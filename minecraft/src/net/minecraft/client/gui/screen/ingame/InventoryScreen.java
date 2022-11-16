@@ -69,7 +69,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 			this.addDrawableChild(new TexturedButtonWidget(this.x + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
 				this.recipeBook.toggleOpen();
 				this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
-				((TexturedButtonWidget)button).setPos(this.x + 104, this.height / 2 - 22);
+				button.setPos(this.x + 104, this.height / 2 - 22);
 				this.mouseDown = true;
 			}));
 			this.addSelectableChild(this.recipeBook);

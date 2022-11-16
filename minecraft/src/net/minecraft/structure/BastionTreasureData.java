@@ -14,13 +14,13 @@ import net.minecraft.structure.processor.StructureProcessorLists;
 
 public class BastionTreasureData {
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);
 		RegistryEntry<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.TREASURE_ROOMS);
 		RegistryEntry<StructureProcessorList> registryEntry2 = registryEntryLookup.getOrThrow(StructureProcessorLists.HIGH_WALL);
 		RegistryEntry<StructureProcessorList> registryEntry3 = registryEntryLookup.getOrThrow(StructureProcessorLists.BOTTOM_RAMPART);
 		RegistryEntry<StructureProcessorList> registryEntry4 = registryEntryLookup.getOrThrow(StructureProcessorLists.HIGH_RAMPART);
 		RegistryEntry<StructureProcessorList> registryEntry5 = registryEntryLookup.getOrThrow(StructureProcessorLists.ROOF);
-		RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+		RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);
 		RegistryEntry<StructurePool> registryEntry6 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
 		StructurePools.register(
 			poolRegisterable,

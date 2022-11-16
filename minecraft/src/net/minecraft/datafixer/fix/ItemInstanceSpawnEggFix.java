@@ -17,6 +17,7 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class ItemInstanceSpawnEggFix extends DataFix {
+	private final String spawnEggId;
 	private static final Map<String, String> ENTITY_SPAWN_EGGS = DataFixUtils.make(Maps.<String, String>newHashMap(), map -> {
 		map.put("minecraft:bat", "minecraft:bat_spawn_egg");
 		map.put("minecraft:blaze", "minecraft:blaze_spawn_egg");
@@ -26,6 +27,7 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 		map.put("minecraft:creeper", "minecraft:creeper_spawn_egg");
 		map.put("minecraft:donkey", "minecraft:donkey_spawn_egg");
 		map.put("minecraft:elder_guardian", "minecraft:elder_guardian_spawn_egg");
+		map.put("minecraft:ender_dragon", "minecraft:ender_dragon_spawn_egg");
 		map.put("minecraft:enderman", "minecraft:enderman_spawn_egg");
 		map.put("minecraft:endermite", "minecraft:endermite_spawn_egg");
 		map.put("minecraft:evocation_illager", "minecraft:evocation_illager_spawn_egg");
@@ -33,6 +35,7 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 		map.put("minecraft:guardian", "minecraft:guardian_spawn_egg");
 		map.put("minecraft:horse", "minecraft:horse_spawn_egg");
 		map.put("minecraft:husk", "minecraft:husk_spawn_egg");
+		map.put("minecraft:iron_golem", "minecraft:iron_golem_spawn_egg");
 		map.put("minecraft:llama", "minecraft:llama_spawn_egg");
 		map.put("minecraft:magma_cube", "minecraft:magma_cube_spawn_egg");
 		map.put("minecraft:mooshroom", "minecraft:mooshroom_spawn_egg");
@@ -49,6 +52,7 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 		map.put("minecraft:skeleton", "minecraft:skeleton_spawn_egg");
 		map.put("minecraft:skeleton_horse", "minecraft:skeleton_horse_spawn_egg");
 		map.put("minecraft:slime", "minecraft:slime_spawn_egg");
+		map.put("minecraft:snow_golem", "minecraft:snow_golem_spawn_egg");
 		map.put("minecraft:spider", "minecraft:spider_spawn_egg");
 		map.put("minecraft:squid", "minecraft:squid_spawn_egg");
 		map.put("minecraft:stray", "minecraft:stray_spawn_egg");
@@ -57,6 +61,7 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 		map.put("minecraft:villager", "minecraft:villager_spawn_egg");
 		map.put("minecraft:vindication_illager", "minecraft:vindication_illager_spawn_egg");
 		map.put("minecraft:witch", "minecraft:witch_spawn_egg");
+		map.put("minecraft:wither", "minecraft:wither_spawn_egg");
 		map.put("minecraft:wither_skeleton", "minecraft:wither_skeleton_spawn_egg");
 		map.put("minecraft:wolf", "minecraft:wolf_spawn_egg");
 		map.put("minecraft:zombie", "minecraft:zombie_spawn_egg");
@@ -65,8 +70,9 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 		map.put("minecraft:zombie_villager", "minecraft:zombie_villager_spawn_egg");
 	});
 
-	public ItemInstanceSpawnEggFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemInstanceSpawnEggFix(Schema schema, boolean changesType, String spawnEggId) {
+		super(schema, changesType);
+		this.spawnEggId = spawnEggId;
 	}
 
 	@Override
@@ -79,22 +85,22 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 		OpticFinder<?> opticFinder3 = type.findField("tag");
 		OpticFinder<?> opticFinder4 = opticFinder3.type().findField("EntityTag");
 		return this.fixTypeEverywhereTyped(
-			"ItemInstanceSpawnEggFix",
+			"ItemInstanceSpawnEggFix" + this.getOutputSchema().getVersionKey(),
 			type,
-			typed -> {
-				Optional<Pair<String, String>> optional = typed.getOptional(opticFinder);
-				if (optional.isPresent() && Objects.equals(((Pair)optional.get()).getSecond(), "minecraft:spawn_egg")) {
-					Typed<?> typed2 = typed.getOrCreateTyped(opticFinder3);
-					Typed<?> typed3 = typed2.getOrCreateTyped(opticFinder4);
-					Optional<String> optional2 = typed3.getOptional(opticFinder2);
+			stack -> {
+				Optional<Pair<String, String>> optional = stack.getOptional(opticFinder);
+				if (optional.isPresent() && Objects.equals(((Pair)optional.get()).getSecond(), this.spawnEggId)) {
+					Typed<?> typed = stack.getOrCreateTyped(opticFinder3);
+					Typed<?> typed2 = typed.getOrCreateTyped(opticFinder4);
+					Optional<String> optional2 = typed2.getOptional(opticFinder2);
 					if (optional2.isPresent()) {
-						return typed.set(
+						return stack.set(
 							opticFinder, Pair.of(TypeReferences.ITEM_NAME.typeName(), (String)ENTITY_SPAWN_EGGS.getOrDefault(optional2.get(), "minecraft:pig_spawn_egg"))
 						);
 					}
 				}
 
-				return typed;
+				return stack;
 			}
 		);
 	}

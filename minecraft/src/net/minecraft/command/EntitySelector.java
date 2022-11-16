@@ -24,6 +24,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class EntitySelector {
 	public static final int MAX_VALUE = Integer.MAX_VALUE;
+	public static final BiConsumer<Vec3d, List<? extends Entity>> ARBITRARY = (pos, entities) -> {
+	};
 	private static final TypeFilter<Entity, ?> PASSTHROUGH_FILTER = new TypeFilter<Entity, Entity>() {
 		public Entity downcast(Entity entity) {
 			return entity;
@@ -161,12 +163,19 @@ public class EntitySelector {
 		}
 	}
 
-	private void appendEntitiesFromWorld(List<Entity> result, ServerWorld world, Vec3d pos, Predicate<Entity> predicate) {
-		if (this.box != null) {
-			result.addAll(world.getEntitiesByType(this.entityFilter, this.box.offset(pos), predicate));
-		} else {
-			result.addAll(world.getEntitiesByType(this.entityFilter, predicate));
+	private void appendEntitiesFromWorld(List<Entity> entities, ServerWorld world, Vec3d pos, Predicate<Entity> predicate) {
+		int i = this.getAppendLimit();
+		if (entities.size() < i) {
+			if (this.box != null) {
+				world.collectEntitiesByType(this.entityFilter, this.box.offset(pos), predicate, entities, i);
+			} else {
+				world.collectEntitiesByType(this.entityFilter, predicate, entities, i);
+			}
 		}
+	}
+
+	private int getAppendLimit() {
+		return this.sorter == ARBITRARY ? this.limit : Integer.MAX_VALUE;
 	}
 
 	public ServerPlayerEntity getPlayer(ServerCommandSource source) throws CommandSyntaxException {
@@ -200,15 +209,19 @@ public class EntitySelector {
 
 				return Collections.emptyList();
 			} else {
+				int i = this.getAppendLimit();
 				List<ServerPlayerEntity> list;
 				if (this.isLocalWorldOnly()) {
-					list = source.getWorld().getPlayers(predicate);
+					list = source.getWorld().getPlayers(predicate, i);
 				} else {
 					list = Lists.<ServerPlayerEntity>newArrayList();
 
 					for (ServerPlayerEntity serverPlayerEntity3 : source.getServer().getPlayerManager().getPlayerList()) {
 						if (predicate.test(serverPlayerEntity3)) {
 							list.add(serverPlayerEntity3);
+							if (list.size() >= i) {
+								return list;
+							}
 						}
 					}
 				}

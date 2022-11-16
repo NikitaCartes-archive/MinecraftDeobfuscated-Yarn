@@ -26,7 +26,8 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		Items.CREEPER_HEAD,
 		Items.PLAYER_HEAD,
 		Items.DRAGON_HEAD,
-		Items.ZOMBIE_HEAD
+		Items.ZOMBIE_HEAD,
+		Items.PIGLIN_HEAD
 	);
 	private static final Ingredient TRAIL_MODIFIER = Ingredient.ofItems(Items.DIAMOND);
 	private static final Ingredient FLICKER_MODIFIER = Ingredient.ofItems(Items.GLOWSTONE_DUST);
@@ -40,6 +41,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		typeModifiers.put(Items.PLAYER_HEAD, FireworkRocketItem.Type.CREEPER);
 		typeModifiers.put(Items.DRAGON_HEAD, FireworkRocketItem.Type.CREEPER);
 		typeModifiers.put(Items.ZOMBIE_HEAD, FireworkRocketItem.Type.CREEPER);
+		typeModifiers.put(Items.PIGLIN_HEAD, FireworkRocketItem.Type.CREEPER);
 	});
 	private static final Ingredient GUNPOWDER = Ingredient.ofItems(Items.GUNPOWDER);
 

@@ -3,6 +3,7 @@ package net.minecraft.item;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -23,8 +24,8 @@ public class ItemGroup {
 	private final ItemGroup.Type type;
 	@Nullable
 	private ItemStack icon;
-	private ItemStackSet displayStacks = new ItemStackSet();
-	private ItemStackSet searchTabStacks = new ItemStackSet();
+	private Collection<ItemStack> displayStacks = ItemStackSet.create();
+	private Set<ItemStack> searchTabStacks = ItemStackSet.create();
 	@Nullable
 	private Consumer<List<ItemStack>> searchProviderReloader;
 	private final Supplier<ItemStack> iconSupplier;
@@ -99,16 +100,16 @@ public class ItemGroup {
 	public void updateEntries(FeatureSet enabledFeatures, boolean operatorEnabled) {
 		ItemGroup.EntriesImpl entriesImpl = new ItemGroup.EntriesImpl(this, enabledFeatures);
 		this.entryCollector.accept(enabledFeatures, entriesImpl, operatorEnabled);
-		this.displayStacks = entriesImpl.getParentTabStacks();
-		this.searchTabStacks = entriesImpl.getSearchTabStacks();
+		this.displayStacks = entriesImpl.parentTabStacks;
+		this.searchTabStacks = entriesImpl.searchTabStacks;
 		this.reloadSearchProvider();
 	}
 
-	public ItemStackSet getDisplayStacks() {
+	public Collection<ItemStack> getDisplayStacks() {
 		return this.displayStacks;
 	}
 
-	public ItemStackSet getSearchTabStacks() {
+	public Collection<ItemStack> getSearchTabStacks() {
 		return this.searchTabStacks;
 	}
 
@@ -224,8 +225,8 @@ public class ItemGroup {
 	}
 
 	static class EntriesImpl implements ItemGroup.Entries {
-		private final ItemStackSet parentTabStacks = new ItemStackSet();
-		private final ItemStackSet searchTabStacks = new ItemStackSet();
+		public final Collection<ItemStack> parentTabStacks = ItemStackSet.create();
+		public final Set<ItemStack> searchTabStacks = ItemStackSet.create();
 		private final ItemGroup group;
 		private final FeatureSet enabledFeatures;
 
@@ -236,37 +237,33 @@ public class ItemGroup {
 
 		@Override
 		public void add(ItemStack stack, ItemGroup.StackVisibility visibility) {
-			boolean bl = this.parentTabStacks.contains(stack) && visibility != ItemGroup.StackVisibility.SEARCH_TAB_ONLY;
-			if (bl) {
-				throw new IllegalStateException(
-					"Accidentally adding the same item stack twice "
-						+ stack.toHoverableText().getString()
-						+ " to a Creative Mode Tab: "
-						+ this.group.getDisplayName().getString()
-				);
+			if (stack.getCount() != 1) {
+				throw new IllegalArgumentException("Stack size must be exactly 1");
 			} else {
-				if (stack.getItem().isEnabled(this.enabledFeatures)) {
-					switch (visibility) {
-						case PARENT_AND_SEARCH_TABS:
-							this.parentTabStacks.add(stack);
-							this.searchTabStacks.add(stack);
-							break;
-						case PARENT_TAB_ONLY:
-							this.parentTabStacks.add(stack);
-							break;
-						case SEARCH_TAB_ONLY:
-							this.searchTabStacks.add(stack);
+				boolean bl = this.parentTabStacks.contains(stack) && visibility != ItemGroup.StackVisibility.SEARCH_TAB_ONLY;
+				if (bl) {
+					throw new IllegalStateException(
+						"Accidentally adding the same item stack twice "
+							+ stack.toHoverableText().getString()
+							+ " to a Creative Mode Tab: "
+							+ this.group.getDisplayName().getString()
+					);
+				} else {
+					if (stack.getItem().isEnabled(this.enabledFeatures)) {
+						switch (visibility) {
+							case PARENT_AND_SEARCH_TABS:
+								this.parentTabStacks.add(stack);
+								this.searchTabStacks.add(stack);
+								break;
+							case PARENT_TAB_ONLY:
+								this.parentTabStacks.add(stack);
+								break;
+							case SEARCH_TAB_ONLY:
+								this.searchTabStacks.add(stack);
+						}
 					}
 				}
 			}
-		}
-
-		public ItemStackSet getParentTabStacks() {
-			return this.parentTabStacks;
-		}
-
-		public ItemStackSet getSearchTabStacks() {
-			return this.searchTabStacks;
 		}
 	}
 

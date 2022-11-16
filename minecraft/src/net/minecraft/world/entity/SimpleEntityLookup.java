@@ -4,6 +4,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.Box;
 
 /**
@@ -42,17 +43,17 @@ public class SimpleEntityLookup<T extends EntityLike> implements EntityLookup<T>
 	}
 
 	@Override
-	public <U extends T> void forEach(TypeFilter<T, U> filter, Consumer<U> action) {
-		this.index.forEach(filter, action);
+	public <U extends T> void forEach(TypeFilter<T, U> filter, LazyIterationConsumer<U> consumer) {
+		this.index.forEach(filter, consumer);
 	}
 
 	@Override
 	public void forEachIntersects(Box box, Consumer<T> action) {
-		this.cache.forEachIntersects(box, action);
+		this.cache.forEachIntersects(box, LazyIterationConsumer.forConsumer(action));
 	}
 
 	@Override
-	public <U extends T> void forEachIntersects(TypeFilter<T, U> filter, Box box, Consumer<U> action) {
-		this.cache.forEachIntersects(filter, box, action);
+	public <U extends T> void forEachIntersects(TypeFilter<T, U> filter, Box box, LazyIterationConsumer<U> consumer) {
+		this.cache.forEachIntersects(filter, box, consumer);
 	}
 }

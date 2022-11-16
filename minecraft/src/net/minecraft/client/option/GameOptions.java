@@ -671,6 +671,26 @@ public class GameOptions {
 		70,
 		value -> MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate()
 	);
+	private static final MutableText TELEMETRY_TOOLTIP = Text.translatable(
+		"options.telemetry.button.tooltip", Text.translatable("options.telemetry.state.minimal"), Text.translatable("options.telemetry.state.all")
+	);
+	private final SimpleOption<Boolean> telemetryOptInExtra = SimpleOption.ofBoolean(
+		"options.telemetry.button",
+		SimpleOption.constantTooltip(TELEMETRY_TOOLTIP),
+		(optionText, value) -> {
+			MinecraftClient minecraftClient = MinecraftClient.getInstance();
+			if (!minecraftClient.isTelemetryEnabledByApi()) {
+				return Text.translatable("options.telemetry.state.none");
+			} else {
+				return value && minecraftClient.isOptionalTelemetryEnabledByApi()
+					? Text.translatable("options.telemetry.state.all")
+					: Text.translatable("options.telemetry.state.minimal");
+			}
+		},
+		false,
+		value -> {
+		}
+	);
 	private static final Text SCREEN_EFFECT_SCALE_TOOLTIP = Text.translatable("options.screenEffectScale.tooltip");
 	private final SimpleOption<Double> distortionEffectScale = new SimpleOption<>(
 		"options.screenEffectScale",
@@ -1008,6 +1028,10 @@ public class GameOptions {
 		return this.fov;
 	}
 
+	public SimpleOption<Boolean> getTelemetryOptInExtra() {
+		return this.telemetryOptInExtra;
+	}
+
 	public SimpleOption<Double> getDistortionEffectScale() {
 		return this.distortionEffectScale;
 	}
@@ -1163,6 +1187,7 @@ public class GameOptions {
 		visitor.accept("allowServerListing", this.allowServerListing);
 		visitor.accept("onlyShowSecureChat", this.onlyShowSecureChat);
 		visitor.accept("panoramaScrollSpeed", this.panoramaSpeed);
+		visitor.accept("telemetryOptInExtra", this.telemetryOptInExtra);
 
 		for (KeyBinding keyBinding : this.allKeys) {
 			String string = keyBinding.getBoundKeyTranslationKey();

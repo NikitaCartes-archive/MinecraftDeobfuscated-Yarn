@@ -63,6 +63,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 			Blocks.ZOMBIE_HEAD,
 			Blocks.CREEPER_HEAD,
 			Blocks.DRAGON_HEAD,
+			Blocks.PIGLIN_HEAD,
 			Blocks.SHULKER_BOX,
 			Blocks.BLACK_SHULKER_BOX,
 			Blocks.BLUE_SHULKER_BOX,
@@ -302,6 +303,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.ZOMBIE_HEAD);
 		this.addDrop(Blocks.CREEPER_HEAD);
 		this.addDrop(Blocks.DRAGON_HEAD);
+		this.addDrop(Blocks.PIGLIN_HEAD);
 		this.addDrop(Blocks.ANVIL);
 		this.addDrop(Blocks.CHIPPED_ANVIL);
 		this.addDrop(Blocks.DAMAGED_ANVIL);

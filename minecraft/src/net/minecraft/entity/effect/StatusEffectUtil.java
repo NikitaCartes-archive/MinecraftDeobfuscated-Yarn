@@ -12,12 +12,8 @@ import net.minecraft.util.math.Vec3d;
 
 public final class StatusEffectUtil {
 	public static String durationToString(StatusEffectInstance effect, float multiplier) {
-		if (effect.isPermanent()) {
-			return "**:**";
-		} else {
-			int i = MathHelper.floor((float)effect.getDuration() * multiplier);
-			return StringHelper.formatTicks(i);
-		}
+		int i = MathHelper.floor((float)effect.getDuration() * multiplier);
+		return StringHelper.formatTicks(i);
 	}
 
 	public static boolean hasHaste(LivingEntity entity) {

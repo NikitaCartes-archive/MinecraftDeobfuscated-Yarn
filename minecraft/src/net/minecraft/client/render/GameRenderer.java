@@ -1444,7 +1444,7 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	@Nullable
-	public static ShaderProgram getRenderTypeEntityTranslucentEmissiveShader() {
+	public static ShaderProgram getRenderTypeEntityTranslucentEmissiveProgram() {
 		return renderTypeEntityTranslucentEmissiveProgram;
 	}
 
@@ -1604,7 +1604,7 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	@Nullable
-	public static ShaderProgram getRenderTypeCrumblingShader() {
+	public static ShaderProgram getRenderTypeCrumblingProgram() {
 		return renderTypeCrumblingProgram;
 	}
 

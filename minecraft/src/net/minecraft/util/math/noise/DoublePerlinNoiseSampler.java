@@ -102,7 +102,7 @@ public class DoublePerlinNoiseSampler {
 					.apply(instance, DoublePerlinNoiseSampler.NoiseParameters::new)
 		);
 		public static final Codec<RegistryEntry<DoublePerlinNoiseSampler.NoiseParameters>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(
-			RegistryKeys.NOISE_WORLDGEN, CODEC
+			RegistryKeys.NOISE_PARAMETERS, CODEC
 		);
 
 		public NoiseParameters(int firstOctave, List<Double> amplitudes) {

@@ -36,18 +36,15 @@ public class RealmsSettingsScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		int i = this.width / 2 - 106;
 		this.doneButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.configure.world.buttons.done"), button -> this.save()).setPositionAndSize(i - 2, row(12), 106, 20).build()
+			ButtonWidget.builder(Text.translatable("mco.configure.world.buttons.done"), button -> this.save()).dimensions(i - 2, row(12), 106, 20).build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 + 2, row(12), 106, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 2, row(12), 106, 20).build()
 		);
 		String string = this.serverData.state == RealmsServer.State.OPEN ? "mco.configure.world.buttons.close" : "mco.configure.world.buttons.open";
-		ButtonWidget buttonWidget = ButtonWidget.createBuilder(Text.translatable(string), button -> {
+		ButtonWidget buttonWidget = ButtonWidget.builder(Text.translatable(string), button -> {
 			if (this.serverData.state == RealmsServer.State.OPEN) {
 				Text text = Text.translatable("mco.configure.world.close.question.line1");
 				Text text2 = Text.translatable("mco.configure.world.close.question.line2");
@@ -61,7 +58,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 			} else {
 				this.parent.openTheWorld(false, this);
 			}
-		}).setPositionAndSize(this.width / 2 - 53, row(0), 106, 20).build();
+		}).dimensions(this.width / 2 - 53, row(0), 106, 20).build();
 		this.addDrawableChild(buttonWidget);
 		this.nameEdit = new TextFieldWidget(this.client.textRenderer, i, row(4), 212, 20, null, Text.translatable("mco.configure.world.name"));
 		this.nameEdit.setMaxLength(32);
@@ -72,11 +69,6 @@ public class RealmsSettingsScreen extends RealmsScreen {
 		this.descEdit.setMaxLength(32);
 		this.descEdit.setText(this.serverData.getDescription());
 		this.addSelectableChild(this.descEdit);
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

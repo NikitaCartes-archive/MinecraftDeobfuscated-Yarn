@@ -40,7 +40,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 			wrapped.getPos(),
 			UpgradeData.NO_UPGRADE_DATA,
 			wrapped.heightLimitView,
-			wrapped.getWorld().getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN),
+			wrapped.getWorld().getRegistryManager().get(RegistryKeys.BIOME),
 			wrapped.getBlendingData()
 		);
 		this.wrapped = wrapped;

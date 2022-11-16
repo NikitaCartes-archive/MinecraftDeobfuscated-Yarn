@@ -18,13 +18,13 @@ public class OutOfMemoryScreen extends Screen {
 	@Override
 	protected void init() {
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("gui.toTitle"), button -> this.client.setScreen(new TitleScreen()))
-				.setPositionAndSize(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20)
+			ButtonWidget.builder(Text.translatable("gui.toTitle"), button -> this.client.setScreen(new TitleScreen()))
+				.dimensions(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("menu.quit"), button -> this.client.scheduleStop())
-				.setPositionAndSize(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20)
+			ButtonWidget.builder(Text.translatable("menu.quit"), button -> this.client.scheduleStop())
+				.dimensions(this.width / 2 - 155 + 160, this.height / 4 + 120 + 12, 150, 20)
 				.build()
 		);
 		this.message = MultilineText.create(this.textRenderer, Text.translatable("outOfMemory.message"), 295);

@@ -37,7 +37,7 @@ public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 			return false;
 		} else {
 			RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = (RegistryEntry<ConfiguredFeature<?, ?>>)world.getRegistryManager()
-				.get(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN)
+				.get(RegistryKeys.CONFIGURED_FEATURE)
 				.getEntry(registryKey)
 				.orElse(null);
 			if (registryEntry == null) {

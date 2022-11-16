@@ -127,9 +127,7 @@ public abstract class StructurePlacement {
 	public static record ExclusionZone(RegistryEntry<StructureSet> otherSet, int chunkCount) {
 		public static final Codec<StructurePlacement.ExclusionZone> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET_WORLDGEN, StructureSet.CODEC, false)
-							.fieldOf("other_set")
-							.forGetter(StructurePlacement.ExclusionZone::otherSet),
+						RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET, StructureSet.CODEC, false).fieldOf("other_set").forGetter(StructurePlacement.ExclusionZone::otherSet),
 						Codec.intRange(1, 16).fieldOf("chunk_count").forGetter(StructurePlacement.ExclusionZone::chunkCount)
 					)
 					.apply(instance, StructurePlacement.ExclusionZone::new)

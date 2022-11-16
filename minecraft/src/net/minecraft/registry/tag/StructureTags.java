@@ -19,6 +19,6 @@ public interface StructureTags {
 	TagKey<Structure> OCEAN_RUIN = of("ocean_ruin");
 
 	private static TagKey<Structure> of(String id) {
-		return TagKey.of(RegistryKeys.STRUCTURE_WORLDGEN, new Identifier(id));
+		return TagKey.of(RegistryKeys.STRUCTURE, new Identifier(id));
 	}
 }

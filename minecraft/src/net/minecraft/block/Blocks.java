@@ -599,7 +599,9 @@ public class Blocks {
 	public static final Block BOOKSHELF = register("bookshelf", new Block(AbstractBlock.Settings.of(Material.WOOD).strength(1.5F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block CHISELED_BOOKSHELF = register(
 		"chiseled_bookshelf",
-		new ChiseledBookshelfBlock(AbstractBlock.Settings.of(Material.WOOD).strength(1.5F).sounds(BlockSoundGroup.field_41085).requires(FeatureFlags.UPDATE_1_20))
+		new ChiseledBookshelfBlock(
+			AbstractBlock.Settings.of(Material.WOOD).strength(1.5F).sounds(BlockSoundGroup.CHISELED_BOOKSHELF).requires(FeatureFlags.UPDATE_1_20)
+		)
 	);
 	public static final Block MOSSY_COBBLESTONE = register(
 		"mossy_cobblestone", new Block(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(2.0F, 6.0F))
@@ -876,7 +878,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MapColor.DULL_PINK)
 				.noCollision()
 				.strength(1.0F)
-				.sounds(BlockSoundGroup.field_41083)
+				.sounds(BlockSoundGroup.NETHER_WOOD_HANGING_SIGN)
 				.requires(FeatureFlags.UPDATE_1_20),
 			SignType.CRIMSON
 		)
@@ -887,7 +889,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MapColor.DARK_AQUA)
 				.noCollision()
 				.strength(1.0F)
-				.sounds(BlockSoundGroup.field_41083)
+				.sounds(BlockSoundGroup.NETHER_WOOD_HANGING_SIGN)
 				.requires(FeatureFlags.UPDATE_1_20),
 			SignType.WARPED
 		)
@@ -909,7 +911,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MapColor.YELLOW)
 				.noCollision()
 				.strength(1.0F)
-				.sounds(BlockSoundGroup.field_41084)
+				.sounds(BlockSoundGroup.BAMBOO_WOOD_HANGING_SIGN)
 				.requires(FeatureFlags.UPDATE_1_20),
 			SignType.BAMBOO
 		)
@@ -1004,7 +1006,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MapColor.DULL_PINK)
 				.noCollision()
 				.strength(1.0F)
-				.sounds(BlockSoundGroup.field_41083)
+				.sounds(BlockSoundGroup.NETHER_WOOD_HANGING_SIGN)
 				.dropsLike(CRIMSON_HANGING_SIGN)
 				.requires(FeatureFlags.UPDATE_1_20),
 			SignType.CRIMSON
@@ -1016,7 +1018,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MapColor.DARK_AQUA)
 				.noCollision()
 				.strength(1.0F)
-				.sounds(BlockSoundGroup.field_41083)
+				.sounds(BlockSoundGroup.NETHER_WOOD_HANGING_SIGN)
 				.dropsLike(WARPED_HANGING_SIGN)
 				.requires(FeatureFlags.UPDATE_1_20),
 			SignType.WARPED
@@ -1028,7 +1030,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MapColor.YELLOW)
 				.noCollision()
 				.strength(1.0F)
-				.sounds(BlockSoundGroup.field_41084)
+				.sounds(BlockSoundGroup.BAMBOO_WOOD_HANGING_SIGN)
 				.dropsLike(BAMBOO_HANGING_SIGN)
 				.requires(FeatureFlags.UPDATE_1_20),
 			SignType.BAMBOO
@@ -1700,6 +1702,13 @@ public class Blocks {
 	);
 	public static final Block DRAGON_WALL_HEAD = register(
 		"dragon_wall_head", new WallSkullBlock(SkullBlock.Type.DRAGON, AbstractBlock.Settings.of(Material.DECORATION).strength(1.0F).dropsLike(DRAGON_HEAD))
+	);
+	public static final Block PIGLIN_HEAD = register(
+		"piglin_head", new SkullBlock(SkullBlock.Type.PIGLIN, AbstractBlock.Settings.of(Material.DECORATION).strength(1.0F).requires(FeatureFlags.UPDATE_1_20))
+	);
+	public static final Block PIGLIN_WALL_HEAD = register(
+		"piglin_wall_head",
+		new WallPiglinHeadBlock(AbstractBlock.Settings.of(Material.DECORATION).strength(1.0F).dropsLike(PIGLIN_HEAD).requires(FeatureFlags.UPDATE_1_20))
 	);
 	public static final Block ANVIL = register(
 		"anvil",

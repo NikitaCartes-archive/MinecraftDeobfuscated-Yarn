@@ -706,7 +706,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			if (this.player.world.getBlockEntity(blockPos) instanceof JigsawBlockEntity jigsawBlockEntity) {
 				jigsawBlockEntity.setName(packet.getName());
 				jigsawBlockEntity.setTarget(packet.getTarget());
-				jigsawBlockEntity.setPool(RegistryKey.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, packet.getPool()));
+				jigsawBlockEntity.setPool(RegistryKey.of(RegistryKeys.TEMPLATE_POOL, packet.getPool()));
 				jigsawBlockEntity.setFinalState(packet.getFinalState());
 				jigsawBlockEntity.setJoint(packet.getJointType());
 				jigsawBlockEntity.markDirty();
@@ -946,6 +946,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 								this.updatedZ = this.player.getZ();
 							} else {
 								this.requestTeleport(i, j, k, g, h);
+								this.player.handleFall(this.player.getY() - l, packet.isOnGround());
 							}
 						}
 					}

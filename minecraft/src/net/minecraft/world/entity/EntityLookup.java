@@ -4,6 +4,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.Box;
 
 /**
@@ -38,11 +39,11 @@ public interface EntityLookup<T extends EntityLike> {
 	 * @param <U> the type of entity to perform action on
 	 * 
 	 * @param filter specifies the desired type of entity
-	 * @param action the action to perform
+	 * @param consumer the consumer, additionally checking whether to perform the next iteration or to stop early
 	 */
-	<U extends T> void forEach(TypeFilter<T, U> filter, Consumer<U> action);
+	<U extends T> void forEach(TypeFilter<T, U> filter, LazyIterationConsumer<U> consumer);
 
 	void forEachIntersects(Box box, Consumer<T> action);
 
-	<U extends T> void forEachIntersects(TypeFilter<T, U> filter, Box box, Consumer<U> action);
+	<U extends T> void forEachIntersects(TypeFilter<T, U> filter, Box box, LazyIterationConsumer<U> consumer);
 }

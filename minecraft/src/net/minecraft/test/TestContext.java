@@ -26,6 +26,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsageContext;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
@@ -156,8 +157,13 @@ public class TestContext {
 
 	public void useBlock(BlockPos pos, PlayerEntity player) {
 		BlockPos blockPos = this.getAbsolutePos(pos);
+		this.useBlock(pos, player, new BlockHitResult(Vec3d.ofCenter(blockPos), Direction.NORTH, blockPos, true));
+	}
+
+	public void useBlock(BlockPos pos, PlayerEntity player, BlockHitResult result) {
+		BlockPos blockPos = this.getAbsolutePos(pos);
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
-		blockState.onUse(this.getWorld(), player, Hand.MAIN_HAND, new BlockHitResult(Vec3d.ofCenter(blockPos), Direction.NORTH, blockPos, true));
+		blockState.onUse(this.getWorld(), player, Hand.MAIN_HAND, result);
 	}
 
 	public LivingEntity drown(LivingEntity entity) {
@@ -662,5 +668,12 @@ public class TestContext {
 
 	public void forEachRemainingTick(Runnable runnable) {
 		LongStream.range(this.test.getTick(), (long)this.test.getTicksLeft()).forEach(tick -> this.test.runAtTick(tick, runnable::run));
+	}
+
+	public void useStackOnBlock(PlayerEntity player, ItemStack stack, BlockPos pos, Direction direction) {
+		BlockPos blockPos = this.getAbsolutePos(pos.offset(direction));
+		BlockHitResult blockHitResult = new BlockHitResult(Vec3d.ofCenter(blockPos), direction, blockPos, false);
+		ItemUsageContext itemUsageContext = new ItemUsageContext(player, Hand.MAIN_HAND, blockHitResult);
+		stack.useOnBlock(itemUsageContext);
 	}
 }

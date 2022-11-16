@@ -50,22 +50,22 @@ public class AbuseReportReasonScreen extends Screen {
 		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = Util.map(this.reason, this.reasonList::getEntry);
 		this.reasonList.setSelected(reasonEntry);
 		int i = this.width / 2 - 150 - 5;
-		this.addDrawableChild(ButtonWidget.createBuilder(READ_INFO_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+		this.addDrawableChild(ButtonWidget.builder(READ_INFO_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
 				if (confirmed) {
 					Util.getOperatingSystem().open("https://aka.ms/aboutjavareporting");
 				}
 
 				this.client.setScreen(this);
-			}, "https://aka.ms/aboutjavareporting", true))).setPositionAndSize(i, this.getDoneButtonY(), 150, 20).build());
+			}, "https://aka.ms/aboutjavareporting", true))).dimensions(i, this.getDoneButtonY(), 150, 20).build());
 		int j = this.width / 2 + 5;
-		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntryx = this.reasonList.getSelectedOrNull();
 			if (reasonEntryx != null) {
 				this.reasonConsumer.accept(reasonEntryx.getReason());
 			}
 
 			this.client.setScreen(this.parent);
-		}).setPositionAndSize(j, this.getDoneButtonY(), 150, 20).build());
+		}).dimensions(j, this.getDoneButtonY(), 150, 20).build());
 		super.init();
 	}
 

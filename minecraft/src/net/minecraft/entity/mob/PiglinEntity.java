@@ -38,6 +38,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -151,6 +152,14 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	@Override
 	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
 		super.dropEquipment(source, lootingMultiplier, allowDrops);
+		if (this.getWorld().getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)
+			&& source.getAttacker() instanceof CreeperEntity creeperEntity
+			&& creeperEntity.shouldDropHead()) {
+			ItemStack itemStack = new ItemStack(Items.PIGLIN_HEAD);
+			creeperEntity.onHeadDropped();
+			this.dropStack(itemStack);
+		}
+
 		this.inventory.clearToList().forEach(this::dropStack);
 	}
 

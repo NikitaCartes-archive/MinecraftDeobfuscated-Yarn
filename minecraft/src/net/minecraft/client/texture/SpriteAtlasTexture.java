@@ -77,18 +77,25 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 
 	private void dumpAtlasTextureAndInfo(int scales, int width, int height) {
 		String string = this.id.toUnderscoreSeparatedString();
-		TextureUtil.writeAsPNG(string, this.getGlId(), scales, width, height);
-		dumpAtlasInfos(string, this.sprites);
-	}
-
-	private static void dumpAtlasInfos(String id, Map<Identifier, Sprite> sprites) {
-		Path path = Path.of(id + ".txt");
+		Path path = TextureUtil.getDebugTexturePath();
 
 		try {
-			Writer writer = Files.newBufferedWriter(path);
+			Files.createDirectories(path);
+			TextureUtil.writeAsPNG(path, string, this.getGlId(), scales, width, height);
+			dumpAtlasInfos(path, string, this.sprites);
+		} catch (IOException var7) {
+			LOGGER.warn("Failed to dump atlas contents to {}", path);
+		}
+	}
+
+	private static void dumpAtlasInfos(Path path, String string, Map<Identifier, Sprite> map) {
+		Path path2 = path.resolve(string + ".txt");
+
+		try {
+			Writer writer = Files.newBufferedWriter(path2);
 
 			try {
-				for (Entry<Identifier, Sprite> entry : sprites.entrySet().stream().sorted(Entry.comparingByKey()).toList()) {
+				for (Entry<Identifier, Sprite> entry : map.entrySet().stream().sorted(Entry.comparingByKey()).toList()) {
 					Sprite sprite = (Sprite)entry.getValue();
 					writer.write(
 						String.format(
@@ -102,23 +109,23 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 						)
 					);
 				}
-			} catch (Throwable var8) {
+			} catch (Throwable var9) {
 				if (writer != null) {
 					try {
 						writer.close();
-					} catch (Throwable var7) {
-						var8.addSuppressed(var7);
+					} catch (Throwable var8) {
+						var9.addSuppressed(var8);
 					}
 				}
 
-				throw var8;
+				throw var9;
 			}
 
 			if (writer != null) {
 				writer.close();
 			}
-		} catch (IOException var9) {
-			LOGGER.warn("Failed to write file {}", path, var9);
+		} catch (IOException var10) {
+			LOGGER.warn("Failed to write file {}", path2, var10);
 		}
 	}
 

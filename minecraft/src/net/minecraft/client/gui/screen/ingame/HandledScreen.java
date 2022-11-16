@@ -83,8 +83,6 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 	@Override
 	protected void init() {
-		super.init();
-		this.client.keyboard.setRepeatEvents(true);
 		this.x = (this.width - this.backgroundWidth) / 2;
 		this.y = (this.height - this.backgroundHeight) / 2;
 	}
@@ -608,7 +606,6 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	@Override
 	public void removed() {
 		if (this.client.player != null) {
-			this.client.keyboard.setRepeatEvents(false);
 			this.handler.close(this.client.player);
 		}
 	}

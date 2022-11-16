@@ -36,20 +36,14 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20)
+			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent))
+				.dimensions(this.width / 2 - 100, this.height / 4 + 120 + 24, 200, 20)
 				.build()
 		);
 		this.backupInfoList = new RealmsBackupInfoScreen.BackupInfoList(this.client);
 		this.addSelectableChild(this.backupInfoList);
 		this.focusOn(this.backupInfoList);
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

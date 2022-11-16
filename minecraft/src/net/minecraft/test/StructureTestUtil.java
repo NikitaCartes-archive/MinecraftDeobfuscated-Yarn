@@ -285,9 +285,9 @@ public class StructureTestUtil {
 		BlockState blockState = null;
 		DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(
-			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN),
-			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET_WORLDGEN),
-			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE_WORLDGEN)
+			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME),
+			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET),
+			dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE)
 		);
 		List<BlockState> list = flatChunkGeneratorConfig.getLayerBlocks();
 		int i = pos.getY() - world.getBottomY();

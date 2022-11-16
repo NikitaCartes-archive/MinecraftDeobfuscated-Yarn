@@ -34,8 +34,8 @@ public final class NoiseConfig {
 		RegistryEntryLookup.RegistryLookup registryLookup, RegistryKey<ChunkGeneratorSettings> chunkGeneratorSettingsKey, long legacyWorldSeed
 	) {
 		return create(
-			registryLookup.getOrThrow(RegistryKeys.NOISE_SETTINGS_WORLDGEN).getOrThrow(chunkGeneratorSettingsKey).value(),
-			registryLookup.getOrThrow(RegistryKeys.NOISE_WORLDGEN),
+			registryLookup.getOrThrow(RegistryKeys.CHUNK_GENERATOR_SETTINGS).getOrThrow(chunkGeneratorSettingsKey).value(),
+			registryLookup.getOrThrow(RegistryKeys.NOISE_PARAMETERS),
 			legacyWorldSeed
 		);
 	}

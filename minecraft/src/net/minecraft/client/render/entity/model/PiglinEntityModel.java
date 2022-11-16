@@ -94,6 +94,13 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 		modelPartData.addChild(
 			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(16, 16).cuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, dilation), ModelTransform.NONE
 		);
+		addHead(dilation, modelData);
+		modelPartData.addChild(EntityModelPartNames.HAT, ModelPartBuilder.create(), ModelTransform.NONE);
+		return modelData;
+	}
+
+	public static void addHead(Dilation dilation, ModelData baseModelData) {
+		ModelPartData modelPartData = baseModelData.getRoot();
 		ModelPartData modelPartData2 = modelPartData.addChild(
 			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create()
@@ -117,8 +124,6 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 			ModelPartBuilder.create().uv(39, 6).cuboid(-1.0F, 0.0F, -2.0F, 1.0F, 5.0F, 4.0F, dilation),
 			ModelTransform.of(-4.5F, -6.0F, 0.0F, 0.0F, 0.0F, (float) (Math.PI / 6))
 		);
-		modelPartData.addChild(EntityModelPartNames.HAT, ModelPartBuilder.create(), ModelTransform.NONE);
-		return modelData;
 	}
 
 	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {

@@ -1,0 +1,122 @@
+package net.minecraft.client.gui.screen.option;
+
+import java.nio.file.Path;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.class_7940;
+import net.minecraft.client.gui.screen.ConfirmLinkScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.SimplePositioningWidget;
+import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
+
+@Environment(EnvType.CLIENT)
+public class TelemetryInfoScreen extends Screen {
+	private static final int MARGIN = 8;
+	private static final String FEEDBACK_URL = "https://feedback.minecraft.net";
+	private static final Text TITLE_TEXT = Text.translatable("telemetry_info.screen.title");
+	private static final Text DESCRIPTION_TEXT = Text.translatable("telemetry_info.screen.description").formatted(Formatting.GRAY);
+	private static final Text GIVE_FEEDBACK_TEXT = Text.translatable("telemetry_info.button.give_feedback");
+	private static final Text SHOW_DATA_TEXT = Text.translatable("telemetry_info.button.show_data");
+	private final Screen parent;
+	private final GameOptions options;
+	private TelemetryEventWidget telemetryEventWidget;
+	private double scroll;
+
+	public TelemetryInfoScreen(Screen parent, GameOptions options) {
+		super(TITLE_TEXT);
+		this.parent = parent;
+		this.options = options;
+	}
+
+	@Override
+	public Text getNarratedTitle() {
+		return ScreenTexts.joinSentences(super.getNarratedTitle(), DESCRIPTION_TEXT);
+	}
+
+	@Override
+	protected void init() {
+		SimplePositioningWidget simplePositioningWidget = new SimplePositioningWidget(0, 0, this.width, this.height);
+		simplePositioningWidget.getMainPositioner().margin(8);
+		simplePositioningWidget.setMinHeight(this.height);
+		GridWidget gridWidget = simplePositioningWidget.add(new GridWidget(), simplePositioningWidget.copyPositioner().relative(0.5F, 0.0F));
+		gridWidget.getMainPositioner().alignHorizontalCenter().marginBottom(8);
+		GridWidget.Adder adder = gridWidget.createAdder(1);
+		adder.add(new TextWidget(this.getTitle(), this.textRenderer));
+		adder.add(class_7940.method_47617(this.width - 16, this.textRenderer, DESCRIPTION_TEXT));
+		GridWidget gridWidget2 = this.createButtonRow(
+			ButtonWidget.builder(GIVE_FEEDBACK_TEXT, this::openFeedbackPage).build(), ButtonWidget.builder(SHOW_DATA_TEXT, this::openLogDirectory).build()
+		);
+		adder.add(gridWidget2);
+		GridWidget gridWidget3 = this.createButtonRow(this.createOptInButton(), ButtonWidget.builder(ScreenTexts.DONE, this::goBack).build());
+		simplePositioningWidget.add(gridWidget3, simplePositioningWidget.copyPositioner().relative(0.5F, 1.0F));
+		gridWidget.recalculateDimensions();
+		simplePositioningWidget.recalculateDimensions();
+		this.telemetryEventWidget = new TelemetryEventWidget(
+			0, 0, this.width - 40, gridWidget3.getY() - (gridWidget2.getY() + gridWidget2.getHeight()) - 16, this.client.textRenderer
+		);
+		this.telemetryEventWidget.setScrollY(this.scroll);
+		this.telemetryEventWidget.setScrollConsumer(scroll -> this.scroll = scroll);
+		this.setInitialFocus(this.telemetryEventWidget);
+		adder.add(this.telemetryEventWidget);
+		gridWidget.recalculateDimensions();
+		simplePositioningWidget.recalculateDimensions();
+		SimplePositioningWidget.setPos(simplePositioningWidget, 0, 0, this.width, this.height, 0.5F, 0.0F);
+		this.addDrawableChild(simplePositioningWidget);
+	}
+
+	private ClickableWidget createOptInButton() {
+		ClickableWidget clickableWidget = this.options
+			.getTelemetryOptInExtra()
+			.createButton(this.options, 0, 0, 150, value -> this.telemetryEventWidget.refresh(value));
+		clickableWidget.active = this.client.isOptionalTelemetryEnabledByApi();
+		return clickableWidget;
+	}
+
+	private void goBack(ButtonWidget button) {
+		this.client.setScreen(this.parent);
+	}
+
+	private void openFeedbackPage(ButtonWidget button) {
+		this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+			if (confirmed) {
+				Util.getOperatingSystem().open("https://feedback.minecraft.net");
+			}
+
+			this.client.setScreen(this);
+		}, "https://feedback.minecraft.net", true));
+	}
+
+	private void openLogDirectory(ButtonWidget button) {
+		Path path = this.client.getTelemetryManager().getLogManager();
+		Util.getOperatingSystem().open(path.toUri());
+	}
+
+	@Override
+	public void close() {
+		this.client.setScreen(this.parent);
+	}
+
+	@Override
+	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(0);
+		super.render(matrices, mouseX, mouseY, delta);
+	}
+
+	private GridWidget createButtonRow(ClickableWidget left, ClickableWidget right) {
+		GridWidget gridWidget = new GridWidget();
+		gridWidget.getMainPositioner().alignHorizontalCenter().marginX(4);
+		gridWidget.add(left, 0, 0);
+		gridWidget.add(right, 0, 1);
+		gridWidget.recalculateDimensions();
+		return gridWidget;
+	}
+}

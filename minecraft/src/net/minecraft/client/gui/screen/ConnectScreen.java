@@ -88,7 +88,9 @@ public class ConnectScreen extends Screen {
 					inetSocketAddress = (InetSocketAddress)optional.get();
 					ConnectScreen.this.connection = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport());
 					ConnectScreen.this.connection
-						.setPacketListener(new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, info, ConnectScreen.this.parent, ConnectScreen.this::setStatus));
+						.setPacketListener(
+							new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, info, ConnectScreen.this.parent, false, null, ConnectScreen.this::setStatus)
+						);
 					ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
 					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), Optional.ofNullable(client.getSession().getUuidOrNull())));
 				} catch (Exception var6) {
@@ -143,14 +145,14 @@ public class ConnectScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> {
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> {
 			this.connectingCancelled = true;
 			if (this.connection != null) {
 				this.connection.disconnect(Text.translatable("connect.aborted"));
 			}
 
 			this.client.setScreen(this.parent);
-		}).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20).build());
+		}).dimensions(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20).build());
 	}
 
 	@Override

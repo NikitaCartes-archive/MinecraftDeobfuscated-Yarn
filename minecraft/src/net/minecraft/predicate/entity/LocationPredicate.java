@@ -212,13 +212,13 @@ public class LocationPredicate {
 				? (RegistryKey)Identifier.CODEC
 					.parse(JsonOps.INSTANCE, jsonObject.get("structure"))
 					.resultOrPartial(LOGGER::error)
-					.map(identifier -> RegistryKey.of(RegistryKeys.STRUCTURE_WORLDGEN, identifier))
+					.map(identifier -> RegistryKey.of(RegistryKeys.STRUCTURE, identifier))
 					.orElse(null)
 				: null;
 			RegistryKey<Biome> registryKey3 = null;
 			if (jsonObject.has("biome")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "biome"));
-				registryKey3 = RegistryKey.of(RegistryKeys.BIOME_WORLDGEN, identifier);
+				registryKey3 = RegistryKey.of(RegistryKeys.BIOME, identifier);
 			}
 
 			Boolean boolean_ = jsonObject.has("smokey") ? jsonObject.get("smokey").getAsBoolean() : null;

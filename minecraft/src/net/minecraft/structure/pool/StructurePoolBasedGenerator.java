@@ -59,7 +59,7 @@ public class StructurePoolBasedGenerator {
 		StructureTemplateManager structureTemplateManager = context.structureTemplateManager();
 		HeightLimitView heightLimitView = context.world();
 		ChunkRandom chunkRandom = context.random();
-		Registry<StructurePool> registry = dynamicRegistryManager.get(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+		Registry<StructurePool> registry = dynamicRegistryManager.get(RegistryKeys.TEMPLATE_POOL);
 		BlockRotation blockRotation = BlockRotation.random(chunkRandom);
 		StructurePool structurePool2 = structurePool.value();
 		StructurePoolElement structurePoolElement = structurePool2.getRandomElement(chunkRandom);
@@ -410,7 +410,7 @@ public class StructurePoolBasedGenerator {
 		}
 
 		private static RegistryKey<StructurePool> getPoolKey(StructureTemplate.StructureBlockInfo blockInfo) {
-			return RegistryKey.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, new Identifier(blockInfo.nbt.getString("pool")));
+			return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, new Identifier(blockInfo.nbt.getString("pool")));
 		}
 	}
 }

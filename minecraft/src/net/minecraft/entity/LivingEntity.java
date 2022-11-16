@@ -884,6 +884,8 @@ public abstract class LivingEntity extends Entity {
 			EntityType<?> entityType = entity.getType();
 			if (entityType == EntityType.SKELETON && itemStack.isOf(Items.SKELETON_SKULL)
 				|| entityType == EntityType.ZOMBIE && itemStack.isOf(Items.ZOMBIE_HEAD)
+				|| entityType == EntityType.PIGLIN && itemStack.isOf(Items.PIGLIN_HEAD)
+				|| entityType == EntityType.PIGLIN_BRUTE && itemStack.isOf(Items.PIGLIN_HEAD)
 				|| entityType == EntityType.CREEPER && itemStack.isOf(Items.CREEPER_HEAD)) {
 				d *= 0.5;
 			}
@@ -1222,7 +1224,7 @@ public abstract class LivingEntity extends Entity {
 					this.scheduleVelocityUpdate();
 				}
 
-				if (entity2 != null) {
+				if (entity2 != null && !source.isExplosive()) {
 					double d = entity2.getX() - this.getX();
 
 					double e;
@@ -3335,8 +3337,9 @@ public abstract class LivingEntity extends Entity {
 		this.getSleepingPosition().filter(this.world::isChunkLoaded).ifPresent(pos -> {
 			BlockState blockState = this.world.getBlockState(pos);
 			if (blockState.getBlock() instanceof BedBlock) {
+				Direction direction = blockState.get(BedBlock.FACING);
 				this.world.setBlockState(pos, blockState.with(BedBlock.OCCUPIED, Boolean.valueOf(false)), Block.NOTIFY_ALL);
-				Vec3d vec3dx = (Vec3d)BedBlock.findWakeUpPosition(this.getType(), this.world, pos, this.getYaw()).orElseGet(() -> {
+				Vec3d vec3dx = (Vec3d)BedBlock.findWakeUpPosition(this.getType(), this.world, pos, direction, this.getYaw()).orElseGet(() -> {
 					BlockPos blockPos2 = pos.up();
 					return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.1, (double)blockPos2.getZ() + 0.5);
 				});

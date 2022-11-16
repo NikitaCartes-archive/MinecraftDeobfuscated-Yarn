@@ -58,7 +58,7 @@ public final class StructureStart {
 		if ("INVALID".equals(string)) {
 			return DEFAULT;
 		} else {
-			Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
+			Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE);
 			Structure structure = registry.get(new Identifier(string));
 			if (structure == null) {
 				LOGGER.error("Unknown stucture id: {}", string);
@@ -115,7 +115,7 @@ public final class StructureStart {
 	public NbtCompound toNbt(StructureContext context, ChunkPos chunkPos) {
 		NbtCompound nbtCompound = new NbtCompound();
 		if (this.hasChildren()) {
-			nbtCompound.putString("id", context.registryManager().get(RegistryKeys.STRUCTURE_WORLDGEN).getId(this.structure).toString());
+			nbtCompound.putString("id", context.registryManager().get(RegistryKeys.STRUCTURE).getId(this.structure).toString());
 			nbtCompound.putInt("ChunkX", chunkPos.x);
 			nbtCompound.putInt("ChunkZ", chunkPos.z);
 			nbtCompound.putInt("references", this.references);

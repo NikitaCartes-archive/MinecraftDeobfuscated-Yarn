@@ -42,8 +42,8 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 		}
 
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20)
+			ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
+				.dimensions(this.width / 2 - 100, this.height / 6 + 24 * (i >> 1), 200, 20)
 				.build()
 		);
 	}

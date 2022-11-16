@@ -47,8 +47,8 @@ public final class Biome {
 		instance -> instance.group(Biome.Weather.CODEC.forGetter(biome -> biome.weather), BiomeEffects.CODEC.fieldOf("effects").forGetter(biome -> biome.effects))
 				.apply(instance, (weather, effects) -> new Biome(weather, effects, GenerationSettings.INSTANCE, SpawnSettings.INSTANCE))
 	);
-	public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.BIOME_WORLDGEN, CODEC);
-	public static final Codec<RegistryEntryList<Biome>> REGISTRY_ENTRY_LIST_CODEC = RegistryCodecs.entryList(RegistryKeys.BIOME_WORLDGEN, CODEC);
+	public static final Codec<RegistryEntry<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.BIOME, CODEC);
+	public static final Codec<RegistryEntryList<Biome>> REGISTRY_ENTRY_LIST_CODEC = RegistryCodecs.entryList(RegistryKeys.BIOME, CODEC);
 	private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(
 		new ChunkRandom(new CheckedRandom(1234L)), ImmutableList.of(0)
 	);

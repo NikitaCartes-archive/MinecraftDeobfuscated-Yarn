@@ -169,10 +169,7 @@ public class MaterialRules {
 
 	static final class BiomeMaterialCondition implements MaterialRules.MaterialCondition {
 		static final CodecHolder<MaterialRules.BiomeMaterialCondition> CODEC = CodecHolder.of(
-			RegistryKey.createCodec(RegistryKeys.BIOME_WORLDGEN)
-				.listOf()
-				.fieldOf("biome_is")
-				.xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.biomes)
+			RegistryKey.createCodec(RegistryKeys.BIOME).listOf().fieldOf("biome_is").xmap(MaterialRules::biome, biomeMaterialCondition -> biomeMaterialCondition.biomes)
 		);
 		private final List<RegistryKey<Biome>> biomes;
 		final Predicate<RegistryKey<Biome>> predicate;
@@ -581,7 +578,7 @@ public class MaterialRules {
 		static final CodecHolder<MaterialRules.NoiseThresholdMaterialCondition> CODEC = CodecHolder.of(
 			RecordCodecBuilder.mapCodec(
 				instance -> instance.group(
-							RegistryKey.createCodec(RegistryKeys.NOISE_WORLDGEN).fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
+							RegistryKey.createCodec(RegistryKeys.NOISE_PARAMETERS).fieldOf("noise").forGetter(MaterialRules.NoiseThresholdMaterialCondition::noise),
 							Codec.DOUBLE.fieldOf("min_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::minThreshold),
 							Codec.DOUBLE.fieldOf("max_threshold").forGetter(MaterialRules.NoiseThresholdMaterialCondition::maxThreshold)
 						)

@@ -43,14 +43,11 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		this.doneButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.commitAndClose())
-				.setPositionAndSize(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.DONE, button -> this.commitAndClose()).dimensions(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20).build()
 		);
 		this.cancelButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.close()).setPositionAndSize(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20).build()
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).dimensions(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20).build()
 		);
 		boolean bl = this.getCommandExecutor().isTrackingOutput();
 		this.toggleTrackingOutputButton = this.addDrawableChild(
@@ -80,7 +77,6 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.previousOutputTextField.setText("-");
 		this.addSelectableChild(this.previousOutputTextField);
 		this.setInitialFocus(this.consoleCommandTextField);
-		this.consoleCommandTextField.setTextFieldFocused(true);
 		this.commandSuggestor = new ChatInputSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
 		this.commandSuggestor.setWindowActive(true);
 		this.commandSuggestor.refresh();
@@ -107,11 +103,6 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 
 		this.client.setScreen(null);
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	protected abstract void syncSettingsToServer(CommandBlockExecutor commandExecutor);

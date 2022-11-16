@@ -35,7 +35,7 @@ public class FlatChunkGeneratorConfig {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						RegistryCodecs.entryList(RegistryKeys.STRUCTURE_SET_WORLDGEN).optionalFieldOf("structure_overrides").forGetter(config -> config.structureOverrides),
+						RegistryCodecs.entryList(RegistryKeys.STRUCTURE_SET).optionalFieldOf("structure_overrides").forGetter(config -> config.structureOverrides),
 						FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers").forGetter(FlatChunkGeneratorConfig::getLayers),
 						Codec.BOOL.fieldOf("lakes").orElse(false).forGetter(config -> config.hasLakes),
 						Codec.BOOL.fieldOf("features").orElse(false).forGetter(config -> config.hasFeatures),

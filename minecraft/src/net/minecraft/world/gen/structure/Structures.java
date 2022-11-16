@@ -50,8 +50,8 @@ public class Structures {
 	}
 
 	public static void bootstrap(Registerable<Structure> structureRegisterable) {
-		RegistryEntryLookup<Biome> registryEntryLookup = structureRegisterable.getRegistryLookup(RegistryKeys.BIOME_WORLDGEN);
-		RegistryEntryLookup<StructurePool> registryEntryLookup2 = structureRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+		RegistryEntryLookup<Biome> registryEntryLookup = structureRegisterable.getRegistryLookup(RegistryKeys.BIOME);
+		RegistryEntryLookup<StructurePool> registryEntryLookup2 = structureRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);
 		structureRegisterable.register(
 			StructureKeys.PILLAGER_OUTPOST,
 			new JigsawStructure(

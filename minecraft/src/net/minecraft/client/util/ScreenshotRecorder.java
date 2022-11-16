@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ScreenshotRecorder {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final String SCREENSHOTS_DIRECTORY = "screenshots";
 	private int unitHeight;
 	private final DataOutputStream stream;
 	private final byte[] buffer;

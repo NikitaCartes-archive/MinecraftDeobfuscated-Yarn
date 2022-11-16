@@ -28,6 +28,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -160,10 +162,10 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Session;
-import net.minecraft.client.util.TelemetrySender;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.telemetry.TelemetryManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
@@ -382,7 +384,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final SocialInteractionsManager socialInteractionsManager;
 	private final EntityModelLoader entityModelLoader;
 	private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
-	private final UUID deviceSessionId = UUID.randomUUID();
+	private final TelemetryManager telemetryManager;
 	private final ProfileKeys profileKeys;
 	private final RealmsPeriodicCheckers realmsPeriodicCheckers;
 	@Nullable
@@ -445,6 +447,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private Supplier<CrashReport> crashReportSupplier;
 	private static int currentFps;
 	public String fpsDebugString = "";
+	private long renderTime;
 	public boolean wireFrame;
 	public boolean debugChunkInfo;
 	public boolean debugChunkOcclusion;
@@ -644,6 +647,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.window.logOnGlError();
 		this.onResolutionChanged();
 		this.gameRenderer.preloadPrograms(this.defaultResourcePack.getFactory());
+		this.telemetryManager = new TelemetryManager(this, this.userApiService, this.session);
 		this.profileKeys = ProfileKeys.create(this.userApiService, this.session, this.runDirectory.toPath());
 		this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
 		this.narratorManager = new NarratorManager(this);
@@ -1106,6 +1110,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		try {
+			this.telemetryManager.close();
 			this.regionalComplianciesManager.close();
 			this.bakedModelManager.close();
 			this.fontManager.close();
@@ -1166,6 +1171,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.soundManager.updateListenerPosition(this.gameRenderer.getCamera());
 		this.profiler.pop();
 		this.profiler.push("render");
+		long m = Util.getMeasuringTimeNano();
 		boolean bl;
 		if (!this.options.debugEnabled && !this.recorder.isActive()) {
 			bl = false;
@@ -1207,6 +1213,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		matrixStack.push();
 		RenderSystem.applyModelViewMatrix();
 		this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
+		this.renderTime = Util.getMeasuringTimeNano() - m;
 		if (bl) {
 			GlTimer.getInstance().ifPresent(glTimer -> this.currentGlTimerQuery = glTimer.endProfile());
 		}
@@ -1238,14 +1245,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.paused = bl2;
 		}
 
-		long m = Util.getMeasuringTimeNano();
-		long n = m - this.lastMetricsSampleTime;
+		long n = Util.getMeasuringTimeNano();
+		long o = n - this.lastMetricsSampleTime;
 		if (bl) {
-			this.metricsSampleDuration = n;
+			this.metricsSampleDuration = o;
 		}
 
-		this.metricsData.pushSample(n);
-		this.lastMetricsSampleTime = m;
+		this.metricsData.pushSample(o);
+		this.lastMetricsSampleTime = n;
 		this.profiler.push("fpsUpdate");
 		if (this.currentGlTimerQuery != null && this.currentGlTimerQuery.isResultAvailable()) {
 			this.gpuUtilizationPercentage = (double)this.currentGlTimerQuery.queryResult() * 100.0 / (double)this.metricsSampleDuration;
@@ -1343,6 +1350,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Override
 	public void onCursorEnterChanged() {
 		this.mouse.setResolutionChanged();
+	}
+
+	public int getCurrentFps() {
+		return currentFps;
+	}
+
+	public long getRenderTime() {
+		return this.renderTime;
 	}
 
 	private int getFramerateLimit() {
@@ -2022,8 +2037,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.handleBlockBreaking(this.currentScreen == null && !bl3 && this.options.attackKey.isPressed() && this.mouse.isCursorLocked());
 	}
 
-	public TelemetrySender createTelemetrySender() {
-		return new TelemetrySender(this, this.userApiService, this.session.getXuid(), this.session.getClientId(), this.deviceSessionId);
+	public TelemetryManager getTelemetryManager() {
+		return this.telemetryManager;
 	}
 
 	public double getGpuUtilizationPercentage() {
@@ -2038,9 +2053,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return new IntegratedServerLoader(this, this.levelStorage);
 	}
 
-	public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader) {
+	public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, boolean newWorld) {
 		this.disconnect();
 		this.worldGenProgressTracker.set(null);
+		Instant instant = Instant.now();
 
 		try {
 			session.backupLevelDataFile(saveLoader.combinedDynamicRegistries().getCombinedRegistryManager(), saveLoader.saveProperties());
@@ -2057,8 +2073,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			);
 			this.integratedServerRunning = true;
 			this.ensureAbuseReportContext(ReporterEnvironment.ofIntegratedServer());
-		} catch (Throwable var9) {
-			CrashReport crashReport = CrashReport.create(var9, "Starting integrated server");
+		} catch (Throwable var12) {
+			CrashReport crashReport = CrashReport.create(var12, "Starting integrated server");
 			CrashReportSection crashReportSection = crashReport.addElement("Starting integrated server");
 			crashReportSection.add("Level ID", levelName);
 			crashReportSection.add("Level Name", (CrashCallable<String>)(() -> saveLoader.saveProperties().getLevelName()));
@@ -2079,7 +2095,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			try {
 				Thread.sleep(16L);
-			} catch (InterruptedException var8) {
+			} catch (InterruptedException var11) {
 			}
 
 			if (this.crashReportSupplier != null) {
@@ -2089,9 +2105,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.profiler.pop();
+		Duration duration = Duration.between(instant, Instant.now());
 		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
 		ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
-		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, null, status -> {
+		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, null, newWorld, duration, status -> {
 		}));
 		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
 		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), Optional.ofNullable(this.getSession().getUuidOrNull())));
@@ -2179,6 +2196,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.particleManager.setWorld(world);
 		this.blockEntityRenderDispatcher.setWorld(world);
 		this.updateWindowTitle();
+	}
+
+	public boolean isOptionalTelemetryEnabled() {
+		return this.isOptionalTelemetryEnabledByApi() && this.options.getTelemetryOptInExtra().getValue();
+	}
+
+	public boolean isOptionalTelemetryEnabledByApi() {
+		return this.isTelemetryEnabledByApi() && this.userApiService.properties().flag(UserFlag.OPTIONAL_TELEMETRY_AVAILABLE);
+	}
+
+	public boolean isTelemetryEnabledByApi() {
+		return this.userApiService.properties().flag(UserFlag.TELEMETRY_ENABLED);
 	}
 
 	public boolean isMultiplayerEnabled() {
@@ -2443,7 +2472,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.server;
 	}
 
-	public boolean method_47392() {
+	public boolean isConnectedToLocalServer() {
 		IntegratedServer integratedServer = this.getServer();
 		return integratedServer != null && !integratedServer.isRemote();
 	}
@@ -2852,7 +2881,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void loadBlockList() {
 		this.socialInteractionsManager.loadBlockList();
-		this.getProfileKeys().fetchKeyPair();
+		this.getProfileKeys().fetchKeyPair().thenAcceptAsync(optional -> optional.ifPresent(playerKeyPair -> {
+				ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
+				if (clientPlayNetworkHandler != null) {
+					clientPlayNetworkHandler.updateKeyPair(playerKeyPair);
+				}
+			}), this);
 	}
 
 	public Realms32BitWarningChecker getRealms32BitWarningChecker() {

@@ -59,7 +59,7 @@ public class RealmsConnection {
 						RealmsConnection.this.connection
 							.setPacketListener(
 								new ClientLoginNetworkHandler(
-									RealmsConnection.this.connection, minecraftClient, server.createServerInfo(string), RealmsConnection.this.onlineScreen, status -> {
+									RealmsConnection.this.connection, minecraftClient, server.createServerInfo(string), RealmsConnection.this.onlineScreen, false, null, status -> {
 									}
 								)
 							);

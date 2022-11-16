@@ -96,6 +96,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer PIGLIN_BRUTE = registerMain("piglin_brute");
 	public static final EntityModelLayer PIGLIN_BRUTE_INNER_ARMOR = createInnerArmor("piglin_brute");
 	public static final EntityModelLayer PIGLIN_BRUTE_OUTER_ARMOR = createOuterArmor("piglin_brute");
+	public static final EntityModelLayer PIGLIN_HEAD = registerMain("piglin_head");
 	public static final EntityModelLayer PIGLIN_INNER_ARMOR = createInnerArmor("piglin");
 	public static final EntityModelLayer PIGLIN_OUTER_ARMOR = createOuterArmor("piglin");
 	public static final EntityModelLayer PIG_SADDLE = register("pig", "saddle");

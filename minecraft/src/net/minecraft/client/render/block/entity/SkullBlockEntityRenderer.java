@@ -23,6 +23,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.DragonHeadEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
+import net.minecraft.client.render.entity.model.PiglinHeadEntityModel;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
@@ -41,6 +42,7 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 		map.put(SkullBlock.Type.ZOMBIE, new Identifier("textures/entity/zombie/zombie.png"));
 		map.put(SkullBlock.Type.CREEPER, new Identifier("textures/entity/creeper/creeper.png"));
 		map.put(SkullBlock.Type.DRAGON, new Identifier("textures/entity/enderdragon/dragon.png"));
+		map.put(SkullBlock.Type.PIGLIN, new Identifier("textures/entity/piglin/piglin.png"));
 		map.put(SkullBlock.Type.PLAYER, DefaultSkinHelper.getTexture());
 	});
 
@@ -52,6 +54,7 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 		builder.put(SkullBlock.Type.ZOMBIE, new SkullEntityModel(modelLoader.getModelPart(EntityModelLayers.ZOMBIE_HEAD)));
 		builder.put(SkullBlock.Type.CREEPER, new SkullEntityModel(modelLoader.getModelPart(EntityModelLayers.CREEPER_HEAD)));
 		builder.put(SkullBlock.Type.DRAGON, new DragonHeadEntityModel(modelLoader.getModelPart(EntityModelLayers.DRAGON_SKULL)));
+		builder.put(SkullBlock.Type.PIGLIN, new PiglinHeadEntityModel(modelLoader.getModelPart(EntityModelLayers.PIGLIN_HEAD)));
 		return builder.build();
 	}
 
@@ -60,7 +63,7 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 	}
 
 	public void render(SkullBlockEntity skullBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
-		float g = skullBlockEntity.getTicksPowered(f);
+		float g = skullBlockEntity.getPoweredTicks(f);
 		BlockState blockState = skullBlockEntity.getCachedState();
 		boolean bl = blockState.getBlock() instanceof WallSkullBlock;
 		Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;

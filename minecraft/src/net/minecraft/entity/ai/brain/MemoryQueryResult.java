@@ -7,14 +7,14 @@ import java.util.Optional;
 /**
  * The result of a {@link MemoryQuery}. This is passed as a lambda argument to
  * {@link net.minecraft.entity.ai.brain.task.TaskTriggerer#task}. Use
- * {@link net.minecraft.entity.ai.brain.task.TaskTriggerer.Context#getValue} to
+ * {@link net.minecraft.entity.ai.brain.task.TaskTriggerer.TaskContext#getValue} to
  * get the value.
  * 
  * <p>It is also possible to set or forget the stored memory value using methods in
  * this class.
  * 
- * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.Context#getValue
- * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.Context#getOptionalValue
+ * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.TaskContext#getValue
+ * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.TaskContext#getOptionalValue
  */
 public final class MemoryQueryResult<F extends K1, Value> {
 	private final Brain<?> brain;

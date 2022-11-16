@@ -288,7 +288,7 @@ public abstract class RecipeProvider implements DataProvider {
 			.pattern("X X")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_stripped_logs", conditionsFromTag(ItemTags.STRIPPED_LOGS))
+			.criterion("has_stripped_logs", conditionsFromItem(input))
 			.offerTo(exporter);
 	}
 

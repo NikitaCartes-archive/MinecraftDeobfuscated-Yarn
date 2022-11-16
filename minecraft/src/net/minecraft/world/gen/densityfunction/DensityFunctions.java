@@ -63,12 +63,14 @@ public class DensityFunctions {
 	private static final RegistryKey<DensityFunction> CAVES_SPAGHETTI_2D_OVERWORLD = of("overworld/caves/spaghetti_2d");
 
 	private static RegistryKey<DensityFunction> of(String id) {
-		return RegistryKey.of(RegistryKeys.DENSITY_FUNCTION_WORLDGEN, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.DENSITY_FUNCTION, new Identifier(id));
 	}
 
 	public static RegistryEntry<? extends DensityFunction> bootstrap(Registerable<DensityFunction> densityFunctionRegisterable) {
-		RegistryEntryLookup<DoublePerlinNoiseSampler.NoiseParameters> registryEntryLookup = densityFunctionRegisterable.getRegistryLookup(RegistryKeys.NOISE_WORLDGEN);
-		RegistryEntryLookup<DensityFunction> registryEntryLookup2 = densityFunctionRegisterable.getRegistryLookup(RegistryKeys.DENSITY_FUNCTION_WORLDGEN);
+		RegistryEntryLookup<DoublePerlinNoiseSampler.NoiseParameters> registryEntryLookup = densityFunctionRegisterable.getRegistryLookup(
+			RegistryKeys.NOISE_PARAMETERS
+		);
+		RegistryEntryLookup<DensityFunction> registryEntryLookup2 = densityFunctionRegisterable.getRegistryLookup(RegistryKeys.DENSITY_FUNCTION);
 		densityFunctionRegisterable.register(ZERO, DensityFunctionTypes.zero());
 		int i = DimensionType.MIN_HEIGHT * 2;
 		int j = DimensionType.MAX_COLUMN_HEIGHT * 2;

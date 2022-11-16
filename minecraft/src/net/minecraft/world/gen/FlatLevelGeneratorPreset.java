@@ -17,7 +17,5 @@ public record FlatLevelGeneratorPreset(RegistryEntry<Item> displayItem, FlatChun
 				)
 				.apply(instance, FlatLevelGeneratorPreset::new)
 	);
-	public static final Codec<RegistryEntry<FlatLevelGeneratorPreset>> ENTRY_CODEC = RegistryElementCodec.of(
-		RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, CODEC
-	);
+	public static final Codec<RegistryEntry<FlatLevelGeneratorPreset>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, CODEC);
 }

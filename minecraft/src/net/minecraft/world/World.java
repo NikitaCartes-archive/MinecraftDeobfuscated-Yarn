@@ -41,6 +41,7 @@ import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -738,23 +739,45 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	@Override
 	public <T extends Entity> List<T> getEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate) {
-		this.getProfiler().visit("getEntities");
 		List<T> list = Lists.<T>newArrayList();
+		this.collectEntitiesByType(filter, box, predicate, list);
+		return list;
+	}
+
+	public <T extends Entity> void collectEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate, List<? super T> result) {
+		this.collectEntitiesByType(filter, box, predicate, result, Integer.MAX_VALUE);
+	}
+
+	/**
+	 * Collects entities of the given type in {@code box}, up to {@code limit}. Using this can
+	 * improve performance, especially if {@code limit} is small.
+	 * 
+	 * @see #getEntitiesByType
+	 */
+	public <T extends Entity> void collectEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate, List<? super T> result, int limit) {
+		this.getProfiler().visit("getEntities");
 		this.getEntityLookup().forEachIntersects(filter, box, entity -> {
 			if (predicate.test(entity)) {
-				list.add(entity);
+				result.add(entity);
+				if (result.size() >= limit) {
+					return LazyIterationConsumer.NextIteration.ABORT;
+				}
 			}
 
 			if (entity instanceof EnderDragonEntity enderDragonEntity) {
 				for (EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
 					T entity2 = filter.downcast(enderDragonPart);
 					if (entity2 != null && predicate.test(entity2)) {
-						list.add(entity2);
+						result.add(entity2);
+						if (result.size() >= limit) {
+							return LazyIterationConsumer.NextIteration.ABORT;
+						}
 					}
 				}
 			}
+
+			return LazyIterationConsumer.NextIteration.CONTINUE;
 		});
-		return list;
 	}
 
 	/**

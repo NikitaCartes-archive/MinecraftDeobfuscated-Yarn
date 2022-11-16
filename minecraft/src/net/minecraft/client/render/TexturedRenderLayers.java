@@ -31,14 +31,12 @@ public class TexturedRenderLayers {
 	public static final Identifier BANNER_PATTERNS_ATLAS_TEXTURE = new Identifier("textures/atlas/banner_patterns.png");
 	public static final Identifier SHIELD_PATTERNS_ATLAS_TEXTURE = new Identifier("textures/atlas/shield_patterns.png");
 	public static final Identifier SIGNS_ATLAS_TEXTURE = new Identifier("textures/atlas/signs.png");
-	public static final Identifier HANGING_SIGNS_ATLAS_TEXTURE = new Identifier("textures/atlas/hanging_signs.png");
 	public static final Identifier CHEST_ATLAS_TEXTURE = new Identifier("textures/atlas/chest.png");
 	private static final RenderLayer SHULKER_BOXES_RENDER_LAYER = RenderLayer.getEntityCutoutNoCull(SHULKER_BOXES_ATLAS_TEXTURE);
 	private static final RenderLayer BEDS_RENDER_LAYER = RenderLayer.getEntitySolid(BEDS_ATLAS_TEXTURE);
 	private static final RenderLayer BANNER_PATTERNS_RENDER_LAYER = RenderLayer.getEntityNoOutline(BANNER_PATTERNS_ATLAS_TEXTURE);
 	private static final RenderLayer SHIELD_PATTERNS_RENDER_LAYER = RenderLayer.getEntityNoOutline(SHIELD_PATTERNS_ATLAS_TEXTURE);
 	private static final RenderLayer SIGN_RENDER_LAYER = RenderLayer.getEntityCutoutNoCull(SIGNS_ATLAS_TEXTURE);
-	private static final RenderLayer HANGING_SIGN_RENDER_LAYER = RenderLayer.getEntityCutoutNoCull(HANGING_SIGNS_ATLAS_TEXTURE);
 	private static final RenderLayer CHEST_RENDER_LAYER = RenderLayer.getEntityCutout(CHEST_ATLAS_TEXTURE);
 	private static final RenderLayer ENTITY_SOLID = RenderLayer.getEntitySolid(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 	private static final RenderLayer ENTITY_CUTOUT = RenderLayer.getEntityCutout(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
@@ -98,7 +96,7 @@ public class TexturedRenderLayers {
 	}
 
 	public static RenderLayer getHangingSign() {
-		return HANGING_SIGN_RENDER_LAYER;
+		return SIGN_RENDER_LAYER;
 	}
 
 	public static RenderLayer getChest() {
@@ -150,7 +148,7 @@ public class TexturedRenderLayers {
 	}
 
 	private static SpriteIdentifier createHangingSignTextureId(SignType type) {
-		return new SpriteIdentifier(HANGING_SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/hanging/" + type.getName()));
+		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/hanging/" + type.getName()));
 	}
 
 	public static SpriteIdentifier getSignTextureId(SignType signType) {

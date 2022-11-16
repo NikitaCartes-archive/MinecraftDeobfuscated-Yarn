@@ -10,6 +10,7 @@ import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.datafixers.types.Type;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.DataResult.PartialResult;
 import it.unimi.dsi.fastutil.Hash.Strategy;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -1070,6 +1071,20 @@ public class Util {
 		}
 
 		return object2IntMap;
+	}
+
+	/**
+	 * {@return the result wrapped in {@code result}}
+	 * 
+	 * @throws Exception if {@code result} has an error
+	 */
+	public static <T, E extends Exception> T getResult(DataResult<T> result, Function<String, E> exceptionGetter) throws E {
+		Optional<PartialResult<T>> optional = result.error();
+		if (optional.isPresent()) {
+			throw (Exception)exceptionGetter.apply(((PartialResult)optional.get()).message());
+		} else {
+			return (T)result.result().orElseThrow();
+		}
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

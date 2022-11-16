@@ -55,7 +55,7 @@ public class ConfiguredFeatures {
 	}
 
 	public static RegistryKey<ConfiguredFeature<?, ?>> of(String id) {
-		return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.CONFIGURED_FEATURE, new Identifier(id));
 	}
 
 	public static void register(

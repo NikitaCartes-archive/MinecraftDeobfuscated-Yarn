@@ -25,6 +25,6 @@ public interface StructureSetKeys {
 	RegistryKey<StructureSet> STRONGHOLDS = of("strongholds");
 
 	private static RegistryKey<StructureSet> of(String id) {
-		return RegistryKey.of(RegistryKeys.STRUCTURE_SET_WORLDGEN, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.STRUCTURE_SET, new Identifier(id));
 	}
 }

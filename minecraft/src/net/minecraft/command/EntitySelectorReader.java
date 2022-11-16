@@ -54,8 +54,6 @@ public class EntitySelectorReader {
 	public static final DynamicCommandExceptionType VALUELESS_EXCEPTION = new DynamicCommandExceptionType(
 		option -> Text.translatable("argument.entity.options.valueless", option)
 	);
-	public static final BiConsumer<Vec3d, List<? extends Entity>> ARBITRARY = (pos, entities) -> {
-	};
 	public static final BiConsumer<Vec3d, List<? extends Entity>> NEAREST = (pos, entities) -> entities.sort(
 			(entity1, entity2) -> Doubles.compare(entity1.squaredDistanceTo(pos), entity2.squaredDistanceTo(pos))
 		);
@@ -86,7 +84,7 @@ public class EntitySelectorReader {
 	private FloatRangeArgument pitchRange = FloatRangeArgument.ANY;
 	private FloatRangeArgument yawRange = FloatRangeArgument.ANY;
 	private Predicate<Entity> predicate = entity -> true;
-	private BiConsumer<Vec3d, List<? extends Entity>> sorter = ARBITRARY;
+	private BiConsumer<Vec3d, List<? extends Entity>> sorter = EntitySelector.ARBITRARY;
 	private boolean senderOnly;
 	@Nullable
 	private String playerName;
@@ -208,7 +206,7 @@ public class EntitySelectorReader {
 			} else if (c == 'a') {
 				this.limit = Integer.MAX_VALUE;
 				this.includesNonPlayers = false;
-				this.sorter = ARBITRARY;
+				this.sorter = EntitySelector.ARBITRARY;
 				this.setEntityType(EntityType.PLAYER);
 			} else if (c == 'r') {
 				this.limit = 1;
@@ -227,7 +225,7 @@ public class EntitySelectorReader {
 
 				this.limit = Integer.MAX_VALUE;
 				this.includesNonPlayers = true;
-				this.sorter = ARBITRARY;
+				this.sorter = EntitySelector.ARBITRARY;
 				this.predicate = Entity::isAlive;
 			}
 

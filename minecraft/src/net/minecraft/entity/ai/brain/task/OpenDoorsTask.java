@@ -41,45 +41,38 @@ public class OpenDoorsTask {
 							Path pathx = context.getValue(path);
 							Optional<Set<GlobalPos>> optional = context.getOptionalValue(doorsToClose);
 							if (!pathx.isStart() && !pathx.isFinished()) {
-								if (!Objects.equals(mutableObject.getValue(), pathx.getCurrentNode())) {
+								if (Objects.equals(mutableObject.getValue(), pathx.getCurrentNode())) {
 									mutableInt.setValue(20);
-									return true;
-								} else {
-									if (mutableInt.getValue() > 0) {
-										mutableInt.decrement();
+								} else if (mutableInt.decrementAndGet() > 0) {
+									return false;
+								}
+
+								mutableObject.setValue(pathx.getCurrentNode());
+								PathNode pathNode = pathx.getLastNode();
+								PathNode pathNode2 = pathx.getCurrentNode();
+								BlockPos blockPos = pathNode.getBlockPos();
+								BlockState blockState = world.getBlockState(blockPos);
+								if (blockState.isIn(BlockTags.WOODEN_DOORS, state -> state.getBlock() instanceof DoorBlock)) {
+									DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
+									if (!doorBlock.isOpen(blockState)) {
+										doorBlock.setOpen(entity, world, blockState, blockPos, true);
 									}
 
-									if (mutableInt.getValue() == 0) {
-										return true;
-									} else {
-										mutableObject.setValue(pathx.getCurrentNode());
-										PathNode pathNode = pathx.getLastNode();
-										PathNode pathNode2 = pathx.getCurrentNode();
-										BlockPos blockPos = pathNode.getBlockPos();
-										BlockState blockState = world.getBlockState(blockPos);
-										if (blockState.isIn(BlockTags.WOODEN_DOORS, state -> state.getBlock() instanceof DoorBlock)) {
-											DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
-											if (!doorBlock.isOpen(blockState)) {
-												doorBlock.setOpen(entity, world, blockState, blockPos, true);
-											}
+									optional = storePos(doorsToClose, optional, world, blockPos);
+								}
 
-											storePos(doorsToClose, optional, world, entity, blockPos);
-										}
-
-										BlockPos blockPos2 = pathNode2.getBlockPos();
-										BlockState blockState2 = world.getBlockState(blockPos2);
-										if (blockState2.isIn(BlockTags.WOODEN_DOORS, state -> state.getBlock() instanceof DoorBlock)) {
-											DoorBlock doorBlock2 = (DoorBlock)blockState2.getBlock();
-											if (!doorBlock2.isOpen(blockState2)) {
-												doorBlock2.setOpen(entity, world, blockState2, blockPos2, true);
-												storePos(doorsToClose, optional, world, entity, blockPos2);
-											}
-										}
-
-										optional.ifPresent(doors -> pathToDoor(world, entity, pathNode, pathNode2, doors, context.getOptionalValue(mobs)));
-										return false;
+								BlockPos blockPos2 = pathNode2.getBlockPos();
+								BlockState blockState2 = world.getBlockState(blockPos2);
+								if (blockState2.isIn(BlockTags.WOODEN_DOORS, state -> state.getBlock() instanceof DoorBlock)) {
+									DoorBlock doorBlock2 = (DoorBlock)blockState2.getBlock();
+									if (!doorBlock2.isOpen(blockState2)) {
+										doorBlock2.setOpen(entity, world, blockState2, blockPos2, true);
+										optional = storePos(doorsToClose, optional, world, blockPos2);
 									}
 								}
+
+								optional.ifPresent(doors -> pathToDoor(world, entity, pathNode, pathNode2, doors, context.getOptionalValue(mobs)));
+								return true;
 							} else {
 								return false;
 							}
@@ -156,10 +149,17 @@ public class OpenDoorsTask {
 		return doorPos.getDimension() != world.getRegistryKey() || !doorPos.getPos().isWithinDistance(entity.getPos(), 2.0);
 	}
 
-	private static void storePos(
-		MemoryQueryResult<Mu, Set<GlobalPos>> queryResult, Optional<Set<GlobalPos>> doors, ServerWorld world, LivingEntity entity, BlockPos pos
+	private static Optional<Set<GlobalPos>> storePos(
+		MemoryQueryResult<Mu, Set<GlobalPos>> queryResult, Optional<Set<GlobalPos>> doors, ServerWorld world, BlockPos pos
 	) {
 		GlobalPos globalPos = GlobalPos.create(world.getRegistryKey(), pos);
-		doors.ifPresentOrElse(doorSet -> doorSet.add(globalPos), () -> queryResult.remember(Sets.<GlobalPos>newHashSet(globalPos)));
+		return Optional.of((Set)doors.map(doorSet -> {
+			doorSet.add(globalPos);
+			return doorSet;
+		}).orElseGet(() -> {
+			Set<GlobalPos> set = Sets.<GlobalPos>newHashSet(globalPos);
+			queryResult.remember(set);
+			return set;
+		}));
 	}
 }

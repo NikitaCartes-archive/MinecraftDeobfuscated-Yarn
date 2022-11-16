@@ -42,13 +42,14 @@ public class EntityModels {
 		TexturedModelData texturedModelData9 = CowEntityModel.getTexturedModelData();
 		TexturedModelData texturedModelData10 = TexturedModelData.of(OcelotEntityModel.getModelData(Dilation.NONE), 64, 32);
 		TexturedModelData texturedModelData11 = TexturedModelData.of(PiglinEntityModel.getModelData(Dilation.NONE), 64, 64);
-		TexturedModelData texturedModelData12 = SkullEntityModel.getHeadTexturedModelData();
-		TexturedModelData texturedModelData13 = LlamaEntityModel.getTexturedModelData(Dilation.NONE);
-		TexturedModelData texturedModelData14 = StriderEntityModel.getTexturedModelData();
-		TexturedModelData texturedModelData15 = HoglinEntityModel.getTexturedModelData();
-		TexturedModelData texturedModelData16 = SkeletonEntityModel.getTexturedModelData();
-		TexturedModelData texturedModelData17 = TexturedModelData.of(VillagerResemblingModel.getModelData(), 64, 64);
-		TexturedModelData texturedModelData18 = SpiderEntityModel.getTexturedModelData();
+		TexturedModelData texturedModelData12 = TexturedModelData.of(PiglinHeadEntityModel.getModelData(), 64, 64);
+		TexturedModelData texturedModelData13 = SkullEntityModel.getHeadTexturedModelData();
+		TexturedModelData texturedModelData14 = LlamaEntityModel.getTexturedModelData(Dilation.NONE);
+		TexturedModelData texturedModelData15 = StriderEntityModel.getTexturedModelData();
+		TexturedModelData texturedModelData16 = HoglinEntityModel.getTexturedModelData();
+		TexturedModelData texturedModelData17 = SkeletonEntityModel.getTexturedModelData();
+		TexturedModelData texturedModelData18 = TexturedModelData.of(VillagerResemblingModel.getModelData(), 64, 64);
+		TexturedModelData texturedModelData19 = SpiderEntityModel.getTexturedModelData();
 		builder.put(EntityModelLayers.ALLAY, AllayEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ARMOR_STAND, ArmorStandEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ARMOR_STAND_INNER_ARMOR, ArmorStandArmorEntityModel.getTexturedModelData(HAT_DILATION));
@@ -65,7 +66,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.CAT, texturedModelData10);
 		builder.put(EntityModelLayers.CAT_COLLAR, TexturedModelData.of(OcelotEntityModel.getModelData(new Dilation(0.01F)), 64, 32));
 		builder.put(EntityModelLayers.CAMEL, CamelEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.CAVE_SPIDER, texturedModelData18);
+		builder.put(EntityModelLayers.CAVE_SPIDER, texturedModelData19);
 		builder.put(EntityModelLayers.CHEST, ChestBlockEntityRenderer.getSingleTexturedModelData());
 		builder.put(EntityModelLayers.DOUBLE_CHEST_LEFT, ChestBlockEntityRenderer.getLeftDoubleTexturedModelData());
 		builder.put(EntityModelLayers.DOUBLE_CHEST_RIGHT, ChestBlockEntityRenderer.getRightDoubleTexturedModelData());
@@ -106,7 +107,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.GLOW_SQUID, SquidEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.GOAT, GoatEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.GUARDIAN, GuardianEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.HOGLIN, texturedModelData15);
+		builder.put(EntityModelLayers.HOGLIN, texturedModelData16);
 		builder.put(EntityModelLayers.HOPPER_MINECART, texturedModelData5);
 		builder.put(EntityModelLayers.HORSE, texturedModelData7);
 		builder.put(EntityModelLayers.HORSE_ARMOR, TexturedModelData.of(HorseEntityModel.getModelData(new Dilation(0.1F)), 64, 64));
@@ -116,7 +117,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.ILLUSIONER, texturedModelData8);
 		builder.put(EntityModelLayers.IRON_GOLEM, IronGolemEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.LEASH_KNOT, LeashKnotEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.LLAMA, texturedModelData13);
+		builder.put(EntityModelLayers.LLAMA, texturedModelData14);
 		builder.put(EntityModelLayers.LLAMA_DECOR, LlamaEntityModel.getTexturedModelData(new Dilation(0.5F)));
 		builder.put(EntityModelLayers.LLAMA_SPIT, LlamaSpitEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.MAGMA_CUBE, MagmaCubeEntityModel.getTexturedModelData());
@@ -135,9 +136,10 @@ public class EntityModels {
 		builder.put(EntityModelLayers.PIGLIN_BRUTE, texturedModelData11);
 		builder.put(EntityModelLayers.PIGLIN_BRUTE_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.PIGLIN_BRUTE_OUTER_ARMOR, texturedModelData3);
+		builder.put(EntityModelLayers.PIGLIN_HEAD, texturedModelData12);
 		builder.put(EntityModelLayers.PILLAGER, texturedModelData8);
 		builder.put(EntityModelLayers.PLAYER, TexturedModelData.of(PlayerEntityModel.getTexturedModelData(Dilation.NONE, false), 64, 64));
-		builder.put(EntityModelLayers.PLAYER_HEAD, texturedModelData12);
+		builder.put(EntityModelLayers.PLAYER_HEAD, texturedModelData13);
 		builder.put(EntityModelLayers.PLAYER_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.PLAYER_OUTER_ARMOR, texturedModelData2);
 		builder.put(EntityModelLayers.PLAYER_SLIM, TexturedModelData.of(PlayerEntityModel.getTexturedModelData(Dilation.NONE, true), 64, 64));
@@ -157,7 +159,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.SHULKER, ShulkerEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.SHULKER_BULLET, ShulkerBulletEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.SILVERFISH, SilverfishEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.SKELETON, texturedModelData16);
+		builder.put(EntityModelLayers.SKELETON, texturedModelData17);
 		builder.put(EntityModelLayers.SKELETON_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.SKELETON_OUTER_ARMOR, texturedModelData2);
 		builder.put(EntityModelLayers.SKELETON_HORSE, texturedModelData7);
@@ -166,17 +168,17 @@ public class EntityModels {
 		builder.put(EntityModelLayers.SLIME_OUTER, SlimeEntityModel.getOuterTexturedModelData());
 		builder.put(EntityModelLayers.SNOW_GOLEM, SnowGolemEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.SPAWNER_MINECART, texturedModelData5);
-		builder.put(EntityModelLayers.SPIDER, texturedModelData18);
+		builder.put(EntityModelLayers.SPIDER, texturedModelData19);
 		builder.put(EntityModelLayers.SQUID, SquidEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.STRAY, texturedModelData16);
+		builder.put(EntityModelLayers.STRAY, texturedModelData17);
 		builder.put(EntityModelLayers.STRAY_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.STRAY_OUTER_ARMOR, texturedModelData2);
 		builder.put(EntityModelLayers.STRAY_OUTER, TexturedModelData.of(BipedEntityModel.getModelData(new Dilation(0.25F), 0.0F), 64, 32));
-		builder.put(EntityModelLayers.STRIDER, texturedModelData14);
-		builder.put(EntityModelLayers.STRIDER_SADDLE, texturedModelData14);
+		builder.put(EntityModelLayers.STRIDER, texturedModelData15);
+		builder.put(EntityModelLayers.STRIDER_SADDLE, texturedModelData15);
 		builder.put(EntityModelLayers.TADPOLE, TadpoleEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.TNT_MINECART, texturedModelData5);
-		builder.put(EntityModelLayers.TRADER_LLAMA, texturedModelData13);
+		builder.put(EntityModelLayers.TRADER_LLAMA, texturedModelData14);
 		builder.put(EntityModelLayers.TRIDENT, TridentEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.TROPICAL_FISH_LARGE, LargeTropicalFishEntityModel.getTexturedModelData(Dilation.NONE));
 		builder.put(EntityModelLayers.TROPICAL_FISH_LARGE_PATTERN, LargeTropicalFishEntityModel.getTexturedModelData(FISH_PATTERN_DILATION));
@@ -184,24 +186,24 @@ public class EntityModels {
 		builder.put(EntityModelLayers.TROPICAL_FISH_SMALL_PATTERN, SmallTropicalFishEntityModel.getTexturedModelData(FISH_PATTERN_DILATION));
 		builder.put(EntityModelLayers.TURTLE, TurtleEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.VEX, VexEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.VILLAGER, texturedModelData17);
+		builder.put(EntityModelLayers.VILLAGER, texturedModelData18);
 		builder.put(EntityModelLayers.VINDICATOR, texturedModelData8);
 		builder.put(EntityModelLayers.WARDEN, WardenEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.WANDERING_TRADER, texturedModelData17);
+		builder.put(EntityModelLayers.WANDERING_TRADER, texturedModelData18);
 		builder.put(EntityModelLayers.WITCH, WitchEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.WITHER, WitherEntityModel.getTexturedModelData(Dilation.NONE));
 		builder.put(EntityModelLayers.WITHER_ARMOR, WitherEntityModel.getTexturedModelData(HAT_DILATION));
 		builder.put(EntityModelLayers.WITHER_SKULL, WitherSkullEntityRenderer.getTexturedModelData());
-		builder.put(EntityModelLayers.WITHER_SKELETON, texturedModelData16);
+		builder.put(EntityModelLayers.WITHER_SKELETON, texturedModelData17);
 		builder.put(EntityModelLayers.WITHER_SKELETON_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.WITHER_SKELETON_OUTER_ARMOR, texturedModelData2);
 		builder.put(EntityModelLayers.WITHER_SKELETON_SKULL, texturedModelData6);
 		builder.put(EntityModelLayers.WOLF, WolfEntityModel.getTexturedModelData());
-		builder.put(EntityModelLayers.ZOGLIN, texturedModelData15);
+		builder.put(EntityModelLayers.ZOGLIN, texturedModelData16);
 		builder.put(EntityModelLayers.ZOMBIE, texturedModelData);
 		builder.put(EntityModelLayers.ZOMBIE_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.ZOMBIE_OUTER_ARMOR, texturedModelData2);
-		builder.put(EntityModelLayers.ZOMBIE_HEAD, texturedModelData12);
+		builder.put(EntityModelLayers.ZOMBIE_HEAD, texturedModelData13);
 		builder.put(EntityModelLayers.ZOMBIE_HORSE, texturedModelData7);
 		builder.put(EntityModelLayers.ZOMBIE_VILLAGER, ZombieVillagerEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.ZOMBIE_VILLAGER_INNER_ARMOR, ZombieVillagerEntityModel.getArmorTexturedModelData(HAT_DILATION));
@@ -209,25 +211,25 @@ public class EntityModels {
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN, texturedModelData11);
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_OUTER_ARMOR, texturedModelData3);
-		TexturedModelData texturedModelData19 = BoatEntityModel.getTexturedModelData();
-		TexturedModelData texturedModelData20 = ChestBoatEntityModel.getTexturedModelData();
-		TexturedModelData texturedModelData21 = RaftEntityModel.getTexturedModelData();
-		TexturedModelData texturedModelData22 = ChestRaftEntityModel.getTexturedModelData();
+		TexturedModelData texturedModelData20 = BoatEntityModel.getTexturedModelData();
+		TexturedModelData texturedModelData21 = ChestBoatEntityModel.getTexturedModelData();
+		TexturedModelData texturedModelData22 = RaftEntityModel.getTexturedModelData();
+		TexturedModelData texturedModelData23 = ChestRaftEntityModel.getTexturedModelData();
 
 		for (BoatEntity.Type type : BoatEntity.Type.values()) {
 			if (type == BoatEntity.Type.BAMBOO) {
-				builder.put(EntityModelLayers.createBoat(type), texturedModelData21);
-				builder.put(EntityModelLayers.createChestBoat(type), texturedModelData22);
+				builder.put(EntityModelLayers.createBoat(type), texturedModelData22);
+				builder.put(EntityModelLayers.createChestBoat(type), texturedModelData23);
 			} else {
-				builder.put(EntityModelLayers.createBoat(type), texturedModelData19);
-				builder.put(EntityModelLayers.createChestBoat(type), texturedModelData20);
+				builder.put(EntityModelLayers.createBoat(type), texturedModelData20);
+				builder.put(EntityModelLayers.createChestBoat(type), texturedModelData21);
 			}
 		}
 
-		TexturedModelData texturedModelData23 = SignBlockEntityRenderer.getTexturedModelData();
-		SignType.stream().forEach(signType -> builder.put(EntityModelLayers.createSign(signType), texturedModelData23));
-		TexturedModelData texturedModelData24 = HangingSignBlockEntityRenderer.getTexturedModelData();
-		SignType.stream().forEach(signType -> builder.put(EntityModelLayers.createHangingSign(signType), texturedModelData24));
+		TexturedModelData texturedModelData24 = SignBlockEntityRenderer.getTexturedModelData();
+		SignType.stream().forEach(signType -> builder.put(EntityModelLayers.createSign(signType), texturedModelData24));
+		TexturedModelData texturedModelData25 = HangingSignBlockEntityRenderer.getTexturedModelData();
+		SignType.stream().forEach(signType -> builder.put(EntityModelLayers.createHangingSign(signType), texturedModelData25));
 		ImmutableMap<EntityModelLayer, TexturedModelData> immutableMap = builder.build();
 		List<EntityModelLayer> list = (List<EntityModelLayer>)EntityModelLayers.getLayers()
 			.filter(layer -> !immutableMap.containsKey(layer))

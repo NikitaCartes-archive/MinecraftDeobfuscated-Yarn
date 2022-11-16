@@ -53,23 +53,23 @@ public class GameMenuScreen extends Screen {
 		Positioner positioner2 = gridWidget.copyPositioner().alignRight();
 		int k = 0;
 		gridWidget.add(new TextWidget(this.title, this.client.textRenderer), k, 0, 1, 2, gridWidget.copyPositioner().marginBottom(5));
-		gridWidget.add(ButtonWidget.createBuilder(Text.translatable("menu.returnToGame"), button -> {
+		gridWidget.add(ButtonWidget.builder(Text.translatable("menu.returnToGame"), button -> {
 			this.client.setScreen(null);
 			this.client.mouse.lockCursor();
-		}).setWidth(204).build(), ++k, 0, 1, 2);
+		}).width(204).build(), ++k, 0, 1, 2);
 		gridWidget.add(
-			ButtonWidget.createBuilder(
+			ButtonWidget.builder(
 					Text.translatable("gui.advancements"), button -> this.client.setScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))
 				)
-				.setWidth(98)
+				.width(98)
 				.build(),
 			++k,
 			0,
 			positioner
 		);
 		gridWidget.add(
-			ButtonWidget.createBuilder(Text.translatable("gui.stats"), button -> this.client.setScreen(new StatsScreen(this, this.client.player.getStatHandler())))
-				.setWidth(98)
+			ButtonWidget.builder(Text.translatable("gui.stats"), button -> this.client.setScreen(new StatsScreen(this, this.client.player.getStatHandler())))
+				.width(98)
 				.build(),
 			k,
 			1,
@@ -77,41 +77,36 @@ public class GameMenuScreen extends Screen {
 		);
 		k++;
 		String string = SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game";
-		gridWidget.add(ButtonWidget.createBuilder(Text.translatable("menu.sendFeedback"), button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+		gridWidget.add(ButtonWidget.builder(Text.translatable("menu.sendFeedback"), button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
 				if (confirmed) {
 					Util.getOperatingSystem().open(string);
 				}
 
 				this.client.setScreen(this);
-			}, string, true))).setWidth(98).build(), k, 0, positioner);
+			}, string, true))).width(98).build(), k, 0, positioner);
 		ButtonWidget buttonWidget = gridWidget.add(
-			ButtonWidget.createBuilder(Text.translatable("menu.reportBugs"), button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+			ButtonWidget.builder(Text.translatable("menu.reportBugs"), button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
 					if (confirmed) {
 						Util.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
 					}
 
 					this.client.setScreen(this);
-				}, "https://aka.ms/snapshotbugs?ref=game", true))).setWidth(98).build(), k, 1, positioner2
+				}, "https://aka.ms/snapshotbugs?ref=game", true))).width(98).build(), k, 1, positioner2
 		);
 		buttonWidget.active = !SharedConstants.getGameVersion().getSaveVersion().isNotMainSeries();
 		gridWidget.add(
-			ButtonWidget.createBuilder(Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options)))
-				.setWidth(98)
-				.build(),
+			ButtonWidget.builder(Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))).width(98).build(),
 			++k,
 			0,
 			positioner
 		);
 		if (this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote()) {
 			gridWidget.add(
-				ButtonWidget.createBuilder(Text.translatable("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))).setWidth(98).build(),
-				k,
-				1,
-				positioner2
+				ButtonWidget.builder(Text.translatable("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))).width(98).build(), k, 1, positioner2
 			);
 		} else {
 			gridWidget.add(
-				ButtonWidget.createBuilder(Text.translatable("menu.playerReporting"), button -> this.client.setScreen(new SocialInteractionsScreen())).setWidth(98).build(),
+				ButtonWidget.builder(Text.translatable("menu.playerReporting"), button -> this.client.setScreen(new SocialInteractionsScreen())).width(98).build(),
 				k,
 				1,
 				positioner2
@@ -120,31 +115,33 @@ public class GameMenuScreen extends Screen {
 
 		k++;
 		Text text = this.client.isInSingleplayer() ? Text.translatable("menu.returnToMenu") : Text.translatable("menu.disconnect");
-		this.exitButton = gridWidget.add(ButtonWidget.createBuilder(text, button -> {
-			if (this.client.getAbuseReportContext().tryShowDraftScreen(this.client, this, true)) {
-				boolean bl = this.client.isInSingleplayer();
-				boolean bl2 = this.client.isConnectedToRealms();
-				button.active = false;
-				this.client.world.disconnect();
-				if (bl) {
-					this.client.disconnect(new MessageScreen(Text.translatable("menu.savingLevel")));
-				} else {
-					this.client.disconnect();
-				}
-
-				TitleScreen titleScreen = new TitleScreen();
-				if (bl) {
-					this.client.setScreen(titleScreen);
-				} else if (bl2) {
-					this.client.setScreen(new RealmsMainScreen(titleScreen));
-				} else {
-					this.client.setScreen(new MultiplayerScreen(titleScreen));
-				}
-			}
-		}).setWidth(204).build(), k, 0, 1, 2);
+		this.exitButton = gridWidget.add(ButtonWidget.builder(text, button -> {
+			button.active = false;
+			this.client.getAbuseReportContext().tryShowDraftScreen(this.client, this, this::disconnect, true);
+		}).width(204).build(), k, 0, 1, 2);
 		gridWidget.recalculateDimensions();
 		SimplePositioningWidget.setPos(gridWidget, 0, 0, this.width, this.height);
 		this.addDrawableChild(gridWidget);
+	}
+
+	private void disconnect() {
+		boolean bl = this.client.isInSingleplayer();
+		boolean bl2 = this.client.isConnectedToRealms();
+		this.client.world.disconnect();
+		if (bl) {
+			this.client.disconnect(new MessageScreen(Text.translatable("menu.savingLevel")));
+		} else {
+			this.client.disconnect();
+		}
+
+		TitleScreen titleScreen = new TitleScreen();
+		if (bl) {
+			this.client.setScreen(titleScreen);
+		} else if (bl2) {
+			this.client.setScreen(new RealmsMainScreen(titleScreen));
+		} else {
+			this.client.setScreen(new MultiplayerScreen(titleScreen));
+		}
 	}
 
 	@Override

@@ -3,23 +3,21 @@ package net.minecraft.client.texture;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
+import net.minecraft.client.texture.atlas.AtlasLoader;
 import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -34,7 +32,6 @@ public class SpriteLoader {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Identifier id;
 	private final int maxTextureSize;
-	private static final ResourceFinder FINDER = new ResourceFinder("textures", ".png");
 
 	public SpriteLoader(Identifier id, int maxTextureSize) {
 		this.id = id;
@@ -45,90 +42,88 @@ public class SpriteLoader {
 		return new SpriteLoader(atlasTexture.getId(), atlasTexture.getMaxTextureSize());
 	}
 
-	public CompletableFuture<SpriteLoader.StitchResult> stitch(Map<Identifier, Resource> sprites, int mipmapLevels, Executor executor) {
-		return this.loadAll(sprites, executor)
-			.thenApplyAsync(
-				spriteContents -> {
-					int j = this.maxTextureSize;
-					TextureStitcher<SpriteContents> textureStitcher = new TextureStitcher<>(j, j, mipmapLevels);
-					int k = Integer.MAX_VALUE;
-					int l = 1 << mipmapLevels;
+	public SpriteLoader.StitchResult method_47663(List<SpriteContents> list, int i, Executor executor) {
+		int j = this.maxTextureSize;
+		TextureStitcher<SpriteContents> textureStitcher = new TextureStitcher<>(j, j, i);
+		int k = Integer.MAX_VALUE;
+		int l = 1 << i;
 
-					for (SpriteContents spriteContents2 : spriteContents) {
-						k = Math.min(k, Math.min(spriteContents2.getWidth(), spriteContents2.getHeight()));
-						int m = Math.min(Integer.lowestOneBit(spriteContents2.getWidth()), Integer.lowestOneBit(spriteContents2.getHeight()));
-						if (m < l) {
-							LOGGER.warn(
-								"Texture {} with size {}x{} limits mip level from {} to {}",
-								spriteContents2.getId(),
-								spriteContents2.getWidth(),
-								spriteContents2.getHeight(),
-								MathHelper.floorLog2(l),
-								MathHelper.floorLog2(m)
-							);
-							l = m;
-						}
+		for (SpriteContents spriteContents : list) {
+			k = Math.min(k, Math.min(spriteContents.getWidth(), spriteContents.getHeight()));
+			int m = Math.min(Integer.lowestOneBit(spriteContents.getWidth()), Integer.lowestOneBit(spriteContents.getHeight()));
+			if (m < l) {
+				LOGGER.warn(
+					"Texture {} with size {}x{} limits mip level from {} to {}",
+					spriteContents.getId(),
+					spriteContents.getWidth(),
+					spriteContents.getHeight(),
+					MathHelper.floorLog2(l),
+					MathHelper.floorLog2(m)
+				);
+				l = m;
+			}
 
-						textureStitcher.add(spriteContents2);
-					}
+			textureStitcher.add(spriteContents);
+		}
 
-					int n = Math.min(k, l);
-					int o = MathHelper.floorLog2(n);
-					int m;
-					if (o < mipmapLevels) {
-						LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.id, mipmapLevels, o, n);
-						m = o;
-					} else {
-						m = mipmapLevels;
-					}
+		int n = Math.min(k, l);
+		int o = MathHelper.floorLog2(n);
+		int m;
+		if (o < i) {
+			LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.id, i, o, n);
+			m = o;
+		} else {
+			m = i;
+		}
 
-					try {
-						textureStitcher.stitch();
-					} catch (TextureStitcherCannotFitException var14) {
-						CrashReport crashReport = CrashReport.create(var14, "Stitching");
-						CrashReportSection crashReportSection = crashReport.addElement("Stitcher");
-						crashReportSection.add(
-							"Sprites",
-							var14.getSprites()
-								.stream()
-								.map(spritex -> String.format(Locale.ROOT, "%s[%dx%d]", spritex.getId(), spritex.getWidth(), spritex.getHeight()))
-								.collect(Collectors.joining(","))
-						);
-						crashReportSection.add("Max Texture Size", j);
-						throw new CrashException(crashReport);
-					}
-
-					Map<Identifier, Sprite> map = this.collectStitchedSprites(textureStitcher);
-					Sprite sprite = (Sprite)map.get(MissingSprite.getMissingSpriteId());
-					CompletableFuture<Void> completableFuture;
-					if (m > 0) {
-						completableFuture = CompletableFuture.runAsync(() -> map.values().forEach(spritex -> spritex.getContents().generateMipmaps(m)), executor);
-					} else {
-						completableFuture = CompletableFuture.completedFuture(null);
-					}
-
-					return new SpriteLoader.StitchResult(textureStitcher.getWidth(), textureStitcher.getHeight(), m, sprite, map, completableFuture);
-				},
-				executor
+		try {
+			textureStitcher.stitch();
+		} catch (TextureStitcherCannotFitException var14) {
+			CrashReport crashReport = CrashReport.create(var14, "Stitching");
+			CrashReportSection crashReportSection = crashReport.addElement("Stitcher");
+			crashReportSection.add(
+				"Sprites",
+				var14.getSprites()
+					.stream()
+					.map(spritex -> String.format(Locale.ROOT, "%s[%dx%d]", spritex.getId(), spritex.getWidth(), spritex.getHeight()))
+					.collect(Collectors.joining(","))
 			);
+			crashReportSection.add("Max Texture Size", j);
+			throw new CrashException(crashReport);
+		}
+
+		Map<Identifier, Sprite> map = this.collectStitchedSprites(textureStitcher);
+		Sprite sprite = (Sprite)map.get(MissingSprite.getMissingSpriteId());
+		CompletableFuture<Void> completableFuture;
+		if (m > 0) {
+			completableFuture = CompletableFuture.runAsync(() -> map.values().forEach(spritex -> spritex.getContents().generateMipmaps(m)), executor);
+		} else {
+			completableFuture = CompletableFuture.completedFuture(null);
+		}
+
+		return new SpriteLoader.StitchResult(textureStitcher.getWidth(), textureStitcher.getHeight(), m, sprite, map, completableFuture);
 	}
 
-	private CompletableFuture<List<SpriteContents>> loadAll(Map<Identifier, Resource> sprites, Executor executor) {
-		List<CompletableFuture<SpriteContents>> list = new ArrayList();
-		list.add(CompletableFuture.supplyAsync(MissingSprite::createSpriteContents, executor));
-		sprites.forEach((id, resource) -> list.add(CompletableFuture.supplyAsync(() -> this.load(id, resource), executor)));
-		return Util.combineSafe(list).thenApply(spriteContents -> spriteContents.stream().filter(Objects::nonNull).toList());
+	public static CompletableFuture<List<SpriteContents>> method_47664(List<Supplier<SpriteContents>> list, Executor executor) {
+		List<CompletableFuture<SpriteContents>> list2 = list.stream().map(supplier -> CompletableFuture.supplyAsync(supplier, executor)).toList();
+		return Util.combineSafe(list2).thenApply(listx -> listx.stream().filter(Objects::nonNull).toList());
+	}
+
+	public CompletableFuture<SpriteLoader.StitchResult> method_47661(ResourceManager resourceManager, Identifier identifier, int i, Executor executor) {
+		return CompletableFuture.supplyAsync(() -> AtlasLoader.of(resourceManager, identifier).loadSources(resourceManager), executor)
+			.thenCompose(list -> method_47664(list, executor))
+			.thenApply(list -> this.method_47663(list, i, executor));
 	}
 
 	@Nullable
-	private SpriteContents load(Identifier id, Resource resource) {
+	public static SpriteContents load(Identifier id, Resource resource) {
 		AnimationResourceMetadata animationResourceMetadata;
 		try {
 			animationResourceMetadata = (AnimationResourceMetadata)resource.getMetadata()
 				.decode(AnimationResourceMetadata.READER)
 				.orElse(AnimationResourceMetadata.EMPTY);
-		} catch (Exception var9) {
-			LOGGER.error("Unable to parse metadata from {} : {}", this.id, var9);
+		} catch (Exception var8) {
+			LOGGER.error("Unable to parse metadata from {}", id, var8);
 			return null;
 		}
 
@@ -138,23 +133,23 @@ public class SpriteLoader {
 
 			try {
 				nativeImage = NativeImage.read(inputStream);
-			} catch (Throwable var10) {
+			} catch (Throwable var9) {
 				if (inputStream != null) {
 					try {
 						inputStream.close();
-					} catch (Throwable var8) {
-						var10.addSuppressed(var8);
+					} catch (Throwable var7) {
+						var9.addSuppressed(var7);
 					}
 				}
 
-				throw var10;
+				throw var9;
 			}
 
 			if (inputStream != null) {
 				inputStream.close();
 			}
-		} catch (IOException var11) {
-			LOGGER.error("Using missing texture, unable to load {} : {}", this.id, var11);
+		} catch (IOException var10) {
+			LOGGER.error("Using missing texture, unable to load {}", id, var10);
 			return null;
 		}
 
@@ -164,7 +159,7 @@ public class SpriteLoader {
 		} else {
 			LOGGER.error(
 				"Image {} size {},{} is not multiple of frame size {},{}",
-				this.id,
+				id,
 				nativeImage.getWidth(),
 				nativeImage.getHeight(),
 				spriteDimensions.width(),
@@ -180,38 +175,6 @@ public class SpriteLoader {
 		int i = stitcher.getWidth();
 		int j = stitcher.getHeight();
 		stitcher.getStitchedSprites((info, width, height) -> map.put(info.getId(), new Sprite(this.id, info, i, j, width, height)));
-		return map;
-	}
-
-	public static void addResource(ResourceManager resourceManager, Identifier id, BiConsumer<Identifier, Resource> adder) {
-		Identifier identifier = FINDER.toResourcePath(id);
-		Optional<Resource> optional = resourceManager.getResource(identifier);
-		if (optional.isPresent()) {
-			adder.accept(id, (Resource)optional.get());
-		} else {
-			LOGGER.warn("Missing sprite: {}", identifier);
-		}
-	}
-
-	public static void addResources(ResourceManager resourceManager, String textureId, BiConsumer<Identifier, Resource> adder) {
-		addResources(resourceManager, "textures/" + textureId, textureId + "/", adder);
-	}
-
-	public static void addResources(ResourceManager resourceManager, String textureId, String prefix, BiConsumer<Identifier, Resource> adder) {
-		ResourceFinder resourceFinder = new ResourceFinder(textureId, ".png");
-		resourceFinder.findResources(resourceManager).forEach((id, resource) -> {
-			Identifier identifier = resourceFinder.toResourceId(id).withPrefixedPath(prefix);
-			adder.accept(identifier, resource);
-		});
-	}
-
-	public static Map<Identifier, Resource> findAllResources(ResourceManager resourceManager, String textureId) {
-		return findAllResources(resourceManager, "textures/" + textureId, textureId + "/");
-	}
-
-	public static Map<Identifier, Resource> findAllResources(ResourceManager resourceManager, String textureId, String prefix) {
-		Map<Identifier, Resource> map = new HashMap();
-		addResources(resourceManager, textureId, prefix, map::put);
 		return map;
 	}
 

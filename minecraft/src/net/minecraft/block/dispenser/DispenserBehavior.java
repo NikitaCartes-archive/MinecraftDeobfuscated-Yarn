@@ -475,6 +475,7 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.ZOMBIE_HEAD, dispenserBehavior2);
 		DispenserBlock.registerBehavior(Items.DRAGON_HEAD, dispenserBehavior2);
 		DispenserBlock.registerBehavior(Items.SKELETON_SKULL, dispenserBehavior2);
+		DispenserBlock.registerBehavior(Items.PIGLIN_HEAD, dispenserBehavior2);
 		DispenserBlock.registerBehavior(Items.PLAYER_HEAD, dispenserBehavior2);
 		DispenserBlock.registerBehavior(
 			Items.WITHER_SKELETON_SKULL,

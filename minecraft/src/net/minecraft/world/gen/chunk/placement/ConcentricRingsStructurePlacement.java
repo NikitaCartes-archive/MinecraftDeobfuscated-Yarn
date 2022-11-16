@@ -35,7 +35,7 @@ public class ConcentricRingsStructurePlacement extends StructurePlacement {
 			Codec.intRange(0, 1023).fieldOf("distance").forGetter(ConcentricRingsStructurePlacement::getDistance),
 			Codec.intRange(0, 1023).fieldOf("spread").forGetter(ConcentricRingsStructurePlacement::getSpread),
 			Codec.intRange(1, 4095).fieldOf("count").forGetter(ConcentricRingsStructurePlacement::getCount),
-			RegistryCodecs.entryList(RegistryKeys.BIOME_WORLDGEN).fieldOf("preferred_biomes").forGetter(ConcentricRingsStructurePlacement::getPreferredBiomes)
+			RegistryCodecs.entryList(RegistryKeys.BIOME).fieldOf("preferred_biomes").forGetter(ConcentricRingsStructurePlacement::getPreferredBiomes)
 		);
 		return new P9<>(p5.t1(), p5.t2(), p5.t3(), p5.t4(), p5.t5(), p4.t1(), p4.t2(), p4.t3(), p4.t4());
 	}

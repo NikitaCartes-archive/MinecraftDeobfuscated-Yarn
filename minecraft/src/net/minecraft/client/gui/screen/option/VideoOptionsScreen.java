@@ -108,11 +108,11 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 		this.list.addSingleOptionEntry(this.gameOptions.getBiomeBlendRadius());
 		this.list.addAll(getOptions(this.gameOptions));
 		this.addSelectableChild(this.list);
-		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			this.client.options.write();
 			window.applyVideoMode();
 			this.client.setScreen(this.parent);
-		}).setPositionAndSize(this.width / 2 - 100, this.height - 27, 200, 20).build());
+		}).dimensions(this.width / 2 - 100, this.height - 27, 200, 20).build());
 	}
 
 	@Override

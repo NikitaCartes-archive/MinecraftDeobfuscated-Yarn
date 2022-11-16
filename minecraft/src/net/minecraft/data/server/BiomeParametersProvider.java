@@ -34,7 +34,7 @@ public class BiomeParametersProvider implements DataProvider {
 	public CompletableFuture<?> run(DataWriter writer) {
 		return this.registryLookupFuture.thenCompose(lookup -> {
 			DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, lookup);
-			RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN);
+			RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME);
 			return CompletableFuture.allOf((CompletableFuture[])MultiNoiseBiomeSource.Preset.streamPresets().map(preset -> {
 				MultiNoiseBiomeSource multiNoiseBiomeSource = ((MultiNoiseBiomeSource.Preset)preset.getSecond()).getBiomeSource(registryEntryLookup, false);
 				return write(this.resolvePath((Identifier)preset.getFirst()), writer, dynamicOps, MultiNoiseBiomeSource.CODEC, multiNoiseBiomeSource);

@@ -51,11 +51,8 @@ public abstract class AbstractSignEditScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.finishEditing())
-				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120, 200, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.DONE, button -> this.finishEditing()).dimensions(this.width / 2 - 100, this.height / 4 + 120, 200, 20).build()
 		);
 		this.blockEntity.setEditable(false);
 		this.selectionManager = new SelectionManager(
@@ -72,7 +69,6 @@ public abstract class AbstractSignEditScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(new UpdateSignC2SPacket(this.blockEntity.getPos(), this.text[0], this.text[1], this.text[2], this.text[3]));

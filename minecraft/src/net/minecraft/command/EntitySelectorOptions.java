@@ -170,7 +170,7 @@ public class EntitySelectorOptions {
 					case "nearest" -> EntitySelectorReader.NEAREST;
 					case "furthest" -> EntitySelectorReader.FURTHEST;
 					case "random" -> EntitySelectorReader.RANDOM;
-					case "arbitrary" -> EntitySelectorReader.ARBITRARY;
+					case "arbitrary" -> EntitySelector.ARBITRARY;
 					default -> {
 						reader.getReader().setCursor(i);
 						throw IRREVERSIBLE_SORT_EXCEPTION.createWithContext(reader.getReader(), string);

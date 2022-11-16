@@ -44,20 +44,20 @@ public class RegistryLoader {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final List<RegistryLoader.Entry<?>> DYNAMIC_REGISTRIES = List.of(
 		new RegistryLoader.Entry<>(RegistryKeys.DIMENSION_TYPE, DimensionType.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.BIOME_WORLDGEN, Biome.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.CHAT_TYPE, MessageType.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.CONFIGURED_CARVER_WORLDGEN, ConfiguredCarver.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN, ConfiguredFeature.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.PLACED_FEATURE_WORLDGEN, PlacedFeature.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.STRUCTURE_WORLDGEN, Structure.STRUCTURE_CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.STRUCTURE_SET_WORLDGEN, StructureSet.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.PROCESSOR_LIST_WORLDGEN, StructureProcessorType.PROCESSORS_CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.TEMPLATE_POOL_WORLDGEN, StructurePool.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.NOISE_WORLDGEN, DoublePerlinNoiseSampler.NoiseParameters.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.DENSITY_FUNCTION_WORLDGEN, DensityFunction.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.WORLD_PRESET_WORLDGEN, WorldPreset.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, FlatLevelGeneratorPreset.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.BIOME, Biome.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.MESSAGE_TYPE, MessageType.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.CONFIGURED_CARVER, ConfiguredCarver.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.CONFIGURED_FEATURE, ConfiguredFeature.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.PLACED_FEATURE, PlacedFeature.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.STRUCTURE, Structure.STRUCTURE_CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.STRUCTURE_SET, StructureSet.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.PROCESSOR_LIST, StructureProcessorType.PROCESSORS_CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.TEMPLATE_POOL, StructurePool.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.CHUNK_GENERATOR_SETTINGS, ChunkGeneratorSettings.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.NOISE_PARAMETERS, DoublePerlinNoiseSampler.NoiseParameters.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.DENSITY_FUNCTION, DensityFunction.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.WORLD_PRESET, WorldPreset.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPreset.CODEC)
 	);
 	public static final List<RegistryLoader.Entry<?>> DIMENSION_REGISTRIES = List.of(new RegistryLoader.Entry<>(RegistryKeys.DIMENSION, DimensionOptions.CODEC));
 

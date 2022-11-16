@@ -92,7 +92,7 @@ public class IntegratedServerLoader {
 					},
 					SaveLoader::new
 				);
-				this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
+				this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader, true);
 			} catch (Exception var10) {
 				LOGGER.warn("Failed to load datapacks, can't proceed with server load", (Throwable)var10);
 				close(session, levelName);
@@ -127,7 +127,8 @@ public class IntegratedServerLoader {
 				session.getDirectoryName(),
 				session,
 				resourcePackManager,
-				new SaveLoader(lifecycledResourceManager, dataPackContents, dynamicRegistryManager, saveProperties)
+				new SaveLoader(lifecycledResourceManager, dataPackContents, dynamicRegistryManager, saveProperties),
+				true
 			);
 	}
 
@@ -239,7 +240,7 @@ public class IntegratedServerLoader {
 					return this.showPackLoadFailureScreen();
 				}, this.client).thenAcceptAsync(proceed -> {
 					if (proceed) {
-						this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
+						this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader, false);
 					} else {
 						saveLoader.close();
 						close(session, levelName);

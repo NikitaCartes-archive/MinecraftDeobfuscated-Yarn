@@ -18,8 +18,8 @@ import net.minecraft.world.gen.chunk.AquiferSampler;
 
 public record ConfiguredCarver<WC extends CarverConfig>(Carver<WC> carver, WC config) {
 	public static final Codec<ConfiguredCarver<?>> CODEC = Registries.CARVER.getCodec().dispatch(configuredCarver -> configuredCarver.carver, Carver::getCodec);
-	public static final Codec<RegistryEntry<ConfiguredCarver<?>>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.CONFIGURED_CARVER_WORLDGEN, CODEC);
-	public static final Codec<RegistryEntryList<ConfiguredCarver<?>>> LIST_CODEC = RegistryCodecs.entryList(RegistryKeys.CONFIGURED_CARVER_WORLDGEN, CODEC);
+	public static final Codec<RegistryEntry<ConfiguredCarver<?>>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.CONFIGURED_CARVER, CODEC);
+	public static final Codec<RegistryEntryList<ConfiguredCarver<?>>> LIST_CODEC = RegistryCodecs.entryList(RegistryKeys.CONFIGURED_CARVER, CODEC);
 
 	public boolean shouldCarve(Random random) {
 		return this.carver.shouldCarve(this.config, random);

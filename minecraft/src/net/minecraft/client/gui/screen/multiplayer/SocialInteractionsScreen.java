@@ -98,7 +98,6 @@ public class SocialInteractionsScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		if (this.initialized) {
 			this.playerList.updateSize(this.width, this.height, 88, this.getPlayerListBottom());
 		} else {
@@ -112,17 +111,13 @@ public class SocialInteractionsScreen extends Screen {
 		int m = 64 + 16 * this.getRowCount();
 		int n = (this.width - l) / 2 + 3;
 		this.allTabButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(ALL_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.ALL)).setPositionAndSize(j, 45, i, 20).build()
+			ButtonWidget.builder(ALL_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.ALL)).dimensions(j, 45, i, 20).build()
 		);
 		this.hiddenTabButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(HIDDEN_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.HIDDEN))
-				.setPositionAndSize((j + k - i) / 2 + 1, 45, i, 20)
-				.build()
+			ButtonWidget.builder(HIDDEN_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.HIDDEN)).dimensions((j + k - i) / 2 + 1, 45, i, 20).build()
 		);
 		this.blockedTabButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(BLOCKED_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.BLOCKED))
-				.setPositionAndSize(k - i + 1, 45, i, 20)
-				.build()
+			ButtonWidget.builder(BLOCKED_TAB_TITLE, button -> this.setCurrentTab(SocialInteractionsScreen.Tab.BLOCKED)).dimensions(k - i + 1, 45, i, 20).build()
 		);
 		String string = this.searchBox != null ? this.searchBox.getText() : "";
 		this.searchBox = new TextFieldWidget(this.textRenderer, this.getSearchBoxX() + 28, 78, 196, 16, SEARCH_TEXT) {
@@ -142,13 +137,13 @@ public class SocialInteractionsScreen extends Screen {
 		this.searchBox.setChangedListener(this::onSearchChange);
 		this.addSelectableChild(this.searchBox);
 		this.addSelectableChild(this.playerList);
-		this.blockingButton = this.addDrawableChild(ButtonWidget.createBuilder(BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+		this.blockingButton = this.addDrawableChild(ButtonWidget.builder(BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
 				if (confirmed) {
 					Util.getOperatingSystem().open("https://aka.ms/javablocking");
 				}
 
 				this.client.setScreen(this);
-			}, "https://aka.ms/javablocking", true))).setPositionAndSize(n, m, l, 20).build());
+			}, "https://aka.ms/javablocking", true))).dimensions(n, m, l, 20).build());
 		this.initialized = true;
 		this.setCurrentTab(this.currentTab);
 	}
@@ -195,11 +190,6 @@ public class SocialInteractionsScreen extends Screen {
 				narratorManager.narrate(EMPTY_BLOCKED_TEXT);
 			}
 		}
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

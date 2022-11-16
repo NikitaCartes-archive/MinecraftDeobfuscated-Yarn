@@ -95,7 +95,20 @@ public class Models {
 	public static final Model TEMPLATE_GLASS_PANE_SIDE = block("template_glass_pane_side", "_side", TextureKey.PANE, TextureKey.EDGE);
 	public static final Model TEMPLATE_GLASS_PANE_SIDE_ALT = block("template_glass_pane_side_alt", "_side_alt", TextureKey.PANE, TextureKey.EDGE);
 	public static final Model TEMPLATE_COMMAND_BLOCK = block("template_command_block", TextureKey.FRONT, TextureKey.BACK, TextureKey.SIDE);
-	public static final Model TEMPLATE_CHISELED_BOOKSHELF = block("template_chiseled_bookshelf", TextureKey.FRONT, TextureKey.SIDE, TextureKey.TOP);
+	public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_LEFT = block("template_chiseled_bookshelf_slot_top_left", "_slot_top_left", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_MID = block("template_chiseled_bookshelf_slot_top_mid", "_slot_top_mid", TextureKey.TEXTURE);
+	public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_RIGHT = block(
+		"template_chiseled_bookshelf_slot_top_right", "_slot_top_right", TextureKey.TEXTURE
+	);
+	public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_LEFT = block(
+		"template_chiseled_bookshelf_slot_bottom_left", "_slot_bottom_left", TextureKey.TEXTURE
+	);
+	public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_MID = block(
+		"template_chiseled_bookshelf_slot_bottom_mid", "_slot_bottom_mid", TextureKey.TEXTURE
+	);
+	public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_RIGHT = block(
+		"template_chiseled_bookshelf_slot_bottom_right", "_slot_bottom_right", TextureKey.TEXTURE
+	);
 	public static final Model TEMPLATE_ANVIL = block("template_anvil", TextureKey.TOP);
 	public static final Model[] STEM_GROWTH_STAGES = (Model[])IntStream.range(0, 8)
 		.mapToObj(stage -> block("stem_growth" + stage, "_stage" + stage, TextureKey.STEM))

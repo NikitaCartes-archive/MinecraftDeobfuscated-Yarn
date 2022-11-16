@@ -18,8 +18,8 @@ import net.minecraft.world.gen.structure.StructureKeys;
 
 public interface StructureSets {
 	static void bootstrap(Registerable<StructureSet> structureSetRegisterable) {
-		RegistryEntryLookup<Structure> registryEntryLookup = structureSetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE_WORLDGEN);
-		RegistryEntryLookup<Biome> registryEntryLookup2 = structureSetRegisterable.getRegistryLookup(RegistryKeys.BIOME_WORLDGEN);
+		RegistryEntryLookup<Structure> registryEntryLookup = structureSetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE);
+		RegistryEntryLookup<Biome> registryEntryLookup2 = structureSetRegisterable.getRegistryLookup(RegistryKeys.BIOME);
 		RegistryEntry.Reference<StructureSet> reference = structureSetRegisterable.register(
 			StructureSetKeys.VILLAGES,
 			new StructureSet(

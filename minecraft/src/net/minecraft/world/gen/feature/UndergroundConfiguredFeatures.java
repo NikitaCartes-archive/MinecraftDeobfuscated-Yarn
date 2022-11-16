@@ -97,8 +97,8 @@ public class UndergroundConfiguredFeatures {
 	}
 
 	public static void bootstrap(Registerable<ConfiguredFeature<?, ?>> featureRegisterable) {
-		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
-		RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = featureRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
+		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE);
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = featureRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);
 		ConfiguredFeatures.register(featureRegisterable, MONSTER_ROOM, Feature.MONSTER_ROOM);
 		List<Identifier> list = List.of(
 			new Identifier("fossil/spine_1"),

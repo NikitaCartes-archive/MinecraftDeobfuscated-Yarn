@@ -8,7 +8,6 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -59,6 +58,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -275,7 +275,6 @@ public class PacketByteBuf extends ByteBuf {
 		return MAX_VAR_LONG_LENGTH;
 	}
 
-	/** @deprecated */
 	/**
 	 * Reads an object from this buf as a compound NBT with the given codec.
 	 * 
@@ -287,16 +286,12 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @param codec the codec to decode the object
 	 */
+	@Deprecated
 	public <T> T decode(Codec<T> codec) {
 		NbtCompound nbtCompound = this.readUnlimitedNbt();
-		DataResult<T> dataResult = codec.parse(NbtOps.INSTANCE, nbtCompound);
-		dataResult.error().ifPresent(partial -> {
-			throw new EncoderException("Failed to decode: " + partial.message() + " " + nbtCompound);
-		});
-		return (T)dataResult.result().get();
+		return Util.getResult(codec.parse(NbtOps.INSTANCE, nbtCompound), error -> new DecoderException("Failed to decode: " + error + " " + nbtCompound));
 	}
 
-	/** @deprecated */
 	/**
 	 * Writes an object to this buf as a compound NBT with the given codec.
 	 * 
@@ -308,12 +303,10 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param codec the codec to encode the object
 	 * @param object the object to write to this buf
 	 */
+	@Deprecated
 	public <T> void encode(Codec<T> codec, T object) {
-		DataResult<NbtElement> dataResult = codec.encodeStart(NbtOps.INSTANCE, object);
-		dataResult.error().ifPresent(partial -> {
-			throw new EncoderException("Failed to encode: " + partial.message() + " " + object);
-		});
-		this.writeNbt((NbtCompound)dataResult.result().get());
+		NbtElement nbtElement = Util.getResult(codec.encodeStart(NbtOps.INSTANCE, object), error -> new EncoderException("Failed to encode: " + error + " " + object));
+		this.writeNbt((NbtCompound)nbtElement);
 	}
 
 	/**

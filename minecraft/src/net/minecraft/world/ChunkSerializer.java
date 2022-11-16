@@ -94,7 +94,7 @@ public class ChunkSerializer {
 		boolean bl2 = world.getDimension().hasSkyLight();
 		ChunkManager chunkManager = world.getChunkManager();
 		LightingProvider lightingProvider = chunkManager.getLightingProvider();
-		Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN);
+		Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME);
 		Codec<ReadableContainer<RegistryEntry<Biome>>> codec = createCodec(registry);
 		boolean bl3 = false;
 
@@ -316,7 +316,7 @@ public class ChunkSerializer {
 		ChunkSection[] chunkSections = chunk.getSectionArray();
 		NbtList nbtList = new NbtList();
 		LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
-		Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN);
+		Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME);
 		Codec<ReadableContainer<RegistryEntry<Biome>>> codec = createCodec(registry);
 		boolean bl = chunk.isLightOn();
 
@@ -442,7 +442,7 @@ public class ChunkSerializer {
 	private static NbtCompound writeStructures(StructureContext context, ChunkPos pos, Map<Structure, StructureStart> starts, Map<Structure, LongSet> references) {
 		NbtCompound nbtCompound = new NbtCompound();
 		NbtCompound nbtCompound2 = new NbtCompound();
-		Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
+		Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE);
 
 		for (Entry<Structure, StructureStart> entry : starts.entrySet()) {
 			Identifier identifier = registry.getId((Structure)entry.getKey());
@@ -465,7 +465,7 @@ public class ChunkSerializer {
 
 	private static Map<Structure, StructureStart> readStructureStarts(StructureContext context, NbtCompound nbt, long worldSeed) {
 		Map<Structure, StructureStart> map = Maps.<Structure, StructureStart>newHashMap();
-		Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
+		Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE);
 		NbtCompound nbtCompound = nbt.getCompound("starts");
 
 		for (String string : nbtCompound.getKeys()) {
@@ -486,7 +486,7 @@ public class ChunkSerializer {
 
 	private static Map<Structure, LongSet> readStructureReferences(DynamicRegistryManager registryManager, ChunkPos pos, NbtCompound nbt) {
 		Map<Structure, LongSet> map = Maps.<Structure, LongSet>newHashMap();
-		Registry<Structure> registry = registryManager.get(RegistryKeys.STRUCTURE_WORLDGEN);
+		Registry<Structure> registry = registryManager.get(RegistryKeys.STRUCTURE);
 		NbtCompound nbtCompound = nbt.getCompound("References");
 
 		for (String string : nbtCompound.getKeys()) {

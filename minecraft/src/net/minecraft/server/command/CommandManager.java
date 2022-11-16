@@ -87,6 +87,7 @@ public class CommandManager {
 		EnchantCommand.register(this.dispatcher, commandRegistryAccess);
 		ExperienceCommand.register(this.dispatcher);
 		FillCommand.register(this.dispatcher, commandRegistryAccess);
+		FillBiomeCommand.register(this.dispatcher, commandRegistryAccess);
 		ForceLoadCommand.register(this.dispatcher);
 		FunctionCommand.register(this.dispatcher);
 		GameModeCommand.register(this.dispatcher);

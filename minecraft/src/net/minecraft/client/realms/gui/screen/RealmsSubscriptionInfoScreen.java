@@ -56,9 +56,8 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.getSubscription(this.serverData.id);
-		this.client.keyboard.setRepeatEvents(true);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(
+			ButtonWidget.builder(
 					Text.translatable("mco.configure.world.subscription.extend"),
 					button -> {
 						String string = "https://aka.ms/ExtendJavaRealms?subscriptionId="
@@ -69,20 +68,18 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 						Util.getOperatingSystem().open(string);
 					}
 				)
-				.setPositionAndSize(this.width / 2 - 100, row(6), 200, 20)
+				.dimensions(this.width / 2 - 100, row(6), 200, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 100, row(12), 200, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, row(12), 200, 20).build()
 		);
 		if (this.serverData.expired) {
-			this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.configure.world.delete.button"), button -> {
+			this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.configure.world.delete.button"), button -> {
 				Text text = Text.translatable("mco.configure.world.delete.question.line1");
 				Text text2 = Text.translatable("mco.configure.world.delete.question.line2");
 				this.client.setScreen(new RealmsLongConfirmationScreen(this::onDeletionConfirmed, RealmsLongConfirmationScreen.Type.WARNING, text, text2, true));
-			}).setPositionAndSize(this.width / 2 - 100, row(10), 200, 20).build());
+			}).dimensions(this.width / 2 - 100, row(10), 200, 20).build());
 		}
 	}
 
@@ -128,11 +125,6 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		Calendar calendar = new GregorianCalendar(TimeZone.getDefault());
 		calendar.setTimeInMillis(time);
 		return Text.literal(DateFormat.getDateTimeInstance().format(calendar.getTime()));
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

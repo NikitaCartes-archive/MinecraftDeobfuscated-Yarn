@@ -127,28 +127,27 @@ public class BookEditScreen extends Screen {
 	@Override
 	protected void init() {
 		this.invalidatePageContent();
-		this.client.keyboard.setRepeatEvents(true);
-		this.signButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("book.signButton"), button -> {
+		this.signButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("book.signButton"), button -> {
 			this.signing = true;
 			this.updateButtons();
-		}).setPositionAndSize(this.width / 2 - 100, 196, 98, 20).build());
-		this.doneButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
+		}).dimensions(this.width / 2 - 100, 196, 98, 20).build());
+		this.doneButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			this.client.setScreen(null);
 			this.finalizeBook(false);
-		}).setPositionAndSize(this.width / 2 + 2, 196, 98, 20).build());
-		this.finalizeButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("book.finalizeButton"), button -> {
+		}).dimensions(this.width / 2 + 2, 196, 98, 20).build());
+		this.finalizeButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("book.finalizeButton"), button -> {
 			if (this.signing) {
 				this.finalizeBook(true);
 				this.client.setScreen(null);
 			}
-		}).setPositionAndSize(this.width / 2 - 100, 196, 98, 20).build());
-		this.cancelButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> {
+		}).dimensions(this.width / 2 - 100, 196, 98, 20).build());
+		this.cancelButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> {
 			if (this.signing) {
 				this.signing = false;
 			}
 
 			this.updateButtons();
-		}).setPositionAndSize(this.width / 2 + 2, 196, 98, 20).build());
+		}).dimensions(this.width / 2 + 2, 196, 98, 20).build());
 		int i = (this.width - 192) / 2;
 		int j = 2;
 		this.nextPageButton = this.addDrawableChild(new PageTurnWidget(i + 116, 159, true, button -> this.openNextPage(), true));
@@ -177,11 +176,6 @@ public class BookEditScreen extends Screen {
 
 		this.updateButtons();
 		this.changePage();
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	private void updateButtons() {

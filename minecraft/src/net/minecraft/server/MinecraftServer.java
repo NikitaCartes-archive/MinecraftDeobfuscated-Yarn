@@ -466,7 +466,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 			if (bonusChest) {
 				world.getRegistryManager()
-					.getOptional(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN)
+					.getOptional(RegistryKeys.CONFIGURED_FEATURE)
 					.flatMap(featureRegistry -> featureRegistry.getEntry(MiscConfiguredFeatures.BONUS_CHEST))
 					.ifPresent(
 						feature -> ((ConfiguredFeature)feature.value())

@@ -16,6 +16,13 @@ import java.util.UUID;
 public final class Uuids {
 	public static final Codec<UUID> INT_STREAM_CODEC = Codec.INT_STREAM
 		.comapFlatMap(uuidStream -> Util.toArray(uuidStream, 4).map(Uuids::toUuid), uuid -> Arrays.stream(toIntArray(uuid)));
+	public static final Codec<UUID> STRING_CODEC = Codec.STRING.comapFlatMap(string -> {
+		try {
+			return DataResult.success(UUID.fromString(string), Lifecycle.stable());
+		} catch (IllegalArgumentException var2) {
+			return DataResult.error("Invalid UUID " + string + ": " + var2.getMessage());
+		}
+	}, UUID::toString);
 	public static Codec<UUID> CODEC = Codec.either(INT_STREAM_CODEC, Codec.STRING.comapFlatMap(string -> {
 		try {
 			return DataResult.success(UUIDTypeAdapter.fromString(string), Lifecycle.stable());

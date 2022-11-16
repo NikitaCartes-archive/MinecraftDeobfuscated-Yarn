@@ -38,5 +38,6 @@ public class OneTwentyBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.BAMBOO_MOSAIC_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.BAMBOO_DOOR, block -> this.doorDrops(block));
 		this.addDropWithSilkTouch(Blocks.CHISELED_BOOKSHELF);
+		this.addDrop(Blocks.PIGLIN_HEAD);
 	}
 }

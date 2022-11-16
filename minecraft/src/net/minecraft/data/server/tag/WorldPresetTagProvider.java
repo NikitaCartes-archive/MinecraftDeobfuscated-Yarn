@@ -10,7 +10,7 @@ import net.minecraft.world.gen.WorldPresets;
 
 public class WorldPresetTagProvider extends AbstractTagProvider<WorldPreset> {
 	public WorldPresetTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.WORLD_PRESET_WORLDGEN, registryLookupFuture);
+		super(output, RegistryKeys.WORLD_PRESET, registryLookupFuture);
 	}
 
 	@Override

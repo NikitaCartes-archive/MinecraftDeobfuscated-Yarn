@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
@@ -34,18 +35,30 @@ public class NoteBlock extends Block {
 		);
 	}
 
+	private static boolean areMobHeadSoundsEnabled(WorldAccess world) {
+		return world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20);
+	}
+
+	private BlockState getStateWithInstrument(WorldAccess world, BlockPos pos, BlockState state) {
+		if (areMobHeadSoundsEnabled(world)) {
+			BlockState blockState = world.getBlockState(pos.up());
+			return state.with(INSTRUMENT, (Instrument)Instrument.fromAboveState(blockState).orElseGet(() -> Instrument.fromBelowState(world.getBlockState(pos.down()))));
+		} else {
+			return state.with(INSTRUMENT, Instrument.fromBelowState(world.getBlockState(pos.down())));
+		}
+	}
+
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(INSTRUMENT, Instrument.fromBlockState(ctx.getWorld().getBlockState(ctx.getBlockPos().down())));
+		return this.getStateWithInstrument(ctx.getWorld(), ctx.getBlockPos(), this.getDefaultState());
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
-		return direction == Direction.DOWN
-			? state.with(INSTRUMENT, Instrument.fromBlockState(neighborState))
-			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		boolean bl = areMobHeadSoundsEnabled(world) ? direction.getAxis() == Direction.Axis.Y : direction == Direction.DOWN;
+		return bl ? this.getStateWithInstrument(world, pos, state) : super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
@@ -53,15 +66,15 @@ public class NoteBlock extends Block {
 		boolean bl = world.isReceivingRedstonePower(pos);
 		if (bl != (Boolean)state.get(POWERED)) {
 			if (bl) {
-				this.playNote(null, world, pos);
+				this.playNote(null, state, world, pos);
 			}
 
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), Block.NOTIFY_ALL);
 		}
 	}
 
-	private void playNote(@Nullable Entity entity, World world, BlockPos pos) {
-		if (world.getBlockState(pos.up()).isAir()) {
+	private void playNote(@Nullable Entity entity, BlockState state, World world, BlockPos pos) {
+		if (this.isInstrumentMobHead(state) || world.getBlockState(pos.up()).isAir()) {
 			world.addSyncedBlockEvent(pos, this, 0, 0);
 			world.emitGameEvent(entity, GameEvent.NOTE_BLOCK_PLAY, pos);
 		}
@@ -74,7 +87,7 @@ public class NoteBlock extends Block {
 		} else {
 			state = state.cycle(NOTE);
 			world.setBlockState(pos, state, Block.NOTIFY_ALL);
-			this.playNote(player, world, pos);
+			this.playNote(player, state, world, pos);
 			player.incrementStat(Stats.TUNE_NOTEBLOCK);
 			return ActionResult.CONSUME;
 		}
@@ -83,17 +96,27 @@ public class NoteBlock extends Block {
 	@Override
 	public void onBlockBreakStart(BlockState state, World world, BlockPos pos, PlayerEntity player) {
 		if (!world.isClient) {
-			this.playNote(player, world, pos);
+			this.playNote(player, state, world, pos);
 			player.incrementStat(Stats.PLAY_NOTEBLOCK);
 		}
 	}
 
+	private boolean isInstrumentMobHead(BlockState state) {
+		return ((Instrument)state.get(INSTRUMENT)).isMobHead();
+	}
+
 	@Override
 	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
-		int i = (Integer)state.get(NOTE);
-		float f = (float)Math.pow(2.0, (double)(i - 12) / 12.0);
+		float f;
+		if (!this.isInstrumentMobHead(state)) {
+			int i = (Integer)state.get(NOTE);
+			f = (float)Math.pow(2.0, (double)(i - 12) / 12.0);
+			world.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5, (double)pos.getY() + 1.2, (double)pos.getZ() + 0.5, (double)i / 24.0, 0.0, 0.0);
+		} else {
+			f = 1.0F;
+		}
+
 		world.playSound(null, pos, ((Instrument)state.get(INSTRUMENT)).getSound(), SoundCategory.RECORDS, 3.0F, f);
-		world.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5, (double)pos.getY() + 1.2, (double)pos.getZ() + 0.5, (double)i / 24.0, 0.0, 0.0);
 		return true;
 	}
 

@@ -64,23 +64,22 @@ public class EditWorldScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.setRepeatEvents(true);
-		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.edit.resetIcon"), button -> {
+		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.edit.resetIcon"), button -> {
 			this.storageSession.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
 			button.active = false;
-		}).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20).build());
+		}).dimensions(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20).build());
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(
+			ButtonWidget.builder(
 					Text.translatable("selectWorld.edit.openFolder"), button -> Util.getOperatingSystem().open(this.storageSession.getDirectory(WorldSavePath.ROOT).toFile())
 				)
-				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 24 + 5, 200, 20)
+				.dimensions(this.width / 2 - 100, this.height / 4 + 24 + 5, 200, 20)
 				.build()
 		);
-		this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.edit.backup"), button -> {
+		this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.edit.backup"), button -> {
 			boolean bl = backupLevel(this.storageSession);
 			this.callback.accept(!bl);
-		}).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20).build());
-		this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.edit.backupFolder"), button -> {
+		}).dimensions(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20).build());
+		this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.edit.backupFolder"), button -> {
 			LevelStorage levelStorage = this.client.getLevelStorage();
 			Path path = levelStorage.getBackupsDirectory();
 
@@ -91,22 +90,20 @@ public class EditWorldScreen extends Screen {
 			}
 
 			Util.getOperatingSystem().open(path.toFile());
-		}).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20).build());
+		}).dimensions(this.width / 2 - 100, this.height / 4 + 72 + 5, 200, 20).build());
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(
-					Text.translatable("selectWorld.edit.optimize"), button -> this.client.setScreen(new BackupPromptScreen(this, (backup, eraseCache) -> {
-							if (backup) {
-								backupLevel(this.storageSession);
-							}
+			ButtonWidget.builder(Text.translatable("selectWorld.edit.optimize"), button -> this.client.setScreen(new BackupPromptScreen(this, (backup, eraseCache) -> {
+						if (backup) {
+							backupLevel(this.storageSession);
+						}
 
-							this.client.setScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, eraseCache));
-						}, Text.translatable("optimizeWorld.confirm.title"), Text.translatable("optimizeWorld.confirm.description"), true))
-				)
-				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 96 + 5, 200, 20)
+						this.client.setScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, eraseCache));
+					}, Text.translatable("optimizeWorld.confirm.title"), Text.translatable("optimizeWorld.confirm.description"), true)))
+				.dimensions(this.width / 2 - 100, this.height / 4 + 96 + 5, 200, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(
+			ButtonWidget.builder(
 					Text.translatable("selectWorld.edit.export_worldgen_settings"),
 					button -> {
 						DataResult<String> dataResult2;
@@ -156,18 +153,16 @@ public class EditWorldScreen extends Screen {
 						this.client.getToastManager().add(SystemToast.create(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
 					}
 				)
-				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20)
+				.dimensions(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20)
 				.build()
 		);
 		this.saveButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("selectWorld.edit.save"), button -> this.commit())
-				.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20)
+			ButtonWidget.builder(Text.translatable("selectWorld.edit.save"), button -> this.commit())
+				.dimensions(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.callback.accept(false))
-				.setPositionAndSize(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.callback.accept(false)).dimensions(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20).build()
 		);
 		buttonWidget.active = this.storageSession.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])).isPresent();
 		LevelSummary levelSummary = this.storageSession.getLevelSummary();
@@ -189,11 +184,6 @@ public class EditWorldScreen extends Screen {
 	@Override
 	public void close() {
 		this.callback.accept(false);
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	private void commit() {

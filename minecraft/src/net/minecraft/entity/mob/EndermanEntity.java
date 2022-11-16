@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -38,6 +39,9 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -340,7 +344,17 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		super.dropEquipment(source, lootingMultiplier, allowDrops);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
-			this.dropItem(blockState.getBlock());
+			ItemStack itemStack = new ItemStack(Items.DIAMOND_AXE);
+			itemStack.addEnchantment(Enchantments.SILK_TOUCH, 1);
+			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
+				.random(this.world.getRandom())
+				.parameter(LootContextParameters.ORIGIN, this.getPos())
+				.parameter(LootContextParameters.TOOL, itemStack)
+				.optionalParameter(LootContextParameters.THIS_ENTITY, this);
+
+			for (ItemStack itemStack2 : blockState.getDroppedStacks(builder)) {
+				this.dropStack(itemStack2);
+			}
 		}
 	}
 

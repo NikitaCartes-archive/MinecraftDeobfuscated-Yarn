@@ -19,6 +19,11 @@ public class EmptyWidget extends ClickableWidget {
 	public void appendClickableNarrations(NarrationMessageBuilder builder) {
 	}
 
+	@Override
+	public boolean changeFocus(boolean lookForwards) {
+		return false;
+	}
+
 	public static ClickableWidget ofWidth(int width) {
 		return new EmptyWidget(width, 0);
 	}

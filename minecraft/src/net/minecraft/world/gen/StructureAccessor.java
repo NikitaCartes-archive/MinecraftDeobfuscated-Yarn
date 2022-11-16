@@ -115,12 +115,12 @@ public class StructureAccessor {
 	}
 
 	public StructureStart getStructureContaining(BlockPos pos, RegistryKey<Structure> structure) {
-		Structure structure2 = this.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN).get(structure);
+		Structure structure2 = this.getRegistryManager().get(RegistryKeys.STRUCTURE).get(structure);
 		return structure2 == null ? StructureStart.DEFAULT : this.getStructureContaining(pos, structure2);
 	}
 
 	public StructureStart getStructureContaining(BlockPos pos, TagKey<Structure> structureTag) {
-		Registry<Structure> registry = this.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
+		Registry<Structure> registry = this.getRegistryManager().get(RegistryKeys.STRUCTURE);
 
 		for (StructureStart structureStart : this.getStructureStarts(
 			new ChunkPos(pos), structure -> (Boolean)registry.getEntry(registry.getRawId(structure)).map(reference -> reference.isIn(structureTag)).orElse(false)

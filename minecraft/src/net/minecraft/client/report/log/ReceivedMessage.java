@@ -27,14 +27,12 @@ import net.minecraft.util.dynamic.Codecs;
 @Environment(EnvType.CLIENT)
 public interface ReceivedMessage extends ChatLogEntry {
 	/**
-	 * {@return the received message constructed from a chat message's elements}
+	 * {@return the received message constructed from a chat message}
 	 * 
 	 * @param gameProfile the game profile of the message's sender
-	 * @param displayName the displayed name of the sender
-	 * @param message the message content
 	 */
-	static ReceivedMessage.ChatMessage of(GameProfile gameProfile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) {
-		return new ReceivedMessage.ChatMessage(gameProfile, displayName, message, trustStatus);
+	static ReceivedMessage.ChatMessage of(GameProfile gameProfile, SignedMessage message, MessageTrustStatus trustStatus) {
+		return new ReceivedMessage.ChatMessage(gameProfile, message, trustStatus);
 	}
 
 	/**
@@ -72,13 +70,12 @@ public interface ReceivedMessage extends ChatLogEntry {
 	 * A chat message received by the client.
 	 */
 	@Environment(EnvType.CLIENT)
-	public static record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage {
+	public static record ChatMessage(GameProfile profile, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage {
 		public static final Codec<ReceivedMessage.ChatMessage> CHAT_MESSAGE_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codecs.GAME_PROFILE.fieldOf("profile").forGetter(ReceivedMessage.ChatMessage::profile),
-						Codecs.TEXT.fieldOf("display_name").forGetter(ReceivedMessage.ChatMessage::displayName),
 						SignedMessage.CODEC.forGetter(ReceivedMessage.ChatMessage::message),
-						MessageTrustStatus.field_40801.optionalFieldOf("trust_level", MessageTrustStatus.SECURE).forGetter(ReceivedMessage.ChatMessage::trustStatus)
+						MessageTrustStatus.CODEC.optionalFieldOf("trust_level", MessageTrustStatus.SECURE).forGetter(ReceivedMessage.ChatMessage::trustStatus)
 					)
 					.apply(instance, ReceivedMessage.ChatMessage::new)
 		);
@@ -98,7 +95,7 @@ public interface ReceivedMessage extends ChatLogEntry {
 		public Text getNarration() {
 			Text text = this.getContent();
 			Text text2 = this.getFormattedTimestamp();
-			return Text.translatable("gui.chatSelection.message.narrate", this.displayName, text, text2);
+			return Text.translatable("gui.chatSelection.message.narrate", this.profile.getName(), text, text2);
 		}
 
 		/**
@@ -108,7 +105,7 @@ public interface ReceivedMessage extends ChatLogEntry {
 		 */
 		public Text getHeadingText() {
 			Text text = this.getFormattedTimestamp();
-			return Text.translatable("gui.chatSelection.heading", this.displayName, text);
+			return Text.translatable("gui.chatSelection.heading", this.profile.getName(), text);
 		}
 
 		/**

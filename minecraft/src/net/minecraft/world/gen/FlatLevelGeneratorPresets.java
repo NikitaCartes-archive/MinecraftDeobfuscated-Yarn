@@ -39,7 +39,7 @@ public class FlatLevelGeneratorPresets {
 	}
 
 	private static RegistryKey<FlatLevelGeneratorPreset> of(String id) {
-		return RegistryKey.of(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, new Identifier(id));
 	}
 
 	static class Registrar {
@@ -58,9 +58,9 @@ public class FlatLevelGeneratorPresets {
 			boolean hasLakes,
 			FlatChunkGeneratorLayer... layers
 		) {
-			RegistryEntryLookup<StructureSet> registryEntryLookup = this.presetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE_SET_WORLDGEN);
-			RegistryEntryLookup<PlacedFeature> registryEntryLookup2 = this.presetRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
-			RegistryEntryLookup<Biome> registryEntryLookup3 = this.presetRegisterable.getRegistryLookup(RegistryKeys.BIOME_WORLDGEN);
+			RegistryEntryLookup<StructureSet> registryEntryLookup = this.presetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE_SET);
+			RegistryEntryLookup<PlacedFeature> registryEntryLookup2 = this.presetRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
+			RegistryEntryLookup<Biome> registryEntryLookup3 = this.presetRegisterable.getRegistryLookup(RegistryKeys.BIOME);
 			RegistryEntryList.Direct<StructureSet> direct = RegistryEntryList.of(
 				(List<? extends RegistryEntry<StructureSet>>)structureSetKeys.stream().map(registryEntryLookup::getOrThrow).collect(Collectors.toList())
 			);

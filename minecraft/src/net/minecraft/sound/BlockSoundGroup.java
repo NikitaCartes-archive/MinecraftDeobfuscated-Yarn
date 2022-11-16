@@ -733,7 +733,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_HANGING_SIGN_HIT,
 		SoundEvents.BLOCK_HANGING_SIGN_FALL
 	);
-	public static final BlockSoundGroup field_41083 = new BlockSoundGroup(
+	public static final BlockSoundGroup NETHER_WOOD_HANGING_SIGN = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_NETHER_WOOD_HANGING_SIGN_BREAK,
@@ -742,7 +742,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_NETHER_WOOD_HANGING_SIGN_HIT,
 		SoundEvents.BLOCK_NETHER_WOOD_HANGING_SIGN_FALL
 	);
-	public static final BlockSoundGroup field_41084 = new BlockSoundGroup(
+	public static final BlockSoundGroup BAMBOO_WOOD_HANGING_SIGN = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_BAMBOO_WOOD_HANGING_SIGN_BREAK,
@@ -769,7 +769,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_NETHER_WOOD_HIT,
 		SoundEvents.BLOCK_NETHER_WOOD_FALL
 	);
-	public static final BlockSoundGroup field_41085 = new BlockSoundGroup(
+	public static final BlockSoundGroup CHISELED_BOOKSHELF = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_CHISELED_BOOKSHELF_BREAK,

@@ -18,7 +18,7 @@ public record StructureSet(List<StructureSet.WeightedEntry> structures, Structur
 				)
 				.apply(instance, StructureSet::new)
 	);
-	public static final Codec<RegistryEntry<StructureSet>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET_WORLDGEN, CODEC);
+	public static final Codec<RegistryEntry<StructureSet>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET, CODEC);
 
 	public StructureSet(RegistryEntry<Structure> structure, StructurePlacement placement) {
 		this(List.of(new StructureSet.WeightedEntry(structure, 1)), placement);

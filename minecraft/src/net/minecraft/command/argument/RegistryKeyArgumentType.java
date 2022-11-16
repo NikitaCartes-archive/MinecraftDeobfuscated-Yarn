@@ -68,15 +68,15 @@ public class RegistryKeyArgumentType<T> implements ArgumentType<RegistryKey<T>> 
 	}
 
 	public static RegistryEntry.Reference<ConfiguredFeature<?, ?>> getConfiguredFeatureEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.CONFIGURED_FEATURE_WORLDGEN, INVALID_FEATURE_EXCEPTION);
+		return getRegistryEntry(context, name, RegistryKeys.CONFIGURED_FEATURE, INVALID_FEATURE_EXCEPTION);
 	}
 
 	public static RegistryEntry.Reference<Structure> getStructureEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.STRUCTURE_WORLDGEN, INVALID_STRUCTURE_EXCEPTION);
+		return getRegistryEntry(context, name, RegistryKeys.STRUCTURE, INVALID_STRUCTURE_EXCEPTION);
 	}
 
 	public static RegistryEntry.Reference<StructurePool> getStructurePoolEntry(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.TEMPLATE_POOL_WORLDGEN, INVALID_JIGSAW_EXCEPTION);
+		return getRegistryEntry(context, name, RegistryKeys.TEMPLATE_POOL, INVALID_JIGSAW_EXCEPTION);
 	}
 
 	public RegistryKey<T> parse(StringReader stringReader) throws CommandSyntaxException {

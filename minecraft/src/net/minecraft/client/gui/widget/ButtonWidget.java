@@ -18,7 +18,7 @@ public class ButtonWidget extends PressableWidget {
 	protected final ButtonWidget.PressAction onPress;
 	protected final ButtonWidget.NarrationSupplier narrationSupplier;
 
-	public static ButtonWidget.Builder createBuilder(Text message, ButtonWidget.PressAction onPress) {
+	public static ButtonWidget.Builder builder(Text message, ButtonWidget.PressAction onPress) {
 		return new ButtonWidget.Builder(message, onPress);
 	}
 
@@ -60,33 +60,33 @@ public class ButtonWidget extends PressableWidget {
 			this.onPress = onPress;
 		}
 
-		public ButtonWidget.Builder setPosition(int x, int y) {
+		public ButtonWidget.Builder position(int x, int y) {
 			this.x = x;
 			this.y = y;
 			return this;
 		}
 
-		public ButtonWidget.Builder setWidth(int width) {
+		public ButtonWidget.Builder width(int width) {
 			this.width = width;
 			return this;
 		}
 
-		public ButtonWidget.Builder setSize(int width, int height) {
+		public ButtonWidget.Builder size(int width, int height) {
 			this.width = width;
 			this.height = height;
 			return this;
 		}
 
-		public ButtonWidget.Builder setPositionAndSize(int x, int y, int width, int height) {
-			return this.setPosition(x, y).setSize(width, height);
+		public ButtonWidget.Builder dimensions(int x, int y, int width, int height) {
+			return this.position(x, y).size(width, height);
 		}
 
-		public ButtonWidget.Builder setTooltip(@Nullable Tooltip tooltip) {
+		public ButtonWidget.Builder tooltip(@Nullable Tooltip tooltip) {
 			this.tooltip = tooltip;
 			return this;
 		}
 
-		public ButtonWidget.Builder setNarrationSupplier(ButtonWidget.NarrationSupplier narrationSupplier) {
+		public ButtonWidget.Builder narrationSupplier(ButtonWidget.NarrationSupplier narrationSupplier) {
 			this.narrationSupplier = narrationSupplier;
 			return this;
 		}

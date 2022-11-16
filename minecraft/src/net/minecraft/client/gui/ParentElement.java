@@ -32,18 +32,24 @@ public interface ParentElement extends Element {
 
 	@Override
 	default boolean mouseClicked(double mouseX, double mouseY, int button) {
-		for (Element element : this.children()) {
-			if (element.mouseClicked(mouseX, mouseY, button)) {
-				this.setFocused(element);
-				if (button == 0) {
-					this.setDragging(true);
-				}
+		Element element = null;
 
-				return true;
+		for (Element element2 : List.copyOf(this.children())) {
+			if (element2.mouseClicked(mouseX, mouseY, button)) {
+				element = element2;
 			}
 		}
 
-		return false;
+		if (element != null) {
+			this.setFocused(element);
+			if (button == 0) {
+				this.setDragging(true);
+			}
+
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

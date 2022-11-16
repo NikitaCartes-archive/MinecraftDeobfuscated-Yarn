@@ -134,7 +134,7 @@ public class MultiNoiseBiomeSource extends BiomeSource {
 							.fieldOf("preset")
 							.stable()
 							.forGetter(MultiNoiseBiomeSource.Instance::preset),
-						RegistryOps.getEntryLookupCodec(RegistryKeys.BIOME_WORLDGEN)
+						RegistryOps.getEntryLookupCodec(RegistryKeys.BIOME)
 					)
 					.apply(instance, instance.stable(MultiNoiseBiomeSource.Instance::new))
 		);

@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -64,31 +65,25 @@ public class MoreOptionsDialog implements Drawable {
 	private ButtonWidget importSettingsButton;
 	private GeneratorOptionsHolder generatorOptionsHolder;
 	private Optional<RegistryEntry<WorldPreset>> presetEntry;
-	private long seed;
+	private OptionalLong seed;
 
-	public MoreOptionsDialog(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey, long seed) {
+	public MoreOptionsDialog(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey, OptionalLong seed) {
 		this.generatorOptionsHolder = generatorOptionsHolder;
 		this.presetEntry = createPresetEntry(generatorOptionsHolder, presetKey);
 		this.seed = seed;
 	}
 
-	public MoreOptionsDialog(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey) {
-		this.generatorOptionsHolder = generatorOptionsHolder;
-		this.presetEntry = createPresetEntry(generatorOptionsHolder, presetKey);
-		this.seed = GeneratorOptions.getRandomSeed();
-	}
-
 	private static Optional<RegistryEntry<WorldPreset>> createPresetEntry(
 		GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> presetKey
 	) {
-		return presetKey.flatMap(key -> generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET_WORLDGEN).getEntry(key));
+		return presetKey.flatMap(key -> generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET).getEntry(key));
 	}
 
 	public void init(CreateWorldScreen parent, MinecraftClient client, TextRenderer textRenderer) {
 		this.textRenderer = textRenderer;
 		this.parentWidth = parent.width;
 		this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, Text.translatable("selectWorld.enterSeed"));
-		this.seedTextField.setText(Long.toString(this.seed));
+		this.seedTextField.setText(toString(this.seed));
 		this.seedTextField.setChangedListener(seedText -> this.seed = GeneratorOptions.parseSeed(this.seedTextField.getText()));
 		parent.addSelectableChild(this.seedTextField);
 		int i = this.parentWidth / 2 - 155;
@@ -106,7 +101,7 @@ public class MoreOptionsDialog implements Drawable {
 				)
 		);
 		this.mapFeaturesButton.visible = false;
-		Registry<WorldPreset> registry = this.generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET_WORLDGEN);
+		Registry<WorldPreset> registry = this.generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET);
 		List<RegistryEntry<WorldPreset>> list = (List<RegistryEntry<WorldPreset>>)collectPresets(registry, WorldPresetTags.NORMAL)
 			.orElseGet(() -> (List)registry.streamEntries().collect(Collectors.toUnmodifiableList()));
 		List<RegistryEntry<WorldPreset>> list2 = (List<RegistryEntry<WorldPreset>>)collectPresets(registry, WorldPresetTags.EXTENDED).orElse(list);
@@ -127,13 +122,13 @@ public class MoreOptionsDialog implements Drawable {
 		this.presetEntry.ifPresent(this.mapTypeButton::setValue);
 		this.mapTypeButton.visible = false;
 		this.unchangeableMapTypeButton = parent.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.composeGenericOptionText(Text.translatable("selectWorld.mapType"), CUSTOM_TEXT), button -> {
-			}).setPositionAndSize(j, 100, 150, 20).build()
+			ButtonWidget.builder(ScreenTexts.composeGenericOptionText(Text.translatable("selectWorld.mapType"), CUSTOM_TEXT), button -> {
+			}).dimensions(j, 100, 150, 20).build()
 		);
 		this.unchangeableMapTypeButton.active = false;
 		this.unchangeableMapTypeButton.visible = false;
 		this.customizeTypeButton = parent.addDrawableChild(
-			ButtonWidget.createBuilder(
+			ButtonWidget.builder(
 					Text.translatable("selectWorld.customizeType"),
 					button -> {
 						LevelScreenProvider levelScreenProvider = (LevelScreenProvider)LevelScreenProvider.WORLD_PRESET_TO_SCREEN_PROVIDER
@@ -143,7 +138,7 @@ public class MoreOptionsDialog implements Drawable {
 						}
 					}
 				)
-				.setPositionAndSize(j, 120, 150, 20)
+				.dimensions(j, 120, 150, 20)
 				.build()
 		);
 		this.customizeTypeButton.visible = false;
@@ -160,7 +155,7 @@ public class MoreOptionsDialog implements Drawable {
 		);
 		this.bonusItemsButton.visible = false;
 		this.importSettingsButton = parent.addDrawableChild(
-			ButtonWidget.createBuilder(
+			ButtonWidget.builder(
 					Text.translatable("selectWorld.import_worldgen_settings"),
 					button -> {
 						String string = TinyFileDialogs.tinyfd_openFileDialog(SELECT_SETTINGS_FILE_TEXT.getString(), null, null, null, false);
@@ -211,7 +206,7 @@ public class MoreOptionsDialog implements Drawable {
 						}
 					}
 				)
-				.setPositionAndSize(i, 185, 150, 20)
+				.dimensions(i, 185, 150, 20)
 				.build()
 		);
 		this.importSettingsButton.visible = false;
@@ -234,8 +229,8 @@ public class MoreOptionsDialog implements Drawable {
 		this.generatorOptionsHolder = this.generatorOptionsHolder.with(generatorOptions, dimensionsRegistryHolder);
 		this.presetEntry = createPresetEntry(this.generatorOptionsHolder, WorldPresets.getWorldPreset(dimensionsRegistryHolder.dimensions()));
 		this.setMapTypeButtonVisible(true);
-		this.seed = generatorOptions.getSeed();
-		this.seedTextField.setText(Long.toString(this.seed));
+		this.seed = OptionalLong.of(generatorOptions.getSeed());
+		this.seedTextField.setText(toString(this.seed));
 	}
 
 	public void tickSeedTextField() {
@@ -266,8 +261,12 @@ public class MoreOptionsDialog implements Drawable {
 		this.generatorOptionsHolder = generatorOptionsHolder;
 	}
 
+	private static String toString(OptionalLong seed) {
+		return seed.isPresent() ? Long.toString(seed.getAsLong()) : "";
+	}
+
 	public GeneratorOptions getGeneratorOptionsHolder(boolean debug, boolean hardcore) {
-		long l = GeneratorOptions.parseSeed(this.seedTextField.getText());
+		OptionalLong optionalLong = GeneratorOptions.parseSeed(this.seedTextField.getText());
 		GeneratorOptions generatorOptions = this.generatorOptionsHolder.generatorOptions();
 		if (debug || hardcore) {
 			generatorOptions = generatorOptions.withBonusChest(false);
@@ -277,7 +276,7 @@ public class MoreOptionsDialog implements Drawable {
 			generatorOptions = generatorOptions.withStructures(false);
 		}
 
-		return generatorOptions.withSeed(l);
+		return generatorOptions.withSeed(optionalLong);
 	}
 
 	public boolean isDebugWorld() {

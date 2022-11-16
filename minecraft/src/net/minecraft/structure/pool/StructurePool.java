@@ -38,7 +38,7 @@ public class StructurePool {
 				.apply(instance, StructurePool::new)
 	);
 	public static final Codec<RegistryEntry<StructurePool>> REGISTRY_CODEC = Util.make(
-		RegistryElementCodec.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, CODEC), FALLBACK::setValue
+		RegistryElementCodec.of(RegistryKeys.TEMPLATE_POOL, CODEC), FALLBACK::setValue
 	);
 	private final List<Pair<StructurePoolElement, Integer>> elementCounts;
 	private final ObjectArrayList<StructurePoolElement> elements;

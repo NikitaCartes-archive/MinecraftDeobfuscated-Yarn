@@ -60,7 +60,7 @@ public class PlaceCommand {
 				.then(
 					CommandManager.literal("feature")
 						.then(
-							CommandManager.argument("feature", RegistryKeyArgumentType.registryKey(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN))
+							CommandManager.argument("feature", RegistryKeyArgumentType.registryKey(RegistryKeys.CONFIGURED_FEATURE))
 								.executes(
 									context -> executePlaceFeature(
 											context.getSource(), RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"), new BlockPos(context.getSource().getPosition())
@@ -79,7 +79,7 @@ public class PlaceCommand {
 				.then(
 					CommandManager.literal("jigsaw")
 						.then(
-							CommandManager.argument("pool", RegistryKeyArgumentType.registryKey(RegistryKeys.TEMPLATE_POOL_WORLDGEN))
+							CommandManager.argument("pool", RegistryKeyArgumentType.registryKey(RegistryKeys.TEMPLATE_POOL))
 								.then(
 									CommandManager.argument("target", IdentifierArgumentType.identifier())
 										.then(
@@ -112,7 +112,7 @@ public class PlaceCommand {
 				.then(
 					CommandManager.literal("structure")
 						.then(
-							CommandManager.argument("structure", RegistryKeyArgumentType.registryKey(RegistryKeys.STRUCTURE_WORLDGEN))
+							CommandManager.argument("structure", RegistryKeyArgumentType.registryKey(RegistryKeys.STRUCTURE))
 								.executes(
 									context -> executePlaceStructure(
 											context.getSource(), RegistryKeyArgumentType.getStructureEntry(context, "structure"), new BlockPos(context.getSource().getPosition())

@@ -80,24 +80,22 @@ public class StatsScreen extends Screen implements StatsListener {
 
 	public void createButtons() {
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("stat.generalButton"), button -> this.selectStatList(this.generalStats))
-				.setPositionAndSize(this.width / 2 - 120, this.height - 52, 80, 20)
+			ButtonWidget.builder(Text.translatable("stat.generalButton"), button -> this.selectStatList(this.generalStats))
+				.dimensions(this.width / 2 - 120, this.height - 52, 80, 20)
 				.build()
 		);
 		ButtonWidget buttonWidget = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("stat.itemsButton"), button -> this.selectStatList(this.itemStats))
-				.setPositionAndSize(this.width / 2 - 40, this.height - 52, 80, 20)
+			ButtonWidget.builder(Text.translatable("stat.itemsButton"), button -> this.selectStatList(this.itemStats))
+				.dimensions(this.width / 2 - 40, this.height - 52, 80, 20)
 				.build()
 		);
 		ButtonWidget buttonWidget2 = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("stat.mobsButton"), button -> this.selectStatList(this.mobStats))
-				.setPositionAndSize(this.width / 2 + 40, this.height - 52, 80, 20)
+			ButtonWidget.builder(Text.translatable("stat.mobsButton"), button -> this.selectStatList(this.mobStats))
+				.dimensions(this.width / 2 + 40, this.height - 52, 80, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 100, this.height - 28, 200, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, this.height - 28, 200, 20).build()
 		);
 		if (this.itemStats.children().isEmpty()) {
 			buttonWidget.active = false;

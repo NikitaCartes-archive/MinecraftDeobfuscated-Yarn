@@ -100,7 +100,7 @@ public record MessageType(Decoration chat, Decoration narration) {
 	public static final RegistryKey<MessageType> EMOTE_COMMAND = register("emote_command");
 
 	private static RegistryKey<MessageType> register(String id) {
-		return RegistryKey.of(RegistryKeys.CHAT_TYPE, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.MESSAGE_TYPE, new Identifier(id));
 	}
 
 	public static void bootstrap(Registerable<MessageType> messageTypeRegisterable) {
@@ -130,7 +130,7 @@ public record MessageType(Decoration chat, Decoration narration) {
 	}
 
 	public static MessageType.Parameters params(RegistryKey<MessageType> typeKey, DynamicRegistryManager registryManager, Text name) {
-		Registry<MessageType> registry = registryManager.get(RegistryKeys.CHAT_TYPE);
+		Registry<MessageType> registry = registryManager.get(RegistryKeys.MESSAGE_TYPE);
 		return registry.getOrThrow(typeKey).params(name);
 	}
 
@@ -169,7 +169,7 @@ public record MessageType(Decoration chat, Decoration narration) {
 		 * {@return a serialized version of this instance used in packets}
 		 */
 		public MessageType.Serialized toSerialized(DynamicRegistryManager registryManager) {
-			Registry<MessageType> registry = registryManager.get(RegistryKeys.CHAT_TYPE);
+			Registry<MessageType> registry = registryManager.get(RegistryKeys.MESSAGE_TYPE);
 			return new MessageType.Serialized(registry.getRawId(this.type), this.name, this.targetName);
 		}
 	}
@@ -193,7 +193,7 @@ public record MessageType(Decoration chat, Decoration narration) {
 		 * {@link #typeId} is unknown to the client}
 		 */
 		public Optional<MessageType.Parameters> toParameters(DynamicRegistryManager registryManager) {
-			Registry<MessageType> registry = registryManager.get(RegistryKeys.CHAT_TYPE);
+			Registry<MessageType> registry = registryManager.get(RegistryKeys.MESSAGE_TYPE);
 			MessageType messageType = registry.get(this.typeId);
 			return Optional.ofNullable(messageType).map(type -> new MessageType.Parameters(type, this.name, this.targetName));
 		}

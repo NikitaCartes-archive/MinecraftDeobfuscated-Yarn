@@ -78,7 +78,7 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.ProfileKeys;
-import net.minecraft.client.util.TelemetrySender;
+import net.minecraft.client.util.telemetry.WorldSession;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandRegistryAccess;
@@ -343,7 +343,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	private Set<RegistryKey<World>> worldKeys;
 	private CombinedDynamicRegistries<ClientDynamicRegistryType> combinedDynamicRegistries = ClientDynamicRegistryType.createCombinedDynamicRegistries();
 	private FeatureSet enabledFeatures = FeatureFlags.DEFAULT_ENABLED_FEATURES;
-	private final TelemetrySender telemetrySender;
+	private final WorldSession worldSession;
 	@Nullable
 	private ClientPlayerSession session;
 	private MessageChain.Packer messagePacker = MessageChain.Packer.NONE;
@@ -351,7 +351,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	private MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
 
 	public ClientPlayNetworkHandler(
-		MinecraftClient client, Screen screen, ClientConnection connection, @Nullable ServerInfo serverInfo, GameProfile profile, TelemetrySender telemetrySender
+		MinecraftClient client, Screen screen, ClientConnection connection, @Nullable ServerInfo serverInfo, GameProfile profile, WorldSession worldSession
 	) {
 		this.client = client;
 		this.loginScreen = screen;
@@ -360,7 +360,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		this.profile = profile;
 		this.advancementHandler = new ClientAdvancementManager(client);
 		this.commandSource = new ClientCommandSource(this, client);
-		this.telemetrySender = telemetrySender;
+		this.worldSession = worldSession;
 	}
 
 	public ClientCommandSource getCommandSource() {
@@ -369,6 +369,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 
 	public void clearWorld() {
 		this.world = null;
+		this.worldSession.onUnload();
 	}
 
 	public RecipeManager getRecipeManager() {
@@ -439,14 +440,11 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		this.lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
 		this.signatureStorage = MessageSignatureStorage.create();
 		if (this.connection.isEncrypted()) {
-			this.client
-				.getProfileKeys()
-				.fetchKeyPair()
-				.thenAcceptAsync(keyPair -> keyPair.ifPresent(keys -> this.setSession(ClientPlayerSession.create(keys))), this.client);
+			this.client.getProfileKeys().fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), this.client);
 		}
 
 		this.client.getGame().onStartGameSession();
-		this.telemetrySender.setGameModeAndSend(packet.gameMode(), packet.hardcore());
+		this.worldSession.setGameMode(packet.gameMode(), packet.hardcore());
 	}
 
 	@Override
@@ -760,7 +758,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	@Override
 	public void onDisconnected(Text reason) {
 		this.client.disconnect();
-		this.telemetrySender.send();
+		this.worldSession.onUnload();
 		if (this.loginScreen != null) {
 			if (this.loginScreen instanceof RealmsScreen) {
 				this.client.setScreen(new DisconnectedRealmsScreen(this.loginScreen, DISCONNECT_LOST_TEXT, reason));
@@ -924,6 +922,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.world.setTime(packet.getTime());
 		this.client.world.setTimeOfDay(packet.getTimeOfDay());
+		this.worldSession.setTick(packet.getTime());
 	}
 
 	@Override
@@ -1323,7 +1322,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		MapState mapState = this.client.world.getMapState(string);
 		if (mapState == null) {
 			mapState = MapState.of(packet.getScale(), packet.isLocked(), this.client.world.getRegistryKey());
-			this.client.world.method_47437(string, mapState);
+			this.client.world.putClientsideMapState(string, mapState);
 		}
 
 		packet.apply(mapState);
@@ -1475,7 +1474,6 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 					null,
 					Optional.ofNullable(packet.getFactorCalculationData())
 				);
-				statusEffectInstance.setPermanent(packet.isPermanent());
 				((LivingEntity)entity).setStatusEffect(statusEffectInstance, null);
 			}
 		}
@@ -1954,7 +1952,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			if (CustomPayloadS2CPacket.BRAND.equals(identifier)) {
 				String string = packetByteBuf.readString();
 				this.client.player.setServerBrand(string);
-				this.telemetrySender.setServerBrandAndSend(string);
+				this.worldSession.setBrand(string);
 			} else if (CustomPayloadS2CPacket.DEBUG_PATH.equals(identifier)) {
 				int i = packetByteBuf.readInt();
 				float f = packetByteBuf.readFloat();
@@ -2546,18 +2544,16 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 				profileKeys.fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), this.client);
 			}
 		}
+
+		this.worldSession.tick();
 	}
 
-	private void updateKeyPair(PlayerKeyPair keyPair) {
+	public void updateKeyPair(PlayerKeyPair keyPair) {
 		if (this.session == null || !this.session.keyPair().equals(keyPair)) {
-			this.setSession(ClientPlayerSession.create(keyPair));
+			this.session = ClientPlayerSession.create(keyPair);
+			this.messagePacker = this.session.createPacker(this.profile.getId());
+			this.sendPacket(new PlayerSessionC2SPacket(this.session.toPublicSession().toSerialized()));
 		}
-	}
-
-	private void setSession(ClientPlayerSession session) {
-		this.session = session;
-		this.messagePacker = session.createPacker(this.profile.getId());
-		this.sendPacket(new PlayerSessionC2SPacket(session.toPublicSession().toSerialized()));
 	}
 
 	@Nullable

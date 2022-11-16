@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -13,7 +12,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
@@ -21,11 +19,11 @@ import net.minecraft.util.Identifier;
 public class SpriteAtlasManager implements AutoCloseable {
 	private final Map<Identifier, SpriteAtlasManager.Atlas> atlases;
 
-	public SpriteAtlasManager(Map<Identifier, SpriteAtlasManager.SpriteResourceLoader> loaders, TextureManager textureManager) {
+	public SpriteAtlasManager(Map<Identifier, Identifier> loaders, TextureManager textureManager) {
 		this.atlases = (Map<Identifier, SpriteAtlasManager.Atlas>)loaders.entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> {
 			SpriteAtlasTexture spriteAtlasTexture = new SpriteAtlasTexture((Identifier)entry.getKey());
 			textureManager.registerTexture((Identifier)entry.getKey(), spriteAtlasTexture);
-			return new SpriteAtlasManager.Atlas(spriteAtlasTexture, (SpriteAtlasManager.SpriteResourceLoader)entry.getValue());
+			return new SpriteAtlasManager.Atlas(spriteAtlasTexture, (Identifier)entry.getValue());
 		}));
 	}
 
@@ -47,8 +45,8 @@ public class SpriteAtlasManager implements AutoCloseable {
 					Entry::getKey,
 					entry -> {
 						SpriteAtlasManager.Atlas atlas = (SpriteAtlasManager.Atlas)entry.getValue();
-						return CompletableFuture.supplyAsync(() -> (Map)atlas.loader.apply(resourceManager), executor)
-							.thenCompose(sprites -> SpriteLoader.fromAtlas(atlas.atlas).stitch(sprites, mipmapLevels, executor))
+						return SpriteLoader.fromAtlas(atlas.atlas)
+							.method_47661(resourceManager, atlas.atlasInfoLocation, mipmapLevels, executor)
 							.thenApply(stitchResult -> new SpriteAtlasManager.AtlasPreparation(atlas.atlas, stitchResult));
 					}
 				)
@@ -56,7 +54,7 @@ public class SpriteAtlasManager implements AutoCloseable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record Atlas(SpriteAtlasTexture atlas, SpriteAtlasManager.SpriteResourceLoader loader) implements AutoCloseable {
+	static record Atlas(SpriteAtlasTexture atlas, Identifier atlasInfoLocation) implements AutoCloseable {
 
 		public void close() {
 			this.atlas.clear();
@@ -89,10 +87,5 @@ public class SpriteAtlasManager implements AutoCloseable {
 		public void upload() {
 			this.atlasTexture.upload(this.stitchResult);
 		}
-	}
-
-	@FunctionalInterface
-	@Environment(EnvType.CLIENT)
-	public interface SpriteResourceLoader extends Function<ResourceManager, Map<Identifier, Resource>> {
 	}
 }

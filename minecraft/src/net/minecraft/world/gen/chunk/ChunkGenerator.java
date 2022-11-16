@@ -337,7 +337,7 @@ public abstract class ChunkGenerator {
 		if (!SharedConstants.isOutsideGenerationArea(chunkPos)) {
 			ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, world.getBottomSectionCoord());
 			BlockPos blockPos = chunkSectionPos.getMinPos();
-			Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
+			Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
 			Map<Integer, List<Structure>> map = (Map<Integer, List<Structure>>)registry.stream()
 				.collect(Collectors.groupingBy(structureType -> structureType.getFeatureGenerationStep().ordinal()));
 			List<PlacedFeatureIndexer.IndexedFeatures> list = (List<PlacedFeatureIndexer.IndexedFeatures>)this.indexedFeaturesListSupplier.get();
@@ -355,7 +355,7 @@ public abstract class ChunkGenerator {
 			int i = list.size();
 
 			try {
-				Registry<PlacedFeature> registry2 = world.getRegistryManager().get(RegistryKeys.PLACED_FEATURE_WORLDGEN);
+				Registry<PlacedFeature> registry2 = world.getRegistryManager().get(RegistryKeys.PLACED_FEATURE);
 				int j = Math.max(GenerationStep.Feature.values().length, i);
 
 				for (int k = 0; k < j; k++) {
@@ -619,7 +619,7 @@ public abstract class ChunkGenerator {
 					} catch (Exception var21) {
 						CrashReport crashReport = CrashReport.create(var21, "Generating structure reference");
 						CrashReportSection crashReportSection = crashReport.addElement("Structure");
-						Optional<? extends Registry<Structure>> optional = world.getRegistryManager().getOptional(RegistryKeys.STRUCTURE_WORLDGEN);
+						Optional<? extends Registry<Structure>> optional = world.getRegistryManager().getOptional(RegistryKeys.STRUCTURE);
 						crashReportSection.add(
 							"Id",
 							(CrashCallable<String>)(() -> (String)optional.map(structureTypeRegistry -> structureTypeRegistry.getId(structureStart.getStructure()).toString())

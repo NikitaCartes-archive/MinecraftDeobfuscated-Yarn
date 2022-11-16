@@ -30,16 +30,16 @@ public class KeybindsScreen extends GameOptionsScreen {
 	protected void init() {
 		this.controlsList = new ControlsListWidget(this, this.client);
 		this.addSelectableChild(this.controlsList);
-		this.resetAllButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("controls.resetAll"), button -> {
+		this.resetAllButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("controls.resetAll"), button -> {
 			for (KeyBinding keyBinding : this.gameOptions.allKeys) {
 				keyBinding.setBoundKey(keyBinding.getDefaultKey());
 			}
 
 			KeyBinding.updateKeysByCode();
-		}).setPositionAndSize(this.width / 2 - 155, this.height - 29, 150, 20).build());
+		}).dimensions(this.width / 2 - 155, this.height - 29, 150, 20).build());
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 155 + 160, this.height - 29, 150, 20)
+			ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
+				.dimensions(this.width / 2 - 155 + 160, this.height - 29, 150, 20)
 				.build()
 		);
 	}

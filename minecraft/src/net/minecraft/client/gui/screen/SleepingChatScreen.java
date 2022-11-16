@@ -18,8 +18,8 @@ public class SleepingChatScreen extends ChatScreen {
 	protected void init() {
 		super.init();
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("multiplayer.stopSleeping"), button -> this.stopSleeping())
-				.setPositionAndSize(this.width / 2 - 100, this.height - 40, 200, 20)
+			ButtonWidget.builder(Text.translatable("multiplayer.stopSleeping"), button -> this.stopSleeping())
+				.dimensions(this.width / 2 - 100, this.height - 40, 200, 20)
 				.build()
 		);
 	}

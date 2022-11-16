@@ -34,9 +34,9 @@ public interface LevelScreenProvider {
 		(LevelScreenProvider)(parent, generatorOptionsHolder) -> {
 			ChunkGenerator chunkGenerator = generatorOptionsHolder.selectedDimensions().getChunkGenerator();
 			DynamicRegistryManager dynamicRegistryManager = generatorOptionsHolder.getCombinedRegistryManager();
-			RegistryEntryLookup<Biome> registryEntryLookup = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN);
-			RegistryEntryLookup<StructureSet> registryEntryLookup2 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET_WORLDGEN);
-			RegistryEntryLookup<PlacedFeature> registryEntryLookup3 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE_WORLDGEN);
+			RegistryEntryLookup<Biome> registryEntryLookup = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME);
+			RegistryEntryLookup<StructureSet> registryEntryLookup2 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET);
+			RegistryEntryLookup<PlacedFeature> registryEntryLookup3 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE);
 			return new CustomizeFlatLevelScreen(
 				parent,
 				config -> parent.moreOptionsDialog.apply(createModifier(config)),
@@ -62,7 +62,7 @@ public interface LevelScreenProvider {
 
 	private static GeneratorOptionsHolder.RegistryAwareModifier createModifier(RegistryEntry<Biome> biomeEntry) {
 		return (dynamicRegistryManager, dimensionsRegistryHolder) -> {
-			Registry<ChunkGeneratorSettings> registry = dynamicRegistryManager.get(RegistryKeys.NOISE_SETTINGS_WORLDGEN);
+			Registry<ChunkGeneratorSettings> registry = dynamicRegistryManager.get(RegistryKeys.CHUNK_GENERATOR_SETTINGS);
 			RegistryEntry<ChunkGeneratorSettings> registryEntry2 = registry.entryOf(ChunkGeneratorSettings.OVERWORLD);
 			BiomeSource biomeSource = new FixedBiomeSource(biomeEntry);
 			ChunkGenerator chunkGenerator = new NoiseChunkGenerator(biomeSource, registryEntry2);

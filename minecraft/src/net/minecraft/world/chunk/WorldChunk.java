@@ -100,7 +100,7 @@ public class WorldChunk extends Chunk {
 		@Nullable WorldChunk.EntityLoader entityLoader,
 		@Nullable BlendingData blendingData
 	) {
-		super(pos, upgradeData, world, world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN), inhabitedTime, sectionArrayInitializer, blendingData);
+		super(pos, upgradeData, world, world.getRegistryManager().get(RegistryKeys.BIOME), inhabitedTime, sectionArrayInitializer, blendingData);
 		this.world = world;
 		this.gameEventDispatchers = new Int2ObjectOpenHashMap<>();
 

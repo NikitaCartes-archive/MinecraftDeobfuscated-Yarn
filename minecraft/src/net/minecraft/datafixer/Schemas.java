@@ -403,7 +403,7 @@ public class Schemas {
 			)
 		);
 		builder.addFixer(new ChoiceTypesFix(schema43, "RemoveNoteBlockFlowerPotFix", TypeReferences.BLOCK_ENTITY));
-		builder.addFixer(new ItemInstanceSpawnEggFix(schema43, false));
+		builder.addFixer(new ItemInstanceSpawnEggFix(schema43, false, "minecraft:spawn_egg"));
 		builder.addFixer(new EntityWolfColorFix(schema43, false));
 		builder.addFixer(new BlockEntityBannerColorFix(schema43, false));
 		builder.addFixer(new LevelFlatGeneratorInfoFix(schema43, false));
@@ -1022,6 +1022,8 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema173, "Added Camel", TypeReferences.ENTITY));
 		Schema schema174 = builder.addSchema(3204, Schema3204::new);
 		builder.addFixer(new ChoiceTypesFix(schema174, "Added Chiseled Bookshelf", TypeReferences.BLOCK_ENTITY));
+		Schema schema175 = builder.addSchema(3209, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ItemInstanceSpawnEggFix(schema175, false, "minecraft:pig_spawn_egg"));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

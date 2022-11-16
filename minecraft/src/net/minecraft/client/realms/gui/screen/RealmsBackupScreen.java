@@ -61,7 +61,6 @@ public class RealmsBackupScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		this.backupObjectSelectionList = new RealmsBackupScreen.BackupObjectSelectionList();
 		if (lastScrollPosition != -1) {
 			this.backupObjectSelectionList.setScrollAmount((double)lastScrollPosition);
@@ -90,23 +89,21 @@ public class RealmsBackupScreen extends RealmsScreen {
 			}
 		}).start();
 		this.downloadButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.backup.button.download"), button -> this.downloadClicked())
-				.setPositionAndSize(this.width - 135, row(1), 120, 20)
+			ButtonWidget.builder(Text.translatable("mco.backup.button.download"), button -> this.downloadClicked())
+				.dimensions(this.width - 135, row(1), 120, 20)
 				.build()
 		);
 		this.restoreButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.backup.button.restore"), button -> this.restoreClicked(this.selectedBackup))
-				.setPositionAndSize(this.width - 135, row(3), 120, 20)
+			ButtonWidget.builder(Text.translatable("mco.backup.button.restore"), button -> this.restoreClicked(this.selectedBackup))
+				.dimensions(this.width - 135, row(3), 120, 20)
 				.build()
 		);
-		this.changesButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.backup.changes.tooltip"), button -> {
+		this.changesButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.backup.changes.tooltip"), button -> {
 			this.client.setScreen(new RealmsBackupInfoScreen(this, (Backup)this.backups.get(this.selectedBackup)));
 			this.selectedBackup = -1;
-		}).setPositionAndSize(this.width - 135, row(5), 120, 20).build());
+		}).dimensions(this.width - 135, row(5), 120, 20).build());
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width - 100, this.height - 35, 85, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width - 100, this.height - 35, 85, 20).build()
 		);
 		this.addSelectableChild(this.backupObjectSelectionList);
 		this.focusOn(this.backupObjectSelectionList);

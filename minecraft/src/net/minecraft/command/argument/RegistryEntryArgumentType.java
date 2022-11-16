@@ -70,11 +70,11 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry.
 	}
 
 	public static RegistryEntry.Reference<ConfiguredFeature<?, ?>> getConfiguredFeature(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
+		return getRegistryEntry(context, name, RegistryKeys.CONFIGURED_FEATURE);
 	}
 
 	public static RegistryEntry.Reference<Structure> getStructure(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		return getRegistryEntry(context, name, RegistryKeys.STRUCTURE_WORLDGEN);
+		return getRegistryEntry(context, name, RegistryKeys.STRUCTURE);
 	}
 
 	public static RegistryEntry.Reference<EntityType<?>> getEntityType(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {

@@ -51,10 +51,8 @@ public class ConfirmScreen extends Screen {
 	}
 
 	protected void addButtons(int y) {
-		this.addButton(ButtonWidget.createBuilder(this.yesText, button -> this.callback.accept(true)).setPositionAndSize(this.width / 2 - 155, y, 150, 20).build());
-		this.addButton(
-			ButtonWidget.createBuilder(this.noText, button -> this.callback.accept(false)).setPositionAndSize(this.width / 2 - 155 + 160, y, 150, 20).build()
-		);
+		this.addButton(ButtonWidget.builder(this.yesText, button -> this.callback.accept(true)).dimensions(this.width / 2 - 155, y, 150, 20).build());
+		this.addButton(ButtonWidget.builder(this.noText, button -> this.callback.accept(false)).dimensions(this.width / 2 - 155 + 160, y, 150, 20).build());
 	}
 
 	protected void addButton(ButtonWidget button) {

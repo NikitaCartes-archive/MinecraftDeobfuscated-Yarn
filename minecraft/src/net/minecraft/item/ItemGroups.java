@@ -951,6 +951,7 @@ public class ItemGroups {
 			entries.add(Items.PLAYER_HEAD);
 			entries.add(Items.ZOMBIE_HEAD);
 			entries.add(Items.CREEPER_HEAD);
+			entries.add(Items.PIGLIN_HEAD);
 			entries.add(Items.DRAGON_HEAD);
 			entries.add(Items.DRAGON_EGG);
 			entries.add(Items.END_PORTAL_FRAME);
@@ -970,63 +971,62 @@ public class ItemGroups {
 		.entries((enabledFeatures, entries, operatorEnabled) -> {
 			entries.add(Items.REDSTONE);
 			entries.add(Items.REDSTONE_TORCH);
+			entries.add(Items.REDSTONE_BLOCK);
 			entries.add(Items.REPEATER);
 			entries.add(Items.COMPARATOR);
-			entries.add(Items.REDSTONE_BLOCK);
-			entries.add(Items.PISTON);
-			entries.add(Items.STICKY_PISTON);
-			entries.add(Items.SLIME_BLOCK);
-			entries.add(Items.HONEY_BLOCK);
-			entries.add(Items.OBSERVER);
-			entries.add(Items.HOPPER);
-			entries.add(Items.DISPENSER);
-			entries.add(Items.DROPPER);
-			entries.add(Items.CHEST);
-			entries.add(Items.BARREL);
-			entries.add(Items.CHISELED_BOOKSHELF);
-			entries.add(Items.ARMOR_STAND);
-			entries.add(Items.CAULDRON);
-			entries.add(Items.FURNACE);
-			entries.add(Items.RAIL);
-			entries.add(Items.POWERED_RAIL);
-			entries.add(Items.DETECTOR_RAIL);
-			entries.add(Items.ACTIVATOR_RAIL);
-			entries.add(Items.MINECART);
-			entries.add(Items.CHEST_MINECART);
-			entries.add(Items.FURNACE_MINECART);
-			entries.add(Items.TNT_MINECART);
-			entries.add(Items.HOPPER_MINECART);
-			entries.add(Items.OAK_CHEST_BOAT);
-			entries.add(Items.BAMBOO_CHEST_RAFT);
+			entries.add(Items.TARGET);
+			entries.add(Items.LEVER);
 			entries.add(Items.OAK_BUTTON);
 			entries.add(Items.STONE_BUTTON);
 			entries.add(Items.OAK_PRESSURE_PLATE);
 			entries.add(Items.STONE_PRESSURE_PLATE);
 			entries.add(Items.LIGHT_WEIGHTED_PRESSURE_PLATE);
 			entries.add(Items.HEAVY_WEIGHTED_PRESSURE_PLATE);
-			entries.add(Items.OAK_DOOR);
-			entries.add(Items.OAK_TRAPDOOR);
-			entries.add(Items.OAK_FENCE_GATE);
-			entries.add(Items.IRON_DOOR);
-			entries.add(Items.IRON_TRAPDOOR);
-			entries.add(Items.COMPOSTER);
-			entries.add(Items.LECTERN);
-			entries.add(Items.NOTE_BLOCK);
-			entries.add(Items.TARGET);
-			entries.add(Items.LEVER);
-			entries.add(Items.LIGHTNING_ROD);
-			entries.add(Items.DAYLIGHT_DETECTOR);
 			entries.add(Items.SCULK_SENSOR);
 			entries.add(Items.WHITE_WOOL);
 			entries.add(Items.TRIPWIRE_HOOK);
 			entries.add(Items.STRING);
+			entries.add(Items.LECTERN);
+			entries.add(Items.DAYLIGHT_DETECTOR);
+			entries.add(Items.LIGHTNING_ROD);
+			entries.add(Items.PISTON);
+			entries.add(Items.STICKY_PISTON);
+			entries.add(Items.SLIME_BLOCK);
+			entries.add(Items.HONEY_BLOCK);
+			entries.add(Items.DISPENSER);
+			entries.add(Items.DROPPER);
+			entries.add(Items.HOPPER);
+			entries.add(Items.CHEST);
+			entries.add(Items.BARREL);
+			entries.add(Items.CHISELED_BOOKSHELF);
+			entries.add(Items.FURNACE);
 			entries.add(Items.TRAPPED_CHEST);
+			entries.add(Items.OBSERVER);
+			entries.add(Items.NOTE_BLOCK);
+			entries.add(Items.COMPOSTER);
+			entries.add(Items.CAULDRON);
+			entries.add(Items.RAIL);
+			entries.add(Items.POWERED_RAIL);
+			entries.add(Items.DETECTOR_RAIL);
+			entries.add(Items.ACTIVATOR_RAIL);
+			entries.add(Items.MINECART);
+			entries.add(Items.HOPPER_MINECART);
+			entries.add(Items.CHEST_MINECART);
+			entries.add(Items.FURNACE_MINECART);
+			entries.add(Items.TNT_MINECART);
+			entries.add(Items.OAK_CHEST_BOAT);
+			entries.add(Items.BAMBOO_CHEST_RAFT);
+			entries.add(Items.OAK_DOOR);
+			entries.add(Items.IRON_DOOR);
+			entries.add(Items.OAK_FENCE_GATE);
+			entries.add(Items.OAK_TRAPDOOR);
+			entries.add(Items.IRON_TRAPDOOR);
 			entries.add(Items.TNT);
 			entries.add(Items.REDSTONE_LAMP);
-			entries.add(Items.BIG_DRIPLEAF);
 			entries.add(Items.BELL);
+			entries.add(Items.BIG_DRIPLEAF);
+			entries.add(Items.ARMOR_STAND);
 			entries.add(Items.REDSTONE_ORE);
-			entries.add(Items.DEEPSLATE_REDSTONE_ORE);
 		})
 		.build();
 	private static final ItemGroup HOTBAR = ItemGroup.create(ItemGroup.Row.TOP, 5)
@@ -1039,7 +1039,7 @@ public class ItemGroups {
 		.displayName(Text.translatable("itemGroup.search"))
 		.icon(() -> new ItemStack(Items.COMPASS))
 		.entries((enabledFeatures, entries, operatorEnabled) -> {
-			Set<ItemStack> set = new ItemStackSet();
+			Set<ItemStack> set = ItemStackSet.create();
 
 			for (ItemGroup itemGroup : ItemGroups.GROUPS) {
 				if (itemGroup.getType() != ItemGroup.Type.SEARCH) {
@@ -1132,11 +1132,15 @@ public class ItemGroups {
 			entries.add(Items.MANGROVE_CHEST_BOAT);
 			entries.add(Items.BAMBOO_RAFT);
 			entries.add(Items.BAMBOO_CHEST_RAFT);
+			entries.add(Items.RAIL);
+			entries.add(Items.POWERED_RAIL);
+			entries.add(Items.DETECTOR_RAIL);
+			entries.add(Items.ACTIVATOR_RAIL);
 			entries.add(Items.MINECART);
+			entries.add(Items.HOPPER_MINECART);
 			entries.add(Items.CHEST_MINECART);
 			entries.add(Items.FURNACE_MINECART);
 			entries.add(Items.TNT_MINECART);
-			entries.add(Items.HOPPER_MINECART);
 			addInstruments(entries, Items.GOAT_HORN, InstrumentTags.GOAT_HORNS, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
 			entries.add(Items.MUSIC_DISC_13);
 			entries.add(Items.MUSIC_DISC_CAT);
@@ -1540,15 +1544,15 @@ public class ItemGroups {
 
 	private static void addSuspiciousStews(ItemGroup.Entries entries, ItemGroup.StackVisibility visibility) {
 		List<SuspiciousStewIngredient> list = SuspiciousStewIngredient.getAll();
-		ItemStackSet itemStackSet = new ItemStackSet();
+		Set<ItemStack> set = ItemStackSet.create();
 
 		for (SuspiciousStewIngredient suspiciousStewIngredient : list) {
 			ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW);
 			SuspiciousStewItem.addEffectToStew(itemStack, suspiciousStewIngredient.getEffectInStew(), suspiciousStewIngredient.getEffectInStewDuration());
-			itemStackSet.add(itemStack);
+			set.add(itemStack);
 		}
 
-		entries.addAll(itemStackSet, visibility);
+		entries.addAll(set, visibility);
 	}
 
 	private static void addFireworkRockets(ItemGroup.Entries entries, ItemGroup.StackVisibility visibility) {

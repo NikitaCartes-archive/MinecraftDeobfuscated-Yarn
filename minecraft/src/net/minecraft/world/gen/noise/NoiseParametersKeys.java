@@ -71,7 +71,7 @@ public class NoiseParametersKeys {
 	public static final RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> NETHER_STATE_SELECTOR = of("nether_state_selector");
 
 	private static RegistryKey<DoublePerlinNoiseSampler.NoiseParameters> of(String id) {
-		return RegistryKey.of(RegistryKeys.NOISE_WORLDGEN, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.NOISE_PARAMETERS, new Identifier(id));
 	}
 
 	public static DoublePerlinNoiseSampler createNoiseSampler(

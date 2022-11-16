@@ -58,15 +58,13 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		this.left_x = this.width / 2 - 150;
 		this.right_x = this.width / 2 + 190;
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.backButtonClicked()).setPositionAndSize(this.right_x - 80 + 8, row(13) - 5, 70, 20).build()
+			ButtonWidget.builder(ScreenTexts.BACK, button -> this.backButtonClicked()).dimensions(this.right_x - 80 + 8, row(13) - 5, 70, 20).build()
 		);
 		if (this.serverData == null) {
 			this.fetchServerData(this.serverId);
 		} else {
 			this.addButtons();
 		}
-
-		this.client.keyboard.setRepeatEvents(true);
 	}
 
 	@Override
@@ -80,7 +78,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			boolean bl = i != this.serverData.activeSlot || this.serverData.worldType == RealmsServer.WorldType.MINIGAME;
 			ButtonWidget buttonWidget;
 			if (bl) {
-				buttonWidget = ButtonWidget.createBuilder(
+				buttonWidget = ButtonWidget.builder(
 						Text.translatable("mco.brokenworld.play"),
 						button -> {
 							if (((RealmsWorldOptions)this.serverData.slots.get(i)).empty) {
@@ -105,10 +103,10 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 							}
 						}
 					)
-					.setPositionAndSize(this.getFramePositionX(i), row(8), 80, 20)
+					.dimensions(this.getFramePositionX(i), row(8), 80, 20)
 					.build();
 			} else {
-				buttonWidget = ButtonWidget.createBuilder(Text.translatable("mco.brokenworld.download"), button -> {
+				buttonWidget = ButtonWidget.builder(Text.translatable("mco.brokenworld.download"), button -> {
 					Text text = Text.translatable("mco.configure.world.restore.download.question.line1");
 					Text text2 = Text.translatable("mco.configure.world.restore.download.question.line2");
 					this.client.setScreen(new RealmsLongConfirmationScreen(confirmed -> {
@@ -118,7 +116,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 							this.client.setScreen(this);
 						}
 					}, RealmsLongConfirmationScreen.Type.INFO, text, text2, true));
-				}).setPositionAndSize(this.getFramePositionX(i), row(8), 80, 20).build();
+				}).dimensions(this.getFramePositionX(i), row(8), 80, 20).build();
 			}
 
 			if (this.slotsThatHasBeenDownloaded.contains(i)) {
@@ -127,7 +125,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			}
 
 			this.addDrawableChild(buttonWidget);
-			this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.brokenworld.reset"), button -> {
+			this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.brokenworld.reset"), button -> {
 				RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(this, this.serverData, this::play, () -> {
 					this.client.setScreen(this);
 					this.play();
@@ -137,7 +135,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				}
 
 				this.client.setScreen(realmsResetWorldScreen);
-			}).setPositionAndSize(this.getFramePositionX(i), row(10), 80, 20).build());
+			}).dimensions(this.getFramePositionX(i), row(10), 80, 20).build());
 		}
 	}
 
@@ -193,11 +191,6 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 
 	private int getFramePositionX(int i) {
 		return this.left_x + (i - 1) * 110;
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

@@ -204,7 +204,6 @@ public class RealmsMainScreen extends RealmsScreen {
 				this.client.setConnectedToRealms(false);
 			}
 
-			this.client.keyboard.setRepeatEvents(true);
 			this.showingPopup = false;
 			this.addButtons();
 			this.realmSelectionList = new RealmsMainScreen.RealmSelectionList();
@@ -235,47 +234,47 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	public void addButtons() {
 		this.leaveButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer()))
-				.setPositionAndSize(this.width / 2 - 190, this.height - 32, 90, 20)
+			ButtonWidget.builder(Text.translatable("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer()))
+				.dimensions(this.width / 2 - 190, this.height - 32, 90, 20)
 				.build()
 		);
 		this.configureButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.selectServer.configure"), button -> this.configureClicked(this.findServer()))
-				.setPositionAndSize(this.width / 2 - 190, this.height - 32, 90, 20)
+			ButtonWidget.builder(Text.translatable("mco.selectServer.configure"), button -> this.configureClicked(this.findServer()))
+				.dimensions(this.width / 2 - 190, this.height - 32, 90, 20)
 				.build()
 		);
 		this.playButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.selectServer.play"), button -> this.play(this.findServer(), this))
-				.setPositionAndSize(this.width / 2 - 93, this.height - 32, 90, 20)
+			ButtonWidget.builder(Text.translatable("mco.selectServer.play"), button -> this.play(this.findServer(), this))
+				.dimensions(this.width / 2 - 93, this.height - 32, 90, 20)
 				.build()
 		);
-		this.backButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.BACK, button -> {
+		this.backButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> {
 			if (!this.justClosedPopup) {
 				this.client.setScreen(this.lastScreen);
 			}
-		}).setPositionAndSize(this.width / 2 + 4, this.height - 32, 90, 20).build());
+		}).dimensions(this.width / 2 + 4, this.height - 32, 90, 20).build());
 		this.renewButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer()))
-				.setPositionAndSize(this.width / 2 + 100, this.height - 32, 90, 20)
+			ButtonWidget.builder(Text.translatable("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer()))
+				.dimensions(this.width / 2 + 100, this.height - 32, 90, 20)
 				.build()
 		);
 		this.newsButton = this.addDrawableChild(new RealmsMainScreen.NewsButton());
 		this.showPopupButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.selectServer.purchase"), button -> this.popupOpenedByUser = !this.popupOpenedByUser)
-				.setPositionAndSize(this.width - 90, 6, 80, 20)
+			ButtonWidget.builder(Text.translatable("mco.selectServer.purchase"), button -> this.popupOpenedByUser = !this.popupOpenedByUser)
+				.dimensions(this.width - 90, 6, 80, 20)
 				.build()
 		);
 		this.pendingInvitesButton = this.addDrawableChild(new RealmsMainScreen.PendingInvitesButton());
 		this.closeButton = this.addDrawableChild(new RealmsMainScreen.CloseButton());
-		this.createTrialButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.selectServer.trial"), button -> {
+		this.createTrialButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.selectServer.trial"), button -> {
 			if (this.trialAvailable && !this.createdTrial) {
 				Util.getOperatingSystem().open("https://aka.ms/startjavarealmstrial");
 				this.client.setScreen(this.lastScreen);
 			}
-		}).setPositionAndSize(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20).build());
+		}).dimensions(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20).build());
 		this.buyARealmButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.selectServer.buy"), button -> Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms"))
-				.setPositionAndSize(this.width / 2 + 52, this.popupY0() + 160 - 20, 98, 20)
+			ButtonWidget.builder(Text.translatable("mco.selectServer.buy"), button -> Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms"))
+				.dimensions(this.width / 2 + 52, this.popupY0() + 160 - 20, 98, 20)
 				.build()
 		);
 		this.updateButtonStates(null);
@@ -481,11 +480,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		return list;
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	public void setCreatedTrial(boolean createdTrial) {

@@ -1,5 +1,6 @@
 package net.minecraft.block.enums;
 
+import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -24,14 +25,26 @@ public enum Instrument implements StringIdentifiable {
 	DIDGERIDOO("didgeridoo", SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO),
 	BIT("bit", SoundEvents.BLOCK_NOTE_BLOCK_BIT),
 	BANJO("banjo", SoundEvents.BLOCK_NOTE_BLOCK_BANJO),
-	PLING("pling", SoundEvents.BLOCK_NOTE_BLOCK_PLING);
+	PLING("pling", SoundEvents.BLOCK_NOTE_BLOCK_PLING),
+	ZOMBIE("zombie", SoundEvents.ENTITY_ZOMBIE_AMBIENT, true),
+	SKELETON("skeleton", SoundEvents.ENTITY_SKELETON_AMBIENT, true),
+	CREEPER("creeper", SoundEvents.ENTITY_CREEPER_PRIMED, true),
+	DRAGON("dragon", SoundEvents.ENTITY_ENDER_DRAGON_AMBIENT, true),
+	WITHER_SKELETON("wither_skeleton", SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT, true),
+	PIGLIN("piglin", SoundEvents.ENTITY_PIGLIN_ANGRY, true);
 
 	private final String name;
 	private final SoundEvent sound;
+	private final boolean mobHead;
 
-	private Instrument(String name, SoundEvent sound) {
+	private Instrument(String name, SoundEvent sound, boolean mobHead) {
 		this.name = name;
 		this.sound = sound;
+		this.mobHead = mobHead;
+	}
+
+	private Instrument(String name, SoundEvent sound) {
+		this(name, sound, false);
 	}
 
 	@Override
@@ -43,7 +56,27 @@ public enum Instrument implements StringIdentifiable {
 		return this.sound;
 	}
 
-	public static Instrument fromBlockState(BlockState state) {
+	public boolean isMobHead() {
+		return this.mobHead;
+	}
+
+	public static Optional<Instrument> fromAboveState(BlockState state) {
+		if (state.isOf(Blocks.ZOMBIE_HEAD)) {
+			return Optional.of(ZOMBIE);
+		} else if (state.isOf(Blocks.SKELETON_SKULL)) {
+			return Optional.of(SKELETON);
+		} else if (state.isOf(Blocks.CREEPER_HEAD)) {
+			return Optional.of(CREEPER);
+		} else if (state.isOf(Blocks.DRAGON_HEAD)) {
+			return Optional.of(DRAGON);
+		} else if (state.isOf(Blocks.WITHER_SKELETON_SKULL)) {
+			return Optional.of(WITHER_SKELETON);
+		} else {
+			return state.isOf(Blocks.PIGLIN_HEAD) ? Optional.of(PIGLIN) : Optional.empty();
+		}
+	}
+
+	public static Instrument fromBelowState(BlockState state) {
 		if (state.isOf(Blocks.CLAY)) {
 			return FLUTE;
 		} else if (state.isOf(Blocks.GOLD_BLOCK)) {

@@ -1431,7 +1431,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 			return optional;
 		} else if (block instanceof BedBlock && BedBlock.isBedWorking(world)) {
-			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, angle);
+			return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, blockState.get(BedBlock.FACING), angle);
 		} else if (!forced) {
 			return Optional.empty();
 		} else {

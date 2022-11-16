@@ -37,7 +37,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		super(Text.translatable("createWorld.customize.buffet.title"));
 		this.parent = parent;
 		this.onDone = onDone;
-		this.biomeRegistry = generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.BIOME_WORLDGEN);
+		this.biomeRegistry = generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.BIOME);
 		RegistryEntry<Biome> registryEntry = (RegistryEntry<Biome>)this.biomeRegistry
 			.getEntry(BiomeKeys.PLAINS)
 			.or(() -> this.biomeRegistry.streamEntries().findAny())
@@ -58,17 +58,14 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
 		this.addSelectableChild(this.biomeSelectionList);
-		this.confirmButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
+		this.confirmButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			this.onDone.accept(this.biome);
 			this.client.setScreen(this.parent);
-		}).setPositionAndSize(this.width / 2 - 155, this.height - 28, 150, 20).build());
+		}).dimensions(this.width / 2 - 155, this.height - 28, 150, 20).build());
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 + 5, this.height - 28, 150, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 5, this.height - 28, 150, 20).build()
 		);
 		this.biomeSelectionList
 			.setSelected(

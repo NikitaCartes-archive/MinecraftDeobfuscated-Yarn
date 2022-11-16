@@ -21,7 +21,6 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	int duration;
 	private int amplifier;
 	private boolean ambient;
-	private boolean permanent;
 	private boolean showParticles;
 	private boolean showIcon;
 	/**
@@ -307,14 +306,6 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		}
 
 		return new StatusEffectInstance(type, j, Math.max(i, 0), bl, bl2, bl3, statusEffectInstance, optional);
-	}
-
-	public void setPermanent(boolean permanent) {
-		this.permanent = permanent;
-	}
-
-	public boolean isPermanent() {
-		return this.permanent;
 	}
 
 	public int compareTo(StatusEffectInstance statusEffectInstance) {

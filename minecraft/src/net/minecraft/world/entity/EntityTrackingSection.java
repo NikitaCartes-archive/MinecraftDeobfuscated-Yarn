@@ -2,11 +2,11 @@ package net.minecraft.world.entity;
 
 import com.mojang.logging.LogUtils;
 import java.util.Collection;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.collection.TypeFilterableList;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.Box;
 import org.slf4j.Logger;
 
@@ -31,23 +31,29 @@ public class EntityTrackingSection<T extends EntityLike> {
 		return this.collection.remove(entity);
 	}
 
-	public void forEach(Box box, Consumer<T> action) {
+	public LazyIterationConsumer.NextIteration forEach(Box box, LazyIterationConsumer<T> consumer) {
 		for (T entityLike : this.collection) {
-			if (entityLike.getBoundingBox().intersects(box)) {
-				action.accept(entityLike);
+			if (entityLike.getBoundingBox().intersects(box) && consumer.accept(entityLike).shouldAbort()) {
+				return LazyIterationConsumer.NextIteration.ABORT;
 			}
 		}
+
+		return LazyIterationConsumer.NextIteration.CONTINUE;
 	}
 
-	public <U extends T> void forEach(TypeFilter<T, U> type, Box box, Consumer<? super U> action) {
+	public <U extends T> LazyIterationConsumer.NextIteration forEach(TypeFilter<T, U> type, Box box, LazyIterationConsumer<? super U> consumer) {
 		Collection<? extends T> collection = this.collection.getAllOfType(type.getBaseClass());
-		if (!collection.isEmpty()) {
+		if (collection.isEmpty()) {
+			return LazyIterationConsumer.NextIteration.CONTINUE;
+		} else {
 			for (T entityLike : collection) {
 				U entityLike2 = (U)type.downcast(entityLike);
-				if (entityLike2 != null && entityLike.getBoundingBox().intersects(box)) {
-					action.accept(entityLike2);
+				if (entityLike2 != null && entityLike.getBoundingBox().intersects(box) && consumer.accept(entityLike2).shouldAbort()) {
+					return LazyIterationConsumer.NextIteration.ABORT;
 				}
 			}
+
+			return LazyIterationConsumer.NextIteration.CONTINUE;
 		}
 	}
 

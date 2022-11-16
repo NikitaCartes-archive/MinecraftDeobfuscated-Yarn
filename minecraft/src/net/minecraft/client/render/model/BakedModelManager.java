@@ -8,7 +8,6 @@ import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.io.Reader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +24,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.color.block.BlockColors;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.block.BlockModels;
-import net.minecraft.client.render.block.entity.BellBlockEntityRenderer;
-import net.minecraft.client.render.block.entity.EnchantingTableBlockEntityRenderer;
 import net.minecraft.client.render.model.json.JsonUnbakedModel;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
@@ -48,42 +44,21 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class BakedModelManager implements ResourceReloader, AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Map<Identifier, SpriteAtlasManager.SpriteResourceLoader> LAYERS_TO_LOADERS = Map.of(
+	private static final Map<Identifier, Identifier> LAYERS_TO_LOADERS = Map.of(
 		TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE,
-		(SpriteAtlasManager.SpriteResourceLoader)resourceManager -> {
-			Map<Identifier, Resource> map = new HashMap();
-			SpriteLoader.addResource(resourceManager, ModelLoader.BANNER_BASE.getTextureId(), map::put);
-			SpriteLoader.addResources(resourceManager, "entity/banner", map::put);
-			return map;
-		},
+		new Identifier("banner_patterns"),
 		TexturedRenderLayers.BEDS_ATLAS_TEXTURE,
-		(SpriteAtlasManager.SpriteResourceLoader)resourceManager -> SpriteLoader.findAllResources(resourceManager, "entity/bed"),
+		new Identifier("beds"),
 		TexturedRenderLayers.CHEST_ATLAS_TEXTURE,
-		(SpriteAtlasManager.SpriteResourceLoader)resourceManager -> SpriteLoader.findAllResources(resourceManager, "entity/chest"),
+		new Identifier("chests"),
 		TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE,
-		(SpriteAtlasManager.SpriteResourceLoader)resourceManager -> {
-			Map<Identifier, Resource> map = new HashMap();
-			SpriteLoader.addResource(resourceManager, ModelLoader.SHIELD_BASE.getTextureId(), map::put);
-			SpriteLoader.addResource(resourceManager, ModelLoader.SHIELD_BASE_NO_PATTERN.getTextureId(), map::put);
-			SpriteLoader.addResources(resourceManager, "entity/shield", map::put);
-			return map;
-		},
+		new Identifier("shield_patterns"),
 		TexturedRenderLayers.SIGNS_ATLAS_TEXTURE,
-		(SpriteAtlasManager.SpriteResourceLoader)resourceManager -> SpriteLoader.findAllResources(resourceManager, "entity/signs"),
+		new Identifier("signs"),
 		TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE,
-		(SpriteAtlasManager.SpriteResourceLoader)resourceManager -> SpriteLoader.findAllResources(resourceManager, "entity/shulker"),
+		new Identifier("shulker_boxes"),
 		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,
-		(SpriteAtlasManager.SpriteResourceLoader)resourceManager -> {
-			Map<Identifier, Resource> map = new HashMap();
-			SpriteLoader.addResources(resourceManager, "block", map::put);
-			SpriteLoader.addResources(resourceManager, "item", map::put);
-			SpriteLoader.addResources(resourceManager, "entity/conduit", map::put);
-			SpriteLoader.addResource(resourceManager, BellBlockEntityRenderer.BELL_BODY_TEXTURE.getTextureId(), map::put);
-			SpriteLoader.addResource(resourceManager, EnchantingTableBlockEntityRenderer.BOOK_TEXTURE.getTextureId(), map::put);
-			return map;
-		},
-		TexturedRenderLayers.HANGING_SIGNS_ATLAS_TEXTURE,
-		(SpriteAtlasManager.SpriteResourceLoader)resourceManager -> SpriteLoader.findAllResources(resourceManager, "entity/signs/hanging")
+		new Identifier("blocks")
 	);
 	private Map<Identifier, BakedModel> models;
 	private final SpriteAtlasManager atlasManager;

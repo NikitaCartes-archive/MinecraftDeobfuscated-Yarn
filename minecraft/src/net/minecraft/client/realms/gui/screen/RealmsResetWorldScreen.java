@@ -81,9 +81,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(this.buttonTitle, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 40, row(14) - 10, 80, 20)
-				.build()
+			ButtonWidget.builder(this.buttonTitle, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 40, row(14) - 10, 80, 20).build()
 		);
 		(new Thread("Realms-reset-world-fetcher") {
 			public void run() {
@@ -188,11 +186,6 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	@Override
 	public Text getNarratedTitle() {
 		return ScreenTexts.joinSentences(this.getTitle(), this.narrateLabels());
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

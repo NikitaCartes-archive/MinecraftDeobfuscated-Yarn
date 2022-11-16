@@ -74,11 +74,10 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.setRepeatEvents(true);
-		this.cancelButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> {
+		this.cancelButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> {
 			this.cancelled = true;
 			this.backButtonClicked();
-		}).setPositionAndSize(this.width / 2 - 100, this.height - 42, 200, 20).build());
+		}).dimensions(this.width / 2 - 100, this.height - 42, 200, 20).build());
 		this.checkDownloadSize();
 	}
 

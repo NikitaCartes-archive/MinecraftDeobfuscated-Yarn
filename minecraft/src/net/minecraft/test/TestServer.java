@@ -85,7 +85,7 @@ public class TestServer extends MinecraftServer {
 								loadContextSupplierContext -> {
 									Registry<DimensionOptions> registry = new SimpleRegistry<>(RegistryKeys.DIMENSION, Lifecycle.stable()).freeze();
 									DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = loadContextSupplierContext.worldGenRegistryManager()
-										.get(RegistryKeys.WORLD_PRESET_WORLDGEN)
+										.get(RegistryKeys.WORLD_PRESET)
 										.entryOf(WorldPresets.FLAT)
 										.value()
 										.createDimensionsRegistryHolder()

@@ -7,9 +7,9 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.function.LazyIterationConsumer;
 import org.slf4j.Logger;
 
 /**
@@ -20,11 +20,11 @@ public class EntityIndex<T extends EntityLike> {
 	private final Int2ObjectMap<T> idToEntity = new Int2ObjectLinkedOpenHashMap<>();
 	private final Map<UUID, T> uuidToEntity = Maps.<UUID, T>newHashMap();
 
-	public <U extends T> void forEach(TypeFilter<T, U> filter, Consumer<U> action) {
+	public <U extends T> void forEach(TypeFilter<T, U> filter, LazyIterationConsumer<U> consumer) {
 		for (T entityLike : this.idToEntity.values()) {
 			U entityLike2 = (U)filter.downcast(entityLike);
-			if (entityLike2 != null) {
-				action.accept(entityLike2);
+			if (entityLike2 != null && consumer.accept(entityLike2).shouldAbort()) {
+				return;
 			}
 		}
 	}

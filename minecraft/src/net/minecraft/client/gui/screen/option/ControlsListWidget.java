@@ -115,18 +115,18 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		KeyBindingEntry(KeyBinding binding, Text bindingName) {
 			this.binding = binding;
 			this.bindingName = bindingName;
-			this.editButton = ButtonWidget.createBuilder(bindingName, button -> ControlsListWidget.this.parent.selectedKeyBinding = binding)
-				.setPositionAndSize(0, 0, 75, 20)
-				.setNarrationSupplier(
+			this.editButton = ButtonWidget.builder(bindingName, button -> ControlsListWidget.this.parent.selectedKeyBinding = binding)
+				.dimensions(0, 0, 75, 20)
+				.narrationSupplier(
 					supplier -> binding.isUnbound()
 							? Text.translatable("narrator.controls.unbound", bindingName)
 							: Text.translatable("narrator.controls.bound", bindingName, supplier.get())
 				)
 				.build();
-			this.resetButton = ButtonWidget.createBuilder(Text.translatable("controls.reset"), button -> {
+			this.resetButton = ButtonWidget.builder(Text.translatable("controls.reset"), button -> {
 				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
 				KeyBinding.updateKeysByCode();
-			}).setPositionAndSize(0, 0, 50, 20).setNarrationSupplier(supplier -> Text.translatable("narrator.controls.reset", bindingName)).build();
+			}).dimensions(0, 0, 50, 20).narrationSupplier(supplier -> Text.translatable("narrator.controls.reset", bindingName)).build();
 		}
 
 		@Override

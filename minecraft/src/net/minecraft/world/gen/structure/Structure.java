@@ -45,7 +45,7 @@ import net.minecraft.world.gen.noise.NoiseConfig;
 
 public abstract class Structure {
 	public static final Codec<Structure> STRUCTURE_CODEC = Registries.STRUCTURE_TYPE.getCodec().dispatch(Structure::getType, StructureType::codec);
-	public static final Codec<RegistryEntry<Structure>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.STRUCTURE_WORLDGEN, STRUCTURE_CODEC);
+	public static final Codec<RegistryEntry<Structure>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.STRUCTURE, STRUCTURE_CODEC);
 	protected final Structure.Config config;
 
 	public static <S extends Structure> RecordCodecBuilder<S, Structure.Config> configCodecBuilder(Instance<S> instance) {
@@ -191,7 +191,7 @@ public abstract class Structure {
 	) {
 		public static final MapCodec<Structure.Config> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-						RegistryCodecs.entryList(RegistryKeys.BIOME_WORLDGEN).fieldOf("biomes").forGetter(Structure.Config::biomes),
+						RegistryCodecs.entryList(RegistryKeys.BIOME).fieldOf("biomes").forGetter(Structure.Config::biomes),
 						Codec.simpleMap(SpawnGroup.CODEC, StructureSpawns.CODEC, StringIdentifiable.toKeyable(SpawnGroup.values()))
 							.fieldOf("spawn_overrides")
 							.forGetter(Structure.Config::spawnOverrides),

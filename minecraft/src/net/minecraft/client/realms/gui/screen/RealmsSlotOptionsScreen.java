@@ -79,11 +79,6 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
-	}
-
-	@Override
 	public void tick() {
 		this.nameEdit.tick();
 	}
@@ -225,12 +220,12 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		}
 
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.configure.world.buttons.done"), button -> this.saveSettings())
-				.setPositionAndSize(this.column1_x, row(13), this.column2_x, 20)
+			ButtonWidget.builder(Text.translatable("mco.configure.world.buttons.done"), button -> this.saveSettings())
+				.dimensions(this.column1_x, row(13), this.column2_x, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).setPositionAndSize(i, row(13), this.column2_x, 20).build()
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(i, row(13), this.column2_x, 20).build()
 		);
 		this.addSelectableChild(this.nameEdit);
 	}

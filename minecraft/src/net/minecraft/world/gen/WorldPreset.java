@@ -24,7 +24,7 @@ public class WorldPreset {
 					.apply(instance, WorldPreset::new)
 		)
 		.flatXmap(WorldPreset::validate, WorldPreset::validate);
-	public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.WORLD_PRESET_WORLDGEN, CODEC);
+	public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.WORLD_PRESET, CODEC);
 	private final Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions;
 
 	public WorldPreset(Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions) {

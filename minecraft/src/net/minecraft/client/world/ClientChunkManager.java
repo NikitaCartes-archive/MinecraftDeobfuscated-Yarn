@@ -37,7 +37,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	public ClientChunkManager(ClientWorld world, int loadDistance) {
 		this.world = world;
-		this.emptyChunk = new EmptyChunk(world, new ChunkPos(0, 0), world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN).entryOf(BiomeKeys.PLAINS));
+		this.emptyChunk = new EmptyChunk(world, new ChunkPos(0, 0), world.getRegistryManager().get(RegistryKeys.BIOME).entryOf(BiomeKeys.PLAINS));
 		this.lightingProvider = new LightingProvider(this, true, world.getDimension().hasSkyLight());
 		this.chunks = new ClientChunkManager.ClientChunkMap(getChunkMapRadius(loadDistance));
 	}
