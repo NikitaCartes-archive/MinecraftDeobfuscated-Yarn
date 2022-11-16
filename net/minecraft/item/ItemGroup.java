@@ -6,6 +6,7 @@ package net.minecraft.item;
 import com.google.common.collect.Lists;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import net.minecraft.item.ItemConvertible;
@@ -29,8 +30,8 @@ public class ItemGroup {
     private final Type type;
     @Nullable
     private ItemStack icon;
-    private ItemStackSet displayStacks = new ItemStackSet();
-    private ItemStackSet searchTabStacks = new ItemStackSet();
+    private Collection<ItemStack> displayStacks = ItemStackSet.create();
+    private Set<ItemStack> searchTabStacks = ItemStackSet.create();
     @Nullable
     private Consumer<List<ItemStack>> searchProviderReloader;
     private final Supplier<ItemStack> iconSupplier;
@@ -104,16 +105,16 @@ public class ItemGroup {
     public void updateEntries(FeatureSet enabledFeatures, boolean operatorEnabled) {
         EntriesImpl entriesImpl = new EntriesImpl(this, enabledFeatures);
         this.entryCollector.accept(enabledFeatures, entriesImpl, operatorEnabled);
-        this.displayStacks = entriesImpl.getParentTabStacks();
-        this.searchTabStacks = entriesImpl.getSearchTabStacks();
+        this.displayStacks = entriesImpl.parentTabStacks;
+        this.searchTabStacks = entriesImpl.searchTabStacks;
         this.reloadSearchProvider();
     }
 
-    public ItemStackSet getDisplayStacks() {
+    public Collection<ItemStack> getDisplayStacks() {
         return this.displayStacks;
     }
 
-    public ItemStackSet getSearchTabStacks() {
+    public Collection<ItemStack> getSearchTabStacks() {
         return this.searchTabStacks;
     }
 
@@ -222,8 +223,8 @@ public class ItemGroup {
 
     static class EntriesImpl
     implements Entries {
-        private final ItemStackSet parentTabStacks = new ItemStackSet();
-        private final ItemStackSet searchTabStacks = new ItemStackSet();
+        public final Collection<ItemStack> parentTabStacks = ItemStackSet.create();
+        public final Set<ItemStack> searchTabStacks = ItemStackSet.create();
         private final ItemGroup group;
         private final FeatureSet enabledFeatures;
 
@@ -235,6 +236,9 @@ public class ItemGroup {
         @Override
         public void add(ItemStack stack, StackVisibility visibility) {
             boolean bl;
+            if (stack.getCount() != 1) {
+                throw new IllegalArgumentException("Stack size must be exactly 1");
+            }
             boolean bl2 = bl = this.parentTabStacks.contains(stack) && visibility != StackVisibility.SEARCH_TAB_ONLY;
             if (bl) {
                 throw new IllegalStateException("Accidentally adding the same item stack twice " + stack.toHoverableText().getString() + " to a Creative Mode Tab: " + this.group.getDisplayName().getString());
@@ -255,14 +259,6 @@ public class ItemGroup {
                     }
                 }
             }
-        }
-
-        public ItemStackSet getParentTabStacks() {
-            return this.parentTabStacks;
-        }
-
-        public ItemStackSet getSearchTabStacks() {
-            return this.searchTabStacks;
         }
     }
 

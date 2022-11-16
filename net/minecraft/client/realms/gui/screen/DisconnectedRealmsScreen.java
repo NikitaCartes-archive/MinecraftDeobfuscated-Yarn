@@ -36,7 +36,7 @@ extends RealmsScreen {
         minecraftClient.getServerResourcePackProvider().clear();
         this.lines = MultilineText.create(this.textRenderer, (StringVisitable)this.reason, this.width - 50);
         this.textHeight = this.lines.count() * this.textRenderer.fontHeight;
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.BACK, button -> minecraftClient.setScreen(this.parent)).setPositionAndSize(this.width / 2 - 100, this.height / 2 + this.textHeight / 2 + this.textRenderer.fontHeight, 200, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> minecraftClient.setScreen(this.parent)).dimensions(this.width / 2 - 100, this.height / 2 + this.textHeight / 2 + this.textRenderer.fontHeight, 200, 20).build());
     }
 
     @Override

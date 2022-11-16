@@ -3,6 +3,7 @@
  */
 package net.minecraft.util;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -23,10 +24,13 @@ public class StringHelper {
     public static String formatTicks(int ticks) {
         int i = ticks / 20;
         int j = i / 60;
-        if ((i %= 60) < 10) {
-            return j + ":0" + i;
+        i %= 60;
+        int k = j / 60;
+        j %= 60;
+        if (k > 0) {
+            return String.format(Locale.ROOT, "%02d:%02d:%02d", k, j, i);
         }
-        return j + ":" + i;
+        return String.format(Locale.ROOT, "%02d:%02d", j, i);
     }
 
     /**

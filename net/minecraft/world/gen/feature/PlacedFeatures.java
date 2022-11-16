@@ -62,7 +62,7 @@ public class PlacedFeatures {
     }
 
     public static RegistryKey<PlacedFeature> of(String id) {
-        return RegistryKey.of(RegistryKeys.PLACED_FEATURE_WORLDGEN, new Identifier(id));
+        return RegistryKey.of(RegistryKeys.PLACED_FEATURE, new Identifier(id));
     }
 
     public static void register(Registerable<PlacedFeature> featureRegisterable, RegistryKey<PlacedFeature> key, RegistryEntry<ConfiguredFeature<?, ?>> entry, List<PlacementModifier> modifiers) {

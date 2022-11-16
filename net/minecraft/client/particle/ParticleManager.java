@@ -130,6 +130,7 @@ public class ParticleManager
 implements ResourceReloader {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final ResourceFinder FINDER = ResourceFinder.json("particles");
+    private static final Identifier field_41385 = new Identifier("particles");
     private static final int MAX_PARTICLE_COUNT = 16384;
     private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(ParticleTextureSheet.TERRAIN_SHEET, ParticleTextureSheet.PARTICLE_SHEET_OPAQUE, ParticleTextureSheet.PARTICLE_SHEET_LIT, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT, ParticleTextureSheet.CUSTOM);
     protected ClientWorld world;
@@ -272,7 +273,7 @@ implements ResourceReloader {
             });
             return Util.combineSafe(list);
         });
-        CompletionStage completableFuture2 = ((CompletableFuture)CompletableFuture.supplyAsync(() -> SpriteLoader.findAllResources(manager, "particle"), prepareExecutor).thenCompose(particles -> SpriteLoader.fromAtlas(this.particleAtlasTexture).stitch((Map<Identifier, Resource>)particles, 0, prepareExecutor))).thenCompose(SpriteLoader.StitchResult::whenComplete);
+        CompletionStage completableFuture2 = SpriteLoader.fromAtlas(this.particleAtlasTexture).method_47661(manager, field_41385, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete);
         return ((CompletableFuture)CompletableFuture.allOf(new CompletableFuture[]{completableFuture2, completableFuture}).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(arg_0 -> this.method_45766(applyProfiler, (CompletableFuture)completableFuture2, (CompletableFuture)completableFuture, arg_0), applyExecutor);
     }
 
@@ -300,7 +301,7 @@ implements ResourceReloader {
             if (!bl) {
                 throw new IllegalStateException("Redundant texture list for particle " + id);
             }
-            Optional<List<Identifier>> optional = Optional.of(list.stream().map(textureId -> textureId.withPrefixedPath("particle/")).collect(Collectors.toList()));
+            Optional<List<Identifier>> optional = Optional.of(list);
             return optional;
         } catch (IOException iOException) {
             throw new IllegalStateException("Failed to load description for particle " + id, iOException);

@@ -18,7 +18,6 @@ import java.nio.IntBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -430,10 +429,6 @@ implements AutoCloseable {
         GlStateManager._glDrawPixels(this.width, this.height, this.format.toGl(), GlConst.GL_UNSIGNED_BYTE, this.pointer);
     }
 
-    public void writeTo(String path) throws IOException {
-        this.writeTo(FileSystems.getDefault().getPath(path, new String[0]));
-    }
-
     public void writeTo(File path) throws IOException {
         this.writeTo(path.toPath());
     }
@@ -538,12 +533,16 @@ implements AutoCloseable {
     }
 
     public void copyRect(int x, int y, int translateX, int translateY, int width, int height, boolean flipX, boolean flipY) {
+        this.copyRect(this, x, y, x + translateX, y + translateY, width, height, flipX, flipY);
+    }
+
+    public void copyRect(NativeImage image, int x, int y, int destX, int destY, int width, int height, boolean flipX, boolean flipY) {
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
                 int k = flipX ? width - 1 - j : j;
                 int l = flipY ? height - 1 - i : i;
                 int m = this.getColor(x + j, y + i);
-                this.setColor(x + translateX + k, y + translateY + l, m);
+                image.setColor(destX + k, destY + l, m);
             }
         }
     }

@@ -19,6 +19,7 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Stream;
@@ -128,11 +129,11 @@ extends Screen {
             return new GeneratorOptionsHolder(generatorOptions.worldGenSettings(), combinedDynamicRegistries, dataPackContents, generatorOptions.dataConfiguration());
         }, Util.getMainWorkerExecutor(), client);
         client.runTasks(completableFuture::isDone);
-        client.setScreen(new CreateWorldScreen(parent, DataConfiguration.SAFE_MODE, new MoreOptionsDialog(completableFuture.join(), Optional.of(WorldPresets.DEFAULT))));
+        client.setScreen(new CreateWorldScreen(parent, DataConfiguration.SAFE_MODE, new MoreOptionsDialog(completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty())));
     }
 
     public static CreateWorldScreen create(@Nullable Screen parent, LevelInfo levelInfo, GeneratorOptionsHolder generatorOptionsHolder, @Nullable Path dataPackTempDir) {
-        CreateWorldScreen createWorldScreen = new CreateWorldScreen(parent, generatorOptionsHolder.dataConfiguration(), new MoreOptionsDialog(generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()), generatorOptionsHolder.generatorOptions().getSeed()));
+        CreateWorldScreen createWorldScreen = new CreateWorldScreen(parent, generatorOptionsHolder.dataConfiguration(), new MoreOptionsDialog(generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()), OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed())));
         createWorldScreen.levelName = levelInfo.getLevelName();
         createWorldScreen.cheatsEnabled = levelInfo.areCommandsAllowed();
         createWorldScreen.tweakedCheats = true;
@@ -165,7 +166,6 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.client.keyboard.setRepeatEvents(true);
         this.levelNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, (Text)Text.translatable("selectWorld.enterName")){
 
             @Override
@@ -190,18 +190,18 @@ extends Screen {
             this.tweakedCheats = true;
             this.cheatsEnabled = cheatsEnabled;
         }));
-        this.dataPacksButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.dataPacks"), button -> this.openPackScreen()).setPositionAndSize(j, 151, 150, 20).build());
-        this.gameRulesButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.gameRules"), button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optionalGameRules -> {
+        this.dataPacksButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.dataPacks"), button -> this.openPackScreen()).dimensions(j, 151, 150, 20).build());
+        this.gameRulesButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.gameRules"), button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optionalGameRules -> {
             this.client.setScreen(this);
             optionalGameRules.ifPresent(gameRules -> {
                 this.gameRules = gameRules;
             });
-        }))).setPositionAndSize(i, 185, 150, 20).build());
+        }))).dimensions(i, 185, 150, 20).build());
         this.moreOptionsDialog.init(this, this.client, this.textRenderer);
-        this.moreOptionsButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.moreWorldOptions"), button -> this.toggleMoreOptions()).setPositionAndSize(j, 185, 150, 20).build());
-        this.createLevelButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("selectWorld.create"), button -> this.createLevel()).setPositionAndSize(i, this.height - 28, 150, 20).build());
+        this.moreOptionsButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.moreWorldOptions"), button -> this.toggleMoreOptions()).dimensions(j, 185, 150, 20).build());
+        this.createLevelButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> this.createLevel()).dimensions(i, this.height - 28, 150, 20).build());
         this.createLevelButton.active = !this.levelName.isEmpty();
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.onCloseScreen()).setPositionAndSize(j, this.height - 28, 150, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCloseScreen()).dimensions(j, this.height - 28, 150, 20).build());
         this.setMoreOptionsOpen();
         this.setInitialFocus(this.levelNameField);
         this.tweakDefaultsTo(this.currentMode);
@@ -232,11 +232,6 @@ extends Screen {
                 throw new RuntimeException("Could not create save folder", exception2);
             }
         }
-    }
-
-    @Override
-    public void removed() {
-        this.client.keyboard.setRepeatEvents(false);
     }
 
     private static void showMessage(MinecraftClient client, Text text) {
@@ -444,10 +439,10 @@ extends Screen {
         this.client.send(() -> this.client.setScreen(new MessageScreen(Text.translatable("dataPack.validation.working"))));
         SaveLoading.ServerConfig serverConfig = CreateWorldScreen.createServerConfig(dataPackManager, dataConfiguration);
         ((CompletableFuture)SaveLoading.load(serverConfig, context -> {
-            if (context.worldGenRegistryManager().get(RegistryKeys.WORLD_PRESET_WORLDGEN).size() == 0) {
+            if (context.worldGenRegistryManager().get(RegistryKeys.WORLD_PRESET).size() == 0) {
                 throw new IllegalStateException("Needs at least one world preset to continue");
             }
-            if (context.worldGenRegistryManager().get(RegistryKeys.BIOME_WORLDGEN).size() == 0) {
+            if (context.worldGenRegistryManager().get(RegistryKeys.BIOME).size() == 0) {
                 throw new IllegalStateException("Needs at least one biome continue");
             }
             GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.getGeneratorOptionsHolder();

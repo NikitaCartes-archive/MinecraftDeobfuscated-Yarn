@@ -97,7 +97,7 @@ public class ChunkSerializer {
         boolean bl2 = world.getDimension().hasSkyLight();
         ServerChunkManager chunkManager = world.getChunkManager();
         LightingProvider lightingProvider = ((ChunkManager)chunkManager).getLightingProvider();
-        Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN);
+        Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME);
         Codec<ReadableContainer<RegistryEntry<Biome>>> codec = ChunkSerializer.createCodec(registry);
         boolean bl3 = false;
         for (int j = 0; j < nbtList.size(); ++j) {
@@ -243,7 +243,7 @@ public class ChunkSerializer {
         ChunkSection[] chunkSections = chunk.getSectionArray();
         NbtList nbtList = new NbtList();
         ServerLightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
-        Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN);
+        Registry<Biome> registry = world.getRegistryManager().get(RegistryKeys.BIOME);
         Codec<ReadableContainer<RegistryEntry<Biome>>> codec = ChunkSerializer.createCodec(registry);
         boolean bl = chunk.isLightOn();
         for (int i = lightingProvider.getBottomY(); i < lightingProvider.getTopY(); ++i) {
@@ -355,7 +355,7 @@ public class ChunkSerializer {
     private static NbtCompound writeStructures(StructureContext context, ChunkPos pos, Map<Structure, StructureStart> starts, Map<Structure, LongSet> references) {
         NbtCompound nbtCompound = new NbtCompound();
         NbtCompound nbtCompound2 = new NbtCompound();
-        Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
+        Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE);
         for (Map.Entry<Structure, StructureStart> entry : starts.entrySet()) {
             Identifier identifier = registry.getId(entry.getKey());
             nbtCompound2.put(identifier.toString(), entry.getValue().toNbt(context, pos));
@@ -373,7 +373,7 @@ public class ChunkSerializer {
 
     private static Map<Structure, StructureStart> readStructureStarts(StructureContext context, NbtCompound nbt, long worldSeed) {
         HashMap<Structure, StructureStart> map = Maps.newHashMap();
-        Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
+        Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE);
         NbtCompound nbtCompound = nbt.getCompound("starts");
         for (String string : nbtCompound.getKeys()) {
             Identifier identifier = Identifier.tryParse(string);
@@ -391,7 +391,7 @@ public class ChunkSerializer {
 
     private static Map<Structure, LongSet> readStructureReferences(DynamicRegistryManager registryManager, ChunkPos pos, NbtCompound nbt) {
         HashMap<Structure, LongSet> map = Maps.newHashMap();
-        Registry<Structure> registry = registryManager.get(RegistryKeys.STRUCTURE_WORLDGEN);
+        Registry<Structure> registry = registryManager.get(RegistryKeys.STRUCTURE);
         NbtCompound nbtCompound = nbt.getCompound("References");
         for (String string : nbtCompound.getKeys()) {
             Identifier identifier = Identifier.tryParse(string);

@@ -16,7 +16,7 @@ import net.minecraft.util.Identifier;
 public class StatusEffectSpriteManager
 extends SpriteAtlasHolder {
     public StatusEffectSpriteManager(TextureManager textureManager) {
-        super(textureManager, new Identifier("textures/atlas/mob_effects.png"), "mob_effect");
+        super(textureManager, new Identifier("textures/atlas/mob_effects.png"), new Identifier("mob_effects"));
     }
 
     public Sprite getSprite(StatusEffect effect) {

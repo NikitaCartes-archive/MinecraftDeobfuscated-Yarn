@@ -41,7 +41,6 @@ extends RealmsScreen {
     @Override
     public void init() {
         this.checkIfMcoEnabled();
-        this.client.keyboard.setRepeatEvents(true);
         if (this.periodicRunnersManager != null) {
             this.periodicRunnersManager.forceRunListeners();
         }

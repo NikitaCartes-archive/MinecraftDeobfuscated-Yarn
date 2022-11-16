@@ -40,10 +40,10 @@ extends GameOptionsScreen {
             this.buttonList.addAll(MouseOptionsScreen.getOptions(this.gameOptions));
         }
         this.addSelectableChild(this.buttonList);
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
             this.gameOptions.write();
             this.client.setScreen(this.parent);
-        }).setPositionAndSize(this.width / 2 - 100, this.height - 27, 200, 20).build());
+        }).dimensions(this.width / 2 - 100, this.height - 27, 200, 20).build());
     }
 
     @Override

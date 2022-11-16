@@ -6,6 +6,7 @@ package net.minecraft.world.entity;
 import java.util.UUID;
 import java.util.function.Consumer;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.entity.EntityLike;
 import org.jetbrains.annotations.Nullable;
@@ -42,12 +43,12 @@ public interface EntityLookup<T extends EntityLike> {
      * @param <U> the type of entity to perform action on
      * 
      * @param filter specifies the desired type of entity
-     * @param action the action to perform
+     * @param consumer the consumer, additionally checking whether to perform the next iteration or to stop early
      */
-    public <U extends T> void forEach(TypeFilter<T, U> var1, Consumer<U> var2);
+    public <U extends T> void forEach(TypeFilter<T, U> var1, LazyIterationConsumer<U> var2);
 
     public void forEachIntersects(Box var1, Consumer<T> var2);
 
-    public <U extends T> void forEachIntersects(TypeFilter<T, U> var1, Box var2, Consumer<U> var3);
+    public <U extends T> void forEachIntersects(TypeFilter<T, U> var1, Box var2, LazyIterationConsumer<U> var3);
 }
 

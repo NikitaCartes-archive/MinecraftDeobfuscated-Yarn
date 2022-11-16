@@ -211,7 +211,7 @@ extends EndPortalBlockEntity {
         if (blockPos == null) {
             BlockPos blockPos2 = new BlockPos(vec3d.x + 0.5, 75.0, vec3d.z + 0.5);
             LOGGER.debug("Failed to find a suitable block to teleport to, spawning an island on {}", (Object)blockPos2);
-            world.getRegistryManager().getOptional(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN).flatMap(registry -> registry.getEntry(EndConfiguredFeatures.END_ISLAND)).ifPresent(reference -> ((ConfiguredFeature)reference.value()).generate(world, world.getChunkManager().getChunkGenerator(), Random.create(blockPos2.asLong()), blockPos2));
+            world.getRegistryManager().getOptional(RegistryKeys.CONFIGURED_FEATURE).flatMap(registry -> registry.getEntry(EndConfiguredFeatures.END_ISLAND)).ifPresent(reference -> ((ConfiguredFeature)reference.value()).generate(world, world.getChunkManager().getChunkGenerator(), Random.create(blockPos2.asLong()), blockPos2));
             blockPos = blockPos2;
         } else {
             LOGGER.debug("Found suitable block to teleport to: {}", (Object)blockPos);

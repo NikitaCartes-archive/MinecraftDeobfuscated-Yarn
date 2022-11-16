@@ -37,8 +37,12 @@ implements Wearable {
     @Override
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        if (world.isClient && (state.isOf(Blocks.DRAGON_HEAD) || state.isOf(Blocks.DRAGON_WALL_HEAD))) {
-            return AbstractSkullBlock.checkType(type, BlockEntityType.SKULL, SkullBlockEntity::tick);
+        if (world.isClient) {
+            boolean bl;
+            boolean bl2 = bl = state.isOf(Blocks.DRAGON_HEAD) || state.isOf(Blocks.DRAGON_WALL_HEAD) || state.isOf(Blocks.PIGLIN_HEAD) || state.isOf(Blocks.PIGLIN_WALL_HEAD);
+            if (bl) {
+                return AbstractSkullBlock.checkType(type, BlockEntityType.SKULL, SkullBlockEntity::tick);
+            }
         }
         return null;
     }

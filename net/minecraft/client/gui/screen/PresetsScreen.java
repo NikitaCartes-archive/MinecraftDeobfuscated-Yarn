@@ -145,7 +145,7 @@ extends Screen {
         RegistryEntry<Biome> registryEntry = reference = biomeLookup.getOrThrow(BIOME_KEY);
         if (iterator.hasNext()) {
             String string = iterator.next();
-            registryEntry = Optional.ofNullable(Identifier.tryParse(string)).map(biomeId -> RegistryKey.of(RegistryKeys.BIOME_WORLDGEN, biomeId)).flatMap(biomeLookup::getOptional).orElseGet(() -> {
+            registryEntry = Optional.ofNullable(Identifier.tryParse(string)).map(biomeId -> RegistryKey.of(RegistryKeys.BIOME, biomeId)).flatMap(biomeLookup::getOptional).orElseGet(() -> {
                 LOGGER.warn("Invalid biome: {}", (Object)string);
                 return reference;
             });
@@ -168,7 +168,6 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.client.keyboard.setRepeatEvents(true);
         this.shareText = Text.translatable("createWorld.customize.presets.share");
         this.listText = Text.translatable("createWorld.customize.presets.list");
         this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
@@ -176,21 +175,21 @@ extends Screen {
         MoreOptionsDialog moreOptionsDialog = this.parent.parent.moreOptionsDialog;
         DynamicRegistryManager dynamicRegistryManager = moreOptionsDialog.getRegistryManager();
         FeatureSet featureSet = moreOptionsDialog.getGeneratorOptionsHolder().dataConfiguration().enabledFeatures();
-        RegistryWrapper.Impl<Biome> registryEntryLookup = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN);
-        RegistryWrapper.Impl<StructureSet> registryEntryLookup2 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET_WORLDGEN);
-        RegistryWrapper.Impl<PlacedFeature> registryEntryLookup3 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE_WORLDGEN);
+        RegistryWrapper.Impl<Biome> registryEntryLookup = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME);
+        RegistryWrapper.Impl<StructureSet> registryEntryLookup2 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET);
+        RegistryWrapper.Impl<PlacedFeature> registryEntryLookup3 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE);
         RegistryWrapper<Block> registryEntryLookup4 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BLOCK).withFeatureFilter(featureSet);
         this.customPresetField.setText(PresetsScreen.getGeneratorConfigString(this.parent.getConfig()));
         this.config = this.parent.getConfig();
         this.addSelectableChild(this.customPresetField);
         this.listWidget = new SuperflatPresetsListWidget(dynamicRegistryManager, featureSet);
         this.addSelectableChild(this.listWidget);
-        this.selectPresetButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("createWorld.customize.presets.select"), buttonWidget -> {
+        this.selectPresetButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("createWorld.customize.presets.select"), buttonWidget -> {
             FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.parsePresetString(registryEntryLookup4, registryEntryLookup, registryEntryLookup2, registryEntryLookup3, this.customPresetField.getText(), this.config);
             this.parent.setConfig(flatChunkGeneratorConfig);
             this.client.setScreen(this.parent);
-        }).setPositionAndSize(this.width / 2 - 155, this.height - 28, 150, 20).build());
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 + 5, this.height - 28, 150, 20).build());
+        }).dimensions(this.width / 2 - 155, this.height - 28, 150, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 5, this.height - 28, 150, 20).build());
         this.updateSelectButton(this.listWidget.getSelectedOrNull() != null);
     }
 
@@ -209,11 +208,6 @@ extends Screen {
     @Override
     public void close() {
         this.client.setScreen(this.parent);
-    }
-
-    @Override
-    public void removed() {
-        this.client.keyboard.setRepeatEvents(false);
     }
 
     @Override
@@ -245,7 +239,7 @@ extends Screen {
     extends AlwaysSelectedEntryListWidget<SuperflatPresetEntry> {
         public SuperflatPresetsListWidget(DynamicRegistryManager dynamicRegistryManager, FeatureSet featureSet) {
             super(PresetsScreen.this.client, PresetsScreen.this.width, PresetsScreen.this.height, 80, PresetsScreen.this.height - 37, 24);
-            for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.get(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN).iterateEntries(FlatLevelGeneratorPresetTags.VISIBLE)) {
+            for (RegistryEntry<FlatLevelGeneratorPreset> registryEntry : dynamicRegistryManager.get(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET).iterateEntries(FlatLevelGeneratorPresetTags.VISIBLE)) {
                 Set set = registryEntry.value().settings().getLayers().stream().map(layer -> layer.getBlockState().getBlock()).filter(block -> !block.isEnabled(featureSet)).collect(Collectors.toSet());
                 if (!set.isEmpty()) {
                     LOGGER.info("Discarding flat world preset {} since it contains experimental blocks {}", (Object)registryEntry.getKey().map(key -> key.getValue().toString()).orElse("<unknown>"), (Object)set);

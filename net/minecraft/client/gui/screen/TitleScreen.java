@@ -132,8 +132,8 @@ extends Screen {
             this.initWidgetsNormal(l, 24);
         }
         this.addDrawableChild(new TexturedButtonWidget(this.width / 2 - 124, l + 72 + 12, 20, 20, 0, 106, 20, ButtonWidget.WIDGETS_TEXTURE, 256, 256, button -> this.client.setScreen(new LanguageOptionsScreen((Screen)this, this.client.options, this.client.getLanguageManager())), Text.translatable("narrator.button.language")));
-        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))).setPositionAndSize(this.width / 2 - 100, l + 72 + 12, 98, 20).build());
-        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("menu.quit"), button -> this.client.scheduleStop()).setPositionAndSize(this.width / 2 + 2, l + 72 + 12, 98, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))).dimensions(this.width / 2 - 100, l + 72 + 12, 98, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("menu.quit"), button -> this.client.scheduleStop()).dimensions(this.width / 2 + 2, l + 72 + 12, 98, 20).build());
         this.addDrawableChild(new TexturedButtonWidget(this.width / 2 + 104, l + 72 + 12, 20, 20, 0, 0, 20, ACCESSIBILITY_ICON_TEXTURE, 32, 64, button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), Text.translatable("narrator.button.accessibility")));
         this.addDrawableChild(new PressableTextWidget(j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new CreditsScreen(false, Runnables.doNothing())), this.textRenderer));
         this.client.setConnectedToRealms(false);
@@ -149,12 +149,12 @@ extends Screen {
     }
 
     private void initWidgetsNormal(int y, int spacingY) {
-        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this))).setPositionAndSize(this.width / 2 - 100, y, 200, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this))).dimensions(this.width / 2 - 100, y, 200, 20).build());
         Text text = this.getMultiplayerDisabledText();
         boolean bl = text == null;
         Tooltip tooltip = text != null ? Tooltip.of(text) : null;
-        this.addDrawableChild(ButtonWidget.createBuilder((Text)Text.translatable((String)"menu.multiplayer"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onMultiplayerButtonPressed(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this)).setPositionAndSize((int)(this.width / 2 - 100), (int)(y + spacingY * 1), (int)200, (int)20).setTooltip((Tooltip)tooltip).build()).active = bl;
-        this.addDrawableChild(ButtonWidget.createBuilder((Text)Text.translatable((String)"menu.online"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onRealmsButtonPress(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this)).setPositionAndSize((int)(this.width / 2 - 100), (int)(y + spacingY * 2), (int)200, (int)20).setTooltip((Tooltip)tooltip).build()).active = bl;
+        this.addDrawableChild(ButtonWidget.builder((Text)Text.translatable((String)"menu.multiplayer"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onMultiplayerButtonPressed(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this)).dimensions((int)(this.width / 2 - 100), (int)(y + spacingY * 1), (int)200, (int)20).tooltip((Tooltip)tooltip).build()).active = bl;
+        this.addDrawableChild(ButtonWidget.builder((Text)Text.translatable((String)"menu.online"), (ButtonWidget.PressAction)(ButtonWidget.PressAction)LambdaMetafactory.metafactory(null, null, null, (Lnet/minecraft/client/gui/widget/ButtonWidget;)V, onRealmsButtonPress(net.minecraft.client.gui.widget.ButtonWidget ), (Lnet/minecraft/client/gui/widget/ButtonWidget;)V)((TitleScreen)this)).dimensions((int)(this.width / 2 - 100), (int)(y + spacingY * 2), (int)200, (int)20).tooltip((Tooltip)tooltip).build()).active = bl;
     }
 
     @Nullable
@@ -174,14 +174,14 @@ extends Screen {
 
     private void initWidgetsDemo(int y, int spacingY) {
         boolean bl = this.canReadDemoWorldData();
-        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("menu.playdemo"), button -> {
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("menu.playdemo"), button -> {
             if (bl) {
                 this.client.createIntegratedServerLoader().start(this, DEMO_WORLD_NAME);
             } else {
                 this.client.createIntegratedServerLoader().createAndStart(DEMO_WORLD_NAME, MinecraftServer.DEMO_LEVEL_INFO, GeneratorOptions.DEMO_OPTIONS, WorldPresets::createDemoOptions);
             }
-        }).setPositionAndSize(this.width / 2 - 100, y, 200, 20).build());
-        this.buttonResetDemo = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("menu.resetdemo"), button -> {
+        }).dimensions(this.width / 2 - 100, y, 200, 20).build());
+        this.buttonResetDemo = this.addDrawableChild(ButtonWidget.builder(Text.translatable("menu.resetdemo"), button -> {
             LevelStorage levelStorage = this.client.getLevelStorage();
             try (LevelStorage.Session session = levelStorage.createSession(DEMO_WORLD_NAME);){
                 LevelSummary levelSummary = session.getLevelSummary();
@@ -192,7 +192,7 @@ extends Screen {
                 SystemToast.addWorldAccessFailureToast(this.client, DEMO_WORLD_NAME);
                 LOGGER.warn("Failed to access demo world", iOException);
             }
-        }).setPositionAndSize(this.width / 2 - 100, y + spacingY * 1, 200, 20).build());
+        }).dimensions(this.width / 2 - 100, y + spacingY * 1, 200, 20).build());
         this.buttonResetDemo.active = bl;
     }
 

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -83,19 +84,25 @@ implements TextureTickListener {
 
     private void dumpAtlasTextureAndInfo(int scales, int width, int height) {
         String string = this.id.toUnderscoreSeparatedString();
-        TextureUtil.writeAsPNG(string, this.getGlId(), scales, width, height);
-        SpriteAtlasTexture.dumpAtlasInfos(string, this.sprites);
+        Path path = TextureUtil.getDebugTexturePath();
+        try {
+            Files.createDirectories(path, new FileAttribute[0]);
+            TextureUtil.writeAsPNG(path, string, this.getGlId(), scales, width, height);
+            SpriteAtlasTexture.dumpAtlasInfos(path, string, this.sprites);
+        } catch (IOException iOException) {
+            LOGGER.warn("Failed to dump atlas contents to {}", (Object)path);
+        }
     }
 
-    private static void dumpAtlasInfos(String id, Map<Identifier, Sprite> sprites) {
-        Path path = Path.of(id + ".txt", new String[0]);
-        try (BufferedWriter writer = Files.newBufferedWriter(path, new OpenOption[0]);){
-            for (Map.Entry entry : sprites.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList()) {
+    private static void dumpAtlasInfos(Path path, String string, Map<Identifier, Sprite> map) {
+        Path path2 = path.resolve(string + ".txt");
+        try (BufferedWriter writer = Files.newBufferedWriter(path2, new OpenOption[0]);){
+            for (Map.Entry entry : map.entrySet().stream().sorted(Map.Entry.comparingByKey()).toList()) {
                 Sprite sprite = (Sprite)entry.getValue();
                 writer.write(String.format(Locale.ROOT, "%s\tx=%d\ty=%d\tw=%d\th=%d%n", entry.getKey(), sprite.getX(), sprite.getY(), sprite.getContents().getWidth(), sprite.getContents().getHeight()));
             }
         } catch (IOException iOException) {
-            LOGGER.warn("Failed to write file {}", (Object)path, (Object)iOException);
+            LOGGER.warn("Failed to write file {}", (Object)path2, (Object)iOException);
         }
     }
 

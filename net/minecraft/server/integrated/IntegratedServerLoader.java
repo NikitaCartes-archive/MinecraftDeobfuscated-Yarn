@@ -82,7 +82,7 @@ public class IntegratedServerLoader {
                 DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = ((DimensionOptionsRegistryHolder)dimensionsRegistrySupplier.apply(context.worldGenRegistryManager())).toConfig(context.dimensionsRegistryManager().get(RegistryKeys.DIMENSION));
                 return new SaveLoading.LoadContext<LevelProperties>(new LevelProperties(levelInfo, dynamicRegistryManager, dimensionsConfig.specialWorldProperty(), dimensionsConfig.getLifecycle()), dimensionsConfig.toDynamicRegistryManager());
             }, SaveLoader::new);
-            this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
+            this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader, true);
         } catch (Exception exception) {
             LOGGER.warn("Failed to load datapacks, can't proceed with server load", exception);
             IntegratedServerLoader.close(session, levelName);
@@ -104,7 +104,7 @@ public class IntegratedServerLoader {
     public void start(LevelStorage.Session session, DataPackContents dataPackContents, CombinedDynamicRegistries<ServerDynamicRegistryType> dynamicRegistryManager, SaveProperties saveProperties) {
         ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session);
         LifecycledResourceManager lifecycledResourceManager = new SaveLoading.DataPacks(resourcePackManager, saveProperties.getDataConfiguration(), false, false).load().getSecond();
-        this.client.startIntegratedServer(session.getDirectoryName(), session, resourcePackManager, new SaveLoader(lifecycledResourceManager, dataPackContents, dynamicRegistryManager, saveProperties));
+        this.client.startIntegratedServer(session.getDirectoryName(), session, resourcePackManager, new SaveLoader(lifecycledResourceManager, dataPackContents, dynamicRegistryManager, saveProperties), true);
     }
 
     private SaveLoader createSaveLoader(LevelStorage.Session session, boolean safeMode, ResourcePackManager dataPackManager) throws Exception {
@@ -190,7 +190,7 @@ public class IntegratedServerLoader {
             return this.showPackLoadFailureScreen();
         }, (Executor)this.client)).thenAcceptAsync(proceed -> {
             if (proceed.booleanValue()) {
-                this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader);
+                this.client.startIntegratedServer(levelName, session, resourcePackManager, saveLoader, false);
             } else {
                 saveLoader.close();
                 IntegratedServerLoader.close(session, levelName);

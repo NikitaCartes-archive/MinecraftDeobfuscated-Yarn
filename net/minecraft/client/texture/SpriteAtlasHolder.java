@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.texture;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
@@ -12,7 +11,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
@@ -23,25 +21,21 @@ public abstract class SpriteAtlasHolder
 implements ResourceReloader,
 AutoCloseable {
     private final SpriteAtlasTexture atlas;
-    private final String pathPrefix;
+    private final Identifier field_41425;
 
-    public SpriteAtlasHolder(TextureManager textureManager, Identifier atlasId, String pathPrefix) {
-        this.pathPrefix = pathPrefix;
+    public SpriteAtlasHolder(TextureManager textureManager, Identifier atlasId, Identifier identifier) {
+        this.field_41425 = identifier;
         this.atlas = new SpriteAtlasTexture(atlasId);
         textureManager.registerTexture(this.atlas.getId(), this.atlas);
     }
 
     protected Sprite getSprite(Identifier objectId) {
-        return this.atlas.getSprite(this.toSpriteId(objectId));
-    }
-
-    private Identifier toSpriteId(Identifier objectId) {
-        return objectId.withPrefixedPath(this.pathPrefix + "/");
+        return this.atlas.getSprite(objectId);
     }
 
     @Override
     public final CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        return ((CompletableFuture)((CompletableFuture)((CompletableFuture)CompletableFuture.supplyAsync(() -> SpriteLoader.findAllResources(manager, this.pathPrefix), prepareExecutor).thenCompose(resources -> SpriteLoader.fromAtlas(this.atlas).stitch((Map<Identifier, Resource>)resources, 0, prepareExecutor))).thenCompose(SpriteLoader.StitchResult::whenComplete)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(stitchResult -> this.afterReload((SpriteLoader.StitchResult)stitchResult, applyProfiler), applyExecutor);
+        return ((CompletableFuture)((CompletableFuture)SpriteLoader.fromAtlas(this.atlas).method_47661(manager, this.field_41425, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(stitchResult -> this.afterReload((SpriteLoader.StitchResult)stitchResult, applyProfiler), applyExecutor);
     }
 
     private void afterReload(SpriteLoader.StitchResult stitchResult, Profiler profiler) {

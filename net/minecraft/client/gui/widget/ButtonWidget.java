@@ -23,7 +23,7 @@ extends PressableWidget {
     protected final PressAction onPress;
     protected final NarrationSupplier narrationSupplier;
 
-    public static Builder createBuilder(Text message, PressAction onPress) {
+    public static Builder builder(Text message, PressAction onPress) {
         return new Builder(message, onPress);
     }
 
@@ -65,33 +65,33 @@ extends PressableWidget {
             this.onPress = onPress;
         }
 
-        public Builder setPosition(int x, int y) {
+        public Builder position(int x, int y) {
             this.x = x;
             this.y = y;
             return this;
         }
 
-        public Builder setWidth(int width) {
+        public Builder width(int width) {
             this.width = width;
             return this;
         }
 
-        public Builder setSize(int width, int height) {
+        public Builder size(int width, int height) {
             this.width = width;
             this.height = height;
             return this;
         }
 
-        public Builder setPositionAndSize(int x, int y, int width, int height) {
-            return this.setPosition(x, y).setSize(width, height);
+        public Builder dimensions(int x, int y, int width, int height) {
+            return this.position(x, y).size(width, height);
         }
 
-        public Builder setTooltip(@Nullable Tooltip tooltip) {
+        public Builder tooltip(@Nullable Tooltip tooltip) {
             this.tooltip = tooltip;
             return this;
         }
 
-        public Builder setNarrationSupplier(NarrationSupplier narrationSupplier) {
+        public Builder narrationSupplier(NarrationSupplier narrationSupplier) {
             this.narrationSupplier = narrationSupplier;
             return this;
         }

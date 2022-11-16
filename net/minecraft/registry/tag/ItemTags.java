@@ -11,7 +11,6 @@ import net.minecraft.util.Identifier;
 public final class ItemTags {
     public static final TagKey<Item> WOOL = ItemTags.of("wool");
     public static final TagKey<Item> PLANKS = ItemTags.of("planks");
-    public static final TagKey<Item> STRIPPED_LOGS = ItemTags.of("stripped_logs");
     public static final TagKey<Item> STONE_BRICKS = ItemTags.of("stone_bricks");
     public static final TagKey<Item> WOODEN_BUTTONS = ItemTags.of("wooden_buttons");
     public static final TagKey<Item> BUTTONS = ItemTags.of("buttons");

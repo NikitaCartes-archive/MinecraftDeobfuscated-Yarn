@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface DensityFunction {
     public static final Codec<DensityFunction> CODEC = DensityFunctionTypes.CODEC;
-    public static final Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.DENSITY_FUNCTION_WORLDGEN, CODEC);
+    public static final Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.DENSITY_FUNCTION, CODEC);
     public static final Codec<DensityFunction> FUNCTION_CODEC = REGISTRY_ENTRY_CODEC.xmap(DensityFunctionTypes.RegistryEntryHolder::new, function -> {
         if (function instanceof DensityFunctionTypes.RegistryEntryHolder) {
             DensityFunctionTypes.RegistryEntryHolder registryEntryHolder = (DensityFunctionTypes.RegistryEntryHolder)function;

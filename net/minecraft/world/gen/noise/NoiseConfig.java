@@ -36,7 +36,7 @@ public final class NoiseConfig {
     private final Map<Identifier, RandomSplitter> randomDerivers;
 
     public static NoiseConfig create(RegistryEntryLookup.RegistryLookup registryLookup, RegistryKey<ChunkGeneratorSettings> chunkGeneratorSettingsKey, long legacyWorldSeed) {
-        return NoiseConfig.create(registryLookup.getOrThrow(RegistryKeys.NOISE_SETTINGS_WORLDGEN).getOrThrow(chunkGeneratorSettingsKey).value(), registryLookup.getOrThrow(RegistryKeys.NOISE_WORLDGEN), legacyWorldSeed);
+        return NoiseConfig.create(registryLookup.getOrThrow(RegistryKeys.CHUNK_GENERATOR_SETTINGS).getOrThrow(chunkGeneratorSettingsKey).value(), registryLookup.getOrThrow(RegistryKeys.NOISE_PARAMETERS), legacyWorldSeed);
     }
 
     public static NoiseConfig create(ChunkGeneratorSettings chunkGeneratorSettings, RegistryEntryLookup<DoublePerlinNoiseSampler.NoiseParameters> noiseParametersLookup, long legacyWorldSeed) {

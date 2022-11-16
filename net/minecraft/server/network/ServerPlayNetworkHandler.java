@@ -696,7 +696,7 @@ ServerPlayPacketListener {
             JigsawBlockEntity jigsawBlockEntity = (JigsawBlockEntity)blockEntity;
             jigsawBlockEntity.setName(packet.getName());
             jigsawBlockEntity.setTarget(packet.getTarget());
-            jigsawBlockEntity.setPool(RegistryKey.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, packet.getPool()));
+            jigsawBlockEntity.setPool(RegistryKey.of(RegistryKeys.TEMPLATE_POOL, packet.getPool()));
             jigsawBlockEntity.setFinalState(packet.getFinalState());
             jigsawBlockEntity.setJoint(packet.getJointType());
             jigsawBlockEntity.markDirty();
@@ -911,6 +911,7 @@ ServerPlayPacketListener {
         this.player.updatePositionAndAngles(d, e, f, g, h);
         if (!this.player.noClip && !this.player.isSleeping() && (bl3 && serverWorld.isSpaceEmpty(this.player, box) || this.isPlayerNotCollidingWithBlocks(serverWorld, box))) {
             this.requestTeleport(i, j, k, g, h);
+            this.player.handleFall(this.player.getY() - l, packet.isOnGround());
             return;
         }
         this.floating = t >= -0.03125 && !bl22 && this.player.interactionManager.getGameMode() != GameMode.SPECTATOR && !this.server.isFlightEnabled() && !this.player.getAbilities().allowFlying && !this.player.hasStatusEffect(StatusEffects.LEVITATION) && !this.player.isFallFlying() && !this.player.isUsingRiptide() && this.isEntityOnAir(this.player);

@@ -44,6 +44,7 @@ extends BlockLootTableGenerator {
         this.addDrop(Blocks.BAMBOO_MOSAIC_SLAB, (Block block) -> this.slabDrops((Block)block));
         this.addDrop(Blocks.BAMBOO_DOOR, (Block block) -> this.doorDrops((Block)block));
         this.addDropWithSilkTouch(Blocks.CHISELED_BOOKSHELF);
+        this.addDrop(Blocks.PIGLIN_HEAD);
     }
 }
 

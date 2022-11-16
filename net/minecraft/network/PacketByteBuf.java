@@ -11,7 +11,6 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -63,6 +62,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -288,13 +288,10 @@ extends ByteBuf {
      * 
      * @param codec the codec to decode the object
      */
+    @Deprecated
     public <T> T decode(Codec<T> codec) {
         NbtCompound nbtCompound = this.readUnlimitedNbt();
-        DataResult dataResult = codec.parse(NbtOps.INSTANCE, nbtCompound);
-        dataResult.error().ifPresent(partial -> {
-            throw new EncoderException("Failed to decode: " + partial.message() + " " + nbtCompound);
-        });
-        return (T)dataResult.result().get();
+        return (T)Util.getResult(codec.parse(NbtOps.INSTANCE, nbtCompound), error -> new DecoderException("Failed to decode: " + error + " " + nbtCompound));
     }
 
     /**
@@ -308,12 +305,10 @@ extends ByteBuf {
      * @param object the object to write to this buf
      * @param codec the codec to encode the object
      */
+    @Deprecated
     public <T> void encode(Codec<T> codec, T object) {
-        DataResult<NbtElement> dataResult = codec.encodeStart(NbtOps.INSTANCE, (NbtElement)object);
-        dataResult.error().ifPresent(partial -> {
-            throw new EncoderException("Failed to encode: " + partial.message() + " " + object);
-        });
-        this.writeNbt((NbtCompound)dataResult.result().get());
+        NbtElement nbtElement = Util.getResult(codec.encodeStart(NbtOps.INSTANCE, (NbtElement)object), error -> new EncoderException("Failed to encode: " + error + " " + object));
+        this.writeNbt((NbtCompound)nbtElement);
     }
 
     /**

@@ -54,7 +54,7 @@ extends Screen {
         int l = this.linesY + k + this.textRenderer.fontHeight * 2;
         int m = (int)((double)this.width / 2.0 - (double)j / 2.0);
         for (ChoiceButton choiceButton2 : this.choiceButtons) {
-            this.addDrawableChild(ButtonWidget.createBuilder(choiceButton2.message, choiceButton2.pressAction).setPositionAndSize(m, l, this.buttonWidth, 20).build());
+            this.addDrawableChild(ButtonWidget.builder(choiceButton2.message, choiceButton2.pressAction).dimensions(m, l, this.buttonWidth, 20).build());
             m += i;
         }
     }

@@ -17,9 +17,9 @@ import net.minecraft.structure.processor.StructureProcessorLists;
 
 public class BastionUnitsData {
     public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-        RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
+        RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);
         RegistryEntry.Reference<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.HOUSING);
-        RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+        RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);
         RegistryEntry.Reference<StructurePool> registryEntry2 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
         StructurePools.register(poolRegisterable, "bastion/units/center_pieces", new StructurePool(registryEntry2, ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/center_pieces/center_0", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/center_pieces/center_1", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/center_pieces/center_2", registryEntry), 1)), StructurePool.Projection.RIGID));
         StructurePools.register(poolRegisterable, "bastion/units/pathways", new StructurePool(registryEntry2, ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/pathways/pathway_0", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/units/pathways/pathway_wall_0", registryEntry), 1)), StructurePool.Projection.RIGID));

@@ -262,7 +262,7 @@ public abstract class ChunkGenerator {
         }
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos2, world.getBottomSectionCoord());
         BlockPos blockPos = chunkSectionPos.getMinPos();
-        Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
+        Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
         Map<Integer, List<Structure>> map = registry.stream().collect(Collectors.groupingBy(structureType -> structureType.getFeatureGenerationStep().ordinal()));
         List<PlacedFeatureIndexer.IndexedFeatures> list = this.indexedFeaturesListSupplier.get();
         ChunkRandom chunkRandom = new ChunkRandom(new Xoroshiro128PlusPlusRandom(RandomSeed.getSeed()));
@@ -277,7 +277,7 @@ public abstract class ChunkGenerator {
         set.retainAll(this.biomeSource.getBiomes());
         int i = list.size();
         try {
-            Registry<PlacedFeature> registry2 = world.getRegistryManager().get(RegistryKeys.PLACED_FEATURE_WORLDGEN);
+            Registry<PlacedFeature> registry2 = world.getRegistryManager().get(RegistryKeys.PLACED_FEATURE);
             int j = Math.max(GenerationStep.Feature.values().length, i);
             for (int k = 0; k < j; ++k) {
                 int m = 0;
@@ -469,7 +469,7 @@ public abstract class ChunkGenerator {
                     } catch (Exception exception) {
                         CrashReport crashReport = CrashReport.create(exception, "Generating structure reference");
                         CrashReportSection crashReportSection = crashReport.addElement("Structure");
-                        Optional<Registry<Structure>> optional = world.getRegistryManager().getOptional(RegistryKeys.STRUCTURE_WORLDGEN);
+                        Optional<Registry<Structure>> optional = world.getRegistryManager().getOptional(RegistryKeys.STRUCTURE);
                         crashReportSection.add("Id", () -> optional.map(structureTypeRegistry -> structureTypeRegistry.getId(structureStart.getStructure()).toString()).orElse("UNKNOWN"));
                         crashReportSection.add("Name", () -> Registries.STRUCTURE_TYPE.getId(structureStart.getStructure().getType()).toString());
                         crashReportSection.add("Class", () -> structureStart.getStructure().getClass().getCanonicalName());

@@ -23,7 +23,7 @@ public interface StructureTags {
     public static final TagKey<Structure> OCEAN_RUIN = StructureTags.of("ocean_ruin");
 
     private static TagKey<Structure> of(String id) {
-        return TagKey.of(RegistryKeys.STRUCTURE_WORLDGEN, new Identifier(id));
+        return TagKey.of(RegistryKeys.STRUCTURE, new Identifier(id));
     }
 }
 

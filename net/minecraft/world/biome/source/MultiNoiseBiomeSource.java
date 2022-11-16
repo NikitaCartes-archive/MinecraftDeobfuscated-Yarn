@@ -95,7 +95,7 @@ extends BiomeSource {
     }
 
     record Instance(Preset preset, RegistryEntryLookup<Biome> biomeRegistry) {
-        public static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.flatXmap(id -> Optional.ofNullable(Preset.BY_IDENTIFIER.get(id)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + id)), preset -> DataResult.success(preset.id)).fieldOf("preset")).stable().forGetter(Instance::preset), RegistryOps.getEntryLookupCodec(RegistryKeys.BIOME_WORLDGEN)).apply((Applicative<Instance, ?>)instance, instance.stable(Instance::new)));
+        public static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.flatXmap(id -> Optional.ofNullable(Preset.BY_IDENTIFIER.get(id)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + id)), preset -> DataResult.success(preset.id)).fieldOf("preset")).stable().forGetter(Instance::preset), RegistryOps.getEntryLookupCodec(RegistryKeys.BIOME)).apply((Applicative<Instance, ?>)instance, instance.stable(Instance::new)));
 
         public MultiNoiseBiomeSource getBiomeSource() {
             return this.preset.getBiomeSource(this, true);

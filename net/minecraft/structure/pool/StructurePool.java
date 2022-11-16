@@ -34,7 +34,7 @@ public class StructurePool {
     private static final int DEFAULT_Y = Integer.MIN_VALUE;
     private static final MutableObject<Codec<RegistryEntry<StructurePool>>> FALLBACK = new MutableObject();
     public static final Codec<StructurePool> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.createLazy(FALLBACK::getValue).fieldOf("fallback")).forGetter(StructurePool::getFallback), ((MapCodec)Codec.mapPair(StructurePoolElement.CODEC.fieldOf("element"), Codec.intRange(1, 150).fieldOf("weight")).codec().listOf().fieldOf("elements")).forGetter(pool -> pool.elementCounts)).apply((Applicative<StructurePool, ?>)instance, StructurePool::new));
-    public static final Codec<RegistryEntry<StructurePool>> REGISTRY_CODEC = Util.make(RegistryElementCodec.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, CODEC), FALLBACK::setValue);
+    public static final Codec<RegistryEntry<StructurePool>> REGISTRY_CODEC = Util.make(RegistryElementCodec.of(RegistryKeys.TEMPLATE_POOL, CODEC), FALLBACK::setValue);
     private final List<Pair<StructurePoolElement, Integer>> elementCounts;
     private final ObjectArrayList<StructurePoolElement> elements;
     private final RegistryEntry<StructurePool> fallback;

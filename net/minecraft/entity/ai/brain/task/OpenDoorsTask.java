@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.Sets;
 import com.mojang.datafixers.kinds.OptionalBox;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -45,15 +46,10 @@ public class OpenDoorsTask {
             if (path.isStart() || path.isFinished()) {
                 return false;
             }
-            if (!Objects.equals(mutableObject.getValue(), path.getCurrentNode())) {
+            if (Objects.equals(mutableObject.getValue(), path.getCurrentNode())) {
                 mutableInt.setValue(20);
-                return true;
-            }
-            if (mutableInt.getValue() > 0) {
-                mutableInt.decrement();
-            }
-            if (mutableInt.getValue() == 0) {
-                return true;
+            } else if (mutableInt.decrementAndGet() > 0) {
+                return false;
             }
             mutableObject.setValue(path.getCurrentNode());
             PathNode pathNode = path.getLastNode();
@@ -65,14 +61,14 @@ public class OpenDoorsTask {
                 if (!doorBlock.isOpen(blockState)) {
                     doorBlock.setOpen(entity, world, blockState, blockPos, true);
                 }
-                OpenDoorsTask.storePos(doorsToClose, optional, world, entity, blockPos);
+                optional = OpenDoorsTask.storePos(doorsToClose, optional, world, blockPos);
             }
             if ((blockState2 = world.getBlockState(blockPos2 = pathNode2.getBlockPos())).isIn(BlockTags.WOODEN_DOORS, state -> state.getBlock() instanceof DoorBlock) && !(doorBlock2 = (DoorBlock)blockState2.getBlock()).isOpen(blockState2)) {
                 doorBlock2.setOpen(entity, world, blockState2, blockPos2, true);
-                OpenDoorsTask.storePos(doorsToClose, optional, world, entity, blockPos2);
+                optional = OpenDoorsTask.storePos(doorsToClose, optional, world, blockPos2);
             }
             optional.ifPresent(doors -> OpenDoorsTask.pathToDoor(world, entity, pathNode, pathNode2, doors, context.getOptionalValue(mobs)));
-            return false;
+            return true;
         }));
     }
 
@@ -132,9 +128,16 @@ public class OpenDoorsTask {
         return doorPos.getDimension() != world.getRegistryKey() || !doorPos.getPos().isWithinDistance(entity.getPos(), 2.0);
     }
 
-    private static void storePos(MemoryQueryResult<OptionalBox.Mu, Set<GlobalPos>> queryResult, Optional<Set<GlobalPos>> doors, ServerWorld world, LivingEntity entity, BlockPos pos) {
+    private static Optional<Set<GlobalPos>> storePos(MemoryQueryResult<OptionalBox.Mu, Set<GlobalPos>> queryResult, Optional<Set<GlobalPos>> doors, ServerWorld world, BlockPos pos) {
         GlobalPos globalPos = GlobalPos.create(world.getRegistryKey(), pos);
-        doors.ifPresentOrElse(doorSet -> doorSet.add(globalPos), () -> queryResult.remember(Sets.newHashSet(globalPos)));
+        return Optional.of(doors.map(doorSet -> {
+            doorSet.add(globalPos);
+            return doorSet;
+        }).orElseGet(() -> {
+            HashSet<GlobalPos> set = Sets.newHashSet(globalPos);
+            queryResult.remember(set);
+            return set;
+        }));
     }
 }
 

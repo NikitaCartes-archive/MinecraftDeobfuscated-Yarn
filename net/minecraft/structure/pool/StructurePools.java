@@ -20,7 +20,7 @@ public class StructurePools {
     public static final RegistryKey<StructurePool> EMPTY = StructurePools.of("empty");
 
     public static RegistryKey<StructurePool> of(String id) {
-        return RegistryKey.of(RegistryKeys.TEMPLATE_POOL_WORLDGEN, new Identifier(id));
+        return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, new Identifier(id));
     }
 
     public static void register(Registerable<StructurePool> structurePoolsRegisterable, String id, StructurePool pool) {
@@ -28,7 +28,7 @@ public class StructurePools {
     }
 
     public static void bootstrap(Registerable<StructurePool> structurePoolsRegisterable) {
-        RegistryEntryLookup<StructurePool> registryEntryLookup = structurePoolsRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+        RegistryEntryLookup<StructurePool> registryEntryLookup = structurePoolsRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);
         RegistryEntry.Reference<StructurePool> registryEntry = registryEntryLookup.getOrThrow(EMPTY);
         structurePoolsRegisterable.register(EMPTY, new StructurePool(registryEntry, ImmutableList.of(), StructurePool.Projection.RIGID));
         BastionRemnantGenerator.bootstrap(structurePoolsRegisterable);

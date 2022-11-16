@@ -20,9 +20,9 @@ public class PillagerOutpostGenerator {
     public static final RegistryKey<StructurePool> STRUCTURE_POOLS = StructurePools.of("pillager_outpost/base_plates");
 
     public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-        RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
+        RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);
         RegistryEntry.Reference<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.OUTPOST_ROT);
-        RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+        RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);
         RegistryEntry.Reference<StructurePool> registryEntry2 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
         poolRegisterable.register(STRUCTURE_POOLS, new StructurePool(registryEntry2, ImmutableList.of(Pair.of(StructurePoolElement.ofLegacySingle("pillager_outpost/base_plate"), 1)), StructurePool.Projection.RIGID));
         StructurePools.register(poolRegisterable, "pillager_outpost/towers", new StructurePool(registryEntry2, ImmutableList.of(Pair.of(StructurePoolElement.ofList(ImmutableList.of(StructurePoolElement.ofLegacySingle("pillager_outpost/watchtower"), StructurePoolElement.ofProcessedLegacySingle("pillager_outpost/watchtower_overgrown", registryEntry))), 1)), StructurePool.Projection.RIGID));

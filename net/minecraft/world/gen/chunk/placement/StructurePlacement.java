@@ -142,7 +142,7 @@ public abstract class StructurePlacement {
 
     @Deprecated
     public record ExclusionZone(RegistryEntry<StructureSet> otherSet, int chunkCount) {
-        public static final Codec<ExclusionZone> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET_WORLDGEN, StructureSet.CODEC, false).fieldOf("other_set")).forGetter(ExclusionZone::otherSet), ((MapCodec)Codec.intRange(1, 16).fieldOf("chunk_count")).forGetter(ExclusionZone::chunkCount)).apply((Applicative<ExclusionZone, ?>)instance, ExclusionZone::new));
+        public static final Codec<ExclusionZone> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET, StructureSet.CODEC, false).fieldOf("other_set")).forGetter(ExclusionZone::otherSet), ((MapCodec)Codec.intRange(1, 16).fieldOf("chunk_count")).forGetter(ExclusionZone::chunkCount)).apply((Applicative<ExclusionZone, ?>)instance, ExclusionZone::new));
 
         boolean shouldExclude(StructurePlacementCalculator calculator, int centerChunkX, int centerChunkZ) {
             return calculator.canGenerate(this.otherSet, centerChunkX, centerChunkZ, this.chunkCount);

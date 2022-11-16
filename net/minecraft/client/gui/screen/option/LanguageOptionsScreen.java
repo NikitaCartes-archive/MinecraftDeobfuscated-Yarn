@@ -35,7 +35,7 @@ extends GameOptionsScreen {
         this.languageSelectionList = new LanguageSelectionListWidget(this.client);
         this.addSelectableChild(this.languageSelectionList);
         this.addDrawableChild(this.gameOptions.getForceUnicodeFont().createButton(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
             LanguageSelectionListWidget.LanguageEntry languageEntry = (LanguageSelectionListWidget.LanguageEntry)this.languageSelectionList.getSelectedOrNull();
             if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
                 this.languageManager.setLanguage(languageEntry.languageDefinition);
@@ -44,7 +44,7 @@ extends GameOptionsScreen {
                 this.gameOptions.write();
             }
             this.client.setScreen(this.parent);
-        }).setPositionAndSize(this.width / 2 - 155 + 160, this.height - 38, 150, 20).build());
+        }).dimensions(this.width / 2 - 155 + 160, this.height - 38, 150, 20).build());
         super.init();
     }
 

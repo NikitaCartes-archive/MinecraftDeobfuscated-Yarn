@@ -108,7 +108,7 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         super(properties);
         String string = this.getString("level-seed", "");
         boolean bl = this.parseBoolean("generate-structures", true);
-        long l = GeneratorOptions.parseSeed(string);
+        long l = GeneratorOptions.parseSeed(string).orElse(GeneratorOptions.getRandomSeed());
         this.generatorOptions = new GeneratorOptions(l, bl, false);
         this.worldGenProperties = new WorldGenProperties(this.get("generator-settings", generatorSettings -> JsonHelper.deserialize(!generatorSettings.isEmpty() ? generatorSettings : "{}"), new JsonObject()), this.get("level-type", type -> type.toLowerCase(Locale.ROOT), WorldPresets.DEFAULT.getValue().toString()));
         this.serverResourcePackProperties = ServerPropertiesHandler.getServerResourcePackProperties(this.getString("resource-pack", ""), this.getString("resource-pack-sha1", ""), this.getDeprecatedString("resource-pack-hash"), this.parseBoolean("require-resource-pack", false), this.getString("resource-pack-prompt", ""));
@@ -191,9 +191,9 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         private static final Map<String, RegistryKey<WorldPreset>> LEVEL_TYPE_TO_PRESET_KEY = Map.of("default", WorldPresets.DEFAULT, "largebiomes", WorldPresets.LARGE_BIOMES);
 
         public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(DynamicRegistryManager dynamicRegistryManager) {
-            Registry<WorldPreset> registry = dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET_WORLDGEN);
+            Registry<WorldPreset> registry = dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET);
             RegistryEntry.Reference<WorldPreset> reference = registry.getEntry(WorldPresets.DEFAULT).or(() -> registry.streamEntries().findAny()).orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
-            RegistryEntry registryEntry = Optional.ofNullable(Identifier.tryParse(this.levelType)).map(levelTypeId -> RegistryKey.of(RegistryKeys.WORLD_PRESET_WORLDGEN, levelTypeId)).or(() -> Optional.ofNullable(LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType))).flatMap(registry::getEntry).orElseGet(() -> {
+            RegistryEntry registryEntry = Optional.ofNullable(Identifier.tryParse(this.levelType)).map(levelTypeId -> RegistryKey.of(RegistryKeys.WORLD_PRESET, levelTypeId)).or(() -> Optional.ofNullable(LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType))).flatMap(registry::getEntry).orElseGet(() -> {
                 field_37276.warn("Failed to parse level-type {}, defaulting to {}", (Object)this.levelType, (Object)reference.registryKey().getValue());
                 return reference;
             });

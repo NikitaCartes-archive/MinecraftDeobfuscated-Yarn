@@ -276,7 +276,7 @@ public class StructureTestUtil {
     private static void resetBlock(int altitude, BlockPos pos, ServerWorld world) {
         BlockState blockState = null;
         DynamicRegistryManager dynamicRegistryManager = world.getRegistryManager();
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN), dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET_WORLDGEN), dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE_WORLDGEN));
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.BIOME), dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET), dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE));
         List<BlockState> list = flatChunkGeneratorConfig.getLayerBlocks();
         int i = pos.getY() - world.getBottomY();
         if (pos.getY() < altitude && i > 0 && i <= list.size()) {

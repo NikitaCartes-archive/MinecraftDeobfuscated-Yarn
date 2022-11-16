@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  * value. If a query fails, the task does not run.
  * 
  * @see MemoryQueryResult
- * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.Context
+ * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.TaskContext
  */
 public interface MemoryQuery<F extends K1, Value> {
     public MemoryModuleType<Value> memory();

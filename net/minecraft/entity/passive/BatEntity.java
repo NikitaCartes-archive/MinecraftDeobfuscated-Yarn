@@ -48,7 +48,9 @@ extends AmbientEntity {
 
     public BatEntity(EntityType<? extends BatEntity> entityType, World world) {
         super((EntityType<? extends AmbientEntity>)entityType, world);
-        this.setRoosting(true);
+        if (!world.isClient) {
+            this.setRoosting(true);
+        }
     }
 
     @Override

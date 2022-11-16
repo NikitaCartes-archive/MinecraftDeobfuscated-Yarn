@@ -94,7 +94,12 @@ public class Models {
     public static final Model TEMPLATE_GLASS_PANE_SIDE = Models.block("template_glass_pane_side", "_side", TextureKey.PANE, TextureKey.EDGE);
     public static final Model TEMPLATE_GLASS_PANE_SIDE_ALT = Models.block("template_glass_pane_side_alt", "_side_alt", TextureKey.PANE, TextureKey.EDGE);
     public static final Model TEMPLATE_COMMAND_BLOCK = Models.block("template_command_block", TextureKey.FRONT, TextureKey.BACK, TextureKey.SIDE);
-    public static final Model TEMPLATE_CHISELED_BOOKSHELF = Models.block("template_chiseled_bookshelf", TextureKey.FRONT, TextureKey.SIDE, TextureKey.TOP);
+    public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_LEFT = Models.block("template_chiseled_bookshelf_slot_top_left", "_slot_top_left", TextureKey.TEXTURE);
+    public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_MID = Models.block("template_chiseled_bookshelf_slot_top_mid", "_slot_top_mid", TextureKey.TEXTURE);
+    public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_RIGHT = Models.block("template_chiseled_bookshelf_slot_top_right", "_slot_top_right", TextureKey.TEXTURE);
+    public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_LEFT = Models.block("template_chiseled_bookshelf_slot_bottom_left", "_slot_bottom_left", TextureKey.TEXTURE);
+    public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_MID = Models.block("template_chiseled_bookshelf_slot_bottom_mid", "_slot_bottom_mid", TextureKey.TEXTURE);
+    public static final Model TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_RIGHT = Models.block("template_chiseled_bookshelf_slot_bottom_right", "_slot_bottom_right", TextureKey.TEXTURE);
     public static final Model TEMPLATE_ANVIL = Models.block("template_anvil", TextureKey.TOP);
     public static final Model[] STEM_GROWTH_STAGES = (Model[])IntStream.range(0, 8).mapToObj(stage -> Models.block("stem_growth" + stage, "_stage" + stage, TextureKey.STEM)).toArray(Model[]::new);
     public static final Model STEM_FRUIT = Models.block("stem_fruit", TextureKey.STEM, TextureKey.UPPERSTEM);

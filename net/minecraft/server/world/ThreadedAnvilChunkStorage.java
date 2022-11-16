@@ -172,11 +172,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         long l = world.getSeed();
         if (chunkGenerator instanceof NoiseChunkGenerator) {
             NoiseChunkGenerator noiseChunkGenerator = (NoiseChunkGenerator)chunkGenerator;
-            this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.getSettings().value(), dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.NOISE_WORLDGEN), l);
+            this.noiseConfig = NoiseConfig.create(noiseChunkGenerator.getSettings().value(), dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.NOISE_PARAMETERS), l);
         } else {
-            this.noiseConfig = NoiseConfig.create(ChunkGeneratorSettings.createMissingSettings(), dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.NOISE_WORLDGEN), l);
+            this.noiseConfig = NoiseConfig.create(ChunkGeneratorSettings.createMissingSettings(), dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.NOISE_PARAMETERS), l);
         }
-        this.structurePlacementCalculator = chunkGenerator.createStructurePlacementCalculator(dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET_WORLDGEN), this.noiseConfig, l);
+        this.structurePlacementCalculator = chunkGenerator.createStructurePlacementCalculator(dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.STRUCTURE_SET), this.noiseConfig, l);
         this.mainThreadExecutor = mainThreadExecutor;
         TaskExecutor<Runnable> taskExecutor = TaskExecutor.create(executor, "worldgen");
         MessageListener<Runnable> messageListener = MessageListener.create("main", mainThreadExecutor::send);
@@ -571,7 +571,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     private Chunk getProtoChunk(ChunkPos chunkPos) {
         this.markAsProtoChunk(chunkPos);
-        return new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN), null);
+        return new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA, this.world, this.world.getRegistryManager().get(RegistryKeys.BIOME), null);
     }
 
     private void markAsProtoChunk(ChunkPos pos) {
@@ -1094,6 +1094,19 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         EntityTracker entityTracker = (EntityTracker)this.entityTrackers.get(entity.getId());
         if (entityTracker != null) {
             entityTracker.sendToNearbyPlayers(packet);
+        }
+    }
+
+    public void sendChunkPacketToWatchingPlayers(Chunk chunk) {
+        WorldChunk worldChunk;
+        ChunkPos chunkPos = chunk.getPos();
+        WorldChunk worldChunk2 = chunk instanceof WorldChunk ? (worldChunk = (WorldChunk)chunk) : this.world.getChunk(chunkPos.x, chunkPos.z);
+        MutableObject<ChunkDataS2CPacket> mutableObject = new MutableObject<ChunkDataS2CPacket>();
+        for (ServerPlayerEntity serverPlayerEntity : this.getPlayersWatchingChunk(chunkPos, false)) {
+            if (mutableObject.getValue() == null) {
+                mutableObject.setValue(new ChunkDataS2CPacket(worldChunk2, this.lightingProvider, null, null, true));
+            }
+            serverPlayerEntity.sendChunkPacket(chunkPos, (Packet)mutableObject.getValue());
         }
     }
 

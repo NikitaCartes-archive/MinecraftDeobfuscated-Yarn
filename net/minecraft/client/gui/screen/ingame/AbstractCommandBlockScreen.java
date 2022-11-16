@@ -47,9 +47,8 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.client.keyboard.setRepeatEvents(true);
-        this.doneButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.commitAndClose()).setPositionAndSize(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20).build());
-        this.cancelButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.close()).setPositionAndSize(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20).build());
+        this.doneButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> this.commitAndClose()).dimensions(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20).build());
+        this.cancelButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).dimensions(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20).build());
         boolean bl = this.getCommandExecutor().isTrackingOutput();
         this.toggleTrackingOutputButton = this.addDrawableChild(CyclingButtonWidget.onOffBuilder(Text.literal("O"), Text.literal("X")).initially(bl).omitKeyText().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, Text.translatable("advMode.trackOutput"), (button, trackOutput) -> {
             CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
@@ -72,7 +71,6 @@ extends Screen {
         this.previousOutputTextField.setText("-");
         this.addSelectableChild(this.previousOutputTextField);
         this.setInitialFocus(this.consoleCommandTextField);
-        this.consoleCommandTextField.setTextFieldFocused(true);
         this.commandSuggestor = new ChatInputSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
         this.commandSuggestor.setWindowActive(true);
         this.commandSuggestor.refresh();
@@ -98,11 +96,6 @@ extends Screen {
             commandBlockExecutor.setLastOutput(null);
         }
         this.client.setScreen(null);
-    }
-
-    @Override
-    public void removed() {
-        this.client.keyboard.setRepeatEvents(false);
     }
 
     protected abstract void syncSettingsToServer(CommandBlockExecutor var1);

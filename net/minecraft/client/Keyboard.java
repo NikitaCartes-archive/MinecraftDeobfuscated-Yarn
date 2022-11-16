@@ -51,7 +51,6 @@ import org.lwjgl.glfw.GLFW;
 public class Keyboard {
     public static final int DEBUG_CRASH_TIME = 10000;
     private final MinecraftClient client;
-    private boolean repeatEvents;
     private final Clipboard clipboard = new Clipboard();
     private long debugCrashStartTime = -1L;
     private long debugCrashLastLogTime = -1L;
@@ -347,7 +346,7 @@ public class Keyboard {
         if (screen != null) {
             boolean[] bls = new boolean[]{false};
             Screen.wrapScreenError(() -> {
-                if (action == 1 || action == 2 && this.repeatEvents) {
+                if (action == 1 || action == 2) {
                     screen.applyKeyPressNarratorDelay();
                     bls[0] = screen.keyPressed(key, scancode, modifiers);
                 } else if (action == 0) {
@@ -415,10 +414,6 @@ public class Keyboard {
                 Screen.wrapScreenError(() -> element.charTyped(c, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
             }
         }
-    }
-
-    public void setRepeatEvents(boolean repeatEvents) {
-        this.repeatEvents = repeatEvents;
     }
 
     public void setup(long window2) {

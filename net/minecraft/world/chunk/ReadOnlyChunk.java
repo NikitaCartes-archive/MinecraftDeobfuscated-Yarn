@@ -46,7 +46,7 @@ extends ProtoChunk {
     private final boolean field_34554;
 
     public ReadOnlyChunk(WorldChunk wrapped, boolean bl) {
-        super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped.heightLimitView, wrapped.getWorld().getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN), wrapped.getBlendingData());
+        super(wrapped.getPos(), UpgradeData.NO_UPGRADE_DATA, wrapped.heightLimitView, wrapped.getWorld().getRegistryManager().get(RegistryKeys.BIOME), wrapped.getBlendingData());
         this.wrapped = wrapped;
         this.field_34554 = bl;
     }

@@ -86,7 +86,7 @@ extends Screen {
         int k = this.description != null ? this.description.count() : 1;
         int l = Math.max(k, 5) * this.textRenderer.fontHeight;
         int m = Math.min(120 + l, this.height - 40);
-        this.button = this.addDrawableChild(ButtonWidget.createBuilder(this.closeButtonText, buttonWidget -> this.close()).setPositionAndSize((this.width - 150) / 2, m, 150, 20).build());
+        this.button = this.addDrawableChild(ButtonWidget.builder(this.closeButtonText, buttonWidget -> this.close()).dimensions((this.width - 150) / 2, m, 150, 20).build());
     }
 
     @Override

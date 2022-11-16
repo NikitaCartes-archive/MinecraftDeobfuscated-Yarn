@@ -454,6 +454,17 @@ public class GameOptions {
         case 110 -> GameOptions.getGenericValueText(optionText, Text.translatable("options.fov.max"));
         default -> GameOptions.getGenericValueText(optionText, value);
     }, new SimpleOption.ValidatingIntSliderCallbacks(30, 110), Codec.DOUBLE.xmap(value -> (int)(value * 40.0 + 70.0), value -> ((double)value.intValue() - 70.0) / 40.0), 70, value -> MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate());
+    private static final MutableText TELEMETRY_TOOLTIP = Text.translatable("options.telemetry.button.tooltip", Text.translatable("options.telemetry.state.minimal"), Text.translatable("options.telemetry.state.all"));
+    private final SimpleOption<Boolean> telemetryOptInExtra = SimpleOption.ofBoolean("options.telemetry.button", SimpleOption.constantTooltip(TELEMETRY_TOOLTIP), (optionText, value) -> {
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        if (!minecraftClient.isTelemetryEnabledByApi()) {
+            return Text.translatable("options.telemetry.state.none");
+        }
+        if (value.booleanValue() && minecraftClient.isOptionalTelemetryEnabledByApi()) {
+            return Text.translatable("options.telemetry.state.all");
+        }
+        return Text.translatable("options.telemetry.state.minimal");
+    }, false, value -> {});
     private static final Text SCREEN_EFFECT_SCALE_TOOLTIP = Text.translatable("options.screenEffectScale.tooltip");
     private final SimpleOption<Double> distortionEffectScale = new SimpleOption<Double>("options.screenEffectScale", SimpleOption.constantTooltip(SCREEN_EFFECT_SCALE_TOOLTIP), (optionText, value) -> {
         if (value == 0.0) {
@@ -760,6 +771,10 @@ public class GameOptions {
         return this.fov;
     }
 
+    public SimpleOption<Boolean> getTelemetryOptInExtra() {
+        return this.telemetryOptInExtra;
+    }
+
     public SimpleOption<Double> getDistortionEffectScale() {
         return this.distortionEffectScale;
     }
@@ -900,6 +915,7 @@ public class GameOptions {
         visitor.accept("allowServerListing", this.allowServerListing);
         visitor.accept("onlyShowSecureChat", this.onlyShowSecureChat);
         visitor.accept("panoramaScrollSpeed", this.panoramaSpeed);
+        visitor.accept("telemetryOptInExtra", this.telemetryOptInExtra);
         for (KeyBinding keyBinding : this.allKeys) {
             String string2;
             String string = keyBinding.getBoundKeyTranslationKey();

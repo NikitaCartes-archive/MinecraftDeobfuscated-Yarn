@@ -111,7 +111,8 @@ public final class SimpleOption<T> {
      * of creating a boolean option.
      */
     public static final PotentialValuesBasedCallbacks<Boolean> BOOLEAN = new PotentialValuesBasedCallbacks<Boolean>(ImmutableList.of(Boolean.TRUE, Boolean.FALSE), Codec.BOOL);
-    private final TooltipFactory<T> tooltipFactoryGetter;
+    public static final ValueTextGetter<Boolean> BOOLEAN_TEXT_GETTER = (optionText, value) -> value != false ? ScreenTexts.ON : ScreenTexts.OFF;
+    private final TooltipFactory<T> tooltipFactory;
     final Function<T, Text> textGetter;
     private final Callbacks<T> callbacks;
     private final Codec<T> codec;
@@ -137,24 +138,28 @@ public final class SimpleOption<T> {
     /**
      * Creates a boolean option.
      */
-    public static SimpleOption<Boolean> ofBoolean(String key, TooltipFactory<Boolean> tooltipFactoryGetter, boolean defaultValue) {
-        return SimpleOption.ofBoolean(key, tooltipFactoryGetter, defaultValue, value -> {});
+    public static SimpleOption<Boolean> ofBoolean(String key, TooltipFactory<Boolean> tooltipFactory, boolean defaultValue) {
+        return SimpleOption.ofBoolean(key, tooltipFactory, defaultValue, value -> {});
     }
 
     /**
      * Creates a boolean option.
      */
-    public static SimpleOption<Boolean> ofBoolean(String key, TooltipFactory<Boolean> tooltipFactoryGetter, boolean defaultValue, Consumer<Boolean> changeCallback) {
-        return new SimpleOption<Boolean>(key, tooltipFactoryGetter, (optionText, value) -> value != false ? ScreenTexts.ON : ScreenTexts.OFF, BOOLEAN, defaultValue, changeCallback);
+    public static SimpleOption<Boolean> ofBoolean(String key, TooltipFactory<Boolean> tooltipFactory, boolean defaultValue, Consumer<Boolean> changeCallback) {
+        return SimpleOption.ofBoolean(key, tooltipFactory, BOOLEAN_TEXT_GETTER, defaultValue, changeCallback);
     }
 
-    public SimpleOption(String key, TooltipFactory<T> tooltipFactoryGetter, ValueTextGetter<T> valueTextGetter, Callbacks<T> callbacks, T defaultValue, Consumer<T> changeCallback) {
-        this(key, tooltipFactoryGetter, valueTextGetter, callbacks, callbacks.codec(), defaultValue, changeCallback);
+    public static SimpleOption<Boolean> ofBoolean(String key, TooltipFactory<Boolean> tooltipFactory, ValueTextGetter<Boolean> valueTextGetter, boolean defaultValue, Consumer<Boolean> changeCallback) {
+        return new SimpleOption<Boolean>(key, tooltipFactory, valueTextGetter, BOOLEAN, defaultValue, changeCallback);
     }
 
-    public SimpleOption(String key, TooltipFactory<T> tooltipFactoryGetter, ValueTextGetter<T> valueTextGetter, Callbacks<T> callbacks, Codec<T> codec, T defaultValue, Consumer<T> changeCallback) {
+    public SimpleOption(String key, TooltipFactory<T> tooltipFactory, ValueTextGetter<T> valueTextGetter, Callbacks<T> callbacks, T defaultValue, Consumer<T> changeCallback) {
+        this(key, tooltipFactory, valueTextGetter, callbacks, callbacks.codec(), defaultValue, changeCallback);
+    }
+
+    public SimpleOption(String key, TooltipFactory<T> tooltipFactory, ValueTextGetter<T> valueTextGetter, Callbacks<T> callbacks, Codec<T> codec, T defaultValue, Consumer<T> changeCallback) {
         this.text = Text.translatable(key);
-        this.tooltipFactoryGetter = tooltipFactoryGetter;
+        this.tooltipFactory = tooltipFactory;
         this.textGetter = value -> valueTextGetter.toString(this.text, value);
         this.callbacks = callbacks;
         this.codec = codec;
@@ -190,7 +195,11 @@ public final class SimpleOption<T> {
     }
 
     public ClickableWidget createButton(GameOptions options, int x, int y, int width) {
-        return this.callbacks.getButtonCreator(this.tooltipFactoryGetter, options, x, y, width).apply(this);
+        return this.createButton(options, x, y, width, value -> {});
+    }
+
+    public ClickableWidget createButton(GameOptions options, int x, int y, int width, Consumer<T> changeCallback) {
+        return this.callbacks.getButtonCreator(this.tooltipFactory, options, x, y, width, changeCallback).apply(this);
     }
 
     /**
@@ -264,7 +273,7 @@ public final class SimpleOption<T> {
 
     @Environment(value=EnvType.CLIENT)
     static interface Callbacks<T> {
-        public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(TooltipFactory<T> var1, GameOptions var2, int var3, int var4, int var5);
+        public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(TooltipFactory<T> var1, GameOptions var2, int var3, int var4, int var5, Consumer<T> var6);
 
         public Optional<T> validate(T var1);
 
@@ -433,12 +442,14 @@ public final class SimpleOption<T> {
         private final SimpleOption<N> option;
         private final SliderCallbacks<N> callbacks;
         private final TooltipFactory<N> tooltipFactory;
+        private final Consumer<N> changeCallback;
 
-        OptionSliderWidgetImpl(GameOptions options, int x, int y, int width, int height, SimpleOption<N> option, SliderCallbacks<N> callbacks, TooltipFactory<N> tooltipFactory) {
+        OptionSliderWidgetImpl(GameOptions options, int x, int y, int width, int height, SimpleOption<N> option, SliderCallbacks<N> callbacks, TooltipFactory<N> tooltipFactory, Consumer<N> changeCallback) {
             super(options, x, y, width, height, callbacks.toSliderProgress(option.getValue()));
             this.option = option;
             this.callbacks = callbacks;
             this.tooltipFactory = tooltipFactory;
+            this.changeCallback = changeCallback;
             this.updateMessage();
         }
 
@@ -452,6 +463,7 @@ public final class SimpleOption<T> {
         protected void applyValue() {
             this.option.setValue(this.callbacks.toValue(this.value));
             this.options.write();
+            this.changeCallback.accept(this.option.getValue());
         }
     }
 
@@ -490,11 +502,11 @@ public final class SimpleOption<T> {
         public boolean isCycling();
 
         @Override
-        default public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width) {
+        default public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width, Consumer<T> changeCallback) {
             if (this.isCycling()) {
-                return CyclingCallbacks.super.getButtonCreator(tooltipFactory, gameOptions, x, y, width);
+                return CyclingCallbacks.super.getButtonCreator(tooltipFactory, gameOptions, x, y, width, changeCallback);
             }
-            return SliderCallbacks.super.getButtonCreator(tooltipFactory, gameOptions, x, y, width);
+            return SliderCallbacks.super.getButtonCreator(tooltipFactory, gameOptions, x, y, width, changeCallback);
         }
     }
 
@@ -508,10 +520,11 @@ public final class SimpleOption<T> {
         }
 
         @Override
-        default public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width) {
+        default public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width, Consumer<T> changeCallback) {
             return option -> CyclingButtonWidget.builder(option.textGetter).values(this.getValues()).tooltip(tooltipFactory).initially(option.value).build(x, y, width, 20, option.text, (button, value) -> {
                 this.valueSetter().set((SimpleOption<Object>)option, value);
                 gameOptions.write();
+                changeCallback.accept(value);
             });
         }
 
@@ -529,8 +542,8 @@ public final class SimpleOption<T> {
         public T toValue(double var1);
 
         @Override
-        default public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width) {
-            return option -> new OptionSliderWidgetImpl(gameOptions, x, y, width, 20, option, this, tooltipFactory);
+        default public Function<SimpleOption<T>, ClickableWidget> getButtonCreator(TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width, Consumer<T> changeCallback) {
+            return option -> new OptionSliderWidgetImpl(gameOptions, x, y, width, 20, option, this, tooltipFactory, changeCallback);
         }
     }
 }

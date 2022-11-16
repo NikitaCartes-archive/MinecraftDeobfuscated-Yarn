@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class ScreenshotRecorder {
     private static final Logger LOGGER = LogUtils.getLogger();
+    public static final String SCREENSHOTS_DIRECTORY = "screenshots";
     private int unitHeight;
     private final DataOutputStream stream;
     private final byte[] buffer;
@@ -51,7 +52,7 @@ public class ScreenshotRecorder {
 
     private static void saveScreenshotInner(File gameDirectory, @Nullable String fileName, Framebuffer framebuffer, Consumer<Text> messageReceiver) {
         NativeImage nativeImage = ScreenshotRecorder.takeScreenshot(framebuffer);
-        File file = new File(gameDirectory, "screenshots");
+        File file = new File(gameDirectory, SCREENSHOTS_DIRECTORY);
         file.mkdir();
         File file2 = fileName == null ? ScreenshotRecorder.getScreenshotFilename(file) : new File(file, fileName);
         Util.getIoWorkerExecutor().execute(() -> {
@@ -97,7 +98,7 @@ public class ScreenshotRecorder {
         this.width = width;
         this.height = height;
         this.unitHeight = unitHeight;
-        File file = new File(gameDirectory, "screenshots");
+        File file = new File(gameDirectory, SCREENSHOTS_DIRECTORY);
         file.mkdir();
         String string = "huge_" + Util.getFormattedCurrentTime();
         int i = 1;

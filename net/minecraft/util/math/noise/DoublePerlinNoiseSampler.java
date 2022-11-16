@@ -97,7 +97,7 @@ public class DoublePerlinNoiseSampler {
 
     public record NoiseParameters(int firstOctave, DoubleList amplitudes) {
         public static final Codec<NoiseParameters> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("firstOctave")).forGetter(NoiseParameters::firstOctave), ((MapCodec)Codec.DOUBLE.listOf().fieldOf("amplitudes")).forGetter(NoiseParameters::amplitudes)).apply((Applicative<NoiseParameters, ?>)instance, NoiseParameters::new));
-        public static final Codec<RegistryEntry<NoiseParameters>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.NOISE_WORLDGEN, CODEC);
+        public static final Codec<RegistryEntry<NoiseParameters>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.NOISE_PARAMETERS, CODEC);
 
         public NoiseParameters(int firstOctave, List<Double> amplitudes) {
             this(firstOctave, new DoubleArrayList(amplitudes));

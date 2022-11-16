@@ -43,7 +43,7 @@ public interface StructureKeys {
     public static final RegistryKey<Structure> ANCIENT_CITY = StructureKeys.of("ancient_city");
 
     private static RegistryKey<Structure> of(String id) {
-        return RegistryKey.of(RegistryKeys.STRUCTURE_WORLDGEN, new Identifier(id));
+        return RegistryKey.of(RegistryKeys.STRUCTURE, new Identifier(id));
     }
 }
 

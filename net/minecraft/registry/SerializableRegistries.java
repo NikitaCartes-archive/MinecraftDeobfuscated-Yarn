@@ -27,8 +27,8 @@ import net.minecraft.world.dimension.DimensionType;
 public class SerializableRegistries {
     private static final Map<RegistryKey<? extends Registry<?>>, Info<?>> REGISTRIES = Util.make(() -> {
         ImmutableMap.Builder<RegistryKey<Registry<?>>, Info<?>> builder = ImmutableMap.builder();
-        SerializableRegistries.add(builder, RegistryKeys.BIOME_WORLDGEN, Biome.NETWORK_CODEC);
-        SerializableRegistries.add(builder, RegistryKeys.CHAT_TYPE, MessageType.CODEC);
+        SerializableRegistries.add(builder, RegistryKeys.BIOME, Biome.NETWORK_CODEC);
+        SerializableRegistries.add(builder, RegistryKeys.MESSAGE_TYPE, MessageType.CODEC);
         SerializableRegistries.add(builder, RegistryKeys.DIMENSION_TYPE, DimensionType.CODEC);
         return builder.build();
     });

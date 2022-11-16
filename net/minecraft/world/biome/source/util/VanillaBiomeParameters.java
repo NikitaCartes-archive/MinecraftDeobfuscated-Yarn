@@ -80,7 +80,7 @@ public final class VanillaBiomeParameters {
     private void writeDebug(Consumer<Pair<MultiNoiseUtil.NoiseHypercube, RegistryKey<Biome>>> parameters) {
         Spline spline2;
         RegistryWrapper.WrapperLookup wrapperLookup = BuiltinRegistries.createWrapperLookup();
-        RegistryWrapper.Impl<DensityFunction> registryEntryLookup = wrapperLookup.getWrapperOrThrow(RegistryKeys.DENSITY_FUNCTION_WORLDGEN);
+        RegistryWrapper.Impl<DensityFunction> registryEntryLookup = wrapperLookup.getWrapperOrThrow(RegistryKeys.DENSITY_FUNCTION);
         DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper = new DensityFunctionTypes.Spline.DensityFunctionWrapper(registryEntryLookup.getOrThrow(DensityFunctions.CONTINENTS_OVERWORLD));
         DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper2 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(registryEntryLookup.getOrThrow(DensityFunctions.EROSION_OVERWORLD));
         DensityFunctionTypes.Spline.DensityFunctionWrapper densityFunctionWrapper3 = new DensityFunctionTypes.Spline.DensityFunctionWrapper(registryEntryLookup.getOrThrow(DensityFunctions.RIDGES_FOLDED_OVERWORLD));

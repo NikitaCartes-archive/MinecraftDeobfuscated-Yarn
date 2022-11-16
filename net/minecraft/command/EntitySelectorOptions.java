@@ -21,6 +21,7 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.FloatRangeArgument;
 import net.minecraft.entity.EntityType;
@@ -147,7 +148,7 @@ public class EntitySelectorOptions {
                 case "nearest" -> EntitySelectorReader.NEAREST;
                 case "furthest" -> EntitySelectorReader.FURTHEST;
                 case "random" -> EntitySelectorReader.RANDOM;
-                case "arbitrary" -> EntitySelectorReader.ARBITRARY;
+                case "arbitrary" -> EntitySelector.ARBITRARY;
                 default -> {
                     reader.getReader().setCursor(i);
                     throw IRREVERSIBLE_SORT_EXCEPTION.createWithContext(reader.getReader(), string);

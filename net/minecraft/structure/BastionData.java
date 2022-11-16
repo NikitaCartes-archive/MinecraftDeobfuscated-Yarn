@@ -15,7 +15,7 @@ import net.minecraft.structure.pool.StructurePools;
 
 public class BastionData {
     public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-        RegistryEntryLookup<StructurePool> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+        RegistryEntryLookup<StructurePool> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);
         RegistryEntry.Reference<StructurePool> registryEntry = registryEntryLookup.getOrThrow(StructurePools.EMPTY);
         StructurePools.register(poolRegisterable, "bastion/mobs/piglin", new StructurePool(registryEntry, ImmutableList.of(Pair.of(StructurePoolElement.ofSingle("bastion/mobs/melee_piglin"), 1), Pair.of(StructurePoolElement.ofSingle("bastion/mobs/sword_piglin"), 4), Pair.of(StructurePoolElement.ofSingle("bastion/mobs/crossbow_piglin"), 4), Pair.of(StructurePoolElement.ofSingle("bastion/mobs/empty"), 1)), StructurePool.Projection.RIGID));
         StructurePools.register(poolRegisterable, "bastion/mobs/hoglin", new StructurePool(registryEntry, ImmutableList.of(Pair.of(StructurePoolElement.ofSingle("bastion/mobs/hoglin"), 2), Pair.of(StructurePoolElement.ofSingle("bastion/mobs/empty"), 1)), StructurePool.Projection.RIGID));

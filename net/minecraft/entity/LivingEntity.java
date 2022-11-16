@@ -130,6 +130,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockLocating;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
@@ -815,7 +816,7 @@ extends Entity {
         if (entity != null) {
             ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
             EntityType<?> entityType = entity.getType();
-            if (entityType == EntityType.SKELETON && itemStack.isOf(Items.SKELETON_SKULL) || entityType == EntityType.ZOMBIE && itemStack.isOf(Items.ZOMBIE_HEAD) || entityType == EntityType.CREEPER && itemStack.isOf(Items.CREEPER_HEAD)) {
+            if (entityType == EntityType.SKELETON && itemStack.isOf(Items.SKELETON_SKULL) || entityType == EntityType.ZOMBIE && itemStack.isOf(Items.ZOMBIE_HEAD) || entityType == EntityType.PIGLIN && itemStack.isOf(Items.PIGLIN_HEAD) || entityType == EntityType.PIGLIN_BRUTE && itemStack.isOf(Items.PIGLIN_HEAD) || entityType == EntityType.CREEPER && itemStack.isOf(Items.CREEPER_HEAD)) {
                 d *= 0.5;
             }
         }
@@ -1124,7 +1125,7 @@ extends Entity {
             if (source != DamageSource.DROWN && (!bl || amount > 0.0f)) {
                 this.scheduleVelocityUpdate();
             }
-            if (entity2 != null) {
+            if (entity2 != null && !source.isExplosive()) {
                 double d = entity2.getX() - this.getX();
                 double e = entity2.getZ() - this.getZ();
                 while (d * d + e * e < 1.0E-4) {
@@ -3024,8 +3025,9 @@ extends Entity {
         this.getSleepingPosition().filter(this.world::isChunkLoaded).ifPresent(pos -> {
             BlockState blockState = this.world.getBlockState((BlockPos)pos);
             if (blockState.getBlock() instanceof BedBlock) {
+                Direction direction = blockState.get(BedBlock.FACING);
                 this.world.setBlockState((BlockPos)pos, (BlockState)blockState.with(BedBlock.OCCUPIED, false), Block.NOTIFY_ALL);
-                Vec3d vec3d = BedBlock.findWakeUpPosition(this.getType(), this.world, pos, this.getYaw()).orElseGet(() -> {
+                Vec3d vec3d = BedBlock.findWakeUpPosition(this.getType(), (CollisionView)this.world, pos, direction, this.getYaw()).orElseGet(() -> {
                     BlockPos blockPos2 = pos.up();
                     return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.1, (double)blockPos2.getZ() + 0.5);
                 });

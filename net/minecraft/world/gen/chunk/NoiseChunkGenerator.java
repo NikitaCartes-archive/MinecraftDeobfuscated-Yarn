@@ -205,7 +205,7 @@ extends ChunkGenerator {
             return;
         }
         HeightContext heightContext = new HeightContext(this, region);
-        this.buildSurface(chunk, heightContext, noiseConfig, structures, region.getBiomeAccess(), region.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN), Blender.getBlender(region));
+        this.buildSurface(chunk, heightContext, noiseConfig, structures, region.getBiomeAccess(), region.getRegistryManager().get(RegistryKeys.BIOME), Blender.getBlender(region));
     }
 
     @VisibleForTesting

@@ -97,8 +97,8 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.doneButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.close()).setPositionAndSize(this.width / 2 + 4, this.height - 48, 150, 20).build());
-        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file.toUri())).setPositionAndSize(this.width / 2 - 154, this.height - 48, 150, 20).setTooltip(Tooltip.of(FOLDER_INFO)).build());
+        this.doneButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).dimensions(this.width / 2 + 4, this.height - 48, 150, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file.toUri())).dimensions(this.width / 2 - 154, this.height - 48, 150, 20).tooltip(Tooltip.of(FOLDER_INFO)).build());
         this.availablePackList = new PackListWidget(this.client, 200, this.height, Text.translatable("pack.available.title"));
         this.availablePackList.setLeftPos(this.width / 2 - 4 - 200);
         this.addSelectableChild(this.availablePackList);

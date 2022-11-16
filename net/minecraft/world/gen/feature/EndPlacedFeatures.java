@@ -28,7 +28,7 @@ public class EndPlacedFeatures {
     public static final RegistryKey<PlacedFeature> END_ISLAND_DECORATED = PlacedFeatures.of("end_island_decorated");
 
     public static void bootstrap(Registerable<PlacedFeature> featureRegisterable) {
-        RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
+        RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE);
         RegistryEntry.Reference<ConfiguredFeature<?, ?>> registryEntry = registryEntryLookup.getOrThrow(EndConfiguredFeatures.END_SPIKE);
         RegistryEntry.Reference<ConfiguredFeature<?, ?>> registryEntry2 = registryEntryLookup.getOrThrow(EndConfiguredFeatures.END_GATEWAY_RETURN);
         RegistryEntry.Reference<ConfiguredFeature<?, ?>> registryEntry3 = registryEntryLookup.getOrThrow(EndConfiguredFeatures.CHORUS_PLANT);

@@ -87,22 +87,21 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.client.keyboard.setRepeatEvents(true);
         AbuseReportLimits abuseReportLimits = this.context.getSender().getLimits();
         int i = this.width / 2;
         AbuseReportReason abuseReportReason = this.report.getReason();
         this.reasonDescription = abuseReportReason != null ? MultilineText.create(this.textRenderer, (StringVisitable)abuseReportReason.getDescription(), 280) : null;
         IntSet intSet = this.report.getSelections();
         Text text = intSet.isEmpty() ? SELECT_CHAT_TEXT : Text.translatable("gui.chatReport.selected_chat", intSet.size());
-        this.addDrawableChild(ButtonWidget.createBuilder(text, button -> this.client.setScreen(new ChatSelectionScreen(this, this.context, this.report, report -> {
+        this.addDrawableChild(ButtonWidget.builder(text, button -> this.client.setScreen(new ChatSelectionScreen(this, this.context, this.report, report -> {
             this.report = report;
             this.onChange();
-        }))).setPositionAndSize(this.getWidgetsLeft(), this.getSelectionButtonY(), 280, 20).build());
+        }))).dimensions(this.getWidgetsLeft(), this.getSelectionButtonY(), 280, 20).build());
         Text text2 = Util.mapOrElse(abuseReportReason, AbuseReportReason::getText, SELECT_REASON_TEXT);
-        this.addDrawableChild(ButtonWidget.createBuilder(text2, button -> this.client.setScreen(new AbuseReportReasonScreen(this, this.report.getReason(), reason -> {
+        this.addDrawableChild(ButtonWidget.builder(text2, button -> this.client.setScreen(new AbuseReportReasonScreen(this, this.report.getReason(), reason -> {
             this.report.setReason((AbuseReportReason)((Object)((Object)reason)));
             this.onChange();
-        }))).setPositionAndSize(this.getWidgetsLeft(), this.getReasonButtonY(), 280, 20).build());
+        }))).dimensions(this.getWidgetsLeft(), this.getReasonButtonY(), 280, 20).build());
         this.editBox = this.addDrawableChild(new EditBoxWidget(this.client.textRenderer, this.getWidgetsLeft(), this.getEditBoxTop(), 280, this.getEditBoxBottom() - this.getEditBoxTop(), DESCRIBE_TEXT, Text.translatable("gui.chatReport.comments")));
         this.editBox.setText(this.report.getOpinionComments());
         this.editBox.setMaxLength(abuseReportLimits.maxOpinionCommentsLength());
@@ -110,8 +109,8 @@ extends Screen {
             this.report.setOpinionComments((String)opinionComments);
             this.onChange();
         });
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.close()).setPositionAndSize(i - 120, this.getBottomButtonsY(), 120, 20).build());
-        this.sendButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("gui.chatReport.send"), button -> this.send()).setPositionAndSize(i + 10, this.getBottomButtonsY(), 120, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(i - 120, this.getBottomButtonsY(), 120, 20).build());
+        this.sendButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.chatReport.send"), button -> this.send()).dimensions(i + 10, this.getBottomButtonsY(), 120, 20).build());
         this.onChange();
     }
 
@@ -275,15 +274,15 @@ extends Screen {
         @Override
         protected void initButtons(int yOffset) {
             int i = 150;
-            this.addDrawableChild(ButtonWidget.createBuilder(RETURN_BUTTON_TEXT, button -> this.close()).setPositionAndSize(this.width / 2 - 155, 100 + yOffset, 150, 20).build());
-            this.addDrawableChild(ButtonWidget.createBuilder(DRAFT_BUTTON_TEXT, button -> {
+            this.addDrawableChild(ButtonWidget.builder(RETURN_BUTTON_TEXT, button -> this.close()).dimensions(this.width / 2 - 155, 100 + yOffset, 150, 20).build());
+            this.addDrawableChild(ButtonWidget.builder(DRAFT_BUTTON_TEXT, button -> {
                 ChatReportScreen.this.setDraft();
                 this.client.setScreen(ChatReportScreen.this.parent);
-            }).setPositionAndSize(this.width / 2 + 5, 100 + yOffset, 150, 20).build());
-            this.addDrawableChild(ButtonWidget.createBuilder(DISCARD_BUTTON_TEXT, button -> {
+            }).dimensions(this.width / 2 + 5, 100 + yOffset, 150, 20).build());
+            this.addDrawableChild(ButtonWidget.builder(DISCARD_BUTTON_TEXT, button -> {
                 ChatReportScreen.this.clearDraft();
                 this.client.setScreen(ChatReportScreen.this.parent);
-            }).setPositionAndSize(this.width / 2 - 75, 130 + yOffset, 150, 20).build());
+            }).dimensions(this.width / 2 - 75, 130 + yOffset, 150, 20).build());
         }
 
         @Override

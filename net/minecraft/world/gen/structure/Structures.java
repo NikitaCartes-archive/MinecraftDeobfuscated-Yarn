@@ -70,8 +70,8 @@ public class Structures {
     }
 
     public static void bootstrap(Registerable<Structure> structureRegisterable) {
-        RegistryEntryLookup<Biome> registryEntryLookup = structureRegisterable.getRegistryLookup(RegistryKeys.BIOME_WORLDGEN);
-        RegistryEntryLookup<StructurePool> registryEntryLookup2 = structureRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+        RegistryEntryLookup<Biome> registryEntryLookup = structureRegisterable.getRegistryLookup(RegistryKeys.BIOME);
+        RegistryEntryLookup<StructurePool> registryEntryLookup2 = structureRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);
         structureRegisterable.register(StructureKeys.PILLAGER_OUTPOST, new JigsawStructure(Structures.createConfig(registryEntryLookup.getOrThrow(BiomeTags.PILLAGER_OUTPOST_HAS_STRUCTURE), Map.of(SpawnGroup.MONSTER, new StructureSpawns(StructureSpawns.BoundingBox.STRUCTURE, Pool.of((Weighted[])new SpawnSettings.SpawnEntry[]{new SpawnSettings.SpawnEntry(EntityType.PILLAGER, 1, 1, 1)}))), GenerationStep.Feature.SURFACE_STRUCTURES, StructureTerrainAdaptation.BEARD_THIN), registryEntryLookup2.getOrThrow(PillagerOutpostGenerator.STRUCTURE_POOLS), 7, ConstantHeightProvider.create(YOffset.fixed(0)), true, Heightmap.Type.WORLD_SURFACE_WG));
         structureRegisterable.register(StructureKeys.MINESHAFT, new MineshaftStructure(Structures.createConfig(registryEntryLookup.getOrThrow(BiomeTags.MINESHAFT_HAS_STRUCTURE), GenerationStep.Feature.UNDERGROUND_STRUCTURES, StructureTerrainAdaptation.NONE), MineshaftStructure.Type.NORMAL));
         structureRegisterable.register(StructureKeys.MINESHAFT_MESA, new MineshaftStructure(Structures.createConfig(registryEntryLookup.getOrThrow(BiomeTags.MINESHAFT_MESA_HAS_STRUCTURE), GenerationStep.Feature.UNDERGROUND_STRUCTURES, StructureTerrainAdaptation.NONE), MineshaftStructure.Type.MESA));

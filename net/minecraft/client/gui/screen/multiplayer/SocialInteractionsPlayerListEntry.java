@@ -93,18 +93,14 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         boolean bl = client.getChatRestriction().allowsChat(client.isInSingleplayer());
         boolean bl3 = bl2 = !client.player.getUuid().equals(uuid);
         if (bl2 && bl && !socialInteractionsManager.isPlayerBlocked(uuid)) {
-            this.reportButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 0, 20, REPORT_BUTTON_TEXTURE, 64, 64, button -> {
-                if (abuseReportContext.tryShowDraftScreen(client, parent, false)) {
-                    client.setScreen(new ChatReportScreen((Screen)parent, abuseReportContext, uuid));
-                }
-            }, Text.translatable("gui.socialInteractions.report")){
+            this.reportButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 0, 20, REPORT_BUTTON_TEXTURE, 64, 64, button -> abuseReportContext.tryShowDraftScreen(client, parent, () -> client.setScreen(new ChatReportScreen((Screen)parent, abuseReportContext, uuid)), false), Text.translatable("gui.socialInteractions.report")){
 
                 @Override
                 protected MutableText getNarrationMessage() {
                     return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
                 }
             };
-            this.reportButton.setTooltip(Tooltip.of(this.getReportText(false), this.getReportText(true)));
+            this.reportButton.setTooltip(this.getReportButtonTooltip());
             this.reportButton.setTooltipDelay(10);
             this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, button -> {
                 socialInteractionsManager.hidePlayer(uuid);
@@ -139,17 +135,17 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         }
     }
 
-    private Text getReportText(boolean narrated) {
+    private Tooltip getReportButtonTooltip() {
         if (!this.reportable) {
-            return NOT_REPORTABLE_TEXT;
+            return Tooltip.of(NOT_REPORTABLE_TEXT);
         }
         if (!this.canSendReports) {
-            return REPORT_DISABLED_TEXT;
+            return Tooltip.of(REPORT_DISABLED_TEXT);
         }
         if (!this.sentMessage) {
-            return Text.translatable("gui.socialInteractions.tooltip.report.no_messages", this.name);
+            return Tooltip.of(Text.translatable("gui.socialInteractions.tooltip.report.no_messages", this.name));
         }
-        return narrated ? Text.translatable("gui.socialInteractions.narration.report", this.name) : reportText;
+        return Tooltip.of(reportText, Text.translatable("gui.socialInteractions.narration.report", this.name));
     }
 
     @Override
@@ -225,6 +221,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         this.sentMessage = sentMessage;
         if (this.reportButton != null) {
             this.reportButton.active = this.canSendReports && this.reportable && sentMessage;
+            this.reportButton.setTooltip(this.getReportButtonTooltip());
         }
     }
 

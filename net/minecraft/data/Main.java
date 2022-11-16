@@ -29,6 +29,7 @@ import net.minecraft.data.report.CommandSyntaxProvider;
 import net.minecraft.data.report.DynamicRegistriesProvider;
 import net.minecraft.data.report.RegistryDumpProvider;
 import net.minecraft.data.server.BiomeParametersProvider;
+import net.minecraft.data.server.advancement.OneTwentyAdvancementProviders;
 import net.minecraft.data.server.advancement.VanillaAdvancementProviders;
 import net.minecraft.data.server.loottable.OneTwentyLootTableProviders;
 import net.minecraft.data.server.loottable.VanillaLootTableProviders;
@@ -136,6 +137,7 @@ public class Main {
         abstractTagProvider = pack2.addProvider(Main.toFactory(OneTwentyBlockTagProvider::new, completableFuture));
         pack2.addProvider(output -> new OneTwentyItemTagProvider(output, completableFuture, abstractTagProvider));
         pack2.addProvider(OneTwentyLootTableProviders::createOneTwentyProvider);
+        pack2.addProvider(Main.toFactory(OneTwentyAdvancementProviders::createOneTwentyProvider, completableFuture));
         pack2.addProvider(output -> MetadataProvider.create(output, Text.translatable("dataPack.update_1_20.description"), FeatureSet.of(FeatureFlags.UPDATE_1_20)));
         return dataGenerator;
     }

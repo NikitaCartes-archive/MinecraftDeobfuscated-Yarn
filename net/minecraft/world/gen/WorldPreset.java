@@ -22,7 +22,7 @@ import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 
 public class WorldPreset {
     public static final Codec<WorldPreset> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.unboundedMap(RegistryKey.createCodec(RegistryKeys.DIMENSION), DimensionOptions.CODEC).fieldOf("dimensions")).forGetter(preset -> preset.dimensions)).apply((Applicative<WorldPreset, ?>)instance, WorldPreset::new)).flatXmap(WorldPreset::validate, WorldPreset::validate);
-    public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.WORLD_PRESET_WORLDGEN, CODEC);
+    public static final Codec<RegistryEntry<WorldPreset>> ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.WORLD_PRESET, CODEC);
     private final Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions;
 
     public WorldPreset(Map<RegistryKey<DimensionOptions>, DimensionOptions> dimensions) {

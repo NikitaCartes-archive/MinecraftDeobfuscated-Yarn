@@ -13,12 +13,12 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSortedSet;
 import java.util.Objects;
 import java.util.Spliterators;
-import java.util.function.Consumer;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.annotation.Debug;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -46,7 +46,7 @@ public class SectionedEntityCache<T extends EntityLike> {
     /**
      * Runs the given action on each collection of entities in the chunk sections within the given box.
      */
-    public void forEachInBox(Box box, Consumer<EntityTrackingSection<T>> action) {
+    public void forEachInBox(Box box, LazyIterationConsumer<EntityTrackingSection<T>> consumer) {
         int i = 2;
         int j = ChunkSectionPos.getSectionCoord(box.minX - 2.0);
         int k = ChunkSectionPos.getSectionCoord(box.minY - 4.0);
@@ -63,8 +63,8 @@ public class SectionedEntityCache<T extends EntityLike> {
                 long s = longIterator.nextLong();
                 int t = ChunkSectionPos.unpackY(s);
                 int u = ChunkSectionPos.unpackZ(s);
-                if (t < k || t > n || u < l || u > o || (entityTrackingSection = (EntityTrackingSection)this.trackingSections.get(s)) == null || entityTrackingSection.isEmpty() || !entityTrackingSection.getStatus().shouldTrack()) continue;
-                action.accept(entityTrackingSection);
+                if (t < k || t > n || u < l || u > o || (entityTrackingSection = (EntityTrackingSection)this.trackingSections.get(s)) == null || entityTrackingSection.isEmpty() || !entityTrackingSection.getStatus().shouldTrack() || !consumer.accept(entityTrackingSection).shouldAbort()) continue;
+                return;
             }
         }
     }
@@ -116,12 +116,12 @@ public class SectionedEntityCache<T extends EntityLike> {
         return longSet;
     }
 
-    public void forEachIntersects(Box box, Consumer<T> action) {
-        this.forEachInBox(box, section -> section.forEach(box, action));
+    public void forEachIntersects(Box box, LazyIterationConsumer<T> consumer) {
+        this.forEachInBox(box, section -> section.forEach(box, consumer));
     }
 
-    public <U extends T> void forEachIntersects(TypeFilter<T, U> filter, Box box, Consumer<U> action) {
-        this.forEachInBox(box, section -> section.forEach(filter, box, action));
+    public <U extends T> void forEachIntersects(TypeFilter<T, U> filter, Box box, LazyIterationConsumer<U> consumer) {
+        this.forEachInBox(box, section -> section.forEach(filter, box, consumer));
     }
 
     public void removeSection(long sectionPos) {

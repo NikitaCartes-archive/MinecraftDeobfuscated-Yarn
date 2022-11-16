@@ -34,6 +34,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.AbstractPiglinEntity;
+import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PiglinActivity;
@@ -45,6 +46,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -116,7 +118,14 @@ InventoryOwner {
 
     @Override
     protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
+        CreeperEntity creeperEntity;
+        Entity entity;
         super.dropEquipment(source, lootingMultiplier, allowDrops);
+        if (this.getWorld().getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20) && (entity = source.getAttacker()) instanceof CreeperEntity && (creeperEntity = (CreeperEntity)entity).shouldDropHead()) {
+            ItemStack itemStack = new ItemStack(Items.PIGLIN_HEAD);
+            creeperEntity.onHeadDropped();
+            this.dropStack(itemStack);
+        }
         this.inventory.clearToList().forEach(this::dropStack);
     }
 

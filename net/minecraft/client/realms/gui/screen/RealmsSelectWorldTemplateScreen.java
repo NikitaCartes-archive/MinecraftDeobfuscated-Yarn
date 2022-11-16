@@ -99,14 +99,13 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        this.client.keyboard.setRepeatEvents(true);
         this.templateList = new WorldTemplateObjectSelectionList(this.templateList.getValues());
-        this.trailerButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.template.button.trailer"), button -> this.onTrailer()).setPositionAndSize(this.width / 2 - 206, this.height - 32, 100, 20).build());
-        this.selectButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.template.button.select"), button -> this.selectTemplate()).setPositionAndSize(this.width / 2 - 100, this.height - 32, 100, 20).build());
+        this.trailerButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.template.button.trailer"), button -> this.onTrailer()).dimensions(this.width / 2 - 206, this.height - 32, 100, 20).build());
+        this.selectButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.template.button.select"), button -> this.selectTemplate()).dimensions(this.width / 2 - 100, this.height - 32, 100, 20).build());
         Text text = this.worldType == RealmsServer.WorldType.MINIGAME ? ScreenTexts.CANCEL : ScreenTexts.BACK;
-        ButtonWidget buttonWidget = ButtonWidget.createBuilder(text, button -> this.close()).setPositionAndSize(this.width / 2 + 6, this.height - 32, 100, 20).build();
+        ButtonWidget buttonWidget = ButtonWidget.builder(text, button -> this.close()).dimensions(this.width / 2 + 6, this.height - 32, 100, 20).build();
         this.addDrawableChild(buttonWidget);
-        this.publisherButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.template.button.publisher"), button -> this.onPublish()).setPositionAndSize(this.width / 2 + 112, this.height - 32, 100, 20).build());
+        this.publisherButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.template.button.publisher"), button -> this.onPublish()).dimensions(this.width / 2 + 112, this.height - 32, 100, 20).build());
         this.selectButton.active = false;
         this.trailerButton.visible = false;
         this.publisherButton.visible = false;

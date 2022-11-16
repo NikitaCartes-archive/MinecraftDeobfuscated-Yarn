@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
+import java.util.OptionalLong;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,18 +59,18 @@ public class GeneratorOptions {
         return new GeneratorOptions(this.seed, structures, this.bonusChest, this.legacyCustomOptions);
     }
 
-    public GeneratorOptions withSeed(long seed) {
-        return new GeneratorOptions(seed, this.generateStructures, this.bonusChest, this.legacyCustomOptions);
+    public GeneratorOptions withSeed(OptionalLong seed) {
+        return new GeneratorOptions(seed.orElse(GeneratorOptions.getRandomSeed()), this.generateStructures, this.bonusChest, this.legacyCustomOptions);
     }
 
-    public static long parseSeed(String seed) {
+    public static OptionalLong parseSeed(String seed) {
         if (StringUtils.isEmpty(seed = seed.trim())) {
-            return GeneratorOptions.getRandomSeed();
+            return OptionalLong.empty();
         }
         try {
-            return Long.parseLong(seed);
+            return OptionalLong.of(Long.parseLong(seed));
         } catch (NumberFormatException numberFormatException) {
-            return seed.hashCode();
+            return OptionalLong.of(seed.hashCode());
         }
     }
 

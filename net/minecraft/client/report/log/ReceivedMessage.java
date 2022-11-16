@@ -34,14 +34,12 @@ import net.minecraft.util.dynamic.Codecs;
 public interface ReceivedMessage
 extends ChatLogEntry {
     /**
-     * {@return the received message constructed from a chat message's elements}
+     * {@return the received message constructed from a chat message}
      * 
-     * @param displayName the displayed name of the sender
-     * @param message the message content
      * @param gameProfile the game profile of the message's sender
      */
-    public static ChatMessage of(GameProfile gameProfile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) {
-        return new ChatMessage(gameProfile, displayName, message, trustStatus);
+    public static ChatMessage of(GameProfile gameProfile, SignedMessage message, MessageTrustStatus trustStatus) {
+        return new ChatMessage(gameProfile, message, trustStatus);
     }
 
     /**
@@ -76,9 +74,9 @@ extends ChatLogEntry {
     public boolean isSentFrom(UUID var1);
 
     @Environment(value=EnvType.CLIENT)
-    public record ChatMessage(GameProfile profile, Text displayName, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage
+    public record ChatMessage(GameProfile profile, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage
     {
-        public static final Codec<ChatMessage> CHAT_MESSAGE_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.GAME_PROFILE.fieldOf("profile")).forGetter(ChatMessage::profile), ((MapCodec)Codecs.TEXT.fieldOf("display_name")).forGetter(ChatMessage::displayName), SignedMessage.CODEC.forGetter(ChatMessage::message), MessageTrustStatus.field_40801.optionalFieldOf("trust_level", MessageTrustStatus.SECURE).forGetter(ChatMessage::trustStatus)).apply((Applicative<ChatMessage, ?>)instance, ChatMessage::new));
+        public static final Codec<ChatMessage> CHAT_MESSAGE_CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codecs.GAME_PROFILE.fieldOf("profile")).forGetter(ChatMessage::profile), SignedMessage.CODEC.forGetter(ChatMessage::message), MessageTrustStatus.CODEC.optionalFieldOf("trust_level", MessageTrustStatus.SECURE).forGetter(ChatMessage::trustStatus)).apply((Applicative<ChatMessage, ?>)instance, ChatMessage::new));
         private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
 
         @Override
@@ -94,12 +92,12 @@ extends ChatLogEntry {
         public Text getNarration() {
             Text text = this.getContent();
             Text text2 = this.getFormattedTimestamp();
-            return Text.translatable("gui.chatSelection.message.narrate", this.displayName, text, text2);
+            return Text.translatable("gui.chatSelection.message.narrate", this.profile.getName(), text, text2);
         }
 
         public Text getHeadingText() {
             Text text = this.getFormattedTimestamp();
-            return Text.translatable("gui.chatSelection.heading", this.displayName, text);
+            return Text.translatable("gui.chatSelection.heading", this.profile.getName(), text);
         }
 
         private Text getFormattedTimestamp() {

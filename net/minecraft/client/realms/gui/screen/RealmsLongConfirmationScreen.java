@@ -35,10 +35,10 @@ extends RealmsScreen {
     @Override
     public void init() {
         if (this.yesNoQuestion) {
-            this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.YES, button -> this.callback.accept(true)).setPositionAndSize(this.width / 2 - 105, RealmsLongConfirmationScreen.row(8), 100, 20).build());
-            this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.NO, button -> this.callback.accept(false)).setPositionAndSize(this.width / 2 + 5, RealmsLongConfirmationScreen.row(8), 100, 20).build());
+            this.addDrawableChild(ButtonWidget.builder(ScreenTexts.YES, button -> this.callback.accept(true)).dimensions(this.width / 2 - 105, RealmsLongConfirmationScreen.row(8), 100, 20).build());
+            this.addDrawableChild(ButtonWidget.builder(ScreenTexts.NO, button -> this.callback.accept(false)).dimensions(this.width / 2 + 5, RealmsLongConfirmationScreen.row(8), 100, 20).build());
         } else {
-            this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.gui.ok"), button -> this.callback.accept(true)).setPositionAndSize(this.width / 2 - 50, RealmsLongConfirmationScreen.row(8), 100, 20).build());
+            this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.gui.ok"), button -> this.callback.accept(true)).dimensions(this.width / 2 - 50, RealmsLongConfirmationScreen.row(8), 100, 20).build());
         }
     }
 

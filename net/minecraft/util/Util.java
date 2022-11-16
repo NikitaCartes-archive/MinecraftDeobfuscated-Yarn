@@ -1077,6 +1077,19 @@ public class Util {
         return object2IntMap;
     }
 
+    /**
+     * {@return the result wrapped in {@code result}}
+     * 
+     * @throws Exception if {@code result} has an error
+     */
+    public static <T, E extends Exception> T getResult(DataResult<T> result, Function<String, E> exceptionGetter) throws E {
+        Optional<DataResult.PartialResult<T>> optional = result.error();
+        if (optional.isPresent()) {
+            throw (Exception)exceptionGetter.apply(optional.get().message());
+        }
+        return result.result().orElseThrow();
+    }
+
     /*
      * Uses 'sealed' constructs - enablewith --sealed true
      */

@@ -67,11 +67,11 @@ implements ArgumentType<RegistryEntry.Reference<T>> {
     }
 
     public static RegistryEntry.Reference<ConfiguredFeature<?, ?>> getConfiguredFeature(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
+        return RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.CONFIGURED_FEATURE);
     }
 
     public static RegistryEntry.Reference<Structure> getStructure(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-        return RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.STRUCTURE_WORLDGEN);
+        return RegistryEntryArgumentType.getRegistryEntry(context, name, RegistryKeys.STRUCTURE);
     }
 
     public static RegistryEntry.Reference<EntityType<?>> getEntityType(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {

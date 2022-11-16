@@ -54,12 +54,12 @@ extends Screen {
         this.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.allowCommands).build(this.width / 2 + 5, 100, 150, 20, ALLOW_COMMANDS_TEXT, (button, allowCommands) -> {
             this.allowCommands = allowCommands;
         }));
-        ButtonWidget buttonWidget = ButtonWidget.createBuilder(Text.translatable("lanServer.start"), button -> {
+        ButtonWidget buttonWidget = ButtonWidget.builder(Text.translatable("lanServer.start"), button -> {
             this.client.setScreen(null);
             MutableText text = integratedServer.openToLan(this.gameMode, this.allowCommands, this.port) ? PublishCommand.getStartedText(this.port) : Text.translatable("commands.publish.failed");
             this.client.inGameHud.getChatHud().addMessage(text);
             this.client.updateWindowTitle();
-        }).setPositionAndSize(this.width / 2 - 155, this.height - 28, 150, 20).build();
+        }).dimensions(this.width / 2 - 155, this.height - 28, 150, 20).build();
         this.portField = new TextFieldWidget(this.textRenderer, this.width / 2 - 75, 160, 150, 20, Text.translatable("lanServer.port"));
         this.portField.setChangedListener(string -> {
             Text text = this.updatePort((String)string);
@@ -77,7 +77,7 @@ extends Screen {
         this.portField.setPlaceholder(Text.literal("" + this.port).formatted(Formatting.DARK_GRAY));
         this.addDrawableChild(this.portField);
         this.addDrawableChild(buttonWidget);
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 + 5, this.height - 28, 150, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 5, this.height - 28, 150, 20).build());
     }
 
     @Nullable

@@ -37,7 +37,7 @@ implements DataProvider {
     public CompletableFuture<?> run(DataWriter writer) {
         return this.registryLookupFuture.thenCompose(lookup -> {
             RegistryOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, lookup);
-            RegistryWrapper.Impl<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN);
+            RegistryWrapper.Impl<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME);
             return CompletableFuture.allOf((CompletableFuture[])MultiNoiseBiomeSource.Preset.streamPresets().map(preset -> {
                 MultiNoiseBiomeSource multiNoiseBiomeSource = ((MultiNoiseBiomeSource.Preset)preset.getSecond()).getBiomeSource(registryEntryLookup, false);
                 return BiomeParametersProvider.write(this.resolvePath((Identifier)preset.getFirst()), writer, dynamicOps, MultiNoiseBiomeSource.CODEC, multiNoiseBiomeSource);

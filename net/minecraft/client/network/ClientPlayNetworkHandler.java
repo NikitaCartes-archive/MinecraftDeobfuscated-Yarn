@@ -90,7 +90,7 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.ProfileKeys;
-import net.minecraft.client.util.TelemetrySender;
+import net.minecraft.client.util.telemetry.WorldSession;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.command.CommandRegistryAccess;
@@ -358,14 +358,14 @@ ClientPlayPacketListener {
     private Set<RegistryKey<World>> worldKeys;
     private CombinedDynamicRegistries<ClientDynamicRegistryType> combinedDynamicRegistries = ClientDynamicRegistryType.createCombinedDynamicRegistries();
     private FeatureSet enabledFeatures = FeatureFlags.DEFAULT_ENABLED_FEATURES;
-    private final TelemetrySender telemetrySender;
+    private final WorldSession worldSession;
     @Nullable
     private ClientPlayerSession session;
     private MessageChain.Packer messagePacker = MessageChain.Packer.NONE;
     private LastSeenMessagesCollector lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
     private MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
 
-    public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, @Nullable ServerInfo serverInfo, GameProfile profile, TelemetrySender telemetrySender) {
+    public ClientPlayNetworkHandler(MinecraftClient client, Screen screen, ClientConnection connection, @Nullable ServerInfo serverInfo, GameProfile profile, WorldSession worldSession) {
         this.client = client;
         this.loginScreen = screen;
         this.connection = connection;
@@ -373,7 +373,7 @@ ClientPlayPacketListener {
         this.profile = profile;
         this.advancementHandler = new ClientAdvancementManager(client);
         this.commandSource = new ClientCommandSource(this, client);
-        this.telemetrySender = telemetrySender;
+        this.worldSession = worldSession;
     }
 
     public ClientCommandSource getCommandSource() {
@@ -382,6 +382,7 @@ ClientPlayPacketListener {
 
     public void clearWorld() {
         this.world = null;
+        this.worldSession.onUnload();
     }
 
     public RecipeManager getRecipeManager() {
@@ -435,10 +436,10 @@ ClientPlayPacketListener {
         this.lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
         this.signatureStorage = MessageSignatureStorage.create();
         if (this.connection.isEncrypted()) {
-            this.client.getProfileKeys().fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(keys -> this.setSession(ClientPlayerSession.create(keys))), (Executor)this.client);
+            this.client.getProfileKeys().fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), (Executor)this.client);
         }
         this.client.getGame().onStartGameSession();
-        this.telemetrySender.setGameModeAndSend(packet.gameMode(), packet.hardcore());
+        this.worldSession.setGameMode(packet.gameMode(), packet.hardcore());
     }
 
     @Override
@@ -735,7 +736,7 @@ ClientPlayPacketListener {
     @Override
     public void onDisconnected(Text reason) {
         this.client.disconnect();
-        this.telemetrySender.send();
+        this.worldSession.onUnload();
         if (this.loginScreen != null) {
             if (this.loginScreen instanceof RealmsScreen) {
                 this.client.setScreen(new DisconnectedRealmsScreen(this.loginScreen, DISCONNECT_LOST_TEXT, reason));
@@ -871,6 +872,7 @@ ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         this.client.world.setTime(packet.getTime());
         this.client.world.setTimeOfDay(packet.getTimeOfDay());
+        this.worldSession.setTick(packet.getTime());
     }
 
     @Override
@@ -1212,7 +1214,7 @@ ClientPlayPacketListener {
         MapState mapState = this.client.world.getMapState(string);
         if (mapState == null) {
             mapState = MapState.of(packet.getScale(), packet.isLocked(), this.client.world.getRegistryKey());
-            this.client.world.method_47437(string, mapState);
+            this.client.world.putClientsideMapState(string, mapState);
         }
         packet.apply(mapState);
         mapRenderer.updateTexture(i, mapState);
@@ -1354,7 +1356,6 @@ ClientPlayPacketListener {
             return;
         }
         StatusEffectInstance statusEffectInstance = new StatusEffectInstance(statusEffect, packet.getDuration(), packet.getAmplifier(), packet.isAmbient(), packet.shouldShowParticles(), packet.shouldShowIcon(), null, Optional.ofNullable(packet.getFactorCalculationData()));
-        statusEffectInstance.setPermanent(packet.isPermanent());
         ((LivingEntity)entity).setStatusEffect(statusEffectInstance, null);
     }
 
@@ -1787,7 +1788,7 @@ ClientPlayPacketListener {
             if (CustomPayloadS2CPacket.BRAND.equals(identifier)) {
                 String string = packetByteBuf.readString();
                 this.client.player.setServerBrand(string);
-                this.telemetrySender.setServerBrandAndSend(string);
+                this.worldSession.setBrand(string);
             } else if (CustomPayloadS2CPacket.DEBUG_PATH.equals(identifier)) {
                 int i = packetByteBuf.readInt();
                 float f = packetByteBuf.readFloat();
@@ -2321,19 +2322,16 @@ ClientPlayPacketListener {
         if (this.connection.isEncrypted() && (profileKeys = this.client.getProfileKeys()).isExpired()) {
             profileKeys.fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), (Executor)this.client);
         }
+        this.worldSession.tick();
     }
 
-    private void updateKeyPair(PlayerKeyPair keyPair) {
+    public void updateKeyPair(PlayerKeyPair keyPair) {
         if (this.session != null && this.session.keyPair().equals(keyPair)) {
             return;
         }
-        this.setSession(ClientPlayerSession.create(keyPair));
-    }
-
-    private void setSession(ClientPlayerSession session) {
-        this.session = session;
-        this.messagePacker = session.createPacker(this.profile.getId());
-        this.sendPacket(new PlayerSessionC2SPacket(session.toPublicSession().toSerialized()));
+        this.session = ClientPlayerSession.create(keyPair);
+        this.messagePacker = this.session.createPacker(this.profile.getId());
+        this.sendPacket(new PlayerSessionC2SPacket(this.session.toPublicSession().toSerialized()));
     }
 
     @Nullable

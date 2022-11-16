@@ -65,7 +65,6 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        this.client.keyboard.setRepeatEvents(true);
         this.worldSelectionList = new WorldSelectionList();
         try {
             this.loadLevelList();
@@ -75,9 +74,9 @@ extends RealmsScreen {
             return;
         }
         this.addSelectableChild(this.worldSelectionList);
-        this.uploadButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("mco.upload.button.name"), button -> this.upload()).setPositionAndSize(this.width / 2 - 154, this.height - 32, 153, 20).build());
+        this.uploadButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.upload.button.name"), button -> this.upload()).dimensions(this.width / 2 - 154, this.height - 32, 153, 20).build());
         this.uploadButton.active = this.selectedWorld >= 0 && this.selectedWorld < this.levelList.size();
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 + 6, this.height - 32, 153, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 6, this.height - 32, 153, 20).build());
         this.addLabel(new RealmsLabel(Text.translatable("mco.upload.select.world.subtitle"), this.width / 2, RealmsSelectFileToUploadScreen.row(-1), 0xA0A0A0));
         if (this.levelList.isEmpty()) {
             this.addLabel(new RealmsLabel(Text.translatable("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 0xFFFFFF));
@@ -87,11 +86,6 @@ extends RealmsScreen {
     @Override
     public Text getNarratedTitle() {
         return ScreenTexts.joinSentences(this.getTitle(), this.narrateLabels());
-    }
-
-    @Override
-    public void removed() {
-        this.client.keyboard.setRepeatEvents(false);
     }
 
     private void upload() {

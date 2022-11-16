@@ -30,6 +30,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -38,6 +40,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -169,10 +172,10 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Session;
-import net.minecraft.client.util.TelemetrySender;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.telemetry.TelemetryManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.entity.Entity;
@@ -188,6 +191,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
+import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -390,7 +394,7 @@ implements WindowEventHandler {
     private final SocialInteractionsManager socialInteractionsManager;
     private final EntityModelLoader entityModelLoader;
     private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
-    private final UUID deviceSessionId = UUID.randomUUID();
+    private final TelemetryManager telemetryManager;
     private final ProfileKeys profileKeys;
     private final RealmsPeriodicCheckers realmsPeriodicCheckers;
     @Nullable
@@ -453,6 +457,7 @@ implements WindowEventHandler {
     private Supplier<CrashReport> crashReportSupplier;
     private static int currentFps;
     public String fpsDebugString = "";
+    private long renderTime;
     public boolean wireFrame;
     public boolean debugChunkInfo;
     public boolean debugChunkOcclusion;
@@ -625,6 +630,7 @@ implements WindowEventHandler {
         this.window.logOnGlError();
         this.onResolutionChanged();
         this.gameRenderer.preloadPrograms(this.defaultResourcePack.getFactory());
+        this.telemetryManager = new TelemetryManager(this, this.userApiService, this.session);
         this.profileKeys = ProfileKeys.create(this.userApiService, this.session, this.runDirectory.toPath());
         this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
         this.narratorManager = new NarratorManager(this);
@@ -1016,6 +1022,7 @@ implements WindowEventHandler {
             this.currentGlTimerQuery.close();
         }
         try {
+            this.telemetryManager.close();
             this.regionalComplianciesManager.close();
             this.bakedModelManager.close();
             this.fontManager.close();
@@ -1072,6 +1079,7 @@ implements WindowEventHandler {
         this.soundManager.updateListenerPosition(this.gameRenderer.getCamera());
         this.profiler.pop();
         this.profiler.push("render");
+        long m = Util.getMeasuringTimeNano();
         if (this.options.debugEnabled || this.recorder.isActive()) {
             boolean bl3 = bl = this.currentGlTimerQuery == null || this.currentGlTimerQuery.isResultAvailable();
             if (bl) {
@@ -1109,6 +1117,7 @@ implements WindowEventHandler {
         matrixStack.push();
         RenderSystem.applyModelViewMatrix();
         this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
+        this.renderTime = Util.getMeasuringTimeNano() - m;
         if (bl) {
             GlTimer.getInstance().ifPresent(glTimer -> {
                 this.currentGlTimerQuery = glTimer.endProfile();
@@ -1136,13 +1145,13 @@ implements WindowEventHandler {
             }
             this.paused = bl2;
         }
-        long m = Util.getMeasuringTimeNano();
-        long n = m - this.lastMetricsSampleTime;
+        long n = Util.getMeasuringTimeNano();
+        long o = n - this.lastMetricsSampleTime;
         if (bl) {
-            this.metricsSampleDuration = n;
+            this.metricsSampleDuration = o;
         }
-        this.metricsData.pushSample(n);
-        this.lastMetricsSampleTime = m;
+        this.metricsData.pushSample(o);
+        this.lastMetricsSampleTime = n;
         this.profiler.push("fpsUpdate");
         if (this.currentGlTimerQuery != null && this.currentGlTimerQuery.isResultAvailable()) {
             this.gpuUtilizationPercentage = (double)this.currentGlTimerQuery.queryResult() * 100.0 / (double)this.metricsSampleDuration;
@@ -1209,6 +1218,14 @@ implements WindowEventHandler {
     @Override
     public void onCursorEnterChanged() {
         this.mouse.setResolutionChanged();
+    }
+
+    public int getCurrentFps() {
+        return currentFps;
+    }
+
+    public long getRenderTime() {
+        return this.renderTime;
     }
 
     private int getFramerateLimit() {
@@ -1793,8 +1810,8 @@ implements WindowEventHandler {
         this.handleBlockBreaking(this.currentScreen == null && !bl3 && this.options.attackKey.isPressed() && this.mouse.isCursorLocked());
     }
 
-    public TelemetrySender createTelemetrySender() {
-        return new TelemetrySender(this, this.userApiService, this.session.getXuid(), this.session.getClientId(), this.deviceSessionId);
+    public TelemetryManager getTelemetryManager() {
+        return this.telemetryManager;
     }
 
     public double getGpuUtilizationPercentage() {
@@ -1809,9 +1826,10 @@ implements WindowEventHandler {
         return new IntegratedServerLoader(this, this.levelStorage);
     }
 
-    public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader) {
+    public void startIntegratedServer(String levelName, LevelStorage.Session session, ResourcePackManager dataPackManager, SaveLoader saveLoader, boolean newWorld) {
         this.disconnect();
         this.worldGenProgressTracker.set(null);
+        Instant instant = Instant.now();
         try {
             session.backupLevelDataFile(saveLoader.combinedDynamicRegistries().getCombinedRegistryManager(), saveLoader.saveProperties());
             ApiServices apiServices = ApiServices.create(this.authenticationService, this.runDirectory);
@@ -1851,9 +1869,10 @@ implements WindowEventHandler {
             return;
         }
         this.profiler.pop();
+        Duration duration = Duration.between(instant, Instant.now());
         SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
         ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
-        clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, null, status -> {}));
+        clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, null, newWorld, duration, status -> {}));
         clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
         clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), Optional.ofNullable(this.getSession().getUuidOrNull())));
         this.integratedServerConnection = clientConnection;
@@ -1934,6 +1953,18 @@ implements WindowEventHandler {
         this.particleManager.setWorld(world);
         this.blockEntityRenderDispatcher.setWorld(world);
         this.updateWindowTitle();
+    }
+
+    public boolean isOptionalTelemetryEnabled() {
+        return this.isOptionalTelemetryEnabledByApi() && this.options.getTelemetryOptInExtra().getValue() != false;
+    }
+
+    public boolean isOptionalTelemetryEnabledByApi() {
+        return this.isTelemetryEnabledByApi() && this.userApiService.properties().flag(UserApiService.UserFlag.OPTIONAL_TELEMETRY_AVAILABLE);
+    }
+
+    public boolean isTelemetryEnabledByApi() {
+        return this.userApiService.properties().flag(UserApiService.UserFlag.TELEMETRY_ENABLED);
     }
 
     public boolean isMultiplayerEnabled() {
@@ -2173,7 +2204,7 @@ implements WindowEventHandler {
         return this.server;
     }
 
-    public boolean method_47392() {
+    public boolean isConnectedToLocalServer() {
         IntegratedServer integratedServer = this.getServer();
         return integratedServer != null && !integratedServer.isRemote();
     }
@@ -2574,7 +2605,12 @@ implements WindowEventHandler {
 
     public void loadBlockList() {
         this.socialInteractionsManager.loadBlockList();
-        this.getProfileKeys().fetchKeyPair();
+        this.getProfileKeys().fetchKeyPair().thenAcceptAsync(optional -> optional.ifPresent(playerKeyPair -> {
+            ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
+            if (clientPlayNetworkHandler != null) {
+                clientPlayNetworkHandler.updateKeyPair((PlayerKeyPair)playerKeyPair);
+            }
+        }), (Executor)this);
     }
 
     public Realms32BitWarningChecker getRealms32BitWarningChecker() {

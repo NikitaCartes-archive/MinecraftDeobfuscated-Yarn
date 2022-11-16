@@ -40,7 +40,6 @@ extends RealmsScreen {
 
     @Override
     public void init() {
-        this.client.keyboard.setRepeatEvents(true);
         this.seedEdit = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, RealmsResetNormalWorldScreen.row(2), 200, 20, null, Text.translatable("mco.reset.world.seed"));
         this.seedEdit.setMaxLength(32);
         this.addSelectableChild(this.seedEdit);
@@ -51,13 +50,8 @@ extends RealmsScreen {
         this.addDrawableChild(CyclingButtonWidget.onOffBuilder(this.mapFeatures).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(6) - 2, 205, 20, Text.translatable("selectWorld.mapFeatures"), (button, mapFeatures) -> {
             this.mapFeatures = mapFeatures;
         }));
-        this.addDrawableChild(ButtonWidget.createBuilder(this.parentTitle, button -> this.callback.accept(new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures))).setPositionAndSize(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(12), 97, 20).build());
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.close()).setPositionAndSize(this.width / 2 + 8, RealmsResetNormalWorldScreen.row(12), 97, 20).build());
-    }
-
-    @Override
-    public void removed() {
-        this.client.keyboard.setRepeatEvents(false);
+        this.addDrawableChild(ButtonWidget.builder(this.parentTitle, button -> this.callback.accept(new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures))).dimensions(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(12), 97, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.width / 2 + 8, RealmsResetNormalWorldScreen.row(12), 97, 20).build());
     }
 
     @Override

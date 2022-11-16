@@ -113,6 +113,7 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TradeOfferList;
+import net.minecraft.world.CollisionView;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
@@ -1268,7 +1269,7 @@ extends LivingEntity {
             return optional;
         }
         if (block instanceof BedBlock && BedBlock.isBedWorking(world)) {
-            return BedBlock.findWakeUpPosition(EntityType.PLAYER, world, pos, angle);
+            return BedBlock.findWakeUpPosition(EntityType.PLAYER, (CollisionView)world, pos, blockState.get(BedBlock.FACING), angle);
         }
         if (!forced) {
             return Optional.empty();

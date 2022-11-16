@@ -35,8 +35,8 @@ extends ButtonWidget {
         this(x, y, width, height, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, ScreenTexts.EMPTY);
     }
 
-    public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, ButtonWidget.PressAction pressAction, Text text) {
-        super(x, y, width, height, text, pressAction, DEFAULT_NARRATION_SUPPLIER);
+    public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, int hoveredVOffset, Identifier texture, int textureWidth, int textureHeight, ButtonWidget.PressAction pressAction, Text message) {
+        super(x, y, width, height, message, pressAction, DEFAULT_NARRATION_SUPPLIER);
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
         this.u = u;

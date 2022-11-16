@@ -100,6 +100,7 @@ public class EntityModelLayers {
     public static final EntityModelLayer PIGLIN_BRUTE = EntityModelLayers.registerMain("piglin_brute");
     public static final EntityModelLayer PIGLIN_BRUTE_INNER_ARMOR = EntityModelLayers.createInnerArmor("piglin_brute");
     public static final EntityModelLayer PIGLIN_BRUTE_OUTER_ARMOR = EntityModelLayers.createOuterArmor("piglin_brute");
+    public static final EntityModelLayer PIGLIN_HEAD = EntityModelLayers.registerMain("piglin_head");
     public static final EntityModelLayer PIGLIN_INNER_ARMOR = EntityModelLayers.createInnerArmor("piglin");
     public static final EntityModelLayer PIGLIN_OUTER_ARMOR = EntityModelLayers.createOuterArmor("piglin");
     public static final EntityModelLayer PIG_SADDLE = EntityModelLayers.register("pig", "saddle");

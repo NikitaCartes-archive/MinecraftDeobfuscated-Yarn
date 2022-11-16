@@ -371,7 +371,7 @@ public class Schemas {
         Schema schema43 = builder.addSchema(1451, 5, Schema1451v5::new);
         builder.addFixer(new ItemRemoveBlockEntityTagFix(schema43, false, Set.of("minecraft:note_block", "minecraft:flower_pot", "minecraft:dandelion", "minecraft:poppy", "minecraft:blue_orchid", "minecraft:allium", "minecraft:azure_bluet", "minecraft:red_tulip", "minecraft:orange_tulip", "minecraft:white_tulip", "minecraft:pink_tulip", "minecraft:oxeye_daisy", "minecraft:cactus", "minecraft:brown_mushroom", "minecraft:red_mushroom", "minecraft:oak_sapling", "minecraft:spruce_sapling", "minecraft:birch_sapling", "minecraft:jungle_sapling", "minecraft:acacia_sapling", "minecraft:dark_oak_sapling", "minecraft:dead_bush", "minecraft:fern")));
         builder.addFixer(new ChoiceTypesFix(schema43, "RemoveNoteBlockFlowerPotFix", TypeReferences.BLOCK_ENTITY));
-        builder.addFixer(new ItemInstanceSpawnEggFix(schema43, false));
+        builder.addFixer(new ItemInstanceSpawnEggFix(schema43, false, "minecraft:spawn_egg"));
         builder.addFixer(new EntityWolfColorFix(schema43, false));
         builder.addFixer(new BlockEntityBannerColorFix(schema43, false));
         builder.addFixer(new LevelFlatGeneratorInfoFix(schema43, false));
@@ -736,6 +736,8 @@ public class Schemas {
         builder.addFixer(new ChoiceTypesFix(schema173, "Added Camel", TypeReferences.ENTITY));
         Schema schema174 = builder.addSchema(3204, Schema3204::new);
         builder.addFixer(new ChoiceTypesFix(schema174, "Added Chiseled Bookshelf", TypeReferences.BLOCK_ENTITY));
+        Schema schema175 = builder.addSchema(3209, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(new ItemInstanceSpawnEggFix(schema175, false, "minecraft:pig_spawn_egg"));
     }
 
     private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -10,7 +10,7 @@ import com.google.gson.JsonElement;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -90,6 +90,7 @@ public class BlockStateModelGenerator {
      * direction with a given connection model.
      */
     public static final List<Pair<BooleanProperty, Function<Identifier, BlockStateVariant>>> CONNECTION_VARIANT_FUNCTIONS = List.of(Pair.of(Properties.NORTH, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier)), Pair.of(Properties.EAST, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)), Pair.of(Properties.SOUTH, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.UVLOCK, true)), Pair.of(Properties.WEST, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)), Pair.of(Properties.UP, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.X, VariantSettings.Rotation.R270).put(VariantSettings.UVLOCK, true)), Pair.of(Properties.DOWN, identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)));
+    private static final Map<class_7987, Identifier> field_41526 = new HashMap<class_7987, Identifier>();
 
     private static BlockStateSupplier createStoneState(Block block, Identifier modelId, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
         Identifier identifier = Models.CUBE_MIRRORED_ALL.upload(block, textures, modelCollector);
@@ -1183,14 +1184,32 @@ public class BlockStateModelGenerator {
     }
 
     private void registerChiseledBookshelf() {
-        String string = "_stage";
-        Collection<Integer> collection = Properties.BOOKS_STORED.getValues();
-        List<Identifier> list = collection.stream().map(stage -> {
-            TextureMap textureMap = new TextureMap().put(TextureKey.FRONT, TextureMap.getSubId(Blocks.CHISELED_BOOKSHELF, "_stage" + stage)).put(TextureKey.SIDE, TextureMap.getSubId(Blocks.CHISELED_BOOKSHELF, "_side")).put(TextureKey.TOP, TextureMap.getSubId(Blocks.CHISELED_BOOKSHELF, "_top"));
-            return Models.TEMPLATE_CHISELED_BOOKSHELF.upload(Blocks.CHISELED_BOOKSHELF, "_stage" + stage, textureMap, this.modelCollector);
-        }).toList();
-        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.CHISELED_BOOKSHELF).coordinate(BlockStateModelGenerator.createNorthDefaultHorizontalRotationStates()).coordinate(BlockStateVariantMap.create(Properties.BOOKS_STORED).register(integer -> BlockStateVariant.create().put(VariantSettings.MODEL, (Identifier)list.get((int)integer)))));
-        this.registerParentedItemModel(Items.CHISELED_BOOKSHELF, list.get(0));
+        Block block = Blocks.CHISELED_BOOKSHELF;
+        Identifier identifier = ModelIds.getBlockModelId(block);
+        MultipartBlockStateSupplier multipartBlockStateSupplier = MultipartBlockStateSupplier.create(block);
+        Map.of(Direction.NORTH, VariantSettings.Rotation.R0, Direction.EAST, VariantSettings.Rotation.R90, Direction.SOUTH, VariantSettings.Rotation.R180, Direction.WEST, VariantSettings.Rotation.R270).forEach((direction, rotation) -> {
+            When.PropertyCondition propertyCondition = When.create().set(Properties.HORIZONTAL_FACING, direction);
+            multipartBlockStateSupplier.with((When)propertyCondition, BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, rotation));
+            this.method_47812(multipartBlockStateSupplier, propertyCondition, (VariantSettings.Rotation)((Object)rotation));
+        });
+        this.blockStateCollector.accept(multipartBlockStateSupplier);
+        this.registerParentedItemModel(block, ModelIds.getBlockSubModelId(block, "_inventory"));
+        field_41526.clear();
+    }
+
+    private void method_47812(MultipartBlockStateSupplier multipartBlockStateSupplier, When.PropertyCondition propertyCondition, VariantSettings.Rotation rotation) {
+        Map.of(Properties.SLOT_0_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_LEFT, Properties.SLOT_1_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_MID, Properties.SLOT_2_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_TOP_RIGHT, Properties.SLOT_3_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_LEFT, Properties.SLOT_4_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_MID, Properties.SLOT_5_OCCUPIED, Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_RIGHT).forEach((booleanProperty, model) -> {
+            this.method_47814(multipartBlockStateSupplier, propertyCondition, rotation, (BooleanProperty)booleanProperty, (Model)model, true);
+            this.method_47814(multipartBlockStateSupplier, propertyCondition, rotation, (BooleanProperty)booleanProperty, (Model)model, false);
+        });
+    }
+
+    private void method_47814(MultipartBlockStateSupplier multipartBlockStateSupplier, When.PropertyCondition propertyCondition, VariantSettings.Rotation rotation, BooleanProperty booleanProperty, Model model, boolean bl) {
+        String string = bl ? "_occupied" : "_empty";
+        TextureMap textureMap = new TextureMap().put(TextureKey.TEXTURE, TextureMap.getSubId(Blocks.CHISELED_BOOKSHELF, string));
+        class_7987 lv = new class_7987(model, string);
+        Identifier identifier = field_41526.computeIfAbsent(lv, arg -> model.upload(Blocks.CHISELED_BOOKSHELF, string, textureMap, this.modelCollector));
+        multipartBlockStateSupplier.with(When.allOf(propertyCondition, When.create().set(booleanProperty, bl)), BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, rotation));
     }
 
     private void registerMagmaBlock() {
@@ -1555,7 +1574,7 @@ public class BlockStateModelGenerator {
         this.registerBed(Blocks.GREEN_BED, Blocks.GREEN_WOOL);
         this.registerBed(Blocks.RED_BED, Blocks.RED_WOOL);
         this.registerBed(Blocks.BLACK_BED, Blocks.BLACK_WOOL);
-        this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("skull"), Blocks.SOUL_SAND).includeWithItem(Models.TEMPLATE_SKULL, Blocks.CREEPER_HEAD, Blocks.PLAYER_HEAD, Blocks.ZOMBIE_HEAD, Blocks.SKELETON_SKULL, Blocks.WITHER_SKELETON_SKULL).includeWithItem(Blocks.DRAGON_HEAD).includeWithoutItem(Blocks.CREEPER_WALL_HEAD, Blocks.DRAGON_WALL_HEAD, Blocks.PLAYER_WALL_HEAD, Blocks.ZOMBIE_WALL_HEAD, Blocks.SKELETON_WALL_SKULL, Blocks.WITHER_SKELETON_WALL_SKULL);
+        this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("skull"), Blocks.SOUL_SAND).includeWithItem(Models.TEMPLATE_SKULL, Blocks.CREEPER_HEAD, Blocks.PLAYER_HEAD, Blocks.ZOMBIE_HEAD, Blocks.SKELETON_SKULL, Blocks.WITHER_SKELETON_SKULL, Blocks.PIGLIN_HEAD).includeWithItem(Blocks.DRAGON_HEAD).includeWithoutItem(Blocks.CREEPER_WALL_HEAD, Blocks.DRAGON_WALL_HEAD, Blocks.PLAYER_WALL_HEAD, Blocks.ZOMBIE_WALL_HEAD, Blocks.SKELETON_WALL_SKULL, Blocks.WITHER_SKELETON_WALL_SKULL, Blocks.PIGLIN_WALL_HEAD);
         this.registerShulkerBox(Blocks.SHULKER_BOX);
         this.registerShulkerBox(Blocks.WHITE_SHULKER_BOX);
         this.registerShulkerBox(Blocks.ORANGE_SHULKER_BOX);
@@ -2063,6 +2082,9 @@ public class BlockStateModelGenerator {
             }
             return this.includeWithItem(blocks);
         }
+    }
+
+    record class_7987(Model template, String modelSuffix) {
     }
 }
 

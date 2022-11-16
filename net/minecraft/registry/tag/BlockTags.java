@@ -11,7 +11,6 @@ import net.minecraft.util.Identifier;
 public final class BlockTags {
     public static final TagKey<Block> WOOL = BlockTags.of("wool");
     public static final TagKey<Block> PLANKS = BlockTags.of("planks");
-    public static final TagKey<Block> STRIPPED_LOGS = BlockTags.of("stripped_logs");
     public static final TagKey<Block> STONE_BRICKS = BlockTags.of("stone_bricks");
     public static final TagKey<Block> WOODEN_BUTTONS = BlockTags.of("wooden_buttons");
     public static final TagKey<Block> BUTTONS = BlockTags.of("buttons");
@@ -84,6 +83,7 @@ public final class BlockTags {
     public static final TagKey<Block> CEILING_HANGING_SIGNS = BlockTags.of("ceiling_hanging_signs");
     public static final TagKey<Block> WALL_HANGING_SIGNS = BlockTags.of("wall_hanging_signs");
     public static final TagKey<Block> ALL_HANGING_SIGNS = BlockTags.of("all_hanging_signs");
+    public static final TagKey<Block> ALL_SIGNS = BlockTags.of("all_signs");
     public static final TagKey<Block> DRAGON_IMMUNE = BlockTags.of("dragon_immune");
     public static final TagKey<Block> DRAGON_TRANSPARENT = BlockTags.of("dragon_transparent");
     public static final TagKey<Block> WITHER_IMMUNE = BlockTags.of("wither_immune");

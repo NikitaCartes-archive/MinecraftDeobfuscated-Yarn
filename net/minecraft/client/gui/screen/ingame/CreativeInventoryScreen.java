@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -37,7 +38,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemStackSet;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
@@ -102,24 +102,24 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
     private void updateDisplayParameters(FeatureSet enabledFeatures, boolean showOperatorTab) {
         if (ItemGroups.updateDisplayParameters(enabledFeatures, showOperatorTab)) {
             for (ItemGroup itemGroup : ItemGroups.getGroups()) {
-                ItemStackSet itemStackSet = itemGroup.getDisplayStacks();
+                Collection<ItemStack> collection = itemGroup.getDisplayStacks();
                 if (itemGroup != selectedTab) continue;
-                if (itemGroup.getType() == ItemGroup.Type.CATEGORY && itemStackSet.isEmpty()) {
+                if (itemGroup.getType() == ItemGroup.Type.CATEGORY && collection.isEmpty()) {
                     this.setSelectedTab(ItemGroups.getDefaultTab());
                     continue;
                 }
-                this.refreshSelectedTab(itemStackSet);
+                this.refreshSelectedTab(collection);
             }
         }
     }
 
-    private void refreshSelectedTab(ItemStackSet stacks) {
+    private void refreshSelectedTab(Collection<ItemStack> displayStacks) {
         int i = ((CreativeScreenHandler)this.handler).getRow(this.scrollPosition);
         ((CreativeScreenHandler)this.handler).itemList.clear();
         if (selectedTab.getType() == ItemGroup.Type.SEARCH) {
             this.search();
         } else {
-            ((CreativeScreenHandler)this.handler).itemList.addAll(stacks);
+            ((CreativeScreenHandler)this.handler).itemList.addAll(displayStacks);
         }
         this.scrollPosition = ((CreativeScreenHandler)this.handler).getScrollPosition(i);
         ((CreativeScreenHandler)this.handler).scrollItems(this.scrollPosition);
@@ -646,7 +646,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         int j = 27;
         int k = 27 * i;
         if (group.isSpecial()) {
-            k = this.backgroundWidth - 27 * (7 - i);
+            k = this.backgroundWidth - 27 * (7 - i) + 1;
         }
         return k;
     }

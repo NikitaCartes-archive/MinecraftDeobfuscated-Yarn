@@ -64,7 +64,7 @@ public final class StructureStart {
         if (INVALID.equals(string)) {
             return DEFAULT;
         }
-        Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
+        Registry<Structure> registry = context.registryManager().get(RegistryKeys.STRUCTURE);
         Structure structure = registry.get(new Identifier(string));
         if (structure == null) {
             LOGGER.error("Unknown stucture id: {}", (Object)string);
@@ -114,7 +114,7 @@ public final class StructureStart {
             nbtCompound.putString("id", INVALID);
             return nbtCompound;
         }
-        nbtCompound.putString("id", context.registryManager().get(RegistryKeys.STRUCTURE_WORLDGEN).getId(this.structure).toString());
+        nbtCompound.putString("id", context.registryManager().get(RegistryKeys.STRUCTURE).getId(this.structure).toString());
         nbtCompound.putInt("ChunkX", chunkPos.x);
         nbtCompound.putInt("ChunkZ", chunkPos.z);
         nbtCompound.putInt("references", this.references);

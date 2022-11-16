@@ -38,7 +38,7 @@ public interface StructureProcessorType<P extends StructureProcessor> {
     public static final Codec<StructureProcessor> CODEC = Registries.STRUCTURE_PROCESSOR.getCodec().dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
     public static final Codec<StructureProcessorList> LIST_CODEC = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
     public static final Codec<StructureProcessorList> PROCESSORS_CODEC = Codec.either(((MapCodec)LIST_CODEC.fieldOf("processors")).codec(), LIST_CODEC).xmap(either -> either.map(structureProcessorList -> structureProcessorList, structureProcessorList -> structureProcessorList), Either::left);
-    public static final Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.PROCESSOR_LIST_WORLDGEN, PROCESSORS_CODEC);
+    public static final Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.PROCESSOR_LIST, PROCESSORS_CODEC);
 
     public Codec<P> codec();
 

@@ -244,7 +244,7 @@ public final class SpawnHelper {
         if (spawnGroup != SpawnGroup.MONSTER || !world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)) {
             return false;
         }
-        Structure structure = structureAccessor.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN).get(StructureKeys.FORTRESS);
+        Structure structure = structureAccessor.getRegistryManager().get(RegistryKeys.STRUCTURE).get(StructureKeys.FORTRESS);
         if (structure == null) {
             return false;
         }

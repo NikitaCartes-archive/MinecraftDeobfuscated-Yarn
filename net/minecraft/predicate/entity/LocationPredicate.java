@@ -146,11 +146,11 @@ public class LocationPredicate {
         NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject2.get("y"));
         NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject2.get("z"));
         RegistryKey registryKey2 = jsonObject.has("dimension") ? (RegistryKey)Identifier.CODEC.parse(JsonOps.INSTANCE, jsonObject.get("dimension")).resultOrPartial(LOGGER::error).map(identifier -> RegistryKey.of(RegistryKeys.WORLD, identifier)).orElse(null) : (registryKey = null);
-        RegistryKey registryKey22 = jsonObject.has("structure") ? (RegistryKey)Identifier.CODEC.parse(JsonOps.INSTANCE, jsonObject.get("structure")).resultOrPartial(LOGGER::error).map(identifier -> RegistryKey.of(RegistryKeys.STRUCTURE_WORLDGEN, identifier)).orElse(null) : null;
+        RegistryKey registryKey22 = jsonObject.has("structure") ? (RegistryKey)Identifier.CODEC.parse(JsonOps.INSTANCE, jsonObject.get("structure")).resultOrPartial(LOGGER::error).map(identifier -> RegistryKey.of(RegistryKeys.STRUCTURE, identifier)).orElse(null) : null;
         RegistryKey<Biome> registryKey3 = null;
         if (jsonObject.has("biome")) {
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "biome"));
-            registryKey3 = RegistryKey.of(RegistryKeys.BIOME_WORLDGEN, identifier2);
+            registryKey3 = RegistryKey.of(RegistryKeys.BIOME, identifier2);
         }
         Boolean boolean_ = jsonObject.has("smokey") ? Boolean.valueOf(jsonObject.get("smokey").getAsBoolean()) : null;
         LightPredicate lightPredicate = LightPredicate.fromJson(jsonObject.get("light"));

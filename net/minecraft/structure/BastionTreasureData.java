@@ -17,13 +17,13 @@ import net.minecraft.structure.processor.StructureProcessorLists;
 
 public class BastionTreasureData {
     public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-        RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
+        RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);
         RegistryEntry.Reference<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.TREASURE_ROOMS);
         RegistryEntry.Reference<StructureProcessorList> registryEntry2 = registryEntryLookup.getOrThrow(StructureProcessorLists.HIGH_WALL);
         RegistryEntry.Reference<StructureProcessorList> registryEntry3 = registryEntryLookup.getOrThrow(StructureProcessorLists.BOTTOM_RAMPART);
         RegistryEntry.Reference<StructureProcessorList> registryEntry4 = registryEntryLookup.getOrThrow(StructureProcessorLists.HIGH_RAMPART);
         RegistryEntry.Reference<StructureProcessorList> registryEntry5 = registryEntryLookup.getOrThrow(StructureProcessorLists.ROOF);
-        RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+        RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);
         RegistryEntry.Reference<StructurePool> registryEntry6 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
         StructurePools.register(poolRegisterable, "bastion/treasure/bases", new StructurePool(registryEntry6, ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/bases/lava_basin", registryEntry), 1)), StructurePool.Projection.RIGID));
         StructurePools.register(poolRegisterable, "bastion/treasure/stairs", new StructurePool(registryEntry6, ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/treasure/stairs/lower_stairs", registryEntry), 1)), StructurePool.Projection.RIGID));

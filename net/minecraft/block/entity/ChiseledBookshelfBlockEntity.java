@@ -4,22 +4,22 @@
 package net.minecraft.block.entity;
 
 import com.mojang.logging.LogUtils;
-import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ChiseledBookshelfBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.StackMappingInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
@@ -28,90 +28,56 @@ import org.slf4j.Logger;
 public class ChiseledBookshelfBlockEntity
 extends BlockEntity
 implements Inventory {
-    private static final Logger LOGGER = LogUtils.getLogger();
     public static final int MAX_BOOKS = 6;
-    private final StackMappingInventory books = new StackMappingInventory(6);
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(6, ItemStack.EMPTY);
 
     public ChiseledBookshelfBlockEntity(BlockPos pos, BlockState state) {
         super(BlockEntityType.CHISELED_BOOKSHELF, pos, state);
     }
 
-    private void updateState() {
-        int i = this.getCachedState().get(Properties.BOOKS_STORED);
-        if (i == this.books.getItemCount()) {
+    private void updateState(int interactedSlot) {
+        if (interactedSlot < 0 || interactedSlot >= 6) {
+            LOGGER.error("Expected slot 0-5, got {}", (Object)interactedSlot);
             return;
         }
-        Objects.requireNonNull(this.world).setBlockState(this.pos, (BlockState)((BlockState)this.getCachedState().with(Properties.BOOKS_STORED, this.books.getItemCount())).with(Properties.LAST_INTERACTION_BOOK_SLOT, i > this.books.getItemCount() ? this.books.getItemCount() + 1 : this.books.getItemCount()), Block.NOTIFY_ALL);
-    }
-
-    public ItemStack getLastBook() {
-        ItemStack itemStack = this.books.removeTopStack();
-        if (!itemStack.isEmpty()) {
-            this.updateState();
+        BlockState blockState = (BlockState)this.getCachedState().with(Properties.LAST_INTERACTION_BOOK_SLOT, interactedSlot + 1);
+        for (int i = 0; i < ChiseledBookshelfBlock.SLOT_OCCUPIED_PROPERTIES.size(); ++i) {
+            boolean bl = !this.getStack(i).isEmpty();
+            BooleanProperty booleanProperty = ChiseledBookshelfBlock.SLOT_OCCUPIED_PROPERTIES.get(i);
+            blockState = (BlockState)blockState.with(booleanProperty, bl);
         }
-        return itemStack;
-    }
-
-    public List<ItemStack> getAndClearBooks() {
-        return this.books.clear();
-    }
-
-    public boolean addBook(ItemStack stack) {
-        if (this.isFull()) {
-            return false;
-        }
-        if (stack.getCount() > 1) {
-            LOGGER.warn("tried to add a stack with more than one items {} at {}", (Object)stack, (Object)this.pos);
-            return false;
-        }
-        if (!stack.isIn(ItemTags.BOOKSHELF_BOOKS)) {
-            LOGGER.warn("tried to add a non book: {} at {}", (Object)stack, (Object)this.pos);
-            return false;
-        }
-        if (!this.books.addStack(stack)) {
-            LOGGER.warn("failed to add {} at {}", (Object)stack, (Object)this.pos);
-            return false;
-        }
-        this.updateState();
-        return true;
+        Objects.requireNonNull(this.world).setBlockState(this.pos, blockState, Block.NOTIFY_ALL);
     }
 
     @Override
     public void readNbt(NbtCompound nbt) {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(6, ItemStack.EMPTY);
-        Inventories.readNbt(nbt, defaultedList);
-        this.books.clear();
-        for (int i = 0; i < defaultedList.size(); ++i) {
-            ItemStack itemStack = defaultedList.get(i);
-            if (itemStack.isEmpty()) continue;
-            this.books.addStack(itemStack, i);
-        }
+        Inventories.readNbt(nbt, this.inventory);
     }
 
     @Override
     protected void writeNbt(NbtCompound nbt) {
-        Inventories.writeNbt(nbt, ChiseledBookshelfBlockEntity.getBooksAsList(this.books), true);
+        Inventories.writeNbt(nbt, this.inventory, true);
     }
 
-    private static DefaultedList<ItemStack> getBooksAsList(StackMappingInventory inventory) {
-        DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(6, ItemStack.EMPTY);
-        for (int i = 0; i < 6; ++i) {
-            defaultedList.set(i, inventory.getStack(i));
-        }
-        return defaultedList;
+    public BlockEntityUpdateS2CPacket toUpdatePacket() {
+        return BlockEntityUpdateS2CPacket.create(this);
+    }
+
+    @Override
+    public NbtCompound toInitialChunkDataNbt() {
+        NbtCompound nbtCompound = new NbtCompound();
+        Inventories.writeNbt(nbtCompound, this.inventory, true);
+        return nbtCompound;
+    }
+
+    public int getOpenSlotCount() {
+        return (int)this.inventory.stream().filter(Predicate.not(ItemStack::isEmpty)).count();
     }
 
     @Override
     public void clear() {
-        this.books.clear();
-    }
-
-    public int getBookCount() {
-        return this.books.getItemCount();
-    }
-
-    public boolean isFull() {
-        return this.books.isFull();
+        this.inventory.clear();
     }
 
     @Override
@@ -120,37 +86,35 @@ implements Inventory {
     }
 
     @Override
-    public void markDirty() {
-        this.books.flatten();
-        this.updateState();
-    }
-
-    @Override
     public boolean isEmpty() {
-        return this.books.isEmpty();
+        return this.inventory.stream().allMatch(ItemStack::isEmpty);
     }
 
     @Override
     public ItemStack getStack(int slot) {
-        return this.books.getStack(slot);
+        return this.inventory.get(slot);
     }
 
     @Override
     public ItemStack removeStack(int slot, int amount) {
-        ItemStack itemStack = this.removeStack(slot);
-        this.updateState();
+        ItemStack itemStack = Objects.requireNonNullElse(this.inventory.get(slot), ItemStack.EMPTY);
+        this.inventory.set(slot, ItemStack.EMPTY);
+        if (!itemStack.isEmpty()) {
+            this.updateState(slot);
+        }
         return itemStack;
     }
 
     @Override
     public ItemStack removeStack(int slot) {
-        return this.books.removeStack(slot);
+        return this.removeStack(slot, 1);
     }
 
     @Override
     public void setStack(int slot, ItemStack stack) {
-        if (this.books.setStack(stack, slot)) {
-            this.updateState();
+        if (stack.isIn(ItemTags.BOOKSHELF_BOOKS)) {
+            this.inventory.set(slot, stack);
+            this.updateState(slot);
         }
     }
 
@@ -167,27 +131,16 @@ implements Inventory {
         if (this.world.getBlockEntity(this.pos) != this) {
             return false;
         }
-        return player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) <= 64.0;
+        return !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
     }
 
     @Override
     public boolean isValid(int slot, ItemStack stack) {
-        return !this.isFull() && stack.isIn(ItemTags.BOOKSHELF_BOOKS) && this.books.hasSlot(slot);
+        return stack.isIn(ItemTags.BOOKSHELF_BOOKS) && this.getStack(slot).isEmpty();
     }
 
-    @Override
-    public int count(Item item) {
-        return (int)this.books.getStacks().stream().filter(stack -> stack.isOf(item)).count();
-    }
-
-    @Override
-    public boolean containsAny(Set<Item> items) {
-        return this.books.getStacks().stream().anyMatch(stack -> items.contains(stack.getItem()));
-    }
-
-    @Override
-    public boolean containsAny(Predicate<ItemStack> predicate) {
-        return this.books.getStacks().stream().anyMatch(predicate);
+    public /* synthetic */ Packet toUpdatePacket() {
+        return this.toUpdatePacket();
     }
 }
 

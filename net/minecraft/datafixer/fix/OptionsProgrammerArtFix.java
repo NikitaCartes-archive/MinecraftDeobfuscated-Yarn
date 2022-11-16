@@ -18,11 +18,11 @@ extends DataFix {
 
     @Override
     public TypeRewriteRule makeRule() {
-        return this.fixTypeEverywhereTyped("OptionsProgrammerArtFix", this.getInputSchema().getType(TypeReferences.OPTIONS), typed -> typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("resourcePacks", this::replaceTypo).update("incompatibleResourcePacks", this::replaceTypo)));
+        return this.fixTypeEverywhereTyped("OptionsProgrammerArtFix", this.getInputSchema().getType(TypeReferences.OPTIONS), typed -> typed.update(DSL.remainderFinder(), options -> options.update("resourcePacks", this::replaceTypo).update("incompatibleResourcePacks", this::replaceTypo)));
     }
 
-    private <T> Dynamic<T> replaceTypo(Dynamic<T> dynamic) {
-        return dynamic.asString().result().map(string -> dynamic.createString(string.replace("\"programer_art\"", "\"programmer_art\""))).orElse(dynamic);
+    private <T> Dynamic<T> replaceTypo(Dynamic<T> option) {
+        return option.asString().result().map(value -> option.createString(value.replace("\"programer_art\"", "\"programmer_art\""))).orElse(option);
     }
 }
 

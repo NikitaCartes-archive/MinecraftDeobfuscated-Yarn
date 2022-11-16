@@ -84,7 +84,7 @@ extends MinecraftServer {
             Stopwatch stopwatch = Stopwatch.createStarted();
             SaveLoader saveLoader = (SaveLoader)Util.waitAndApply(executor -> SaveLoading.load(serverConfig, loadContextSupplierContext -> {
                 Registry<DimensionOptions> registry = new SimpleRegistry<DimensionOptions>(RegistryKeys.DIMENSION, Lifecycle.stable()).freeze();
-                DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = loadContextSupplierContext.worldGenRegistryManager().get(RegistryKeys.WORLD_PRESET_WORLDGEN).entryOf(WorldPresets.FLAT).value().createDimensionsRegistryHolder().toConfig(registry);
+                DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = loadContextSupplierContext.worldGenRegistryManager().get(RegistryKeys.WORLD_PRESET).entryOf(WorldPresets.FLAT).value().createDimensionsRegistryHolder().toConfig(registry);
                 return new SaveLoading.LoadContext<LevelProperties>(new LevelProperties(levelInfo, TEST_LEVEL, dimensionsConfig.specialWorldProperty(), dimensionsConfig.getLifecycle()), dimensionsConfig.toDynamicRegistryManager());
             }, SaveLoader::new, Util.getMainWorkerExecutor(), executor)).get();
             stopwatch.stop();

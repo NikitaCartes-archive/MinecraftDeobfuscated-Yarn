@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 public class EntityStatusEffectS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private static final short field_39448 = Short.MAX_VALUE;
     private static final int AMBIENT_MASK = 1;
     private static final int SHOW_PARTICLES_MASK = 2;
     private static final int SHOW_ICON_MASK = 4;
@@ -61,10 +60,6 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeVarInt(this.duration);
         buf.writeByte(this.flags);
         buf.writeNullable(this.factorCalculationData, (buf2, factorCalculationData) -> buf2.encode(StatusEffectInstance.FactorCalculationData.CODEC, factorCalculationData));
-    }
-
-    public boolean isPermanent() {
-        return this.duration >= Short.MAX_VALUE;
     }
 
     @Override

@@ -24,7 +24,7 @@ extends GameOptionsScreen {
     protected final SimpleOption<?>[] options;
     @Nullable
     private ClickableWidget narratorButton;
-    private ButtonListWidget buttonList;
+    protected ButtonListWidget buttonList;
 
     public SimpleOptionsScreen(Screen parent, GameOptions gameOptions, Text title, SimpleOption<?>[] options) {
         super(parent, gameOptions, title);
@@ -44,7 +44,7 @@ extends GameOptionsScreen {
     }
 
     protected void initFooter() {
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).setPositionAndSize(this.width / 2 - 100, this.height - 27, 200, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, this.height - 27, 200, 20).build());
     }
 
     @Override

@@ -46,7 +46,7 @@ public class WorldPresets {
     }
 
     private static RegistryKey<WorldPreset> of(String id) {
-        return RegistryKey.of(RegistryKeys.WORLD_PRESET_WORLDGEN, new Identifier(id));
+        return RegistryKey.of(RegistryKeys.WORLD_PRESET, new Identifier(id));
     }
 
     public static Optional<RegistryKey<WorldPreset>> getWorldPreset(Registry<DimensionOptions> registry) {
@@ -63,11 +63,11 @@ public class WorldPresets {
     }
 
     public static DimensionOptionsRegistryHolder createDemoOptions(DynamicRegistryManager dynamicRegistryManager) {
-        return dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET_WORLDGEN).entryOf(DEFAULT).value().createDimensionsRegistryHolder();
+        return dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET).entryOf(DEFAULT).value().createDimensionsRegistryHolder();
     }
 
     public static DimensionOptions getDefaultOverworldOptions(DynamicRegistryManager dynamicRegistryManager) {
-        return dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET_WORLDGEN).entryOf(DEFAULT).value().getOverworld().orElseThrow();
+        return dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET).entryOf(DEFAULT).value().getOverworld().orElseThrow();
     }
 
     static class Registrar {
@@ -83,10 +83,10 @@ public class WorldPresets {
         Registrar(Registerable<WorldPreset> presetRegisterable) {
             this.presetRegisterable = presetRegisterable;
             RegistryEntryLookup<DimensionType> registryEntryLookup = presetRegisterable.getRegistryLookup(RegistryKeys.DIMENSION_TYPE);
-            this.chunkGeneratorSettingsLookup = presetRegisterable.getRegistryLookup(RegistryKeys.NOISE_SETTINGS_WORLDGEN);
-            this.biomeLookup = presetRegisterable.getRegistryLookup(RegistryKeys.BIOME_WORLDGEN);
-            this.featureLookup = presetRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
-            this.structureSetLookup = presetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE_SET_WORLDGEN);
+            this.chunkGeneratorSettingsLookup = presetRegisterable.getRegistryLookup(RegistryKeys.CHUNK_GENERATOR_SETTINGS);
+            this.biomeLookup = presetRegisterable.getRegistryLookup(RegistryKeys.BIOME);
+            this.featureLookup = presetRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
+            this.structureSetLookup = presetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE_SET);
             this.overworldDimensionType = registryEntryLookup.getOrThrow(DimensionTypes.OVERWORLD);
             RegistryEntry.Reference<DimensionType> registryEntry = registryEntryLookup.getOrThrow(DimensionTypes.THE_NETHER);
             RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry2 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.NETHER);

@@ -28,6 +28,7 @@ extends ClickableWidget {
     public TextWidget(int x, int y, int width, int height, Text message, TextRenderer textRenderer) {
         super(x, y, width, height, message);
         this.textRenderer = textRenderer;
+        this.active = false;
     }
 
     public TextWidget setTextColor(int textColor) {
@@ -37,11 +38,6 @@ extends ClickableWidget {
 
     @Override
     public void appendClickableNarrations(NarrationMessageBuilder builder) {
-    }
-
-    @Override
-    public boolean changeFocus(boolean lookForwards) {
-        return false;
     }
 
     @Override

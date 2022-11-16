@@ -100,7 +100,7 @@ extends Chunk {
     }
 
     public WorldChunk(World world, ChunkPos pos, UpgradeData upgradeData, ChunkTickScheduler<Block> blockTickScheduler, ChunkTickScheduler<Fluid> fluidTickScheduler, long inhabitedTime, @Nullable ChunkSection[] sectionArrayInitializer, @Nullable EntityLoader entityLoader, @Nullable BlendingData blendingData) {
-        super(pos, upgradeData, world, world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN), inhabitedTime, sectionArrayInitializer, blendingData);
+        super(pos, upgradeData, world, world.getRegistryManager().get(RegistryKeys.BIOME), inhabitedTime, sectionArrayInitializer, blendingData);
         this.world = world;
         this.gameEventDispatchers = new Int2ObjectOpenHashMap<GameEventDispatcher>();
         for (Heightmap.Type type : Heightmap.Type.values()) {

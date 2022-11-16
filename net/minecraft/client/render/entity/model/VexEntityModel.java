@@ -32,10 +32,7 @@ import net.minecraft.util.math.RotationAxis;
  *   <th>Part Name</th><th>Parent</th><th>Corresponding Field</th>
  * </tr>
  * <tr>
- *   <td>{@value EntityModelPartNames#HAT}</td><td>Root part</td><td>{@link #hat}</td>
- * </tr>
- * <tr>
- *   <td>{@value EntityModelPartNames#HEAD}</td><td>Root part</td><td>{@link #head}</td>
+ *   <td>{@value EntityModelPartNames#HEAD}</td><td>Root part</td><td></td>
  * </tr>
  * <tr>
  *   <td>{@value EntityModelPartNames#BODY}</td><td>Root part</td><td>{@link #body}</td>
@@ -45,12 +42,6 @@ import net.minecraft.util.math.RotationAxis;
  * </tr>
  * <tr>
  *   <td>{@value EntityModelPartNames#LEFT_ARM}</td><td>Root part</td><td>{@link #leftArm}</td>
- * </tr>
- * <tr>
- *   <td>{@value EntityModelPartNames#RIGHT_LEG}</td><td>Root part</td><td>{@link #rightLeg}</td>
- * </tr>
- * <tr>
- *   <td>{@value EntityModelPartNames#LEFT_LEG}</td><td>Root part</td><td>{@link #leftLeg}</td>
  * </tr>
  * <tr>
  *   <td>{@value EntityModelPartNames#RIGHT_WING}</td><td>Root part</td><td>{@link #rightWing}</td>
@@ -129,24 +120,24 @@ implements ModelWithArms {
 
     @Override
     public void setArmAngle(Arm arm, MatrixStack matrices) {
-        this.method_47434(matrices);
-        this.method_47435(matrices);
+        this.translateArmToPivot(matrices);
+        this.rotateArm(matrices);
         matrices.scale(0.55f, 0.55f, 0.55f);
-        this.method_47436(matrices);
+        this.translateArmAfterScale(matrices);
     }
 
-    private void method_47434(MatrixStack matrixStack) {
-        matrixStack.translate((this.body.pivotX + this.rightArm.pivotX) / 16.0f, (this.body.pivotY + this.rightArm.pivotY) / 16.0f, (this.body.pivotZ + this.rightArm.pivotZ) / 16.0f);
+    private void translateArmToPivot(MatrixStack matrices) {
+        matrices.translate((this.body.pivotX + this.rightArm.pivotX) / 16.0f, (this.body.pivotY + this.rightArm.pivotY) / 16.0f, (this.body.pivotZ + this.rightArm.pivotZ) / 16.0f);
     }
 
-    private void method_47435(MatrixStack matrixStack) {
-        matrixStack.multiply(RotationAxis.POSITIVE_Z.rotation(this.rightArm.roll));
-        matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(this.rightArm.yaw));
-        matrixStack.multiply(RotationAxis.POSITIVE_X.rotation(this.rightArm.pitch));
+    private void rotateArm(MatrixStack matrices) {
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotation(this.rightArm.roll));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotation(this.rightArm.yaw));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotation(this.rightArm.pitch));
     }
 
-    private void method_47436(MatrixStack matrixStack) {
-        matrixStack.translate(0.046875, -0.15625, 0.078125);
+    private void translateArmAfterScale(MatrixStack matrices) {
+        matrices.translate(0.046875, -0.15625, 0.078125);
     }
 }
 

@@ -97,8 +97,8 @@ public class UndergroundConfiguredFeatures {
     }
 
     public static void bootstrap(Registerable<ConfiguredFeature<?, ?>> featureRegisterable) {
-        RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
-        RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = featureRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
+        RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE);
+        RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = featureRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);
         ConfiguredFeatures.register(featureRegisterable, MONSTER_ROOM, Feature.MONSTER_ROOM);
         List<Identifier> list = List.of(new Identifier("fossil/spine_1"), new Identifier("fossil/spine_2"), new Identifier("fossil/spine_3"), new Identifier("fossil/spine_4"), new Identifier("fossil/skull_1"), new Identifier("fossil/skull_2"), new Identifier("fossil/skull_3"), new Identifier("fossil/skull_4"));
         List<Identifier> list2 = List.of(new Identifier("fossil/spine_1_coal"), new Identifier("fossil/spine_2_coal"), new Identifier("fossil/spine_3_coal"), new Identifier("fossil/spine_4_coal"), new Identifier("fossil/skull_1_coal"), new Identifier("fossil/skull_2_coal"), new Identifier("fossil/skull_3_coal"), new Identifier("fossil/skull_4_coal"));

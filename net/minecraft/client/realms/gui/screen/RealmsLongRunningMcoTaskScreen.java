@@ -69,7 +69,7 @@ implements Errable {
     @Override
     public void init() {
         this.task.init();
-        this.cancelButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.cancelOrBackButtonClicked()).setPositionAndSize(this.width / 2 - 106, RealmsLongRunningMcoTaskScreen.row(12), 212, 20).build());
+        this.cancelButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.cancelOrBackButtonClicked()).dimensions(this.width / 2 - 106, RealmsLongRunningMcoTaskScreen.row(12), 212, 20).build());
     }
 
     private void cancelOrBackButtonClicked() {
@@ -97,7 +97,7 @@ implements Errable {
         this.client.getNarratorManager().narrate(errorMessage);
         this.client.execute(() -> {
             this.remove(this.cancelButton);
-            this.cancelButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.cancelOrBackButtonClicked()).setPositionAndSize(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20).build());
+            this.cancelButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.cancelOrBackButtonClicked()).dimensions(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20).build());
         });
     }
 

@@ -89,8 +89,6 @@ implements ScreenHandlerProvider<T> {
 
     @Override
     protected void init() {
-        super.init();
-        this.client.keyboard.setRepeatEvents(true);
         this.x = (this.width - this.backgroundWidth) / 2;
         this.y = (this.height - this.backgroundHeight) / 2;
     }
@@ -553,7 +551,6 @@ implements ScreenHandlerProvider<T> {
         if (this.client.player == null) {
             return;
         }
-        this.client.keyboard.setRepeatEvents(false);
         ((ScreenHandler)this.handler).close(this.client.player);
     }
 

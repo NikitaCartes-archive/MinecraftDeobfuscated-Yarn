@@ -36,7 +36,7 @@ extends BlockEntity {
     private static Executor executor;
     @Nullable
     private GameProfile owner;
-    private int ticksPowered;
+    private int poweredTicks;
     private boolean powered;
 
     public SkullBlockEntity(BlockPos pos, BlockState state) {
@@ -79,17 +79,17 @@ extends BlockEntity {
     public static void tick(World world, BlockPos pos, BlockState state, SkullBlockEntity blockEntity) {
         if (world.isReceivingRedstonePower(pos)) {
             blockEntity.powered = true;
-            ++blockEntity.ticksPowered;
+            ++blockEntity.poweredTicks;
         } else {
             blockEntity.powered = false;
         }
     }
 
-    public float getTicksPowered(float tickDelta) {
+    public float getPoweredTicks(float tickDelta) {
         if (this.powered) {
-            return (float)this.ticksPowered + tickDelta;
+            return (float)this.poweredTicks + tickDelta;
         }
-        return this.ticksPowered;
+        return this.poweredTicks;
     }
 
     @Nullable

@@ -58,7 +58,7 @@ public class RealmsConnection {
                     if (RealmsConnection.this.aborted) {
                         return;
                     }
-                    RealmsConnection.this.connection.setPacketListener(new ClientLoginNetworkHandler(RealmsConnection.this.connection, minecraftClient, server.createServerInfo(string), RealmsConnection.this.onlineScreen, status -> {}));
+                    RealmsConnection.this.connection.setPacketListener(new ClientLoginNetworkHandler(RealmsConnection.this.connection, minecraftClient, server.createServerInfo(string), RealmsConnection.this.onlineScreen, false, null, status -> {}));
                     if (RealmsConnection.this.aborted) {
                         return;
                     }

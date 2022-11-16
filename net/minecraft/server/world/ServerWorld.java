@@ -108,6 +108,7 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -446,7 +447,9 @@ implements StructureWorldAccess {
                     if (blockState.isOf(Blocks.SNOW)) {
                         int l = blockState.get(SnowBlock.LAYERS);
                         if (l < Math.min(k, 8)) {
-                            this.setBlockState(blockPos, (BlockState)blockState.with(SnowBlock.LAYERS, l + 1));
+                            BlockState blockState2 = (BlockState)blockState.with(SnowBlock.LAYERS, l + 1);
+                            Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, this, blockPos);
+                            this.setBlockState(blockPos, blockState2);
                         }
                     } else {
                         this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
@@ -469,11 +472,11 @@ implements StructureWorldAccess {
                     FluidState fluidState;
                     BlockPos blockPos3 = this.getRandomPosInChunk(i, m, j, 15);
                     profiler.push("randomTick");
-                    BlockState blockState2 = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - m, blockPos3.getZ() - j);
-                    if (blockState2.hasRandomTicks()) {
-                        blockState2.randomTick(this, blockPos3, this.random);
+                    BlockState blockState3 = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - m, blockPos3.getZ() - j);
+                    if (blockState3.hasRandomTicks()) {
+                        blockState3.randomTick(this, blockPos3, this.random);
                     }
-                    if ((fluidState = blockState2.getFluidState()).hasRandomTicks()) {
+                    if ((fluidState = blockState3.getFluidState()).hasRandomTicks()) {
                         fluidState.onRandomTick(this, blockPos3, this.random);
                     }
                     profiler.pop();
@@ -715,12 +718,30 @@ implements StructureWorldAccess {
      */
     public <T extends Entity> List<? extends T> getEntitiesByType(TypeFilter<Entity, T> filter, Predicate<? super T> predicate) {
         ArrayList list = Lists.newArrayList();
+        this.collectEntitiesByType(filter, predicate, list);
+        return list;
+    }
+
+    public <T extends Entity> void collectEntitiesByType(TypeFilter<Entity, T> filter, Predicate<? super T> predicate, List<? super T> result) {
+        this.collectEntitiesByType(filter, predicate, result, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Collects entities of the given type, up to {@code limit}. Using this can improve
+     * performance, especially if {@code limit} is small.
+     * 
+     * @see #getEntitiesByType
+     */
+    public <T extends Entity> void collectEntitiesByType(TypeFilter<Entity, T> filter, Predicate<? super T> predicate, List<? super T> result, int limit) {
         this.getEntityLookup().forEach(filter, entity -> {
             if (predicate.test(entity)) {
-                list.add(entity);
+                result.add((Object)entity);
+                if (result.size() >= limit) {
+                    return LazyIterationConsumer.NextIteration.ABORT;
+                }
             }
+            return LazyIterationConsumer.NextIteration.CONTINUE;
         });
-        return list;
     }
 
     /**
@@ -734,10 +755,19 @@ implements StructureWorldAccess {
      * {@return the list of players filtered using {@code predicate}}
      */
     public List<ServerPlayerEntity> getPlayers(Predicate<? super ServerPlayerEntity> predicate) {
+        return this.getPlayers(predicate, Integer.MAX_VALUE);
+    }
+
+    /**
+     * {@return the list of players filtered using {@code predicate}, up to {@code limit}}
+     */
+    public List<ServerPlayerEntity> getPlayers(Predicate<? super ServerPlayerEntity> predicate, int limit) {
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList();
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
             if (!predicate.test(serverPlayerEntity)) continue;
             list.add(serverPlayerEntity);
+            if (list.size() < limit) continue;
+            return list;
         }
         return list;
     }
@@ -1124,7 +1154,7 @@ implements StructureWorldAccess {
         if (!this.server.getSaveProperties().getGeneratorOptions().shouldGenerateStructures()) {
             return null;
         }
-        Optional<RegistryEntryList.Named<Structure>> optional = this.getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN).getEntryList(structureTag);
+        Optional<RegistryEntryList.Named<Structure>> optional = this.getRegistryManager().get(RegistryKeys.STRUCTURE).getEntryList(structureTag);
         if (optional.isEmpty()) {
             return null;
         }

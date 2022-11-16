@@ -22,11 +22,11 @@ public enum MessageTrustStatus implements StringIdentifiable
     MODIFIED("modified"),
     NOT_SECURE("not_secure");
 
-    public static final Codec<MessageTrustStatus> field_40801;
-    private final String field_40802;
+    public static final Codec<MessageTrustStatus> CODEC;
+    private final String id;
 
-    private MessageTrustStatus(String string2) {
-        this.field_40802 = string2;
+    private MessageTrustStatus(String id) {
+        this.id = id;
     }
 
     public static MessageTrustStatus getStatus(SignedMessage message, Text decorated, Instant receptionTimestamp) {
@@ -78,11 +78,11 @@ public enum MessageTrustStatus implements StringIdentifiable
 
     @Override
     public String asString() {
-        return this.field_40802;
+        return this.id;
     }
 
     static {
-        field_40801 = StringIdentifiable.createCodec(MessageTrustStatus::values);
+        CODEC = StringIdentifiable.createCodec(MessageTrustStatus::values);
     }
 }
 

@@ -23,8 +23,8 @@ import net.minecraft.world.gen.structure.StructureKeys;
 
 public interface StructureSets {
     public static void bootstrap(Registerable<StructureSet> structureSetRegisterable) {
-        RegistryEntryLookup<Structure> registryEntryLookup = structureSetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE_WORLDGEN);
-        RegistryEntryLookup<Biome> registryEntryLookup2 = structureSetRegisterable.getRegistryLookup(RegistryKeys.BIOME_WORLDGEN);
+        RegistryEntryLookup<Structure> registryEntryLookup = structureSetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE);
+        RegistryEntryLookup<Biome> registryEntryLookup2 = structureSetRegisterable.getRegistryLookup(RegistryKeys.BIOME);
         RegistryEntry.Reference<StructureSet> reference = structureSetRegisterable.register(StructureSetKeys.VILLAGES, new StructureSet(List.of(StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_PLAINS)), StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_DESERT)), StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_SAVANNA)), StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_SNOWY)), StructureSet.createEntry(registryEntryLookup.getOrThrow(StructureKeys.VILLAGE_TAIGA))), (StructurePlacement)new RandomSpreadStructurePlacement(34, 8, SpreadType.LINEAR, 10387312)));
         structureSetRegisterable.register(StructureSetKeys.DESERT_PYRAMIDS, new StructureSet(registryEntryLookup.getOrThrow(StructureKeys.DESERT_PYRAMID), (StructurePlacement)new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357617)));
         structureSetRegisterable.register(StructureSetKeys.IGLOOS, new StructureSet(registryEntryLookup.getOrThrow(StructureKeys.IGLOO), (StructurePlacement)new RandomSpreadStructurePlacement(32, 8, SpreadType.LINEAR, 14357618)));

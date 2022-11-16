@@ -12,6 +12,7 @@ import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.WrapperWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Divider;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * A widget that positions its children in a 2D grid.
@@ -122,6 +123,10 @@ extends WrapperWidget {
         return this.mainPositioner;
     }
 
+    public Adder createAdder(int columns) {
+        return new Adder(columns);
+    }
+
     @Environment(value=EnvType.CLIENT)
     static class Element
     extends WrapperWidget.WrappedElement {
@@ -144,6 +149,48 @@ extends WrapperWidget {
 
         public int getColumnEnd() {
             return this.column + this.occupiedColumns - 1;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public final class Adder {
+        private final int columns;
+        private int totalOccupiedColumns;
+
+        Adder(int columns) {
+            this.columns = columns;
+        }
+
+        public <T extends ClickableWidget> T add(T widget) {
+            return this.add(widget, 1);
+        }
+
+        public <T extends ClickableWidget> T add(T widget, int occupiedColumns) {
+            return this.add(widget, occupiedColumns, this.getMainPositioner());
+        }
+
+        public <T extends ClickableWidget> T add(T widget, Positioner positioner) {
+            return this.add(widget, 1, positioner);
+        }
+
+        public <T extends ClickableWidget> T add(T widget, int occupiedColumns, Positioner positioner) {
+            int i = this.totalOccupiedColumns / this.columns;
+            int j = this.totalOccupiedColumns % this.columns;
+            if (j + occupiedColumns > this.columns) {
+                ++i;
+                j = 0;
+                this.totalOccupiedColumns = MathHelper.roundUpToMultiple(this.totalOccupiedColumns, this.columns);
+            }
+            this.totalOccupiedColumns += occupiedColumns;
+            return GridWidget.this.add(widget, i, j, 1, occupiedColumns, positioner);
+        }
+
+        public Positioner copyPositioner() {
+            return GridWidget.this.copyPositioner();
+        }
+
+        public Positioner getMainPositioner() {
+            return GridWidget.this.getMainPositioner();
         }
     }
 }

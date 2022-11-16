@@ -49,7 +49,7 @@ implements Fertilizable {
     }
 
     private Optional<? extends RegistryEntry<ConfiguredFeature<?, ?>>> getFeatureEntry(WorldView world) {
-        return world.getRegistryManager().get(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN).getEntry(this.featureKey);
+        return world.getRegistryManager().get(RegistryKeys.CONFIGURED_FEATURE).getEntry(this.featureKey);
     }
 
     @Override

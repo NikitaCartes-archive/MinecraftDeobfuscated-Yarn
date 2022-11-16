@@ -1147,6 +1147,7 @@ public class Items {
     public static final Item ZOMBIE_HEAD = Items.register(new VerticallyAttachableBlockItem(Blocks.ZOMBIE_HEAD, Blocks.ZOMBIE_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN));
     public static final Item CREEPER_HEAD = Items.register(new VerticallyAttachableBlockItem(Blocks.CREEPER_HEAD, Blocks.CREEPER_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN));
     public static final Item DRAGON_HEAD = Items.register(new VerticallyAttachableBlockItem(Blocks.DRAGON_HEAD, Blocks.DRAGON_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN));
+    public static final Item PIGLIN_HEAD = Items.register(new VerticallyAttachableBlockItem(Blocks.PIGLIN_HEAD, Blocks.PIGLIN_WALL_HEAD, new Item.Settings().rarity(Rarity.UNCOMMON), Direction.DOWN));
     public static final Item NETHER_STAR = Items.register("nether_star", (Item)new NetherStarItem(new Item.Settings().rarity(Rarity.UNCOMMON)));
     public static final Item PUMPKIN_PIE = Items.register("pumpkin_pie", new Item(new Item.Settings().food(FoodComponents.PUMPKIN_PIE)));
     public static final Item FIREWORK_ROCKET = Items.register("firework_rocket", (Item)new FireworkRocketItem(new Item.Settings()));

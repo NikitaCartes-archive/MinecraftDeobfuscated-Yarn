@@ -44,9 +44,7 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.client.keyboard.setRepeatEvents(true);
         this.serverNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 66, 200, 20, Text.translatable("addServer.enterName"));
-        this.serverNameField.setTextFieldFocused(true);
         this.serverNameField.setText(this.server.name);
         this.serverNameField.setChangedListener(serverName -> this.updateAddButton());
         this.addSelectableChild(this.serverNameField);
@@ -56,8 +54,9 @@ extends Screen {
         this.addressField.setChangedListener(address -> this.updateAddButton());
         this.addSelectableChild(this.addressField);
         this.addDrawableChild(CyclingButtonWidget.builder(ServerInfo.ResourcePackPolicy::getName).values((ServerInfo.ResourcePackPolicy[])ServerInfo.ResourcePackPolicy.values()).initially(this.server.getResourcePackPolicy()).build(this.width / 2 - 100, this.height / 4 + 72, 200, 20, Text.translatable("addServer.resourcePack"), (button, resourcePackPolicy) -> this.server.setResourcePackPolicy((ServerInfo.ResourcePackPolicy)((Object)resourcePackPolicy))));
-        this.addButton = this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("addServer.add"), button -> this.addAndClose()).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20).build());
-        this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.callback.accept(false)).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20).build());
+        this.addButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("addServer.add"), button -> this.addAndClose()).dimensions(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.callback.accept(false)).dimensions(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20).build());
+        this.setInitialFocus(this.serverNameField);
         this.updateAddButton();
     }
 
@@ -68,11 +67,6 @@ extends Screen {
         this.init(client, width, height);
         this.addressField.setText(string);
         this.serverNameField.setText(string2);
-    }
-
-    @Override
-    public void removed() {
-        this.client.keyboard.setRepeatEvents(false);
     }
 
     private void addAndClose() {

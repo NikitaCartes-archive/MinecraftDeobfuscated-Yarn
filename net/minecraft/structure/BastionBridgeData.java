@@ -17,12 +17,12 @@ import net.minecraft.structure.processor.StructureProcessorLists;
 
 public class BastionBridgeData {
     public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-        RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
+        RegistryEntryLookup<StructureProcessorList> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);
         RegistryEntry.Reference<StructureProcessorList> registryEntry = registryEntryLookup.getOrThrow(StructureProcessorLists.ENTRANCE_REPLACEMENT);
         RegistryEntry.Reference<StructureProcessorList> registryEntry2 = registryEntryLookup.getOrThrow(StructureProcessorLists.BASTION_GENERIC_DEGRADATION);
         RegistryEntry.Reference<StructureProcessorList> registryEntry3 = registryEntryLookup.getOrThrow(StructureProcessorLists.BRIDGE);
         RegistryEntry.Reference<StructureProcessorList> registryEntry4 = registryEntryLookup.getOrThrow(StructureProcessorLists.RAMPART_DEGRADATION);
-        RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+        RegistryEntryLookup<StructurePool> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);
         RegistryEntry.Reference<StructurePool> registryEntry5 = registryEntryLookup2.getOrThrow(StructurePools.EMPTY);
         StructurePools.register(poolRegisterable, "bastion/bridge/starting_pieces", new StructurePool(registryEntry5, ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/starting_pieces/entrance", registryEntry), 1), Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/starting_pieces/entrance_face", registryEntry2), 1)), StructurePool.Projection.RIGID));
         StructurePools.register(poolRegisterable, "bastion/bridge/bridge_pieces", new StructurePool(registryEntry5, ImmutableList.of(Pair.of(StructurePoolElement.ofProcessedSingle("bastion/bridge/bridge_pieces/bridge", registryEntry3), 1)), StructurePool.Projection.RIGID));

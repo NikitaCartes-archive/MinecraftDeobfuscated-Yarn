@@ -17,7 +17,7 @@ import net.minecraft.world.gen.structure.Structure;
 
 public record StructureSet(List<WeightedEntry> structures, StructurePlacement placement) {
     public static final Codec<StructureSet> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)WeightedEntry.CODEC.listOf().fieldOf("structures")).forGetter(StructureSet::structures), ((MapCodec)StructurePlacement.TYPE_CODEC.fieldOf("placement")).forGetter(StructureSet::placement)).apply((Applicative<StructureSet, ?>)instance, StructureSet::new));
-    public static final Codec<RegistryEntry<StructureSet>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET_WORLDGEN, CODEC);
+    public static final Codec<RegistryEntry<StructureSet>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.STRUCTURE_SET, CODEC);
 
     public StructureSet(RegistryEntry<Structure> structure, StructurePlacement placement) {
         this(List.of(new WeightedEntry(structure, 1)), placement);

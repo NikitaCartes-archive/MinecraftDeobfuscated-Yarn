@@ -30,14 +30,14 @@ extends Screen {
     @Override
     protected void init() {
         int i = -16;
-        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("demo.help.buy"), button -> {
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("demo.help.buy"), button -> {
             button.active = false;
             Util.getOperatingSystem().open("https://aka.ms/BuyMinecraftJava");
-        }).setPositionAndSize(this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20).build());
-        this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("demo.help.later"), button -> {
+        }).dimensions(this.width / 2 - 116, this.height / 2 + 62 + -16, 114, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("demo.help.later"), button -> {
             this.client.setScreen(null);
             this.client.mouse.lockCursor();
-        }).setPositionAndSize(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20).build());
+        }).dimensions(this.width / 2 + 2, this.height / 2 + 62 + -16, 114, 20).build());
         GameOptions gameOptions = this.client.options;
         this.movementText = MultilineText.create(this.textRenderer, Text.translatable("demo.help.movementShort", gameOptions.forwardKey.getBoundKeyLocalizedText(), gameOptions.leftKey.getBoundKeyLocalizedText(), gameOptions.backKey.getBoundKeyLocalizedText(), gameOptions.rightKey.getBoundKeyLocalizedText()), Text.translatable("demo.help.movementMouse"), Text.translatable("demo.help.jump", gameOptions.jumpKey.getBoundKeyLocalizedText()), Text.translatable("demo.help.inventory", gameOptions.inventoryKey.getBoundKeyLocalizedText()));
         this.fullWrappedText = MultilineText.create(this.textRenderer, (StringVisitable)Text.translatable("demo.help.fullWrapped"), 218);

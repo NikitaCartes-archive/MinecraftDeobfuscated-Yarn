@@ -10,8 +10,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Consumer;
 import net.minecraft.util.TypeFilter;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.world.entity.EntityLike;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -24,11 +24,11 @@ public class EntityIndex<T extends EntityLike> {
     private final Int2ObjectMap<T> idToEntity = new Int2ObjectLinkedOpenHashMap<T>();
     private final Map<UUID, T> uuidToEntity = Maps.newHashMap();
 
-    public <U extends T> void forEach(TypeFilter<T, U> filter, Consumer<U> action) {
+    public <U extends T> void forEach(TypeFilter<T, U> filter, LazyIterationConsumer<U> consumer) {
         for (EntityLike entityLike : this.idToEntity.values()) {
             EntityLike entityLike2 = (EntityLike)filter.downcast(entityLike);
-            if (entityLike2 == null) continue;
-            action.accept(entityLike2);
+            if (entityLike2 == null || !consumer.accept(entityLike2).shouldAbort()) continue;
+            return;
         }
     }
 

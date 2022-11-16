@@ -71,8 +71,8 @@ public class StructureLocator {
         this.biomeSource = biomeSource;
         this.seed = seed;
         this.dataFixer = dataFixer;
-        this.biomeRegistry = registryManager.get(RegistryKeys.BIOME_WORLDGEN);
-        this.structureRegistry = registryManager.get(RegistryKeys.STRUCTURE_WORLDGEN);
+        this.biomeRegistry = registryManager.get(RegistryKeys.BIOME);
+        this.structureRegistry = registryManager.get(RegistryKeys.STRUCTURE);
     }
 
     public StructurePresence getStructurePresence(ChunkPos pos, Structure type, boolean skipReferencedStructures) {
@@ -149,7 +149,7 @@ public class StructureLocator {
             return Object2IntMaps.emptyMap();
         }
         Object2IntOpenHashMap<Structure> object2IntMap = new Object2IntOpenHashMap<Structure>();
-        Registry<Structure> registry = this.registryManager.get(RegistryKeys.STRUCTURE_WORLDGEN);
+        Registry<Structure> registry = this.registryManager.get(RegistryKeys.STRUCTURE);
         for (String string : nbtCompound2.getKeys()) {
             String string2;
             NbtCompound nbtCompound3;

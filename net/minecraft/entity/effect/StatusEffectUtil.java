@@ -18,9 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 public final class StatusEffectUtil {
     public static String durationToString(StatusEffectInstance effect, float multiplier) {
-        if (effect.isPermanent()) {
-            return "**:**";
-        }
         int i = MathHelper.floor((float)effect.getDuration() * multiplier);
         return StringHelper.formatTicks(i);
     }

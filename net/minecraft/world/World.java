@@ -43,6 +43,7 @@ import net.minecraft.util.TypeFilter;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.function.LazyIterationConsumer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -676,22 +677,42 @@ AutoCloseable {
 
     @Override
     public <T extends Entity> List<T> getEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate) {
-        this.getProfiler().visit("getEntities");
         ArrayList list = Lists.newArrayList();
+        this.collectEntitiesByType(filter, box, predicate, list);
+        return list;
+    }
+
+    public <T extends Entity> void collectEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate, List<? super T> result) {
+        this.collectEntitiesByType(filter, box, predicate, result, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Collects entities of the given type in {@code box}, up to {@code limit}. Using this can
+     * improve performance, especially if {@code limit} is small.
+     * 
+     * @see #getEntitiesByType
+     */
+    public <T extends Entity> void collectEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate, List<? super T> result, int limit) {
+        this.getProfiler().visit("getEntities");
         this.getEntityLookup().forEachIntersects(filter, box, entity -> {
             if (predicate.test(entity)) {
-                list.add(entity);
+                result.add((Object)entity);
+                if (result.size() >= limit) {
+                    return LazyIterationConsumer.NextIteration.ABORT;
+                }
             }
             if (entity instanceof EnderDragonEntity) {
                 EnderDragonEntity enderDragonEntity = (EnderDragonEntity)entity;
                 for (EnderDragonPart enderDragonPart : enderDragonEntity.getBodyParts()) {
                     Entity entity2 = (Entity)filter.downcast(enderDragonPart);
                     if (entity2 == null || !predicate.test(entity2)) continue;
-                    list.add(entity2);
+                    result.add((Object)entity2);
+                    if (result.size() < limit) continue;
+                    return LazyIterationConsumer.NextIteration.ABORT;
                 }
             }
+            return LazyIterationConsumer.NextIteration.CONTINUE;
         });
-        return list;
     }
 
     /**
