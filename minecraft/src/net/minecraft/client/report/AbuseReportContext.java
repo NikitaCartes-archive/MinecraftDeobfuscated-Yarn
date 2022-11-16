@@ -34,7 +34,7 @@ public final class AbuseReportContext {
 		return new AbuseReportContext(abuseReportSender, environment, chatLog);
 	}
 
-	public boolean tryShowDraftScreen(MinecraftClient client, @Nullable Screen parent, boolean quitting) {
+	public void tryShowDraftScreen(MinecraftClient client, @Nullable Screen parent, Runnable callback, boolean quit) {
 		if (this.draft != null) {
 			ChatAbuseReport.Draft draft = this.draft.copy();
 			client.setScreen(
@@ -44,18 +44,17 @@ public final class AbuseReportContext {
 						if (confirmed) {
 							client.setScreen(new ChatReportScreen(parent, this, draft));
 						} else {
-							client.setScreen(parent);
+							callback.run();
 						}
 					},
-					Text.translatable(quitting ? "gui.chatReport.draft.quittotitle.title" : "gui.chatReport.draft.title"),
-					Text.translatable(quitting ? "gui.chatReport.draft.quittotitle.content" : "gui.chatReport.draft.content"),
+					Text.translatable(quit ? "gui.chatReport.draft.quittotitle.title" : "gui.chatReport.draft.title"),
+					Text.translatable(quit ? "gui.chatReport.draft.quittotitle.content" : "gui.chatReport.draft.content"),
 					Text.translatable("gui.chatReport.draft.edit"),
 					Text.translatable("gui.chatReport.draft.discard")
 				)
 			);
-			return false;
 		} else {
-			return true;
+			callback.run();
 		}
 	}
 

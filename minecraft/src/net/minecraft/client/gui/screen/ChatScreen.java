@@ -44,7 +44,6 @@ public class ChatScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		this.messageHistorySize = this.client.inGameHud.getChatHud().getMessageHistory().size();
 		this.chatField = new TextFieldWidget(this.client.advanceValidatingTextRenderer, 4, this.height - 12, this.width - 4, 12, Text.translatable("chat.editBox")) {
 			@Override
@@ -72,7 +71,6 @@ public class ChatScreen extends Screen {
 
 	@Override
 	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 		this.client.inGameHud.getChatHud().resetScroll();
 	}
 

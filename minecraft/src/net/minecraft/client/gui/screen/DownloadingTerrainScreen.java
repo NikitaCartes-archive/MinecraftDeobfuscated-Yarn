@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 @Environment(EnvType.CLIENT)
 public class DownloadingTerrainScreen extends Screen {
 	private static final Text TEXT = Text.translatable("multiplayer.downloadingTerrain");
-	private static final long MIN_LOAD_TIME_MS = 2000L;
+	private static final long MIN_LOAD_TIME_MS = 30000L;
 	private boolean ready = false;
 	private boolean closeOnNextTick = false;
 	private final long loadStartTime = System.currentTimeMillis();
@@ -33,16 +33,21 @@ public class DownloadingTerrainScreen extends Screen {
 
 	@Override
 	public void tick() {
-		boolean bl = this.closeOnNextTick || System.currentTimeMillis() > this.loadStartTime + 2000L;
-		if (bl && this.client != null && this.client.player != null) {
-			BlockPos blockPos = this.client.player.getBlockPos();
-			boolean bl2 = this.client.world != null && this.client.world.isOutOfHeightLimit(blockPos.getY());
-			if (bl2 || this.client.worldRenderer.isRenderingReady(blockPos)) {
-				this.close();
-			}
+		if (System.currentTimeMillis() > this.loadStartTime + 30000L) {
+			this.close();
+		} else {
+			if (this.closeOnNextTick) {
+				if (this.client.player == null) {
+					return;
+				}
 
-			if (this.ready) {
-				this.closeOnNextTick = true;
+				BlockPos blockPos = this.client.player.getBlockPos();
+				boolean bl = this.client.world != null && this.client.world.isOutOfHeightLimit(blockPos.getY());
+				if (bl || this.client.worldRenderer.isRenderingReady(blockPos) || this.client.player.isSpectator() || !this.client.player.isAlive()) {
+					this.close();
+				}
+			} else {
+				this.closeOnNextTick = this.ready;
 			}
 		}
 	}

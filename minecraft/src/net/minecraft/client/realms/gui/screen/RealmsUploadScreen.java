@@ -87,13 +87,12 @@ public class RealmsUploadScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		this.backButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.onBack()).setPositionAndSize(this.width / 2 - 100, this.height - 42, 200, 20).build()
+			ButtonWidget.builder(ScreenTexts.BACK, button -> this.onBack()).dimensions(this.width / 2 - 100, this.height - 42, 200, 20).build()
 		);
 		this.backButton.visible = false;
 		this.cancelButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.onCancel()).setPositionAndSize(this.width / 2 - 100, this.height - 42, 200, 20).build()
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCancel()).dimensions(this.width / 2 - 100, this.height - 42, 200, 20).build()
 		);
 		if (!this.uploadStarted) {
 			if (this.parent.slot == -1) {
@@ -108,11 +107,6 @@ public class RealmsUploadScreen extends RealmsScreen {
 				});
 			}
 		}
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	private void onBack() {

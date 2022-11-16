@@ -59,7 +59,7 @@ public class StructureProcessorLists {
 	public static final RegistryKey<StructureProcessorList> ANCIENT_CITY_WALLS_DEGRADATION = of("ancient_city_walls_degradation");
 
 	private static RegistryKey<StructureProcessorList> of(String id) {
-		return RegistryKey.of(RegistryKeys.PROCESSOR_LIST_WORLDGEN, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.PROCESSOR_LIST, new Identifier(id));
 	}
 
 	private static void register(

@@ -180,7 +180,7 @@ public class EntitySelectorOptions {
 						var10001 = EntitySelectorReader.RANDOM;
 						break;
 					case "arbitrary":
-						var10001 = EntitySelectorReader.ARBITRARY;
+						var10001 = EntitySelector.ARBITRARY;
 						break;
 					default:
 						reader.getReader().setCursor(i);

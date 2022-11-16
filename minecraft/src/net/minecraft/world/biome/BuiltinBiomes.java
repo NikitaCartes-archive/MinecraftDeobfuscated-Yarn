@@ -8,8 +8,8 @@ import net.minecraft.world.gen.feature.PlacedFeature;
 
 public abstract class BuiltinBiomes {
 	public static void bootstrap(Registerable<Biome> biomeRegisterable) {
-		RegistryEntryLookup<PlacedFeature> registryEntryLookup = biomeRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
-		RegistryEntryLookup<ConfiguredCarver<?>> registryEntryLookup2 = biomeRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_CARVER_WORLDGEN);
+		RegistryEntryLookup<PlacedFeature> registryEntryLookup = biomeRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
+		RegistryEntryLookup<ConfiguredCarver<?>> registryEntryLookup2 = biomeRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_CARVER);
 		biomeRegisterable.register(BiomeKeys.THE_VOID, OverworldBiomeCreator.createTheVoid(registryEntryLookup, registryEntryLookup2));
 		biomeRegisterable.register(BiomeKeys.PLAINS, OverworldBiomeCreator.createPlains(registryEntryLookup, registryEntryLookup2, false, false, false));
 		biomeRegisterable.register(BiomeKeys.SUNFLOWER_PLAINS, OverworldBiomeCreator.createPlains(registryEntryLookup, registryEntryLookup2, true, false, false));

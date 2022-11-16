@@ -16,12 +16,12 @@ import net.minecraft.world.gen.feature.UndergroundPlacedFeatures;
 
 public class AncientCityOutskirtsGenerator {
 	public static void bootstrap(Registerable<StructurePool> poolRegisterable) {
-		RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE_WORLDGEN);
+		RegistryEntryLookup<PlacedFeature> registryEntryLookup = poolRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
 		RegistryEntry<PlacedFeature> registryEntry = registryEntryLookup.getOrThrow(UndergroundPlacedFeatures.SCULK_PATCH_ANCIENT_CITY);
-		RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST_WORLDGEN);
+		RegistryEntryLookup<StructureProcessorList> registryEntryLookup2 = poolRegisterable.getRegistryLookup(RegistryKeys.PROCESSOR_LIST);
 		RegistryEntry<StructureProcessorList> registryEntry2 = registryEntryLookup2.getOrThrow(StructureProcessorLists.ANCIENT_CITY_GENERIC_DEGRADATION);
 		RegistryEntry<StructureProcessorList> registryEntry3 = registryEntryLookup2.getOrThrow(StructureProcessorLists.ANCIENT_CITY_WALLS_DEGRADATION);
-		RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL_WORLDGEN);
+		RegistryEntryLookup<StructurePool> registryEntryLookup3 = poolRegisterable.getRegistryLookup(RegistryKeys.TEMPLATE_POOL);
 		RegistryEntry<StructurePool> registryEntry4 = registryEntryLookup3.getOrThrow(StructurePools.EMPTY);
 		StructurePools.register(
 			poolRegisterable,

@@ -42,27 +42,19 @@ public class RealmsInviteScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		this.nameWidget = new TextFieldWidget(
 			this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, Text.translatable("mco.configure.world.invite.profile.name")
 		);
 		this.addSelectableChild(this.nameWidget);
 		this.setInitialFocus(this.nameWidget);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.configure.world.buttons.invite"), button -> this.onInvite())
-				.setPositionAndSize(this.width / 2 - 100, row(10), 200, 20)
+			ButtonWidget.builder(Text.translatable("mco.configure.world.buttons.invite"), button -> this.onInvite())
+				.dimensions(this.width / 2 - 100, row(10), 200, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 100, row(12), 200, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, row(12), 200, 20).build()
 		);
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	private void onInvite() {

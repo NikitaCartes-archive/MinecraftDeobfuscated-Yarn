@@ -10,6 +10,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.logging.LogUtils;
 import java.math.BigInteger;
 import java.security.PublicKey;
+import java.time.Duration;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import javax.crypto.Cipher;
@@ -49,15 +50,26 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private final Consumer<Text> statusConsumer;
 	private final ClientConnection connection;
 	private GameProfile profile;
+	private final boolean newWorld;
+	@Nullable
+	private final Duration worldLoadTime;
 
 	public ClientLoginNetworkHandler(
-		ClientConnection connection, MinecraftClient client, @Nullable ServerInfo serverInfo, @Nullable Screen parentScreen, Consumer<Text> statusConsumer
+		ClientConnection connection,
+		MinecraftClient client,
+		@Nullable ServerInfo serverInfo,
+		@Nullable Screen parentScreen,
+		boolean newWorld,
+		@Nullable Duration worldLoadTime,
+		Consumer<Text> statusConsumer
 	) {
 		this.connection = connection;
 		this.client = client;
 		this.serverInfo = serverInfo;
 		this.parentScreen = parentScreen;
 		this.statusConsumer = statusConsumer;
+		this.newWorld = newWorld;
+		this.worldLoadTime = worldLoadTime;
 	}
 
 	@Override
@@ -124,7 +136,14 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 		this.connection.setState(NetworkState.PLAY);
 		this.connection
 			.setPacketListener(
-				new ClientPlayNetworkHandler(this.client, this.parentScreen, this.connection, this.serverInfo, this.profile, this.client.createTelemetrySender())
+				new ClientPlayNetworkHandler(
+					this.client,
+					this.parentScreen,
+					this.connection,
+					this.serverInfo,
+					this.profile,
+					this.client.getTelemetryManager().createWorldSession(this.newWorld, this.worldLoadTime)
+				)
 			);
 	}
 

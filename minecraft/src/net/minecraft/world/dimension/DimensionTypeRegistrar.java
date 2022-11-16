@@ -45,7 +45,7 @@ public class DimensionTypeRegistrar {
 				BlockTags.INFINIBURN_NETHER,
 				DimensionTypes.THE_NETHER_ID,
 				0.1F,
-				new DimensionType.MonsterSettings(true, false, ConstantIntProvider.create(11), 15)
+				new DimensionType.MonsterSettings(true, false, ConstantIntProvider.create(7), 15)
 			)
 		);
 		dimensionTypeRegisterable.register(

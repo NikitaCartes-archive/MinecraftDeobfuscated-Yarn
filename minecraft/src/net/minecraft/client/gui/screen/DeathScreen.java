@@ -32,18 +32,18 @@ public class DeathScreen extends Screen {
 		this.ticksSinceDeath = 0;
 		this.buttons.clear();
 		Text text = this.isHardcore ? Text.translatable("deathScreen.spectate") : Text.translatable("deathScreen.respawn");
-		this.buttons.add(this.addDrawableChild(ButtonWidget.createBuilder(text, button -> {
+		this.buttons.add(this.addDrawableChild(ButtonWidget.builder(text, button -> {
 			this.client.player.requestRespawn();
 			this.client.setScreen(null);
-		}).setPositionAndSize(this.width / 2 - 100, this.height / 4 + 72, 200, 20).build()));
+		}).dimensions(this.width / 2 - 100, this.height / 4 + 72, 200, 20).build()));
 		this.buttons
 			.add(
 				this.addDrawableChild(
-					ButtonWidget.createBuilder(
+					ButtonWidget.builder(
 							Text.translatable("deathScreen.titleScreen"),
 							button -> {
 								if (this.isHardcore) {
-									this.quitLevel();
+									this.client.getAbuseReportContext().tryShowDraftScreen(this.client, this, this::quitLevel, true);
 								} else {
 									ConfirmScreen confirmScreen = new ConfirmScreen(
 										this::onConfirmQuit,
@@ -57,7 +57,7 @@ public class DeathScreen extends Screen {
 								}
 							}
 						)
-						.setPositionAndSize(this.width / 2 - 100, this.height / 4 + 96, 200, 20)
+						.dimensions(this.width / 2 - 100, this.height / 4 + 96, 200, 20)
 						.build()
 				)
 			);
@@ -78,7 +78,7 @@ public class DeathScreen extends Screen {
 
 	private void onConfirmQuit(boolean quit) {
 		if (quit) {
-			this.quitLevel();
+			this.client.getAbuseReportContext().tryShowDraftScreen(this.client, this, this::quitLevel, true);
 		} else {
 			this.client.player.requestRespawn();
 			this.client.setScreen(null);

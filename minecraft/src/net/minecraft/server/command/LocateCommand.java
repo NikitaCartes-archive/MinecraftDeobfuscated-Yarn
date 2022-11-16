@@ -55,10 +55,10 @@ public class LocateCommand {
 				.then(
 					CommandManager.literal("structure")
 						.then(
-							CommandManager.argument("structure", RegistryPredicateArgumentType.registryPredicate(RegistryKeys.STRUCTURE_WORLDGEN))
+							CommandManager.argument("structure", RegistryPredicateArgumentType.registryPredicate(RegistryKeys.STRUCTURE))
 								.executes(
 									context -> executeLocateStructure(
-											context.getSource(), RegistryPredicateArgumentType.getPredicate(context, "structure", RegistryKeys.STRUCTURE_WORLDGEN, STRUCTURE_INVALID_EXCEPTION)
+											context.getSource(), RegistryPredicateArgumentType.getPredicate(context, "structure", RegistryKeys.STRUCTURE, STRUCTURE_INVALID_EXCEPTION)
 										)
 								)
 						)
@@ -66,11 +66,9 @@ public class LocateCommand {
 				.then(
 					CommandManager.literal("biome")
 						.then(
-							CommandManager.argument("biome", RegistryEntryPredicateArgumentType.registryEntryPredicate(registryAccess, RegistryKeys.BIOME_WORLDGEN))
+							CommandManager.argument("biome", RegistryEntryPredicateArgumentType.registryEntryPredicate(registryAccess, RegistryKeys.BIOME))
 								.executes(
-									context -> executeLocateBiome(
-											context.getSource(), RegistryEntryPredicateArgumentType.getRegistryEntryPredicate(context, "biome", RegistryKeys.BIOME_WORLDGEN)
-										)
+									context -> executeLocateBiome(context.getSource(), RegistryEntryPredicateArgumentType.getRegistryEntryPredicate(context, "biome", RegistryKeys.BIOME))
 								)
 						)
 				)
@@ -96,7 +94,7 @@ public class LocateCommand {
 	}
 
 	private static int executeLocateStructure(ServerCommandSource source, RegistryPredicateArgumentType.RegistryPredicate<Structure> predicate) throws CommandSyntaxException {
-		Registry<Structure> registry = source.getWorld().getRegistryManager().get(RegistryKeys.STRUCTURE_WORLDGEN);
+		Registry<Structure> registry = source.getWorld().getRegistryManager().get(RegistryKeys.STRUCTURE);
 		RegistryEntryList<Structure> registryEntryList = (RegistryEntryList)getStructureListForPredicate(predicate, registry)
 			.orElseThrow(() -> STRUCTURE_INVALID_EXCEPTION.create(predicate.asString()));
 		BlockPos blockPos = new BlockPos(source.getPosition());

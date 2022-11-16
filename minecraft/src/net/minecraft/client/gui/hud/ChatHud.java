@@ -184,7 +184,7 @@ public class ChatHud extends DrawableHelper {
 	}
 
 	public void addMessage(Text message) {
-		this.addMessage(message, null, this.client.method_47392() ? MessageIndicator.method_47391() : MessageIndicator.system());
+		this.addMessage(message, null, this.client.isConnectedToLocalServer() ? MessageIndicator.singlePlayer() : MessageIndicator.system());
 	}
 
 	public void addMessage(Text message, @Nullable MessageSignatureData signature, @Nullable MessageIndicator indicator) {

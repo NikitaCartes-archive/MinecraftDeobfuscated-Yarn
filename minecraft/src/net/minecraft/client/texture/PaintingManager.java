@@ -11,7 +11,7 @@ public class PaintingManager extends SpriteAtlasHolder {
 	private static final Identifier PAINTING_BACK_ID = new Identifier("back");
 
 	public PaintingManager(TextureManager manager) {
-		super(manager, new Identifier("textures/atlas/paintings.png"), "painting");
+		super(manager, new Identifier("textures/atlas/paintings.png"), new Identifier("paintings"));
 	}
 
 	public Sprite getPaintingSprite(PaintingVariant variant) {

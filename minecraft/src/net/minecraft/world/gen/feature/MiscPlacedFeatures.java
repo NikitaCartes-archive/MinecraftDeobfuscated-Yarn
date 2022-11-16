@@ -47,7 +47,7 @@ public class MiscPlacedFeatures {
 	public static final RegistryKey<PlacedFeature> SPRING_WATER = PlacedFeatures.of("spring_water");
 
 	public static void bootstrap(Registerable<PlacedFeature> featureRegisterable) {
-		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN);
+		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.ICE_SPIKE);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry2 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.ICE_PATCH);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry3 = registryEntryLookup.getOrThrow(MiscConfiguredFeatures.FOREST_ROCK);

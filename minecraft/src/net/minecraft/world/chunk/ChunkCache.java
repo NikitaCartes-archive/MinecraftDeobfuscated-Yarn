@@ -35,7 +35,7 @@ public class ChunkCache implements BlockView, CollisionView {
 
 	public ChunkCache(World world, BlockPos minPos, BlockPos maxPos) {
 		this.world = world;
-		this.plainsEntryGetter = Suppliers.memoize(() -> world.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN).entryOf(BiomeKeys.PLAINS));
+		this.plainsEntryGetter = Suppliers.memoize(() -> world.getRegistryManager().get(RegistryKeys.BIOME).entryOf(BiomeKeys.PLAINS));
 		this.minX = ChunkSectionPos.getSectionCoord(minPos.getX());
 		this.minZ = ChunkSectionPos.getSectionCoord(minPos.getZ());
 		int i = ChunkSectionPos.getSectionCoord(maxPos.getX());

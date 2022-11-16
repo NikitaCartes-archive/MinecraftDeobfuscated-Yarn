@@ -27,24 +27,24 @@ import net.minecraft.world.gen.structure.Structures;
 public class BuiltinRegistries {
 	private static final RegistryBuilder REGISTRY_BUILDER = new RegistryBuilder()
 		.addRegistry(RegistryKeys.DIMENSION_TYPE, DimensionTypeRegistrar::bootstrap)
-		.addRegistry(RegistryKeys.CONFIGURED_CARVER_WORLDGEN, ConfiguredCarvers::bootstrap)
-		.addRegistry(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN, ConfiguredFeatures::bootstrap)
-		.addRegistry(RegistryKeys.PLACED_FEATURE_WORLDGEN, PlacedFeatures::bootstrap)
-		.addRegistry(RegistryKeys.STRUCTURE_WORLDGEN, Structures::bootstrap)
-		.addRegistry(RegistryKeys.STRUCTURE_SET_WORLDGEN, StructureSets::bootstrap)
-		.addRegistry(RegistryKeys.PROCESSOR_LIST_WORLDGEN, StructureProcessorLists::bootstrap)
-		.addRegistry(RegistryKeys.TEMPLATE_POOL_WORLDGEN, StructurePools::bootstrap)
-		.addRegistry(RegistryKeys.BIOME_WORLDGEN, BuiltinBiomes::bootstrap)
-		.addRegistry(RegistryKeys.NOISE_WORLDGEN, BuiltinNoiseParameters::bootstrap)
-		.addRegistry(RegistryKeys.DENSITY_FUNCTION_WORLDGEN, DensityFunctions::bootstrap)
-		.addRegistry(RegistryKeys.NOISE_SETTINGS_WORLDGEN, ChunkGeneratorSettings::bootstrap)
-		.addRegistry(RegistryKeys.WORLD_PRESET_WORLDGEN, WorldPresets::bootstrap)
-		.addRegistry(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, FlatLevelGeneratorPresets::bootstrap)
-		.addRegistry(RegistryKeys.CHAT_TYPE, MessageType::bootstrap);
+		.addRegistry(RegistryKeys.CONFIGURED_CARVER, ConfiguredCarvers::bootstrap)
+		.addRegistry(RegistryKeys.CONFIGURED_FEATURE, ConfiguredFeatures::bootstrap)
+		.addRegistry(RegistryKeys.PLACED_FEATURE, PlacedFeatures::bootstrap)
+		.addRegistry(RegistryKeys.STRUCTURE, Structures::bootstrap)
+		.addRegistry(RegistryKeys.STRUCTURE_SET, StructureSets::bootstrap)
+		.addRegistry(RegistryKeys.PROCESSOR_LIST, StructureProcessorLists::bootstrap)
+		.addRegistry(RegistryKeys.TEMPLATE_POOL, StructurePools::bootstrap)
+		.addRegistry(RegistryKeys.BIOME, BuiltinBiomes::bootstrap)
+		.addRegistry(RegistryKeys.NOISE_PARAMETERS, BuiltinNoiseParameters::bootstrap)
+		.addRegistry(RegistryKeys.DENSITY_FUNCTION, DensityFunctions::bootstrap)
+		.addRegistry(RegistryKeys.CHUNK_GENERATOR_SETTINGS, ChunkGeneratorSettings::bootstrap)
+		.addRegistry(RegistryKeys.WORLD_PRESET, WorldPresets::bootstrap)
+		.addRegistry(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPresets::bootstrap)
+		.addRegistry(RegistryKeys.MESSAGE_TYPE, MessageType::bootstrap);
 
 	private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
-		RegistryEntryLookup<PlacedFeature> registryEntryLookup = wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE_WORLDGEN);
-		wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME_WORLDGEN).streamEntries().forEach(biome -> {
+		RegistryEntryLookup<PlacedFeature> registryEntryLookup = wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE);
+		wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME).streamEntries().forEach(biome -> {
 			Identifier identifier = biome.registryKey().getValue();
 			List<RegistryEntryList<PlacedFeature>> list = ((Biome)biome.value()).getGenerationSettings().getFeatures();
 			list.stream().flatMap(RegistryEntryList::stream).forEach(placedFeature -> placedFeature.getKeyOrValue().ifLeft(key -> {

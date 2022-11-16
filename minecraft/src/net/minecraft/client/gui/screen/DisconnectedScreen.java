@@ -30,8 +30,8 @@ public class DisconnectedScreen extends Screen {
 		this.reasonFormatted = MultilineText.create(this.textRenderer, this.reason, this.width - 50);
 		this.reasonHeight = this.reasonFormatted.count() * 9;
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("gui.toMenu"), button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + 9, this.height - 30), 200, 20)
+			ButtonWidget.builder(Text.translatable("gui.toMenu"), button -> this.client.setScreen(this.parent))
+				.dimensions(this.width / 2 - 100, Math.min(this.height / 2 + this.reasonHeight / 2 + 9, this.height - 30), 200, 20)
 				.build()
 		);
 	}

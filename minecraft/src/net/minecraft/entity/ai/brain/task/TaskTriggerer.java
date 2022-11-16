@@ -33,8 +33,8 @@ import net.minecraft.server.world.ServerWorld;
  * <li>Return the result of {@link #task}. This method creates a new {@link SingleTickTask}.</li>
  * </ol>
  * 
- * <p>A lambda is passed to the {@code task} method. This takes a {@link TaskTriggerer.Context}.
- * You can either call {@link TaskTriggerer.Context#point} to set the actual task function,
+ * <p>A lambda is passed to the {@code task} method. This takes a {@link TaskTriggerer.TaskContext}.
+ * You can either call {@link TaskTriggerer.TaskContext#point} to set the actual task function,
  * or declare a dependency on memory queries. The task function is a function that takes
  * the server world, entity, and the current time, and returns a boolean indicating whether
  * a task successfully ran.
@@ -51,23 +51,23 @@ import net.minecraft.server.world.ServerWorld;
  * 
  * <h2>Memory-dependent task</h2>
  * <p>Memory-dependent tasks (i.e. one that queries, remembers, or forgets a memory) first
- * should call {@code Context.group} with results of {@code Context.queryMemory} methods
+ * should call {@code TaskContext.group} with results of {@code Context.queryMemory} methods
  * for all the dependent memories. Then, call {@code apply} with {@code context} and a
  * lambda function taking the results of the query. This function returns the task function
  * seen earlier.
  * 
  * <p>If any of the query is not successful (e.g. because a value was not present), the task will
  * not run. If all succeed, then the task runs, and the query result can be obtained via
- * {@link TaskTriggerer.Context#getValue}.
+ * {@link TaskTriggerer.TaskContext#getValue}.
  * 
  * <p>There are three query types:
  * 
  * <ul>
- * <li>{@link TaskTriggerer.Context#queryMemoryAbsent} that succeeds if a value is
+ * <li>{@link TaskTriggerer.TaskContext#queryMemoryAbsent} that succeeds if a value is
  * <strong>not</strong> present in the memory.</li>
- * <li>{@link TaskTriggerer.Context#queryMemoryValue} that succeeds if a value is
+ * <li>{@link TaskTriggerer.TaskContext#queryMemoryValue} that succeeds if a value is
  * present in the memory. The result is the queried value.</li>
- * <li>{@link TaskTriggerer.Context#queryMemoryOptional} that always succeeds. The value
+ * <li>{@link TaskTriggerer.TaskContext#queryMemoryOptional} that always succeeds. The value
  * is an optional that contains the value if it is present in the memory.</li>
  * </ul>
  * 

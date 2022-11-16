@@ -30,9 +30,7 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 100, row(12), 200, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, row(12), 200, 20).build()
 		);
 	}
 

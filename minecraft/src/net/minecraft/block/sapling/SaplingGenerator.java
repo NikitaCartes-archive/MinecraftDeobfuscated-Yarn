@@ -24,7 +24,7 @@ public abstract class SaplingGenerator {
 			return false;
 		} else {
 			RegistryEntry<ConfiguredFeature<?, ?>> registryEntry = (RegistryEntry)world.getRegistryManager()
-				.get(RegistryKeys.CONFIGURED_FEATURE_WORLDGEN)
+				.get(RegistryKeys.CONFIGURED_FEATURE)
 				.getEntry(registryKey)
 				.orElse(null);
 			if (registryEntry == null) {

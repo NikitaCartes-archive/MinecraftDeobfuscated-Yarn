@@ -11,6 +11,6 @@ public class FlatLevelGeneratorPresetTags {
 	}
 
 	private static TagKey<FlatLevelGeneratorPreset> of(String id) {
-		return TagKey.of(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, new Identifier(id));
+		return TagKey.of(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, new Identifier(id));
 	}
 }

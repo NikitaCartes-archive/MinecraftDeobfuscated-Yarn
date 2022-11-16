@@ -57,11 +57,9 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 	@Override
 	protected void addCloseButton() {
 		if (this.client.player.canModifyBlocks()) {
-			this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.close()).setPositionAndSize(this.width / 2 - 100, 196, 98, 20).build());
+			this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).dimensions(this.width / 2 - 100, 196, 98, 20).build());
 			this.addDrawableChild(
-				ButtonWidget.createBuilder(Text.translatable("lectern.take_book"), button -> this.sendButtonPressPacket(3))
-					.setPositionAndSize(this.width / 2 + 2, 196, 98, 20)
-					.build()
+				ButtonWidget.builder(Text.translatable("lectern.take_book"), button -> this.sendButtonPressPacket(3)).dimensions(this.width / 2 + 2, 196, 98, 20).build()
 			);
 		} else {
 			super.addCloseButton();

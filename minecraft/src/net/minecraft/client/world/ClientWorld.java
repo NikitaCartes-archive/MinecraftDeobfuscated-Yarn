@@ -536,8 +536,8 @@ public class ClientWorld extends World {
 		return (MapState)this.mapStates.get(id);
 	}
 
-	public void method_47437(String string, MapState mapState) {
-		this.mapStates.put(string, mapState);
+	public void putClientsideMapState(String id, MapState state) {
+		this.mapStates.put(id, state);
 	}
 
 	@Override
@@ -634,7 +634,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public RegistryEntry<Biome> getGeneratorStoredBiome(int biomeX, int biomeY, int biomeZ) {
-		return this.getRegistryManager().get(RegistryKeys.BIOME_WORLDGEN).entryOf(BiomeKeys.PLAINS);
+		return this.getRegistryManager().get(RegistryKeys.BIOME).entryOf(BiomeKeys.PLAINS);
 	}
 
 	public float getStarBrightness(float tickDelta) {

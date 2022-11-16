@@ -1,5 +1,6 @@
 package net.minecraft.util;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.annotation.Nullable;
@@ -21,7 +22,9 @@ public class StringHelper {
 		int i = ticks / 20;
 		int j = i / 60;
 		i %= 60;
-		return i < 10 ? j + ":0" + i : j + ":" + i;
+		int k = j / 60;
+		j %= 60;
+		return k > 0 ? String.format(Locale.ROOT, "%02d:%02d:%02d", k, j, i) : String.format(Locale.ROOT, "%02d:%02d", j, i);
 	}
 
 	/**

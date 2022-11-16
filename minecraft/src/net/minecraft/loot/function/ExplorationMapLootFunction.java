@@ -174,7 +174,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		private static TagKey<Structure> getDestination(JsonObject json) {
 			if (json.has("destination")) {
 				String string = JsonHelper.getString(json, "destination");
-				return TagKey.of(RegistryKeys.STRUCTURE_WORLDGEN, new Identifier(string));
+				return TagKey.of(RegistryKeys.STRUCTURE, new Identifier(string));
 			} else {
 				return ExplorationMapLootFunction.DEFAULT_DESTINATION;
 			}

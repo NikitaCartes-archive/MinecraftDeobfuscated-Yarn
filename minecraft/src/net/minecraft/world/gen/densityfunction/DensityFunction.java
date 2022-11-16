@@ -11,7 +11,7 @@ import net.minecraft.world.gen.chunk.Blender;
 
 public interface DensityFunction {
 	Codec<DensityFunction> CODEC = DensityFunctionTypes.CODEC;
-	Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.DENSITY_FUNCTION_WORLDGEN, CODEC);
+	Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.DENSITY_FUNCTION, CODEC);
 	Codec<DensityFunction> FUNCTION_CODEC = REGISTRY_ENTRY_CODEC.xmap(
 		DensityFunctionTypes.RegistryEntryHolder::new,
 		function -> (RegistryEntry)(function instanceof DensityFunctionTypes.RegistryEntryHolder registryEntryHolder

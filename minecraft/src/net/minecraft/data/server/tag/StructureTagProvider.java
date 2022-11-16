@@ -10,7 +10,7 @@ import net.minecraft.world.gen.structure.StructureKeys;
 
 public class StructureTagProvider extends AbstractTagProvider<Structure> {
 	public StructureTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.STRUCTURE_WORLDGEN, registryLookupFuture);
+		super(output, RegistryKeys.STRUCTURE, registryLookupFuture);
 	}
 
 	@Override

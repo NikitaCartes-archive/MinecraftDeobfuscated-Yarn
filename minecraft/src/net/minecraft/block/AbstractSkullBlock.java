@@ -27,9 +27,14 @@ public abstract class AbstractSkullBlock extends BlockWithEntity implements Wear
 	@Nullable
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-		return !world.isClient || !state.isOf(Blocks.DRAGON_HEAD) && !state.isOf(Blocks.DRAGON_WALL_HEAD)
-			? null
-			: checkType(type, BlockEntityType.SKULL, SkullBlockEntity::tick);
+		if (world.isClient) {
+			boolean bl = state.isOf(Blocks.DRAGON_HEAD) || state.isOf(Blocks.DRAGON_WALL_HEAD) || state.isOf(Blocks.PIGLIN_HEAD) || state.isOf(Blocks.PIGLIN_WALL_HEAD);
+			if (bl) {
+				return checkType(type, BlockEntityType.SKULL, SkullBlockEntity::tick);
+			}
+		}
+
+		return null;
 	}
 
 	public SkullBlock.SkullType getSkullType() {

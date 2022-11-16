@@ -146,14 +146,12 @@ public class TitleScreen extends Screen {
 			)
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options)))
-				.setPositionAndSize(this.width / 2 - 100, l + 72 + 12, 98, 20)
+			ButtonWidget.builder(Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options)))
+				.dimensions(this.width / 2 - 100, l + 72 + 12, 98, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("menu.quit"), button -> this.client.scheduleStop())
-				.setPositionAndSize(this.width / 2 + 2, l + 72 + 12, 98, 20)
-				.build()
+			ButtonWidget.builder(Text.translatable("menu.quit"), button -> this.client.scheduleStop()).dimensions(this.width / 2 + 2, l + 72 + 12, 98, 20).build()
 		);
 		this.addDrawableChild(
 			new TexturedButtonWidget(
@@ -194,21 +192,21 @@ public class TitleScreen extends Screen {
 
 	private void initWidgetsNormal(int y, int spacingY) {
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this)))
-				.setPositionAndSize(this.width / 2 - 100, y, 200, 20)
+			ButtonWidget.builder(Text.translatable("menu.singleplayer"), button -> this.client.setScreen(new SelectWorldScreen(this)))
+				.dimensions(this.width / 2 - 100, y, 200, 20)
 				.build()
 		);
 		Text text = this.getMultiplayerDisabledText();
 		boolean bl = text == null;
 		Tooltip tooltip = text != null ? Tooltip.of(text) : null;
-		this.addDrawableChild(ButtonWidget.createBuilder(Text.translatable("menu.multiplayer"), button -> {
+		this.addDrawableChild(ButtonWidget.builder(Text.translatable("menu.multiplayer"), button -> {
 			Screen screen = (Screen)(this.client.options.skipMultiplayerWarning ? new MultiplayerScreen(this) : new MultiplayerWarningScreen(this));
 			this.client.setScreen(screen);
-		}).setPositionAndSize(this.width / 2 - 100, y + spacingY * 1, 200, 20).setTooltip(tooltip).build()).active = bl;
+		}).dimensions(this.width / 2 - 100, y + spacingY * 1, 200, 20).tooltip(tooltip).build()).active = bl;
 		this.addDrawableChild(
-				ButtonWidget.createBuilder(Text.translatable("menu.online"), button -> this.switchToRealms())
-					.setPositionAndSize(this.width / 2 - 100, y + spacingY * 2, 200, 20)
-					.setTooltip(tooltip)
+				ButtonWidget.builder(Text.translatable("menu.online"), button -> this.switchToRealms())
+					.dimensions(this.width / 2 - 100, y + spacingY * 2, 200, 20)
+					.tooltip(tooltip)
 					.build()
 			)
 			.active = bl;
@@ -233,7 +231,7 @@ public class TitleScreen extends Screen {
 	private void initWidgetsDemo(int y, int spacingY) {
 		boolean bl = this.canReadDemoWorldData();
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(
+			ButtonWidget.builder(
 					Text.translatable("menu.playdemo"),
 					button -> {
 						if (bl) {
@@ -245,11 +243,11 @@ public class TitleScreen extends Screen {
 						}
 					}
 				)
-				.setPositionAndSize(this.width / 2 - 100, y, 200, 20)
+				.dimensions(this.width / 2 - 100, y, 200, 20)
 				.build()
 		);
 		this.buttonResetDemo = this.addDrawableChild(
-			ButtonWidget.createBuilder(
+			ButtonWidget.builder(
 					Text.translatable("menu.resetdemo"),
 					button -> {
 						LevelStorage levelStorage = this.client.getLevelStorage();
@@ -274,7 +272,7 @@ public class TitleScreen extends Screen {
 						}
 					}
 				)
-				.setPositionAndSize(this.width / 2 - 100, y + spacingY * 1, 200, 20)
+				.dimensions(this.width / 2 - 100, y + spacingY * 1, 200, 20)
 				.build()
 		);
 		this.buttonResetDemo.active = bl;

@@ -10,7 +10,7 @@ import net.minecraft.world.gen.FlatLevelGeneratorPresets;
 
 public class FlatLevelGeneratorPresetTagProvider extends AbstractTagProvider<FlatLevelGeneratorPreset> {
 	public FlatLevelGeneratorPresetTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET_WORLDGEN, registryLookupFuture);
+		super(output, RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, registryLookupFuture);
 	}
 
 	@Override

@@ -54,9 +54,9 @@ public class TexturedButtonWidget extends ButtonWidget {
 		int textureWidth,
 		int textureHeight,
 		ButtonWidget.PressAction pressAction,
-		Text text
+		Text message
 	) {
-		super(x, y, width, height, text, pressAction, DEFAULT_NARRATION_SUPPLIER);
+		super(x, y, width, height, message, pressAction, DEFAULT_NARRATION_SUPPLIER);
 		this.textureWidth = textureWidth;
 		this.textureHeight = textureHeight;
 		this.u = u;

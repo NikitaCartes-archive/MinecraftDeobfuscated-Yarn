@@ -106,7 +106,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		super(properties);
 		String string = this.getString("level-seed", "");
 		boolean bl = this.parseBoolean("generate-structures", true);
-		long l = GeneratorOptions.parseSeed(string);
+		long l = GeneratorOptions.parseSeed(string).orElse(GeneratorOptions.getRandomSeed());
 		this.generatorOptions = new GeneratorOptions(l, bl, false);
 		this.worldGenProperties = new ServerPropertiesHandler.WorldGenProperties(
 			this.get("generator-settings", generatorSettings -> JsonHelper.deserialize(!generatorSettings.isEmpty() ? generatorSettings : "{}"), new JsonObject()),
@@ -205,12 +205,12 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		);
 
 		public DimensionOptionsRegistryHolder createDimensionsRegistryHolder(DynamicRegistryManager dynamicRegistryManager) {
-			Registry<WorldPreset> registry = dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET_WORLDGEN);
+			Registry<WorldPreset> registry = dynamicRegistryManager.get(RegistryKeys.WORLD_PRESET);
 			RegistryEntry.Reference<WorldPreset> reference = (RegistryEntry.Reference)registry.getEntry(WorldPresets.DEFAULT)
 				.or(() -> registry.streamEntries().findAny())
 				.orElseThrow(() -> new IllegalStateException("Invalid datapack contents: can't find default preset"));
 			RegistryEntry<WorldPreset> registryEntry = (RegistryEntry)Optional.ofNullable(Identifier.tryParse(this.levelType))
-				.map(levelTypeId -> RegistryKey.of(RegistryKeys.WORLD_PRESET_WORLDGEN, levelTypeId))
+				.map(levelTypeId -> RegistryKey.of(RegistryKeys.WORLD_PRESET, levelTypeId))
 				.or(() -> Optional.ofNullable((RegistryKey)LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType)))
 				.flatMap(registry::getEntry)
 				.orElseGet(() -> {

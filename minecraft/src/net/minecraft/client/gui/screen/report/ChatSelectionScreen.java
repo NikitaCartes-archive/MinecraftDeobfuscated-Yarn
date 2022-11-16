@@ -65,13 +65,11 @@ public class ChatSelectionScreen extends Screen {
 		this.selectionList = new ChatSelectionScreen.SelectionListWidget(this.client, (this.contextMessage.count() + 1) * 9);
 		this.selectionList.setRenderBackground(false);
 		this.addSelectableChild(this.selectionList);
-		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.BACK, button -> this.close()).setPositionAndSize(this.width / 2 - 155, this.height - 32, 150, 20).build()
-		);
-		this.doneButton = this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.DONE, button -> {
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.width / 2 - 155, this.height - 32, 150, 20).build());
+		this.doneButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			this.newReportConsumer.accept(this.report);
 			this.close();
-		}).setPositionAndSize(this.width / 2 - 155 + 160, this.height - 32, 150, 20).build());
+		}).dimensions(this.width / 2 - 155 + 160, this.height - 32, 150, 20).build());
 		this.setDoneButtonActivation();
 		this.addMessages();
 		this.selectionList.setScrollAmount((double)this.selectionList.getMaxScroll());

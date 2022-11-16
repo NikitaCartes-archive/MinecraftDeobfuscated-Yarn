@@ -225,12 +225,11 @@ public class BlockBox {
 	 * {@return whether this box contains {@code pos}}
 	 */
 	public boolean contains(Vec3i pos) {
-		return pos.getX() >= this.minX
-			&& pos.getX() <= this.maxX
-			&& pos.getZ() >= this.minZ
-			&& pos.getZ() <= this.maxZ
-			&& pos.getY() >= this.minY
-			&& pos.getY() <= this.maxY;
+		return this.contains(pos.getX(), pos.getY(), pos.getZ());
+	}
+
+	public boolean contains(int x, int y, int z) {
+		return x >= this.minX && x <= this.maxX && z >= this.minZ && z <= this.maxZ && y >= this.minY && y <= this.maxY;
 	}
 
 	/**

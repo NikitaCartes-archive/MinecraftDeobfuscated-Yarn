@@ -24,17 +24,17 @@ public class MultiplayerWarningScreen extends WarningScreen {
 
 	@Override
 	protected void initButtons(int yOffset) {
-		this.addDrawableChild(ButtonWidget.createBuilder(ScreenTexts.PROCEED, buttonWidget -> {
+		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.PROCEED, buttonWidget -> {
 			if (this.checkbox.isChecked()) {
 				this.client.options.skipMultiplayerWarning = true;
 				this.client.options.write();
 			}
 
 			this.client.setScreen(new MultiplayerScreen(this.parent));
-		}).setPositionAndSize(this.width / 2 - 155, 100 + yOffset, 150, 20).build());
+		}).dimensions(this.width / 2 - 155, 100 + yOffset, 150, 20).build());
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.BACK, buttonWidget -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 155 + 160, 100 + yOffset, 150, 20)
+			ButtonWidget.builder(ScreenTexts.BACK, buttonWidget -> this.client.setScreen(this.parent))
+				.dimensions(this.width / 2 - 155 + 160, 100 + yOffset, 150, 20)
 				.build()
 		);
 	}

@@ -69,6 +69,7 @@ import org.slf4j.Logger;
 public class ParticleManager implements ResourceReloader {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final ResourceFinder FINDER = ResourceFinder.json("particles");
+	private static final Identifier field_41385 = new Identifier("particles");
 	private static final int MAX_PARTICLE_COUNT = 16384;
 	private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(
 		ParticleTextureSheet.TERRAIN_SHEET,
@@ -224,10 +225,8 @@ public class ParticleManager implements ResourceReloader {
 				});
 				return Util.combineSafe(list);
 			});
-		CompletableFuture<SpriteLoader.StitchResult> completableFuture2 = CompletableFuture.supplyAsync(
-				() -> SpriteLoader.findAllResources(manager, "particle"), prepareExecutor
-			)
-			.thenCompose(particles -> SpriteLoader.fromAtlas(this.particleAtlasTexture).stitch(particles, 0, prepareExecutor))
+		CompletableFuture<SpriteLoader.StitchResult> completableFuture2 = SpriteLoader.fromAtlas(this.particleAtlasTexture)
+			.method_47661(manager, field_41385, 0, prepareExecutor)
 			.thenCompose(SpriteLoader.StitchResult::whenComplete);
 		return CompletableFuture.allOf(completableFuture2, completableFuture).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(void_ -> {
 			this.particles.clear();
@@ -296,7 +295,7 @@ public class ParticleManager implements ResourceReloader {
 						throw new IllegalStateException("Redundant texture list for particle " + id);
 					}
 
-					var11 = Optional.of((List)list.stream().map(textureId -> textureId.withPrefixedPath("particle/")).collect(Collectors.toList()));
+					var11 = Optional.of(list);
 				} catch (Throwable var9) {
 					if (reader != null) {
 						try {

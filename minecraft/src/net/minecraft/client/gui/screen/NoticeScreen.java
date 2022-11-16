@@ -42,9 +42,7 @@ public class NoticeScreen extends Screen {
 		int i = this.noticeLines.count() * 9;
 		int j = MathHelper.clamp(90 + i + 12, this.height / 6 + 96, this.height - 24);
 		int k = 150;
-		this.addDrawableChild(
-			ButtonWidget.createBuilder(this.buttonText, button -> this.actionHandler.run()).setPositionAndSize((this.width - 150) / 2, j, 150, 20).build()
-		);
+		this.addDrawableChild(ButtonWidget.builder(this.buttonText, button -> this.actionHandler.run()).dimensions((this.width - 150) / 2, j, 150, 20).build());
 	}
 
 	@Override

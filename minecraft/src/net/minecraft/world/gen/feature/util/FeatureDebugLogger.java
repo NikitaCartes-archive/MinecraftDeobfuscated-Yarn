@@ -60,7 +60,7 @@ public class FeatureDebugLogger {
 				(world, features) -> {
 					String string = world.getRegistryKey().getValue().toString();
 					boolean bl = world.getServer().isRunning();
-					Registry<PlacedFeature> registry = world.getRegistryManager().get(RegistryKeys.PLACED_FEATURE_WORLDGEN);
+					Registry<PlacedFeature> registry = world.getRegistryManager().get(RegistryKeys.PLACED_FEATURE);
 					String string2 = (bl ? "running" : "dead") + " " + string;
 					Integer integer = features.chunksWithFeatures().getValue();
 					LOGGER.debug(string2 + " total_chunks: " + integer);

@@ -228,14 +228,13 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		return world.getBlockState(pos.down()).getBlock() instanceof BedBlock;
 	}
 
-	public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, float spawnAngle) {
-		Direction direction = world.getBlockState(pos).get(FACING);
-		Direction direction2 = direction.rotateYClockwise();
-		Direction direction3 = direction2.pointsTo(spawnAngle) ? direction2.getOpposite() : direction2;
+	public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, Direction bedDirection, float spawnAngle) {
+		Direction direction = bedDirection.rotateYClockwise();
+		Direction direction2 = direction.pointsTo(spawnAngle) ? direction.getOpposite() : direction;
 		if (isBedBelow(world, pos)) {
-			return findWakeUpPosition(type, world, pos, direction, direction3);
+			return findWakeUpPosition(type, world, pos, bedDirection, direction2);
 		} else {
-			int[][] is = getAroundAndOnBedOffsets(direction, direction3);
+			int[][] is = getAroundAndOnBedOffsets(bedDirection, direction2);
 			Optional<Vec3d> optional = findWakeUpPosition(type, world, pos, is, true);
 			return optional.isPresent() ? optional : findWakeUpPosition(type, world, pos, is, false);
 		}

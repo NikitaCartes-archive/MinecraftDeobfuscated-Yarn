@@ -39,6 +39,6 @@ public interface StructureKeys {
 	RegistryKey<Structure> ANCIENT_CITY = of("ancient_city");
 
 	private static RegistryKey<Structure> of(String id) {
-		return RegistryKey.of(RegistryKeys.STRUCTURE_WORLDGEN, new Identifier(id));
+		return RegistryKey.of(RegistryKeys.STRUCTURE, new Identifier(id));
 	}
 }

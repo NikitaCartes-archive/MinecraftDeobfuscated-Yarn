@@ -51,25 +51,18 @@ public class EditGameRulesScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.client.keyboard.setRepeatEvents(true);
-		super.init();
 		this.ruleListWidget = new EditGameRulesScreen.RuleListWidget(this.gameRules);
 		this.addSelectableChild(this.ruleListWidget);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.ruleSaver.accept(Optional.empty()))
-				.setPositionAndSize(this.width / 2 - 155 + 160, this.height - 29, 150, 20)
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.ruleSaver.accept(Optional.empty()))
+				.dimensions(this.width / 2 - 155 + 160, this.height - 29, 150, 20)
 				.build()
 		);
 		this.doneButton = this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.DONE, button -> this.ruleSaver.accept(Optional.of(this.gameRules)))
-				.setPositionAndSize(this.width / 2 - 155, this.height - 29, 150, 20)
+			ButtonWidget.builder(ScreenTexts.DONE, button -> this.ruleSaver.accept(Optional.of(this.gameRules)))
+				.dimensions(this.width / 2 - 155, this.height - 29, 150, 20)
 				.build()
 		);
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import net.minecraft.util.Identifier;
 public final class ItemTags {
 	public static final TagKey<Item> WOOL = of("wool");
 	public static final TagKey<Item> PLANKS = of("planks");
-	public static final TagKey<Item> STRIPPED_LOGS = of("stripped_logs");
 	public static final TagKey<Item> STONE_BRICKS = of("stone_bricks");
 	public static final TagKey<Item> WOODEN_BUTTONS = of("wooden_buttons");
 	public static final TagKey<Item> BUTTONS = of("buttons");

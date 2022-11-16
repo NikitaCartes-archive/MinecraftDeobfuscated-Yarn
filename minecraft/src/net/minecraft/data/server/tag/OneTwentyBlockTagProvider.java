@@ -54,6 +54,7 @@ public class OneTwentyBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.BAMBOO_WALL_HANGING_SIGN
 			);
 		this.getOrCreateTagBuilder(BlockTags.ALL_HANGING_SIGNS).addTag(BlockTags.CEILING_HANGING_SIGNS).addTag(BlockTags.WALL_HANGING_SIGNS);
+		this.getOrCreateTagBuilder(BlockTags.ALL_SIGNS).addTag(BlockTags.ALL_HANGING_SIGNS);
 		this.getOrCreateTagBuilder(BlockTags.AXE_MINEABLE)
 			.addTag(BlockTags.ALL_HANGING_SIGNS)
 			.add(Blocks.BAMBOO_MOSAIC, Blocks.BAMBOO_MOSAIC_SLAB, Blocks.BAMBOO_MOSAIC_STAIRS)

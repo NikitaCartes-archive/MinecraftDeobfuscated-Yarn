@@ -34,23 +34,17 @@ public class BackupPromptScreen extends Screen {
 		this.wrappedText = MultilineText.create(this.textRenderer, this.subtitle, this.width - 50);
 		int i = (this.wrappedText.count() + 1) * 9;
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(
-					Text.translatable("selectWorld.backupJoinConfirmButton"), button -> this.callback.proceed(true, this.eraseCacheCheckbox.isChecked())
-				)
-				.setPositionAndSize(this.width / 2 - 155, 100 + i, 150, 20)
+			ButtonWidget.builder(Text.translatable("selectWorld.backupJoinConfirmButton"), button -> this.callback.proceed(true, this.eraseCacheCheckbox.isChecked()))
+				.dimensions(this.width / 2 - 155, 100 + i, 150, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(
-					Text.translatable("selectWorld.backupJoinSkipButton"), button -> this.callback.proceed(false, this.eraseCacheCheckbox.isChecked())
-				)
-				.setPositionAndSize(this.width / 2 - 155 + 160, 100 + i, 150, 20)
+			ButtonWidget.builder(Text.translatable("selectWorld.backupJoinSkipButton"), button -> this.callback.proceed(false, this.eraseCacheCheckbox.isChecked()))
+				.dimensions(this.width / 2 - 155 + 160, 100 + i, 150, 20)
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 - 155 + 80, 124 + i, 150, 20)
-				.build()
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 155 + 80, 124 + i, 150, 20).build()
 		);
 		this.eraseCacheCheckbox = new CheckboxWidget(this.width / 2 - 155 + 80, 76 + i, 150, 20, Text.translatable("selectWorld.backupEraseCache"), false);
 		if (this.showEraseCacheCheckbox) {

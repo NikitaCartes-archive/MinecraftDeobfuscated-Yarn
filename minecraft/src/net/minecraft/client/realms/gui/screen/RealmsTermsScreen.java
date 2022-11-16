@@ -39,23 +39,15 @@ public class RealmsTermsScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.client.keyboard.setRepeatEvents(true);
 		int i = this.width / 4 - 2;
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.terms.buttons.agree"), button -> this.agreedToTos())
-				.setPositionAndSize(this.width / 4, row(12), i, 20)
-				.build()
+			ButtonWidget.builder(Text.translatable("mco.terms.buttons.agree"), button -> this.agreedToTos()).dimensions(this.width / 4, row(12), i, 20).build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.createBuilder(Text.translatable("mco.terms.buttons.disagree"), button -> this.client.setScreen(this.parent))
-				.setPositionAndSize(this.width / 2 + 4, row(12), i, 20)
+			ButtonWidget.builder(Text.translatable("mco.terms.buttons.disagree"), button -> this.client.setScreen(this.parent))
+				.dimensions(this.width / 2 + 4, row(12), i, 20)
 				.build()
 		);
-	}
-
-	@Override
-	public void removed() {
-		this.client.keyboard.setRepeatEvents(false);
 	}
 
 	@Override

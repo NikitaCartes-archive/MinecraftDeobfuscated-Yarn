@@ -118,19 +118,7 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
-		Advancement advancement = Advancement.Builder.create()
-			.display(
-				Blocks.HAY_BLOCK,
-				Text.translatable("advancements.husbandry.root.title"),
-				Text.translatable("advancements.husbandry.root.description"),
-				new Identifier("textures/gui/advancements/backgrounds/husbandry.png"),
-				AdvancementFrame.TASK,
-				false,
-				false,
-				false
-			)
-			.criterion("consumed_item", ConsumeItemCriterion.Conditions.any())
-			.build(exporter, "husbandry/root");
+		Advancement advancement = this.createRootAdvancement(exporter);
 		Advancement advancement2 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
@@ -150,21 +138,8 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 			.criterion("beetroots", PlacedBlockCriterion.Conditions.block(Blocks.BEETROOTS))
 			.criterion("nether_wart", PlacedBlockCriterion.Conditions.block(Blocks.NETHER_WART))
 			.build(exporter, "husbandry/plant_seed");
-		Advancement advancement3 = Advancement.Builder.create()
-			.parent(advancement)
-			.display(
-				Items.WHEAT,
-				Text.translatable("advancements.husbandry.breed_an_animal.title"),
-				Text.translatable("advancements.husbandry.breed_an_animal.description"),
-				null,
-				AdvancementFrame.TASK,
-				true,
-				true,
-				false
-			)
-			.criteriaMerger(CriterionMerger.OR)
-			.criterion("bred", BredAnimalsCriterion.Conditions.any())
-			.build(exporter, "husbandry/breed_an_animal");
+		Advancement advancement3 = this.createBreedAnimalAdvancement(advancement, exporter);
+		this.createBreedAllAnimalsAdvancement(advancement3, exporter);
 		this.requireFoodItemsEaten(Advancement.Builder.create())
 			.parent(advancement2)
 			.display(
@@ -208,20 +183,6 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 			)
 			.criterion("tamed_animal", TameAnimalCriterion.Conditions.any())
 			.build(exporter, "husbandry/tame_an_animal");
-		this.requireListedAnimalsBred(Advancement.Builder.create())
-			.parent(advancement3)
-			.display(
-				Items.GOLDEN_CARROT,
-				Text.translatable("advancements.husbandry.breed_all_animals.title"),
-				Text.translatable("advancements.husbandry.breed_all_animals.description"),
-				null,
-				AdvancementFrame.CHALLENGE,
-				true,
-				true,
-				false
-			)
-			.rewards(AdvancementRewards.Builder.experience(100))
-			.build(exporter, "husbandry/bred_all_animals");
 		Advancement advancement5 = this.requireListedFishCaught(Advancement.Builder.create())
 			.parent(advancement)
 			.criteriaMerger(CriterionMerger.OR)
@@ -456,7 +417,7 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 			.criterion(
 				"make_a_sign_glow",
 				ItemCriterion.Conditions.create(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.SIGNS).build()),
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.ALL_SIGNS).build()),
 					ItemPredicate.Builder.create().items(Items.GLOW_INK_SAC)
 				)
 			)
@@ -502,6 +463,57 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 			.build(exporter, "husbandry/allay_deliver_cake_to_note_block");
 	}
 
+	Advancement createRootAdvancement(Consumer<Advancement> exporter) {
+		return Advancement.Builder.create()
+			.display(
+				Blocks.HAY_BLOCK,
+				Text.translatable("advancements.husbandry.root.title"),
+				Text.translatable("advancements.husbandry.root.description"),
+				new Identifier("textures/gui/advancements/backgrounds/husbandry.png"),
+				AdvancementFrame.TASK,
+				false,
+				false,
+				false
+			)
+			.criterion("consumed_item", ConsumeItemCriterion.Conditions.any())
+			.build(exporter, "husbandry/root");
+	}
+
+	Advancement createBreedAnimalAdvancement(Advancement parent, Consumer<Advancement> exporter) {
+		return Advancement.Builder.create()
+			.parent(parent)
+			.display(
+				Items.WHEAT,
+				Text.translatable("advancements.husbandry.breed_an_animal.title"),
+				Text.translatable("advancements.husbandry.breed_an_animal.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criteriaMerger(CriterionMerger.OR)
+			.criterion("bred", BredAnimalsCriterion.Conditions.any())
+			.build(exporter, "husbandry/breed_an_animal");
+	}
+
+	Advancement createBreedAllAnimalsAdvancement(Advancement parent, Consumer<Advancement> exporter) {
+		return this.requireListedAnimalsBred(Advancement.Builder.create())
+			.parent(parent)
+			.display(
+				Items.GOLDEN_CARROT,
+				Text.translatable("advancements.husbandry.breed_all_animals.title"),
+				Text.translatable("advancements.husbandry.breed_all_animals.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.rewards(AdvancementRewards.Builder.experience(100))
+			.build(exporter, "husbandry/bred_all_animals");
+	}
+
 	private Advancement.Builder requireAllFrogsOnLeads(Advancement.Builder builder) {
 		Registries.FROG_VARIANT
 			.streamEntries()
@@ -527,12 +539,12 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 		return builder;
 	}
 
-	private Advancement.Builder requireListedAnimalsBred(Advancement.Builder builder) {
-		for(EntityType<?> entityType : BREEDABLE_ANIMALS) {
+	Advancement.Builder requireListedAnimalsBred(Advancement.Builder builder) {
+		for(EntityType<?> entityType : this.getBreedableAnimals()) {
 			builder.criterion(EntityType.getId(entityType).toString(), BredAnimalsCriterion.Conditions.create(EntityPredicate.Builder.create().type(entityType)));
 		}
 
-		for(EntityType<?> entityType : EGG_LAYING_ANIMALS) {
+		for(EntityType<?> entityType : this.getEggLayingAnimals()) {
 			builder.criterion(
 				EntityType.getId(entityType).toString(),
 				BredAnimalsCriterion.Conditions.create(
@@ -575,5 +587,13 @@ public class HusbandryTabAdvancementGenerator implements AdvancementTabGenerator
 					)
 			);
 		return builder;
+	}
+
+	public EntityType<?>[] getBreedableAnimals() {
+		return BREEDABLE_ANIMALS;
+	}
+
+	public EntityType<?>[] getEggLayingAnimals() {
+		return EGG_LAYING_ANIMALS;
 	}
 }

@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
  * value. If a query fails, the task does not run.
  * 
  * @see MemoryQueryResult
- * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.Context
+ * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.TaskContext
  */
 public interface MemoryQuery<F extends K1, Value> {
 	MemoryModuleType<Value> memory();
@@ -27,7 +27,7 @@ public interface MemoryQuery<F extends K1, Value> {
 	 * A query that succeeds if a value is <strong>not</strong> present in the memory. The
 	 * query result is always {@code Unit.INSTANCE}.
 	 * 
-	 * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.Context#queryMemoryAbsent
+	 * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.TaskContext#queryMemoryAbsent
 	 */
 	public static record Absent<Value>(MemoryModuleType<Value> memory) implements MemoryQuery<Mu<Unit>, Value> {
 		@Override
@@ -45,7 +45,7 @@ public interface MemoryQuery<F extends K1, Value> {
 	 * A query that always succeeds. The value is an optional that contains the value if it
 	 * is present in the memory.
 	 * 
-	 * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.Context#queryMemoryOptional
+	 * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.TaskContext#queryMemoryOptional
 	 */
 	public static record Optional<Value>(MemoryModuleType<Value> memory) implements MemoryQuery<com.mojang.datafixers.kinds.OptionalBox.Mu, Value> {
 		@Override
@@ -62,7 +62,7 @@ public interface MemoryQuery<F extends K1, Value> {
 	/**
 	 * A query that succeeds if a value is present in the memory. The result is the queried value.
 	 * 
-	 * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.Context#queryMemoryValue
+	 * @see net.minecraft.entity.ai.brain.task.TaskTriggerer.TaskContext#queryMemoryValue
 	 */
 	public static record Value<Value>(MemoryModuleType<Value> memory) implements MemoryQuery<com.mojang.datafixers.kinds.IdF.Mu, Value> {
 		@Override
