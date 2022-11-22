@@ -34,7 +34,7 @@ public class AmphibiousSwimNavigation extends EntityNavigation {
 
 	@Override
 	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target) {
-		return this.isInLiquid() ? doesNotCollide(this.entity, origin, target) : false;
+		return this.isInLiquid() ? doesNotCollide(this.entity, origin, target, false) : false;
 	}
 
 	@Override

@@ -682,33 +682,44 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	}
 
 	@Nullable
-	public Entity spawnFromItemStack(
+	public T spawnFromItemStack(
 		ServerWorld world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY
 	) {
-		return this.spawn(
-			world,
-			stack == null ? null : stack.getNbt(),
-			stack != null && stack.hasCustomName() ? stack.getName() : null,
-			player,
-			pos,
-			spawnReason,
-			alignPosition,
-			invertY
-		);
+		Consumer<T> consumer = entity -> {
+		};
+		NbtCompound nbtCompound;
+		if (stack != null) {
+			if (stack.hasCustomName()) {
+				consumer = entity -> entity.setCustomName(stack.getName());
+			}
+
+			nbtCompound = stack.getNbt();
+			if (nbtCompound != null) {
+				consumer = consumer.andThen(entity -> loadFromEntityNbt(world, player, entity, nbtCompound));
+			}
+		} else {
+			nbtCompound = null;
+		}
+
+		return this.spawn(world, nbtCompound, consumer, pos, spawnReason, alignPosition, invertY);
+	}
+
+	@Nullable
+	public T spawn(ServerWorld world, BlockPos pos, SpawnReason reason) {
+		return this.spawn(world, (NbtCompound)null, null, pos, reason, false, false);
 	}
 
 	@Nullable
 	public T spawn(
 		ServerWorld world,
 		@Nullable NbtCompound itemNbt,
-		@Nullable Text name,
-		@Nullable PlayerEntity player,
+		@Nullable Consumer<T> afterConsumer,
 		BlockPos pos,
-		SpawnReason spawnReason,
+		SpawnReason reason,
 		boolean alignPosition,
 		boolean invertY
 	) {
-		T entity = this.create(world, itemNbt, name, player, pos, spawnReason, alignPosition, invertY);
+		T entity = this.create(world, itemNbt, afterConsumer, pos, reason, alignPosition, invertY);
 		if (entity != null) {
 			world.spawnEntityAndPassengers(entity);
 		}
@@ -720,10 +731,9 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public T create(
 		ServerWorld world,
 		@Nullable NbtCompound itemNbt,
-		@Nullable Text name,
-		@Nullable PlayerEntity player,
+		@Nullable Consumer<T> afterConsumer,
 		BlockPos pos,
-		SpawnReason spawnReason,
+		SpawnReason reason,
 		boolean alignPosition,
 		boolean invertY
 	) {
@@ -745,15 +755,14 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			if (entity instanceof MobEntity mobEntity) {
 				mobEntity.headYaw = mobEntity.getYaw();
 				mobEntity.bodyYaw = mobEntity.getYaw();
-				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemNbt);
+				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), reason, null, itemNbt);
 				mobEntity.playAmbientSound();
 			}
 
-			if (name != null && entity instanceof LivingEntity) {
-				entity.setCustomName(name);
+			if (afterConsumer != null) {
+				afterConsumer.accept(entity);
 			}
 
-			loadFromEntityNbt(world, player, entity, itemNbt);
 			return entity;
 		}
 	}

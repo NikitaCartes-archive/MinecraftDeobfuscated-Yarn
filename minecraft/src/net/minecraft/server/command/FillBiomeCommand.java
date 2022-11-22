@@ -6,9 +6,11 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.RegistryEntryArgumentType;
+import net.minecraft.command.argument.RegistryEntryPredicateArgumentType;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
@@ -21,6 +23,7 @@ import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 public class FillBiomeCommand {
 	private static final int MAX_BLOCKS = 32768;
@@ -44,7 +47,23 @@ public class FillBiomeCommand {
 													context.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(context, "from"),
 													BlockPosArgumentType.getLoadedBlockPos(context, "to"),
-													RegistryEntryArgumentType.getRegistryEntry(context, "biome", RegistryKeys.BIOME)
+													RegistryEntryArgumentType.getRegistryEntry(context, "biome", RegistryKeys.BIOME),
+													registryEntry -> true
+												)
+										)
+										.then(
+											CommandManager.literal("replace")
+												.then(
+													CommandManager.argument("filter", RegistryEntryPredicateArgumentType.registryEntryPredicate(commandRegistryAccess, RegistryKeys.BIOME))
+														.executes(
+															context -> execute(
+																	context.getSource(),
+																	BlockPosArgumentType.getLoadedBlockPos(context, "from"),
+																	BlockPosArgumentType.getLoadedBlockPos(context, "to"),
+																	RegistryEntryArgumentType.getRegistryEntry(context, "biome", RegistryKeys.BIOME),
+																	RegistryEntryPredicateArgumentType.getRegistryEntryPredicate(context, "filter", RegistryKeys.BIOME)::test
+																)
+														)
 												)
 										)
 								)
@@ -61,16 +80,26 @@ public class FillBiomeCommand {
 		return new BlockPos(convertCoordinate(pos.getX()), convertCoordinate(pos.getY()), convertCoordinate(pos.getZ()));
 	}
 
-	private static BiomeSupplier createBiomeSupplier(Chunk chunk, BlockBox box, RegistryEntry<Biome> biome) {
+	private static BiomeSupplier createBiomeSupplier(
+		MutableInt counter, Chunk chunk, BlockBox box, RegistryEntry<Biome> biome, Predicate<RegistryEntry<Biome>> filter
+	) {
 		return (x, y, z, noise) -> {
 			int i = BiomeCoords.toBlock(x);
 			int j = BiomeCoords.toBlock(y);
 			int k = BiomeCoords.toBlock(z);
-			return box.contains(i, j, k) ? biome : chunk.getBiomeForNoiseGen(x, y, z);
+			RegistryEntry<Biome> registryEntry2 = chunk.getBiomeForNoiseGen(x, y, z);
+			if (box.contains(i, j, k) && filter.test(registryEntry2)) {
+				counter.increment();
+				return biome;
+			} else {
+				return registryEntry2;
+			}
 		};
 	}
 
-	private static int execute(ServerCommandSource source, BlockPos from, BlockPos to, RegistryEntry.Reference<Biome> biome) throws CommandSyntaxException {
+	private static int execute(
+		ServerCommandSource source, BlockPos from, BlockPos to, RegistryEntry.Reference<Biome> biome, Predicate<RegistryEntry<Biome>> filter
+	) throws CommandSyntaxException {
 		BlockPos blockPos = convertPos(from);
 		BlockPos blockPos2 = convertPos(to);
 		BlockBox blockBox = BlockBox.create(blockPos, blockPos2);
@@ -92,19 +121,28 @@ public class FillBiomeCommand {
 				}
 			}
 
-			for (Chunk chunk2 : list) {
-				chunk2.populateBiomes(createBiomeSupplier(chunk2, blockBox, biome), serverWorld.getChunkManager().getNoiseConfig().getMultiNoiseSampler());
-				chunk2.setNeedsSaving(true);
-				serverWorld.getChunkManager().threadedAnvilChunkStorage.sendChunkPacketToWatchingPlayers(chunk2);
+			MutableInt mutableInt = new MutableInt(0);
+
+			for (Chunk chunk : list) {
+				chunk.populateBiomes(createBiomeSupplier(mutableInt, chunk, blockBox, biome, filter), serverWorld.getChunkManager().getNoiseConfig().getMultiNoiseSampler());
+				chunk.setNeedsSaving(true);
+				serverWorld.getChunkManager().threadedAnvilChunkStorage.sendChunkPacketToWatchingPlayers(chunk);
 			}
 
 			source.sendFeedback(
 				Text.translatable(
-					"commands.fillbiome.success", blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ(), blockBox.getMaxX(), blockBox.getMaxY(), blockBox.getMaxZ()
+					"commands.fillbiome.success.count",
+					mutableInt.getValue(),
+					blockBox.getMinX(),
+					blockBox.getMinY(),
+					blockBox.getMinZ(),
+					blockBox.getMaxX(),
+					blockBox.getMaxY(),
+					blockBox.getMaxZ()
 				),
 				true
 			);
-			return i;
+			return mutableInt.getValue();
 		}
 	}
 }

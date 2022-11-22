@@ -95,7 +95,7 @@ public class ChestBoatEntity extends BoatEntity implements RideableInventory, Ve
 
 	@Override
 	public Item asItem() {
-		return switch (this.getBoatType()) {
+		return switch (this.getVariant()) {
 			case SPRUCE -> Items.SPRUCE_CHEST_BOAT;
 			case BIRCH -> Items.BIRCH_CHEST_BOAT;
 			case JUNGLE -> Items.JUNGLE_CHEST_BOAT;

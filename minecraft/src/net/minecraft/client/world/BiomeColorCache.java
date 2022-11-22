@@ -29,7 +29,7 @@ public class BiomeColorCache {
 		int i = ChunkSectionPos.getSectionCoord(pos.getX());
 		int j = ChunkSectionPos.getSectionCoord(pos.getZ());
 		BiomeColorCache.Last last = (BiomeColorCache.Last)this.last.get();
-		if (last.x != i || last.z != j || last.colors == null) {
+		if (last.x != i || last.z != j || last.colors == null || last.colors.needsCacheRefresh()) {
 			last.x = i;
 			last.z = j;
 			last.colors = this.getColorArray(i, j);
@@ -56,7 +56,10 @@ public class BiomeColorCache {
 			for (int i = -1; i <= 1; i++) {
 				for (int j = -1; j <= 1; j++) {
 					long l = ChunkPos.toLong(chunkX + i, chunkZ + j);
-					this.colors.remove(l);
+					BiomeColorCache.Colors colors = this.colors.remove(l);
+					if (colors != null) {
+						colors.setNeedsCacheRefresh();
+					}
 				}
 			}
 		} finally {
@@ -114,6 +117,7 @@ public class BiomeColorCache {
 		private final Int2ObjectArrayMap<int[]> colors = new Int2ObjectArrayMap<>(16);
 		private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 		private static final int XZ_COLORS_SIZE = MathHelper.square(16);
+		private volatile boolean needsCacheRefresh;
 
 		public int[] get(int y) {
 			this.lock.readLock().lock();
@@ -143,6 +147,14 @@ public class BiomeColorCache {
 			int[] is = new int[XZ_COLORS_SIZE];
 			Arrays.fill(is, -1);
 			return is;
+		}
+
+		public boolean needsCacheRefresh() {
+			return this.needsCacheRefresh;
+		}
+
+		public void setNeedsCacheRefresh() {
+			this.needsCacheRefresh = true;
 		}
 	}
 

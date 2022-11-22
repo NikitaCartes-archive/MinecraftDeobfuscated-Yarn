@@ -1,5 +1,8 @@
 package net.minecraft.entity.passive;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.util.Objects;
+import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -11,6 +14,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.control.JumpControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -47,6 +51,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -61,20 +66,13 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 
-public class RabbitEntity extends AnimalEntity {
+public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEntity.RabbitType> {
 	public static final double field_30356 = 0.6;
 	public static final double field_30357 = 0.8;
 	public static final double field_30358 = 1.0;
 	public static final double ESCAPE_SPEED = 2.2;
 	public static final double field_30360 = 1.4;
 	private static final TrackedData<Integer> RABBIT_TYPE = DataTracker.registerData(RabbitEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	public static final int BROWN_TYPE = 0;
-	public static final int WHITE_TYPE = 1;
-	public static final int BLACK_TYPE = 2;
-	public static final int WHITE_SPOTTED_TYPE = 3;
-	public static final int GOLD_TYPE = 4;
-	public static final int SALT_TYPE = 5;
-	public static final int KILLER_BUNNY_TYPE = 99;
 	private static final Identifier KILLER_BUNNY = new Identifier("killer_bunny");
 	public static final int field_30368 = 8;
 	public static final int field_30369 = 8;
@@ -166,7 +164,7 @@ public class RabbitEntity extends AnimalEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(RABBIT_TYPE, 0);
+		this.dataTracker.startTracking(RABBIT_TYPE, RabbitEntity.RabbitType.BROWN.index);
 	}
 
 	@Override
@@ -188,7 +186,7 @@ public class RabbitEntity extends AnimalEntity {
 				this.scheduleJump();
 			}
 
-			if (this.getRabbitType() == KILLER_BUNNY_TYPE && this.ticksUntilJump == 0) {
+			if (this.getVariant() == RabbitEntity.RabbitType.EVIL && this.ticksUntilJump == 0) {
 				LivingEntity livingEntity = this.getTarget();
 				if (livingEntity != null && this.squaredDistanceTo(livingEntity) < 16.0) {
 					this.lookTowards(livingEntity.getX(), livingEntity.getZ());
@@ -267,14 +265,14 @@ public class RabbitEntity extends AnimalEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("RabbitType", this.getRabbitType());
+		nbt.putInt("RabbitType", this.getVariant().index);
 		nbt.putInt("MoreCarrotTicks", this.moreCarrotTicks);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.setRabbitType(nbt.getInt("RabbitType"));
+		this.setVariant(RabbitEntity.RabbitType.byIndex(nbt.getInt("RabbitType")));
 		this.moreCarrotTicks = nbt.getInt("MoreCarrotTicks");
 	}
 
@@ -299,7 +297,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		if (this.getRabbitType() == KILLER_BUNNY_TYPE) {
+		if (this.getVariant() == RabbitEntity.RabbitType.EVIL) {
 			this.playSound(SoundEvents.ENTITY_RABBIT_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 			return target.damage(DamageSource.mob(this), 8.0F);
 		} else {
@@ -309,7 +307,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Override
 	public SoundCategory getSoundCategory() {
-		return this.getRabbitType() == KILLER_BUNNY_TYPE ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
+		return this.getVariant() == RabbitEntity.RabbitType.EVIL ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
 	}
 
 	private static boolean isTempting(ItemStack stack) {
@@ -320,19 +318,19 @@ public class RabbitEntity extends AnimalEntity {
 	public RabbitEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		RabbitEntity rabbitEntity = EntityType.RABBIT.create(serverWorld);
 		if (rabbitEntity != null) {
-			int i;
-			i = this.chooseType(serverWorld);
+			RabbitEntity.RabbitType rabbitType;
+			rabbitType = getTypeFromPos(serverWorld, this.getBlockPos());
 			label16:
 			if (this.random.nextInt(20) != 0) {
 				if (passiveEntity instanceof RabbitEntity rabbitEntity2 && this.random.nextBoolean()) {
-					i = rabbitEntity2.getRabbitType();
+					rabbitType = rabbitEntity2.getVariant();
 					break label16;
 				}
 
-				i = this.getRabbitType();
+				rabbitType = this.getVariant();
 			}
 
-			rabbitEntity.setRabbitType(i);
+			rabbitEntity.setVariant(rabbitType);
 		}
 
 		return rabbitEntity;
@@ -343,12 +341,12 @@ public class RabbitEntity extends AnimalEntity {
 		return isTempting(stack);
 	}
 
-	public int getRabbitType() {
-		return this.dataTracker.get(RABBIT_TYPE);
+	public RabbitEntity.RabbitType getVariant() {
+		return RabbitEntity.RabbitType.byIndex(this.dataTracker.get(RABBIT_TYPE));
 	}
 
-	public void setRabbitType(int rabbitType) {
-		if (rabbitType == KILLER_BUNNY_TYPE) {
+	public void setVariant(RabbitEntity.RabbitType rabbitType) {
+		if (rabbitType == RabbitEntity.RabbitType.EVIL) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(8.0);
 			this.goalSelector.add(4, new RabbitEntity.RabbitAttackGoal(this));
 			this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
@@ -359,7 +357,7 @@ public class RabbitEntity extends AnimalEntity {
 			}
 		}
 
-		this.dataTracker.set(RABBIT_TYPE, rabbitType);
+		this.dataTracker.set(RABBIT_TYPE, rabbitType.index);
 	}
 
 	@Nullable
@@ -367,26 +365,26 @@ public class RabbitEntity extends AnimalEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		int i = this.chooseType(world);
+		RabbitEntity.RabbitType rabbitType = getTypeFromPos(world, this.getBlockPos());
 		if (entityData instanceof RabbitEntity.RabbitData) {
-			i = ((RabbitEntity.RabbitData)entityData).type;
+			rabbitType = ((RabbitEntity.RabbitData)entityData).type;
 		} else {
-			entityData = new RabbitEntity.RabbitData(i);
+			entityData = new RabbitEntity.RabbitData(rabbitType);
 		}
 
-		this.setRabbitType(i);
+		this.setVariant(rabbitType);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
-	private int chooseType(WorldAccess world) {
-		RegistryEntry<Biome> registryEntry = world.getBiome(this.getBlockPos());
+	private static RabbitEntity.RabbitType getTypeFromPos(WorldAccess world, BlockPos pos) {
+		RegistryEntry<Biome> registryEntry = world.getBiome(pos);
 		int i = world.getRandom().nextInt(100);
 		if (registryEntry.value().getPrecipitation() == Biome.Precipitation.SNOW) {
-			return i < 80 ? 1 : 3;
+			return i < 80 ? RabbitEntity.RabbitType.WHITE : RabbitEntity.RabbitType.WHITE_SPLOTCHED;
 		} else if (registryEntry.isIn(BiomeTags.ONLY_ALLOWS_SNOW_AND_GOLD_RABBITS)) {
-			return 4;
+			return RabbitEntity.RabbitType.GOLD;
 		} else {
-			return i < 50 ? 0 : (i < 90 ? 5 : 2);
+			return i < 50 ? RabbitEntity.RabbitType.BROWN : (i < 90 ? RabbitEntity.RabbitType.SALT : RabbitEntity.RabbitType.BLACK);
 		}
 	}
 
@@ -518,7 +516,7 @@ public class RabbitEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			return this.rabbit.getRabbitType() != RabbitEntity.KILLER_BUNNY_TYPE && super.canStart();
+			return this.rabbit.getVariant() != RabbitEntity.RabbitType.EVIL && super.canStart();
 		}
 	}
 
@@ -534,9 +532,9 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	public static class RabbitData extends PassiveEntity.PassiveData {
-		public final int type;
+		public final RabbitEntity.RabbitType type;
 
-		public RabbitData(int type) {
+		public RabbitData(RabbitEntity.RabbitType type) {
 			super(1.0F);
 			this.type = type;
 		}
@@ -602,6 +600,43 @@ public class RabbitEntity extends AnimalEntity {
 			if (speed > 0.0) {
 				this.rabbitSpeed = speed;
 			}
+		}
+	}
+
+	public static enum RabbitType implements StringIdentifiable {
+		BROWN(0, "brown"),
+		WHITE(1, "white"),
+		BLACK(2, "black"),
+		WHITE_SPLOTCHED(3, "white_splotched"),
+		GOLD(4, "gold"),
+		SALT(5, "salt"),
+		EVIL(99, "evil");
+
+		private static final IntFunction<RabbitEntity.RabbitType> TYPE_BY_INDEX = Util.make(new Int2ObjectOpenHashMap<>(), map -> {
+			for (RabbitEntity.RabbitType rabbitType : values()) {
+				map.put(rabbitType.index, rabbitType);
+			}
+		});
+		public static final com.mojang.serialization.Codec<RabbitEntity.RabbitType> CODEC = StringIdentifiable.createCodec(RabbitEntity.RabbitType::values);
+		final int index;
+		private final String name;
+
+		private RabbitType(int index, String name) {
+			this.index = index;
+			this.name = name;
+		}
+
+		@Override
+		public String asString() {
+			return this.name;
+		}
+
+		public int getIndex() {
+			return this.index;
+		}
+
+		public static RabbitEntity.RabbitType byIndex(int index) {
+			return (RabbitEntity.RabbitType)Objects.requireNonNullElse((RabbitEntity.RabbitType)TYPE_BY_INDEX.apply(index), BROWN);
 		}
 	}
 }

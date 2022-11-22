@@ -476,7 +476,7 @@ public class InGameHud extends DrawableHelper {
 					int o = l;
 					float g = f;
 					list.add((Runnable)() -> {
-						RenderSystem.setShaderTexture(0, sprite.getId());
+						RenderSystem.setShaderTexture(0, sprite.getAtlasId());
 						RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, g);
 						drawSprite(matrices, n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
 					});

@@ -11,10 +11,8 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.state.property.Properties;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -24,6 +22,7 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 	public static final int MAX_BOOKS = 6;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(6, ItemStack.EMPTY);
+	private int lastInteractedSlot = -1;
 
 	public ChiseledBookshelfBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.CHISELED_BOOKSHELF, pos, state);
@@ -31,7 +30,8 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 
 	private void updateState(int interactedSlot) {
 		if (interactedSlot >= 0 && interactedSlot < 6) {
-			BlockState blockState = this.getCachedState().with(Properties.LAST_INTERACTION_BOOK_SLOT, Integer.valueOf(interactedSlot + 1));
+			this.lastInteractedSlot = interactedSlot;
+			BlockState blockState = this.getCachedState();
 
 			for (int i = 0; i < ChiseledBookshelfBlock.SLOT_OCCUPIED_PROPERTIES.size(); i++) {
 				boolean bl = !this.getStack(i).isEmpty();
@@ -47,23 +47,15 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 
 	@Override
 	public void readNbt(NbtCompound nbt) {
+		this.inventory.clear();
 		Inventories.readNbt(nbt, this.inventory);
+		this.lastInteractedSlot = nbt.getInt("last_interacted_slot");
 	}
 
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		Inventories.writeNbt(nbt, this.inventory, true);
-	}
-
-	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return BlockEntityUpdateS2CPacket.create(this);
-	}
-
-	@Override
-	public NbtCompound toInitialChunkDataNbt() {
-		NbtCompound nbtCompound = new NbtCompound();
-		Inventories.writeNbt(nbtCompound, this.inventory, true);
-		return nbtCompound;
+		nbt.putInt("last_interacted_slot", this.lastInteractedSlot);
 	}
 
 	public int getOpenSlotCount() {
@@ -133,5 +125,9 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 	@Override
 	public boolean isValid(int slot, ItemStack stack) {
 		return stack.isIn(ItemTags.BOOKSHELF_BOOKS) && this.getStack(slot).isEmpty();
+	}
+
+	public int getLastInteractedSlot() {
+		return this.lastInteractedSlot;
 	}
 }

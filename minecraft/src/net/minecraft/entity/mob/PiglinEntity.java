@@ -68,7 +68,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	private static final float field_30552 = 0.1F;
 	private static final int field_30553 = 3;
 	private static final float field_30554 = 0.2F;
-	private static final float field_30555 = 0.81F;
+	private static final float field_30555 = 0.82F;
 	private static final double field_30556 = 0.5;
 	private final SimpleInventory inventory = new SimpleInventory(8);
 	private boolean cannotHunt;
@@ -275,7 +275,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		float f = super.getActiveEyeHeight(pose, dimensions);
-		return this.isBaby() ? f - 0.81F : f;
+		return this.isBaby() ? f - 0.82F : f;
 	}
 
 	@Override

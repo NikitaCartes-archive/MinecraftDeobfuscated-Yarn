@@ -15,7 +15,7 @@ public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, Rabbit
 	private static final Identifier BLACK_TEXTURE = new Identifier("textures/entity/rabbit/black.png");
 	private static final Identifier GOLD_TEXTURE = new Identifier("textures/entity/rabbit/gold.png");
 	private static final Identifier SALT_TEXTURE = new Identifier("textures/entity/rabbit/salt.png");
-	private static final Identifier WHITE_SPOTTED_TEXTURE = new Identifier("textures/entity/rabbit/white_splotched.png");
+	private static final Identifier WHITE_SPLOTCHED_TEXTURE = new Identifier("textures/entity/rabbit/white_splotched.png");
 	private static final Identifier TOAST_TEXTURE = new Identifier("textures/entity/rabbit/toast.png");
 	private static final Identifier CAERBANNOG_TEXTURE = new Identifier("textures/entity/rabbit/caerbannog.png");
 
@@ -25,26 +25,18 @@ public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, Rabbit
 
 	public Identifier getTexture(RabbitEntity rabbitEntity) {
 		String string = Formatting.strip(rabbitEntity.getName().getString());
-		if (string != null && "Toast".equals(string)) {
+		if ("Toast".equals(string)) {
 			return TOAST_TEXTURE;
 		} else {
-			switch (rabbitEntity.getRabbitType()) {
-				case 0:
-				default:
-					return BROWN_TEXTURE;
-				case 1:
-					return WHITE_TEXTURE;
-				case 2:
-					return BLACK_TEXTURE;
-				case 3:
-					return WHITE_SPOTTED_TEXTURE;
-				case 4:
-					return GOLD_TEXTURE;
-				case 5:
-					return SALT_TEXTURE;
-				case 99:
-					return CAERBANNOG_TEXTURE;
-			}
+			return switch (rabbitEntity.getVariant()) {
+				case BROWN -> BROWN_TEXTURE;
+				case WHITE -> WHITE_TEXTURE;
+				case BLACK -> BLACK_TEXTURE;
+				case GOLD -> GOLD_TEXTURE;
+				case SALT -> SALT_TEXTURE;
+				case WHITE_SPLOTCHED -> WHITE_SPLOTCHED_TEXTURE;
+				case EVIL -> CAERBANNOG_TEXTURE;
+			};
 		}
 	}
 }

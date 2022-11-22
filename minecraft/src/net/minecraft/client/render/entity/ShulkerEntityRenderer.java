@@ -21,7 +21,7 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	private static final Identifier TEXTURE = new Identifier("textures/" + TexturedRenderLayers.SHULKER_TEXTURE_ID.getTextureId().getPath() + ".png");
 	private static final Identifier[] COLORED_TEXTURES = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES
 		.stream()
-		.map(spriteIdentifier -> new Identifier("textures/" + spriteIdentifier.getTextureId().getPath() + ".png"))
+		.map(spriteId -> new Identifier("textures/" + spriteId.getTextureId().getPath() + ".png"))
 		.toArray(Identifier[]::new);
 
 	public ShulkerEntityRenderer(EntityRendererFactory.Context context) {
@@ -30,21 +30,22 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	}
 
 	public Vec3d getPositionOffset(ShulkerEntity shulkerEntity, float f) {
-		return (Vec3d)shulkerEntity.method_33352(f).orElse(super.getPositionOffset(shulkerEntity, f));
+		return (Vec3d)shulkerEntity.getRenderPositionOffset(f).orElse(super.getPositionOffset(shulkerEntity, f));
 	}
 
 	public boolean shouldRender(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
 		return super.shouldRender(shulkerEntity, frustum, d, e, f)
 			? true
-			: shulkerEntity.method_33352(0.0F)
+			: shulkerEntity.getRenderPositionOffset(0.0F)
 				.filter(
-					vec3d -> {
+					renderPositionOffset -> {
 						EntityType<?> entityType = shulkerEntity.getType();
 						float fx = entityType.getHeight() / 2.0F;
 						float g = entityType.getWidth() / 2.0F;
-						Vec3d vec3d2 = Vec3d.ofBottomCenter(shulkerEntity.getBlockPos());
+						Vec3d vec3d = Vec3d.ofBottomCenter(shulkerEntity.getBlockPos());
 						return frustum.isVisible(
-							new Box(vec3d.x, vec3d.y + (double)fx, vec3d.z, vec3d2.x, vec3d2.y + (double)fx, vec3d2.z).expand((double)g, (double)fx, (double)g)
+							new Box(renderPositionOffset.x, renderPositionOffset.y + (double)fx, renderPositionOffset.z, vec3d.x, vec3d.y + (double)fx, vec3d.z)
+								.expand((double)g, (double)fx, (double)g)
 						);
 					}
 				)

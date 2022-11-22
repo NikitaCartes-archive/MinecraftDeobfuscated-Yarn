@@ -12,9 +12,11 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
@@ -41,10 +43,7 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 
 	public ChiseledBookshelfBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		BlockState blockState = this.stateManager
-			.getDefaultState()
-			.with(HorizontalFacingBlock.FACING, Direction.NORTH)
-			.with(Properties.LAST_INTERACTION_BOOK_SLOT, Integer.valueOf(0));
+		BlockState blockState = this.stateManager.getDefaultState().with(HorizontalFacingBlock.FACING, Direction.NORTH);
 
 		for (BooleanProperty booleanProperty : SLOT_OCCUPIED_PROPERTIES) {
 			blockState = blockState.with(booleanProperty, Boolean.valueOf(false));
@@ -64,14 +63,20 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 			Optional<Vec2f> optional = getHitPos(hit, state.get(HorizontalFacingBlock.FACING));
 			if (optional.isEmpty()) {
 				return ActionResult.PASS;
-			} else if (world.isClient()) {
-				return ActionResult.SUCCESS;
 			} else {
 				int i = getSlotForHitPos((Vec2f)optional.get());
-				ItemStack itemStack = player.getStackInHand(hand);
-				return itemStack.isIn(ItemTags.BOOKSHELF_BOOKS)
-					? tryAddBook(world, pos, player, chiseledBookshelfBlockEntity, itemStack, i)
-					: tryRemoveBook(world, pos, player, chiseledBookshelfBlockEntity, i);
+				if ((Boolean)state.get((Property)SLOT_OCCUPIED_PROPERTIES.get(i))) {
+					tryRemoveBook(world, pos, player, chiseledBookshelfBlockEntity, i);
+					return ActionResult.success(world.isClient);
+				} else {
+					ItemStack itemStack = player.getStackInHand(hand);
+					if (itemStack.isIn(ItemTags.BOOKSHELF_BOOKS)) {
+						tryAddBook(world, pos, player, chiseledBookshelfBlockEntity, itemStack, i);
+						return ActionResult.success(world.isClient);
+					} else {
+						return ActionResult.CONSUME;
+					}
+				}
 			}
 		} else {
 			return ActionResult.PASS;
@@ -116,11 +121,9 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 		}
 	}
 
-	private static ActionResult tryAddBook(World world, BlockPos pos, PlayerEntity player, ChiseledBookshelfBlockEntity blockEntity, ItemStack stack, int slot) {
-		ActionResult actionResult = ActionResult.CONSUME;
-		if (!blockEntity.getStack(slot).isEmpty()) {
-			return actionResult;
-		} else {
+	private static void tryAddBook(World world, BlockPos pos, PlayerEntity player, ChiseledBookshelfBlockEntity blockEntity, ItemStack stack, int slot) {
+		if (!world.isClient) {
+			player.incrementStat(Stats.USED.getOrCreateStat(stack.getItem()));
 			SoundEvent soundEvent = stack.isOf(Items.ENCHANTED_BOOK)
 				? SoundEvents.BLOCK_CHISELED_BOOKSHELF_INSERT_ENCHANTED
 				: SoundEvents.BLOCK_CHISELED_BOOKSHELF_INSERT;
@@ -131,16 +134,12 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 			}
 
 			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
-			return actionResult;
 		}
 	}
 
-	private static ActionResult tryRemoveBook(World world, BlockPos pos, PlayerEntity player, ChiseledBookshelfBlockEntity blockEntity, int slot) {
-		ActionResult actionResult = ActionResult.CONSUME;
-		ItemStack itemStack = blockEntity.removeStack(slot, 1);
-		if (itemStack.isEmpty()) {
-			return actionResult;
-		} else {
+	private static void tryRemoveBook(World world, BlockPos pos, PlayerEntity player, ChiseledBookshelfBlockEntity blockEntity, int slot) {
+		if (!world.isClient) {
+			ItemStack itemStack = blockEntity.removeStack(slot, 1);
 			SoundEvent soundEvent = itemStack.isOf(Items.ENCHANTED_BOOK)
 				? SoundEvents.BLOCK_CHISELED_BOOKSHELF_PICKUP_ENCHANTED
 				: SoundEvents.BLOCK_CHISELED_BOOKSHELF_PICKUP;
@@ -149,7 +148,7 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 				player.dropItem(itemStack, false);
 			}
 
-			return actionResult;
+			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 		}
 	}
 
@@ -161,7 +160,7 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(Properties.LAST_INTERACTION_BOOK_SLOT).add(HorizontalFacingBlock.FACING);
+		builder.add(HorizontalFacingBlock.FACING);
 		SLOT_OCCUPIED_PROPERTIES.forEach(property -> builder.add(property));
 	}
 
@@ -196,6 +195,12 @@ public class ChiseledBookshelfBlock extends BlockWithEntity {
 
 	@Override
 	public int getComparatorOutput(BlockState state, World world, BlockPos pos) {
-		return (Integer)state.get(Properties.LAST_INTERACTION_BOOK_SLOT);
+		if (world.isClient()) {
+			return 0;
+		} else {
+			return world.getBlockEntity(pos) instanceof ChiseledBookshelfBlockEntity chiseledBookshelfBlockEntity
+				? chiseledBookshelfBlockEntity.getLastInteractedSlot() + 1
+				: 0;
+		}
 	}
 }

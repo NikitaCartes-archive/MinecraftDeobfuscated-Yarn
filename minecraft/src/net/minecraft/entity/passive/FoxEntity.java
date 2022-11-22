@@ -5,11 +5,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -28,6 +27,7 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
@@ -74,6 +74,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -87,7 +88,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 
-public class FoxEntity extends AnimalEntity {
+public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.Type> {
 	private static final TrackedData<Integer> TYPE = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Byte> FOX_FLAGS = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int SITTING_FLAG = 1;
@@ -287,7 +288,7 @@ public class FoxEntity extends AnimalEntity {
 	public FoxEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
 		FoxEntity foxEntity = EntityType.FOX.create(serverWorld);
 		if (foxEntity != null) {
-			foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
+			foxEntity.setVariant(this.random.nextBoolean() ? this.getVariant() : ((FoxEntity)passiveEntity).getVariant());
 		}
 
 		return foxEntity;
@@ -314,7 +315,7 @@ public class FoxEntity extends AnimalEntity {
 			entityData = new FoxEntity.FoxData(type);
 		}
 
-		this.setType(type);
+		this.setVariant(type);
 		if (bl) {
 			this.setBreedingAge(-24000);
 		}
@@ -328,7 +329,7 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	private void addTypeSpecificGoals() {
-		if (this.getFoxType() == FoxEntity.Type.RED) {
+		if (this.getVariant() == FoxEntity.Type.RED) {
 			this.targetSelector.add(4, this.followChickenAndRabbitGoal);
 			this.targetSelector.add(4, this.followBabyTurtleGoal);
 			this.targetSelector.add(6, this.followFishGoal);
@@ -353,11 +354,11 @@ public class FoxEntity extends AnimalEntity {
 		return this.isBaby() ? dimensions.height * 0.85F : 0.4F;
 	}
 
-	public FoxEntity.Type getFoxType() {
+	public FoxEntity.Type getVariant() {
 		return FoxEntity.Type.fromId(this.dataTracker.get(TYPE));
 	}
 
-	private void setType(FoxEntity.Type type) {
+	public void setVariant(FoxEntity.Type type) {
 		this.dataTracker.set(TYPE, type.getId());
 	}
 
@@ -390,7 +391,7 @@ public class FoxEntity extends AnimalEntity {
 
 		nbt.put("Trusted", nbtList);
 		nbt.putBoolean("Sleeping", this.isSleeping());
-		nbt.putString("Type", this.getFoxType().getKey());
+		nbt.putString("Type", this.getVariant().asString());
 		nbt.putBoolean("Sitting", this.isSitting());
 		nbt.putBoolean("Crouching", this.isInSneakingPose());
 	}
@@ -405,7 +406,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		this.setSleeping(nbt.getBoolean("Sleeping"));
-		this.setType(FoxEntity.Type.byName(nbt.getString("Type")));
+		this.setVariant(FoxEntity.Type.byName(nbt.getString("Type")));
 		this.setSitting(nbt.getBoolean("Sitting"));
 		this.setCrouching(nbt.getBoolean("Crouching"));
 		if (this.world instanceof ServerWorld) {
@@ -1451,15 +1452,14 @@ public class FoxEntity extends AnimalEntity {
 		}
 	}
 
-	public static enum Type {
+	public static enum Type implements StringIdentifiable {
 		RED(0, "red"),
 		SNOW(1, "snow");
 
+		public static final StringIdentifiable.Codec<FoxEntity.Type> CODEC = StringIdentifiable.createCodec(FoxEntity.Type::values);
 		private static final FoxEntity.Type[] TYPES = (FoxEntity.Type[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(FoxEntity.Type::getId))
 			.toArray(FoxEntity.Type[]::new);
-		private static final Map<String, FoxEntity.Type> NAME_TYPE_MAP = (Map<String, FoxEntity.Type>)Arrays.stream(values())
-			.collect(Collectors.toMap(FoxEntity.Type::getKey, type -> type));
 		private final int id;
 		private final String key;
 
@@ -1468,7 +1468,8 @@ public class FoxEntity extends AnimalEntity {
 			this.key = key;
 		}
 
-		public String getKey() {
+		@Override
+		public String asString() {
 			return this.key;
 		}
 
@@ -1477,7 +1478,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		public static FoxEntity.Type byName(String name) {
-			return (FoxEntity.Type)NAME_TYPE_MAP.getOrDefault(name, RED);
+			return (FoxEntity.Type)Objects.requireNonNullElse((FoxEntity.Type)CODEC.byId(name), RED);
 		}
 
 		public static FoxEntity.Type fromId(int id) {

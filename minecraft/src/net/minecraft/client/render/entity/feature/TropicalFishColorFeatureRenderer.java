@@ -11,9 +11,22 @@ import net.minecraft.client.render.entity.model.SmallTropicalFishEntityModel;
 import net.minecraft.client.render.entity.model.TintableCompositeModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.TropicalFishEntity;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class TropicalFishColorFeatureRenderer extends FeatureRenderer<TropicalFishEntity, TintableCompositeModel<TropicalFishEntity>> {
+	private static final Identifier KOB_TEXTURE = new Identifier("textures/entity/fish/tropical_a_pattern_1.png");
+	private static final Identifier SUNSTREAK_TEXTURE = new Identifier("textures/entity/fish/tropical_a_pattern_2.png");
+	private static final Identifier SNOOPER_TEXTURE = new Identifier("textures/entity/fish/tropical_a_pattern_3.png");
+	private static final Identifier DASHER_TEXTURE = new Identifier("textures/entity/fish/tropical_a_pattern_4.png");
+	private static final Identifier BRINELY_TEXTURE = new Identifier("textures/entity/fish/tropical_a_pattern_5.png");
+	private static final Identifier SPOTTY_TEXTURE = new Identifier("textures/entity/fish/tropical_a_pattern_6.png");
+	private static final Identifier FLOPPER_TEXTURE = new Identifier("textures/entity/fish/tropical_b_pattern_1.png");
+	private static final Identifier STRIPEY_TEXTURE = new Identifier("textures/entity/fish/tropical_b_pattern_2.png");
+	private static final Identifier GLITTER_TEXTURE = new Identifier("textures/entity/fish/tropical_b_pattern_3.png");
+	private static final Identifier BLOCKFISH_TEXTURE = new Identifier("textures/entity/fish/tropical_b_pattern_4.png");
+	private static final Identifier BETTY_TEXTURE = new Identifier("textures/entity/fish/tropical_b_pattern_5.png");
+	private static final Identifier CLAYFISH_TEXTURE = new Identifier("textures/entity/fish/tropical_b_pattern_6.png");
 	private final SmallTropicalFishEntityModel<TropicalFishEntity> smallModel;
 	private final LargeTropicalFishEntityModel<TropicalFishEntity> largeModel;
 
@@ -37,25 +50,28 @@ public class TropicalFishColorFeatureRenderer extends FeatureRenderer<TropicalFi
 		float k,
 		float l
 	) {
-		EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(tropicalFishEntity.getShape() == 0 ? this.smallModel : this.largeModel);
-		float[] fs = tropicalFishEntity.getPatternColorComponents();
-		render(
-			this.getContextModel(),
-			entityModel,
-			tropicalFishEntity.getVarietyId(),
-			matrixStack,
-			vertexConsumerProvider,
-			i,
-			tropicalFishEntity,
-			f,
-			g,
-			j,
-			k,
-			l,
-			h,
-			fs[0],
-			fs[1],
-			fs[2]
-		);
+		TropicalFishEntity.Variety variety = tropicalFishEntity.getVariant();
+
+		EntityModel<TropicalFishEntity> entityModel = (EntityModel<TropicalFishEntity>)(switch (variety.getSize()) {
+			case SMALL -> this.smallModel;
+			case LARGE -> this.largeModel;
+		});
+
+		Identifier identifier = switch (variety) {
+			case KOB -> KOB_TEXTURE;
+			case SUNSTREAK -> SUNSTREAK_TEXTURE;
+			case SNOOPER -> SNOOPER_TEXTURE;
+			case DASHER -> DASHER_TEXTURE;
+			case BRINELY -> BRINELY_TEXTURE;
+			case SPOTTY -> SPOTTY_TEXTURE;
+			case FLOPPER -> FLOPPER_TEXTURE;
+			case STRIPEY -> STRIPEY_TEXTURE;
+			case GLITTER -> GLITTER_TEXTURE;
+			case BLOCKFISH -> BLOCKFISH_TEXTURE;
+			case BETTY -> BETTY_TEXTURE;
+			case CLAYFISH -> CLAYFISH_TEXTURE;
+		};
+		float[] fs = tropicalFishEntity.getPatternColorComponents().getColorComponents();
+		render(this.getContextModel(), entityModel, identifier, matrixStack, vertexConsumerProvider, i, tropicalFishEntity, f, g, j, k, l, h, fs[0], fs[1], fs[2]);
 	}
 }

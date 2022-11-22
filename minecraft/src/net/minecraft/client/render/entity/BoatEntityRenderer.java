@@ -71,7 +71,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 		}
 
 		Pair<Identifier, CompositeEntityModel<BoatEntity>> pair = (Pair<Identifier, CompositeEntityModel<BoatEntity>>)this.texturesAndModels
-			.get(boatEntity.getBoatType());
+			.get(boatEntity.getVariant());
 		Identifier identifier = pair.getFirst();
 		CompositeEntityModel<BoatEntity> compositeEntityModel = pair.getSecond();
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
@@ -91,6 +91,6 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 	}
 
 	public Identifier getTexture(BoatEntity boatEntity) {
-		return (Identifier)((Pair)this.texturesAndModels.get(boatEntity.getBoatType())).getFirst();
+		return (Identifier)((Pair)this.texturesAndModels.get(boatEntity.getVariant())).getFirst();
 	}
 }

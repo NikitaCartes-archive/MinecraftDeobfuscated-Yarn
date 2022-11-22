@@ -10,12 +10,10 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class LlamaEntityRenderer extends MobEntityRenderer<LlamaEntity, LlamaEntityModel<LlamaEntity>> {
-	private static final Identifier[] TEXTURES = new Identifier[]{
-		new Identifier("textures/entity/llama/creamy.png"),
-		new Identifier("textures/entity/llama/white.png"),
-		new Identifier("textures/entity/llama/brown.png"),
-		new Identifier("textures/entity/llama/gray.png")
-	};
+	private static final Identifier CREAMY_TEXTURE = new Identifier("textures/entity/llama/creamy.png");
+	private static final Identifier WHITE_TEXTURE = new Identifier("textures/entity/llama/white.png");
+	private static final Identifier BROWN_TEXTURE = new Identifier("textures/entity/llama/brown.png");
+	private static final Identifier GRAY_TEXTURE = new Identifier("textures/entity/llama/gray.png");
 
 	public LlamaEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer) {
 		super(ctx, new LlamaEntityModel<>(ctx.getPart(layer)), 0.7F);
@@ -23,6 +21,11 @@ public class LlamaEntityRenderer extends MobEntityRenderer<LlamaEntity, LlamaEnt
 	}
 
 	public Identifier getTexture(LlamaEntity llamaEntity) {
-		return TEXTURES[llamaEntity.getVariant()];
+		return switch (llamaEntity.getVariant()) {
+			case CREAMY -> CREAMY_TEXTURE;
+			case WHITE -> WHITE_TEXTURE;
+			case BROWN -> BROWN_TEXTURE;
+			case GRAY -> GRAY_TEXTURE;
+		};
 	}
 }

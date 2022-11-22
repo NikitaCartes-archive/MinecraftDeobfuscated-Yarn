@@ -21,6 +21,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -51,6 +52,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -95,8 +97,8 @@ import org.slf4j.Logger;
  * </table>
  * </div>
  */
-public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bucketable {
-	private static final Logger field_37260 = LogUtils.getLogger();
+public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, VariantHolder<AxolotlEntity.Variant>, Bucketable {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int PLAY_DEAD_TICKS = 200;
 	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AxolotlEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.AXOLOTL_ATTACKABLES, SensorType.AXOLOTL_TEMPTATIONS
@@ -243,7 +245,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		return AxolotlEntity.Variant.VARIANTS[this.dataTracker.get(VARIANT)];
 	}
 
-	private void setVariant(AxolotlEntity.Variant variant) {
+	public void setVariant(AxolotlEntity.Variant variant) {
 		this.dataTracker.set(VARIANT, variant.getId());
 	}
 
@@ -416,7 +418,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		if (i >= 0 && i < AxolotlEntity.Variant.VARIANTS.length) {
 			this.setVariant(AxolotlEntity.Variant.VARIANTS[i]);
 		} else {
-			field_37260.error("Invalid variant: {}", i);
+			LOGGER.error("Invalid variant: {}", i);
 		}
 
 		if (nbt.contains("Age")) {
@@ -443,14 +445,14 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		return !this.isPlayingDead() && super.canTakeDamage();
 	}
 
-	public static void appreciatePlayer(AxolotlEntity axolotl, LivingEntity livingEntity) {
+	public static void appreciatePlayer(AxolotlEntity axolotl, LivingEntity entity) {
 		World world = axolotl.world;
-		if (livingEntity.isDead()) {
-			DamageSource damageSource = livingEntity.getRecentDamageSource();
+		if (entity.isDead()) {
+			DamageSource damageSource = entity.getRecentDamageSource();
 			if (damageSource != null) {
-				Entity entity = damageSource.getAttacker();
-				if (entity != null && entity.getType() == EntityType.PLAYER) {
-					PlayerEntity playerEntity = (PlayerEntity)entity;
+				Entity entity2 = damageSource.getAttacker();
+				if (entity2 != null && entity2.getType() == EntityType.PLAYER) {
+					PlayerEntity playerEntity = (PlayerEntity)entity2;
 					List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotl.getBoundingBox().expand(20.0));
 					if (list.contains(playerEntity)) {
 						axolotl.buffPlayer(playerEntity);
@@ -595,7 +597,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		}
 	}
 
-	public static enum Variant {
+	public static enum Variant implements StringIdentifiable {
 		LUCY(0, "lucy", true),
 		WILD(1, "wild", true),
 		GOLD(2, "gold", true),
@@ -605,6 +607,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		public static final AxolotlEntity.Variant[] VARIANTS = (AxolotlEntity.Variant[])Arrays.stream(values())
 			.sorted(Comparator.comparingInt(AxolotlEntity.Variant::getId))
 			.toArray(AxolotlEntity.Variant[]::new);
+		public static final com.mojang.serialization.Codec<AxolotlEntity.Variant> CODEC = StringIdentifiable.createCodec(AxolotlEntity.Variant::values);
 		private final int id;
 		private final String name;
 		private final boolean natural;
@@ -620,6 +623,11 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Bu
 		}
 
 		public String getName() {
+			return this.name;
+		}
+
+		@Override
+		public String asString() {
 			return this.name;
 		}
 

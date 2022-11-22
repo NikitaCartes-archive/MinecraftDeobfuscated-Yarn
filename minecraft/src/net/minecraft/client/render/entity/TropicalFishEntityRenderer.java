@@ -18,6 +18,8 @@ import net.minecraft.util.math.RotationAxis;
 public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEntity, TintableCompositeModel<TropicalFishEntity>> {
 	private final TintableCompositeModel<TropicalFishEntity> smallModel = this.getModel();
 	private final TintableCompositeModel<TropicalFishEntity> largeModel;
+	private static final Identifier A_TEXTURE = new Identifier("textures/entity/fish/tropical_a.png");
+	private static final Identifier B_TEXTURE = new Identifier("textures/entity/fish/tropical_b.png");
 
 	public TropicalFishEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new SmallTropicalFishEntityModel<>(context.getPart(EntityModelLayers.TROPICAL_FISH_SMALL)), 0.15F);
@@ -26,13 +28,19 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 	}
 
 	public Identifier getTexture(TropicalFishEntity tropicalFishEntity) {
-		return tropicalFishEntity.getShapeId();
+		return switch (tropicalFishEntity.getVariant().getSize()) {
+			case SMALL -> A_TEXTURE;
+			case LARGE -> B_TEXTURE;
+		};
 	}
 
 	public void render(TropicalFishEntity tropicalFishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		TintableCompositeModel<TropicalFishEntity> tintableCompositeModel = tropicalFishEntity.getShape() == 0 ? this.smallModel : this.largeModel;
+		TintableCompositeModel<TropicalFishEntity> tintableCompositeModel = switch (tropicalFishEntity.getVariant().getSize()) {
+			case SMALL -> this.smallModel;
+			case LARGE -> this.largeModel;
+		};
 		this.model = tintableCompositeModel;
-		float[] fs = tropicalFishEntity.getBaseColorComponents();
+		float[] fs = tropicalFishEntity.getBaseColorComponents().getColorComponents();
 		tintableCompositeModel.setColorMultiplier(fs[0], fs[1], fs[2]);
 		super.render(tropicalFishEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		tintableCompositeModel.setColorMultiplier(1.0F, 1.0F, 1.0F);

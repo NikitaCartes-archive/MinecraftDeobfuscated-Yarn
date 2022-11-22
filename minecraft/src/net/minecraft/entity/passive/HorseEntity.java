@@ -6,6 +6,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -30,7 +31,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-public class HorseEntity extends AbstractHorseEntity {
+public class HorseEntity extends AbstractHorseEntity implements VariantHolder<HorseColor> {
 	private static final UUID HORSE_ARMOR_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(HorseEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
@@ -54,7 +55,7 @@ public class HorseEntity extends AbstractHorseEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("Variant", this.getVariant());
+		nbt.putInt("Variant", this.getHorseVariant());
 		if (!this.items.getStack(1).isEmpty()) {
 			nbt.put("ArmorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
 		}
@@ -72,7 +73,7 @@ public class HorseEntity extends AbstractHorseEntity {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.setVariant(nbt.getInt("Variant"));
+		this.setHorseVariant(nbt.getInt("Variant"));
 		if (nbt.contains("ArmorItem", NbtElement.COMPOUND_TYPE)) {
 			ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("ArmorItem"));
 			if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
@@ -83,24 +84,28 @@ public class HorseEntity extends AbstractHorseEntity {
 		this.updateSaddle();
 	}
 
-	private void setVariant(int variant) {
+	private void setHorseVariant(int variant) {
 		this.dataTracker.set(VARIANT, variant);
 	}
 
-	private int getVariant() {
+	private int getHorseVariant() {
 		return this.dataTracker.get(VARIANT);
 	}
 
-	private void setVariant(HorseColor color, HorseMarking marking) {
-		this.setVariant(color.getIndex() & 0xFF | marking.getIndex() << 8 & 0xFF00);
+	private void setHorseVariant(HorseColor color, HorseMarking marking) {
+		this.setHorseVariant(color.getIndex() & 0xFF | marking.getIndex() << 8 & 0xFF00);
 	}
 
-	public HorseColor getColor() {
-		return HorseColor.byIndex(this.getVariant() & 0xFF);
+	public HorseColor getVariant() {
+		return HorseColor.byIndex(this.getHorseVariant() & 0xFF);
+	}
+
+	public void setVariant(HorseColor horseColor) {
+		this.setHorseVariant(horseColor.getIndex() & 0xFF | this.getHorseVariant() & -256);
 	}
 
 	public HorseMarking getMarking() {
-		return HorseMarking.byIndex((this.getVariant() & 0xFF00) >> 8);
+		return HorseMarking.byIndex((this.getHorseVariant() & 0xFF00) >> 8);
 	}
 
 	@Override
@@ -218,9 +223,9 @@ public class HorseEntity extends AbstractHorseEntity {
 				int i = this.random.nextInt(9);
 				HorseColor horseColor;
 				if (i < 4) {
-					horseColor = this.getColor();
+					horseColor = this.getVariant();
 				} else if (i < 8) {
-					horseColor = horseEntity.getColor();
+					horseColor = horseEntity.getVariant();
 				} else {
 					horseColor = Util.getRandom(HorseColor.values(), this.random);
 				}
@@ -235,7 +240,7 @@ public class HorseEntity extends AbstractHorseEntity {
 					horseMarking = Util.getRandom(HorseMarking.values(), this.random);
 				}
 
-				horseEntity2.setVariant(horseColor, horseMarking);
+				horseEntity2.setHorseVariant(horseColor, horseMarking);
 				this.setChildAttributes(entity, horseEntity2);
 			}
 
@@ -267,7 +272,7 @@ public class HorseEntity extends AbstractHorseEntity {
 			entityData = new HorseEntity.HorseData(horseColor);
 		}
 
-		this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), random));
+		this.setHorseVariant(horseColor, Util.getRandom(HorseMarking.values(), random));
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 

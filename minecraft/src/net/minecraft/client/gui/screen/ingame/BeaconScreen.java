@@ -269,7 +269,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		protected void renderExtra(MatrixStack matrices) {
-			RenderSystem.setShaderTexture(0, this.sprite.getId());
+			RenderSystem.setShaderTexture(0, this.sprite.getAtlasId());
 			drawSprite(matrices, this.getX() + 2, this.getY() + 2, this.getZOffset(), 18, 18, this.sprite);
 		}
 

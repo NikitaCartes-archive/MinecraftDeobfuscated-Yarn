@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.goal.CatSitOnBlockGoal;
@@ -69,7 +70,7 @@ import net.minecraft.world.World;
 /**
  * Meow.
  */
-public class CatEntity extends TameableEntity {
+public class CatEntity extends TameableEntity implements VariantHolder<CatVariant> {
 	public static final double CROUCHING_SPEED = 0.6;
 	public static final double NORMAL_SPEED = 0.8;
 	public static final double SPRINTING_SPEED = 1.33;
@@ -119,8 +120,8 @@ public class CatEntity extends TameableEntity {
 		return this.dataTracker.get(CAT_VARIANT);
 	}
 
-	public void setVariant(CatVariant variant) {
-		this.dataTracker.set(CAT_VARIANT, variant);
+	public void setVariant(CatVariant catVariant) {
+		this.dataTracker.set(CAT_VARIANT, catVariant);
 	}
 
 	/**

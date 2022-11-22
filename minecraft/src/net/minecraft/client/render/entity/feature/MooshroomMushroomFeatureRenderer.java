@@ -31,7 +31,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			boolean bl = minecraftClient.hasOutline(mooshroomEntity) && mooshroomEntity.isInvisible();
 			if (!mooshroomEntity.isInvisible() || bl) {
-				BlockState blockState = mooshroomEntity.getMooshroomType().getMushroomState();
+				BlockState blockState = mooshroomEntity.getVariant().getMushroomState();
 				int m = LivingEntityRenderer.getOverlay(mooshroomEntity, 0.0F);
 				BakedModel bakedModel = this.blockRenderManager.getModel(blockState);
 				matrixStack.push();

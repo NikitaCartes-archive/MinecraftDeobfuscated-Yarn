@@ -13,6 +13,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.ApiServices;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
@@ -21,6 +22,7 @@ import net.minecraft.world.World;
 
 public class SkullBlockEntity extends BlockEntity {
 	public static final String SKULL_OWNER_KEY = "SkullOwner";
+	public static final String NOTE_BLOCK_SOUND_KEY = "note_block_sound";
 	@Nullable
 	private static UserCache userCache;
 	@Nullable
@@ -29,6 +31,8 @@ public class SkullBlockEntity extends BlockEntity {
 	private static Executor executor;
 	@Nullable
 	private GameProfile owner;
+	@Nullable
+	private Identifier noteBlockSound;
 	private int poweredTicks;
 	private boolean powered;
 
@@ -56,6 +60,10 @@ public class SkullBlockEntity extends BlockEntity {
 			NbtHelper.writeGameProfile(nbtCompound, this.owner);
 			nbt.put("SkullOwner", nbtCompound);
 		}
+
+		if (this.noteBlockSound != null) {
+			nbt.putString("note_block_sound", this.noteBlockSound.toString());
+		}
 	}
 
 	@Override
@@ -68,6 +76,10 @@ public class SkullBlockEntity extends BlockEntity {
 			if (!StringHelper.isEmpty(string)) {
 				this.setOwner(new GameProfile(null, string));
 			}
+		}
+
+		if (nbt.contains("note_block_sound", NbtElement.STRING_TYPE)) {
+			this.noteBlockSound = Identifier.tryParse(nbt.getString("note_block_sound"));
 		}
 	}
 
@@ -87,6 +99,11 @@ public class SkullBlockEntity extends BlockEntity {
 	@Nullable
 	public GameProfile getOwner() {
 		return this.owner;
+	}
+
+	@Nullable
+	public Identifier getNoteBlockSound() {
+		return this.noteBlockSound;
 	}
 
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {

@@ -1075,8 +1075,6 @@ public class Util {
 
 	/**
 	 * {@return the result wrapped in {@code result}}
-	 * 
-	 * @throws Exception if {@code result} has an error
 	 */
 	public static <T, E extends Exception> T getResult(DataResult<T> result, Function<String, E> exceptionGetter) throws E {
 		Optional<PartialResult<T>> optional = result.error();

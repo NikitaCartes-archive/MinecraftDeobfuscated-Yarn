@@ -1,5 +1,7 @@
 package net.minecraft.entity.passive;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -10,6 +12,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -44,6 +47,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -52,9 +57,8 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob {
+public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<LlamaEntity.Variant>, RangedAttackMob {
 	private static final int MAX_STRENGTH = 5;
-	private static final int VARIANTS = 4;
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
 	private static final TrackedData<Integer> STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -89,7 +93,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("Variant", this.getVariant());
+		nbt.putInt("Variant", this.getVariant().index);
 		nbt.putInt("Strength", this.getStrength());
 		if (!this.items.getStack(1).isEmpty()) {
 			nbt.put("DecorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
@@ -100,7 +104,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		this.setStrength(nbt.getInt("Strength"));
 		super.readCustomDataFromNbt(nbt);
-		this.setVariant(nbt.getInt("Variant"));
+		this.setVariant(LlamaEntity.Variant.byIndex(nbt.getInt("Variant")));
 		if (nbt.contains("DecorItem", NbtElement.COMPOUND_TYPE)) {
 			this.items.setStack(1, ItemStack.fromNbt(nbt.getCompound("DecorItem")));
 		}
@@ -137,12 +141,12 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		this.dataTracker.startTracking(VARIANT, 0);
 	}
 
-	public int getVariant() {
-		return MathHelper.clamp(this.dataTracker.get(VARIANT), 0, 3);
+	public LlamaEntity.Variant getVariant() {
+		return LlamaEntity.Variant.byIndex(this.dataTracker.get(VARIANT));
 	}
 
-	public void setVariant(int variant) {
-		this.dataTracker.set(VARIANT, variant);
+	public void setVariant(LlamaEntity.Variant variant) {
+		this.dataTracker.set(VARIANT, variant.index);
 	}
 
 	@Override
@@ -251,15 +255,15 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	) {
 		Random random = world.getRandom();
 		this.initializeStrength(random);
-		int i;
+		LlamaEntity.Variant variant;
 		if (entityData instanceof LlamaEntity.LlamaData) {
-			i = ((LlamaEntity.LlamaData)entityData).variant;
+			variant = ((LlamaEntity.LlamaData)entityData).variant;
 		} else {
-			i = random.nextInt(4);
-			entityData = new LlamaEntity.LlamaData(i);
+			variant = Util.getRandom(LlamaEntity.Variant.values(), random);
+			entityData = new LlamaEntity.LlamaData(variant);
 		}
 
-		this.setVariant(i);
+		this.setVariant(variant);
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
@@ -510,9 +514,9 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	static class LlamaData extends PassiveEntity.PassiveData {
-		public final int variant;
+		public final LlamaEntity.Variant variant;
 
-		LlamaData(int variant) {
+		LlamaData(LlamaEntity.Variant variant) {
 			super(true);
 			this.variant = variant;
 		}
@@ -531,6 +535,38 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 			}
 
 			return super.shouldContinue();
+		}
+	}
+
+	public static enum Variant implements StringIdentifiable {
+		CREAMY(0, "creamy"),
+		WHITE(1, "white"),
+		BROWN(2, "brown"),
+		GRAY(3, "gray");
+
+		public static final com.mojang.serialization.Codec<LlamaEntity.Variant> CODEC = StringIdentifiable.createCodec(LlamaEntity.Variant::values);
+		private static final LlamaEntity.Variant[] VALUES = (LlamaEntity.Variant[])Arrays.stream(values())
+			.sorted(Comparator.comparingInt(LlamaEntity.Variant::getIndex))
+			.toArray(LlamaEntity.Variant[]::new);
+		final int index;
+		private final String name;
+
+		private Variant(int index, String name) {
+			this.index = index;
+			this.name = name;
+		}
+
+		public int getIndex() {
+			return this.index;
+		}
+
+		public static LlamaEntity.Variant byIndex(int index) {
+			return VALUES[MathHelper.clamp(index, 0, VALUES.length - 1)];
+		}
+
+		@Override
+		public String asString() {
+			return this.name;
 		}
 	}
 }

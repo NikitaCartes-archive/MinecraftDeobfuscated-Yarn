@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -1497,8 +1498,12 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public void clearGoalsAndTasks() {
-		this.goalSelector.clear();
+		this.clearGoals(goal -> true);
 		this.getBrain().clear();
+	}
+
+	public void clearGoals(Predicate<Goal> predicate) {
+		this.goalSelector.clear(predicate);
 	}
 
 	@Override

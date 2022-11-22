@@ -21,6 +21,11 @@ public class BirdNavigation extends EntityNavigation {
 	}
 
 	@Override
+	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target) {
+		return doesNotCollide(this.entity, origin, target, true);
+	}
+
+	@Override
 	protected boolean isAtValidPosition() {
 		return this.canSwim() && this.isInLiquid() || !this.entity.hasVehicle();
 	}

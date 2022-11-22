@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -31,7 +32,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
-public class PaintingEntity extends AbstractDecorationEntity {
+public class PaintingEntity extends AbstractDecorationEntity implements VariantHolder<RegistryEntry<PaintingVariant>> {
 	private static final TrackedData<RegistryEntry<PaintingVariant>> VARIANT = DataTracker.registerData(
 		PaintingEntity.class, TrackedDataHandlerRegistry.PAINTING_VARIANT
 	);
@@ -57,7 +58,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 		}
 	}
 
-	private void setVariant(RegistryEntry<PaintingVariant> variant) {
+	public void setVariant(RegistryEntry<PaintingVariant> variant) {
 		this.dataTracker.set(VARIANT, variant);
 	}
 
@@ -118,9 +119,9 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		RegistryEntry<PaintingVariant> registryEntry = (RegistryEntry<PaintingVariant>)Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
-			.map(identifier -> RegistryKey.of(RegistryKeys.PAINTING_VARIANT, identifier))
+			.map(id -> RegistryKey.of(RegistryKeys.PAINTING_VARIANT, id))
 			.flatMap(Registries.PAINTING_VARIANT::getEntry)
-			.map(reference -> reference)
+			.map(entry -> entry)
 			.orElseGet(PaintingEntity::getDefaultVariant);
 		this.setVariant(registryEntry);
 		this.facing = Direction.fromHorizontal(nbt.getByte("facing"));

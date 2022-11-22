@@ -18,6 +18,7 @@ import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -67,7 +68,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 
-public class FrogEntity extends AnimalEntity {
+public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVariant> {
 	public static final Ingredient SLIME_BALL = Ingredient.ofItems(Items.SLIME_BALL);
 	protected static final ImmutableList<SensorType<? extends Sensor<? super FrogEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.HURT_BY, SensorType.FROG_ATTACKABLES, SensorType.FROG_TEMPTATIONS, SensorType.IS_IN_WATER
@@ -433,13 +434,15 @@ public class FrogEntity extends AnimalEntity {
 		@Nullable
 		@Override
 		public PathNode getStart() {
-			return this.getStart(
-				new BlockPos(
-					MathHelper.floor(this.entity.getBoundingBox().minX),
-					MathHelper.floor(this.entity.getBoundingBox().minY),
-					MathHelper.floor(this.entity.getBoundingBox().minZ)
-				)
-			);
+			return !this.entity.isTouchingWater()
+				? super.getStart()
+				: this.getStart(
+					new BlockPos(
+						MathHelper.floor(this.entity.getBoundingBox().minX),
+						MathHelper.floor(this.entity.getBoundingBox().minY),
+						MathHelper.floor(this.entity.getBoundingBox().minZ)
+					)
+				);
 		}
 
 		@Override

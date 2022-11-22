@@ -37,13 +37,15 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 	@Nullable
 	@Override
 	public PathNode getStart() {
-		return this.getStart(
-			new BlockPos(
-				MathHelper.floor(this.entity.getBoundingBox().minX),
-				MathHelper.floor(this.entity.getBoundingBox().minY + 0.5),
-				MathHelper.floor(this.entity.getBoundingBox().minZ)
-			)
-		);
+		return !this.entity.isTouchingWater()
+			? super.getStart()
+			: this.getStart(
+				new BlockPos(
+					MathHelper.floor(this.entity.getBoundingBox().minX),
+					MathHelper.floor(this.entity.getBoundingBox().minY + 0.5),
+					MathHelper.floor(this.entity.getBoundingBox().minZ)
+				)
+			);
 	}
 
 	@Nullable
@@ -87,11 +89,6 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 	private boolean isValidAquaticAdjacentSuccessor(@Nullable PathNode node, PathNode successor) {
 		return this.isValidAdjacentSuccessor(node, successor) && node.type == PathNodeType.WATER;
-	}
-
-	@Override
-	protected double getFeetY(BlockPos pos) {
-		return this.entity.isTouchingWater() ? (double)pos.getY() + 0.5 : super.getFeetY(pos);
 	}
 
 	@Override

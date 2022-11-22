@@ -17,13 +17,15 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class OpenToLanScreen extends Screen {
+	private static final int MIN_PORT = 1024;
+	private static final int MAX_PORT = 65535;
 	private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands");
 	private static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
 	private static final Text OTHER_PLAYERS_TEXT = Text.translatable("lanServer.otherPlayers");
 	private static final Text PORT_TEXT = Text.translatable("lanServer.port");
-	private static final Text INVALID_PORT_TEXT = Text.translatable("lanServer.port.invalid");
-	public static final Text UNAVAILABLE_PORT_TEXT = Text.translatable("lanServer.port.unavailable");
-	public static final int field_41107 = 16733525;
+	private static final Text UNAVAILABLE_PORT_TEXT = Text.translatable("lanServer.port.unavailable.new", 1024, 65535);
+	private static final Text INVALID_PORT_TEXT = Text.translatable("lanServer.port.invalid.new", 1024, 65535);
+	private static final int ERROR_TEXT_COLOR = 16733525;
 	private final Screen parent;
 	private GameMode gameMode = GameMode.SURVIVAL;
 	private boolean allowCommands;
@@ -64,8 +66,8 @@ public class OpenToLanScreen extends Screen {
 			this.client.updateWindowTitle();
 		}).dimensions(this.width / 2 - 155, this.height - 28, 150, 20).build();
 		this.portField = new TextFieldWidget(this.textRenderer, this.width / 2 - 75, 160, 150, 20, Text.translatable("lanServer.port"));
-		this.portField.setChangedListener(string -> {
-			Text text = this.updatePort(string);
+		this.portField.setChangedListener(portText -> {
+			Text text = this.updatePort(portText);
 			this.portField.setPlaceholder(Text.literal(this.port + "").formatted(Formatting.DARK_GRAY));
 			if (text == null) {
 				this.portField.setEditableColor(14737632);
@@ -85,6 +87,14 @@ public class OpenToLanScreen extends Screen {
 		);
 	}
 
+	@Override
+	public void tick() {
+		super.tick();
+		if (this.portField != null) {
+			this.portField.tick();
+		}
+	}
+
 	@Nullable
 	private Text updatePort(String portText) {
 		if (portText.isBlank()) {
@@ -93,13 +103,13 @@ public class OpenToLanScreen extends Screen {
 		} else {
 			try {
 				this.port = Integer.parseInt(portText);
-				if (this.port < 1 || this.port > 65535) {
+				if (this.port < 1024 || this.port > 65535) {
 					return INVALID_PORT_TEXT;
 				} else {
 					return !NetworkUtils.isPortAvailable(this.port) ? UNAVAILABLE_PORT_TEXT : null;
 				}
 			} catch (NumberFormatException var3) {
-				this.port = -1;
+				this.port = NetworkUtils.findLocalPort();
 				return INVALID_PORT_TEXT;
 			}
 		}

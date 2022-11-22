@@ -24,6 +24,6 @@ public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, 
 	}
 
 	public Identifier getTexture(MooshroomEntity mooshroomEntity) {
-		return (Identifier)TEXTURES.get(mooshroomEntity.getMooshroomType());
+		return (Identifier)TEXTURES.get(mooshroomEntity.getVariant());
 	}
 }
