@@ -94,8 +94,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		}
 
 		BlockPos blockPos = this.entity.getBlockPos();
-		PathNodeType pathNodeType = this.getNodeType(this.entity, blockPos.getX(), i, blockPos.getZ());
-		if (this.entity.getPathfindingPenalty(pathNodeType) < 0.0F) {
+		if (!this.canPathThrough(mutable.set(blockPos.getX(), i, blockPos.getZ()))) {
 			Box box = this.entity.getBoundingBox();
 			if (this.canPathThrough(mutable.set(box.minX, (double)i, box.minZ))
 				|| this.canPathThrough(mutable.set(box.minX, (double)i, box.maxZ))
@@ -119,9 +118,9 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		return pathNode;
 	}
 
-	private boolean canPathThrough(BlockPos pos) {
+	protected boolean canPathThrough(BlockPos pos) {
 		PathNodeType pathNodeType = this.getNodeType(this.entity, pos);
-		return this.entity.getPathfindingPenalty(pathNodeType) >= 0.0F;
+		return pathNodeType != PathNodeType.OPEN && this.entity.getPathfindingPenalty(pathNodeType) >= 0.0F;
 	}
 
 	@Nullable
@@ -228,7 +227,9 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	protected double getFeetY(BlockPos pos) {
-		return getFeetY(this.cachedWorld, pos);
+		return (this.canSwim() || this.isAmphibious()) && this.cachedWorld.getFluidState(pos).isIn(FluidTags.WATER)
+			? (double)pos.getY() + 0.5
+			: getFeetY(this.cachedWorld, pos);
 	}
 
 	public static double getFeetY(BlockView world, BlockPos pos) {
@@ -273,10 +274,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						double h = (double)(z - direction.getOffsetZ()) + 0.5;
 						Box box = new Box(
 							g - e,
-							getFeetY(this.cachedWorld, mutable.set(g, (double)(y + 1), h)) + 0.001,
+							this.getFeetY(mutable.set(g, (double)(y + 1), h)) + 0.001,
 							h - e,
 							g + e,
-							(double)this.entity.getHeight() + getFeetY(this.cachedWorld, mutable.set((double)pathNode.x, (double)pathNode.y, (double)pathNode.z)) - 0.002,
+							(double)this.entity.getHeight() + this.getFeetY(mutable.set((double)pathNode.x, (double)pathNode.y, (double)pathNode.z)) - 0.002,
 							h + e
 						);
 						if (this.checkBoxCollision(box)) {
@@ -461,7 +462,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		return type;
 	}
 
-	private PathNodeType getNodeType(MobEntity entity, BlockPos pos) {
+	protected PathNodeType getNodeType(MobEntity entity, BlockPos pos) {
 		return this.getNodeType(entity, pos.getX(), pos.getY(), pos.getZ());
 	}
 

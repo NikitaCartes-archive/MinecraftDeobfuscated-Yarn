@@ -7,13 +7,13 @@ import java.util.function.DoubleConsumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7940;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.EmptyWidget;
 import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.ScrollableWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -151,12 +151,13 @@ public class TelemetryEventWidget extends ScrollableWidget {
 		}
 
 		public void appndTitle(TextRenderer textRenderer, Text title, int marginBottom) {
-			this.widgetAdder.add(class_7940.method_47618(this.gridWidth, textRenderer, title), this.widgetAdder.copyPositioner().marginBottom(marginBottom));
+			this.widgetAdder
+				.add(MultilineTextWidget.createNonCentered(this.gridWidth, textRenderer, title), this.widgetAdder.copyPositioner().marginBottom(marginBottom));
 			this.narration.append(title).append("\n");
 		}
 
 		public void appendText(TextRenderer textRenderer, Text text) {
-			this.widgetAdder.add(class_7940.method_47617(this.gridWidth - 64, textRenderer, text), this.positioner);
+			this.widgetAdder.add(MultilineTextWidget.createCentered(this.gridWidth - 64, textRenderer, text), this.positioner);
 			this.narration.append(text).append("\n");
 		}
 

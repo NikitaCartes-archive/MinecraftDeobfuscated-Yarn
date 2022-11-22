@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen.multiplayer;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -131,10 +132,11 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 			};
 			this.showButton.setTooltip(Tooltip.of(showText, text2));
 			this.showButton.setTooltipDelay(10);
-			this.showButton.visible = socialInteractionsManager.isPlayerHidden(uuid);
-			this.hideButton.visible = !this.showButton.visible;
 			this.reportButton.active = false;
-			this.buttons = ImmutableList.of(this.hideButton, this.showButton, this.reportButton);
+			this.buttons = new ArrayList();
+			this.buttons.add(this.hideButton);
+			this.buttons.add(this.reportButton);
+			this.setShowButtonVisible(socialInteractionsManager.isPlayerHidden(this.uuid));
 		} else {
 			this.buttons = ImmutableList.of();
 		}
@@ -237,10 +239,15 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	}
 
 	private void onButtonClick(boolean showButtonVisible, Text chatMessage) {
-		this.showButton.visible = showButtonVisible;
-		this.hideButton.visible = !showButtonVisible;
+		this.setShowButtonVisible(showButtonVisible);
 		this.client.inGameHud.getChatHud().addMessage(chatMessage);
 		this.client.getNarratorManager().narrate(chatMessage);
+	}
+
+	private void setShowButtonVisible(boolean showButtonVisible) {
+		this.showButton.visible = showButtonVisible;
+		this.hideButton.visible = !showButtonVisible;
+		this.buttons.set(0, showButtonVisible ? this.showButton : this.hideButton);
 	}
 
 	MutableText getNarrationMessage(MutableText text) {

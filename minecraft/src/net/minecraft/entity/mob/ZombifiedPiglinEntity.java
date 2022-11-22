@@ -54,6 +54,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final UniformIntProvider ANGER_PASSING_COOLDOWN_RANGE = TimeHelper.betweenSeconds(4, 6);
 	private int angerPassingCooldown;
 	private static final float EYE_HEIGHT = 1.79F;
+	private static final float BABY_EYE_HEIGHT_OFFSET = 0.82F;
 
 	public ZombifiedPiglinEntity(EntityType<? extends ZombifiedPiglinEntity> entityType, World world) {
 		super(entityType, world);
@@ -88,7 +89,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return this.isBaby() ? 0.97999996F : 1.79F;
+		return this.isBaby() ? 0.96999997F : 1.79F;
 	}
 
 	@Override

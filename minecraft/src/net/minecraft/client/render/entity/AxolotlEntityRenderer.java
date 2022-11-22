@@ -14,7 +14,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class AxolotlEntityRenderer extends MobEntityRenderer<AxolotlEntity, AxolotlEntityModel<AxolotlEntity>> {
-	private static final Map<AxolotlEntity.Variant, Identifier> TEXTURES = Util.make(Maps.newHashMap(), variants -> {
+	private static final Map<AxolotlEntity.Variant, Identifier> TEXTURES = Util.make(Maps.<AxolotlEntity.Variant, Identifier>newHashMap(), variants -> {
 		for(AxolotlEntity.Variant variant : AxolotlEntity.Variant.VARIANTS) {
 			variants.put(variant, new Identifier(String.format(Locale.ROOT, "textures/entity/axolotl/axolotl_%s.png", variant.getName())));
 		}

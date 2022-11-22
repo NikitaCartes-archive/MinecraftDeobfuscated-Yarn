@@ -66,7 +66,7 @@ public class BlockStateModelGenerator {
 		.put(Blocks.DEEPSLATE, BlockStateModelGenerator::createDeepslateState)
 		.put(Blocks.MUD_BRICKS, BlockStateModelGenerator::createMudBrickState)
 		.build();
-	final Map<Block, TexturedModel> sandstoneModels = ImmutableMap.<Block, TexturedModel>builder()
+	final Map<Block, TexturedModel> texturedModels = ImmutableMap.<Block, TexturedModel>builder()
 		.put(Blocks.SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL.get(Blocks.SANDSTONE))
 		.put(Blocks.RED_SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL.get(Blocks.RED_SANDSTONE))
 		.put(Blocks.SMOOTH_SANDSTONE, TexturedModel.getCubeAll(TextureMap.getSubId(Blocks.SANDSTONE, "_top")))
@@ -101,8 +101,8 @@ public class BlockStateModelGenerator {
 	static final Map<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>> VARIANT_POOL_FUNCTIONS = ImmutableMap.builder()
 		.put(BlockFamily.Variant.BUTTON, BlockStateModelGenerator.BlockTexturePool::button)
 		.put(BlockFamily.Variant.DOOR, BlockStateModelGenerator.BlockTexturePool::door)
-		.put(BlockFamily.Variant.CHISELED, BlockStateModelGenerator.BlockTexturePool::sandstone)
-		.put(BlockFamily.Variant.CRACKED, BlockStateModelGenerator.BlockTexturePool::sandstone)
+		.put(BlockFamily.Variant.CHISELED, BlockStateModelGenerator.BlockTexturePool::block)
+		.put(BlockFamily.Variant.CRACKED, BlockStateModelGenerator.BlockTexturePool::block)
 		.put(BlockFamily.Variant.CUSTOM_FENCE, BlockStateModelGenerator.BlockTexturePool::customFence)
 		.put(BlockFamily.Variant.FENCE, BlockStateModelGenerator.BlockTexturePool::fence)
 		.put(BlockFamily.Variant.CUSTOM_FENCE_GATE, BlockStateModelGenerator.BlockTexturePool::customFenceGate)
@@ -120,44 +120,44 @@ public class BlockStateModelGenerator {
 	 * direction with a given connection model.
 	 */
 	public static final List<Pair<BooleanProperty, Function<Identifier, BlockStateVariant>>> CONNECTION_VARIANT_FUNCTIONS = List.of(
-		Pair.of(Properties.NORTH, (Function)identifier -> BlockStateVariant.create().put(VariantSettings.MODEL, identifier)),
+		Pair.of(Properties.NORTH, (Function)model -> BlockStateVariant.create().put(VariantSettings.MODEL, model)),
 		Pair.of(
 			Properties.EAST,
-			(Function)identifier -> BlockStateVariant.create()
-					.put(VariantSettings.MODEL, identifier)
+			(Function)model -> BlockStateVariant.create()
+					.put(VariantSettings.MODEL, model)
 					.put(VariantSettings.Y, VariantSettings.Rotation.R90)
 					.put(VariantSettings.UVLOCK, true)
 		),
 		Pair.of(
 			Properties.SOUTH,
-			(Function)identifier -> BlockStateVariant.create()
-					.put(VariantSettings.MODEL, identifier)
+			(Function)model -> BlockStateVariant.create()
+					.put(VariantSettings.MODEL, model)
 					.put(VariantSettings.Y, VariantSettings.Rotation.R180)
 					.put(VariantSettings.UVLOCK, true)
 		),
 		Pair.of(
 			Properties.WEST,
-			(Function)identifier -> BlockStateVariant.create()
-					.put(VariantSettings.MODEL, identifier)
+			(Function)model -> BlockStateVariant.create()
+					.put(VariantSettings.MODEL, model)
 					.put(VariantSettings.Y, VariantSettings.Rotation.R270)
 					.put(VariantSettings.UVLOCK, true)
 		),
 		Pair.of(
 			Properties.UP,
-			(Function)identifier -> BlockStateVariant.create()
-					.put(VariantSettings.MODEL, identifier)
+			(Function)model -> BlockStateVariant.create()
+					.put(VariantSettings.MODEL, model)
 					.put(VariantSettings.X, VariantSettings.Rotation.R270)
 					.put(VariantSettings.UVLOCK, true)
 		),
 		Pair.of(
 			Properties.DOWN,
-			(Function)identifier -> BlockStateVariant.create()
-					.put(VariantSettings.MODEL, identifier)
+			(Function)model -> BlockStateVariant.create()
+					.put(VariantSettings.MODEL, model)
 					.put(VariantSettings.X, VariantSettings.Rotation.R90)
 					.put(VariantSettings.UVLOCK, true)
 		)
 	);
-	private static final Map<BlockStateModelGenerator.class_7987, Identifier> field_41526 = new HashMap();
+	private static final Map<BlockStateModelGenerator.ChiseledBookshelfModelCacheKey, Identifier> CHISELED_BOOKSHELF_MODEL_CACHE = new HashMap();
 
 	private static BlockStateSupplier createStoneState(
 		Block block, Identifier modelId, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector
@@ -1180,7 +1180,7 @@ public class BlockStateModelGenerator {
 	}
 
 	private BlockStateModelGenerator.BlockTexturePool registerCubeAllModelTexturePool(Block block) {
-		TexturedModel texturedModel = (TexturedModel)this.sandstoneModels.getOrDefault(block, TexturedModel.CUBE_ALL.get(block));
+		TexturedModel texturedModel = (TexturedModel)this.texturedModels.getOrDefault(block, TexturedModel.CUBE_ALL.get(block));
 		return new BlockStateModelGenerator.BlockTexturePool(texturedModel.getTextures()).base(block, texturedModel.getModel());
 	}
 
@@ -3515,18 +3515,22 @@ public class BlockStateModelGenerator {
 				Direction.WEST,
 				VariantSettings.Rotation.R270
 			)
-			.forEach((direction, rotation) -> {
-				When.PropertyCondition propertyCondition = When.create().set(Properties.HORIZONTAL_FACING, direction);
-				multipartBlockStateSupplier.with(propertyCondition, BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, rotation));
-				this.method_47812(multipartBlockStateSupplier, propertyCondition, rotation);
-			});
+			.forEach(
+				(direction, rotation) -> {
+					When.PropertyCondition propertyCondition = When.create().set(Properties.HORIZONTAL_FACING, direction);
+					multipartBlockStateSupplier.with(
+						propertyCondition, BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, rotation).put(VariantSettings.UVLOCK, true)
+					);
+					this.supplyChiseledBookshelfModels(multipartBlockStateSupplier, propertyCondition, rotation);
+				}
+			);
 		this.blockStateCollector.accept(multipartBlockStateSupplier);
 		this.registerParentedItemModel(block, ModelIds.getBlockSubModelId(block, "_inventory"));
-		field_41526.clear();
+		CHISELED_BOOKSHELF_MODEL_CACHE.clear();
 	}
 
-	private void method_47812(
-		MultipartBlockStateSupplier multipartBlockStateSupplier, When.PropertyCondition propertyCondition, VariantSettings.Rotation rotation
+	private void supplyChiseledBookshelfModels(
+		MultipartBlockStateSupplier blockStateSupplier, When.PropertyCondition facingCondition, VariantSettings.Rotation rotation
 	) {
 		Map.of(
 				Properties.SLOT_0_OCCUPIED,
@@ -3542,26 +3546,30 @@ public class BlockStateModelGenerator {
 				Properties.SLOT_5_OCCUPIED,
 				Models.TEMPLATE_CHISELED_BOOKSHELF_SLOT_BOTTOM_RIGHT
 			)
-			.forEach((booleanProperty, model) -> {
-				this.method_47814(multipartBlockStateSupplier, propertyCondition, rotation, booleanProperty, model, true);
-				this.method_47814(multipartBlockStateSupplier, propertyCondition, rotation, booleanProperty, model, false);
+			.forEach((property, model) -> {
+				this.supplyChiseledBookshelfModel(blockStateSupplier, facingCondition, rotation, property, model, true);
+				this.supplyChiseledBookshelfModel(blockStateSupplier, facingCondition, rotation, property, model, false);
 			});
 	}
 
-	private void method_47814(
-		MultipartBlockStateSupplier multipartBlockStateSupplier,
-		When.PropertyCondition propertyCondition,
+	private void supplyChiseledBookshelfModel(
+		MultipartBlockStateSupplier blockStateSupplier,
+		When.PropertyCondition facingCondition,
 		VariantSettings.Rotation rotation,
-		BooleanProperty booleanProperty,
+		BooleanProperty property,
 		Model model,
-		boolean bl
+		boolean occupied
 	) {
-		String string = bl ? "_occupied" : "_empty";
+		String string = occupied ? "_occupied" : "_empty";
 		TextureMap textureMap = new TextureMap().put(TextureKey.TEXTURE, TextureMap.getSubId(Blocks.CHISELED_BOOKSHELF, string));
-		BlockStateModelGenerator.class_7987 lv = new BlockStateModelGenerator.class_7987(model, string);
-		Identifier identifier = (Identifier)field_41526.computeIfAbsent(lv, arg -> model.upload(Blocks.CHISELED_BOOKSHELF, string, textureMap, this.modelCollector));
-		multipartBlockStateSupplier.with(
-			When.allOf(propertyCondition, When.create().set(booleanProperty, bl)),
+		BlockStateModelGenerator.ChiseledBookshelfModelCacheKey chiseledBookshelfModelCacheKey = new BlockStateModelGenerator.ChiseledBookshelfModelCacheKey(
+			model, string
+		);
+		Identifier identifier = (Identifier)CHISELED_BOOKSHELF_MODEL_CACHE.computeIfAbsent(
+			chiseledBookshelfModelCacheKey, key -> model.upload(Blocks.CHISELED_BOOKSHELF, string, textureMap, this.modelCollector)
+		);
+		blockStateSupplier.with(
+			When.allOf(facingCondition, When.create().set(property, occupied)),
 			BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, rotation)
 		);
 	}
@@ -3629,7 +3637,7 @@ public class BlockStateModelGenerator {
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.RESPAWN_ANCHOR)
 					.coordinate(
-						BlockStateVariantMap.create(Properties.CHARGES).register(integer -> BlockStateVariant.create().put(VariantSettings.MODEL, identifiers[integer]))
+						BlockStateVariantMap.create(Properties.CHARGES).register(charges -> BlockStateVariant.create().put(VariantSettings.MODEL, identifiers[charges]))
 					)
 			);
 		this.registerParentedItemModel(Items.RESPAWN_ANCHOR, identifiers[0]);
@@ -4543,8 +4551,8 @@ public class BlockStateModelGenerator {
 			return this;
 		}
 
-		private BlockStateModelGenerator.BlockTexturePool sandstone(Block block) {
-			TexturedModel texturedModel = (TexturedModel)BlockStateModelGenerator.this.sandstoneModels.getOrDefault(block, TexturedModel.CUBE_ALL.get(block));
+		private BlockStateModelGenerator.BlockTexturePool block(Block block) {
+			TexturedModel texturedModel = (TexturedModel)BlockStateModelGenerator.this.texturedModels.getOrDefault(block, TexturedModel.CUBE_ALL.get(block));
 			BlockStateModelGenerator.this.blockStateCollector
 				.accept(BlockStateModelGenerator.createSingletonBlockState(block, texturedModel.upload(block, BlockStateModelGenerator.this.modelCollector)));
 			return this;
@@ -4611,6 +4619,9 @@ public class BlockStateModelGenerator {
 		}
 	}
 
+	static record ChiseledBookshelfModelCacheKey(Model template, String modelSuffix) {
+	}
+
 	class LogTexturePool {
 		private final TextureMap textures;
 
@@ -4661,8 +4672,5 @@ public class BlockStateModelGenerator {
 		public Model getFlowerPotCrossModel() {
 			return this == TINTED ? Models.TINTED_FLOWER_POT_CROSS : Models.FLOWER_POT_CROSS;
 		}
-	}
-
-	static record class_7987(Model template, String modelSuffix) {
 	}
 }

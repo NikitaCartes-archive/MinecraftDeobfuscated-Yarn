@@ -855,7 +855,7 @@ public class OverworldBiomeCreator {
 		DefaultBiomeFeatures.addMineables(lookupBackedBuilder);
 		DefaultBiomeFeatures.addFrozenTopLayer(lookupBackedBuilder);
 		DefaultBiomeFeatures.addPlainsTallGrass(lookupBackedBuilder);
-		DefaultBiomeFeatures.addDefaultOres(lookupBackedBuilder, true);
+		DefaultBiomeFeatures.addDefaultOres(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDefaultDisks(lookupBackedBuilder);
 		DefaultBiomeFeatures.addPlainsFeatures(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);

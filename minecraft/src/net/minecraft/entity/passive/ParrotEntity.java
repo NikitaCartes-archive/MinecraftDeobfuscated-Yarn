@@ -3,6 +3,8 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -55,6 +58,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -67,7 +71,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
-public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
+public class ParrotEntity extends TameableShoulderEntity implements VariantHolder<ParrotEntity.Variant>, Flutterer {
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(ParrotEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final Predicate<MobEntity> CAN_IMITATE = new Predicate<MobEntity>() {
 		public boolean test(@Nullable MobEntity mobEntity) {
@@ -76,7 +80,6 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	};
 	private static final Item COOKIE = Items.COOKIE;
 	private static final Set<Item> TAMING_INGREDIENTS = Sets.<Item>newHashSet(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
-	private static final int field_30351 = 5;
 	static final Map<EntityType<?>, SoundEvent> MOB_SOUNDS = Util.make(Maps.<EntityType<?>, SoundEvent>newHashMap(), map -> {
 		map.put(EntityType.BLAZE, SoundEvents.ENTITY_PARROT_IMITATE_BLAZE);
 		map.put(EntityType.CAVE_SPIDER, SoundEvents.ENTITY_PARROT_IMITATE_SPIDER);
@@ -136,7 +139,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		this.setVariant(world.getRandom().nextInt(5));
+		this.setVariant(Util.getRandom(ParrotEntity.Variant.values(), world.getRandom()));
 		if (entityData == null) {
 			entityData = new PassiveEntity.PassiveData(false);
 		}
@@ -415,12 +418,12 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 		}
 	}
 
-	public int getVariant() {
-		return MathHelper.clamp(this.dataTracker.get(VARIANT), 0, 4);
+	public ParrotEntity.Variant getVariant() {
+		return ParrotEntity.Variant.byIndex(this.dataTracker.get(VARIANT));
 	}
 
-	public void setVariant(int variant) {
-		this.dataTracker.set(VARIANT, variant);
+	public void setVariant(ParrotEntity.Variant variant) {
+		this.dataTracker.set(VARIANT, variant.index);
 	}
 
 	@Override
@@ -432,13 +435,13 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("Variant", this.getVariant());
+		nbt.putInt("Variant", this.getVariant().index);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.setVariant(nbt.getInt("Variant"));
+		this.setVariant(ParrotEntity.Variant.byIndex(nbt.getInt("Variant")));
 	}
 
 	@Override
@@ -495,6 +498,39 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 			}
 
 			return null;
+		}
+	}
+
+	public static enum Variant implements StringIdentifiable {
+		RED_BLUE(0, "red_blue"),
+		BLUE(1, "blue"),
+		GREEN(2, "green"),
+		YELLOW_BLUE(3, "yellow_blue"),
+		GRAY(4, "gray");
+
+		public static final com.mojang.serialization.Codec<ParrotEntity.Variant> CODEC = StringIdentifiable.createCodec(ParrotEntity.Variant::values);
+		private static final ParrotEntity.Variant[] VALUES = (ParrotEntity.Variant[])Arrays.stream(values())
+			.sorted(Comparator.comparingInt(ParrotEntity.Variant::getIndex))
+			.toArray(i -> new ParrotEntity.Variant[i]);
+		final int index;
+		private final String name;
+
+		private Variant(int index, String name) {
+			this.index = index;
+			this.name = name;
+		}
+
+		public int getIndex() {
+			return this.index;
+		}
+
+		public static ParrotEntity.Variant byIndex(int index) {
+			return VALUES[MathHelper.clamp(index, 0, VALUES.length - 1)];
+		}
+
+		@Override
+		public String asString() {
+			return this.name;
 		}
 	}
 }

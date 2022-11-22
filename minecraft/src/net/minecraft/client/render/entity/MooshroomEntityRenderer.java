@@ -14,7 +14,7 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, CowEntityModel<MooshroomEntity>> {
-	private static final Map<MooshroomEntity.Type, Identifier> TEXTURES = Util.make(Maps.newHashMap(), map -> {
+	private static final Map<MooshroomEntity.Type, Identifier> TEXTURES = Util.make(Maps.<MooshroomEntity.Type, Identifier>newHashMap(), map -> {
 		map.put(MooshroomEntity.Type.BROWN, new Identifier("textures/entity/cow/brown_mooshroom.png"));
 		map.put(MooshroomEntity.Type.RED, new Identifier("textures/entity/cow/red_mooshroom.png"));
 	});
@@ -25,6 +25,6 @@ public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, 
 	}
 
 	public Identifier getTexture(MooshroomEntity mooshroomEntity) {
-		return (Identifier)TEXTURES.get(mooshroomEntity.getMooshroomType());
+		return (Identifier)TEXTURES.get(mooshroomEntity.getVariant());
 	}
 }

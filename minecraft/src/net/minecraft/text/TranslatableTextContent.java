@@ -82,9 +82,7 @@ public class TranslatableTextContent implements TextContent {
 
 					String string3 = matcher.group(1);
 					int m = string3 != null ? Integer.parseInt(string3) - 1 : i++;
-					if (m < this.args.length) {
-						partsConsumer.accept(this.getArg(m));
-					}
+					partsConsumer.accept(this.getArg(m));
 				}
 			}
 
@@ -102,15 +100,15 @@ public class TranslatableTextContent implements TextContent {
 	}
 
 	private StringVisitable getArg(int index) {
-		if (index >= this.args.length) {
-			throw new TranslationException(this, index);
-		} else {
+		if (index >= 0 && index < this.args.length) {
 			Object object = this.args[index];
 			if (object instanceof Text) {
 				return (Text)object;
 			} else {
 				return object == null ? NULL_ARGUMENT : StringVisitable.plain(object.toString());
 			}
+		} else {
+			throw new TranslationException(this, index);
 		}
 	}
 
