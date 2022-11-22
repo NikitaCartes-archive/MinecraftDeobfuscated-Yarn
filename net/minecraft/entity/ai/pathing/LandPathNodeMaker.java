@@ -86,8 +86,7 @@ extends PathNodeMaker {
             i = blockPos.up().getY();
         }
         blockPos = this.entity.getBlockPos();
-        PathNodeType pathNodeType = this.getNodeType(this.entity, blockPos.getX(), i, blockPos.getZ());
-        if (this.entity.getPathfindingPenalty(pathNodeType) < 0.0f) {
+        if (!this.canPathThrough(mutable.set(blockPos.getX(), i, blockPos.getZ()))) {
             Box box = this.entity.getBoundingBox();
             if (this.canPathThrough(mutable.set(box.minX, (double)i, box.minZ)) || this.canPathThrough(mutable.set(box.minX, (double)i, box.maxZ)) || this.canPathThrough(mutable.set(box.maxX, (double)i, box.minZ)) || this.canPathThrough(mutable.set(box.maxX, (double)i, box.maxZ))) {
                 return this.getStart(mutable);
@@ -106,9 +105,9 @@ extends PathNodeMaker {
         return pathNode;
     }
 
-    private boolean canPathThrough(BlockPos pos) {
+    protected boolean canPathThrough(BlockPos pos) {
         PathNodeType pathNodeType = this.getNodeType(this.entity, pos);
-        return this.entity.getPathfindingPenalty(pathNodeType) >= 0.0f;
+        return pathNodeType != PathNodeType.OPEN && this.entity.getPathfindingPenalty(pathNodeType) >= 0.0f;
     }
 
     @Override
@@ -200,6 +199,9 @@ extends PathNodeMaker {
     }
 
     protected double getFeetY(BlockPos pos) {
+        if ((this.canSwim() || this.isAmphibious()) && this.cachedWorld.getFluidState(pos).isIn(FluidTags.WATER)) {
+            return (double)pos.getY() + 0.5;
+        }
         return LandPathNodeMaker.getFeetY(this.cachedWorld, pos);
     }
 
@@ -236,7 +238,7 @@ extends PathNodeMaker {
         if (pathNodeType == PathNodeType.WALKABLE || this.isAmphibious() && pathNodeType == PathNodeType.WATER) {
             return pathNode;
         }
-        if ((pathNode == null || pathNode.penalty < 0.0f) && maxYStep > 0 && (pathNodeType != PathNodeType.FENCE || this.canWalkOverFences()) && pathNodeType != PathNodeType.UNPASSABLE_RAIL && pathNodeType != PathNodeType.TRAPDOOR && pathNodeType != PathNodeType.POWDER_SNOW && (pathNode = this.getPathNode(x, y + 1, z, maxYStep - 1, prevFeetY, direction, nodeType)) != null && (pathNode.type == PathNodeType.OPEN || pathNode.type == PathNodeType.WALKABLE) && this.entity.getWidth() < 1.0f && this.checkBoxCollision(box = new Box((g = (double)(x - direction.getOffsetX()) + 0.5) - e, LandPathNodeMaker.getFeetY(this.cachedWorld, mutable.set(g, (double)(y + 1), h = (double)(z - direction.getOffsetZ()) + 0.5)) + 0.001, h - e, g + e, (double)this.entity.getHeight() + LandPathNodeMaker.getFeetY(this.cachedWorld, mutable.set((double)pathNode.x, (double)pathNode.y, (double)pathNode.z)) - 0.002, h + e))) {
+        if ((pathNode == null || pathNode.penalty < 0.0f) && maxYStep > 0 && (pathNodeType != PathNodeType.FENCE || this.canWalkOverFences()) && pathNodeType != PathNodeType.UNPASSABLE_RAIL && pathNodeType != PathNodeType.TRAPDOOR && pathNodeType != PathNodeType.POWDER_SNOW && (pathNode = this.getPathNode(x, y + 1, z, maxYStep - 1, prevFeetY, direction, nodeType)) != null && (pathNode.type == PathNodeType.OPEN || pathNode.type == PathNodeType.WALKABLE) && this.entity.getWidth() < 1.0f && this.checkBoxCollision(box = new Box((g = (double)(x - direction.getOffsetX()) + 0.5) - e, this.getFeetY(mutable.set(g, (double)(y + 1), h = (double)(z - direction.getOffsetZ()) + 0.5)) + 0.001, h - e, g + e, (double)this.entity.getHeight() + this.getFeetY(mutable.set((double)pathNode.x, (double)pathNode.y, (double)pathNode.z)) - 0.002, h + e))) {
             pathNode = null;
         }
         if (!this.isAmphibious() && pathNodeType == PathNodeType.WATER && !this.canSwim()) {
@@ -372,7 +374,7 @@ extends PathNodeMaker {
         return type;
     }
 
-    private PathNodeType getNodeType(MobEntity entity, BlockPos pos) {
+    protected PathNodeType getNodeType(MobEntity entity, BlockPos pos) {
         return this.getNodeType(entity, pos.getX(), pos.getY(), pos.getZ());
     }
 

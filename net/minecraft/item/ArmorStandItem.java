@@ -47,7 +47,7 @@ extends Item {
         }
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
-            ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(serverWorld, itemStack.getNbt(), null, context.getPlayer(), blockPos, SpawnReason.SPAWN_EGG, true, true);
+            ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(serverWorld, itemStack.getNbt(), null, blockPos, SpawnReason.SPAWN_EGG, true, true);
             if (armorStandEntity == null) {
                 return ActionResult.FAIL;
             }

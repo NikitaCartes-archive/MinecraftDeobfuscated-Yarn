@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -36,7 +37,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class PaintingEntity
-extends AbstractDecorationEntity {
+extends AbstractDecorationEntity
+implements VariantHolder<RegistryEntry<PaintingVariant>> {
     private static final TrackedData<RegistryEntry<PaintingVariant>> VARIANT = DataTracker.registerData(PaintingEntity.class, TrackedDataHandlerRegistry.PAINTING_VARIANT);
     private static final RegistryKey<PaintingVariant> DEFAULT_VARIANT = PaintingVariants.KEBAB;
 
@@ -60,10 +62,12 @@ extends AbstractDecorationEntity {
         }
     }
 
-    private void setVariant(RegistryEntry<PaintingVariant> variant) {
+    @Override
+    public void setVariant(RegistryEntry<PaintingVariant> variant) {
         this.dataTracker.set(VARIANT, variant);
     }
 
+    @Override
     public RegistryEntry<PaintingVariant> getVariant() {
         return this.dataTracker.get(VARIANT);
     }
@@ -117,7 +121,7 @@ extends AbstractDecorationEntity {
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
-        RegistryEntry registryEntry = Optional.ofNullable(Identifier.tryParse(nbt.getString("variant"))).map(identifier -> RegistryKey.of(RegistryKeys.PAINTING_VARIANT, identifier)).flatMap(Registries.PAINTING_VARIANT::getEntry).map(reference -> reference).orElseGet(PaintingEntity::getDefaultVariant);
+        RegistryEntry registryEntry = Optional.ofNullable(Identifier.tryParse(nbt.getString("variant"))).map(id -> RegistryKey.of(RegistryKeys.PAINTING_VARIANT, id)).flatMap(Registries.PAINTING_VARIANT::getEntry).map(entry -> entry).orElseGet(PaintingEntity::getDefaultVariant);
         this.setVariant(registryEntry);
         this.facing = Direction.fromHorizontal(nbt.getByte("facing"));
         super.readCustomDataFromNbt(nbt);
@@ -126,12 +130,12 @@ extends AbstractDecorationEntity {
 
     @Override
     public int getWidthPixels() {
-        return this.getVariant().value().getWidth();
+        return ((PaintingVariant)this.getVariant().value()).getWidth();
     }
 
     @Override
     public int getHeightPixels() {
-        return this.getVariant().value().getHeight();
+        return ((PaintingVariant)this.getVariant().value()).getHeight();
     }
 
     @Override
@@ -183,6 +187,11 @@ extends AbstractDecorationEntity {
     @Override
     public ItemStack getPickBlockStack() {
         return new ItemStack(Items.PAINTING);
+    }
+
+    @Override
+    public /* synthetic */ Object getVariant() {
+        return this.getVariant();
     }
 }
 

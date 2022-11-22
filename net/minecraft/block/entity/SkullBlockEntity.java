@@ -18,6 +18,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.ApiServices;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.Util;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 public class SkullBlockEntity
 extends BlockEntity {
     public static final String SKULL_OWNER_KEY = "SkullOwner";
+    public static final String NOTE_BLOCK_SOUND_KEY = "note_block_sound";
     @Nullable
     private static UserCache userCache;
     @Nullable
@@ -36,6 +38,8 @@ extends BlockEntity {
     private static Executor executor;
     @Nullable
     private GameProfile owner;
+    @Nullable
+    private Identifier noteBlockSound;
     private int poweredTicks;
     private boolean powered;
 
@@ -63,6 +67,9 @@ extends BlockEntity {
             NbtHelper.writeGameProfile(nbtCompound, this.owner);
             nbt.put(SKULL_OWNER_KEY, nbtCompound);
         }
+        if (this.noteBlockSound != null) {
+            nbt.putString(NOTE_BLOCK_SOUND_KEY, this.noteBlockSound.toString());
+        }
     }
 
     @Override
@@ -73,6 +80,9 @@ extends BlockEntity {
             this.setOwner(NbtHelper.toGameProfile(nbt.getCompound(SKULL_OWNER_KEY)));
         } else if (nbt.contains("ExtraType", NbtElement.STRING_TYPE) && !StringHelper.isEmpty(string = nbt.getString("ExtraType"))) {
             this.setOwner(new GameProfile(null, string));
+        }
+        if (nbt.contains(NOTE_BLOCK_SOUND_KEY, NbtElement.STRING_TYPE)) {
+            this.noteBlockSound = Identifier.tryParse(nbt.getString(NOTE_BLOCK_SOUND_KEY));
         }
     }
 
@@ -95,6 +105,11 @@ extends BlockEntity {
     @Nullable
     public GameProfile getOwner() {
         return this.owner;
+    }
+
+    @Nullable
+    public Identifier getNoteBlockSound() {
+        return this.noteBlockSound;
     }
 
     public BlockEntityUpdateS2CPacket toUpdatePacket() {

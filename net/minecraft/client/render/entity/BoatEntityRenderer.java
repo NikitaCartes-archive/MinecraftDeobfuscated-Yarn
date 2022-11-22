@@ -39,7 +39,7 @@ extends EntityRenderer<BoatEntity> {
     public BoatEntityRenderer(EntityRendererFactory.Context ctx, boolean chest) {
         super(ctx);
         this.shadowRadius = 0.8f;
-        this.texturesAndModels = Stream.of(BoatEntity.Type.values()).collect(ImmutableMap.toImmutableMap(type -> type, type -> Pair.of(new Identifier(BoatEntityRenderer.getTexture(type, chest)), this.createModel(ctx, (BoatEntity.Type)((Object)type), chest))));
+        this.texturesAndModels = Stream.of(BoatEntity.Type.values()).collect(ImmutableMap.toImmutableMap(type -> type, type -> Pair.of(new Identifier(BoatEntityRenderer.getTexture(type, chest)), this.createModel(ctx, (BoatEntity.Type)type, chest))));
     }
 
     private CompositeEntityModel<BoatEntity> createModel(EntityRendererFactory.Context ctx, BoatEntity.Type type, boolean chest) {
@@ -75,7 +75,7 @@ extends EntityRenderer<BoatEntity> {
         if (!MathHelper.approximatelyEquals(k = boatEntity.interpolateBubbleWobble(g), 0.0f)) {
             matrixStack.multiply(new Quaternionf().setAngleAxis(boatEntity.interpolateBubbleWobble(g) * ((float)Math.PI / 180), 1.0f, 0.0f, 1.0f));
         }
-        Pair<Identifier, CompositeEntityModel<BoatEntity>> pair = this.texturesAndModels.get((Object)boatEntity.getBoatType());
+        Pair<Identifier, CompositeEntityModel<BoatEntity>> pair = this.texturesAndModels.get(boatEntity.getVariant());
         Identifier identifier = pair.getFirst();
         CompositeEntityModel<BoatEntity> compositeEntityModel = pair.getSecond();
         matrixStack.scale(-1.0f, -1.0f, 1.0f);
@@ -96,7 +96,7 @@ extends EntityRenderer<BoatEntity> {
 
     @Override
     public Identifier getTexture(BoatEntity boatEntity) {
-        return this.texturesAndModels.get((Object)boatEntity.getBoatType()).getFirst();
+        return this.texturesAndModels.get(boatEntity.getVariant()).getFirst();
     }
 }
 

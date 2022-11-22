@@ -55,7 +55,7 @@ extends Item {
         }
         if (((HitResult)hitResult).getType() == HitResult.Type.BLOCK) {
             BoatEntity boatEntity = this.createEntity(world, hitResult);
-            boatEntity.setBoatType(this.type);
+            boatEntity.setVariant(this.type);
             boatEntity.setYaw(user.getYaw());
             if (!world.isSpaceEmpty(boatEntity, boatEntity.getBoundingBox())) {
                 return TypedActionResult.fail(itemStack);

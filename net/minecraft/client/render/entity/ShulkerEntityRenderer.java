@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 public class ShulkerEntityRenderer
 extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
     private static final Identifier TEXTURE = new Identifier("textures/" + TexturedRenderLayers.SHULKER_TEXTURE_ID.getTextureId().getPath() + ".png");
-    private static final Identifier[] COLORED_TEXTURES = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.stream().map(spriteIdentifier -> new Identifier("textures/" + spriteIdentifier.getTextureId().getPath() + ".png")).toArray(Identifier[]::new);
+    private static final Identifier[] COLORED_TEXTURES = (Identifier[])TexturedRenderLayers.COLORED_SHULKER_BOXES_TEXTURES.stream().map(spriteId -> new Identifier("textures/" + spriteId.getTextureId().getPath() + ".png")).toArray(Identifier[]::new);
 
     public ShulkerEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new ShulkerEntityModel(context.getPart(EntityModelLayers.SHULKER)), 0.0f);
@@ -34,7 +34,7 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
 
     @Override
     public Vec3d getPositionOffset(ShulkerEntity shulkerEntity, float f) {
-        return shulkerEntity.method_33352(f).orElse(super.getPositionOffset(shulkerEntity, f));
+        return shulkerEntity.getRenderPositionOffset(f).orElse(super.getPositionOffset(shulkerEntity, f));
     }
 
     @Override
@@ -42,12 +42,12 @@ extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
         if (super.shouldRender(shulkerEntity, frustum, d, e, f)) {
             return true;
         }
-        return shulkerEntity.method_33352(0.0f).filter(vec3d -> {
+        return shulkerEntity.getRenderPositionOffset(0.0f).filter(renderPositionOffset -> {
             EntityType<?> entityType = shulkerEntity.getType();
             float f = entityType.getHeight() / 2.0f;
             float g = entityType.getWidth() / 2.0f;
-            Vec3d vec3d2 = Vec3d.ofBottomCenter(shulkerEntity.getBlockPos());
-            return frustum.isVisible(new Box(vec3d.x, vec3d.y + (double)f, vec3d.z, vec3d2.x, vec3d2.y + (double)f, vec3d2.z).expand(g, f, g));
+            Vec3d vec3d = Vec3d.ofBottomCenter(shulkerEntity.getBlockPos());
+            return frustum.isVisible(new Box(renderPositionOffset.x, renderPositionOffset.y + (double)f, renderPositionOffset.z, vec3d.x, vec3d.y + (double)f, vec3d.z).expand(g, f, g));
         }).isPresent();
     }
 

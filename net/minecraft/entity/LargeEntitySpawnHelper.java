@@ -23,7 +23,7 @@ public class LargeEntitySpawnHelper {
             int j = MathHelper.nextBetween(world.random, -horizontalRange, horizontalRange);
             int k = MathHelper.nextBetween(world.random, -horizontalRange, horizontalRange);
             mutable.set(pos, j, verticalRange, k);
-            if (!world.getWorldBorder().contains(mutable) || !LargeEntitySpawnHelper.findSpawnPos(world, verticalRange, mutable, requirements) || (mobEntity = (MobEntity)entityType.create(world, null, null, null, mutable, reason, false, false)) == null) continue;
+            if (!world.getWorldBorder().contains(mutable) || !LargeEntitySpawnHelper.findSpawnPos(world, verticalRange, mutable, requirements) || (mobEntity = (MobEntity)entityType.create(world, null, null, mutable, reason, false, false)) == null) continue;
             if (mobEntity.canSpawn(world, reason) && mobEntity.canSpawn(world)) {
                 world.spawnEntityAndPassengers(mobEntity);
                 return Optional.of(mobEntity);

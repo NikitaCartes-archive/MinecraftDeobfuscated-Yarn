@@ -17,6 +17,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -63,7 +64,8 @@ import org.joml.Vector3f;
 
 public class ShulkerEntity
 extends GolemEntity
-implements Monster {
+implements VariantHolder<Optional<DyeColor>>,
+Monster {
     private static final UUID COVERED_ARMOR_BONUS_ID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
     private static final EntityAttributeModifier COVERED_ARMOR_BONUS = new EntityAttributeModifier(COVERED_ARMOR_BONUS_ID, "Covered armor bonus", 20.0, EntityAttributeModifier.Operation.ADDITION);
     protected static final TrackedData<Direction> ATTACHED_FACE = DataTracker.registerData(ShulkerEntity.class, TrackedDataHandlerRegistry.FACING);
@@ -422,10 +424,7 @@ implements Monster {
         }
         ShulkerEntity shulkerEntity = EntityType.SHULKER.create(this.world);
         if (shulkerEntity != null) {
-            DyeColor dyeColor = this.getColor();
-            if (dyeColor != null) {
-                shulkerEntity.setColor(dyeColor);
-            }
+            shulkerEntity.setVariant((Optional<DyeColor>)this.getVariant());
             shulkerEntity.refreshPositionAfterTeleport(vec3d);
             this.world.spawnEntity(shulkerEntity);
         }
@@ -506,21 +505,27 @@ implements Monster {
         return 0.0f;
     }
 
-    public Optional<Vec3d> method_33352(float f) {
+    public Optional<Vec3d> getRenderPositionOffset(float tickDelta) {
         if (this.prevAttachedBlock == null || this.teleportLerpTimer <= 0) {
             return Optional.empty();
         }
-        double d = (double)((float)this.teleportLerpTimer - f) / 6.0;
+        double d = (double)((float)this.teleportLerpTimer - tickDelta) / 6.0;
         d *= d;
         BlockPos blockPos = this.getBlockPos();
         double e = (double)(blockPos.getX() - this.prevAttachedBlock.getX()) * d;
-        double g = (double)(blockPos.getY() - this.prevAttachedBlock.getY()) * d;
-        double h = (double)(blockPos.getZ() - this.prevAttachedBlock.getZ()) * d;
-        return Optional.of(new Vec3d(-e, -g, -h));
+        double f = (double)(blockPos.getY() - this.prevAttachedBlock.getY()) * d;
+        double g = (double)(blockPos.getZ() - this.prevAttachedBlock.getZ()) * d;
+        return Optional.of(new Vec3d(-e, -f, -g));
     }
 
-    private void setColor(DyeColor color) {
-        this.dataTracker.set(COLOR, (byte)color.getId());
+    @Override
+    public void setVariant(Optional<DyeColor> optional) {
+        this.dataTracker.set(COLOR, optional.map(color -> (byte)color.getId()).orElse((byte)16));
+    }
+
+    @Override
+    public Optional<DyeColor> getVariant() {
+        return Optional.ofNullable(this.getColor());
     }
 
     @Nullable
@@ -530,6 +535,11 @@ implements Monster {
             return null;
         }
         return DyeColor.byId(b);
+    }
+
+    @Override
+    public /* synthetic */ Object getVariant() {
+        return this.getVariant();
     }
 
     class ShulkerLookControl

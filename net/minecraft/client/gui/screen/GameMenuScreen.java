@@ -4,6 +4,7 @@
 package net.minecraft.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -20,12 +21,10 @@ import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.GridWidget;
-import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
@@ -35,11 +34,29 @@ extends Screen {
     private static final String SNAPSHOT_FEEDBACK_URL = "https://aka.ms/snapshotfeedback?ref=game";
     private static final String JAVA_FEEDBACK_URL = "https://aka.ms/javafeedback?ref=game";
     private static final String SNAPSHOT_BUGS_URL = "https://aka.ms/snapshotbugs?ref=game";
+    private static final int field_41616 = 2;
+    private static final int field_41617 = 50;
+    private static final int field_41618 = 4;
+    private static final int field_41619 = 204;
+    private static final int field_41620 = 98;
+    private static final Text RETURN_TO_GAME_TEXT = Text.translatable("menu.returnToGame");
+    private static final Text ADVANCEMENTS_TEXT = Text.translatable("gui.advancements");
+    private static final Text STATS_TEXT = Text.translatable("gui.stats");
+    private static final Text SEND_FEEDBACK_TEXT = Text.translatable("menu.sendFeedback");
+    private static final Text REPORT_BUGS_TEXT = Text.translatable("menu.reportBugs");
+    private static final Text OPTIONS_TEXT = Text.translatable("menu.options");
+    private static final Text SHARE_TO_LAN_TEXT = Text.translatable("menu.shareToLan");
+    private static final Text PLAYER_REPORTING_TEXT = Text.translatable("menu.playerReporting");
+    private static final Text RETURN_TO_MENU_TEXT = Text.translatable("menu.returnToMenu");
+    private static final Text DISCONNECT_TEXT = Text.translatable("menu.disconnect");
+    private static final Text SAVING_LEVEL_TEXT = Text.translatable("menu.savingLevel");
+    private static final Text GAME_TEXT = Text.translatable("menu.game");
+    private static final Text PAUSED_TEXT = Text.translatable("menu.paused");
     private final boolean showMenu;
     private ButtonWidget exitButton;
 
     public GameMenuScreen(boolean showMenu) {
-        super(showMenu ? Text.translatable("menu.game") : Text.translatable("menu.paused"));
+        super(showMenu ? GAME_TEXT : PAUSED_TEXT);
         this.showMenu = showMenu;
     }
 
@@ -47,56 +64,35 @@ extends Screen {
     protected void init() {
         if (this.showMenu) {
             this.initWidgets();
-        } else {
-            SimplePositioningWidget simplePositioningWidget = this.addDrawableChild(SimplePositioningWidget.of(this.width, this.height));
-            simplePositioningWidget.getMainPositioner().alignHorizontalCenter().alignTop().marginTop(10);
-            simplePositioningWidget.add(new TextWidget(this.title, this.textRenderer));
-            simplePositioningWidget.recalculateDimensions();
         }
+        this.addDrawableChild(new TextWidget(0, this.showMenu ? 40 : 10, this.width, this.textRenderer.fontHeight, this.title, this.textRenderer));
     }
 
     private void initWidgets() {
-        int i = 204;
-        int j = 98;
         GridWidget gridWidget = new GridWidget();
-        gridWidget.getMainPositioner().margin(0, 2).alignHorizontalCenter();
-        Positioner positioner = gridWidget.copyPositioner().alignLeft();
-        Positioner positioner2 = gridWidget.copyPositioner().alignRight();
-        int k = 0;
-        gridWidget.add(new TextWidget(this.title, this.client.textRenderer), k, 0, 1, 2, gridWidget.copyPositioner().marginBottom(5));
-        gridWidget.add(ButtonWidget.builder(Text.translatable("menu.returnToGame"), button -> {
+        gridWidget.getMainPositioner().margin(4, 4, 4, 0);
+        GridWidget.Adder adder = gridWidget.createAdder(2);
+        adder.add(ButtonWidget.builder(RETURN_TO_GAME_TEXT, button -> {
             this.client.setScreen(null);
             this.client.mouse.lockCursor();
-        }).width(204).build(), ++k, 0, 1, 2);
-        gridWidget.add(ButtonWidget.builder(Text.translatable("gui.advancements"), button -> this.client.setScreen(new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler()))).width(98).build(), ++k, 0, positioner);
-        gridWidget.add(ButtonWidget.builder(Text.translatable("gui.stats"), button -> this.client.setScreen(new StatsScreen(this, this.client.player.getStatHandler()))).width(98).build(), k, 1, positioner2);
-        String string = SharedConstants.getGameVersion().isStable() ? JAVA_FEEDBACK_URL : SNAPSHOT_FEEDBACK_URL;
-        gridWidget.add(ButtonWidget.builder(Text.translatable("menu.sendFeedback"), button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
-            if (confirmed) {
-                Util.getOperatingSystem().open(string);
-            }
-            this.client.setScreen(this);
-        }, string, true))).width(98).build(), ++k, 0, positioner);
-        ButtonWidget buttonWidget = gridWidget.add(ButtonWidget.builder(Text.translatable("menu.reportBugs"), button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
-            if (confirmed) {
-                Util.getOperatingSystem().open(SNAPSHOT_BUGS_URL);
-            }
-            this.client.setScreen(this);
-        }, SNAPSHOT_BUGS_URL, true))).width(98).build(), k, 1, positioner2);
-        buttonWidget.active = !SharedConstants.getGameVersion().getSaveVersion().isNotMainSeries();
-        gridWidget.add(ButtonWidget.builder(Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options))).width(98).build(), ++k, 0, positioner);
+        }).width(204).build(), 2, gridWidget.copyPositioner().marginTop(50));
+        adder.add(this.createButton(ADVANCEMENTS_TEXT, () -> new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler())));
+        adder.add(this.createButton(STATS_TEXT, () -> new StatsScreen(this, this.client.player.getStatHandler())));
+        adder.add(this.createUrlButton(SEND_FEEDBACK_TEXT, SharedConstants.getGameVersion().isStable() ? JAVA_FEEDBACK_URL : SNAPSHOT_FEEDBACK_URL));
+        adder.add(this.createUrlButton((Text)GameMenuScreen.REPORT_BUGS_TEXT, (String)SNAPSHOT_BUGS_URL)).active = !SharedConstants.getGameVersion().getSaveVersion().isNotMainSeries();
+        adder.add(this.createButton(OPTIONS_TEXT, () -> new OptionsScreen(this, this.client.options)));
         if (this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote()) {
-            gridWidget.add(ButtonWidget.builder(Text.translatable("menu.shareToLan"), button -> this.client.setScreen(new OpenToLanScreen(this))).width(98).build(), k, 1, positioner2);
+            adder.add(this.createButton(SHARE_TO_LAN_TEXT, () -> new OpenToLanScreen(this)));
         } else {
-            gridWidget.add(ButtonWidget.builder(Text.translatable("menu.playerReporting"), button -> this.client.setScreen(new SocialInteractionsScreen())).width(98).build(), k, 1, positioner2);
+            adder.add(this.createButton(PLAYER_REPORTING_TEXT, SocialInteractionsScreen::new));
         }
-        MutableText text = this.client.isInSingleplayer() ? Text.translatable("menu.returnToMenu") : Text.translatable("menu.disconnect");
-        this.exitButton = gridWidget.add(ButtonWidget.builder(text, button -> {
+        Text text = this.client.isInSingleplayer() ? RETURN_TO_MENU_TEXT : DISCONNECT_TEXT;
+        this.exitButton = adder.add(ButtonWidget.builder(text, button -> {
             button.active = false;
             this.client.getAbuseReportContext().tryShowDraftScreen(this.client, this, this::disconnect, true);
-        }).width(204).build(), ++k, 0, 1, 2);
+        }).width(204).build(), 2);
         gridWidget.recalculateDimensions();
-        SimplePositioningWidget.setPos(gridWidget, 0, 0, this.width, this.height);
+        SimplePositioningWidget.setPos(gridWidget, 0, 0, this.width, this.height, 0.5f, 0.25f);
         this.addDrawableChild(gridWidget);
     }
 
@@ -105,7 +101,7 @@ extends Screen {
         boolean bl2 = this.client.isConnectedToRealms();
         this.client.world.disconnect();
         if (bl) {
-            this.client.disconnect(new MessageScreen(Text.translatable("menu.savingLevel")));
+            this.client.disconnect(new MessageScreen(SAVING_LEVEL_TEXT));
         } else {
             this.client.disconnect();
         }
@@ -135,6 +131,19 @@ extends Screen {
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             this.drawTexture(matrices, this.exitButton.getX() + this.exitButton.getWidth() - 17, this.exitButton.getY() + 3, 182, 24, 15, 15);
         }
+    }
+
+    private ButtonWidget createButton(Text text, Supplier<Screen> screenSupplier) {
+        return ButtonWidget.builder(text, button -> this.client.setScreen((Screen)screenSupplier.get())).width(98).build();
+    }
+
+    private ButtonWidget createUrlButton(Text text, String url) {
+        return this.createButton(text, () -> new ConfirmLinkScreen(confirmed -> {
+            if (confirmed) {
+                Util.getOperatingSystem().open(url);
+            }
+            this.client.setScreen(this);
+        }, url, true));
     }
 }
 

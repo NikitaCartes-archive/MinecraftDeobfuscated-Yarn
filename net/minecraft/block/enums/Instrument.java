@@ -14,41 +14,38 @@ import net.minecraft.util.StringIdentifiable;
 
 public enum Instrument implements StringIdentifiable
 {
-    HARP("harp", SoundEvents.BLOCK_NOTE_BLOCK_HARP),
-    BASEDRUM("basedrum", SoundEvents.BLOCK_NOTE_BLOCK_BASEDRUM),
-    SNARE("snare", SoundEvents.BLOCK_NOTE_BLOCK_SNARE),
-    HAT("hat", SoundEvents.BLOCK_NOTE_BLOCK_HAT),
-    BASS("bass", SoundEvents.BLOCK_NOTE_BLOCK_BASS),
-    FLUTE("flute", SoundEvents.BLOCK_NOTE_BLOCK_FLUTE),
-    BELL("bell", SoundEvents.BLOCK_NOTE_BLOCK_BELL),
-    GUITAR("guitar", SoundEvents.BLOCK_NOTE_BLOCK_GUITAR),
-    CHIME("chime", SoundEvents.BLOCK_NOTE_BLOCK_CHIME),
-    XYLOPHONE("xylophone", SoundEvents.BLOCK_NOTE_BLOCK_XYLOPHONE),
-    IRON_XYLOPHONE("iron_xylophone", SoundEvents.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE),
-    COW_BELL("cow_bell", SoundEvents.BLOCK_NOTE_BLOCK_COW_BELL),
-    DIDGERIDOO("didgeridoo", SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO),
-    BIT("bit", SoundEvents.BLOCK_NOTE_BLOCK_BIT),
-    BANJO("banjo", SoundEvents.BLOCK_NOTE_BLOCK_BANJO),
-    PLING("pling", SoundEvents.BLOCK_NOTE_BLOCK_PLING),
-    ZOMBIE("zombie", SoundEvents.ENTITY_ZOMBIE_AMBIENT, true),
-    SKELETON("skeleton", SoundEvents.ENTITY_SKELETON_AMBIENT, true),
-    CREEPER("creeper", SoundEvents.ENTITY_CREEPER_PRIMED, true),
-    DRAGON("dragon", SoundEvents.ENTITY_ENDER_DRAGON_AMBIENT, true),
-    WITHER_SKELETON("wither_skeleton", SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT, true),
-    PIGLIN("piglin", SoundEvents.ENTITY_PIGLIN_ANGRY, true);
+    HARP("harp", SoundEvents.BLOCK_NOTE_BLOCK_HARP, Type.BASE_BLOCK),
+    BASEDRUM("basedrum", SoundEvents.BLOCK_NOTE_BLOCK_BASEDRUM, Type.BASE_BLOCK),
+    SNARE("snare", SoundEvents.BLOCK_NOTE_BLOCK_SNARE, Type.BASE_BLOCK),
+    HAT("hat", SoundEvents.BLOCK_NOTE_BLOCK_HAT, Type.BASE_BLOCK),
+    BASS("bass", SoundEvents.BLOCK_NOTE_BLOCK_BASS, Type.BASE_BLOCK),
+    FLUTE("flute", SoundEvents.BLOCK_NOTE_BLOCK_FLUTE, Type.BASE_BLOCK),
+    BELL("bell", SoundEvents.BLOCK_NOTE_BLOCK_BELL, Type.BASE_BLOCK),
+    GUITAR("guitar", SoundEvents.BLOCK_NOTE_BLOCK_GUITAR, Type.BASE_BLOCK),
+    CHIME("chime", SoundEvents.BLOCK_NOTE_BLOCK_CHIME, Type.BASE_BLOCK),
+    XYLOPHONE("xylophone", SoundEvents.BLOCK_NOTE_BLOCK_XYLOPHONE, Type.BASE_BLOCK),
+    IRON_XYLOPHONE("iron_xylophone", SoundEvents.BLOCK_NOTE_BLOCK_IRON_XYLOPHONE, Type.BASE_BLOCK),
+    COW_BELL("cow_bell", SoundEvents.BLOCK_NOTE_BLOCK_COW_BELL, Type.BASE_BLOCK),
+    DIDGERIDOO("didgeridoo", SoundEvents.BLOCK_NOTE_BLOCK_DIDGERIDOO, Type.BASE_BLOCK),
+    BIT("bit", SoundEvents.BLOCK_NOTE_BLOCK_BIT, Type.BASE_BLOCK),
+    BANJO("banjo", SoundEvents.BLOCK_NOTE_BLOCK_BANJO, Type.BASE_BLOCK),
+    PLING("pling", SoundEvents.BLOCK_NOTE_BLOCK_PLING, Type.BASE_BLOCK),
+    ZOMBIE("zombie", SoundEvents.ENTITY_ZOMBIE_AMBIENT, Type.MOB_HEAD),
+    SKELETON("skeleton", SoundEvents.ENTITY_SKELETON_AMBIENT, Type.MOB_HEAD),
+    CREEPER("creeper", SoundEvents.ENTITY_CREEPER_PRIMED, Type.MOB_HEAD),
+    DRAGON("dragon", SoundEvents.ENTITY_ENDER_DRAGON_AMBIENT, Type.MOB_HEAD),
+    WITHER_SKELETON("wither_skeleton", SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT, Type.MOB_HEAD),
+    PIGLIN("piglin", SoundEvents.ENTITY_PIGLIN_AMBIENT, Type.MOB_HEAD),
+    CUSTOM_HEAD("custom_head", SoundEvents.UI_BUTTON_CLICK, Type.CUSTOM);
 
     private final String name;
     private final SoundEvent sound;
-    private final boolean mobHead;
+    private final Type type;
 
-    private Instrument(String name, SoundEvent sound, boolean mobHead) {
+    private Instrument(String name, SoundEvent sound, Type type) {
         this.name = name;
         this.sound = sound;
-        this.mobHead = mobHead;
-    }
-
-    private Instrument(String name, SoundEvent sound) {
-        this(name, sound, false);
+        this.type = type;
     }
 
     @Override
@@ -60,8 +57,25 @@ public enum Instrument implements StringIdentifiable
         return this.sound;
     }
 
-    public boolean isMobHead() {
-        return this.mobHead;
+    /**
+     * {@return whether note blocks playing this instrument should produce note particles}
+     */
+    public boolean shouldSpawnNoteParticles() {
+        return this.type == Type.BASE_BLOCK;
+    }
+
+    /**
+     * {@return whether note blocks playing this instrument should determine the sound from skulls above them}
+     */
+    public boolean hasCustomSound() {
+        return this.type == Type.CUSTOM;
+    }
+
+    /**
+     * {@return whether this instrument should prevent note blocks from playing when they do not have air above them}
+     */
+    public boolean shouldRequireAirAbove() {
+        return this.type == Type.BASE_BLOCK;
     }
 
     public static Optional<Instrument> fromAboveState(BlockState state) {
@@ -82,6 +96,9 @@ public enum Instrument implements StringIdentifiable
         }
         if (state.isOf(Blocks.PIGLIN_HEAD)) {
             return Optional.of(PIGLIN);
+        }
+        if (state.isOf(Blocks.PLAYER_HEAD)) {
+            return Optional.of(CUSTOM_HEAD);
         }
         return Optional.empty();
     }
@@ -134,6 +151,13 @@ public enum Instrument implements StringIdentifiable
             return BASS;
         }
         return HARP;
+    }
+
+    static enum Type {
+        BASE_BLOCK,
+        MOB_HEAD,
+        CUSTOM;
+
     }
 }
 

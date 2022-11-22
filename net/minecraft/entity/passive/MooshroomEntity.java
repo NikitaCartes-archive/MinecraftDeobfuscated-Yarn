@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.passive;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.block.BlockState;
@@ -13,6 +14,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.Shearable;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -35,6 +37,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
@@ -46,7 +49,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class MooshroomEntity
 extends CowEntity
-implements Shearable {
+implements Shearable,
+VariantHolder<Type> {
     private static final TrackedData<String> TYPE = DataTracker.registerData(MooshroomEntity.class, TrackedDataHandlerRegistry.STRING);
     private static final int MUTATION_CHANCE = 1024;
     @Nullable
@@ -75,7 +79,7 @@ implements Shearable {
     public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
         UUID uUID = lightning.getUuid();
         if (!uUID.equals(this.lightningId)) {
-            this.setType(this.getMooshroomType() == Type.RED ? Type.BROWN : Type.RED);
+            this.setVariant(this.getVariant() == Type.RED ? Type.BROWN : Type.RED);
             this.lightningId = uUID;
             this.playSound(SoundEvents.ENTITY_MOOSHROOM_CONVERT, 2.0f, 1.0f);
         }
@@ -116,7 +120,7 @@ implements Shearable {
             }
             return ActionResult.success(this.world.isClient);
         }
-        if (this.getMooshroomType() == Type.BROWN && itemStack.isIn(ItemTags.SMALL_FLOWERS)) {
+        if (this.getVariant() == Type.BROWN && itemStack.isIn(ItemTags.SMALL_FLOWERS)) {
             if (this.stewEffect != null) {
                 for (int i = 0; i < 2; ++i) {
                     this.world.addParticle(ParticleTypes.SMOKE, this.getX() + this.random.nextDouble() / 2.0, this.getBodyY(0.5), this.getZ() + this.random.nextDouble() / 2.0, 0.0, this.random.nextDouble() / 5.0, 0.0);
@@ -162,7 +166,7 @@ implements Shearable {
             cowEntity.setInvulnerable(this.isInvulnerable());
             this.world.spawnEntity(cowEntity);
             for (int i = 0; i < 5; ++i) {
-                this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getBodyY(1.0), this.getZ(), new ItemStack(this.getMooshroomType().mushroom.getBlock())));
+                this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getBodyY(1.0), this.getZ(), new ItemStack(this.getVariant().mushroom.getBlock())));
             }
         }
     }
@@ -175,7 +179,7 @@ implements Shearable {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putString("Type", this.getMooshroomType().name);
+        nbt.putString("Type", this.getVariant().asString());
         if (this.stewEffect != null) {
             nbt.putInt("EffectId", StatusEffect.getRawId(this.stewEffect));
             nbt.putInt("EffectDuration", this.stewEffectDuration);
@@ -185,7 +189,7 @@ implements Shearable {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setType(Type.fromName(nbt.getString("Type")));
+        this.setVariant(Type.fromName(nbt.getString("Type")));
         if (nbt.contains("EffectId", NbtElement.BYTE_TYPE)) {
             this.stewEffect = StatusEffect.byRawId(nbt.getInt("EffectId"));
         }
@@ -202,11 +206,13 @@ implements Shearable {
         return Optional.empty();
     }
 
-    private void setType(Type type) {
+    @Override
+    public void setVariant(Type type) {
         this.dataTracker.set(TYPE, type.name);
     }
 
-    public Type getMooshroomType() {
+    @Override
+    public Type getVariant() {
         return Type.fromName(this.dataTracker.get(TYPE));
     }
 
@@ -215,15 +221,15 @@ implements Shearable {
     public MooshroomEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         MooshroomEntity mooshroomEntity = EntityType.MOOSHROOM.create(serverWorld);
         if (mooshroomEntity != null) {
-            mooshroomEntity.setType(this.chooseBabyType((MooshroomEntity)passiveEntity));
+            mooshroomEntity.setVariant(this.chooseBabyType((MooshroomEntity)passiveEntity));
         }
         return mooshroomEntity;
     }
 
     private Type chooseBabyType(MooshroomEntity mooshroom) {
         Type type2;
-        Type type = this.getMooshroomType();
-        Type type3 = type == (type2 = mooshroom.getMooshroomType()) && this.random.nextInt(1024) == 0 ? (type == Type.BROWN ? Type.RED : Type.BROWN) : (this.random.nextBoolean() ? type : type2);
+        Type type = this.getVariant();
+        Type type3 = type == (type2 = mooshroom.getVariant()) && this.random.nextInt(1024) == 0 ? (type == Type.BROWN ? Type.RED : Type.BROWN) : (this.random.nextBoolean() ? type : type2);
         return type3;
     }
 
@@ -239,10 +245,17 @@ implements Shearable {
         return this.createChild(world, entity);
     }
 
-    public static enum Type {
+    @Override
+    public /* synthetic */ Object getVariant() {
+        return this.getVariant();
+    }
+
+    public static enum Type implements StringIdentifiable
+    {
         RED("red", Blocks.RED_MUSHROOM.getDefaultState()),
         BROWN("brown", Blocks.BROWN_MUSHROOM.getDefaultState());
 
+        public static final StringIdentifiable.Codec<Type> CODEC;
         final String name;
         final BlockState mushroom;
 
@@ -255,12 +268,17 @@ implements Shearable {
             return this.mushroom;
         }
 
+        @Override
+        public String asString() {
+            return this.name;
+        }
+
         static Type fromName(String name) {
-            for (Type type : Type.values()) {
-                if (!type.name.equals(name)) continue;
-                return type;
-            }
-            return RED;
+            return Objects.requireNonNullElse(CODEC.byId(name), RED);
+        }
+
+        static {
+            CODEC = StringIdentifiable.createCodec(Type::values);
         }
     }
 }

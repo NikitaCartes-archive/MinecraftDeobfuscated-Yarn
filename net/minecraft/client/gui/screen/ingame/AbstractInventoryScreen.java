@@ -95,7 +95,7 @@ extends HandledScreen<T> {
         for (StatusEffectInstance statusEffectInstance : statusEffects) {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
-            RenderSystem.setShaderTexture(0, sprite.getId());
+            RenderSystem.setShaderTexture(0, sprite.getAtlasId());
             AbstractInventoryScreen.drawSprite(matrices, x + (wide ? 6 : 7), i + 7, this.getZOffset(), 18, 18, sprite);
             i += height;
         }

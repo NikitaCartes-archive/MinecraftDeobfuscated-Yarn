@@ -37,7 +37,7 @@ extends EntityRenderer<PaintingEntity> {
     public void render(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
         matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f - f));
-        PaintingVariant paintingVariant = paintingEntity.getVariant().value();
+        PaintingVariant paintingVariant = (PaintingVariant)paintingEntity.getVariant().value();
         float h = 0.0625f;
         matrixStack.scale(0.0625f, 0.0625f, 0.0625f);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(this.getTexture(paintingEntity)));
@@ -49,7 +49,7 @@ extends EntityRenderer<PaintingEntity> {
 
     @Override
     public Identifier getTexture(PaintingEntity paintingEntity) {
-        return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getId();
+        return MinecraftClient.getInstance().getPaintingManager().getBackSprite().getAtlasId();
     }
 
     private void renderPainting(MatrixStack matrices, VertexConsumer vertexConsumer, PaintingEntity entity, int width, int height, Sprite paintingSprite, Sprite backSprite) {

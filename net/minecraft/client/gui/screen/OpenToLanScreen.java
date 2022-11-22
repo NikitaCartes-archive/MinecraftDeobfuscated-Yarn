@@ -24,13 +24,15 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class OpenToLanScreen
 extends Screen {
+    private static final int MIN_PORT = 1024;
+    private static final int MAX_PORT = 65535;
     private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands");
     private static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
     private static final Text OTHER_PLAYERS_TEXT = Text.translatable("lanServer.otherPlayers");
     private static final Text PORT_TEXT = Text.translatable("lanServer.port");
-    private static final Text INVALID_PORT_TEXT = Text.translatable("lanServer.port.invalid");
-    public static final Text UNAVAILABLE_PORT_TEXT = Text.translatable("lanServer.port.unavailable");
-    public static final int field_41107 = 0xFF5555;
+    private static final Text UNAVAILABLE_PORT_TEXT = Text.translatable("lanServer.port.unavailable.new", 1024, 65535);
+    private static final Text INVALID_PORT_TEXT = Text.translatable("lanServer.port.invalid.new", 1024, 65535);
+    private static final int ERROR_TEXT_COLOR = 0xFF5555;
     private final Screen parent;
     private GameMode gameMode = GameMode.SURVIVAL;
     private boolean allowCommands;
@@ -61,8 +63,8 @@ extends Screen {
             this.client.updateWindowTitle();
         }).dimensions(this.width / 2 - 155, this.height - 28, 150, 20).build();
         this.portField = new TextFieldWidget(this.textRenderer, this.width / 2 - 75, 160, 150, 20, Text.translatable("lanServer.port"));
-        this.portField.setChangedListener(string -> {
-            Text text = this.updatePort((String)string);
+        this.portField.setChangedListener(portText -> {
+            Text text = this.updatePort((String)portText);
             this.portField.setPlaceholder(Text.literal("" + this.port).formatted(Formatting.DARK_GRAY));
             if (text == null) {
                 this.portField.setEditableColor(0xE0E0E0);
@@ -80,6 +82,14 @@ extends Screen {
         this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 5, this.height - 28, 150, 20).build());
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.portField != null) {
+            this.portField.tick();
+        }
+    }
+
     @Nullable
     private Text updatePort(String portText) {
         if (portText.isBlank()) {
@@ -88,7 +98,7 @@ extends Screen {
         }
         try {
             this.port = Integer.parseInt(portText);
-            if (this.port < 1 || this.port > 65535) {
+            if (this.port < 1024 || this.port > 65535) {
                 return INVALID_PORT_TEXT;
             }
             if (!NetworkUtils.isPortAvailable(this.port)) {
@@ -96,7 +106,7 @@ extends Screen {
             }
             return null;
         } catch (NumberFormatException numberFormatException) {
-            this.port = -1;
+            this.port = NetworkUtils.findLocalPort();
             return INVALID_PORT_TEXT;
         }
     }

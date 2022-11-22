@@ -40,7 +40,7 @@ extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
 
     @Override
     public Identifier getTexture(FoxEntity foxEntity) {
-        if (foxEntity.getFoxType() == FoxEntity.Type.RED) {
+        if (foxEntity.getVariant() == FoxEntity.Type.RED) {
             return foxEntity.isSleeping() ? SLEEPING_TEXTURE : TEXTURE;
         }
         return foxEntity.isSleeping() ? SLEEPING_SNOW_TEXTURE : SNOW_TEXTURE;

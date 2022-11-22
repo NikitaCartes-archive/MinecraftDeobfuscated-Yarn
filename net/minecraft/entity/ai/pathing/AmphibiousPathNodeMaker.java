@@ -45,6 +45,9 @@ extends LandPathNodeMaker {
     @Override
     @Nullable
     public PathNode getStart() {
+        if (!this.entity.isTouchingWater()) {
+            return super.getStart();
+        }
         return this.getStart(new BlockPos(MathHelper.floor(this.entity.getBoundingBox().minX), MathHelper.floor(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.getBoundingBox().minZ)));
     }
 
@@ -79,11 +82,6 @@ extends LandPathNodeMaker {
 
     private boolean isValidAquaticAdjacentSuccessor(@Nullable PathNode node, PathNode successor) {
         return this.isValidAdjacentSuccessor(node, successor) && node.type == PathNodeType.WATER;
-    }
-
-    @Override
-    protected double getFeetY(BlockPos pos) {
-        return this.entity.isTouchingWater() ? (double)pos.getY() + 0.5 : super.getFeetY(pos);
     }
 
     @Override

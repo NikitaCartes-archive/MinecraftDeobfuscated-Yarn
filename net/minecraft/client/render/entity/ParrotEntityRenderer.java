@@ -16,7 +16,11 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class ParrotEntityRenderer
 extends MobEntityRenderer<ParrotEntity, ParrotEntityModel> {
-    public static final Identifier[] TEXTURES = new Identifier[]{new Identifier("textures/entity/parrot/parrot_red_blue.png"), new Identifier("textures/entity/parrot/parrot_blue.png"), new Identifier("textures/entity/parrot/parrot_green.png"), new Identifier("textures/entity/parrot/parrot_yellow_blue.png"), new Identifier("textures/entity/parrot/parrot_grey.png")};
+    private static final Identifier RED_BLUE_TEXTURE = new Identifier("textures/entity/parrot/parrot_red_blue.png");
+    private static final Identifier BLUE_TEXTURE = new Identifier("textures/entity/parrot/parrot_blue.png");
+    private static final Identifier GREEN_TEXTURE = new Identifier("textures/entity/parrot/parrot_green.png");
+    private static final Identifier YELLOW_TEXTURE = new Identifier("textures/entity/parrot/parrot_yellow_blue.png");
+    private static final Identifier GREY_TEXTURE = new Identifier("textures/entity/parrot/parrot_grey.png");
 
     public ParrotEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new ParrotEntityModel(context.getPart(EntityModelLayers.PARROT)), 0.3f);
@@ -24,7 +28,18 @@ extends MobEntityRenderer<ParrotEntity, ParrotEntityModel> {
 
     @Override
     public Identifier getTexture(ParrotEntity parrotEntity) {
-        return TEXTURES[parrotEntity.getVariant()];
+        return ParrotEntityRenderer.getTexture(parrotEntity.getVariant());
+    }
+
+    public static Identifier getTexture(ParrotEntity.Variant variant) {
+        return switch (variant) {
+            default -> throw new IncompatibleClassChangeError();
+            case ParrotEntity.Variant.RED_BLUE -> RED_BLUE_TEXTURE;
+            case ParrotEntity.Variant.BLUE -> BLUE_TEXTURE;
+            case ParrotEntity.Variant.GREEN -> GREEN_TEXTURE;
+            case ParrotEntity.Variant.YELLOW_BLUE -> YELLOW_TEXTURE;
+            case ParrotEntity.Variant.GRAY -> GREY_TEXTURE;
+        };
     }
 
     @Override

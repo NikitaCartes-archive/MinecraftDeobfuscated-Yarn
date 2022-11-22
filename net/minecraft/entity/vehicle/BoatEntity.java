@@ -6,6 +6,7 @@ package net.minecraft.entity.vehicle;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -17,6 +18,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -38,6 +40,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -53,7 +56,8 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class BoatEntity
-extends Entity {
+extends Entity
+implements VariantHolder<Type> {
     private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Integer> DAMAGE_WOBBLE_SIDE = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Float> DAMAGE_WOBBLE_STRENGTH = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -155,7 +159,7 @@ extends Entity {
 
     @Override
     public double getMountedHeightOffset() {
-        return this.getBoatType() == Type.BAMBOO ? 0.3 : -0.1;
+        return this.getVariant() == Type.BAMBOO ? 0.3 : -0.1;
     }
 
     @Override
@@ -214,7 +218,7 @@ extends Entity {
     }
 
     public Item asItem() {
-        return switch (this.getBoatType()) {
+        return switch (this.getVariant()) {
             case Type.SPRUCE -> Items.SPRUCE_BOAT;
             case Type.BIRCH -> Items.BIRCH_BOAT;
             case Type.JUNGLE -> Items.JUNGLE_BOAT;
@@ -657,13 +661,13 @@ extends Entity {
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
-        nbt.putString("Type", this.getBoatType().getName());
+        nbt.putString("Type", this.getVariant().asString());
     }
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         if (nbt.contains("Type", NbtElement.STRING_TYPE)) {
-            this.setBoatType(Type.getType(nbt.getString("Type")));
+            this.setVariant(Type.getType(nbt.getString("Type")));
         }
     }
 
@@ -699,7 +703,7 @@ extends Entity {
                     if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                         int i;
                         for (i = 0; i < 3; ++i) {
-                            this.dropItem(this.getBoatType().getBaseBlock());
+                            this.dropItem(this.getVariant().getBaseBlock());
                         }
                         for (i = 0; i < 2; ++i) {
                             this.dropItem(Items.STICK);
@@ -753,11 +757,13 @@ extends Entity {
         return this.dataTracker.get(DAMAGE_WOBBLE_SIDE);
     }
 
-    public void setBoatType(Type type) {
+    @Override
+    public void setVariant(Type type) {
         this.dataTracker.set(BOAT_TYPE, type.ordinal());
     }
 
-    public Type getBoatType() {
+    @Override
+    public Type getVariant() {
         return Type.getType(this.dataTracker.get(BOAT_TYPE));
     }
 
@@ -793,7 +799,13 @@ extends Entity {
         return new ItemStack(this.asItem());
     }
 
-    public static enum Type {
+    @Override
+    public /* synthetic */ Object getVariant() {
+        return this.getVariant();
+    }
+
+    public static enum Type implements StringIdentifiable
+    {
         OAK(Blocks.OAK_PLANKS, "oak"),
         SPRUCE(Blocks.SPRUCE_PLANKS, "spruce"),
         BIRCH(Blocks.BIRCH_PLANKS, "birch"),
@@ -805,10 +817,16 @@ extends Entity {
 
         private final String name;
         private final Block baseBlock;
+        public static final StringIdentifiable.Codec<Type> CODEC;
 
         private Type(Block baseBlock, String name) {
             this.name = name;
             this.baseBlock = baseBlock;
+        }
+
+        @Override
+        public String asString() {
+            return this.name;
         }
 
         public String getName() {
@@ -832,12 +850,11 @@ extends Entity {
         }
 
         public static Type getType(String name) {
-            Type[] types = Type.values();
-            for (int i = 0; i < types.length; ++i) {
-                if (!types[i].getName().equals(name)) continue;
-                return types[i];
-            }
-            return types[0];
+            return Objects.requireNonNullElse(CODEC.byId(name), OAK);
+        }
+
+        static {
+            CODEC = StringIdentifiable.createCodec(Type::values);
         }
     }
 

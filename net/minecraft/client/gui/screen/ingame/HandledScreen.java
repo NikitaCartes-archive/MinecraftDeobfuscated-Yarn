@@ -223,7 +223,7 @@ implements ScreenHandlerProvider<T> {
         this.itemRenderer.zOffset = 100.0f;
         if (itemStack.isEmpty() && slot.isEnabled() && (pair = slot.getBackgroundSprite()) != null) {
             Sprite sprite = this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
-            RenderSystem.setShaderTexture(0, sprite.getId());
+            RenderSystem.setShaderTexture(0, sprite.getAtlasId());
             HandledScreen.drawSprite(matrices, i, j, this.getZOffset(), 16, 16, sprite);
             bl2 = true;
         }

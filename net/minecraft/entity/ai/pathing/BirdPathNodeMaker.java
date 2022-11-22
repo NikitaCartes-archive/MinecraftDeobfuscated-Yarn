@@ -41,7 +41,6 @@ extends LandPathNodeMaker {
     @Nullable
     public PathNode getStart() {
         BlockPos blockPos;
-        PathNodeType pathNodeType;
         int i;
         if (this.canSwim() && this.entity.isTouchingWater()) {
             i = this.entity.getBlockY();
@@ -54,14 +53,19 @@ extends LandPathNodeMaker {
         } else {
             i = MathHelper.floor(this.entity.getY() + 0.5);
         }
-        if (this.entity.getPathfindingPenalty(pathNodeType = this.getNodeType((blockPos = this.entity.getBlockPos()).getX(), i, blockPos.getZ())) < 0.0f) {
+        if (!this.canPathThrough(blockPos = new BlockPos(this.entity.getX(), (double)i, this.entity.getZ()))) {
             for (BlockPos blockPos2 : this.entity.getPotentialEscapePositions()) {
-                PathNodeType pathNodeType2 = this.getNodeType(blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
-                if (!(this.entity.getPathfindingPenalty(pathNodeType2) >= 0.0f)) continue;
+                if (!this.canPathThrough(blockPos2)) continue;
                 return super.getStart(blockPos2);
             }
         }
-        return super.getStart(new BlockPos(blockPos.getX(), i, blockPos.getZ()));
+        return super.getStart(blockPos);
+    }
+
+    @Override
+    protected boolean canPathThrough(BlockPos pos) {
+        PathNodeType pathNodeType = this.getNodeType(this.entity, pos);
+        return this.entity.getPathfindingPenalty(pathNodeType) >= 0.0f;
     }
 
     @Override

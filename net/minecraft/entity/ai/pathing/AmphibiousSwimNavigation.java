@@ -42,7 +42,7 @@ extends EntityNavigation {
     @Override
     protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target) {
         if (this.isInLiquid()) {
-            return AmphibiousSwimNavigation.doesNotCollide(this.entity, origin, target);
+            return AmphibiousSwimNavigation.doesNotCollide(this.entity, origin, target, false);
         }
         return false;
     }

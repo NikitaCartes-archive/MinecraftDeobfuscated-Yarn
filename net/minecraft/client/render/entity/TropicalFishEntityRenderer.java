@@ -24,6 +24,8 @@ public class TropicalFishEntityRenderer
 extends MobEntityRenderer<TropicalFishEntity, TintableCompositeModel<TropicalFishEntity>> {
     private final TintableCompositeModel<TropicalFishEntity> smallModel = (TintableCompositeModel)this.getModel();
     private final TintableCompositeModel<TropicalFishEntity> largeModel;
+    private static final Identifier A_TEXTURE = new Identifier("textures/entity/fish/tropical_a.png");
+    private static final Identifier B_TEXTURE = new Identifier("textures/entity/fish/tropical_b.png");
 
     public TropicalFishEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new SmallTropicalFishEntityModel(context.getPart(EntityModelLayers.TROPICAL_FISH_SMALL)), 0.15f);
@@ -33,14 +35,22 @@ extends MobEntityRenderer<TropicalFishEntity, TintableCompositeModel<TropicalFis
 
     @Override
     public Identifier getTexture(TropicalFishEntity tropicalFishEntity) {
-        return tropicalFishEntity.getShapeId();
+        return switch (tropicalFishEntity.getVariant().getSize()) {
+            default -> throw new IncompatibleClassChangeError();
+            case TropicalFishEntity.Size.SMALL -> A_TEXTURE;
+            case TropicalFishEntity.Size.LARGE -> B_TEXTURE;
+        };
     }
 
     @Override
     public void render(TropicalFishEntity tropicalFishEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         TintableCompositeModel<TropicalFishEntity> tintableCompositeModel;
-        this.model = tintableCompositeModel = tropicalFishEntity.getShape() == 0 ? this.smallModel : this.largeModel;
-        float[] fs = tropicalFishEntity.getBaseColorComponents();
+        this.model = tintableCompositeModel = (switch (tropicalFishEntity.getVariant().getSize()) {
+            default -> throw new IncompatibleClassChangeError();
+            case TropicalFishEntity.Size.SMALL -> this.smallModel;
+            case TropicalFishEntity.Size.LARGE -> this.largeModel;
+        });
+        float[] fs = tropicalFishEntity.getBaseColorComponents().getColorComponents();
         tintableCompositeModel.setColorMultiplier(fs[0], fs[1], fs[2]);
         super.render(tropicalFishEntity, f, g, matrixStack, vertexConsumerProvider, i);
         tintableCompositeModel.setColorMultiplier(1.0f, 1.0f, 1.0f);

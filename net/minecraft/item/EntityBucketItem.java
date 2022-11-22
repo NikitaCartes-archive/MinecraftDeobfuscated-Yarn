@@ -54,9 +54,9 @@ extends BucketItem {
     }
 
     private void spawnEntity(ServerWorld world, ItemStack stack, BlockPos pos) {
-        Entity entity = this.entityType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false);
+        Object entity = this.entityType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false);
         if (entity instanceof Bucketable) {
-            Bucketable bucketable = (Bucketable)((Object)entity);
+            Bucketable bucketable = (Bucketable)entity;
             bucketable.copyDataFromNbt(stack.getOrCreateNbt());
             bucketable.setFromBucket(true);
         }
@@ -70,12 +70,12 @@ extends BucketItem {
             Formatting[] formattings = new Formatting[]{Formatting.ITALIC, Formatting.GRAY};
             String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);
             String string2 = "color.minecraft." + TropicalFishEntity.getPatternDyeColor(i);
-            for (int j = 0; j < TropicalFishEntity.COMMON_VARIANTS.length; ++j) {
-                if (i != TropicalFishEntity.COMMON_VARIANTS[j]) continue;
+            for (int j = 0; j < TropicalFishEntity.COMMON_VARIANTS.size(); ++j) {
+                if (i != TropicalFishEntity.COMMON_VARIANTS.get(j).getId()) continue;
                 tooltip.add(Text.translatable(TropicalFishEntity.getToolTipForVariant(j)).formatted(formattings));
                 return;
             }
-            tooltip.add(Text.translatable(TropicalFishEntity.getTranslationKey(i)).formatted(formattings));
+            tooltip.add(TropicalFishEntity.getVariety(i).getText().copyContentOnly().formatted(formattings));
             MutableText mutableText = Text.translatable(string);
             if (!string.equals(string2)) {
                 mutableText.append(", ").append(Text.translatable(string2));

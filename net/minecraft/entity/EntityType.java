@@ -25,7 +25,6 @@ import net.minecraft.entity.EyeOfEnderEntity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MarkerEntity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.SpawnReason;
@@ -343,13 +342,30 @@ TypeFilter<Entity, T> {
     }
 
     @Nullable
-    public Entity spawnFromItemStack(ServerWorld world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
-        return this.spawn(world, stack == null ? null : stack.getNbt(), stack != null && stack.hasCustomName() ? stack.getName() : null, player, pos, spawnReason, alignPosition, invertY);
+    public T spawnFromItemStack(ServerWorld world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+        NbtCompound nbtCompound;
+        Consumer<Entity> consumer = entity -> {};
+        if (stack != null) {
+            if (stack.hasCustomName()) {
+                consumer = entity -> entity.setCustomName(stack.getName());
+            }
+            if ((nbtCompound = stack.getNbt()) != null) {
+                consumer = consumer.andThen(entity -> EntityType.loadFromEntityNbt(world, player, entity, nbtCompound));
+            }
+        } else {
+            nbtCompound = null;
+        }
+        return (T)this.spawn(world, nbtCompound, consumer, pos, spawnReason, alignPosition, invertY);
     }
 
     @Nullable
-    public T spawn(ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
-        T entity = this.create(world, itemNbt, name, player, pos, spawnReason, alignPosition, invertY);
+    public T spawn(ServerWorld world, BlockPos pos, SpawnReason reason) {
+        return this.spawn(world, null, null, pos, reason, false, false);
+    }
+
+    @Nullable
+    public T spawn(ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Consumer<T> afterConsumer, BlockPos pos, SpawnReason reason, boolean alignPosition, boolean invertY) {
+        T entity = this.create(world, itemNbt, afterConsumer, pos, reason, alignPosition, invertY);
         if (entity != null) {
             world.spawnEntityAndPassengers((Entity)entity);
         }
@@ -357,7 +373,7 @@ TypeFilter<Entity, T> {
     }
 
     @Nullable
-    public T create(ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+    public T create(ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Consumer<T> afterConsumer, BlockPos pos, SpawnReason reason, boolean alignPosition, boolean invertY) {
         double d;
         T entity = this.create(world);
         if (entity == null) {
@@ -374,13 +390,12 @@ TypeFilter<Entity, T> {
             MobEntity mobEntity = (MobEntity)entity;
             mobEntity.headYaw = mobEntity.getYaw();
             mobEntity.bodyYaw = mobEntity.getYaw();
-            mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemNbt);
+            mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), reason, null, itemNbt);
             mobEntity.playAmbientSound();
         }
-        if (name != null && entity instanceof LivingEntity) {
-            ((Entity)entity).setCustomName(name);
+        if (afterConsumer != null) {
+            afterConsumer.accept(entity);
         }
-        EntityType.loadFromEntityNbt(world, player, entity, itemNbt);
         return entity;
     }
 

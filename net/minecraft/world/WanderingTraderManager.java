@@ -103,7 +103,7 @@ implements Spawner {
             if (world.getBiome(blockPos3).isIn(BiomeTags.WITHOUT_WANDERING_TRADER_SPAWNS)) {
                 return false;
             }
-            WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(world, null, null, null, blockPos3, SpawnReason.EVENT, false, false);
+            WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(world, blockPos3, SpawnReason.EVENT);
             if (wanderingTraderEntity != null) {
                 for (int j = 0; j < 2; ++j) {
                     this.spawnLlama(world, wanderingTraderEntity, 4);
@@ -123,7 +123,7 @@ implements Spawner {
         if (blockPos == null) {
             return;
         }
-        TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(world, null, null, null, blockPos, SpawnReason.EVENT, false, false);
+        TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(world, blockPos, SpawnReason.EVENT);
         if (traderLlamaEntity == null) {
             return;
         }

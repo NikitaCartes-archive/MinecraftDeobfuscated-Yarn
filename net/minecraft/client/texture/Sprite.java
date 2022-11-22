@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class Sprite {
-    private final Identifier id;
+    private final Identifier atlasId;
     private final SpriteContents contents;
     final int x;
     final int y;
@@ -23,8 +23,8 @@ public class Sprite {
     private final float vMin;
     private final float vMax;
 
-    protected Sprite(Identifier id, SpriteContents contents, int maxLevel, int atlasWidth, int atlasHeight, int x) {
-        this.id = id;
+    protected Sprite(Identifier atlasId, SpriteContents contents, int maxLevel, int atlasWidth, int atlasHeight, int x) {
+        this.atlasId = atlasId;
         this.contents = contents;
         this.x = atlasHeight;
         this.y = x;
@@ -102,8 +102,8 @@ public class Sprite {
         return (f - this.vMin) / g * 16.0f;
     }
 
-    public Identifier getId() {
-        return this.id;
+    public Identifier getAtlasId() {
+        return this.atlasId;
     }
 
     public String toString() {

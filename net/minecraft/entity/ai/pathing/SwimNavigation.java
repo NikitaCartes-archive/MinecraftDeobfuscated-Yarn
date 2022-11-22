@@ -44,7 +44,7 @@ extends EntityNavigation {
 
     @Override
     protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target) {
-        return SwimNavigation.doesNotCollide(this.entity, origin, target);
+        return SwimNavigation.doesNotCollide(this.entity, origin, target, false);
     }
 
     @Override

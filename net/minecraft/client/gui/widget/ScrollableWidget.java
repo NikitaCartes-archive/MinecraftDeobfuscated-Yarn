@@ -79,7 +79,7 @@ Element {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        if (!this.visible || !this.isFocused()) {
+        if (!this.visible) {
             return false;
         }
         this.setScrollY(this.scrollY - amount * this.getDeltaYPerScroll());

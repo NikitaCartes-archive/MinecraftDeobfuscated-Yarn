@@ -30,6 +30,8 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class EntityNavigation {
     private static final int RECALCULATE_COOLDOWN = 20;
+    private static final int field_41545 = 100;
+    private static final float field_41546 = 0.25f;
     protected final MobEntity entity;
     protected final World world;
     @Nullable
@@ -270,7 +272,9 @@ public abstract class EntityNavigation {
 
     protected void checkTimeouts(Vec3d currentPos) {
         if (this.tickCount - this.pathStartTime > 100) {
-            if (currentPos.squaredDistanceTo(this.pathStartPos) < 2.25) {
+            float f = this.entity.getMovementSpeed() >= 1.0f ? this.entity.getMovementSpeed() : this.entity.getMovementSpeed() * this.entity.getMovementSpeed();
+            float g = f * 100.0f * 0.25f;
+            if (currentPos.squaredDistanceTo(this.pathStartPos) < (double)(g * g)) {
                 this.nearPathStartPos = true;
                 this.stop();
             } else {
@@ -353,9 +357,9 @@ public abstract class EntityNavigation {
         return false;
     }
 
-    protected static boolean doesNotCollide(MobEntity entity, Vec3d startPos, Vec3d entityPos) {
+    protected static boolean doesNotCollide(MobEntity entity, Vec3d startPos, Vec3d entityPos, boolean includeFluids) {
         Vec3d vec3d = new Vec3d(entityPos.x, entityPos.y + (double)entity.getHeight() * 0.5, entityPos.z);
-        return entity.world.raycast(new RaycastContext(startPos, vec3d, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS;
+        return entity.world.raycast(new RaycastContext(startPos, vec3d, RaycastContext.ShapeType.COLLIDER, includeFluids ? RaycastContext.FluidHandling.ANY : RaycastContext.FluidHandling.NONE, entity)).getType() == HitResult.Type.MISS;
     }
 
     public boolean isValidPosition(BlockPos pos) {

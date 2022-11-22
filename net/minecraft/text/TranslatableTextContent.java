@@ -82,12 +82,9 @@ implements TextContent {
                 if ("%".equals(string) && "%%".equals(string2)) {
                     partsConsumer.accept(LITERAL_PERCENT_SIGN);
                 } else if ("s".equals(string)) {
-                    int m;
                     String string3 = matcher.group(1);
-                    int n = m = string3 != null ? Integer.parseInt(string3) - 1 : i++;
-                    if (m < this.args.length) {
-                        partsConsumer.accept(this.getArg(m));
-                    }
+                    int m = string3 != null ? Integer.parseInt(string3) - 1 : i++;
+                    partsConsumer.accept(this.getArg(m));
                 } else {
                     throw new TranslationException(this, "Unsupported format: '" + string2 + "'");
                 }
@@ -106,7 +103,7 @@ implements TextContent {
     }
 
     private StringVisitable getArg(int index) {
-        if (index >= this.args.length) {
+        if (index < 0 || index >= this.args.length) {
             throw new TranslationException(this, index);
         }
         Object object = this.args[index];

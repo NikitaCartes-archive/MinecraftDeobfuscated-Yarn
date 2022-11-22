@@ -6,6 +6,7 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -23,6 +24,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -56,6 +58,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -104,8 +107,9 @@ import org.slf4j.Logger;
 public class AxolotlEntity
 extends AnimalEntity
 implements AngledModelEntity,
+VariantHolder<Variant>,
 Bucketable {
-    private static final Logger field_37260 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final int PLAY_DEAD_TICKS = 200;
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AxolotlEntity>>> SENSORS = ImmutableList.of(SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.AXOLOTL_ATTACKABLES, SensorType.AXOLOTL_TEMPTATIONS);
     protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(MemoryModuleType.BREED_TARGET, MemoryModuleType.MOBS, MemoryModuleType.VISIBLE_MOBS, MemoryModuleType.NEAREST_VISIBLE_PLAYER, MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER, MemoryModuleType.LOOK_TARGET, MemoryModuleType.WALK_TARGET, MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE, MemoryModuleType.PATH, MemoryModuleType.ATTACK_TARGET, MemoryModuleType.ATTACK_COOLING_DOWN, MemoryModuleType.NEAREST_VISIBLE_ADULT, new MemoryModuleType[]{MemoryModuleType.HURT_BY_ENTITY, MemoryModuleType.PLAY_DEAD_TICKS, MemoryModuleType.NEAREST_ATTACKABLE, MemoryModuleType.TEMPTING_PLAYER, MemoryModuleType.TEMPTATION_COOLDOWN_TICKS, MemoryModuleType.IS_TEMPTED, MemoryModuleType.HAS_HUNTING_COOLDOWN, MemoryModuleType.IS_PANICKING});
@@ -221,11 +225,13 @@ Bucketable {
         return 6000;
     }
 
+    @Override
     public Variant getVariant() {
         return Variant.VARIANTS[this.dataTracker.get(VARIANT)];
     }
 
-    private void setVariant(Variant variant) {
+    @Override
+    public void setVariant(Variant variant) {
         this.dataTracker.set(VARIANT, variant.getId());
     }
 
@@ -379,7 +385,7 @@ Bucketable {
         if (i >= 0 && i < Variant.VARIANTS.length) {
             this.setVariant(Variant.VARIANTS[i]);
         } else {
-            field_37260.error("Invalid variant: {}", (Object)i);
+            LOGGER.error("Invalid variant: {}", (Object)i);
         }
         if (nbt.contains("Age")) {
             this.setBreedingAge(nbt.getInt("Age"));
@@ -404,12 +410,12 @@ Bucketable {
         return !this.isPlayingDead() && super.canTakeDamage();
     }
 
-    public static void appreciatePlayer(AxolotlEntity axolotl, LivingEntity livingEntity) {
-        Entity entity;
+    public static void appreciatePlayer(AxolotlEntity axolotl, LivingEntity entity) {
+        Entity entity2;
         DamageSource damageSource;
         World world = axolotl.world;
-        if (livingEntity.isDead() && (damageSource = livingEntity.getRecentDamageSource()) != null && (entity = damageSource.getAttacker()) != null && entity.getType() == EntityType.PLAYER) {
-            PlayerEntity playerEntity = (PlayerEntity)entity;
+        if (entity.isDead() && (damageSource = entity.getRecentDamageSource()) != null && (entity2 = damageSource.getAttacker()) != null && entity2.getType() == EntityType.PLAYER) {
+            PlayerEntity playerEntity = (PlayerEntity)entity2;
             List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, axolotl.getBoundingBox().expand(20.0));
             if (list.contains(playerEntity)) {
                 axolotl.buffPlayer(playerEntity);
@@ -508,6 +514,11 @@ Bucketable {
         return world.getBlockState(pos.down()).isIn(BlockTags.AXOLOTLS_SPAWNABLE_ON);
     }
 
+    @Override
+    public /* synthetic */ Object getVariant() {
+        return this.getVariant();
+    }
+
     static class AxolotlMoveControl
     extends AquaticMoveControl {
         private final AxolotlEntity axolotl;
@@ -539,7 +550,8 @@ Bucketable {
         }
     }
 
-    public static enum Variant {
+    public static enum Variant implements StringIdentifiable
+    {
         LUCY(0, "lucy", true),
         WILD(1, "wild", true),
         GOLD(2, "gold", true),
@@ -547,6 +559,7 @@ Bucketable {
         BLUE(4, "blue", false);
 
         public static final Variant[] VARIANTS;
+        public static final Codec<Variant> CODEC;
         private final int id;
         private final String name;
         private final boolean natural;
@@ -565,6 +578,11 @@ Bucketable {
             return this.name;
         }
 
+        @Override
+        public String asString() {
+            return this.name;
+        }
+
         public static Variant getRandomNatural(Random random) {
             return Variant.getRandom(random, true);
         }
@@ -580,6 +598,7 @@ Bucketable {
 
         static {
             VARIANTS = (Variant[])Arrays.stream(Variant.values()).sorted(Comparator.comparingInt(Variant::getId)).toArray(Variant[]::new);
+            CODEC = StringIdentifiable.createCodec(Variant::values);
         }
     }
 

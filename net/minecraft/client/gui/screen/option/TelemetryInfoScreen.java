@@ -6,13 +6,13 @@ package net.minecraft.client.gui.screen.option;
 import java.nio.file.Path;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_7940;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.TelemetryEventWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.option.GameOptions;
@@ -26,7 +26,7 @@ import net.minecraft.util.Util;
 public class TelemetryInfoScreen
 extends Screen {
     private static final int MARGIN = 8;
-    private static final String FEEDBACK_URL = "https://feedback.minecraft.net";
+    private static final String FEEDBACK_URL = "https://aka.ms/javafeedback?ref=game";
     private static final Text TITLE_TEXT = Text.translatable("telemetry_info.screen.title");
     private static final Text DESCRIPTION_TEXT = Text.translatable("telemetry_info.screen.description").formatted(Formatting.GRAY);
     private static final Text GIVE_FEEDBACK_TEXT = Text.translatable("telemetry_info.button.give_feedback");
@@ -56,7 +56,7 @@ extends Screen {
         gridWidget.getMainPositioner().alignHorizontalCenter().marginBottom(8);
         GridWidget.Adder adder = gridWidget.createAdder(1);
         adder.add(new TextWidget(this.getTitle(), this.textRenderer));
-        adder.add(class_7940.method_47617(this.width - 16, this.textRenderer, DESCRIPTION_TEXT));
+        adder.add(MultilineTextWidget.createCentered(this.width - 16, this.textRenderer, DESCRIPTION_TEXT));
         GridWidget gridWidget2 = this.createButtonRow(ButtonWidget.builder(GIVE_FEEDBACK_TEXT, this::openFeedbackPage).build(), ButtonWidget.builder(SHOW_DATA_TEXT, this::openLogDirectory).build());
         adder.add(gridWidget2);
         GridWidget gridWidget3 = this.createButtonRow(this.createOptInButton(), ButtonWidget.builder(ScreenTexts.DONE, this::goBack).build());

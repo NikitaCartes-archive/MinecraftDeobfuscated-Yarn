@@ -36,6 +36,7 @@ public enum DyeColor implements StringIdentifiable
 
     private static final DyeColor[] VALUES;
     private static final Int2ObjectOpenHashMap<DyeColor> BY_FIREWORK_COLOR;
+    public static final StringIdentifiable.Codec<DyeColor> CODEC;
     private final int id;
     private final String name;
     private final MapColor mapColor;
@@ -124,11 +125,8 @@ public enum DyeColor implements StringIdentifiable
     @Nullable
     @Contract(value="_,!null->!null;_,null->_")
     public static DyeColor byName(String name, @Nullable DyeColor defaultColor) {
-        for (DyeColor dyeColor : DyeColor.values()) {
-            if (!dyeColor.name.equals(name)) continue;
-            return dyeColor;
-        }
-        return defaultColor;
+        DyeColor dyeColor = CODEC.byId(name);
+        return dyeColor != null ? dyeColor : defaultColor;
     }
 
     /**
@@ -151,7 +149,8 @@ public enum DyeColor implements StringIdentifiable
 
     static {
         VALUES = (DyeColor[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).toArray(DyeColor[]::new);
-        BY_FIREWORK_COLOR = new Int2ObjectOpenHashMap<DyeColor>(Arrays.stream(DyeColor.values()).collect(Collectors.toMap(dyeColor -> dyeColor.fireworkColor, dyeColor -> dyeColor)));
+        BY_FIREWORK_COLOR = new Int2ObjectOpenHashMap<DyeColor>(Arrays.stream(DyeColor.values()).collect(Collectors.toMap(color -> color.fireworkColor, color -> color)));
+        CODEC = StringIdentifiable.createCodec(DyeColor::values);
     }
 }
 

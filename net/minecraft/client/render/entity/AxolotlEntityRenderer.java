@@ -31,7 +31,7 @@ extends MobEntityRenderer<AxolotlEntity, AxolotlEntityModel<AxolotlEntity>> {
 
     @Override
     public Identifier getTexture(AxolotlEntity axolotlEntity) {
-        return TEXTURES.get((Object)axolotlEntity.getVariant());
+        return TEXTURES.get(axolotlEntity.getVariant());
     }
 }
 

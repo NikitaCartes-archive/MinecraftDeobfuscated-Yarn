@@ -51,6 +51,7 @@ extends HostileEntity {
     public static final int field_28645 = MathHelper.ceil(3.9269907f);
     protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(VexEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final int CHARGING_FLAG = 1;
+    private static final double field_41597 = 0.4;
     @Nullable
     MobEntity owner;
     @Nullable
@@ -214,6 +215,11 @@ extends HostileEntity {
     protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
         this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0f);
+    }
+
+    @Override
+    public double getHeightOffset() {
+        return 0.4;
     }
 
     class VexMoveControl

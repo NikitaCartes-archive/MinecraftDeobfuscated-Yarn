@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -1427,8 +1428,12 @@ extends LivingEntity {
     }
 
     public void clearGoalsAndTasks() {
-        this.goalSelector.clear();
+        this.clearGoals(goal -> true);
         this.getBrain().clear();
+    }
+
+    public void clearGoals(Predicate<Goal> predicate) {
+        this.goalSelector.clear(predicate);
     }
 
     @Override

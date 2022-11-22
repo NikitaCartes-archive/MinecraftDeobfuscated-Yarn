@@ -43,7 +43,7 @@ extends FeatureRenderer<T, CowEntityModel<T>> {
         if (((Entity)mooshroomEntity).isInvisible() && !bl) {
             return;
         }
-        BlockState blockState = ((MooshroomEntity)mooshroomEntity).getMooshroomType().getMushroomState();
+        BlockState blockState = ((MooshroomEntity)mooshroomEntity).getVariant().getMushroomState();
         int m = LivingEntityRenderer.getOverlay(mooshroomEntity, 0.0f);
         BakedModel bakedModel = this.blockRenderManager.getModel(blockState);
         matrixStack.push();

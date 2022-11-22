@@ -106,7 +106,7 @@ VehicleInventory {
 
     @Override
     public Item asItem() {
-        return switch (this.getBoatType()) {
+        return switch (this.getVariant()) {
             case BoatEntity.Type.SPRUCE -> Items.SPRUCE_CHEST_BOAT;
             case BoatEntity.Type.BIRCH -> Items.BIRCH_CHEST_BOAT;
             case BoatEntity.Type.JUNGLE -> Items.JUNGLE_CHEST_BOAT;

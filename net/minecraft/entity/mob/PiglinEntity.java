@@ -78,7 +78,7 @@ InventoryOwner {
     private static final float field_30552 = 0.1f;
     private static final int field_30553 = 3;
     private static final float field_30554 = 0.2f;
-    private static final float field_30555 = 0.81f;
+    private static final float field_30555 = 0.82f;
     private static final double field_30556 = 0.5;
     private final SimpleInventory inventory = new SimpleInventory(8);
     private boolean cannotHunt;
@@ -233,7 +233,7 @@ InventoryOwner {
     @Override
     protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         float f = super.getActiveEyeHeight(pose, dimensions);
-        return this.isBaby() ? f - 0.81f : f;
+        return this.isBaby() ? f - 0.82f : f;
     }
 
     @Override

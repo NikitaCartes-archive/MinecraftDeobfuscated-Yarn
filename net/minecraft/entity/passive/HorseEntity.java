@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -41,7 +42,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class HorseEntity
-extends AbstractHorseEntity {
+extends AbstractHorseEntity
+implements VariantHolder<HorseColor> {
     private static final UUID HORSE_ARMOR_BONUS_ID = UUID.fromString("556E1665-8B10-40C8-8F9D-CF9B1667F295");
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(HorseEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
@@ -65,7 +67,7 @@ extends AbstractHorseEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("Variant", this.getVariant());
+        nbt.putInt("Variant", this.getHorseVariant());
         if (!this.items.getStack(1).isEmpty()) {
             nbt.put("ArmorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
         }
@@ -84,31 +86,37 @@ extends AbstractHorseEntity {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         ItemStack itemStack;
         super.readCustomDataFromNbt(nbt);
-        this.setVariant(nbt.getInt("Variant"));
+        this.setHorseVariant(nbt.getInt("Variant"));
         if (nbt.contains("ArmorItem", NbtElement.COMPOUND_TYPE) && !(itemStack = ItemStack.fromNbt(nbt.getCompound("ArmorItem"))).isEmpty() && this.isHorseArmor(itemStack)) {
             this.items.setStack(1, itemStack);
         }
         this.updateSaddle();
     }
 
-    private void setVariant(int variant) {
+    private void setHorseVariant(int variant) {
         this.dataTracker.set(VARIANT, variant);
     }
 
-    private int getVariant() {
+    private int getHorseVariant() {
         return this.dataTracker.get(VARIANT);
     }
 
-    private void setVariant(HorseColor color, HorseMarking marking) {
-        this.setVariant(color.getIndex() & 0xFF | marking.getIndex() << 8 & 0xFF00);
+    private void setHorseVariant(HorseColor color, HorseMarking marking) {
+        this.setHorseVariant(color.getIndex() & 0xFF | marking.getIndex() << 8 & 0xFF00);
     }
 
-    public HorseColor getColor() {
-        return HorseColor.byIndex(this.getVariant() & 0xFF);
+    @Override
+    public HorseColor getVariant() {
+        return HorseColor.byIndex(this.getHorseVariant() & 0xFF);
+    }
+
+    @Override
+    public void setVariant(HorseColor horseColor) {
+        this.setHorseVariant(horseColor.getIndex() & 0xFF | this.getHorseVariant() & 0xFFFFFF00);
     }
 
     public HorseMarking getMarking() {
-        return HorseMarking.byIndex((this.getVariant() & 0xFF00) >> 8);
+        return HorseMarking.byIndex((this.getHorseVariant() & 0xFF00) >> 8);
     }
 
     @Override
@@ -221,10 +229,10 @@ extends AbstractHorseEntity {
         HorseEntity horseEntity2 = EntityType.HORSE.create(world);
         if (horseEntity2 != null) {
             int i = this.random.nextInt(9);
-            HorseColor horseColor = i < 4 ? this.getColor() : (i < 8 ? horseEntity.getColor() : Util.getRandom(HorseColor.values(), this.random));
+            HorseColor horseColor = i < 4 ? this.getVariant() : (i < 8 ? horseEntity.getVariant() : Util.getRandom(HorseColor.values(), this.random));
             int j = this.random.nextInt(5);
             HorseMarking horseMarking = j < 2 ? this.getMarking() : (j < 4 ? horseEntity.getMarking() : Util.getRandom(HorseMarking.values(), this.random));
-            horseEntity2.setVariant(horseColor, horseMarking);
+            horseEntity2.setHorseVariant(horseColor, horseMarking);
             this.setChildAttributes(entity, horseEntity2);
         }
         return horseEntity2;
@@ -251,8 +259,13 @@ extends AbstractHorseEntity {
             horseColor = Util.getRandom(HorseColor.values(), random);
             entityData = new HorseData(horseColor);
         }
-        this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), random));
+        this.setHorseVariant(horseColor, Util.getRandom(HorseMarking.values(), random));
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    }
+
+    @Override
+    public /* synthetic */ Object getVariant() {
+        return this.getVariant();
     }
 
     public static class HorseData
