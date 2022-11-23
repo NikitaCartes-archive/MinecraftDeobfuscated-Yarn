@@ -6,7 +6,7 @@ package net.minecraft.entity.vehicle;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.IntFunction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -42,6 +42,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -818,6 +819,7 @@ implements VariantHolder<Type> {
         private final String name;
         private final Block baseBlock;
         public static final StringIdentifiable.Codec<Type> CODEC;
+        private static final IntFunction<Type> BY_ID;
 
         private Type(Block baseBlock, String name) {
             this.name = name;
@@ -842,19 +844,16 @@ implements VariantHolder<Type> {
         }
 
         public static Type getType(int type) {
-            Type[] types = Type.values();
-            if (type < 0 || type >= types.length) {
-                type = 0;
-            }
-            return types[type];
+            return BY_ID.apply(type);
         }
 
         public static Type getType(String name) {
-            return Objects.requireNonNullElse(CODEC.byId(name), OAK);
+            return CODEC.byId(name, OAK);
         }
 
         static {
             CODEC = StringIdentifiable.createCodec(Type::values);
+            BY_ID = ValueLists.createIdToValueFunction(Enum::ordinal, Type.values(), ValueLists.OutOfBoundsHandling.ZERO);
         }
     }
 

@@ -22,7 +22,7 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     public UpdateDifficultyC2SPacket(PacketByteBuf buf) {
-        this.difficulty = Difficulty.byOrdinal(buf.readUnsignedByte());
+        this.difficulty = Difficulty.byId(buf.readUnsignedByte());
     }
 
     @Override

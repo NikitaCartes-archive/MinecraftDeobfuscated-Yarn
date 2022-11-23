@@ -5,10 +5,11 @@ package net.minecraft.util;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import net.minecraft.block.MapColor;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +35,7 @@ public enum DyeColor implements StringIdentifiable
     RED(14, "red", 11546150, MapColor.RED, 11743532, 0xFF0000),
     BLACK(15, "black", 0x1D1D21, MapColor.BLACK, 0x1E1B1B, 0);
 
-    private static final DyeColor[] VALUES;
+    private static final IntFunction<DyeColor> BY_ID;
     private static final Int2ObjectOpenHashMap<DyeColor> BY_FIREWORK_COLOR;
     public static final StringIdentifiable.Codec<DyeColor> CODEC;
     private final int id;
@@ -110,10 +111,7 @@ public enum DyeColor implements StringIdentifiable
      * @apiNote If out-of-range IDs are passed, this returns {@link #WHITE}.
      */
     public static DyeColor byId(int id) {
-        if (id < 0 || id >= VALUES.length) {
-            id = 0;
-        }
-        return VALUES[id];
+        return BY_ID.apply(id);
     }
 
     /**
@@ -148,7 +146,7 @@ public enum DyeColor implements StringIdentifiable
     }
 
     static {
-        VALUES = (DyeColor[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).toArray(DyeColor[]::new);
+        BY_ID = ValueLists.createIdToValueFunction(DyeColor::getId, DyeColor.values(), ValueLists.OutOfBoundsHandling.ZERO);
         BY_FIREWORK_COLOR = new Int2ObjectOpenHashMap<DyeColor>(Arrays.stream(DyeColor.values()).collect(Collectors.toMap(color -> color.fireworkColor, color -> color)));
         CODEC = StringIdentifiable.createCodec(DyeColor::values);
     }

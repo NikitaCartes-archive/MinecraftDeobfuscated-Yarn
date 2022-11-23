@@ -71,6 +71,7 @@ import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
@@ -102,6 +103,7 @@ import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.CsvWriter;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Unit;
@@ -907,6 +909,11 @@ implements StructureWorldAccess {
     @Override
     public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed) {
         this.server.getPlayerManager().sendToAround(except, entity.getX(), entity.getY(), entity.getZ(), sound.getDistanceToTravel(volume), this.getRegistryKey(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch, seed));
+    }
+
+    @Override
+    public void playSound(@Nullable PlayerEntity except, Vec3d pos, Identifier id, SoundCategory category, float volume, float pitch, double distance, long seed) {
+        this.server.getPlayerManager().sendToAround(except, pos.getX(), pos.getY(), pos.getZ(), distance, this.getRegistryKey(), new PlaySoundIdS2CPacket(id, category, pos, volume, pitch, seed));
     }
 
     @Override

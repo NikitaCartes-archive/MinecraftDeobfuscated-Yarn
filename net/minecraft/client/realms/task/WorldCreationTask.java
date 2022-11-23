@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class WorldCreationTask
 extends LongRunningTask {
-    private static final Logger field_36362 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final String name;
     private final String motd;
     private final long worldId;
@@ -37,10 +37,10 @@ extends LongRunningTask {
             realmsClient.initializeWorld(this.worldId, this.name, this.motd);
             WorldCreationTask.setScreen(this.lastScreen);
         } catch (RealmsServiceException realmsServiceException) {
-            field_36362.error("Couldn't create world");
+            LOGGER.error("Couldn't create world");
             this.error(realmsServiceException.toString());
         } catch (Exception exception) {
-            field_36362.error("Could not create world");
+            LOGGER.error("Could not create world");
             this.error(exception.getLocalizedMessage());
         }
     }

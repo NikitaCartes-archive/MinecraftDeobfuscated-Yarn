@@ -5,13 +5,11 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -88,6 +86,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -1363,7 +1362,7 @@ implements VariantHolder<Type> {
         SNOW(1, "snow");
 
         public static final StringIdentifiable.Codec<Type> CODEC;
-        private static final Type[] TYPES;
+        private static final IntFunction<Type> BY_ID;
         private final int id;
         private final String key;
 
@@ -1382,14 +1381,11 @@ implements VariantHolder<Type> {
         }
 
         public static Type byName(String name) {
-            return Objects.requireNonNullElse(CODEC.byId(name), RED);
+            return CODEC.byId(name, RED);
         }
 
         public static Type fromId(int id) {
-            if (id < 0 || id > TYPES.length) {
-                id = 0;
-            }
-            return TYPES[id];
+            return BY_ID.apply(id);
         }
 
         public static Type fromBiome(RegistryEntry<Biome> biome) {
@@ -1398,7 +1394,7 @@ implements VariantHolder<Type> {
 
         static {
             CODEC = StringIdentifiable.createCodec(Type::values);
-            TYPES = (Type[])Arrays.stream(Type.values()).sorted(Comparator.comparingInt(Type::getId)).toArray(Type[]::new);
+            BY_ID = ValueLists.createIdToValueFunction(Type::getId, Type.values(), ValueLists.OutOfBoundsHandling.ZERO);
         }
     }
 

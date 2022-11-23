@@ -18,22 +18,22 @@ extends IdentifierNormalizingSchema {
         super(i, schema);
     }
 
-    protected static void method_5280(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-        schema.register(map, string, () -> Schema100.targetItems(schema));
+    protected static void targetEntityItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
+        schema.register(map, entityId, () -> Schema100.targetItems(schema));
     }
 
     @Override
     public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
         Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-        Schema1470.method_5280(schema, map, "minecraft:turtle");
-        Schema1470.method_5280(schema, map, "minecraft:cod_mob");
-        Schema1470.method_5280(schema, map, "minecraft:tropical_fish");
-        Schema1470.method_5280(schema, map, "minecraft:salmon_mob");
-        Schema1470.method_5280(schema, map, "minecraft:puffer_fish");
-        Schema1470.method_5280(schema, map, "minecraft:phantom");
-        Schema1470.method_5280(schema, map, "minecraft:dolphin");
-        Schema1470.method_5280(schema, map, "minecraft:drowned");
-        schema.register(map, "minecraft:trident", (String string) -> DSL.optionalFields("inBlockState", TypeReferences.BLOCK_STATE.in(schema)));
+        Schema1470.targetEntityItems(schema, map, "minecraft:turtle");
+        Schema1470.targetEntityItems(schema, map, "minecraft:cod_mob");
+        Schema1470.targetEntityItems(schema, map, "minecraft:tropical_fish");
+        Schema1470.targetEntityItems(schema, map, "minecraft:salmon_mob");
+        Schema1470.targetEntityItems(schema, map, "minecraft:puffer_fish");
+        Schema1470.targetEntityItems(schema, map, "minecraft:phantom");
+        Schema1470.targetEntityItems(schema, map, "minecraft:dolphin");
+        Schema1470.targetEntityItems(schema, map, "minecraft:drowned");
+        schema.register(map, "minecraft:trident", (String name) -> DSL.optionalFields("inBlockState", TypeReferences.BLOCK_STATE.in(schema)));
         return map;
     }
 }

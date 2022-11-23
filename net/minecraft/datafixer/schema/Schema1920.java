@@ -17,8 +17,8 @@ extends IdentifierNormalizingSchema {
         super(i, schema);
     }
 
-    protected static void method_17343(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-        schema.register(map, string, () -> DSL.optionalFields("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))));
+    protected static void method_17343(Schema schema, Map<String, Supplier<TypeTemplate>> map, String name) {
+        schema.register(map, name, () -> DSL.optionalFields("Items", DSL.list(TypeReferences.ITEM_STACK.in(schema))));
     }
 
     @Override

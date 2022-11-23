@@ -31,7 +31,7 @@ public interface DataProvider {
         map.defaultReturnValue(2);
     });
     public static final Comparator<String> JSON_KEY_SORTING_COMPARATOR = Comparator.comparingInt(JSON_KEY_SORT_ORDER).thenComparing(key -> key);
-    public static final Logger field_40831 = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
     public CompletableFuture<?> run(DataWriter var1);
 
@@ -49,7 +49,7 @@ public interface DataProvider {
                 }
                 writer.write(path, byteArrayOutputStream.toByteArray(), hashingOutputStream.hash());
             } catch (IOException iOException) {
-                field_40831.error("Failed to save file to {}", (Object)path, (Object)iOException);
+                LOGGER.error("Failed to save file to {}", (Object)path, (Object)iOException);
             }
         }, Util.getMainWorkerExecutor());
     }

@@ -7,11 +7,12 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 
 public class BiomeMoodSound {
-    public static final Codec<BiomeMoodSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.CODEC.fieldOf("sound")).forGetter(biomeMoodSound -> biomeMoodSound.sound), ((MapCodec)Codec.INT.fieldOf("tick_delay")).forGetter(biomeMoodSound -> biomeMoodSound.cultivationTicks), ((MapCodec)Codec.INT.fieldOf("block_search_extent")).forGetter(biomeMoodSound -> biomeMoodSound.spawnRange), ((MapCodec)Codec.DOUBLE.fieldOf("offset")).forGetter(biomeMoodSound -> biomeMoodSound.extraDistance)).apply((Applicative<BiomeMoodSound, ?>)instance, BiomeMoodSound::new));
+    public static final Codec<BiomeMoodSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registries.SOUND_EVENT.getCodec().fieldOf("sound")).forGetter(sound -> sound.sound), ((MapCodec)Codec.INT.fieldOf("tick_delay")).forGetter(sound -> sound.cultivationTicks), ((MapCodec)Codec.INT.fieldOf("block_search_extent")).forGetter(sound -> sound.spawnRange), ((MapCodec)Codec.DOUBLE.fieldOf("offset")).forGetter(sound -> sound.extraDistance)).apply((Applicative<BiomeMoodSound, ?>)instance, BiomeMoodSound::new));
     public static final BiomeMoodSound CAVE = new BiomeMoodSound(SoundEvents.AMBIENT_CAVE, 6000, 8, 2.0);
     private final SoundEvent sound;
     private final int cultivationTicks;

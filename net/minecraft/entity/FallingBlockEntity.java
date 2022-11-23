@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 
 public class FallingBlockEntity
 extends Entity {
-    private static final Logger field_36333 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private BlockState block = Blocks.SAND.getDefaultState();
     public int timeFalling;
     public boolean dropItem = true;
@@ -168,7 +168,7 @@ extends Entity {
                                     try {
                                         blockEntity.readNbt(nbtCompound);
                                     } catch (Exception exception) {
-                                        field_36333.error("Failed to load block entity from falling block", exception);
+                                        LOGGER.error("Failed to load block entity from falling block", exception);
                                     }
                                     blockEntity.markDirty();
                                 }

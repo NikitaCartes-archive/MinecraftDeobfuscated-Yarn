@@ -5,9 +5,8 @@ package net.minecraft.item;
 
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
+import java.util.function.IntFunction;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
@@ -24,6 +23,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -120,7 +120,7 @@ extends Item {
         CREEPER(3, "creeper"),
         BURST(4, "burst");
 
-        private static final Type[] TYPES;
+        private static final IntFunction<Type> BY_ID;
         private final int id;
         private final String name;
 
@@ -138,14 +138,11 @@ extends Item {
         }
 
         public static Type byId(int id) {
-            if (id < 0 || id >= TYPES.length) {
-                return SMALL_BALL;
-            }
-            return TYPES[id];
+            return BY_ID.apply(id);
         }
 
         static {
-            TYPES = (Type[])Arrays.stream(Type.values()).sorted(Comparator.comparingInt(type -> type.id)).toArray(Type[]::new);
+            BY_ID = ValueLists.createIdToValueFunction(Type::getId, Type.values(), ValueLists.OutOfBoundsHandling.ZERO);
         }
     }
 }

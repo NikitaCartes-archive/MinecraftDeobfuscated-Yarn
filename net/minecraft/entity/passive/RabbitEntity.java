@@ -4,8 +4,6 @@
 package net.minecraft.entity.passive;
 
 import com.mojang.serialization.Codec;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import java.util.Objects;
 import java.util.function.IntFunction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -59,6 +57,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -174,7 +173,7 @@ implements VariantHolder<RabbitType> {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.dataTracker.startTracking(RABBIT_TYPE, RabbitType.BROWN.index);
+        this.dataTracker.startTracking(RABBIT_TYPE, RabbitType.BROWN.id);
     }
 
     @Override
@@ -263,14 +262,14 @@ implements VariantHolder<RabbitType> {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("RabbitType", this.getVariant().index);
+        nbt.putInt("RabbitType", this.getVariant().id);
         nbt.putInt("MoreCarrotTicks", this.moreCarrotTicks);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.setVariant(RabbitType.byIndex(nbt.getInt("RabbitType")));
+        this.setVariant(RabbitType.byId(nbt.getInt("RabbitType")));
         this.moreCarrotTicks = nbt.getInt("MoreCarrotTicks");
     }
 
@@ -346,7 +345,7 @@ implements VariantHolder<RabbitType> {
 
     @Override
     public RabbitType getVariant() {
-        return RabbitType.byIndex(this.dataTracker.get(RABBIT_TYPE));
+        return RabbitType.byId(this.dataTracker.get(RABBIT_TYPE));
     }
 
     @Override
@@ -361,7 +360,7 @@ implements VariantHolder<RabbitType> {
                 this.setCustomName(Text.translatable(Util.createTranslationKey("entity", KILLER_BUNNY)));
             }
         }
-        this.dataTracker.set(RABBIT_TYPE, rabbitType.index);
+        this.dataTracker.set(RABBIT_TYPE, rabbitType.id);
     }
 
     @Override
@@ -592,13 +591,13 @@ implements VariantHolder<RabbitType> {
         SALT(5, "salt"),
         EVIL(99, "evil");
 
-        private static final IntFunction<RabbitType> TYPE_BY_INDEX;
+        private static final IntFunction<RabbitType> BY_ID;
         public static final Codec<RabbitType> CODEC;
-        final int index;
+        final int id;
         private final String name;
 
-        private RabbitType(int index, String name) {
-            this.index = index;
+        private RabbitType(int id, String name) {
+            this.id = id;
             this.name = name;
         }
 
@@ -607,20 +606,16 @@ implements VariantHolder<RabbitType> {
             return this.name;
         }
 
-        public int getIndex() {
-            return this.index;
+        public int getId() {
+            return this.id;
         }
 
-        public static RabbitType byIndex(int index) {
-            return Objects.requireNonNullElse(TYPE_BY_INDEX.apply(index), BROWN);
+        public static RabbitType byId(int id) {
+            return BY_ID.apply(id);
         }
 
         static {
-            TYPE_BY_INDEX = Util.make(new Int2ObjectOpenHashMap(), map -> {
-                for (RabbitType rabbitType : RabbitType.values()) {
-                    map.put(rabbitType.index, rabbitType);
-                }
-            });
+            BY_ID = ValueLists.createIdToValueFunction(RabbitType::getId, RabbitType.values(), BROWN);
             CODEC = StringIdentifiable.createCodec(RabbitType::values);
         }
     }

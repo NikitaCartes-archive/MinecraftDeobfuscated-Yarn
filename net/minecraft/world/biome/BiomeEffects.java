@@ -9,6 +9,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import java.util.OptionalInt;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.BiomeAdditionsSound;
 import net.minecraft.sound.BiomeMoodSound;
 import net.minecraft.sound.MusicSound;
@@ -19,7 +20,7 @@ import net.minecraft.world.biome.BiomeParticleConfig;
 import org.jetbrains.annotations.Nullable;
 
 public class BiomeEffects {
-    public static final Codec<BiomeEffects> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("fog_color")).forGetter(effects -> effects.fogColor), ((MapCodec)Codec.INT.fieldOf("water_color")).forGetter(effects -> effects.waterColor), ((MapCodec)Codec.INT.fieldOf("water_fog_color")).forGetter(effects -> effects.waterFogColor), ((MapCodec)Codec.INT.fieldOf("sky_color")).forGetter(effects -> effects.skyColor), Codec.INT.optionalFieldOf("foliage_color").forGetter(effects -> effects.foliageColor), Codec.INT.optionalFieldOf("grass_color").forGetter(effects -> effects.grassColor), GrassColorModifier.CODEC.optionalFieldOf("grass_color_modifier", GrassColorModifier.NONE).forGetter(effects -> effects.grassColorModifier), BiomeParticleConfig.CODEC.optionalFieldOf("particle").forGetter(effects -> effects.particleConfig), SoundEvent.CODEC.optionalFieldOf("ambient_sound").forGetter(effects -> effects.loopSound), BiomeMoodSound.CODEC.optionalFieldOf("mood_sound").forGetter(effects -> effects.moodSound), BiomeAdditionsSound.CODEC.optionalFieldOf("additions_sound").forGetter(effects -> effects.additionsSound), MusicSound.CODEC.optionalFieldOf("music").forGetter(effects -> effects.music)).apply((Applicative<BiomeEffects, ?>)instance, BiomeEffects::new));
+    public static final Codec<BiomeEffects> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("fog_color")).forGetter(effects -> effects.fogColor), ((MapCodec)Codec.INT.fieldOf("water_color")).forGetter(effects -> effects.waterColor), ((MapCodec)Codec.INT.fieldOf("water_fog_color")).forGetter(effects -> effects.waterFogColor), ((MapCodec)Codec.INT.fieldOf("sky_color")).forGetter(effects -> effects.skyColor), Codec.INT.optionalFieldOf("foliage_color").forGetter(effects -> effects.foliageColor), Codec.INT.optionalFieldOf("grass_color").forGetter(effects -> effects.grassColor), GrassColorModifier.CODEC.optionalFieldOf("grass_color_modifier", GrassColorModifier.NONE).forGetter(effects -> effects.grassColorModifier), BiomeParticleConfig.CODEC.optionalFieldOf("particle").forGetter(effects -> effects.particleConfig), Registries.SOUND_EVENT.getCodec().optionalFieldOf("ambient_sound").forGetter(effects -> effects.loopSound), BiomeMoodSound.CODEC.optionalFieldOf("mood_sound").forGetter(effects -> effects.moodSound), BiomeAdditionsSound.CODEC.optionalFieldOf("additions_sound").forGetter(effects -> effects.additionsSound), MusicSound.CODEC.optionalFieldOf("music").forGetter(effects -> effects.music)).apply((Applicative<BiomeEffects, ?>)instance, BiomeEffects::new));
     private final int fogColor;
     private final int waterColor;
     private final int waterFogColor;

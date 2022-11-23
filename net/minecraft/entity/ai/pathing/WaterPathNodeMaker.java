@@ -45,15 +45,13 @@ extends PathNodeMaker {
     }
 
     @Override
-    @Nullable
     public PathNode getStart() {
-        return super.getNode(MathHelper.floor(this.entity.getBoundingBox().minX), MathHelper.floor(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.getBoundingBox().minZ));
+        return this.getNode(MathHelper.floor(this.entity.getBoundingBox().minX), MathHelper.floor(this.entity.getBoundingBox().minY + 0.5), MathHelper.floor(this.entity.getBoundingBox().minZ));
     }
 
     @Override
-    @Nullable
     public TargetPathNode getNode(double x, double y, double z) {
-        return this.asTargetPathNode(super.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
+        return this.asTargetPathNode(this.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
     }
 
     @Override
@@ -61,35 +59,35 @@ extends PathNodeMaker {
         int i = 0;
         EnumMap<Direction, PathNode> map = Maps.newEnumMap(Direction.class);
         for (Direction direction : Direction.values()) {
-            PathNode pathNode = this.getNode(node.x + direction.getOffsetX(), node.y + direction.getOffsetY(), node.z + direction.getOffsetZ());
+            PathNode pathNode = this.getPassableNode(node.x + direction.getOffsetX(), node.y + direction.getOffsetY(), node.z + direction.getOffsetZ());
             map.put(direction, pathNode);
             if (!this.hasNotVisited(pathNode)) continue;
             successors[i++] = pathNode;
         }
         for (Direction direction2 : Direction.Type.HORIZONTAL) {
             Direction direction3 = direction2.rotateYClockwise();
-            PathNode pathNode2 = this.getNode(node.x + direction2.getOffsetX() + direction3.getOffsetX(), node.y, node.z + direction2.getOffsetZ() + direction3.getOffsetZ());
-            if (!this.method_38488(pathNode2, (PathNode)map.get(direction2), (PathNode)map.get(direction3))) continue;
+            PathNode pathNode2 = this.getPassableNode(node.x + direction2.getOffsetX() + direction3.getOffsetX(), node.y, node.z + direction2.getOffsetZ() + direction3.getOffsetZ());
+            if (!this.canPathThrough(pathNode2, (PathNode)map.get(direction2), (PathNode)map.get(direction3))) continue;
             successors[i++] = pathNode2;
         }
         return i;
     }
 
-    protected boolean hasNotVisited(@Nullable PathNode pathNode) {
-        return pathNode != null && !pathNode.visited;
+    protected boolean hasNotVisited(@Nullable PathNode node) {
+        return node != null && !node.visited;
     }
 
-    protected boolean method_38488(@Nullable PathNode pathNode, @Nullable PathNode pathNode2, @Nullable PathNode pathNode3) {
-        return this.hasNotVisited(pathNode) && pathNode2 != null && pathNode2.penalty >= 0.0f && pathNode3 != null && pathNode3.penalty >= 0.0f;
+    protected boolean canPathThrough(@Nullable PathNode diagonalNode, @Nullable PathNode node1, @Nullable PathNode node2) {
+        return this.hasNotVisited(diagonalNode) && node1 != null && node1.penalty >= 0.0f && node2 != null && node2.penalty >= 0.0f;
     }
 
-    @Override
     @Nullable
-    protected PathNode getNode(int x, int y, int z) {
+    protected PathNode getPassableNode(int x, int y, int z) {
         float f;
         PathNode pathNode = null;
         PathNodeType pathNodeType = this.addPathNodePos(x, y, z);
-        if ((this.canJumpOutOfWater && pathNodeType == PathNodeType.BREACH || pathNodeType == PathNodeType.WATER) && (f = this.entity.getPathfindingPenalty(pathNodeType)) >= 0.0f && (pathNode = super.getNode(x, y, z)) != null) {
+        if ((this.canJumpOutOfWater && pathNodeType == PathNodeType.BREACH || pathNodeType == PathNodeType.WATER) && (f = this.entity.getPathfindingPenalty(pathNodeType)) >= 0.0f) {
+            pathNode = this.getNode(x, y, z);
             pathNode.type = pathNodeType;
             pathNode.penalty = Math.max(pathNode.penalty, f);
             if (this.cachedWorld.getFluidState(new BlockPos(x, y, z)).isEmpty()) {
@@ -100,7 +98,7 @@ extends PathNodeMaker {
     }
 
     protected PathNodeType addPathNodePos(int x, int y, int z) {
-        return this.nodePosToType.computeIfAbsent(BlockPos.asLong(x, y, z), l -> this.getDefaultNodeType(this.cachedWorld, x, y, z));
+        return this.nodePosToType.computeIfAbsent(BlockPos.asLong(x, y, z), pos -> this.getDefaultNodeType(this.cachedWorld, x, y, z));
     }
 
     @Override

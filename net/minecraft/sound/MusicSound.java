@@ -7,10 +7,11 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundEvent;
 
 public class MusicSound {
-    public static final Codec<MusicSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.CODEC.fieldOf("sound")).forGetter(musicSound -> musicSound.sound), ((MapCodec)Codec.INT.fieldOf("min_delay")).forGetter(musicSound -> musicSound.minDelay), ((MapCodec)Codec.INT.fieldOf("max_delay")).forGetter(musicSound -> musicSound.maxDelay), ((MapCodec)Codec.BOOL.fieldOf("replace_current_music")).forGetter(musicSound -> musicSound.replaceCurrentMusic)).apply((Applicative<MusicSound, ?>)instance, MusicSound::new));
+    public static final Codec<MusicSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registries.SOUND_EVENT.getCodec().fieldOf("sound")).forGetter(sound -> sound.sound), ((MapCodec)Codec.INT.fieldOf("min_delay")).forGetter(sound -> sound.minDelay), ((MapCodec)Codec.INT.fieldOf("max_delay")).forGetter(sound -> sound.maxDelay), ((MapCodec)Codec.BOOL.fieldOf("replace_current_music")).forGetter(sound -> sound.replaceCurrentMusic)).apply((Applicative<MusicSound, ?>)instance, MusicSound::new));
     private final SoundEvent sound;
     private final int minDelay;
     private final int maxDelay;

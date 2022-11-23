@@ -53,7 +53,7 @@ import org.slf4j.Logger;
 
 public class FishingBobberEntity
 extends ProjectileEntity {
-    private static final Logger field_36336 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Random velocityRandom = Random.create();
     private boolean caughtFish;
     private int outOfOpenWaterTicks;
@@ -501,7 +501,7 @@ extends ProjectileEntity {
         super.onSpawnPacket(packet);
         if (this.getPlayerOwner() == null) {
             int i = packet.getEntityData();
-            field_36336.error("Failed to recreate fishing hook on client. {} (id: {}) is not a valid owner.", (Object)this.world.getEntityById(i), (Object)i);
+            LOGGER.error("Failed to recreate fishing hook on client. {} (id: {}) is not a valid owner.", (Object)this.world.getEntityById(i), (Object)i);
             this.kill();
         }
     }

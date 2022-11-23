@@ -232,7 +232,7 @@ implements DedicatedServer {
         ServerPropertiesHandler serverPropertiesHandler = this.getProperties();
         try (BufferedWriter writer = Files.newBufferedWriter(file, new OpenOption[0]);){
             writer.write(String.format(Locale.ROOT, "sync-chunk-writes=%s%n", serverPropertiesHandler.syncChunkWrites));
-            writer.write(String.format(Locale.ROOT, "gamemode=%s%n", new Object[]{serverPropertiesHandler.gameMode}));
+            writer.write(String.format(Locale.ROOT, "gamemode=%s%n", serverPropertiesHandler.gameMode));
             writer.write(String.format(Locale.ROOT, "spawn-monsters=%s%n", serverPropertiesHandler.spawnMonsters));
             writer.write(String.format(Locale.ROOT, "entity-broadcast-range-percentage=%d%n", serverPropertiesHandler.entityBroadcastRangePercentage));
             writer.write(String.format(Locale.ROOT, "max-world-size=%d%n", serverPropertiesHandler.maxWorldSize));

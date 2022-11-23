@@ -17,8 +17,8 @@ extends Schema {
     public static final PrimitiveCodec<String> CODEC = new PrimitiveCodec<String>(){
 
         @Override
-        public <T> DataResult<String> read(DynamicOps<T> dynamicOps, T object) {
-            return dynamicOps.getStringValue(object).map(IdentifierNormalizingSchema::normalize);
+        public <T> DataResult<String> read(DynamicOps<T> ops, T input) {
+            return ops.getStringValue(input).map(IdentifierNormalizingSchema::normalize);
         }
 
         @Override
@@ -31,8 +31,8 @@ extends Schema {
         }
 
         @Override
-        public /* synthetic */ Object write(DynamicOps dynamicOps, Object object) {
-            return this.write(dynamicOps, (String)object);
+        public /* synthetic */ Object write(DynamicOps ops, Object value) {
+            return this.write(ops, (String)value);
         }
     };
     private static final Type<String> IDENTIFIER_TYPE = new Const.PrimitiveType<String>(CODEC);
@@ -54,8 +54,8 @@ extends Schema {
     }
 
     @Override
-    public Type<?> getChoiceType(DSL.TypeReference typeReference, String string) {
-        return super.getChoiceType(typeReference, IdentifierNormalizingSchema.normalize(string));
+    public Type<?> getChoiceType(DSL.TypeReference type, String choiceName) {
+        return super.getChoiceType(type, IdentifierNormalizingSchema.normalize(choiceName));
     }
 }
 

@@ -24,7 +24,7 @@ extends IdentifierNormalizingSchema {
         schema.registerSimple(map, "minecraft:egg");
         schema.registerSimple(map, "minecraft:ender_pearl");
         schema.registerSimple(map, "minecraft:fireball");
-        schema.register(map, "minecraft:potion", (String string) -> DSL.optionalFields("Potion", TypeReferences.ITEM_STACK.in(schema)));
+        schema.register(map, "minecraft:potion", (String name) -> DSL.optionalFields("Potion", TypeReferences.ITEM_STACK.in(schema)));
         schema.registerSimple(map, "minecraft:small_fireball");
         schema.registerSimple(map, "minecraft:snowball");
         schema.registerSimple(map, "minecraft:wither_skull");

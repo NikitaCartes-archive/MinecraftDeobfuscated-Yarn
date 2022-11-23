@@ -98,7 +98,7 @@ public class StructureLocator {
      * <p>This method only performs simple checks like biomes.
      */
     private boolean isGenerationPossible(ChunkPos pos, Structure structure) {
-        return structure.getStructurePosition(new Structure.Context(this.registryManager, this.chunkGenerator, this.biomeSource, this.noiseConfig, this.structureTemplateManager, this.seed, pos, this.world, structure.getValidBiomes()::contains)).isPresent();
+        return structure.getValidStructurePosition(new Structure.Context(this.registryManager, this.chunkGenerator, this.biomeSource, this.noiseConfig, this.structureTemplateManager, this.seed, pos, this.world, structure.getValidBiomes()::contains)).isPresent();
     }
 
     @Nullable

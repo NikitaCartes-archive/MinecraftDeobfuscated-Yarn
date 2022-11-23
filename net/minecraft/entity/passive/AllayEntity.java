@@ -58,7 +58,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -83,7 +82,6 @@ implements InventoryOwner {
     private static final int field_39461 = 5;
     private static final float field_39462 = 55.0f;
     private static final float field_39463 = 15.0f;
-    private static final float field_39451 = 0.5f;
     private static final Ingredient DUPLICATION_INGREDIENT = Ingredient.ofItems(Items.AMETHYST_SHARD);
     private static final int DUPLICATION_COOLDOWN = 6000;
     private static final int field_39679 = 3;
@@ -472,18 +470,6 @@ implements InventoryOwner {
     @Override
     protected boolean shouldFollowLeash() {
         return false;
-    }
-
-    @Override
-    public Iterable<BlockPos> getPotentialEscapePositions() {
-        Box box = this.getBoundingBox();
-        int i = MathHelper.floor(box.minX - 0.5);
-        int j = MathHelper.floor(box.maxX + 0.5);
-        int k = MathHelper.floor(box.minZ - 0.5);
-        int l = MathHelper.floor(box.maxZ + 0.5);
-        int m = MathHelper.floor(box.minY - 0.5);
-        int n = MathHelper.floor(box.maxY + 0.5);
-        return BlockPos.iterate(i, m, k, j, n, l);
     }
 
     private void tickDuplicationCooldown() {

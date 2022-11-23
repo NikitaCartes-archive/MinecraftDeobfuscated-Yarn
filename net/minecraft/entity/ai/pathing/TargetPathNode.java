@@ -4,7 +4,6 @@
 package net.minecraft.entity.ai.pathing;
 
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.network.PacketByteBuf;
 
 public class TargetPathNode
@@ -42,11 +41,7 @@ extends PathNode {
 
     public static TargetPathNode fromBuffer(PacketByteBuf buffer) {
         TargetPathNode targetPathNode = new TargetPathNode(buffer.readInt(), buffer.readInt(), buffer.readInt());
-        targetPathNode.pathLength = buffer.readFloat();
-        targetPathNode.penalty = buffer.readFloat();
-        targetPathNode.visited = buffer.readBoolean();
-        targetPathNode.type = PathNodeType.values()[buffer.readInt()];
-        targetPathNode.heapWeight = buffer.readFloat();
+        TargetPathNode.readFromBuf(buffer, targetPathNode);
         return targetPathNode;
     }
 }

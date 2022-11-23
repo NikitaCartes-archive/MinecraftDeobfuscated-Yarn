@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.mob;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import java.util.Arrays;
 import java.util.List;
@@ -1362,8 +1361,12 @@ extends LivingEntity {
         return this.getWidth() * 2.0f * (this.getWidth() * 2.0f) + target.getWidth();
     }
 
+    public double getSquaredDistanceToAttackPosOf(LivingEntity target) {
+        return Math.max(this.squaredDistanceTo(target.getAttackPos()), this.squaredDistanceTo(target.getPos()));
+    }
+
     public boolean isInAttackRange(LivingEntity entity) {
-        double d = this.squaredDistanceTo(entity.getX(), entity.getY(), entity.getZ());
+        double d = this.getSquaredDistanceToAttackPosOf(entity);
         return d <= this.squaredAttackRange(entity);
     }
 
@@ -1451,18 +1454,6 @@ extends LivingEntity {
             return null;
         }
         return new ItemStack(spawnEggItem);
-    }
-
-    /**
-     * {@return the list of positions that the entity should try to pathfind to when escaping}
-     * 
-     * @implNote This is used when the current position's {@linkplain #getPathfindingPenalty
-     * pathfinding penalty} is negative (i.e. dangerous). Note that currently
-     * {@link net.minecraft.entity.ai.pathing.BirdPathNodeMaker} is the only node maker
-     * utilizing this method.
-     */
-    public Iterable<BlockPos> getPotentialEscapePositions() {
-        return ImmutableSet.of(new BlockPos(this.getBoundingBox().minX, (double)this.getBlockY(), this.getBoundingBox().minZ), new BlockPos(this.getBoundingBox().minX, (double)this.getBlockY(), this.getBoundingBox().maxZ), new BlockPos(this.getBoundingBox().maxX, (double)this.getBlockY(), this.getBoundingBox().minZ), new BlockPos(this.getBoundingBox().maxX, (double)this.getBlockY(), this.getBoundingBox().maxZ));
     }
 }
 

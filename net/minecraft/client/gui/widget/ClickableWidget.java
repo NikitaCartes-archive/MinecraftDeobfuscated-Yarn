@@ -13,9 +13,12 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
+import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
@@ -101,8 +104,15 @@ Selectable {
             this.wasHovered = bl;
         }
         if (bl && Util.getMeasuringTimeMs() - this.lastHoveredTime > (long)this.tooltipDelay && (screen = MinecraftClient.getInstance().currentScreen) != null) {
-            screen.setTooltip(this.tooltip);
+            screen.setTooltip(this.tooltip, this.getTooltipPositioner(), this.isFocused());
         }
+    }
+
+    protected TooltipPositioner getTooltipPositioner() {
+        if (this.isFocused()) {
+            return new FocusedTooltipPositioner(this);
+        }
+        return HoveredTooltipPositioner.INSTANCE;
     }
 
     public void setTooltip(@Nullable Tooltip tooltip) {

@@ -124,7 +124,7 @@ import org.slf4j.Logger;
 
 public abstract class PlayerEntity
 extends LivingEntity {
-    private static final Logger field_38197 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final int field_30643 = 16;
     public static final int field_30644 = 20;
     public static final int field_30645 = 100;
@@ -691,7 +691,7 @@ extends LivingEntity {
             this.setShoulderEntityRight(nbt.getCompound("ShoulderEntityRight"));
         }
         if (nbt.contains("LastDeathLocation", NbtElement.COMPOUND_TYPE)) {
-            this.setLastDeathPos(GlobalPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("LastDeathLocation")).resultOrPartial(field_38197::error));
+            this.setLastDeathPos(GlobalPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("LastDeathLocation")).resultOrPartial(LOGGER::error));
         }
     }
 
@@ -716,7 +716,7 @@ extends LivingEntity {
         if (!this.getShoulderEntityRight().isEmpty()) {
             nbt.put("ShoulderEntityRight", this.getShoulderEntityRight());
         }
-        this.getLastDeathPos().flatMap(globalPos -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, (GlobalPos)globalPos).resultOrPartial(field_38197::error)).ifPresent(nbtElement -> nbt.put("LastDeathLocation", (NbtElement)nbtElement));
+        this.getLastDeathPos().flatMap(globalPos -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, (GlobalPos)globalPos).resultOrPartial(LOGGER::error)).ifPresent(nbtElement -> nbt.put("LastDeathLocation", (NbtElement)nbtElement));
     }
 
     @Override

@@ -43,7 +43,6 @@ extends LandPathNodeMaker {
     }
 
     @Override
-    @Nullable
     public PathNode getStart() {
         if (!this.entity.isTouchingWater()) {
             return super.getStart();
@@ -52,7 +51,6 @@ extends LandPathNodeMaker {
     }
 
     @Override
-    @Nullable
     public TargetPathNode getNode(double x, double y, double z) {
         return this.asTargetPathNode(this.getNode(MathHelper.floor(x), MathHelper.floor(y + 0.5), MathHelper.floor(z)));
     }

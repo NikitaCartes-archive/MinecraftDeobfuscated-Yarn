@@ -26,14 +26,18 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
-import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.screen.narration.ScreenNarrator;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
+import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
 import net.minecraft.client.gui.tooltip.TooltipComponent;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
@@ -59,6 +63,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
+import org.joml.Vector2ic;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -94,7 +99,7 @@ implements Drawable {
     @Nullable
     private Selectable selected;
     @Nullable
-    private List<OrderedText> tooltip;
+    private PositionedTooltip tooltip;
 
     protected Screen(Text title) {
         this.title = title;
@@ -111,7 +116,7 @@ implements Drawable {
     public final void renderWithTooltip(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.render(matrices, mouseX, mouseY, delta);
         if (this.tooltip != null) {
-            this.renderOrderedTooltip(matrices, this.tooltip, mouseX, mouseY);
+            this.renderPositionedTooltip(matrices, this.tooltip, mouseX, mouseY);
             this.tooltip = null;
         }
     }
@@ -190,7 +195,7 @@ implements Drawable {
     public void renderTooltip(MatrixStack matrices, List<Text> lines, Optional<TooltipData> data2, int x, int y) {
         List<TooltipComponent> list = lines.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
         data2.ifPresent(data -> list.add(1, TooltipComponent.of(data)));
-        this.renderTooltipFromComponents(matrices, list, x, y);
+        this.renderTooltipFromComponents(matrices, list, x, y, HoveredTooltipPositioner.INSTANCE);
     }
 
     public List<Text> getTooltipFromItem(ItemStack stack) {
@@ -206,12 +211,16 @@ implements Drawable {
     }
 
     public void renderOrderedTooltip(MatrixStack matrices, List<? extends OrderedText> lines, int x, int y) {
-        this.renderTooltipFromComponents(matrices, lines.stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y);
+        this.renderTooltipFromComponents(matrices, lines.stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y, HoveredTooltipPositioner.INSTANCE);
     }
 
-    private void renderTooltipFromComponents(MatrixStack matrices, List<TooltipComponent> components, int x, int y) {
+    private void renderPositionedTooltip(MatrixStack matrices, PositionedTooltip tooltip, int x, int y) {
+        this.renderTooltipFromComponents(matrices, tooltip.tooltip().stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y, tooltip.positioner());
+    }
+
+    private void renderTooltipFromComponents(MatrixStack matrices, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {
         TooltipComponent tooltipComponent2;
-        int t;
+        int q;
         int k;
         if (components.isEmpty()) {
             return;
@@ -229,17 +238,11 @@ implements Drawable {
         int m = y - 12;
         k = i;
         int n = j;
-        if (l + i > this.width) {
-            l = Math.max(l - 24 - 4 - i, 4);
-        }
-        if (m + n + 6 > this.height) {
-            m = this.height - n - 6;
-        }
+        Vector2ic vector2ic = positioner.getPosition(this, l, m, k, n);
+        l = vector2ic.x();
+        m = vector2ic.y();
         matrices.push();
-        int o = -267386864;
-        int p = 0x505000FF;
-        int q = 1344798847;
-        int r = 400;
+        int o = 400;
         float f = this.itemRenderer.zOffset;
         this.itemRenderer.zOffset = 400.0f;
         Tessellator tessellator = Tessellator.getInstance();
@@ -247,15 +250,7 @@ implements Drawable {
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-        Screen.fillGradient(matrix4f, bufferBuilder, l - 3, m - 4, l + k + 3, m - 3, 400, -267386864, -267386864);
-        Screen.fillGradient(matrix4f, bufferBuilder, l - 3, m + n + 3, l + k + 3, m + n + 4, 400, -267386864, -267386864);
-        Screen.fillGradient(matrix4f, bufferBuilder, l - 3, m - 3, l + k + 3, m + n + 3, 400, -267386864, -267386864);
-        Screen.fillGradient(matrix4f, bufferBuilder, l - 4, m - 3, l - 3, m + n + 3, 400, -267386864, -267386864);
-        Screen.fillGradient(matrix4f, bufferBuilder, l + k + 3, m - 3, l + k + 4, m + n + 3, 400, -267386864, -267386864);
-        Screen.fillGradient(matrix4f, bufferBuilder, l - 3, m - 3 + 1, l - 3 + 1, m + n + 3 - 1, 400, 0x505000FF, 1344798847);
-        Screen.fillGradient(matrix4f, bufferBuilder, l + k + 2, m - 3 + 1, l + k + 3, m + n + 3 - 1, 400, 0x505000FF, 1344798847);
-        Screen.fillGradient(matrix4f, bufferBuilder, l - 3, m - 3, l + k + 3, m - 3 + 1, 400, 0x505000FF, 0x505000FF);
-        Screen.fillGradient(matrix4f, bufferBuilder, l - 3, m + n + 2, l + k + 3, m + n + 3, 400, 1344798847, 1344798847);
+        TooltipBackgroundRenderer.render((matrix, builder, startX, startY, endX, endY, z, colorStart, colorEnd) -> DrawableHelper.fillGradient(matrix, builder, startX, startY, endX, endY, z, colorStart, colorEnd), matrix4f, bufferBuilder, l, m, k, n, 400);
         RenderSystem.enableDepthTest();
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
@@ -265,19 +260,19 @@ implements Drawable {
         RenderSystem.enableTexture();
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         matrices.translate(0.0f, 0.0f, 400.0f);
-        int s = m;
-        for (t = 0; t < components.size(); ++t) {
-            tooltipComponent2 = components.get(t);
-            tooltipComponent2.drawText(this.textRenderer, l, s, matrix4f, immediate);
-            s += tooltipComponent2.getHeight() + (t == 0 ? 2 : 0);
+        int p = m;
+        for (q = 0; q < components.size(); ++q) {
+            tooltipComponent2 = components.get(q);
+            tooltipComponent2.drawText(this.textRenderer, l, p, matrix4f, immediate);
+            p += tooltipComponent2.getHeight() + (q == 0 ? 2 : 0);
         }
         immediate.draw();
         matrices.pop();
-        s = m;
-        for (t = 0; t < components.size(); ++t) {
-            tooltipComponent2 = components.get(t);
-            tooltipComponent2.drawItems(this.textRenderer, l, s, matrices, this.itemRenderer, 400);
-            s += tooltipComponent2.getHeight() + (t == 0 ? 2 : 0);
+        p = m;
+        for (q = 0; q < components.size(); ++q) {
+            tooltipComponent2 = components.get(q);
+            tooltipComponent2.drawItems(this.textRenderer, l, p, matrices, this.itemRenderer, 400);
+            p += tooltipComponent2.getHeight() + (q == 0 ? 2 : 0);
         }
         this.itemRenderer.zOffset = f;
     }
@@ -634,15 +629,21 @@ implements Drawable {
     }
 
     public void setTooltip(List<OrderedText> tooltip) {
-        this.tooltip = tooltip;
+        this.setTooltip(tooltip, HoveredTooltipPositioner.INSTANCE, true);
+    }
+
+    public void setTooltip(List<OrderedText> tooltip, TooltipPositioner positioner, boolean focused) {
+        if (this.tooltip == null || focused) {
+            this.tooltip = new PositionedTooltip(tooltip, positioner);
+        }
     }
 
     protected void setTooltip(Text tooltip) {
         this.setTooltip(Tooltip.wrapLines(this.client, tooltip));
     }
 
-    public void setTooltip(Tooltip tooltip) {
-        this.setTooltip(tooltip.getLines(this.client));
+    public void setTooltip(Tooltip tooltip, TooltipPositioner positioner, boolean focused) {
+        this.setTooltip(tooltip.getLines(this.client), positioner, focused);
     }
 
     protected static void hide(ClickableWidget ... widgets) {
@@ -653,6 +654,10 @@ implements Drawable {
 
     static {
         NARRATOR_MODE_CHANGE_DELAY = SCREEN_INIT_NARRATION_DELAY = TimeUnit.SECONDS.toMillis(2L);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    record PositionedTooltip(List<OrderedText> tooltip, TooltipPositioner positioner) {
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -30,7 +30,7 @@ public final class LevelInfo {
 
     public static LevelInfo fromDynamic(Dynamic<?> dynamic, DataConfiguration dataConfiguration) {
         GameMode gameMode = GameMode.byId(dynamic.get("GameType").asInt(0));
-        return new LevelInfo(dynamic.get("LevelName").asString(""), gameMode, dynamic.get("hardcore").asBoolean(false), dynamic.get("Difficulty").asNumber().map(difficulty -> Difficulty.byOrdinal(difficulty.byteValue())).result().orElse(Difficulty.NORMAL), dynamic.get("allowCommands").asBoolean(gameMode == GameMode.CREATIVE), new GameRules(dynamic.get("GameRules")), dataConfiguration);
+        return new LevelInfo(dynamic.get("LevelName").asString(""), gameMode, dynamic.get("hardcore").asBoolean(false), dynamic.get("Difficulty").asNumber().map(difficulty -> Difficulty.byId(difficulty.byteValue())).result().orElse(Difficulty.NORMAL), dynamic.get("allowCommands").asBoolean(gameMode == GameMode.CREATIVE), new GameRules(dynamic.get("GameRules")), dataConfiguration);
     }
 
     public String getLevelName() {

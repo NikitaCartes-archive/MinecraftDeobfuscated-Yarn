@@ -23,50 +23,50 @@ import net.minecraft.util.Identifier;
 
 public class Schema1451v6
 extends IdentifierNormalizingSchema {
-    public static final String field_34013 = "_special";
+    public static final String SPECIAL_TYPE = "_special";
     protected static final Hook.HookFunction field_34014 = new Hook.HookFunction(){
 
         @Override
-        public <T> T apply(DynamicOps<T> dynamicOps, T object) {
-            Dynamic dynamic = new Dynamic(dynamicOps, object);
-            return DataFixUtils.orElse(dynamic.get("CriteriaName").asString().get().left().map(string -> {
-                int i = string.indexOf(58);
+        public <T> T apply(DynamicOps<T> ops, T value) {
+            Dynamic dynamic = new Dynamic(ops, value);
+            return DataFixUtils.orElse(dynamic.get("CriteriaName").asString().get().left().map(criteriaName -> {
+                int i = criteriaName.indexOf(58);
                 if (i < 0) {
-                    return Pair.of(Schema1451v6.field_34013, string);
+                    return Pair.of(Schema1451v6.SPECIAL_TYPE, criteriaName);
                 }
                 try {
-                    Identifier identifier = Identifier.splitOn(string.substring(0, i), '.');
-                    Identifier identifier2 = Identifier.splitOn(string.substring(i + 1), '.');
+                    Identifier identifier = Identifier.splitOn(criteriaName.substring(0, i), '.');
+                    Identifier identifier2 = Identifier.splitOn(criteriaName.substring(i + 1), '.');
                     return Pair.of(identifier.toString(), identifier2.toString());
                 } catch (Exception exception) {
-                    return Pair.of(Schema1451v6.field_34013, string);
+                    return Pair.of(Schema1451v6.SPECIAL_TYPE, criteriaName);
                 }
             }).map(pair -> dynamic.set("CriteriaType", dynamic.createMap(ImmutableMap.of(dynamic.createString("type"), dynamic.createString((String)pair.getFirst()), dynamic.createString("id"), dynamic.createString((String)pair.getSecond()))))), dynamic).getValue();
         }
     };
     protected static final Hook.HookFunction field_34015 = new Hook.HookFunction(){
 
-        private String method_37399(String string) {
-            Identifier identifier = Identifier.tryParse(string);
-            return identifier != null ? identifier.getNamespace() + "." + identifier.getPath() : string;
+        private String normalize(String id) {
+            Identifier identifier = Identifier.tryParse(id);
+            return identifier != null ? identifier.getNamespace() + "." + identifier.getPath() : id;
         }
 
         @Override
-        public <T> T apply(DynamicOps<T> dynamicOps, T object) {
-            Dynamic dynamic = new Dynamic(dynamicOps, object);
-            Optional<Dynamic> optional = dynamic.get("CriteriaType").get().get().left().flatMap(dynamic2 -> {
-                Optional<String> optional = dynamic2.get("type").asString().get().left();
-                Optional<String> optional2 = dynamic2.get("id").asString().get().left();
+        public <T> T apply(DynamicOps<T> ops, T value) {
+            Dynamic dynamic = new Dynamic(ops, value);
+            Optional<Dynamic> optional = dynamic.get("CriteriaType").get().get().left().flatMap(criteriaType -> {
+                Optional<String> optional = criteriaType.get("type").asString().get().left();
+                Optional<String> optional2 = criteriaType.get("id").asString().get().left();
                 if (optional.isPresent() && optional2.isPresent()) {
                     String string = optional.get();
-                    if (string.equals(Schema1451v6.field_34013)) {
+                    if (string.equals(Schema1451v6.SPECIAL_TYPE)) {
                         return Optional.of(dynamic.createString(optional2.get()));
                     }
-                    return Optional.of(dynamic2.createString(this.method_37399(string) + ":" + this.method_37399(optional2.get())));
+                    return Optional.of(criteriaType.createString(this.normalize(string) + ":" + this.normalize(optional2.get())));
                 }
                 return Optional.empty();
             });
-            return DataFixUtils.orElse(optional.map(dynamic2 -> dynamic.set("CriteriaName", (Dynamic<?>)dynamic2).remove("CriteriaType")), dynamic).getValue();
+            return DataFixUtils.orElse(optional.map(criteriaName -> dynamic.set("CriteriaName", (Dynamic<?>)criteriaName).remove("CriteriaType")), dynamic).getValue();
         }
     };
 
@@ -97,7 +97,7 @@ extends IdentifierNormalizingSchema {
         map.put("minecraft:killed", supplier3);
         map.put("minecraft:killed_by", supplier3);
         map.put("minecraft:custom", () -> DSL.optionalFields("id", DSL.constType(Schema1451v6.getIdentifierType())));
-        map.put(field_34013, () -> DSL.optionalFields("id", DSL.constType(DSL.string())));
+        map.put(SPECIAL_TYPE, () -> DSL.optionalFields("id", DSL.constType(DSL.string())));
         return map;
     }
 }

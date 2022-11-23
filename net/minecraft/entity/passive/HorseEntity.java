@@ -102,17 +102,17 @@ implements VariantHolder<HorseColor> {
     }
 
     private void setHorseVariant(HorseColor color, HorseMarking marking) {
-        this.setHorseVariant(color.getIndex() & 0xFF | marking.getIndex() << 8 & 0xFF00);
+        this.setHorseVariant(color.getId() & 0xFF | marking.getId() << 8 & 0xFF00);
     }
 
     @Override
     public HorseColor getVariant() {
-        return HorseColor.byIndex(this.getHorseVariant() & 0xFF);
+        return HorseColor.byId(this.getHorseVariant() & 0xFF);
     }
 
     @Override
     public void setVariant(HorseColor horseColor) {
-        this.setHorseVariant(horseColor.getIndex() & 0xFF | this.getHorseVariant() & 0xFFFFFF00);
+        this.setHorseVariant(horseColor.getId() & 0xFF | this.getHorseVariant() & 0xFFFFFF00);
     }
 
     public HorseMarking getMarking() {

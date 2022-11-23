@@ -56,7 +56,7 @@ import org.slf4j.Logger;
 
 public class RuinedPortalStructurePiece
 extends SimpleStructurePiece {
-    private static final Logger field_24992 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final float field_31620 = 0.3f;
     private static final float field_31621 = 0.07f;
     private static final float field_31622 = 0.2f;
@@ -72,7 +72,7 @@ extends SimpleStructurePiece {
     public RuinedPortalStructurePiece(StructureTemplateManager manager, NbtCompound nbt) {
         super(StructurePieceType.RUINED_PORTAL, nbt, manager, id -> RuinedPortalStructurePiece.createPlacementData(manager, nbt, id));
         this.verticalPlacement = VerticalPlacement.getFromId(nbt.getString("VerticalPlacement"));
-        this.properties = (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error);
+        this.properties = (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, LOGGER::error);
     }
 
     @Override
@@ -81,13 +81,13 @@ extends SimpleStructurePiece {
         nbt.putString("Rotation", this.placementData.getRotation().name());
         nbt.putString("Mirror", this.placementData.getMirror().name());
         nbt.putString("VerticalPlacement", this.verticalPlacement.getId());
-        Properties.CODEC.encodeStart(NbtOps.INSTANCE, this.properties).resultOrPartial(field_24992::error).ifPresent(nbtElement -> nbt.put("Properties", (NbtElement)nbtElement));
+        Properties.CODEC.encodeStart(NbtOps.INSTANCE, this.properties).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("Properties", (NbtElement)nbtElement));
     }
 
     private static StructurePlacementData createPlacementData(StructureTemplateManager manager, NbtCompound nbt, Identifier id) {
         StructureTemplate structureTemplate = manager.getTemplateOrBlank(id);
         BlockPos blockPos = new BlockPos(structureTemplate.getSize().getX() / 2, 0, structureTemplate.getSize().getZ() / 2);
-        return RuinedPortalStructurePiece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mirror")), BlockRotation.valueOf(nbt.getString("Rotation")), VerticalPlacement.getFromId(nbt.getString("VerticalPlacement")), blockPos, (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error));
+        return RuinedPortalStructurePiece.createPlacementData(BlockMirror.valueOf(nbt.getString("Mirror")), BlockRotation.valueOf(nbt.getString("Rotation")), VerticalPlacement.getFromId(nbt.getString("VerticalPlacement")), blockPos, (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, LOGGER::error));
     }
 
     private static StructurePlacementData createPlacementData(BlockMirror mirror, BlockRotation rotation, VerticalPlacement verticalPlacement, BlockPos pos, Properties properties) {

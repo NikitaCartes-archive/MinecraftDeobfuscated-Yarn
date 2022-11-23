@@ -412,7 +412,6 @@ implements VariantHolder<FrogVariant> {
         }
 
         @Override
-        @Nullable
         public PathNode getStart() {
             if (!this.entity.isTouchingWater()) {
                 return super.getStart();

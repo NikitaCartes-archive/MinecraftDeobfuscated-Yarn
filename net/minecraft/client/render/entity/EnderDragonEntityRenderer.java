@@ -94,15 +94,15 @@ extends EntityRenderer<EnderDragonEntity> {
                 float p = random.nextFloat() * 2.0f + 1.0f + m * 2.0f;
                 Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
                 int q = (int)(255.0f * (1.0f - m));
-                EnderDragonEntityRenderer.method_23157(vertexConsumer4, matrix4f, q);
-                EnderDragonEntityRenderer.method_23156(vertexConsumer4, matrix4f, o, p);
-                EnderDragonEntityRenderer.method_23158(vertexConsumer4, matrix4f, o, p);
-                EnderDragonEntityRenderer.method_23157(vertexConsumer4, matrix4f, q);
-                EnderDragonEntityRenderer.method_23158(vertexConsumer4, matrix4f, o, p);
-                EnderDragonEntityRenderer.method_23159(vertexConsumer4, matrix4f, o, p);
-                EnderDragonEntityRenderer.method_23157(vertexConsumer4, matrix4f, q);
-                EnderDragonEntityRenderer.method_23159(vertexConsumer4, matrix4f, o, p);
-                EnderDragonEntityRenderer.method_23156(vertexConsumer4, matrix4f, o, p);
+                EnderDragonEntityRenderer.putDeathLightSourceVertex(vertexConsumer4, matrix4f, q);
+                EnderDragonEntityRenderer.putDeathLightNegativeXTerminalVertex(vertexConsumer4, matrix4f, o, p);
+                EnderDragonEntityRenderer.putDeathLightPositiveXTerminalVertex(vertexConsumer4, matrix4f, o, p);
+                EnderDragonEntityRenderer.putDeathLightSourceVertex(vertexConsumer4, matrix4f, q);
+                EnderDragonEntityRenderer.putDeathLightPositiveXTerminalVertex(vertexConsumer4, matrix4f, o, p);
+                EnderDragonEntityRenderer.putDeathLightPositiveZTerminalVertex(vertexConsumer4, matrix4f, o, p);
+                EnderDragonEntityRenderer.putDeathLightSourceVertex(vertexConsumer4, matrix4f, q);
+                EnderDragonEntityRenderer.putDeathLightPositiveZTerminalVertex(vertexConsumer4, matrix4f, o, p);
+                EnderDragonEntityRenderer.putDeathLightNegativeXTerminalVertex(vertexConsumer4, matrix4f, o, p);
                 ++n;
             }
             matrixStack.pop();
@@ -119,20 +119,20 @@ extends EntityRenderer<EnderDragonEntity> {
         super.render(enderDragonEntity, f, g, matrixStack, vertexConsumerProvider, i);
     }
 
-    private static void method_23157(VertexConsumer vertices, Matrix4f matrix, int alpha) {
-        vertices.vertex(matrix, 0.0f, 0.0f, 0.0f).color(255, 255, 255, alpha).next();
+    private static void putDeathLightSourceVertex(VertexConsumer buffer, Matrix4f matrix, int alpha) {
+        buffer.vertex(matrix, 0.0f, 0.0f, 0.0f).color(255, 255, 255, alpha).next();
     }
 
-    private static void method_23156(VertexConsumer vertices, Matrix4f matrix, float y, float x) {
-        vertices.vertex(matrix, -HALF_SQRT_3 * x, y, -0.5f * x).color(255, 0, 255, 0).next();
+    private static void putDeathLightNegativeXTerminalVertex(VertexConsumer buffer, Matrix4f matrix, float radius, float width) {
+        buffer.vertex(matrix, -HALF_SQRT_3 * width, radius, -0.5f * width).color(255, 0, 255, 0).next();
     }
 
-    private static void method_23158(VertexConsumer vertices, Matrix4f matrix, float y, float x) {
-        vertices.vertex(matrix, HALF_SQRT_3 * x, y, -0.5f * x).color(255, 0, 255, 0).next();
+    private static void putDeathLightPositiveXTerminalVertex(VertexConsumer buffer, Matrix4f matrix, float radius, float width) {
+        buffer.vertex(matrix, HALF_SQRT_3 * width, radius, -0.5f * width).color(255, 0, 255, 0).next();
     }
 
-    private static void method_23159(VertexConsumer vertices, Matrix4f matrix, float y, float z) {
-        vertices.vertex(matrix, 0.0f, y, 1.0f * z).color(255, 0, 255, 0).next();
+    private static void putDeathLightPositiveZTerminalVertex(VertexConsumer buffer, Matrix4f matrix, float radius, float width) {
+        buffer.vertex(matrix, 0.0f, radius, 1.0f * width).color(255, 0, 255, 0).next();
     }
 
     public static void renderCrystalBeam(float dx, float dy, float dz, float tickDelta, int age, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {

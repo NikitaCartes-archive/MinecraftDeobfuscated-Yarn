@@ -26,7 +26,7 @@ extends IdentifierNormalizingSchema {
     public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
         Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
         Schema1800.targetEntityItems(schema, map, "minecraft:panda");
-        schema.register(map, "minecraft:pillager", (String string) -> DSL.optionalFields("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema)), Schema100.targetItems(schema)));
+        schema.register(map, "minecraft:pillager", (String name) -> DSL.optionalFields("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema)), Schema100.targetItems(schema)));
         return map;
     }
 }

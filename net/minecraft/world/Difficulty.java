@@ -3,18 +3,21 @@
  */
 package net.minecraft.world;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.IntFunction;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import org.jetbrains.annotations.Nullable;
 
-public enum Difficulty {
+public enum Difficulty implements StringIdentifiable
+{
     PEACEFUL(0, "peaceful"),
     EASY(1, "easy"),
     NORMAL(2, "normal"),
     HARD(3, "hard");
 
-    private static final Difficulty[] BY_NAME;
+    public static final StringIdentifiable.Codec<Difficulty> CODEC;
+    private static final IntFunction<Difficulty> BY_ID;
     private final int id;
     private final String name;
 
@@ -31,25 +34,27 @@ public enum Difficulty {
         return Text.translatable("options.difficulty." + this.name);
     }
 
-    public static Difficulty byOrdinal(int ordinal) {
-        return BY_NAME[ordinal % BY_NAME.length];
+    public static Difficulty byId(int id) {
+        return BY_ID.apply(id);
     }
 
     @Nullable
     public static Difficulty byName(String name) {
-        for (Difficulty difficulty : Difficulty.values()) {
-            if (!difficulty.name.equals(name)) continue;
-            return difficulty;
-        }
-        return null;
+        return CODEC.byId(name);
     }
 
     public String getName() {
         return this.name;
     }
 
+    @Override
+    public String asString() {
+        return this.name;
+    }
+
     static {
-        BY_NAME = (Difficulty[])Arrays.stream(Difficulty.values()).sorted(Comparator.comparingInt(Difficulty::getId)).toArray(Difficulty[]::new);
+        CODEC = StringIdentifiable.createCodec(Difficulty::values);
+        BY_ID = ValueLists.createIdToValueFunction(Difficulty::getId, Difficulty.values(), ValueLists.OutOfBoundsHandling.WRAP);
     }
 }
 

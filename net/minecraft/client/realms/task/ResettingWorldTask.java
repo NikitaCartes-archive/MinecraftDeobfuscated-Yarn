@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public abstract class ResettingWorldTask
 extends LongRunningTask {
-    private static final Logger field_36358 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final long serverId;
     private final Text title;
     private final Runnable callback;
@@ -54,7 +54,7 @@ extends LongRunningTask {
                 if (this.aborted()) {
                     return;
                 }
-                field_36358.error("Couldn't reset world");
+                LOGGER.error("Couldn't reset world");
                 this.error(exception.toString());
                 return;
             }

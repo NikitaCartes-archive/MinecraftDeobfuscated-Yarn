@@ -3,18 +3,24 @@
  */
 package net.minecraft.world;
 
+import java.util.function.IntFunction;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-public enum GameMode {
+public enum GameMode implements StringIdentifiable
+{
     SURVIVAL(0, "survival"),
     CREATIVE(1, "creative"),
     ADVENTURE(2, "adventure"),
     SPECTATOR(3, "spectator");
 
     public static final GameMode DEFAULT;
+    public static final StringIdentifiable.Codec<GameMode> CODEC;
+    private static final IntFunction<GameMode> BY_ID;
     private static final int UNKNOWN = -1;
     private final int id;
     private final String name;
@@ -33,6 +39,11 @@ public enum GameMode {
     }
 
     public String getName() {
+        return this.name;
+    }
+
+    @Override
+    public String asString() {
         return this.name;
     }
 
@@ -76,15 +87,7 @@ public enum GameMode {
     }
 
     public static GameMode byId(int id) {
-        return GameMode.byId(id, DEFAULT);
-    }
-
-    public static GameMode byId(int id, GameMode defaultMode) {
-        for (GameMode gameMode : GameMode.values()) {
-            if (gameMode.id != id) continue;
-            return gameMode;
-        }
-        return defaultMode;
+        return BY_ID.apply(id);
     }
 
     public static GameMode byName(String name) {
@@ -94,11 +97,8 @@ public enum GameMode {
     @Nullable
     @Contract(value="_,!null->!null;_,null->_")
     public static GameMode byName(String name, @Nullable GameMode defaultMode) {
-        for (GameMode gameMode : GameMode.values()) {
-            if (!gameMode.name.equals(name)) continue;
-            return gameMode;
-        }
-        return defaultMode;
+        GameMode gameMode = CODEC.byId(name);
+        return gameMode != null ? gameMode : defaultMode;
     }
 
     public static int getId(@Nullable GameMode gameMode) {
@@ -115,6 +115,8 @@ public enum GameMode {
 
     static {
         DEFAULT = SURVIVAL;
+        CODEC = StringIdentifiable.createCodec(GameMode::values);
+        BY_ID = ValueLists.createIdToValueFunction(GameMode::getId, GameMode.values(), ValueLists.OutOfBoundsHandling.ZERO);
     }
 }
 

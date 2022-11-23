@@ -31,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class OpenDoorsTask {
     private static final int RUN_TIME = 20;
-    private static final double PATHING_DISTANCE = 2.0;
+    private static final double PATHING_DISTANCE = 3.0;
     private static final double REACH_DISTANCE = 2.0;
 
     public static Task<LivingEntity> create() {
@@ -125,7 +125,7 @@ public class OpenDoorsTask {
     }
 
     private static boolean cannotReachDoor(ServerWorld world, LivingEntity entity, GlobalPos doorPos) {
-        return doorPos.getDimension() != world.getRegistryKey() || !doorPos.getPos().isWithinDistance(entity.getPos(), 2.0);
+        return doorPos.getDimension() != world.getRegistryKey() || !doorPos.getPos().isWithinDistance(entity.getPos(), 3.0);
     }
 
     private static Optional<Set<GlobalPos>> storePos(MemoryQueryResult<OptionalBox.Mu, Set<GlobalPos>> queryResult, Optional<Set<GlobalPos>> doors, ServerWorld world, BlockPos pos) {

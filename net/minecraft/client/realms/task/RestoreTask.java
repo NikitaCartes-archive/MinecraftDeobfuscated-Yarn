@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class RestoreTask
 extends LongRunningTask {
-    private static final Logger field_36359 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final Backup backup;
     private final long worldId;
     private final RealmsConfigureWorldScreen lastScreen;
@@ -57,14 +57,14 @@ extends LongRunningTask {
                 if (this.aborted()) {
                     return;
                 }
-                field_36359.error("Couldn't restore backup", realmsServiceException);
+                LOGGER.error("Couldn't restore backup", realmsServiceException);
                 RestoreTask.setScreen(new RealmsGenericErrorScreen(realmsServiceException, (Screen)this.lastScreen));
                 return;
             } catch (Exception exception) {
                 if (this.aborted()) {
                     return;
                 }
-                field_36359.error("Couldn't restore backup", exception);
+                LOGGER.error("Couldn't restore backup", exception);
                 this.error(exception.getLocalizedMessage());
                 return;
             }

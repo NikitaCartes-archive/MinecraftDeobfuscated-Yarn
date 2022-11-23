@@ -100,6 +100,7 @@ extends AbstractItemTagProvider {
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.AXOLOTL_TEMPT_ITEMS)).add(Items.TROPICAL_FISH_BUCKET);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.CLUSTER_MAX_HARVESTABLES)).add(Items.DIAMOND_PICKAXE, Items.GOLDEN_PICKAXE, Items.IRON_PICKAXE, Items.NETHERITE_PICKAXE, Items.STONE_PICKAXE, Items.WOODEN_PICKAXE);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.COMPASSES)).add(Items.COMPASS).add(Items.RECOVERY_COMPASS);
+        ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.CREEPER_IGNITERS)).add(Items.FLINT_AND_STEEL).add(Items.FIRE_CHARGE);
     }
 }
 

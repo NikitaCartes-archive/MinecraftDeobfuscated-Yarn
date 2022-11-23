@@ -3,12 +3,11 @@
  */
 package net.minecraft.client.option;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.TranslatableOption;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.function.ValueLists;
 
 @Environment(value=EnvType.CLIENT)
 public enum ParticlesMode implements TranslatableOption
@@ -17,7 +16,7 @@ public enum ParticlesMode implements TranslatableOption
     DECREASED(1, "options.particles.decreased"),
     MINIMAL(2, "options.particles.minimal");
 
-    private static final ParticlesMode[] VALUES;
+    private static final IntFunction<ParticlesMode> BY_ID;
     private final int id;
     private final String translationKey;
 
@@ -37,11 +36,11 @@ public enum ParticlesMode implements TranslatableOption
     }
 
     public static ParticlesMode byId(int id) {
-        return VALUES[MathHelper.floorMod(id, VALUES.length)];
+        return BY_ID.apply(id);
     }
 
     static {
-        VALUES = (ParticlesMode[])Arrays.stream(ParticlesMode.values()).sorted(Comparator.comparingInt(ParticlesMode::getId)).toArray(ParticlesMode[]::new);
+        BY_ID = ValueLists.createIdToValueFunction(ParticlesMode::getId, ParticlesMode.values(), ValueLists.OutOfBoundsHandling.WRAP);
     }
 }
 

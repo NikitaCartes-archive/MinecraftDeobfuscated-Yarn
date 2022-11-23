@@ -4,9 +4,7 @@
 package net.minecraft.entity.passive;
 
 import com.mojang.serialization.Codec;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.IntFunction;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -31,6 +29,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
@@ -209,7 +208,7 @@ implements VariantHolder<Variety> {
         CLAYFISH("clayfish", Size.LARGE, 5);
 
         public static final Codec<Variety> CODEC;
-        private static final IntFunction<Variety> VARIETY_BY_ID;
+        private static final IntFunction<Variety> BY_ID;
         private final String name;
         private final Text text;
         private final Size size;
@@ -223,7 +222,7 @@ implements VariantHolder<Variety> {
         }
 
         public static Variety fromId(int id) {
-            return Objects.requireNonNullElse(VARIETY_BY_ID.apply(id), KOB);
+            return BY_ID.apply(id);
         }
 
         public Size getSize() {
@@ -245,11 +244,7 @@ implements VariantHolder<Variety> {
 
         static {
             CODEC = StringIdentifiable.createCodec(Variety::values);
-            VARIETY_BY_ID = Util.make(new Int2ObjectOpenHashMap(), map -> {
-                for (Variety variety : Variety.values()) {
-                    map.put(variety.id, variety);
-                }
-            });
+            BY_ID = ValueLists.createIdToValueFunction(Variety::getId, Variety.values(), KOB);
         }
     }
 

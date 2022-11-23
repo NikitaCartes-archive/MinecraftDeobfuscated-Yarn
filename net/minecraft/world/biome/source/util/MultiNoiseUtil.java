@@ -238,7 +238,7 @@ public class MultiNoiseUtil {
     }
 
     protected static final class SearchTree<T> {
-        private static final int MAX_NODES_FOR_SIMPLE_TREE = 10;
+        private static final int MAX_NODES_FOR_SIMPLE_TREE = 6;
         private final TreeNode<T> firstNode;
         private final ThreadLocal<TreeLeafNode<T>> previousResultNode = new ThreadLocal();
 
@@ -265,7 +265,7 @@ public class MultiNoiseUtil {
             if (subTree.size() == 1) {
                 return subTree.get(0);
             }
-            if (subTree.size() <= 10) {
+            if (subTree.size() <= 6) {
                 subTree.sort(Comparator.comparingLong(node -> {
                     long l = 0L;
                     for (int j = 0; j < parameterNumber; ++j) {
@@ -314,7 +314,7 @@ public class MultiNoiseUtil {
         private static <T> List<TreeBranchNode<T>> getBatchedTree(List<? extends TreeNode<T>> nodes) {
             ArrayList<TreeBranchNode<T>> list = Lists.newArrayList();
             ArrayList<TreeNode<T>> list2 = Lists.newArrayList();
-            int i = (int)Math.pow(10.0, Math.floor(Math.log((double)nodes.size() - 0.01) / Math.log(10.0)));
+            int i = (int)Math.pow(6.0, Math.floor(Math.log((double)nodes.size() - 0.01) / Math.log(6.0)));
             for (TreeNode<T> treeNode : nodes) {
                 list2.add(treeNode);
                 if (list2.size() < i) continue;

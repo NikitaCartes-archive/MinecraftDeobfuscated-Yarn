@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.passive;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import net.minecraft.block.BlockState;
@@ -274,7 +273,7 @@ VariantHolder<Type> {
         }
 
         static Type fromName(String name) {
-            return Objects.requireNonNullElse(CODEC.byId(name), RED);
+            return CODEC.byId(name, RED);
         }
 
         static {

@@ -13,7 +13,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkCache;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class PathNodeMaker {
     protected ChunkCache cachedWorld;
@@ -41,28 +40,20 @@ public abstract class PathNodeMaker {
         this.entity = null;
     }
 
-    @Nullable
     protected PathNode getNode(BlockPos pos) {
         return this.getNode(pos.getX(), pos.getY(), pos.getZ());
     }
 
-    @Nullable
     protected PathNode getNode(int x, int y, int z) {
         return this.pathNodeCache.computeIfAbsent(PathNode.hash(x, y, z), l -> new PathNode(x, y, z));
     }
 
-    @Nullable
     public abstract PathNode getStart();
 
-    @Nullable
     public abstract TargetPathNode getNode(double var1, double var3, double var5);
 
-    @Nullable
-    protected TargetPathNode asTargetPathNode(@Nullable PathNode node) {
-        if (node != null) {
-            return new TargetPathNode(node);
-        }
-        return null;
+    protected TargetPathNode asTargetPathNode(PathNode node) {
+        return new TargetPathNode(node);
     }
 
     public abstract int getSuccessors(PathNode[] var1, PathNode var2);

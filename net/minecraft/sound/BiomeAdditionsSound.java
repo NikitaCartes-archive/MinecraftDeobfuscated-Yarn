@@ -7,13 +7,14 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.registry.Registries;
 import net.minecraft.sound.SoundEvent;
 
 /**
  * Represents an "additions sound" for a biome.
  */
 public class BiomeAdditionsSound {
-    public static final Codec<BiomeAdditionsSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.CODEC.fieldOf("sound")).forGetter(biomeAdditionsSound -> biomeAdditionsSound.sound), ((MapCodec)Codec.DOUBLE.fieldOf("tick_chance")).forGetter(biomeAdditionsSound -> biomeAdditionsSound.chance)).apply((Applicative<BiomeAdditionsSound, ?>)instance, BiomeAdditionsSound::new));
+    public static final Codec<BiomeAdditionsSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registries.SOUND_EVENT.getCodec().fieldOf("sound")).forGetter(sound -> sound.sound), ((MapCodec)Codec.DOUBLE.fieldOf("tick_chance")).forGetter(sound -> sound.chance)).apply((Applicative<BiomeAdditionsSound, ?>)instance, BiomeAdditionsSound::new));
     private final SoundEvent sound;
     private final double chance;
 

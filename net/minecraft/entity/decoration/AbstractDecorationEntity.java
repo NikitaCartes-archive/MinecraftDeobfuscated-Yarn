@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 
 public abstract class AbstractDecorationEntity
 extends Entity {
-    private static final Logger field_39455 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     protected static final Predicate<Entity> PREDICATE = entity -> entity instanceof AbstractDecorationEntity;
     private int obstructionCheckCounter;
     protected BlockPos attachmentPos;
@@ -187,7 +187,7 @@ extends Entity {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         BlockPos blockPos = new BlockPos(nbt.getInt("TileX"), nbt.getInt("TileY"), nbt.getInt("TileZ"));
         if (!blockPos.isWithinDistance(this.getBlockPos(), 16.0)) {
-            field_39455.error("Hanging entity at invalid position: {}", (Object)blockPos);
+            LOGGER.error("Hanging entity at invalid position: {}", (Object)blockPos);
             return;
         }
         this.attachmentPos = blockPos;

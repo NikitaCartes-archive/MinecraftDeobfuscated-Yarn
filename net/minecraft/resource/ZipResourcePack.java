@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 
 public class ZipResourcePack
 extends AbstractFileResourcePack {
-    private static final Logger field_39096 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     public static final Splitter TYPE_NAMESPACE_SPLITTER = Splitter.on('/').omitEmptyStrings().limit(3);
     private final File backingZipFile;
     @Nullable
@@ -50,7 +50,7 @@ extends AbstractFileResourcePack {
             try {
                 this.file = new ZipFile(this.backingZipFile);
             } catch (IOException iOException) {
-                field_39096.error("Failed to open pack {}", (Object)this.backingZipFile, (Object)iOException);
+                LOGGER.error("Failed to open pack {}", (Object)this.backingZipFile, (Object)iOException);
                 this.failedToOpen = true;
                 return null;
             }
@@ -104,7 +104,7 @@ extends AbstractFileResourcePack {
                 set.add(string2);
                 continue;
             }
-            field_39096.warn("Ignored non-lowercase namespace: {} in {}", (Object)string2, (Object)this.backingZipFile);
+            LOGGER.warn("Ignored non-lowercase namespace: {} in {}", (Object)string2, (Object)this.backingZipFile);
         }
         return set;
     }
@@ -141,7 +141,7 @@ extends AbstractFileResourcePack {
                 consumer.accept(identifier, InputSupplier.create(zipFile, zipEntry));
                 continue;
             }
-            field_39096.warn("Invalid path in datapack: {}:{}, ignoring", (Object)namespace, (Object)string4);
+            LOGGER.warn("Invalid path in datapack: {}:{}, ignoring", (Object)namespace, (Object)string4);
         }
     }
 }

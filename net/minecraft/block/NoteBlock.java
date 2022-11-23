@@ -28,6 +28,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
@@ -38,6 +39,7 @@ extends Block {
     public static final EnumProperty<Instrument> INSTRUMENT = Properties.INSTRUMENT;
     public static final BooleanProperty POWERED = Properties.POWERED;
     public static final IntProperty NOTE = Properties.NOTE;
+    public static final int field_41678 = 3;
 
     public NoteBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -112,7 +114,6 @@ extends Block {
 
     @Override
     public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
-        SoundEvent soundEvent;
         float f;
         Instrument instrument = state.get(INSTRUMENT);
         if (instrument.shouldSpawnNoteParticles()) {
@@ -123,24 +124,24 @@ extends Block {
             f = 1.0f;
         }
         if (instrument.hasCustomSound()) {
-            soundEvent = this.getCustomSound(instrument, world, pos);
-            if (soundEvent == null) {
+            Identifier identifier = this.getCustomSound(world, pos);
+            if (identifier == null) {
                 return false;
             }
+            world.playSound(null, Vec3d.ofCenter(pos), identifier, SoundCategory.RECORDS, 3.0f, f, SoundEvent.getDistanceToTravelForVolume(3.0f));
         } else {
-            soundEvent = instrument.getSound();
+            SoundEvent soundEvent = instrument.getSound();
+            world.playSound(null, pos, soundEvent, SoundCategory.RECORDS, 3.0f, f);
         }
-        world.playSound(null, pos, soundEvent, SoundCategory.RECORDS, 3.0f, f);
         return true;
     }
 
     @Nullable
-    private SoundEvent getCustomSound(Instrument instrument, World world, BlockPos pos) {
-        SkullBlockEntity skullBlockEntity;
-        Identifier identifier;
+    private Identifier getCustomSound(World world, BlockPos pos) {
         BlockEntity blockEntity = world.getBlockEntity(pos.up());
-        if (blockEntity instanceof SkullBlockEntity && (identifier = (skullBlockEntity = (SkullBlockEntity)blockEntity).getNoteBlockSound()) != null) {
-            return new SoundEvent(identifier);
+        if (blockEntity instanceof SkullBlockEntity) {
+            SkullBlockEntity skullBlockEntity = (SkullBlockEntity)blockEntity;
+            return skullBlockEntity.getNoteBlockSound();
         }
         return null;
     }

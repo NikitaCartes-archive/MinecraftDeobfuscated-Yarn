@@ -39,7 +39,7 @@ extends MobEntityRenderer<PandaEntity, PandaEntityModel<PandaEntity>> {
 
     @Override
     public Identifier getTexture(PandaEntity pandaEntity) {
-        return TEXTURES.getOrDefault((Object)pandaEntity.getProductGene(), TEXTURES.get((Object)PandaEntity.Gene.NORMAL));
+        return TEXTURES.getOrDefault(pandaEntity.getProductGene(), TEXTURES.get(PandaEntity.Gene.NORMAL));
     }
 
     @Override

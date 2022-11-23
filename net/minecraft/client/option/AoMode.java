@@ -3,12 +3,11 @@
  */
 package net.minecraft.client.option;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.TranslatableOption;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.function.ValueLists;
 
 @Environment(value=EnvType.CLIENT)
 public enum AoMode implements TranslatableOption
@@ -17,7 +16,7 @@ public enum AoMode implements TranslatableOption
     MIN(1, "options.ao.min"),
     MAX(2, "options.ao.max");
 
-    private static final AoMode[] VALUES;
+    private static final IntFunction<AoMode> BY_ID;
     private final int id;
     private final String translationKey;
 
@@ -37,11 +36,11 @@ public enum AoMode implements TranslatableOption
     }
 
     public static AoMode byId(int id) {
-        return VALUES[MathHelper.floorMod(id, VALUES.length)];
+        return BY_ID.apply(id);
     }
 
     static {
-        VALUES = (AoMode[])Arrays.stream(AoMode.values()).sorted(Comparator.comparingInt(AoMode::getId)).toArray(AoMode[]::new);
+        BY_ID = ValueLists.createIdToValueFunction(AoMode::getId, AoMode.values(), ValueLists.OutOfBoundsHandling.WRAP);
     }
 }
 

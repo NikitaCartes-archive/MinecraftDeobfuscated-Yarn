@@ -14,7 +14,7 @@ import org.slf4j.Logger;
 
 public class WorldUuidFix
 extends AbstractUuidFix {
-    private static final Logger field_36329 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
 
     public WorldUuidFix(Schema outputSchema) {
         super(outputSchema, TypeReferences.LEVEL);
@@ -40,7 +40,7 @@ extends AbstractUuidFix {
 
     private Dynamic<?> fixCustomBossEvents(Dynamic<?> dynamic2) {
         return dynamic2.update("CustomBossEvents", dynamic -> dynamic.updateMapValues(pair -> pair.mapSecond(dynamic -> dynamic.update("Players", dynamic22 -> dynamic.createList(dynamic22.asStream().map(dynamic -> WorldUuidFix.createArrayFromCompoundUuid(dynamic).orElseGet(() -> {
-            field_36329.warn("CustomBossEvents contains invalid UUIDs.");
+            LOGGER.warn("CustomBossEvents contains invalid UUIDs.");
             return dynamic;
         })))))));
     }

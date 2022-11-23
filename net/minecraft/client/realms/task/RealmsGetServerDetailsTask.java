@@ -34,7 +34,7 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class RealmsGetServerDetailsTask
 extends LongRunningTask {
-    private static final Logger field_36356 = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private final RealmsServer server;
     private final Screen lastScreen;
     private final RealmsMainScreen mainScreen;
@@ -54,7 +54,7 @@ extends LongRunningTask {
         try {
             realmsServerAddress = this.join();
         } catch (CancellationException cancellationException) {
-            field_36356.info("User aborted connecting to realms");
+            LOGGER.info("User aborted connecting to realms");
             return;
         } catch (RealmsServiceException realmsServiceException) {
             switch (realmsServiceException.getErrorCode(-1)) {
@@ -69,13 +69,13 @@ extends LongRunningTask {
                 }
             }
             this.error(realmsServiceException.toString());
-            field_36356.error("Couldn't connect to world", realmsServiceException);
+            LOGGER.error("Couldn't connect to world", realmsServiceException);
             return;
         } catch (TimeoutException timeoutException) {
             this.error(Text.translatable("mco.errorMessage.connectionFailure"));
             return;
         } catch (Exception exception) {
-            field_36356.error("Couldn't connect to world", exception);
+            LOGGER.error("Couldn't connect to world", exception);
             this.error(exception.getLocalizedMessage());
             return;
         }
@@ -113,7 +113,7 @@ extends LongRunningTask {
                 }
                 ((CompletableFuture)this.downloadResourcePack(address).thenRun(() -> RealmsGetServerDetailsTask.setScreen((Screen)connectingScreenCreator.apply(address)))).exceptionally(throwable -> {
                     MinecraftClient.getInstance().getServerResourcePackProvider().clear();
-                    field_36356.error("Failed to download resource pack from {}", (Object)address, throwable);
+                    LOGGER.error("Failed to download resource pack from {}", (Object)address, throwable);
                     RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen(Text.literal("Failed to download resource pack!"), this.lastScreen));
                     return null;
                 });

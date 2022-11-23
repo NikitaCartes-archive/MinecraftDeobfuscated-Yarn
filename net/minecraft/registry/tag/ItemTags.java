@@ -89,6 +89,7 @@ public final class ItemTags {
     public static final TagKey<Item> CLUSTER_MAX_HARVESTABLES = ItemTags.of("cluster_max_harvestables");
     public static final TagKey<Item> COMPASSES = ItemTags.of("compasses");
     public static final TagKey<Item> HANGING_SIGNS = ItemTags.of("hanging_signs");
+    public static final TagKey<Item> CREEPER_IGNITERS = ItemTags.of("creeper_igniters");
 
     private ItemTags() {
     }

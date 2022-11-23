@@ -27,6 +27,7 @@ import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class GameMenuScreen
@@ -53,6 +54,7 @@ extends Screen {
     private static final Text GAME_TEXT = Text.translatable("menu.game");
     private static final Text PAUSED_TEXT = Text.translatable("menu.paused");
     private final boolean showMenu;
+    @Nullable
     private ButtonWidget exitButton;
 
     public GameMenuScreen(boolean showMenu) {
@@ -126,7 +128,7 @@ extends Screen {
             this.renderBackground(matrices);
         }
         super.render(matrices, mouseX, mouseY, delta);
-        if (this.showMenu && this.client != null && this.client.getAbuseReportContext().hasDraft()) {
+        if (this.showMenu && this.client != null && this.client.getAbuseReportContext().hasDraft() && this.exitButton != null) {
             RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             this.drawTexture(matrices, this.exitButton.getX() + this.exitButton.getWidth() - 17, this.exitButton.getY() + 3, 182, 24, 15, 15);

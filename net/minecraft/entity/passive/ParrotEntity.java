@@ -8,11 +8,10 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -66,6 +65,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -412,7 +412,7 @@ Flutterer {
 
     @Override
     public void setVariant(Variant variant) {
-        this.dataTracker.set(VARIANT, variant.index);
+        this.dataTracker.set(VARIANT, variant.id);
     }
 
     @Override
@@ -424,7 +424,7 @@ Flutterer {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("Variant", this.getVariant().index);
+        nbt.putInt("Variant", this.getVariant().id);
     }
 
     @Override
@@ -457,21 +457,21 @@ Flutterer {
         GRAY(4, "gray");
 
         public static final Codec<Variant> CODEC;
-        private static final Variant[] VALUES;
-        final int index;
+        private static final IntFunction<Variant> BY_ID;
+        final int id;
         private final String name;
 
-        private Variant(int index, String name) {
-            this.index = index;
+        private Variant(int id, String name) {
+            this.id = id;
             this.name = name;
         }
 
-        public int getIndex() {
-            return this.index;
+        public int getId() {
+            return this.id;
         }
 
         public static Variant byIndex(int index) {
-            return VALUES[MathHelper.clamp(index, 0, VALUES.length - 1)];
+            return BY_ID.apply(index);
         }
 
         @Override
@@ -481,7 +481,7 @@ Flutterer {
 
         static {
             CODEC = StringIdentifiable.createCodec(Variant::values);
-            VALUES = (Variant[])Arrays.stream(Variant.values()).sorted(Comparator.comparingInt(Variant::getIndex)).toArray(Variant[]::new);
+            BY_ID = ValueLists.createIdToValueFunction(Variant::getId, Variant.values(), ValueLists.OutOfBoundsHandling.CLAMP);
         }
     }
 

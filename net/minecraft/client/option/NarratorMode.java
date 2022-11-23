@@ -3,12 +3,11 @@
  */
 package net.minecraft.client.option;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.function.ValueLists;
 
 /**
  * Contains the different narrator modes that control
@@ -33,7 +32,7 @@ public enum NarratorMode {
      */
     SYSTEM(3, "options.narrator.system");
 
-    private static final NarratorMode[] VALUES;
+    private static final IntFunction<NarratorMode> BY_ID;
     private final int id;
     private final Text name;
 
@@ -62,7 +61,7 @@ public enum NarratorMode {
      * @see #getId
      */
     public static NarratorMode byId(int id) {
-        return VALUES[MathHelper.floorMod(id, VALUES.length)];
+        return BY_ID.apply(id);
     }
 
     /**
@@ -86,7 +85,7 @@ public enum NarratorMode {
     }
 
     static {
-        VALUES = (NarratorMode[])Arrays.stream(NarratorMode.values()).sorted(Comparator.comparingInt(NarratorMode::getId)).toArray(NarratorMode[]::new);
+        BY_ID = ValueLists.createIdToValueFunction(NarratorMode::getId, NarratorMode.values(), ValueLists.OutOfBoundsHandling.WRAP);
     }
 }
 
