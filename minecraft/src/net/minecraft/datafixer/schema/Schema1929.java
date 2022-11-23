@@ -19,7 +19,7 @@ public class Schema1929 extends IdentifierNormalizingSchema {
 		schema.register(
 			map,
 			"minecraft:wandering_trader",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
+			(Function<String, TypeTemplate>)(name -> DSL.optionalFields(
 					"Inventory",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"Offers",
@@ -37,7 +37,7 @@ public class Schema1929 extends IdentifierNormalizingSchema {
 		schema.register(
 			map,
 			"minecraft:trader_llama",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
+			(Function<String, TypeTemplate>)(name -> DSL.optionalFields(
 					"Items",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"SaddleItem",

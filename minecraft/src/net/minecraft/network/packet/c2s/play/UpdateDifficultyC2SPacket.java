@@ -17,7 +17,7 @@ public class UpdateDifficultyC2SPacket implements Packet<ServerPlayPacketListene
 	}
 
 	public UpdateDifficultyC2SPacket(PacketByteBuf buf) {
-		this.difficulty = Difficulty.byOrdinal(buf.readUnsignedByte());
+		this.difficulty = Difficulty.byId(buf.readUnsignedByte());
 	}
 
 	@Override

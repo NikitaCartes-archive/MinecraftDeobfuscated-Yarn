@@ -43,7 +43,7 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import org.slf4j.Logger;
 
 public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPropertiesHandler> {
-	static final Logger field_37276 = LogUtils.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
 	private static final Splitter COMMA_SPLITTER = Splitter.on(',').trimResults();
 	public final boolean onlineMode = this.parseBoolean("online-mode", true);
@@ -56,7 +56,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final String motd = this.getString("motd", "A Minecraft Server");
 	public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
 	public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);
-	public final Difficulty difficulty = this.get("difficulty", combineParser(Difficulty::byOrdinal, Difficulty::byName), Difficulty::getName, Difficulty.EASY);
+	public final Difficulty difficulty = this.get("difficulty", combineParser(Difficulty::byId, Difficulty::byName), Difficulty::getName, Difficulty.EASY);
 	public final GameMode gameMode = this.get("gamemode", combineParser(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.SURVIVAL);
 	public final String levelName = this.getString("level-name", "world");
 	public final int serverPort = this.getInt("server-port", 25565);
@@ -138,7 +138,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 			try {
 				return Text.Serializer.fromJson(prompt);
 			} catch (Exception var2) {
-				field_37276.warn("Failed to parse resource pack prompt '{}'", prompt, var2);
+				LOGGER.warn("Failed to parse resource pack prompt '{}'", prompt, var2);
 			}
 		}
 
@@ -155,19 +155,19 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 			if (!sha1.isEmpty()) {
 				string = sha1;
 				if (!Strings.isNullOrEmpty(hash)) {
-					field_37276.warn("resource-pack-hash is deprecated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
+					LOGGER.warn("resource-pack-hash is deprecated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
 				}
 			} else if (!Strings.isNullOrEmpty(hash)) {
-				field_37276.warn("resource-pack-hash is deprecated. Please use resource-pack-sha1 instead.");
+				LOGGER.warn("resource-pack-hash is deprecated. Please use resource-pack-sha1 instead.");
 				string = hash;
 			} else {
 				string = "";
 			}
 
 			if (string.isEmpty()) {
-				field_37276.warn("You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack.");
+				LOGGER.warn("You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack.");
 			} else if (!SHA1_PATTERN.matcher(string).matches()) {
-				field_37276.warn("Invalid sha1 for resource-pack-sha1");
+				LOGGER.warn("Invalid sha1 for resource-pack-sha1");
 			}
 
 			Text text = parseResourcePackPrompt(prompt);
@@ -185,7 +185,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		return FeatureFlags.FEATURE_MANAGER.featureSetOf((Iterable<Identifier>)COMMA_SPLITTER.splitToStream(featureFlags).mapMulti((id, consumer) -> {
 			Identifier identifier = Identifier.tryParse(id);
 			if (identifier == null) {
-				field_37276.warn("Invalid resource location {}, ignoring", id);
+				LOGGER.warn("Invalid resource location {}, ignoring", id);
 			} else {
 				consumer.accept(identifier);
 			}
@@ -211,7 +211,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 				.or(() -> Optional.ofNullable((RegistryKey)LEVEL_TYPE_TO_PRESET_KEY.get(this.levelType)))
 				.flatMap(registry::getEntry)
 				.orElseGet(() -> {
-					ServerPropertiesHandler.field_37276.warn("Failed to parse level-type {}, defaulting to {}", this.levelType, reference.registryKey().getValue());
+					ServerPropertiesHandler.LOGGER.warn("Failed to parse level-type {}, defaulting to {}", this.levelType, reference.registryKey().getValue());
 					return reference;
 				});
 			DimensionOptionsRegistryHolder dimensionOptionsRegistryHolder = registryEntry.value().createDimensionsRegistryHolder();
@@ -219,7 +219,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 				RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, dynamicRegistryManager);
 				Optional<FlatChunkGeneratorConfig> optional = FlatChunkGeneratorConfig.CODEC
 					.parse(new Dynamic<>(registryOps, this.generatorSettings()))
-					.resultOrPartial(ServerPropertiesHandler.field_37276::error);
+					.resultOrPartial(ServerPropertiesHandler.LOGGER::error);
 				if (optional.isPresent()) {
 					return dimensionOptionsRegistryHolder.with(dynamicRegistryManager, new FlatChunkGenerator((FlatChunkGeneratorConfig)optional.get()));
 				}

@@ -1,9 +1,8 @@
 package net.minecraft.item;
 
 import com.google.common.collect.Lists;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
+import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,6 +16,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -126,9 +126,9 @@ public class FireworkRocketItem extends Item {
 		CREEPER(3, "creeper"),
 		BURST(4, "burst");
 
-		private static final FireworkRocketItem.Type[] TYPES = (FireworkRocketItem.Type[])Arrays.stream(values())
-			.sorted(Comparator.comparingInt(type -> type.id))
-			.toArray(FireworkRocketItem.Type[]::new);
+		private static final IntFunction<FireworkRocketItem.Type> BY_ID = ValueLists.createIdToValueFunction(
+			FireworkRocketItem.Type::getId, values(), ValueLists.OutOfBoundsHandling.ZERO
+		);
 		private final int id;
 		private final String name;
 
@@ -146,7 +146,7 @@ public class FireworkRocketItem extends Item {
 		}
 
 		public static FireworkRocketItem.Type byId(int id) {
-			return id >= 0 && id < TYPES.length ? TYPES[id] : SMALL_BALL;
+			return (FireworkRocketItem.Type)BY_ID.apply(id);
 		}
 	}
 }

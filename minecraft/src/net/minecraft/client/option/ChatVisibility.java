@@ -1,18 +1,17 @@
 package net.minecraft.client.option;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.IntFunction;
 import net.minecraft.util.TranslatableOption;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.function.ValueLists;
 
 public enum ChatVisibility implements TranslatableOption {
 	FULL(0, "options.chat.visibility.full"),
 	SYSTEM(1, "options.chat.visibility.system"),
 	HIDDEN(2, "options.chat.visibility.hidden");
 
-	private static final ChatVisibility[] VALUES = (ChatVisibility[])Arrays.stream(values())
-		.sorted(Comparator.comparingInt(ChatVisibility::getId))
-		.toArray(ChatVisibility[]::new);
+	private static final IntFunction<ChatVisibility> BY_ID = ValueLists.createIdToValueFunction(
+		ChatVisibility::getId, values(), ValueLists.OutOfBoundsHandling.WRAP
+	);
 	private final int id;
 	private final String translationKey;
 
@@ -32,6 +31,6 @@ public enum ChatVisibility implements TranslatableOption {
 	}
 
 	public static ChatVisibility byId(int id) {
-		return VALUES[MathHelper.floorMod(id, VALUES.length)];
+		return (ChatVisibility)BY_ID.apply(id);
 	}
 }

@@ -119,24 +119,28 @@ public class PathNode {
 		return "Node{x=" + this.x + ", y=" + this.y + ", z=" + this.z + "}";
 	}
 
-	public void toBuffer(PacketByteBuf buffer) {
-		buffer.writeInt(this.x);
-		buffer.writeInt(this.y);
-		buffer.writeInt(this.z);
-		buffer.writeFloat(this.pathLength);
-		buffer.writeFloat(this.penalty);
-		buffer.writeBoolean(this.visited);
-		buffer.writeInt(this.type.ordinal());
-		buffer.writeFloat(this.heapWeight);
+	public void write(PacketByteBuf buf) {
+		buf.writeInt(this.x);
+		buf.writeInt(this.y);
+		buf.writeInt(this.z);
+		buf.writeFloat(this.pathLength);
+		buf.writeFloat(this.penalty);
+		buf.writeBoolean(this.visited);
+		buf.writeEnumConstant(this.type);
+		buf.writeFloat(this.heapWeight);
 	}
 
-	public static PathNode readBuf(PacketByteBuf buf) {
+	public static PathNode fromBuf(PacketByteBuf buf) {
 		PathNode pathNode = new PathNode(buf.readInt(), buf.readInt(), buf.readInt());
-		pathNode.pathLength = buf.readFloat();
-		pathNode.penalty = buf.readFloat();
-		pathNode.visited = buf.readBoolean();
-		pathNode.type = PathNodeType.values()[buf.readInt()];
-		pathNode.heapWeight = buf.readFloat();
+		readFromBuf(buf, pathNode);
 		return pathNode;
+	}
+
+	protected static void readFromBuf(PacketByteBuf buf, PathNode target) {
+		target.pathLength = buf.readFloat();
+		target.penalty = buf.readFloat();
+		target.visited = buf.readBoolean();
+		target.type = buf.readEnumConstant(PathNodeType.class);
+		target.heapWeight = buf.readFloat();
 	}
 }

@@ -1,7 +1,6 @@
 package net.minecraft.entity.passive;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -49,6 +48,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -93,7 +93,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("Variant", this.getVariant().index);
+		nbt.putInt("Variant", this.getVariant().id);
 		nbt.putInt("Strength", this.getStrength());
 		if (!this.items.getStack(1).isEmpty()) {
 			nbt.put("DecorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
@@ -104,7 +104,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		this.setStrength(nbt.getInt("Strength"));
 		super.readCustomDataFromNbt(nbt);
-		this.setVariant(LlamaEntity.Variant.byIndex(nbt.getInt("Variant")));
+		this.setVariant(LlamaEntity.Variant.byId(nbt.getInt("Variant")));
 		if (nbt.contains("DecorItem", NbtElement.COMPOUND_TYPE)) {
 			this.items.setStack(1, ItemStack.fromNbt(nbt.getCompound("DecorItem")));
 		}
@@ -142,11 +142,11 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	public LlamaEntity.Variant getVariant() {
-		return LlamaEntity.Variant.byIndex(this.dataTracker.get(VARIANT));
+		return LlamaEntity.Variant.byId(this.dataTracker.get(VARIANT));
 	}
 
 	public void setVariant(LlamaEntity.Variant variant) {
-		this.dataTracker.set(VARIANT, variant.index);
+		this.dataTracker.set(VARIANT, variant.id);
 	}
 
 	@Override
@@ -545,23 +545,23 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 		GRAY(3, "gray");
 
 		public static final com.mojang.serialization.Codec<LlamaEntity.Variant> CODEC = StringIdentifiable.createCodec(LlamaEntity.Variant::values);
-		private static final LlamaEntity.Variant[] VALUES = (LlamaEntity.Variant[])Arrays.stream(values())
-			.sorted(Comparator.comparingInt(LlamaEntity.Variant::getIndex))
-			.toArray(LlamaEntity.Variant[]::new);
-		final int index;
+		private static final IntFunction<LlamaEntity.Variant> BY_ID = ValueLists.createIdToValueFunction(
+			LlamaEntity.Variant::getIndex, values(), ValueLists.OutOfBoundsHandling.CLAMP
+		);
+		final int id;
 		private final String name;
 
-		private Variant(int index, String name) {
-			this.index = index;
+		private Variant(int id, String name) {
+			this.id = id;
 			this.name = name;
 		}
 
 		public int getIndex() {
-			return this.index;
+			return this.id;
 		}
 
-		public static LlamaEntity.Variant byIndex(int index) {
-			return VALUES[MathHelper.clamp(index, 0, VALUES.length - 1)];
+		public static LlamaEntity.Variant byId(int id) {
+			return (LlamaEntity.Variant)BY_ID.apply(id);
 		}
 
 		@Override

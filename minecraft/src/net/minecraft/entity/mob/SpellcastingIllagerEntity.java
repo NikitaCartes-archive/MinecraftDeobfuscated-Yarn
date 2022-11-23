@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
+import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -11,6 +12,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
@@ -194,6 +196,9 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		DISAPPEAR(4, 0.3, 0.3, 0.8),
 		BLINDNESS(5, 0.1, 0.1, 0.2);
 
+		private static final IntFunction<SpellcastingIllagerEntity.Spell> BY_ID = ValueLists.createIdToValueFunction(
+			spell -> spell.id, values(), ValueLists.OutOfBoundsHandling.ZERO
+		);
 		final int id;
 		final double[] particleVelocity;
 
@@ -203,13 +208,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		}
 
 		public static SpellcastingIllagerEntity.Spell byId(int id) {
-			for (SpellcastingIllagerEntity.Spell spell : values()) {
-				if (id == spell.id) {
-					return spell;
-				}
-			}
-
-			return NONE;
+			return (SpellcastingIllagerEntity.Spell)BY_ID.apply(id);
 		}
 	}
 }

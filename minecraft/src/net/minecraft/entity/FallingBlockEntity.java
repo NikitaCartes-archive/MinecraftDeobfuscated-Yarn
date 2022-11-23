@@ -44,7 +44,7 @@ import net.minecraft.world.World;
 import org.slf4j.Logger;
 
 public class FallingBlockEntity extends Entity {
-	private static final Logger field_36333 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private BlockState block = Blocks.SAND.getDefaultState();
 	public int timeFalling;
 	public boolean dropItem = true;
@@ -182,7 +182,7 @@ public class FallingBlockEntity extends Entity {
 											try {
 												blockEntity.readNbt(nbtCompound);
 											} catch (Exception var15) {
-												field_36333.error("Failed to load block entity from falling block", (Throwable)var15);
+												LOGGER.error("Failed to load block entity from falling block", (Throwable)var15);
 											}
 
 											blockEntity.markDirty();

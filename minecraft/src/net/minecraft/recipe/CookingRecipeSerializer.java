@@ -2,7 +2,6 @@ package net.minecraft.recipe;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.util.Objects;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
@@ -22,9 +21,8 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 
 	public T read(Identifier identifier, JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "group", "");
-		CookingRecipeCategory cookingRecipeCategory = (CookingRecipeCategory)Objects.requireNonNullElse(
-			(CookingRecipeCategory)CookingRecipeCategory.CODEC.byId(JsonHelper.getString(jsonObject, "category", null)), CookingRecipeCategory.MISC
-		);
+		CookingRecipeCategory cookingRecipeCategory = (CookingRecipeCategory)CookingRecipeCategory.CODEC
+			.byId(JsonHelper.getString(jsonObject, "category", null), CookingRecipeCategory.MISC);
 		JsonElement jsonElement = (JsonElement)(JsonHelper.hasArray(jsonObject, "ingredient")
 			? JsonHelper.getArray(jsonObject, "ingredient")
 			: JsonHelper.getObject(jsonObject, "ingredient"));

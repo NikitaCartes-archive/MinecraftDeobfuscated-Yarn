@@ -13,24 +13,22 @@ public class Schema1470 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	protected static void method_5280(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
+	protected static void targetEntityItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
+		schema.register(map, entityId, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 	}
 
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		method_5280(schema, map, "minecraft:turtle");
-		method_5280(schema, map, "minecraft:cod_mob");
-		method_5280(schema, map, "minecraft:tropical_fish");
-		method_5280(schema, map, "minecraft:salmon_mob");
-		method_5280(schema, map, "minecraft:puffer_fish");
-		method_5280(schema, map, "minecraft:phantom");
-		method_5280(schema, map, "minecraft:dolphin");
-		method_5280(schema, map, "minecraft:drowned");
-		schema.register(
-			map, "minecraft:trident", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("inBlockState", TypeReferences.BLOCK_STATE.in(schema)))
-		);
+		targetEntityItems(schema, map, "minecraft:turtle");
+		targetEntityItems(schema, map, "minecraft:cod_mob");
+		targetEntityItems(schema, map, "minecraft:tropical_fish");
+		targetEntityItems(schema, map, "minecraft:salmon_mob");
+		targetEntityItems(schema, map, "minecraft:puffer_fish");
+		targetEntityItems(schema, map, "minecraft:phantom");
+		targetEntityItems(schema, map, "minecraft:dolphin");
+		targetEntityItems(schema, map, "minecraft:drowned");
+		schema.register(map, "minecraft:trident", (Function<String, TypeTemplate>)(name -> DSL.optionalFields("inBlockState", TypeReferences.BLOCK_STATE.in(schema))));
 		return map;
 	}
 }

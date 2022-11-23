@@ -17,27 +17,27 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.util.Identifier;
 
 public class Schema1451v6 extends IdentifierNormalizingSchema {
-	public static final String field_34013 = "_special";
+	public static final String SPECIAL_TYPE = "_special";
 	protected static final HookFunction field_34014 = new HookFunction() {
 		@Override
-		public <T> T apply(DynamicOps<T> dynamicOps, T object) {
-			Dynamic<T> dynamic = new Dynamic<>(dynamicOps, object);
+		public <T> T apply(DynamicOps<T> ops, T value) {
+			Dynamic<T> dynamic = new Dynamic<>(ops, value);
 			return DataFixUtils.orElse(
 					dynamic.get("CriteriaName")
 						.asString()
 						.get()
 						.left()
-						.map(string -> {
-							int i = string.indexOf(58);
+						.map(criteriaName -> {
+							int i = criteriaName.indexOf(58);
 							if (i < 0) {
-								return Pair.of("_special", string);
+								return Pair.of("_special", criteriaName);
 							} else {
 								try {
-									Identifier identifier = Identifier.splitOn(string.substring(0, i), '.');
-									Identifier identifier2 = Identifier.splitOn(string.substring(i + 1), '.');
+									Identifier identifier = Identifier.splitOn(criteriaName.substring(0, i), '.');
+									Identifier identifier2 = Identifier.splitOn(criteriaName.substring(i + 1), '.');
 									return Pair.of(identifier.toString(), identifier2.toString());
 								} catch (Exception var4) {
-									return Pair.of("_special", string);
+									return Pair.of("_special", criteriaName);
 								}
 							}
 						})
@@ -60,33 +60,33 @@ public class Schema1451v6 extends IdentifierNormalizingSchema {
 		}
 	};
 	protected static final HookFunction field_34015 = new HookFunction() {
-		private String method_37399(String string) {
-			Identifier identifier = Identifier.tryParse(string);
-			return identifier != null ? identifier.getNamespace() + "." + identifier.getPath() : string;
+		private String normalize(String id) {
+			Identifier identifier = Identifier.tryParse(id);
+			return identifier != null ? identifier.getNamespace() + "." + identifier.getPath() : id;
 		}
 
 		@Override
-		public <T> T apply(DynamicOps<T> dynamicOps, T object) {
-			Dynamic<T> dynamic = new Dynamic<>(dynamicOps, object);
+		public <T> T apply(DynamicOps<T> ops, T value) {
+			Dynamic<T> dynamic = new Dynamic<>(ops, value);
 			Optional<Dynamic<T>> optional = dynamic.get("CriteriaType")
 				.get()
 				.get()
 				.left()
 				.flatMap(
-					dynamic2 -> {
-						Optional<String> optionalx = dynamic2.get("type").asString().get().left();
-						Optional<String> optional2 = dynamic2.get("id").asString().get().left();
+					criteriaType -> {
+						Optional<String> optionalx = criteriaType.get("type").asString().get().left();
+						Optional<String> optional2 = criteriaType.get("id").asString().get().left();
 						if (optionalx.isPresent() && optional2.isPresent()) {
 							String string = (String)optionalx.get();
 							return string.equals("_special")
 								? Optional.of(dynamic.createString((String)optional2.get()))
-								: Optional.of(dynamic2.createString(this.method_37399(string) + ":" + this.method_37399((String)optional2.get())));
+								: Optional.of(criteriaType.createString(this.normalize(string) + ":" + this.normalize((String)optional2.get())));
 						} else {
 							return Optional.empty();
 						}
 					}
 				);
-			return DataFixUtils.orElse(optional.map(dynamic2 -> dynamic.set("CriteriaName", dynamic2).remove("CriteriaType")), dynamic).getValue();
+			return DataFixUtils.orElse(optional.map(criteriaName -> dynamic.set("CriteriaName", criteriaName).remove("CriteriaType")), dynamic).getValue();
 		}
 	};
 

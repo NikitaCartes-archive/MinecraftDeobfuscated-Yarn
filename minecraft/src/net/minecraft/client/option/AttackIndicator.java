@@ -1,11 +1,10 @@
 package net.minecraft.client.option;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.TranslatableOption;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.function.ValueLists;
 
 @Environment(EnvType.CLIENT)
 public enum AttackIndicator implements TranslatableOption {
@@ -13,9 +12,9 @@ public enum AttackIndicator implements TranslatableOption {
 	CROSSHAIR(1, "options.attack.crosshair"),
 	HOTBAR(2, "options.attack.hotbar");
 
-	private static final AttackIndicator[] VALUES = (AttackIndicator[])Arrays.stream(values())
-		.sorted(Comparator.comparingInt(AttackIndicator::getId))
-		.toArray(AttackIndicator[]::new);
+	private static final IntFunction<AttackIndicator> BY_ID = ValueLists.createIdToValueFunction(
+		AttackIndicator::getId, values(), ValueLists.OutOfBoundsHandling.WRAP
+	);
 	private final int id;
 	private final String translationKey;
 
@@ -35,6 +34,6 @@ public enum AttackIndicator implements TranslatableOption {
 	}
 
 	public static AttackIndicator byId(int id) {
-		return VALUES[MathHelper.floorMod(id, VALUES.length)];
+		return (AttackIndicator)BY_ID.apply(id);
 	}
 }

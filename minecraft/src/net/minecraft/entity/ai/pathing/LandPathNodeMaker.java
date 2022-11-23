@@ -52,7 +52,6 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		super.clear();
 	}
 
-	@Nullable
 	@Override
 	public PathNode getStart() {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
@@ -107,14 +106,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		return this.getStart(new BlockPos(blockPos.getX(), i, blockPos.getZ()));
 	}
 
-	@Nullable
 	protected PathNode getStart(BlockPos pos) {
 		PathNode pathNode = this.getNode(pos);
-		if (pathNode != null) {
-			pathNode.type = this.getNodeType(this.entity, pathNode.getBlockPos());
-			pathNode.penalty = this.entity.getPathfindingPenalty(pathNode.type);
-		}
-
+		pathNode.type = this.getNodeType(this.entity, pathNode.getBlockPos());
+		pathNode.penalty = this.entity.getPathfindingPenalty(pathNode.type);
 		return pathNode;
 	}
 
@@ -123,7 +118,6 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		return pathNodeType != PathNodeType.OPEN && this.entity.getPathfindingPenalty(pathNodeType) >= 0.0F;
 	}
 
-	@Nullable
 	@Override
 	public TargetPathNode getNode(double x, double y, double z) {
 		return this.asTargetPathNode(this.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
@@ -329,11 +323,9 @@ public class LandPathNodeMaker extends PathNodeMaker {
 
 				if (isBlocked(pathNodeType) && pathNode == null) {
 					pathNode = this.getNode(x, y, z);
-					if (pathNode != null) {
-						pathNode.visited = true;
-						pathNode.type = pathNodeType;
-						pathNode.penalty = pathNodeType.getDefaultPenalty();
-					}
+					pathNode.visited = true;
+					pathNode.type = pathNodeType;
+					pathNode.penalty = pathNodeType.getDefaultPenalty();
 				}
 
 				return pathNode;
@@ -347,25 +339,17 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		return Math.max(1.125, (double)this.entity.stepHeight);
 	}
 
-	@Nullable
 	private PathNode getNodeWith(int x, int y, int z, PathNodeType type, float penalty) {
 		PathNode pathNode = this.getNode(x, y, z);
-		if (pathNode != null) {
-			pathNode.type = type;
-			pathNode.penalty = Math.max(pathNode.penalty, penalty);
-		}
-
+		pathNode.type = type;
+		pathNode.penalty = Math.max(pathNode.penalty, penalty);
 		return pathNode;
 	}
 
-	@Nullable
 	private PathNode getBlockedNode(int x, int y, int z) {
 		PathNode pathNode = this.getNode(x, y, z);
-		if (pathNode != null) {
-			pathNode.type = PathNodeType.BLOCKED;
-			pathNode.penalty = -1.0F;
-		}
-
+		pathNode.type = PathNodeType.BLOCKED;
+		pathNode.penalty = -1.0F;
 		return pathNode;
 	}
 

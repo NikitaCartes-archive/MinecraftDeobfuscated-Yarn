@@ -783,7 +783,7 @@ public class MineshaftGenerator {
 
 		public MineshaftPart(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
 			super(structurePieceType, nbtCompound);
-			this.mineshaftType = MineshaftStructure.Type.byIndex(nbtCompound.getInt("MST"));
+			this.mineshaftType = MineshaftStructure.Type.byId(nbtCompound.getInt("MST"));
 		}
 
 		@Override

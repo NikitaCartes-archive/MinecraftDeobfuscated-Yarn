@@ -1,9 +1,8 @@
 package net.minecraft.entity.passive;
 
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -49,6 +48,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -222,8 +223,8 @@ public class PandaEntity extends AnimalEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putString("MainGene", this.getMainGene().getName());
-		nbt.putString("HiddenGene", this.getHiddenGene().getName());
+		nbt.putString("MainGene", this.getMainGene().asString());
+		nbt.putString("HiddenGene", this.getHiddenGene().asString());
 	}
 
 	@Override
@@ -699,7 +700,7 @@ public class PandaEntity extends AnimalEntity {
 		}
 	}
 
-	public static enum Gene {
+	public static enum Gene implements StringIdentifiable {
 		NORMAL(0, "normal", false),
 		LAZY(1, "lazy", false),
 		WORRIED(2, "worried", false),
@@ -708,9 +709,10 @@ public class PandaEntity extends AnimalEntity {
 		WEAK(5, "weak", true),
 		AGGRESSIVE(6, "aggressive", false);
 
-		private static final PandaEntity.Gene[] VALUES = (PandaEntity.Gene[])Arrays.stream(values())
-			.sorted(Comparator.comparingInt(PandaEntity.Gene::getId))
-			.toArray(PandaEntity.Gene[]::new);
+		public static final StringIdentifiable.Codec<PandaEntity.Gene> CODEC = StringIdentifiable.createCodec(PandaEntity.Gene::values);
+		private static final IntFunction<PandaEntity.Gene> BY_ID = ValueLists.createIdToValueFunction(
+			PandaEntity.Gene::getId, values(), ValueLists.OutOfBoundsHandling.ZERO
+		);
 		private static final int field_30350 = 6;
 		private final int id;
 		private final String name;
@@ -726,7 +728,8 @@ public class PandaEntity extends AnimalEntity {
 			return this.id;
 		}
 
-		public String getName() {
+		@Override
+		public String asString() {
 			return this.name;
 		}
 
@@ -743,21 +746,11 @@ public class PandaEntity extends AnimalEntity {
 		}
 
 		public static PandaEntity.Gene byId(int id) {
-			if (id < 0 || id >= VALUES.length) {
-				id = 0;
-			}
-
-			return VALUES[id];
+			return (PandaEntity.Gene)BY_ID.apply(id);
 		}
 
 		public static PandaEntity.Gene byName(String name) {
-			for (PandaEntity.Gene gene : values()) {
-				if (gene.name.equals(name)) {
-					return gene;
-				}
-			}
-
-			return NORMAL;
+			return (PandaEntity.Gene)CODEC.byId(name, NORMAL);
 		}
 
 		public static PandaEntity.Gene createRandom(Random random) {

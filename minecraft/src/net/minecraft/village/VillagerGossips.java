@@ -1,11 +1,12 @@
 package net.minecraft.village;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.mojang.serialization.DataResult;
+import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -21,14 +22,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.DoublePredicate;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.annotation.Debug;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
+import org.slf4j.Logger;
 
 public class VillagerGossips {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int field_30236 = 2;
 	private final Map<UUID, VillagerGossips.Reputation> entityReputation = Maps.<UUID, VillagerGossips.Reputation>newHashMap();
 
@@ -59,7 +61,7 @@ public class VillagerGossips {
 	}
 
 	private Collection<VillagerGossips.GossipEntry> pickGossips(Random random, int count) {
-		List<VillagerGossips.GossipEntry> list = (List<VillagerGossips.GossipEntry>)this.entries().collect(Collectors.toList());
+		List<VillagerGossips.GossipEntry> list = this.entries().toList();
 		if (list.isEmpty()) {
 			return Collections.emptyList();
 		} else {
@@ -146,14 +148,19 @@ public class VillagerGossips {
 		}
 	}
 
-	public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-		return new Dynamic<>(ops, ops.createList(this.entries().map(entry -> entry.serialize(ops)).map(Dynamic::getValue)));
+	public <T> T serialize(DynamicOps<T> ops) {
+		return (T)VillagerGossips.GossipEntry.LIST_CODEC
+			.encodeStart(ops, this.entries().toList())
+			.resultOrPartial(error -> LOGGER.warn("Failed to serialize gossips: {}", error))
+			.orElseGet(ops::emptyList);
 	}
 
 	public void deserialize(Dynamic<?> dynamic) {
-		dynamic.asStream()
-			.map(VillagerGossips.GossipEntry::deserialize)
-			.flatMap(result -> result.result().stream())
+		VillagerGossips.GossipEntry.LIST_CODEC
+			.decode(dynamic)
+			.resultOrPartial(error -> LOGGER.warn("Failed to deserialize gossips: {}", error))
+			.stream()
+			.flatMap(pair -> ((List)pair.getFirst()).stream())
 			.forEach(entry -> this.getReputationFor(entry.target).associatedGossip.put(entry.type, entry.value));
 	}
 
@@ -166,54 +173,19 @@ public class VillagerGossips {
 		return i > type.maxValue ? Math.max(type.maxValue, left) : i;
 	}
 
-	static class GossipEntry {
-		public static final String TARGET_KEY = "Target";
-		public static final String TYPE_KEY = "Type";
-		public static final String VALUE_KEY = "Value";
-		public final UUID target;
-		public final VillageGossipType type;
-		public final int value;
-
-		public GossipEntry(UUID target, VillageGossipType type, int value) {
-			this.target = target;
-			this.type = type;
-			this.value = value;
-		}
+	static record GossipEntry(UUID target, VillageGossipType type, int value) {
+		public static final Codec<VillagerGossips.GossipEntry> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Uuids.INT_STREAM_CODEC.fieldOf("Target").forGetter(VillagerGossips.GossipEntry::target),
+						VillageGossipType.CODEC.fieldOf("Type").forGetter(VillagerGossips.GossipEntry::type),
+						Codecs.POSITIVE_INT.fieldOf("Value").forGetter(VillagerGossips.GossipEntry::value)
+					)
+					.apply(instance, VillagerGossips.GossipEntry::new)
+		);
+		public static final Codec<List<VillagerGossips.GossipEntry>> LIST_CODEC = CODEC.listOf();
 
 		public int getValue() {
 			return this.value * this.type.multiplier;
-		}
-
-		public String toString() {
-			return "GossipEntry{target=" + this.target + ", type=" + this.type + ", value=" + this.value + "}";
-		}
-
-		public <T> Dynamic<T> serialize(DynamicOps<T> ops) {
-			return new Dynamic<>(
-				ops,
-				ops.createMap(
-					ImmutableMap.of(
-						ops.createString("Target"),
-						(T)Uuids.INT_STREAM_CODEC.encodeStart(ops, this.target).result().orElseThrow(RuntimeException::new),
-						ops.createString("Type"),
-						ops.createString(this.type.key),
-						ops.createString("Value"),
-						ops.createInt(this.value)
-					)
-				)
-			);
-		}
-
-		public static DataResult<VillagerGossips.GossipEntry> deserialize(Dynamic<?> dynamic) {
-			return DataResult.unbox(
-				DataResult.instance()
-					.group(
-						dynamic.get("Target").read(Uuids.INT_STREAM_CODEC),
-						dynamic.get("Type").asString().map(VillageGossipType::byKey),
-						dynamic.get("Value").read(Codecs.POSITIVE_INT)
-					)
-					.apply(DataResult.instance(), VillagerGossips.GossipEntry::new)
-			);
 		}
 	}
 

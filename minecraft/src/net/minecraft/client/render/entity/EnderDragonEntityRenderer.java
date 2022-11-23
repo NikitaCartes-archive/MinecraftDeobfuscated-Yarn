@@ -87,15 +87,15 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 				float p = random.nextFloat() * 2.0F + 1.0F + m * 2.0F;
 				Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
 				int q = (int)(255.0F * (1.0F - m));
-				method_23157(vertexConsumer4, matrix4f, q);
-				method_23156(vertexConsumer4, matrix4f, o, p);
-				method_23158(vertexConsumer4, matrix4f, o, p);
-				method_23157(vertexConsumer4, matrix4f, q);
-				method_23158(vertexConsumer4, matrix4f, o, p);
-				method_23159(vertexConsumer4, matrix4f, o, p);
-				method_23157(vertexConsumer4, matrix4f, q);
-				method_23159(vertexConsumer4, matrix4f, o, p);
-				method_23156(vertexConsumer4, matrix4f, o, p);
+				putDeathLightSourceVertex(vertexConsumer4, matrix4f, q);
+				putDeathLightNegativeXTerminalVertex(vertexConsumer4, matrix4f, o, p);
+				putDeathLightPositiveXTerminalVertex(vertexConsumer4, matrix4f, o, p);
+				putDeathLightSourceVertex(vertexConsumer4, matrix4f, q);
+				putDeathLightPositiveXTerminalVertex(vertexConsumer4, matrix4f, o, p);
+				putDeathLightPositiveZTerminalVertex(vertexConsumer4, matrix4f, o, p);
+				putDeathLightSourceVertex(vertexConsumer4, matrix4f, q);
+				putDeathLightPositiveZTerminalVertex(vertexConsumer4, matrix4f, o, p);
+				putDeathLightNegativeXTerminalVertex(vertexConsumer4, matrix4f, o, p);
 			}
 
 			matrixStack.pop();
@@ -116,20 +116,20 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		super.render(enderDragonEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
-	private static void method_23157(VertexConsumer vertices, Matrix4f matrix, int alpha) {
-		vertices.vertex(matrix, 0.0F, 0.0F, 0.0F).color(255, 255, 255, alpha).next();
+	private static void putDeathLightSourceVertex(VertexConsumer buffer, Matrix4f matrix, int alpha) {
+		buffer.vertex(matrix, 0.0F, 0.0F, 0.0F).color(255, 255, 255, alpha).next();
 	}
 
-	private static void method_23156(VertexConsumer vertices, Matrix4f matrix, float y, float x) {
-		vertices.vertex(matrix, -HALF_SQRT_3 * x, y, -0.5F * x).color(255, 0, 255, 0).next();
+	private static void putDeathLightNegativeXTerminalVertex(VertexConsumer buffer, Matrix4f matrix, float radius, float width) {
+		buffer.vertex(matrix, -HALF_SQRT_3 * width, radius, -0.5F * width).color(255, 0, 255, 0).next();
 	}
 
-	private static void method_23158(VertexConsumer vertices, Matrix4f matrix, float y, float x) {
-		vertices.vertex(matrix, HALF_SQRT_3 * x, y, -0.5F * x).color(255, 0, 255, 0).next();
+	private static void putDeathLightPositiveXTerminalVertex(VertexConsumer buffer, Matrix4f matrix, float radius, float width) {
+		buffer.vertex(matrix, HALF_SQRT_3 * width, radius, -0.5F * width).color(255, 0, 255, 0).next();
 	}
 
-	private static void method_23159(VertexConsumer vertices, Matrix4f matrix, float y, float z) {
-		vertices.vertex(matrix, 0.0F, y, 1.0F * z).color(255, 0, 255, 0).next();
+	private static void putDeathLightPositiveZTerminalVertex(VertexConsumer buffer, Matrix4f matrix, float radius, float width) {
+		buffer.vertex(matrix, 0.0F, radius, 1.0F * width).color(255, 0, 255, 0).next();
 	}
 
 	public static void renderCrystalBeam(

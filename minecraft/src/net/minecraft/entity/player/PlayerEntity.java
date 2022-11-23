@@ -114,7 +114,7 @@ import net.minecraft.world.World;
 import org.slf4j.Logger;
 
 public abstract class PlayerEntity extends LivingEntity {
-	private static final Logger field_38197 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int field_30643 = 16;
 	public static final int field_30644 = 20;
 	public static final int field_30645 = 100;
@@ -788,7 +788,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		if (nbt.contains("LastDeathLocation", NbtElement.COMPOUND_TYPE)) {
-			this.setLastDeathPos(GlobalPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("LastDeathLocation")).resultOrPartial(field_38197::error));
+			this.setLastDeathPos(GlobalPos.CODEC.parse(NbtOps.INSTANCE, nbt.get("LastDeathLocation")).resultOrPartial(LOGGER::error));
 		}
 	}
 
@@ -816,7 +816,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.getLastDeathPos()
-			.flatMap(globalPos -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, globalPos).resultOrPartial(field_38197::error))
+			.flatMap(globalPos -> GlobalPos.CODEC.encodeStart(NbtOps.INSTANCE, globalPos).resultOrPartial(LOGGER::error))
 			.ifPresent(nbtElement -> nbt.put("LastDeathLocation", nbtElement));
 	}
 

@@ -4,17 +4,21 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.EnumSet;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.chunk.ChunkCache;
 
 public class BirdPathNodeMaker extends LandPathNodeMaker {
 	private final Long2ObjectMap<PathNodeType> pathNodes = new Long2ObjectOpenHashMap<>();
+	private static final float field_41681 = 1.5F;
+	private static final int field_41682 = 10;
 
 	@Override
 	public void init(ChunkCache cachedWorld, MobEntity entity) {
@@ -30,7 +34,6 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		super.clear();
 	}
 
-	@Nullable
 	@Override
 	public PathNode getStart() {
 		int i;
@@ -47,7 +50,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 
 		BlockPos blockPos = new BlockPos(this.entity.getX(), (double)i, this.entity.getZ());
 		if (!this.canPathThrough(blockPos)) {
-			for (BlockPos blockPos2 : this.entity.getPotentialEscapePositions()) {
+			for (BlockPos blockPos2 : this.getPotentialEscapePositions(this.entity)) {
 				if (this.canPathThrough(blockPos2)) {
 					return super.getStart(blockPos2);
 				}
@@ -65,103 +68,103 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 
 	@Override
 	public TargetPathNode getNode(double x, double y, double z) {
-		return this.asTargetPathNode(super.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
+		return this.asTargetPathNode(this.getNode(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z)));
 	}
 
 	@Override
 	public int getSuccessors(PathNode[] successors, PathNode node) {
 		int i = 0;
-		PathNode pathNode = this.getNode(node.x, node.y, node.z + 1);
+		PathNode pathNode = this.getPassableNode(node.x, node.y, node.z + 1);
 		if (this.unvisited(pathNode)) {
 			successors[i++] = pathNode;
 		}
 
-		PathNode pathNode2 = this.getNode(node.x - 1, node.y, node.z);
+		PathNode pathNode2 = this.getPassableNode(node.x - 1, node.y, node.z);
 		if (this.unvisited(pathNode2)) {
 			successors[i++] = pathNode2;
 		}
 
-		PathNode pathNode3 = this.getNode(node.x + 1, node.y, node.z);
+		PathNode pathNode3 = this.getPassableNode(node.x + 1, node.y, node.z);
 		if (this.unvisited(pathNode3)) {
 			successors[i++] = pathNode3;
 		}
 
-		PathNode pathNode4 = this.getNode(node.x, node.y, node.z - 1);
+		PathNode pathNode4 = this.getPassableNode(node.x, node.y, node.z - 1);
 		if (this.unvisited(pathNode4)) {
 			successors[i++] = pathNode4;
 		}
 
-		PathNode pathNode5 = this.getNode(node.x, node.y + 1, node.z);
+		PathNode pathNode5 = this.getPassableNode(node.x, node.y + 1, node.z);
 		if (this.unvisited(pathNode5)) {
 			successors[i++] = pathNode5;
 		}
 
-		PathNode pathNode6 = this.getNode(node.x, node.y - 1, node.z);
+		PathNode pathNode6 = this.getPassableNode(node.x, node.y - 1, node.z);
 		if (this.unvisited(pathNode6)) {
 			successors[i++] = pathNode6;
 		}
 
-		PathNode pathNode7 = this.getNode(node.x, node.y + 1, node.z + 1);
+		PathNode pathNode7 = this.getPassableNode(node.x, node.y + 1, node.z + 1);
 		if (this.unvisited(pathNode7) && this.isPassable(pathNode) && this.isPassable(pathNode5)) {
 			successors[i++] = pathNode7;
 		}
 
-		PathNode pathNode8 = this.getNode(node.x - 1, node.y + 1, node.z);
+		PathNode pathNode8 = this.getPassableNode(node.x - 1, node.y + 1, node.z);
 		if (this.unvisited(pathNode8) && this.isPassable(pathNode2) && this.isPassable(pathNode5)) {
 			successors[i++] = pathNode8;
 		}
 
-		PathNode pathNode9 = this.getNode(node.x + 1, node.y + 1, node.z);
+		PathNode pathNode9 = this.getPassableNode(node.x + 1, node.y + 1, node.z);
 		if (this.unvisited(pathNode9) && this.isPassable(pathNode3) && this.isPassable(pathNode5)) {
 			successors[i++] = pathNode9;
 		}
 
-		PathNode pathNode10 = this.getNode(node.x, node.y + 1, node.z - 1);
+		PathNode pathNode10 = this.getPassableNode(node.x, node.y + 1, node.z - 1);
 		if (this.unvisited(pathNode10) && this.isPassable(pathNode4) && this.isPassable(pathNode5)) {
 			successors[i++] = pathNode10;
 		}
 
-		PathNode pathNode11 = this.getNode(node.x, node.y - 1, node.z + 1);
+		PathNode pathNode11 = this.getPassableNode(node.x, node.y - 1, node.z + 1);
 		if (this.unvisited(pathNode11) && this.isPassable(pathNode) && this.isPassable(pathNode6)) {
 			successors[i++] = pathNode11;
 		}
 
-		PathNode pathNode12 = this.getNode(node.x - 1, node.y - 1, node.z);
+		PathNode pathNode12 = this.getPassableNode(node.x - 1, node.y - 1, node.z);
 		if (this.unvisited(pathNode12) && this.isPassable(pathNode2) && this.isPassable(pathNode6)) {
 			successors[i++] = pathNode12;
 		}
 
-		PathNode pathNode13 = this.getNode(node.x + 1, node.y - 1, node.z);
+		PathNode pathNode13 = this.getPassableNode(node.x + 1, node.y - 1, node.z);
 		if (this.unvisited(pathNode13) && this.isPassable(pathNode3) && this.isPassable(pathNode6)) {
 			successors[i++] = pathNode13;
 		}
 
-		PathNode pathNode14 = this.getNode(node.x, node.y - 1, node.z - 1);
+		PathNode pathNode14 = this.getPassableNode(node.x, node.y - 1, node.z - 1);
 		if (this.unvisited(pathNode14) && this.isPassable(pathNode4) && this.isPassable(pathNode6)) {
 			successors[i++] = pathNode14;
 		}
 
-		PathNode pathNode15 = this.getNode(node.x + 1, node.y, node.z - 1);
+		PathNode pathNode15 = this.getPassableNode(node.x + 1, node.y, node.z - 1);
 		if (this.unvisited(pathNode15) && this.isPassable(pathNode4) && this.isPassable(pathNode3)) {
 			successors[i++] = pathNode15;
 		}
 
-		PathNode pathNode16 = this.getNode(node.x + 1, node.y, node.z + 1);
+		PathNode pathNode16 = this.getPassableNode(node.x + 1, node.y, node.z + 1);
 		if (this.unvisited(pathNode16) && this.isPassable(pathNode) && this.isPassable(pathNode3)) {
 			successors[i++] = pathNode16;
 		}
 
-		PathNode pathNode17 = this.getNode(node.x - 1, node.y, node.z - 1);
+		PathNode pathNode17 = this.getPassableNode(node.x - 1, node.y, node.z - 1);
 		if (this.unvisited(pathNode17) && this.isPassable(pathNode4) && this.isPassable(pathNode2)) {
 			successors[i++] = pathNode17;
 		}
 
-		PathNode pathNode18 = this.getNode(node.x - 1, node.y, node.z + 1);
+		PathNode pathNode18 = this.getPassableNode(node.x - 1, node.y, node.z + 1);
 		if (this.unvisited(pathNode18) && this.isPassable(pathNode) && this.isPassable(pathNode2)) {
 			successors[i++] = pathNode18;
 		}
 
-		PathNode pathNode19 = this.getNode(node.x + 1, node.y + 1, node.z - 1);
+		PathNode pathNode19 = this.getPassableNode(node.x + 1, node.y + 1, node.z - 1);
 		if (this.unvisited(pathNode19)
 			&& this.isPassable(pathNode15)
 			&& this.isPassable(pathNode4)
@@ -172,7 +175,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			successors[i++] = pathNode19;
 		}
 
-		PathNode pathNode20 = this.getNode(node.x + 1, node.y + 1, node.z + 1);
+		PathNode pathNode20 = this.getPassableNode(node.x + 1, node.y + 1, node.z + 1);
 		if (this.unvisited(pathNode20)
 			&& this.isPassable(pathNode16)
 			&& this.isPassable(pathNode)
@@ -183,7 +186,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			successors[i++] = pathNode20;
 		}
 
-		PathNode pathNode21 = this.getNode(node.x - 1, node.y + 1, node.z - 1);
+		PathNode pathNode21 = this.getPassableNode(node.x - 1, node.y + 1, node.z - 1);
 		if (this.unvisited(pathNode21)
 			&& this.isPassable(pathNode17)
 			&& this.isPassable(pathNode4)
@@ -194,7 +197,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			successors[i++] = pathNode21;
 		}
 
-		PathNode pathNode22 = this.getNode(node.x - 1, node.y + 1, node.z + 1);
+		PathNode pathNode22 = this.getPassableNode(node.x - 1, node.y + 1, node.z + 1);
 		if (this.unvisited(pathNode22)
 			&& this.isPassable(pathNode18)
 			&& this.isPassable(pathNode)
@@ -205,7 +208,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			successors[i++] = pathNode22;
 		}
 
-		PathNode pathNode23 = this.getNode(node.x + 1, node.y - 1, node.z - 1);
+		PathNode pathNode23 = this.getPassableNode(node.x + 1, node.y - 1, node.z - 1);
 		if (this.unvisited(pathNode23)
 			&& this.isPassable(pathNode15)
 			&& this.isPassable(pathNode4)
@@ -216,7 +219,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			successors[i++] = pathNode23;
 		}
 
-		PathNode pathNode24 = this.getNode(node.x + 1, node.y - 1, node.z + 1);
+		PathNode pathNode24 = this.getPassableNode(node.x + 1, node.y - 1, node.z + 1);
 		if (this.unvisited(pathNode24)
 			&& this.isPassable(pathNode16)
 			&& this.isPassable(pathNode)
@@ -227,7 +230,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			successors[i++] = pathNode24;
 		}
 
-		PathNode pathNode25 = this.getNode(node.x - 1, node.y - 1, node.z - 1);
+		PathNode pathNode25 = this.getPassableNode(node.x - 1, node.y - 1, node.z - 1);
 		if (this.unvisited(pathNode25)
 			&& this.isPassable(pathNode17)
 			&& this.isPassable(pathNode4)
@@ -238,7 +241,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			successors[i++] = pathNode25;
 		}
 
-		PathNode pathNode26 = this.getNode(node.x - 1, node.y - 1, node.z + 1);
+		PathNode pathNode26 = this.getPassableNode(node.x - 1, node.y - 1, node.z + 1);
 		if (this.unvisited(pathNode26)
 			&& this.isPassable(pathNode18)
 			&& this.isPassable(pathNode)
@@ -261,19 +264,16 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	}
 
 	@Nullable
-	@Override
-	protected PathNode getNode(int x, int y, int z) {
+	protected PathNode getPassableNode(int x, int y, int z) {
 		PathNode pathNode = null;
 		PathNodeType pathNodeType = this.getNodeType(x, y, z);
 		float f = this.entity.getPathfindingPenalty(pathNodeType);
 		if (f >= 0.0F) {
-			pathNode = super.getNode(x, y, z);
-			if (pathNode != null) {
-				pathNode.type = pathNodeType;
-				pathNode.penalty = Math.max(pathNode.penalty, f);
-				if (pathNodeType == PathNodeType.WALKABLE) {
-					pathNode.penalty++;
-				}
+			pathNode = this.getNode(x, y, z);
+			pathNode.type = pathNodeType;
+			pathNode.penalty = Math.max(pathNode.penalty, f);
+			if (pathNodeType == PathNodeType.WALKABLE) {
+				pathNode.penalty++;
 			}
 		}
 
@@ -284,7 +284,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		return this.pathNodes
 			.computeIfAbsent(
 				BlockPos.asLong(x, y, z),
-				(Long2ObjectFunction<? extends PathNodeType>)(l -> this.getNodeType(
+				(Long2ObjectFunction<? extends PathNodeType>)(pos -> this.getNodeType(
 						this.cachedWorld,
 						x,
 						y,
@@ -356,5 +356,40 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		}
 
 		return pathNodeType;
+	}
+
+	/**
+	 * {@return the iterable of positions that the entity should try to pathfind to when escaping}
+	 * 
+	 * @apiNote This is used when the entity {@linkplain #canPathThrough cannot path through}
+	 * the current position (e.g. because it is dangerous).
+	 */
+	private Iterable<BlockPos> getPotentialEscapePositions(MobEntity entity) {
+		float f = 1.0F;
+		Box box = entity.getBoundingBox();
+		boolean bl = box.getAverageSideLength() < 1.0;
+		if (!bl) {
+			return List.of(
+				new BlockPos(box.minX, (double)entity.getBlockY(), box.minZ),
+				new BlockPos(box.minX, (double)entity.getBlockY(), box.maxZ),
+				new BlockPos(box.maxX, (double)entity.getBlockY(), box.minZ),
+				new BlockPos(box.maxX, (double)entity.getBlockY(), box.maxZ)
+			);
+		} else {
+			double d = Math.max(0.0, (1.5 - box.getZLength()) / 2.0);
+			double e = Math.max(0.0, (1.5 - box.getXLength()) / 2.0);
+			double g = Math.max(0.0, (1.5 - box.getYLength()) / 2.0);
+			Box box2 = box.expand(e, g, d);
+			return BlockPos.iterateRandomly(
+				entity.getRandom(),
+				10,
+				MathHelper.floor(box2.minX),
+				MathHelper.floor(box2.minY),
+				MathHelper.floor(box2.minZ),
+				MathHelper.floor(box2.maxX),
+				MathHelper.floor(box2.maxY),
+				MathHelper.floor(box2.maxZ)
+			);
+		}
 	}
 }

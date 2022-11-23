@@ -92,10 +92,11 @@ public abstract class Structure {
 		HeightLimitView world,
 		Predicate<RegistryEntry<Biome>> validBiomes
 	) {
-		Optional<Structure.StructurePosition> optional = this.getStructurePosition(
-			new Structure.Context(dynamicRegistryManager, chunkGenerator, biomeSource, noiseConfig, structureTemplateManager, seed, chunkPos, world, validBiomes)
+		Structure.Context context = new Structure.Context(
+			dynamicRegistryManager, chunkGenerator, biomeSource, noiseConfig, structureTemplateManager, seed, chunkPos, world, validBiomes
 		);
-		if (optional.isPresent() && isBiomeValid((Structure.StructurePosition)optional.get(), chunkGenerator, noiseConfig, validBiomes)) {
+		Optional<Structure.StructurePosition> optional = this.getValidStructurePosition(context);
+		if (optional.isPresent()) {
 			StructurePiecesCollector structurePiecesCollector = ((Structure.StructurePosition)optional.get()).generate();
 			StructureStart structureStart = new StructureStart(this, chunkPos, references, structurePiecesCollector.toList());
 			if (structureStart.hasChildren()) {
@@ -116,16 +117,19 @@ public abstract class Structure {
 		return Optional.of(new Structure.StructurePosition(new BlockPos(i, k, j), generator));
 	}
 
-	private static boolean isBiomeValid(
-		Structure.StructurePosition result, ChunkGenerator chunkGenerator, NoiseConfig noiseConfig, Predicate<RegistryEntry<Biome>> validBiomes
-	) {
+	private static boolean isBiomeValid(Structure.StructurePosition result, Structure.Context context) {
 		BlockPos blockPos = result.position();
-		return validBiomes.test(
-			chunkGenerator.getBiomeSource()
-				.getBiome(
-					BiomeCoords.fromBlock(blockPos.getX()), BiomeCoords.fromBlock(blockPos.getY()), BiomeCoords.fromBlock(blockPos.getZ()), noiseConfig.getMultiNoiseSampler()
-				)
-		);
+		return context.biomePredicate
+			.test(
+				context.chunkGenerator
+					.getBiomeSource()
+					.getBiome(
+						BiomeCoords.fromBlock(blockPos.getX()),
+						BiomeCoords.fromBlock(blockPos.getY()),
+						BiomeCoords.fromBlock(blockPos.getZ()),
+						context.noiseConfig.getMultiNoiseSampler()
+					)
+			);
 	}
 
 	public void postPlace(
@@ -182,7 +186,11 @@ public abstract class Structure {
 		return new BlockPos(k, getMinCornerHeight(context, k, l, i, j), l);
 	}
 
-	public abstract Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context);
+	protected abstract Optional<Structure.StructurePosition> getStructurePosition(Structure.Context context);
+
+	public Optional<Structure.StructurePosition> getValidStructurePosition(Structure.Context context) {
+		return this.getStructurePosition(context).filter(position -> isBiomeValid(position, context));
+	}
 
 	public abstract StructureType<?> getType();
 
@@ -214,6 +222,7 @@ public abstract class Structure {
 		HeightLimitView world,
 		Predicate<RegistryEntry<Biome>> biomePredicate
 	) {
+
 		public Context(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,

@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -43,6 +44,7 @@ public class GameMenuScreen extends Screen {
 	private static final Text GAME_TEXT = Text.translatable("menu.game");
 	private static final Text PAUSED_TEXT = Text.translatable("menu.paused");
 	private final boolean showMenu;
+	@Nullable
 	private ButtonWidget exitButton;
 
 	public GameMenuScreen(boolean showMenu) {
@@ -126,7 +128,7 @@ public class GameMenuScreen extends Screen {
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);
-		if (this.showMenu && this.client != null && this.client.getAbuseReportContext().hasDraft()) {
+		if (this.showMenu && this.client != null && this.client.getAbuseReportContext().hasDraft() && this.exitButton != null) {
 			RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			this.drawTexture(matrices, this.exitButton.getX() + this.exitButton.getWidth() - 17, this.exitButton.getY() + 3, 182, 24, 15, 15);

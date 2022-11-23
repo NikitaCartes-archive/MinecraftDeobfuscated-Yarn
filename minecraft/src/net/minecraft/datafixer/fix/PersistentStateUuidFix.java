@@ -9,7 +9,7 @@ import net.minecraft.datafixer.TypeReferences;
 import org.slf4j.Logger;
 
 public class PersistentStateUuidFix extends AbstractUuidFix {
-	private static final Logger field_36330 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
 	public PersistentStateUuidFix(Schema outputSchema) {
 		super(outputSchema, TypeReferences.SAVED_DATA);
@@ -33,7 +33,7 @@ public class PersistentStateUuidFix extends AbstractUuidFix {
 															"HeroesOfTheVillage",
 															dynamicxxx -> dynamicxxx.createList(
 																	dynamicxxx.asStream().map(dynamicxxxx -> (Dynamic)createArrayFromMostLeastTags(dynamicxxxx, "UUIDMost", "UUIDLeast").orElseGet(() -> {
-																			field_36330.warn("HeroesOfTheVillage contained invalid UUIDs.");
+																			LOGGER.warn("HeroesOfTheVillage contained invalid UUIDs.");
 																			return dynamicxxxx;
 																		}))
 																)

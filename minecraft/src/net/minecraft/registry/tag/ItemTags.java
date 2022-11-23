@@ -85,6 +85,7 @@ public final class ItemTags {
 	public static final TagKey<Item> CLUSTER_MAX_HARVESTABLES = of("cluster_max_harvestables");
 	public static final TagKey<Item> COMPASSES = of("compasses");
 	public static final TagKey<Item> HANGING_SIGNS = of("hanging_signs");
+	public static final TagKey<Item> CREEPER_IGNITERS = of("creeper_igniters");
 
 	private ItemTags() {
 	}

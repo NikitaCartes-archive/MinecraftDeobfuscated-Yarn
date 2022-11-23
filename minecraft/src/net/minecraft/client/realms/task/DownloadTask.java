@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class DownloadTask extends LongRunningTask {
-	private static final Logger field_36355 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final long worldId;
 	private final int slot;
 	private final Screen lastScreen;
@@ -60,7 +60,7 @@ public class DownloadTask extends LongRunningTask {
 					return;
 				}
 
-				field_36355.error("Couldn't download world data");
+				LOGGER.error("Couldn't download world data");
 				setScreen(new RealmsGenericErrorScreen(var5, this.lastScreen));
 				return;
 			} catch (Exception var6) {
@@ -68,7 +68,7 @@ public class DownloadTask extends LongRunningTask {
 					return;
 				}
 
-				field_36355.error("Couldn't download world data", (Throwable)var6);
+				LOGGER.error("Couldn't download world data", (Throwable)var6);
 				this.error(var6.getLocalizedMessage());
 				return;
 			}

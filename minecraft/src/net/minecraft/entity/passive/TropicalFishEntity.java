@@ -1,8 +1,6 @@
 package net.minecraft.entity.passive;
 
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
@@ -27,6 +25,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
@@ -248,11 +247,7 @@ public class TropicalFishEntity extends SchoolingFishEntity implements VariantHo
 		CLAYFISH("clayfish", TropicalFishEntity.Size.LARGE, 5);
 
 		public static final com.mojang.serialization.Codec<TropicalFishEntity.Variety> CODEC = StringIdentifiable.createCodec(TropicalFishEntity.Variety::values);
-		private static final IntFunction<TropicalFishEntity.Variety> VARIETY_BY_ID = Util.make(new Int2ObjectOpenHashMap<>(), map -> {
-			for (TropicalFishEntity.Variety variety : values()) {
-				map.put(variety.id, variety);
-			}
-		});
+		private static final IntFunction<TropicalFishEntity.Variety> BY_ID = ValueLists.createIdToValueFunction(TropicalFishEntity.Variety::getId, values(), KOB);
 		private final String name;
 		private final Text text;
 		private final TropicalFishEntity.Size size;
@@ -266,7 +261,7 @@ public class TropicalFishEntity extends SchoolingFishEntity implements VariantHo
 		}
 
 		public static TropicalFishEntity.Variety fromId(int id) {
-			return (TropicalFishEntity.Variety)Objects.requireNonNullElse((TropicalFishEntity.Variety)VARIETY_BY_ID.apply(id), KOB);
+			return (TropicalFishEntity.Variety)BY_ID.apply(id);
 		}
 
 		public TropicalFishEntity.Size getSize() {

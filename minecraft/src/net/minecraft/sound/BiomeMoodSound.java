@@ -2,14 +2,15 @@ package net.minecraft.sound;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.registry.Registries;
 
 public class BiomeMoodSound {
 	public static final Codec<BiomeMoodSound> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					SoundEvent.CODEC.fieldOf("sound").forGetter(biomeMoodSound -> biomeMoodSound.sound),
-					Codec.INT.fieldOf("tick_delay").forGetter(biomeMoodSound -> biomeMoodSound.cultivationTicks),
-					Codec.INT.fieldOf("block_search_extent").forGetter(biomeMoodSound -> biomeMoodSound.spawnRange),
-					Codec.DOUBLE.fieldOf("offset").forGetter(biomeMoodSound -> biomeMoodSound.extraDistance)
+					Registries.SOUND_EVENT.getCodec().fieldOf("sound").forGetter(sound -> sound.sound),
+					Codec.INT.fieldOf("tick_delay").forGetter(sound -> sound.cultivationTicks),
+					Codec.INT.fieldOf("block_search_extent").forGetter(sound -> sound.spawnRange),
+					Codec.DOUBLE.fieldOf("offset").forGetter(sound -> sound.extraDistance)
 				)
 				.apply(instance, BiomeMoodSound::new)
 	);

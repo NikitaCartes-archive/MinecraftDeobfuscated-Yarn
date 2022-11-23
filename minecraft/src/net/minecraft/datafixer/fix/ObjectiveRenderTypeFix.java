@@ -7,28 +7,27 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.Type;
 import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.scoreboard.ScoreboardCriterion;
 
 public class ObjectiveRenderTypeFix extends DataFix {
-	public ObjectiveRenderTypeFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ObjectiveRenderTypeFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
-	private static ScoreboardCriterion.RenderType parseLegacyRenderType(String oldName) {
-		return oldName.equals("health") ? ScoreboardCriterion.RenderType.HEARTS : ScoreboardCriterion.RenderType.INTEGER;
+	private static String parseLegacyRenderType(String oldName) {
+		return oldName.equals("health") ? "hearts" : "integer";
 	}
 
 	@Override
 	protected TypeRewriteRule makeRule() {
 		Type<?> type = this.getInputSchema().getType(TypeReferences.OBJECTIVE);
-		return this.fixTypeEverywhereTyped("ObjectiveRenderTypeFix", type, typed -> typed.update(DSL.remainderFinder(), dynamic -> {
-				Optional<String> optional = dynamic.get("RenderType").asString().result();
-				if (!optional.isPresent()) {
-					String string = dynamic.get("CriteriaName").asString("");
-					ScoreboardCriterion.RenderType renderType = parseLegacyRenderType(string);
-					return dynamic.set("RenderType", dynamic.createString(renderType.getName()));
+		return this.fixTypeEverywhereTyped("ObjectiveRenderTypeFix", type, typed -> typed.update(DSL.remainderFinder(), objective -> {
+				Optional<String> optional = objective.get("RenderType").asString().result();
+				if (optional.isEmpty()) {
+					String string = objective.get("CriteriaName").asString("");
+					String string2 = parseLegacyRenderType(string);
+					return objective.set("RenderType", objective.createString(string2));
 				} else {
-					return dynamic;
+					return objective;
 				}
 			}));
 	}

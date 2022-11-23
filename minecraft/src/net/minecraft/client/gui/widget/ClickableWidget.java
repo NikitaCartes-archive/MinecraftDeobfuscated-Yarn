@@ -11,9 +11,12 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.Tooltip;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
+import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
+import net.minecraft.client.gui.tooltip.Tooltip;
+import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
@@ -95,10 +98,14 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 			if (bl && Util.getMeasuringTimeMs() - this.lastHoveredTime > (long)this.tooltipDelay) {
 				Screen screen = MinecraftClient.getInstance().currentScreen;
 				if (screen != null) {
-					screen.setTooltip(this.tooltip);
+					screen.setTooltip(this.tooltip, this.getTooltipPositioner(), this.isFocused());
 				}
 			}
 		}
+	}
+
+	protected TooltipPositioner getTooltipPositioner() {
+		return (TooltipPositioner)(this.isFocused() ? new FocusedTooltipPositioner(this) : HoveredTooltipPositioner.INSTANCE);
 	}
 
 	public void setTooltip(@Nullable Tooltip tooltip) {

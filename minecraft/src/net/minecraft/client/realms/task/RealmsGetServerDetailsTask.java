@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsGetServerDetailsTask extends LongRunningTask {
-	private static final Logger field_36356 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final RealmsServer server;
 	private final Screen lastScreen;
 	private final RealmsMainScreen mainScreen;
@@ -48,7 +48,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 		try {
 			realmsServerAddress = this.join();
 		} catch (CancellationException var4) {
-			field_36356.info("User aborted connecting to realms");
+			LOGGER.info("User aborted connecting to realms");
 			return;
 		} catch (RealmsServiceException var5) {
 			switch (var5.getErrorCode(-1)) {
@@ -65,14 +65,14 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					return;
 				default:
 					this.error(var5.toString());
-					field_36356.error("Couldn't connect to world", (Throwable)var5);
+					LOGGER.error("Couldn't connect to world", (Throwable)var5);
 					return;
 			}
 		} catch (TimeoutException var6) {
 			this.error(Text.translatable("mco.errorMessage.connectionFailure"));
 			return;
 		} catch (Exception var7) {
-			field_36356.error("Couldn't connect to world", (Throwable)var7);
+			LOGGER.error("Couldn't connect to world", (Throwable)var7);
 			this.error(var7.getLocalizedMessage());
 			return;
 		}
@@ -114,7 +114,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 				if (confirmed) {
 					this.downloadResourcePack(address).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
 						MinecraftClient.getInstance().getServerResourcePackProvider().clear();
-						field_36356.error("Failed to download resource pack from {}", address, throwable);
+						LOGGER.error("Failed to download resource pack from {}", address, throwable);
 						setScreen(new RealmsGenericErrorScreen(Text.literal("Failed to download resource pack!"), this.lastScreen));
 						return null;
 					});

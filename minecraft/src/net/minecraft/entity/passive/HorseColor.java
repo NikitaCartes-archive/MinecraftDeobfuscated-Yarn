@@ -1,8 +1,8 @@
 package net.minecraft.entity.passive;
 
-import java.util.Arrays;
-import java.util.Comparator;
+import java.util.function.IntFunction;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 
 public enum HorseColor implements StringIdentifiable {
 	WHITE(0, "white"),
@@ -14,23 +14,21 @@ public enum HorseColor implements StringIdentifiable {
 	DARK_BROWN(6, "dark_brown");
 
 	public static final com.mojang.serialization.Codec<HorseColor> CODEC = StringIdentifiable.createCodec(HorseColor::values);
-	private static final HorseColor[] VALUES = (HorseColor[])Arrays.stream(values())
-		.sorted(Comparator.comparingInt(HorseColor::getIndex))
-		.toArray(HorseColor[]::new);
-	private final int index;
+	private static final IntFunction<HorseColor> BY_ID = ValueLists.createIdToValueFunction(HorseColor::getId, values(), ValueLists.OutOfBoundsHandling.WRAP);
+	private final int id;
 	private final String name;
 
-	private HorseColor(int index, String name) {
-		this.index = index;
+	private HorseColor(int id, String name) {
+		this.id = id;
 		this.name = name;
 	}
 
-	public int getIndex() {
-		return this.index;
+	public int getId() {
+		return this.id;
 	}
 
-	public static HorseColor byIndex(int index) {
-		return VALUES[index % VALUES.length];
+	public static HorseColor byId(int id) {
+		return (HorseColor)BY_ID.apply(id);
 	}
 
 	@Override

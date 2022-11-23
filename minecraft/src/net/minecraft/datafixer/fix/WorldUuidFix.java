@@ -9,7 +9,7 @@ import net.minecraft.datafixer.TypeReferences;
 import org.slf4j.Logger;
 
 public class WorldUuidFix extends AbstractUuidFix {
-	private static final Logger field_36329 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 
 	public WorldUuidFix(Schema outputSchema) {
 		super(outputSchema, TypeReferences.LEVEL);
@@ -50,7 +50,7 @@ public class WorldUuidFix extends AbstractUuidFix {
 					pair -> pair.mapSecond(
 							dynamicxx -> dynamicxx.update(
 									"Players", dynamic2 -> dynamicxx.createList(dynamic2.asStream().map(dynamicxxxx -> (Dynamic)createArrayFromCompoundUuid(dynamicxxxx).orElseGet(() -> {
-												field_36329.warn("CustomBossEvents contains invalid UUIDs.");
+												LOGGER.warn("CustomBossEvents contains invalid UUIDs.");
 												return dynamicxxxx;
 											})))
 								)

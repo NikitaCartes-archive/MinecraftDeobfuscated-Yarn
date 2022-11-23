@@ -1,9 +1,12 @@
 package net.minecraft.server.command;
 
+import com.google.common.base.Stopwatch;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
+import java.time.Duration;
 import java.util.Optional;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.RegistryEntryPredicateArgumentType;
@@ -18,14 +21,17 @@ import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import org.slf4j.Logger;
 
 public class LocateCommand {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final DynamicCommandExceptionType STRUCTURE_NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(
 		id -> Text.translatable("commands.locate.structure.not_found", id)
 	);
@@ -94,35 +100,41 @@ public class LocateCommand {
 			.orElseThrow(() -> STRUCTURE_INVALID_EXCEPTION.create(predicate.asString()));
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		ServerWorld serverWorld = source.getWorld();
+		Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
 		Pair<BlockPos, RegistryEntry<Structure>> pair = serverWorld.getChunkManager()
 			.getChunkGenerator()
 			.locateStructure(serverWorld, registryEntryList, blockPos, 100, false);
+		stopwatch.stop();
 		if (pair == null) {
 			throw STRUCTURE_NOT_FOUND_EXCEPTION.create(predicate.asString());
 		} else {
-			return sendCoordinates(source, predicate, blockPos, pair, "commands.locate.structure.success", false);
+			return sendCoordinates(source, predicate, blockPos, pair, "commands.locate.structure.success", false, stopwatch.elapsed());
 		}
 	}
 
 	private static int executeLocateBiome(ServerCommandSource source, RegistryEntryPredicateArgumentType.EntryPredicate<Biome> predicate) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(source.getPosition());
+		Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
 		Pair<BlockPos, RegistryEntry<Biome>> pair = source.getWorld().locateBiome(predicate, blockPos, 6400, 32, 64);
+		stopwatch.stop();
 		if (pair == null) {
 			throw BIOME_NOT_FOUND_EXCEPTION.create(predicate.asString());
 		} else {
-			return sendCoordinates(source, predicate, blockPos, pair, "commands.locate.biome.success", true);
+			return sendCoordinates(source, predicate, blockPos, pair, "commands.locate.biome.success", true, stopwatch.elapsed());
 		}
 	}
 
 	private static int executeLocatePoi(ServerCommandSource source, RegistryEntryPredicateArgumentType.EntryPredicate<PointOfInterestType> predicate) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		ServerWorld serverWorld = source.getWorld();
+		Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
 		Optional<Pair<RegistryEntry<PointOfInterestType>, BlockPos>> optional = serverWorld.getPointOfInterestStorage()
 			.getNearestTypeAndPosition(predicate, blockPos, 256, PointOfInterestStorage.OccupationStatus.ANY);
+		stopwatch.stop();
 		if (optional.isEmpty()) {
 			throw POI_NOT_FOUND_EXCEPTION.create(predicate.asString());
 		} else {
-			return sendCoordinates(source, predicate, blockPos, ((Pair)optional.get()).swap(), "commands.locate.poi.success", false);
+			return sendCoordinates(source, predicate, blockPos, ((Pair)optional.get()).swap(), "commands.locate.poi.success", false, stopwatch.elapsed());
 		}
 	}
 
@@ -136,10 +148,11 @@ public class LocateCommand {
 		BlockPos currentPos,
 		Pair<BlockPos, ? extends RegistryEntry<?>> result,
 		String successMessage,
-		boolean includeY
+		boolean includeY,
+		Duration timeTaken
 	) {
 		String string = predicate.getEntry().map(entry -> predicate.asString(), tag -> predicate.asString() + " (" + getKeyString(result) + ")");
-		return sendCoordinates(source, currentPos, result, successMessage, includeY, string);
+		return sendCoordinates(source, currentPos, result, successMessage, includeY, string, timeTaken);
 	}
 
 	public static int sendCoordinates(
@@ -148,10 +161,11 @@ public class LocateCommand {
 		BlockPos currentPos,
 		Pair<BlockPos, ? extends RegistryEntry<?>> result,
 		String successMessage,
-		boolean includeY
+		boolean includeY,
+		Duration timeTaken
 	) {
 		String string = structure.getKey().map(key -> key.getValue().toString(), key -> "#" + key.id() + " (" + getKeyString(result) + ")");
-		return sendCoordinates(source, currentPos, result, successMessage, includeY, string);
+		return sendCoordinates(source, currentPos, result, successMessage, includeY, string, timeTaken);
 	}
 
 	private static int sendCoordinates(
@@ -160,7 +174,8 @@ public class LocateCommand {
 		Pair<BlockPos, ? extends RegistryEntry<?>> result,
 		String successMessage,
 		boolean includeY,
-		String entryString
+		String entryString,
+		Duration timeTaken
 	) {
 		BlockPos blockPos = result.getFirst();
 		int i = includeY
@@ -174,6 +189,7 @@ public class LocateCommand {
 						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.coordinates.tooltip")))
 			);
 		source.sendFeedback(Text.translatable(successMessage, entryString, text, i), false);
+		LOGGER.info("Locating element " + entryString + " took " + timeTaken.toMillis() + " ms");
 		return i;
 	}
 

@@ -19,7 +19,7 @@ public class Schema1451v3 extends IdentifierNormalizingSchema {
 		schema.registerSimple(map, "minecraft:egg");
 		schema.registerSimple(map, "minecraft:ender_pearl");
 		schema.registerSimple(map, "minecraft:fireball");
-		schema.register(map, "minecraft:potion", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("Potion", TypeReferences.ITEM_STACK.in(schema))));
+		schema.register(map, "minecraft:potion", (Function<String, TypeTemplate>)(name -> DSL.optionalFields("Potion", TypeReferences.ITEM_STACK.in(schema))));
 		schema.registerSimple(map, "minecraft:small_fireball");
 		schema.registerSimple(map, "minecraft:snowball");
 		schema.registerSimple(map, "minecraft:wither_skull");

@@ -365,7 +365,7 @@ public class MultiNoiseUtil {
 	}
 
 	protected static final class SearchTree<T> {
-		private static final int MAX_NODES_FOR_SIMPLE_TREE = 10;
+		private static final int MAX_NODES_FOR_SIMPLE_TREE = 6;
 		private final MultiNoiseUtil.SearchTree.TreeNode<T> firstNode;
 		private final ThreadLocal<MultiNoiseUtil.SearchTree.TreeLeafNode<T>> previousResultNode = new ThreadLocal();
 
@@ -394,7 +394,7 @@ public class MultiNoiseUtil {
 				throw new IllegalStateException("Need at least one child to build a node");
 			} else if (subTree.size() == 1) {
 				return (MultiNoiseUtil.SearchTree.TreeNode<T>)subTree.get(0);
-			} else if (subTree.size() <= 10) {
+			} else if (subTree.size() <= 6) {
 				subTree.sort(Comparator.comparingLong(node -> {
 					long lx = 0L;
 
@@ -457,7 +457,7 @@ public class MultiNoiseUtil {
 		private static <T> List<MultiNoiseUtil.SearchTree.TreeBranchNode<T>> getBatchedTree(List<? extends MultiNoiseUtil.SearchTree.TreeNode<T>> nodes) {
 			List<MultiNoiseUtil.SearchTree.TreeBranchNode<T>> list = Lists.<MultiNoiseUtil.SearchTree.TreeBranchNode<T>>newArrayList();
 			List<MultiNoiseUtil.SearchTree.TreeNode<T>> list2 = Lists.<MultiNoiseUtil.SearchTree.TreeNode<T>>newArrayList();
-			int i = (int)Math.pow(10.0, Math.floor(Math.log((double)nodes.size() - 0.01) / Math.log(10.0)));
+			int i = (int)Math.pow(6.0, Math.floor(Math.log((double)nodes.size() - 0.01) / Math.log(6.0)));
 
 			for (MultiNoiseUtil.SearchTree.TreeNode<T> treeNode : nodes) {
 				list2.add(treeNode);

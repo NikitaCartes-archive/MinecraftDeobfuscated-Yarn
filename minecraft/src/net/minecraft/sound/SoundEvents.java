@@ -1389,11 +1389,11 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_STEP = register("entity.zombie_villager.step");
 
 	private static SoundEvent register(String id, float distanceToTravel) {
-		return Registry.register(Registries.SOUND_EVENT, id, new SoundEvent(new Identifier(id), distanceToTravel));
+		return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(new Identifier(id), distanceToTravel));
 	}
 
 	private static SoundEvent register(String id) {
-		return Registry.register(Registries.SOUND_EVENT, id, new SoundEvent(new Identifier(id)));
+		return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(new Identifier(id)));
 	}
 
 	private static ImmutableList<SoundEvent> registerGoatHornSounds() {

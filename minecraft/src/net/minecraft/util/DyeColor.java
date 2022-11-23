@@ -2,11 +2,12 @@ package net.minecraft.util;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Map;
+import java.util.function.IntFunction;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.block.MapColor;
+import net.minecraft.util.function.ValueLists;
 import org.jetbrains.annotations.Contract;
 
 /**
@@ -30,7 +31,7 @@ public enum DyeColor implements StringIdentifiable {
 	RED(14, "red", 11546150, MapColor.RED, 11743532, 16711680),
 	BLACK(15, "black", 1908001, MapColor.BLACK, 1973019, 0);
 
-	private static final DyeColor[] VALUES = (DyeColor[])Arrays.stream(values()).sorted(Comparator.comparingInt(DyeColor::getId)).toArray(DyeColor[]::new);
+	private static final IntFunction<DyeColor> BY_ID = ValueLists.createIdToValueFunction(DyeColor::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
 	private static final Int2ObjectOpenHashMap<DyeColor> BY_FIREWORK_COLOR = new Int2ObjectOpenHashMap<>(
 		(Map<? extends Integer, ? extends DyeColor>)Arrays.stream(values()).collect(Collectors.toMap(color -> color.fireworkColor, color -> color))
 	);
@@ -108,11 +109,7 @@ public enum DyeColor implements StringIdentifiable {
 	 * @apiNote If out-of-range IDs are passed, this returns {@link #WHITE}.
 	 */
 	public static DyeColor byId(int id) {
-		if (id < 0 || id >= VALUES.length) {
-			id = 0;
-		}
-
-		return VALUES[id];
+		return (DyeColor)BY_ID.apply(id);
 	}
 
 	/**

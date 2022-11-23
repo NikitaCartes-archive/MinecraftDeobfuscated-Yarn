@@ -431,7 +431,6 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 			super(bl);
 		}
 
-		@Nullable
 		@Override
 		public PathNode getStart() {
 			return !this.entity.isTouchingWater()

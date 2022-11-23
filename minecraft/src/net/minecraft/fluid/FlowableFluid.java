@@ -93,7 +93,7 @@ public abstract class FlowableFluid extends Fluid {
 		if ((Boolean)state.get(FALLING)) {
 			for (Direction direction2 : Direction.Type.HORIZONTAL) {
 				mutable.set(pos, direction2);
-				if (this.method_15749(world, mutable, direction2) || this.method_15749(world, mutable.up(), direction2)) {
+				if (this.isFlowBlocked(world, mutable, direction2) || this.isFlowBlocked(world, mutable.up(), direction2)) {
 					vec3d = vec3d.normalize().add(0.0, -6.0, 0.0);
 					break;
 				}
@@ -107,7 +107,7 @@ public abstract class FlowableFluid extends Fluid {
 		return state.isEmpty() || state.getFluid().matchesType(this);
 	}
 
-	protected boolean method_15749(BlockView world, BlockPos pos, Direction direction) {
+	protected boolean isFlowBlocked(BlockView world, BlockPos pos, Direction direction) {
 		BlockState blockState = world.getBlockState(pos);
 		FluidState fluidState = world.getFluidState(pos);
 		if (fluidState.getFluid().matchesType(this)) {
@@ -127,16 +127,16 @@ public abstract class FlowableFluid extends Fluid {
 			FluidState fluidState = this.getUpdatedState(world, blockPos, blockState2);
 			if (this.canFlow(world, fluidPos, blockState, Direction.DOWN, blockPos, blockState2, world.getFluidState(blockPos), fluidState.getFluid())) {
 				this.flow(world, blockPos, blockState2, Direction.DOWN, fluidState);
-				if (this.method_15740(world, fluidPos) >= 3) {
-					this.method_15744(world, fluidPos, state, blockState);
+				if (this.countNeighboringSources(world, fluidPos) >= 3) {
+					this.flowToSides(world, fluidPos, state, blockState);
 				}
-			} else if (state.isStill() || !this.method_15736(world, fluidState.getFluid(), fluidPos, blockState, blockPos, blockState2)) {
-				this.method_15744(world, fluidPos, state, blockState);
+			} else if (state.isStill() || !this.canFlowDownTo(world, fluidState.getFluid(), fluidPos, blockState, blockPos, blockState2)) {
+				this.flowToSides(world, fluidPos, state, blockState);
 			}
 		}
 	}
 
-	private void method_15744(World world, BlockPos pos, FluidState fluidState, BlockState blockState) {
+	private void flowToSides(World world, BlockPos pos, FluidState fluidState, BlockState blockState) {
 		int i = fluidState.getLevel() - this.getLevelDecreasePerBlock(world);
 		if ((Boolean)fluidState.get(FALLING)) {
 			i = 7;
@@ -260,7 +260,7 @@ public abstract class FlowableFluid extends Fluid {
 		return (short)((i + 128 & 0xFF) << 8 | j + 128 & 0xFF);
 	}
 
-	protected int method_15742(
+	protected int getFlowSpeedBetween(
 		WorldView world,
 		BlockPos blockPos,
 		int i,
@@ -286,14 +286,14 @@ public abstract class FlowableFluid extends Fluid {
 					boolean bl = short2BooleanMap.computeIfAbsent(s, (Short2BooleanFunction)(sx -> {
 						BlockPos blockPos2x = blockPos3.down();
 						BlockState blockState2x = world.getBlockState(blockPos2x);
-						return this.method_15736(world, this.getFlowing(), blockPos3, blockState2, blockPos2x, blockState2x);
+						return this.canFlowDownTo(world, this.getFlowing(), blockPos3, blockState2, blockPos2x, blockState2x);
 					}));
 					if (bl) {
 						return i;
 					}
 
 					if (i < this.getFlowSpeed(world)) {
-						int k = this.method_15742(world, blockPos3, i + 1, direction2.getOpposite(), blockState2, blockPos2, short2ObjectMap, short2BooleanMap);
+						int k = this.getFlowSpeedBetween(world, blockPos3, i + 1, direction2.getOpposite(), blockState2, blockPos2, short2ObjectMap, short2BooleanMap);
 						if (k < j) {
 							j = k;
 						}
@@ -305,7 +305,7 @@ public abstract class FlowableFluid extends Fluid {
 		return j;
 	}
 
-	private boolean method_15736(BlockView world, Fluid fluid, BlockPos pos, BlockState state, BlockPos fromPos, BlockState fromState) {
+	private boolean canFlowDownTo(BlockView world, Fluid fluid, BlockPos pos, BlockState state, BlockPos fromPos, BlockState fromState) {
 		if (!this.receivesFlow(Direction.DOWN, world, pos, state, fromPos, fromState)) {
 			return false;
 		} else {
@@ -327,7 +327,7 @@ public abstract class FlowableFluid extends Fluid {
 
 	protected abstract int getFlowSpeed(WorldView world);
 
-	private int method_15740(WorldView world, BlockPos pos) {
+	private int countNeighboringSources(WorldView world, BlockPos pos) {
 		int i = 0;
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
@@ -361,13 +361,13 @@ public abstract class FlowableFluid extends Fluid {
 				BlockPos blockPos2 = blockPos.down();
 				boolean bl = short2BooleanMap.computeIfAbsent(s, (Short2BooleanFunction)(sx -> {
 					BlockState blockState2 = world.getBlockState(blockPos2);
-					return this.method_15736(world, this.getFlowing(), blockPos, blockState, blockPos2, blockState2);
+					return this.canFlowDownTo(world, this.getFlowing(), blockPos, blockState, blockPos2, blockState2);
 				}));
 				int j;
 				if (bl) {
 					j = 0;
 				} else {
-					j = this.method_15742(world, blockPos, 1, direction.getOpposite(), blockState, pos, short2ObjectMap, short2BooleanMap);
+					j = this.getFlowSpeedBetween(world, blockPos, 1, direction.getOpposite(), blockState, pos, short2ObjectMap, short2BooleanMap);
 				}
 
 				if (j < i) {

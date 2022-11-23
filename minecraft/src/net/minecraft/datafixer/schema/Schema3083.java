@@ -12,10 +12,10 @@ public class Schema3083 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	protected static void method_42645(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
+	protected static void method_42645(Schema schema, Map<String, Supplier<TypeTemplate>> map, String name) {
 		schema.register(
 			map,
-			string,
+			name,
 			(Supplier<TypeTemplate>)(() -> DSL.optionalFields(
 					"ArmorItems",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),

@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class OpenServerTask extends LongRunningTask {
-	private static final Logger field_36357 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private final RealmsServer serverData;
 	private final Screen returnScreen;
 	private final boolean join;
@@ -67,7 +67,7 @@ public class OpenServerTask extends LongRunningTask {
 					return;
 				}
 
-				field_36357.error("Failed to open server", (Throwable)var5);
+				LOGGER.error("Failed to open server", (Throwable)var5);
 				this.error("Failed to open the server");
 			}
 		}

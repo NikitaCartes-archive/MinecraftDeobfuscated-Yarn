@@ -24,7 +24,7 @@ public class Schema1800 extends IdentifierNormalizingSchema {
 		schema.register(
 			map,
 			"minecraft:pillager",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema)), Schema100.targetItems(schema)))
+			(Function<String, TypeTemplate>)(name -> DSL.optionalFields("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema)), Schema100.targetItems(schema)))
 		);
 		return map;
 	}

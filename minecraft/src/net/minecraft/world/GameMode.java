@@ -1,17 +1,22 @@
 package net.minecraft.world;
 
+import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerAbilities;
 import net.minecraft.text.Text;
+import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import org.jetbrains.annotations.Contract;
 
-public enum GameMode {
+public enum GameMode implements StringIdentifiable {
 	SURVIVAL(0, "survival"),
 	CREATIVE(1, "creative"),
 	ADVENTURE(2, "adventure"),
 	SPECTATOR(3, "spectator");
 
 	public static final GameMode DEFAULT = SURVIVAL;
+	public static final StringIdentifiable.Codec<GameMode> CODEC = StringIdentifiable.createCodec(GameMode::values);
+	private static final IntFunction<GameMode> BY_ID = ValueLists.createIdToValueFunction(GameMode::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
 	private static final int UNKNOWN = -1;
 	private final int id;
 	private final String name;
@@ -30,6 +35,11 @@ public enum GameMode {
 	}
 
 	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public String asString() {
 		return this.name;
 	}
 
@@ -74,17 +84,7 @@ public enum GameMode {
 	}
 
 	public static GameMode byId(int id) {
-		return byId(id, DEFAULT);
-	}
-
-	public static GameMode byId(int id, GameMode defaultMode) {
-		for (GameMode gameMode : values()) {
-			if (gameMode.id == id) {
-				return gameMode;
-			}
-		}
-
-		return defaultMode;
+		return (GameMode)BY_ID.apply(id);
 	}
 
 	public static GameMode byName(String name) {
@@ -94,13 +94,8 @@ public enum GameMode {
 	@Nullable
 	@Contract("_,!null->!null;_,null->_")
 	public static GameMode byName(String name, @Nullable GameMode defaultMode) {
-		for (GameMode gameMode : values()) {
-			if (gameMode.name.equals(name)) {
-				return gameMode;
-			}
-		}
-
-		return defaultMode;
+		GameMode gameMode = (GameMode)CODEC.byId(name);
+		return gameMode != null ? gameMode : defaultMode;
 	}
 
 	public static int getId(@Nullable GameMode gameMode) {

@@ -2,6 +2,7 @@ package net.minecraft.sound;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.registry.Registries;
 
 /**
  * Represents an "additions sound" for a biome.
@@ -9,8 +10,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 public class BiomeAdditionsSound {
 	public static final Codec<BiomeAdditionsSound> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					SoundEvent.CODEC.fieldOf("sound").forGetter(biomeAdditionsSound -> biomeAdditionsSound.sound),
-					Codec.DOUBLE.fieldOf("tick_chance").forGetter(biomeAdditionsSound -> biomeAdditionsSound.chance)
+					Registries.SOUND_EVENT.getCodec().fieldOf("sound").forGetter(sound -> sound.sound), Codec.DOUBLE.fieldOf("tick_chance").forGetter(sound -> sound.chance)
 				)
 				.apply(instance, BiomeAdditionsSound::new)
 	);

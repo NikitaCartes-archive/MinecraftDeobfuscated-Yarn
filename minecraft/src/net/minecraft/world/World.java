@@ -456,6 +456,14 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.playSoundFromEntity(except, entity, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
 
+	public abstract void playSound(
+		@Nullable PlayerEntity except, Vec3d pos, Identifier id, SoundCategory category, float volume, float pitch, double distance, long seed
+	);
+
+	public void playSound(@Nullable PlayerEntity except, Vec3d pos, Identifier id, SoundCategory category, float volume, float pitch, double distance) {
+		this.playSound(except, pos, id, category, volume, pitch, distance, this.threadSafeRandom.nextLong());
+	}
+
 	public void playSoundAtBlockCenter(BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
 		this.playSound((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, sound, category, volume, pitch, useDistance);
 	}

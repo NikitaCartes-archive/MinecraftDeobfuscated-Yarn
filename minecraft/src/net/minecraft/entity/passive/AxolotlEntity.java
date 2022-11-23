@@ -2,13 +2,12 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.AngledModelEntity;
 import net.minecraft.entity.Bucketable;
@@ -54,6 +53,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -62,7 +62,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.joml.Vector3f;
-import org.slf4j.Logger;
 
 /**
  * Represents an axolotl, the cutest predator.
@@ -98,7 +97,6 @@ import org.slf4j.Logger;
  * </div>
  */
 public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, VariantHolder<AxolotlEntity.Variant>, Bucketable {
-	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final int PLAY_DEAD_TICKS = 200;
 	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super AxolotlEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, SensorType.AXOLOTL_ATTACKABLES, SensorType.AXOLOTL_TEMPTATIONS
@@ -173,7 +171,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.setVariant(AxolotlEntity.Variant.VARIANTS[nbt.getInt("Variant")]);
+		this.setVariant(AxolotlEntity.Variant.byId(nbt.getInt("Variant")));
 		this.setFromBucket(nbt.getBoolean("FromBucket"));
 	}
 
@@ -242,7 +240,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	}
 
 	public AxolotlEntity.Variant getVariant() {
-		return AxolotlEntity.Variant.VARIANTS[this.dataTracker.get(VARIANT)];
+		return AxolotlEntity.Variant.byId(this.dataTracker.get(VARIANT));
 	}
 
 	public void setVariant(AxolotlEntity.Variant variant) {
@@ -414,13 +412,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	@Override
 	public void copyDataFromNbt(NbtCompound nbt) {
 		Bucketable.copyDataFromNbt(this, nbt);
-		int i = nbt.getInt("Variant");
-		if (i >= 0 && i < AxolotlEntity.Variant.VARIANTS.length) {
-			this.setVariant(AxolotlEntity.Variant.VARIANTS[i]);
-		} else {
-			LOGGER.error("Invalid variant: {}", i);
-		}
-
+		this.setVariant(AxolotlEntity.Variant.byId(nbt.getInt("Variant")));
 		if (nbt.contains("Age")) {
 			this.setBreedingAge(nbt.getInt("Age"));
 		}
@@ -604,9 +596,9 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 		CYAN(3, "cyan", true),
 		BLUE(4, "blue", false);
 
-		public static final AxolotlEntity.Variant[] VARIANTS = (AxolotlEntity.Variant[])Arrays.stream(values())
-			.sorted(Comparator.comparingInt(AxolotlEntity.Variant::getId))
-			.toArray(AxolotlEntity.Variant[]::new);
+		private static final IntFunction<AxolotlEntity.Variant> BY_ID = ValueLists.createIdToValueFunction(
+			AxolotlEntity.Variant::getId, values(), ValueLists.OutOfBoundsHandling.ZERO
+		);
 		public static final com.mojang.serialization.Codec<AxolotlEntity.Variant> CODEC = StringIdentifiable.createCodec(AxolotlEntity.Variant::values);
 		private final int id;
 		private final String name;
@@ -631,6 +623,10 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 			return this.name;
 		}
 
+		public static AxolotlEntity.Variant byId(int id) {
+			return (AxolotlEntity.Variant)BY_ID.apply(id);
+		}
+
 		public static AxolotlEntity.Variant getRandomNatural(Random random) {
 			return getRandom(random, true);
 		}
@@ -640,7 +636,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 		}
 
 		private static AxolotlEntity.Variant getRandom(Random random, boolean natural) {
-			AxolotlEntity.Variant[] variants = (AxolotlEntity.Variant[])Arrays.stream(VARIANTS)
+			AxolotlEntity.Variant[] variants = (AxolotlEntity.Variant[])Arrays.stream(values())
 				.filter(variant -> variant.natural == natural)
 				.toArray(AxolotlEntity.Variant[]::new);
 			return Util.getRandom(variants, random);

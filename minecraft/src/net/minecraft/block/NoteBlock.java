@@ -22,6 +22,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
@@ -30,6 +31,7 @@ public class NoteBlock extends Block {
 	public static final EnumProperty<Instrument> INSTRUMENT = Properties.INSTRUMENT;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final IntProperty NOTE = Properties.NOTE;
+	public static final int field_41678 = 3;
 
 	public NoteBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -116,30 +118,24 @@ public class NoteBlock extends Block {
 			f = 1.0F;
 		}
 
-		SoundEvent soundEvent;
 		if (instrument.hasCustomSound()) {
-			soundEvent = this.getCustomSound(instrument, world, pos);
-			if (soundEvent == null) {
+			Identifier identifier = this.getCustomSound(world, pos);
+			if (identifier == null) {
 				return false;
 			}
+
+			world.playSound(null, Vec3d.ofCenter(pos), identifier, SoundCategory.RECORDS, 3.0F, f, (double)SoundEvent.getDistanceToTravelForVolume(3.0F));
 		} else {
-			soundEvent = instrument.getSound();
+			SoundEvent soundEvent = instrument.getSound();
+			world.playSound(null, pos, soundEvent, SoundCategory.RECORDS, 3.0F, f);
 		}
 
-		world.playSound(null, pos, soundEvent, SoundCategory.RECORDS, 3.0F, f);
 		return true;
 	}
 
 	@Nullable
-	private SoundEvent getCustomSound(Instrument instrument, World world, BlockPos pos) {
-		if (world.getBlockEntity(pos.up()) instanceof SkullBlockEntity skullBlockEntity) {
-			Identifier identifier = skullBlockEntity.getNoteBlockSound();
-			if (identifier != null) {
-				return new SoundEvent(identifier);
-			}
-		}
-
-		return null;
+	private Identifier getCustomSound(World world, BlockPos pos) {
+		return world.getBlockEntity(pos.up()) instanceof SkullBlockEntity skullBlockEntity ? skullBlockEntity.getNoteBlockSound() : null;
 	}
 
 	@Override

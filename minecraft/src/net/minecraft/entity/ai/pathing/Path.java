@@ -145,26 +145,26 @@ public class Path {
 			buffer.writeBoolean(this.reachesTarget);
 			buffer.writeInt(this.currentNodeIndex);
 			buffer.writeInt(this.debugTargetNodes.size());
-			this.debugTargetNodes.forEach(targetPathNode -> targetPathNode.toBuffer(buffer));
+			this.debugTargetNodes.forEach(targetPathNode -> targetPathNode.write(buffer));
 			buffer.writeInt(this.target.getX());
 			buffer.writeInt(this.target.getY());
 			buffer.writeInt(this.target.getZ());
 			buffer.writeInt(this.nodes.size());
 
 			for (PathNode pathNode : this.nodes) {
-				pathNode.toBuffer(buffer);
+				pathNode.write(buffer);
 			}
 
 			buffer.writeInt(this.debugNodes.length);
 
 			for (PathNode pathNode2 : this.debugNodes) {
-				pathNode2.toBuffer(buffer);
+				pathNode2.write(buffer);
 			}
 
 			buffer.writeInt(this.debugSecondNodes.length);
 
 			for (PathNode pathNode2 : this.debugSecondNodes) {
-				pathNode2.toBuffer(buffer);
+				pathNode2.write(buffer);
 			}
 		}
 	}
@@ -184,19 +184,19 @@ public class Path {
 		int l = buffer.readInt();
 
 		for (int m = 0; m < l; m++) {
-			list.add(PathNode.readBuf(buffer));
+			list.add(PathNode.fromBuf(buffer));
 		}
 
 		PathNode[] pathNodes = new PathNode[buffer.readInt()];
 
 		for (int n = 0; n < pathNodes.length; n++) {
-			pathNodes[n] = PathNode.readBuf(buffer);
+			pathNodes[n] = PathNode.fromBuf(buffer);
 		}
 
 		PathNode[] pathNodes2 = new PathNode[buffer.readInt()];
 
 		for (int o = 0; o < pathNodes2.length; o++) {
-			pathNodes2[o] = PathNode.readBuf(buffer);
+			pathNodes2[o] = PathNode.fromBuf(buffer);
 		}
 
 		Path path = new Path(list, blockPos, bl);

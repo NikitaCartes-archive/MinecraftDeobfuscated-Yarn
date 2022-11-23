@@ -1,4 +1,4 @@
-package net.minecraft.client.gui.screen;
+package net.minecraft.client.gui.tooltip;
 
 import java.util.List;
 import javax.annotation.Nullable;

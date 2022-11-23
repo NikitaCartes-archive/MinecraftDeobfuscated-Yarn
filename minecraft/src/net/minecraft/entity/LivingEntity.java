@@ -125,7 +125,7 @@ import org.slf4j.Logger;
  * Represents an entity which has a health value and can receive damage.
  */
 public abstract class LivingEntity extends Entity {
-	private static final Logger field_36332 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final UUID SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
 	private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
 	private static final UUID POWDER_SNOW_SLOW_ID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
@@ -733,7 +733,7 @@ public abstract class LivingEntity extends Entity {
 			nbt.putInt("SleepingZ", pos.getZ());
 		});
 		DataResult<NbtElement> dataResult = this.brain.encode(NbtOps.INSTANCE);
-		dataResult.resultOrPartial(field_36332::error).ifPresent(brain -> nbt.put("Brain", brain));
+		dataResult.resultOrPartial(LOGGER::error).ifPresent(brain -> nbt.put("Brain", brain));
 	}
 
 	@Override
@@ -767,7 +767,7 @@ public abstract class LivingEntity extends Entity {
 			Team team = this.world.getScoreboard().getTeam(string);
 			boolean bl = team != null && this.world.getScoreboard().addPlayerToTeam(this.getUuidAsString(), team);
 			if (!bl) {
-				field_36332.warn("Unable to add mob to team \"{}\" (that team probably doesn't exist)", string);
+				LOGGER.warn("Unable to add mob to team \"{}\" (that team probably doesn't exist)", string);
 			}
 		}
 
@@ -1378,7 +1378,7 @@ public abstract class LivingEntity extends Entity {
 			}
 
 			if (!this.world.isClient && this.hasCustomName()) {
-				field_36332.info("Named entity {} died: {}", this, this.getDamageTracker().getDeathMessage().getString());
+				LOGGER.info("Named entity {} died: {}", this, this.getDamageTracker().getDeathMessage().getString());
 			}
 
 			this.dead = true;
@@ -1521,6 +1521,16 @@ public abstract class LivingEntity extends Entity {
 
 	public boolean isExperienceDroppingDisabled() {
 		return this.experienceDroppingDisabled;
+	}
+
+	/**
+	 * {@return this entity's attack position} Used to determine if a mob can perform a melee attack on this entity. May be offset by a mount.
+	 * @see net.minecraft.entity.AttackPosOffsettingMount#getPassengerAttackYOffset
+	 */
+	protected Vec3d getAttackPos() {
+		return this.getVehicle() instanceof AttackPosOffsettingMount attackPosOffsettingMount
+			? this.getPos().add(0.0, attackPosOffsettingMount.getPassengerAttackYOffset(), 0.0)
+			: this.getPos();
 	}
 
 	public LivingEntity.FallSounds getFallSounds() {

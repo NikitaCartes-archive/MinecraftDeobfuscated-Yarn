@@ -139,8 +139,8 @@ public class Schema704 extends Schema {
 	});
 	protected static final HookFunction field_5745 = new HookFunction() {
 		@Override
-		public <T> T apply(DynamicOps<T> dynamicOps, T object) {
-			return Schema99.method_5359(new Dynamic<>(dynamicOps, object), Schema704.BLOCK_RENAMES, "ArmorStand");
+		public <T> T apply(DynamicOps<T> ops, T value) {
+			return Schema99.method_5359(new Dynamic<>(ops, value), Schema704.BLOCK_RENAMES, "ArmorStand");
 		}
 	};
 
@@ -153,10 +153,10 @@ public class Schema704 extends Schema {
 	}
 
 	@Override
-	public Type<?> getChoiceType(TypeReference typeReference, String string) {
-		return Objects.equals(typeReference.typeName(), TypeReferences.BLOCK_ENTITY.typeName())
-			? super.getChoiceType(typeReference, IdentifierNormalizingSchema.normalize(string))
-			: super.getChoiceType(typeReference, string);
+	public Type<?> getChoiceType(TypeReference type, String choiceName) {
+		return Objects.equals(type.typeName(), TypeReferences.BLOCK_ENTITY.typeName())
+			? super.getChoiceType(type, IdentifierNormalizingSchema.normalize(choiceName))
+			: super.getChoiceType(type, choiceName);
 	}
 
 	@Override
@@ -165,11 +165,11 @@ public class Schema704 extends Schema {
 		targetItems(schema, map, "minecraft:furnace");
 		targetItems(schema, map, "minecraft:chest");
 		schema.registerSimple(map, "minecraft:ender_chest");
-		schema.register(map, "minecraft:jukebox", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("RecordItem", TypeReferences.ITEM_STACK.in(schema))));
+		schema.register(map, "minecraft:jukebox", (Function<String, TypeTemplate>)(name -> DSL.optionalFields("RecordItem", TypeReferences.ITEM_STACK.in(schema))));
 		targetItems(schema, map, "minecraft:dispenser");
 		targetItems(schema, map, "minecraft:dropper");
 		schema.registerSimple(map, "minecraft:sign");
-		schema.register(map, "minecraft:mob_spawner", (Function<String, TypeTemplate>)(string -> TypeReferences.UNTAGGED_SPAWNER.in(schema)));
+		schema.register(map, "minecraft:mob_spawner", (Function<String, TypeTemplate>)(name -> TypeReferences.UNTAGGED_SPAWNER.in(schema)));
 		schema.registerSimple(map, "minecraft:noteblock");
 		schema.registerSimple(map, "minecraft:piston");
 		targetItems(schema, map, "minecraft:brewing_stand");
@@ -183,7 +183,7 @@ public class Schema704 extends Schema {
 		schema.register(
 			map,
 			"minecraft:flower_pot",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields("Item", DSL.or(DSL.constType(DSL.intType()), TypeReferences.ITEM_NAME.in(schema))))
+			(Function<String, TypeTemplate>)(name -> DSL.optionalFields("Item", DSL.or(DSL.constType(DSL.intType()), TypeReferences.ITEM_NAME.in(schema))))
 		);
 		schema.registerSimple(map, "minecraft:banner");
 		schema.registerSimple(map, "minecraft:structure_block");

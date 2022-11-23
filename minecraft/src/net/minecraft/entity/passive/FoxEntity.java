@@ -1,13 +1,11 @@
 package net.minecraft.entity.passive;
 
 import com.google.common.collect.Lists;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
@@ -75,6 +73,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -1457,9 +1456,9 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		SNOW(1, "snow");
 
 		public static final StringIdentifiable.Codec<FoxEntity.Type> CODEC = StringIdentifiable.createCodec(FoxEntity.Type::values);
-		private static final FoxEntity.Type[] TYPES = (FoxEntity.Type[])Arrays.stream(values())
-			.sorted(Comparator.comparingInt(FoxEntity.Type::getId))
-			.toArray(FoxEntity.Type[]::new);
+		private static final IntFunction<FoxEntity.Type> BY_ID = ValueLists.createIdToValueFunction(
+			FoxEntity.Type::getId, values(), ValueLists.OutOfBoundsHandling.ZERO
+		);
 		private final int id;
 		private final String key;
 
@@ -1478,15 +1477,11 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		}
 
 		public static FoxEntity.Type byName(String name) {
-			return (FoxEntity.Type)Objects.requireNonNullElse((FoxEntity.Type)CODEC.byId(name), RED);
+			return (FoxEntity.Type)CODEC.byId(name, RED);
 		}
 
 		public static FoxEntity.Type fromId(int id) {
-			if (id < 0 || id > TYPES.length) {
-				id = 0;
-			}
-
-			return TYPES[id];
+			return (FoxEntity.Type)BY_ID.apply(id);
 		}
 
 		public static FoxEntity.Type fromBiome(RegistryEntry<Biome> biome) {

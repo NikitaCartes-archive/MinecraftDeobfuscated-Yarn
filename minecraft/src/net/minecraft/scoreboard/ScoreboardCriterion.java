@@ -1,9 +1,7 @@
 package net.minecraft.scoreboard;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -11,6 +9,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.stat.StatType;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringIdentifiable;
 
 public class ScoreboardCriterion {
 	/**
@@ -130,12 +129,12 @@ public class ScoreboardCriterion {
 		return this.defaultRenderType;
 	}
 
-	public static enum RenderType {
+	public static enum RenderType implements StringIdentifiable {
 		INTEGER("integer"),
 		HEARTS("hearts");
 
 		private final String name;
-		private static final Map<String, ScoreboardCriterion.RenderType> CRITERION_TYPES;
+		public static final StringIdentifiable.Codec<ScoreboardCriterion.RenderType> CODEC = StringIdentifiable.createCodec(ScoreboardCriterion.RenderType::values);
 
 		private RenderType(String name) {
 			this.name = name;
@@ -145,18 +144,13 @@ public class ScoreboardCriterion {
 			return this.name;
 		}
 
-		public static ScoreboardCriterion.RenderType getType(String name) {
-			return (ScoreboardCriterion.RenderType)CRITERION_TYPES.getOrDefault(name, INTEGER);
+		@Override
+		public String asString() {
+			return this.name;
 		}
 
-		static {
-			Builder<String, ScoreboardCriterion.RenderType> builder = ImmutableMap.builder();
-
-			for (ScoreboardCriterion.RenderType renderType : values()) {
-				builder.put(renderType.name, renderType);
-			}
-
-			CRITERION_TYPES = builder.build();
+		public static ScoreboardCriterion.RenderType getType(String name) {
+			return (ScoreboardCriterion.RenderType)CODEC.byId(name, INTEGER);
 		}
 	}
 }

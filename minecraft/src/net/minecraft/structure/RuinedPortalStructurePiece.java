@@ -43,7 +43,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.slf4j.Logger;
 
 public class RuinedPortalStructurePiece extends SimpleStructurePiece {
-	private static final Logger field_24992 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final float field_31620 = 0.3F;
 	private static final float field_31621 = 0.07F;
 	private static final float field_31622 = 0.2F;
@@ -69,9 +69,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	public RuinedPortalStructurePiece(StructureTemplateManager manager, NbtCompound nbt) {
 		super(StructurePieceType.RUINED_PORTAL, nbt, manager, id -> createPlacementData(manager, nbt, id));
 		this.verticalPlacement = RuinedPortalStructurePiece.VerticalPlacement.getFromId(nbt.getString("VerticalPlacement"));
-		this.properties = RuinedPortalStructurePiece.Properties.CODEC
-			.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Properties")))
-			.getOrThrow(true, field_24992::error);
+		this.properties = RuinedPortalStructurePiece.Properties.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, LOGGER::error);
 	}
 
 	@Override
@@ -82,7 +80,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 		nbt.putString("VerticalPlacement", this.verticalPlacement.getId());
 		RuinedPortalStructurePiece.Properties.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.properties)
-			.resultOrPartial(field_24992::error)
+			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("Properties", nbtElement));
 	}
 
@@ -94,7 +92,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 			BlockRotation.valueOf(nbt.getString("Rotation")),
 			RuinedPortalStructurePiece.VerticalPlacement.getFromId(nbt.getString("VerticalPlacement")),
 			blockPos,
-			RuinedPortalStructurePiece.Properties.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, field_24992::error)
+			RuinedPortalStructurePiece.Properties.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Properties"))).getOrThrow(true, LOGGER::error)
 		);
 	}
 

@@ -149,11 +149,12 @@ public enum DirectionTransformation implements StringIdentifiable {
 	public Direction map(Direction direction) {
 		if (this.mappings == null) {
 			this.mappings = Maps.newEnumMap(Direction.class);
+			Direction.Axis[] axiss = Direction.Axis.values();
 
 			for (Direction direction2 : Direction.values()) {
 				Direction.Axis axis = direction2.getAxis();
 				Direction.AxisDirection axisDirection = direction2.getDirection();
-				Direction.Axis axis2 = Direction.Axis.values()[this.axisTransformation.map(axis.ordinal())];
+				Direction.Axis axis2 = axiss[this.axisTransformation.map(axis.ordinal())];
 				Direction.AxisDirection axisDirection2 = this.shouldFlipDirection(axis2) ? axisDirection.getOpposite() : axisDirection;
 				Direction direction3 = Direction.from(axis2, axisDirection2);
 				this.mappings.put(direction2, direction3);

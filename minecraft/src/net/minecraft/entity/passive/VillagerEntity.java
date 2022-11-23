@@ -497,7 +497,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("VillagerData", nbtElement));
 		nbt.putByte("FoodLevel", (byte)this.foodLevel);
-		nbt.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
+		nbt.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE));
 		nbt.putInt("Xp", this.experience);
 		nbt.putLong("LastRestock", this.lastRestockTime);
 		nbt.putLong("LastGossipDecay", this.lastGossipDecayTime);

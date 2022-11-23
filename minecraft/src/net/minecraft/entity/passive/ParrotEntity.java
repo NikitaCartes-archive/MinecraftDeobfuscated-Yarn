@@ -3,11 +3,10 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.IntFunction;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -59,6 +58,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -422,7 +422,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	}
 
 	public void setVariant(ParrotEntity.Variant variant) {
-		this.dataTracker.set(VARIANT, variant.index);
+		this.dataTracker.set(VARIANT, variant.id);
 	}
 
 	@Override
@@ -434,7 +434,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("Variant", this.getVariant().index);
+		nbt.putInt("Variant", this.getVariant().id);
 	}
 
 	@Override
@@ -508,23 +508,23 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 		GRAY(4, "gray");
 
 		public static final com.mojang.serialization.Codec<ParrotEntity.Variant> CODEC = StringIdentifiable.createCodec(ParrotEntity.Variant::values);
-		private static final ParrotEntity.Variant[] VALUES = (ParrotEntity.Variant[])Arrays.stream(values())
-			.sorted(Comparator.comparingInt(ParrotEntity.Variant::getIndex))
-			.toArray(ParrotEntity.Variant[]::new);
-		final int index;
+		private static final IntFunction<ParrotEntity.Variant> BY_ID = ValueLists.createIdToValueFunction(
+			ParrotEntity.Variant::getId, values(), ValueLists.OutOfBoundsHandling.CLAMP
+		);
+		final int id;
 		private final String name;
 
-		private Variant(int index, String name) {
-			this.index = index;
+		private Variant(int id, String name) {
+			this.id = id;
 			this.name = name;
 		}
 
-		public int getIndex() {
-			return this.index;
+		public int getId() {
+			return this.id;
 		}
 
 		public static ParrotEntity.Variant byIndex(int index) {
-			return VALUES[MathHelper.clamp(index, 0, VALUES.length - 1)];
+			return (ParrotEntity.Variant)BY_ID.apply(index);
 		}
 
 		@Override
