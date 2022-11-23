@@ -12,7 +12,7 @@ import org.slf4j.Logger;
  * Queues a future that handles received messages on the server thread.
  */
 public class MessageChainTaskQueue implements FutureQueue, AutoCloseable {
-	private static final Logger field_39828 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private CompletableFuture<?> current = CompletableFuture.completedFuture(null);
 	private final Executor executor;
 	private volatile boolean closed;
@@ -35,7 +35,7 @@ public class MessageChainTaskQueue implements FutureQueue, AutoCloseable {
 			if (throwable instanceof CancellationException cancellationException) {
 				throw cancellationException;
 			} else {
-				field_39828.error("Chain link failed, continuing to next one", throwable);
+				LOGGER.error("Chain link failed, continuing to next one", throwable);
 				return null;
 			}
 		});

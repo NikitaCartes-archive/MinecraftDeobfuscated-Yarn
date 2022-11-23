@@ -2,7 +2,7 @@ package net.minecraft.entity.vehicle;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -39,6 +39,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.function.BooleanBiFunction;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -893,6 +894,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		private final String name;
 		private final Block baseBlock;
 		public static final StringIdentifiable.Codec<BoatEntity.Type> CODEC = StringIdentifiable.createCodec(BoatEntity.Type::values);
+		private static final IntFunction<BoatEntity.Type> BY_ID = ValueLists.createIdToValueFunction(Enum::ordinal, values(), ValueLists.OutOfBoundsHandling.ZERO);
 
 		private Type(Block baseBlock, String name) {
 			this.name = name;
@@ -917,16 +919,11 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		}
 
 		public static BoatEntity.Type getType(int type) {
-			BoatEntity.Type[] types = values();
-			if (type < 0 || type >= types.length) {
-				type = 0;
-			}
-
-			return types[type];
+			return (BoatEntity.Type)BY_ID.apply(type);
 		}
 
 		public static BoatEntity.Type getType(String name) {
-			return (BoatEntity.Type)Objects.requireNonNullElse((BoatEntity.Type)CODEC.byId(name), OAK);
+			return (BoatEntity.Type)CODEC.byId(name, OAK);
 		}
 	}
 }

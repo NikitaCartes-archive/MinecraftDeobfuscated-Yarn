@@ -5,6 +5,7 @@ import com.mojang.serialization.Dynamic;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
+import net.minecraft.entity.AttackPosOffsettingMount;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -46,7 +47,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Saddleable {
+public class CamelEntity extends AbstractHorseEntity implements JumpingMount, AttackPosOffsettingMount, Saddleable {
 	public static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.CACTUS);
 	public static final int field_40132 = 55;
 	private static final float field_40146 = 0.1F;
@@ -138,6 +139,11 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, Sa
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return dimensions.height - 0.1F;
+	}
+
+	@Override
+	public double getPassengerAttackYOffset() {
+		return 0.5;
 	}
 
 	@Override

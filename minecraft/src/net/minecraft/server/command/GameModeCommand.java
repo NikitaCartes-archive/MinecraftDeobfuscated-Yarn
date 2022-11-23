@@ -1,7 +1,6 @@
 package net.minecraft.server.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,14 +19,12 @@ public class GameModeCommand {
 			CommandManager.literal("gamemode")
 				.requires(source -> source.hasPermissionLevel(2))
 				.then(
-					((RequiredArgumentBuilder)CommandManager.argument("gamemode", GameModeArgumentType.gameMode())
-							.executes(
-								commandContext -> execute(
-										commandContext,
-										Collections.singleton(((ServerCommandSource)commandContext.getSource()).getPlayerOrThrow()),
-										GameModeArgumentType.getGameMode(commandContext, "gamemode")
-									)
-							))
+					CommandManager.argument("gamemode", GameModeArgumentType.gameMode())
+						.executes(
+							commandContext -> execute(
+									commandContext, Collections.singleton(commandContext.getSource().getPlayerOrThrow()), GameModeArgumentType.getGameMode(commandContext, "gamemode")
+								)
+						)
 						.then(
 							CommandManager.argument("target", EntityArgumentType.players())
 								.executes(

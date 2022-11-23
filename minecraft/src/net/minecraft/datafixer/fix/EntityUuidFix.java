@@ -14,7 +14,7 @@ import net.minecraft.datafixer.TypeReferences;
 import org.slf4j.Logger;
 
 public class EntityUuidFix extends AbstractUuidFix {
-	private static final Logger field_36328 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Set<String> RIDEABLE_TAMEABLES = Sets.newHashSet();
 	private static final Set<String> TAMEABLE_PETS = Sets.newHashSet();
 	private static final Set<String> BREEDABLES = Sets.newHashSet();
@@ -72,7 +72,7 @@ public class EntityUuidFix extends AbstractUuidFix {
 			"Brain",
 			dynamicx -> dynamicx.update(
 					"memories", dynamicxx -> dynamicxx.update("minecraft:angry_at", dynamicxxx -> (Dynamic)updateStringUuid(dynamicxxx, "value", "value").orElseGet(() -> {
-								field_36328.warn("angry_at has no value.");
+								LOGGER.warn("angry_at has no value.");
 								return dynamicxxx;
 							}))
 				)
@@ -105,7 +105,7 @@ public class EntityUuidFix extends AbstractUuidFix {
 		Optional<Dynamic<?>> optional = dynamic.get("TrustedUUIDs")
 			.result()
 			.map(dynamic2 -> dynamic.createList(dynamic2.asStream().map(dynamicxx -> (Dynamic)createArrayFromCompoundUuid(dynamicxx).orElseGet(() -> {
-						field_36328.warn("Trusted contained invalid data.");
+						LOGGER.warn("Trusted contained invalid data.");
 						return dynamicxx;
 					}))));
 		return DataFixUtils.orElse(optional.map(dynamic2 -> dynamic.remove("TrustedUUIDs").set("Trusted", dynamic2)), dynamic);

@@ -119,7 +119,7 @@ public class OptionsScreen extends Screen {
 	}
 
 	public static CyclingButtonWidget<Difficulty> createDifficultyButtonWidget(int x, int y, String translationKey, MinecraftClient client) {
-		return CyclingButtonWidget.builder(Difficulty::getTranslatableName)
+		return CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
 			.values(Difficulty.values())
 			.initially(client.world.getDifficulty())
 			.build(

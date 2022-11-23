@@ -56,7 +56,7 @@ import org.slf4j.Logger;
  * Represents a scoped, modifiable view of biomes, block states, fluid states and block entities.
  */
 public abstract class Chunk implements BlockView, BiomeAccess.Storage, StructureHolder {
-	private static final Logger field_34548 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final LongSet EMPTY_STRUCTURE_REFERENCES = new LongOpenHashSet();
 	protected final ShortList[] postProcessingLists;
 	protected volatile boolean needsSaving;
@@ -99,7 +99,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 			if (this.sectionArray.length == sectionArrayInitializer.length) {
 				System.arraycopy(sectionArrayInitializer, 0, this.sectionArray, 0, this.sectionArray.length);
 			} else {
-				field_34548.warn("Could not set level chunk sections, array length is {} instead of {}", sectionArrayInitializer.length, this.sectionArray.length);
+				LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", sectionArrayInitializer.length, this.sectionArray.length);
 			}
 		}
 
@@ -178,7 +178,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		Heightmap heightmap = (Heightmap)this.heightmaps.get(type);
 		if (heightmap == null) {
 			if (SharedConstants.isDevelopment && this instanceof WorldChunk) {
-				field_34548.error("Unprimed heightmap: " + type + " " + x + " " + z);
+				LOGGER.error("Unprimed heightmap: " + type + " " + x + " " + z);
 			}
 
 			Heightmap.populateHeightmaps(this, EnumSet.of(type));
@@ -268,7 +268,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	public abstract void removeBlockEntity(BlockPos pos);
 
 	public void markBlockForPostProcessing(BlockPos pos) {
-		field_34548.warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", pos);
+		LOGGER.warn("Trying to mark a block for PostProcessing @ {}, but this operation is not supported.", pos);
 	}
 
 	public ShortList[] getPostProcessingLists() {

@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -283,7 +282,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 		}
 
 		static MooshroomEntity.Type fromName(String name) {
-			return (MooshroomEntity.Type)Objects.requireNonNullElse((MooshroomEntity.Type)CODEC.byId(name), RED);
+			return (MooshroomEntity.Type)CODEC.byId(name, RED);
 		}
 	}
 }

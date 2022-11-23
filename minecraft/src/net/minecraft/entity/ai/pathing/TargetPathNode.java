@@ -36,11 +36,7 @@ public class TargetPathNode extends PathNode {
 
 	public static TargetPathNode fromBuffer(PacketByteBuf buffer) {
 		TargetPathNode targetPathNode = new TargetPathNode(buffer.readInt(), buffer.readInt(), buffer.readInt());
-		targetPathNode.pathLength = buffer.readFloat();
-		targetPathNode.penalty = buffer.readFloat();
-		targetPathNode.visited = buffer.readBoolean();
-		targetPathNode.type = PathNodeType.values()[buffer.readInt()];
-		targetPathNode.heapWeight = buffer.readFloat();
+		readFromBuf(buffer, targetPathNode);
 		return targetPathNode;
 	}
 }

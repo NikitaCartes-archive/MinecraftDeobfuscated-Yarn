@@ -9,7 +9,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSyntaxException;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Map.Entry;
 import net.minecraft.inventory.CraftingInventory;
@@ -317,9 +316,8 @@ public class ShapedRecipe implements CraftingRecipe {
 	public static class Serializer implements RecipeSerializer<ShapedRecipe> {
 		public ShapedRecipe read(Identifier identifier, JsonObject jsonObject) {
 			String string = JsonHelper.getString(jsonObject, "group", "");
-			CraftingRecipeCategory craftingRecipeCategory = (CraftingRecipeCategory)Objects.requireNonNullElse(
-				(CraftingRecipeCategory)CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(jsonObject, "category", null)), CraftingRecipeCategory.MISC
-			);
+			CraftingRecipeCategory craftingRecipeCategory = (CraftingRecipeCategory)CraftingRecipeCategory.CODEC
+				.byId(JsonHelper.getString(jsonObject, "category", null), CraftingRecipeCategory.MISC);
 			Map<String, Ingredient> map = ShapedRecipe.readSymbols(JsonHelper.getObject(jsonObject, "key"));
 			String[] strings = ShapedRecipe.removePadding(ShapedRecipe.getPattern(JsonHelper.getArray(jsonObject, "pattern")));
 			int i = strings[0].length();

@@ -23,6 +23,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
@@ -31,6 +32,7 @@ public class NoteBlock extends Block {
 	public static final EnumProperty<Instrument> INSTRUMENT = Properties.INSTRUMENT;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final IntProperty NOTE = Properties.NOTE;
+	public static final int field_41678 = 3;
 
 	public NoteBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -117,31 +119,25 @@ public class NoteBlock extends Block {
 			f = 1.0F;
 		}
 
-		SoundEvent soundEvent;
 		if (instrument.hasCustomSound()) {
-			soundEvent = this.getCustomSound(instrument, world, pos);
-			if (soundEvent == null) {
+			Identifier identifier = this.getCustomSound(world, pos);
+			if (identifier == null) {
 				return false;
 			}
+
+			world.playSound(null, Vec3d.ofCenter(pos), identifier, SoundCategory.RECORDS, 3.0F, f, (double)SoundEvent.getDistanceToTravelForVolume(3.0F));
 		} else {
-			soundEvent = instrument.getSound();
+			SoundEvent soundEvent = instrument.getSound();
+			world.playSound(null, pos, soundEvent, SoundCategory.RECORDS, 3.0F, f);
 		}
 
-		world.playSound(null, pos, soundEvent, SoundCategory.RECORDS, 3.0F, f);
 		return true;
 	}
 
 	@Nullable
-	private SoundEvent getCustomSound(Instrument instrument, World world, BlockPos pos) {
-		BlockEntity identifier = world.getBlockEntity(pos.up());
-		if (identifier instanceof SkullBlockEntity skullBlockEntity) {
-			Identifier identifierx = skullBlockEntity.getNoteBlockSound();
-			if (identifierx != null) {
-				return new SoundEvent(identifierx);
-			}
-		}
-
-		return null;
+	private Identifier getCustomSound(World world, BlockPos pos) {
+		BlockEntity var4 = world.getBlockEntity(pos.up());
+		return var4 instanceof SkullBlockEntity skullBlockEntity ? skullBlockEntity.getNoteBlockSound() : null;
 	}
 
 	@Override

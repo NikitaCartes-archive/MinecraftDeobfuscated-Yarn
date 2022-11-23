@@ -5,12 +5,14 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.Optional;
+import java.util.function.IntFunction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
@@ -74,6 +76,9 @@ public class MineshaftStructure extends Structure {
 		MESA("mesa", Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_PLANKS, Blocks.DARK_OAK_FENCE);
 
 		public static final com.mojang.serialization.Codec<MineshaftStructure.Type> CODEC = StringIdentifiable.createCodec(MineshaftStructure.Type::values);
+		private static final IntFunction<MineshaftStructure.Type> BY_ID = ValueLists.createIdToValueFunction(
+			Enum::ordinal, values(), ValueLists.OutOfBoundsHandling.ZERO
+		);
 		private final String name;
 		private final BlockState log;
 		private final BlockState planks;
@@ -90,8 +95,8 @@ public class MineshaftStructure extends Structure {
 			return this.name;
 		}
 
-		public static MineshaftStructure.Type byIndex(int index) {
-			return index >= 0 && index < values().length ? values()[index] : NORMAL;
+		public static MineshaftStructure.Type byId(int id) {
+			return (MineshaftStructure.Type)BY_ID.apply(id);
 		}
 
 		public BlockState getLog() {

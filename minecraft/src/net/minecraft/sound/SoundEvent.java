@@ -1,20 +1,19 @@
 package net.minecraft.sound;
 
-import com.mojang.serialization.Codec;
 import net.minecraft.util.Identifier;
 
 public class SoundEvent {
-	public static final Codec<SoundEvent> CODEC = Identifier.CODEC.xmap(SoundEvent::new, soundEvent -> soundEvent.id);
+	private static final float DEFAULT_DISTANCE_TO_TRAVEL = 16.0F;
 	private final Identifier id;
 	private final float distanceToTravel;
 	private final boolean staticDistance;
 
-	public SoundEvent(Identifier id) {
-		this(id, 16.0F, false);
+	static SoundEvent of(Identifier id) {
+		return new SoundEvent(id, 16.0F, false);
 	}
 
-	public SoundEvent(Identifier id, float distanceToTravel) {
-		this(id, distanceToTravel, true);
+	static SoundEvent of(Identifier id, float distanceToTravel) {
+		return new SoundEvent(id, distanceToTravel, true);
 	}
 
 	private SoundEvent(Identifier id, float distanceToTravel, boolean useStaticDistance) {
@@ -28,10 +27,10 @@ public class SoundEvent {
 	}
 
 	public float getDistanceToTravel(float volume) {
-		if (this.staticDistance) {
-			return this.distanceToTravel;
-		} else {
-			return volume > 1.0F ? 16.0F * volume : 16.0F;
-		}
+		return this.staticDistance ? this.distanceToTravel : getDistanceToTravelForVolume(volume);
+	}
+
+	public static float getDistanceToTravelForVolume(float volume) {
+		return volume > 1.0F ? 16.0F * volume : 16.0F;
 	}
 }

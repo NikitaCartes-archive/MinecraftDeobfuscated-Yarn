@@ -33,7 +33,7 @@ public final class LevelInfo {
 			dynamic.get("LevelName").asString(""),
 			gameMode,
 			dynamic.get("hardcore").asBoolean(false),
-			(Difficulty)dynamic.get("Difficulty").asNumber().map(difficulty -> Difficulty.byOrdinal(difficulty.byteValue())).result().orElse(Difficulty.NORMAL),
+			(Difficulty)dynamic.get("Difficulty").asNumber().map(difficulty -> Difficulty.byId(difficulty.byteValue())).result().orElse(Difficulty.NORMAL),
 			dynamic.get("allowCommands").asBoolean(gameMode == GameMode.CREATIVE),
 			new GameRules(dynamic.get("GameRules")),
 			dataConfiguration

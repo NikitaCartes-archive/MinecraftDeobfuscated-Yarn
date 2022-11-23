@@ -104,7 +104,7 @@ public class StructureLocator {
 	 * <p>This method only performs simple checks like biomes.
 	 */
 	private boolean isGenerationPossible(ChunkPos pos, Structure structure) {
-		return structure.getStructurePosition(
+		return structure.getValidStructurePosition(
 				new Structure.Context(
 					this.registryManager,
 					this.chunkGenerator,

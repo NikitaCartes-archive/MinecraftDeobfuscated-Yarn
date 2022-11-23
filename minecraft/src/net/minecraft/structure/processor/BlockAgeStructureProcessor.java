@@ -10,6 +10,7 @@ import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
@@ -103,7 +104,7 @@ public class BlockAgeStructureProcessor extends StructureProcessor {
 	private static BlockState randomStairProperties(Random random, Block stairs) {
 		return stairs.getDefaultState()
 			.with(StairsBlock.FACING, Direction.Type.HORIZONTAL.random(random))
-			.with(StairsBlock.HALF, BlockHalf.values()[random.nextInt(BlockHalf.values().length)]);
+			.with(StairsBlock.HALF, (BlockHalf)Util.getRandom(BlockHalf.values(), random));
 	}
 
 	private BlockState process(Random random, BlockState[] regularStates, BlockState[] mossyStates) {

@@ -34,7 +34,7 @@ public class Schema100 extends Schema {
 		targetEntityItems(schema, map, "Ghast");
 		targetEntityItems(schema, map, "PigZombie");
 		schema.register(
-			map, "Enderman", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("carried", TypeReferences.BLOCK_NAME.in(schema), targetItems(schema)))
+			map, "Enderman", (Function<String, TypeTemplate>)(name -> DSL.optionalFields("carried", TypeReferences.BLOCK_NAME.in(schema), targetItems(schema)))
 		);
 		targetEntityItems(schema, map, "CaveSpider");
 		targetEntityItems(schema, map, "Silverfish");
@@ -59,7 +59,7 @@ public class Schema100 extends Schema {
 		schema.register(
 			map,
 			"EntityHorse",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
+			(Function<String, TypeTemplate>)(name -> DSL.optionalFields(
 					"Items",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"ArmorItem",
@@ -73,7 +73,7 @@ public class Schema100 extends Schema {
 		schema.register(
 			map,
 			"Villager",
-			(Function<String, TypeTemplate>)(string -> DSL.optionalFields(
+			(Function<String, TypeTemplate>)(name -> DSL.optionalFields(
 					"Inventory",
 					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
 					"Offers",

@@ -32,6 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -212,11 +213,9 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	@Override
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.isOf(Items.FLINT_AND_STEEL)) {
-			this.world
-				.playSound(
-					player, this.getX(), this.getY(), this.getZ(), SoundEvents.ITEM_FLINTANDSTEEL_USE, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F
-				);
+		if (itemStack.isIn(ItemTags.CREEPER_IGNITERS)) {
+			SoundEvent soundEvent = itemStack.isOf(Items.FIRE_CHARGE) ? SoundEvents.ITEM_FIRECHARGE_USE : SoundEvents.ITEM_FLINTANDSTEEL_USE;
+			this.world.playSound(player, this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
 			if (!this.world.isClient) {
 				this.ignite();
 				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));

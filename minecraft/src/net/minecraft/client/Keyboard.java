@@ -188,7 +188,7 @@ public class Keyboard {
 						this.client
 							.player
 							.networkHandler
-							.sendCommand("gamemode " + ((GameMode)MoreObjects.firstNonNull(this.client.interactionManager.getPreviousGameMode(), GameMode.CREATIVE)).getName());
+							.sendCommand("gamemode " + MoreObjects.firstNonNull(this.client.interactionManager.getPreviousGameMode(), GameMode.CREATIVE).getName());
 					}
 
 					return true;

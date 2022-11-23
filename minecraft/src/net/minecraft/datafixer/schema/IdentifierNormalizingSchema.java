@@ -12,8 +12,8 @@ import net.minecraft.util.Identifier;
 public class IdentifierNormalizingSchema extends Schema {
 	public static final PrimitiveCodec<String> CODEC = new PrimitiveCodec<String>() {
 		@Override
-		public <T> DataResult<String> read(DynamicOps<T> dynamicOps, T object) {
-			return dynamicOps.getStringValue(object).map(IdentifierNormalizingSchema::normalize);
+		public <T> DataResult<String> read(DynamicOps<T> ops, T input) {
+			return ops.getStringValue(input).map(IdentifierNormalizingSchema::normalize);
 		}
 
 		public <T> T write(DynamicOps<T> dynamicOps, String string) {
@@ -40,7 +40,7 @@ public class IdentifierNormalizingSchema extends Schema {
 	}
 
 	@Override
-	public Type<?> getChoiceType(TypeReference typeReference, String string) {
-		return super.getChoiceType(typeReference, normalize(string));
+	public Type<?> getChoiceType(TypeReference type, String choiceName) {
+		return super.getChoiceType(type, normalize(choiceName));
 	}
 }

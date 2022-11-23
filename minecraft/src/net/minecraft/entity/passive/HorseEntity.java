@@ -93,15 +93,15 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 	}
 
 	private void setHorseVariant(HorseColor color, HorseMarking marking) {
-		this.setHorseVariant(color.getIndex() & 0xFF | marking.getIndex() << 8 & 0xFF00);
+		this.setHorseVariant(color.getId() & 0xFF | marking.getId() << 8 & 0xFF00);
 	}
 
 	public HorseColor getVariant() {
-		return HorseColor.byIndex(this.getHorseVariant() & 0xFF);
+		return HorseColor.byId(this.getHorseVariant() & 0xFF);
 	}
 
 	public void setVariant(HorseColor horseColor) {
-		this.setHorseVariant(horseColor.getIndex() & 0xFF | this.getHorseVariant() & -256);
+		this.setHorseVariant(horseColor.getId() & 0xFF | this.getHorseVariant() & -256);
 	}
 
 	public HorseMarking getMarking() {

@@ -1,12 +1,8 @@
 package net.minecraft.village;
 
-import com.google.common.collect.ImmutableMap;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Stream;
-import javax.annotation.Nullable;
+import net.minecraft.util.StringIdentifiable;
 
-public enum VillageGossipType {
+public enum VillageGossipType implements StringIdentifiable {
 	MAJOR_NEGATIVE("major_negative", -5, 100, 10, 10),
 	MINOR_NEGATIVE("minor_negative", -1, 200, 20, 20),
 	MINOR_POSITIVE("minor_positive", 1, 200, 1, 5),
@@ -21,8 +17,7 @@ public enum VillageGossipType {
 	public final int maxValue;
 	public final int decay;
 	public final int shareDecrement;
-	private static final Map<String, VillageGossipType> BY_KEY = (Map<String, VillageGossipType>)Stream.of(values())
-		.collect(ImmutableMap.toImmutableMap(type -> type.key, Function.identity()));
+	public static final com.mojang.serialization.Codec<VillageGossipType> CODEC = StringIdentifiable.createCodec(VillageGossipType::values);
 
 	private VillageGossipType(String key, int multiplier, int maxReputation, int decay, int shareDecrement) {
 		this.key = key;
@@ -32,8 +27,8 @@ public enum VillageGossipType {
 		this.shareDecrement = shareDecrement;
 	}
 
-	@Nullable
-	public static VillageGossipType byKey(String key) {
-		return (VillageGossipType)BY_KEY.get(key);
+	@Override
+	public String asString() {
+		return this.key;
 	}
 }

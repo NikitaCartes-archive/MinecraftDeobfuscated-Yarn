@@ -1,7 +1,6 @@
 package net.minecraft.recipe;
 
 import com.google.gson.JsonObject;
-import java.util.Objects;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.util.Identifier;
@@ -24,9 +23,8 @@ public class SpecialRecipeSerializer<T extends CraftingRecipe> implements Recipe
 	}
 
 	public T read(Identifier identifier, JsonObject jsonObject) {
-		CraftingRecipeCategory craftingRecipeCategory = (CraftingRecipeCategory)Objects.requireNonNullElse(
-			(CraftingRecipeCategory)CraftingRecipeCategory.CODEC.byId(JsonHelper.getString(jsonObject, "category", null)), CraftingRecipeCategory.MISC
-		);
+		CraftingRecipeCategory craftingRecipeCategory = (CraftingRecipeCategory)CraftingRecipeCategory.CODEC
+			.byId(JsonHelper.getString(jsonObject, "category", null), CraftingRecipeCategory.MISC);
 		return this.factory.create(identifier, craftingRecipeCategory);
 	}
 

@@ -34,7 +34,6 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 		super.clear();
 	}
 
-	@Nullable
 	@Override
 	public PathNode getStart() {
 		return !this.entity.isTouchingWater()
@@ -48,7 +47,6 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 			);
 	}
 
-	@Nullable
 	@Override
 	public TargetPathNode getNode(double x, double y, double z) {
 		return this.asTargetPathNode(this.getNode(MathHelper.floor(x), MathHelper.floor(y + 0.5), MathHelper.floor(z)));

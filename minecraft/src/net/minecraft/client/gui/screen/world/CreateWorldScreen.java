@@ -220,7 +220,7 @@ public class CreateWorldScreen extends Screen {
 				.build(i, 100, 150, 20, GAME_MODE_TEXT, (button, mode) -> this.tweakDefaultsTo(mode))
 		);
 		this.difficultyButton = this.addDrawableChild(
-			CyclingButtonWidget.builder(Difficulty::getTranslatableName)
+			CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
 				.values(Difficulty.values())
 				.initially(this.getDifficulty())
 				.build(j, 100, 150, 20, Text.translatable("options.difficulty"), (button, difficulty) -> this.currentDifficulty = difficulty)

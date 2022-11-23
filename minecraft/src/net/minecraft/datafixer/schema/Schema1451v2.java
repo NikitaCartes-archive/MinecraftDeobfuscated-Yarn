@@ -16,7 +16,7 @@ public class Schema1451v2 extends IdentifierNormalizingSchema {
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerBlockEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerBlockEntities(schema);
-		schema.register(map, "minecraft:piston", (Function<String, TypeTemplate>)(string -> DSL.optionalFields("blockState", TypeReferences.BLOCK_STATE.in(schema))));
+		schema.register(map, "minecraft:piston", (Function<String, TypeTemplate>)(name -> DSL.optionalFields("blockState", TypeReferences.BLOCK_STATE.in(schema))));
 		return map;
 	}
 }
