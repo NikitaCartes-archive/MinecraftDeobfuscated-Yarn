@@ -30,7 +30,6 @@ import net.minecraft.client.render.DimensionEffects;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.sound.EntityTrackingSoundInstance;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.world.BiomeColorCache;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientEntityManager;
@@ -62,7 +61,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.CubicSampler;
 import net.minecraft.util.CuboidBlockIterator;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -432,9 +430,9 @@ extends World {
     }
 
     @Override
-    public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed) {
+    public void playSound(@Nullable PlayerEntity except, double x, double y, double z, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed) {
         if (except == this.client.player) {
-            this.playSound(x, y, z, sound, category, volume, pitch, false, seed);
+            this.playSound(x, y, z, sound.value(), category, volume, pitch, false, seed);
         }
     }
 
@@ -458,13 +456,6 @@ extends World {
             this.client.getSoundManager().play(positionedSoundInstance, (int)(e * 20.0));
         } else {
             this.client.getSoundManager().play(positionedSoundInstance);
-        }
-    }
-
-    @Override
-    public void playSound(@Nullable PlayerEntity except, Vec3d pos, Identifier id, SoundCategory category, float volume, float pitch, double distance, long seed) {
-        if (except == this.client.player) {
-            this.client.getSoundManager().play(new PositionedSoundInstance(id, category, volume, pitch, Random.create(seed), false, 0, SoundInstance.AttenuationType.LINEAR, pos.getX(), pos.getY(), pos.getZ(), false));
         }
     }
 

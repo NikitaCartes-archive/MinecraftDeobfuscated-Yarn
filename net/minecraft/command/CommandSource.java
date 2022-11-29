@@ -40,7 +40,7 @@ public interface CommandSource {
 
     public Collection<String> getTeamNames();
 
-    public Collection<Identifier> getSoundIds();
+    public Stream<Identifier> getSoundIds();
 
     public Stream<Identifier> getRecipeIds();
 

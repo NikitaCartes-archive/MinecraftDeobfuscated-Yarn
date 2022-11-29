@@ -7,23 +7,23 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundEvent;
 
 /**
  * Represents an "additions sound" for a biome.
  */
 public class BiomeAdditionsSound {
-    public static final Codec<BiomeAdditionsSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registries.SOUND_EVENT.getCodec().fieldOf("sound")).forGetter(sound -> sound.sound), ((MapCodec)Codec.DOUBLE.fieldOf("tick_chance")).forGetter(sound -> sound.chance)).apply((Applicative<BiomeAdditionsSound, ?>)instance, BiomeAdditionsSound::new));
-    private final SoundEvent sound;
+    public static final Codec<BiomeAdditionsSound> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)SoundEvent.ENTRY_CODEC.fieldOf("sound")).forGetter(sound -> sound.sound), ((MapCodec)Codec.DOUBLE.fieldOf("tick_chance")).forGetter(sound -> sound.chance)).apply((Applicative<BiomeAdditionsSound, ?>)instance, BiomeAdditionsSound::new));
+    private final RegistryEntry<SoundEvent> sound;
     private final double chance;
 
-    public BiomeAdditionsSound(SoundEvent sound, double chance) {
+    public BiomeAdditionsSound(RegistryEntry<SoundEvent> sound, double chance) {
         this.sound = sound;
         this.chance = chance;
     }
 
-    public SoundEvent getSound() {
+    public RegistryEntry<SoundEvent> getSound() {
         return this.sound;
     }
 

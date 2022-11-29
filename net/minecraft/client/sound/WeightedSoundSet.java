@@ -20,13 +20,10 @@ import org.jetbrains.annotations.Nullable;
 public class WeightedSoundSet
 implements SoundContainer<Sound> {
     private final List<SoundContainer<Sound>> sounds = Lists.newArrayList();
-    private final Random random = Random.create();
-    private final Identifier id;
     @Nullable
     private final Text subtitle;
 
     public WeightedSoundSet(Identifier id, @Nullable String subtitle) {
-        this.id = id;
         this.subtitle = subtitle == null ? null : Text.translatable(subtitle);
     }
 
@@ -55,10 +52,6 @@ implements SoundContainer<Sound> {
 
     public void add(SoundContainer<Sound> container) {
         this.sounds.add(container);
-    }
-
-    public Identifier getId() {
-        return this.id;
     }
 
     @Nullable

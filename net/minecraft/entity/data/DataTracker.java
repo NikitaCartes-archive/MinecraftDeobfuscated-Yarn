@@ -176,7 +176,6 @@ public class DataTracker {
         } finally {
             this.lock.writeLock().unlock();
         }
-        this.dirty = true;
     }
 
     private <T> void copyToFrom(Entry<T> to, SerializedEntry<?> from) {
@@ -190,15 +189,6 @@ public class DataTracker {
         return this.entries.isEmpty();
     }
 
-    public void clearDirty() {
-        this.dirty = false;
-        this.lock.readLock().lock();
-        for (Entry entry : this.entries.values()) {
-            entry.setDirty(false);
-        }
-        this.lock.readLock().unlock();
-    }
-
     public static class Entry<T> {
         final TrackedData<T> data;
         T value;
@@ -209,7 +199,6 @@ public class DataTracker {
             this.data = data;
             this.initialValue = value;
             this.value = value;
-            this.dirty = true;
         }
 
         public TrackedData<T> getData() {

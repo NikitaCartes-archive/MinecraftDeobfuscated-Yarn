@@ -109,7 +109,7 @@ extends Item {
     }
 
     private static void playSound(World world, PlayerEntity player, Instrument instrument) {
-        SoundEvent soundEvent = instrument.soundEvent();
+        SoundEvent soundEvent = instrument.soundEvent().value();
         float f = instrument.range() / 16.0f;
         world.playSoundFromEntity(player, player, soundEvent, SoundCategory.RECORDS, f, 1.0f);
         world.emitGameEvent(GameEvent.INSTRUMENT_PLAY, player.getPos(), GameEvent.Emitter.of(player));

@@ -5,7 +5,6 @@ package net.minecraft.client.util;
 
 import com.mojang.logging.LogUtils;
 import com.mojang.text2speech.Narrator;
-import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -35,17 +34,28 @@ public class NarratorManager {
     }
 
     /**
-     * Narrates a lazily supplied chat message.
+     * Narrates a chat message.
      * 
      * @see NarratorMode#shouldNarrateChat
-     * 
-     * @param messageSupplier the message to narrate
      */
-    public void narrateChatMessage(Supplier<Text> messageSupplier) {
+    public void narrateChatMessage(Text text) {
         if (this.getNarratorMode().shouldNarrateChat()) {
-            String string = messageSupplier.get().getString();
+            String string = text.getString();
             this.debugPrintMessage(string);
             this.narrator.say(string, false);
+        }
+    }
+
+    /**
+     * Narrates a system message.
+     * 
+     * @see NarratorMode#shouldNarrateSystem
+     */
+    public void narrateSystemMessage(Text text) {
+        String string = text.getString();
+        if (this.getNarratorMode().shouldNarrateSystem() && !string.isEmpty()) {
+            this.debugPrintMessage(string);
+            this.narrator.say(string, true);
         }
     }
 

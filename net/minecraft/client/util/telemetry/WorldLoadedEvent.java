@@ -7,7 +7,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.telemetry.PropertyMap;
-import net.minecraft.client.util.telemetry.TelemetryEvent;
 import net.minecraft.client.util.telemetry.TelemetryEventProperty;
 import net.minecraft.client.util.telemetry.TelemetryEventType;
 import net.minecraft.client.util.telemetry.TelemetrySender;
@@ -15,18 +14,12 @@ import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class WorldLoadedEvent
-implements TelemetryEvent {
-    private final Callback callback;
+public class WorldLoadedEvent {
     private boolean sent;
     @Nullable
     private TelemetryEventProperty.GameMode gameMode = null;
     @Nullable
     private String brand;
-
-    public WorldLoadedEvent(Callback callback) {
-        this.callback = callback;
-    }
 
     public void putServerType(PropertyMap.Builder builder) {
         if (this.brand != null) {
@@ -45,14 +38,13 @@ implements TelemetryEvent {
         return TelemetryEventProperty.ServerType.OTHER;
     }
 
-    @Override
-    public void send(TelemetrySender sender) {
-        if (this.sent || this.gameMode == null) {
-            return;
+    public boolean send(TelemetrySender sender) {
+        if (this.sent || this.gameMode == null || this.brand == null) {
+            return false;
         }
         this.sent = true;
-        this.callback.onWorldLoadSent();
         sender.send(TelemetryEventType.WORLD_LOADED, builder -> builder.put(TelemetryEventProperty.GAME_MODE, this.gameMode));
+        return true;
     }
 
     public void setGameMode(GameMode gameMode, boolean hardcore) {
@@ -72,16 +64,6 @@ implements TelemetryEvent {
 
     public void setBrand(String brand) {
         this.brand = brand;
-    }
-
-    @Nullable
-    public String getBrand() {
-        return this.brand;
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public static interface Callback {
-        public void onWorldLoadSent();
     }
 }
 

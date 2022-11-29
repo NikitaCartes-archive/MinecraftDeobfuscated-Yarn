@@ -20,7 +20,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 
 /**
  * Represents the model of a {@linkplain VexEntity}.
@@ -62,6 +61,7 @@ implements ModelWithArms {
     private final ModelPart leftArm;
     private final ModelPart rightWing;
     private final ModelPart leftWing;
+    private final ModelPart head;
 
     public VexEntityModel(ModelPart root) {
         super(RenderLayer::getEntityTranslucent);
@@ -71,12 +71,13 @@ implements ModelWithArms {
         this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
         this.rightWing = this.body.getChild(EntityModelPartNames.RIGHT_WING);
         this.leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
+        this.head = this.root.getChild(EntityModelPartNames.HEAD);
     }
 
     public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.ROOT, ModelPartBuilder.create(), ModelTransform.pivot(0.0f, 0.0f, 0.0f));
+        ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.ROOT, ModelPartBuilder.create(), ModelTransform.pivot(0.0f, -2.5f, 0.0f));
         modelPartData2.addChild(EntityModelPartNames.HEAD, ModelPartBuilder.create().uv(0, 0).cuboid(-2.5f, -5.0f, -2.5f, 5.0f, 5.0f, 5.0f, new Dilation(0.0f)), ModelTransform.pivot(0.0f, 20.0f, 0.0f));
         ModelPartData modelPartData3 = modelPartData2.addChild(EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 10).cuboid(-1.5f, 0.0f, -1.0f, 3.0f, 4.0f, 2.0f, new Dilation(0.0f)).uv(0, 16).cuboid(-1.5f, 1.0f, -1.0f, 3.0f, 5.0f, 2.0f, new Dilation(-0.2f)), ModelTransform.pivot(0.0f, 20.0f, 0.0f));
         modelPartData3.addChild(EntityModelPartNames.RIGHT_ARM, ModelPartBuilder.create().uv(23, 0).cuboid(-1.25f, -0.5f, -1.0f, 2.0f, 4.0f, 2.0f, new Dilation(-0.1f)), ModelTransform.pivot(-1.75f, 0.25f, 0.0f));
@@ -90,6 +91,8 @@ implements ModelWithArms {
     public void setAngles(VexEntity vexEntity, float f, float g, float h, float i, float j) {
         this.getPart().traverse().forEach(ModelPart::resetTransform);
         this.body.pitch = 6.440265f;
+        this.head.yaw = i * ((float)Math.PI / 180);
+        this.head.pitch = j * ((float)Math.PI / 180);
         float k = 0.62831855f + MathHelper.cos(h * 5.5f * ((float)Math.PI / 180)) * 0.1f;
         if (vexEntity.isCharging()) {
             this.body.pitch = 0.0f;
@@ -120,24 +123,21 @@ implements ModelWithArms {
 
     @Override
     public void setArmAngle(Arm arm, MatrixStack matrices) {
-        this.translateArmToPivot(matrices);
-        this.rotateArm(matrices);
+        boolean bl = arm == Arm.RIGHT;
+        ModelPart modelPart = bl ? this.rightArm : this.leftArm;
+        this.root.rotate(matrices);
+        this.body.rotate(matrices);
+        modelPart.rotate(matrices);
         matrices.scale(0.55f, 0.55f, 0.55f);
-        this.translateArmAfterScale(matrices);
+        this.translateForHand(matrices, bl);
     }
 
-    private void translateArmToPivot(MatrixStack matrices) {
-        matrices.translate((this.body.pivotX + this.rightArm.pivotX) / 16.0f, (this.body.pivotY + this.rightArm.pivotY) / 16.0f, (this.body.pivotZ + this.rightArm.pivotZ) / 16.0f);
-    }
-
-    private void rotateArm(MatrixStack matrices) {
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotation(this.rightArm.roll));
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotation(this.rightArm.yaw));
-        matrices.multiply(RotationAxis.POSITIVE_X.rotation(this.rightArm.pitch));
-    }
-
-    private void translateArmAfterScale(MatrixStack matrices) {
-        matrices.translate(0.046875, -0.15625, 0.078125);
+    private void translateForHand(MatrixStack matrices, boolean mainHand) {
+        if (mainHand) {
+            matrices.translate(0.046875, -0.15625, 0.078125);
+        } else {
+            matrices.translate(-0.046875, -0.15625, 0.078125);
+        }
     }
 }
 

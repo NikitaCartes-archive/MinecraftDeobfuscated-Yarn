@@ -4,6 +4,7 @@
 package net.minecraft.data.server.loottable;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -797,7 +798,7 @@ extends BlockLootTableGenerator {
         this.addDrop(Blocks.RED_BANNER, (Block block) -> this.bannerDrops((Block)block));
         this.addDrop(Blocks.WHITE_BANNER, (Block block) -> this.bannerDrops((Block)block));
         this.addDrop(Blocks.YELLOW_BANNER, (Block block) -> this.bannerDrops((Block)block));
-        this.addDrop(Blocks.PLAYER_HEAD, (Block block) -> LootTable.builder().pool(this.addSurvivesExplosionCondition((ItemConvertible)block, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((Object)ItemEntry.builder(block).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("SkullOwner", "SkullOwner")))))));
+        this.addDrop(Blocks.PLAYER_HEAD, (Block block) -> LootTable.builder().pool(this.addSurvivesExplosionCondition((ItemConvertible)block, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((Object)ItemEntry.builder(block).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("SkullOwner", "SkullOwner").withOperation("note_block_sound", String.format(Locale.ROOT, "%s.%s", "BlockEntityTag", "note_block_sound"))))))));
         this.addDrop(Blocks.BEE_NEST, (Block block) -> VanillaBlockLootTableGenerator.beeNestDrops(block));
         this.addDrop(Blocks.BEEHIVE, (Block block) -> VanillaBlockLootTableGenerator.beehiveDrops(block));
         this.addDrop(Blocks.BIRCH_LEAVES, (Block block) -> this.leavesDrops((Block)block, Blocks.BIRCH_SAPLING, SAPLING_DROP_CHANCE));

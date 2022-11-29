@@ -85,8 +85,6 @@ import net.minecraft.client.sound.AggressiveBeeSoundInstance;
 import net.minecraft.client.sound.GuardianAttackSoundInstance;
 import net.minecraft.client.sound.MovingMinecartSoundInstance;
 import net.minecraft.client.sound.PassiveBeeSoundInstance;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.ProfileKeys;
@@ -219,7 +217,6 @@ import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
@@ -1188,17 +1185,17 @@ ClientPlayPacketListener {
                 this.client.inGameHud.getChatHud().addMessage(Text.translatable("demo.day.6", gameOptions.screenshotKey.getBoundKeyLocalizedText()));
             }
         } else if (reason == GameStateChangeS2CPacket.PROJECTILE_HIT_PLAYER) {
-            this.world.playSound((PlayerEntity)playerEntity, playerEntity.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18f, 0.45f);
+            this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.getEyeY(), playerEntity.getZ(), SoundEvents.ENTITY_ARROW_HIT_PLAYER, SoundCategory.PLAYERS, 0.18f, 0.45f);
         } else if (reason == GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED) {
             this.world.setRainGradient(f);
         } else if (reason == GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED) {
             this.world.setThunderGradient(f);
         } else if (reason == GameStateChangeS2CPacket.PUFFERFISH_STING) {
-            this.world.playSound((PlayerEntity)playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PUFFER_FISH_STING, SoundCategory.NEUTRAL, 1.0f, 1.0f);
+            this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PUFFER_FISH_STING, SoundCategory.NEUTRAL, 1.0f, 1.0f);
         } else if (reason == GameStateChangeS2CPacket.ELDER_GUARDIAN_EFFECT) {
             this.world.addParticle(ParticleTypes.ELDER_GUARDIAN, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), 0.0, 0.0, 0.0);
             if (i == 1) {
-                this.world.playSound((PlayerEntity)playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0f, 1.0f);
+                this.world.playSound(playerEntity, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.HOSTILE, 1.0f, 1.0f);
             }
         } else if (reason == GameStateChangeS2CPacket.IMMEDIATE_RESPAWN) {
             this.client.player.setShowsDeathScreen(f == GameStateChangeS2CPacket.DEMO_OPEN_SCREEN);
@@ -1648,7 +1645,7 @@ ClientPlayPacketListener {
     @Override
     public void onPlaySound(PlaySoundS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.client.world.playSound(this.client.player, packet.getX(), packet.getY(), packet.getZ(), packet.getSound(), packet.getCategory(), packet.getVolume(), packet.getPitch(), packet.getSeed());
+        this.client.world.playSound((PlayerEntity)this.client.player, packet.getX(), packet.getY(), packet.getZ(), packet.getSound().value(), packet.getCategory(), packet.getVolume(), packet.getPitch(), packet.getSeed());
     }
 
     @Override
@@ -1659,12 +1656,6 @@ ClientPlayPacketListener {
             return;
         }
         this.client.world.playSoundFromEntity(this.client.player, entity, packet.getSound(), packet.getCategory(), packet.getVolume(), packet.getPitch(), packet.getSeed());
-    }
-
-    @Override
-    public void onPlaySoundId(PlaySoundIdS2CPacket packet) {
-        NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.client.getSoundManager().play(new PositionedSoundInstance(packet.getSoundId(), packet.getCategory(), packet.getVolume(), packet.getPitch(), Random.create(packet.getSeed()), false, 0, SoundInstance.AttenuationType.LINEAR, packet.getX(), packet.getY(), packet.getZ(), false));
     }
 
     @Override

@@ -80,6 +80,11 @@ extends AbstractNbtNumber {
     }
 
     @Override
+    public int getSizeInBits() {
+        return 96;
+    }
+
+    @Override
     public byte getType() {
         return NbtElement.INT_TYPE;
     }

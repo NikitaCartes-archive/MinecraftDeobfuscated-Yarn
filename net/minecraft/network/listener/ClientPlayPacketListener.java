@@ -64,7 +64,6 @@ import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
@@ -236,8 +235,6 @@ extends PacketListener {
     public void onPlaySound(PlaySoundS2CPacket var1);
 
     public void onPlaySoundFromEntity(PlaySoundFromEntityS2CPacket var1);
-
-    public void onPlaySoundId(PlaySoundIdS2CPacket var1);
 
     public void onItemPickupAnimation(ItemPickupAnimationS2CPacket var1);
 

@@ -31,6 +31,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -377,8 +378,8 @@ implements CommandSource {
     }
 
     @Override
-    public Collection<Identifier> getSoundIds() {
-        return Registries.SOUND_EVENT.getIds();
+    public Stream<Identifier> getSoundIds() {
+        return Registries.SOUND_EVENT.stream().map(SoundEvent::getId);
     }
 
     @Override

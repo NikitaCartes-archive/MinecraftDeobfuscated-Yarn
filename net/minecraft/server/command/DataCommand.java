@@ -31,7 +31,6 @@ import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
@@ -43,9 +42,7 @@ public class DataCommand {
     private static final DynamicCommandExceptionType GET_INVALID_EXCEPTION = new DynamicCommandExceptionType(path -> Text.translatable("commands.data.get.invalid", path));
     private static final DynamicCommandExceptionType GET_UNKNOWN_EXCEPTION = new DynamicCommandExceptionType(path -> Text.translatable("commands.data.get.unknown", path));
     private static final SimpleCommandExceptionType GET_MULTIPLE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.data.get.multiple"));
-    private static final DynamicCommandExceptionType MODIFY_EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(nbt -> Text.translatable("commands.data.modify.expected_list", nbt));
     private static final DynamicCommandExceptionType MODIFY_EXPECTED_OBJECT_EXCEPTION = new DynamicCommandExceptionType(nbt -> Text.translatable("commands.data.modify.expected_object", nbt));
-    private static final DynamicCommandExceptionType MODIFY_INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(index -> Text.translatable("commands.data.modify.invalid_index", index));
     public static final List<Function<String, ObjectType>> OBJECT_TYPE_FACTORIES = ImmutableList.of(EntityDataObject.TYPE_FACTORY, BlockDataObject.TYPE_FACTORY, StorageDataObject.TYPE_FACTORY);
     public static final List<ObjectType> TARGET_OBJECT_TYPES = OBJECT_TYPE_FACTORIES.stream().map(factory -> (ObjectType)factory.apply("target")).collect(ImmutableList.toImmutableList());
     public static final List<ObjectType> SOURCE_OBJECT_TYPES = OBJECT_TYPE_FACTORIES.stream().map(factory -> (ObjectType)factory.apply("source")).collect(ImmutableList.toImmutableList());
@@ -53,54 +50,37 @@ public class DataCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("data").requires(source -> source.hasPermissionLevel(2));
         for (ObjectType objectType : TARGET_OBJECT_TYPES) {
-            ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)literalArgumentBuilder.then(objectType.addArgumentsToBuilder(CommandManager.literal("merge"), builder -> builder.then(CommandManager.argument("nbt", NbtCompoundArgumentType.nbtCompound()).executes(context -> DataCommand.executeMerge((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtCompoundArgumentType.getNbtCompound(context, "nbt"))))))).then(objectType.addArgumentsToBuilder(CommandManager.literal("get"), builder -> ((ArgumentBuilder)builder.executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context)))).then(((RequiredArgumentBuilder)CommandManager.argument("path", NbtPathArgumentType.nbtPath()).executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path")))).then(CommandManager.argument("scale", DoubleArgumentType.doubleArg()).executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path"), DoubleArgumentType.getDouble(context, "scale")))))))).then(objectType.addArgumentsToBuilder(CommandManager.literal("remove"), builder -> builder.then(CommandManager.argument("path", NbtPathArgumentType.nbtPath()).executes(context -> DataCommand.executeRemove((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path"))))))).then(DataCommand.addModifyArgument((builder, modifier) -> ((ArgumentBuilder)((ArgumentBuilder)((ArgumentBuilder)((ArgumentBuilder)builder.then(CommandManager.literal("insert").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("index", IntegerArgumentType.integer()).then(modifier.create((context, sourceNbt, path, elements) -> {
-                int i = IntegerArgumentType.getInteger(context, "index");
-                return DataCommand.executeInsert(i, sourceNbt, path, elements);
-            }))))).then(CommandManager.literal("prepend").then(modifier.create((context, sourceNbt, path, elements) -> DataCommand.executeInsert(0, sourceNbt, path, elements))))).then(CommandManager.literal("append").then(modifier.create((context, sourceNbt, path, elements) -> DataCommand.executeInsert(-1, sourceNbt, path, elements))))).then(CommandManager.literal("set").then(modifier.create((context, sourceNbt, path, elements) -> path.put((NbtElement)sourceNbt, ((NbtElement)Iterables.getLast(elements))::copy))))).then(CommandManager.literal("merge").then(modifier.create((context, sourceNbt, path, elements) -> {
-                List<NbtElement> collection = path.getOrInit(sourceNbt, NbtCompound::new);
+            ((LiteralArgumentBuilder)((LiteralArgumentBuilder)((LiteralArgumentBuilder)literalArgumentBuilder.then(objectType.addArgumentsToBuilder(CommandManager.literal("merge"), builder -> builder.then(CommandManager.argument("nbt", NbtCompoundArgumentType.nbtCompound()).executes(context -> DataCommand.executeMerge((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtCompoundArgumentType.getNbtCompound(context, "nbt"))))))).then(objectType.addArgumentsToBuilder(CommandManager.literal("get"), builder -> ((ArgumentBuilder)builder.executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context)))).then(((RequiredArgumentBuilder)CommandManager.argument("path", NbtPathArgumentType.nbtPath()).executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path")))).then(CommandManager.argument("scale", DoubleArgumentType.doubleArg()).executes(context -> DataCommand.executeGet((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path"), DoubleArgumentType.getDouble(context, "scale")))))))).then(objectType.addArgumentsToBuilder(CommandManager.literal("remove"), builder -> builder.then(CommandManager.argument("path", NbtPathArgumentType.nbtPath()).executes(context -> DataCommand.executeRemove((ServerCommandSource)context.getSource(), objectType.getObject(context), NbtPathArgumentType.getNbtPath(context, "path"))))))).then(DataCommand.addModifyArgument((builder, modifier) -> ((ArgumentBuilder)((ArgumentBuilder)((ArgumentBuilder)((ArgumentBuilder)builder.then(CommandManager.literal("insert").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("index", IntegerArgumentType.integer()).then(modifier.create((context, sourceNbt, path, elements) -> path.insert(IntegerArgumentType.getInteger(context, "index"), sourceNbt, elements)))))).then(CommandManager.literal("prepend").then(modifier.create((context, nbtCompound, path, elements) -> path.insert(0, nbtCompound, elements))))).then(CommandManager.literal("append").then(modifier.create((context, nbtCompound, path, elements) -> path.insert(-1, nbtCompound, elements))))).then(CommandManager.literal("set").then(modifier.create((context, sourceNbt, path, elements) -> path.put(sourceNbt, (NbtElement)Iterables.getLast(elements)))))).then(CommandManager.literal("merge").then(modifier.create((context, element, path, elements) -> {
+                NbtCompound nbtCompound = new NbtCompound();
+                for (NbtElement nbtElement : elements) {
+                    if (NbtPathArgumentType.NbtPath.isTooDeep(nbtElement, 0)) {
+                        throw NbtPathArgumentType.TOO_DEEP_EXCEPTION.create();
+                    }
+                    if (nbtElement instanceof NbtCompound) {
+                        NbtCompound nbtCompound2 = (NbtCompound)nbtElement;
+                        nbtCompound.copyFrom(nbtCompound2);
+                        continue;
+                    }
+                    throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement);
+                }
+                List<NbtElement> collection = path.getOrInit(element, NbtCompound::new);
+                if (element.getSizeInBytes() + nbtCompound.getSizeInBytes() * collection.size() > 0x200000) {
+                    throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
+                }
                 int i = 0;
-                for (NbtElement nbtElement : collection) {
-                    if (!(nbtElement instanceof NbtCompound)) {
-                        throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement);
+                for (NbtElement nbtElement2 : collection) {
+                    if (!(nbtElement2 instanceof NbtCompound)) {
+                        throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement2);
                     }
-                    NbtCompound nbtCompound = (NbtCompound)nbtElement;
-                    NbtCompound nbtCompound2 = nbtCompound.copy();
-                    for (NbtElement nbtElement2 : elements) {
-                        if (!(nbtElement2 instanceof NbtCompound)) {
-                            throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement2);
-                        }
-                        nbtCompound.copyFrom((NbtCompound)nbtElement2);
-                    }
-                    i += nbtCompound2.equals(nbtCompound) ? 0 : 1;
+                    NbtCompound nbtCompound3 = (NbtCompound)nbtElement2;
+                    NbtCompound nbtCompound4 = nbtCompound3.copy();
+                    nbtCompound3.copyFrom(nbtCompound);
+                    i += nbtCompound4.equals(nbtCompound3) ? 0 : 1;
                 }
                 return i;
             })))));
         }
         dispatcher.register(literalArgumentBuilder);
-    }
-
-    private static int executeInsert(int integer, NbtCompound sourceNbt, NbtPathArgumentType.NbtPath path, List<NbtElement> elements) throws CommandSyntaxException {
-        List<NbtElement> collection = path.getOrInit(sourceNbt, NbtList::new);
-        int i = 0;
-        for (NbtElement nbtElement : collection) {
-            if (!(nbtElement instanceof AbstractNbtList)) {
-                throw MODIFY_EXPECTED_LIST_EXCEPTION.create(nbtElement);
-            }
-            boolean bl = false;
-            AbstractNbtList abstractNbtList = (AbstractNbtList)nbtElement;
-            int j = integer < 0 ? abstractNbtList.size() + integer + 1 : integer;
-            for (NbtElement nbtElement2 : elements) {
-                try {
-                    if (!abstractNbtList.addElement(j, nbtElement2.copy())) continue;
-                    ++j;
-                    bl = true;
-                } catch (IndexOutOfBoundsException indexOutOfBoundsException) {
-                    throw MODIFY_INVALID_INDEX_EXCEPTION.create(j);
-                }
-            }
-            i += bl ? 1 : 0;
-        }
-        return i;
     }
 
     private static ArgumentBuilder<ServerCommandSource, ?> addModifyArgument(BiConsumer<ArgumentBuilder<ServerCommandSource, ?>, ModifyArgumentCreator> subArgumentAdder) {
@@ -197,9 +177,15 @@ public class DataCommand {
     }
 
     private static int executeMerge(ServerCommandSource source, DataCommandObject object, NbtCompound nbt) throws CommandSyntaxException {
-        NbtCompound nbtCompound2;
         NbtCompound nbtCompound = object.getNbt();
-        if (nbtCompound.equals(nbtCompound2 = nbtCompound.copy().copyFrom(nbt))) {
+        if (NbtPathArgumentType.NbtPath.isTooDeep(nbt, 0)) {
+            throw NbtPathArgumentType.TOO_DEEP_EXCEPTION.create();
+        }
+        if (nbtCompound.getSizeInBytes() + nbt.getSizeInBytes() > 0x200000) {
+            throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
+        }
+        NbtCompound nbtCompound2 = nbtCompound.copy().copyFrom(nbt);
+        if (nbtCompound.equals(nbtCompound2)) {
             throw MERGE_FAILED_EXCEPTION.create();
         }
         object.setNbt(nbtCompound2);

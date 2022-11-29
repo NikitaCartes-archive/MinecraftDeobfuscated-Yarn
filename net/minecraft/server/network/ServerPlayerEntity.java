@@ -92,6 +92,7 @@ import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardCriterion;
@@ -990,10 +991,7 @@ extends PlayerEntity {
         this.closeScreenHandler();
     }
 
-    /**
-     * Runs closing tasks for the current screen handler and
-     * sets it to the {@code playerScreenHandler}.
-     */
+    @Override
     public void closeScreenHandler() {
         this.currentScreenHandler.close(this);
         this.playerScreenHandler.copySharedSlots(this.currentScreenHandler);
@@ -1492,7 +1490,7 @@ extends PlayerEntity {
 
     @Override
     public void playSound(SoundEvent event, SoundCategory category, float volume, float pitch) {
-        this.networkHandler.sendPacket(new PlaySoundS2CPacket(event, category, this.getX(), this.getY(), this.getZ(), volume, pitch, this.random.nextLong()));
+        this.networkHandler.sendPacket(new PlaySoundS2CPacket(Registries.SOUND_EVENT.getEntry(event), category, this.getX(), this.getY(), this.getZ(), volume, pitch, this.random.nextLong()));
     }
 
     @Override

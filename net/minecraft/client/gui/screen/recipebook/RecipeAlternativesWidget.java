@@ -252,7 +252,7 @@ Element {
             this.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
             MatrixStack matrixStack = RenderSystem.getModelViewStack();
             matrixStack.push();
-            matrixStack.translate((double)(this.getX() + 2), (double)(this.getY() + 2), 125.0);
+            matrixStack.translate((double)(this.getX() + 2), (double)(this.getY() + 2), 150.0);
             for (InputSlot inputSlot : this.slots) {
                 matrixStack.push();
                 matrixStack.translate((double)inputSlot.y, (double)inputSlot.x, 0.0);

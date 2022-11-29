@@ -13,6 +13,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -28,7 +29,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
@@ -114,6 +114,7 @@ extends Block {
 
     @Override
     public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
+        RegistryEntry<SoundEvent> registryEntry;
         float f;
         Instrument instrument = state.get(INSTRUMENT);
         if (instrument.shouldSpawnNoteParticles()) {
@@ -128,11 +129,11 @@ extends Block {
             if (identifier == null) {
                 return false;
             }
-            world.playSound(null, Vec3d.ofCenter(pos), identifier, SoundCategory.RECORDS, 3.0f, f, SoundEvent.getDistanceToTravelForVolume(3.0f));
+            registryEntry = RegistryEntry.of(SoundEvent.of(identifier));
         } else {
-            SoundEvent soundEvent = instrument.getSound();
-            world.playSound(null, pos, soundEvent, SoundCategory.RECORDS, 3.0f, f);
+            registryEntry = instrument.getSound();
         }
+        world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, registryEntry, SoundCategory.RECORDS, 3.0f, f, world.random.nextLong());
         return true;
     }
 

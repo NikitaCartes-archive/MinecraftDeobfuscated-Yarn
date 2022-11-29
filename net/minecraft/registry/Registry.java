@@ -318,6 +318,14 @@ IndexedIterable<T> {
         return entry;
     }
 
+    public static <T> RegistryEntry.Reference<T> method_47984(Registry<T> registry, RegistryKey<T> registryKey, T object) {
+        return ((MutableRegistry)registry).add(registryKey, object, Lifecycle.stable());
+    }
+
+    public static <T> RegistryEntry.Reference<T> registerReference(Registry<T> registry, Identifier identifier, T object) {
+        return Registry.method_47984(registry, RegistryKey.of(registry.getKey(), identifier), object);
+    }
+
     public static <V, T extends V> T register(Registry<V> registry, int rawId, String id, T entry) {
         ((MutableRegistry)registry).set(rawId, RegistryKey.of(registry.getKey(), new Identifier(id)), entry, Lifecycle.stable());
         return entry;
@@ -340,6 +348,8 @@ IndexedIterable<T> {
      * @see #entryOf
      */
     public Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> var1);
+
+    public RegistryEntry<T> getEntry(T var1);
 
     /**
      * {@return the reference registry entry for the value assigned {@code key}}

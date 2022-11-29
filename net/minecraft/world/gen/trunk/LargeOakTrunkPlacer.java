@@ -94,7 +94,7 @@ extends TrunkPlacer {
         for (int j = 0; j <= i; ++j) {
             BlockPos blockPos2 = startPos.add(0.5f + (float)j * f, 0.5f + (float)j * g, 0.5f + (float)j * h);
             if (make) {
-                this.getAndSetState(testableWorld, biConsumer, random, blockPos2, config, state -> (BlockState)state.with(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2)));
+                this.getAndSetState(testableWorld, biConsumer, random, blockPos2, config, state -> (BlockState)state.withIfExists(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2)));
                 continue;
             }
             if (this.canReplaceOrIsLog(testableWorld, blockPos2)) continue;

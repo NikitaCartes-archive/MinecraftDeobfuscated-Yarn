@@ -7,14 +7,14 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import org.apache.commons.lang3.Validate;
 
 public class PlaySoundS2CPacket
 implements Packet<ClientPlayPacketListener> {
     public static final float COORDINATE_SCALE = 8.0f;
-    private final SoundEvent sound;
+    private final RegistryEntry<SoundEvent> sound;
     private final SoundCategory category;
     private final int fixedX;
     private final int fixedY;
@@ -23,8 +23,7 @@ implements Packet<ClientPlayPacketListener> {
     private final float pitch;
     private final long seed;
 
-    public PlaySoundS2CPacket(SoundEvent sound, SoundCategory category, double x, double y, double z, float volume, float pitch, long seed) {
-        Validate.notNull(sound, "sound", new Object[0]);
+    public PlaySoundS2CPacket(RegistryEntry<SoundEvent> sound, SoundCategory category, double x, double y, double z, float volume, float pitch, long seed) {
         this.sound = sound;
         this.category = category;
         this.fixedX = (int)(x * 8.0);
@@ -36,7 +35,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public PlaySoundS2CPacket(PacketByteBuf buf) {
-        this.sound = buf.readRegistryValue(Registries.SOUND_EVENT);
+        this.sound = buf.readRegistryEntry(Registries.SOUND_EVENT.getIndexedEntries(), SoundEvent::fromBuf);
         this.category = buf.readEnumConstant(SoundCategory.class);
         this.fixedX = buf.readInt();
         this.fixedY = buf.readInt();
@@ -48,7 +47,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Override
     public void write(PacketByteBuf buf) {
-        buf.writeRegistryValue(Registries.SOUND_EVENT, this.sound);
+        buf.writeRegistryEntry(Registries.SOUND_EVENT.getIndexedEntries(), this.sound, (packetByteBuf, soundEvent) -> soundEvent.writeBuf((PacketByteBuf)packetByteBuf));
         buf.writeEnumConstant(this.category);
         buf.writeInt(this.fixedX);
         buf.writeInt(this.fixedY);
@@ -58,7 +57,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeLong(this.seed);
     }
 
-    public SoundEvent getSound() {
+    public RegistryEntry<SoundEvent> getSound() {
         return this.sound;
     }
 

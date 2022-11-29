@@ -226,6 +226,12 @@ implements MutableRegistry<T> {
         return Optional.ofNullable(this.keyToEntry.get(key));
     }
 
+    @Override
+    public RegistryEntry<T> getEntry(T value) {
+        RegistryEntry.Reference<T> reference = this.valueToEntry.get(value);
+        return reference != null ? reference : RegistryEntry.of(value);
+    }
+
     RegistryEntry.Reference<T> getOrCreateEntry(RegistryKey<T> key) {
         return this.keyToEntry.computeIfAbsent(key, key2 -> {
             if (this.intrusiveValueToEntry != null) {

@@ -417,6 +417,13 @@ extends LivingEntity {
         this.currentScreenHandler = this.playerScreenHandler;
     }
 
+    /**
+     * Runs closing tasks for the current screen handler and
+     * sets it to the {@code playerScreenHandler}.
+     */
+    protected void closeScreenHandler() {
+    }
+
     @Override
     public void tickRiding() {
         if (!this.world.isClient && this.shouldDismount() && this.hasVehicle()) {
@@ -1172,8 +1179,8 @@ extends LivingEntity {
     public void remove(Entity.RemovalReason reason) {
         super.remove(reason);
         this.playerScreenHandler.close(this);
-        if (this.currentScreenHandler != null) {
-            this.currentScreenHandler.close(this);
+        if (this.currentScreenHandler != null && this.shouldCloseHandledScreenOnRespawn()) {
+            this.closeScreenHandler();
         }
     }
 

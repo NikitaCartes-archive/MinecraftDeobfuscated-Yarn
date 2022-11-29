@@ -121,6 +121,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.HitResult;
@@ -353,13 +354,15 @@ extends Entity {
         }
         if (this.isAlive()) {
             BlockPos blockPos;
-            double e;
-            double d;
             boolean bl = this instanceof PlayerEntity;
-            if (this.isInsideWall()) {
-                this.damage(DamageSource.IN_WALL, 1.0f);
-            } else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox()) && (d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getSafeZone()) < 0.0 && (e = this.world.getWorldBorder().getDamagePerBlock()) > 0.0) {
-                this.damage(DamageSource.IN_WALL, Math.max(1, MathHelper.floor(-d * e)));
+            if (!this.world.isClient) {
+                double e;
+                double d;
+                if (this.isInsideWall()) {
+                    this.damage(DamageSource.IN_WALL, 1.0f);
+                } else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox()) && (d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getSafeZone()) < 0.0 && (e = this.world.getWorldBorder().getDamagePerBlock()) > 0.0) {
+                    this.damage(DamageSource.IN_WALL, Math.max(1, MathHelper.floor(-d * e)));
+                }
             }
             if (this.isSubmergedIn(FluidTags.WATER) && !this.world.getBlockState(new BlockPos(this.getX(), this.getEyeY(), this.getZ())).isOf(Blocks.BUBBLE_COLUMN)) {
                 boolean bl2;
@@ -529,7 +532,7 @@ extends Entity {
 
     protected void updatePostDeath() {
         ++this.deathTime;
-        if (this.deathTime >= 20 && !this.world.isClient()) {
+        if (this.deathTime >= 20 && !this.world.isClient() && !this.isRemoved()) {
             this.world.sendEntityStatus(this, EntityStatuses.ADD_DEATH_PARTICLES);
             this.remove(Entity.RemovalReason.KILLED);
         }
@@ -2523,6 +2526,10 @@ extends Entity {
     }
 
     protected void tickCramming() {
+        if (this.world.isClient()) {
+            this.world.getEntitiesByType(TypeFilter.instanceOf(PlayerEntity.class), this.getBoundingBox(), EntityPredicates.canBePushedBy(this)).forEach(this::pushAway);
+            return;
+        }
         List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
         if (!list.isEmpty()) {
             int j;

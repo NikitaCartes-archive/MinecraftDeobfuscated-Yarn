@@ -44,7 +44,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BlockItem
 extends Item {
-    private static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
+    public static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
     public static final String BLOCK_STATE_TAG_KEY = "BlockStateTag";
     @Deprecated
     private final Block block;

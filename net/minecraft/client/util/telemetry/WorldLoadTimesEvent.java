@@ -6,15 +6,13 @@ package net.minecraft.client.util.telemetry;
 import java.time.Duration;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.telemetry.TelemetryEvent;
 import net.minecraft.client.util.telemetry.TelemetryEventProperty;
 import net.minecraft.client.util.telemetry.TelemetryEventType;
 import net.minecraft.client.util.telemetry.TelemetrySender;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
-public class WorldLoadTimesEvent
-implements TelemetryEvent {
+public class WorldLoadTimesEvent {
     private final boolean newWorld;
     @Nullable
     private final Duration worldLoadTime;
@@ -24,7 +22,6 @@ implements TelemetryEvent {
         this.newWorld = newWorld;
     }
 
-    @Override
     public void send(TelemetrySender sender) {
         if (this.worldLoadTime != null) {
             sender.send(TelemetryEventType.WORLD_LOAD_TIMES, builder -> {

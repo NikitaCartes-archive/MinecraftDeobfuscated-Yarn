@@ -104,6 +104,11 @@ extends AbstractNbtList<NbtLong> {
     }
 
     @Override
+    public int getSizeInBits() {
+        return 192 + 64 * this.value.length;
+    }
+
+    @Override
     public byte getType() {
         return NbtElement.LONG_ARRAY_TYPE;
     }

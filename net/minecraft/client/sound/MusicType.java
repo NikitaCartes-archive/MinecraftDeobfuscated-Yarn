@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.sound;
 
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -21,8 +22,8 @@ public class MusicType {
     public static final MusicSound UNDERWATER = MusicType.createIngameMusic(SoundEvents.MUSIC_UNDER_WATER);
     public static final MusicSound GAME = MusicType.createIngameMusic(SoundEvents.MUSIC_GAME);
 
-    public static MusicSound createIngameMusic(SoundEvent event) {
-        return new MusicSound(event, 12000, 24000, false);
+    public static MusicSound createIngameMusic(RegistryEntry<SoundEvent> sound) {
+        return new MusicSound(sound, 12000, 24000, false);
     }
 }
 

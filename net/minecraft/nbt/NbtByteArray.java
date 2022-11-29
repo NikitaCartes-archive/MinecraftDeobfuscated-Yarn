@@ -93,6 +93,11 @@ extends AbstractNbtList<NbtByte> {
     }
 
     @Override
+    public int getSizeInBits() {
+        return 192 + 8 * this.value.length;
+    }
+
+    @Override
     public byte getType() {
         return NbtElement.BYTE_ARRAY_TYPE;
     }

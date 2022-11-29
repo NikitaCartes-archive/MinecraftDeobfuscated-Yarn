@@ -155,7 +155,7 @@ implements SidedInventory {
 
     @Override
     public void onOpen(PlayerEntity player) {
-        if (!player.isSpectator()) {
+        if (!this.removed && !player.isSpectator()) {
             if (this.viewerCount < 0) {
                 this.viewerCount = 0;
             }
@@ -170,7 +170,7 @@ implements SidedInventory {
 
     @Override
     public void onClose(PlayerEntity player) {
-        if (!player.isSpectator()) {
+        if (!this.removed && !player.isSpectator()) {
             --this.viewerCount;
             this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount <= 0) {

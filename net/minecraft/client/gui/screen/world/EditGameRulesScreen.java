@@ -140,7 +140,7 @@ extends Screen {
         public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             super.render(matrices, mouseX, mouseY, delta);
             AbstractRuleWidget abstractRuleWidget = (AbstractRuleWidget)this.getHoveredEntry();
-            if (abstractRuleWidget != null) {
+            if (abstractRuleWidget != null && abstractRuleWidget.description != null) {
                 EditGameRulesScreen.this.setTooltip(abstractRuleWidget.description);
             }
         }

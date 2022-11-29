@@ -198,7 +198,7 @@ public class MessageHandler {
      * @see net.minecraft.client.util.NarratorManager#narrateChatMessage
      */
     private void narrate(MessageType.Parameters params, Text message) {
-        this.client.getNarratorManager().narrateChatMessage(() -> params.applyNarrationDecoration(message));
+        this.client.getNarratorManager().narrateChatMessage(params.applyNarrationDecoration(message));
     }
 
     /**
@@ -242,7 +242,7 @@ public class MessageHandler {
             this.client.inGameHud.getChatHud().addMessage(message);
             this.addToChatLog(message, Instant.now());
         }
-        this.client.getNarratorManager().narrate(message);
+        this.client.getNarratorManager().narrateSystemMessage(message);
     }
 
     private UUID extractSender(Text text) {

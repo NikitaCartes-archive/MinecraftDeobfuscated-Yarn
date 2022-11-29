@@ -131,6 +131,12 @@ public interface NbtElement {
      */
     public NbtElement copy();
 
+    public int getSizeInBits();
+
+    default public int getSizeInBytes() {
+        return this.getSizeInBits() / 8;
+    }
+
     /**
      * {@return the NBT's string representation}
      * 
