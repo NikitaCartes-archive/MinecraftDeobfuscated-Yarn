@@ -80,8 +80,8 @@ public class ClientCommandSource implements CommandSource {
 	}
 
 	@Override
-	public Collection<Identifier> getSoundIds() {
-		return this.client.getSoundManager().getKeys();
+	public Stream<Identifier> getSoundIds() {
+		return this.client.getSoundManager().getKeys().stream();
 	}
 
 	@Override

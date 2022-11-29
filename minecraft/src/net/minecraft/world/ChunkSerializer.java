@@ -254,10 +254,13 @@ public class ChunkSerializer {
 			NbtList nbtList5 = nbt.getList("Lights", NbtElement.LIST_TYPE);
 
 			for (int q = 0; q < nbtList5.size(); q++) {
-				NbtList nbtList6 = nbtList5.getList(q);
+				ChunkSection chunkSection2 = chunkSections[q];
+				if (chunkSection2 != null && !chunkSection2.isEmpty()) {
+					NbtList nbtList6 = nbtList5.getList(q);
 
-				for (int r = 0; r < nbtList6.size(); r++) {
-					protoChunk2.addLightSource(nbtList6.getShort(r), q);
+					for (int r = 0; r < nbtList6.size(); r++) {
+						protoChunk2.addLightSource(nbtList6.getShort(r), q);
+					}
 				}
 			}
 

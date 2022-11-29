@@ -28,7 +28,6 @@ import net.minecraft.nbt.AbstractNbtList;
 import net.minecraft.nbt.AbstractNbtNumber;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -42,14 +41,8 @@ public class DataCommand {
 		path -> Text.translatable("commands.data.get.unknown", path)
 	);
 	private static final SimpleCommandExceptionType GET_MULTIPLE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.data.get.multiple"));
-	private static final DynamicCommandExceptionType MODIFY_EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(
-		nbt -> Text.translatable("commands.data.modify.expected_list", nbt)
-	);
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_OBJECT_EXCEPTION = new DynamicCommandExceptionType(
 		nbt -> Text.translatable("commands.data.modify.expected_object", nbt)
-	);
-	private static final DynamicCommandExceptionType MODIFY_INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(
-		index -> Text.translatable("commands.data.modify.invalid_index", index)
 	);
 	public static final List<Function<String, DataCommand.ObjectType>> OBJECT_TYPE_FACTORIES = ImmutableList.of(
 		EntityDataObject.TYPE_FACTORY, BlockDataObject.TYPE_FACTORY, StorageDataObject.TYPE_FACTORY
@@ -108,75 +101,53 @@ public class DataCommand {
 					addModifyArgument(
 						(builder, modifier) -> builder.then(
 									CommandManager.literal("insert")
-										.then(CommandManager.argument("index", IntegerArgumentType.integer()).then(modifier.create((context, sourceNbt, path, elements) -> {
-											int i = IntegerArgumentType.getInteger(context, "index");
-											return executeInsert(i, sourceNbt, path, elements);
-										})))
+										.then(
+											CommandManager.argument("index", IntegerArgumentType.integer())
+												.then(modifier.create((context, sourceNbt, path, elements) -> path.insert(IntegerArgumentType.getInteger(context, "index"), sourceNbt, elements)))
+										)
 								)
-								.then(CommandManager.literal("prepend").then(modifier.create((context, sourceNbt, path, elements) -> executeInsert(0, sourceNbt, path, elements))))
-								.then(CommandManager.literal("append").then(modifier.create((context, sourceNbt, path, elements) -> executeInsert(-1, sourceNbt, path, elements))))
-								.then(
-									CommandManager.literal("set").then(modifier.create((context, sourceNbt, path, elements) -> path.put(sourceNbt, Iterables.getLast(elements)::copy)))
-								)
-								.then(CommandManager.literal("merge").then(modifier.create((context, sourceNbt, path, elements) -> {
-									Collection<NbtElement> collection = path.getOrInit(sourceNbt, NbtCompound::new);
-									int i = 0;
+								.then(CommandManager.literal("prepend").then(modifier.create((context, nbtCompound, path, elements) -> path.insert(0, nbtCompound, elements))))
+								.then(CommandManager.literal("append").then(modifier.create((context, nbtCompound, path, elements) -> path.insert(-1, nbtCompound, elements))))
+								.then(CommandManager.literal("set").then(modifier.create((context, sourceNbt, path, elements) -> path.put(sourceNbt, Iterables.getLast(elements)))))
+								.then(CommandManager.literal("merge").then(modifier.create((context, element, path, elements) -> {
+									NbtCompound nbtCompound = new NbtCompound();
 
-									for (NbtElement nbtElement : collection) {
-										if (!(nbtElement instanceof NbtCompound nbtCompound)) {
+									for (NbtElement nbtElement : elements) {
+										if (NbtPathArgumentType.NbtPath.isTooDeep(nbtElement, 0)) {
+											throw NbtPathArgumentType.TOO_DEEP_EXCEPTION.create();
+										}
+
+										if (!(nbtElement instanceof NbtCompound nbtCompound2)) {
 											throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement);
 										}
 
-										NbtCompound nbtCompound2 = nbtCompound.copy();
+										nbtCompound.copyFrom(nbtCompound2);
+									}
 
-										for (NbtElement nbtElement2 : elements) {
-											if (!(nbtElement2 instanceof NbtCompound)) {
+									Collection<NbtElement> collection = path.getOrInit(element, NbtCompound::new);
+									if (element.getSizeInBytes() + nbtCompound.getSizeInBytes() * collection.size() > 2097152) {
+										throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
+									} else {
+										int i = 0;
+
+										for (NbtElement nbtElement2 : collection) {
+											if (!(nbtElement2 instanceof NbtCompound nbtCompound3)) {
 												throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement2);
 											}
 
-											nbtCompound.copyFrom((NbtCompound)nbtElement2);
+											NbtCompound nbtCompound4 = nbtCompound3.copy();
+											nbtCompound3.copyFrom(nbtCompound);
+											i += nbtCompound4.equals(nbtCompound3) ? 0 : 1;
 										}
 
-										i += nbtCompound2.equals(nbtCompound) ? 0 : 1;
+										return i;
 									}
-
-									return i;
 								})))
 					)
 				);
 		}
 
 		dispatcher.register(literalArgumentBuilder);
-	}
-
-	private static int executeInsert(int integer, NbtCompound sourceNbt, NbtPathArgumentType.NbtPath path, List<NbtElement> elements) throws CommandSyntaxException {
-		Collection<NbtElement> collection = path.getOrInit(sourceNbt, NbtList::new);
-		int i = 0;
-
-		for (NbtElement nbtElement : collection) {
-			if (!(nbtElement instanceof AbstractNbtList)) {
-				throw MODIFY_EXPECTED_LIST_EXCEPTION.create(nbtElement);
-			}
-
-			boolean bl = false;
-			AbstractNbtList<?> abstractNbtList = (AbstractNbtList<?>)nbtElement;
-			int j = integer < 0 ? abstractNbtList.size() + integer + 1 : integer;
-
-			for (NbtElement nbtElement2 : elements) {
-				try {
-					if (abstractNbtList.addElement(j, nbtElement2.copy())) {
-						j++;
-						bl = true;
-					}
-				} catch (IndexOutOfBoundsException var14) {
-					throw MODIFY_INVALID_INDEX_EXCEPTION.create(j);
-				}
-			}
-
-			i += bl ? 1 : 0;
-		}
-
-		return i;
 	}
 
 	private static ArgumentBuilder<ServerCommandSource, ?> addModifyArgument(
@@ -301,13 +272,19 @@ public class DataCommand {
 
 	private static int executeMerge(ServerCommandSource source, DataCommandObject object, NbtCompound nbt) throws CommandSyntaxException {
 		NbtCompound nbtCompound = object.getNbt();
-		NbtCompound nbtCompound2 = nbtCompound.copy().copyFrom(nbt);
-		if (nbtCompound.equals(nbtCompound2)) {
-			throw MERGE_FAILED_EXCEPTION.create();
+		if (NbtPathArgumentType.NbtPath.isTooDeep(nbt, 0)) {
+			throw NbtPathArgumentType.TOO_DEEP_EXCEPTION.create();
+		} else if (nbtCompound.getSizeInBytes() + nbt.getSizeInBytes() > 2097152) {
+			throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
 		} else {
-			object.setNbt(nbtCompound2);
-			source.sendFeedback(object.feedbackModify(), true);
-			return 1;
+			NbtCompound nbtCompound2 = nbtCompound.copy().copyFrom(nbt);
+			if (nbtCompound.equals(nbtCompound2)) {
+				throw MERGE_FAILED_EXCEPTION.create();
+			} else {
+				object.setNbt(nbtCompound2);
+				source.sendFeedback(object.feedbackModify(), true);
+				return 1;
+			}
 		}
 	}
 

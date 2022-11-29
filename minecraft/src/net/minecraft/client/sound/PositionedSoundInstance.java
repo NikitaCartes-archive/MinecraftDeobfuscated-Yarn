@@ -2,6 +2,7 @@ package net.minecraft.client.sound;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -17,6 +18,10 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 
 	public static PositionedSoundInstance master(SoundEvent sound, float pitch) {
 		return master(sound, pitch, 0.25F);
+	}
+
+	public static PositionedSoundInstance master(RegistryEntry<SoundEvent> sound, float pitch) {
+		return master(sound.value(), pitch);
 	}
 
 	public static PositionedSoundInstance master(SoundEvent sound, float pitch, float volume) {

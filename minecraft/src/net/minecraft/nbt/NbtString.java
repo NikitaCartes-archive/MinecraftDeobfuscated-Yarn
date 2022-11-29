@@ -82,6 +82,11 @@ public class NbtString implements NbtElement {
 	}
 
 	@Override
+	public int getSizeInBits() {
+		return 288 + 16 * this.value.length();
+	}
+
+	@Override
 	public byte getType() {
 		return NbtElement.STRING_TYPE;
 	}

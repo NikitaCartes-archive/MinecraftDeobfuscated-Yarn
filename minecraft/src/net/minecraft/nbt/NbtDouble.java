@@ -67,6 +67,11 @@ public class NbtDouble extends AbstractNbtNumber {
 	}
 
 	@Override
+	public int getSizeInBits() {
+		return 128;
+	}
+
+	@Override
 	public byte getType() {
 		return NbtElement.DOUBLE_TYPE;
 	}

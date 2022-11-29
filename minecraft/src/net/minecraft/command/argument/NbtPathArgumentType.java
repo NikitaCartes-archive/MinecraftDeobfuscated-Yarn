@@ -9,6 +9,7 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,8 +33,16 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 	public static final SimpleCommandExceptionType INVALID_PATH_NODE_EXCEPTION = new SimpleCommandExceptionType(
 		Text.translatable("arguments.nbtpath.node.invalid")
 	);
+	public static final SimpleCommandExceptionType TOO_DEEP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.nbtpath.too_deep"));
+	public static final SimpleCommandExceptionType TOO_LARGE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.nbtpath.too_large"));
 	public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(
 		path -> Text.translatable("arguments.nbtpath.nothing_found", path)
+	);
+	static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(
+		object -> Text.translatable("commands.data.modify.expected_list", object)
+	);
+	static final DynamicCommandExceptionType INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(
+		object -> Text.translatable("commands.data.modify.invalid_index", object)
 	);
 	private static final char LEFT_SQUARE_BRACKET = '[';
 	private static final char RIGHT_SQUARE_BRACKET = ']';
@@ -589,14 +598,111 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 			return (Integer)elements.stream().map(operation).reduce(0, (a, b) -> a + b);
 		}
 
-		public int put(NbtElement element, NbtElement source) throws CommandSyntaxException {
-			return this.put(element, source::copy);
+		public static boolean isTooDeep(NbtElement element, int depth) {
+			if (depth >= 512) {
+				return true;
+			} else {
+				if (element instanceof NbtCompound nbtCompound) {
+					for (String string : nbtCompound.getKeys()) {
+						NbtElement nbtElement = nbtCompound.get(string);
+						if (nbtElement != null && isTooDeep(nbtElement, depth + 1)) {
+							return true;
+						}
+					}
+				} else if (element instanceof NbtList) {
+					for (NbtElement nbtElement2 : (NbtList)element) {
+						if (isTooDeep(nbtElement2, depth + 1)) {
+							return true;
+						}
+					}
+				}
+
+				return false;
+			}
 		}
 
-		public int put(NbtElement element, Supplier<NbtElement> source) throws CommandSyntaxException {
-			List<NbtElement> list = this.getTerminals(element);
-			NbtPathArgumentType.PathNode pathNode = this.nodes[this.nodes.length - 1];
-			return forEach(list, nbt -> pathNode.set(nbt, source));
+		public int put(NbtElement element, NbtElement source) throws CommandSyntaxException {
+			if (isTooDeep(source, this.getDepth())) {
+				throw NbtPathArgumentType.TOO_DEEP_EXCEPTION.create();
+			} else {
+				NbtElement nbtElement = source.copy();
+				List<NbtElement> list = this.getTerminals(element);
+				if (list.isEmpty()) {
+					return 0;
+				} else {
+					int i = list.size();
+					int j = element.getSizeInBits() + nbtElement.getSizeInBits() * i;
+					if (j > 2097152) {
+						throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
+					} else {
+						NbtPathArgumentType.PathNode pathNode = this.nodes[this.nodes.length - 1];
+						MutableBoolean mutableBoolean = new MutableBoolean(false);
+						return forEach(list, nbtElement2 -> pathNode.set(nbtElement2, () -> {
+								if (mutableBoolean.isFalse()) {
+									mutableBoolean.setTrue();
+									return nbtElement;
+								} else {
+									return nbtElement.copy();
+								}
+							}));
+					}
+				}
+			}
+		}
+
+		private int getDepth() {
+			return this.nodes.length;
+		}
+
+		public int insert(int index, NbtCompound compound, List<NbtElement> elements) throws CommandSyntaxException {
+			List<NbtElement> list = new ArrayList(elements.size());
+			int i = 0;
+
+			for (NbtElement nbtElement : elements) {
+				NbtElement nbtElement2 = nbtElement.copy();
+				list.add(nbtElement2);
+				if (isTooDeep(nbtElement2, this.getDepth())) {
+					throw NbtPathArgumentType.TOO_DEEP_EXCEPTION.create();
+				}
+
+				i += nbtElement2.getSizeInBits();
+			}
+
+			Collection<NbtElement> collection = this.getOrInit(compound, NbtList::new);
+			int j = compound.getSizeInBits();
+			int k = collection.size();
+			int l = j + k * i;
+			if (l > 2097152) {
+				throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
+			} else {
+				int m = 0;
+				boolean bl = false;
+
+				for (NbtElement nbtElement3 : collection) {
+					if (!(nbtElement3 instanceof AbstractNbtList<?> abstractNbtList)) {
+						throw NbtPathArgumentType.EXPECTED_LIST_EXCEPTION.create(nbtElement3);
+					}
+
+					boolean bl2 = false;
+					int n = index < 0 ? abstractNbtList.size() + index + 1 : index;
+
+					for (NbtElement nbtElement4 : list) {
+						try {
+							if (abstractNbtList.addElement(n, bl ? nbtElement4.copy() : nbtElement4)) {
+								n++;
+								bl2 = true;
+							}
+						} catch (IndexOutOfBoundsException var20) {
+							throw NbtPathArgumentType.INVALID_INDEX_EXCEPTION.create(n);
+						}
+					}
+
+					bl = true;
+					m += bl2 ? 1 : 0;
+				}
+
+				return m;
+			}
 		}
 
 		public int remove(NbtElement element) {

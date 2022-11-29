@@ -1,6 +1,7 @@
 package net.minecraft.data.server.loottable;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -889,7 +890,14 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 							block,
 							LootPool.builder()
 								.rolls(ConstantLootNumberProvider.create(1.0F))
-								.with(ItemEntry.builder(block).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("SkullOwner", "SkullOwner")))
+								.with(
+									ItemEntry.builder(block)
+										.apply(
+											CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY)
+												.withOperation("SkullOwner", "SkullOwner")
+												.withOperation("note_block_sound", String.format(Locale.ROOT, "%s.%s", "BlockEntityTag", "note_block_sound"))
+										)
+								)
 						)
 					)
 		);

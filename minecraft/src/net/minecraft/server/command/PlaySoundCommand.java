@@ -11,11 +11,14 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
-import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
+import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class PlaySoundCommand {
@@ -121,7 +124,8 @@ public class PlaySoundCommand {
 		float pitch,
 		float minVolume
 	) throws CommandSyntaxException {
-		double d = Math.pow(volume > 1.0F ? (double)(volume * 16.0F) : 16.0, 2.0);
+		RegistryEntry<SoundEvent> registryEntry = RegistryEntry.of(SoundEvent.of(sound));
+		double d = (double)MathHelper.square(registryEntry.value().getDistanceToTravel(volume));
 		int i = 0;
 		long l = source.getWorld().getRandom().nextLong();
 
@@ -142,7 +146,7 @@ public class PlaySoundCommand {
 				j = minVolume;
 			}
 
-			serverPlayerEntity.networkHandler.sendPacket(new PlaySoundIdS2CPacket(sound, category, vec3d, j, pitch, l));
+			serverPlayerEntity.networkHandler.sendPacket(new PlaySoundS2CPacket(registryEntry, category, vec3d.getX(), vec3d.getY(), vec3d.getZ(), j, pitch, l));
 			i++;
 		}
 

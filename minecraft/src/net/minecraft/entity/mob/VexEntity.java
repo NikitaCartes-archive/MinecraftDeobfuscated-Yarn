@@ -60,7 +60,7 @@ public class VexEntity extends HostileEntity {
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height - 0.4375F;
+		return dimensions.height - 0.28125F;
 	}
 
 	@Override

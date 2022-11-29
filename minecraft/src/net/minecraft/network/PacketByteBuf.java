@@ -56,6 +56,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -209,7 +210,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * The maximum size, in number of bytes, allowed of the NBT compound read by
 	 * {@link #readNbt()}.
 	 */
-	private static final int MAX_READ_NBT_SIZE = 2097152;
+	public static final int MAX_READ_NBT_SIZE = 2097152;
 	private final ByteBuf parent;
 	/**
 	 * The default max length of strings {@linkplain #readString() read} or {@linkplain
@@ -331,6 +332,22 @@ public class PacketByteBuf extends ByteBuf {
 		}
 	}
 
+	public <T> void writeRegistryEntry(IndexedIterable<RegistryEntry<T>> registryEntries, RegistryEntry<T> entry, PacketByteBuf.PacketWriter<T> writer) {
+		switch (entry.getType()) {
+			case REFERENCE:
+				int i = registryEntries.getRawId(entry);
+				if (i == -1) {
+					throw new IllegalArgumentException("Can't find id for '" + entry.value() + "' in map " + registryEntries);
+				}
+
+				this.writeVarInt(i + 1);
+				break;
+			case DIRECT:
+				this.writeVarInt(0);
+				writer.accept(this, entry.value());
+		}
+	}
+
 	/**
 	 * Reads a value from a registry (or other {@link IndexedIterable}s). The value
 	 * is stored using its raw ID as a {@linkplain #readVarInt() var int}.
@@ -347,6 +364,20 @@ public class PacketByteBuf extends ByteBuf {
 	public <T> T readRegistryValue(IndexedIterable<T> registry) {
 		int i = this.readVarInt();
 		return registry.get(i);
+	}
+
+	public <T> RegistryEntry<T> readRegistryEntry(IndexedIterable<RegistryEntry<T>> registryEntries, PacketByteBuf.PacketReader<T> reader) {
+		int i = this.readVarInt();
+		if (i == 0) {
+			return RegistryEntry.of((T)reader.apply(this));
+		} else {
+			RegistryEntry<T> registryEntry = registryEntries.get(i - 1);
+			if (registryEntry == null) {
+				throw new IllegalArgumentException("Can't find element with id " + i);
+			} else {
+				return registryEntry;
+			}
+		}
 	}
 
 	public static <T> IntFunction<T> getMaxValidator(IntFunction<T> applier, int max) {

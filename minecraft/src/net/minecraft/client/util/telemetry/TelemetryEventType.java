@@ -1,5 +1,6 @@
 package net.minecraft.client.util.telemetry;
 
+import com.mojang.authlib.minecraft.TelemetryEvent;
 import com.mojang.authlib.minecraft.TelemetrySession;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
@@ -94,8 +95,8 @@ public class TelemetryEventType {
 		return this.optional;
 	}
 
-	public com.mojang.authlib.minecraft.TelemetryEvent createEvent(TelemetrySession session, PropertyMap properties) {
-		com.mojang.authlib.minecraft.TelemetryEvent telemetryEvent = session.createNewEvent(this.exportKey);
+	public TelemetryEvent createEvent(TelemetrySession session, PropertyMap properties) {
+		TelemetryEvent telemetryEvent = session.createNewEvent(this.exportKey);
 
 		for (TelemetryEventProperty<?> telemetryEventProperty : this.properties) {
 			telemetryEventProperty.addTo(properties, telemetryEvent);

@@ -66,12 +66,6 @@ public class TexturedButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void setPos(int x, int y) {
-		this.setX(x);
-		this.setY(y);
-	}
-
-	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, this.texture);

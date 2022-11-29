@@ -2340,20 +2340,24 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	private ItemStack addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
+	private void addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
 		NbtCompound nbtCompound = blockEntity.createNbtWithIdentifyingData();
+		BlockItem.setBlockEntityNbt(stack, blockEntity.getType(), nbtCompound);
 		if (stack.getItem() instanceof SkullItem && nbtCompound.contains("SkullOwner")) {
 			NbtCompound nbtCompound2 = nbtCompound.getCompound("SkullOwner");
-			stack.getOrCreateNbt().put("SkullOwner", nbtCompound2);
-			return stack;
+			NbtCompound nbtCompound3 = stack.getOrCreateNbt();
+			nbtCompound3.put("SkullOwner", nbtCompound2);
+			NbtCompound nbtCompound4 = nbtCompound3.getCompound("BlockEntityTag");
+			nbtCompound4.remove("SkullOwner");
+			nbtCompound4.remove("x");
+			nbtCompound4.remove("y");
+			nbtCompound4.remove("z");
 		} else {
-			BlockItem.setBlockEntityNbt(stack, blockEntity.getType(), nbtCompound);
 			NbtCompound nbtCompound2 = new NbtCompound();
 			NbtList nbtList = new NbtList();
 			nbtList.add(NbtString.of("\"(+NBT)\""));
 			nbtCompound2.put("Lore", nbtList);
 			stack.setSubNbt("display", nbtCompound2);
-			return stack;
 		}
 	}
 

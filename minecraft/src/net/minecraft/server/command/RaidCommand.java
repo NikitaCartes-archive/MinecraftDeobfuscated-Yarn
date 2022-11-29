@@ -12,10 +12,12 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.village.raid.RaidManager;
 
@@ -99,7 +101,9 @@ public class RaidCommand {
 
 	private static int executeSound(ServerCommandSource source, @Nullable Text type) {
 		if (type != null && type.getString().equals("local")) {
-			source.getWorld().playSound(null, new BlockPos(source.getPosition().add(5.0, 0.0, 0.0)), SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, 2.0F, 1.0F);
+			ServerWorld serverWorld = source.getWorld();
+			Vec3d vec3d = source.getPosition().add(5.0, 0.0, 0.0);
+			serverWorld.playSound(null, vec3d.x, vec3d.y, vec3d.z, SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL, 2.0F, 1.0F, serverWorld.random.nextLong());
 		}
 
 		return 1;

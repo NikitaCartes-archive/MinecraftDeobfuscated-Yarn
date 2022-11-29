@@ -216,6 +216,12 @@ public class SimpleRegistry<T> implements MutableRegistry<T> {
 		return Optional.ofNullable((RegistryEntry.Reference)this.keyToEntry.get(key));
 	}
 
+	@Override
+	public RegistryEntry<T> getEntry(T value) {
+		RegistryEntry.Reference<T> reference = (RegistryEntry.Reference<T>)this.valueToEntry.get(value);
+		return (RegistryEntry<T>)(reference != null ? reference : RegistryEntry.of(value));
+	}
+
 	RegistryEntry.Reference<T> getOrCreateEntry(RegistryKey<T> key) {
 		return (RegistryEntry.Reference<T>)this.keyToEntry.computeIfAbsent(key, key2 -> {
 			if (this.intrusiveValueToEntry != null) {

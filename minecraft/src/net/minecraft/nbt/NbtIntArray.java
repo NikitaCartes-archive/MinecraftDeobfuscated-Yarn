@@ -89,6 +89,11 @@ public class NbtIntArray extends AbstractNbtList<NbtInt> {
 	}
 
 	@Override
+	public int getSizeInBits() {
+		return 192 + 32 * this.value.length;
+	}
+
+	@Override
 	public byte getType() {
 		return NbtElement.INT_ARRAY_TYPE;
 	}

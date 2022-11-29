@@ -138,6 +138,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		MemoryModuleType.NEAREST_VISIBLE_PLAYER,
 		MemoryModuleType.NEAREST_VISIBLE_TARGETABLE_PLAYER,
 		MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM,
+		MemoryModuleType.ITEM_PICKUP_COOLDOWN_TICKS,
 		MemoryModuleType.WALK_TARGET,
 		MemoryModuleType.LOOK_TARGET,
 		MemoryModuleType.INTERACTION_TARGET,

@@ -104,6 +104,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.HitResult;
@@ -349,14 +350,16 @@ public abstract class LivingEntity extends Entity {
 
 		if (this.isAlive()) {
 			boolean bl = this instanceof PlayerEntity;
-			if (this.isInsideWall()) {
-				this.damage(DamageSource.IN_WALL, 1.0F);
-			} else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox())) {
-				double d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getSafeZone();
-				if (d < 0.0) {
-					double e = this.world.getWorldBorder().getDamagePerBlock();
-					if (e > 0.0) {
-						this.damage(DamageSource.IN_WALL, (float)Math.max(1, MathHelper.floor(-d * e)));
+			if (!this.world.isClient) {
+				if (this.isInsideWall()) {
+					this.damage(DamageSource.IN_WALL, 1.0F);
+				} else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox())) {
+					double d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getSafeZone();
+					if (d < 0.0) {
+						double e = this.world.getWorldBorder().getDamagePerBlock();
+						if (e > 0.0) {
+							this.damage(DamageSource.IN_WALL, (float)Math.max(1, MathHelper.floor(-d * e)));
+						}
 					}
 				}
 			}
@@ -566,7 +569,7 @@ public abstract class LivingEntity extends Entity {
 
 	protected void updatePostDeath() {
 		this.deathTime++;
-		if (this.deathTime >= 20 && !this.world.isClient()) {
+		if (this.deathTime >= 20 && !this.world.isClient() && !this.isRemoved()) {
 			this.world.sendEntityStatus(this, EntityStatuses.ADD_DEATH_PARTICLES);
 			this.remove(Entity.RemovalReason.KILLED);
 		}
@@ -2802,26 +2805,30 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void tickCramming() {
-		List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
-		if (!list.isEmpty()) {
-			int i = this.world.getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
-			if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
-				int j = 0;
+		if (this.world.isClient()) {
+			this.world.getEntitiesByType(TypeFilter.instanceOf(PlayerEntity.class), this.getBoundingBox(), EntityPredicates.canBePushedBy(this)).forEach(this::pushAway);
+		} else {
+			List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
+			if (!list.isEmpty()) {
+				int i = this.world.getGameRules().getInt(GameRules.MAX_ENTITY_CRAMMING);
+				if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
+					int j = 0;
 
-				for (int k = 0; k < list.size(); k++) {
-					if (!((Entity)list.get(k)).hasVehicle()) {
-						j++;
+					for (int k = 0; k < list.size(); k++) {
+						if (!((Entity)list.get(k)).hasVehicle()) {
+							j++;
+						}
+					}
+
+					if (j > i - 1) {
+						this.damage(DamageSource.CRAMMING, 6.0F);
 					}
 				}
 
-				if (j > i - 1) {
-					this.damage(DamageSource.CRAMMING, 6.0F);
+				for (int j = 0; j < list.size(); j++) {
+					Entity entity = (Entity)list.get(j);
+					this.pushAway(entity);
 				}
-			}
-
-			for (int j = 0; j < list.size(); j++) {
-				Entity entity = (Entity)list.get(j);
-				this.pushAway(entity);
 			}
 		}
 	}

@@ -12,16 +12,11 @@ public final class PerformanceMetricsEvent extends SampleEvent {
 	private final LongList frameRateSamples = new LongArrayList();
 	private final LongList renderTimeSamples = new LongArrayList();
 	private final LongList usedMemorySamples = new LongArrayList();
-	private final TelemetrySender sender;
-
-	public PerformanceMetricsEvent(TelemetrySender sender) {
-		this.sender = sender;
-	}
 
 	@Override
-	public void tick() {
+	public void tick(TelemetrySender sender) {
 		if (MinecraftClient.getInstance().isOptionalTelemetryEnabled()) {
-			super.tick();
+			super.tick(sender);
 		}
 	}
 
@@ -46,19 +41,14 @@ public final class PerformanceMetricsEvent extends SampleEvent {
 	}
 
 	@Override
-	public void send() {
-		this.send(this.sender);
-	}
-
-	@Override
 	public void send(TelemetrySender sender) {
-		sender.send(TelemetryEventType.PERFORMANCE_METRICS, builder -> {
-			builder.put(TelemetryEventProperty.FRAME_RATE_SAMPLES, new LongArrayList(this.frameRateSamples));
-			builder.put(TelemetryEventProperty.RENDER_TIME_SAMPLES, new LongArrayList(this.renderTimeSamples));
-			builder.put(TelemetryEventProperty.USED_MEMORY_SAMPLES, new LongArrayList(this.usedMemorySamples));
-			builder.put(TelemetryEventProperty.NUMBER_OF_SAMPLES, this.getSampleCount());
-			builder.put(TelemetryEventProperty.RENDER_DISTANCE, MinecraftClient.getInstance().options.getClampedViewDistance());
-			builder.put(TelemetryEventProperty.DEDICATED_MEMORY_KB, (int)MAX_MEMORY_KB);
+		sender.send(TelemetryEventType.PERFORMANCE_METRICS, map -> {
+			map.put(TelemetryEventProperty.FRAME_RATE_SAMPLES, new LongArrayList(this.frameRateSamples));
+			map.put(TelemetryEventProperty.RENDER_TIME_SAMPLES, new LongArrayList(this.renderTimeSamples));
+			map.put(TelemetryEventProperty.USED_MEMORY_SAMPLES, new LongArrayList(this.usedMemorySamples));
+			map.put(TelemetryEventProperty.NUMBER_OF_SAMPLES, this.getSampleCount());
+			map.put(TelemetryEventProperty.RENDER_DISTANCE, MinecraftClient.getInstance().options.getClampedViewDistance());
+			map.put(TelemetryEventProperty.DEDICATED_MEMORY_KB, (int)MAX_MEMORY_KB);
 		});
 		this.clearSamples();
 	}

@@ -67,6 +67,11 @@ public class NbtFloat extends AbstractNbtNumber {
 	}
 
 	@Override
+	public int getSizeInBits() {
+		return 96;
+	}
+
+	@Override
 	public byte getType() {
 		return NbtElement.FLOAT_TYPE;
 	}

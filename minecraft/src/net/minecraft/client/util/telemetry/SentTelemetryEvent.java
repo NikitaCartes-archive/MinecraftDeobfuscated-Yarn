@@ -1,5 +1,6 @@
 package net.minecraft.client.util.telemetry;
 
+import com.mojang.authlib.minecraft.TelemetryEvent;
 import com.mojang.authlib.minecraft.TelemetrySession;
 import com.mojang.serialization.Codec;
 import net.fabricmc.api.EnvType;
@@ -19,7 +20,7 @@ public record SentTelemetryEvent(TelemetryEventType type, PropertyMap properties
 		this.properties = properties;
 	}
 
-	public com.mojang.authlib.minecraft.TelemetryEvent createEvent(TelemetrySession session) {
+	public TelemetryEvent createEvent(TelemetrySession session) {
 		return this.type.createEvent(session, this.properties);
 	}
 }

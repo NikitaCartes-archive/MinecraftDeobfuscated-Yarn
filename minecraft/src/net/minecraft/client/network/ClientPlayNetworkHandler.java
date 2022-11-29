@@ -73,8 +73,6 @@ import net.minecraft.client.sound.AggressiveBeeSoundInstance;
 import net.minecraft.client.sound.GuardianAttackSoundInstance;
 import net.minecraft.client.sound.MovingMinecartSoundInstance;
 import net.minecraft.client.sound.PassiveBeeSoundInstance;
-import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.ProfileKeys;
@@ -207,7 +205,6 @@ import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
@@ -1776,7 +1773,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 				packet.getX(),
 				packet.getY(),
 				packet.getZ(),
-				packet.getSound(),
+				packet.getSound().value(),
 				packet.getCategory(),
 				packet.getVolume(),
 				packet.getPitch(),
@@ -1793,29 +1790,6 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 				.world
 				.playSoundFromEntity(this.client.player, entity, packet.getSound(), packet.getCategory(), packet.getVolume(), packet.getPitch(), packet.getSeed());
 		}
-	}
-
-	@Override
-	public void onPlaySoundId(PlaySoundIdS2CPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client
-			.getSoundManager()
-			.play(
-				new PositionedSoundInstance(
-					packet.getSoundId(),
-					packet.getCategory(),
-					packet.getVolume(),
-					packet.getPitch(),
-					Random.create(packet.getSeed()),
-					false,
-					0,
-					SoundInstance.AttenuationType.LINEAR,
-					packet.getX(),
-					packet.getY(),
-					packet.getZ(),
-					false
-				)
-			);
 	}
 
 	@Override

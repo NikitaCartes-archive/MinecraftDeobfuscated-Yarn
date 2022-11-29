@@ -236,7 +236,7 @@ public final class Biome {
 		return this.effects.getParticleConfig();
 	}
 
-	public Optional<SoundEvent> getLoopSound() {
+	public Optional<RegistryEntry<SoundEvent>> getLoopSound() {
 		return this.effects.getLoopSound();
 	}
 

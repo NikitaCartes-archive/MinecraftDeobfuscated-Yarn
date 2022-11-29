@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -57,6 +58,8 @@ public class EntityTrackerEntry {
 	private List<Entity> lastPassengers = Collections.emptyList();
 	private boolean hadVehicle;
 	private boolean lastOnGround;
+	@Nullable
+	private List<DataTracker.SerializedEntry<?>> changedEntries;
 
 	public EntityTrackerEntry(ServerWorld world, Entity entity, int tickInterval, boolean alwaysUpdateVelocity, Consumer<Packet<?>> receiver) {
 		this.world = world;
@@ -69,6 +72,7 @@ public class EntityTrackerEntry {
 		this.lastPitch = MathHelper.floor(entity.getPitch() * 256.0F / 360.0F);
 		this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
 		this.lastOnGround = entity.isOnGround();
+		this.changedEntries = entity.getDataTracker().getChangedEntries();
 	}
 
 	public void tick() {
@@ -203,13 +207,8 @@ public class EntityTrackerEntry {
 		Packet<ClientPlayPacketListener> packet = this.entity.createSpawnPacket();
 		this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
 		sender.accept(packet);
-		DataTracker dataTracker = this.entity.getDataTracker();
-		if (!dataTracker.isEmpty()) {
-			List<DataTracker.SerializedEntry<?>> list = dataTracker.getChangedEntries();
-			dataTracker.clearDirty();
-			if (list != null) {
-				sender.accept(new EntityTrackerUpdateS2CPacket(this.entity.getId(), list));
-			}
+		if (this.changedEntries != null) {
+			sender.accept(new EntityTrackerUpdateS2CPacket(this.entity.getId(), this.changedEntries));
 		}
 
 		boolean bl = this.alwaysUpdateVelocity;
@@ -230,17 +229,17 @@ public class EntityTrackerEntry {
 		}
 
 		if (this.entity instanceof LivingEntity) {
-			List<Pair<EquipmentSlot, ItemStack>> list2 = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
+			List<Pair<EquipmentSlot, ItemStack>> list = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
 
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 				ItemStack itemStack = ((LivingEntity)this.entity).getEquippedStack(equipmentSlot);
 				if (!itemStack.isEmpty()) {
-					list2.add(Pair.of(equipmentSlot, itemStack.copy()));
+					list.add(Pair.of(equipmentSlot, itemStack.copy()));
 				}
 			}
 
-			if (!list2.isEmpty()) {
-				sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getId(), list2));
+			if (!list.isEmpty()) {
+				sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getId(), list));
 			}
 		}
 
@@ -270,6 +269,7 @@ public class EntityTrackerEntry {
 		DataTracker dataTracker = this.entity.getDataTracker();
 		List<DataTracker.SerializedEntry<?>> list = dataTracker.getDirtyEntries();
 		if (list != null) {
+			this.changedEntries = dataTracker.getChangedEntries();
 			this.sendSyncPacket(new EntityTrackerUpdateS2CPacket(this.entity.getId(), list));
 		}
 

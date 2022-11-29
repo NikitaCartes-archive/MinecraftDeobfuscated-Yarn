@@ -17,8 +17,8 @@ public class WorldSession {
 	private final WorldLoadTimesEvent worldLoadTimesEvent;
 
 	public WorldSession(TelemetrySender sender, boolean newWorld, @Nullable Duration worldLoadTime) {
-		this.worldLoadedEvent = new WorldLoadedEvent(this::onLoad);
-		this.performanceMetricsEvent = new PerformanceMetricsEvent(sender);
+		this.worldLoadedEvent = new WorldLoadedEvent();
+		this.performanceMetricsEvent = new PerformanceMetricsEvent();
 		this.worldLoadTimesEvent = new WorldLoadTimesEvent(newWorld, worldLoadTime);
 		this.sender = sender.decorate(builder -> {
 			this.worldLoadedEvent.putServerType(builder);
@@ -27,19 +27,18 @@ public class WorldSession {
 	}
 
 	public void tick() {
-		this.performanceMetricsEvent.tick();
+		this.performanceMetricsEvent.tick(this.sender);
 	}
 
 	public void setGameMode(GameMode gameMode, boolean hardcore) {
 		this.worldLoadedEvent.setGameMode(gameMode, hardcore);
-		if (this.worldLoadedEvent.getBrand() != null) {
-			this.worldLoadedEvent.send(this.sender);
-		}
+		this.worldUnloadedEvent.start();
+		this.onLoad();
 	}
 
 	public void setBrand(String brand) {
 		this.worldLoadedEvent.setBrand(brand);
-		this.worldLoadedEvent.send(this.sender);
+		this.onLoad();
 	}
 
 	public void setTick(long tick) {
@@ -47,9 +46,10 @@ public class WorldSession {
 	}
 
 	public void onLoad() {
-		this.worldLoadTimesEvent.send(this.sender);
-		this.worldUnloadedEvent.setStartTime();
-		this.performanceMetricsEvent.start();
+		if (this.worldLoadedEvent.send(this.sender)) {
+			this.worldLoadTimesEvent.send(this.sender);
+			this.performanceMetricsEvent.start();
+		}
 	}
 
 	public void onUnload() {

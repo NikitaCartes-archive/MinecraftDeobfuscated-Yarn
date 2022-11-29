@@ -108,7 +108,9 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 			for (int j = 0; j <= i; j++) {
 				BlockPos blockPos2 = startPos.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * g), (double)(0.5F + (float)j * h));
 				if (make) {
-					this.getAndSetState(testableWorld, biConsumer, random, blockPos2, config, state -> state.with(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2)));
+					this.getAndSetState(
+						testableWorld, biConsumer, random, blockPos2, config, state -> state.withIfExists(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2))
+					);
 				} else if (!this.canReplaceOrIsLog(testableWorld, blockPos2)) {
 					return false;
 				}

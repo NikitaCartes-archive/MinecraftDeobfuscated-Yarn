@@ -116,6 +116,20 @@ public abstract class State<O, S> {
 		}
 	}
 
+	public <T extends Comparable<T>, V extends T> S withIfExists(Property<T> property, V value) {
+		Comparable<?> comparable = this.entries.get(property);
+		if (comparable != null && comparable != value) {
+			S object = this.withTable.get(property, value);
+			if (object == null) {
+				throw new IllegalArgumentException("Cannot set property " + property + " to " + value + " on " + this.owner + ", it is not an allowed value");
+			} else {
+				return object;
+			}
+		} else {
+			return (S)this;
+		}
+	}
+
 	public void createWithTable(Map<Map<Property<?>, Comparable<?>>, S> states) {
 		if (this.withTable != null) {
 			throw new IllegalStateException();

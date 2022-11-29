@@ -133,7 +133,6 @@ import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlaySoundIdS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
@@ -218,7 +217,6 @@ public enum NetworkState {
 					.register(CooldownUpdateS2CPacket.class, CooldownUpdateS2CPacket::new)
 					.register(ChatSuggestionsS2CPacket.class, ChatSuggestionsS2CPacket::new)
 					.register(CustomPayloadS2CPacket.class, CustomPayloadS2CPacket::new)
-					.register(PlaySoundIdS2CPacket.class, PlaySoundIdS2CPacket::new)
 					.register(RemoveMessageS2CPacket.class, RemoveMessageS2CPacket::new)
 					.register(DisconnectS2CPacket.class, DisconnectS2CPacket::new)
 					.register(ProfilelessChatMessageS2CPacket.class, ProfilelessChatMessageS2CPacket::new)

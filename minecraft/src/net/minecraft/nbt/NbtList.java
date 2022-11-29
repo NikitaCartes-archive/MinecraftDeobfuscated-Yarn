@@ -150,6 +150,18 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 	}
 
 	@Override
+	public int getSizeInBits() {
+		int i = 296;
+		i += 32 * this.value.size();
+
+		for (NbtElement nbtElement : this.value) {
+			i += nbtElement.getSizeInBits();
+		}
+
+		return i;
+	}
+
+	@Override
 	public byte getType() {
 		return NbtElement.LIST_TYPE;
 	}

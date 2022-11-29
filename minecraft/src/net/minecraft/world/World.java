@@ -27,6 +27,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -438,8 +439,14 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * @param except the player that should not receive the sound, or {@code null}
 	 */
 	public abstract void playSound(
-		@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed
+		@Nullable PlayerEntity except, double x, double y, double z, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
 	);
+
+	public void playSound(
+		@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed
+	) {
+		this.playSound(except, x, y, z, Registries.SOUND_EVENT.getEntry(sound), category, volume, pitch, seed);
+	}
 
 	/**
 	 * @param except the player that should not receive the sound, or {@code null}
@@ -454,14 +461,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
 		this.playSoundFromEntity(except, entity, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
-	}
-
-	public abstract void playSound(
-		@Nullable PlayerEntity except, Vec3d pos, Identifier id, SoundCategory category, float volume, float pitch, double distance, long seed
-	);
-
-	public void playSound(@Nullable PlayerEntity except, Vec3d pos, Identifier id, SoundCategory category, float volume, float pitch, double distance) {
-		this.playSound(except, pos, id, category, volume, pitch, distance, this.threadSafeRandom.nextLong());
 	}
 
 	public void playSoundAtBlockCenter(BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {

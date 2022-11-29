@@ -56,7 +56,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 			this.soundLoops.values().forEach(BiomeEffectSoundPlayer.MusicLoop::fadeOut);
 			biome.getLoopSound().ifPresent(sound -> this.soundLoops.compute(biome, (soundx, loop) -> {
 					if (loop == null) {
-						loop = new BiomeEffectSoundPlayer.MusicLoop(sound);
+						loop = new BiomeEffectSoundPlayer.MusicLoop((SoundEvent)sound.value());
 						this.soundManager.play(loop);
 					}
 
@@ -67,7 +67,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 
 		this.additionsSound.ifPresent(sound -> {
 			if (this.random.nextDouble() < sound.getChance()) {
-				this.soundManager.play(PositionedSoundInstance.ambient(sound.getSound()));
+				this.soundManager.play(PositionedSoundInstance.ambient(sound.getSound().value()));
 			}
 		});
 		this.moodSound
@@ -97,7 +97,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 						double l = Math.sqrt(g * g + h * h + k * k);
 						double m = l + sound.getExtraDistance();
 						PositionedSoundInstance positionedSoundInstance = PositionedSoundInstance.ambient(
-							sound.getSound(), this.random, this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m
+							sound.getSound().value(), this.random, this.player.getX() + g / l * m, this.player.getEyeY() + h / l * m, this.player.getZ() + k / l * m
 						);
 						this.soundManager.play(positionedSoundInstance);
 						this.moodPercentage = 0.0F;

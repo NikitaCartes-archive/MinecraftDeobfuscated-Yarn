@@ -331,6 +331,14 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 		return entry;
 	}
 
+	static <T> RegistryEntry.Reference<T> method_47984(Registry<T> registry, RegistryKey<T> registryKey, T object) {
+		return ((MutableRegistry)registry).add(registryKey, object, Lifecycle.stable());
+	}
+
+	static <T> RegistryEntry.Reference<T> registerReference(Registry<T> registry, Identifier identifier, T object) {
+		return method_47984(registry, RegistryKey.of(registry.getKey(), identifier), object);
+	}
+
 	static <V, T extends V> T register(Registry<V> registry, int rawId, String id, T entry) {
 		((MutableRegistry)registry).set(rawId, RegistryKey.of(registry.getKey(), new Identifier(id)), (V)entry, Lifecycle.stable());
 		return entry;
@@ -353,6 +361,8 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 	 * @see #entryOf
 	 */
 	Optional<RegistryEntry.Reference<T>> getEntry(RegistryKey<T> key);
+
+	RegistryEntry<T> getEntry(T value);
 
 	/**
 	 * {@return the reference registry entry for the value assigned {@code key}}

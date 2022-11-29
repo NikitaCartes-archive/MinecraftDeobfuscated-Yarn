@@ -59,7 +59,7 @@ public class NbtCompound implements NbtElement {
 					String string = NbtCompound.readString(dataInput, nbtTagSizeTracker);
 					nbtTagSizeTracker.add((long)(224 + 16 * string.length()));
 					NbtElement nbtElement = NbtCompound.read(NbtTypes.byId(b), string, dataInput, i + 1, nbtTagSizeTracker);
-					if (map.put(string, nbtElement) != null) {
+					if (map.put(string, nbtElement) == null) {
 						nbtTagSizeTracker.add(288L);
 					}
 				}
@@ -153,6 +153,19 @@ public class NbtCompound implements NbtElement {
 		}
 
 		output.writeByte(0);
+	}
+
+	@Override
+	public int getSizeInBits() {
+		int i = 384;
+
+		for (Entry<String, NbtElement> entry : this.entries.entrySet()) {
+			i += 224 + 16 * ((String)entry.getKey()).length();
+			i += 288;
+			i += ((NbtElement)entry.getValue()).getSizeInBits();
+		}
+
+		return i;
 	}
 
 	/**
