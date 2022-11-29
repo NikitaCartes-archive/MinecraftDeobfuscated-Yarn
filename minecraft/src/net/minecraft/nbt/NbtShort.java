@@ -62,6 +62,11 @@ public class NbtShort extends AbstractNbtNumber {
 	}
 
 	@Override
+	public int getSizeInBits() {
+		return 80;
+	}
+
+	@Override
 	public byte getType() {
 		return NbtElement.SHORT_TYPE;
 	}

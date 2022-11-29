@@ -143,7 +143,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		REPLACE("replace") {
 			@Override
 			public void merge(NbtElement itemNbt, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceNbts) throws CommandSyntaxException {
-				targetPath.put(itemNbt, Iterables.getLast(sourceNbts)::copy);
+				targetPath.put(itemNbt, Iterables.getLast(sourceNbts));
 			}
 		},
 		APPEND("append") {

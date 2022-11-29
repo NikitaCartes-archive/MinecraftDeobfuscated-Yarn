@@ -14,7 +14,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.VexEntity;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 
 /**
  * Represents the model of a {@linkplain VexEntity}.
@@ -54,6 +53,7 @@ public class VexEntityModel extends SinglePartEntityModel<VexEntity> implements 
 	private final ModelPart leftArm;
 	private final ModelPart rightWing;
 	private final ModelPart leftWing;
+	private final ModelPart head;
 
 	public VexEntityModel(ModelPart root) {
 		super(RenderLayer::getEntityTranslucent);
@@ -63,12 +63,13 @@ public class VexEntityModel extends SinglePartEntityModel<VexEntity> implements 
 		this.leftArm = this.body.getChild(EntityModelPartNames.LEFT_ARM);
 		this.rightWing = this.body.getChild(EntityModelPartNames.RIGHT_WING);
 		this.leftWing = this.body.getChild(EntityModelPartNames.LEFT_WING);
+		this.head = this.root.getChild(EntityModelPartNames.HEAD);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.ROOT, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, 0.0F, 0.0F));
+		ModelPartData modelPartData2 = modelPartData.addChild(EntityModelPartNames.ROOT, ModelPartBuilder.create(), ModelTransform.pivot(0.0F, -2.5F, 0.0F));
 		modelPartData2.addChild(
 			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create().uv(0, 0).cuboid(-2.5F, -5.0F, -2.5F, 5.0F, 5.0F, 5.0F, new Dilation(0.0F)),
@@ -109,6 +110,8 @@ public class VexEntityModel extends SinglePartEntityModel<VexEntity> implements 
 	public void setAngles(VexEntity vexEntity, float f, float g, float h, float i, float j) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.body.pitch = 6.440265F;
+		this.head.yaw = i * (float) (Math.PI / 180.0);
+		this.head.pitch = j * (float) (Math.PI / 180.0);
 		float k = (float) (Math.PI / 5) + MathHelper.cos(h * 5.5F * (float) (Math.PI / 180.0)) * 0.1F;
 		if (vexEntity.isCharging()) {
 			this.body.pitch = 0.0F;
@@ -140,25 +143,20 @@ public class VexEntityModel extends SinglePartEntityModel<VexEntity> implements 
 
 	@Override
 	public void setArmAngle(Arm arm, MatrixStack matrices) {
-		this.translateArmToPivot(matrices);
-		this.rotateArm(matrices);
+		boolean bl = arm == Arm.RIGHT;
+		ModelPart modelPart = bl ? this.rightArm : this.leftArm;
+		this.root.rotate(matrices);
+		this.body.rotate(matrices);
+		modelPart.rotate(matrices);
 		matrices.scale(0.55F, 0.55F, 0.55F);
-		this.translateArmAfterScale(matrices);
+		this.translateForHand(matrices, bl);
 	}
 
-	private void translateArmToPivot(MatrixStack matrices) {
-		matrices.translate(
-			(this.body.pivotX + this.rightArm.pivotX) / 16.0F, (this.body.pivotY + this.rightArm.pivotY) / 16.0F, (this.body.pivotZ + this.rightArm.pivotZ) / 16.0F
-		);
-	}
-
-	private void rotateArm(MatrixStack matrices) {
-		matrices.multiply(RotationAxis.POSITIVE_Z.rotation(this.rightArm.roll));
-		matrices.multiply(RotationAxis.POSITIVE_Y.rotation(this.rightArm.yaw));
-		matrices.multiply(RotationAxis.POSITIVE_X.rotation(this.rightArm.pitch));
-	}
-
-	private void translateArmAfterScale(MatrixStack matrices) {
-		matrices.translate(0.046875, -0.15625, 0.078125);
+	private void translateForHand(MatrixStack matrices, boolean mainHand) {
+		if (mainHand) {
+			matrices.translate(0.046875, -0.15625, 0.078125);
+		} else {
+			matrices.translate(-0.046875, -0.15625, 0.078125);
+		}
 	}
 }

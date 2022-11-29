@@ -7,17 +7,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
-public class WorldLoadedEvent implements TelemetryEvent {
-	private final WorldLoadedEvent.Callback callback;
+public class WorldLoadedEvent {
 	private boolean sent;
 	@Nullable
 	private TelemetryEventProperty.GameMode gameMode = null;
 	@Nullable
 	private String brand;
-
-	public WorldLoadedEvent(WorldLoadedEvent.Callback callback) {
-		this.callback = callback;
-	}
 
 	public void putServerType(PropertyMap.Builder builder) {
 		if (this.brand != null) {
@@ -35,12 +30,13 @@ public class WorldLoadedEvent implements TelemetryEvent {
 		}
 	}
 
-	@Override
-	public void send(TelemetrySender sender) {
-		if (!this.sent && this.gameMode != null) {
+	public boolean send(TelemetrySender sender) {
+		if (!this.sent && this.gameMode != null && this.brand != null) {
 			this.sent = true;
-			this.callback.onWorldLoadSent();
 			sender.send(TelemetryEventType.WORLD_LOADED, builder -> builder.put(TelemetryEventProperty.GAME_MODE, this.gameMode));
+			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -55,15 +51,5 @@ public class WorldLoadedEvent implements TelemetryEvent {
 
 	public void setBrand(String brand) {
 		this.brand = brand;
-	}
-
-	@Nullable
-	public String getBrand() {
-		return this.brand;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public interface Callback {
-		void onWorldLoadSent();
 	}
 }

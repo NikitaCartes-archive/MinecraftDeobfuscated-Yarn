@@ -37,7 +37,7 @@ public interface CommandSource {
 
 	Collection<String> getTeamNames();
 
-	Collection<Identifier> getSoundIds();
+	Stream<Identifier> getSoundIds();
 
 	Stream<Identifier> getRecipeIds();
 

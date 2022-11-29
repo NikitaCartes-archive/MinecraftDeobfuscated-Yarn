@@ -40,7 +40,7 @@ public class LightBlock extends Block implements Waterloggable {
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (!world.isClient) {
+		if (!world.isClient && player.isCreativeLevelTwoOp()) {
 			world.setBlockState(pos, state.cycle(LEVEL_15), Block.NOTIFY_LISTENERS);
 			return ActionResult.SUCCESS;
 		} else {

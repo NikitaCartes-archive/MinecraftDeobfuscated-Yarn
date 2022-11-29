@@ -35,7 +35,7 @@ import net.minecraft.world.event.GameEvent;
  * block in the world.
  */
 public class BlockItem extends Item {
-	private static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
+	public static final String BLOCK_ENTITY_TAG_KEY = "BlockEntityTag";
 	public static final String BLOCK_STATE_TAG_KEY = "BlockStateTag";
 	@Deprecated
 	private final Block block;

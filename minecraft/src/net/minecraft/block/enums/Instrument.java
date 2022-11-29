@@ -4,6 +4,7 @@ import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -26,19 +27,19 @@ public enum Instrument implements StringIdentifiable {
 	BIT("bit", SoundEvents.BLOCK_NOTE_BLOCK_BIT, Instrument.Type.BASE_BLOCK),
 	BANJO("banjo", SoundEvents.BLOCK_NOTE_BLOCK_BANJO, Instrument.Type.BASE_BLOCK),
 	PLING("pling", SoundEvents.BLOCK_NOTE_BLOCK_PLING, Instrument.Type.BASE_BLOCK),
-	ZOMBIE("zombie", SoundEvents.ENTITY_ZOMBIE_AMBIENT, Instrument.Type.MOB_HEAD),
-	SKELETON("skeleton", SoundEvents.ENTITY_SKELETON_AMBIENT, Instrument.Type.MOB_HEAD),
-	CREEPER("creeper", SoundEvents.ENTITY_CREEPER_PRIMED, Instrument.Type.MOB_HEAD),
-	DRAGON("dragon", SoundEvents.ENTITY_ENDER_DRAGON_AMBIENT, Instrument.Type.MOB_HEAD),
-	WITHER_SKELETON("wither_skeleton", SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT, Instrument.Type.MOB_HEAD),
-	PIGLIN("piglin", SoundEvents.ENTITY_PIGLIN_AMBIENT, Instrument.Type.MOB_HEAD),
+	ZOMBIE("zombie", SoundEvents.BLOCK_NOTE_BLOCK_IMITATE_ZOMBIE, Instrument.Type.MOB_HEAD),
+	SKELETON("skeleton", SoundEvents.BLOCK_NOTE_BLOCK_IMITATE_SKELETON, Instrument.Type.MOB_HEAD),
+	CREEPER("creeper", SoundEvents.BLOCK_NOTE_BLOCK_IMITATE_CREEPER, Instrument.Type.MOB_HEAD),
+	DRAGON("dragon", SoundEvents.BLOCK_NOTE_BLOCK_IMITATE_ENDER_DRAGON, Instrument.Type.MOB_HEAD),
+	WITHER_SKELETON("wither_skeleton", SoundEvents.BLOCK_NOTE_BLOCK_IMITATE_WITHER_SKELETON, Instrument.Type.MOB_HEAD),
+	PIGLIN("piglin", SoundEvents.BLOCK_NOTE_BLOCK_IMITATE_PIGLIN, Instrument.Type.MOB_HEAD),
 	CUSTOM_HEAD("custom_head", SoundEvents.UI_BUTTON_CLICK, Instrument.Type.CUSTOM);
 
 	private final String name;
-	private final SoundEvent sound;
+	private final RegistryEntry<SoundEvent> sound;
 	private final Instrument.Type type;
 
-	private Instrument(String name, SoundEvent sound, Instrument.Type type) {
+	private Instrument(String name, RegistryEntry<SoundEvent> sound, Instrument.Type type) {
 		this.name = name;
 		this.sound = sound;
 		this.type = type;
@@ -49,7 +50,7 @@ public enum Instrument implements StringIdentifiable {
 		return this.name;
 	}
 
-	public SoundEvent getSound() {
+	public RegistryEntry<SoundEvent> getSound() {
 		return this.sound;
 	}
 

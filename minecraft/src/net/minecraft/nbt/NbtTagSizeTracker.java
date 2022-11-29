@@ -1,5 +1,7 @@
 package net.minecraft.nbt;
 
+import com.google.common.annotations.VisibleForTesting;
+
 /**
  * Tracks the size of NBT elements. Throws {@link RuntimeException} if the
  * tracked element becomes larger than {@link #maxBytes} during addition.
@@ -24,5 +26,10 @@ public class NbtTagSizeTracker {
 				"Tried to read NBT tag that was too big; tried to allocate: " + this.allocatedBytes + "bytes where max allowed: " + this.maxBytes
 			);
 		}
+	}
+
+	@VisibleForTesting
+	public long method_47987() {
+		return this.allocatedBytes;
 	}
 }

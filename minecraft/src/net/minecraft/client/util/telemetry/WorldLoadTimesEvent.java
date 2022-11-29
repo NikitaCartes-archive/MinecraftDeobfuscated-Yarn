@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public class WorldLoadTimesEvent implements TelemetryEvent {
+public class WorldLoadTimesEvent {
 	private final boolean newWorld;
 	@Nullable
 	private final Duration worldLoadTime;
@@ -16,7 +16,6 @@ public class WorldLoadTimesEvent implements TelemetryEvent {
 		this.newWorld = newWorld;
 	}
 
-	@Override
 	public void send(TelemetrySender sender) {
 		if (this.worldLoadTime != null) {
 			sender.send(TelemetryEventType.WORLD_LOAD_TIMES, builder -> {

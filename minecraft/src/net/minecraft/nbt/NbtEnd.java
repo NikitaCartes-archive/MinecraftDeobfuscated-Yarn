@@ -61,6 +61,11 @@ public class NbtEnd implements NbtElement {
 	}
 
 	@Override
+	public int getSizeInBits() {
+		return 64;
+	}
+
+	@Override
 	public byte getType() {
 		return NbtElement.END_TYPE;
 	}
