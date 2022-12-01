@@ -26,9 +26,11 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	static final Text INCOMPATIBLE = Text.translatable("pack.incompatible");
 	static final Text INCOMPATIBLE_CONFIRM = Text.translatable("pack.incompatible.confirm.title");
 	private final Text title;
+	private final Screen screen;
 
-	public PackListWidget(MinecraftClient client, int width, int height, Text title) {
+	public PackListWidget(MinecraftClient client, Screen screen, int width, int height, Text title) {
 		super(client, width, height, 32, height - 55 + 4, 36);
+		this.screen = screen;
 		this.title = title;
 		this.centerListVertically = false;
 		this.setRenderHeader(true, (int)(9.0F * 1.5F));
@@ -50,6 +52,11 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	@Override
 	protected int getScrollbarPositionX() {
 		return this.right - 6;
+	}
+
+	@Override
+	protected boolean isFocused() {
+		return this.screen.getFocused() == this;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -126,6 +126,7 @@ import net.minecraft.datafixer.fix.OminousBannerBlockEntityRenameFix;
 import net.minecraft.datafixer.fix.OminousBannerItemRenameFix;
 import net.minecraft.datafixer.fix.OptionFix;
 import net.minecraft.datafixer.fix.OptionsAddTextBackgroundFix;
+import net.minecraft.datafixer.fix.OptionsAmbientOcclusionFix;
 import net.minecraft.datafixer.fix.OptionsForceVBOFix;
 import net.minecraft.datafixer.fix.OptionsKeyLwjgl3Fix;
 import net.minecraft.datafixer.fix.OptionsKeyTranslationFix;
@@ -1024,6 +1025,8 @@ public class Schemas {
 		builder.addFixer(new ChoiceTypesFix(schema174, "Added Chiseled Bookshelf", TypeReferences.BLOCK_ENTITY));
 		Schema schema175 = builder.addSchema(3209, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new ItemInstanceSpawnEggFix(schema175, false, "minecraft:pig_spawn_egg"));
+		Schema schema176 = builder.addSchema(3214, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new OptionsAmbientOcclusionFix(schema176));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

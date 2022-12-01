@@ -111,7 +111,7 @@ public class TelemetryEventWidget extends ScrollableWidget {
 		builder.appendText(this.textRenderer, Text.translatable(string, eventType.getTitle()));
 		builder.appendText(this.textRenderer, eventType.getDescription().formatted(Formatting.GRAY));
 		builder.appendSpace(9 / 2);
-		builder.appndTitle(this.textRenderer, PROPERTY_TITLE_TEXT, 2);
+		builder.appendTitle(this.textRenderer, PROPERTY_TITLE_TEXT, 2);
 		this.appendProperties(eventType, builder);
 	}
 
@@ -147,10 +147,10 @@ public class TelemetryEventWidget extends ScrollableWidget {
 		}
 
 		public void appendTitle(TextRenderer textRenderer, Text title) {
-			this.appndTitle(textRenderer, title, 0);
+			this.appendTitle(textRenderer, title, 0);
 		}
 
-		public void appndTitle(TextRenderer textRenderer, Text title, int marginBottom) {
+		public void appendTitle(TextRenderer textRenderer, Text title, int marginBottom) {
 			this.widgetAdder
 				.add(MultilineTextWidget.createNonCentered(this.gridWidth, textRenderer, title), this.widgetAdder.copyPositioner().marginBottom(marginBottom));
 			this.narration.append(title).append("\n");

@@ -11,10 +11,10 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  * Instances are immutable.
  */
 public class NbtLong extends AbstractNbtNumber {
-	private static final int SIZE = 128;
+	private static final int SIZE = 16;
 	public static final NbtType<NbtLong> TYPE = new NbtType.OfFixedSize<NbtLong>() {
 		public NbtLong read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.add(128L);
+			nbtTagSizeTracker.add(16L);
 			return NbtLong.of(dataInput.readLong());
 		}
 
@@ -62,8 +62,8 @@ public class NbtLong extends AbstractNbtNumber {
 	}
 
 	@Override
-	public int getSizeInBits() {
-		return 128;
+	public int getSizeInBytes() {
+		return 16;
 	}
 
 	@Override

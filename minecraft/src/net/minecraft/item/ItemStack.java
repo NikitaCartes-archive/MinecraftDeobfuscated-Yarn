@@ -739,20 +739,6 @@ public final class ItemStack {
 		}
 	}
 
-	public static boolean areItemsEqualIgnoreDamage(ItemStack left, ItemStack right) {
-		if (left == right) {
-			return true;
-		} else {
-			return !left.isEmpty() && !right.isEmpty() ? left.isItemEqualIgnoreDamage(right) : false;
-		}
-	}
-
-	/**
-	 * {@return whether the given item stacks' items are equal}
-	 * 
-	 * @see #areEqual
-	 * @see #canCombine
-	 */
 	public static boolean areItemsEqual(ItemStack left, ItemStack right) {
 		if (left == right) {
 			return true;
@@ -761,19 +747,8 @@ public final class ItemStack {
 		}
 	}
 
-	public boolean isItemEqualIgnoreDamage(ItemStack stack) {
-		return !stack.isEmpty() && this.isOf(stack.getItem());
-	}
-
-	/**
-	 * {@return whether this stack and {@code stack} hold the same item}
-	 */
 	public boolean isItemEqual(ItemStack stack) {
-		if (!this.isDamageable()) {
-			return this.isItemEqualIgnoreDamage(stack);
-		} else {
-			return !stack.isEmpty() && this.isOf(stack.getItem());
-		}
+		return !stack.isEmpty() && this.isOf(stack.getItem());
 	}
 
 	/**

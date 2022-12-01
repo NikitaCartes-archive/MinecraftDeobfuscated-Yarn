@@ -1782,7 +1782,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 				packet.getX(),
 				packet.getY(),
 				packet.getZ(),
-				packet.getSound().value(),
+				packet.getSound(),
 				packet.getCategory(),
 				packet.getVolume(),
 				packet.getPitch(),

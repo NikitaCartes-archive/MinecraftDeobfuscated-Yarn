@@ -12,14 +12,14 @@ import net.minecraft.util.math.MathHelper;
  * Instances are immutable.
  */
 public class NbtFloat extends AbstractNbtNumber {
-	private static final int SIZE = 96;
+	private static final int SIZE = 12;
 	/**
 	 * The NBT float representing {@code 0.0f}.
 	 */
 	public static final NbtFloat ZERO = new NbtFloat(0.0F);
 	public static final NbtType<NbtFloat> TYPE = new NbtType.OfFixedSize<NbtFloat>() {
 		public NbtFloat read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.add(96L);
+			nbtTagSizeTracker.add(12L);
 			return NbtFloat.of(dataInput.readFloat());
 		}
 
@@ -67,8 +67,8 @@ public class NbtFloat extends AbstractNbtNumber {
 	}
 
 	@Override
-	public int getSizeInBits() {
-		return 96;
+	public int getSizeInBytes() {
+		return 12;
 	}
 
 	@Override

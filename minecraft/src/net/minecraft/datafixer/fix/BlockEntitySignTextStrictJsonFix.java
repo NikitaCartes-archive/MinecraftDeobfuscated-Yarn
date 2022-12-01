@@ -54,7 +54,7 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 		if (!"null".equals(string) && !StringUtils.isEmpty(string)) {
 			if (string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
 				try {
-					text = JsonHelper.deserialize(GSON, string, Text.class, true);
+					text = JsonHelper.deserializeNullable(GSON, string, Text.class, true);
 					if (text == null) {
 						text = ScreenTexts.EMPTY;
 					}
