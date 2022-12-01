@@ -19,6 +19,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.Path;
@@ -467,6 +468,38 @@ public class TestContext {
 					throw new GameTestException("Expected entity data to be: " + data + ", but was: " + object);
 				}
 			}
+		}
+	}
+
+	public <E extends LivingEntity> void expectEntityHoldingItem(BlockPos pos, EntityType<E> entityType, Item item) {
+		BlockPos blockPos = this.getAbsolutePos(pos);
+		List<E> list = this.getWorld().getEntitiesByType(entityType, new Box(blockPos), Entity::isAlive);
+		if (list.isEmpty()) {
+			throw new PositionedException("Expected entity of type: " + entityType, blockPos, pos, this.getTick());
+		} else {
+			for (E livingEntity : list) {
+				if (livingEntity.isHolding(item)) {
+					return;
+				}
+			}
+
+			throw new PositionedException("Entity should be holding: " + item, blockPos, pos, this.getTick());
+		}
+	}
+
+	public <E extends Entity & InventoryOwner> void expectEntityWithItem(BlockPos pos, EntityType<E> entityType, Item item) {
+		BlockPos blockPos = this.getAbsolutePos(pos);
+		List<E> list = this.getWorld().getEntitiesByType(entityType, new Box(blockPos), entityx -> ((Entity)entityx).isAlive());
+		if (list.isEmpty()) {
+			throw new PositionedException("Expected " + entityType.getUntranslatedName() + " to exist", blockPos, pos, this.getTick());
+		} else {
+			for (E entity : list) {
+				if (entity.getInventory().containsAny(stack -> stack.isOf(item))) {
+					return;
+				}
+			}
+
+			throw new PositionedException("Entity inventory should contain: " + item, blockPos, pos, this.getTick());
 		}
 	}
 

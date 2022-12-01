@@ -281,7 +281,7 @@ public class TradeOffer {
 				itemStack.setDamage(itemStack.getDamage());
 			}
 
-			return ItemStack.areItemsEqualIgnoreDamage(itemStack, sample)
+			return ItemStack.areItemsEqual(itemStack, sample)
 				&& (!sample.hasNbt() || itemStack.hasNbt() && NbtHelper.matches(sample.getNbt(), itemStack.getNbt(), false));
 		}
 	}

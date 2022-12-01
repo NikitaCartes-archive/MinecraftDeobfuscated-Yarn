@@ -2343,66 +2343,67 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.enablePolygonOffset();
 			RenderSystem.disableCull();
 			float m = (float)(Util.getMeasuringTimeMs() % 3000L) / 3000.0F;
-			float n = 0.0F;
-			float o = 0.0F;
-			float p = (float)(h - MathHelper.fractionalPart(camera.getPos().y));
+			float n = (float)(-MathHelper.fractionalPart(camera.getPos().y * 0.5));
+			float o = n + (float)h;
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-			double q = Math.max((double)MathHelper.floor(g - d), worldBorder.getBoundNorth());
-			double r = Math.min((double)MathHelper.ceil(g + d), worldBorder.getBoundSouth());
+			double p = Math.max((double)MathHelper.floor(g - d), worldBorder.getBoundNorth());
+			double q = Math.min((double)MathHelper.ceil(g + d), worldBorder.getBoundSouth());
+			float r = (float)(MathHelper.floor(p) & 1) * 0.5F;
 			if (f > worldBorder.getBoundEast() - d) {
-				float s = 0.0F;
+				float s = r;
 
-				for (double t = q; t < r; s += 0.5F) {
-					double u = Math.min(1.0, r - t);
+				for (double t = p; t < q; s += 0.5F) {
+					double u = Math.min(1.0, q - t);
 					float v = (float)u * 0.5F;
-					bufferBuilder.vertex(worldBorder.getBoundEast() - f, -h, t - g).texture(m - s, m + p).next();
-					bufferBuilder.vertex(worldBorder.getBoundEast() - f, -h, t + u - g).texture(m - (v + s), m + p).next();
-					bufferBuilder.vertex(worldBorder.getBoundEast() - f, h, t + u - g).texture(m - (v + s), m + 0.0F).next();
-					bufferBuilder.vertex(worldBorder.getBoundEast() - f, h, t - g).texture(m - s, m + 0.0F).next();
+					bufferBuilder.vertex(worldBorder.getBoundEast() - f, -h, t - g).texture(m - s, m + o).next();
+					bufferBuilder.vertex(worldBorder.getBoundEast() - f, -h, t + u - g).texture(m - (v + s), m + o).next();
+					bufferBuilder.vertex(worldBorder.getBoundEast() - f, h, t + u - g).texture(m - (v + s), m + n).next();
+					bufferBuilder.vertex(worldBorder.getBoundEast() - f, h, t - g).texture(m - s, m + n).next();
 					t++;
 				}
 			}
 
 			if (f < worldBorder.getBoundWest() + d) {
-				float s = 0.0F;
+				float s = r;
 
-				for (double t = q; t < r; s += 0.5F) {
-					double u = Math.min(1.0, r - t);
+				for (double t = p; t < q; s += 0.5F) {
+					double u = Math.min(1.0, q - t);
 					float v = (float)u * 0.5F;
-					bufferBuilder.vertex(worldBorder.getBoundWest() - f, -h, t - g).texture(m + s, m + p).next();
-					bufferBuilder.vertex(worldBorder.getBoundWest() - f, -h, t + u - g).texture(m + v + s, m + p).next();
-					bufferBuilder.vertex(worldBorder.getBoundWest() - f, h, t + u - g).texture(m + v + s, m + 0.0F).next();
-					bufferBuilder.vertex(worldBorder.getBoundWest() - f, h, t - g).texture(m + s, m + 0.0F).next();
+					bufferBuilder.vertex(worldBorder.getBoundWest() - f, -h, t - g).texture(m + s, m + o).next();
+					bufferBuilder.vertex(worldBorder.getBoundWest() - f, -h, t + u - g).texture(m + v + s, m + o).next();
+					bufferBuilder.vertex(worldBorder.getBoundWest() - f, h, t + u - g).texture(m + v + s, m + n).next();
+					bufferBuilder.vertex(worldBorder.getBoundWest() - f, h, t - g).texture(m + s, m + n).next();
 					t++;
 				}
 			}
 
-			q = Math.max((double)MathHelper.floor(f - d), worldBorder.getBoundWest());
-			r = Math.min((double)MathHelper.ceil(f + d), worldBorder.getBoundEast());
+			p = Math.max((double)MathHelper.floor(f - d), worldBorder.getBoundWest());
+			q = Math.min((double)MathHelper.ceil(f + d), worldBorder.getBoundEast());
+			r = (float)(MathHelper.floor(p) & 1) * 0.5F;
 			if (g > worldBorder.getBoundSouth() - d) {
-				float s = 0.0F;
+				float s = r;
 
-				for (double t = q; t < r; s += 0.5F) {
-					double u = Math.min(1.0, r - t);
+				for (double t = p; t < q; s += 0.5F) {
+					double u = Math.min(1.0, q - t);
 					float v = (float)u * 0.5F;
-					bufferBuilder.vertex(t - f, -h, worldBorder.getBoundSouth() - g).texture(m + s, m + p).next();
-					bufferBuilder.vertex(t + u - f, -h, worldBorder.getBoundSouth() - g).texture(m + v + s, m + p).next();
-					bufferBuilder.vertex(t + u - f, h, worldBorder.getBoundSouth() - g).texture(m + v + s, m + 0.0F).next();
-					bufferBuilder.vertex(t - f, h, worldBorder.getBoundSouth() - g).texture(m + s, m + 0.0F).next();
+					bufferBuilder.vertex(t - f, -h, worldBorder.getBoundSouth() - g).texture(m + s, m + o).next();
+					bufferBuilder.vertex(t + u - f, -h, worldBorder.getBoundSouth() - g).texture(m + v + s, m + o).next();
+					bufferBuilder.vertex(t + u - f, h, worldBorder.getBoundSouth() - g).texture(m + v + s, m + n).next();
+					bufferBuilder.vertex(t - f, h, worldBorder.getBoundSouth() - g).texture(m + s, m + n).next();
 					t++;
 				}
 			}
 
 			if (g < worldBorder.getBoundNorth() + d) {
-				float s = 0.0F;
+				float s = r;
 
-				for (double t = q; t < r; s += 0.5F) {
-					double u = Math.min(1.0, r - t);
+				for (double t = p; t < q; s += 0.5F) {
+					double u = Math.min(1.0, q - t);
 					float v = (float)u * 0.5F;
-					bufferBuilder.vertex(t - f, -h, worldBorder.getBoundNorth() - g).texture(m - s, m + p).next();
-					bufferBuilder.vertex(t + u - f, -h, worldBorder.getBoundNorth() - g).texture(m - (v + s), m + p).next();
-					bufferBuilder.vertex(t + u - f, h, worldBorder.getBoundNorth() - g).texture(m - (v + s), m + 0.0F).next();
-					bufferBuilder.vertex(t - f, h, worldBorder.getBoundNorth() - g).texture(m - s, m + 0.0F).next();
+					bufferBuilder.vertex(t - f, -h, worldBorder.getBoundNorth() - g).texture(m - s, m + o).next();
+					bufferBuilder.vertex(t + u - f, -h, worldBorder.getBoundNorth() - g).texture(m - (v + s), m + o).next();
+					bufferBuilder.vertex(t + u - f, h, worldBorder.getBoundNorth() - g).texture(m - (v + s), m + n).next();
+					bufferBuilder.vertex(t - f, h, worldBorder.getBoundNorth() - g).texture(m - s, m + n).next();
 					t++;
 				}
 			}

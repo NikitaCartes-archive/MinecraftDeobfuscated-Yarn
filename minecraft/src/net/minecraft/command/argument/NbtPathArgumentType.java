@@ -34,7 +34,6 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		Text.translatable("arguments.nbtpath.node.invalid")
 	);
 	public static final SimpleCommandExceptionType TOO_DEEP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.nbtpath.too_deep"));
-	public static final SimpleCommandExceptionType TOO_LARGE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.nbtpath.too_large"));
 	public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(
 		path -> Text.translatable("arguments.nbtpath.nothing_found", path)
 	);
@@ -630,22 +629,16 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 				if (list.isEmpty()) {
 					return 0;
 				} else {
-					int i = list.size();
-					int j = element.getSizeInBits() + nbtElement.getSizeInBits() * i;
-					if (j > 2097152) {
-						throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
-					} else {
-						NbtPathArgumentType.PathNode pathNode = this.nodes[this.nodes.length - 1];
-						MutableBoolean mutableBoolean = new MutableBoolean(false);
-						return forEach(list, nbtElement2 -> pathNode.set(nbtElement2, () -> {
-								if (mutableBoolean.isFalse()) {
-									mutableBoolean.setTrue();
-									return nbtElement;
-								} else {
-									return nbtElement.copy();
-								}
-							}));
-					}
+					NbtPathArgumentType.PathNode pathNode = this.nodes[this.nodes.length - 1];
+					MutableBoolean mutableBoolean = new MutableBoolean(false);
+					return forEach(list, nbtElement2 -> pathNode.set(nbtElement2, () -> {
+							if (mutableBoolean.isFalse()) {
+								mutableBoolean.setTrue();
+								return nbtElement;
+							} else {
+								return nbtElement.copy();
+							}
+						}));
 				}
 			}
 		}
@@ -656,7 +649,6 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 		public int insert(int index, NbtCompound compound, List<NbtElement> elements) throws CommandSyntaxException {
 			List<NbtElement> list = new ArrayList(elements.size());
-			int i = 0;
 
 			for (NbtElement nbtElement : elements) {
 				NbtElement nbtElement2 = nbtElement.copy();
@@ -664,45 +656,36 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 				if (isTooDeep(nbtElement2, this.getDepth())) {
 					throw NbtPathArgumentType.TOO_DEEP_EXCEPTION.create();
 				}
-
-				i += nbtElement2.getSizeInBits();
 			}
 
 			Collection<NbtElement> collection = this.getOrInit(compound, NbtList::new);
-			int j = compound.getSizeInBits();
-			int k = collection.size();
-			int l = j + k * i;
-			if (l > 2097152) {
-				throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
-			} else {
-				int m = 0;
-				boolean bl = false;
+			int i = 0;
+			boolean bl = false;
 
-				for (NbtElement nbtElement3 : collection) {
-					if (!(nbtElement3 instanceof AbstractNbtList<?> abstractNbtList)) {
-						throw NbtPathArgumentType.EXPECTED_LIST_EXCEPTION.create(nbtElement3);
-					}
-
-					boolean bl2 = false;
-					int n = index < 0 ? abstractNbtList.size() + index + 1 : index;
-
-					for (NbtElement nbtElement4 : list) {
-						try {
-							if (abstractNbtList.addElement(n, bl ? nbtElement4.copy() : nbtElement4)) {
-								n++;
-								bl2 = true;
-							}
-						} catch (IndexOutOfBoundsException var20) {
-							throw NbtPathArgumentType.INVALID_INDEX_EXCEPTION.create(n);
-						}
-					}
-
-					bl = true;
-					m += bl2 ? 1 : 0;
+			for (NbtElement nbtElement3 : collection) {
+				if (!(nbtElement3 instanceof AbstractNbtList<?> abstractNbtList)) {
+					throw NbtPathArgumentType.EXPECTED_LIST_EXCEPTION.create(nbtElement3);
 				}
 
-				return m;
+				boolean bl2 = false;
+				int j = index < 0 ? abstractNbtList.size() + index + 1 : index;
+
+				for (NbtElement nbtElement4 : list) {
+					try {
+						if (abstractNbtList.addElement(j, bl ? nbtElement4.copy() : nbtElement4)) {
+							j++;
+							bl2 = true;
+						}
+					} catch (IndexOutOfBoundsException var16) {
+						throw NbtPathArgumentType.INVALID_INDEX_EXCEPTION.create(j);
+					}
+				}
+
+				bl = true;
+				i += bl2 ? 1 : 0;
 			}
+
+			return i;
 		}
 
 		public int remove(NbtElement element) {

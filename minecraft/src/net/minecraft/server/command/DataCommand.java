@@ -125,23 +125,19 @@ public class DataCommand {
 									}
 
 									Collection<NbtElement> collection = path.getOrInit(element, NbtCompound::new);
-									if (element.getSizeInBytes() + nbtCompound.getSizeInBytes() * collection.size() > 2097152) {
-										throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
-									} else {
-										int i = 0;
+									int i = 0;
 
-										for (NbtElement nbtElement2 : collection) {
-											if (!(nbtElement2 instanceof NbtCompound nbtCompound3)) {
-												throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement2);
-											}
-
-											NbtCompound nbtCompound4 = nbtCompound3.copy();
-											nbtCompound3.copyFrom(nbtCompound);
-											i += nbtCompound4.equals(nbtCompound3) ? 0 : 1;
+									for (NbtElement nbtElement2 : collection) {
+										if (!(nbtElement2 instanceof NbtCompound nbtCompound3)) {
+											throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement2);
 										}
 
-										return i;
+										NbtCompound nbtCompound4 = nbtCompound3.copy();
+										nbtCompound3.copyFrom(nbtCompound);
+										i += nbtCompound4.equals(nbtCompound3) ? 0 : 1;
 									}
+
+									return i;
 								})))
 					)
 				);
@@ -274,8 +270,6 @@ public class DataCommand {
 		NbtCompound nbtCompound = object.getNbt();
 		if (NbtPathArgumentType.NbtPath.isTooDeep(nbt, 0)) {
 			throw NbtPathArgumentType.TOO_DEEP_EXCEPTION.create();
-		} else if (nbtCompound.getSizeInBytes() + nbt.getSizeInBytes() > 2097152) {
-			throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
 		} else {
 			NbtCompound nbtCompound2 = nbtCompound.copy().copyFrom(nbt);
 			if (nbtCompound.equals(nbtCompound2)) {

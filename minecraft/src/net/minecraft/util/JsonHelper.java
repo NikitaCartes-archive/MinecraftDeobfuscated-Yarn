@@ -415,7 +415,7 @@ public class JsonHelper {
 	}
 
 	@Nullable
-	public static <T> T deserialize(Gson gson, Reader reader, Class<T> type, boolean lenient) {
+	public static <T> T deserializeNullable(Gson gson, Reader reader, Class<T> type, boolean lenient) {
 		try {
 			JsonReader jsonReader = new JsonReader(reader);
 			jsonReader.setLenient(lenient);
@@ -425,8 +425,17 @@ public class JsonHelper {
 		}
 	}
 
+	public static <T> T deserialize(Gson gson, Reader reader, Class<T> type, boolean lenient) {
+		T object = deserializeNullable(gson, reader, type, lenient);
+		if (object == null) {
+			throw new JsonParseException("JSON data was null or empty");
+		} else {
+			return object;
+		}
+	}
+
 	@Nullable
-	public static <T> T deserialize(Gson gson, Reader reader, TypeToken<T> typeToken, boolean lenient) {
+	public static <T> T deserializeNullable(Gson gson, Reader reader, TypeToken<T> typeToken, boolean lenient) {
 		try {
 			JsonReader jsonReader = new JsonReader(reader);
 			jsonReader.setLenient(lenient);
@@ -436,17 +445,29 @@ public class JsonHelper {
 		}
 	}
 
+	public static <T> T deserialize(Gson gson, Reader reader, TypeToken<T> typeToken, boolean lenient) {
+		T object = deserializeNullable(gson, reader, typeToken, lenient);
+		if (object == null) {
+			throw new JsonParseException("JSON data was null or empty");
+		} else {
+			return object;
+		}
+	}
+
 	@Nullable
 	public static <T> T deserialize(Gson gson, String content, TypeToken<T> typeToken, boolean lenient) {
-		return deserialize(gson, new StringReader(content), typeToken, lenient);
+		return deserializeNullable(gson, new StringReader(content), typeToken, lenient);
+	}
+
+	public static <T> T deserialize(Gson gson, String content, Class<T> type, boolean lenient) {
+		return deserialize(gson, new StringReader(content), type, lenient);
 	}
 
 	@Nullable
-	public static <T> T deserialize(Gson gson, String content, Class<T> clazz, boolean lenient) {
-		return deserialize(gson, new StringReader(content), clazz, lenient);
+	public static <T> T deserializeNullable(Gson gson, String content, Class<T> type, boolean lenient) {
+		return deserializeNullable(gson, new StringReader(content), type, lenient);
 	}
 
-	@Nullable
 	public static <T> T deserialize(Gson gson, Reader reader, TypeToken<T> typeToken) {
 		return deserialize(gson, reader, typeToken, false);
 	}
@@ -456,14 +477,12 @@ public class JsonHelper {
 		return deserialize(gson, content, typeToken, false);
 	}
 
-	@Nullable
-	public static <T> T deserialize(Gson gson, Reader reader, Class<T> clazz) {
-		return deserialize(gson, reader, clazz, false);
+	public static <T> T deserialize(Gson gson, Reader reader, Class<T> type) {
+		return deserialize(gson, reader, type, false);
 	}
 
-	@Nullable
-	public static <T> T deserialize(Gson gson, String content, Class<T> clazz) {
-		return deserialize(gson, content, clazz, false);
+	public static <T> T deserialize(Gson gson, String content, Class<T> type) {
+		return deserialize(gson, content, type, false);
 	}
 
 	public static JsonObject deserialize(String content, boolean lenient) {

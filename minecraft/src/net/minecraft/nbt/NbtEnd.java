@@ -12,10 +12,10 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  * and is the type of an empty {@link NbtList}.
  */
 public class NbtEnd implements NbtElement {
-	private static final int SIZE = 64;
+	private static final int SIZE = 8;
 	public static final NbtType<NbtEnd> TYPE = new NbtType<NbtEnd>() {
 		public NbtEnd read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
-			nbtTagSizeTracker.add(64L);
+			nbtTagSizeTracker.add(8L);
 			return NbtEnd.INSTANCE;
 		}
 
@@ -61,8 +61,8 @@ public class NbtEnd implements NbtElement {
 	}
 
 	@Override
-	public int getSizeInBits() {
-		return 64;
+	public int getSizeInBytes() {
+		return 8;
 	}
 
 	@Override

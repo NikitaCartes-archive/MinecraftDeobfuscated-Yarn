@@ -94,7 +94,6 @@ import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
 import net.minecraft.client.network.message.MessageHandler;
-import net.minecraft.client.option.AoMode;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.option.CloudRenderMode;
 import net.minecraft.client.option.GameOptions;
@@ -2273,7 +2272,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public static boolean isAmbientOcclusionEnabled() {
-		return instance.options.getAo().getValue() != AoMode.OFF;
+		return instance.options.getAo().getValue();
 	}
 
 	private void doItemPick() {

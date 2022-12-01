@@ -565,7 +565,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	public boolean contains(ItemStack stack) {
 		for (List<ItemStack> list : this.combinedInventory) {
 			for (ItemStack itemStack : list) {
-				if (!itemStack.isEmpty() && itemStack.isItemEqualIgnoreDamage(stack)) {
+				if (!itemStack.isEmpty() && ItemStack.canCombine(itemStack, stack)) {
 					return true;
 				}
 			}

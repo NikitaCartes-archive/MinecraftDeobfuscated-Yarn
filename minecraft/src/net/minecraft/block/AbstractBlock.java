@@ -1163,12 +1163,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public void initShapeCache() {
+			this.fluidState = this.owner.getFluidState(this.asBlockState());
+			this.ticksRandomly = this.owner.hasRandomTicks(this.asBlockState());
 			if (!this.getBlock().hasDynamicBounds()) {
 				this.shapeCache = new AbstractBlock.AbstractBlockState.ShapeCache(this.asBlockState());
 			}
-
-			this.fluidState = this.owner.getFluidState(this.asBlockState());
-			this.ticksRandomly = this.owner.hasRandomTicks(this.asBlockState());
 		}
 
 		public Block getBlock() {

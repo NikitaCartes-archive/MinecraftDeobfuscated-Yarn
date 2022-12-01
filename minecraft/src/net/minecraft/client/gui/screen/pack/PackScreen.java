@@ -89,21 +89,21 @@ public class PackScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.doneButton = this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).dimensions(this.width / 2 + 4, this.height - 48, 150, 20).build()
-		);
+		this.availablePackList = new PackListWidget(this.client, this, 200, this.height, Text.translatable("pack.available.title"));
+		this.availablePackList.setLeftPos(this.width / 2 - 4 - 200);
+		this.addSelectableChild(this.availablePackList);
+		this.selectedPackList = new PackListWidget(this.client, this, 200, this.height, Text.translatable("pack.selected.title"));
+		this.selectedPackList.setLeftPos(this.width / 2 + 4);
+		this.addSelectableChild(this.selectedPackList);
 		this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("pack.openFolder"), button -> Util.getOperatingSystem().open(this.file.toUri()))
 				.dimensions(this.width / 2 - 154, this.height - 48, 150, 20)
 				.tooltip(Tooltip.of(FOLDER_INFO))
 				.build()
 		);
-		this.availablePackList = new PackListWidget(this.client, 200, this.height, Text.translatable("pack.available.title"));
-		this.availablePackList.setLeftPos(this.width / 2 - 4 - 200);
-		this.addSelectableChild(this.availablePackList);
-		this.selectedPackList = new PackListWidget(this.client, 200, this.height, Text.translatable("pack.selected.title"));
-		this.selectedPackList.setLeftPos(this.width / 2 + 4);
-		this.addSelectableChild(this.selectedPackList);
+		this.doneButton = this.addDrawableChild(
+			ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).dimensions(this.width / 2 + 4, this.height - 48, 150, 20).build()
+		);
 		this.refresh();
 	}
 
@@ -133,6 +133,7 @@ public class PackScreen extends Screen {
 
 	private void updatePackList(PackListWidget widget, Stream<ResourcePackOrganizer.Pack> packs) {
 		widget.children().clear();
+		widget.setSelected(null);
 		packs.forEach(pack -> widget.children().add(new PackListWidget.ResourcePackEntry(this.client, widget, this, pack)));
 	}
 

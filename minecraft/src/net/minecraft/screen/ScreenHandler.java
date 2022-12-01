@@ -647,7 +647,7 @@ public abstract class ScreenHandler {
 
 				ItemStack itemStack = this.quickMove(player, slotIndex);
 
-				while (!itemStack.isEmpty() && ItemStack.areItemsEqualIgnoreDamage(slot.getStack(), itemStack)) {
+				while (!itemStack.isEmpty() && ItemStack.areItemsEqual(slot.getStack(), itemStack)) {
 					itemStack = this.quickMove(player, slotIndex);
 				}
 			} else {

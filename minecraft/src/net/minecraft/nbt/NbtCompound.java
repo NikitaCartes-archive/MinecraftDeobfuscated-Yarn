@@ -44,11 +44,11 @@ public class NbtCompound implements NbtElement {
 		NbtElement nbtElement = dynamic.convert(NbtOps.INSTANCE).getValue();
 		return nbtElement instanceof NbtCompound ? DataResult.success((NbtCompound)nbtElement) : DataResult.error("Not a compound tag: " + nbtElement);
 	}, nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
-	private static final int SIZE = 384;
-	private static final int field_33191 = 256;
+	private static final int SIZE = 48;
+	private static final int field_41719 = 32;
 	public static final NbtType<NbtCompound> TYPE = new NbtType.OfVariableSize<NbtCompound>() {
 		public NbtCompound read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-			nbtTagSizeTracker.add(384L);
+			nbtTagSizeTracker.add(48L);
 			if (i > 512) {
 				throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
 			} else {
@@ -57,10 +57,10 @@ public class NbtCompound implements NbtElement {
 				byte b;
 				while ((b = NbtCompound.readByte(dataInput, nbtTagSizeTracker)) != 0) {
 					String string = NbtCompound.readString(dataInput, nbtTagSizeTracker);
-					nbtTagSizeTracker.add((long)(224 + 16 * string.length()));
+					nbtTagSizeTracker.add((long)(28 + 2 * string.length()));
 					NbtElement nbtElement = NbtCompound.read(NbtTypes.byId(b), string, dataInput, i + 1, nbtTagSizeTracker);
 					if (map.put(string, nbtElement) == null) {
-						nbtTagSizeTracker.add(288L);
+						nbtTagSizeTracker.add(36L);
 					}
 				}
 
@@ -156,13 +156,13 @@ public class NbtCompound implements NbtElement {
 	}
 
 	@Override
-	public int getSizeInBits() {
-		int i = 384;
+	public int getSizeInBytes() {
+		int i = 48;
 
 		for (Entry<String, NbtElement> entry : this.entries.entrySet()) {
-			i += 224 + 16 * ((String)entry.getKey()).length();
-			i += 288;
-			i += ((NbtElement)entry.getValue()).getSizeInBits();
+			i += 28 + 2 * ((String)entry.getKey()).length();
+			i += 36;
+			i += ((NbtElement)entry.getValue()).getSizeInBytes();
 		}
 
 		return i;

@@ -199,19 +199,7 @@ public class GameOptions {
 		value -> {
 		}
 	);
-	private final SimpleOption<AoMode> ao = new SimpleOption<>(
-		"options.ao",
-		SimpleOption.emptyTooltip(),
-		SimpleOption.enumValueText(),
-		new SimpleOption.PotentialValuesBasedCallbacks<>(
-			Arrays.asList(AoMode.values()),
-			Codec.either(Codec.BOOL.xmap(value -> value ? AoMode.MAX.getId() : AoMode.OFF.getId(), value -> value == AoMode.MAX.getId()), Codec.INT)
-				.xmap(either -> either.map(value -> value, value -> value), Either::right)
-				.xmap(AoMode::byId, AoMode::getId)
-		),
-		AoMode.MAX,
-		value -> MinecraftClient.getInstance().worldRenderer.reload()
-	);
+	private final SimpleOption<Boolean> ao = SimpleOption.ofBoolean("options.ao", true, value -> MinecraftClient.getInstance().worldRenderer.reload());
 	private static final Text NONE_CHUNK_BUILDER_MODE_TOOLTIP = Text.translatable("options.prioritizeChunkUpdates.none.tooltip");
 	private static final Text BY_PLAYER_CHUNK_BUILDER_MODE_TOOLTIP = Text.translatable("options.prioritizeChunkUpdates.byPlayer.tooltip");
 	private static final Text NEARBY_CHUNK_BUILDER_MODE_TOOLTIP = Text.translatable("options.prioritizeChunkUpdates.nearby.tooltip");
@@ -825,7 +813,7 @@ public class GameOptions {
 		return this.graphicsMode;
 	}
 
-	public SimpleOption<AoMode> getAo() {
+	public SimpleOption<Boolean> getAo() {
 		return this.ao;
 	}
 

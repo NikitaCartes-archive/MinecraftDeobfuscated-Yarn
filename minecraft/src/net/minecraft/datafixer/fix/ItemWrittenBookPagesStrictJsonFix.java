@@ -29,7 +29,7 @@ public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
 						if (!"null".equals(string) && !StringUtils.isEmpty(string)) {
 							if (string.charAt(0) == '"' && string.charAt(string.length() - 1) == '"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
 								try {
-									text = JsonHelper.deserialize(BlockEntitySignTextStrictJsonFix.GSON, string, Text.class, true);
+									text = JsonHelper.deserializeNullable(BlockEntitySignTextStrictJsonFix.GSON, string, Text.class, true);
 									if (text == null) {
 										text = ScreenTexts.EMPTY;
 									}

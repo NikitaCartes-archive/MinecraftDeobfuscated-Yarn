@@ -221,7 +221,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					return;
 				}
 
-				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && itemStack.isItemEqualIgnoreDamage(itemStack2) && ItemStack.areNbtEqual(itemStack, itemStack2)) {
+				if (!itemStack.isEmpty() && !itemStack2.isEmpty() && itemStack.isItemEqual(itemStack2) && ItemStack.areNbtEqual(itemStack, itemStack2)) {
 					if (button == 0) {
 						if (bl) {
 							itemStack.setCount(itemStack.getMaxCount());

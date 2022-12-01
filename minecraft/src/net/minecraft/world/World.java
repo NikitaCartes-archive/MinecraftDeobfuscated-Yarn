@@ -452,7 +452,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * @param except the player that should not receive the sound, or {@code null}
 	 */
 	public abstract void playSoundFromEntity(
-		@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed
+		@Nullable PlayerEntity except, Entity entity, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed
 	);
 
 	public void playSound(@Nullable PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch) {
@@ -460,7 +460,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch) {
-		this.playSoundFromEntity(except, entity, sound, category, volume, pitch, this.threadSafeRandom.nextLong());
+		this.playSoundFromEntity(except, entity, Registries.SOUND_EVENT.getEntry(sound), category, volume, pitch, this.threadSafeRandom.nextLong());
 	}
 
 	public void playSoundAtBlockCenter(BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {

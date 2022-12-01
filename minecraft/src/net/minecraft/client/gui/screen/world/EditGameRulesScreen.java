@@ -53,14 +53,14 @@ public class EditGameRulesScreen extends Screen {
 	protected void init() {
 		this.ruleListWidget = new EditGameRulesScreen.RuleListWidget(this.gameRules);
 		this.addSelectableChild(this.ruleListWidget);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.ruleSaver.accept(Optional.empty()))
-				.dimensions(this.width / 2 - 155 + 160, this.height - 29, 150, 20)
-				.build()
-		);
 		this.doneButton = this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.DONE, button -> this.ruleSaver.accept(Optional.of(this.gameRules)))
 				.dimensions(this.width / 2 - 155, this.height - 29, 150, 20)
+				.build()
+		);
+		this.addDrawableChild(
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.ruleSaver.accept(Optional.empty()))
+				.dimensions(this.width / 2 - 155 + 160, this.height - 29, 150, 20)
 				.build()
 		);
 	}
