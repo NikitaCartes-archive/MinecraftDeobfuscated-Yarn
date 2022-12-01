@@ -34,7 +34,7 @@ public class RecipeResultCollection {
         ItemStack itemStack = recipes.get(0).getOutput();
         for (int j = 1; j < i; ++j) {
             ItemStack itemStack2 = recipes.get(j).getOutput();
-            if (ItemStack.areItemsEqualIgnoreDamage(itemStack, itemStack2) && ItemStack.areNbtEqual(itemStack, itemStack2)) continue;
+            if (ItemStack.areItemsEqual(itemStack, itemStack2) && ItemStack.areNbtEqual(itemStack, itemStack2)) continue;
             return false;
         }
         return true;

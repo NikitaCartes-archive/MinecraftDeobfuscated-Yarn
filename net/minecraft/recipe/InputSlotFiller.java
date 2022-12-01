@@ -152,7 +152,7 @@ implements RecipeGridAligner<Integer> {
             int k = this.inventory.getOccupiedSlotWithRoomForStack(itemStack);
             if (k == -1 && list.size() <= i) {
                 for (ItemStack itemStack2 : list) {
-                    if (!itemStack2.isItemEqualIgnoreDamage(itemStack) || itemStack2.getCount() == itemStack2.getMaxCount() || itemStack2.getCount() + itemStack.getCount() > itemStack2.getMaxCount()) continue;
+                    if (!itemStack2.isItemEqual(itemStack) || itemStack2.getCount() == itemStack2.getMaxCount() || itemStack2.getCount() + itemStack.getCount() > itemStack2.getMaxCount()) continue;
                     itemStack2.increment(itemStack.getCount());
                     itemStack.setCount(0);
                     break;

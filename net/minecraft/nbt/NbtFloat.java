@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class NbtFloat
 extends AbstractNbtNumber {
-    private static final int SIZE = 96;
+    private static final int SIZE = 12;
     /**
      * The NBT float representing {@code 0.0f}.
      */
@@ -29,7 +29,7 @@ extends AbstractNbtNumber {
 
         @Override
         public NbtFloat read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-            nbtTagSizeTracker.add(96L);
+            nbtTagSizeTracker.add(12L);
             return NbtFloat.of(dataInput.readFloat());
         }
 
@@ -85,8 +85,8 @@ extends AbstractNbtNumber {
     }
 
     @Override
-    public int getSizeInBits() {
-        return 96;
+    public int getSizeInBytes() {
+        return 12;
     }
 
     @Override

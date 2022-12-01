@@ -21,6 +21,7 @@ import net.minecraft.world.WorldEvents;
 
 public class SkeletonEntity
 extends AbstractSkeletonEntity {
+    private static final int TOTAL_CONVERSION_TIME = 300;
     private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(SkeletonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final String STRAY_CONVERSION_TIME_KEY = "StrayConversionTime";
     private int inPowderSnowTime;
@@ -55,18 +56,21 @@ extends AbstractSkeletonEntity {
     @Override
     public void tick() {
         if (!this.world.isClient && this.isAlive() && !this.isAiDisabled()) {
-            if (this.isConverting()) {
-                --this.conversionTime;
-                if (this.conversionTime < 0) {
-                    this.convertToStray();
-                }
-            } else if (this.inPowderSnow) {
-                ++this.inPowderSnowTime;
-                if (this.inPowderSnowTime >= 140) {
-                    this.setConversionTime(300);
+            if (this.inPowderSnow) {
+                if (this.isConverting()) {
+                    --this.conversionTime;
+                    if (this.conversionTime < 0) {
+                        this.convertToStray();
+                    }
+                } else {
+                    ++this.inPowderSnowTime;
+                    if (this.inPowderSnowTime >= 140) {
+                        this.setConversionTime(300);
+                    }
                 }
             } else {
                 this.inPowderSnowTime = -1;
+                this.setConverting(false);
             }
         }
         super.tick();
@@ -88,7 +92,7 @@ extends AbstractSkeletonEntity {
 
     private void setConversionTime(int time) {
         this.conversionTime = time;
-        this.dataTracker.set(CONVERTING, true);
+        this.setConverting(true);
     }
 
     /**

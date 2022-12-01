@@ -317,7 +317,7 @@ RecipeInputProvider {
         if (itemStack2.isEmpty()) {
             return true;
         }
-        if (!itemStack2.isItemEqualIgnoreDamage(itemStack)) {
+        if (!itemStack2.isItemEqual(itemStack)) {
             return false;
         }
         if (itemStack2.getCount() < count && itemStack2.getCount() < itemStack2.getMaxCount()) {
@@ -417,7 +417,7 @@ RecipeInputProvider {
     @Override
     public void setStack(int slot, ItemStack stack) {
         ItemStack itemStack = this.inventory.get(slot);
-        boolean bl = !stack.isEmpty() && stack.isItemEqualIgnoreDamage(itemStack) && ItemStack.areNbtEqual(stack, itemStack);
+        boolean bl = !stack.isEmpty() && stack.isItemEqual(itemStack) && ItemStack.areNbtEqual(stack, itemStack);
         this.inventory.set(slot, stack);
         if (stack.getCount() > this.getMaxCountPerStack()) {
             stack.setCount(this.getMaxCountPerStack());

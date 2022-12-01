@@ -13,7 +13,7 @@ public class NbtTagSizeTracker {
     public static final NbtTagSizeTracker EMPTY = new NbtTagSizeTracker(0L){
 
         @Override
-        public void add(long bits) {
+        public void add(long bytes) {
         }
     };
     private final long maxBytes;
@@ -23,15 +23,15 @@ public class NbtTagSizeTracker {
         this.maxBytes = maxBytes;
     }
 
-    public void add(long bits) {
-        this.allocatedBytes += bits / 8L;
+    public void add(long bytes) {
+        this.allocatedBytes += bytes;
         if (this.allocatedBytes > this.maxBytes) {
             throw new RuntimeException("Tried to read NBT tag that was too big; tried to allocate: " + this.allocatedBytes + "bytes where max allowed: " + this.maxBytes);
         }
     }
 
     @VisibleForTesting
-    public long method_47987() {
+    public long getAllocatedBytes() {
         return this.allocatedBytes;
     }
 }

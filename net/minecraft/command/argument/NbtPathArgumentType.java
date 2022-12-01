@@ -36,7 +36,6 @@ implements ArgumentType<NbtPath> {
     private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar", "foo[0]", "[0]", "[]", "{foo=bar}");
     public static final SimpleCommandExceptionType INVALID_PATH_NODE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.nbtpath.node.invalid"));
     public static final SimpleCommandExceptionType TOO_DEEP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.nbtpath.too_deep"));
-    public static final SimpleCommandExceptionType TOO_LARGE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("arguments.nbtpath.too_large"));
     public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(path -> Text.translatable("arguments.nbtpath.nothing_found", path));
     static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(object -> Text.translatable("commands.data.modify.expected_list", object));
     static final DynamicCommandExceptionType INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(object -> Text.translatable("commands.data.modify.invalid_index", object));
@@ -227,11 +226,6 @@ implements ArgumentType<NbtPath> {
             if (list.isEmpty()) {
                 return 0;
             }
-            int i = list.size();
-            int j = element.getSizeInBits() + nbtElement.getSizeInBits() * i;
-            if (j > 0x200000) {
-                throw TOO_LARGE_EXCEPTION.create();
-            }
             PathNode pathNode = this.nodes[this.nodes.length - 1];
             MutableBoolean mutableBoolean = new MutableBoolean(false);
             return NbtPath.forEach(list, nbtElement2 -> pathNode.set((NbtElement)nbtElement2, () -> {
@@ -248,24 +242,15 @@ implements ArgumentType<NbtPath> {
         }
 
         public int insert(int index, NbtCompound compound, List<NbtElement> elements) throws CommandSyntaxException {
-            int k;
             ArrayList<NbtElement> list = new ArrayList<NbtElement>(elements.size());
-            int i = 0;
             for (NbtElement nbtElement : elements) {
                 NbtElement nbtElement2 = nbtElement.copy();
                 list.add(nbtElement2);
-                if (NbtPath.isTooDeep(nbtElement2, this.getDepth())) {
-                    throw TOO_DEEP_EXCEPTION.create();
-                }
-                i += nbtElement2.getSizeInBits();
+                if (!NbtPath.isTooDeep(nbtElement2, this.getDepth())) continue;
+                throw TOO_DEEP_EXCEPTION.create();
             }
             List<NbtElement> collection = this.getOrInit(compound, NbtList::new);
-            int j = compound.getSizeInBits();
-            int l = j + (k = collection.size()) * i;
-            if (l > 0x200000) {
-                throw TOO_LARGE_EXCEPTION.create();
-            }
-            int m = 0;
+            int i = 0;
             boolean bl = false;
             for (NbtElement nbtElement3 : collection) {
                 if (!(nbtElement3 instanceof AbstractNbtList)) {
@@ -273,20 +258,20 @@ implements ArgumentType<NbtPath> {
                 }
                 AbstractNbtList abstractNbtList = (AbstractNbtList)nbtElement3;
                 boolean bl2 = false;
-                int n = index < 0 ? abstractNbtList.size() + index + 1 : index;
+                int j = index < 0 ? abstractNbtList.size() + index + 1 : index;
                 for (NbtElement nbtElement4 : list) {
                     try {
-                        if (!abstractNbtList.addElement(n, bl ? nbtElement4.copy() : nbtElement4)) continue;
-                        ++n;
+                        if (!abstractNbtList.addElement(j, bl ? nbtElement4.copy() : nbtElement4)) continue;
+                        ++j;
                         bl2 = true;
                     } catch (IndexOutOfBoundsException indexOutOfBoundsException) {
-                        throw INVALID_INDEX_EXCEPTION.create(n);
+                        throw INVALID_INDEX_EXCEPTION.create(j);
                     }
                 }
                 bl = true;
-                m += bl2 ? 1 : 0;
+                i += bl2 ? 1 : 0;
             }
-            return m;
+            return i;
         }
 
         public int remove(NbtElement element) {

@@ -663,7 +663,7 @@ public abstract class ScreenHandler {
                                             return;
                                         }
                                         ItemStack itemStack4 = this.quickMove(player, slotIndex);
-                                        while (!itemStack4.isEmpty() && ItemStack.areItemsEqualIgnoreDamage(slot.getStack(), itemStack4)) {
+                                        while (!itemStack4.isEmpty() && ItemStack.areItemsEqual(slot.getStack(), itemStack4)) {
                                             itemStack4 = this.quickMove(player, slotIndex);
                                         }
                                     } else {

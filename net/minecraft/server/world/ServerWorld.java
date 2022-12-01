@@ -905,8 +905,8 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch, long seed) {
-        this.server.getPlayerManager().sendToAround(except, entity.getX(), entity.getY(), entity.getZ(), sound.getDistanceToTravel(volume), this.getRegistryKey(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch, seed));
+    public void playSoundFromEntity(@Nullable PlayerEntity except, Entity entity, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed) {
+        this.server.getPlayerManager().sendToAround(except, entity.getX(), entity.getY(), entity.getZ(), sound.value().getDistanceToTravel(volume), this.getRegistryKey(), new PlaySoundFromEntityS2CPacket(sound, category, entity, volume, pitch, seed));
     }
 
     @Override

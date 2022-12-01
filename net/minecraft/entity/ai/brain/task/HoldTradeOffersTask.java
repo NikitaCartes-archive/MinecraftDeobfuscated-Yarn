@@ -83,7 +83,7 @@ extends MultiTickTask<VillagerEntity> {
     private void setupOffers(LivingEntity customer, VillagerEntity villager) {
         boolean bl = false;
         ItemStack itemStack = customer.getMainHandStack();
-        if (this.customerHeldStack == null || !ItemStack.areItemsEqualIgnoreDamage(this.customerHeldStack, itemStack)) {
+        if (this.customerHeldStack == null || !ItemStack.areItemsEqual(this.customerHeldStack, itemStack)) {
             this.customerHeldStack = itemStack;
             bl = true;
             this.offers.clear();
@@ -109,7 +109,7 @@ extends MultiTickTask<VillagerEntity> {
     }
 
     private boolean isPossible(TradeOffer offer) {
-        return ItemStack.areItemsEqualIgnoreDamage(this.customerHeldStack, offer.getAdjustedFirstBuyItem()) || ItemStack.areItemsEqualIgnoreDamage(this.customerHeldStack, offer.getSecondBuyItem());
+        return ItemStack.areItemsEqual(this.customerHeldStack, offer.getAdjustedFirstBuyItem()) || ItemStack.areItemsEqual(this.customerHeldStack, offer.getSecondBuyItem());
     }
 
     private static void holdNothing(VillagerEntity villager) {

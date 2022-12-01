@@ -19,12 +19,12 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtInt
 extends AbstractNbtNumber {
-    private static final int SIZE = 96;
+    private static final int SIZE = 12;
     public static final NbtType<NbtInt> TYPE = new NbtType.OfFixedSize<NbtInt>(){
 
         @Override
         public NbtInt read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-            nbtTagSizeTracker.add(96L);
+            nbtTagSizeTracker.add(12L);
             return NbtInt.of(dataInput.readInt());
         }
 
@@ -80,8 +80,8 @@ extends AbstractNbtNumber {
     }
 
     @Override
-    public int getSizeInBits() {
-        return 96;
+    public int getSizeInBytes() {
+        return 12;
     }
 
     @Override

@@ -46,12 +46,12 @@ import net.minecraft.nbt.visitor.NbtElementVisitor;
  */
 public class NbtList
 extends AbstractNbtList<NbtElement> {
-    private static final int SIZE = 296;
+    private static final int SIZE = 37;
     public static final NbtType<NbtList> TYPE = new NbtType.OfVariableSize<NbtList>(){
 
         @Override
         public NbtList read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-            nbtTagSizeTracker.add(296L);
+            nbtTagSizeTracker.add(37L);
             if (i > 512) {
                 throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
             }
@@ -60,7 +60,7 @@ extends AbstractNbtList<NbtElement> {
             if (b == 0 && j > 0) {
                 throw new RuntimeException("Missing type on ListTag");
             }
-            nbtTagSizeTracker.add(32L * (long)j);
+            nbtTagSizeTracker.add(4L * (long)j);
             NbtType<?> nbtType = NbtTypes.byId(b);
             ArrayList<NbtElement> list = Lists.newArrayListWithCapacity(j);
             for (int k = 0; k < j; ++k) {
@@ -170,11 +170,11 @@ extends AbstractNbtList<NbtElement> {
     }
 
     @Override
-    public int getSizeInBits() {
-        int i = 296;
-        i += 32 * this.value.size();
+    public int getSizeInBytes() {
+        int i = 37;
+        i += 4 * this.value.size();
         for (NbtElement nbtElement : this.value) {
-            i += nbtElement.getSizeInBits();
+            i += nbtElement.getSizeInBytes();
         }
         return i;
     }

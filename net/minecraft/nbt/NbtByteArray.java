@@ -26,14 +26,14 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class NbtByteArray
 extends AbstractNbtList<NbtByte> {
-    private static final int SIZE = 192;
+    private static final int SIZE = 24;
     public static final NbtType<NbtByteArray> TYPE = new NbtType.OfVariableSize<NbtByteArray>(){
 
         @Override
         public NbtByteArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-            nbtTagSizeTracker.add(192L);
+            nbtTagSizeTracker.add(24L);
             int j = dataInput.readInt();
-            nbtTagSizeTracker.add(8L * (long)j);
+            nbtTagSizeTracker.add(1L * (long)j);
             byte[] bs = new byte[j];
             dataInput.readFully(bs);
             return new NbtByteArray(bs);
@@ -93,8 +93,8 @@ extends AbstractNbtList<NbtByte> {
     }
 
     @Override
-    public int getSizeInBits() {
-        return 192 + 8 * this.value.length;
+    public int getSizeInBytes() {
+        return 24 + 1 * this.value.length;
     }
 
     @Override

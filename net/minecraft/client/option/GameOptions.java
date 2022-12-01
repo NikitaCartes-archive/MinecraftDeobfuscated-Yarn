@@ -49,7 +49,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.option.AoMode;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.option.CloudRenderMode;
@@ -167,7 +166,7 @@ public class GameOptions {
         option.setValue(graphicsMode);
         minecraftClient.worldRenderer.reload();
     }, Codec.INT.xmap(GraphicsMode::byId, GraphicsMode::getId)), GraphicsMode.FANCY, value -> {});
-    private final SimpleOption<AoMode> ao = new SimpleOption<AoMode>("options.ao", SimpleOption.emptyTooltip(), SimpleOption.enumValueText(), new SimpleOption.PotentialValuesBasedCallbacks<AoMode>(Arrays.asList(AoMode.values()), Codec.either(Codec.BOOL.xmap(value -> value != false ? AoMode.MAX.getId() : AoMode.OFF.getId(), value -> value.intValue() == AoMode.MAX.getId()), Codec.INT).xmap(either -> either.map(value -> value, value -> value), Either::right).xmap(AoMode::byId, AoMode::getId)), AoMode.MAX, value -> MinecraftClient.getInstance().worldRenderer.reload());
+    private final SimpleOption<Boolean> ao = SimpleOption.ofBoolean("options.ao", true, value -> MinecraftClient.getInstance().worldRenderer.reload());
     private static final Text NONE_CHUNK_BUILDER_MODE_TOOLTIP = Text.translatable("options.prioritizeChunkUpdates.none.tooltip");
     private static final Text BY_PLAYER_CHUNK_BUILDER_MODE_TOOLTIP = Text.translatable("options.prioritizeChunkUpdates.byPlayer.tooltip");
     private static final Text NEARBY_CHUNK_BUILDER_MODE_TOOLTIP = Text.translatable("options.prioritizeChunkUpdates.nearby.tooltip");
@@ -570,7 +569,7 @@ public class GameOptions {
         return this.graphicsMode;
     }
 
-    public SimpleOption<AoMode> getAo() {
+    public SimpleOption<Boolean> getAo() {
         return this.ao;
     }
 

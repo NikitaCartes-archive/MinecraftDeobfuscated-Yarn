@@ -20,7 +20,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class NbtDouble
 extends AbstractNbtNumber {
-    private static final int SIZE = 128;
+    private static final int SIZE = 16;
     /**
      * The NBT double representing {@code 0.0}.
      */
@@ -29,7 +29,7 @@ extends AbstractNbtNumber {
 
         @Override
         public NbtDouble read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-            nbtTagSizeTracker.add(128L);
+            nbtTagSizeTracker.add(16L);
             return NbtDouble.of(dataInput.readDouble());
         }
 
@@ -85,8 +85,8 @@ extends AbstractNbtNumber {
     }
 
     @Override
-    public int getSizeInBits() {
-        return 128;
+    public int getSizeInBytes() {
+        return 16;
     }
 
     @Override

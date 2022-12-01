@@ -1397,11 +1397,11 @@ implements ToggleableFeature {
         }
 
         public void initShapeCache() {
+            this.fluidState = ((Block)this.owner).getFluidState(this.asBlockState());
+            this.ticksRandomly = ((Block)this.owner).hasRandomTicks(this.asBlockState());
             if (!this.getBlock().hasDynamicBounds()) {
                 this.shapeCache = new ShapeCache(this.asBlockState());
             }
-            this.fluidState = ((Block)this.owner).getFluidState(this.asBlockState());
-            this.ticksRandomly = ((Block)this.owner).hasRandomTicks(this.asBlockState());
         }
 
         public Block getBlock() {

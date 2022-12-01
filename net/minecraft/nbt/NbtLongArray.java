@@ -27,14 +27,14 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class NbtLongArray
 extends AbstractNbtList<NbtLong> {
-    private static final int SIZE = 192;
+    private static final int SIZE = 24;
     public static final NbtType<NbtLongArray> TYPE = new NbtType.OfVariableSize<NbtLongArray>(){
 
         @Override
         public NbtLongArray read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-            nbtTagSizeTracker.add(192L);
+            nbtTagSizeTracker.add(24L);
             int j = dataInput.readInt();
-            nbtTagSizeTracker.add(64L * (long)j);
+            nbtTagSizeTracker.add(8L * (long)j);
             long[] ls = new long[j];
             for (int k = 0; k < j; ++k) {
                 ls[k] = dataInput.readLong();
@@ -104,8 +104,8 @@ extends AbstractNbtList<NbtLong> {
     }
 
     @Override
-    public int getSizeInBits() {
-        return 192 + 64 * this.value.length;
+    public int getSizeInBytes() {
+        return 24 + 8 * this.value.length;
     }
 
     @Override

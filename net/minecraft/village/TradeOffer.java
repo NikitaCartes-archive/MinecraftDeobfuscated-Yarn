@@ -270,7 +270,7 @@ public class TradeOffer {
         if (itemStack.getItem().isDamageable()) {
             itemStack.setDamage(itemStack.getDamage());
         }
-        return ItemStack.areItemsEqualIgnoreDamage(itemStack, sample) && (!sample.hasNbt() || itemStack.hasNbt() && NbtHelper.matches(sample.getNbt(), itemStack.getNbt(), false));
+        return ItemStack.areItemsEqual(itemStack, sample) && (!sample.hasNbt() || itemStack.hasNbt() && NbtHelper.matches(sample.getNbt(), itemStack.getNbt(), false));
     }
 
     public boolean depleteBuyItems(ItemStack firstBuyStack, ItemStack secondBuyStack) {

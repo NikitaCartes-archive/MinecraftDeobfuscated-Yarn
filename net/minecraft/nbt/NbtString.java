@@ -21,14 +21,14 @@ import net.minecraft.util.Util;
  */
 public class NbtString
 implements NbtElement {
-    private static final int SIZE = 288;
+    private static final int SIZE = 36;
     public static final NbtType<NbtString> TYPE = new NbtType.OfVariableSize<NbtString>(){
 
         @Override
         public NbtString read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
-            nbtTagSizeTracker.add(288L);
+            nbtTagSizeTracker.add(36L);
             String string = dataInput.readUTF();
-            nbtTagSizeTracker.add(16 * string.length());
+            nbtTagSizeTracker.add(2 * string.length());
             return NbtString.of(string);
         }
 
@@ -99,8 +99,8 @@ implements NbtElement {
     }
 
     @Override
-    public int getSizeInBits() {
-        return 288 + 16 * this.value.length();
+    public int getSizeInBytes() {
+        return 36 + 2 * this.value.length();
     }
 
     @Override

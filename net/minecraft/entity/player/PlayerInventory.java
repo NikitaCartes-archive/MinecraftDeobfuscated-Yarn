@@ -516,7 +516,7 @@ Nameable {
     public boolean contains(ItemStack stack) {
         for (List list : this.combinedInventory) {
             for (ItemStack itemStack : list) {
-                if (itemStack.isEmpty() || !itemStack.isItemEqualIgnoreDamage(stack)) continue;
+                if (itemStack.isEmpty() || !ItemStack.canCombine(itemStack, stack)) continue;
                 return true;
             }
         }

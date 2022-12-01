@@ -64,9 +64,6 @@ public class DataCommand {
                     throw MODIFY_EXPECTED_OBJECT_EXCEPTION.create(nbtElement);
                 }
                 List<NbtElement> collection = path.getOrInit(element, NbtCompound::new);
-                if (element.getSizeInBytes() + nbtCompound.getSizeInBytes() * collection.size() > 0x200000) {
-                    throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
-                }
                 int i = 0;
                 for (NbtElement nbtElement2 : collection) {
                     if (!(nbtElement2 instanceof NbtCompound)) {
@@ -180,9 +177,6 @@ public class DataCommand {
         NbtCompound nbtCompound = object.getNbt();
         if (NbtPathArgumentType.NbtPath.isTooDeep(nbt, 0)) {
             throw NbtPathArgumentType.TOO_DEEP_EXCEPTION.create();
-        }
-        if (nbtCompound.getSizeInBytes() + nbt.getSizeInBytes() > 0x200000) {
-            throw NbtPathArgumentType.TOO_LARGE_EXCEPTION.create();
         }
         NbtCompound nbtCompound2 = nbtCompound.copy().copyFrom(nbt);
         if (nbtCompound.equals(nbtCompound2)) {

@@ -21,6 +21,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.Path;
@@ -454,6 +455,32 @@ public class TestContext {
             if (!(object == null ? data != null : !object.equals(data))) continue;
             throw new GameTestException("Expected entity data to be: " + data + ", but was: " + object);
         }
+    }
+
+    public <E extends LivingEntity> void expectEntityHoldingItem(BlockPos pos, EntityType<E> entityType, Item item) {
+        BlockPos blockPos = this.getAbsolutePos(pos);
+        List<LivingEntity> list = this.getWorld().getEntitiesByType(entityType, new Box(blockPos), Entity::isAlive);
+        if (list.isEmpty()) {
+            throw new PositionedException("Expected entity of type: " + entityType, blockPos, pos, this.getTick());
+        }
+        for (LivingEntity livingEntity : list) {
+            if (!livingEntity.isHolding(item)) continue;
+            return;
+        }
+        throw new PositionedException("Entity should be holding: " + item, blockPos, pos, this.getTick());
+    }
+
+    public <E extends Entity> void expectEntityWithItem(BlockPos pos, EntityType<E> entityType, Item item) {
+        BlockPos blockPos = this.getAbsolutePos(pos);
+        List<Entity> list = this.getWorld().getEntitiesByType(entityType, new Box(blockPos), entity -> ((Entity)entity).isAlive());
+        if (list.isEmpty()) {
+            throw new PositionedException("Expected " + entityType.getUntranslatedName() + " to exist", blockPos, pos, this.getTick());
+        }
+        for (Entity entity2 : list) {
+            if (!((InventoryOwner)((Object)entity2)).getInventory().containsAny(stack -> stack.isOf(item))) continue;
+            return;
+        }
+        throw new PositionedException("Entity inventory should contain: " + item, blockPos, pos, this.getTick());
     }
 
     public void expectEmptyContainer(BlockPos pos) {

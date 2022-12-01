@@ -14,10 +14,10 @@ import net.minecraft.nbt.visitor.StringNbtWriter;
  * Represents an NBT element.
  */
 public interface NbtElement {
-    public static final int field_33246 = 64;
-    public static final int field_33247 = 96;
-    public static final int field_33248 = 32;
-    public static final int field_33249 = 224;
+    public static final int field_33246 = 8;
+    public static final int field_33247 = 12;
+    public static final int field_33248 = 4;
+    public static final int field_33249 = 28;
     /**
      * The numeric ID of an NBT end value. Is {@value}.
      * 
@@ -131,11 +131,7 @@ public interface NbtElement {
      */
     public NbtElement copy();
 
-    public int getSizeInBits();
-
-    default public int getSizeInBytes() {
-        return this.getSizeInBits() / 8;
-    }
+    public int getSizeInBytes();
 
     /**
      * {@return the NBT's string representation}

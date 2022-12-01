@@ -48,12 +48,9 @@ extends SinglePreparationResourceReloader<Map<Identifier, JsonElement>> {
                 BufferedReader reader = entry.getValue().getReader();
                 try {
                     JsonElement jsonElement = JsonHelper.deserialize(this.gson, (Reader)reader, JsonElement.class);
-                    if (jsonElement != null) {
-                        JsonElement jsonElement2 = map.put(identifier2, jsonElement);
-                        if (jsonElement2 == null) continue;
-                        throw new IllegalStateException("Duplicate data file ignored with ID " + identifier2);
-                    }
-                    LOGGER.error("Couldn't load data file {} from {} as it's null or empty", (Object)identifier2, (Object)identifier);
+                    JsonElement jsonElement2 = map.put(identifier2, jsonElement);
+                    if (jsonElement2 == null) continue;
+                    throw new IllegalStateException("Duplicate data file ignored with ID " + identifier2);
                 } finally {
                     if (reader == null) continue;
                     ((Reader)reader).close();

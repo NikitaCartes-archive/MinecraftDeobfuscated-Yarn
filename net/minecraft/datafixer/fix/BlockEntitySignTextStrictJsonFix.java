@@ -65,7 +65,7 @@ extends ChoiceFix {
             text = ScreenTexts.EMPTY;
         } else if (string.charAt(0) == '\"' && string.charAt(string.length() - 1) == '\"' || string.charAt(0) == '{' && string.charAt(string.length() - 1) == '}') {
             try {
-                text = JsonHelper.deserialize(GSON, string, Text.class, true);
+                text = JsonHelper.deserializeNullable(GSON, string, Text.class, true);
                 if (text == null) {
                     text = ScreenTexts.EMPTY;
                 }

@@ -1645,7 +1645,7 @@ ClientPlayPacketListener {
     @Override
     public void onPlaySound(PlaySoundS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        this.client.world.playSound((PlayerEntity)this.client.player, packet.getX(), packet.getY(), packet.getZ(), packet.getSound().value(), packet.getCategory(), packet.getVolume(), packet.getPitch(), packet.getSeed());
+        this.client.world.playSound((PlayerEntity)this.client.player, packet.getX(), packet.getY(), packet.getZ(), packet.getSound(), packet.getCategory(), packet.getVolume(), packet.getPitch(), packet.getSeed());
     }
 
     @Override
