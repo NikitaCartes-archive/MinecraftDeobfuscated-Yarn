@@ -103,8 +103,11 @@ implements TextContent {
     }
 
     private StringVisitable getArg(int index) {
-        if (index < 0 || index >= this.args.length) {
+        if (index < 0) {
             throw new TranslationException(this, index);
+        }
+        if (index >= this.args.length) {
+            return Text.EMPTY;
         }
         Object object = this.args[index];
         if (object instanceof Text) {

@@ -40,7 +40,6 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -190,7 +189,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -2609,12 +2607,7 @@ implements WindowEventHandler {
 
     public void loadBlockList() {
         this.socialInteractionsManager.loadBlockList();
-        this.getProfileKeys().fetchKeyPair().thenAcceptAsync(optional -> optional.ifPresent(playerKeyPair -> {
-            ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
-            if (clientPlayNetworkHandler != null) {
-                clientPlayNetworkHandler.updateKeyPair((PlayerKeyPair)playerKeyPair);
-            }
-        }), (Executor)this);
+        this.getProfileKeys().fetchKeyPair();
     }
 
     public Realms32BitWarningChecker getRealms32BitWarningChecker() {

@@ -11,12 +11,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 import java.util.function.BooleanSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.LanServerPinger;
+import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.SaveLoader;
@@ -161,6 +164,12 @@ extends MinecraftServer {
     public boolean openToLan(@Nullable GameMode gameMode, boolean cheatsAllowed, int port) {
         try {
             this.client.loadBlockList();
+            this.client.getProfileKeys().fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(keys -> {
+                ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+                if (clientPlayNetworkHandler != null) {
+                    clientPlayNetworkHandler.updateKeyPair((PlayerKeyPair)keys);
+                }
+            }), (Executor)this.client);
             this.getNetworkIo().bind(null, port);
             LOGGER.info("Started serving on {}", (Object)port);
             this.lanPort = port;

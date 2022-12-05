@@ -2317,6 +2317,9 @@ ClientPlayPacketListener {
     }
 
     public void updateKeyPair(PlayerKeyPair keyPair) {
+        if (!this.profile.getId().equals(this.client.getSession().getUuidOrNull())) {
+            return;
+        }
         if (this.session != null && this.session.keyPair().equals(keyPair)) {
             return;
         }
