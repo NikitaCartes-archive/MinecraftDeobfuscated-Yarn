@@ -101,15 +101,17 @@ public class TranslatableTextContent implements TextContent {
 	}
 
 	private StringVisitable getArg(int index) {
-		if (index >= 0 && index < this.args.length) {
+		if (index < 0) {
+			throw new TranslationException(this, index);
+		} else if (index >= this.args.length) {
+			return Text.EMPTY;
+		} else {
 			Object object = this.args[index];
 			if (object instanceof Text) {
 				return (Text)object;
 			} else {
 				return object == null ? NULL_ARGUMENT : StringVisitable.plain(object.toString());
 			}
-		} else {
-			throw new TranslationException(this, index);
 		}
 	}
 

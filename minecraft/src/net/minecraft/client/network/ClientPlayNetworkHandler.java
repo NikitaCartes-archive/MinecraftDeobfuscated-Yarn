@@ -2523,10 +2523,12 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	}
 
 	public void updateKeyPair(PlayerKeyPair keyPair) {
-		if (this.session == null || !this.session.keyPair().equals(keyPair)) {
-			this.session = ClientPlayerSession.create(keyPair);
-			this.messagePacker = this.session.createPacker(this.profile.getId());
-			this.sendPacket(new PlayerSessionC2SPacket(this.session.toPublicSession().toSerialized()));
+		if (this.profile.getId().equals(this.client.getSession().getUuidOrNull())) {
+			if (this.session == null || !this.session.keyPair().equals(keyPair)) {
+				this.session = ClientPlayerSession.create(keyPair);
+				this.messagePacker = this.session.createPacker(this.profile.getId());
+				this.sendPacket(new PlayerSessionC2SPacket(this.session.toPublicSession().toSerialized()));
+			}
 		}
 	}
 
