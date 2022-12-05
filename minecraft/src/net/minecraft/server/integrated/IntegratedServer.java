@@ -6,6 +6,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -14,7 +15,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.LanServerPinger;
+import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.SaveLoader;
@@ -167,6 +170,12 @@ public class IntegratedServer extends MinecraftServer {
 	public boolean openToLan(@Nullable GameMode gameMode, boolean cheatsAllowed, int port) {
 		try {
 			this.client.loadBlockList();
+			this.client.getProfileKeys().fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(keys -> {
+					ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+					if (clientPlayNetworkHandler != null) {
+						clientPlayNetworkHandler.updateKeyPair(keys);
+					}
+				}), this.client);
 			this.getNetworkIo().bind(null, port);
 			LOGGER.info("Started serving on {}", port);
 			this.lanPort = port;

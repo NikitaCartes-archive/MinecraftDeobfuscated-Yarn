@@ -181,7 +181,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -2895,12 +2894,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public void loadBlockList() {
 		this.socialInteractionsManager.loadBlockList();
-		this.getProfileKeys().fetchKeyPair().thenAcceptAsync(optional -> optional.ifPresent(playerKeyPair -> {
-				ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
-				if (clientPlayNetworkHandler != null) {
-					clientPlayNetworkHandler.updateKeyPair(playerKeyPair);
-				}
-			}), this);
+		this.getProfileKeys().fetchKeyPair();
 	}
 
 	public Realms32BitWarningChecker getRealms32BitWarningChecker() {
