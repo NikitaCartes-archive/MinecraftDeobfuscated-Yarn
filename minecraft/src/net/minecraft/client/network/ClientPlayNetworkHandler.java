@@ -94,6 +94,7 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.GuardianEntity;
@@ -1068,8 +1069,14 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		}
 
 		this.client.cameraEntity = clientPlayerEntity2;
-		clientPlayerEntity2.getDataTracker().writeUpdatedEntries(clientPlayerEntity.getDataTracker().getChangedEntries());
-		if (packet.shouldKeepPlayerAttributes()) {
+		if (packet.method_48016((byte)2)) {
+			List<DataTracker.SerializedEntry<?>> list = clientPlayerEntity.getDataTracker().getChangedEntries();
+			if (list != null) {
+				clientPlayerEntity2.getDataTracker().writeUpdatedEntries(list);
+			}
+		}
+
+		if (packet.method_48016((byte)1)) {
 			clientPlayerEntity2.getAttributes().setFrom(clientPlayerEntity.getAttributes());
 		}
 

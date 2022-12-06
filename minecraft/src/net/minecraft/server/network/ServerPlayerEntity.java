@@ -764,7 +764,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 						this.interactionManager.getPreviousGameMode(),
 						destination.isDebugWorld(),
 						destination.isFlat(),
-						true,
+						(byte)3,
 						this.getLastDeathPos()
 					)
 				);
@@ -1492,7 +1492,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 						this.interactionManager.getPreviousGameMode(),
 						targetWorld.isDebugWorld(),
 						targetWorld.isFlat(),
-						true,
+						(byte)3,
 						this.getLastDeathPos()
 					)
 				);

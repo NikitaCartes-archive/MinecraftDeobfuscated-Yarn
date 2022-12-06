@@ -685,23 +685,36 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public T spawnFromItemStack(
 		ServerWorld world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY
 	) {
-		Consumer<T> consumer = entity -> {
-		};
+		Consumer<T> consumer;
 		NbtCompound nbtCompound;
 		if (stack != null) {
-			if (stack.hasCustomName()) {
-				consumer = entity -> entity.setCustomName(stack.getName());
-			}
-
 			nbtCompound = stack.getNbt();
-			if (nbtCompound != null) {
-				consumer = consumer.andThen(entity -> loadFromEntityNbt(world, player, entity, nbtCompound));
-			}
+			consumer = method_48009(world, stack, player);
 		} else {
+			consumer = entity -> {
+			};
 			nbtCompound = null;
 		}
 
 		return this.spawn(world, nbtCompound, consumer, pos, spawnReason, alignPosition, invertY);
+	}
+
+	public static <T extends Entity> Consumer<T> method_48009(ServerWorld serverWorld, ItemStack itemStack, @Nullable PlayerEntity playerEntity) {
+		Consumer<T> consumer = entity -> {
+		};
+		consumer = method_48012(consumer, itemStack);
+		return method_48011(consumer, serverWorld, itemStack, playerEntity);
+	}
+
+	public static <T extends Entity> Consumer<T> method_48012(Consumer<T> consumer, ItemStack itemStack) {
+		return itemStack.hasCustomName() ? consumer.andThen(entity -> entity.setCustomName(itemStack.getName())) : consumer;
+	}
+
+	public static <T extends Entity> Consumer<T> method_48011(
+		Consumer<T> consumer, ServerWorld serverWorld, ItemStack itemStack, @Nullable PlayerEntity playerEntity
+	) {
+		NbtCompound nbtCompound = itemStack.getNbt();
+		return nbtCompound != null ? consumer.andThen(entity -> loadFromEntityNbt(serverWorld, playerEntity, entity, nbtCompound)) : consumer;
 	}
 
 	@Nullable

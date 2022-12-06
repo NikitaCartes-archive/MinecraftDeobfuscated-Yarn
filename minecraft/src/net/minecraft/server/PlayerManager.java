@@ -489,6 +489,7 @@ public abstract class PlayerManager {
 			serverPlayerEntity.setPosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
 		}
 
+		byte b = (byte)(alive ? 1 : 0);
 		WorldProperties worldProperties = serverPlayerEntity.world.getLevelProperties();
 		serverPlayerEntity.networkHandler
 			.sendPacket(
@@ -500,7 +501,7 @@ public abstract class PlayerManager {
 					serverPlayerEntity.interactionManager.getPreviousGameMode(),
 					serverPlayerEntity.getWorld().isDebugWorld(),
 					serverPlayerEntity.getWorld().isFlat(),
-					alive,
+					b,
 					serverPlayerEntity.getLastDeathPos()
 				)
 			);
