@@ -13,6 +13,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> {
+	public static final byte field_41730 = 1;
+	public static final byte field_41731 = 2;
+	public static final byte field_41732 = 3;
 	private final RegistryKey<DimensionType> dimensionType;
 	private final RegistryKey<World> dimension;
 	private final long sha256Seed;
@@ -21,7 +24,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	private final GameMode previousGameMode;
 	private final boolean debugWorld;
 	private final boolean flatWorld;
-	private final boolean keepPlayerAttributes;
+	private final byte field_41733;
 	private final Optional<GlobalPos> lastDeathPos;
 
 	public PlayerRespawnS2CPacket(
@@ -32,7 +35,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		@Nullable GameMode previousGameMode,
 		boolean debugWorld,
 		boolean flatWorld,
-		boolean keepPlayerAttributes,
+		byte b,
 		Optional<GlobalPos> lastDeathPos
 	) {
 		this.dimensionType = dimensionType;
@@ -42,7 +45,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.previousGameMode = previousGameMode;
 		this.debugWorld = debugWorld;
 		this.flatWorld = flatWorld;
-		this.keepPlayerAttributes = keepPlayerAttributes;
+		this.field_41733 = b;
 		this.lastDeathPos = lastDeathPos;
 	}
 
@@ -54,7 +57,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.previousGameMode = GameMode.getOrNull(buf.readByte());
 		this.debugWorld = buf.readBoolean();
 		this.flatWorld = buf.readBoolean();
-		this.keepPlayerAttributes = buf.readBoolean();
+		this.field_41733 = buf.readByte();
 		this.lastDeathPos = buf.readOptional(PacketByteBuf::readGlobalPos);
 	}
 
@@ -67,7 +70,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		buf.writeByte(GameMode.getId(this.previousGameMode));
 		buf.writeBoolean(this.debugWorld);
 		buf.writeBoolean(this.flatWorld);
-		buf.writeBoolean(this.keepPlayerAttributes);
+		buf.writeByte(this.field_41733);
 		buf.writeOptional(this.lastDeathPos, PacketByteBuf::writeGlobalPos);
 	}
 
@@ -104,8 +107,8 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		return this.flatWorld;
 	}
 
-	public boolean shouldKeepPlayerAttributes() {
-		return this.keepPlayerAttributes;
+	public boolean method_48016(byte b) {
+		return (this.field_41733 & b) != 0;
 	}
 
 	public Optional<GlobalPos> getLastDeathPos() {

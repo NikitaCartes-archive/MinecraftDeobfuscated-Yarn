@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import java.util.function.Consumer;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ArmorStandEntity;
@@ -36,7 +37,9 @@ public class ArmorStandItem extends Item {
 			Box box = EntityType.ARMOR_STAND.getDimensions().getBoxAt(vec3d.getX(), vec3d.getY(), vec3d.getZ());
 			if (world.isSpaceEmpty(null, box) && world.getOtherEntities(null, box).isEmpty()) {
 				if (world instanceof ServerWorld serverWorld) {
-					ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(serverWorld, itemStack.getNbt(), null, blockPos, SpawnReason.SPAWN_EGG, true, true);
+					Consumer<ArmorStandEntity> consumer = EntityType.method_48011(armorStandEntityx -> {
+					}, serverWorld, itemStack, context.getPlayer());
+					ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(serverWorld, itemStack.getNbt(), consumer, blockPos, SpawnReason.SPAWN_EGG, true, true);
 					if (armorStandEntity == null) {
 						return ActionResult.FAIL;
 					}

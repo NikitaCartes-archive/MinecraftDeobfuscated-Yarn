@@ -229,7 +229,7 @@ public class ParticleManager implements ResourceReloader {
 			.method_47661(manager, field_41385, 0, prepareExecutor)
 			.thenCompose(SpriteLoader.StitchResult::whenComplete);
 		return CompletableFuture.allOf(completableFuture2, completableFuture).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(void_ -> {
-			this.particles.clear();
+			this.method_48015();
 			applyProfiler.startTick();
 			applyProfiler.push("upload");
 			SpriteLoader.StitchResult stitchResult = (SpriteLoader.StitchResult)completableFuture2.join();
@@ -469,9 +469,8 @@ public class ParticleManager implements ResourceReloader {
 
 	public void setWorld(@Nullable ClientWorld world) {
 		this.world = world;
-		this.particles.clear();
+		this.method_48015();
 		this.newEmitterParticles.clear();
-		this.groupCounts.clear();
 	}
 
 	public void addBlockBreakParticles(BlockPos pos, BlockState state) {
@@ -556,6 +555,11 @@ public class ParticleManager implements ResourceReloader {
 	 */
 	private boolean canAdd(ParticleGroup group) {
 		return this.groupCounts.getInt(group) < group.getMaxCount();
+	}
+
+	private void method_48015() {
+		this.particles.clear();
+		this.groupCounts.clear();
 	}
 
 	@Environment(EnvType.CLIENT)
