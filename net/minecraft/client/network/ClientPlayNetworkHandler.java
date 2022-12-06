@@ -106,6 +106,7 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.GuardianEntity;
@@ -963,6 +964,7 @@ ClientPlayPacketListener {
 
     @Override
     public void onPlayerRespawn(PlayerRespawnS2CPacket packet) {
+        List<DataTracker.SerializedEntry<?>> list;
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         RegistryKey<World> registryKey = packet.getDimension();
         RegistryEntry.Reference<DimensionType> registryEntry = this.combinedDynamicRegistries.getCombinedRegistryManager().get(RegistryKeys.DIMENSION_TYPE).entryOf(packet.getDimensionType());
@@ -993,8 +995,10 @@ ClientPlayPacketListener {
             this.client.getMusicTracker().stop();
         }
         this.client.cameraEntity = clientPlayerEntity2;
-        clientPlayerEntity2.getDataTracker().writeUpdatedEntries(clientPlayerEntity.getDataTracker().getChangedEntries());
-        if (packet.shouldKeepPlayerAttributes()) {
+        if (packet.method_48016((byte)2) && (list = clientPlayerEntity.getDataTracker().getChangedEntries()) != null) {
+            clientPlayerEntity2.getDataTracker().writeUpdatedEntries(list);
+        }
+        if (packet.method_48016((byte)1)) {
             clientPlayerEntity2.getAttributes().setFrom(clientPlayerEntity.getAttributes());
         }
         clientPlayerEntity2.init();

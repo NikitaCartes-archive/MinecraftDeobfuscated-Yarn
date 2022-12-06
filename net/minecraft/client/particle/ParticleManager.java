@@ -441,9 +441,8 @@ implements ResourceReloader {
 
     public void setWorld(@Nullable ClientWorld world) {
         this.world = world;
-        this.particles.clear();
+        this.method_48015();
         this.newEmitterParticles.clear();
-        this.groupCounts.clear();
     }
 
     public void addBlockBreakParticles(BlockPos pos, BlockState state) {
@@ -521,8 +520,13 @@ implements ResourceReloader {
         return this.groupCounts.getInt(group) < group.getMaxCount();
     }
 
-    private /* synthetic */ void method_45766(Profiler profiler, CompletableFuture completableFuture, CompletableFuture completableFuture2, Void void_) {
+    private void method_48015() {
         this.particles.clear();
+        this.groupCounts.clear();
+    }
+
+    private /* synthetic */ void method_45766(Profiler profiler, CompletableFuture completableFuture, CompletableFuture completableFuture2, Void void_) {
+        this.method_48015();
         profiler.startTick();
         profiler.push("upload");
         SpriteLoader.StitchResult stitchResult = (SpriteLoader.StitchResult)completableFuture.join();
