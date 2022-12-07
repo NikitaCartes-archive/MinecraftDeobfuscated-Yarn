@@ -129,7 +129,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<Potion>> POTION = of("potion");
 	public static final RegistryKey<Registry<RecipeSerializer<?>>> RECIPE_SERIALIZER = of("recipe_serializer");
 	public static final RegistryKey<Registry<RecipeType<?>>> RECIPE_TYPE = of("recipe_type");
-	public static final RegistryKey<Registry<RootPlacerType<?>>> ROOT_PLAYER_TYPE = of("worldgen/root_placer_type");
+	public static final RegistryKey<Registry<RootPlacerType<?>>> ROOT_PLACER_TYPE = of("worldgen/root_placer_type");
 	public static final RegistryKey<Registry<RuleTestType<?>>> RULE_TEST = of("rule_test");
 	public static final RegistryKey<Registry<Schedule>> SCHEDULE = of("schedule");
 	public static final RegistryKey<Registry<SensorType<?>>> SENSOR_TYPE = of("sensor_type");

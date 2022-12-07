@@ -9,7 +9,7 @@ public class RootPlacerType<P extends RootPlacer> {
 	private final Codec<P> codec;
 
 	private static <P extends RootPlacer> RootPlacerType<P> register(String id, Codec<P> codec) {
-		return Registry.register(Registries.ROOT_PLAYER_TYPE, id, new RootPlacerType<>(codec));
+		return Registry.register(Registries.ROOT_PLACER_TYPE, id, new RootPlacerType<>(codec));
 	}
 
 	private RootPlacerType(Codec<P> codec) {
