@@ -1278,7 +1278,7 @@ public class InGameHud extends DrawableHelper {
 	static enum HeartType {
 		CONTAINER(0, false),
 		NORMAL(2, true),
-		POISIONED(4, true),
+		POISONED(4, true),
 		WITHERED(6, true),
 		ABSORBING(8, false),
 		FROZEN(9, false);
@@ -1310,7 +1310,7 @@ public class InGameHud extends DrawableHelper {
 		static InGameHud.HeartType fromPlayerState(PlayerEntity player) {
 			InGameHud.HeartType heartType;
 			if (player.hasStatusEffect(StatusEffects.POISON)) {
-				heartType = POISIONED;
+				heartType = POISONED;
 			} else if (player.hasStatusEffect(StatusEffects.WITHER)) {
 				heartType = WITHERED;
 			} else if (player.isFrozen()) {

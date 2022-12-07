@@ -20,7 +20,7 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.stateprovider.BlockStateProvider;
 
 public abstract class RootPlacer {
-	public static final Codec<RootPlacer> TYPE_CODEC = Registries.ROOT_PLAYER_TYPE.getCodec().dispatch(RootPlacer::getType, RootPlacerType::getCodec);
+	public static final Codec<RootPlacer> TYPE_CODEC = Registries.ROOT_PLACER_TYPE.getCodec().dispatch(RootPlacer::getType, RootPlacerType::getCodec);
 	protected final IntProvider trunkOffsetY;
 	protected final BlockStateProvider rootProvider;
 	protected final Optional<AboveRootPlacement> aboveRootPlacement;

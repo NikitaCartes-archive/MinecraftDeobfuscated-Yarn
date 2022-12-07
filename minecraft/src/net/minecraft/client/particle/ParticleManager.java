@@ -69,7 +69,7 @@ import org.slf4j.Logger;
 public class ParticleManager implements ResourceReloader {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final ResourceFinder FINDER = ResourceFinder.json("particles");
-	private static final Identifier field_41385 = new Identifier("particles");
+	private static final Identifier PARTICLES_PATH = new Identifier("particles");
 	private static final int MAX_PARTICLE_COUNT = 16384;
 	private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(
 		ParticleTextureSheet.TERRAIN_SHEET,
@@ -226,10 +226,10 @@ public class ParticleManager implements ResourceReloader {
 				return Util.combineSafe(list);
 			});
 		CompletableFuture<SpriteLoader.StitchResult> completableFuture2 = SpriteLoader.fromAtlas(this.particleAtlasTexture)
-			.method_47661(manager, field_41385, 0, prepareExecutor)
+			.method_47661(manager, PARTICLES_PATH, 0, prepareExecutor)
 			.thenCompose(SpriteLoader.StitchResult::whenComplete);
 		return CompletableFuture.allOf(completableFuture2, completableFuture).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(void_ -> {
-			this.method_48015();
+			this.clearParticles();
 			applyProfiler.startTick();
 			applyProfiler.push("upload");
 			SpriteLoader.StitchResult stitchResult = (SpriteLoader.StitchResult)completableFuture2.join();
@@ -469,7 +469,7 @@ public class ParticleManager implements ResourceReloader {
 
 	public void setWorld(@Nullable ClientWorld world) {
 		this.world = world;
-		this.method_48015();
+		this.clearParticles();
 		this.newEmitterParticles.clear();
 	}
 
@@ -557,7 +557,7 @@ public class ParticleManager implements ResourceReloader {
 		return this.groupCounts.getInt(group) < group.getMaxCount();
 	}
 
-	private void method_48015() {
+	private void clearParticles() {
 		this.particles.clear();
 		this.groupCounts.clear();
 	}

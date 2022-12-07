@@ -1069,14 +1069,14 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		}
 
 		this.client.cameraEntity = clientPlayerEntity2;
-		if (packet.method_48016((byte)2)) {
+		if (packet.hasFlag((byte)2)) {
 			List<DataTracker.SerializedEntry<?>> list = clientPlayerEntity.getDataTracker().getChangedEntries();
 			if (list != null) {
 				clientPlayerEntity2.getDataTracker().writeUpdatedEntries(list);
 			}
 		}
 
-		if (packet.method_48016((byte)1)) {
+		if (packet.hasFlag((byte)1)) {
 			clientPlayerEntity2.getAttributes().setFrom(clientPlayerEntity.getAttributes());
 		}
 

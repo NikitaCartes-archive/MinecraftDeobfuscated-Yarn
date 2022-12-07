@@ -151,7 +151,7 @@ public class Registries {
 	public static final Registry<LootScoreProviderType> LOOT_SCORE_PROVIDER_TYPE = create(
 		RegistryKeys.LOOT_SCORE_PROVIDER_TYPE, registry -> LootScoreProviderTypes.CONTEXT
 	);
-	public static final Registry<FloatProviderType<?>> FLOAT_PROIDER_TYPE = create(RegistryKeys.FLOAT_PROVIDER_TYPE, registry -> FloatProviderType.CONSTANT);
+	public static final Registry<FloatProviderType<?>> FLOAT_PROVIDER_TYPE = create(RegistryKeys.FLOAT_PROVIDER_TYPE, registry -> FloatProviderType.CONSTANT);
 	public static final Registry<IntProviderType<?>> INT_PROVIDER_TYPE = create(RegistryKeys.INT_PROVIDER_TYPE, registry -> IntProviderType.CONSTANT);
 	public static final Registry<HeightProviderType<?>> HEIGHT_PROVIDER_TYPE = create(RegistryKeys.HEIGHT_PROVIDER_TYPE, registry -> HeightProviderType.CONSTANT);
 	public static final Registry<BlockPredicateType<?>> BLOCK_PREDICATE_TYPE = create(RegistryKeys.BLOCK_PREDICATE_TYPE, registry -> BlockPredicateType.NOT);
@@ -172,7 +172,7 @@ public class Registries {
 		RegistryKeys.FOLIAGE_PLACER_TYPE, registry -> FoliagePlacerType.BLOB_FOLIAGE_PLACER
 	);
 	public static final Registry<TrunkPlacerType<?>> TRUNK_PLACER_TYPE = create(RegistryKeys.TRUNK_PLACER_TYPE, registry -> TrunkPlacerType.STRAIGHT_TRUNK_PLACER);
-	public static final Registry<RootPlacerType<?>> ROOT_PLAYER_TYPE = create(RegistryKeys.ROOT_PLAYER_TYPE, registry -> RootPlacerType.MANGROVE_ROOT_PLACER);
+	public static final Registry<RootPlacerType<?>> ROOT_PLACER_TYPE = create(RegistryKeys.ROOT_PLACER_TYPE, registry -> RootPlacerType.MANGROVE_ROOT_PLACER);
 	public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = create(RegistryKeys.TREE_DECORATOR_TYPE, registry -> TreeDecoratorType.LEAVE_VINE);
 	public static final Registry<FeatureSizeType<?>> FEATURE_SIZE_TYPE = create(
 		RegistryKeys.FEATURE_SIZE_TYPE, registry -> FeatureSizeType.TWO_LAYERS_FEATURE_SIZE
