@@ -48,17 +48,17 @@ extends Item {
         }
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
-            Consumer<ArmorStandEntity> consumer = EntityType.method_48011(armorStandEntity -> {}, serverWorld, itemStack, context.getPlayer());
-            ArmorStandEntity armorStandEntity2 = EntityType.ARMOR_STAND.create(serverWorld, itemStack.getNbt(), consumer, blockPos, SpawnReason.SPAWN_EGG, true, true);
-            if (armorStandEntity2 == null) {
+            Consumer<ArmorStandEntity> consumer = EntityType.nbtCopier(entity -> {}, serverWorld, itemStack, context.getPlayer());
+            ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(serverWorld, itemStack.getNbt(), consumer, blockPos, SpawnReason.SPAWN_EGG, true, true);
+            if (armorStandEntity == null) {
                 return ActionResult.FAIL;
             }
             float f = (float)MathHelper.floor((MathHelper.wrapDegrees(context.getPlayerYaw() - 180.0f) + 22.5f) / 45.0f) * 45.0f;
-            armorStandEntity2.refreshPositionAndAngles(armorStandEntity2.getX(), armorStandEntity2.getY(), armorStandEntity2.getZ(), f, 0.0f);
-            this.setRotations(armorStandEntity2, world.random);
-            serverWorld.spawnEntityAndPassengers(armorStandEntity2);
-            world.playSound(null, armorStandEntity2.getX(), armorStandEntity2.getY(), armorStandEntity2.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75f, 0.8f);
-            armorStandEntity2.emitGameEvent(GameEvent.ENTITY_PLACE, context.getPlayer());
+            armorStandEntity.refreshPositionAndAngles(armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), f, 0.0f);
+            this.setRotations(armorStandEntity, world.random);
+            serverWorld.spawnEntityAndPassengers(armorStandEntity);
+            world.playSound(null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75f, 0.8f);
+            armorStandEntity.emitGameEvent(GameEvent.ENTITY_PLACE, context.getPlayer());
         }
         itemStack.decrement(1);
         return ActionResult.success(world.isClient);

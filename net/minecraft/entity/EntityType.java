@@ -347,7 +347,7 @@ TypeFilter<Entity, T> {
         NbtCompound nbtCompound;
         if (stack != null) {
             nbtCompound = stack.getNbt();
-            consumer = EntityType.method_48009(world, stack, player);
+            consumer = EntityType.copier(world, stack, player);
         } else {
             consumer = entity -> {};
             nbtCompound = null;
@@ -355,25 +355,25 @@ TypeFilter<Entity, T> {
         return (T)this.spawn(world, nbtCompound, consumer, pos, spawnReason, alignPosition, invertY);
     }
 
-    public static <T extends Entity> Consumer<T> method_48009(ServerWorld serverWorld, ItemStack itemStack, @Nullable PlayerEntity playerEntity) {
+    public static <T extends Entity> Consumer<T> copier(ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
         Consumer<Entity> consumer = entity -> {};
-        consumer = EntityType.method_48012(consumer, itemStack);
-        return EntityType.method_48011(consumer, serverWorld, itemStack, playerEntity);
+        consumer = EntityType.customNameCopier(consumer, stack);
+        return EntityType.nbtCopier(consumer, world, stack, player);
     }
 
-    public static <T extends Entity> Consumer<T> method_48012(Consumer<T> consumer, ItemStack itemStack) {
-        if (itemStack.hasCustomName()) {
-            return consumer.andThen(entity -> entity.setCustomName(itemStack.getName()));
+    public static <T extends Entity> Consumer<T> customNameCopier(Consumer<T> chained, ItemStack stack) {
+        if (stack.hasCustomName()) {
+            return chained.andThen(entity -> entity.setCustomName(stack.getName()));
         }
-        return consumer;
+        return chained;
     }
 
-    public static <T extends Entity> Consumer<T> method_48011(Consumer<T> consumer, ServerWorld serverWorld, ItemStack itemStack, @Nullable PlayerEntity playerEntity) {
-        NbtCompound nbtCompound = itemStack.getNbt();
+    public static <T extends Entity> Consumer<T> nbtCopier(Consumer<T> chained, ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
+        NbtCompound nbtCompound = stack.getNbt();
         if (nbtCompound != null) {
-            return consumer.andThen(entity -> EntityType.loadFromEntityNbt(serverWorld, playerEntity, entity, nbtCompound));
+            return chained.andThen(entity -> EntityType.loadFromEntityNbt(world, player, entity, nbtCompound));
         }
-        return consumer;
+        return chained;
     }
 
     @Nullable

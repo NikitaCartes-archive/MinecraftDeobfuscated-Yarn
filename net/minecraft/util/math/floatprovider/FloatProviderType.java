@@ -21,7 +21,7 @@ public interface FloatProviderType<P extends FloatProvider> {
     public Codec<P> codec();
 
     public static <P extends FloatProvider> FloatProviderType<P> register(String id, Codec<P> codec) {
-        return Registry.register(Registries.FLOAT_PROIDER_TYPE, id, () -> codec);
+        return Registry.register(Registries.FLOAT_PROVIDER_TYPE, id, () -> codec);
     }
 }
 

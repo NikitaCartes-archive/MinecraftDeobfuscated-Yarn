@@ -17,9 +17,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class PlayerRespawnS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    public static final byte field_41730 = 1;
-    public static final byte field_41731 = 2;
-    public static final byte field_41732 = 3;
+    public static final byte KEEP_ATTRIBUTES = 1;
+    public static final byte KEEP_TRACKED_DATA = 2;
+    public static final byte KEEP_ALL = 3;
     private final RegistryKey<DimensionType> dimensionType;
     private final RegistryKey<World> dimension;
     private final long sha256Seed;
@@ -28,10 +28,10 @@ implements Packet<ClientPlayPacketListener> {
     private final GameMode previousGameMode;
     private final boolean debugWorld;
     private final boolean flatWorld;
-    private final byte field_41733;
+    private final byte flag;
     private final Optional<GlobalPos> lastDeathPos;
 
-    public PlayerRespawnS2CPacket(RegistryKey<DimensionType> dimensionType, RegistryKey<World> dimension, long sha256Seed, GameMode gameMode, @Nullable GameMode previousGameMode, boolean debugWorld, boolean flatWorld, byte b, Optional<GlobalPos> lastDeathPos) {
+    public PlayerRespawnS2CPacket(RegistryKey<DimensionType> dimensionType, RegistryKey<World> dimension, long sha256Seed, GameMode gameMode, @Nullable GameMode previousGameMode, boolean debugWorld, boolean flatWorld, byte flag, Optional<GlobalPos> lastDeathPos) {
         this.dimensionType = dimensionType;
         this.dimension = dimension;
         this.sha256Seed = sha256Seed;
@@ -39,7 +39,7 @@ implements Packet<ClientPlayPacketListener> {
         this.previousGameMode = previousGameMode;
         this.debugWorld = debugWorld;
         this.flatWorld = flatWorld;
-        this.field_41733 = b;
+        this.flag = flag;
         this.lastDeathPos = lastDeathPos;
     }
 
@@ -51,7 +51,7 @@ implements Packet<ClientPlayPacketListener> {
         this.previousGameMode = GameMode.getOrNull(buf.readByte());
         this.debugWorld = buf.readBoolean();
         this.flatWorld = buf.readBoolean();
-        this.field_41733 = buf.readByte();
+        this.flag = buf.readByte();
         this.lastDeathPos = buf.readOptional(PacketByteBuf::readGlobalPos);
     }
 
@@ -64,7 +64,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeByte(GameMode.getId(this.previousGameMode));
         buf.writeBoolean(this.debugWorld);
         buf.writeBoolean(this.flatWorld);
-        buf.writeByte(this.field_41733);
+        buf.writeByte(this.flag);
         buf.writeOptional(this.lastDeathPos, PacketByteBuf::writeGlobalPos);
     }
 
@@ -102,8 +102,8 @@ implements Packet<ClientPlayPacketListener> {
         return this.flatWorld;
     }
 
-    public boolean method_48016(byte b) {
-        return (this.field_41733 & b) != 0;
+    public boolean hasFlag(byte flag) {
+        return (this.flag & flag) != 0;
     }
 
     public Optional<GlobalPos> getLastDeathPos() {

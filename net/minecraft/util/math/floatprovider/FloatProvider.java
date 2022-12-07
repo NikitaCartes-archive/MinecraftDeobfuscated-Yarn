@@ -14,7 +14,7 @@ import net.minecraft.util.math.floatprovider.FloatSupplier;
 
 public abstract class FloatProvider
 implements FloatSupplier {
-    private static final Codec<Either<Float, FloatProvider>> FLOAT_CODEC = Codec.either(Codec.FLOAT, Registries.FLOAT_PROIDER_TYPE.getCodec().dispatch(FloatProvider::getType, FloatProviderType::codec));
+    private static final Codec<Either<Float, FloatProvider>> FLOAT_CODEC = Codec.either(Codec.FLOAT, Registries.FLOAT_PROVIDER_TYPE.getCodec().dispatch(FloatProvider::getType, FloatProviderType::codec));
     public static final Codec<FloatProvider> VALUE_CODEC = FLOAT_CODEC.xmap(either -> either.map(ConstantFloatProvider::create, provider -> provider), provider -> provider.getType() == FloatProviderType.CONSTANT ? Either.left(Float.valueOf(((ConstantFloatProvider)provider).getValue())) : Either.right(provider));
 
     public static Codec<FloatProvider> createValidatedCodec(float min, float max) {

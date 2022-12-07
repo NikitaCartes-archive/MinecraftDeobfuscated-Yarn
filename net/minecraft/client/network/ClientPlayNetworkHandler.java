@@ -995,10 +995,10 @@ ClientPlayPacketListener {
             this.client.getMusicTracker().stop();
         }
         this.client.cameraEntity = clientPlayerEntity2;
-        if (packet.method_48016((byte)2) && (list = clientPlayerEntity.getDataTracker().getChangedEntries()) != null) {
+        if (packet.hasFlag((byte)2) && (list = clientPlayerEntity.getDataTracker().getChangedEntries()) != null) {
             clientPlayerEntity2.getDataTracker().writeUpdatedEntries(list);
         }
-        if (packet.method_48016((byte)1)) {
+        if (packet.hasFlag((byte)1)) {
             clientPlayerEntity2.getAttributes().setFrom(clientPlayerEntity.getAttributes());
         }
         clientPlayerEntity2.init();

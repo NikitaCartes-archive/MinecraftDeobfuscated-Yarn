@@ -1176,7 +1176,7 @@ extends DrawableHelper {
     static enum HeartType {
         CONTAINER(0, false),
         NORMAL(2, true),
-        POISIONED(4, true),
+        POISONED(4, true),
         WITHERED(6, true),
         ABSORBING(8, false),
         FROZEN(9, false);
@@ -1202,7 +1202,7 @@ extends DrawableHelper {
         }
 
         static HeartType fromPlayerState(PlayerEntity player) {
-            HeartType heartType = player.hasStatusEffect(StatusEffects.POISON) ? POISIONED : (player.hasStatusEffect(StatusEffects.WITHER) ? WITHERED : (player.isFrozen() ? FROZEN : NORMAL));
+            HeartType heartType = player.hasStatusEffect(StatusEffects.POISON) ? POISONED : (player.hasStatusEffect(StatusEffects.WITHER) ? WITHERED : (player.isFrozen() ? FROZEN : NORMAL));
             return heartType;
         }
     }

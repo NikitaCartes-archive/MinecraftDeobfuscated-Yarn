@@ -147,7 +147,7 @@ public class Registries {
     public static final Registry<LootNumberProviderType> LOOT_NUMBER_PROVIDER_TYPE = Registries.create(RegistryKeys.LOOT_NUMBER_PROVIDER_TYPE, registry -> LootNumberProviderTypes.CONSTANT);
     public static final Registry<LootNbtProviderType> LOOT_NBT_PROVIDER_TYPE = Registries.create(RegistryKeys.LOOT_NBT_PROVIDER_TYPE, registry -> LootNbtProviderTypes.CONTEXT);
     public static final Registry<LootScoreProviderType> LOOT_SCORE_PROVIDER_TYPE = Registries.create(RegistryKeys.LOOT_SCORE_PROVIDER_TYPE, registry -> LootScoreProviderTypes.CONTEXT);
-    public static final Registry<FloatProviderType<?>> FLOAT_PROIDER_TYPE = Registries.create(RegistryKeys.FLOAT_PROVIDER_TYPE, registry -> FloatProviderType.CONSTANT);
+    public static final Registry<FloatProviderType<?>> FLOAT_PROVIDER_TYPE = Registries.create(RegistryKeys.FLOAT_PROVIDER_TYPE, registry -> FloatProviderType.CONSTANT);
     public static final Registry<IntProviderType<?>> INT_PROVIDER_TYPE = Registries.create(RegistryKeys.INT_PROVIDER_TYPE, registry -> IntProviderType.CONSTANT);
     public static final Registry<HeightProviderType<?>> HEIGHT_PROVIDER_TYPE = Registries.create(RegistryKeys.HEIGHT_PROVIDER_TYPE, registry -> HeightProviderType.CONSTANT);
     public static final Registry<BlockPredicateType<?>> BLOCK_PREDICATE_TYPE = Registries.create(RegistryKeys.BLOCK_PREDICATE_TYPE, registry -> BlockPredicateType.NOT);
@@ -160,7 +160,7 @@ public class Registries {
     public static final Registry<BlockStateProviderType<?>> BLOCK_STATE_PROVIDER_TYPE = Registries.create(RegistryKeys.BLOCK_STATE_PROVIDER_TYPE, registry -> BlockStateProviderType.SIMPLE_STATE_PROVIDER);
     public static final Registry<FoliagePlacerType<?>> FOLIAGE_PLACER_TYPE = Registries.create(RegistryKeys.FOLIAGE_PLACER_TYPE, registry -> FoliagePlacerType.BLOB_FOLIAGE_PLACER);
     public static final Registry<TrunkPlacerType<?>> TRUNK_PLACER_TYPE = Registries.create(RegistryKeys.TRUNK_PLACER_TYPE, registry -> TrunkPlacerType.STRAIGHT_TRUNK_PLACER);
-    public static final Registry<RootPlacerType<?>> ROOT_PLAYER_TYPE = Registries.create(RegistryKeys.ROOT_PLAYER_TYPE, registry -> RootPlacerType.MANGROVE_ROOT_PLACER);
+    public static final Registry<RootPlacerType<?>> ROOT_PLACER_TYPE = Registries.create(RegistryKeys.ROOT_PLACER_TYPE, registry -> RootPlacerType.MANGROVE_ROOT_PLACER);
     public static final Registry<TreeDecoratorType<?>> TREE_DECORATOR_TYPE = Registries.create(RegistryKeys.TREE_DECORATOR_TYPE, registry -> TreeDecoratorType.LEAVE_VINE);
     public static final Registry<FeatureSizeType<?>> FEATURE_SIZE_TYPE = Registries.create(RegistryKeys.FEATURE_SIZE_TYPE, registry -> FeatureSizeType.TWO_LAYERS_FEATURE_SIZE);
     public static final Registry<Codec<? extends BiomeSource>> BIOME_SOURCE = Registries.create(RegistryKeys.BIOME_SOURCE, Lifecycle.stable(), BiomeSources::registerAndGetDefault);
