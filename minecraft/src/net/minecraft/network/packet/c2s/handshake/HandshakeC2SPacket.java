@@ -2,9 +2,9 @@ package net.minecraft.network.packet.c2s.handshake;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class HandshakeC2SPacket implements Packet<ServerHandshakePacketListener> {
 	private static final int MAX_ADDRESS_LENGTH = 255;

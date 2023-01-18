@@ -38,6 +38,7 @@ import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.ServerMetadata;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
@@ -48,7 +49,7 @@ import org.slf4j.Logger;
 public class MultiplayerServerListPinger {
 	static final Splitter ZERO_SPLITTER = Splitter.on('\u0000').limit(6);
 	static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
+	private static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").styled(style -> style.withColor(-65536));
 	private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
 	public void add(ServerInfo entry, Runnable saver) throws UnknownHostException {
@@ -62,7 +63,7 @@ public class MultiplayerServerListPinger {
 			this.clientConnections.add(clientConnection);
 			entry.label = Text.translatable("multiplayer.status.pinging");
 			entry.ping = -1L;
-			entry.playerListSummary = null;
+			entry.playerListSummary = Collections.emptyList();
 			clientConnection.setPacketListener(
 				new ClientQueryPacketListener() {
 					private boolean sentQuery;
@@ -94,6 +95,7 @@ public class MultiplayerServerListPinger {
 								entry.playerCountLabel = MultiplayerServerListPinger.createPlayerCountText(
 									serverMetadata.getPlayers().getOnlinePlayerCount(), serverMetadata.getPlayers().getPlayerLimit()
 								);
+								entry.players = serverMetadata.getPlayers();
 								List<Text> list = Lists.<Text>newArrayList();
 								GameProfile[] gameProfiles = serverMetadata.getPlayers().getSample();
 								if (gameProfiles != null && gameProfiles.length > 0) {
@@ -148,8 +150,8 @@ public class MultiplayerServerListPinger {
 					}
 	
 					@Override
-					public ClientConnection getConnection() {
-						return clientConnection;
+					public boolean isConnectionOpen() {
+						return clientConnection.isOpen();
 					}
 				}
 			);
@@ -226,6 +228,7 @@ public class MultiplayerServerListPinger {
 								info.version = Text.literal(string2);
 								info.label = Text.literal(string3);
 								info.playerCountLabel = MultiplayerServerListPinger.createPlayerCountText(j, k);
+								info.players = new ServerMetadata.Players(k, j);
 							}
 						}
 

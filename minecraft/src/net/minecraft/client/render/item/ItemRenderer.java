@@ -14,11 +14,9 @@ import net.minecraft.block.TransparentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.OverlayVertexConsumer;
@@ -29,8 +27,6 @@ import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexConsumers;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.BakedQuad;
@@ -277,7 +273,6 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.push();
 		matrixStack.translate((float)x, (float)y, 100.0F + this.zOffset);
@@ -398,16 +393,12 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 			if (stack.isItemBarVisible()) {
 				RenderSystem.disableDepthTest();
-				RenderSystem.disableTexture();
-				RenderSystem.disableBlend();
-				Tessellator tessellator = Tessellator.getInstance();
-				BufferBuilder bufferBuilder = tessellator.getBuffer();
 				int i = stack.getItemBarStep();
 				int j = stack.getItemBarColor();
-				this.renderGuiQuad(bufferBuilder, x + 2, y + 13, 13, 2, 0, 0, 0, 255);
-				this.renderGuiQuad(bufferBuilder, x + 2, y + 13, i, 1, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
-				RenderSystem.enableBlend();
-				RenderSystem.enableTexture();
+				int k = x + 2;
+				int l = y + 13;
+				DrawableHelper.fill(matrixStack, k, l, k + 13, l + 2, -16777216);
+				DrawableHelper.fill(matrixStack, k, l, k + i, l + 1, j | 0xFF000000);
 				RenderSystem.enableDepthTest();
 			}
 
@@ -417,26 +408,12 @@ public class ItemRenderer implements SynchronousResourceReloader {
 				: clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), MinecraftClient.getInstance().getTickDelta());
 			if (f > 0.0F) {
 				RenderSystem.disableDepthTest();
-				RenderSystem.disableTexture();
-				RenderSystem.enableBlend();
-				RenderSystem.defaultBlendFunc();
-				Tessellator tessellator2 = Tessellator.getInstance();
-				BufferBuilder bufferBuilder2 = tessellator2.getBuffer();
-				this.renderGuiQuad(bufferBuilder2, x, y + MathHelper.floor(16.0F * (1.0F - f)), 16, MathHelper.ceil(16.0F * f), 255, 255, 255, 127);
-				RenderSystem.enableTexture();
+				int k = y + MathHelper.floor(16.0F * (1.0F - f));
+				int l = k + MathHelper.ceil(16.0F * f);
+				DrawableHelper.fill(matrixStack, x, k, x + 16, l, Integer.MAX_VALUE);
 				RenderSystem.enableDepthTest();
 			}
 		}
-	}
-
-	private void renderGuiQuad(BufferBuilder buffer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-		buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		buffer.vertex((double)(x + 0), (double)(y + 0), 0.0).color(red, green, blue, alpha).next();
-		buffer.vertex((double)(x + 0), (double)(y + height), 0.0).color(red, green, blue, alpha).next();
-		buffer.vertex((double)(x + width), (double)(y + height), 0.0).color(red, green, blue, alpha).next();
-		buffer.vertex((double)(x + width), (double)(y + 0), 0.0).color(red, green, blue, alpha).next();
-		BufferRenderer.drawWithGlobalProgram(buffer.end());
 	}
 
 	@Override

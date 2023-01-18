@@ -10,6 +10,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -112,7 +113,7 @@ public abstract class Enchantment {
 		}
 
 		if (level != 1 || this.getMaxLevel() != 1) {
-			mutableText.append(" ").append(Text.translatable("enchantment.level." + level));
+			mutableText.append(ScreenTexts.SPACE).append(Text.translatable("enchantment.level." + level));
 		}
 
 		return mutableText;

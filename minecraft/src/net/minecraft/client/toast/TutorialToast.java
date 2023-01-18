@@ -35,7 +35,6 @@ public class TutorialToast implements Toast {
 	@Override
 	public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
 		RenderSystem.setShaderTexture(0, TEXTURE);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		manager.drawTexture(matrices, 0, 0, 0, 96, this.getWidth(), this.getHeight());
 		this.type.drawIcon(matrices, manager, 6, 6);
 		if (this.description == null) {

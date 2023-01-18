@@ -6,6 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import java.io.IOException;
 import java.util.List;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import org.slf4j.Logger;
 
@@ -23,16 +24,16 @@ public class DecoderHandler extends ByteToMessageDecoder {
 		if (i != 0) {
 			PacketByteBuf packetByteBuf = new PacketByteBuf(buf);
 			int j = packetByteBuf.readVarInt();
-			Packet<?> packet = ((NetworkState)ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get()).getPacketHandler(this.side, j, packetByteBuf);
+			Packet<?> packet = ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getPacketHandler(this.side, j, packetByteBuf);
 			if (packet == null) {
 				throw new IOException("Bad packet id " + j);
 			} else {
-				int k = ((NetworkState)ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get()).getId();
+				int k = ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId();
 				FlightProfiler.INSTANCE.onPacketReceived(k, j, ctx.channel().remoteAddress(), i);
 				if (packetByteBuf.readableBytes() > 0) {
 					throw new IOException(
 						"Packet "
-							+ ((NetworkState)ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get()).getId()
+							+ ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get().getId()
 							+ "/"
 							+ j
 							+ " ("

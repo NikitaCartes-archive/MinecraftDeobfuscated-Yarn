@@ -2,9 +2,9 @@ package net.minecraft.network.packet.s2c.query;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientQueryPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;

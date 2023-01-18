@@ -373,11 +373,6 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 		}
 	}
 
-	@Override
-	public boolean canJumpToNextPathNode(PathNodeType type) {
-		return super.canJumpToNextPathNode(type) && type != PathNodeType.WATER_BORDER;
-	}
-
 	public static boolean isValidFrogFood(LivingEntity entity) {
 		if (entity instanceof SlimeEntity slimeEntity && slimeEntity.getSize() != 1) {
 			return false;
@@ -414,6 +409,11 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 	static class FrogSwimNavigation extends AmphibiousSwimNavigation {
 		FrogSwimNavigation(FrogEntity frog, World world) {
 			super(frog, world);
+		}
+
+		@Override
+		public boolean canJumpToNext(PathNodeType nodeType) {
+			return nodeType != PathNodeType.WATER_BORDER && super.canJumpToNext(nodeType);
 		}
 
 		@Override

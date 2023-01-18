@@ -74,7 +74,7 @@ public class NetherPortalBlock extends Block {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (!entity.hasVehicle() && !entity.hasPassengers() && entity.canUsePortals()) {
+		if (entity.canUsePortals()) {
 			entity.setInNetherPortal(pos);
 		}
 	}

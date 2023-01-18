@@ -1,7 +1,11 @@
 package net.minecraft.client.gui;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.navigation.FocusedRect;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
 
 /**
  * Base GUI interface for handling callbacks related to
@@ -155,18 +159,9 @@ public interface Element {
 		return false;
 	}
 
-	/**
-	 * Changes the focusing element by cycling to the next/previous element.
-	 * 
-	 * This action is done typically when the user has pressed the 'Tab' or 'Ctrl+Tab'
-	 * key.
-	 * 
-	 * @return {@code true} to indicate that the event handling is successful/valid
-	 * 
-	 * @param lookForwards {@code true} to cycle forwards, otherwise cycle backwards
-	 */
-	default boolean changeFocus(boolean lookForwards) {
-		return false;
+	@Nullable
+	default GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+		return null;
 	}
 
 	/**
@@ -180,5 +175,18 @@ public interface Element {
 	 */
 	default boolean isMouseOver(double mouseX, double mouseY) {
 		return false;
+	}
+
+	void setFocused(boolean focused);
+
+	boolean isFocused();
+
+	@Nullable
+	default GuiNavigationPath getFocusedPath() {
+		return this.isFocused() ? GuiNavigationPath.of(this) : null;
+	}
+
+	default FocusedRect getNavigationFocus() {
+		return FocusedRect.empty();
 	}
 }

@@ -63,10 +63,8 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	public static void drawPath(Path path, float nodeSize, boolean drawDebugNodes, boolean drawLabels, double cameraX, double cameraY, double cameraZ) {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.disableTexture();
 		RenderSystem.lineWidth(6.0F);
 		drawPathInternal(path, nodeSize, drawDebugNodes, drawLabels, cameraX, cameraY, cameraZ);
-		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}
 

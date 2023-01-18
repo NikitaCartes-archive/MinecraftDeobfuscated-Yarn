@@ -11,6 +11,7 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.DefaultEventLoopGroup;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
@@ -36,6 +37,7 @@ import net.minecraft.network.encryption.PacketDecryptor;
 import net.minecraft.network.encryption.PacketEncryptor;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.text.Text;
@@ -117,6 +119,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	public void setState(NetworkState state) {
 		this.channel.attr(PROTOCOL_ATTRIBUTE_KEY).set(state);
+		this.channel.attr(PacketBundleHandler.KEY).set(state);
 		this.channel.config().setAutoRead(true);
 		LOGGER.debug("Enabled auto read");
 	}
@@ -204,6 +207,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		NetworkState networkState2 = this.getState();
 		++this.packetsSentCounter;
 		if (networkState2 != networkState) {
+			if (networkState == null) {
+				throw new IllegalStateException("Encountered packet without set protocol: " + packet);
+			}
+
 			LOGGER.debug("Disabled auto read");
 			this.channel.config().setAutoRead(false);
 		}
@@ -242,7 +249,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	 * Returns the current network state of this connection.
 	 */
 	private NetworkState getState() {
-		return (NetworkState)this.channel.attr(PROTOCOL_ATTRIBUTE_KEY).get();
+		return this.channel.attr(PROTOCOL_ATTRIBUTE_KEY).get();
 	}
 
 	private void sendQueuedPackets() {
@@ -326,31 +333,30 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			lazy = CLIENT_IO_GROUP;
 		}
 
-		new Bootstrap()
-			.group(lazy.get())
-			.handler(
-				new ChannelInitializer<Channel>() {
-					@Override
-					protected void initChannel(Channel channel) {
-						try {
-							channel.config().setOption(ChannelOption.TCP_NODELAY, true);
-						} catch (ChannelException var3) {
-						}
-		
-						channel.pipeline()
-							.addLast("timeout", new ReadTimeoutHandler(30))
-							.addLast("splitter", new SplitterHandler())
-							.addLast("decoder", new DecoderHandler(NetworkSide.CLIENTBOUND))
-							.addLast("prepender", new SizePrepender())
-							.addLast("encoder", new PacketEncoder(NetworkSide.SERVERBOUND))
-							.addLast("packet_handler", clientConnection);
-					}
+		new Bootstrap().group(lazy.get()).handler(new ChannelInitializer<Channel>() {
+			@Override
+			protected void initChannel(Channel channel) {
+				try {
+					channel.config().setOption(ChannelOption.TCP_NODELAY, true);
+				} catch (ChannelException var3) {
 				}
-			)
-			.channel(class_)
-			.connect(address.getAddress(), address.getPort())
-			.syncUninterruptibly();
+
+				ChannelPipeline channelPipeline = channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
+				ClientConnection.addHandlers(channelPipeline, NetworkSide.CLIENTBOUND);
+				channelPipeline.addLast("packet_handler", clientConnection);
+			}
+		}).channel(class_).connect(address.getAddress(), address.getPort()).syncUninterruptibly();
 		return clientConnection;
+	}
+
+	public static void addHandlers(ChannelPipeline pipeline, NetworkSide side) {
+		NetworkSide networkSide = side.getOpposite();
+		pipeline.addLast("splitter", new SplitterHandler())
+			.addLast("decoder", new DecoderHandler(side))
+			.addLast("prepender", new SizePrepender())
+			.addLast("encoder", new PacketEncoder(networkSide))
+			.addLast("unbundler", new PacketUnbundler(networkSide))
+			.addLast("bundler", new PacketBundler(side));
 	}
 
 	public static ClientConnection connectLocal(SocketAddress address) {
@@ -358,7 +364,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		new Bootstrap().group(LOCAL_CLIENT_IO_GROUP.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) {
-				channel.pipeline().addLast("packet_handler", clientConnection);
+				ChannelPipeline channelPipeline = channel.pipeline();
+				channelPipeline.addLast("packet_handler", clientConnection);
 			}
 		}).channel(LocalChannel.class).connect(address).syncUninterruptibly();
 		return clientConnection;

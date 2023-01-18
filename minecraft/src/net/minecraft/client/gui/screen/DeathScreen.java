@@ -36,10 +36,12 @@ public class DeathScreen extends Screen {
 		this.ticksSinceDeath = 0;
 		this.buttons.clear();
 		Text text = this.isHardcore ? Text.translatable("deathScreen.spectate") : Text.translatable("deathScreen.respawn");
-		this.buttons.add(this.addDrawableChild(ButtonWidget.builder(text, button -> {
-			this.client.player.requestRespawn();
-			this.client.setScreen(null);
-		}).dimensions(this.width / 2 - 100, this.height / 4 + 72, 200, 20).build()));
+		this.buttons
+			.add(
+				this.addDrawableChild(
+					ButtonWidget.builder(text, button -> this.client.player.requestRespawn()).dimensions(this.width / 2 - 100, this.height / 4 + 72, 200, 20).build()
+				)
+			);
 		this.titleScreenButton = this.addDrawableChild(
 			ButtonWidget.builder(
 					Text.translatable("deathScreen.titleScreen"),
@@ -110,7 +112,6 @@ public class DeathScreen extends Screen {
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.titleScreenButton != null && this.client.getAbuseReportContext().hasDraft()) {
 			RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			this.drawTexture(matrices, this.titleScreenButton.getX() + this.titleScreenButton.getWidth() - 17, this.titleScreenButton.getY() + 3, 182, 24, 15, 15);
 		}
 	}

@@ -14,14 +14,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -363,7 +360,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 				&& mouseY >= (double)this.getY()
 				&& mouseY < (double)(this.getY() + this.height);
 			if (this.focusUnlocked) {
-				this.setTextFieldFocused(bl);
+				this.setFocused(bl);
 			}
 
 			if (this.isFocused() && bl && button == 0) {
@@ -379,10 +376,6 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 				return false;
 			}
 		}
-	}
-
-	public void setTextFieldFocused(boolean focused) {
-		this.setFocused(focused);
 	}
 
 	@Override
@@ -443,12 +436,12 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 
 			if (k != j) {
 				int p = l + this.textRenderer.getWidth(string.substring(0, k));
-				this.drawSelectionHighlight(o, m - 1, p - 1, m + 1 + 9);
+				this.drawSelectionHighlight(matrices, o, m - 1, p - 1, m + 1 + 9);
 			}
 		}
 	}
 
-	private void drawSelectionHighlight(int x1, int y1, int x2, int y2) {
+	private void drawSelectionHighlight(MatrixStack matrices, int x1, int y1, int x2, int y2) {
 		if (x1 < x2) {
 			int i = x1;
 			x1 = x2;
@@ -469,22 +462,10 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 			x1 = this.getX() + this.width;
 		}
 
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionProgram);
-		RenderSystem.setShaderColor(0.0F, 0.0F, 1.0F, 1.0F);
-		RenderSystem.disableTexture();
 		RenderSystem.enableColorLogicOp();
 		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-		bufferBuilder.vertex((double)x1, (double)y2, 0.0).next();
-		bufferBuilder.vertex((double)x2, (double)y2, 0.0).next();
-		bufferBuilder.vertex((double)x2, (double)y1, 0.0).next();
-		bufferBuilder.vertex((double)x1, (double)y1, 0.0).next();
-		tessellator.draw();
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		fill(matrices, x1, y1, x2, y2, -16776961);
 		RenderSystem.disableColorLogicOp();
-		RenderSystem.enableTexture();
 	}
 
 	public void setMaxLength(int maxLength) {
@@ -519,9 +500,10 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		this.uneditableColor = uneditableColor;
 	}
 
+	@Nullable
 	@Override
-	public boolean changeFocus(boolean lookForwards) {
-		return this.visible && this.editable ? super.changeFocus(lookForwards) : false;
+	public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+		return this.visible && this.editable ? super.getNavigationPath(navigation) : null;
 	}
 
 	@Override
@@ -534,9 +516,12 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 	}
 
 	@Override
-	protected void onFocusedChanged(boolean newFocused) {
-		if (newFocused) {
-			this.focusedTicks = 0;
+	public void setFocused(boolean focused) {
+		if (this.focusUnlocked || focused) {
+			super.setFocused(focused);
+			if (focused) {
+				this.focusedTicks = 0;
+			}
 		}
 	}
 

@@ -33,7 +33,6 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.lineWidth(2.0F);
-		RenderSystem.disableTexture();
 		RenderSystem.depthMask(false);
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
@@ -125,7 +124,6 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		RenderSystem.depthMask(true);
-		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}
 }

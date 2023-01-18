@@ -25,8 +25,8 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	}
 
 	@Override
-	public ClientConnection getConnection() {
-		return this.connection;
+	public boolean isConnectionOpen() {
+		return this.connection.isOpen();
 	}
 
 	@Override

@@ -106,10 +106,10 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 				if (empty) {
 					text2 = ScreenTexts.EMPTY;
 				} else {
-					text2 = Text.literal(" ").append(text).append(" ").append(server.minigameName);
+					text2 = ScreenTexts.space().append(text).append(ScreenTexts.SPACE).append(server.minigameName);
 				}
 			} else {
-				text2 = Text.literal(" ").append(text);
+				text2 = ScreenTexts.space().append(text);
 			}
 
 			Text text3;
@@ -184,8 +184,6 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 
 		if (active) {
 			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
-		} else {
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		drawTexture(matrices, x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
@@ -200,6 +198,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		}
 
 		drawTexture(matrices, x, y, 0.0F, 0.0F, 80, 80, 80, 80);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (active) {
 			this.drawCheckmark(matrices, x, y);
 		}
@@ -209,7 +208,6 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 
 	private void drawCheckmark(MatrixStack matrices, int x, int y) {
 		RenderSystem.setShaderTexture(0, CHECKMARK);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		drawTexture(matrices, x + 67, y + 4, 0.0F, 0.0F, 9, 8, 9, 8);

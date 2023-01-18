@@ -252,11 +252,15 @@ public class WorldTickScheduler<T> implements QueryableTickScheduler<T> {
 	}
 
 	public void scheduleTicks(BlockBox box, Vec3i offset) {
+		this.scheduleTicks(this, box, offset);
+	}
+
+	public void scheduleTicks(WorldTickScheduler<T> scheduler, BlockBox box, Vec3i offset) {
 		List<OrderedTick<T>> list = new ArrayList();
 		Predicate<OrderedTick<T>> predicate = tick -> box.contains(tick.pos());
-		this.tickedTicks.stream().filter(predicate).forEach(list::add);
-		this.tickableTicks.stream().filter(predicate).forEach(list::add);
-		this.visitChunks(box, (chunkPos, chunkTickScheduler) -> chunkTickScheduler.getQueueAsStream().filter(predicate).forEach(list::add));
+		scheduler.tickedTicks.stream().filter(predicate).forEach(list::add);
+		scheduler.tickableTicks.stream().filter(predicate).forEach(list::add);
+		scheduler.visitChunks(box, (chunkPos, chunkTickScheduler) -> chunkTickScheduler.getQueueAsStream().filter(predicate).forEach(list::add));
 		LongSummaryStatistics longSummaryStatistics = list.stream().mapToLong(OrderedTick::subTickOrder).summaryStatistics();
 		long l = longSummaryStatistics.getMin();
 		long m = longSummaryStatistics.getMax();

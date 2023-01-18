@@ -81,7 +81,6 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		DiffuseLighting.disableGuiDepthLighting();
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
@@ -105,8 +104,8 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
 		float l = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.25F;
 		float m = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.75F;
-		l = (l - (float)MathHelper.fastFloor((double)l)) * 1.6F - 0.3F;
-		m = (m - (float)MathHelper.fastFloor((double)m)) * 1.6F - 0.3F;
+		l = (l - (float)MathHelper.floor(l)) * 1.6F - 0.3F;
+		m = (m - (float)MathHelper.floor(m)) * 1.6F - 0.3F;
 		if (l < 0.0F) {
 			l = 0.0F;
 		}
@@ -132,7 +131,6 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 		RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 		RenderSystem.restoreProjectionMatrix();
 		DiffuseLighting.enableGuiDepthLighting();
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		EnchantingPhrases.getInstance().setSeed((long)this.handler.getSeed());
 		int n = this.handler.getLapisCount();
 
@@ -143,7 +141,6 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, TEXTURE);
 			int r = this.handler.enchantmentPower[o];
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			if (r == 0) {
 				this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
 			} else {

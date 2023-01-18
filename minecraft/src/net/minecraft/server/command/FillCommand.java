@@ -24,9 +24,9 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 
 public class FillCommand {
-	private static final int MAX_BLOCKS = 32768;
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(maxCount, count) -> Text.translatable("commands.fill.toobig", maxCount, count)
 	);
@@ -134,12 +134,13 @@ public class FillCommand {
 		ServerCommandSource source, BlockBox range, BlockStateArgument block, FillCommand.Mode mode, @Nullable Predicate<CachedBlockPosition> filter
 	) throws CommandSyntaxException {
 		int i = range.getBlockCountX() * range.getBlockCountY() * range.getBlockCountZ();
-		if (i > 32768) {
-			throw TOO_BIG_EXCEPTION.create(32768, i);
+		int j = source.getWorld().getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT);
+		if (i > j) {
+			throw TOO_BIG_EXCEPTION.create(j, i);
 		} else {
 			List<BlockPos> list = Lists.<BlockPos>newArrayList();
 			ServerWorld serverWorld = source.getWorld();
-			int j = 0;
+			int k = 0;
 
 			for(BlockPos blockPos : BlockPos.iterate(range.getMinX(), range.getMinY(), range.getMinZ(), range.getMaxX(), range.getMaxY(), range.getMaxZ())) {
 				if (filter == null || filter.test(new CachedBlockPosition(serverWorld, blockPos, true))) {
@@ -149,7 +150,7 @@ public class FillCommand {
 						Clearable.clear(blockEntity);
 						if (blockStateArgument.setBlockState(serverWorld, blockPos, Block.NOTIFY_LISTENERS)) {
 							list.add(blockPos.toImmutable());
-							++j;
+							++k;
 						}
 					}
 				}
@@ -160,11 +161,11 @@ public class FillCommand {
 				serverWorld.updateNeighbors(blockPos, block2);
 			}
 
-			if (j == 0) {
+			if (k == 0) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				source.sendFeedback(Text.translatable("commands.fill.success", j), true);
-				return j;
+				source.sendFeedback(Text.translatable("commands.fill.success", k), true);
+				return k;
 			}
 		}
 	}

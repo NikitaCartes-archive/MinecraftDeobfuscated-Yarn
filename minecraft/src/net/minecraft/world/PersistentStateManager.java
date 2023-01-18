@@ -15,7 +15,6 @@ import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import org.slf4j.Logger;
@@ -62,7 +61,7 @@ public class PersistentStateManager {
 		try {
 			File file = this.getFile(id);
 			if (file.exists()) {
-				NbtCompound nbtCompound = this.readNbt(id, SharedConstants.getGameVersion().getWorldVersion());
+				NbtCompound nbtCompound = this.readNbt(id, SharedConstants.getGameVersion().getSaveVersion().getId());
 				return (T)readFunction.apply(nbtCompound.getCompound("data"));
 			}
 		} catch (Exception var5) {
@@ -106,8 +105,8 @@ public class PersistentStateManager {
 					dataInputStream.close();
 				}
 
-				int i = nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound.getInt("DataVersion") : 1343;
-				var8 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, nbtCompound, i, dataVersion);
+				int i = NbtHelper.getDataVersion(nbtCompound, 1343);
+				var8 = DataFixTypes.SAVED_DATA.update(this.dataFixer, nbtCompound, i, dataVersion);
 			} catch (Throwable var14) {
 				try {
 					pushbackInputStream.close();

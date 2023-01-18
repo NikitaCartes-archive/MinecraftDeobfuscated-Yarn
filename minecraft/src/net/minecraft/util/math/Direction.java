@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -38,7 +39,7 @@ public enum Direction implements StringIdentifiable {
 	EAST(5, 4, 3, "east", Direction.AxisDirection.POSITIVE, Direction.Axis.X, new Vec3i(1, 0, 0));
 
 	public static final StringIdentifiable.Codec<Direction> CODEC = StringIdentifiable.createCodec(Direction::values);
-	public static final com.mojang.serialization.Codec<Direction> VERTICAL_CODEC = CODEC.flatXmap(Direction::validateVertical, Direction::validateVertical);
+	public static final com.mojang.serialization.Codec<Direction> VERTICAL_CODEC = Codecs.validate(CODEC, Direction::validateVertical);
 	private final int id;
 	private final int idOpposite;
 	private final int idHorizontal;

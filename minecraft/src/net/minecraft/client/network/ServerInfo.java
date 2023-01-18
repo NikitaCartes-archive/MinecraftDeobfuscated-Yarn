@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.server.ServerMetadata;
 import net.minecraft.text.Text;
 
 /**
@@ -27,6 +28,8 @@ public class ServerInfo {
 	public String address;
 	public Text playerCountLabel;
 	public Text label;
+	@Nullable
+	public ServerMetadata.Players players;
 	public long ping;
 	public int protocolVersion = SharedConstants.getGameVersion().getProtocolVersion();
 	public Text version = Text.literal(SharedConstants.getGameVersion().getName());

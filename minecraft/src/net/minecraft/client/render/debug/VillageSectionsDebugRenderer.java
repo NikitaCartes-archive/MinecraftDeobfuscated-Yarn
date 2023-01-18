@@ -35,9 +35,7 @@ public class VillageSectionsDebugRenderer implements DebugRenderer.Renderer {
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.disableTexture();
 		this.drawSections(cameraX, cameraY, cameraZ);
-		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}
 

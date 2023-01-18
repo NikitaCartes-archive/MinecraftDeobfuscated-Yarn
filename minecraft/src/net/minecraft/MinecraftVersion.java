@@ -2,7 +2,6 @@ package net.minecraft;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.bridge.game.PackType;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +9,7 @@ import java.io.InputStreamReader;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.UUID;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.JsonHelper;
 import org.slf4j.Logger;
 
@@ -27,12 +27,12 @@ public class MinecraftVersion implements GameVersion {
 
 	private MinecraftVersion() {
 		this.id = UUID.randomUUID().toString().replaceAll("-", "");
-		this.name = "1.19.3";
-		this.stable = true;
-		this.saveVersion = new SaveVersion(3218, "main");
+		this.name = "23w03a";
+		this.stable = false;
+		this.saveVersion = new SaveVersion(3320, "main");
 		this.protocolVersion = SharedConstants.getProtocolVersion();
 		this.resourcePackVersion = 12;
-		this.dataPackVersion = 10;
+		this.dataPackVersion = 11;
 		this.buildTime = new Date();
 	}
 
@@ -127,8 +127,8 @@ public class MinecraftVersion implements GameVersion {
 	}
 
 	@Override
-	public int getPackVersion(PackType packType) {
-		return packType == PackType.DATA ? this.dataPackVersion : this.resourcePackVersion;
+	public int getResourceVersion(ResourceType type) {
+		return type == ResourceType.SERVER_DATA ? this.dataPackVersion : this.resourcePackVersion;
 	}
 
 	@Override

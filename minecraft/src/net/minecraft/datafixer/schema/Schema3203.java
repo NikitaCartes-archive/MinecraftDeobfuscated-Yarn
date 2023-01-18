@@ -13,7 +13,7 @@ public class Schema3203 extends IdentifierNormalizingSchema {
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		schema.registerSimple(map, "minecraft:camel");
+		schema.register(map, "minecraft:camel", (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 		return map;
 	}
 }

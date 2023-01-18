@@ -28,6 +28,14 @@ public abstract class AbstractParentElement extends DrawableHelper implements Pa
 
 	@Override
 	public void setFocused(@Nullable Element focused) {
+		if (this.focused != null) {
+			this.focused.setFocused(false);
+		}
+
+		if (focused != null) {
+			focused.setFocused(true);
+		}
+
 		this.focused = focused;
 	}
 }

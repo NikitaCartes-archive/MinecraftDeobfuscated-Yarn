@@ -35,7 +35,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 				keyBinding.setBoundKey(keyBinding.getDefaultKey());
 			}
 
-			KeyBinding.updateKeysByCode();
+			this.update();
 		}).dimensions(this.width / 2 - 155, this.height - 29, 150, 20).build());
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
@@ -44,12 +44,17 @@ public class KeybindsScreen extends GameOptionsScreen {
 		);
 	}
 
+	private void update() {
+		KeyBinding.updateKeysByCode();
+		this.controlsList.children().forEach(ControlsListWidget.Entry::update);
+	}
+
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.selectedKeyBinding != null) {
 			this.gameOptions.setKeyCode(this.selectedKeyBinding, InputUtil.Type.MOUSE.createFromCode(button));
 			this.selectedKeyBinding = null;
-			KeyBinding.updateKeysByCode();
+			this.update();
 			return true;
 		} else {
 			return super.mouseClicked(mouseX, mouseY, button);
@@ -67,7 +72,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 
 			this.selectedKeyBinding = null;
 			this.lastKeyCodeUpdateTime = Util.getMeasuringTimeMs();
-			KeyBinding.updateKeysByCode();
+			this.update();
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);

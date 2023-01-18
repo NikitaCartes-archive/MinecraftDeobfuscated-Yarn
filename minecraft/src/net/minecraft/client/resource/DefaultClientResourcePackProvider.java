@@ -26,7 +26,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class DefaultClientResourcePackProvider extends VanillaResourcePackProvider {
 	private static final PackResourceMetadata METADATA = new PackResourceMetadata(
-		Text.translatable("resourcePack.vanilla.description"), ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion())
+		Text.translatable("resourcePack.vanilla.description"), SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES)
 	);
 	private static final ResourceMetadataMap METADATA_MAP = ResourceMetadataMap.of(PackResourceMetadata.SERIALIZER, METADATA);
 	private static final Text VANILLA_NAME_TEXT = Text.translatable("resourcePack.vanilla.name");

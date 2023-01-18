@@ -115,6 +115,7 @@ public class SplashOverlay extends Overlay {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, h);
 		drawTexture(matrices, k - r, p - q, r, (int)d, -0.0625F, 0.0F, 120, 60, 120, 120);
 		drawTexture(matrices, k, p - q, r, (int)d, 0.0625F, 60.0F, 120, 60, 120, 120);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableBlend();
 		int s = (int)((double)this.client.getWindow().getScaledHeight() * 0.8325);

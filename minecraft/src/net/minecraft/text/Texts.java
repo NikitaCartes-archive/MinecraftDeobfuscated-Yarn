@@ -136,7 +136,8 @@ public class Texts {
 			TextContent string = text.getContent();
 			if (string instanceof TranslatableTextContent translatableTextContent) {
 				String stringx = translatableTextContent.getKey();
-				return Language.getInstance().hasTranslation(stringx);
+				String string2 = translatableTextContent.getFallback();
+				return string2 != null || Language.getInstance().hasTranslation(stringx);
 			}
 		}
 

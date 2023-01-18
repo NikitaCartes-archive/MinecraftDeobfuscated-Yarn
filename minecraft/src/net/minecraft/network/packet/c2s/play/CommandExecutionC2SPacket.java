@@ -1,11 +1,11 @@
 package net.minecraft.network.packet.c2s.play;
 
 import java.time.Instant;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.LastSeenMessageList;
+import net.minecraft.network.packet.Packet;
 
 /**
  * A packet used to execute commands on the server.

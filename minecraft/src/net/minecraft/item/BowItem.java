@@ -27,7 +27,7 @@ public class BowItem extends RangedWeaponItem implements Vanishable {
 		if (user instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)user;
 			boolean bl = playerEntity.getAbilities().creativeMode || EnchantmentHelper.getLevel(Enchantments.INFINITY, stack) > 0;
-			ItemStack itemStack = playerEntity.getArrowType(stack);
+			ItemStack itemStack = playerEntity.getProjectileType(stack);
 			if (!itemStack.isEmpty() || bl) {
 				if (itemStack.isEmpty()) {
 					itemStack = new ItemStack(Items.ARROW);
@@ -113,7 +113,7 @@ public class BowItem extends RangedWeaponItem implements Vanishable {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		boolean bl = !user.getArrowType(itemStack).isEmpty();
+		boolean bl = !user.getProjectileType(itemStack).isEmpty();
 		if (!user.getAbilities().creativeMode && !bl) {
 			return TypedActionResult.fail(itemStack);
 		} else {

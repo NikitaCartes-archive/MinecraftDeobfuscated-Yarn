@@ -28,7 +28,6 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 		World world = this.client.world;
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.disableTexture();
 		BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
 		LongSet longSet = new LongOpenHashSet();
 
@@ -52,7 +51,5 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 				DebugRenderer.drawString(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);
 			}
 		}
-
-		RenderSystem.enableTexture();
 	}
 }

@@ -37,7 +37,6 @@ public class LockButtonWidget extends ButtonWidget {
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, ButtonWidget.WIDGETS_TEXTURE);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;
 		if (!this.active) {
 			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED_DISABLED : LockButtonWidget.IconLocation.UNLOCKED_DISABLED;

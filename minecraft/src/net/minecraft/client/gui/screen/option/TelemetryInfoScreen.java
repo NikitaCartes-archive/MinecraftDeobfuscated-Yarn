@@ -3,6 +3,7 @@ package net.minecraft.client.gui.screen.option;
 import java.nio.file.Path;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -58,8 +59,7 @@ public class TelemetryInfoScreen extends Screen {
 		adder.add(gridWidget2);
 		GridWidget gridWidget3 = this.createButtonRow(this.createOptInButton(), ButtonWidget.builder(ScreenTexts.DONE, this::goBack).build());
 		simplePositioningWidget.add(gridWidget3, simplePositioningWidget.copyPositioner().relative(0.5F, 1.0F));
-		gridWidget.recalculateDimensions();
-		simplePositioningWidget.recalculateDimensions();
+		simplePositioningWidget.refreshPositions();
 		this.telemetryEventWidget = new TelemetryEventWidget(
 			0, 0, this.width - 40, gridWidget3.getY() - (gridWidget2.getY() + gridWidget2.getHeight()) - 16, this.client.textRenderer
 		);
@@ -67,10 +67,10 @@ public class TelemetryInfoScreen extends Screen {
 		this.telemetryEventWidget.setScrollConsumer(scroll -> this.scroll = scroll);
 		this.setInitialFocus(this.telemetryEventWidget);
 		adder.add(this.telemetryEventWidget);
-		gridWidget.recalculateDimensions();
-		simplePositioningWidget.recalculateDimensions();
+		simplePositioningWidget.refreshPositions();
 		SimplePositioningWidget.setPos(simplePositioningWidget, 0, 0, this.width, this.height, 0.5F, 0.0F);
-		this.addDrawableChild(simplePositioningWidget);
+		simplePositioningWidget.forEachChild(element -> {
+		});
 	}
 
 	private ClickableWidget createOptInButton() {
@@ -107,7 +107,7 @@ public class TelemetryInfoScreen extends Screen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(0);
+		this.renderBackgroundTexture(matrices);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -116,7 +116,6 @@ public class TelemetryInfoScreen extends Screen {
 		gridWidget.getMainPositioner().alignHorizontalCenter().marginX(4);
 		gridWidget.add(left, 0, 0);
 		gridWidget.add(right, 0, 1);
-		gridWidget.recalculateDimensions();
 		return gridWidget;
 	}
 }

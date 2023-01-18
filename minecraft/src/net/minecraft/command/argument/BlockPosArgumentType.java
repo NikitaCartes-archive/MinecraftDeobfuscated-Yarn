@@ -14,6 +14,7 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -29,18 +30,27 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 	}
 
 	public static BlockPos getLoadedBlockPos(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		BlockPos blockPos = context.<PosArgument>getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
-		if (!context.getSource().getWorld().isChunkLoaded(blockPos)) {
+		ServerWorld serverWorld = context.getSource().getWorld();
+		return getLoadedBlockPos(context, serverWorld, name);
+	}
+
+	public static BlockPos getLoadedBlockPos(CommandContext<ServerCommandSource> context, ServerWorld world, String name) throws CommandSyntaxException {
+		BlockPos blockPos = getBlockPos(context, name);
+		if (!world.isChunkLoaded(blockPos)) {
 			throw UNLOADED_EXCEPTION.create();
-		} else if (!context.getSource().getWorld().isInBuildLimit(blockPos)) {
+		} else if (!world.isInBuildLimit(blockPos)) {
 			throw OUT_OF_WORLD_EXCEPTION.create();
 		} else {
 			return blockPos;
 		}
 	}
 
-	public static BlockPos getBlockPos(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
-		BlockPos blockPos = context.<PosArgument>getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
+	public static BlockPos getBlockPos(CommandContext<ServerCommandSource> context, String name) {
+		return context.<PosArgument>getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
+	}
+
+	public static BlockPos getValidBlockPos(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+		BlockPos blockPos = getBlockPos(context, name);
 		if (!World.isValid(blockPos)) {
 			throw OUT_OF_BOUNDS_EXCEPTION.create();
 		} else {

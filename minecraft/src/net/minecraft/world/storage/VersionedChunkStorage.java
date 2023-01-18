@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.ChunkPos;
@@ -44,7 +43,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 	) {
 		int i = getDataVersion(nbt);
 		if (i < 1493) {
-			nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, i, 1493);
+			nbt = DataFixTypes.CHUNK.update(this.dataFixer, nbt, i, 1493);
 			if (nbt.getCompound("Level").getBoolean("hasLegacyStructureData")) {
 				FeatureUpdater featureUpdater = this.getFeatureUpdater(worldKey, persistentStateManagerFactory);
 				nbt = featureUpdater.getUpdatedReferences(nbt);
@@ -52,9 +51,9 @@ public class VersionedChunkStorage implements AutoCloseable {
 		}
 
 		saveContextToNbt(nbt, worldKey, generatorCodecKey);
-		nbt = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbt, Math.max(1493, i));
-		if (i < SharedConstants.getGameVersion().getWorldVersion()) {
-			nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+		nbt = DataFixTypes.CHUNK.update(this.dataFixer, nbt, Math.max(1493, i));
+		if (i < SharedConstants.getGameVersion().getSaveVersion().getId()) {
+			NbtHelper.putDataVersion(nbt);
 		}
 
 		nbt.remove("__context");
@@ -83,7 +82,7 @@ public class VersionedChunkStorage implements AutoCloseable {
 	}
 
 	public static int getDataVersion(NbtCompound nbt) {
-		return nbt.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbt.getInt("DataVersion") : -1;
+		return NbtHelper.getDataVersion(nbt, -1);
 	}
 
 	public CompletableFuture<Optional<NbtCompound>> getNbt(ChunkPos chunkPos) {

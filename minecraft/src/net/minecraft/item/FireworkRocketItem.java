@@ -10,6 +10,7 @@ import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -86,7 +87,10 @@ public class FireworkRocketItem extends Item {
 		if (nbtCompound != null) {
 			if (nbtCompound.contains("Flight", NbtElement.NUMBER_TYPE)) {
 				tooltip.add(
-					Text.translatable("item.minecraft.firework_rocket.flight").append(" ").append(String.valueOf(nbtCompound.getByte("Flight"))).formatted(Formatting.GRAY)
+					Text.translatable("item.minecraft.firework_rocket.flight")
+						.append(ScreenTexts.SPACE)
+						.append(String.valueOf(nbtCompound.getByte("Flight")))
+						.formatted(Formatting.GRAY)
 				);
 			}
 

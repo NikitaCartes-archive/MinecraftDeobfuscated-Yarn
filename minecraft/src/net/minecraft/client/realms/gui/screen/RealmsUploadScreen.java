@@ -2,7 +2,6 @@ package net.minecraft.client.realms.gui.screen;
 
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.RateLimiter;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,11 +26,6 @@ import net.minecraft.client.realms.dto.UploadInfo;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.exception.RetryCallException;
 import net.minecraft.client.realms.util.UploadTokenCache;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
@@ -48,6 +42,10 @@ import org.slf4j.Logger;
 public class RealmsUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final ReentrantLock UPLOAD_LOCK = new ReentrantLock();
+	private static final int field_41776 = 200;
+	private static final int field_41773 = 80;
+	private static final int field_41774 = 95;
+	private static final int field_41775 = 1;
 	private static final String[] DOTS = new String[]{"", ".", ". .", ". . ."};
 	private static final Text VERIFYING_TEXT = Text.translatable("mco.upload.verifying");
 	private final RealmsResetWorldScreen parent;
@@ -88,11 +86,11 @@ public class RealmsUploadScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.backButton = this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.BACK, button -> this.onBack()).dimensions(this.width / 2 - 100, this.height - 42, 200, 20).build()
+			ButtonWidget.builder(ScreenTexts.BACK, button -> this.onBack()).dimensions((this.width - 200) / 2, this.height - 42, 200, 20).build()
 		);
 		this.backButton.visible = false;
 		this.cancelButton = this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCancel()).dimensions(this.width / 2 - 100, this.height - 42, 200, 20).build()
+			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCancel()).dimensions((this.width - 200) / 2, this.height - 42, 200, 20).build()
 		);
 		if (!this.uploadStarted) {
 			if (this.parent.slot == -1) {
@@ -168,24 +166,10 @@ public class RealmsUploadScreen extends RealmsScreen {
 	private void drawProgressBar(MatrixStack matrices) {
 		double d = Math.min((double)this.uploadStatus.bytesWritten / (double)this.uploadStatus.totalBytes, 1.0);
 		this.progress = String.format(Locale.ROOT, "%.1f", d * 100.0);
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.disableTexture();
-		double e = (double)(this.width / 2 - 100);
-		double f = 0.5;
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		bufferBuilder.vertex(e - 0.5, 95.5, 0.0).color(217, 210, 210, 255).next();
-		bufferBuilder.vertex(e + 200.0 * d + 0.5, 95.5, 0.0).color(217, 210, 210, 255).next();
-		bufferBuilder.vertex(e + 200.0 * d + 0.5, 79.5, 0.0).color(217, 210, 210, 255).next();
-		bufferBuilder.vertex(e - 0.5, 79.5, 0.0).color(217, 210, 210, 255).next();
-		bufferBuilder.vertex(e, 95.0, 0.0).color(128, 128, 128, 255).next();
-		bufferBuilder.vertex(e + 200.0 * d, 95.0, 0.0).color(128, 128, 128, 255).next();
-		bufferBuilder.vertex(e + 200.0 * d, 80.0, 0.0).color(128, 128, 128, 255).next();
-		bufferBuilder.vertex(e, 80.0, 0.0).color(128, 128, 128, 255).next();
-		tessellator.draw();
-		RenderSystem.enableTexture();
+		int i = (this.width - 200) / 2;
+		int j = i + (int)Math.round(200.0 * d);
+		fill(matrices, i - 1, 79, j + 1, 175, -2501934);
+		fill(matrices, i, 80, j, 95, -8355712);
 		drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
 	}
 

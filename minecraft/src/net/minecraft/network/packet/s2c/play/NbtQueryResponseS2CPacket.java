@@ -2,9 +2,9 @@ package net.minecraft.network.packet.s2c.play;
 
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class NbtQueryResponseS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int transactionId;

@@ -121,7 +121,6 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
@@ -158,7 +157,6 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, BeaconScreen.TEXTURE);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int i = 219;
 			int j = 0;
 			if (!this.active) {

@@ -16,7 +16,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
@@ -171,7 +170,6 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, STATS_ICON_TEXTURE);
 		drawTexture(matrices, x, y, this.getZOffset(), (float)u, (float)v, 18, 18, 128, 128);
@@ -282,7 +280,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			@Override
 			public Text getNarration() {
-				return Text.translatable("narrator.select", Text.empty().append(this.displayName).append(" ").append(this.getFormatted()));
+				return Text.translatable("narrator.select", Text.empty().append(this.displayName).append(ScreenTexts.SPACE).append(this.getFormatted()));
 			}
 		}
 	}
@@ -342,7 +340,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void renderHeader(MatrixStack matrices, int x, int y, Tessellator tessellator) {
+		protected void renderHeader(MatrixStack matrices, int x, int y) {
 			if (!this.client.mouse.wasLeftButtonClicked()) {
 				this.selectedHeaderColumn = -1;
 			}

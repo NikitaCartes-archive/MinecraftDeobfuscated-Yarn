@@ -2,13 +2,13 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.FilterMask;
 import net.minecraft.network.message.MessageBody;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.text.Text;
 
 /**

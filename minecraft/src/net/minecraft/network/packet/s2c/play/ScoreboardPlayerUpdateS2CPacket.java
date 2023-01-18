@@ -2,9 +2,9 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.scoreboard.ServerScoreboard;
 
 public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketListener> {

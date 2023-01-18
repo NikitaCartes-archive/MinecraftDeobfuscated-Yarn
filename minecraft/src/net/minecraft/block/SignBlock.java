@@ -32,7 +32,7 @@ public class SignBlock extends AbstractSignBlock {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		return this.getDefaultState()
-			.with(ROTATION, Integer.valueOf(RotationPropertyHelper.fromYaw(ctx.getPlayerYaw())))
+			.with(ROTATION, Integer.valueOf(RotationPropertyHelper.fromYaw(ctx.getPlayerYaw() + 180.0F)))
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 

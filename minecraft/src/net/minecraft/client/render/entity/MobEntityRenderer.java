@@ -63,7 +63,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		float m = 0.025F;
 		VertexConsumer vertexConsumer = provider.getBuffer(RenderLayer.getLeash());
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-		float n = MathHelper.fastInverseSqrt(j * j + l * l) * 0.025F / 2.0F;
+		float n = MathHelper.inverseSqrt(j * j + l * l) * 0.025F / 2.0F;
 		float o = l * n;
 		float p = j * n;
 		BlockPos blockPos = new BlockPos(entity.getCameraPosVec(tickDelta));

@@ -2,9 +2,9 @@ package net.minecraft.network.packet.s2c.play;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener> {
 	public static final GameStateChangeS2CPacket.Reason NO_RESPAWN_BLOCK = new GameStateChangeS2CPacket.Reason(0);

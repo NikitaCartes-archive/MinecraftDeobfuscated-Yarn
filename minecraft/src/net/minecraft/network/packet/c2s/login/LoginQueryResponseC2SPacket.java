@@ -1,9 +1,9 @@
 package net.minecraft.network.packet.c2s.login;
 
 import javax.annotation.Nullable;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerLoginPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class LoginQueryResponseC2SPacket implements Packet<ServerLoginPacketListener> {
 	private static final int MAX_PAYLOAD_SIZE = 1048576;

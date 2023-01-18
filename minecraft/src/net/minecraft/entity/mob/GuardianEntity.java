@@ -312,6 +312,10 @@ public class GuardianEntity extends HostileEntity {
 		return ((float)this.beamTicks + tickDelta) / (float)this.getWarmupTime();
 	}
 
+	public float getBeamTicks() {
+		return (float)this.beamTicks;
+	}
+
 	@Override
 	public boolean canSpawn(WorldView world) {
 		return world.doesNotIntersectEntities(this);

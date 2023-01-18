@@ -12,7 +12,7 @@ public class OutOfMemoryScreen extends Screen {
 	private MultilineText message = MultilineText.EMPTY;
 
 	public OutOfMemoryScreen() {
-		super(Text.translatable("outOfMemory.error"));
+		super(Text.translatable("outOfMemory.title"));
 	}
 
 	@Override

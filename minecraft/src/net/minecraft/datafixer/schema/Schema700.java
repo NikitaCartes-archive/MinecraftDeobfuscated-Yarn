@@ -10,14 +10,10 @@ public class Schema700 extends Schema {
 		super(versionKey, parent);
 	}
 
-	protected static void targetEntityItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
-		schema.register(map, entityId, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
-	}
-
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		targetEntityItems(schema, map, "ElderGuardian");
+		schema.register(map, "ElderGuardian", (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 		return map;
 	}
 }

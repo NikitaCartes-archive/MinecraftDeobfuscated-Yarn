@@ -39,6 +39,7 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 		RenderSystem.setShaderTexture(0, this.skinId);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, (float)alpha / 255.0F);
 		PlayerSkinDrawer.draw(matrices, 2, 2, 12);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	@Override

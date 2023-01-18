@@ -177,11 +177,19 @@ public interface Text extends Message, StringVisitable {
 	}
 
 	static MutableText translatable(String key) {
-		return MutableText.of(new TranslatableTextContent(key));
+		return MutableText.of(new TranslatableTextContent(key, null, TranslatableTextContent.EMPTY_ARGUMENTS));
 	}
 
 	static MutableText translatable(String key, Object... args) {
-		return MutableText.of(new TranslatableTextContent(key, args));
+		return MutableText.of(new TranslatableTextContent(key, null, args));
+	}
+
+	static MutableText translatableWithFallback(String key, @Nullable String fallback) {
+		return MutableText.of(new TranslatableTextContent(key, fallback, TranslatableTextContent.EMPTY_ARGUMENTS));
+	}
+
+	static MutableText translatableWithFallback(String key, @Nullable String falback, Object... args) {
+		return MutableText.of(new TranslatableTextContent(key, falback, args));
 	}
 
 	static MutableText empty() {
@@ -266,6 +274,7 @@ public interface Text extends Message, StringVisitable {
 					mutableText = string.isEmpty() ? Text.empty() : Text.literal(string);
 				} else if (jsonObject.has("translate")) {
 					String string = JsonHelper.getString(jsonObject, "translate");
+					String string2 = JsonHelper.getString(jsonObject, "fallback", null);
 					if (jsonObject.has("with")) {
 						JsonArray jsonArray = JsonHelper.getArray(jsonObject, "with");
 						Object[] objects = new Object[jsonArray.size()];
@@ -274,9 +283,9 @@ public interface Text extends Message, StringVisitable {
 							objects[i] = optimizeArgument(this.deserialize(jsonArray.get(i), type, jsonDeserializationContext));
 						}
 
-						mutableText = Text.translatable(string, objects);
+						mutableText = Text.translatableWithFallback(string, string2, objects);
 					} else {
-						mutableText = Text.translatable(string);
+						mutableText = Text.translatableWithFallback(string, string2);
 					}
 				} else if (jsonObject.has("score")) {
 					JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "score");
@@ -379,6 +388,11 @@ public interface Text extends Message, StringVisitable {
 				jsonObject.addProperty("text", literalTextContent.string());
 			} else if (textContent instanceof TranslatableTextContent translatableTextContent) {
 				jsonObject.addProperty("translate", translatableTextContent.getKey());
+				String string = translatableTextContent.getFallback();
+				if (string != null) {
+					jsonObject.addProperty("fallback", string);
+				}
+
 				if (translatableTextContent.getArgs().length > 0) {
 					JsonArray jsonArray2 = new JsonArray();
 

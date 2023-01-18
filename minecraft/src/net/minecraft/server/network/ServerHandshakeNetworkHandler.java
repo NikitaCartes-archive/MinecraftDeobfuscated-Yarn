@@ -56,7 +56,7 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	}
 
 	@Override
-	public ClientConnection getConnection() {
-		return this.connection;
+	public boolean isConnectionOpen() {
+		return this.connection.isOpen();
 	}
 }

@@ -56,9 +56,7 @@ public abstract class PathNodeMaker {
 	/**
 	 * Gets the path node type at the given position without adjusting the node type according to whether the entity can enter or open doors
 	 */
-	public abstract PathNodeType getNodeType(
-		BlockView world, int x, int y, int z, MobEntity mob, int sizeX, int sizeY, int sizeZ, boolean canOpenDoors, boolean canEnterOpenDoors
-	);
+	public abstract PathNodeType getNodeType(BlockView world, int x, int y, int z, MobEntity mob);
 
 	/**
 	 * Gets the path node type at the given position without adjusting the node type according to whether the entity can enter or open doors

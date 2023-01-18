@@ -532,7 +532,6 @@ public class DebugHud extends DrawableHelper {
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		RenderSystem.enableBlend();
-		RenderSystem.disableTexture();
 		RenderSystem.defaultBlendFunc();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
@@ -552,7 +551,6 @@ public class DebugHud extends DrawableHelper {
 		}
 
 		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		if (showFps) {
 			fill(matrices, x + 1, r - 30 + 1, x + 14, r - 30 + 10, -1873784752);

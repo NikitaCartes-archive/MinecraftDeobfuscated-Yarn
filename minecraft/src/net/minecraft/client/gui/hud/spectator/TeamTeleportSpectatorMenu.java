@@ -121,6 +121,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 			RenderSystem.setShaderTexture(0, this.skinId);
 			RenderSystem.setShaderColor(brightness, brightness, brightness, (float)alpha / 255.0F);
 			PlayerSkinDrawer.draw(matrices, 2, 2, 12);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		@Override

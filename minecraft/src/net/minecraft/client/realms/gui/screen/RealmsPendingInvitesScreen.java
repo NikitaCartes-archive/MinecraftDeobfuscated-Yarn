@@ -201,11 +201,6 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 
 		@Override
-		public boolean isFocused() {
-			return RealmsPendingInvitesScreen.this.getFocused() == this;
-		}
-
-		@Override
 		public void renderBackground(MatrixStack matrices) {
 			RealmsPendingInvitesScreen.this.renderBackground(matrices);
 		}
@@ -258,10 +253,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, invite.worldOwnerName, (float)(x + 38), (float)(y + 12), 7105644);
 			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, RealmsUtil.convertToAgePresentation(invite.date), (float)(x + 38), (float)(y + 24), 7105644);
 			RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, x, y, mouseX, mouseY);
-			RealmsTextureManager.withBoundFace(invite.worldOwnerUuid, () -> {
-				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-				PlayerSkinDrawer.draw(matrices, x, y, 32);
-			});
+			RealmsTextureManager.withBoundFace(invite.worldOwnerUuid, () -> PlayerSkinDrawer.draw(matrices, x, y, 32));
 		}
 
 		@Override
@@ -283,7 +275,6 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			@Override
 			protected void render(MatrixStack matrices, int x, int y, boolean showTooltip) {
 				RenderSystem.setShaderTexture(0, RealmsPendingInvitesScreen.ACCEPT_ICON);
-				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				float f = showTooltip ? 19.0F : 0.0F;
 				DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 18, 18, 37, 18);
 				if (showTooltip) {
@@ -306,7 +297,6 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			@Override
 			protected void render(MatrixStack matrices, int x, int y, boolean showTooltip) {
 				RenderSystem.setShaderTexture(0, RealmsPendingInvitesScreen.REJECT_ICON);
-				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				float f = showTooltip ? 19.0F : 0.0F;
 				DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 18, 18, 37, 18);
 				if (showTooltip) {

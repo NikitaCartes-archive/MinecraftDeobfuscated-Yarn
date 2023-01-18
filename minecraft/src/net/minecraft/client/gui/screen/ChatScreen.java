@@ -55,6 +55,7 @@ public class ChatScreen extends Screen {
 		this.chatField.setDrawsBackground(false);
 		this.chatField.setText(this.originalChatText);
 		this.chatField.setChangedListener(this::onChatFieldUpdate);
+		this.chatField.setFocusUnlocked(false);
 		this.addSelectableChild(this.chatField);
 		this.chatInputSuggestor = new ChatInputSuggestor(this.client, this, this.chatField, this.textRenderer, false, false, 1, 10, true, -805306368);
 		this.chatInputSuggestor.refresh();
@@ -185,8 +186,6 @@ public class ChatScreen extends Screen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.setFocused(this.chatField);
-		this.chatField.setTextFieldFocused(true);
 		fill(matrices, 2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
 		this.chatField.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);
@@ -212,12 +211,12 @@ public class ChatScreen extends Screen {
 	}
 
 	@Override
-	protected void addScreenNarrations(NarrationMessageBuilder builder) {
-		builder.put(NarrationPart.TITLE, this.getTitle());
-		builder.put(NarrationPart.USAGE, USAGE_TEXT);
+	protected void addScreenNarrations(NarrationMessageBuilder messageBuilder) {
+		messageBuilder.put(NarrationPart.TITLE, this.getTitle());
+		messageBuilder.put(NarrationPart.USAGE, USAGE_TEXT);
 		String string = this.chatField.getText();
 		if (!string.isEmpty()) {
-			builder.nextMessage().put(NarrationPart.TITLE, Text.translatable("chat_screen.message", string));
+			messageBuilder.nextMessage().put(NarrationPart.TITLE, Text.translatable("chat_screen.message", string));
 		}
 	}
 
