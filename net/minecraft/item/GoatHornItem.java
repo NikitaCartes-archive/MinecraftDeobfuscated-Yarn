@@ -93,7 +93,7 @@ extends Item {
     private Optional<? extends RegistryEntry<Instrument>> getInstrument(ItemStack stack) {
         Identifier identifier;
         NbtCompound nbtCompound = stack.getNbt();
-        if (nbtCompound != null && (identifier = Identifier.tryParse(nbtCompound.getString(INSTRUMENT_KEY))) != null) {
+        if (nbtCompound != null && nbtCompound.contains(INSTRUMENT_KEY, 28) && (identifier = Identifier.tryParse(nbtCompound.getString(INSTRUMENT_KEY))) != null) {
             return Registries.INSTRUMENT.getEntry(RegistryKey.of(RegistryKeys.INSTRUMENT, identifier));
         }
         Iterator<RegistryEntry<Instrument>> iterator = Registries.INSTRUMENT.iterateEntries(this.instrumentTag).iterator();

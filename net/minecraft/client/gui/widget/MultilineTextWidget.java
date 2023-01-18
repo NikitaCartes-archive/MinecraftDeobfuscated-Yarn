@@ -20,7 +20,7 @@ extends ClickableWidget {
     private final int fontHeight;
     private final boolean centered;
 
-    private MultilineTextWidget(MultilineText multilineText, TextRenderer textRenderer, Text text, boolean centered) {
+    protected MultilineTextWidget(MultilineText multilineText, TextRenderer textRenderer, Text text, boolean centered) {
         super(0, 0, multilineText.getMaxWidth(), multilineText.count() * textRenderer.fontHeight, text);
         this.text = multilineText;
         this.fontHeight = textRenderer.fontHeight;

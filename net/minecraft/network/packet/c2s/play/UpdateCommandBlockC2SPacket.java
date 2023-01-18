@@ -4,9 +4,9 @@
 package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.block.entity.CommandBlockBlockEntity;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.util.math.BlockPos;
 
 public class UpdateCommandBlockC2SPacket

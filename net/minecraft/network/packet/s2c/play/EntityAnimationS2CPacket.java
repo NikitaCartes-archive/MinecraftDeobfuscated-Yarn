@@ -4,14 +4,13 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class EntityAnimationS2CPacket
 implements Packet<ClientPlayPacketListener> {
     public static final int SWING_MAIN_HAND = 0;
-    public static final int DAMAGE = 1;
     public static final int WAKE_UP = 2;
     public static final int SWING_OFF_HAND = 3;
     public static final int CRIT = 4;

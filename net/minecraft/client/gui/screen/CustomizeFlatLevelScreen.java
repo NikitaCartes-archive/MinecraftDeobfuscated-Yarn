@@ -138,11 +138,6 @@ extends Screen {
         }
 
         @Override
-        protected boolean isFocused() {
-            return CustomizeFlatLevelScreen.this.getFocused() == this;
-        }
-
-        @Override
         protected int getScrollbarPositionX() {
             return this.width - 70;
         }
@@ -215,7 +210,6 @@ extends Screen {
             }
 
             private void renderIconBackgroundTexture(MatrixStack matrices, int x, int y) {
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 RenderSystem.setShaderTexture(0, DrawableHelper.STATS_ICON_TEXTURE);
                 DrawableHelper.drawTexture(matrices, x, y, CustomizeFlatLevelScreen.this.getZOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
             }

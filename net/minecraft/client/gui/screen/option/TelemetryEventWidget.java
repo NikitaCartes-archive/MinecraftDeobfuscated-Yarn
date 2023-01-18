@@ -97,7 +97,7 @@ extends ScrollableWidget {
         int j = this.getX() + this.getPadding();
         matrices.push();
         matrices.translate((double)j, (double)i, 0.0);
-        this.contents.grid().render(matrices, mouseX, mouseY, delta);
+        this.contents.grid().forEachChild(widget -> widget.render(matrices, mouseX, mouseY, delta));
         matrices.pop();
     }
 
@@ -165,7 +165,7 @@ extends ScrollableWidget {
         }
 
         public Contents build() {
-            this.grid.recalculateDimensions();
+            this.grid.refreshPositions();
             return new Contents(this.grid, this.narration);
         }
     }

@@ -42,7 +42,7 @@ extends ConfirmScreen {
     }
 
     protected static MutableText getConfirmText(boolean linkTrusted, String link) {
-        return ConfirmLinkScreen.getConfirmText(linkTrusted).append(" ").append(Text.literal(link));
+        return ConfirmLinkScreen.getConfirmText(linkTrusted).append(ScreenTexts.SPACE).append(Text.literal(link));
     }
 
     protected static MutableText getConfirmText(boolean linkTrusted) {

@@ -42,7 +42,6 @@ implements DebugRenderer.Renderer {
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.disableTexture();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -54,7 +53,6 @@ implements DebugRenderer.Renderer {
             WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos.getX() + 0.5f - f) - cameraX, (double)((float)blockPos.getY() + 0.5f - f) - cameraY, (double)((float)blockPos.getZ() + 0.5f - f) - cameraZ, (double)((float)blockPos.getX() + 0.5f + f) - cameraX, (double)((float)blockPos.getY() + 0.5f + f) - cameraY, (double)((float)blockPos.getZ() + 0.5f + f) - cameraZ, this.reds.get(i).floatValue(), this.greens.get(i).floatValue(), this.blues.get(i).floatValue(), this.alphas.get(i).floatValue());
         }
         tessellator.draw();
-        RenderSystem.enableTexture();
     }
 }
 

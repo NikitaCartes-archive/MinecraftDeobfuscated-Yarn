@@ -102,7 +102,7 @@ extends ButtonWidget {
         if (action == Action.NOTHING) {
             return Pair.of(null, Text.literal(text));
         }
-        Text text2 = minigame ? (empty ? ScreenTexts.EMPTY : Text.literal(" ").append(text).append(" ").append(server.minigameName)) : Text.literal(" ").append(text);
+        Text text2 = minigame ? (empty ? ScreenTexts.EMPTY : ScreenTexts.space().append(text).append(ScreenTexts.SPACE).append(server.minigameName)) : ScreenTexts.space().append(text);
         Text text3 = action == Action.JOIN ? ACTIVE_TOOLTIP : (minigame ? MINIGAME_TOOLTIP : TOOLTIP);
         MutableText text4 = text3.copy().append(text2);
         return Pair.of(text3, text4);
@@ -138,8 +138,6 @@ extends ButtonWidget {
         }
         if (active) {
             RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
-        } else {
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
         RealmsWorldSlotButton.drawTexture(matrices, x + 3, y + 3, 0.0f, 0.0f, 74, 74, 74, 74);
         RenderSystem.setShaderTexture(0, SLOT_FRAME);
@@ -152,6 +150,7 @@ extends ButtonWidget {
             RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
         }
         RealmsWorldSlotButton.drawTexture(matrices, x, y, 0.0f, 0.0f, 80, 80, 80, 80);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         if (active) {
             this.drawCheckmark(matrices, x, y);
         }
@@ -160,7 +159,6 @@ extends ButtonWidget {
 
     private void drawCheckmark(MatrixStack matrices, int x, int y) {
         RenderSystem.setShaderTexture(0, CHECKMARK);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RealmsWorldSlotButton.drawTexture(matrices, x + 67, y + 4, 0.0f, 0.0f, 9, 8, 9, 8);

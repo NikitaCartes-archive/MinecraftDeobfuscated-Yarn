@@ -4,9 +4,9 @@
 package net.minecraft.network.packet.s2c.play;
 
 import java.util.BitSet;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.LightData;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.light.LightingProvider;

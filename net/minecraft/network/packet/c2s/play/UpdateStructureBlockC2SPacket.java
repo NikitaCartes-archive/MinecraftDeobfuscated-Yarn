@@ -5,9 +5,9 @@ package net.minecraft.network.packet.c2s.play;
 
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
@@ -57,9 +57,9 @@ implements Packet<ServerPlayPacketListener> {
         this.mode = buf.readEnumConstant(StructureBlockMode.class);
         this.templateName = buf.readString();
         int i = 48;
-        this.offset = new BlockPos(MathHelper.clamp((int)buf.readByte(), -48, 48), MathHelper.clamp((int)buf.readByte(), -48, 48), MathHelper.clamp((int)buf.readByte(), -48, 48));
+        this.offset = new BlockPos(MathHelper.clamp(buf.readByte(), -48, 48), MathHelper.clamp(buf.readByte(), -48, 48), MathHelper.clamp(buf.readByte(), -48, 48));
         int j = 48;
-        this.size = new Vec3i(MathHelper.clamp((int)buf.readByte(), 0, 48), MathHelper.clamp((int)buf.readByte(), 0, 48), MathHelper.clamp((int)buf.readByte(), 0, 48));
+        this.size = new Vec3i(MathHelper.clamp(buf.readByte(), 0, 48), MathHelper.clamp(buf.readByte(), 0, 48), MathHelper.clamp(buf.readByte(), 0, 48));
         this.mirror = buf.readEnumConstant(BlockMirror.class);
         this.rotation = buf.readEnumConstant(BlockRotation.class);
         this.metadata = buf.readString(128);

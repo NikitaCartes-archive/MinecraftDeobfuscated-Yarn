@@ -33,7 +33,6 @@ implements DebugRenderer.Renderer {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(0.0f, 1.0f, 0.0f, 0.75f);
-        RenderSystem.disableTexture();
         RenderSystem.lineWidth(6.0f);
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             fluidState = worldView.getFluidState(blockPos2);
@@ -46,7 +45,7 @@ implements DebugRenderer.Renderer {
             if (!fluidState.isIn(FluidTags.WATER)) continue;
             DebugRenderer.drawString(String.valueOf(fluidState.getLevel()), (double)blockPos2.getX() + 0.5, (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2), (double)blockPos2.getZ() + 0.5, -16777216);
         }
-        RenderSystem.enableTexture();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();
     }
 }

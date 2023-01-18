@@ -32,7 +32,6 @@ implements DebugRenderer.Renderer {
         ClientWorld world = this.client.world;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.disableTexture();
         BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
         LongOpenHashSet longSet = new LongOpenHashSet();
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
@@ -46,7 +45,6 @@ implements DebugRenderer.Renderer {
             if (i == 15) continue;
             DebugRenderer.drawString(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);
         }
-        RenderSystem.enableTexture();
     }
 }
 

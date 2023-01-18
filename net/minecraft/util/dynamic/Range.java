@@ -5,7 +5,6 @@ package net.minecraft.util.dynamic;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import java.util.function.Function;
 import net.minecraft.util.dynamic.Codecs;
 
 public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
@@ -22,7 +21,7 @@ public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
     }
 
     public static <T extends Comparable<T>> Codec<Range<T>> createRangedCodec(Codec<T> codec, T minInclusive, T maxInclusive) {
-        Function<Range, DataResult> function = range -> {
+        return Codecs.validate(Range.createCodec(codec), range -> {
             if (range.minInclusive().compareTo(minInclusive) < 0) {
                 return DataResult.error("Range limit too low, expected at least " + minInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]");
             }
@@ -30,8 +29,7 @@ public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
                 return DataResult.error("Range limit too high, expected at most " + maxInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]");
             }
             return DataResult.success(range);
-        };
-        return Range.createCodec(codec).flatXmap(function, function);
+        });
     }
 
     public static <T extends Comparable<T>> DataResult<Range<T>> validate(T minInclusive, T maxInclusive) {

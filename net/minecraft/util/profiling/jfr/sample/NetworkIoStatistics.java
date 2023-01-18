@@ -69,8 +69,8 @@ public final class NetworkIoStatistics {
             ImmutableMap.Builder builder = ImmutableMap.builder();
             for (NetworkState networkState : NetworkState.values()) {
                 for (NetworkSide networkSide : NetworkSide.values()) {
-                    Int2ObjectMap<Class<net.minecraft.network.Packet<?>>> int2ObjectMap = networkState.getPacketIdToPacketMap(networkSide);
-                    int2ObjectMap.forEach((BiConsumer<Integer, Class<net.minecraft.network.Packet<?>>>)((BiConsumer<Integer, Class>)(packetId, clazz) -> builder.put(new Packet(networkSide, networkState.getId(), (int)packetId), clazz.getSimpleName())));
+                    Int2ObjectMap<Class<net.minecraft.network.packet.Packet<?>>> int2ObjectMap = networkState.getPacketIdToPacketMap(networkSide);
+                    int2ObjectMap.forEach((BiConsumer<Integer, Class<net.minecraft.network.packet.Packet<?>>>)((BiConsumer<Integer, Class>)(packetId, clazz) -> builder.put(new Packet(networkSide, networkState.getId(), (int)packetId), clazz.getSimpleName())));
                 }
             }
             PACKET_TO_NAME = builder.build();

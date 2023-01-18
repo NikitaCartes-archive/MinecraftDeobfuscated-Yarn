@@ -198,7 +198,6 @@ extends DrawableHelper {
         int k = this.width - j;
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         int l = originY + this.y;
         int m = bl ? originX + this.x - this.width + 26 + 6 : originX + this.x;

@@ -148,19 +148,13 @@ extends RealmsScreen {
         RenderSystem.setShaderTexture(0, texture);
         if (hovered) {
             RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
-        } else {
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
         DrawableHelper.drawTexture(matrices, x + 2, y + 14, 0.0f, 0.0f, 56, 56, 56, 56);
         RenderSystem.setShaderTexture(0, SLOT_FRAME_TEXTURE);
-        if (hovered) {
-            RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
-        } else {
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        }
         DrawableHelper.drawTexture(matrices, x, y + 12, 0.0f, 0.0f, 60, 60, 60, 60);
         int i = hovered ? 0xA0A0A0 : 0xFFFFFF;
         RealmsResetWorldScreen.drawCenteredText(matrices, this.textRenderer, text, x + 30, y, i);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     private void executeLongRunningTask(LongRunningTask task) {

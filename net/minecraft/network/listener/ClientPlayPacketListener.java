@@ -10,6 +10,7 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
+import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
@@ -23,6 +24,7 @@ import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
@@ -127,6 +129,8 @@ extends PacketListener {
     public void onPlayerSpawn(PlayerSpawnS2CPacket var1);
 
     public void onEntityAnimation(EntityAnimationS2CPacket var1);
+
+    public void onDamageTilt(DamageTiltS2CPacket var1);
 
     public void onStatistics(StatisticsS2CPacket var1);
 
@@ -327,5 +331,7 @@ extends PacketListener {
     public void onChatSuggestions(ChatSuggestionsS2CPacket var1);
 
     public void onFeatures(FeaturesS2CPacket var1);
+
+    public void onBundle(BundleS2CPacket var1);
 }
 

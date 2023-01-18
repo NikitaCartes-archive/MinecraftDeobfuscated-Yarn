@@ -202,7 +202,6 @@ public class DebugRenderer {
         matrixStack.translate((float)(x - d), (float)(y - e) + 0.07f, (float)(z - f));
         matrixStack.multiplyPositionMatrix(new Matrix4f().rotation(camera.getRotation()));
         matrixStack.scale(size, -size, size);
-        RenderSystem.enableTexture();
         if (visibleThroughObjects) {
             RenderSystem.disableDepthTest();
         } else {
@@ -215,7 +214,6 @@ public class DebugRenderer {
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         textRenderer.draw(string, g -= offset / size, 0.0f, color, false, AffineTransformation.identity().getMatrix(), (VertexConsumerProvider)immediate, visibleThroughObjects, 0, 0xF000F0);
         immediate.draw();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableDepthTest();
         matrixStack.pop();
         RenderSystem.applyModelViewMatrix();

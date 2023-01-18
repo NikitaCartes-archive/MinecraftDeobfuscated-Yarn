@@ -7,33 +7,48 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Narratable;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AlwaysSelectedEntryListWidget<E extends Entry<E>>
 extends EntryListWidget<E> {
     private static final Text SELECTION_USAGE_TEXT = Text.translatable("narration.selection.usage");
-    private boolean inFocus;
 
     public AlwaysSelectedEntryListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
         super(minecraftClient, i, j, k, l, m);
     }
 
     @Override
-    public boolean changeFocus(boolean lookForwards) {
-        if (!this.inFocus && this.getEntryCount() == 0) {
-            return false;
+    @Nullable
+    public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+        if (this.getEntryCount() == 0) {
+            return null;
         }
-        boolean bl = this.inFocus = !this.inFocus;
-        if (this.inFocus && this.getSelectedOrNull() == null && this.getEntryCount() > 0) {
-            this.moveSelection(EntryListWidget.MoveDirection.DOWN);
-        } else if (this.inFocus && this.getSelectedOrNull() != null) {
-            this.ensureSelectedEntryVisible();
+        if (this.isFocused() && navigation instanceof GuiNavigation.Arrow) {
+            GuiNavigation.Arrow arrow = (GuiNavigation.Arrow)navigation;
+            Entry entry = (Entry)this.getNeighboringEntry(arrow.direction());
+            if (entry != null) {
+                return GuiNavigationPath.of(this, GuiNavigationPath.of(entry));
+            }
+            return null;
         }
-        return this.inFocus;
+        if (!this.isFocused()) {
+            Entry entry2 = (Entry)this.getSelectedOrNull();
+            if (entry2 == null) {
+                entry2 = (Entry)this.getNeighboringEntry(navigation.getDirection());
+            }
+            if (entry2 == null) {
+                return null;
+            }
+            return GuiNavigationPath.of(this, GuiNavigationPath.of(entry2));
+        }
+        return null;
     }
 
     @Override
@@ -58,11 +73,6 @@ extends EntryListWidget<E> {
     public static abstract class Entry<E extends Entry<E>>
     extends EntryListWidget.Entry<E>
     implements Narratable {
-        @Override
-        public boolean changeFocus(boolean lookForwards) {
-            return false;
-        }
-
         public abstract Text getNarration();
 
         @Override

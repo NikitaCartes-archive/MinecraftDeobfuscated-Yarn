@@ -256,11 +256,6 @@ extends Screen {
         }
 
         @Override
-        protected boolean isFocused() {
-            return PresetsScreen.this.getFocused() == this;
-        }
-
-        @Override
         public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
             if (super.keyPressed(keyCode, scanCode, modifiers)) {
                 return true;
@@ -309,7 +304,6 @@ extends Screen {
             }
 
             private void drawIconBackground(MatrixStack matrices, int x, int y) {
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 RenderSystem.setShaderTexture(0, DrawableHelper.STATS_ICON_TEXTURE);
                 DrawableHelper.drawTexture(matrices, x, y, PresetsScreen.this.getZOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
             }

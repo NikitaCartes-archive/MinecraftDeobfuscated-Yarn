@@ -59,7 +59,6 @@ implements DebugRenderer.Renderer {
         Vec3d vec3d = new Vec3d(cameraX, 0.0, cameraZ);
         this.entries.removeIf(Entry::hasExpired);
         this.listeners.removeIf(listener -> listener.isTooFar(world, vec3d));
-        RenderSystem.disableTexture();
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -110,7 +109,6 @@ implements DebugRenderer.Renderer {
             DebugRenderer.drawString(entry.event.getId(), vec3d2.x, vec3d2.y + (double)0.85f, vec3d2.z, -7564911, 0.0075f);
         }
         RenderSystem.depthMask(true);
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 

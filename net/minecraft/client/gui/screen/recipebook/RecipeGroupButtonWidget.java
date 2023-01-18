@@ -73,7 +73,6 @@ extends ToggleButtonWidget {
         if (this.toggled) {
             k -= 2;
         }
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         this.drawTexture(matrices, k, this.getY(), i, j, this.width, this.height);
         RenderSystem.enableDepthTest();
         this.renderIcons(minecraftClient.getItemRenderer());

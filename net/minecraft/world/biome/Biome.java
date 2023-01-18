@@ -82,12 +82,15 @@ public final class Biome {
         return this.spawnSettings;
     }
 
-    public Precipitation getPrecipitation() {
-        return this.weather.precipitation;
+    public boolean hasPrecipitation() {
+        return this.weather.hasPrecipitation();
     }
 
-    public boolean hasHighHumidity() {
-        return this.getDownfall() > 0.85f;
+    public Precipitation getPrecipitation(BlockPos pos) {
+        if (!this.hasPrecipitation()) {
+            return Precipitation.NONE;
+        }
+        return this.isCold(pos) ? Precipitation.SNOW : Precipitation.RAIN;
     }
 
     private float computeTemperature(BlockPos pos) {
@@ -152,10 +155,6 @@ public final class Biome {
         return this.getTemperature(pos) > 0.1f;
     }
 
-    public boolean isHot(BlockPos pos) {
-        return this.getTemperature(pos) > 1.0f;
-    }
-
     public boolean canSetSnow(WorldView world, BlockPos pos) {
         BlockState blockState;
         if (this.doesNotSnow(pos)) {
@@ -191,10 +190,6 @@ public final class Biome {
         double d = MathHelper.clamp(this.weather.temperature, 0.0f, 1.0f);
         double e = MathHelper.clamp(this.weather.downfall, 0.0f, 1.0f);
         return FoliageColors.getColor(d, e);
-    }
-
-    public float getDownfall() {
-        return this.weather.downfall;
     }
 
     public float getTemperature() {
@@ -233,35 +228,15 @@ public final class Biome {
         return this.effects.getMusic();
     }
 
-    record Weather(Precipitation precipitation, float temperature, TemperatureModifier temperatureModifier, float downfall) {
-        public static final MapCodec<Weather> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Precipitation.CODEC.fieldOf("precipitation")).forGetter(weather -> weather.precipitation), ((MapCodec)Codec.FLOAT.fieldOf("temperature")).forGetter(weather -> Float.valueOf(weather.temperature)), TemperatureModifier.CODEC.optionalFieldOf("temperature_modifier", TemperatureModifier.NONE).forGetter(weather -> weather.temperatureModifier), ((MapCodec)Codec.FLOAT.fieldOf("downfall")).forGetter(weather -> Float.valueOf(weather.downfall))).apply((Applicative<Weather, ?>)instance, Weather::new));
+    record Weather(boolean hasPrecipitation, float temperature, TemperatureModifier temperatureModifier, float downfall) {
+        public static final MapCodec<Weather> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Codec.BOOL.fieldOf("has_precipitation")).forGetter(weather -> weather.hasPrecipitation), ((MapCodec)Codec.FLOAT.fieldOf("temperature")).forGetter(weather -> Float.valueOf(weather.temperature)), TemperatureModifier.CODEC.optionalFieldOf("temperature_modifier", TemperatureModifier.NONE).forGetter(weather -> weather.temperatureModifier), ((MapCodec)Codec.FLOAT.fieldOf("downfall")).forGetter(weather -> Float.valueOf(weather.downfall))).apply((Applicative<Weather, ?>)instance, Weather::new));
     }
 
-    public static enum Precipitation implements StringIdentifiable
-    {
-        NONE("none"),
-        RAIN("rain"),
-        SNOW("snow");
+    public static enum Precipitation {
+        NONE,
+        RAIN,
+        SNOW;
 
-        public static final Codec<Precipitation> CODEC;
-        private final String name;
-
-        private Precipitation(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return this.name;
-        }
-
-        @Override
-        public String asString() {
-            return this.name;
-        }
-
-        static {
-            CODEC = StringIdentifiable.createCodec(Precipitation::values);
-        }
     }
 
     /*
@@ -316,8 +291,7 @@ public final class Biome {
     }
 
     public static class Builder {
-        @Nullable
-        private Precipitation precipitation;
+        private boolean precipitation = true;
         @Nullable
         private Float temperature;
         private TemperatureModifier temperatureModifier = TemperatureModifier.NONE;
@@ -330,7 +304,7 @@ public final class Biome {
         @Nullable
         private GenerationSettings generationSettings;
 
-        public Builder precipitation(Precipitation precipitation) {
+        public Builder precipitation(boolean precipitation) {
             this.precipitation = precipitation;
             return this;
         }
@@ -366,14 +340,14 @@ public final class Biome {
         }
 
         public Biome build() {
-            if (this.precipitation == null || this.temperature == null || this.downfall == null || this.specialEffects == null || this.spawnSettings == null || this.generationSettings == null) {
+            if (this.temperature == null || this.downfall == null || this.specialEffects == null || this.spawnSettings == null || this.generationSettings == null) {
                 throw new IllegalStateException("You are missing parameters to build a proper biome\n" + this);
             }
             return new Biome(new Weather(this.precipitation, this.temperature.floatValue(), this.temperatureModifier, this.downfall.floatValue()), this.specialEffects, this.generationSettings, this.spawnSettings);
         }
 
         public String toString() {
-            return "BiomeBuilder{\nprecipitation=" + this.precipitation + ",\ntemperature=" + this.temperature + ",\ntemperatureModifier=" + this.temperatureModifier + ",\ndownfall=" + this.downfall + ",\nspecialEffects=" + this.specialEffects + ",\nmobSpawnSettings=" + this.spawnSettings + ",\ngenerationSettings=" + this.generationSettings + ",\n}";
+            return "BiomeBuilder{\nhasPrecipitation=" + this.precipitation + ",\ntemperature=" + this.temperature + ",\ntemperatureModifier=" + this.temperatureModifier + ",\ndownfall=" + this.downfall + ",\nspecialEffects=" + this.specialEffects + ",\nmobSpawnSettings=" + this.spawnSettings + ",\ngenerationSettings=" + this.generationSettings + ",\n}";
         }
     }
 }

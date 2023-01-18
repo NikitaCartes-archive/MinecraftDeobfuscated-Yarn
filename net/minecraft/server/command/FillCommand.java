@@ -31,10 +31,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.GameRules;
 import org.jetbrains.annotations.Nullable;
 
 public class FillCommand {
-    private static final int MAX_BLOCKS = 32768;
     private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType((maxCount, count) -> Text.translatable("commands.fill.toobig", maxCount, count));
     static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.fill.failed"));
@@ -44,13 +44,14 @@ public class FillCommand {
     }
 
     private static int execute(ServerCommandSource source, BlockBox range, BlockStateArgument block, Mode mode, @Nullable Predicate<CachedBlockPosition> filter) throws CommandSyntaxException {
+        int j;
         int i = range.getBlockCountX() * range.getBlockCountY() * range.getBlockCountZ();
-        if (i > 32768) {
-            throw TOO_BIG_EXCEPTION.create(32768, i);
+        if (i > (j = source.getWorld().getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT))) {
+            throw TOO_BIG_EXCEPTION.create(j, i);
         }
         ArrayList<BlockPos> list = Lists.newArrayList();
         ServerWorld serverWorld = source.getWorld();
-        int j = 0;
+        int k = 0;
         for (BlockPos blockPos : BlockPos.iterate(range.getMinX(), range.getMinY(), range.getMinZ(), range.getMaxX(), range.getMaxY(), range.getMaxZ())) {
             BlockStateArgument blockStateArgument;
             if (filter != null && !filter.test(new CachedBlockPosition(serverWorld, blockPos, true)) || (blockStateArgument = mode.filter.filter(range, blockPos, block, serverWorld)) == null) continue;
@@ -58,17 +59,17 @@ public class FillCommand {
             Clearable.clear(blockEntity);
             if (!blockStateArgument.setBlockState(serverWorld, blockPos, Block.NOTIFY_LISTENERS)) continue;
             list.add(blockPos.toImmutable());
-            ++j;
+            ++k;
         }
         for (BlockPos blockPos : list) {
             Block block2 = serverWorld.getBlockState(blockPos).getBlock();
             serverWorld.updateNeighbors(blockPos, block2);
         }
-        if (j == 0) {
+        if (k == 0) {
             throw FAILED_EXCEPTION.create();
         }
-        source.sendFeedback(Text.translatable("commands.fill.success", j), true);
-        return j;
+        source.sendFeedback(Text.translatable("commands.fill.success", k), true);
+        return k;
     }
 
     static enum Mode {

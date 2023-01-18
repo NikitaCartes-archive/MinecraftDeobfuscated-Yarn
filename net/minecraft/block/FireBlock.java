@@ -18,6 +18,7 @@ import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.TntBlock;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -162,7 +163,7 @@ extends AbstractFireBlock {
                 return;
             }
         }
-        int k = (bl2 = world.hasHighHumidity(pos)) ? -50 : 0;
+        int k = (bl2 = world.getBiome(pos).isIn(BiomeTags.INCREASED_FIRE_BURNOUT)) ? -50 : 0;
         this.trySpreadingFire(world, pos.east(), 300 + k, random, i);
         this.trySpreadingFire(world, pos.west(), 300 + k, random, i);
         this.trySpreadingFire(world, pos.down(), 250 + k, random, i);

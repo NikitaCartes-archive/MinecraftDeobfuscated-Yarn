@@ -309,7 +309,6 @@ AutoCloseable {
         int m = -1;
         float g = (float)this.ticks + tickDelta;
         RenderSystem.setShader(GameRenderer::getParticleProgram);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int n = k - l; n <= k + l; ++n) {
             for (int o = i - l; o <= i + l; ++o) {
@@ -321,7 +320,7 @@ AutoCloseable {
                 double e = (double)this.field_20795[p] * 0.5;
                 mutable.set((double)o, cameraY, (double)n);
                 Biome biome = world.getBiome(mutable).value();
-                if (biome.getPrecipitation() == Biome.Precipitation.NONE) continue;
+                if (!biome.hasPrecipitation()) continue;
                 int q = world.getTopY(Heightmap.Type.MOTION_BLOCKING, o, n);
                 int r = j - l;
                 int s = j + l;
@@ -337,7 +336,8 @@ AutoCloseable {
                 if (r == s) continue;
                 Random random = Random.create(o * o * 3121 + o * 45238971 ^ n * n * 418711 + n * 13761);
                 mutable.set(o, r, n);
-                if (biome.doesNotSnow(mutable)) {
+                Biome.Precipitation precipitation = biome.getPrecipitation(mutable);
+                if (precipitation == Biome.Precipitation.RAIN) {
                     if (m != 0) {
                         if (m >= 0) {
                             tessellator.draw();
@@ -360,6 +360,7 @@ AutoCloseable {
                     bufferBuilder.vertex((double)o - cameraX - d + 0.5, (double)r - cameraY, (double)n - cameraZ - e + 0.5).texture(0.0f, (float)s * 0.25f + h).color(1.0f, 1.0f, 1.0f, y).light(z).next();
                     continue;
                 }
+                if (precipitation != Biome.Precipitation.SNOW) continue;
                 if (m != 1) {
                     if (m >= 0) {
                         tessellator.draw();
@@ -406,11 +407,11 @@ AutoCloseable {
         Vec3i blockPos2 = null;
         int i = (int)(100.0f * f * f) / (this.client.options.getParticles().getValue() == ParticlesMode.DECREASED ? 2 : 1);
         for (int j = 0; j < i; ++j) {
+            Biome biome;
+            int l;
             int k = random.nextInt(21) - 10;
-            int l = random.nextInt(21) - 10;
-            BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l));
-            Biome biome = worldView.getBiome(blockPos3).value();
-            if (blockPos3.getY() <= worldView.getBottomY() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !biome.doesNotSnow(blockPos3)) continue;
+            BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l = random.nextInt(21) - 10));
+            if (blockPos3.getY() <= worldView.getBottomY() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || (biome = worldView.getBiome(blockPos3).value()).getPrecipitation(blockPos3) != Biome.Precipitation.RAIN) continue;
             blockPos2 = blockPos3.down();
             if (this.client.options.getParticles().getValue() == ParticlesMode.MINIMAL) break;
             double d = random.nextDouble();
@@ -1365,7 +1366,6 @@ AutoCloseable {
             RenderSystem.disableCull();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
-            RenderSystem.disableTexture();
             for (ChunkInfo chunkInfo : this.chunkInfos) {
                 int i;
                 ChunkBuilder.BuiltChunk builtChunk = chunkInfo.chunk;
@@ -1445,11 +1445,9 @@ AutoCloseable {
             RenderSystem.depthMask(true);
             RenderSystem.disableBlend();
             RenderSystem.enableCull();
-            RenderSystem.enableTexture();
         }
         if (this.capturedFrustum != null) {
             RenderSystem.disableCull();
-            RenderSystem.disableTexture();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.lineWidth(5.0f);
@@ -1470,7 +1468,6 @@ AutoCloseable {
             RenderSystem.depthMask(false);
             RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
             bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             this.method_22984(bufferBuilder, 0);
             this.method_22984(bufferBuilder, 1);
             this.method_22984(bufferBuilder, 1);
@@ -1501,7 +1498,6 @@ AutoCloseable {
             RenderSystem.depthMask(true);
             RenderSystem.disableBlend();
             RenderSystem.enableCull();
-            RenderSystem.enableTexture();
             RenderSystem.lineWidth(1.0f);
         }
     }
@@ -1585,7 +1581,6 @@ AutoCloseable {
             matrices.pop();
         }
         RenderSystem.depthMask(true);
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 
@@ -1611,7 +1606,6 @@ AutoCloseable {
         if (this.client.world.getDimensionEffects().getSkyType() != DimensionEffects.SkyType.NORMAL) {
             return;
         }
-        RenderSystem.disableTexture();
         Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.getCamera().getPos(), tickDelta);
         float f = (float)vec3d.x;
         float g = (float)vec3d.y;
@@ -1629,7 +1623,6 @@ AutoCloseable {
         float[] fs = this.world.getDimensionEffects().getFogColorOverride(this.world.getSkyAngle(tickDelta), tickDelta);
         if (fs != null) {
             RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-            RenderSystem.disableTexture();
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             matrices.push();
             matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0f));
@@ -1652,7 +1645,6 @@ AutoCloseable {
             BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
             matrices.pop();
         }
-        RenderSystem.enableTexture();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
         matrices.push();
         i = 1.0f - this.world.getRainGradient(tickDelta);
@@ -1684,7 +1676,6 @@ AutoCloseable {
         bufferBuilder.vertex(matrix4f2, k, -100.0f, -k).texture(t, o).next();
         bufferBuilder.vertex(matrix4f2, -k, -100.0f, -k).texture(p, o).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-        RenderSystem.disableTexture();
         float u = this.world.method_23787(tickDelta) * i;
         if (u > 0.0f) {
             RenderSystem.setShaderColor(u, u, u, u);
@@ -1697,7 +1688,6 @@ AutoCloseable {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();
         matrices.pop();
-        RenderSystem.disableTexture();
         RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, 1.0f);
         double d = this.client.player.getCameraPosVec((float)tickDelta).y - this.world.getLevelProperties().getSkyDarknessHeight(this.world);
         if (d < 0.0) {
@@ -1708,12 +1698,7 @@ AutoCloseable {
             VertexBuffer.unbind();
             matrices.pop();
         }
-        if (this.world.getDimensionEffects().isAlternateSkyColor()) {
-            RenderSystem.setShaderColor(f * 0.2f + 0.04f, g * 0.2f + 0.04f, h * 0.6f + 0.1f, 1.0f);
-        } else {
-            RenderSystem.setShaderColor(f, g, h, 1.0f);
-        }
-        RenderSystem.enableTexture();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.depthMask(true);
     }
 
@@ -1793,7 +1778,6 @@ AutoCloseable {
             VertexBuffer.unbind();
         }
         matrices.pop();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
     }
@@ -2029,6 +2013,7 @@ AutoCloseable {
         RenderSystem.disableBlend();
         matrixStack.pop();
         RenderSystem.applyModelViewMatrix();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.depthMask(true);
     }
 

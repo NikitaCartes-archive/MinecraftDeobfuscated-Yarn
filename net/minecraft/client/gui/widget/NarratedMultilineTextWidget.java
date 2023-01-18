@@ -1,0 +1,65 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.client.gui.widget;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.gui.widget.MultilineTextWidget;
+import net.minecraft.client.sound.SoundManager;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringVisitable;
+import net.minecraft.text.Text;
+
+@Environment(value=EnvType.CLIENT)
+public class NarratedMultilineTextWidget
+extends MultilineTextWidget {
+    private final Text title;
+    private static final int FOCUSED_BORDER_COLOR = -1;
+    private static final int UNFOCUSED_BORDER_COLOR = -6250336;
+    private static final int BACKGROUND_COLOR = 0x55000000;
+    private static final int EXPANSION = 3;
+    private static final int BORDER_WIDTH = 1;
+
+    public NarratedMultilineTextWidget(TextRenderer textRenderer, Text text, int width) {
+        super(MultilineText.create(textRenderer, (StringVisitable)text, width), textRenderer, text, true);
+        this.title = text;
+        this.active = true;
+    }
+
+    @Override
+    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+        builder.put(NarrationPart.TITLE, this.title);
+    }
+
+    @Override
+    protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
+        int i = this.getX() - 3;
+        int j = this.getY() - 3;
+        int k = this.getX() + this.width + 3;
+        int l = this.getY() + this.height + 3;
+        int m = this.isFocused() ? -1 : -6250336;
+        NarratedMultilineTextWidget.fill(matrices, i - 1, j - 1, i, l + 1, m);
+        NarratedMultilineTextWidget.fill(matrices, k, j - 1, k + 1, l + 1, m);
+        NarratedMultilineTextWidget.fill(matrices, i, j, k, j - 1, m);
+        NarratedMultilineTextWidget.fill(matrices, i, l, k, l + 1, m);
+        NarratedMultilineTextWidget.fill(matrices, i, j, k, l, 0x55000000);
+        super.renderBackground(matrices, client, mouseX, mouseY);
+    }
+
+    @Override
+    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        this.renderBackground(matrices, MinecraftClient.getInstance(), mouseX, mouseY);
+        super.renderButton(matrices, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public void playDownSound(SoundManager soundManager) {
+    }
+}
+

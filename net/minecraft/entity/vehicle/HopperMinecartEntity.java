@@ -20,16 +20,12 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class HopperMinecartEntity
 extends StorageMinecartEntity
 implements Hopper {
-    public static final int MAX_TRANSFER_COOLDOWN = 4;
     private boolean enabled = true;
-    private int transferCooldown = -1;
-    private final BlockPos currentBlockPos = BlockPos.ORIGIN;
 
     public HopperMinecartEntity(EntityType<? extends HopperMinecartEntity> entityType, World world) {
         super(entityType, world);
@@ -94,20 +90,8 @@ implements Hopper {
     @Override
     public void tick() {
         super.tick();
-        if (!this.world.isClient && this.isAlive() && this.isEnabled()) {
-            BlockPos blockPos = this.getBlockPos();
-            if (blockPos.equals(this.currentBlockPos)) {
-                --this.transferCooldown;
-            } else {
-                this.setTransferCooldown(0);
-            }
-            if (!this.isCoolingDown()) {
-                this.setTransferCooldown(0);
-                if (this.canOperate()) {
-                    this.setTransferCooldown(4);
-                    this.markDirty();
-                }
-            }
+        if (!this.world.isClient && this.isAlive() && this.isEnabled() && this.canOperate()) {
+            this.markDirty();
         }
     }
 
@@ -116,8 +100,9 @@ implements Hopper {
             return true;
         }
         List<Entity> list = this.world.getEntitiesByClass(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
-        if (!list.isEmpty()) {
-            HopperBlockEntity.extract(this, (ItemEntity)list.get(0));
+        for (ItemEntity itemEntity : list) {
+            if (!HopperBlockEntity.extract(this, itemEntity)) continue;
+            return true;
         }
         return false;
     }
@@ -130,23 +115,13 @@ implements Hopper {
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("TransferCooldown", this.transferCooldown);
         nbt.putBoolean("Enabled", this.enabled);
     }
 
     @Override
     protected void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.transferCooldown = nbt.getInt("TransferCooldown");
         this.enabled = nbt.contains("Enabled") ? nbt.getBoolean("Enabled") : true;
-    }
-
-    public void setTransferCooldown(int transferCooldown) {
-        this.transferCooldown = transferCooldown;
-    }
-
-    public boolean isCoolingDown() {
-        return this.transferCooldown > 0;
     }
 
     @Override

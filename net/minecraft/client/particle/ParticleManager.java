@@ -415,7 +415,6 @@ implements ResourceReloader {
             Iterable iterable = this.particles.get(particleTextureSheet);
             if (iterable == null) continue;
             RenderSystem.setShader(GameRenderer::getParticleProgram);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuffer();
             particleTextureSheet.begin(bufferBuilder, this.textureManager);

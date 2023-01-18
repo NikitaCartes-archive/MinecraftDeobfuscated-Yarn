@@ -93,9 +93,9 @@ extends Screen {
             button.active = false;
             this.client.getAbuseReportContext().tryShowDraftScreen(this.client, this, this::disconnect, true);
         }).width(204).build(), 2);
-        gridWidget.recalculateDimensions();
+        gridWidget.refreshPositions();
         SimplePositioningWidget.setPos(gridWidget, 0, 0, this.width, this.height, 0.5f, 0.25f);
-        this.addDrawableChild(gridWidget);
+        gridWidget.forEachChild(this::addDrawableChild);
     }
 
     private void disconnect() {
@@ -130,7 +130,6 @@ extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
         if (this.showMenu && this.client != null && this.client.getAbuseReportContext().hasDraft() && this.exitButton != null) {
             RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             this.drawTexture(matrices, this.exitButton.getX() + this.exitButton.getWidth() - 17, this.exitButton.getY() + 3, 182, 24, 15, 15);
         }
     }

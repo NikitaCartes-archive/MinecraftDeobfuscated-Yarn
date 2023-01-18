@@ -11,9 +11,7 @@ import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,7 +27,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.NbtByteArray;
 import net.minecraft.nbt.NbtCompound;
@@ -37,7 +34,6 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIntArray;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtLongArray;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.nbt.NbtTypes;
 import net.minecraft.nbt.StringNbtReader;
@@ -554,31 +550,6 @@ public final class NbtHelper {
     }
 
     /**
-     * Uses the data fixer to update an NBT compound object to the latest data version.
-     * 
-     * @param oldVersion the data version of the NBT compound object
-     * @param fixer the data fixer
-     * @param fixTypes the fix types
-     * @param compound the NBT compound object to fix
-     */
-    public static NbtCompound update(DataFixer fixer, DataFixTypes fixTypes, NbtCompound compound, int oldVersion) {
-        return NbtHelper.update(fixer, fixTypes, compound, oldVersion, SharedConstants.getGameVersion().getWorldVersion());
-    }
-
-    /**
-     * Uses the data fixer to update an NBT compound object.
-     * 
-     * @param fixTypes the fix types
-     * @param fixer the data fixer
-     * @param oldVersion the data version of the NBT compound object
-     * @param compound the NBT compound object to fix
-     * @param targetVersion the data version to update the NBT compound object to
-     */
-    public static NbtCompound update(DataFixer fixer, DataFixTypes fixTypes, NbtCompound compound, int oldVersion, int targetVersion) {
-        return fixer.update(fixTypes.getTypeReference(), new Dynamic<NbtCompound>(NbtOps.INSTANCE, compound), oldVersion, targetVersion).getValue();
-    }
-
-    /**
      * {@return the pretty-printed text representation of {@code element}}
      * 
      * @see net.minecraft.nbt.visitor.NbtTextFormatter
@@ -718,6 +689,20 @@ public final class NbtHelper {
         }
         nbtCompound.putString("Name", string2);
         return nbtCompound;
+    }
+
+    public static NbtCompound putDataVersion(NbtCompound nbt) {
+        int i = SharedConstants.getGameVersion().getSaveVersion().getId();
+        return NbtHelper.putDataVersion(nbt, i);
+    }
+
+    public static NbtCompound putDataVersion(NbtCompound nbt, int dataVersion) {
+        nbt.putInt("DataVersion", dataVersion);
+        return nbt;
+    }
+
+    public static int getDataVersion(NbtCompound nbt, int fallback) {
+        return nbt.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbt.getInt("DataVersion") : fallback;
     }
 }
 

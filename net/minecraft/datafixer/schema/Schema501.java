@@ -15,14 +15,10 @@ extends Schema {
         super(versionKey, parent);
     }
 
-    protected static void targetEntityItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
-        schema.register(map, entityId, () -> Schema100.targetItems(schema));
-    }
-
     @Override
     public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
         Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-        Schema501.targetEntityItems(schema, map, "PolarBear");
+        schema.register(map, "PolarBear", () -> Schema100.targetItems(schema));
         return map;
     }
 }

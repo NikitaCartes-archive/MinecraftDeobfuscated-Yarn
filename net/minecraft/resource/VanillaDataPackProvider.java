@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class VanillaDataPackProvider
 extends VanillaResourcePackProvider {
-    private static final PackResourceMetadata METADATA = new PackResourceMetadata(Text.translatable("dataPack.vanilla.description"), ResourceType.SERVER_DATA.getPackVersion(SharedConstants.getGameVersion()));
+    private static final PackResourceMetadata METADATA = new PackResourceMetadata(Text.translatable("dataPack.vanilla.description"), SharedConstants.getGameVersion().getResourceVersion(ResourceType.SERVER_DATA));
     private static final PackFeatureSetMetadata FEATURE_FLAGS = new PackFeatureSetMetadata(FeatureFlags.DEFAULT_ENABLED_FEATURES);
     private static final ResourceMetadataMap METADATA_MAP = ResourceMetadataMap.of(PackResourceMetadata.SERIALIZER, METADATA, PackFeatureSetMetadata.SERIALIZER, FEATURE_FLAGS);
     private static final Text NAME = Text.translatable("dataPack.vanilla.name");

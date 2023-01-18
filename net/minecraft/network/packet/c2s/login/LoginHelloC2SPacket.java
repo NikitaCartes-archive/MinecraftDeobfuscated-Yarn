@@ -5,9 +5,9 @@ package net.minecraft.network.packet.c2s.login;
 
 import java.util.Optional;
 import java.util.UUID;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerLoginPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public record LoginHelloC2SPacket(String name, Optional<UUID> profileId) implements Packet<ServerLoginPacketListener>
 {

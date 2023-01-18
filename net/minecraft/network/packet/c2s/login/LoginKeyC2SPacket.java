@@ -7,11 +7,11 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.Arrays;
 import javax.crypto.SecretKey;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ServerLoginPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class LoginKeyC2SPacket
 implements Packet<ServerLoginPacketListener> {

@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -25,23 +26,21 @@ import org.jetbrains.annotations.Nullable;
 
 public class TranslatableTextContent
 implements TextContent {
-    private static final Object[] EMPTY_ARGUMENTS = new Object[0];
+    public static final Object[] EMPTY_ARGUMENTS = new Object[0];
     private static final StringVisitable LITERAL_PERCENT_SIGN = StringVisitable.plain("%");
     private static final StringVisitable NULL_ARGUMENT = StringVisitable.plain("null");
     private final String key;
+    @Nullable
+    private final String fallback;
     private final Object[] args;
     @Nullable
     private Language languageCache;
     private List<StringVisitable> translations = ImmutableList.of();
     private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
-    public TranslatableTextContent(String key) {
+    public TranslatableTextContent(String key, @Nullable String fallback, Object[] args) {
         this.key = key;
-        this.args = EMPTY_ARGUMENTS;
-    }
-
-    public TranslatableTextContent(String key, Object ... args) {
-        this.key = key;
+        this.fallback = fallback;
         this.args = args;
     }
 
@@ -51,7 +50,7 @@ implements TextContent {
             return;
         }
         this.languageCache = language;
-        String string = language.get(this.key);
+        String string = this.fallback != null ? language.get(this.key, this.fallback) : language.get(this.key);
         try {
             ImmutableList.Builder builder = ImmutableList.builder();
             this.forEachPart(string, builder::add);
@@ -103,11 +102,8 @@ implements TextContent {
     }
 
     private StringVisitable getArg(int index) {
-        if (index < 0) {
+        if (index < 0 || index >= this.args.length) {
             throw new TranslationException(this, index);
-        }
-        if (index >= this.args.length) {
-            return Text.EMPTY;
         }
         Object object = this.args[index];
         if (object instanceof Text) {
@@ -145,7 +141,7 @@ implements TextContent {
             Object object = this.args[i];
             objects[i] = object instanceof Text ? Texts.parse(source, (Text)object, sender, depth) : object;
         }
-        return MutableText.of(new TranslatableTextContent(this.key, objects));
+        return MutableText.of(new TranslatableTextContent(this.key, this.fallback, objects));
     }
 
     /*
@@ -158,23 +154,30 @@ implements TextContent {
         }
         if (!(o instanceof TranslatableTextContent)) return false;
         TranslatableTextContent translatableTextContent = (TranslatableTextContent)o;
-        if (!this.key.equals(translatableTextContent.key)) return false;
+        if (!Objects.equals(this.key, translatableTextContent.key)) return false;
+        if (!Objects.equals(this.fallback, translatableTextContent.fallback)) return false;
         if (!Arrays.equals(this.args, translatableTextContent.args)) return false;
         return true;
     }
 
     public int hashCode() {
-        int i = this.key.hashCode();
+        int i = Objects.hashCode(this.key);
+        i = 31 * i + Objects.hashCode(this.fallback);
         i = 31 * i + Arrays.hashCode(this.args);
         return i;
     }
 
     public String toString() {
-        return "translation{key='" + this.key + "', args=" + Arrays.toString(this.args) + "}";
+        return "translation{key='" + this.key + "'" + (String)(this.fallback != null ? ", fallback='" + this.fallback + "'" : "") + ", args=" + Arrays.toString(this.args) + "}";
     }
 
     public String getKey() {
         return this.key;
+    }
+
+    @Nullable
+    public String getFallback() {
+        return this.fallback;
     }
 
     public Object[] getArgs() {

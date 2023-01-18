@@ -170,7 +170,7 @@ extends Screen {
 
             @Override
             protected MutableText getNarrationMessage() {
-                return ScreenTexts.joinSentences(super.getNarrationMessage(), Text.translatable("selectWorld.resultFolder")).append(" ").append(CreateWorldScreen.this.saveDirectoryName);
+                return ScreenTexts.joinSentences(super.getNarrationMessage(), Text.translatable("selectWorld.resultFolder")).append(ScreenTexts.SPACE).append(CreateWorldScreen.this.saveDirectoryName);
             }
         };
         this.levelNameField.setText(this.levelName);
@@ -182,7 +182,7 @@ extends Screen {
         this.addSelectableChild(this.levelNameField);
         int i = this.width / 2 - 155;
         int j = this.width / 2 + 5;
-        this.gameModeSwitchButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.builder(Mode::asText).values((Mode[])new Mode[]{Mode.SURVIVAL, Mode.HARDCORE, Mode.CREATIVE}).initially(this.currentMode).narration(button -> ClickableWidget.getNarrationMessage(button.getMessage()).append(ScreenTexts.SENTENCE_SEPARATOR).append(this.firstGameModeDescriptionLine).append(" ").append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (button, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
+        this.gameModeSwitchButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.builder(Mode::asText).values((Mode[])new Mode[]{Mode.SURVIVAL, Mode.HARDCORE, Mode.CREATIVE}).initially(this.currentMode).narration(button -> ClickableWidget.getNarrationMessage(button.getMessage()).append(ScreenTexts.SENTENCE_SEPARATOR).append(this.firstGameModeDescriptionLine).append(ScreenTexts.SPACE).append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (button, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
         this.difficultyButton = this.addDrawableChild((Element & Drawable)CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(this.getDifficulty()).build(j, 100, 150, 20, Text.translatable("options.difficulty"), (button, difficulty) -> {
             this.currentDifficulty = difficulty;
         }));
@@ -371,7 +371,7 @@ extends Screen {
             this.moreOptionsDialog.render(matrices, mouseX, mouseY, delta);
         } else {
             CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, ENTER_NAME_TEXT, this.width / 2 - 100, 47, -6250336);
-            CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, Text.empty().append(RESULT_FOLDER_TEXT).append(" ").append(this.saveDirectoryName), this.width / 2 - 100, 85, -6250336);
+            CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, Text.empty().append(RESULT_FOLDER_TEXT).append(ScreenTexts.SPACE).append(this.saveDirectoryName), this.width / 2 - 100, 85, -6250336);
             this.levelNameField.render(matrices, mouseX, mouseY, delta);
             CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 150, 122, -6250336);
             CreateWorldScreen.drawTextWithShadow(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 150, 134, -6250336);

@@ -25,6 +25,8 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.ParentElement;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.pack.PackListWidget;
@@ -133,8 +135,26 @@ extends Screen {
 
     private void updatePackList(PackListWidget widget, Stream<ResourcePackOrganizer.Pack> packs) {
         widget.children().clear();
+        PackListWidget.ResourcePackEntry resourcePackEntry = (PackListWidget.ResourcePackEntry)widget.getSelectedOrNull();
+        String string = resourcePackEntry == null ? "" : resourcePackEntry.getName();
         widget.setSelected(null);
-        packs.forEach(pack -> widget.children().add(new PackListWidget.ResourcePackEntry(this.client, widget, this, (ResourcePackOrganizer.Pack)pack)));
+        packs.forEach(pack -> {
+            PackListWidget.ResourcePackEntry resourcePackEntry = new PackListWidget.ResourcePackEntry(this.client, widget, (ResourcePackOrganizer.Pack)pack);
+            widget.children().add(resourcePackEntry);
+            if (pack.getName().equals(string)) {
+                widget.setSelected(resourcePackEntry);
+            }
+        });
+    }
+
+    public void switchFocusedList(ResourcePackOrganizer.Pack pack, PackListWidget listWidget) {
+        PackListWidget packListWidget = this.selectedPackList == listWidget ? this.availablePackList : this.selectedPackList;
+        this.switchFocus(GuiNavigationPath.of(packListWidget.getFirst(), new ParentElement[]{packListWidget, this}));
+    }
+
+    public void clearSelection() {
+        this.selectedPackList.setSelected(null);
+        this.availablePackList.setSelected(null);
     }
 
     private void refresh() {
@@ -146,7 +166,7 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackgroundTexture(0);
+        this.renderBackgroundTexture(matrices);
         this.availablePackList.render(matrices, mouseX, mouseY, delta);
         this.selectedPackList.render(matrices, mouseX, mouseY, delta);
         PackScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);

@@ -22,12 +22,12 @@ import net.minecraft.client.gui.screen.option.VideoOptionsScreen;
 import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.widget.AxisGridWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.EmptyWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
@@ -80,12 +80,12 @@ extends Screen {
         adder.add(this.createButton(ACCESSIBILITY_TEXT, () -> new AccessibilityOptionsScreen(this, this.settings)));
         adder.add(this.createButton(TELEMETRY_TEXT, () -> new TelemetryInfoScreen(this, this.settings)));
         adder.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).width(200).build(), 2, adder.copyPositioner().marginTop(6));
-        gridWidget.recalculateDimensions();
+        gridWidget.refreshPositions();
         SimplePositioningWidget.setPos(gridWidget, 0, this.height / 6 - 12, this.width, this.height, 0.5f, 0.0f);
-        this.addDrawableChild(gridWidget);
+        gridWidget.forEachChild(this::addDrawableChild);
     }
 
-    private ClickableWidget createTopRightButton() {
+    private Widget createTopRightButton() {
         if (this.client.world != null && this.client.isIntegratedServerRunning()) {
             this.difficultyButton = OptionsScreen.createDifficultyButtonWidget(0, 0, "options.difficulty", this.client);
             if (!this.client.world.getLevelProperties().isHardcore()) {
@@ -97,7 +97,6 @@ extends Screen {
                 AxisGridWidget axisGridWidget = new AxisGridWidget(150, 0, AxisGridWidget.DisplayAxis.HORIZONTAL);
                 axisGridWidget.add(this.difficultyButton);
                 axisGridWidget.add(this.lockDifficultyButton);
-                axisGridWidget.recalculateDimensions();
                 return axisGridWidget;
             }
             this.difficultyButton.active = false;

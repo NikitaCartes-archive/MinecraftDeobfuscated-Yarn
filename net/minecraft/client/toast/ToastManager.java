@@ -105,6 +105,10 @@ extends DrawableHelper {
         return this.client;
     }
 
+    public double getNotificationDisplayTimeMultiplier() {
+        return this.client.options.getNotificationDisplayTime().getValue();
+    }
+
     @Environment(value=EnvType.CLIENT)
     class Entry<T extends Toast> {
         private static final long DISAPPEAR_TIME = 600L;

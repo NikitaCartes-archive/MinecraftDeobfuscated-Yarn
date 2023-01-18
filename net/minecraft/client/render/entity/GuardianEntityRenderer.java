@@ -69,7 +69,7 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
         LivingEntity livingEntity = guardianEntity.getBeamTarget();
         if (livingEntity != null) {
             float h = guardianEntity.getBeamProgress(g);
-            float j = (float)guardianEntity.world.getTime() + g;
+            float j = guardianEntity.getBeamTicks() + g;
             float k = j * 0.5f % 1.0f;
             float l = guardianEntity.getStandingEyeHeight();
             matrixStack.push();

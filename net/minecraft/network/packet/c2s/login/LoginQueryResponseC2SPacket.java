@@ -3,9 +3,9 @@
  */
 package net.minecraft.network.packet.c2s.login;
 
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerLoginPacketListener;
+import net.minecraft.network.packet.Packet;
 import org.jetbrains.annotations.Nullable;
 
 public class LoginQueryResponseC2SPacket

@@ -3,9 +3,9 @@
  */
 package net.minecraft.network.packet.s2c.query;
 
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientQueryPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class QueryPongS2CPacket
 implements Packet<ClientQueryPacketListener> {

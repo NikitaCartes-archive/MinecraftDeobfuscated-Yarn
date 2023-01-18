@@ -18,6 +18,7 @@ import java.util.stream.Stream;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.timer.TimerCallback;
 import net.minecraft.world.timer.TimerCallbackSerializer;
 import org.slf4j.Logger;
@@ -36,17 +37,19 @@ public class Timer<T> {
         return Comparator.comparingLong(event -> event.triggerTime).thenComparing(event -> event.id);
     }
 
-    public Timer(TimerCallbackSerializer<T> timerCallbackSerializer, Stream<Dynamic<NbtElement>> nbts) {
+    public Timer(TimerCallbackSerializer<T> timerCallbackSerializer, Stream<? extends Dynamic<?>> nbts) {
         this(timerCallbackSerializer);
         this.events.clear();
         this.eventsByName.clear();
         this.eventCounter = UnsignedLong.ZERO;
         nbts.forEach(nbt -> {
-            if (!(nbt.getValue() instanceof NbtCompound)) {
-                LOGGER.warn("Invalid format of events: {}", nbt);
-                return;
+            NbtElement nbtElement = nbt.convert(NbtOps.INSTANCE).getValue();
+            if (nbtElement instanceof NbtCompound) {
+                NbtCompound nbtCompound = (NbtCompound)nbtElement;
+                this.addEvent(nbtCompound);
+            } else {
+                LOGGER.warn("Invalid format of events: {}", (Object)nbtElement);
             }
-            this.addEvent((NbtCompound)nbt.getValue());
         });
     }
 

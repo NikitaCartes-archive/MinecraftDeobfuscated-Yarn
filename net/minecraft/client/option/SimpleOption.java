@@ -33,6 +33,7 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.TranslatableOption;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -353,14 +354,13 @@ public final class SimpleOption<T> {
 
         @Override
         public Codec<Integer> codec() {
-            Function<Integer, DataResult> function = value -> {
+            return Codecs.validate(Codec.INT, value -> {
                 int i = this.maxSupplier.getAsInt() + 1;
                 if (value.compareTo(this.minInclusive) >= 0 && value.compareTo(i) <= 0) {
                     return DataResult.success(value);
                 }
                 return DataResult.error("Value " + value + " outside of range [" + this.minInclusive + ":" + i + "]", value);
-            };
-            return Codec.INT.flatXmap(function, function);
+            });
         }
 
         @Override

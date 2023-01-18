@@ -14,14 +14,8 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
@@ -189,20 +183,10 @@ extends Screen {
             int t = this.client.textRenderer.getWidth(string.substring(0, r)) - this.client.textRenderer.getWidth(string) / 2;
             int u = Math.min(s, t);
             int v = Math.max(s, t);
-            Tessellator tessellator = Tessellator.getInstance();
-            BufferBuilder bufferBuilder = tessellator.getBuffer();
-            RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-            RenderSystem.disableTexture();
             RenderSystem.enableColorLogicOp();
             RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-            bufferBuilder.vertex(matrix4f, u, m + this.blockEntity.getTextLineHeight(), 0.0f).color(0, 0, 255, 255).next();
-            bufferBuilder.vertex(matrix4f, v, m + this.blockEntity.getTextLineHeight(), 0.0f).color(0, 0, 255, 255).next();
-            bufferBuilder.vertex(matrix4f, v, m, 0.0f).color(0, 0, 255, 255).next();
-            bufferBuilder.vertex(matrix4f, u, m, 0.0f).color(0, 0, 255, 255).next();
-            BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+            AbstractSignEditScreen.fill(matrices, u, m, v, m + this.blockEntity.getTextLineHeight(), -16776961);
             RenderSystem.disableColorLogicOp();
-            RenderSystem.enableTexture();
         }
     }
 }

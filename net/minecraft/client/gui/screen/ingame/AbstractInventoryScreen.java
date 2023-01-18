@@ -19,6 +19,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
@@ -48,7 +49,6 @@ extends HandledScreen<T> {
         if (collection.isEmpty() || j < 32) {
             return;
         }
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         boolean bl = j >= 120;
         int k = 33;
         if (collection.size() > 5) {
@@ -79,7 +79,6 @@ extends HandledScreen<T> {
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
         int i = this.y;
         for (StatusEffectInstance statusEffectInstance : statusEffects) {
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             if (wide) {
                 this.drawTexture(matrices, x, i, 0, 166, 120, 32);
             } else {
@@ -115,7 +114,7 @@ extends HandledScreen<T> {
     private Text getStatusEffectDescription(StatusEffectInstance statusEffect) {
         MutableText mutableText = statusEffect.getEffectType().getName().copy();
         if (statusEffect.getAmplifier() >= 1 && statusEffect.getAmplifier() <= 9) {
-            mutableText.append(" ").append(Text.translatable("enchantment.level." + (statusEffect.getAmplifier() + 1)));
+            mutableText.append(ScreenTexts.SPACE).append(Text.translatable("enchantment.level." + (statusEffect.getAmplifier() + 1)));
         }
         return mutableText;
     }

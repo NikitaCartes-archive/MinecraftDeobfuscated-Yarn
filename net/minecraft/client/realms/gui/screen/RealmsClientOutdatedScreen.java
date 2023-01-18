@@ -5,6 +5,7 @@ package net.minecraft.client.realms.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
@@ -43,7 +44,7 @@ extends RealmsScreen {
     }
 
     private Text[] getLines() {
-        if (this.client.getGame().getVersion().isStable()) {
+        if (SharedConstants.getGameVersion().isStable()) {
             return INCOMPATIBLE_LINES;
         }
         return INCOMPATIBLE_LINES_UNSTABLE;

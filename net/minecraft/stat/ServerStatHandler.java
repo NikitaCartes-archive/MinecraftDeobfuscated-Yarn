@@ -91,10 +91,7 @@ extends StatHandler {
                 return;
             }
             NbtCompound nbtCompound = ServerStatHandler.jsonToCompound(jsonElement.getAsJsonObject());
-            if (!nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
-                nbtCompound.putInt("DataVersion", 1343);
-            }
-            if ((nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"))).contains("stats", NbtElement.COMPOUND_TYPE)) {
+            if ((nbtCompound = DataFixTypes.STATS.update(dataFixer, nbtCompound, NbtHelper.getDataVersion(nbtCompound, 1343))).contains("stats", NbtElement.COMPOUND_TYPE)) {
                 NbtCompound nbtCompound2 = nbtCompound.getCompound("stats");
                 for (String string : nbtCompound2.getKeys()) {
                     if (!nbtCompound2.contains(string, NbtElement.COMPOUND_TYPE)) continue;
@@ -146,7 +143,7 @@ extends StatHandler {
         }
         JsonObject jsonObject2 = new JsonObject();
         jsonObject2.add("stats", jsonObject);
-        jsonObject2.addProperty("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+        jsonObject2.addProperty("DataVersion", SharedConstants.getGameVersion().getSaveVersion().getId());
         return jsonObject2.toString();
     }
 

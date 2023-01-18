@@ -51,8 +51,8 @@ extends Screen {
     private static final int field_32426 = 236;
     private static final int field_32427 = 16;
     private static final int field_32428 = 64;
+    public static final int field_32433 = 72;
     public static final int field_32432 = 88;
-    public static final int field_32433 = 78;
     private static final int field_32429 = 238;
     private static final int field_32430 = 20;
     private static final int field_32431 = 36;
@@ -121,7 +121,7 @@ extends Screen {
         this.hiddenTabButton = this.addDrawableChild(ButtonWidget.builder(HIDDEN_TAB_TITLE, button -> this.setCurrentTab(Tab.HIDDEN)).dimensions((j + k - i) / 2 + 1, 45, i, 20).build());
         this.blockedTabButton = this.addDrawableChild(ButtonWidget.builder(BLOCKED_TAB_TITLE, button -> this.setCurrentTab(Tab.BLOCKED)).dimensions(k - i + 1, 45, i, 20).build());
         String string = this.searchBox != null ? this.searchBox.getText() : "";
-        this.searchBox = new TextFieldWidget(this.textRenderer, this.getSearchBoxX() + 28, 78, 196, 16, SEARCH_TEXT){
+        this.searchBox = new TextFieldWidget(this.textRenderer, this.getSearchBoxX() + 29, 75, 198, 13, SEARCH_TEXT){
 
             @Override
             protected MutableText getNarrationMessage() {
@@ -132,7 +132,6 @@ extends Screen {
             }
         };
         this.searchBox.setMaxLength(16);
-        this.searchBox.setDrawsBackground(false);
         this.searchBox.setVisible(true);
         this.searchBox.setEditableColor(0xFFFFFF);
         this.searchBox.setText(string);
@@ -214,11 +213,11 @@ extends Screen {
         if (!this.playerList.isEmpty()) {
             this.playerList.render(matrices, mouseX, mouseY, delta);
         } else if (!this.searchBox.getText().isEmpty()) {
-            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (78 + this.getPlayerListBottom()) / 2, -1);
+            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
         } else if (this.currentTab == Tab.HIDDEN) {
-            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (78 + this.getPlayerListBottom()) / 2, -1);
+            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
         } else if (this.currentTab == Tab.BLOCKED) {
-            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (78 + this.getPlayerListBottom()) / 2, -1);
+            SocialInteractionsScreen.drawCenteredText(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
         }
         this.searchBox.render(matrices, mouseX, mouseY, delta);
         this.blockingButton.visible = this.currentTab == Tab.BLOCKED;

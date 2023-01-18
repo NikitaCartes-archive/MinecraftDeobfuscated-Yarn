@@ -4,9 +4,9 @@
 package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.player.PlayerAbilities;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class PlayerAbilitiesS2CPacket
 implements Packet<ClientPlayPacketListener> {

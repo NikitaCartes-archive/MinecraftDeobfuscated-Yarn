@@ -3,10 +3,10 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.MessageType;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.text.Text;
 
 public record ProfilelessChatMessageS2CPacket(Text message, MessageType.Serialized chatType) implements Packet<ClientPlayPacketListener>

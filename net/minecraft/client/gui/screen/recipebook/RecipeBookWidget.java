@@ -109,9 +109,8 @@ RecipeDisplayListener {
         this.client.player.getInventory().populateRecipeFinder(this.recipeFinder);
         this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
         String string = this.searchField != null ? this.searchField.getText() : "";
-        this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, this.client.textRenderer.fontHeight + 5, Text.translatable("itemGroup.search"));
+        this.searchField = new TextFieldWidget(this.client.textRenderer, i + 26, j + 14, 79, this.client.textRenderer.fontHeight + 3, Text.translatable("itemGroup.search"));
         this.searchField.setMaxLength(50);
-        this.searchField.setDrawsBackground(false);
         this.searchField.setVisible(true);
         this.searchField.setEditableColor(0xFFFFFF);
         this.searchField.setText(string);
@@ -138,11 +137,6 @@ RecipeDisplayListener {
 
     private void updateTooltip() {
         this.toggleCraftableButton.setTooltip(this.toggleCraftableButton.isToggled() ? Tooltip.of(this.getToggleCraftableButtonText()) : Tooltip.of(TOGGLE_ALL_RECIPES_TEXT));
-    }
-
-    @Override
-    public boolean changeFocus(boolean lookForwards) {
-        return false;
     }
 
     protected void setBookButtonTexture() {
@@ -213,11 +207,11 @@ RecipeDisplayListener {
             RecipeBookGroup recipeBookGroup = recipeGroupButtonWidget.getCategory();
             if (recipeBookGroup == RecipeBookGroup.CRAFTING_SEARCH || recipeBookGroup == RecipeBookGroup.FURNACE_SEARCH) {
                 recipeGroupButtonWidget.visible = true;
-                recipeGroupButtonWidget.setPos(i, j + 27 * l++);
+                recipeGroupButtonWidget.setPosition(i, j + 27 * l++);
                 continue;
             }
             if (!recipeGroupButtonWidget.hasKnownRecipes(this.recipeBook)) continue;
-            recipeGroupButtonWidget.setPos(i, j + 27 * l++);
+            recipeGroupButtonWidget.setPosition(i, j + 27 * l++);
             recipeGroupButtonWidget.checkForNewRecipes(this.client);
         }
     }
@@ -253,7 +247,6 @@ RecipeDisplayListener {
         matrices.translate(0.0f, 0.0f, 100.0f);
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         int i = (this.parentWidth - 147) / 2 - this.leftOffset;
         int j = (this.parentHeight - 166) / 2;
         this.drawTexture(matrices, i, j, 1, 1, 147, 166);
@@ -377,7 +370,7 @@ RecipeDisplayListener {
         }
         if (this.client.options.chatKey.matchesKey(keyCode, scanCode) && !this.searchField.isFocused()) {
             this.searching = true;
-            this.searchField.setTextFieldFocused(true);
+            this.searchField.setFocused(true);
             return true;
         }
         return false;
@@ -409,6 +402,15 @@ RecipeDisplayListener {
         return false;
     }
 
+    @Override
+    public void setFocused(boolean focused) {
+    }
+
+    @Override
+    public boolean isFocused() {
+        return false;
+    }
+
     private void refreshSearchResults() {
         String string = this.searchField.getText().toLowerCase(Locale.ROOT);
         this.triggerPirateSpeakEasterEgg(string);
@@ -421,12 +423,13 @@ RecipeDisplayListener {
     private void triggerPirateSpeakEasterEgg(String search) {
         if ("excitedze".equals(search)) {
             LanguageManager languageManager = this.client.getLanguageManager();
+            String string = "en_pt";
             LanguageDefinition languageDefinition = languageManager.getLanguage("en_pt");
-            if (languageManager.getLanguage().compareTo(languageDefinition) == 0) {
+            if (languageDefinition == null || languageManager.getLanguage().equals("en_pt")) {
                 return;
             }
-            languageManager.setLanguage(languageDefinition);
-            this.client.options.language = languageDefinition.getCode();
+            languageManager.setLanguage("en_pt");
+            this.client.options.language = "en_pt";
             this.client.reloadResources();
             this.client.options.write();
         }

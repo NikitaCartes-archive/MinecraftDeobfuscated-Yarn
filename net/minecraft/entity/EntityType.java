@@ -356,9 +356,11 @@ TypeFilter<Entity, T> {
     }
 
     public static <T extends Entity> Consumer<T> copier(ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
-        Consumer<Entity> consumer = entity -> {};
-        consumer = EntityType.customNameCopier(consumer, stack);
-        return EntityType.nbtCopier(consumer, world, stack, player);
+        return EntityType.copier(entity -> {}, world, stack, player);
+    }
+
+    public static <T extends Entity> Consumer<T> copier(Consumer<T> chained, ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
+        return EntityType.nbtCopier(EntityType.customNameCopier(chained, stack), world, stack, player);
     }
 
     public static <T extends Entity> Consumer<T> customNameCopier(Consumer<T> chained, ItemStack stack) {

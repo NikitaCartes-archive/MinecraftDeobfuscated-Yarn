@@ -84,7 +84,6 @@ extends HandledScreen<EnchantmentScreenHandler> {
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         DiffuseLighting.disableGuiDepthLighting();
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
@@ -108,8 +107,8 @@ extends HandledScreen<EnchantmentScreenHandler> {
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0f));
         float l = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.25f;
         float m = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.75f;
-        l = (l - (float)MathHelper.fastFloor(l)) * 1.6f - 0.3f;
-        m = (m - (float)MathHelper.fastFloor(m)) * 1.6f - 0.3f;
+        l = (l - (float)MathHelper.floor(l)) * 1.6f - 0.3f;
+        m = (m - (float)MathHelper.floor(m)) * 1.6f - 0.3f;
         if (l < 0.0f) {
             l = 0.0f;
         }
@@ -131,7 +130,6 @@ extends HandledScreen<EnchantmentScreenHandler> {
         RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
         RenderSystem.restoreProjectionMatrix();
         DiffuseLighting.enableGuiDepthLighting();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         EnchantingPhrases.getInstance().setSeed(((EnchantmentScreenHandler)this.handler).getSeed());
         int n = ((EnchantmentScreenHandler)this.handler).getLapisCount();
         for (int o = 0; o < 3; ++o) {
@@ -141,7 +139,6 @@ extends HandledScreen<EnchantmentScreenHandler> {
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, TEXTURE);
             int r = ((EnchantmentScreenHandler)this.handler).enchantmentPower[o];
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             if (r == 0) {
                 this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
                 continue;

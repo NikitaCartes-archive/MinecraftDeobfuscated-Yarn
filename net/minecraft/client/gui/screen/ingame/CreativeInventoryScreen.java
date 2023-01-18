@@ -515,7 +515,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         if (selectedTab.getType() == ItemGroup.Type.SEARCH) {
             this.searchBox.setVisible(true);
             this.searchBox.setFocusUnlocked(false);
-            this.searchBox.setTextFieldFocused(true);
+            this.searchBox.setFocused(true);
             if (itemGroup != group) {
                 this.searchBox.setText("");
             }
@@ -523,7 +523,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         } else {
             this.searchBox.setVisible(false);
             this.searchBox.setFocusUnlocked(true);
-            this.searchBox.setTextFieldFocused(false);
+            this.searchBox.setFocused(false);
             this.searchBox.setText("");
         }
         this.scrollPosition = 0.0f;
@@ -580,7 +580,6 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         if (this.deleteItemSlot != null && selectedTab.getType() == ItemGroup.Type.INVENTORY && this.isPointWithinBounds(this.deleteItemSlot.x, this.deleteItemSlot.y, 16, 16, mouseX, mouseY)) {
             this.renderTooltip(matrices, DELETE_ITEM_SLOT_TEXT, mouseX, mouseY);
         }
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
     }
 
@@ -615,7 +614,6 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         for (ItemGroup itemGroup : ItemGroups.getGroupsToDisplay()) {
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, TEXTURE);
@@ -626,7 +624,6 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         RenderSystem.setShaderTexture(0, new Identifier(TAB_TEXTURE_PREFIX + selectedTab.getTexture()));
         this.drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         int i = this.x + 175;
         int j = this.y + 18;
         int k = j + 112;

@@ -56,7 +56,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Keyboard;
-import net.minecraft.client.MinecraftClientGame;
 import net.minecraft.client.Mouse;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.WindowEventHandler;
@@ -72,6 +71,8 @@ import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gl.WindowFramebuffer;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.navigation.GuiNavigationType;
+import net.minecraft.client.gui.screen.AccessibilityOnboardingScreen;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
@@ -349,6 +350,7 @@ implements WindowEventHandler {
     private final HotbarStorage creativeHotbarStorage;
     public final Mouse mouse;
     public final Keyboard keyboard;
+    private GuiNavigationType navigationType = GuiNavigationType.NONE;
     /**
      * The directory that stores options, worlds, resource packs, logs, etc.
      */
@@ -386,7 +388,6 @@ implements WindowEventHandler {
     private final PaintingManager paintingManager;
     private final StatusEffectSpriteManager statusEffectSpriteManager;
     private final ToastManager toastManager;
-    private final MinecraftClientGame game = new MinecraftClientGame(this);
     private final TutorialManager tutorialManager;
     private final SocialInteractionsManager socialInteractionsManager;
     private final EntityModelLoader entityModelLoader;
@@ -654,6 +655,10 @@ implements WindowEventHandler {
                 }
                 this.setScreen(new TitleScreen(true));
             }, this.getMultiplayerBanDetails()));
+        } else if (this.options.onboardAccessibility) {
+            this.setScreen(new AccessibilityOnboardingScreen(this.options));
+            this.options.onboardAccessibility = false;
+            this.options.write();
         } else {
             this.setScreen(new TitleScreen(true));
         }
@@ -1093,7 +1098,6 @@ implements WindowEventHandler {
         this.framebuffer.beginWrite(true);
         BackgroundRenderer.clearFog();
         this.profiler.push("display");
-        RenderSystem.enableTexture();
         RenderSystem.enableCull();
         this.profiler.pop();
         if (!this.skipGameRender) {
@@ -1370,7 +1374,6 @@ implements WindowEventHandler {
         matrixStack.translate(0.0f, 0.0f, -2000.0f);
         RenderSystem.applyModelViewMatrix();
         RenderSystem.lineWidth(1.0f);
-        RenderSystem.disableTexture();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         int i = 160;
@@ -1418,7 +1421,6 @@ implements WindowEventHandler {
         }
         DecimalFormat decimalFormat = new DecimalFormat("##0.00");
         decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
-        RenderSystem.enableTexture();
         String string = ProfileResult.getHumanReadableName(profilerTiming.name);
         Object string2 = "";
         if (!"unspecified".equals(string)) {
@@ -1920,7 +1922,6 @@ implements WindowEventHandler {
             this.serverResourcePackProvider.clear();
             this.inGameHud.clear();
             this.integratedServerRunning = false;
-            this.game.onLeaveGameSession();
         }
         this.world = null;
         this.setWorld(null);
@@ -2159,7 +2160,7 @@ implements WindowEventHandler {
             });
         }
         if (languageManager != null) {
-            systemDetails.addSection("Current Language", () -> languageManager.getLanguage().toString());
+            systemDetails.addSection("Current Language", () -> languageManager.getLanguage());
         }
         systemDetails.addSection("CPU", GlDebugInfo::getCpuInfo);
         return systemDetails;
@@ -2559,10 +2560,6 @@ implements WindowEventHandler {
         return this.profiler;
     }
 
-    public MinecraftClientGame getGame() {
-        return this.game;
-    }
-
     @Nullable
     public WorldGenerationProgressTracker getWorldGenerationProgressTracker() {
         return this.worldGenProgressTracker.get();
@@ -2616,6 +2613,14 @@ implements WindowEventHandler {
 
     public SignatureVerifier getServicesSignatureVerifier() {
         return this.servicesSignatureVerifier;
+    }
+
+    public GuiNavigationType getNavigationType() {
+        return this.navigationType;
+    }
+
+    public void setNavigationType(GuiNavigationType navigationType) {
+        this.navigationType = navigationType;
     }
 
     public NarratorManager getNarratorManager() {

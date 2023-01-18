@@ -19,7 +19,7 @@ public class TheEndBiomeCreator {
     private static Biome createEndBiome(GenerationSettings.LookupBackedBuilder builder) {
         SpawnSettings.Builder builder2 = new SpawnSettings.Builder();
         DefaultBiomeFeatures.addEndMobs(builder2);
-        return new Biome.Builder().precipitation(Biome.Precipitation.NONE).temperature(0.5f).downfall(0.5f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(0xA080A0).skyColor(0).moodSound(BiomeMoodSound.CAVE).build()).spawnSettings(builder2.build()).generationSettings(builder.build()).build();
+        return new Biome.Builder().precipitation(false).temperature(0.5f).downfall(0.5f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(0xA080A0).skyColor(0).moodSound(BiomeMoodSound.CAVE).build()).spawnSettings(builder2.build()).generationSettings(builder.build()).build();
     }
 
     public static Biome createEndBarrens(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {

@@ -379,10 +379,10 @@ implements VariantHolder<RabbitType> {
     private static RabbitType getTypeFromPos(WorldAccess world, BlockPos pos) {
         RegistryEntry<Biome> registryEntry = world.getBiome(pos);
         int i = world.getRandom().nextInt(100);
-        if (registryEntry.value().getPrecipitation() == Biome.Precipitation.SNOW) {
+        if (registryEntry.isIn(BiomeTags.SPAWNS_WHITE_RABBITS)) {
             return i < 80 ? RabbitType.WHITE : RabbitType.WHITE_SPLOTCHED;
         }
-        if (registryEntry.isIn(BiomeTags.ONLY_ALLOWS_SNOW_AND_GOLD_RABBITS)) {
+        if (registryEntry.isIn(BiomeTags.SPAWNS_GOLD_RABBITS)) {
             return RabbitType.GOLD;
         }
         return i < 50 ? RabbitType.BROWN : (i < 90 ? RabbitType.SALT : RabbitType.BLACK);

@@ -77,11 +77,21 @@ public class DamageTracker {
             } else if (text2 != null && !text2.equals(text)) {
                 ItemStack itemStack;
                 Entity entity2 = damageRecord.getDamageSource().getAttacker();
-                ItemStack itemStack2 = itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).getMainHandStack() : ItemStack.EMPTY;
+                if (entity2 instanceof LivingEntity) {
+                    LivingEntity livingEntity = (LivingEntity)entity2;
+                    v0 = livingEntity.getMainHandStack();
+                } else {
+                    v0 = itemStack = ItemStack.EMPTY;
+                }
                 text3 = !itemStack.isEmpty() && itemStack.hasCustomName() ? Text.translatable("death.fell.assist.item", this.entity.getDisplayName(), text2, itemStack.toHoverableText()) : Text.translatable("death.fell.assist", this.entity.getDisplayName(), text2);
             } else if (text != null) {
                 ItemStack itemStack2;
-                ItemStack itemStack = itemStack2 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY;
+                if (entity instanceof LivingEntity) {
+                    LivingEntity livingEntity2 = (LivingEntity)entity;
+                    v1 = livingEntity2.getMainHandStack();
+                } else {
+                    v1 = itemStack2 = ItemStack.EMPTY;
+                }
                 text3 = !itemStack2.isEmpty() && itemStack2.hasCustomName() ? Text.translatable("death.fell.finish.item", this.entity.getDisplayName(), text, itemStack2.toHoverableText()) : Text.translatable("death.fell.finish", this.entity.getDisplayName(), text);
             } else {
                 text3 = Text.translatable("death.fell.killer", this.entity.getDisplayName());
@@ -99,13 +109,19 @@ public class DamageTracker {
         float f = 0.0f;
         float g = 0.0f;
         for (DamageRecord damageRecord : this.recentDamage) {
-            if (damageRecord.getDamageSource().getAttacker() instanceof PlayerEntity && (playerEntity == null || damageRecord.getDamage() > g)) {
-                g = damageRecord.getDamage();
-                playerEntity = (PlayerEntity)damageRecord.getDamageSource().getAttacker();
+            Entity entity = damageRecord.getDamageSource().getAttacker();
+            if (entity instanceof PlayerEntity) {
+                PlayerEntity playerEntity2 = (PlayerEntity)entity;
+                if (playerEntity == null || damageRecord.getDamage() > g) {
+                    g = damageRecord.getDamage();
+                    playerEntity = playerEntity2;
+                }
             }
-            if (!(damageRecord.getDamageSource().getAttacker() instanceof LivingEntity) || livingEntity != null && !(damageRecord.getDamage() > f)) continue;
+            if (!((entity = damageRecord.getDamageSource().getAttacker()) instanceof LivingEntity)) continue;
+            LivingEntity livingEntity2 = (LivingEntity)entity;
+            if (livingEntity != null && !(damageRecord.getDamage() > f)) continue;
             f = damageRecord.getDamage();
-            livingEntity = (LivingEntity)damageRecord.getDamageSource().getAttacker();
+            livingEntity = livingEntity2;
         }
         if (playerEntity != null && g >= f / 3.0f) {
             return playerEntity;

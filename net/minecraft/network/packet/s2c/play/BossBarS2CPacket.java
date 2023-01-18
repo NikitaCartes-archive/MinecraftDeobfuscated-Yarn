@@ -6,9 +6,9 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.UUID;
 import java.util.function.Function;
 import net.minecraft.entity.boss.BossBar;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.text.Text;
 
 public class BossBarS2CPacket

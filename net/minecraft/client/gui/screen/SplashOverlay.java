@@ -118,6 +118,7 @@ extends Overlay {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, h);
         SplashOverlay.drawTexture(matrices, k - r, p - q, r, (int)d, -0.0625f, 0.0f, 120, 60, 120, 120);
         SplashOverlay.drawTexture(matrices, k, p - q, r, (int)d, 0.0625f, 60.0f, 120, 60, 120, 120);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
         int s = (int)((double)this.client.getWindow().getScaledHeight() * 0.8325);

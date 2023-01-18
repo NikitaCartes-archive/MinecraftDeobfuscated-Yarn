@@ -116,6 +116,7 @@ public class Codecs {
         properties.forEach((key, property) -> profile.getProperties().put(key, property));
         return profile;
     }));
+    public static final Codec<String> NON_EMPTY_STRING = Codecs.validate(Codec.STRING, string -> string.isEmpty() ? DataResult.error("Expected non-empty string") : DataResult.success(string));
 
     /**
      * Returns an exclusive-or codec for {@link Either} instances.
@@ -236,58 +237,39 @@ public class Codecs {
         });
     }
 
-    private static <N extends Number> Function<N, DataResult<N>> createIntRangeChecker(N min, N max, Function<N, String> messageFactory) {
-        return value -> {
-            if (((Comparable)((Object)value)).compareTo(min) >= 0 && ((Comparable)((Object)value)).compareTo(max) <= 0) {
-                return DataResult.success(value);
-            }
-            return DataResult.error((String)messageFactory.apply(value));
-        };
+    public static <T> Codec<T> validate(Codec<T> codec, Function<T, DataResult<T>> validator) {
+        return codec.flatXmap(validator, validator);
     }
 
     private static Codec<Integer> rangedInt(int min, int max, Function<Integer, String> messageFactory) {
-        Function<Integer, DataResult<Integer>> function = Codecs.createIntRangeChecker(min, max, messageFactory);
-        return Codec.INT.flatXmap(function, function);
-    }
-
-    private static <N extends Number> Function<N, DataResult<N>> createFloatRangeChecker(N min, N max, Function<N, String> messageFactory) {
-        return value -> {
-            if (((Comparable)((Object)value)).compareTo(min) > 0 && ((Comparable)((Object)value)).compareTo(max) <= 0) {
+        return Codecs.validate(Codec.INT, value -> {
+            if (value.compareTo(min) >= 0 && value.compareTo(max) <= 0) {
                 return DataResult.success(value);
             }
-            return DataResult.error((String)messageFactory.apply(value));
-        };
+            return DataResult.error((String)messageFactory.apply((Integer)value));
+        });
     }
 
     private static Codec<Float> rangedFloat(float min, float max, Function<Float, String> messageFactory) {
-        Function<Float, DataResult<Float>> function = Codecs.createFloatRangeChecker(Float.valueOf(min), Float.valueOf(max), messageFactory);
-        return Codec.FLOAT.flatXmap(function, function);
-    }
-
-    public static <T> Function<List<T>, DataResult<List<T>>> createNonEmptyListChecker() {
-        return list -> {
-            if (list.isEmpty()) {
-                return DataResult.error("List must have contents");
+        return Codecs.validate(Codec.FLOAT, value -> {
+            if (value.compareTo(Float.valueOf(min)) > 0 && value.compareTo(Float.valueOf(max)) <= 0) {
+                return DataResult.success(value);
             }
-            return DataResult.success(list);
-        };
+            return DataResult.error((String)messageFactory.apply((Float)value));
+        });
     }
 
     public static <T> Codec<List<T>> nonEmptyList(Codec<List<T>> originalCodec) {
-        return originalCodec.flatXmap(Codecs.createNonEmptyListChecker(), Codecs.createNonEmptyListChecker());
-    }
-
-    public static <T> Function<RegistryEntryList<T>, DataResult<RegistryEntryList<T>>> createNonEmptyEntryListChecker() {
-        return entries -> {
-            if (entries.getStorage().right().filter(List::isEmpty).isPresent()) {
-                return DataResult.error("List must have contents");
-            }
-            return DataResult.success(entries);
-        };
+        return Codecs.validate(originalCodec, list -> list.isEmpty() ? DataResult.error("List must have contents") : DataResult.success(list));
     }
 
     public static <T> Codec<RegistryEntryList<T>> nonEmptyEntryList(Codec<RegistryEntryList<T>> originalCodec) {
-        return originalCodec.flatXmap(Codecs.createNonEmptyEntryListChecker(), Codecs.createNonEmptyEntryListChecker());
+        return Codecs.validate(originalCodec, registryEntryList -> {
+            if (registryEntryList.getStorage().right().filter(List::isEmpty).isPresent()) {
+                return DataResult.error("List must have contents");
+            }
+            return DataResult.success(registryEntryList);
+        });
     }
 
     public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {
@@ -379,6 +361,19 @@ public class Codecs {
 
     private static DataResult<Pair<Optional<UUID>, Optional<String>>> createPairFromGameProfile(GameProfile profile) {
         return DataResult.success(Pair.of(Optional.ofNullable(profile.getId()), Optional.ofNullable(profile.getName())));
+    }
+
+    public static Codec<String> string(int minLength, int maxLength) {
+        return Codecs.validate(Codec.STRING, string -> {
+            int k = string.length();
+            if (k < minLength) {
+                return DataResult.error("String \"" + string + "\" is too short: " + k + ", expected range [" + minLength + "-" + maxLength + "]");
+            }
+            if (k > maxLength) {
+                return DataResult.error("String \"" + string + "\" is too long: " + k + ", expected range [" + minLength + "-" + maxLength + "]");
+            }
+            return DataResult.success(string);
+        });
     }
 
     static final class Xor<F, S>

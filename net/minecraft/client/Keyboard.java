@@ -12,6 +12,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.navigation.GuiNavigationType;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.KeybindsScreen;
@@ -29,6 +30,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.Registries;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -98,7 +100,7 @@ public class Keyboard {
     }
 
     private void addDebugMessage(Formatting formatting, Text text) {
-        this.client.inGameHud.getChatHud().addMessage(Text.empty().append(Text.translatable("debug.prefix").formatted(formatting, Formatting.BOLD)).append(" ").append(text));
+        this.client.inGameHud.getChatHud().addMessage(Text.empty().append(Text.translatable("debug.prefix").formatted(formatting, Formatting.BOLD)).append(ScreenTexts.SPACE).append(text));
     }
 
     private void debugLog(Text text) {
@@ -314,6 +316,7 @@ public class Keyboard {
             this.debugCrashLastLogTime = Util.getMeasuringTimeMs();
             this.debugCrashElapsedTime = 0L;
         }
+        this.client.setNavigationType(key == GLFW.GLFW_KEY_TAB ? GuiNavigationType.KEYBOARD_TAB : GuiNavigationType.KEYBOARD_OTHER);
         Screen screen = this.client.currentScreen;
         if (!(action != 1 || this.client.currentScreen instanceof KeybindsScreen && ((KeybindsScreen)screen).lastKeyCodeUpdateTime > Util.getMeasuringTimeMs() - 20L)) {
             if (this.client.options.fullscreenKey.matchesKey(key, scancode)) {

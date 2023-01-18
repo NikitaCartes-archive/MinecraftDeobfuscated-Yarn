@@ -24,15 +24,13 @@ import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -49,7 +47,7 @@ public class TeleportCommand {
 
     private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, Entity destination) throws CommandSyntaxException {
         for (Entity entity : targets) {
-            TeleportCommand.teleport(source, entity, (ServerWorld)destination.world, destination.getX(), destination.getY(), destination.getZ(), EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class), destination.getYaw(), destination.getPitch(), null);
+            TeleportCommand.teleport(source, entity, (ServerWorld)destination.world, destination.getX(), destination.getY(), destination.getZ(), EnumSet.noneOf(PositionFlag.class), destination.getYaw(), destination.getPitch(), null);
         }
         if (targets.size() == 1) {
             source.sendFeedback(Text.translatable("commands.teleport.success.entity.single", targets.iterator().next().getDisplayName(), destination.getDisplayName()), true);
@@ -62,25 +60,25 @@ public class TeleportCommand {
     private static int execute(ServerCommandSource source, Collection<? extends Entity> targets, ServerWorld world, PosArgument location, @Nullable PosArgument rotation, @Nullable LookTarget facingLocation) throws CommandSyntaxException {
         Vec3d vec3d = location.toAbsolutePos(source);
         Vec2f vec2f = rotation == null ? null : rotation.toAbsoluteRotation(source);
-        EnumSet<PlayerPositionLookS2CPacket.Flag> set = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
+        EnumSet<PositionFlag> set = EnumSet.noneOf(PositionFlag.class);
         if (location.isXRelative()) {
-            set.add(PlayerPositionLookS2CPacket.Flag.X);
+            set.add(PositionFlag.X);
         }
         if (location.isYRelative()) {
-            set.add(PlayerPositionLookS2CPacket.Flag.Y);
+            set.add(PositionFlag.Y);
         }
         if (location.isZRelative()) {
-            set.add(PlayerPositionLookS2CPacket.Flag.Z);
+            set.add(PositionFlag.Z);
         }
         if (rotation == null) {
-            set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
-            set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
+            set.add(PositionFlag.X_ROT);
+            set.add(PositionFlag.Y_ROT);
         } else {
             if (rotation.isXRelative()) {
-                set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
+                set.add(PositionFlag.X_ROT);
             }
             if (rotation.isYRelative()) {
-                set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
+                set.add(PositionFlag.Y_ROT);
             }
         }
         for (Entity entity : targets) {
@@ -102,55 +100,27 @@ public class TeleportCommand {
         return String.format(Locale.ROOT, "%f", d);
     }
 
-    private static void teleport(ServerCommandSource source, Entity target, ServerWorld world, double x, double y, double z, Set<PlayerPositionLookS2CPacket.Flag> movementFlags, float yaw, float pitch, @Nullable LookTarget facingLocation) throws CommandSyntaxException {
+    private static void teleport(ServerCommandSource source, Entity target, ServerWorld world, double x, double y, double z, Set<PositionFlag> movementFlags, float yaw, float pitch, @Nullable LookTarget facingLocation) throws CommandSyntaxException {
+        LivingEntity livingEntity;
+        float g;
         BlockPos blockPos = new BlockPos(x, y, z);
         if (!World.isValid(blockPos)) {
             throw INVALID_POSITION_EXCEPTION.create();
         }
         float f = MathHelper.wrapDegrees(yaw);
-        float g = MathHelper.wrapDegrees(pitch);
-        if (target instanceof ServerPlayerEntity) {
-            ChunkPos chunkPos = new ChunkPos(new BlockPos(x, y, z));
-            world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, target.getId());
-            target.stopRiding();
-            if (((ServerPlayerEntity)target).isSleeping()) {
-                ((ServerPlayerEntity)target).wakeUp(true, true);
-            }
-            if (world == target.world) {
-                ((ServerPlayerEntity)target).networkHandler.requestTeleport(x, y, z, f, g, movementFlags);
-            } else {
-                ((ServerPlayerEntity)target).teleport(world, x, y, z, f, g);
-            }
-            target.setHeadYaw(f);
-        } else {
-            float h = MathHelper.clamp(g, -90.0f, 90.0f);
-            if (world == target.world) {
-                target.refreshPositionAndAngles(x, y, z, f, h);
-                target.setHeadYaw(f);
-            } else {
-                target.detach();
-                Entity entity = target;
-                target = entity.getType().create(world);
-                if (target != null) {
-                    target.copyFrom(entity);
-                    target.refreshPositionAndAngles(x, y, z, f, h);
-                    target.setHeadYaw(f);
-                    entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
-                    world.onDimensionChanged(target);
-                } else {
-                    return;
-                }
-            }
+        if (!target.teleport(world, x, y, z, movementFlags, f, g = MathHelper.wrapDegrees(pitch))) {
+            return;
         }
         if (facingLocation != null) {
             facingLocation.look(source, target);
         }
-        if (!(target instanceof LivingEntity) || !((LivingEntity)target).isFallFlying()) {
+        if (!(target instanceof LivingEntity) || !(livingEntity = (LivingEntity)target).isFallFlying()) {
             target.setVelocity(target.getVelocity().multiply(1.0, 0.0, 1.0));
             target.setOnGround(true);
         }
         if (target instanceof PathAwareEntity) {
-            ((PathAwareEntity)target).getNavigation().stop();
+            PathAwareEntity pathAwareEntity = (PathAwareEntity)target;
+            pathAwareEntity.getNavigation().stop();
         }
     }
 

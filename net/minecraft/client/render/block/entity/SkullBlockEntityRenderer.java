@@ -73,7 +73,7 @@ implements BlockEntityRenderer<SkullBlockEntity> {
         BlockState blockState = skullBlockEntity.getCachedState();
         boolean bl = blockState.getBlock() instanceof WallSkullBlock;
         Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;
-        int k = bl ? RotationPropertyHelper.fromDirection(direction) : blockState.get(SkullBlock.ROTATION);
+        int k = bl ? RotationPropertyHelper.fromDirection(direction.getOpposite()) : blockState.get(SkullBlock.ROTATION);
         float h = RotationPropertyHelper.toDegrees(k);
         SkullBlock.SkullType skullType = ((AbstractSkullBlock)blockState.getBlock()).getSkullType();
         SkullBlockEntityModel skullBlockEntityModel = this.MODELS.get(skullType);

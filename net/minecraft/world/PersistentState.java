@@ -6,8 +6,8 @@ package net.minecraft.world;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
-import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import org.slf4j.Logger;
 
@@ -35,7 +35,7 @@ public abstract class PersistentState {
         }
         NbtCompound nbtCompound = new NbtCompound();
         nbtCompound.put("data", this.writeNbt(new NbtCompound()));
-        nbtCompound.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+        NbtHelper.putDataVersion(nbtCompound);
         try {
             NbtIo.writeCompressed(nbtCompound, file);
         } catch (IOException iOException) {

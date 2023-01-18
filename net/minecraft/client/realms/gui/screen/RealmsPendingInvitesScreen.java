@@ -198,11 +198,6 @@ extends RealmsScreen {
         }
 
         @Override
-        public boolean isFocused() {
-            return RealmsPendingInvitesScreen.this.getFocused() == this;
-        }
-
-        @Override
         public void renderBackground(MatrixStack matrices) {
             RealmsPendingInvitesScreen.this.renderBackground(matrices);
         }
@@ -254,10 +249,7 @@ extends RealmsScreen {
             RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, invite.worldOwnerName, (float)(x + 38), (float)(y + 12), 0x6C6C6C);
             RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, RealmsUtil.convertToAgePresentation(invite.date), (float)(x + 38), (float)(y + 24), 0x6C6C6C);
             RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, x, y, mouseX, mouseY);
-            RealmsTextureManager.withBoundFace(invite.worldOwnerUuid, () -> {
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-                PlayerSkinDrawer.draw(matrices, x, y, 32);
-            });
+            RealmsTextureManager.withBoundFace(invite.worldOwnerUuid, () -> PlayerSkinDrawer.draw(matrices, x, y, 32));
         }
 
         @Override
@@ -276,7 +268,6 @@ extends RealmsScreen {
             @Override
             protected void render(MatrixStack matrices, int x, int y, boolean showTooltip) {
                 RenderSystem.setShaderTexture(0, ACCEPT_ICON);
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 float f = showTooltip ? 19.0f : 0.0f;
                 DrawableHelper.drawTexture(matrices, x, y, f, 0.0f, 18, 18, 37, 18);
                 if (showTooltip) {
@@ -300,7 +291,6 @@ extends RealmsScreen {
             @Override
             protected void render(MatrixStack matrices, int x, int y, boolean showTooltip) {
                 RenderSystem.setShaderTexture(0, REJECT_ICON);
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 float f = showTooltip ? 19.0f : 0.0f;
                 DrawableHelper.drawTexture(matrices, x, y, f, 0.0f, 18, 18, 37, 18);
                 if (showTooltip) {

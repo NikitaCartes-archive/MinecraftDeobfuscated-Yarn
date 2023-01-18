@@ -4,15 +4,19 @@
 package net.minecraft.server.network;
 
 import com.google.common.collect.Lists;
+import com.google.common.net.InetAddresses;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.Set;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -49,16 +53,17 @@ import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
@@ -77,9 +82,9 @@ import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
@@ -115,6 +120,7 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.network.ServerRecipeBook;
 import net.minecraft.server.network.SpawnLocating;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -1155,12 +1161,29 @@ extends PlayerEntity {
 
     @Override
     public void requestTeleport(double destX, double destY, double destZ) {
-        this.networkHandler.requestTeleport(destX, destY, destZ, this.getYaw(), this.getPitch(), PlayerPositionLookS2CPacket.Flag.ROT);
+        this.networkHandler.requestTeleport(destX, destY, destZ, this.getYaw(), this.getPitch(), PositionFlag.ROT);
     }
 
     @Override
     public void requestTeleportOffset(double offsetX, double offsetY, double offsetZ) {
-        this.networkHandler.requestTeleport(this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, this.getYaw(), this.getPitch(), PlayerPositionLookS2CPacket.Flag.VALUES);
+        this.networkHandler.requestTeleport(this.getX() + offsetX, this.getY() + offsetY, this.getZ() + offsetZ, this.getYaw(), this.getPitch(), PositionFlag.VALUES);
+    }
+
+    @Override
+    public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch) {
+        ChunkPos chunkPos = new ChunkPos(new BlockPos(destX, destY, destZ));
+        world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, this.getId());
+        this.stopRiding();
+        if (this.isSleeping()) {
+            this.wakeUp(true, true);
+        }
+        if (world == this.world) {
+            this.networkHandler.requestTeleport(destX, destY, destZ, yaw, pitch, flags);
+        } else {
+            this.teleport(world, destX, destY, destZ, yaw, pitch);
+        }
+        this.setHeadYaw(yaw);
+        return true;
     }
 
     @Override
@@ -1258,10 +1281,12 @@ extends PlayerEntity {
     }
 
     public String getIp() {
-        String string = this.networkHandler.connection.getAddress().toString();
-        string = string.substring(string.indexOf("/") + 1);
-        string = string.substring(0, string.indexOf(":"));
-        return string;
+        SocketAddress socketAddress = this.networkHandler.getConnectionAddress();
+        if (socketAddress instanceof InetSocketAddress) {
+            InetSocketAddress inetSocketAddress = (InetSocketAddress)socketAddress;
+            return InetAddresses.toAddrString(inetSocketAddress.getAddress());
+        }
+        return "<unknown>";
     }
 
     public void setClientSettings(ClientSettingsC2SPacket packet) {
@@ -1335,8 +1360,15 @@ extends PlayerEntity {
         Entity entity2 = this.getCameraEntity();
         Entity entity3 = this.cameraEntity = entity == null ? this : entity;
         if (entity2 != this.cameraEntity) {
+            World world = this.cameraEntity.getWorld();
+            if (world instanceof ServerWorld) {
+                ServerWorld serverWorld = (ServerWorld)world;
+                this.teleport(serverWorld, this.cameraEntity.getX(), this.cameraEntity.getY(), this.cameraEntity.getZ(), Set.of(), this.getYaw(), this.getPitch());
+            }
+            if (entity != null) {
+                this.getWorld().getChunkManager().updatePosition(this);
+            }
             this.networkHandler.sendPacket(new SetCameraEntityS2CPacket(this.cameraEntity));
-            this.networkHandler.requestTeleport(this.cameraEntity.getX(), this.cameraEntity.getY(), this.cameraEntity.getZ(), this.getYaw(), this.getPitch());
             this.networkHandler.syncWithPlayerPosition();
         }
     }
@@ -1613,6 +1645,13 @@ extends PlayerEntity {
     @Nullable
     public PublicPlayerSession getSession() {
         return this.session;
+    }
+
+    @Override
+    public void takeKnockback(double strength, double x, double z) {
+        super.takeKnockback(strength, x, z);
+        this.damageTiltYaw = (float)(MathHelper.atan2(z, x) * 57.2957763671875 - (double)this.getYaw());
+        this.networkHandler.sendPacket(new DamageTiltS2CPacket(this));
     }
 
     @Override

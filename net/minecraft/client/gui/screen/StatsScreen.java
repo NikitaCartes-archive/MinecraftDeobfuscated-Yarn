@@ -20,7 +20,6 @@ import net.minecraft.client.gui.screen.StatsListener;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
@@ -156,7 +155,6 @@ implements StatsListener {
     }
 
     void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, STATS_ICON_TEXTURE);
         StatsScreen.drawTexture(matrices, x, y, this.getZOffset(), u, v, 18, 18, 128, 128);
@@ -203,7 +201,7 @@ implements StatsListener {
 
             @Override
             public Text getNarration() {
-                return Text.translatable("narrator.select", Text.empty().append(this.displayName).append(" ").append(this.getFormatted()));
+                return Text.translatable("narrator.select", Text.empty().append(this.displayName).append(ScreenTexts.SPACE).append(this.getFormatted()));
             }
         }
     }
@@ -256,7 +254,7 @@ implements StatsListener {
         }
 
         @Override
-        protected void renderHeader(MatrixStack matrices, int x, int y, Tessellator tessellator) {
+        protected void renderHeader(MatrixStack matrices, int x, int y) {
             int j;
             int i;
             if (!this.client.mouse.wasLeftButtonClicked()) {

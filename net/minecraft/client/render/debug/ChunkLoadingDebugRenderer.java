@@ -52,7 +52,6 @@ implements DebugRenderer.Renderer {
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.lineWidth(2.0f);
-            RenderSystem.disableTexture();
             RenderSystem.depthMask(false);
             Map map = this.loadingData.serverStates.getNow(null);
             double e = this.client.gameRenderer.getCamera().getPos().y * 0.85;
@@ -70,7 +69,6 @@ implements DebugRenderer.Renderer {
                 }
             }
             RenderSystem.depthMask(true);
-            RenderSystem.enableTexture();
             RenderSystem.disableBlend();
         }
     }

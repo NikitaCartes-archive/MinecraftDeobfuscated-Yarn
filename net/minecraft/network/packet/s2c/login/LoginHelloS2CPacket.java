@@ -4,11 +4,11 @@
 package net.minecraft.network.packet.s2c.login;
 
 import java.security.PublicKey;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ClientLoginPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class LoginHelloS2CPacket
 implements Packet<ClientLoginPacketListener> {

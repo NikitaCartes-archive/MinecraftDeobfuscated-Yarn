@@ -3,7 +3,7 @@
  */
 package net.minecraft.server.world;
 
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**

@@ -325,7 +325,6 @@ extends RealmsScreen {
 
     private void drawExpired(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, EXPIRED_ICON);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 10, 28, 10, 28);
         if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
             this.tooltip = EXPIRED_TEXT;
@@ -334,7 +333,6 @@ extends RealmsScreen {
 
     private void drawExpiring(MatrixStack matrices, int x, int y, int mouseX, int mouseY, int remainingDays) {
         RenderSystem.setShaderTexture(0, EXPIRES_SOON_ICON);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         if (this.animTick % 20 < 10) {
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 10, 28, 20, 28);
         } else {
@@ -347,7 +345,6 @@ extends RealmsScreen {
 
     private void drawOpen(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, ON_ICON);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 10, 28, 10, 28);
         if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
             this.tooltip = OPEN_TEXT;
@@ -356,7 +353,6 @@ extends RealmsScreen {
 
     private void drawClosed(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, OFF_ICON);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 10, 28, 10, 28);
         if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
             this.tooltip = CLOSED_TEXT;

@@ -62,17 +62,21 @@ public class BiomeTags {
     public static final TagKey<Biome> HAS_CLOSER_WATER_FOG = BiomeTags.of("has_closer_water_fog");
     public static final TagKey<Biome> WATER_ON_MAP_OUTLINES = BiomeTags.of("water_on_map_outlines");
     public static final TagKey<Biome> PRODUCES_CORALS_FROM_BONEMEAL = BiomeTags.of("produces_corals_from_bonemeal");
+    public static final TagKey<Biome> INCREASED_FIRE_BURNOUT = BiomeTags.of("increased_fire_burnout");
+    public static final TagKey<Biome> SNOW_GOLEM_MELTS = BiomeTags.of("snow_golem_melts");
     public static final TagKey<Biome> WITHOUT_ZOMBIE_SIEGES = BiomeTags.of("without_zombie_sieges");
     public static final TagKey<Biome> WITHOUT_PATROL_SPAWNS = BiomeTags.of("without_patrol_spawns");
     public static final TagKey<Biome> WITHOUT_WANDERING_TRADER_SPAWNS = BiomeTags.of("without_wandering_trader_spawns");
     public static final TagKey<Biome> SPAWNS_COLD_VARIANT_FROGS = BiomeTags.of("spawns_cold_variant_frogs");
     public static final TagKey<Biome> SPAWNS_WARM_VARIANT_FROGS = BiomeTags.of("spawns_warm_variant_frogs");
-    public static final TagKey<Biome> ONLY_ALLOWS_SNOW_AND_GOLD_RABBITS = BiomeTags.of("only_allows_snow_and_gold_rabbits");
+    public static final TagKey<Biome> SPAWNS_GOLD_RABBITS = BiomeTags.of("spawns_gold_rabbits");
+    public static final TagKey<Biome> SPAWNS_WHITE_RABBITS = BiomeTags.of("spawns_white_rabbits");
     public static final TagKey<Biome> REDUCE_WATER_AMBIENT_SPAWNS = BiomeTags.of("reduce_water_ambient_spawns");
     public static final TagKey<Biome> ALLOWS_TROPICAL_FISH_SPAWNS_AT_ANY_HEIGHT = BiomeTags.of("allows_tropical_fish_spawns_at_any_height");
     public static final TagKey<Biome> POLAR_BEARS_SPAWN_ON_ALTERNATE_BLOCKS = BiomeTags.of("polar_bears_spawn_on_alternate_blocks");
     public static final TagKey<Biome> MORE_FREQUENT_DROWNED_SPAWNS = BiomeTags.of("more_frequent_drowned_spawns");
     public static final TagKey<Biome> ALLOWS_SURFACE_SLIME_SPAWNS = BiomeTags.of("allows_surface_slime_spawns");
+    public static final TagKey<Biome> SPAWNS_SNOW_FOXES = BiomeTags.of("spawns_snow_foxes");
 
     private BiomeTags() {
     }

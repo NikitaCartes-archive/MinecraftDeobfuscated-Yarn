@@ -11,8 +11,8 @@ import java.io.IOException;
 import java.util.List;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.util.profiling.jfr.FlightProfiler;
 import org.slf4j.Logger;
 
@@ -44,7 +44,7 @@ extends ByteToMessageDecoder {
         }
         objects.add(packet);
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(ClientConnection.PACKET_RECEIVED_MARKER, " IN: [{}:{}] {}", new Object[]{ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), j, packet.getClass().getName()});
+            LOGGER.debug(ClientConnection.PACKET_RECEIVED_MARKER, " IN: [{}:{}] {}", ctx.channel().attr(ClientConnection.PROTOCOL_ATTRIBUTE_KEY).get(), j, packet.getClass().getName());
         }
     }
 }

@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -147,7 +148,7 @@ public class SpreadPlayersCommand {
             } else {
                 pile = piles[i++];
             }
-            entity.teleport((double)MathHelper.floor(pile.x) + 0.5, pile.getY(world, maxY), (double)MathHelper.floor(pile.z) + 0.5);
+            entity.teleport(world, (double)MathHelper.floor(pile.x) + 0.5, pile.getY(world, maxY), (double)MathHelper.floor(pile.z) + 0.5, Set.of(), entity.getYaw(), entity.getPitch());
             double e = Double.MAX_VALUE;
             for (Pile pile2 : piles) {
                 if (pile == pile2) continue;

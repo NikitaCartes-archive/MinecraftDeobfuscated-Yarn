@@ -77,7 +77,7 @@ extends LivingEntityRenderer<T, M> {
         float m = 0.025f;
         VertexConsumer vertexConsumer = provider.getBuffer(RenderLayer.getLeash());
         Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-        float n = MathHelper.fastInverseSqrt(j * j + l * l) * 0.025f / 2.0f;
+        float n = MathHelper.inverseSqrt(j * j + l * l) * 0.025f / 2.0f;
         float o = l * n;
         float p = j * n;
         BlockPos blockPos = new BlockPos(((Entity)entity).getCameraPosVec(tickDelta));

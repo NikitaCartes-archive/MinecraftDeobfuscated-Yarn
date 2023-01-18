@@ -121,12 +121,12 @@ SaveProperties {
     }
 
     public LevelProperties(LevelInfo levelInfo, GeneratorOptions generatorOptions, SpecialProperty specialProperty, Lifecycle lifecycle) {
-        this(null, SharedConstants.getGameVersion().getWorldVersion(), null, false, 0, 0, 0, 0.0f, 0L, 0L, 19133, 0, 0, false, 0, false, false, false, WorldBorder.DEFAULT_BORDER, 0, 0, null, Sets.newLinkedHashSet(), new Timer<MinecraftServer>(TimerCallbackSerializer.INSTANCE), null, new NbtCompound(), levelInfo.withCopiedGameRules(), generatorOptions, specialProperty, lifecycle);
+        this(null, SharedConstants.getGameVersion().getSaveVersion().getId(), null, false, 0, 0, 0, 0.0f, 0L, 0L, 19133, 0, 0, false, 0, false, false, false, WorldBorder.DEFAULT_BORDER, 0, 0, null, Sets.newLinkedHashSet(), new Timer<MinecraftServer>(TimerCallbackSerializer.INSTANCE), null, new NbtCompound(), levelInfo.withCopiedGameRules(), generatorOptions, specialProperty, lifecycle);
     }
 
-    public static LevelProperties readProperties(Dynamic<NbtElement> dynamic2, DataFixer dataFixer, int dataVersion, @Nullable NbtCompound playerData, LevelInfo levelInfo, SaveVersionInfo saveVersionInfo, SpecialProperty specialProperty, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
+    public static <T> LevelProperties readProperties(Dynamic<T> dynamic2, DataFixer dataFixer, int dataVersion, @Nullable NbtCompound playerData, LevelInfo levelInfo, SaveVersionInfo saveVersionInfo, SpecialProperty specialProperty, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
         long l = dynamic2.get("Time").asLong(0L);
-        NbtCompound nbtCompound = (NbtCompound)dynamic2.get("DragonFight").result().map(Dynamic::getValue).orElseGet(() -> (NbtElement)dynamic2.get("DimensionData").get("1").get("DragonFight").orElseEmptyMap().getValue());
+        NbtCompound nbtCompound = (NbtCompound)dynamic2.get("DragonFight").result().orElseGet(() -> dynamic2.get("DimensionData").get("1").get("DragonFight").orElseEmptyMap()).convert(NbtOps.INSTANCE).getValue();
         return new LevelProperties(dataFixer, dataVersion, playerData, dynamic2.get("WasModded").asBoolean(false), dynamic2.get("SpawnX").asInt(0), dynamic2.get("SpawnY").asInt(0), dynamic2.get("SpawnZ").asInt(0), dynamic2.get("SpawnAngle").asFloat(0.0f), l, dynamic2.get("DayTime").asLong(l), saveVersionInfo.getLevelFormatVersion(), dynamic2.get("clearWeatherTime").asInt(0), dynamic2.get("rainTime").asInt(0), dynamic2.get("raining").asBoolean(false), dynamic2.get("thunderTime").asInt(0), dynamic2.get("thundering").asBoolean(false), dynamic2.get("initialized").asBoolean(true), dynamic2.get("DifficultyLocked").asBoolean(false), WorldBorder.Properties.fromDynamic(dynamic2, WorldBorder.DEFAULT_BORDER), dynamic2.get("WanderingTraderSpawnDelay").asInt(0), dynamic2.get("WanderingTraderSpawnChance").asInt(0), dynamic2.get("WanderingTraderId").read(Uuids.INT_STREAM_CODEC).result().orElse(null), dynamic2.get("ServerBrands").asStream().flatMap(dynamic -> dynamic.asString().result().stream()).collect(Collectors.toCollection(Sets::newLinkedHashSet)), new Timer<MinecraftServer>(TimerCallbackSerializer.INSTANCE, dynamic2.get("ScheduledEvents").asStream()), (NbtCompound)dynamic2.get("CustomBossEvents").orElseEmptyMap().getValue(), nbtCompound, levelInfo, generatorOptions, specialProperty, lifecycle);
     }
 
@@ -152,7 +152,7 @@ SaveProperties {
         nbtCompound.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
         nbtCompound.putString("Series", SharedConstants.getGameVersion().getSaveVersion().getSeries());
         levelNbt.put("Version", nbtCompound);
-        levelNbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+        NbtHelper.putDataVersion(levelNbt);
         RegistryOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, registryManager);
         WorldGenSettings.encode(dynamicOps, this.generatorOptions, registryManager).resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error)).ifPresent(nbtElement -> levelNbt.put(WORLD_GEN_SETTINGS_KEY, (NbtElement)nbtElement));
         levelNbt.putInt("GameType", this.levelInfo.getGameMode().getId());
@@ -228,11 +228,11 @@ SaveProperties {
         if (this.playerDataLoaded || this.playerData == null) {
             return;
         }
-        if (this.dataVersion < SharedConstants.getGameVersion().getWorldVersion()) {
+        if (this.dataVersion < SharedConstants.getGameVersion().getSaveVersion().getId()) {
             if (this.dataFixer == null) {
                 throw Util.throwOrPause(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
             }
-            this.playerData = NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, this.playerData, this.dataVersion);
+            this.playerData = DataFixTypes.PLAYER.update(this.dataFixer, this.playerData, this.dataVersion);
         }
         this.playerDataLoaded = true;
     }

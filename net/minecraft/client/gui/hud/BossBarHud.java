@@ -41,7 +41,6 @@ extends DrawableHelper {
         for (ClientBossBar clientBossBar : this.bossBars.values()) {
             int k = i / 2 - 91;
             int l = j;
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.setShaderTexture(0, BARS_TEXTURE);
             this.renderBossBar(matrices, k, l, clientBossBar);
             Text text = clientBossBar.getName();

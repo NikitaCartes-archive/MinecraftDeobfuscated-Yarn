@@ -9,6 +9,7 @@ import net.minecraft.item.FireworkRocketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
@@ -39,7 +40,7 @@ extends Item {
             tooltip.add(FireworkStarItem.appendColors(Text.empty().formatted(Formatting.GRAY), is));
         }
         if ((js = nbt.getIntArray("FadeColors")).length > 0) {
-            tooltip.add(FireworkStarItem.appendColors(Text.translatable("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.GRAY), js));
+            tooltip.add(FireworkStarItem.appendColors(Text.translatable("item.minecraft.firework_star.fade_to").append(ScreenTexts.SPACE).formatted(Formatting.GRAY), js));
         }
         if (nbt.getBoolean("Trail")) {
             tooltip.add(Text.translatable("item.minecraft.firework_star.trail").formatted(Formatting.GRAY));

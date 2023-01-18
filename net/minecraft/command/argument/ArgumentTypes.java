@@ -118,7 +118,7 @@ public class ArgumentTypes {
         ArgumentTypes.register(registry, "float_range", NumberRangeArgumentType.FloatRangeArgumentType.class, ConstantArgumentSerializer.of(NumberRangeArgumentType::floatRange));
         ArgumentTypes.register(registry, "dimension", DimensionArgumentType.class, ConstantArgumentSerializer.of(DimensionArgumentType::dimension));
         ArgumentTypes.register(registry, "gamemode", GameModeArgumentType.class, ConstantArgumentSerializer.of(GameModeArgumentType::gameMode));
-        ArgumentTypes.register(registry, "time", TimeArgumentType.class, ConstantArgumentSerializer.of(TimeArgumentType::time));
+        ArgumentTypes.register(registry, "time", TimeArgumentType.class, new TimeArgumentType.Serializer());
         ArgumentTypes.register(registry, "resource_or_tag", ArgumentTypes.upcast(RegistryEntryPredicateArgumentType.class), new RegistryEntryPredicateArgumentType.Serializer());
         ArgumentTypes.register(registry, "resource_or_tag_key", ArgumentTypes.upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());
         ArgumentTypes.register(registry, "resource", ArgumentTypes.upcast(RegistryEntryArgumentType.class), new RegistryEntryArgumentType.Serializer());

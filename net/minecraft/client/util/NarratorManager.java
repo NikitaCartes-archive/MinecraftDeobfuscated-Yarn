@@ -55,7 +55,7 @@ public class NarratorManager {
         String string = text.getString();
         if (this.getNarratorMode().shouldNarrateSystem() && !string.isEmpty()) {
             this.debugPrintMessage(string);
-            this.narrator.say(string, true);
+            this.narrator.say(string, false);
         }
     }
 

@@ -61,7 +61,7 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackgroundTexture(0);
+        this.renderBackgroundTexture(matrices);
         DialogScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.linesY - this.textRenderer.fontHeight * 2, -1);
         this.lines.drawCenterWithShadow(matrices, this.width / 2, this.linesY);
         super.render(matrices, mouseX, mouseY, delta);

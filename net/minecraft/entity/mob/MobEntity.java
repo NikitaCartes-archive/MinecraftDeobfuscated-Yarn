@@ -210,14 +210,6 @@ extends LivingEntity {
         this.pathfindingPenalties.put(nodeType, Float.valueOf(penalty));
     }
 
-    /**
-     * {@return if this entity can jump to the next node in path given the type of
-     * the node}
-     */
-    public boolean canJumpToNextPathNode(PathNodeType type) {
-        return type != PathNodeType.DANGER_FIRE && type != PathNodeType.DANGER_CACTUS && type != PathNodeType.DANGER_OTHER && type != PathNodeType.WALKABLE_DOOR;
-    }
-
     protected BodyControl createBodyControl() {
         return new BodyControl(this);
     }

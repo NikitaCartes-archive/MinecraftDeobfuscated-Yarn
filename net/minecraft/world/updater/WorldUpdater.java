@@ -131,7 +131,7 @@ public class WorldUpdater {
                             if (!chunkPos2.equals(chunkPos)) {
                                 LOGGER.warn("Chunk {} has invalid position {}", (Object)chunkPos, (Object)chunkPos2);
                             }
-                            boolean bl4 = bl3 = i < SharedConstants.getGameVersion().getWorldVersion();
+                            boolean bl4 = bl3 = i < SharedConstants.getGameVersion().getSaveVersion().getId();
                             if (this.eraseCache) {
                                 bl3 = bl3 || nbtCompound2.contains("Heightmaps");
                                 nbtCompound2.remove("Heightmaps");

@@ -96,7 +96,7 @@ extends AbstractSignBlock {
                 bl2 = false;
             }
         }
-        int i = !bl2 ? RotationPropertyHelper.fromDirection(direction) : RotationPropertyHelper.fromYaw(ctx.getPlayerYaw());
+        int i = !bl2 ? RotationPropertyHelper.fromDirection(direction.getOpposite()) : RotationPropertyHelper.fromYaw(ctx.getPlayerYaw() + 180.0f);
         return (BlockState)((BlockState)((BlockState)this.getDefaultState().with(ATTACHED, bl2)).with(ROTATION, i)).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 

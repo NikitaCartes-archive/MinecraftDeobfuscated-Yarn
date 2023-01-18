@@ -48,7 +48,7 @@ extends Item {
         }
         if (world instanceof ServerWorld) {
             ServerWorld serverWorld = (ServerWorld)world;
-            Consumer<ArmorStandEntity> consumer = EntityType.nbtCopier(entity -> {}, serverWorld, itemStack, context.getPlayer());
+            Consumer consumer = EntityType.copier(serverWorld, itemStack, context.getPlayer());
             ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.create(serverWorld, itemStack.getNbt(), consumer, blockPos, SpawnReason.SPAWN_EGG, true, true);
             if (armorStandEntity == null) {
                 return ActionResult.FAIL;

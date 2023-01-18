@@ -38,7 +38,6 @@ extends AbstractSignEditScreen {
     protected void renderSignBackground(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, BlockState state) {
         matrices.translate(0.0f, -13.0f, 0.0f);
         RenderSystem.setShaderTexture(0, this.texture);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         matrices.scale(4.0f, 4.0f, 1.0f);
         HangingSignEditScreen.drawTexture(matrices, -8, -8, 0.0f, 0.0f, 16, 16, 16, 16);
     }

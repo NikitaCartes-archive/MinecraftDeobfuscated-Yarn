@@ -192,7 +192,6 @@ extends Entity {
     public int stuckStingerTimer;
     public int hurtTime;
     public int maxHurtTime;
-    public float knockbackVelocity;
     public int deathTime;
     public float lastHandSwingProgress;
     public float handSwingProgress;
@@ -1052,6 +1051,7 @@ extends Entity {
     @Override
     public boolean damage(DamageSource source, float amount) {
         boolean bl3;
+        Entity entity2;
         if (this.isInvulnerableTo(source)) {
             return false;
         }
@@ -1101,9 +1101,7 @@ extends Entity {
             this.damageHelmet(source, amount);
             amount *= 0.75f;
         }
-        this.knockbackVelocity = 0.0f;
-        Entity entity2 = source.getAttacker();
-        if (entity2 != null) {
+        if ((entity2 = source.getAttacker()) != null) {
             WolfEntity wolfEntity;
             if (entity2 instanceof LivingEntity && !source.isNeutral()) {
                 this.setAttacker((LivingEntity)entity2);
@@ -1136,10 +1134,7 @@ extends Entity {
                     d = (Math.random() - Math.random()) * 0.01;
                     e = (Math.random() - Math.random()) * 0.01;
                 }
-                this.knockbackVelocity = (float)(MathHelper.atan2(e, d) * 57.2957763671875 - (double)this.getYaw());
                 this.takeKnockback(0.4f, d, e);
-            } else {
-                this.knockbackVelocity = (int)(Math.random() * 2.0) * 180;
             }
         }
         if (this.isDead()) {
@@ -1401,6 +1396,10 @@ extends Entity {
         return this.getPos();
     }
 
+    public float getDamageTiltYaw() {
+        return 0.0f;
+    }
+
     public FallSounds getFallSounds() {
         return new FallSounds(SoundEvents.ENTITY_GENERIC_SMALL_FALL, SoundEvents.ENTITY_GENERIC_BIG_FALL);
     }
@@ -1486,9 +1485,8 @@ extends Entity {
     }
 
     @Override
-    public void animateDamage() {
+    public void animateDamage(float yaw) {
         this.hurtTime = this.maxHurtTime = 10;
-        this.knockbackVelocity = 0.0f;
     }
 
     public int getArmor() {
@@ -1552,6 +1550,7 @@ extends Entity {
     }
 
     protected void applyDamage(DamageSource source, float amount) {
+        Entity entity;
         if (this.isInvulnerableTo(source)) {
             return;
         }
@@ -1560,15 +1559,16 @@ extends Entity {
         amount = Math.max(amount - this.getAbsorptionAmount(), 0.0f);
         this.setAbsorptionAmount(this.getAbsorptionAmount() - (f - amount));
         float g = f - amount;
-        if (g > 0.0f && g < 3.4028235E37f && source.getAttacker() instanceof ServerPlayerEntity) {
-            ((ServerPlayerEntity)source.getAttacker()).increaseStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(g * 10.0f));
+        if (g > 0.0f && g < 3.4028235E37f && (entity = source.getAttacker()) instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+            serverPlayerEntity.increaseStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(g * 10.0f));
         }
         if (amount == 0.0f) {
             return;
         }
         float h = this.getHealth();
-        this.setHealth(h - amount);
         this.getDamageTracker().onDamage(source, h, amount);
+        this.setHealth(h - amount);
         this.setAbsorptionAmount(this.getAbsorptionAmount() - amount);
         this.emitGameEvent(GameEvent.ENTITY_DAMAGE);
     }
@@ -1656,7 +1656,6 @@ extends Entity {
                 this.limbDistance = 1.5f;
                 this.timeUntilRegen = 20;
                 this.hurtTime = this.maxHurtTime = 10;
-                this.knockbackVelocity = 0.0f;
                 if (status == EntityStatuses.DAMAGE_FROM_THORNS) {
                     this.playSound(SoundEvents.ENCHANT_THORNS_HIT, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
                 }
@@ -2998,6 +2997,11 @@ extends Entity {
         return new Box(-entityDimensions.width / 2.0f, 0.0, -entityDimensions.width / 2.0f, entityDimensions.width / 2.0f, entityDimensions.height, entityDimensions.width / 2.0f);
     }
 
+    @Override
+    public boolean canUsePortals() {
+        return super.canUsePortals() && !this.isSleeping();
+    }
+
     public Optional<BlockPos> getSleepingPosition() {
         return this.dataTracker.get(SLEEPING_POSITION);
     }
@@ -3085,7 +3089,7 @@ extends Entity {
         return super.getEyeHeight(pose, dimensions);
     }
 
-    public ItemStack getArrowType(ItemStack stack) {
+    public ItemStack getProjectileType(ItemStack stack) {
         return ItemStack.EMPTY;
     }
 

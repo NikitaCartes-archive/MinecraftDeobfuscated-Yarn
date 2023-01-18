@@ -77,6 +77,7 @@ implements SpectatorMenuCloseCallback {
         if (state.getSelectedSlot() >= 0) {
             this.drawTexture(matrices, x - 91 - 1 + state.getSelectedSlot() * 20, y - 1, 0, 22, 24, 22);
         }
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         for (int i = 0; i < 9; ++i) {
             this.renderSpectatorCommand(matrices, i, this.client.getWindow().getScaledWidth() / 2 - 90 + i * 20 + 2, y + 3, height, state.getCommand(i));
         }
@@ -92,6 +93,7 @@ implements SpectatorMenuCloseCallback {
             float f = command.isEnabled() ? 1.0f : 0.25f;
             RenderSystem.setShaderColor(f, f, f, height);
             command.renderIcon(matrices, f, i);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             matrices.pop();
             if (i > 3 && command.isEnabled()) {
                 Text text = this.client.options.hotbarKeys[slot].getBoundKeyLocalizedText();

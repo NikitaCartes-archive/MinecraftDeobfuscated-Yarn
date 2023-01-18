@@ -35,6 +35,11 @@ implements ProgressListener {
     }
 
     @Override
+    protected boolean hasUsageText() {
+        return false;
+    }
+
+    @Override
     public void setTitle(Text title) {
         this.setTitleAndTask(title);
     }

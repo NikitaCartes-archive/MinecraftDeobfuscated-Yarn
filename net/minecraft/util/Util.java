@@ -308,7 +308,7 @@ public class Util {
         block2: {
             type = null;
             try {
-                type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(typeReference, id);
+                type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getSaveVersion().getId())).getChoiceType(typeReference, id);
             } catch (IllegalArgumentException illegalArgumentException) {
                 LOGGER.error("No data fixer registered for {}", (Object)id);
                 if (!SharedConstants.isDevelopment) break block2;

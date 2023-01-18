@@ -8,7 +8,6 @@ import com.mojang.logging.LogUtils;
 import java.io.File;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
 import net.minecraft.client.option.HotbarStorageEntry;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -40,12 +39,10 @@ public class HotbarStorage {
             if (nbtCompound == null) {
                 return;
             }
-            if (!nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
-                nbtCompound.putInt("DataVersion", 1343);
-            }
-            nbtCompound = NbtHelper.update(this.dataFixer, DataFixTypes.HOTBAR, nbtCompound, nbtCompound.getInt("DataVersion"));
-            for (int i = 0; i < 9; ++i) {
-                this.entries[i].readNbtList(nbtCompound.getList(String.valueOf(i), NbtElement.COMPOUND_TYPE));
+            int i = NbtHelper.getDataVersion(nbtCompound, 1343);
+            nbtCompound = DataFixTypes.HOTBAR.update(this.dataFixer, nbtCompound, i);
+            for (int j = 0; j < 9; ++j) {
+                this.entries[j].readNbtList(nbtCompound.getList(String.valueOf(j), NbtElement.COMPOUND_TYPE));
             }
         } catch (Exception exception) {
             LOGGER.error("Failed to load creative mode options", exception);
@@ -54,8 +51,7 @@ public class HotbarStorage {
 
     public void save() {
         try {
-            NbtCompound nbtCompound = new NbtCompound();
-            nbtCompound.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+            NbtCompound nbtCompound = NbtHelper.putDataVersion(new NbtCompound());
             for (int i = 0; i < 9; ++i) {
                 nbtCompound.put(String.valueOf(i), this.getSavedHotbar(i).toNbtList());
             }

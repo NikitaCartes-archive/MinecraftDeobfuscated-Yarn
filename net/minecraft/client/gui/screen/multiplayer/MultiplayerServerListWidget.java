@@ -23,7 +23,6 @@ import net.minecraft.client.gui.screen.LoadingDisplay;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
@@ -34,8 +33,10 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -53,11 +54,12 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
     static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
     static final Text LAN_SCANNING_TEXT = Text.translatable("lanServer.scanning");
-    static final Text CANNOT_RESOLVE_TEXT = Text.translatable("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
-    static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
+    static final Text CANNOT_RESOLVE_TEXT = Text.translatable("multiplayer.status.cannot_resolve").styled(style -> style.withColor(-65536));
+    static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").styled(style -> style.withColor(-65536));
     static final Text INCOMPATIBLE_TEXT = Text.translatable("multiplayer.status.incompatible");
     static final Text NO_CONNECTION_TEXT = Text.translatable("multiplayer.status.no_connection");
     static final Text PINGING_TEXT = Text.translatable("multiplayer.status.pinging");
+    static final Text ONLINE_TEXT = Text.translatable("multiplayer.status.online");
     private final MultiplayerScreen screen;
     private final List<ServerEntry> servers = Lists.newArrayList();
     private final Entry scanningEntry = new ScanningEntry();
@@ -87,11 +89,6 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         return entry != null && entry.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    @Override
-    protected void moveSelection(EntryListWidget.MoveDirection direction) {
-        this.moveSelectionIf(direction, entry -> !(entry instanceof ScanningEntry));
-    }
-
     public void setServers(ServerList servers) {
         this.servers.clear();
         for (int i = 0; i < servers.size(); ++i) {
@@ -101,11 +98,20 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     public void setLanServers(List<LanServerInfo> lanServers) {
+        int i = lanServers.size() - this.lanServers.size();
         this.lanServers.clear();
         for (LanServerInfo lanServerInfo : lanServers) {
             this.lanServers.add(new LanServerEntry(this.screen, lanServerInfo));
         }
         this.updateEntries();
+        for (int j = this.lanServers.size() - i; j < this.lanServers.size(); ++j) {
+            LanServerEntry lanServerEntry = this.lanServers.get(j);
+            int k = j - this.lanServers.size() + this.children().size();
+            int l = this.getRowTop(k);
+            int m = this.getRowBottom(k);
+            if (m < this.top || l > this.bottom) continue;
+            this.client.getNarratorManager().narrateSystemMessage(Text.translatable("multiplayer.lan.server_found", lanServerEntry.getMotdNarration()));
+        }
     }
 
     @Override
@@ -116,11 +122,6 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     @Override
     public int getRowWidth() {
         return super.getRowWidth() + 85;
-    }
-
-    @Override
-    protected boolean isFocused() {
-        return this.screen.getFocused() == this;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -138,7 +139,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public Text getNarration() {
-            return ScreenTexts.EMPTY;
+            return LAN_SCANNING_TEXT;
         }
     }
 
@@ -201,7 +202,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     }
                 });
             }
-            boolean bl = this.server.protocolVersion != SharedConstants.getGameVersion().getProtocolVersion();
+            boolean bl = !this.protocolVersionMatches();
             this.client.textRenderer.draw(matrices, this.server.name, (float)(x + 32 + 3), (float)(y + 1), 0xFFFFFF);
             List<OrderedText> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
             for (int i = 0; i < Math.min(list.size(), 2); ++i) {
@@ -215,7 +216,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 l = 5;
                 text2 = INCOMPATIBLE_TEXT;
                 list2 = this.server.playerListSummary;
-            } else if (this.server.online && this.server.ping != -2L) {
+            } else if (this.pinged()) {
                 l = this.server.ping < 0L ? 5 : (this.server.ping < 150L ? 0 : (this.server.ping < 300L ? 1 : (this.server.ping < 600L ? 2 : (this.server.ping < 1000L ? 3 : 4))));
                 if (this.server.ping < 0L) {
                     text2 = NO_CONNECTION_TEXT;
@@ -234,7 +235,6 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 list2 = Collections.emptyList();
             }
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
             DrawableHelper.drawTexture(matrices, x + entryWidth - 15, y, k * 10, 176 + l * 8, 10, 8, 256, 256);
             String string = this.server.getIcon();
@@ -262,7 +262,6 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 RenderSystem.setShaderTexture(0, SERVER_SELECTION_TEXTURE);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
                 RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 int o = mouseX - x;
                 int p = mouseY - y;
                 if (this.canConnect()) {
@@ -287,6 +286,14 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     }
                 }
             }
+        }
+
+        private boolean pinged() {
+            return this.server.online && this.server.ping != -2L;
+        }
+
+        private boolean protocolVersionMatches() {
+            return this.server.protocolVersion == SharedConstants.getGameVersion().getProtocolVersion();
         }
 
         public void saveFile() {
@@ -380,7 +387,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 this.screen.connect();
             }
             this.time = Util.getMeasuringTimeMs();
-            return false;
+            return true;
         }
 
         public ServerInfo getServer() {
@@ -389,7 +396,33 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public Text getNarration() {
-            return Text.translatable("narrator.select", this.server.name);
+            MutableText mutableText = Text.empty();
+            mutableText.append(Text.translatable("narrator.select", this.server.name));
+            mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+            if (!this.protocolVersionMatches()) {
+                mutableText.append(INCOMPATIBLE_TEXT);
+                mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+                mutableText.append(Text.translatable("multiplayer.status.version.narration", this.server.version));
+                mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+                mutableText.append(Text.translatable("multiplayer.status.motd.narration", this.server.label));
+            } else if (this.server.ping < 0L) {
+                mutableText.append(NO_CONNECTION_TEXT);
+            } else if (!this.pinged()) {
+                mutableText.append(PINGING_TEXT);
+            } else {
+                mutableText.append(ONLINE_TEXT);
+                mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+                mutableText.append(Text.translatable("multiplayer.status.ping.narration", this.server.ping));
+                mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+                mutableText.append(Text.translatable("multiplayer.status.motd.narration", this.server.label));
+                if (this.server.players != null) {
+                    mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+                    mutableText.append(Text.translatable("multiplayer.status.player_count.narration", this.server.players.getOnlinePlayerCount(), this.server.players.getPlayerLimit()));
+                    mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
+                    mutableText.append(Texts.join(this.server.playerListSummary, Text.literal(", ")));
+                }
+            }
+            return mutableText;
         }
     }
 
@@ -437,7 +470,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public Text getNarration() {
-            return Text.translatable("narrator.select", Text.empty().append(TITLE_TEXT).append(" ").append(this.server.getMotd()));
+            return Text.translatable("narrator.select", this.getMotdNarration());
+        }
+
+        public Text getMotdNarration() {
+            return Text.empty().append(TITLE_TEXT).append(ScreenTexts.SPACE).append(this.server.getMotd());
         }
     }
 }

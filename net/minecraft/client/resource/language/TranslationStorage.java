@@ -14,7 +14,6 @@ import java.util.Locale;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.ReorderingUtil;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
@@ -36,12 +35,9 @@ extends Language {
         this.rightToLeft = rightToLeft;
     }
 
-    public static TranslationStorage load(ResourceManager resourceManager, List<LanguageDefinition> definitions) {
+    public static TranslationStorage load(ResourceManager resourceManager, List<String> definitions, boolean rightToLeft) {
         HashMap<String, String> map = Maps.newHashMap();
-        boolean bl = false;
-        for (LanguageDefinition languageDefinition : definitions) {
-            bl |= languageDefinition.isRightToLeft();
-            String string = languageDefinition.getCode();
+        for (String string : definitions) {
             String string2 = String.format(Locale.ROOT, "lang/%s.json", string);
             for (String string3 : resourceManager.getAllNamespaces()) {
                 try {
@@ -52,7 +48,7 @@ extends Language {
                 }
             }
         }
-        return new TranslationStorage(ImmutableMap.copyOf(map), bl);
+        return new TranslationStorage(ImmutableMap.copyOf(map), rightToLeft);
     }
 
     private static void load(String langCode, List<Resource> resourceRefs, Map<String, String> translations) {
@@ -72,8 +68,8 @@ extends Language {
     }
 
     @Override
-    public String get(String key) {
-        return this.translations.getOrDefault(key, key);
+    public String get(String key, String fallback) {
+        return this.translations.getOrDefault(key, fallback);
     }
 
     @Override

@@ -61,8 +61,7 @@ extends Screen {
         adder.add(gridWidget2);
         GridWidget gridWidget3 = this.createButtonRow(this.createOptInButton(), ButtonWidget.builder(ScreenTexts.DONE, this::goBack).build());
         simplePositioningWidget.add(gridWidget3, simplePositioningWidget.copyPositioner().relative(0.5f, 1.0f));
-        gridWidget.recalculateDimensions();
-        simplePositioningWidget.recalculateDimensions();
+        simplePositioningWidget.refreshPositions();
         this.telemetryEventWidget = new TelemetryEventWidget(0, 0, this.width - 40, gridWidget3.getY() - (gridWidget2.getY() + gridWidget2.getHeight()) - 16, this.client.textRenderer);
         this.telemetryEventWidget.setScrollY(this.scroll);
         this.telemetryEventWidget.setScrollConsumer(scroll -> {
@@ -70,10 +69,11 @@ extends Screen {
         });
         this.setInitialFocus(this.telemetryEventWidget);
         adder.add(this.telemetryEventWidget);
-        gridWidget.recalculateDimensions();
-        simplePositioningWidget.recalculateDimensions();
+        simplePositioningWidget.refreshPositions();
         SimplePositioningWidget.setPos(simplePositioningWidget, 0, 0, this.width, this.height, 0.5f, 0.0f);
-        this.addDrawableChild(simplePositioningWidget);
+        simplePositioningWidget.forEachChild(element -> {
+            ClickableWidget cfr_ignored_0 = (ClickableWidget)this.addDrawableChild(element);
+        });
     }
 
     private ClickableWidget createOptInButton() {
@@ -107,7 +107,7 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackgroundTexture(0);
+        this.renderBackgroundTexture(matrices);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
@@ -116,7 +116,6 @@ extends Screen {
         gridWidget.getMainPositioner().alignHorizontalCenter().marginX(4);
         gridWidget.add(left, 0, 0);
         gridWidget.add(right, 0, 1);
-        gridWidget.recalculateDimensions();
         return gridWidget;
     }
 }

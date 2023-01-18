@@ -10,34 +10,81 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
+import net.minecraft.client.gui.navigation.NavigationAxis;
+import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class ElementListWidget<E extends Entry<E>>
 extends EntryListWidget<E> {
-    private boolean widgetFocused;
-
     public ElementListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
         super(minecraftClient, i, j, k, l, m);
     }
 
     @Override
-    public boolean changeFocus(boolean lookForwards) {
-        this.widgetFocused = super.changeFocus(lookForwards);
-        if (this.widgetFocused) {
-            this.ensureVisible((Entry)this.getFocused());
+    @Nullable
+    public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+        if (this.getEntryCount() == 0) {
+            return null;
         }
-        return this.widgetFocused;
+        if (navigation instanceof GuiNavigation.Arrow) {
+            GuiNavigationPath guiNavigationPath;
+            int i;
+            GuiNavigation.Arrow arrow = (GuiNavigation.Arrow)navigation;
+            Entry entry = (Entry)this.getFocused();
+            if (arrow.direction().getAxis() == NavigationAxis.HORIZONTAL && entry != null) {
+                return GuiNavigationPath.of(this, entry.getNavigationPath(navigation));
+            }
+            NavigationDirection navigationDirection = arrow.direction();
+            if (entry == null) {
+                switch (navigationDirection) {
+                    case LEFT: {
+                        i = Integer.MAX_VALUE;
+                        navigationDirection = NavigationDirection.DOWN;
+                        break;
+                    }
+                    case RIGHT: {
+                        i = 0;
+                        navigationDirection = NavigationDirection.DOWN;
+                        break;
+                    }
+                    default: {
+                        i = 0;
+                        break;
+                    }
+                }
+            } else {
+                i = entry.children().indexOf(entry.getFocused());
+            }
+            Entry entry2 = entry;
+            do {
+                if ((entry2 = this.getNeighboringEntry(navigationDirection, element -> !element.children().isEmpty(), entry2)) != null) continue;
+                return null;
+            } while ((guiNavigationPath = entry2.getNavigationPath(arrow, i)) == null);
+            return GuiNavigationPath.of(this, guiNavigationPath);
+        }
+        return super.getNavigationPath(navigation);
+    }
+
+    @Override
+    public void setFocused(@Nullable Element focused) {
+        super.setFocused(focused);
+        if (focused == null) {
+            this.setSelected(null);
+        }
     }
 
     @Override
     public Selectable.SelectionType getType() {
-        if (this.widgetFocused) {
+        if (this.isFocused()) {
             return Selectable.SelectionType.FOCUSED;
         }
         return super.getType();
@@ -85,7 +132,18 @@ extends EntryListWidget<E> {
         }
 
         @Override
+        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            return ParentElement.super.mouseClicked(mouseX, mouseY, button);
+        }
+
+        @Override
         public void setFocused(@Nullable Element focused) {
+            if (this.focused != null) {
+                this.focused.setFocused(false);
+            }
+            if (focused != null) {
+                focused.setFocused(true);
+            }
             this.focused = focused;
         }
 
@@ -93,6 +151,52 @@ extends EntryListWidget<E> {
         @Nullable
         public Element getFocused() {
             return this.focused;
+        }
+
+        @Nullable
+        public GuiNavigationPath getNavigationPath(GuiNavigation navigation, int index) {
+            if (this.children().isEmpty()) {
+                return null;
+            }
+            GuiNavigationPath guiNavigationPath = this.children().get(Math.min(index, this.children().size() - 1)).getNavigationPath(navigation);
+            return GuiNavigationPath.of(this, guiNavigationPath);
+        }
+
+        @Override
+        @Nullable
+        public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+            if (navigation instanceof GuiNavigation.Arrow) {
+                int j;
+                int i;
+                GuiNavigation.Arrow arrow = (GuiNavigation.Arrow)navigation;
+                switch (arrow.direction()) {
+                    default: {
+                        throw new IncompatibleClassChangeError();
+                    }
+                    case UP: 
+                    case DOWN: {
+                        int n = 0;
+                        break;
+                    }
+                    case LEFT: {
+                        int n = -1;
+                        break;
+                    }
+                    case RIGHT: {
+                        int n = i = 1;
+                    }
+                }
+                if (i == 0) {
+                    return null;
+                }
+                for (int k = j = MathHelper.clamp(i + this.children().indexOf(this.getFocused()), 0, this.children().size() - 1); k >= 0 && k < this.children().size(); k += i) {
+                    Element element = this.children().get(k);
+                    GuiNavigationPath guiNavigationPath = element.getNavigationPath(navigation);
+                    if (guiNavigationPath == null) continue;
+                    return GuiNavigationPath.of(this, guiNavigationPath);
+                }
+            }
+            return ParentElement.super.getNavigationPath(navigation);
         }
 
         public abstract List<? extends Selectable> selectableChildren();

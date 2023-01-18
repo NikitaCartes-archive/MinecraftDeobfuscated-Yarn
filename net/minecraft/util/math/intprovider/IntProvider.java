@@ -6,8 +6,8 @@ package net.minecraft.util.math.intprovider;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import java.util.function.Function;
 import net.minecraft.registry.Registries;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProviderType;
 import net.minecraft.util.math.random.Random;
@@ -19,7 +19,7 @@ public abstract class IntProvider {
     public static final Codec<IntProvider> POSITIVE_CODEC = IntProvider.createValidatingCodec(1, Integer.MAX_VALUE);
 
     public static Codec<IntProvider> createValidatingCodec(int min, int max) {
-        Function<IntProvider, DataResult> function = provider -> {
+        return Codecs.validate(VALUE_CODEC, provider -> {
             if (provider.getMin() < min) {
                 return DataResult.error("Value provider too low: " + min + " [" + provider.getMin() + "-" + provider.getMax() + "]");
             }
@@ -27,8 +27,7 @@ public abstract class IntProvider {
                 return DataResult.error("Value provider too high: " + max + " [" + provider.getMin() + "-" + provider.getMax() + "]");
             }
             return DataResult.success(provider);
-        };
-        return VALUE_CODEC.flatXmap(function, function);
+        });
     }
 
     public abstract int get(Random var1);

@@ -45,6 +45,7 @@ implements SpectatorMenuCommand {
         RenderSystem.setShaderTexture(0, this.skinId);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, (float)alpha / 255.0f);
         PlayerSkinDrawer.draw(matrices, 2, 2, 12);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     @Override

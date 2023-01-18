@@ -90,6 +90,7 @@ public final class ItemTags {
     public static final TagKey<Item> COMPASSES = ItemTags.of("compasses");
     public static final TagKey<Item> HANGING_SIGNS = ItemTags.of("hanging_signs");
     public static final TagKey<Item> CREEPER_IGNITERS = ItemTags.of("creeper_igniters");
+    public static final TagKey<Item> NOTEBLOCK_TOP_INSTRUMENTS = ItemTags.of("noteblock_top_instruments");
 
     private ItemTags() {
     }

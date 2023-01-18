@@ -10,6 +10,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.navigation.GuiNavigationType;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.GlfwUtil;
@@ -49,6 +50,7 @@ public class Mouse {
         if (window != this.client.getWindow().getHandle()) {
             return;
         }
+        this.client.setNavigationType(GuiNavigationType.MOUSE);
         boolean bl2 = bl = action == 1;
         if (MinecraftClient.IS_SYSTEM_MAC && button == 0) {
             if (bl) {

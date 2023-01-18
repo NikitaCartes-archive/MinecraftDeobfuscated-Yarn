@@ -27,7 +27,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.Registries;
@@ -928,17 +928,7 @@ AutoCloseable {
             return false;
         }
         Biome biome = this.getBiome(pos).value();
-        return biome.getPrecipitation() == Biome.Precipitation.RAIN && biome.doesNotSnow(pos);
-    }
-
-    /**
-     * {@return whether the biome at {@code pos} has high humidity}
-     * 
-     * <p>Humidity affects the chance of fire spreading.
-     */
-    public boolean hasHighHumidity(BlockPos pos) {
-        Biome biome = this.getBiome(pos).value();
-        return biome.hasHighHumidity();
+        return biome.getPrecipitation(pos) == Biome.Precipitation.RAIN;
     }
 
     @Nullable

@@ -40,7 +40,6 @@ import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
 import net.minecraft.client.gui.screen.world.SelectWorldScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -192,19 +191,9 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     }
 
     @Override
-    protected boolean isFocused() {
-        return this.parent.getFocused() == this;
-    }
-
-    @Override
     public void setSelected(@Nullable Entry entry) {
         super.setSelected(entry);
         this.parent.worldSelected(entry != null && entry.isAvailable());
-    }
-
-    @Override
-    protected void moveSelection(EntryListWidget.MoveDirection direction) {
-        this.moveSelectionIf(direction, Entry::isAvailable);
     }
 
     public Optional<WorldEntry> getSelectedAsOptional() {
@@ -315,7 +304,6 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + this.client.textRenderer.fontHeight + 3), 0x808080);
             this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3), 0x808080);
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.setShaderTexture(0, this.icon != null ? this.iconLocation : UNKNOWN_SERVER_LOCATION);
             RenderSystem.enableBlend();
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
@@ -325,7 +313,6 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 RenderSystem.setShaderTexture(0, WORLD_SELECTION_LOCATION);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
                 RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 int i = mouseX - x;
                 boolean bl = i < 32;
                 int n = j = bl ? 32 : 0;
@@ -374,7 +361,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 return true;
             }
             this.time = Util.getMeasuringTimeMs();
-            return false;
+            return true;
         }
 
         public void play() {

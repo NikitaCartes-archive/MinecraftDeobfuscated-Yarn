@@ -8,9 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 

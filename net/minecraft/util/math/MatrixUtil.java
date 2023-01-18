@@ -28,7 +28,7 @@ public class MatrixUtil {
         float j = g;
         float i = 2.0f * (f - h);
         if (field_40746 * j * j < i * i) {
-            float k = MathHelper.fastInverseSqrt(j * j + i * i);
+            float k = MathHelper.inverseSqrt(j * j + i * i);
             return Pair.of(Float.valueOf(k * j), Float.valueOf(k * i));
         }
         return Pair.of(Float.valueOf(SIN_PI_OVER_8), Float.valueOf(COS_PI_OVER_8));
@@ -44,7 +44,7 @@ public class MatrixUtil {
             i = j;
             j = k;
         }
-        k = MathHelper.fastInverseSqrt(j * j + i * i);
+        k = MathHelper.inverseSqrt(j * j + i * i);
         return Pair.of(Float.valueOf(i *= k), Float.valueOf(j *= k));
     }
 

@@ -250,11 +250,6 @@ extends RealmsScreen {
         }
 
         @Override
-        public boolean isFocused() {
-            return RealmsBackupScreen.this.getFocused() == this;
-        }
-
-        @Override
         public int getMaxPosition() {
             return this.getEntryCount() * 36;
         }
@@ -362,7 +357,6 @@ extends RealmsScreen {
         private void drawRestore(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
             boolean bl = mouseX >= x && mouseX <= x + 12 && mouseY >= y && mouseY <= y + 14 && mouseY < RealmsBackupScreen.this.height - 15 && mouseY > 32;
             RenderSystem.setShaderTexture(0, RESTORE_ICON);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             matrices.push();
             matrices.scale(0.5f, 0.5f, 0.5f);
             float f = bl ? 28.0f : 0.0f;
@@ -376,7 +370,6 @@ extends RealmsScreen {
         private void drawInfo(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
             boolean bl = mouseX >= x && mouseX <= x + 8 && mouseY >= y && mouseY <= y + 8 && mouseY < RealmsBackupScreen.this.height - 15 && mouseY > 32;
             RenderSystem.setShaderTexture(0, PLUS_ICON);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             matrices.push();
             matrices.scale(0.5f, 0.5f, 0.5f);
             float f = bl ? 15.0f : 0.0f;

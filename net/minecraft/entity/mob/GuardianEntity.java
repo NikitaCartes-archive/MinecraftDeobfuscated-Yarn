@@ -281,6 +281,10 @@ extends HostileEntity {
         return ((float)this.beamTicks + tickDelta) / (float)this.getWarmupTime();
     }
 
+    public float getBeamTicks() {
+        return this.beamTicks;
+    }
+
     @Override
     public boolean canSpawn(WorldView world) {
         return world.doesNotIntersectEntities(this);

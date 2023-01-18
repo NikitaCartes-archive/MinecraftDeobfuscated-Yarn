@@ -365,11 +365,6 @@ extends RealmsScreen {
             RealmsSelectWorldTemplateScreen.this.renderBackground(matrices);
         }
 
-        @Override
-        public boolean isFocused() {
-            return RealmsSelectWorldTemplateScreen.this.getFocused() == this;
-        }
-
         public boolean isEmpty() {
             return this.getEntryCount() == 0;
         }
@@ -410,10 +405,8 @@ extends RealmsScreen {
 
         private void drawImage(MatrixStack matrices, int x, int y, int mouseX, int mouseY, WorldTemplate template) {
             RealmsTextureManager.bindWorldTemplate(template.id, template.image);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, x + 1, y + 1, 0.0f, 0.0f, 38, 38, 38, 38);
             RenderSystem.setShaderTexture(0, SLOT_FRAME);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 40, 40, 40, 40);
         }
 
@@ -438,13 +431,11 @@ extends RealmsScreen {
             }
             if (!bl3) {
                 RenderSystem.setShaderTexture(0, LINK_ICONS);
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 float f = bl ? 15.0f : 0.0f;
                 DrawableHelper.drawTexture(matrices, x + i, y, f, 0.0f, 15, 15, 30, 15);
             }
             if (!"".equals(trailer)) {
                 RenderSystem.setShaderTexture(0, TRAILER_ICONS);
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 int j = x + i + (bl3 ? 0 : 17);
                 float g = bl2 ? 15.0f : 0.0f;
                 DrawableHelper.drawTexture(matrices, j, y, g, 0.0f, 15, 15, 30, 15);

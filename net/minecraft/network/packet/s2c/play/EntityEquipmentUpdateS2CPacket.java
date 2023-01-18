@@ -8,9 +8,9 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class EntityEquipmentUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {

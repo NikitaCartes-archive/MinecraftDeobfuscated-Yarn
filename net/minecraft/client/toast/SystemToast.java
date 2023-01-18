@@ -70,7 +70,6 @@ implements Toast {
             this.justUpdated = false;
         }
         RenderSystem.setShaderTexture(0, TEXTURE);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         int i = this.getWidth();
         if (i == 160 && this.lines.size() <= 1) {
             manager.drawTexture(matrices, 0, 0, 0, 64, i, this.getHeight());
@@ -92,7 +91,7 @@ implements Toast {
                 manager.getClient().textRenderer.draw(matrices, this.lines.get(j), 18.0f, (float)(18 + j * 12), -1);
             }
         }
-        return startTime - this.startTime < this.type.displayDuration ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+        return (double)(startTime - this.startTime) < (double)this.type.displayDuration * manager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
     }
 
     private void drawPart(MatrixStack matrices, ToastManager manager, int width, int textureV, int y, int height) {

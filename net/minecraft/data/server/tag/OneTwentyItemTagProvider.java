@@ -45,6 +45,7 @@ extends AbstractItemTagProvider {
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.BOATS)).add(Items.BAMBOO_RAFT);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.BOOKSHELF_BOOKS)).add(Items.BOOK, Items.WRITTEN_BOOK, Items.ENCHANTED_BOOK, Items.WRITABLE_BOOK);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.NON_FLAMMABLE_WOOD)).add(Items.WARPED_HANGING_SIGN, Items.CRIMSON_HANGING_SIGN);
+        ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.NOTEBLOCK_TOP_INSTRUMENTS)).add(Items.ZOMBIE_HEAD, Items.SKELETON_SKULL, Items.CREEPER_HEAD, Items.DRAGON_HEAD, Items.WITHER_SKELETON_SKULL, Items.PIGLIN_HEAD, Items.PLAYER_HEAD);
     }
 }
 

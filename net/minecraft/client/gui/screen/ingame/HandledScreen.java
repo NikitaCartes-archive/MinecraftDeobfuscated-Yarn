@@ -106,9 +106,7 @@ implements ScreenHandlerProvider<T> {
         matrixStack.push();
         matrixStack.translate(i, j, 0.0f);
         RenderSystem.applyModelViewMatrix();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         this.focusedSlot = null;
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         for (int k = 0; k < ((ScreenHandler)this.handler).slots.size(); ++k) {
             Slot slot = ((ScreenHandler)this.handler).slots.get(k);
             if (slot.isEnabled()) {

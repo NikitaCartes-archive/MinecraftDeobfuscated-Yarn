@@ -345,11 +345,6 @@ implements VariantHolder<FrogVariant> {
         }
     }
 
-    @Override
-    public boolean canJumpToNextPathNode(PathNodeType type) {
-        return super.canJumpToNextPathNode(type) && type != PathNodeType.WATER_BORDER;
-    }
-
     public static boolean isValidFrogFood(LivingEntity entity) {
         SlimeEntity slimeEntity;
         if (entity instanceof SlimeEntity && (slimeEntity = (SlimeEntity)entity).getSize() != 1) {
@@ -393,6 +388,11 @@ implements VariantHolder<FrogVariant> {
     extends AmphibiousSwimNavigation {
         FrogSwimNavigation(FrogEntity frog, World world) {
             super(frog, world);
+        }
+
+        @Override
+        public boolean canJumpToNext(PathNodeType nodeType) {
+            return nodeType != PathNodeType.WATER_BORDER && super.canJumpToNext(nodeType);
         }
 
         @Override

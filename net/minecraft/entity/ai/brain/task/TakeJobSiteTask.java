@@ -26,7 +26,7 @@ public class TakeJobSiteTask {
             if (entity.isBaby()) {
                 return false;
             }
-            if (entity.getVillagerData().getProfession() == VillagerProfession.NONE) {
+            if (entity.getVillagerData().getProfession() != VillagerProfession.NONE) {
                 return false;
             }
             BlockPos blockPos = ((GlobalPos)context.getValue(potentialJobSite)).getPos();

@@ -76,6 +76,7 @@ import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -938,7 +939,7 @@ implements VariantHolder<Type> {
             if (!FoxEntity.this.isWalking()) {
                 Vec3d vec3d = FoxEntity.this.getVelocity();
                 if (vec3d.y * vec3d.y < (double)0.03f && FoxEntity.this.getPitch() != 0.0f) {
-                    FoxEntity.this.setPitch(MathHelper.lerpAngle(FoxEntity.this.getPitch(), 0.0f, 0.2f));
+                    FoxEntity.this.setPitch(MathHelper.lerpAngleDegrees(0.2f, FoxEntity.this.getPitch(), 0.0f));
                 } else {
                     double d = vec3d.horizontalLength();
                     double e = Math.signum(-vec3d.y) * Math.acos(d / vec3d.length()) * 57.2957763671875;
@@ -1389,7 +1390,7 @@ implements VariantHolder<Type> {
         }
 
         public static Type fromBiome(RegistryEntry<Biome> biome) {
-            return biome.value().getPrecipitation() == Biome.Precipitation.SNOW ? SNOW : RED;
+            return biome.isIn(BiomeTags.SPAWNS_SNOW_FOXES) ? SNOW : RED;
         }
 
         static {

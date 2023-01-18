@@ -47,8 +47,8 @@ public abstract class Language {
         return new Language(){
 
             @Override
-            public String get(String key) {
-                return map.getOrDefault(key, key);
+            public String get(String key, String fallback) {
+                return map.getOrDefault(key, fallback);
             }
 
             @Override
@@ -84,7 +84,11 @@ public abstract class Language {
         instance = language;
     }
 
-    public abstract String get(String var1);
+    public String get(String key) {
+        return this.get(key, key);
+    }
+
+    public abstract String get(String var1, String var2);
 
     public abstract boolean hasTranslation(String var1);
 

@@ -138,8 +138,8 @@ implements AutoCloseable {
             int k;
             Dynamic<T> dynamic2 = new Dynamic<T>(ops, data);
             int j = SerializingRegionBasedStorage.getDataVersion(dynamic2);
-            boolean bl = j != (k = SharedConstants.getGameVersion().getWorldVersion());
-            Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic2, j, k);
+            boolean bl = j != (k = SharedConstants.getGameVersion().getSaveVersion().getId());
+            Dynamic<T> dynamic22 = this.dataFixTypes.update(this.dataFixer, dynamic2, j, k);
             OptionalDynamic<T> optionalDynamic = dynamic22.get(SECTIONS_KEY);
             for (int l = this.world.getBottomSectionCoord(); l < this.world.getTopSectionCoord(); ++l) {
                 long m = SerializingRegionBasedStorage.chunkSectionPosAsLong(pos, l);
@@ -177,7 +177,7 @@ implements AutoCloseable {
             String string = Integer.toString(i);
             dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(ops.createString(string), object));
         }
-        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString(SECTIONS_KEY), ops.createMap(map), ops.createString("DataVersion"), ops.createInt(SharedConstants.getGameVersion().getWorldVersion()))));
+        return new Dynamic<T>(ops, ops.createMap(ImmutableMap.of(ops.createString(SECTIONS_KEY), ops.createMap(map), ops.createString("DataVersion"), ops.createInt(SharedConstants.getGameVersion().getSaveVersion().getId()))));
     }
 
     private static long chunkSectionPosAsLong(ChunkPos chunkPos, int y) {

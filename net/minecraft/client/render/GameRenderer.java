@@ -750,7 +750,7 @@ implements AutoCloseable {
         return d;
     }
 
-    private void bobViewWhenHurt(MatrixStack matrices, float tickDelta) {
+    private void tiltViewWhenHurt(MatrixStack matrices, float tickDelta) {
         if (this.client.getCameraEntity() instanceof LivingEntity) {
             float g;
             LivingEntity livingEntity = (LivingEntity)this.client.getCameraEntity();
@@ -764,7 +764,7 @@ implements AutoCloseable {
             }
             f /= (float)livingEntity.maxHurtTime;
             f = MathHelper.sin(f * f * f * f * (float)Math.PI);
-            g = livingEntity.knockbackVelocity;
+            g = livingEntity.getDamageTiltYaw();
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-g));
             matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-f * 14.0f));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
@@ -802,7 +802,7 @@ implements AutoCloseable {
         this.loadProjectionMatrix(this.getBasicProjectionMatrix(this.getFov(camera, tickDelta, false)));
         matrices.loadIdentity();
         matrices.push();
-        this.bobViewWhenHurt(matrices, tickDelta);
+        this.tiltViewWhenHurt(matrices, tickDelta);
         if (this.client.options.getBobView().getValue().booleanValue()) {
             this.bobView(matrices, tickDelta);
         }
@@ -815,7 +815,7 @@ implements AutoCloseable {
         matrices.pop();
         if (this.client.options.getPerspective().isFirstPerson() && !bl) {
             InGameOverlayRenderer.renderOverlays(this.client, matrices);
-            this.bobViewWhenHurt(matrices, tickDelta);
+            this.tiltViewWhenHurt(matrices, tickDelta);
         }
         if (this.client.options.getBobView().getValue().booleanValue()) {
             this.bobView(matrices, tickDelta);
@@ -869,7 +869,6 @@ implements AutoCloseable {
             if (this.postProcessor != null && this.postProcessorEnabled) {
                 RenderSystem.disableBlend();
                 RenderSystem.disableDepthTest();
-                RenderSystem.enableTexture();
                 RenderSystem.resetTextureMatrix();
                 this.postProcessor.render(tickDelta);
             }
@@ -1023,7 +1022,7 @@ implements AutoCloseable {
         MatrixStack matrixStack = new MatrixStack();
         double d = this.getFov(camera, tickDelta, true);
         matrixStack.multiplyPositionMatrix(this.getBasicProjectionMatrix(d));
-        this.bobViewWhenHurt(matrixStack, tickDelta);
+        this.tiltViewWhenHurt(matrixStack, tickDelta);
         if (this.client.options.getBobView().getValue().booleanValue()) {
             this.bobView(matrixStack, tickDelta);
         }

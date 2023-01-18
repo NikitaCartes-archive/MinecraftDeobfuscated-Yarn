@@ -41,7 +41,6 @@ implements DebugRenderer.Renderer {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
         RenderSystem.setShaderColor(0.0f, 1.0f, 0.0f, 0.75f);
-        RenderSystem.disableTexture();
         DebugRenderer.drawBox(pos, 0.02f, marker.getBlue(), marker.getGreen(), marker.getAlpha(), marker.getRed());
         if (!marker.message.isEmpty()) {
             double d = (double)pos.getX() + 0.5;
@@ -49,7 +48,7 @@ implements DebugRenderer.Renderer {
             double f = (double)pos.getZ() + 0.5;
             DebugRenderer.drawString(marker.message, d, e, f, -1, 0.01f, true, 0.0f, true);
         }
-        RenderSystem.enableTexture();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();
     }
 

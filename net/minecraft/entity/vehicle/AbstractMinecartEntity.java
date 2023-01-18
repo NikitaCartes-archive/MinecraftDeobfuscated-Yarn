@@ -258,7 +258,7 @@ extends Entity {
     abstract Item getItem();
 
     @Override
-    public void animateDamage() {
+    public void animateDamage(float yaw) {
         this.setDamageWobbleSide(-this.getDamageWobbleSide());
         this.setDamageWobbleTicks(10);
         this.setDamageWobbleStrength(this.getDamageWobbleStrength() + this.getDamageWobbleStrength() * 10.0f);

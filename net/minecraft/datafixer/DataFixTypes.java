@@ -4,7 +4,12 @@
 package net.minecraft.datafixer;
 
 import com.mojang.datafixers.DSL;
+import com.mojang.datafixers.DataFixer;
+import com.mojang.serialization.Dynamic;
+import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.TypeReferences;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtOps;
 
 public enum DataFixTypes {
     LEVEL(TypeReferences.LEVEL),
@@ -28,6 +33,42 @@ public enum DataFixTypes {
 
     public DSL.TypeReference getTypeReference() {
         return this.typeReference;
+    }
+
+    private static int getSaveVersionId() {
+        return SharedConstants.getGameVersion().getSaveVersion().getId();
+    }
+
+    /**
+     * {@return {@code dynamic} updated from {@code oldVersion} to {@code newVersion}}
+     */
+    public <T> Dynamic<T> update(DataFixer dataFixer, Dynamic<T> dynamic, int oldVersion, int newVersion) {
+        return dataFixer.update(this.typeReference, dynamic, oldVersion, newVersion);
+    }
+
+    /**
+     * {@return {@code dynamic} updated from {@code oldVersion} to the current version}
+     */
+    public <T> Dynamic<T> update(DataFixer dataFixer, Dynamic<T> dynamic, int oldVersion) {
+        return this.update(dataFixer, dynamic, oldVersion, DataFixTypes.getSaveVersionId());
+    }
+
+    /**
+     * {@return {@code nbt} updated from {@code oldVersion} to {@code newVersion}}
+     * 
+     * @see net.minecraft.nbt.NbtHelper#getDataVersion
+     */
+    public NbtCompound update(DataFixer dataFixer, NbtCompound nbt, int oldVersion, int newVersion) {
+        return this.update(dataFixer, new Dynamic<NbtCompound>(NbtOps.INSTANCE, nbt), oldVersion, newVersion).getValue();
+    }
+
+    /**
+     * {@return {@code nbt} updated from {@code oldVersion} to the current version}
+     * 
+     * @see net.minecraft.nbt.NbtHelper#getDataVersion
+     */
+    public NbtCompound update(DataFixer dataFixer, NbtCompound nbt, int oldVersion) {
+        return this.update(dataFixer, nbt, oldVersion, DataFixTypes.getSaveVersionId());
     }
 }
 

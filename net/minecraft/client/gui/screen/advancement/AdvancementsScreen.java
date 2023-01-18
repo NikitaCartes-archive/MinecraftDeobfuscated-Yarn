@@ -145,7 +145,6 @@ implements ClientAdvancementManager.Listener {
     }
 
     public void drawWindow(MatrixStack matrices, int x, int y) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, WINDOW_TEXTURE);
@@ -165,7 +164,6 @@ implements ClientAdvancementManager.Listener {
     }
 
     private void drawWidgetTooltip(MatrixStack matrices, int mouseX, int mouseY, int x, int y) {
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         if (this.selectedTab != null) {
             MatrixStack matrixStack = RenderSystem.getModelViewStack();
             matrixStack.push();

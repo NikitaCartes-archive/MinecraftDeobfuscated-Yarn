@@ -211,15 +211,15 @@ extends LandPathNodeMaker {
     }
 
     private PathNodeType getNodeType(int x, int y, int z) {
-        return this.pathNodes.computeIfAbsent(BlockPos.asLong(x, y, z), pos -> this.getNodeType(this.cachedWorld, x, y, z, this.entity, this.entityBlockXSize, this.entityBlockYSize, this.entityBlockZSize, this.canOpenDoors(), this.canEnterOpenDoors()));
+        return this.pathNodes.computeIfAbsent(BlockPos.asLong(x, y, z), pos -> this.getNodeType(this.cachedWorld, x, y, z, this.entity));
     }
 
     @Override
-    public PathNodeType getNodeType(BlockView world, int x, int y, int z, MobEntity mob, int sizeX, int sizeY, int sizeZ, boolean canOpenDoors, boolean canEnterOpenDoors) {
+    public PathNodeType getNodeType(BlockView world, int x, int y, int z, MobEntity mob) {
         EnumSet<PathNodeType> enumSet = EnumSet.noneOf(PathNodeType.class);
         PathNodeType pathNodeType = PathNodeType.BLOCKED;
         BlockPos blockPos = mob.getBlockPos();
-        pathNodeType = super.findNearbyNodeTypes(world, x, y, z, sizeX, sizeY, sizeZ, canOpenDoors, canEnterOpenDoors, enumSet, pathNodeType, blockPos);
+        pathNodeType = super.findNearbyNodeTypes(world, x, y, z, enumSet, pathNodeType, blockPos);
         if (enumSet.contains((Object)PathNodeType.FENCE)) {
             return PathNodeType.FENCE;
         }
@@ -245,8 +245,6 @@ extends LandPathNodeMaker {
             PathNodeType pathNodeType2 = BirdPathNodeMaker.getCommonNodeType(world, mutable.set(x, y - 1, z));
             if (pathNodeType2 == PathNodeType.DAMAGE_FIRE || pathNodeType2 == PathNodeType.LAVA) {
                 pathNodeType = PathNodeType.DAMAGE_FIRE;
-            } else if (pathNodeType2 == PathNodeType.DAMAGE_CACTUS) {
-                pathNodeType = PathNodeType.DAMAGE_CACTUS;
             } else if (pathNodeType2 == PathNodeType.DAMAGE_OTHER) {
                 pathNodeType = PathNodeType.DAMAGE_OTHER;
             } else if (pathNodeType2 == PathNodeType.COCOA) {

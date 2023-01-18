@@ -39,6 +39,7 @@ import net.minecraft.test.GameTestException;
 import net.minecraft.test.GameTestState;
 import net.minecraft.test.PositionedException;
 import net.minecraft.test.TimedTaskRunner;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
@@ -170,7 +171,11 @@ public class TestContext {
     public void useBlock(BlockPos pos, PlayerEntity player, BlockHitResult result) {
         BlockPos blockPos = this.getAbsolutePos(pos);
         BlockState blockState = this.getWorld().getBlockState(blockPos);
-        blockState.onUse(this.getWorld(), player, Hand.MAIN_HAND, result);
+        ActionResult actionResult = blockState.onUse(this.getWorld(), player, Hand.MAIN_HAND, result);
+        if (!actionResult.isAccepted()) {
+            ItemUsageContext itemUsageContext = new ItemUsageContext(player, Hand.MAIN_HAND, result);
+            player.getStackInHand(Hand.MAIN_HAND).useOnBlock(itemUsageContext);
+        }
     }
 
     public LivingEntity drown(LivingEntity entity) {

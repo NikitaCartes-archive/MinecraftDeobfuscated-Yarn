@@ -17,7 +17,6 @@ import java.util.Map;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtInt;
 import net.minecraft.nbt.scanner.NbtScanQuery;
 import net.minecraft.nbt.scanner.SelectiveNbtCollector;
@@ -122,7 +121,7 @@ public class StructureLocator {
         }
         VersionedChunkStorage.saveContextToNbt(nbtCompound, this.worldKey, this.chunkGenerator.getCodecKey());
         try {
-            nbtCompound2 = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, nbtCompound, i);
+            nbtCompound2 = DataFixTypes.CHUNK.update(this.dataFixer, nbtCompound, i);
         } catch (Exception exception2) {
             LOGGER.warn("Failed to partially datafix chunk {}", (Object)pos, (Object)exception2);
             return StructurePresence.CHUNK_LOAD_NEEDED;

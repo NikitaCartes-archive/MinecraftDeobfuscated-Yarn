@@ -3,11 +3,12 @@
  */
 package net.minecraft.command.argument;
 
+import com.google.gson.JsonObject;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
@@ -16,18 +17,30 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
+import net.minecraft.command.argument.serialize.ArgumentSerializer;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 
 public class TimeArgumentType
 implements ArgumentType<Integer> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0d", "0s", "0t", "0");
     private static final SimpleCommandExceptionType INVALID_UNIT_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.time.invalid_unit"));
-    private static final DynamicCommandExceptionType INVALID_COUNT_EXCEPTION = new DynamicCommandExceptionType(time -> Text.translatable("argument.time.invalid_tick_count", time));
+    private static final Dynamic2CommandExceptionType TICK_COUNT_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType((value, minimum) -> Text.translatable("argument.time.tick_count_too_low", minimum, value));
     private static final Object2IntMap<String> UNITS = new Object2IntOpenHashMap<String>();
+    final int minimum;
+
+    private TimeArgumentType(int minimum) {
+        this.minimum = minimum;
+    }
 
     public static TimeArgumentType time() {
-        return new TimeArgumentType();
+        return new TimeArgumentType(0);
+    }
+
+    public static TimeArgumentType time(int minimum) {
+        return new TimeArgumentType(minimum);
     }
 
     @Override
@@ -39,8 +52,8 @@ implements ArgumentType<Integer> {
             throw INVALID_UNIT_EXCEPTION.create();
         }
         int j = Math.round(f * (float)i);
-        if (j < 0) {
-            throw INVALID_COUNT_EXCEPTION.create(j);
+        if (j < this.minimum) {
+            throw TICK_COUNT_TOO_LOW_EXCEPTION.create(j, this.minimum);
         }
         return j;
     }
@@ -71,6 +84,59 @@ implements ArgumentType<Integer> {
         UNITS.put("s", 20);
         UNITS.put("t", 1);
         UNITS.put("", 1);
+    }
+
+    public static class Serializer
+    implements ArgumentSerializer<TimeArgumentType, Properties> {
+        @Override
+        public void writePacket(Properties properties, PacketByteBuf packetByteBuf) {
+            packetByteBuf.writeInt(properties.minimum);
+        }
+
+        @Override
+        public Properties fromPacket(PacketByteBuf packetByteBuf) {
+            int i = packetByteBuf.readInt();
+            return new Properties(i);
+        }
+
+        @Override
+        public void writeJson(Properties properties, JsonObject jsonObject) {
+            jsonObject.addProperty("min", properties.minimum);
+        }
+
+        @Override
+        public Properties getArgumentTypeProperties(TimeArgumentType timeArgumentType) {
+            return new Properties(timeArgumentType.minimum);
+        }
+
+        @Override
+        public /* synthetic */ ArgumentSerializer.ArgumentTypeProperties fromPacket(PacketByteBuf buf) {
+            return this.fromPacket(buf);
+        }
+
+        public final class Properties
+        implements ArgumentSerializer.ArgumentTypeProperties<TimeArgumentType> {
+            final int minimum;
+
+            Properties(int minimum) {
+                this.minimum = minimum;
+            }
+
+            @Override
+            public TimeArgumentType createType(CommandRegistryAccess commandRegistryAccess) {
+                return TimeArgumentType.time(this.minimum);
+            }
+
+            @Override
+            public ArgumentSerializer<TimeArgumentType, ?> getSerializer() {
+                return Serializer.this;
+            }
+
+            @Override
+            public /* synthetic */ ArgumentType createType(CommandRegistryAccess commandRegistryAccess) {
+                return this.createType(commandRegistryAccess);
+            }
+        }
     }
 }
 

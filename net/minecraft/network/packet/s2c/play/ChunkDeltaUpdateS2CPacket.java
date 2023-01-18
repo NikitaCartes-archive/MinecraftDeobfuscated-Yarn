@@ -8,9 +8,9 @@ import it.unimi.dsi.fastutil.shorts.ShortSet;
 import java.util.function.BiConsumer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkSection;
@@ -66,7 +66,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeBoolean(this.noLightingUpdates);
         buf.writeVarInt(this.positions.length);
         for (int i = 0; i < this.positions.length; ++i) {
-            buf.writeVarLong(Block.getRawIdFromState(this.blockStates[i]) << 12 | this.positions[i]);
+            buf.writeVarLong((long)Block.getRawIdFromState(this.blockStates[i]) << 12 | (long)this.positions[i]);
         }
     }
 

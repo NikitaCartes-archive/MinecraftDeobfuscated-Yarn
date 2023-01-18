@@ -19,10 +19,6 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
-import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
-import net.minecraft.entity.ai.pathing.MobNavigation;
-import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -44,7 +40,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
@@ -70,6 +65,7 @@ extends RaiderEntity {
         super((EntityType<? extends RaiderEntity>)entityType, world);
         this.stepHeight = 1.0f;
         this.experiencePoints = 20;
+        this.setPathfindingPenalty(PathNodeType.LEAVES, 0.0f);
     }
 
     @Override
@@ -119,11 +115,6 @@ extends RaiderEntity {
     @Override
     public SoundEvent getCelebratingSound() {
         return SoundEvents.ENTITY_RAVAGER_CELEBRATE;
-    }
-
-    @Override
-    protected EntityNavigation createNavigation(World world) {
-        return new Navigation(this, world);
     }
 
     @Override
@@ -338,33 +329,6 @@ extends RaiderEntity {
         protected double getSquaredMaxAttackDistance(LivingEntity entity) {
             float f = RavagerEntity.this.getWidth() - 0.1f;
             return f * 2.0f * (f * 2.0f) + entity.getWidth();
-        }
-    }
-
-    static class Navigation
-    extends MobNavigation {
-        public Navigation(MobEntity mobEntity, World world) {
-            super(mobEntity, world);
-        }
-
-        @Override
-        protected PathNodeNavigator createPathNodeNavigator(int range) {
-            this.nodeMaker = new PathNodeMaker();
-            return new PathNodeNavigator(this.nodeMaker, range);
-        }
-    }
-
-    static class PathNodeMaker
-    extends LandPathNodeMaker {
-        PathNodeMaker() {
-        }
-
-        @Override
-        protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
-            if (type == PathNodeType.LEAVES) {
-                return PathNodeType.OPEN;
-            }
-            return super.adjustNodeType(world, canOpenDoors, canEnterOpenDoors, pos, type);
         }
     }
 }

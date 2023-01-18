@@ -188,7 +188,6 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
         }
         if (this.hasDraftReport && this.reportButton != null) {
             RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 182.0f, 24.0f, 15, 15, 256, 256);
         }
     }

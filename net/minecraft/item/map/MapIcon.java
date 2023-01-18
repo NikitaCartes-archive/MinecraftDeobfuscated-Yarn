@@ -135,7 +135,7 @@ public class MapIcon {
         }
 
         public static Type byId(byte id) {
-            return Type.values()[MathHelper.clamp((int)id, 0, Type.values().length - 1)];
+            return Type.values()[MathHelper.clamp(id, 0, Type.values().length - 1)];
         }
 
         public boolean shouldUseIconCountLimit() {

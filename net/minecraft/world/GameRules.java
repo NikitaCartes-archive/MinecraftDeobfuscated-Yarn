@@ -92,6 +92,7 @@ public class GameRules {
     public static final Key<BooleanRule> DO_WEATHER_CYCLE = GameRules.register("doWeatherCycle", Category.UPDATES, BooleanRule.create(true));
     public static final Key<BooleanRule> DO_LIMITED_CRAFTING = GameRules.register("doLimitedCrafting", Category.PLAYER, BooleanRule.create(false));
     public static final Key<IntRule> MAX_COMMAND_CHAIN_LENGTH = GameRules.register("maxCommandChainLength", Category.MISC, IntRule.create(65536));
+    public static final Key<IntRule> COMMAND_MODIFICATION_BLOCK_LIMIT = GameRules.register("commandModificationBlockLimit", Category.MISC, IntRule.create(32768));
     /**
      * A {@linkplain Rule game rule} which regulates whether a player's advancements should be announced in chat.
      */

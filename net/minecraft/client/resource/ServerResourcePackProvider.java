@@ -74,7 +74,7 @@ implements ResourcePackProvider {
     }
 
     private static Map<String, String> getDownloadHeaders() {
-        return Map.of("X-Minecraft-Username", MinecraftClient.getInstance().getSession().getUsername(), "X-Minecraft-UUID", MinecraftClient.getInstance().getSession().getUuid(), "X-Minecraft-Version", SharedConstants.getGameVersion().getName(), "X-Minecraft-Version-ID", SharedConstants.getGameVersion().getId(), "X-Minecraft-Pack-Format", String.valueOf(ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion())), "User-Agent", "Minecraft Java/" + SharedConstants.getGameVersion().getName());
+        return Map.of("X-Minecraft-Username", MinecraftClient.getInstance().getSession().getUsername(), "X-Minecraft-UUID", MinecraftClient.getInstance().getSession().getUuid(), "X-Minecraft-Version", SharedConstants.getGameVersion().getName(), "X-Minecraft-Version-ID", SharedConstants.getGameVersion().getId(), "X-Minecraft-Pack-Format", String.valueOf(SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES)), "User-Agent", "Minecraft Java/" + SharedConstants.getGameVersion().getName());
     }
 
     /*

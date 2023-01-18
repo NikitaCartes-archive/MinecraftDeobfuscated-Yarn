@@ -16,15 +16,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -354,7 +351,7 @@ implements Drawable {
         }
         boolean bl2 = bl = mouseX >= (double)this.getX() && mouseX < (double)(this.getX() + this.width) && mouseY >= (double)this.getY() && mouseY < (double)(this.getY() + this.height);
         if (this.focusUnlocked) {
-            this.setTextFieldFocused(bl);
+            this.setFocused(bl);
         }
         if (this.isFocused() && bl && button == 0) {
             int i = MathHelper.floor(mouseX) - this.getX();
@@ -366,10 +363,6 @@ implements Drawable {
             return true;
         }
         return false;
-    }
-
-    public void setTextFieldFocused(boolean focused) {
-        this.setFocused(focused);
     }
 
     @Override
@@ -425,11 +418,11 @@ implements Drawable {
         }
         if (k != j) {
             int p = l + this.textRenderer.getWidth(string.substring(0, k));
-            this.drawSelectionHighlight(o, m - 1, p - 1, m + 1 + this.textRenderer.fontHeight);
+            this.drawSelectionHighlight(matrices, o, m - 1, p - 1, m + 1 + this.textRenderer.fontHeight);
         }
     }
 
-    private void drawSelectionHighlight(int x1, int y1, int x2, int y2) {
+    private void drawSelectionHighlight(MatrixStack matrices, int x1, int y1, int x2, int y2) {
         int i;
         if (x1 < x2) {
             i = x1;
@@ -447,22 +440,10 @@ implements Drawable {
         if (x1 > this.getX() + this.width) {
             x1 = this.getX() + this.width;
         }
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::getPositionProgram);
-        RenderSystem.setShaderColor(0.0f, 0.0f, 1.0f, 1.0f);
-        RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-        bufferBuilder.vertex(x1, y2, 0.0).next();
-        bufferBuilder.vertex(x2, y2, 0.0).next();
-        bufferBuilder.vertex(x2, y1, 0.0).next();
-        bufferBuilder.vertex(x1, y1, 0.0).next();
-        tessellator.draw();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        TextFieldWidget.fill(matrices, x1, y1, x2, y2, -16776961);
         RenderSystem.disableColorLogicOp();
-        RenderSystem.enableTexture();
     }
 
     public void setMaxLength(int maxLength) {
@@ -498,11 +479,12 @@ implements Drawable {
     }
 
     @Override
-    public boolean changeFocus(boolean lookForwards) {
+    @Nullable
+    public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
         if (!this.visible || !this.editable) {
-            return false;
+            return null;
         }
-        return super.changeFocus(lookForwards);
+        return super.getNavigationPath(navigation);
     }
 
     @Override
@@ -511,8 +493,12 @@ implements Drawable {
     }
 
     @Override
-    protected void onFocusedChanged(boolean newFocused) {
-        if (newFocused) {
+    public void setFocused(boolean focused) {
+        if (!this.focusUnlocked && !focused) {
+            return;
+        }
+        super.setFocused(focused);
+        if (focused) {
             this.focusedTicks = 0;
         }
     }

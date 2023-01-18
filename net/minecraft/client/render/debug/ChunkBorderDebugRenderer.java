@@ -41,7 +41,6 @@ implements DebugRenderer.Renderer {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         double d = (double)this.client.world.getBottomY() - cameraY;
         double e = (double)this.client.world.getTopY() - cameraY;
-        RenderSystem.disableTexture();
         RenderSystem.disableBlend();
         ChunkPos chunkPos = entity.getChunkPos();
         double f = (double)chunkPos.getStartX() - cameraX;
@@ -113,7 +112,6 @@ implements DebugRenderer.Renderer {
         tessellator.draw();
         RenderSystem.lineWidth(1.0f);
         RenderSystem.enableBlend();
-        RenderSystem.enableTexture();
     }
 }
 

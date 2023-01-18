@@ -18,14 +18,10 @@ extends IdentifierNormalizingSchema {
         super(i, schema);
     }
 
-    protected static void targetEntityItems(Schema schema, Map<String, Supplier<TypeTemplate>> map, String entityId) {
-        schema.register(map, entityId, () -> Schema100.targetItems(schema));
-    }
-
     @Override
     public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
         Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-        Schema1800.targetEntityItems(schema, map, "minecraft:panda");
+        schema.register(map, "minecraft:panda", () -> Schema100.targetItems(schema));
         schema.register(map, "minecraft:pillager", (String name) -> DSL.optionalFields("Inventory", DSL.list(TypeReferences.ITEM_STACK.in(schema)), Schema100.targetItems(schema)));
         return map;
     }

@@ -156,7 +156,7 @@ extends RealmsScreen {
         int j = daysLeft % 30;
         MutableText mutableText = Text.empty();
         if (i > 0) {
-            mutableText.append(Integer.toString(i)).append(" ");
+            mutableText.append(Integer.toString(i)).append(ScreenTexts.SPACE);
             if (i == 1) {
                 mutableText.append(MONTH_TEXT);
             } else {
@@ -167,7 +167,7 @@ extends RealmsScreen {
             if (i > 0) {
                 mutableText.append(", ");
             }
-            mutableText.append(Integer.toString(j)).append(" ");
+            mutableText.append(Integer.toString(j)).append(ScreenTexts.SPACE);
             if (j == 1) {
                 mutableText.append(DAY_TEXT);
             } else {

@@ -3,24 +3,18 @@
  */
 package net.minecraft.client.resource.metadata;
 
-import java.util.Collection;
+import com.mojang.serialization.Codec;
+import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.language.LanguageDefinition;
-import net.minecraft.client.resource.metadata.LanguageResourceMetadataReader;
+import net.minecraft.resource.metadata.ResourceMetadataSerializer;
+import net.minecraft.util.dynamic.Codecs;
 
 @Environment(value=EnvType.CLIENT)
-public class LanguageResourceMetadata {
-    public static final LanguageResourceMetadataReader READER = new LanguageResourceMetadataReader();
-    public static final boolean field_32978 = false;
-    private final Collection<LanguageDefinition> definitions;
-
-    public LanguageResourceMetadata(Collection<LanguageDefinition> definitions) {
-        this.definitions = definitions;
-    }
-
-    public Collection<LanguageDefinition> getLanguageDefinitions() {
-        return this.definitions;
-    }
+public record LanguageResourceMetadata(Map<String, LanguageDefinition> definitions) {
+    public static final Codec<String> LANGUAGE_CODE_CODEC = Codecs.string(1, 16);
+    public static final Codec<LanguageResourceMetadata> CODEC = Codec.unboundedMap(LANGUAGE_CODE_CODEC, LanguageDefinition.CODEC).xmap(LanguageResourceMetadata::new, LanguageResourceMetadata::definitions);
+    public static final ResourceMetadataSerializer<LanguageResourceMetadata> SERIALIZER = ResourceMetadataSerializer.fromCodec("language", CODEC);
 }
 

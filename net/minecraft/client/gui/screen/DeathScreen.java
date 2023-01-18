@@ -45,10 +45,7 @@ extends Screen {
         this.ticksSinceDeath = 0;
         this.buttons.clear();
         MutableText text = this.isHardcore ? Text.translatable("deathScreen.spectate") : Text.translatable("deathScreen.respawn");
-        this.buttons.add(this.addDrawableChild(ButtonWidget.builder(text, button -> {
-            this.client.player.requestRespawn();
-            this.client.setScreen(null);
-        }).dimensions(this.width / 2 - 100, this.height / 4 + 72, 200, 20).build()));
+        this.buttons.add(this.addDrawableChild(ButtonWidget.builder(text, button -> this.client.player.requestRespawn()).dimensions(this.width / 2 - 100, this.height / 4 + 72, 200, 20).build()));
         this.titleScreenButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("deathScreen.titleScreen"), button -> this.client.getAbuseReportContext().tryShowDraftScreen(this.client, this, this::onTitleScreenButtonClicked, true)).dimensions(this.width / 2 - 100, this.height / 4 + 96, 200, 20).build());
         this.buttons.add(this.titleScreenButton);
         for (ButtonWidget buttonWidget : this.buttons) {
@@ -105,7 +102,6 @@ extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
         if (this.titleScreenButton != null && this.client.getAbuseReportContext().hasDraft()) {
             RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             this.drawTexture(matrices, this.titleScreenButton.getX() + this.titleScreenButton.getWidth() - 17, this.titleScreenButton.getY() + 3, 182, 24, 15, 15);
         }
     }

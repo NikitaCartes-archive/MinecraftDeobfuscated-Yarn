@@ -40,9 +40,14 @@ extends GameOptionsScreen {
             for (KeyBinding keyBinding : this.gameOptions.allKeys) {
                 keyBinding.setBoundKey(keyBinding.getDefaultKey());
             }
-            KeyBinding.updateKeysByCode();
+            this.update();
         }).dimensions(this.width / 2 - 155, this.height - 29, 150, 20).build());
         this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 155 + 160, this.height - 29, 150, 20).build());
+    }
+
+    private void update() {
+        KeyBinding.updateKeysByCode();
+        this.controlsList.children().forEach(ControlsListWidget.Entry::update);
     }
 
     @Override
@@ -50,7 +55,7 @@ extends GameOptionsScreen {
         if (this.selectedKeyBinding != null) {
             this.gameOptions.setKeyCode(this.selectedKeyBinding, InputUtil.Type.MOUSE.createFromCode(button));
             this.selectedKeyBinding = null;
-            KeyBinding.updateKeysByCode();
+            this.update();
             return true;
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -66,7 +71,7 @@ extends GameOptionsScreen {
             }
             this.selectedKeyBinding = null;
             this.lastKeyCodeUpdateTime = Util.getMeasuringTimeMs();
-            KeyBinding.updateKeysByCode();
+            this.update();
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);

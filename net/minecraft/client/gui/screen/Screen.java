@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.gui.screen;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -29,6 +30,10 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.navigation.FocusedRect;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
+import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
@@ -130,19 +135,86 @@ implements Drawable {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        GuiNavigation.Tab guiNavigation;
         if (keyCode == GLFW.GLFW_KEY_ESCAPE && this.shouldCloseOnEsc()) {
             this.close();
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_TAB) {
-            boolean bl;
-            boolean bl2 = bl = !Screen.hasShiftDown();
-            if (!this.changeFocus(bl)) {
-                this.changeFocus(bl);
-            }
-            return false;
+        if (super.keyPressed(keyCode, scanCode, modifiers)) {
+            return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        switch (keyCode) {
+            case 263: {
+                Record record = this.getArrowNavigation(NavigationDirection.LEFT);
+                break;
+            }
+            case 262: {
+                Record record = this.getArrowNavigation(NavigationDirection.RIGHT);
+                break;
+            }
+            case 265: {
+                Record record = this.getArrowNavigation(NavigationDirection.UP);
+                break;
+            }
+            case 264: {
+                Record record = this.getArrowNavigation(NavigationDirection.DOWN);
+                break;
+            }
+            case 258: {
+                Record record = this.getTabNavigation();
+                break;
+            }
+            default: {
+                Record record = guiNavigation = null;
+            }
+        }
+        if (guiNavigation != null) {
+            GuiNavigationPath guiNavigationPath = super.getNavigationPath(guiNavigation);
+            if (guiNavigationPath == null && guiNavigation instanceof GuiNavigation.Tab) {
+                this.blur();
+                guiNavigationPath = super.getNavigationPath(guiNavigation);
+            }
+            if (guiNavigationPath != null) {
+                this.switchFocus(guiNavigationPath);
+            }
+        }
+        return false;
+    }
+
+    private GuiNavigation.Tab getTabNavigation() {
+        boolean bl = !Screen.hasShiftDown();
+        return new GuiNavigation.Tab(bl);
+    }
+
+    private GuiNavigation.Arrow getArrowNavigation(NavigationDirection direction) {
+        return new GuiNavigation.Arrow(direction);
+    }
+
+    /**
+     * Sets the initial focus of this screen. This should be called inside the overridden
+     * {@link #init()} method by screen implementations.
+     */
+    protected void setInitialFocus(Element element) {
+        GuiNavigationPath guiNavigationPath = GuiNavigationPath.of(this, element.getNavigationPath(new GuiNavigation.Down()));
+        if (guiNavigationPath != null) {
+            this.switchFocus(guiNavigationPath);
+        }
+    }
+
+    private void blur() {
+        GuiNavigationPath guiNavigationPath = this.getFocusedPath();
+        if (guiNavigationPath != null) {
+            guiNavigationPath.setFocused(false);
+        }
+    }
+
+    /**
+     * Switches focus from the currently focused element, if any, to {@code path}.
+     */
+    @VisibleForTesting
+    protected void switchFocus(GuiNavigationPath path) {
+        this.blur();
+        path.setFocused(true);
     }
 
     /**
@@ -252,12 +324,10 @@ implements Drawable {
         Matrix4f matrix4f = matrices.peek().getPositionMatrix();
         TooltipBackgroundRenderer.render((matrix, builder, startX, startY, endX, endY, z, colorStart, colorEnd) -> DrawableHelper.fillGradient(matrix, builder, startX, startY, endX, endY, z, colorStart, colorEnd), matrix4f, bufferBuilder, l, m, k, n, 400);
         RenderSystem.enableDepthTest();
-        RenderSystem.disableTexture();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         RenderSystem.disableBlend();
-        RenderSystem.enableTexture();
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         matrices.translate(0.0f, 0.0f, 400.0f);
         int p = m;
@@ -374,7 +444,7 @@ implements Drawable {
 
     protected void clearAndInit() {
         this.clearChildren();
-        this.setFocused(null);
+        this.blur();
         this.init();
     }
 
@@ -387,6 +457,8 @@ implements Drawable {
      * Called when a screen should be initialized.
      * 
      * <p>This method is called when this screen is {@linkplain net.minecraft.client.MinecraftClient#setScreen(Screen) opened} or resized.
+     * 
+     * <p>This should call {@link #setInitialFocus} to set the element that is initially focused.
      */
     protected void init() {
     }
@@ -401,46 +473,25 @@ implements Drawable {
      * Renders the background of this screen.
      * 
      * <p>If the client is in a world, renders the translucent background gradient.
-     * Otherwise {@linkplain #renderBackgroundTexture(int) renders the background texture}.
+     * Otherwise {@linkplain #renderBackgroundTexture renders the background texture}.
      */
     public void renderBackground(MatrixStack matrices) {
-        this.renderBackground(matrices, 0);
-    }
-
-    /**
-     * Renders the background of this screen.
-     * 
-     * <p>If the client is in a world, renders the translucent background gradient.
-     * Otherwise {@linkplain #renderBackgroundTexture(int) renders the background texture}.
-     * 
-     * @param vOffset an offset applied to the V coordinate of the background texture
-     */
-    public void renderBackground(MatrixStack matrices, int vOffset) {
         if (this.client.world != null) {
             this.fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
         } else {
-            this.renderBackgroundTexture(vOffset);
+            this.renderBackgroundTexture(matrices);
         }
     }
 
     /**
      * Renders the fullscreen {@linkplain net.minecraft.client.gui.DrawableHelper#OPTIONS_BACKGROUND_TEXTURE background texture} of this screen.
-     * 
-     * @param vOffset an offset applied to the V coordinate of the background texture
      */
-    public void renderBackgroundTexture(int vOffset) {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+    public void renderBackgroundTexture(MatrixStack matrices) {
         RenderSystem.setShaderTexture(0, OPTIONS_BACKGROUND_TEXTURE);
+        RenderSystem.setShaderColor(0.25f, 0.25f, 0.25f, 1.0f);
+        int i = 32;
+        Screen.drawTexture(matrices, 0, 0, 0, 0.0f, 0.0f, this.width, this.height, 32, 32);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        float f = 32.0f;
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-        bufferBuilder.vertex(0.0, this.height, 0.0).texture(0.0f, (float)this.height / 32.0f + (float)vOffset).color(64, 64, 64, 255).next();
-        bufferBuilder.vertex(this.width, this.height, 0.0).texture((float)this.width / 32.0f, (float)this.height / 32.0f + (float)vOffset).color(64, 64, 64, 255).next();
-        bufferBuilder.vertex(this.width, 0.0, 0.0).texture((float)this.width / 32.0f, vOffset).color(64, 64, 64, 255).next();
-        bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0f, vOffset).color(64, 64, 64, 255).next();
-        tessellator.draw();
     }
 
     public boolean shouldPause() {
@@ -580,10 +631,16 @@ implements Drawable {
         }
     }
 
-    protected void addScreenNarrations(NarrationMessageBuilder builder) {
-        builder.put(NarrationPart.TITLE, this.getNarratedTitle());
-        builder.put(NarrationPart.USAGE, SCREEN_USAGE_TEXT);
-        this.addElementNarrations(builder);
+    protected boolean hasUsageText() {
+        return true;
+    }
+
+    protected void addScreenNarrations(NarrationMessageBuilder messageBuilder) {
+        messageBuilder.put(NarrationPart.TITLE, this.getNarratedTitle());
+        if (this.hasUsageText()) {
+            messageBuilder.put(NarrationPart.USAGE, SCREEN_USAGE_TEXT);
+        }
+        this.addElementNarrations(messageBuilder);
     }
 
     protected void addElementNarrations(NarrationMessageBuilder builder) {
@@ -650,6 +707,11 @@ implements Drawable {
         for (ClickableWidget clickableWidget : widgets) {
             clickableWidget.visible = false;
         }
+    }
+
+    @Override
+    public FocusedRect getNavigationFocus() {
+        return new FocusedRect(0, 0, this.width, this.height);
     }
 
     static {

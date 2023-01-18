@@ -101,7 +101,6 @@ extends HandledScreen<MerchantScreenHandler> {
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
@@ -115,7 +114,6 @@ extends HandledScreen<MerchantScreenHandler> {
             TradeOffer tradeOffer = (TradeOffer)tradeOfferList.get(k);
             if (tradeOffer.isDisabled()) {
                 RenderSystem.setShaderTexture(0, TEXTURE);
-                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 MerchantScreen.drawTexture(matrices, this.x + 83 + 99, this.y + 35, this.getZOffset(), 311.0f, 0.0f, 28, 21, 512, 256);
             }
         }

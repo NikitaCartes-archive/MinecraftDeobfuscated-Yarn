@@ -21,7 +21,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
@@ -112,7 +112,7 @@ extends PersistentState {
         RegistryKey<World> registryKey = DimensionType.worldFromDimensionNbt(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("dimension"))).resultOrPartial(LOGGER::error).orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + nbt.get("dimension")));
         int i = nbt.getInt("xCenter");
         int j = nbt.getInt("zCenter");
-        byte b = (byte)MathHelper.clamp((int)nbt.getByte("scale"), 0, 4);
+        byte b = (byte)MathHelper.clamp(nbt.getByte("scale"), 0, 4);
         boolean bl = !nbt.contains("trackingPosition", NbtElement.BYTE_TYPE) || nbt.getBoolean("trackingPosition");
         boolean bl2 = nbt.getBoolean("unlimitedTracking");
         boolean bl3 = nbt.getBoolean("locked");

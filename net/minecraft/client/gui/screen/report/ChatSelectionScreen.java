@@ -16,6 +16,7 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.hud.MessageIndicator;
+import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -205,15 +206,18 @@ extends Screen {
         }
 
         @Override
-        protected void moveSelection(EntryListWidget.MoveDirection direction) {
-            if (!this.tryMoveSelection(direction) && direction == EntryListWidget.MoveDirection.UP) {
-                ChatSelectionScreen.this.addMoreMessages();
-                this.tryMoveSelection(direction);
-            }
+        @Nullable
+        protected Entry getNeighboringEntry(NavigationDirection navigationDirection) {
+            return this.getNeighboringEntry(navigationDirection, Entry::canSelect);
         }
 
-        private boolean tryMoveSelection(EntryListWidget.MoveDirection direction) {
-            return this.moveSelectionIf(direction, Entry::canSelect);
+        @Override
+        public void setSelected(@Nullable Entry entry) {
+            super.setSelected(entry);
+            Entry entry2 = this.getNeighboringEntry(NavigationDirection.UP);
+            if (entry2 == null) {
+                ChatSelectionScreen.this.addMoreMessages();
+            }
         }
 
         @Override
@@ -222,7 +226,6 @@ extends Screen {
             if (entry != null && entry.keyPressed(keyCode, scanCode, modifiers)) {
                 return true;
             }
-            this.setFocused(null);
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
 
@@ -231,8 +234,9 @@ extends Screen {
         }
 
         @Override
-        protected boolean isFocused() {
-            return ChatSelectionScreen.this.getFocused() == this;
+        @Nullable
+        protected /* synthetic */ EntryListWidget.Entry getNeighboringEntry(NavigationDirection direction) {
+            return this.getNeighboringEntry(direction);
         }
 
         @Environment(value=EnvType.CLIENT)
@@ -323,7 +327,7 @@ extends Screen {
             @Override
             public boolean mouseClicked(double mouseX, double mouseY, int button) {
                 if (button == 0) {
-                    SelectionListWidget.this.setSelected(null);
+                    SelectionListWidget.this.setSelected((Entry)null);
                     return this.toggle();
                 }
                 return false;

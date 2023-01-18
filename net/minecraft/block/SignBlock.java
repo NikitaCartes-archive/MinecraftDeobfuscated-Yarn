@@ -40,7 +40,7 @@ extends AbstractSignBlock {
     @Override
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-        return (BlockState)((BlockState)this.getDefaultState().with(ROTATION, RotationPropertyHelper.fromYaw(ctx.getPlayerYaw()))).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+        return (BlockState)((BlockState)this.getDefaultState().with(ROTATION, RotationPropertyHelper.fromYaw(ctx.getPlayerYaw() + 180.0f))).with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
     }
 
     @Override

@@ -117,12 +117,12 @@ public class SpriteLoader {
             return null;
         }
         SpriteDimensions spriteDimensions = animationResourceMetadata.getSize(nativeImage.getWidth(), nativeImage.getHeight());
-        if (!MathHelper.isMultipleOf(nativeImage.getWidth(), spriteDimensions.width()) || !MathHelper.isMultipleOf(nativeImage.getHeight(), spriteDimensions.height())) {
-            LOGGER.error("Image {} size {},{} is not multiple of frame size {},{}", id, nativeImage.getWidth(), nativeImage.getHeight(), spriteDimensions.width(), spriteDimensions.height());
-            nativeImage.close();
-            return null;
+        if (MathHelper.isMultipleOf(nativeImage.getWidth(), spriteDimensions.width()) && MathHelper.isMultipleOf(nativeImage.getHeight(), spriteDimensions.height())) {
+            return new SpriteContents(id, spriteDimensions, nativeImage, animationResourceMetadata);
         }
-        return new SpriteContents(id, spriteDimensions, nativeImage, animationResourceMetadata);
+        LOGGER.error("Image {} size {},{} is not multiple of frame size {},{}", id, nativeImage.getWidth(), nativeImage.getHeight(), spriteDimensions.width(), spriteDimensions.height());
+        nativeImage.close();
+        return null;
     }
 
     private Map<Identifier, Sprite> collectStitchedSprites(TextureStitcher<SpriteContents> stitcher) {

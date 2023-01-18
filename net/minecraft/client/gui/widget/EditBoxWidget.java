@@ -16,15 +16,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ScrollableWidget;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import org.joml.Matrix4f;
 
 /**
  * A widget of {@link EditBox}, a multiline edit box with support for
@@ -220,23 +214,10 @@ extends ScrollableWidget {
     }
 
     private void drawSelection(MatrixStack matrices, int left, int top, int right, int bottom) {
-        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::getPositionProgram);
-        RenderSystem.setShaderColor(0.0f, 0.0f, 1.0f, 1.0f);
-        RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-        bufferBuilder.vertex(matrix4f, left, bottom, 0.0f).next();
-        bufferBuilder.vertex(matrix4f, right, bottom, 0.0f).next();
-        bufferBuilder.vertex(matrix4f, right, top, 0.0f).next();
-        bufferBuilder.vertex(matrix4f, left, top, 0.0f).next();
-        tessellator.draw();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        EditBoxWidget.fill(matrices, left, top, right, bottom, -16776961);
         RenderSystem.disableColorLogicOp();
-        RenderSystem.enableTexture();
     }
 
     private void onCursorChange() {

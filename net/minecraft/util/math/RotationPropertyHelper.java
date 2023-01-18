@@ -5,25 +5,26 @@ package net.minecraft.util.math;
 
 import java.util.Optional;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationCalculator;
 
 public class RotationPropertyHelper {
-    private static final int MAX = 15;
+    private static final RotationCalculator CALCULATOR = new RotationCalculator(4);
+    private static final int MAX = CALCULATOR.getMax();
     private static final int NORTH = 0;
     private static final int EAST = 4;
     private static final int SOUTH = 8;
     private static final int WEST = 12;
 
     public static int getMax() {
-        return 15;
+        return MAX;
     }
 
     public static int fromDirection(Direction direction) {
-        return direction.getAxis().isVertical() ? 0 : direction.getOpposite().getHorizontal() * 4;
+        return CALCULATOR.toRotation(direction);
     }
 
     public static int fromYaw(float yaw) {
-        return MathHelper.floor((double)((180.0f + yaw) * 16.0f / 360.0f) + 0.5) & 0xF;
+        return CALCULATOR.toClampedRotation(yaw);
     }
 
     public static Optional<Direction> toDirection(int rotation) {
@@ -38,7 +39,7 @@ public class RotationPropertyHelper {
     }
 
     public static float toDegrees(int rotation) {
-        return (float)rotation * 22.5f;
+        return CALCULATOR.toWrappedDegrees(rotation);
     }
 }
 

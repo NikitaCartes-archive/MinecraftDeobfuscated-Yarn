@@ -130,6 +130,7 @@ import net.minecraft.datafixer.fix.ObjectiveRenderTypeFix;
 import net.minecraft.datafixer.fix.OminousBannerBlockEntityRenameFix;
 import net.minecraft.datafixer.fix.OminousBannerItemRenameFix;
 import net.minecraft.datafixer.fix.OptionFix;
+import net.minecraft.datafixer.fix.OptionsAccessibilityOnboardFix;
 import net.minecraft.datafixer.fix.OptionsAddTextBackgroundFix;
 import net.minecraft.datafixer.fix.OptionsAmbientOcclusionFix;
 import net.minecraft.datafixer.fix.OptionsForceVBOFix;
@@ -267,7 +268,7 @@ public class Schemas {
     }
 
     private static synchronized DataFixer create() {
-        DataFixerBuilder dataFixerBuilder = new DataFixerBuilder(SharedConstants.getGameVersion().getWorldVersion());
+        DataFixerBuilder dataFixerBuilder = new DataFixerBuilder(SharedConstants.getGameVersion().getSaveVersion().getId());
         Schemas.build(dataFixerBuilder);
         boolean bl = switch (SharedConstants.dataFixerPhase) {
             case DataFixerPhase.UNINITIALIZED_OPTIMIZED -> true;
@@ -741,6 +742,8 @@ public class Schemas {
         builder.addFixer(new ItemInstanceSpawnEggFix(schema175, false, "minecraft:pig_spawn_egg"));
         Schema schema176 = builder.addSchema(3214, EMPTY_IDENTIFIER_NORMALIZE);
         builder.addFixer(new OptionsAmbientOcclusionFix(schema176));
+        Schema schema177 = builder.addSchema(3319, EMPTY_IDENTIFIER_NORMALIZE);
+        builder.addFixer(new OptionsAccessibilityOnboardFix(schema177));
     }
 
     private static UnaryOperator<String> replacing(Map<String, String> replacements) {

@@ -11,7 +11,6 @@ import com.mojang.serialization.DynamicOps;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
@@ -33,8 +32,7 @@ implements Codec<RegistryEntryList<E>> {
      * instead of serializing as one entry if the length is {@code 0}
      */
     private static <E> Codec<List<RegistryEntry<E>>> createDirectEntryListCodec(Codec<RegistryEntry<E>> entryCodec, boolean alwaysSerializeAsList) {
-        Function function = Codecs.createEqualTypeChecker(RegistryEntry::getType);
-        Codec<List<RegistryEntry<E>>> codec = entryCodec.listOf().flatXmap(function, function);
+        Codec<List<RegistryEntry<E>>> codec = Codecs.validate(entryCodec.listOf(), Codecs.createEqualTypeChecker(RegistryEntry::getType));
         if (alwaysSerializeAsList) {
             return codec;
         }

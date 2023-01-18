@@ -150,7 +150,7 @@ extends ValueLookupTagProvider<Block> {
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.GEODE_INVALID_BLOCKS)).add(Blocks.BEDROCK, Blocks.WATER, Blocks.LAVA, Blocks.ICE, Blocks.PACKED_ICE, Blocks.BLUE_ICE);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.ANIMALS_SPAWNABLE_ON)).add(Blocks.GRASS_BLOCK);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.AXOLOTLS_SPAWNABLE_ON)).add(Blocks.CLAY);
-        ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.GOATS_SPAWNABLE_ON)).add(Blocks.STONE, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.PACKED_ICE, Blocks.GRAVEL);
+        ((ValueLookupTagProvider.ObjectBuilder)((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.GOATS_SPAWNABLE_ON)).addTag((TagKey)BlockTags.ANIMALS_SPAWNABLE_ON)).add(Blocks.STONE, Blocks.SNOW, Blocks.SNOW_BLOCK, Blocks.PACKED_ICE, Blocks.GRAVEL);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.MOOSHROOMS_SPAWNABLE_ON)).add(Blocks.MYCELIUM);
         ((ValueLookupTagProvider.ObjectBuilder)((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.PARROTS_SPAWNABLE_ON)).add(Blocks.GRASS_BLOCK, Blocks.AIR).addTag((TagKey)BlockTags.LEAVES)).addTag((TagKey)BlockTags.LOGS);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.POLAR_BEARS_SPAWNABLE_ON_ALTERNATE)).add(Blocks.ICE);

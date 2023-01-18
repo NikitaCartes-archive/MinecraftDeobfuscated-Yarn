@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.network;
+package net.minecraft.network.packet;
 
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.PacketListener;

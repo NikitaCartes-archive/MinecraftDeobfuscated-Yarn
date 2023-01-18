@@ -96,11 +96,6 @@ Element {
         this.lastClickedRecipe = null;
     }
 
-    @Override
-    public boolean changeFocus(boolean lookForwards) {
-        return false;
-    }
-
     public RecipeResultCollection getResults() {
         return this.resultCollection;
     }
@@ -135,7 +130,6 @@ Element {
         }
         this.time += delta;
         RenderSystem.enableBlend();
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
         matrices.push();
         matrices.translate(0.0f, 0.0f, 170.0f);
@@ -186,6 +180,15 @@ Element {
 
     public boolean isVisible() {
         return this.visible;
+    }
+
+    @Override
+    public void setFocused(boolean focused) {
+    }
+
+    @Override
+    public boolean isFocused() {
+        return false;
     }
 
     @Environment(value=EnvType.CLIENT)

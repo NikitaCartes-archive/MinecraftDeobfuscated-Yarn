@@ -188,11 +188,19 @@ StringVisitable {
     }
 
     public static MutableText translatable(String key) {
-        return MutableText.of(new TranslatableTextContent(key));
+        return MutableText.of(new TranslatableTextContent(key, null, TranslatableTextContent.EMPTY_ARGUMENTS));
     }
 
     public static MutableText translatable(String key, Object ... args) {
-        return MutableText.of(new TranslatableTextContent(key, args));
+        return MutableText.of(new TranslatableTextContent(key, null, args));
+    }
+
+    public static MutableText translatableWithFallback(String key, @Nullable String fallback) {
+        return MutableText.of(new TranslatableTextContent(key, fallback, TranslatableTextContent.EMPTY_ARGUMENTS));
+    }
+
+    public static MutableText translatableWithFallback(String key, @Nullable String falback, Object ... args) {
+        return MutableText.of(new TranslatableTextContent(key, falback, args));
     }
 
     public static MutableText empty() {
@@ -265,18 +273,16 @@ StringVisitable {
                     mutableText = string.isEmpty() ? Text.empty() : Text.literal(string);
                 } else if (jsonObject.has("translate")) {
                     string = JsonHelper.getString(jsonObject, "translate");
+                    String string2 = JsonHelper.getString(jsonObject, "fallback", null);
                     if (jsonObject.has("with")) {
-                        void var9_17;
                         JsonArray jsonArray = JsonHelper.getArray(jsonObject, "with");
-                        Object[] objects = new Object[jsonArray.size()];
-                        boolean bl = false;
-                        while (var9_17 < objects.length) {
-                            objects[var9_17] = Serializer.optimizeArgument(this.deserialize(jsonArray.get((int)var9_17), type, jsonDeserializationContext));
-                            ++var9_17;
+                        Object[] objectArray = new Object[jsonArray.size()];
+                        for (int i = 0; i < objectArray.length; ++i) {
+                            objectArray[i] = Serializer.optimizeArgument(this.deserialize(jsonArray.get(i), type, jsonDeserializationContext));
                         }
-                        mutableText = Text.translatable(string, objects);
+                        mutableText = Text.translatableWithFallback(string, string2, objectArray);
                     } else {
-                        mutableText = Text.translatable(string);
+                        mutableText = Text.translatableWithFallback(string, string2);
                     }
                 } else if (jsonObject.has("score")) {
                     JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "score");
@@ -288,7 +294,7 @@ StringVisitable {
                 } else if (jsonObject.has("keybind")) {
                     mutableText = Text.keybind(JsonHelper.getString(jsonObject, "keybind"));
                 } else {
-                    void var9_21;
+                    void var9_20;
                     if (!jsonObject.has("nbt")) throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
                     string = JsonHelper.getString(jsonObject, "nbt");
                     Optional<Text> optional2 = this.getSeparator(type, jsonDeserializationContext, jsonObject);
@@ -301,7 +307,7 @@ StringVisitable {
                         if (!jsonObject.has("storage")) throw new JsonParseException("Don't know how to turn " + jsonElement + " into a Component");
                         StorageNbtDataSource storageNbtDataSource = new StorageNbtDataSource(new Identifier(JsonHelper.getString(jsonObject, "storage")));
                     }
-                    mutableText = Text.nbt(string, bl, optional2, (NbtDataSource)var9_21);
+                    mutableText = Text.nbt(string, bl, optional2, (NbtDataSource)var9_20);
                 }
                 if (jsonObject.has("extra")) {
                     JsonArray jsonArray2 = JsonHelper.getArray(jsonObject, "extra");
@@ -382,6 +388,10 @@ StringVisitable {
             } else if (textContent instanceof TranslatableTextContent) {
                 TranslatableTextContent translatableTextContent = (TranslatableTextContent)textContent;
                 jsonObject.addProperty("translate", translatableTextContent.getKey());
+                String string = translatableTextContent.getFallback();
+                if (string != null) {
+                    jsonObject.addProperty("fallback", string);
+                }
                 if (translatableTextContent.getArgs().length <= 0) return jsonObject;
                 JsonArray jsonArray2 = new JsonArray();
                 for (Object object : translatableTextContent.getArgs()) {

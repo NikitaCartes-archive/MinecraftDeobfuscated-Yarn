@@ -78,7 +78,7 @@ extends RealmsScreen {
 
     @Override
     public Text getNarratedTitle() {
-        return Texts.join(Stream.concat(Stream.of(this.title), Stream.of(this.message)).collect(Collectors.toList()), Text.literal(" "));
+        return Texts.join(Stream.concat(Stream.of(this.title), Stream.of(this.message)).collect(Collectors.toList()), ScreenTexts.SPACE);
     }
 
     private void addButtons() {
@@ -251,6 +251,7 @@ extends RealmsScreen {
         }
         DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 80, 80, 80, 80);
         RealmsBrokenWorldScreen.drawCenteredText(matrices, this.textRenderer, slotName, x + 40, y + 66, 0xFFFFFF);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 }
 

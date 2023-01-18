@@ -70,7 +70,6 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.Window;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
@@ -208,6 +207,8 @@ public class GameOptions {
         }
         return Text.translatable("options.chat.delay", String.format(Locale.ROOT, "%.1f", value));
     }, new SimpleOption.ValidatingIntSliderCallbacks(0, 60).withModifier(value -> (double)value / 10.0, value -> (int)(value * 10.0)), Codec.doubleRange(0.0, 6.0), 0.0, value -> MinecraftClient.getInstance().getMessageHandler().setChatDelay((double)value));
+    private static final Text NOTIFICATION_DISPLAY_TIME_TOOLTIP = Text.translatable("options.notifications.display_time.tooltip");
+    private final SimpleOption<Double> notificationDisplayTime = new SimpleOption<Double>("options.notifications.display_time", SimpleOption.constantTooltip(NOTIFICATION_DISPLAY_TIME_TOOLTIP), (optionText, value) -> GameOptions.getGenericValueText(optionText, Text.translatable("options.multiplier", value)), new SimpleOption.ValidatingIntSliderCallbacks(5, 100).withModifier(sliderProgressValue -> (double)sliderProgressValue / 10.0, value -> (int)(value * 10.0)), Codec.doubleRange(0.5, 10.0), 1.0, value -> {});
     private final SimpleOption<Integer> mipmapLevels = new SimpleOption<Integer>("options.mipmapLevels", SimpleOption.emptyTooltip(), (optionText, value) -> {
         if (value == 0) {
             return ScreenTexts.composeToggleText(optionText, false);
@@ -231,7 +232,7 @@ public class GameOptions {
         }
     });
     public int glDebugVerbosity = 1;
-    private final SimpleOption<Boolean> autoJump = SimpleOption.ofBoolean("options.autoJump", true);
+    private final SimpleOption<Boolean> autoJump = SimpleOption.ofBoolean("options.autoJump", false);
     private final SimpleOption<Boolean> operatorItemsTab = SimpleOption.ofBoolean("options.operatorItemsTab", false);
     private final SimpleOption<Boolean> autoSuggestions = SimpleOption.ofBoolean("options.autoSuggestCommands", true);
     private final SimpleOption<Boolean> chatColors = SimpleOption.ofBoolean("options.chat.color", true);
@@ -531,6 +532,7 @@ public class GameOptions {
         soundManager.reloadSounds();
         soundManager.play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0f));
     });
+    public boolean onboardAccessibility = true;
     public boolean syncChunkWrites;
 
     public SimpleOption<Boolean> getMonochromeLogo() {
@@ -619,6 +621,10 @@ public class GameOptions {
 
     public SimpleOption<Double> getChatDelay() {
         return this.chatDelay;
+    }
+
+    public SimpleOption<Double> getNotificationDisplayTime() {
+        return this.notificationDisplayTime;
     }
 
     public SimpleOption<Integer> getMipmapLevels() {
@@ -895,6 +901,7 @@ public class GameOptions {
         visitor.accept("chatHeightUnfocused", this.chatHeightUnfocused);
         visitor.accept("chatScale", this.chatScale);
         visitor.accept("chatWidth", this.chatWidth);
+        visitor.accept("notificationDisplayTime", this.notificationDisplayTime);
         visitor.accept("mipmapLevels", this.mipmapLevels);
         this.useNativeTransport = visitor.visitBoolean("useNativeTransport", this.useNativeTransport);
         visitor.accept("mainHand", this.mainArm);
@@ -915,6 +922,7 @@ public class GameOptions {
         visitor.accept("onlyShowSecureChat", this.onlyShowSecureChat);
         visitor.accept("panoramaScrollSpeed", this.panoramaSpeed);
         visitor.accept("telemetryOptInExtra", this.telemetryOptInExtra);
+        this.onboardAccessibility = visitor.visitBoolean("onboardAccessibility", this.onboardAccessibility);
         for (KeyBinding keyBinding : this.allKeys) {
             String string2;
             String string = keyBinding.getBoundKeyTranslationKey();
@@ -1051,12 +1059,12 @@ public class GameOptions {
         } catch (RuntimeException runtimeException) {
             // empty catch block
         }
-        return NbtHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, nbt, i);
+        return DataFixTypes.OPTIONS.update(this.client.getDataFixer(), nbt, i);
     }
 
     public void write() {
         try (final PrintWriter printWriter = new PrintWriter(new OutputStreamWriter((OutputStream)new FileOutputStream(this.optionsFile), StandardCharsets.UTF_8));){
-            printWriter.println("version:" + SharedConstants.getGameVersion().getWorldVersion());
+            printWriter.println("version:" + SharedConstants.getGameVersion().getSaveVersion().getId());
             this.accept(new Visitor(){
 
                 public void print(String key) {
