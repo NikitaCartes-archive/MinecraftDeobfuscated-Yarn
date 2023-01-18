@@ -64,6 +64,15 @@ public class EditWorldScreen extends Screen {
 
 	@Override
 	protected void init() {
+		this.saveButton = ButtonWidget.builder(Text.translatable("selectWorld.edit.save"), button -> this.commit())
+			.dimensions(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20)
+			.build();
+		this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 38, 200, 20, Text.translatable("selectWorld.enterName"));
+		LevelSummary levelSummary = this.storageSession.getLevelSummary();
+		String string = levelSummary == null ? "" : levelSummary.getDisplayName();
+		this.levelNameTextField.setText(string);
+		this.levelNameTextField.setChangedListener(levelName -> this.saveButton.active = !levelName.trim().isEmpty());
+		this.addSelectableChild(this.levelNameTextField);
 		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.edit.resetIcon"), button -> {
 			this.storageSession.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
 			button.active = false;
@@ -156,21 +165,11 @@ public class EditWorldScreen extends Screen {
 				.dimensions(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20)
 				.build()
 		);
-		this.saveButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("selectWorld.edit.save"), button -> this.commit())
-				.dimensions(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20)
-				.build()
-		);
+		this.addDrawableChild(this.saveButton);
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.callback.accept(false)).dimensions(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20).build()
 		);
 		buttonWidget.active = this.storageSession.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])).isPresent();
-		LevelSummary levelSummary = this.storageSession.getLevelSummary();
-		String string = levelSummary == null ? "" : levelSummary.getDisplayName();
-		this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 38, 200, 20, Text.translatable("selectWorld.enterName"));
-		this.levelNameTextField.setText(string);
-		this.levelNameTextField.setChangedListener(levelName -> this.saveButton.active = !levelName.trim().isEmpty());
-		this.addSelectableChild(this.levelNameTextField);
 		this.setInitialFocus(this.levelNameTextField);
 	}
 

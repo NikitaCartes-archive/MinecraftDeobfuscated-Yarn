@@ -79,19 +79,15 @@ public class ServerStatHandler extends StatHandler {
 		try {
 			JsonReader jsonReader = new JsonReader(new StringReader(json));
 
-			label51: {
+			label47: {
 				try {
 					jsonReader.setLenient(false);
 					JsonElement jsonElement = Streams.parse(jsonReader);
 					if (!jsonElement.isJsonNull()) {
 						NbtCompound nbtCompound = jsonToCompound(jsonElement.getAsJsonObject());
-						if (!nbtCompound.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
-							nbtCompound.putInt("DataVersion", 1343);
-						}
-
-						nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"));
+						nbtCompound = DataFixTypes.STATS.update(dataFixer, nbtCompound, NbtHelper.getDataVersion(nbtCompound, 1343));
 						if (!nbtCompound.contains("stats", NbtElement.COMPOUND_TYPE)) {
-							break label51;
+							break label47;
 						}
 
 						NbtCompound nbtCompound2 = nbtCompound.getCompound("stats");
@@ -99,7 +95,7 @@ public class ServerStatHandler extends StatHandler {
 
 						while (true) {
 							if (!var7.hasNext()) {
-								break label51;
+								break label47;
 							}
 
 							String string = (String)var7.next();
@@ -186,7 +182,7 @@ public class ServerStatHandler extends StatHandler {
 
 		JsonObject jsonObject2 = new JsonObject();
 		jsonObject2.add("stats", jsonObject);
-		jsonObject2.addProperty("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+		jsonObject2.addProperty("DataVersion", SharedConstants.getGameVersion().getSaveVersion().getId());
 		return jsonObject2.toString();
 	}
 

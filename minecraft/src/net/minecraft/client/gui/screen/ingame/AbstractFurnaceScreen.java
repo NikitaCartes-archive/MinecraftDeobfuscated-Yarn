@@ -38,7 +38,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		this.addDrawableChild(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
 			this.recipeBook.toggleOpen();
 			this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
-			((TexturedButtonWidget)button).setPos(this.x + 20, this.height / 2 - 49);
+			((TexturedButtonWidget)button).setPosition(this.x + 20, this.height / 2 - 49);
 		}));
 		this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
 	}
@@ -68,7 +68,6 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, this.background);
 		int i = this.x;
 		int j = this.y;

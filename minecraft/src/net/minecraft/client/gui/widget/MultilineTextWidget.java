@@ -14,7 +14,7 @@ public class MultilineTextWidget extends ClickableWidget {
 	private final int fontHeight;
 	private final boolean centered;
 
-	private MultilineTextWidget(MultilineText multilineText, TextRenderer textRenderer, Text text, boolean centered) {
+	protected MultilineTextWidget(MultilineText multilineText, TextRenderer textRenderer, Text text, boolean centered) {
 		super(0, 0, multilineText.getMaxWidth(), multilineText.count() * 9, text);
 		this.text = multilineText;
 		this.fontHeight = 9;

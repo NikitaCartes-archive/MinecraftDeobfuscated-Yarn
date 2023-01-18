@@ -2,6 +2,7 @@ package net.minecraft.client.realms.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -48,7 +49,7 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 	}
 
 	private Text[] getLines() {
-		return this.client.getGame().getVersion().isStable() ? INCOMPATIBLE_LINES : INCOMPATIBLE_LINES_UNSTABLE;
+		return SharedConstants.getGameVersion().isStable() ? INCOMPATIBLE_LINES : INCOMPATIBLE_LINES_UNSTABLE;
 	}
 
 	@Override

@@ -17,7 +17,6 @@ import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.lwjgl.glfw.GLFW;
@@ -27,7 +26,7 @@ import org.slf4j.Logger;
 public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	static final Text WORLD_LANG = Text.translatable("selectWorld.world");
-	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").formatted(Formatting.DARK_RED);
+	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").styled(style -> style.withColor(-65536));
 	static final Text CHEATS_TEXT = Text.translatable("selectWorld.cheats");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private final RealmsResetWorldScreen parent;
@@ -204,11 +203,6 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		@Override
 		public int getMaxPosition() {
 			return RealmsSelectFileToUploadScreen.this.levelList.size() * 36;
-		}
-
-		@Override
-		public boolean isFocused() {
-			return RealmsSelectFileToUploadScreen.this.getFocused() == this;
 		}
 
 		@Override

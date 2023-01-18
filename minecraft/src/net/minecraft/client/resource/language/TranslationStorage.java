@@ -29,26 +29,23 @@ public class TranslationStorage extends Language {
 		this.rightToLeft = rightToLeft;
 	}
 
-	public static TranslationStorage load(ResourceManager resourceManager, List<LanguageDefinition> definitions) {
+	public static TranslationStorage load(ResourceManager resourceManager, List<String> definitions, boolean rightToLeft) {
 		Map<String, String> map = Maps.<String, String>newHashMap();
-		boolean bl = false;
 
-		for (LanguageDefinition languageDefinition : definitions) {
-			bl |= languageDefinition.isRightToLeft();
-			String string = languageDefinition.getCode();
+		for (String string : definitions) {
 			String string2 = String.format(Locale.ROOT, "lang/%s.json", string);
 
 			for (String string3 : resourceManager.getAllNamespaces()) {
 				try {
 					Identifier identifier = new Identifier(string3, string2);
 					load(string, resourceManager.getAllResources(identifier), map);
-				} catch (Exception var11) {
-					LOGGER.warn("Skipped language file: {}:{} ({})", string3, string2, var11.toString());
+				} catch (Exception var10) {
+					LOGGER.warn("Skipped language file: {}:{} ({})", string3, string2, var10.toString());
 				}
 			}
 		}
 
-		return new TranslationStorage(ImmutableMap.copyOf(map), bl);
+		return new TranslationStorage(ImmutableMap.copyOf(map), rightToLeft);
 	}
 
 	private static void load(String langCode, List<Resource> resourceRefs, Map<String, String> translations) {
@@ -80,8 +77,8 @@ public class TranslationStorage extends Language {
 	}
 
 	@Override
-	public String get(String key) {
-		return (String)this.translations.getOrDefault(key, key);
+	public String get(String key, String fallback) {
+		return (String)this.translations.getOrDefault(key, fallback);
 	}
 
 	@Override

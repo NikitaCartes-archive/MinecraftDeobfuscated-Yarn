@@ -63,8 +63,8 @@ public abstract class Language {
 		final Map<String, String> map = builder.build();
 		return new Language() {
 			@Override
-			public String get(String key) {
-				return (String)map.getOrDefault(key, key);
+			public String get(String key, String fallback) {
+				return (String)map.getOrDefault(key, fallback);
 			}
 
 			@Override
@@ -104,7 +104,11 @@ public abstract class Language {
 		instance = language;
 	}
 
-	public abstract String get(String key);
+	public String get(String key) {
+		return this.get(key, key);
+	}
+
+	public abstract String get(String key, String fallback);
 
 	public abstract boolean hasTranslation(String key);
 

@@ -176,7 +176,6 @@ public abstract class LivingEntity extends Entity {
 	public int stuckStingerTimer;
 	public int hurtTime;
 	public int maxHurtTime;
-	public float knockbackVelocity;
 	public int deathTime;
 	public float lastHandSwingProgress;
 	public float handSwingProgress;
@@ -1180,7 +1179,6 @@ public abstract class LivingEntity extends Entity {
 				amount *= 0.75F;
 			}
 
-			this.knockbackVelocity = 0.0F;
 			Entity entity2 = source.getAttacker();
 			if (entity2 != null) {
 				if (entity2 instanceof LivingEntity && !source.isNeutral()) {
@@ -1235,10 +1233,7 @@ public abstract class LivingEntity extends Entity {
 						d = (Math.random() - Math.random()) * 0.01;
 					}
 
-					this.knockbackVelocity = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI - (double)this.getYaw());
 					this.takeKnockback(0.4F, d, e);
-				} else {
-					this.knockbackVelocity = (float)((int)(Math.random() * 2.0) * 180);
 				}
 			}
 
@@ -1536,6 +1531,10 @@ public abstract class LivingEntity extends Entity {
 			: this.getPos();
 	}
 
+	public float getDamageTiltYaw() {
+		return 0.0F;
+	}
+
 	public LivingEntity.FallSounds getFallSounds() {
 		return new LivingEntity.FallSounds(SoundEvents.ENTITY_GENERIC_SMALL_FALL, SoundEvents.ENTITY_GENERIC_BIG_FALL);
 	}
@@ -1628,10 +1627,9 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public void animateDamage() {
+	public void animateDamage(float yaw) {
 		this.maxHurtTime = 10;
 		this.hurtTime = this.maxHurtTime;
-		this.knockbackVelocity = 0.0F;
 	}
 
 	public int getArmor() {
@@ -1705,18 +1703,18 @@ public abstract class LivingEntity extends Entity {
 		if (!this.isInvulnerableTo(source)) {
 			amount = this.applyArmorToDamage(source, amount);
 			amount = this.modifyAppliedDamage(source, amount);
-			float var8 = Math.max(amount - this.getAbsorptionAmount(), 0.0F);
-			this.setAbsorptionAmount(this.getAbsorptionAmount() - (amount - var8));
-			float g = amount - var8;
-			if (g > 0.0F && g < 3.4028235E37F && source.getAttacker() instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)source.getAttacker()).increaseStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(g * 10.0F));
+			float var9 = Math.max(amount - this.getAbsorptionAmount(), 0.0F);
+			this.setAbsorptionAmount(this.getAbsorptionAmount() - (amount - var9));
+			float g = amount - var9;
+			if (g > 0.0F && g < 3.4028235E37F && source.getAttacker() instanceof ServerPlayerEntity serverPlayerEntity) {
+				serverPlayerEntity.increaseStat(Stats.DAMAGE_DEALT_ABSORBED, Math.round(g * 10.0F));
 			}
 
-			if (var8 != 0.0F) {
+			if (var9 != 0.0F) {
 				float h = this.getHealth();
-				this.setHealth(h - var8);
-				this.getDamageTracker().onDamage(source, h, var8);
-				this.setAbsorptionAmount(this.getAbsorptionAmount() - var8);
+				this.getDamageTracker().onDamage(source, h, var9);
+				this.setHealth(h - var9);
+				this.setAbsorptionAmount(this.getAbsorptionAmount() - var9);
 				this.emitGameEvent(GameEvent.ENTITY_DAMAGE);
 			}
 		}
@@ -1801,7 +1799,6 @@ public abstract class LivingEntity extends Entity {
 				this.timeUntilRegen = 20;
 				this.maxHurtTime = 10;
 				this.hurtTime = this.maxHurtTime;
-				this.knockbackVelocity = 0.0F;
 				if (status == EntityStatuses.DAMAGE_FROM_THORNS) {
 					this.playSound(SoundEvents.ENCHANT_THORNS_HIT, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				}
@@ -3304,6 +3301,11 @@ public abstract class LivingEntity extends Entity {
 		);
 	}
 
+	@Override
+	public boolean canUsePortals() {
+		return super.canUsePortals() && !this.isSleeping();
+	}
+
 	public Optional<BlockPos> getSleepingPosition() {
 		return this.dataTracker.get(SLEEPING_POSITION);
 	}
@@ -3393,7 +3395,7 @@ public abstract class LivingEntity extends Entity {
 		return super.getEyeHeight(pose, dimensions);
 	}
 
-	public ItemStack getArrowType(ItemStack stack) {
+	public ItemStack getProjectileType(ItemStack stack) {
 		return ItemStack.EMPTY;
 	}
 

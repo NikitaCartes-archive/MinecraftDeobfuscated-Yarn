@@ -16,11 +16,6 @@ import net.minecraft.client.realms.dto.PlayerInfo;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.util.RealmsTextureManager;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -201,21 +196,10 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
 		int i = row(12) + 20;
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
 		RenderSystem.setShaderTexture(0, OPTIONS_BACKGROUND);
+		RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
+		drawTexture(matrices, 0, i, 0.0F, 0.0F, this.width, this.height - i, 32, 32);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		float f = 32.0F;
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(0.0, (double)this.height, 0.0).texture(0.0F, (float)(this.height - i) / 32.0F + 0.0F).color(64, 64, 64, 255).next();
-		bufferBuilder.vertex((double)this.width, (double)this.height, 0.0)
-			.texture((float)this.width / 32.0F, (float)(this.height - i) / 32.0F + 0.0F)
-			.color(64, 64, 64, 255)
-			.next();
-		bufferBuilder.vertex((double)this.width, (double)i, 0.0).texture((float)this.width / 32.0F, 0.0F).color(64, 64, 64, 255).next();
-		bufferBuilder.vertex(0.0, (double)i, 0.0).texture(0.0F, 0.0F).color(64, 64, 64, 255).next();
-		tessellator.draw();
 		if (this.serverData != null && this.serverData.players != null) {
 			this.textRenderer
 				.draw(
@@ -248,7 +232,6 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	void drawRemoveIcon(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
 		boolean bl = mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9 && mouseY < row(12) + 20 && mouseY > row(1);
 		RenderSystem.setShaderTexture(0, CROSS_PLAYER_ICON);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 7.0F : 0.0F;
 		DrawableHelper.drawTexture(matrices, x, y, 0.0F, f, 8, 7, 8, 14);
 		if (bl) {
@@ -260,7 +243,6 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	void drawOpped(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
 		boolean bl = mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9 && mouseY < row(12) + 20 && mouseY > row(1);
 		RenderSystem.setShaderTexture(0, OP_ICON);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 8.0F : 0.0F;
 		DrawableHelper.drawTexture(matrices, x, y, 0.0F, f, 8, 8, 8, 16);
 		if (bl) {
@@ -272,7 +254,6 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	void drawNormal(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
 		boolean bl = mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 9 && mouseY < row(12) + 20 && mouseY > row(1);
 		RenderSystem.setShaderTexture(0, USER_ICON);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 8.0F : 0.0F;
 		DrawableHelper.drawTexture(matrices, x, y, 0.0F, f, 8, 8, 8, 16);
 		if (bl) {
@@ -294,11 +275,6 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		@Override
 		public int getRowWidth() {
 			return (int)((double)this.width * 1.0);
-		}
-
-		@Override
-		public boolean isFocused() {
-			return RealmsPlayerScreen.this.getFocused() == this;
 		}
 
 		@Override
@@ -400,10 +376,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			}
 
 			RealmsPlayerScreen.this.drawRemoveIcon(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 22, y + 2, mouseX, mouseY);
-			RealmsTextureManager.withBoundFace(playerInfo.getUuid(), () -> {
-				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-				PlayerSkinDrawer.draw(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8);
-			});
+			RealmsTextureManager.withBoundFace(playerInfo.getUuid(), () -> PlayerSkinDrawer.draw(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8));
 		}
 
 		@Override

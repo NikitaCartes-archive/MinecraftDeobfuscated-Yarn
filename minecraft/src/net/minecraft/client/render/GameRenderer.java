@@ -836,7 +836,7 @@ public class GameRenderer implements AutoCloseable {
 		}
 	}
 
-	private void bobViewWhenHurt(MatrixStack matrices, float tickDelta) {
+	private void tiltViewWhenHurt(MatrixStack matrices, float tickDelta) {
 		if (this.client.getCameraEntity() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)this.client.getCameraEntity();
 			float f = (float)livingEntity.hurtTime - tickDelta;
@@ -851,7 +851,7 @@ public class GameRenderer implements AutoCloseable {
 
 			f /= (float)livingEntity.maxHurtTime;
 			f = MathHelper.sin(f * f * f * f * (float) Math.PI);
-			float g = livingEntity.knockbackVelocity;
+			float g = livingEntity.getDamageTiltYaw();
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-g));
 			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-f * 14.0F));
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
@@ -885,7 +885,7 @@ public class GameRenderer implements AutoCloseable {
 			this.loadProjectionMatrix(this.getBasicProjectionMatrix(this.getFov(camera, tickDelta, false)));
 			matrices.loadIdentity();
 			matrices.push();
-			this.bobViewWhenHurt(matrices, tickDelta);
+			this.tiltViewWhenHurt(matrices, tickDelta);
 			if (this.client.options.getBobView().getValue()) {
 				this.bobView(matrices, tickDelta);
 			}
@@ -910,7 +910,7 @@ public class GameRenderer implements AutoCloseable {
 			matrices.pop();
 			if (this.client.options.getPerspective().isFirstPerson() && !bl) {
 				InGameOverlayRenderer.renderOverlays(this.client, matrices);
-				this.bobViewWhenHurt(matrices, tickDelta);
+				this.tiltViewWhenHurt(matrices, tickDelta);
 			}
 
 			if (this.client.options.getBobView().getValue()) {
@@ -977,7 +977,6 @@ public class GameRenderer implements AutoCloseable {
 				if (this.postProcessor != null && this.postProcessorEnabled) {
 					RenderSystem.disableBlend();
 					RenderSystem.disableDepthTest();
-					RenderSystem.enableTexture();
 					RenderSystem.resetTextureMatrix();
 					this.postProcessor.render(tickDelta);
 				}
@@ -1159,7 +1158,7 @@ public class GameRenderer implements AutoCloseable {
 		MatrixStack matrixStack = new MatrixStack();
 		double d = this.getFov(camera, tickDelta, true);
 		matrixStack.multiplyPositionMatrix(this.getBasicProjectionMatrix(d));
-		this.bobViewWhenHurt(matrixStack, tickDelta);
+		this.tiltViewWhenHurt(matrixStack, tickDelta);
 		if (this.client.options.getBobView().getValue()) {
 			this.bobView(matrixStack, tickDelta);
 		}

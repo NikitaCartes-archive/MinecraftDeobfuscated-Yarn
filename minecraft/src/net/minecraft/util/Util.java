@@ -310,7 +310,7 @@ public class Util {
 		Type<?> type = null;
 
 		try {
-			type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getWorldVersion())).getChoiceType(typeReference, id);
+			type = Schemas.getFixer().getSchema(DataFixUtils.makeKey(SharedConstants.getGameVersion().getSaveVersion().getId())).getChoiceType(typeReference, id);
 		} catch (IllegalArgumentException var4) {
 			LOGGER.error("No data fixer registered for {}", id);
 			if (SharedConstants.isDevelopment) {

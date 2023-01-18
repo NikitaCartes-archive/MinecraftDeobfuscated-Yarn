@@ -493,16 +493,6 @@ public class GlStateManager {
 		}
 	}
 
-	public static void _enableTexture() {
-		RenderSystem.assertOnRenderThreadOrInit();
-		TEXTURES[activeTexture].capState = true;
-	}
-
-	public static void _disableTexture() {
-		RenderSystem.assertOnRenderThread();
-		TEXTURES[activeTexture].capState = false;
-	}
-
 	public static void _texParameter(int target, int pname, float param) {
 		RenderSystem.assertOnRenderThreadOrInit();
 		GL11.glTexParameterf(target, pname, param);
@@ -559,10 +549,6 @@ public class GlStateManager {
 			TEXTURES[activeTexture].boundTexture = texture;
 			GL11.glBindTexture(GlConst.GL_TEXTURE_2D, texture);
 		}
-	}
-
-	public static int _getTextureId(int texture) {
-		return texture >= 0 && texture < 12 && TEXTURES[texture].capState ? TEXTURES[texture].boundTexture : 0;
 	}
 
 	public static int _getActiveTexture() {
@@ -889,7 +875,6 @@ public class GlStateManager {
 
 	@Environment(EnvType.CLIENT)
 	static class Texture2DState {
-		public boolean capState;
 		public int boundTexture;
 	}
 

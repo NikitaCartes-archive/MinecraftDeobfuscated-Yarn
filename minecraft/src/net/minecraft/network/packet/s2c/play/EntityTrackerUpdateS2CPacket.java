@@ -3,9 +3,9 @@ package net.minecraft.network.packet.s2c.play;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.data.DataTracker;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public record EntityTrackerUpdateS2CPacket(int id, List<DataTracker.SerializedEntry<?>> trackedValues) implements Packet<ClientPlayPacketListener> {
 	public static final int MARKER_ID = 255;

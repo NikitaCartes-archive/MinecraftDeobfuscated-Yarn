@@ -69,7 +69,7 @@ public final class NetworkIoStatistics {
 
 			for (NetworkState networkState : NetworkState.values()) {
 				for (NetworkSide networkSide : NetworkSide.values()) {
-					Int2ObjectMap<Class<? extends net.minecraft.network.Packet<?>>> int2ObjectMap = networkState.getPacketIdToPacketMap(networkSide);
+					Int2ObjectMap<Class<? extends net.minecraft.network.packet.Packet<?>>> int2ObjectMap = networkState.getPacketIdToPacketMap(networkSide);
 					int2ObjectMap.forEach((packetId, clazz) -> builder.put(new NetworkIoStatistics.Packet(networkSide, networkState.getId(), packetId), clazz.getSimpleName()));
 				}
 			}

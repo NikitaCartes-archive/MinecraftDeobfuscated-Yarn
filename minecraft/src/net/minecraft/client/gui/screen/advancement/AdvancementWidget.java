@@ -206,7 +206,6 @@ public class AdvancementWidget extends DrawableHelper {
 		int k = this.width - j;
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		int l = originY + this.y;
 		int m;

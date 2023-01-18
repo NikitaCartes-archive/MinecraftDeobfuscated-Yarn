@@ -52,7 +52,6 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			Vec3d vec3d = new Vec3d(cameraX, 0.0, cameraZ);
 			this.entries.removeIf(GameEventDebugRenderer.Entry::hasExpired);
 			this.listeners.removeIf(listener -> listener.isTooFar(world, vec3d));
-			RenderSystem.disableTexture();
 			RenderSystem.enableDepthTest();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
@@ -139,7 +138,6 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			}
 
 			RenderSystem.depthMask(true);
-			RenderSystem.enableTexture();
 			RenderSystem.disableBlend();
 		}
 	}

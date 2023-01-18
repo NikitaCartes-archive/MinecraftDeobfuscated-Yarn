@@ -80,7 +80,7 @@ public class ServerResourcePackProvider implements ResourcePackProvider {
 			"X-Minecraft-Version-ID",
 			SharedConstants.getGameVersion().getId(),
 			"X-Minecraft-Pack-Format",
-			String.valueOf(ResourceType.CLIENT_RESOURCES.getPackVersion(SharedConstants.getGameVersion())),
+			String.valueOf(SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES)),
 			"User-Agent",
 			"Minecraft Java/" + SharedConstants.getGameVersion().getName()
 		);

@@ -60,7 +60,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.map.MapState;
-import net.minecraft.network.Packet;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
@@ -106,6 +106,8 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -153,14 +155,10 @@ import org.slf4j.Logger;
 
 public class ServerWorld extends World implements StructureWorldAccess {
 	public static final BlockPos END_SPAWN_POS = new BlockPos(100, 50, 0);
-	private static final int field_35660 = 12000;
-	private static final int field_35653 = 180000;
-	private static final int field_35654 = 12000;
-	private static final int field_35655 = 24000;
-	private static final int field_35656 = 12000;
-	private static final int field_35657 = 180000;
-	private static final int field_35658 = 3600;
-	private static final int field_35659 = 15600;
+	public static final IntProvider CLEAR_WEATHER_DURATION_PROVIDER = UniformIntProvider.create(12000, 180000);
+	public static final IntProvider RAIN_WEATHER_DURATION_PROVIDER = UniformIntProvider.create(12000, 24000);
+	private static final IntProvider CLEAR_THUNDER_WEATHER_DURATION_PROVIDER = UniformIntProvider.create(12000, 180000);
+	public static final IntProvider THUNDER_WEATHER_DURATION_PROVIDER = UniformIntProvider.create(3600, 15600);
 	private static final Logger LOGGER = LogUtils.getLogger();
 	/**
 	 * The number of ticks ({@value}) the world will continue to tick entities after
@@ -494,13 +492,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 					}
 				}
 
-				BlockState blockState = this.getBlockState(blockPos2);
-				Biome.Precipitation precipitation = biome.getPrecipitation();
-				if (precipitation == Biome.Precipitation.RAIN && biome.isCold(blockPos2)) {
-					precipitation = Biome.Precipitation.SNOW;
+				Biome.Precipitation precipitation = biome.getPrecipitation(blockPos2);
+				if (precipitation != Biome.Precipitation.NONE) {
+					BlockState blockState3 = this.getBlockState(blockPos2);
+					blockState3.getBlock().precipitationTick(blockState3, this, blockPos2, precipitation);
 				}
-
-				blockState.getBlock().precipitationTick(blockState, this, blockPos2, precipitation);
 			}
 		}
 
@@ -513,12 +509,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 					for (int l = 0; l < randomTickSpeed; l++) {
 						BlockPos blockPos3 = this.getRandomPosInChunk(i, m, j, 15);
 						profiler.push("randomTick");
-						BlockState blockState3 = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - m, blockPos3.getZ() - j);
-						if (blockState3.hasRandomTicks()) {
-							blockState3.randomTick(this, blockPos3, this.random);
+						BlockState blockState4 = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - m, blockPos3.getZ() - j);
+						if (blockState4.hasRandomTicks()) {
+							blockState4.randomTick(this, blockPos3, this.random);
 						}
 
-						FluidState fluidState = blockState3.getFluidState();
+						FluidState fluidState = blockState4.getFluidState();
 						if (fluidState.hasRandomTicks()) {
 							fluidState.onRandomTick(this, blockPos3, this.random);
 						}
@@ -629,9 +625,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 							bl2 = !bl2;
 						}
 					} else if (bl2) {
-						j = MathHelper.nextBetween(this.random, 3600, 15600);
+						j = THUNDER_WEATHER_DURATION_PROVIDER.get(this.random);
 					} else {
-						j = MathHelper.nextBetween(this.random, 12000, 180000);
+						j = CLEAR_THUNDER_WEATHER_DURATION_PROVIDER.get(this.random);
 					}
 
 					if (k > 0) {
@@ -639,9 +635,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 							bl3 = !bl3;
 						}
 					} else if (bl3) {
-						k = MathHelper.nextBetween(this.random, 12000, 24000);
+						k = RAIN_WEATHER_DURATION_PROVIDER.get(this.random);
 					} else {
-						k = MathHelper.nextBetween(this.random, 12000, 180000);
+						k = CLEAR_WEATHER_DURATION_PROVIDER.get(this.random);
 					}
 				}
 

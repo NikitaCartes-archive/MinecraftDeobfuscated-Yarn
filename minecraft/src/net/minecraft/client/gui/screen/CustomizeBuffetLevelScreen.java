@@ -84,7 +84,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(0);
+		this.renderBackgroundTexture(matrices);
 		this.biomeSelectionList.render(matrices, mouseX, mouseY, delta);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		drawCenteredText(matrices, this.textRenderer, BUFFET_BIOME_TEXT, this.width / 2, 28, 10526880);
@@ -108,11 +108,6 @@ public class CustomizeBuffetLevelScreen extends Screen {
 				.map(entry -> new CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem(entry))
 				.sorted(Comparator.comparing(biome -> biome.text.getString(), collator))
 				.forEach(entry -> this.addEntry(entry));
-		}
-
-		@Override
-		protected boolean isFocused() {
-			return CustomizeBuffetLevelScreen.this.getFocused() == this;
 		}
 
 		public void setSelected(@Nullable CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem buffetBiomeItem) {

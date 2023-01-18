@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,6 +11,9 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.navigation.FocusedRect;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
@@ -34,8 +38,9 @@ import net.minecraft.util.math.MathHelper;
  * and narrated when the widget is selected.
  */
 @Environment(EnvType.CLIENT)
-public abstract class ClickableWidget extends DrawableHelper implements Drawable, Element, Selectable {
+public abstract class ClickableWidget extends DrawableHelper implements Drawable, Element, Widget, Selectable {
 	public static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+	protected static final int field_41797 = 46;
 	protected int width;
 	protected int height;
 	private int x;
@@ -60,19 +65,24 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		this.message = message;
 	}
 
+	@Override
 	public int getHeight() {
 		return this.height;
 	}
 
-	protected int getYImage(boolean hovered) {
+	protected Identifier getTexture() {
+		return WIDGETS_TEXTURE;
+	}
+
+	protected int getYImage() {
 		int i = 1;
 		if (!this.active) {
 			i = 0;
-		} else if (hovered) {
+		} else if (this.isHovered()) {
 			i = 2;
 		}
 
-		return i;
+		return 46 + i * 20;
 	}
 
 	@Override
@@ -86,7 +96,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 
 	private void applyTooltip() {
 		if (this.tooltip != null) {
-			boolean bl = this.isHovered();
+			boolean bl = this.hovered || this.isFocused() && MinecraftClient.getInstance().getNavigationType().isKeyboard();
 			if (bl != this.wasHovered) {
 				if (bl) {
 					this.lastHoveredTime = Util.getMeasuringTimeMs();
@@ -105,7 +115,9 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	}
 
 	protected TooltipPositioner getTooltipPositioner() {
-		return (TooltipPositioner)(this.isFocused() ? new FocusedTooltipPositioner(this) : HoveredTooltipPositioner.INSTANCE);
+		return (TooltipPositioner)(!this.hovered && this.isFocused() && MinecraftClient.getInstance().getNavigationType().isKeyboard()
+			? new FocusedTooltipPositioner(this)
+			: HoveredTooltipPositioner.INSTANCE);
 	}
 
 	public void setTooltip(@Nullable Tooltip tooltip) {
@@ -128,18 +140,21 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		TextRenderer textRenderer = minecraftClient.textRenderer;
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-		RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
+		RenderSystem.setShaderTexture(0, this.getTexture());
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-		int i = this.getYImage(this.isHovered());
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.enableDepthTest();
-		this.drawTexture(matrices, this.getX(), this.getY(), 0, 46 + i * 20, this.width / 2, this.height);
-		this.drawTexture(matrices, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+		int i = this.width / 2;
+		int j = this.width - i;
+		int k = this.getYImage();
+		this.drawTexture(matrices, this.getX(), this.getY(), 0, k, i, this.height);
+		this.drawTexture(matrices, this.getX() + i, this.getY(), 200 - j, k, j, this.height);
 		this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
-		int j = this.active ? 16777215 : 10526880;
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		int l = this.active ? 16777215 : 10526880;
 		drawCenteredText(
-			matrices, textRenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24
+			matrices, textRenderer, this.getMessage(), this.getX() + i, this.getY() + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0F) << 24
 		);
 	}
 
@@ -207,21 +222,17 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	}
 
 	public boolean isHovered() {
-		return this.hovered || this.focused;
+		return this.hovered || this.isFocused();
 	}
 
+	@Nullable
 	@Override
-	public boolean changeFocus(boolean lookForwards) {
-		if (this.active && this.visible) {
-			this.focused = !this.focused;
-			this.onFocusedChanged(this.focused);
-			return this.focused;
+	public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+		if (!this.active || !this.visible) {
+			return null;
 		} else {
-			return false;
+			return !this.isFocused() ? GuiNavigationPath.of(this) : null;
 		}
-	}
-
-	protected void onFocusedChanged(boolean newFocused) {
 	}
 
 	@Override
@@ -238,6 +249,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		soundManager.play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 	}
 
+	@Override
 	public int getWidth() {
 		return this.width;
 	}
@@ -258,6 +270,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		return this.message;
 	}
 
+	@Override
 	public boolean isFocused() {
 		return this.focused;
 	}
@@ -267,13 +280,14 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		return this.visible && this.active;
 	}
 
-	protected void setFocused(boolean focused) {
+	@Override
+	public void setFocused(boolean focused) {
 		this.focused = focused;
 	}
 
 	@Override
 	public Selectable.SelectionType getType() {
-		if (this.focused) {
+		if (this.isFocused()) {
 			return Selectable.SelectionType.FOCUSED;
 		} else {
 			return this.hovered ? Selectable.SelectionType.HOVERED : Selectable.SelectionType.NONE;
@@ -301,24 +315,33 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		}
 	}
 
+	@Override
 	public int getX() {
 		return this.x;
 	}
 
+	@Override
 	public void setX(int x) {
 		this.x = x;
 	}
 
-	public void setPos(int x, int y) {
-		this.setX(x);
-		this.setY(y);
-	}
-
+	@Override
 	public int getY() {
 		return this.y;
 	}
 
+	@Override
 	public void setY(int y) {
 		this.y = y;
+	}
+
+	@Override
+	public void forEachChild(Consumer<ClickableWidget> consumer) {
+		consumer.accept(this);
+	}
+
+	@Override
+	public FocusedRect getNavigationFocus() {
+		return new FocusedRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
 	}
 }

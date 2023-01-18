@@ -48,6 +48,11 @@ public class LevelLoadingScreen extends Screen {
 	}
 
 	@Override
+	protected boolean hasUsageText() {
+		return false;
+	}
+
+	@Override
 	public void removed() {
 		this.done = true;
 		this.narrateScreenIfNarrationEnabled(true);

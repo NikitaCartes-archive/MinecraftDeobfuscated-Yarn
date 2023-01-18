@@ -15,7 +15,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.PlayerSkinDrawer;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -28,6 +27,7 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -43,11 +43,9 @@ import net.minecraft.world.GameMode;
  */
 @Environment(EnvType.CLIENT)
 public class PlayerListHud extends DrawableHelper {
-	private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(
-			playerListEntry -> playerListEntry.getGameMode() == GameMode.SPECTATOR ? 1 : 0
-		)
-		.thenComparing(playerListEntry -> Util.mapOrElse(playerListEntry.getScoreboardTeam(), Team::getName, ""))
-		.thenComparing(playerListEntry -> playerListEntry.getProfile().getName(), String::compareToIgnoreCase);
+	private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(entry -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
+		.thenComparing(entry -> Util.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
+		.thenComparing(entry -> entry.getProfile().getName(), String::compareToIgnoreCase);
 	public static final int MAX_ROWS = 20;
 	public static final int HEART_OUTLINE_U = 16;
 	public static final int BLINKING_HEART_OUTLINE_U = 25;
@@ -92,12 +90,19 @@ public class PlayerListHud extends DrawableHelper {
 		if (this.visible != visible) {
 			this.hearts.clear();
 			this.visible = visible;
+			if (visible) {
+				Text text = Texts.join(this.collectPlayerEntries(), Text.literal(", "), this::getPlayerName);
+				this.client.getNarratorManager().narrate(Text.translatable("multiplayer.player.list.narration", text));
+			}
 		}
 	}
 
+	private List<PlayerListEntry> collectPlayerEntries() {
+		return this.client.player.networkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).limit(80L).toList();
+	}
+
 	public void render(MatrixStack matrices, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
-		List<PlayerListEntry> list = clientPlayNetworkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).limit(80L).toList();
+		List<PlayerListEntry> list = this.collectPlayerEntries();
 		int i = 0;
 		int j = 0;
 
@@ -178,7 +183,6 @@ public class PlayerListHud extends DrawableHelper {
 			int w = p + s * o + s * 5;
 			int x = q + v * 9;
 			fill(matrices, w, x, w + o, x + 8, t);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			if (u < list.size()) {
@@ -223,7 +227,6 @@ public class PlayerListHud extends DrawableHelper {
 	}
 
 	protected void renderLatencyIcon(MatrixStack matrices, int width, int x, int y, PlayerListEntry entry) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
 		int i = 0;
 		int j;

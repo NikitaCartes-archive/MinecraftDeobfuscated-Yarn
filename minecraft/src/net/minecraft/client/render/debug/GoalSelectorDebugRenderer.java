@@ -40,7 +40,6 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 		Camera camera = this.client.gameRenderer.getCamera();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.disableTexture();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		this.goalSelectors.forEach((index, selectors) -> {
 			for (int i = 0; i < selectors.size(); i++) {
@@ -55,7 +54,6 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 			}
 		});
 		RenderSystem.enableDepthTest();
-		RenderSystem.enableTexture();
 	}
 
 	@Environment(EnvType.CLIENT)

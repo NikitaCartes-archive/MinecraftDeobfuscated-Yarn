@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,6 +21,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.nbt.NbtOps;
@@ -287,8 +287,7 @@ public class ChunkSerializer {
 
 	public static NbtCompound serialize(ServerWorld world, Chunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+		NbtCompound nbtCompound = NbtHelper.putDataVersion(new NbtCompound());
 		nbtCompound.putInt("xPos", chunkPos.x);
 		nbtCompound.putInt("yPos", chunk.getBottomSectionCoord());
 		nbtCompound.putInt("zPos", chunkPos.z);

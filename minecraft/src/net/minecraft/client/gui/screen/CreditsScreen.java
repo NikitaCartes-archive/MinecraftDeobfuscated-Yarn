@@ -16,11 +16,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.gui.LogoDrawer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
@@ -35,13 +31,10 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class CreditsScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
-	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
 	private static final Text SEPARATOR_LINE = Text.literal("============").formatted(Formatting.WHITE);
 	private static final String CENTERED_LINE_PREFIX = "           ";
 	private static final String OBFUSCATION_PLACEHOLDER = "" + Formatting.WHITE + Formatting.OBFUSCATED + Formatting.GREEN + Formatting.AQUA;
-	private static final int MAX_WIDTH = 274;
 	private static final float SPACE_BAR_SPEED_MULTIPLIER = 5.0F;
 	private static final float CTRL_KEY_SPEED_MULTIPLIER = 15.0F;
 	private final boolean endCredits;
@@ -54,10 +47,12 @@ public class CreditsScreen extends Screen {
 	private final IntSet pressedCtrlKeys = new IntOpenHashSet();
 	private float speed;
 	private final float baseSpeed;
+	private final LogoDrawer logoDrawer;
 
-	public CreditsScreen(boolean endCredits, Runnable finishAction) {
+	public CreditsScreen(boolean endCredits, LogoDrawer logoDrawer, Runnable finishAction) {
 		super(NarratorManager.EMPTY);
 		this.endCredits = endCredits;
+		this.logoDrawer = logoDrawer;
 		this.finishAction = finishAction;
 		if (!endCredits) {
 			this.baseSpeed = 0.75F;
@@ -227,56 +222,40 @@ public class CreditsScreen extends Screen {
 		this.credits.add(text.asOrderedText());
 	}
 
-	private void renderBackground() {
-		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
+	private void renderBackground(MatrixStack matrices) {
 		RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 		int i = this.width;
-		float f = -this.time * 0.5F;
-		float g = (float)this.height - 0.5F * this.time;
-		float h = 0.015625F;
-		float j = this.time / this.baseSpeed;
-		float k = j * 0.02F;
-		float l = (float)(this.creditsHeight + this.height + this.height + 24) / this.baseSpeed;
-		float m = (l - 20.0F - j) * 0.005F;
-		if (m < k) {
-			k = m;
+		float f = this.time * 0.5F;
+		int j = 64;
+		float g = this.time / this.baseSpeed;
+		float h = g * 0.02F;
+		float k = (float)(this.creditsHeight + this.height + this.height + 24) / this.baseSpeed;
+		float l = (k - 20.0F - g) * 0.005F;
+		if (l < h) {
+			h = l;
 		}
 
-		if (k > 1.0F) {
-			k = 1.0F;
+		if (h > 1.0F) {
+			h = 1.0F;
 		}
 
-		k *= k;
-		k = k * 96.0F / 255.0F;
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(0.0, (double)this.height, (double)this.getZOffset()).texture(0.0F, f * 0.015625F).color(k, k, k, 1.0F).next();
-		bufferBuilder.vertex((double)i, (double)this.height, (double)this.getZOffset()).texture((float)i * 0.015625F, f * 0.015625F).color(k, k, k, 1.0F).next();
-		bufferBuilder.vertex((double)i, 0.0, (double)this.getZOffset()).texture((float)i * 0.015625F, g * 0.015625F).color(k, k, k, 1.0F).next();
-		bufferBuilder.vertex(0.0, 0.0, (double)this.getZOffset()).texture(0.0F, g * 0.015625F).color(k, k, k, 1.0F).next();
-		tessellator.draw();
+		h *= h;
+		h = h * 96.0F / 255.0F;
+		RenderSystem.setShaderColor(h, h, h, 1.0F);
+		drawTexture(matrices, 0, 0, this.getZOffset(), 0.0F, f, i, this.height, 64, 64);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.time = this.time + delta * this.speed;
-		this.renderBackground();
+		this.renderBackground(matrices);
 		int i = this.width / 2 - 137;
 		int j = this.height + 50;
 		float f = -this.time;
 		matrices.push();
 		matrices.translate(0.0F, f, 0.0F);
-		RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.enableBlend();
-		this.drawWithOutline(i, j, (x, y) -> {
-			this.drawTexture(matrices, x + 0, y, 0, 0, 155, 44);
-			this.drawTexture(matrices, x + 155, y, 0, 45, 155, 44);
-		});
-		RenderSystem.disableBlend();
-		RenderSystem.setShaderTexture(0, EDITION_TITLE_TEXTURE);
-		drawTexture(matrices, i + 88, j + 37, 0.0F, 0.0F, 98, 14, 128, 16);
+		this.logoDrawer.draw(matrices, this.width, delta, j);
 		int k = j + 100;
 
 		for (int l = 0; l < this.credits.size(); l++) {
@@ -300,20 +279,10 @@ public class CreditsScreen extends Screen {
 		}
 
 		matrices.pop();
-		RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
 		RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
-		int l = this.width;
-		int m = this.height;
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-		bufferBuilder.vertex(0.0, (double)m, (double)this.getZOffset()).texture(0.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)l, (double)m, (double)this.getZOffset()).texture(1.0F, 1.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex((double)l, 0.0, (double)this.getZOffset()).texture(1.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		bufferBuilder.vertex(0.0, 0.0, (double)this.getZOffset()).texture(0.0F, 0.0F).color(1.0F, 1.0F, 1.0F, 1.0F).next();
-		tessellator.draw();
+		drawTexture(matrices, 0, 0, this.getZOffset(), 0.0F, 0.0F, this.width, this.height, this.width, this.height);
 		RenderSystem.disableBlend();
 		super.render(matrices, mouseX, mouseY, delta);
 	}

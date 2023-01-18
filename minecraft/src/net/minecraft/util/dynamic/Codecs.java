@@ -149,6 +149,9 @@ public class Codecs {
 					return profile;
 				})
 	);
+	public static final Codec<String> NON_EMPTY_STRING = validate(
+		Codec.STRING, string -> string.isEmpty() ? DataResult.error("Expected non-empty string") : DataResult.success(string)
+	);
 
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.
@@ -280,42 +283,35 @@ public class Codecs {
 		});
 	}
 
-	private static <N extends Number & Comparable<N>> Function<N, DataResult<N>> createIntRangeChecker(N min, N max, Function<N, String> messageFactory) {
-		return value -> ((Comparable)value).compareTo(min) >= 0 && ((Comparable)value).compareTo(max) <= 0
-				? DataResult.success(value)
-				: DataResult.error((String)messageFactory.apply(value));
+	public static <T> Codec<T> validate(Codec<T> codec, Function<T, DataResult<T>> validator) {
+		return codec.flatXmap(validator, validator);
 	}
 
 	private static Codec<Integer> rangedInt(int min, int max, Function<Integer, String> messageFactory) {
-		Function<Integer, DataResult<Integer>> function = createIntRangeChecker(min, max, messageFactory);
-		return Codec.INT.flatXmap(function, function);
-	}
-
-	private static <N extends Number & Comparable<N>> Function<N, DataResult<N>> createFloatRangeChecker(N min, N max, Function<N, String> messageFactory) {
-		return value -> ((Comparable)value).compareTo(min) > 0 && ((Comparable)value).compareTo(max) <= 0
-				? DataResult.success(value)
-				: DataResult.error((String)messageFactory.apply(value));
+		return validate(
+			Codec.INT,
+			value -> value.compareTo(min) >= 0 && value.compareTo(max) <= 0 ? DataResult.success(value) : DataResult.error((String)messageFactory.apply(value))
+		);
 	}
 
 	private static Codec<Float> rangedFloat(float min, float max, Function<Float, String> messageFactory) {
-		Function<Float, DataResult<Float>> function = createFloatRangeChecker(min, max, messageFactory);
-		return Codec.FLOAT.flatXmap(function, function);
-	}
-
-	public static <T> Function<List<T>, DataResult<List<T>>> createNonEmptyListChecker() {
-		return list -> list.isEmpty() ? DataResult.error("List must have contents") : DataResult.success(list);
+		return validate(
+			Codec.FLOAT,
+			value -> value.compareTo(min) > 0 && value.compareTo(max) <= 0 ? DataResult.success(value) : DataResult.error((String)messageFactory.apply(value))
+		);
 	}
 
 	public static <T> Codec<List<T>> nonEmptyList(Codec<List<T>> originalCodec) {
-		return originalCodec.flatXmap(createNonEmptyListChecker(), createNonEmptyListChecker());
-	}
-
-	public static <T> Function<RegistryEntryList<T>, DataResult<RegistryEntryList<T>>> createNonEmptyEntryListChecker() {
-		return entries -> entries.getStorage().right().filter(List::isEmpty).isPresent() ? DataResult.error("List must have contents") : DataResult.success(entries);
+		return validate(originalCodec, list -> list.isEmpty() ? DataResult.error("List must have contents") : DataResult.success(list));
 	}
 
 	public static <T> Codec<RegistryEntryList<T>> nonEmptyEntryList(Codec<RegistryEntryList<T>> originalCodec) {
-		return originalCodec.flatXmap(createNonEmptyEntryListChecker(), createNonEmptyEntryListChecker());
+		return validate(
+			originalCodec,
+			registryEntryList -> registryEntryList.getStorage().right().filter(List::isEmpty).isPresent()
+					? DataResult.error("List must have contents")
+					: DataResult.success(registryEntryList)
+		);
 	}
 
 	public static <A> Codec<A> createLazy(Supplier<Codec<A>> supplier) {
@@ -403,6 +399,22 @@ public class Codecs {
 
 	private static DataResult<Pair<Optional<UUID>, Optional<String>>> createPairFromGameProfile(GameProfile profile) {
 		return DataResult.success(Pair.of(Optional.ofNullable(profile.getId()), Optional.ofNullable(profile.getName())));
+	}
+
+	public static Codec<String> string(int minLength, int maxLength) {
+		return validate(
+			Codec.STRING,
+			string -> {
+				int k = string.length();
+				if (k < minLength) {
+					return DataResult.error("String \"" + string + "\" is too short: " + k + ", expected range [" + minLength + "-" + maxLength + "]");
+				} else {
+					return k > maxLength
+						? DataResult.error("String \"" + string + "\" is too long: " + k + ", expected range [" + minLength + "-" + maxLength + "]")
+						: DataResult.success(string);
+				}
+			}
+		);
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {

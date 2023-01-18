@@ -18,6 +18,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
@@ -26,7 +27,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class FillBiomeCommand {
-	private static final int MAX_BLOCKS = 32768;
 	public static final SimpleCommandExceptionType UNLOADED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("argument.pos.unloaded"));
 	private static final Dynamic2CommandExceptionType TOO_BIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(maximum, specified) -> Text.translatable("commands.fillbiome.toobig", maximum, specified)
@@ -104,15 +104,16 @@ public class FillBiomeCommand {
 		BlockPos blockPos2 = convertPos(to);
 		BlockBox blockBox = BlockBox.create(blockPos, blockPos2);
 		int i = blockBox.getBlockCountX() * blockBox.getBlockCountY() * blockBox.getBlockCountZ();
-		if (i > 32768) {
-			throw TOO_BIG_EXCEPTION.create(32768, i);
+		int j = source.getWorld().getGameRules().getInt(GameRules.COMMAND_MODIFICATION_BLOCK_LIMIT);
+		if (i > j) {
+			throw TOO_BIG_EXCEPTION.create(j, i);
 		} else {
 			ServerWorld serverWorld = source.getWorld();
 			List<Chunk> list = new ArrayList();
 
-			for (int j = ChunkSectionPos.getSectionCoord(blockBox.getMinZ()); j <= ChunkSectionPos.getSectionCoord(blockBox.getMaxZ()); j++) {
-				for (int k = ChunkSectionPos.getSectionCoord(blockBox.getMinX()); k <= ChunkSectionPos.getSectionCoord(blockBox.getMaxX()); k++) {
-					Chunk chunk = serverWorld.getChunk(k, j, ChunkStatus.FULL, false);
+			for (int k = ChunkSectionPos.getSectionCoord(blockBox.getMinZ()); k <= ChunkSectionPos.getSectionCoord(blockBox.getMaxZ()); k++) {
+				for (int l = ChunkSectionPos.getSectionCoord(blockBox.getMinX()); l <= ChunkSectionPos.getSectionCoord(blockBox.getMaxX()); l++) {
+					Chunk chunk = serverWorld.getChunk(l, k, ChunkStatus.FULL, false);
 					if (chunk == null) {
 						throw UNLOADED_EXCEPTION.create();
 					}

@@ -121,6 +121,9 @@ public class GameRules {
 	public static final GameRules.Key<GameRules.IntRule> MAX_COMMAND_CHAIN_LENGTH = register(
 		"maxCommandChainLength", GameRules.Category.MISC, GameRules.IntRule.create(65536)
 	);
+	public static final GameRules.Key<GameRules.IntRule> COMMAND_MODIFICATION_BLOCK_LIMIT = register(
+		"commandModificationBlockLimit", GameRules.Category.MISC, GameRules.IntRule.create(32768)
+	);
 	/**
 	 * A {@linkplain Rule game rule} which regulates whether a player's advancements should be announced in chat.
 	 */

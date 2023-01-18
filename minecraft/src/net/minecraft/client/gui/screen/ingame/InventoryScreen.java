@@ -69,7 +69,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 			this.addDrawableChild(new TexturedButtonWidget(this.x + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
 				this.recipeBook.toggleOpen();
 				this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
-				button.setPos(this.x + 104, this.height / 2 - 22);
+				button.setPosition(this.x + 104, this.height / 2 - 22);
 				this.mouseDown = true;
 			}));
 			this.addSelectableChild(this.recipeBook);
@@ -103,7 +103,6 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 		int i = this.x;
 		int j = this.y;

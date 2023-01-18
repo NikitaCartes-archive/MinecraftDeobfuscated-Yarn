@@ -1072,7 +1072,7 @@ public final class ItemStack {
 
 						if (bl) {
 							list.add(
-								Text.literal(" ")
+								ScreenTexts.space()
 									.append(
 										Text.translatable(
 											"attribute.modifier.equals." + entityAttributeModifier.getOperation().getId(),

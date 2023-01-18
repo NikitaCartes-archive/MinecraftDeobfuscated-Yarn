@@ -16,8 +16,6 @@ import org.apache.commons.lang3.math.NumberUtils;
  * table of {@code sin(N)} ({@code 0 <= N < pi * 2}).
  */
 public class MathHelper {
-	private static final int field_29850 = 1024;
-	private static final float field_29851 = 1024.0F;
 	private static final long field_29852 = 61440L;
 	private static final long HALF_PI_RADIANS_SINE_TABLE_INDEX = 16384L;
 	private static final long field_29854 = -4611686018427387904L;
@@ -49,11 +47,6 @@ public class MathHelper {
 	private static final double[] ARCSINE_TABLE = new double[257];
 	private static final double[] COSINE_TABLE = new double[257];
 
-	public static float ceil(float value, float digits) {
-		float f = (float)Math.pow(10.0, (double)digits);
-		return (float)((int)(value * f)) / f;
-	}
-
 	public static float sin(float value) {
 		return SINE_TABLE[(int)(value * 10430.378F) & 65535];
 	}
@@ -71,10 +64,6 @@ public class MathHelper {
 		return value < (float)i ? i - 1 : i;
 	}
 
-	public static int fastFloor(double value) {
-		return (int)(value + 1024.0) - 1024;
-	}
-
 	public static int floor(double value) {
 		int i = (int)value;
 		return value < (double)i ? i - 1 : i;
@@ -83,10 +72,6 @@ public class MathHelper {
 	public static long lfloor(double value) {
 		long l = (long)value;
 		return value < (double)l ? l - 1L : l;
-	}
-
-	public static int absFloor(double value) {
-		return (int)(value >= 0.0 ? value : -value + 1.0);
 	}
 
 	public static float abs(float value) {
@@ -107,44 +92,16 @@ public class MathHelper {
 		return value > (double)i ? i + 1 : i;
 	}
 
-	public static byte clamp(byte value, byte min, byte max) {
-		if (value < min) {
-			return min;
-		} else {
-			return value > max ? max : value;
-		}
-	}
-
 	public static int clamp(int value, int min, int max) {
-		if (value < min) {
-			return min;
-		} else {
-			return value > max ? max : value;
-		}
-	}
-
-	public static long clamp(long value, long min, long max) {
-		if (value < min) {
-			return min;
-		} else {
-			return value > max ? max : value;
-		}
+		return Math.min(Math.max(value, min), max);
 	}
 
 	public static float clamp(float value, float min, float max) {
-		if (value < min) {
-			return min;
-		} else {
-			return value > max ? max : value;
-		}
+		return value < min ? min : Math.min(value, max);
 	}
 
 	public static double clamp(double value, double min, double max) {
-		if (value < min) {
-			return min;
-		} else {
-			return value > max ? max : value;
-		}
+		return value < min ? min : Math.min(value, max);
 	}
 
 	public static double clampedLerp(double start, double end, double delta) {
@@ -172,7 +129,7 @@ public class MathHelper {
 			b = -b;
 		}
 
-		return a > b ? a : b;
+		return Math.max(a, b);
 	}
 
 	public static int floorDiv(int dividend, int divisor) {
@@ -199,16 +156,6 @@ public class MathHelper {
 		return min >= max ? min : random.nextDouble() * (max - min) + min;
 	}
 
-	public static double average(long[] array) {
-		long l = 0L;
-
-		for (long m : array) {
-			l += m;
-		}
-
-		return (double)l / (double)array.length;
-	}
-
 	public static boolean approximatelyEquals(float a, float b) {
 		return Math.abs(b - a) < 1.0E-5F;
 	}
@@ -230,7 +177,7 @@ public class MathHelper {
 	}
 
 	public static boolean isMultipleOf(int a, int b) {
-		return a / b * b == a;
+		return a % b == 0;
 	}
 
 	/**
@@ -325,38 +272,6 @@ public class MathHelper {
 		return NumberUtils.toInt(string, fallback);
 	}
 
-	/**
-	 * {@return the parsed integer; {@code fallback} if {@code string} is not an
-	 * integer; or {@code min} if the parsed integer is too small}
-	 * 
-	 * @param string the string to parse
-	 * @param fallback the fallback for unparsable {@code string}
-	 * @param min the minimum if the parsed value is too small
-	 */
-	public static int parseInt(String string, int fallback, int min) {
-		return Math.max(min, parseInt(string, fallback));
-	}
-
-	public static double parseDouble(String string, double fallback) {
-		try {
-			return Double.parseDouble(string);
-		} catch (Throwable var4) {
-			return fallback;
-		}
-	}
-
-	/**
-	 * {@return the parsed double; {@code fallback} if {@code string} is not an
-	 * double; or {@code min} if the parsed double is too small}
-	 * 
-	 * @param string the string to parse
-	 * @param fallback the fallback for unparsable {@code string}
-	 * @param min the minimum if the parsed value is too small
-	 */
-	public static double parseDouble(String string, double fallback, double min) {
-		return Math.max(min, parseDouble(string, fallback));
-	}
-
 	public static int smallestEncompassingPowerOfTwo(int value) {
 		int i = value - 1;
 		i |= i >> 1;
@@ -399,35 +314,7 @@ public class MathHelper {
 	}
 
 	public static int packRgb(float r, float g, float b) {
-		return packRgb(floor(r * 255.0F), floor(g * 255.0F), floor(b * 255.0F));
-	}
-
-	public static int packRgb(int r, int g, int b) {
-		int i = (r << 8) + g;
-		return (i << 8) + b;
-	}
-
-	public static int multiplyColors(int a, int b) {
-		int i = (a & 0xFF0000) >> 16;
-		int j = (b & 0xFF0000) >> 16;
-		int k = (a & 0xFF00) >> 8;
-		int l = (b & 0xFF00) >> 8;
-		int m = (a & 0xFF) >> 0;
-		int n = (b & 0xFF) >> 0;
-		int o = (int)((float)i * (float)j / 255.0F);
-		int p = (int)((float)k * (float)l / 255.0F);
-		int q = (int)((float)m * (float)n / 255.0F);
-		return a & 0xFF000000 | o << 16 | p << 8 | q;
-	}
-
-	public static int multiplyColors(int color, float r, float g, float b) {
-		int i = (color & 0xFF0000) >> 16;
-		int j = (color & 0xFF00) >> 8;
-		int k = (color & 0xFF) >> 0;
-		int l = (int)((float)i * r);
-		int m = (int)((float)j * g);
-		int n = (int)((float)k * b);
-		return color & 0xFF000000 | l << 16 | m << 8 | n;
+		return ColorHelper.Argb.getArgb(0, floor(r * 255.0F), floor(g * 255.0F), floor(b * 255.0F));
 	}
 
 	public static float fractionalPart(float value) {
@@ -438,22 +325,12 @@ public class MathHelper {
 		return value - (double)lfloor(value);
 	}
 
-	public static Vec3d method_34946(Vec3d vec3d, Vec3d vec3d2, Vec3d vec3d3, Vec3d vec3d4, double d) {
-		double e = ((-d + 2.0) * d - 1.0) * d * 0.5;
-		double f = ((3.0 * d - 5.0) * d * d + 2.0) * 0.5;
-		double g = ((-3.0 * d + 4.0) * d + 1.0) * d * 0.5;
-		double h = (d - 1.0) * d * d * 0.5;
-		return new Vec3d(
-			vec3d.x * e + vec3d2.x * f + vec3d3.x * g + vec3d4.x * h,
-			vec3d.y * e + vec3d2.y * f + vec3d3.y * g + vec3d4.y * h,
-			vec3d.z * e + vec3d2.z * f + vec3d3.z * g + vec3d4.z * h
-		);
-	}
-
+	@Deprecated
 	public static long hashCode(Vec3i vec) {
 		return hashCode(vec.getX(), vec.getY(), vec.getZ());
 	}
 
+	@Deprecated
 	public static long hashCode(int x, int y, int z) {
 		long l = (long)(x * 3129871) ^ (long)z * 116129781L ^ (long)y;
 		l = l * l * 42317861L + l * 11L;
@@ -575,23 +452,18 @@ public class MathHelper {
 		}
 	}
 
-	/**
-	 * {@return an approximation of {@code 1 / Math.sqrt(x)}}
-	 * 
-	 * @see <a href="https://en.wikipedia.org/wiki/Fast_inverse_square_root">
-	 * Fast inverse square root - Wikipedia</a>
-	 */
-	public static float fastInverseSqrt(float x) {
-		float f = 0.5F * x;
-		int i = Float.floatToIntBits(x);
-		i = 1597463007 - (i >> 1);
-		x = Float.intBitsToFloat(i);
-		return x * (1.5F - f * x * x);
+	public static float inverseSqrt(float x) {
+		return org.joml.Math.invsqrt(x);
+	}
+
+	public static double inverseSqrt(double x) {
+		return org.joml.Math.invsqrt(x);
 	}
 
 	/**
 	 * {@return an approximation of {@code 1 / Math.sqrt(x)}}
 	 */
+	@Deprecated
 	public static double fastInverseSqrt(double x) {
 		double d = 0.5 * x;
 		long l = Double.doubleToRawLongBits(x);
@@ -655,10 +527,7 @@ public class MathHelper {
 				throw new RuntimeException("Something went wrong when converting from HSV to RGB. Input was " + hue + ", " + saturation + ", " + value);
 		}
 
-		int n = clamp((int)(k * 255.0F), 0, 255);
-		int o = clamp((int)(l * 255.0F), 0, 255);
-		int p = clamp((int)(m * 255.0F), 0, 255);
-		return n << 16 | o << 8 | p;
+		return ColorHelper.Argb.getArgb(0, clamp((int)(k * 255.0F), 0, 255), clamp((int)(l * 255.0F), 0, 255), clamp((int)(m * 255.0F), 0, 255));
 	}
 
 	public static int idealHash(int value) {
@@ -667,82 +536,6 @@ public class MathHelper {
 		value ^= value >>> 13;
 		value *= -1028477387;
 		return value ^ value >>> 16;
-	}
-
-	public static long murmurHash(long value) {
-		value ^= value >>> 33;
-		value *= -49064778989728563L;
-		value ^= value >>> 33;
-		value *= -4265267296055464877L;
-		return value ^ value >>> 33;
-	}
-
-	public static double[] getCumulativeDistribution(double... values) {
-		double d = 0.0;
-
-		for (double e : values) {
-			d += e;
-		}
-
-		for (int i = 0; i < values.length; i++) {
-			values[i] /= d;
-		}
-
-		for (int i = 0; i < values.length; i++) {
-			values[i] += i == 0 ? 0.0 : values[i - 1];
-		}
-
-		return values;
-	}
-
-	public static int method_34950(Random random, double[] ds) {
-		double d = random.nextDouble();
-
-		for (int i = 0; i < ds.length; i++) {
-			if (d < ds[i]) {
-				return i;
-			}
-		}
-
-		return ds.length;
-	}
-
-	public static double[] method_34941(double d, double e, double f, int i, int j) {
-		double[] ds = new double[j - i + 1];
-		int k = 0;
-
-		for (int l = i; l <= j; l++) {
-			ds[k] = Math.max(0.0, d * StrictMath.exp(-((double)l - f) * ((double)l - f) / (2.0 * e * e)));
-			k++;
-		}
-
-		return ds;
-	}
-
-	public static double[] method_34940(double d, double e, double f, double g, double h, double i, int j, int k) {
-		double[] ds = new double[k - j + 1];
-		int l = 0;
-
-		for (int m = j; m <= k; m++) {
-			ds[l] = Math.max(
-				0.0, d * StrictMath.exp(-((double)m - f) * ((double)m - f) / (2.0 * e * e)) + g * StrictMath.exp(-((double)m - i) * ((double)m - i) / (2.0 * h * h))
-			);
-			l++;
-		}
-
-		return ds;
-	}
-
-	public static double[] method_34942(double d, double e, int i, int j) {
-		double[] ds = new double[j - i + 1];
-		int k = 0;
-
-		for (int l = i; l <= j; l++) {
-			ds[k] = Math.max(d * StrictMath.log((double)l) + e, 0.0);
-			k++;
-		}
-
-		return ds;
 	}
 
 	/**
@@ -878,38 +671,6 @@ public class MathHelper {
 		return start + delta * wrapDegrees(end - start);
 	}
 
-	public static float method_34955(float f, float g, float h) {
-		return Math.min(f * f * 0.6F + g * g * ((3.0F + g) / 4.0F) + h * h * 0.8F, 1.0F);
-	}
-
-	@Deprecated
-	public static float lerpAngle(float start, float end, float delta) {
-		float f = end - start;
-
-		while (f < -180.0F) {
-			f += 360.0F;
-		}
-
-		while (f >= 180.0F) {
-			f -= 360.0F;
-		}
-
-		return start + delta * f;
-	}
-
-	@Deprecated
-	public static float fwrapDegrees(double degrees) {
-		while (degrees >= 180.0) {
-			degrees -= 360.0;
-		}
-
-		while (degrees < -180.0) {
-			degrees += 360.0;
-		}
-
-		return (float)degrees;
-	}
-
 	public static float wrap(float value, float maxDeviation) {
 		return (Math.abs(value % maxDeviation - maxDeviation * 0.5F) - maxDeviation * 0.25F) / (maxDeviation * 0.25F);
 	}
@@ -928,10 +689,6 @@ public class MathHelper {
 
 	public static long square(long n) {
 		return n * n;
-	}
-
-	public static float magnitude(float n) {
-		return n * n * n;
 	}
 
 	/**

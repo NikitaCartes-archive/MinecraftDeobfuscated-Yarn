@@ -3,9 +3,9 @@ package net.minecraft.network.packet.c2s.play;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.server.world.ServerWorld;
 
 public class SpectatorTeleportC2SPacket implements Packet<ServerPlayPacketListener> {

@@ -14,10 +14,10 @@ public class SetWorldSpawnCommand {
 				.executes(context -> execute(context.getSource(), new BlockPos(context.getSource().getPosition()), 0.0F))
 				.then(
 					CommandManager.argument("pos", BlockPosArgumentType.blockPos())
-						.executes(context -> execute(context.getSource(), BlockPosArgumentType.getBlockPos(context, "pos"), 0.0F))
+						.executes(context -> execute(context.getSource(), BlockPosArgumentType.getValidBlockPos(context, "pos"), 0.0F))
 						.then(
 							CommandManager.argument("angle", AngleArgumentType.angle())
-								.executes(context -> execute(context.getSource(), BlockPosArgumentType.getBlockPos(context, "pos"), AngleArgumentType.getAngle(context, "angle")))
+								.executes(context -> execute(context.getSource(), BlockPosArgumentType.getValidBlockPos(context, "pos"), AngleArgumentType.getAngle(context, "angle")))
 						)
 				)
 		);

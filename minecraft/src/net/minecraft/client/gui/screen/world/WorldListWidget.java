@@ -35,7 +35,6 @@ import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -207,19 +206,9 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		return super.getRowWidth() + 50;
 	}
 
-	@Override
-	protected boolean isFocused() {
-		return this.parent.getFocused() == this;
-	}
-
 	public void setSelected(@Nullable WorldListWidget.Entry entry) {
 		super.setSelected(entry);
 		this.parent.worldSelected(entry != null && entry.isAvailable());
-	}
-
-	@Override
-	protected void moveSelection(EntryListWidget.MoveDirection direction) {
-		this.moveSelectionIf(direction, WorldListWidget.Entry::isAvailable);
 	}
 
 	public Optional<WorldListWidget.WorldEntry> getSelectedAsOptional() {
@@ -348,7 +337,6 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + 9 + 3), 8421504);
 			this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + 9 + 9 + 3), 8421504);
 			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.setShaderTexture(0, this.icon != null ? this.iconLocation : WorldListWidget.UNKNOWN_SERVER_LOCATION);
 			RenderSystem.enableBlend();
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
@@ -357,7 +345,6 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				RenderSystem.setShaderTexture(0, WorldListWidget.WORLD_SELECTION_LOCATION);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
 				RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				int i = mouseX - x;
 				boolean bl = i < 32;
 				int j = bl ? 32 : 0;
@@ -408,7 +395,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					return true;
 				} else {
 					this.time = Util.getMeasuringTimeMs();
-					return false;
+					return true;
 				}
 			}
 		}

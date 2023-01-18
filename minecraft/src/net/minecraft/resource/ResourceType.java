@@ -1,25 +1,16 @@
 package net.minecraft.resource;
 
-import com.mojang.bridge.game.GameVersion;
-import com.mojang.bridge.game.PackType;
-
 public enum ResourceType {
-	CLIENT_RESOURCES("assets", PackType.RESOURCE),
-	SERVER_DATA("data", PackType.DATA);
+	CLIENT_RESOURCES("assets"),
+	SERVER_DATA("data");
 
 	private final String directory;
-	private final PackType packType;
 
-	private ResourceType(String name, PackType packType) {
+	private ResourceType(String name) {
 		this.directory = name;
-		this.packType = packType;
 	}
 
 	public String getDirectory() {
 		return this.directory;
-	}
-
-	public int getPackVersion(GameVersion gameVersion) {
-		return gameVersion.getPackVersion(this.packType);
 	}
 }

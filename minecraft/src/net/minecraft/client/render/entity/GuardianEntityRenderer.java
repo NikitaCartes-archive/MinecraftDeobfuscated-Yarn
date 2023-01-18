@@ -65,7 +65,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 		LivingEntity livingEntity = guardianEntity.getBeamTarget();
 		if (livingEntity != null) {
 			float h = guardianEntity.getBeamProgress(g);
-			float j = (float)guardianEntity.world.getTime() + g;
+			float j = guardianEntity.getBeamTicks() + g;
 			float k = j * 0.5F % 1.0F;
 			float l = guardianEntity.getStandingEyeHeight();
 			matrixStack.push();

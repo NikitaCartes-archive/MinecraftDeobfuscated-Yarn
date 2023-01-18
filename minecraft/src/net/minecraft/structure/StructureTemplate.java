@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -645,8 +644,7 @@ public class StructureTemplate {
 
 		nbt.put("entities", nbtList4);
 		nbt.put("size", this.createNbtIntList(this.size.getX(), this.size.getY(), this.size.getZ()));
-		nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-		return nbt;
+		return NbtHelper.putDataVersion(nbt);
 	}
 
 	public void readNbt(RegistryEntryLookup<Block> blockLookup, NbtCompound nbt) {

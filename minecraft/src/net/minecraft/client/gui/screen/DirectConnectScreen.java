@@ -46,6 +46,11 @@ public class DirectConnectScreen extends Screen {
 
 	@Override
 	protected void init() {
+		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 116, 200, 20, Text.translatable("addServer.enterIp"));
+		this.addressField.setMaxLength(128);
+		this.addressField.setText(this.client.options.lastServer);
+		this.addressField.setChangedListener(text -> this.onAddressFieldChanged());
+		this.addSelectableChild(this.addressField);
 		this.selectServerButton = this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("selectServer.select"), button -> this.saveAndClose())
 				.dimensions(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20)
@@ -56,11 +61,6 @@ public class DirectConnectScreen extends Screen {
 				.dimensions(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20)
 				.build()
 		);
-		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 116, 200, 20, Text.translatable("addServer.enterIp"));
-		this.addressField.setMaxLength(128);
-		this.addressField.setText(this.client.options.lastServer);
-		this.addressField.setChangedListener(text -> this.onAddressFieldChanged());
-		this.addSelectableChild(this.addressField);
 		this.setInitialFocus(this.addressField);
 		this.onAddressFieldChanged();
 	}

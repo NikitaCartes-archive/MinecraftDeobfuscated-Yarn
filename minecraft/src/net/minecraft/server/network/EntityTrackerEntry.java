@@ -3,6 +3,7 @@ package net.minecraft.server.network;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -22,8 +23,9 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
-import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
@@ -195,11 +197,13 @@ public class EntityTrackerEntry {
 	}
 
 	public void startTracking(ServerPlayerEntity player) {
-		this.sendPackets(player.networkHandler::sendPacket);
+		List<Packet<ClientPlayPacketListener>> list = new ArrayList();
+		this.sendPackets(list::add);
+		player.networkHandler.sendPacket(new BundleS2CPacket(list));
 		this.entity.onStartedTrackingBy(player);
 	}
 
-	public void sendPackets(Consumer<Packet<?>> sender) {
+	public void sendPackets(Consumer<Packet<ClientPlayPacketListener>> sender) {
 		if (this.entity.isRemoved()) {
 			LOGGER.warn("Fetching packet for removed entity {}", this.entity);
 		}

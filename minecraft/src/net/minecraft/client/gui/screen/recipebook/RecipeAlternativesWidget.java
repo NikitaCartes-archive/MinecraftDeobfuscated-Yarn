@@ -97,11 +97,6 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		this.lastClickedRecipe = null;
 	}
 
-	@Override
-	public boolean changeFocus(boolean lookForwards) {
-		return false;
-	}
-
 	public RecipeResultCollection getResults() {
 		return this.resultCollection;
 	}
@@ -137,7 +132,6 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		if (this.visible) {
 			this.time += delta;
 			RenderSystem.enableBlend();
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 			matrices.push();
 			matrices.translate(0.0F, 0.0F, 170.0F);
@@ -196,6 +190,15 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 
 	public boolean isVisible() {
 		return this.visible;
+	}
+
+	@Override
+	public void setFocused(boolean focused) {
+	}
+
+	@Override
+	public boolean isFocused() {
+		return false;
 	}
 
 	@Environment(EnvType.CLIENT)

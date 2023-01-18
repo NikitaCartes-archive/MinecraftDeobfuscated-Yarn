@@ -492,7 +492,12 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void breakAndDropItem(DamageSource damageSource) {
-		Block.dropStack(this.world, this.getBlockPos(), new ItemStack(Items.ARMOR_STAND));
+		ItemStack itemStack = new ItemStack(Items.ARMOR_STAND);
+		if (this.hasCustomName()) {
+			itemStack.setCustomName(this.getCustomName());
+		}
+
+		Block.dropStack(this.world, this.getBlockPos(), itemStack);
 		this.onBreak(damageSource);
 	}
 

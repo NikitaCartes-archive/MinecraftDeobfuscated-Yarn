@@ -94,9 +94,8 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 		this.client.player.getInventory().populateRecipeFinder(this.recipeFinder);
 		this.craftingScreenHandler.populateRecipeFinder(this.recipeFinder);
 		String string = this.searchField != null ? this.searchField.getText() : "";
-		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, 9 + 5, Text.translatable("itemGroup.search"));
+		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 26, j + 14, 79, 9 + 3, Text.translatable("itemGroup.search"));
 		this.searchField.setMaxLength(50);
-		this.searchField.setDrawsBackground(false);
 		this.searchField.setVisible(true);
 		this.searchField.setEditableColor(16777215);
 		this.searchField.setText(string);
@@ -132,11 +131,6 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 	private void updateTooltip() {
 		this.toggleCraftableButton
 			.setTooltip(this.toggleCraftableButton.isToggled() ? Tooltip.of(this.getToggleCraftableButtonText()) : Tooltip.of(TOGGLE_ALL_RECIPES_TEXT));
-	}
-
-	@Override
-	public boolean changeFocus(boolean lookForwards) {
-		return false;
 	}
 
 	protected void setBookButtonTexture() {
@@ -224,9 +218,9 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 			RecipeBookGroup recipeBookGroup = recipeGroupButtonWidget.getCategory();
 			if (recipeBookGroup == RecipeBookGroup.CRAFTING_SEARCH || recipeBookGroup == RecipeBookGroup.FURNACE_SEARCH) {
 				recipeGroupButtonWidget.visible = true;
-				recipeGroupButtonWidget.setPos(i, j + 27 * l++);
+				recipeGroupButtonWidget.setPosition(i, j + 27 * l++);
 			} else if (recipeGroupButtonWidget.hasKnownRecipes(this.recipeBook)) {
-				recipeGroupButtonWidget.setPos(i, j + 27 * l++);
+				recipeGroupButtonWidget.setPosition(i, j + 27 * l++);
 				recipeGroupButtonWidget.checkForNewRecipes(this.client);
 			}
 		}
@@ -262,7 +256,6 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 			matrices.translate(0.0F, 0.0F, 100.0F);
 			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, TEXTURE);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int i = (this.parentWidth - 147) / 2 - this.leftOffset;
 			int j = (this.parentHeight - 166) / 2;
 			this.drawTexture(matrices, i, j, 1, 1, 147, 166);
@@ -394,7 +387,7 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 			return true;
 		} else if (this.client.options.chatKey.matchesKey(keyCode, scanCode) && !this.searchField.isFocused()) {
 			this.searching = true;
-			this.searchField.setTextFieldFocused(true);
+			this.searchField.setFocused(true);
 			return true;
 		} else {
 			return false;
@@ -426,6 +419,15 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 		return false;
 	}
 
+	@Override
+	public void setFocused(boolean focused) {
+	}
+
+	@Override
+	public boolean isFocused() {
+		return false;
+	}
+
 	private void refreshSearchResults() {
 		String string = this.searchField.getText().toLowerCase(Locale.ROOT);
 		this.triggerPirateSpeakEasterEgg(string);
@@ -438,13 +440,14 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 	private void triggerPirateSpeakEasterEgg(String search) {
 		if ("excitedze".equals(search)) {
 			LanguageManager languageManager = this.client.getLanguageManager();
+			String string = "en_pt";
 			LanguageDefinition languageDefinition = languageManager.getLanguage("en_pt");
-			if (languageManager.getLanguage().compareTo(languageDefinition) == 0) {
+			if (languageDefinition == null || languageManager.getLanguage().equals("en_pt")) {
 				return;
 			}
 
-			languageManager.setLanguage(languageDefinition);
-			this.client.options.language = languageDefinition.getCode();
+			languageManager.setLanguage("en_pt");
+			this.client.options.language = "en_pt";
 			this.client.reloadResources();
 			this.client.options.write();
 		}

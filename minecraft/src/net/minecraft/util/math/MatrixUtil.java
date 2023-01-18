@@ -40,7 +40,7 @@ public class MatrixUtil {
 	private static Pair<Float, Float> method_46411(float f, float g, float h) {
 		float i = 2.0F * (f - h);
 		if (field_40746 * g * g < i * i) {
-			float k = MathHelper.fastInverseSqrt(g * g + i * i);
+			float k = MathHelper.inverseSqrt(g * g + i * i);
 			return Pair.of(k * g, k * i);
 		} else {
 			return Pair.of(SIN_PI_OVER_8, COS_PI_OVER_8);
@@ -57,7 +57,7 @@ public class MatrixUtil {
 			j = k;
 		}
 
-		float k = MathHelper.fastInverseSqrt(j * j + i * i);
+		float k = MathHelper.inverseSqrt(j * j + i * i);
 		j *= k;
 		i *= k;
 		return Pair.of(i, j);

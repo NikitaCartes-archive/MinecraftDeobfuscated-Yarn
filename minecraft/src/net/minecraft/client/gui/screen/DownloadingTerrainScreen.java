@@ -25,8 +25,13 @@ public class DownloadingTerrainScreen extends Screen {
 	}
 
 	@Override
+	protected boolean hasUsageText() {
+		return false;
+	}
+
+	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(0);
+		this.renderBackgroundTexture(matrices);
 		drawCenteredText(matrices, this.textRenderer, TEXT, this.width / 2, this.height / 2 - 50, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
@@ -50,6 +55,12 @@ public class DownloadingTerrainScreen extends Screen {
 				this.closeOnNextTick = this.ready;
 			}
 		}
+	}
+
+	@Override
+	public void close() {
+		this.client.getNarratorManager().narrate(Text.translatable("narrator.ready_to_play"));
+		super.close();
 	}
 
 	public void setReady() {

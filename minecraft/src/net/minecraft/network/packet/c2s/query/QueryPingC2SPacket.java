@@ -1,8 +1,8 @@
 package net.minecraft.network.packet.c2s.query;
 
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerQueryPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class QueryPingC2SPacket implements Packet<ServerQueryPacketListener> {
 	private final long startTime;

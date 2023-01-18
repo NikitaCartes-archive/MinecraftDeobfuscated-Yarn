@@ -98,7 +98,7 @@ public class HangingSignBlock extends AbstractSignBlock {
 			}
 		}
 
-		int i = !bl2 ? RotationPropertyHelper.fromDirection(direction) : RotationPropertyHelper.fromYaw(ctx.getPlayerYaw());
+		int i = !bl2 ? RotationPropertyHelper.fromDirection(direction.getOpposite()) : RotationPropertyHelper.fromYaw(ctx.getPlayerYaw() + 180.0F);
 		return this.getDefaultState()
 			.with(ATTACHED, Boolean.valueOf(bl2))
 			.with(ROTATION, Integer.valueOf(i))

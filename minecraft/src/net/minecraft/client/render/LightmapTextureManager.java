@@ -82,7 +82,6 @@ public class LightmapTextureManager implements AutoCloseable {
 		this.client.getTextureManager().bindTexture(this.textureIdentifier);
 		RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_LINEAR);
 		RenderSystem.texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_LINEAR);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private float getDarknessFactor(float delta) {

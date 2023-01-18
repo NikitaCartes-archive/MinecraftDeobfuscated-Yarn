@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.MagmaCubeEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -24,6 +25,11 @@ public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, 
 
 	public Identifier getTexture(MagmaCubeEntity magmaCubeEntity) {
 		return TEXTURE;
+	}
+
+	public void render(MagmaCubeEntity magmaCubeEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
+		this.shadowRadius = 0.25F * (float)magmaCubeEntity.getSize();
+		super.render(magmaCubeEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}
 
 	protected void scale(MagmaCubeEntity magmaCubeEntity, MatrixStack matrixStack, float f) {

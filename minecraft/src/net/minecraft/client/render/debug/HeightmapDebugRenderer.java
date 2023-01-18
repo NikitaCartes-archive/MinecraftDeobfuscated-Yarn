@@ -35,7 +35,6 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		WorldAccess worldAccess = this.client.world;
 		RenderSystem.disableBlend();
-		RenderSystem.disableTexture();
 		RenderSystem.enableDepthTest();
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
@@ -77,7 +76,6 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		tessellator.draw();
-		RenderSystem.enableTexture();
 	}
 
 	private Vector3f getColorForHeightmapType(Heightmap.Type type) {

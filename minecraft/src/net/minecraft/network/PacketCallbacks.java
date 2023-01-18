@@ -2,6 +2,7 @@ package net.minecraft.network;
 
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.network.packet.Packet;
 
 /**
  * A set of callbacks for sending a packet.

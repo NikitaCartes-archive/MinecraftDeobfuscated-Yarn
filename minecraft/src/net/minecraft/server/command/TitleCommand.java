@@ -7,7 +7,8 @@ import java.util.Collection;
 import java.util.function.Function;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
-import net.minecraft.network.Packet;
+import net.minecraft.command.argument.TimeArgumentType;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
@@ -74,11 +75,11 @@ public class TitleCommand {
 						.then(
 							CommandManager.literal("times")
 								.then(
-									CommandManager.argument("fadeIn", IntegerArgumentType.integer(0))
+									CommandManager.argument("fadeIn", TimeArgumentType.time())
 										.then(
-											CommandManager.argument("stay", IntegerArgumentType.integer(0))
+											CommandManager.argument("stay", TimeArgumentType.time())
 												.then(
-													CommandManager.argument("fadeOut", IntegerArgumentType.integer(0))
+													CommandManager.argument("fadeOut", TimeArgumentType.time())
 														.executes(
 															context -> executeTimes(
 																	context.getSource(),

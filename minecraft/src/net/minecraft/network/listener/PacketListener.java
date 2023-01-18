@@ -1,11 +1,10 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.network.ClientConnection;
 import net.minecraft.text.Text;
 
 /**
- * A packet listener listens to packets on a {@linkplain ClientConnection
- * connection}.
+ * A packet listener listens to packets on a {@linkplain
+ * net.minecraft.network.ClientConnection connection}.
  * 
  * <p>Its listener methods will be called on the netty event loop than the
  * client or server game engine threads.
@@ -19,15 +18,7 @@ public interface PacketListener {
 	 */
 	void onDisconnected(Text reason);
 
-	/**
-	 * Returns the connection this packet listener intends to listen to.
-	 * 
-	 * @apiNote The returned connection may or may not have this listener as
-	 * its current packet listener.
-	 * 
-	 * @see ClientConnection#getPacketListener()
-	 */
-	ClientConnection getConnection();
+	boolean isConnectionOpen();
 
 	/**
 	 * {@return whether uncaught exceptions in main thread should crash the game

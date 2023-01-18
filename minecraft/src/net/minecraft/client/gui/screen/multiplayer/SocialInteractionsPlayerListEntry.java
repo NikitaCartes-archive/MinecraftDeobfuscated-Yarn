@@ -195,7 +195,6 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 
 		if (this.hasDraftReport && this.reportButton != null) {
 			RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			DrawableHelper.drawTexture(matrices, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 182.0F, 24.0F, 15, 15, 256, 256);
 		}
 	}

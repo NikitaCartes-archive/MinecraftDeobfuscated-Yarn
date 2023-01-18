@@ -2,7 +2,6 @@ package net.minecraft.util.dynamic;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import java.util.function.Function;
 
 public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
 	public static final Codec<Range<Integer>> CODEC = createCodec((Codec<T>)Codec.INT);
@@ -21,16 +20,18 @@ public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
 	}
 
 	public static <T extends Comparable<T>> Codec<Range<T>> createRangedCodec(Codec<T> codec, T minInclusive, T maxInclusive) {
-		Function<Range<T>, DataResult<Range<T>>> function = range -> {
-			if (range.minInclusive().compareTo(minInclusive) < 0) {
-				return DataResult.error("Range limit too low, expected at least " + minInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]");
-			} else {
-				return range.maxInclusive().compareTo(maxInclusive) > 0
-					? DataResult.error("Range limit too high, expected at most " + maxInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]")
-					: DataResult.success(range);
+		return Codecs.validate(
+			createCodec(codec),
+			range -> {
+				if (range.minInclusive().compareTo(minInclusive) < 0) {
+					return DataResult.error("Range limit too low, expected at least " + minInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]");
+				} else {
+					return range.maxInclusive().compareTo(maxInclusive) > 0
+						? DataResult.error("Range limit too high, expected at most " + maxInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]")
+						: DataResult.success(range);
+				}
 			}
-		};
-		return createCodec(codec).flatXmap(function, function);
+		);
 	}
 
 	public static <T extends Comparable<T>> DataResult<Range<T>> validate(T minInclusive, T maxInclusive) {

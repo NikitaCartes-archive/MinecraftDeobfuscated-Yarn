@@ -3,6 +3,7 @@ package net.minecraft.block.dispenser;
 import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
@@ -205,12 +206,13 @@ public interface DispenserBehavior {
 			public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
 				BlockPos blockPos = pointer.getPos().offset(direction);
-				World world = pointer.getWorld();
-				ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5);
-				EntityType.loadFromEntityNbt(world, null, armorStandEntity, stack.getNbt());
-				armorStandEntity.setYaw(direction.asRotation());
-				world.spawnEntity(armorStandEntity);
-				stack.decrement(1);
+				ServerWorld serverWorld = pointer.getWorld();
+				Consumer<ArmorStandEntity> consumer = EntityType.copier(armorStandEntityx -> armorStandEntityx.setYaw(direction.asRotation()), serverWorld, stack, null);
+				ArmorStandEntity armorStandEntity = EntityType.ARMOR_STAND.spawn(serverWorld, stack.getNbt(), consumer, blockPos, SpawnReason.DISPENSER, false, false);
+				if (armorStandEntity != null) {
+					stack.decrement(1);
+				}
+
 				return stack;
 			}
 		});

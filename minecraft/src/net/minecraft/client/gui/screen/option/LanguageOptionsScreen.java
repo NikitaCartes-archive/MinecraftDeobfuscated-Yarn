@@ -35,9 +35,9 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		this.addDrawableChild(this.gameOptions.getForceUnicodeFont().createButton(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
 			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = this.languageSelectionList.getSelectedOrNull();
-			if (languageEntry != null && !languageEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
-				this.languageManager.setLanguage(languageEntry.languageDefinition);
-				this.gameOptions.language = languageEntry.languageDefinition.getCode();
+			if (languageEntry != null && !languageEntry.languageCode.equals(this.languageManager.getLanguage())) {
+				this.languageManager.setLanguage(languageEntry.languageCode);
+				this.gameOptions.language = languageEntry.languageCode;
 				this.client.reloadResources();
 				this.gameOptions.write();
 			}
@@ -59,17 +59,20 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 	class LanguageSelectionListWidget extends AlwaysSelectedEntryListWidget<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry> {
 		public LanguageSelectionListWidget(MinecraftClient client) {
 			super(client, LanguageOptionsScreen.this.width, LanguageOptionsScreen.this.height, 32, LanguageOptionsScreen.this.height - 65 + 4, 18);
-
-			for (LanguageDefinition languageDefinition : LanguageOptionsScreen.this.languageManager.getAllLanguages()) {
-				LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = new LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry(
-					languageDefinition
+			String string = LanguageOptionsScreen.this.languageManager.getLanguage();
+			LanguageOptionsScreen.this.languageManager
+				.getAllLanguages()
+				.forEach(
+					(languageCode, languageDefinition) -> {
+						LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = new LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry(
+							languageCode, languageDefinition
+						);
+						this.addEntry(languageEntry);
+						if (string.equals(languageCode)) {
+							this.setSelected(languageEntry);
+						}
+					}
 				);
-				this.addEntry(languageEntry);
-				if (LanguageOptionsScreen.this.languageManager.getLanguage().getCode().equals(languageDefinition.getCode())) {
-					this.setSelected(languageEntry);
-				}
-			}
-
 			if (this.getSelectedOrNull() != null) {
 				this.centerScrollOn(this.getSelectedOrNull());
 			}
@@ -90,30 +93,25 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			LanguageOptionsScreen.this.renderBackground(matrices);
 		}
 
-		@Override
-		protected boolean isFocused() {
-			return LanguageOptionsScreen.this.getFocused() == this;
-		}
-
 		@Environment(EnvType.CLIENT)
 		public class LanguageEntry extends AlwaysSelectedEntryListWidget.Entry<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry> {
-			final LanguageDefinition languageDefinition;
+			final String languageCode;
+			private final Text languageDefinition;
 
-			public LanguageEntry(LanguageDefinition languageDefinition) {
-				this.languageDefinition = languageDefinition;
+			public LanguageEntry(String languageCode, LanguageDefinition languageDefinition) {
+				this.languageCode = languageCode;
+				this.languageDefinition = languageDefinition.getDisplayText();
 			}
 
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				String string = this.languageDefinition.toString();
 				LanguageOptionsScreen.this.textRenderer
 					.drawWithShadow(
 						matrices,
-						string,
-						(float)(LanguageSelectionListWidget.this.width / 2 - LanguageOptionsScreen.this.textRenderer.getWidth(string) / 2),
+						this.languageDefinition,
+						(float)(LanguageSelectionListWidget.this.width / 2 - LanguageOptionsScreen.this.textRenderer.getWidth(this.languageDefinition) / 2),
 						(float)(y + 1),
-						16777215,
-						true
+						16777215
 					);
 			}
 

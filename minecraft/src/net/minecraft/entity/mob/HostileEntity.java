@@ -128,7 +128,7 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	}
 
 	@Override
-	public ItemStack getArrowType(ItemStack stack) {
+	public ItemStack getProjectileType(ItemStack stack) {
 		if (stack.getItem() instanceof RangedWeaponItem) {
 			Predicate<ItemStack> predicate = ((RangedWeaponItem)stack.getItem()).getHeldProjectiles();
 			ItemStack itemStack = RangedWeaponItem.getHeldProjectile(this, predicate);

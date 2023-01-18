@@ -33,11 +33,11 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -922,9 +922,8 @@ public abstract class PlayerManager {
 		UUID uUID = player.getUuid();
 		PlayerAdvancementTracker playerAdvancementTracker = (PlayerAdvancementTracker)this.advancementTrackers.get(uUID);
 		if (playerAdvancementTracker == null) {
-			File file = this.server.getSavePath(WorldSavePath.ADVANCEMENTS).toFile();
-			File file2 = new File(file, uUID + ".json");
-			playerAdvancementTracker = new PlayerAdvancementTracker(this.server.getDataFixer(), this, this.server.getAdvancementLoader(), file2, player);
+			Path path = this.server.getSavePath(WorldSavePath.ADVANCEMENTS).resolve(uUID + ".json");
+			playerAdvancementTracker = new PlayerAdvancementTracker(this.server.getDataFixer(), this, this.server.getAdvancementLoader(), path, player);
 			this.advancementTrackers.put(uUID, playerAdvancementTracker);
 		}
 

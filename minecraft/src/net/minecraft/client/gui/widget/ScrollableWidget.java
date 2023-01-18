@@ -1,15 +1,9 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
@@ -41,12 +35,11 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 				&& mouseX <= (double)(this.getX() + this.width + 8)
 				&& mouseY >= (double)this.getY()
 				&& mouseY < (double)(this.getY() + this.height);
-			this.setFocused(bl || bl2);
 			if (bl2 && button == 0) {
 				this.scrollbarDragged = true;
 				return true;
 			} else {
-				return false;
+				return bl || bl2;
 			}
 		}
 	}
@@ -116,7 +109,7 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	 */
 	protected void renderOverlay(MatrixStack matrices) {
 		if (this.overflows()) {
-			this.drawScrollbar();
+			this.drawScrollbar(matrices);
 		}
 	}
 
@@ -153,25 +146,14 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 		fill(matrices, this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, -16777216);
 	}
 
-	private void drawScrollbar() {
+	private void drawScrollbar(MatrixStack matrices) {
 		int i = this.getScrollbarThumbHeight();
 		int j = this.getX() + this.width;
 		int k = this.getX() + this.width + 8;
 		int l = Math.max(this.getY(), (int)this.scrollY * (this.height - i) / this.getMaxScrollY() + this.getY());
 		int m = l + i;
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		bufferBuilder.vertex((double)j, (double)m, 0.0).color(128, 128, 128, 255).next();
-		bufferBuilder.vertex((double)k, (double)m, 0.0).color(128, 128, 128, 255).next();
-		bufferBuilder.vertex((double)k, (double)l, 0.0).color(128, 128, 128, 255).next();
-		bufferBuilder.vertex((double)j, (double)l, 0.0).color(128, 128, 128, 255).next();
-		bufferBuilder.vertex((double)j, (double)(m - 1), 0.0).color(192, 192, 192, 255).next();
-		bufferBuilder.vertex((double)(k - 1), (double)(m - 1), 0.0).color(192, 192, 192, 255).next();
-		bufferBuilder.vertex((double)(k - 1), (double)l, 0.0).color(192, 192, 192, 255).next();
-		bufferBuilder.vertex((double)j, (double)l, 0.0).color(192, 192, 192, 255).next();
-		tessellator.draw();
+		fill(matrices, j, l, k, m, -8355712);
+		fill(matrices, j, l, k - 1, m - 1, -4144960);
 	}
 
 	protected boolean isVisible(int top, int bottom) {

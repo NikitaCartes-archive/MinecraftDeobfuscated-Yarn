@@ -31,7 +31,6 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.registry.RegistryEntryLookup;
@@ -258,12 +257,9 @@ public class StructureTemplateManager {
 	}
 
 	public StructureTemplate createTemplate(NbtCompound nbt) {
-		if (!nbt.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
-			nbt.putInt("DataVersion", 500);
-		}
-
 		StructureTemplate structureTemplate = new StructureTemplate();
-		structureTemplate.readNbt(this.blockLookup, NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
+		int i = NbtHelper.getDataVersion(nbt, 500);
+		structureTemplate.readNbt(this.blockLookup, DataFixTypes.STRUCTURE.update(this.dataFixer, nbt, i));
 		return structureTemplate;
 	}
 

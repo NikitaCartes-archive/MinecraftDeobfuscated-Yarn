@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.SharedConstants;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -67,6 +66,7 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
@@ -173,6 +173,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	private Optional<GlobalPos> lastDeathPos = Optional.empty();
 	@Nullable
 	public FishingBobberEntity fishHook;
+	protected float damageTiltYaw;
 
 	public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
 		super(EntityType.PLAYER, world);
@@ -617,9 +618,9 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		if (damageSource != null) {
 			this.setVelocity(
-				(double)(-MathHelper.cos((this.knockbackVelocity + this.getYaw()) * (float) (Math.PI / 180.0)) * 0.1F),
+				(double)(-MathHelper.cos((this.getDamageTiltYaw() + this.getYaw()) * (float) (Math.PI / 180.0)) * 0.1F),
 				0.1F,
-				(double)(-MathHelper.sin((this.knockbackVelocity + this.getYaw()) * (float) (Math.PI / 180.0)) * 0.1F)
+				(double)(-MathHelper.sin((this.getDamageTiltYaw() + this.getYaw()) * (float) (Math.PI / 180.0)) * 0.1F)
 			);
 		} else {
 			this.setVelocity(0.0, 0.1, 0.0);
@@ -802,7 +803,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+		NbtHelper.putDataVersion(nbt);
 		nbt.put("Inventory", this.inventory.writeNbt(new NbtList()));
 		nbt.putInt("SelectedItemSlot", this.inventory.selectedSlot);
 		nbt.putShort("SleepTimer", (short)this.sleepTimer);
@@ -949,8 +950,8 @@ public abstract class PlayerEntity extends LivingEntity {
 			if (var8 != 0.0F) {
 				this.addExhaustion(source.getExhaustion());
 				float h = this.getHealth();
-				this.setHealth(this.getHealth() - var8);
 				this.getDamageTracker().onDamage(source, h, var8);
+				this.setHealth(this.getHealth() - var8);
 				if (var8 < 3.4028235E37F) {
 					this.increaseStat(Stats.DAMAGE_TAKEN, Math.round(var8 * 10.0F));
 				}
@@ -2081,7 +2082,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public ItemStack getArrowType(ItemStack stack) {
+	public ItemStack getProjectileType(ItemStack stack) {
 		if (!(stack.getItem() instanceof RangedWeaponItem)) {
 			return ItemStack.EMPTY;
 		} else {
@@ -2172,6 +2173,22 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public void setLastDeathPos(Optional<GlobalPos> lastDeathPos) {
 		this.lastDeathPos = lastDeathPos;
+	}
+
+	@Override
+	public float getDamageTiltYaw() {
+		return this.damageTiltYaw;
+	}
+
+	@Override
+	public void animateDamage(float yaw) {
+		super.animateDamage(yaw);
+		this.damageTiltYaw = yaw;
+	}
+
+	@Override
+	public boolean canSprintAsVehicle() {
+		return true;
 	}
 
 	/**

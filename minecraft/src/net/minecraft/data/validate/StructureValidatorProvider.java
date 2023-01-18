@@ -5,7 +5,6 @@ import net.minecraft.data.SnbtProvider;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.Registries;
 import net.minecraft.structure.StructureTemplate;
@@ -20,26 +19,14 @@ public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 	}
 
 	public static NbtCompound update(String name, NbtCompound nbt) {
-		return internalUpdate(name, addDataVersion(nbt));
-	}
-
-	private static NbtCompound addDataVersion(NbtCompound nbt) {
-		if (!nbt.contains("DataVersion", NbtElement.NUMBER_TYPE)) {
-			nbt.putInt("DataVersion", 500);
-		}
-
-		return nbt;
-	}
-
-	private static NbtCompound internalUpdate(String name, NbtCompound nbt) {
 		StructureTemplate structureTemplate = new StructureTemplate();
-		int i = nbt.getInt("DataVersion");
-		int j = 3200;
-		if (i < 3200) {
-			LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 3200, name);
+		int i = NbtHelper.getDataVersion(nbt, 500);
+		int j = 3318;
+		if (i < 3318) {
+			LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 3318, name);
 		}
 
-		NbtCompound nbtCompound = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, nbt, i);
+		NbtCompound nbtCompound = DataFixTypes.STRUCTURE.update(Schemas.getFixer(), nbt, i);
 		structureTemplate.readNbt(Registries.BLOCK.getReadOnlyWrapper(), nbtCompound);
 		return structureTemplate.writeNbt(new NbtCompound());
 	}

@@ -98,9 +98,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		matrixStack.push();
 		matrixStack.translate((float)i, (float)j, 0.0F);
 		RenderSystem.applyModelViewMatrix();
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		this.focusedSlot = null;
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 		for (int k = 0; k < this.handler.slots.size(); k++) {
 			Slot slot = this.handler.slots.get(k);

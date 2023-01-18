@@ -10,7 +10,11 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.DirectConnectScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.AxisGridWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.EmptyWidget;
+import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.LanServerQueryManager;
 import net.minecraft.client.network.MultiplayerServerListPinger;
@@ -26,6 +30,10 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class MultiplayerScreen extends Screen {
+	public static final int field_41849 = 308;
+	public static final int field_41850 = 100;
+	public static final int field_41851 = 74;
+	public static final int field_41852 = 64;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final MultiplayerServerListPinger serverListPinger = new MultiplayerServerListPinger();
 	private final Screen parent;
@@ -60,8 +68,8 @@ public class MultiplayerScreen extends Screen {
 			try {
 				this.lanServerDetector = new LanServerQueryManager.LanServerDetector(this.lanServers);
 				this.lanServerDetector.start();
-			} catch (Exception var2) {
-				LOGGER.warn("Unable to start LAN server detection: {}", var2.getMessage());
+			} catch (Exception var9) {
+				LOGGER.warn("Unable to start LAN server detection: {}", var9.getMessage());
 			}
 
 			this.serverListWidget = new MultiplayerServerListWidget(this, this.client, this.width, this.height, 32, this.height - 64, 36);
@@ -69,17 +77,15 @@ public class MultiplayerScreen extends Screen {
 		}
 
 		this.addSelectableChild(this.serverListWidget);
-		this.buttonJoin = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("selectServer.select"), button -> this.connect()).dimensions(this.width / 2 - 154, this.height - 52, 100, 20).build()
-		);
-		this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.direct"), button -> {
+		this.buttonJoin = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.select"), button -> this.connect()).width(100).build());
+		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.direct"), button -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", false);
 			this.client.setScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
-		}).dimensions(this.width / 2 - 50, this.height - 52, 100, 20).build());
-		this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.add"), button -> {
+		}).width(100).build());
+		ButtonWidget buttonWidget2 = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.add"), button -> {
 			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", false);
 			this.client.setScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
-		}).dimensions(this.width / 2 + 4 + 50, this.height - 52, 100, 20).build());
+		}).width(100).build());
 		this.buttonEdit = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.edit"), button -> {
 			MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedOrNull();
 			if (entry instanceof MultiplayerServerListWidget.ServerEntry) {
@@ -88,7 +94,7 @@ public class MultiplayerScreen extends Screen {
 				this.selectedEntry.copyWithSettingsFrom(serverInfo);
 				this.client.setScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
 			}
-		}).dimensions(this.width / 2 - 154, this.height - 28, 70, 20).build());
+		}).width(74).build());
 		this.buttonDelete = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.delete"), button -> {
 			MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedOrNull();
 			if (entry instanceof MultiplayerServerListWidget.ServerEntry) {
@@ -101,13 +107,25 @@ public class MultiplayerScreen extends Screen {
 					this.client.setScreen(new ConfirmScreen(this::removeEntry, text, text2, text3, text4));
 				}
 			}
-		}).dimensions(this.width / 2 - 74, this.height - 28, 70, 20).build());
-		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("selectServer.refresh"), button -> this.refresh()).dimensions(this.width / 2 + 4, this.height - 28, 70, 20).build()
+		}).width(74).build());
+		ButtonWidget buttonWidget3 = this.addDrawableChild(
+			ButtonWidget.builder(Text.translatable("selectServer.refresh"), button -> this.refresh()).width(74).build()
 		);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 4 + 76, this.height - 28, 75, 20).build()
-		);
+		ButtonWidget buttonWidget4 = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).width(74).build());
+		GridWidget gridWidget = new GridWidget();
+		GridWidget.Adder adder = gridWidget.createAdder(1);
+		AxisGridWidget axisGridWidget = adder.add(new AxisGridWidget(308, 20, AxisGridWidget.DisplayAxis.HORIZONTAL));
+		axisGridWidget.add(this.buttonJoin);
+		axisGridWidget.add(buttonWidget);
+		axisGridWidget.add(buttonWidget2);
+		adder.add(EmptyWidget.ofHeight(4));
+		AxisGridWidget axisGridWidget2 = adder.add(new AxisGridWidget(308, 20, AxisGridWidget.DisplayAxis.HORIZONTAL));
+		axisGridWidget2.add(this.buttonEdit);
+		axisGridWidget2.add(this.buttonDelete);
+		axisGridWidget2.add(buttonWidget3);
+		axisGridWidget2.add(buttonWidget4);
+		gridWidget.refreshPositions();
+		SimplePositioningWidget.setPos(gridWidget, 0, this.height - 64, this.width, 64);
 		this.updateButtonActivationStates();
 	}
 

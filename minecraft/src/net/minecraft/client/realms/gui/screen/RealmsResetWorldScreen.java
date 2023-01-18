@@ -213,21 +213,14 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 		RenderSystem.setShaderTexture(0, texture);
 		if (hovered) {
 			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
-		} else {
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		DrawableHelper.drawTexture(matrices, x + 2, y + 14, 0.0F, 0.0F, 56, 56, 56, 56);
 		RenderSystem.setShaderTexture(0, SLOT_FRAME_TEXTURE);
-		if (hovered) {
-			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
-		} else {
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		}
-
 		DrawableHelper.drawTexture(matrices, x, y + 12, 0.0F, 0.0F, 60, 60, 60, 60);
 		int i = hovered ? 10526880 : 16777215;
 		drawCenteredText(matrices, this.textRenderer, text, x + 30, y, i);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private void executeLongRunningTask(LongRunningTask task) {

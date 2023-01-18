@@ -83,15 +83,16 @@ public class DamageTracker {
 				if (damageRecord.getDamageSource() == DamageSource.FALL || damageRecord.getDamageSource() == DamageSource.OUT_OF_WORLD) {
 					text3 = Text.translatable("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
 				} else if (text2 != null && !text2.equals(text)) {
-					Entity entity2 = damageRecord.getDamageSource().getAttacker();
-					ItemStack itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).getMainHandStack() : ItemStack.EMPTY;
+					ItemStack itemStack = damageRecord.getDamageSource().getAttacker() instanceof LivingEntity livingEntity
+						? livingEntity.getMainHandStack()
+						: ItemStack.EMPTY;
 					if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
 						text3 = Text.translatable("death.fell.assist.item", this.entity.getDisplayName(), text2, itemStack.toHoverableText());
 					} else {
 						text3 = Text.translatable("death.fell.assist", this.entity.getDisplayName(), text2);
 					}
 				} else if (text != null) {
-					ItemStack itemStack2 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY;
+					ItemStack itemStack2 = entity instanceof LivingEntity livingEntity2 ? livingEntity2.getMainHandStack() : ItemStack.EMPTY;
 					if (!itemStack2.isEmpty() && itemStack2.hasCustomName()) {
 						text3 = Text.translatable("death.fell.finish.item", this.entity.getDisplayName(), text, itemStack2.toHoverableText());
 					} else {
@@ -116,14 +117,14 @@ public class DamageTracker {
 		float g = 0.0F;
 
 		for (DamageRecord damageRecord : this.recentDamage) {
-			if (damageRecord.getDamageSource().getAttacker() instanceof PlayerEntity && (playerEntity == null || damageRecord.getDamage() > g)) {
+			if (damageRecord.getDamageSource().getAttacker() instanceof PlayerEntity playerEntity2 && (playerEntity == null || damageRecord.getDamage() > g)) {
 				g = damageRecord.getDamage();
-				playerEntity = (PlayerEntity)damageRecord.getDamageSource().getAttacker();
+				playerEntity = playerEntity2;
 			}
 
-			if (damageRecord.getDamageSource().getAttacker() instanceof LivingEntity && (livingEntity == null || damageRecord.getDamage() > f)) {
+			if (damageRecord.getDamageSource().getAttacker() instanceof LivingEntity livingEntity2 && (livingEntity == null || damageRecord.getDamage() > f)) {
 				f = damageRecord.getDamage();
-				livingEntity = (LivingEntity)damageRecord.getDamageSource().getAttacker();
+				livingEntity = livingEntity2;
 			}
 		}
 

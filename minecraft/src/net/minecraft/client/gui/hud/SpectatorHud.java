@@ -72,6 +72,8 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 			this.drawTexture(matrices, x - 91 - 1 + state.getSelectedSlot() * 20, y - 1, 0, 22, 24, 22);
 		}
 
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
 		for (int i = 0; i < 9; i++) {
 			this.renderSpectatorCommand(matrices, i, this.client.getWindow().getScaledWidth() / 2 - 90 + i * 20 + 2, (float)(y + 3), height, state.getCommand(i));
 		}
@@ -88,6 +90,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 			float f = command.isEnabled() ? 1.0F : 0.25F;
 			RenderSystem.setShaderColor(f, f, f, height);
 			command.renderIcon(matrices, f, i);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			matrices.pop();
 			if (i > 3 && command.isEnabled()) {
 				Text text = this.client.options.hotbarKeys[slot].getBoundKeyLocalizedText();

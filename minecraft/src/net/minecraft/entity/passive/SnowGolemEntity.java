@@ -27,6 +27,7 @@ import net.minecraft.entity.projectile.thrown.SnowballEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -37,7 +38,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.event.GameEvent;
 
 public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAttackMob {
@@ -91,12 +91,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	public void tickMovement() {
 		super.tickMovement();
 		if (!this.world.isClient) {
-			int i = MathHelper.floor(this.getX());
-			int j = MathHelper.floor(this.getY());
-			int k = MathHelper.floor(this.getZ());
-			BlockPos blockPos = new BlockPos(i, j, k);
-			Biome biome = this.world.getBiome(blockPos).value();
-			if (biome.isHot(blockPos)) {
+			if (this.world.getBiome(this.getBlockPos()).isIn(BiomeTags.SNOW_GOLEM_MELTS)) {
 				this.damage(DamageSource.ON_FIRE, 1.0F);
 			}
 
@@ -106,14 +101,14 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 
 			BlockState blockState = Blocks.SNOW.getDefaultState();
 
-			for (int l = 0; l < 4; l++) {
-				i = MathHelper.floor(this.getX() + (double)((float)(l % 2 * 2 - 1) * 0.25F));
-				j = MathHelper.floor(this.getY());
-				k = MathHelper.floor(this.getZ() + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
-				BlockPos blockPos2 = new BlockPos(i, j, k);
-				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
-					this.world.setBlockState(blockPos2, blockState);
-					this.world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos2, GameEvent.Emitter.of(this, blockState));
+			for (int i = 0; i < 4; i++) {
+				int j = MathHelper.floor(this.getX() + (double)((float)(i % 2 * 2 - 1) * 0.25F));
+				int k = MathHelper.floor(this.getY());
+				int l = MathHelper.floor(this.getZ() + (double)((float)(i / 2 % 2 * 2 - 1) * 0.25F));
+				BlockPos blockPos = new BlockPos(j, k, l);
+				if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
+					this.world.setBlockState(blockPos, blockState);
+					this.world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this, blockState));
 				}
 			}
 		}

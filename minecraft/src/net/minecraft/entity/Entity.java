@@ -51,9 +51,10 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
-import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
@@ -598,7 +599,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * For living entities, {@link #refreshPositionAndAngles} should be used instead.
 	 * 
 	 * @see #refreshPositionAndAngles
-	 * @see #teleport
+	 * @see #teleport(double, double, double)
 	 */
 	public final void setPosition(Vec3d pos) {
 		this.setPosition(pos.getX(), pos.getY(), pos.getZ());
@@ -611,7 +612,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * For living entities, {@link #refreshPositionAndAngles} should be used instead.
 	 * 
 	 * @see #refreshPositionAndAngles
-	 * @see #teleport
+	 * @see #teleport(double, double, double)
 	 */
 	public void setPosition(double x, double y, double z) {
 		this.setPos(x, y, z);
@@ -2482,11 +2483,15 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 				this.setPose(EntityPose.STANDING);
 				this.vehicle = entity;
-				this.vehicle.addPassenger(this);
-				entity.streamIntoPassengers()
-					.filter(passenger -> passenger instanceof ServerPlayerEntity)
-					.forEach(player -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)player));
-				return true;
+				if (!this.vehicle.addPassenger(this)) {
+					this.vehicle = null;
+					return false;
+				} else {
+					entity.streamIntoPassengers()
+						.filter(passenger -> passenger instanceof ServerPlayerEntity)
+						.forEach(player -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)player));
+					return true;
+				}
 			} else {
 				return false;
 			}
@@ -2550,10 +2555,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public boolean method_45320(Entity entity) {
-		return true;
-	}
-
 	/**
 	 * Stops riding the vehicle if present.
 	 * 
@@ -2575,7 +2576,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * 
 	 * @throws IllegalStateException when the method is called directly
 	 */
-	protected void addPassenger(Entity passenger) {
+	protected boolean addPassenger(Entity passenger) {
 		if (passenger.getVehicle() != this) {
 			throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
 		} else {
@@ -2583,7 +2584,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.passengerList = ImmutableList.of(passenger);
 			} else {
 				List<Entity> list = Lists.<Entity>newArrayList(this.passengerList);
-				if (!this.world.isClient && passenger instanceof PlayerEntity && !(this.getPrimaryPassenger() instanceof PlayerEntity)) {
+				if (!this.world.isClient && passenger instanceof PlayerEntity && !(this.getFirstPassenger() instanceof PlayerEntity)) {
 					list.add(0, passenger);
 				} else {
 					list.add(passenger);
@@ -2591,6 +2592,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 				this.passengerList = ImmutableList.copyOf(list);
 			}
+
+			return true;
 		}
 	}
 
@@ -2763,7 +2766,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	/**
 	 * Called on the client to animate the entity's damage (the wobble).
 	 */
-	public void animateDamage() {
+	public void animateDamage(float yaw) {
 	}
 
 	/**
@@ -3754,7 +3757,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * net.minecraft.entity.projectile.FishingBobberEntity} cannot use portals.
 	 */
 	public boolean canUsePortals() {
-		return true;
+		return !this.hasVehicle() && !this.hasPassengers();
 	}
 
 	/**
@@ -3955,6 +3958,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * 
 	 * @see #requestTeleportAndDismount
 	 * @see #requestTeleport
+	 * @see #teleport(ServerWorld, double, double, double, Set, float, float)
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
 	 */
 	public final void teleport(double destX, double destY, double destZ) {
@@ -3967,10 +3971,42 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
+	 * Teleports the entity to the given position. If {@code world} differs from
+	 * the current world, it copies the entity and discards the current one.
+	 * 
+	 * @see #requestTeleportAndDismount
+	 * @see #requestTeleport
+	 * @see #teleport(double, double, double)
+	 * @see #refreshPositionAndAngles(double, double, double, float, float)
+	 */
+	public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch) {
+		float f = MathHelper.clamp(pitch, -90.0F, 90.0F);
+		if (world == this.world) {
+			this.refreshPositionAndAngles(destX, destY, destZ, yaw, f);
+			this.setHeadYaw(yaw);
+		} else {
+			this.detach();
+			Entity entity = this.getType().create(world);
+			if (entity == null) {
+				return false;
+			}
+
+			entity.copyFrom(this);
+			entity.refreshPositionAndAngles(destX, destY, destZ, yaw, f);
+			entity.setHeadYaw(yaw);
+			this.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
+			world.onDimensionChanged(entity);
+		}
+
+		return true;
+	}
+
+	/**
 	 * Requests the entity to teleport to the given position. If the entity is
 	 * a player, this also dismounts the player.
 	 * 
-	 * @see #teleport
+	 * @see #teleport(double, double, double)
+	 * @see #teleport(ServerWorld, double, double, double, Set, float, float)
 	 * @see #requestTeleport
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
 	 */
@@ -3984,7 +4020,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * <p>For players, this sends the teleport packet. For other entities,
 	 * this just sets the position of the entity and its passengers.
 	 * 
-	 * @see #teleport
+	 * @see #teleport(double, double, double)
+	 * @see #teleport(ServerWorld, double, double, double, Set, float, float)
 	 * @see #requestTeleportOffset(double, double, double)
 	 * @see #requestTeleportAndDismount
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
@@ -5044,6 +5081,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		} else {
 			this.pitch = pitch;
 		}
+	}
+
+	public boolean canSprintAsVehicle() {
+		return false;
 	}
 
 	/**

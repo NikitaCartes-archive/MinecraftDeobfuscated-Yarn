@@ -3,9 +3,9 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.ImmutableList;
 import java.util.Collection;
 import java.util.List;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.recipe.book.RecipeBookOptions;
 import net.minecraft.util.Identifier;
 

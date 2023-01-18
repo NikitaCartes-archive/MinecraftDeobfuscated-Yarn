@@ -16,6 +16,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AdvancementToast implements Toast {
+	public static final int field_41812 = 5000;
 	private final Advancement advancement;
 	private boolean soundPlayed;
 
@@ -27,7 +28,6 @@ public class AdvancementToast implements Toast {
 	public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, TEXTURE);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
 		manager.drawTexture(matrices, 0, 0, 0, 0, this.getWidth(), this.getHeight());
 		if (advancementDisplay != null) {
@@ -61,7 +61,7 @@ public class AdvancementToast implements Toast {
 			}
 
 			manager.getClient().getItemRenderer().renderInGui(advancementDisplay.getIcon(), 8, 8);
-			return startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
+			return (double)startTime >= 5000.0 * manager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		} else {
 			return Toast.Visibility.HIDE;
 		}

@@ -3,6 +3,7 @@ package net.minecraft.server.command;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.RedirectModifier;
 import com.mojang.brigadier.ResultConsumer;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
@@ -18,10 +19,13 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.BiPredicate;
 import java.util.function.BinaryOperator;
+import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
@@ -44,7 +48,10 @@ import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.command.argument.SwizzleArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.CommandBossBar;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.context.LootContext;
@@ -63,10 +70,13 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.chunk.WorldChunk;
 
 public class ExecuteCommand {
 	private static final int MAX_BLOCKS = 32768;
@@ -206,6 +216,7 @@ public class ExecuteCommand {
 								.redirect(literalCommandNode, context -> context.getSource().withWorld(DimensionArgumentType.getDimensionArgument(context, "dimension")))
 						)
 				)
+				.then(addOnArguments(literalCommandNode, CommandManager.literal("on")))
 		);
 	}
 
@@ -393,6 +404,13 @@ public class ExecuteCommand {
 		}, BINARY_RESULT_CONSUMER);
 	}
 
+	private static boolean isLoaded(ServerWorld world, BlockPos pos) {
+		int i = ChunkSectionPos.getSectionCoord(pos.getX());
+		int j = ChunkSectionPos.getSectionCoord(pos.getZ());
+		WorldChunk worldChunk = world.getChunkManager().getWorldChunk(i, j);
+		return worldChunk != null ? worldChunk.getLevelType() == ChunkHolder.LevelType.ENTITY_TICKING : false;
+	}
+
 	private static ArgumentBuilder<ServerCommandSource, ?> addConditionArguments(
 		CommandNode<ServerCommandSource> root,
 		LiteralArgumentBuilder<ServerCommandSource> argumentBuilder,
@@ -427,6 +445,29 @@ public class ExecuteCommand {
 											.test(context.getSource().getWorld().getBiome(BlockPosArgumentType.getLoadedBlockPos(context, "pos")))
 								)
 							)
+					)
+			)
+			.then(
+				CommandManager.literal("loaded")
+					.then(
+						CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+							.fork(
+								root,
+								context -> getSourceOrEmptyForConditionFork(
+										context, positive, isLoaded(context.getSource().getWorld(), BlockPosArgumentType.getBlockPos(context, "pos"))
+									)
+							)
+					)
+			)
+			.then(
+				CommandManager.literal("dimension")
+					.then(
+						addConditionLogic(
+							root,
+							CommandManager.argument("dimension", DimensionArgumentType.dimension()),
+							positive,
+							context -> DimensionArgumentType.getDimensionArgument(context, "dimension") == context.getSource().getWorld()
+						)
 					)
 			)
 			.then(
@@ -737,6 +778,55 @@ public class ExecuteCommand {
 
 			return OptionalInt.of(j);
 		}
+	}
+
+	private static RedirectModifier<ServerCommandSource> createEntityModifier(Function<Entity, Optional<Entity>> function) {
+		return context -> {
+			ServerCommandSource serverCommandSource = context.getSource();
+			Entity entity = serverCommandSource.getEntity();
+			return (Collection<ServerCommandSource>)(entity == null
+				? List.of()
+				: (Collection)((Optional)function.apply(entity))
+					.filter(entityx -> !entityx.isRemoved())
+					.map(entityx -> List.of(serverCommandSource.withEntity(entityx)))
+					.orElse(List.of()));
+		};
+	}
+
+	private static RedirectModifier<ServerCommandSource> createMultiEntityModifier(Function<Entity, Stream<Entity>> function) {
+		return context -> {
+			ServerCommandSource serverCommandSource = context.getSource();
+			Entity entity = serverCommandSource.getEntity();
+			return entity == null ? List.of() : ((Stream)function.apply(entity)).filter(entityx -> !entityx.isRemoved()).map(serverCommandSource::withEntity).toList();
+		};
+	}
+
+	private static LiteralArgumentBuilder<ServerCommandSource> addOnArguments(
+		CommandNode<ServerCommandSource> node, LiteralArgumentBuilder<ServerCommandSource> builder
+	) {
+		return builder.then(
+				CommandManager.literal("owner")
+					.fork(
+						node, createEntityModifier(entity -> entity instanceof TameableEntity tameableEntity ? Optional.ofNullable(tameableEntity.getOwner()) : Optional.empty())
+					)
+			)
+			.then(
+				CommandManager.literal("leasher")
+					.fork(node, createEntityModifier(entity -> entity instanceof MobEntity mobEntity ? Optional.ofNullable(mobEntity.getHoldingEntity()) : Optional.empty()))
+			)
+			.then(
+				CommandManager.literal("target")
+					.fork(node, createEntityModifier(entity -> entity instanceof MobEntity mobEntity ? Optional.ofNullable(mobEntity.getTarget()) : Optional.empty()))
+			)
+			.then(
+				CommandManager.literal("attacker")
+					.fork(
+						node, createEntityModifier(entity -> entity instanceof LivingEntity livingEntity ? Optional.ofNullable(livingEntity.getAttacker()) : Optional.empty())
+					)
+			)
+			.then(CommandManager.literal("vehicle").fork(node, createEntityModifier(entity -> Optional.ofNullable(entity.getVehicle()))))
+			.then(CommandManager.literal("controller").fork(node, createEntityModifier(entity -> Optional.ofNullable(entity.getPrimaryPassenger()))))
+			.then(CommandManager.literal("passengers").fork(node, createMultiEntityModifier(entity -> entity.getPassengerList().stream())));
 	}
 
 	@FunctionalInterface

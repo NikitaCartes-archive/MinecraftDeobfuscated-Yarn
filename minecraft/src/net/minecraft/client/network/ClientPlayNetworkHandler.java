@@ -37,6 +37,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.LogoDrawer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
@@ -114,7 +115,6 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.encryption.ClientPlayerSession;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
@@ -132,6 +132,7 @@ import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.network.message.MessageSignatureStorage;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedMessage;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.play.ChatMessageC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
@@ -150,6 +151,7 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
+import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkData;
@@ -164,6 +166,7 @@ import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
@@ -216,6 +219,7 @@ import net.minecraft.network.packet.s2c.play.PlayerRemoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
@@ -435,13 +439,13 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		this.client.options.sendClientSettings();
 		this.connection
 			.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
+		this.session = null;
 		this.lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
 		this.signatureStorage = MessageSignatureStorage.create();
 		if (this.connection.isEncrypted()) {
 			this.client.getProfileKeys().fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), this.client);
 		}
 
-		this.client.getGame().onStartGameSession();
 		this.worldSession.setGameMode(packet.gameMode(), packet.hardcore());
 	}
 
@@ -605,9 +609,9 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		}
 
 		Vec3d vec3d = playerEntity.getVelocity();
-		boolean bl = packet.getFlags().contains(PlayerPositionLookS2CPacket.Flag.X);
-		boolean bl2 = packet.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Y);
-		boolean bl3 = packet.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Z);
+		boolean bl = packet.getFlags().contains(PositionFlag.X);
+		boolean bl2 = packet.getFlags().contains(PositionFlag.Y);
+		boolean bl3 = packet.getFlags().contains(PositionFlag.Z);
 		double d;
 		double e;
 		if (bl) {
@@ -654,7 +658,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		playerEntity.setVelocity(d, f, h);
 		float j = packet.getYaw();
 		float k = packet.getPitch();
-		if (packet.getFlags().contains(PlayerPositionLookS2CPacket.Flag.X_ROT)) {
+		if (packet.getFlags().contains(PositionFlag.X_ROT)) {
 			playerEntity.setPitch(playerEntity.getPitch() + k);
 			playerEntity.prevPitch += k;
 		} else {
@@ -662,7 +666,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			playerEntity.prevPitch = k;
 		}
 
-		if (packet.getFlags().contains(PlayerPositionLookS2CPacket.Flag.Y_ROT)) {
+		if (packet.getFlags().contains(PositionFlag.Y_ROT)) {
 			playerEntity.setYaw(playerEntity.getYaw() + j);
 			playerEntity.prevYaw += j;
 		} else {
@@ -902,8 +906,6 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			} else if (packet.getAnimationId() == EntityAnimationS2CPacket.SWING_OFF_HAND) {
 				LivingEntity livingEntity = (LivingEntity)entity;
 				livingEntity.swingHand(Hand.OFF_HAND);
-			} else if (packet.getAnimationId() == EntityAnimationS2CPacket.DAMAGE) {
-				entity.animateDamage();
 			} else if (packet.getAnimationId() == EntityAnimationS2CPacket.WAKE_UP) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
 				playerEntity.wakeUp(false, false);
@@ -912,6 +914,15 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			} else if (packet.getAnimationId() == EntityAnimationS2CPacket.ENCHANTED_HIT) {
 				this.client.particleManager.addEmitter(entity, ParticleTypes.ENCHANTED_HIT);
 			}
+		}
+	}
+
+	@Override
+	public void onDamageTilt(DamageTiltS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		Entity entity = this.world.getEntityById(packet.id());
+		if (entity != null) {
+			entity.animateDamage(packet.yaw());
 		}
 	}
 
@@ -1263,7 +1274,9 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			} else if (i == 1) {
 				this.client
 					.setScreen(
-						new CreditsScreen(true, () -> this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN)))
+						new CreditsScreen(
+							true, new LogoDrawer(false), () -> this.client.player.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN))
+						)
 					);
 			}
 		} else if (reason == GameStateChangeS2CPacket.DEMO_MESSAGE_SHOWN) {
@@ -2387,6 +2400,15 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		this.world.handlePlayerActionResponse(packet.sequence());
 	}
 
+	@Override
+	public void onBundle(BundleS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+
+		for (Packet<ClientPlayPacketListener> packet2 : packet.getPackets()) {
+			packet2.apply(this);
+		}
+	}
+
 	private void updateLighting(
 		int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet inited, BitSet uninited, Iterator<byte[]> nibbles, boolean nonEdge
 	) {
@@ -2403,9 +2425,13 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		}
 	}
 
-	@Override
 	public ClientConnection getConnection() {
 		return this.connection;
+	}
+
+	@Override
+	public boolean isConnectionOpen() {
+		return this.connection.isOpen();
 	}
 
 	public Collection<PlayerListEntry> getListedPlayerListEntries() {

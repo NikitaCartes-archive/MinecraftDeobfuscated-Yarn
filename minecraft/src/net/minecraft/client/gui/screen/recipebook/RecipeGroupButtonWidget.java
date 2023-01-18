@@ -73,7 +73,6 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 			k -= 2;
 		}
 
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		this.drawTexture(matrices, k, this.getY(), i, j, this.width, this.height);
 		RenderSystem.enableDepthTest();
 		this.renderIcons(minecraftClient.getItemRenderer());

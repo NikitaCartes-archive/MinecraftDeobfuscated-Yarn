@@ -4,11 +4,15 @@ import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -75,9 +79,10 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 				.draw(matrices, this.text, (float)(ControlsListWidget.this.client.currentScreen.width / 2 - this.textWidth / 2), (float)(y + entryHeight - 9 - 1), 16777215);
 		}
 
+		@Nullable
 		@Override
-		public boolean changeFocus(boolean lookForwards) {
-			return false;
+		public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+			return null;
 		}
 
 		@Override
@@ -99,10 +104,15 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 				}
 			});
 		}
+
+		@Override
+		void update() {
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public abstract static class Entry extends ElementListWidget.Entry<ControlsListWidget.Entry> {
+		abstract void update();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -118,15 +128,17 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			this.editButton = ButtonWidget.builder(bindingName, button -> ControlsListWidget.this.parent.selectedKeyBinding = binding)
 				.dimensions(0, 0, 75, 20)
 				.narrationSupplier(
-					supplier -> binding.isUnbound()
+					textSupplier -> binding.isUnbound()
 							? Text.translatable("narrator.controls.unbound", bindingName)
-							: Text.translatable("narrator.controls.bound", bindingName, supplier.get())
+							: Text.translatable("narrator.controls.bound", bindingName, textSupplier.get())
 				)
 				.build();
 			this.resetButton = ButtonWidget.builder(Text.translatable("controls.reset"), button -> {
 				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
 				KeyBinding.updateKeysByCode();
-			}).dimensions(0, 0, 50, 20).narrationSupplier(supplier -> Text.translatable("narrator.controls.reset", bindingName)).build();
+				this.update();
+			}).dimensions(0, 0, 50, 20).narrationSupplier(textSupplier -> Text.translatable("narrator.controls.reset", bindingName)).build();
+			this.update();
 		}
 
 		@Override
@@ -136,7 +148,6 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			ControlsListWidget.this.client.textRenderer.draw(matrices, this.bindingName, var10003, (float)(y + entryHeight / 2 - 9 / 2), 16777215);
 			this.resetButton.setX(x + 190);
 			this.resetButton.setY(y);
-			this.resetButton.active = !this.binding.isDefault();
 			this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
 			this.editButton.setX(x + 105);
 			this.editButton.setY(y);
@@ -153,9 +164,21 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 			if (bl) {
 				this.editButton
-					.setMessage(Text.literal("> ").append(this.editButton.getMessage().copy().formatted(Formatting.YELLOW)).append(" <").formatted(Formatting.YELLOW));
+					.setMessage(
+						Text.literal("> ")
+							.append(this.editButton.getMessage().copy().formatted(Formatting.WHITE, Formatting.UNDERLINE))
+							.append(" <")
+							.formatted(Formatting.YELLOW)
+					);
 			} else if (bl2) {
-				this.editButton.setMessage(this.editButton.getMessage().copy().formatted(Formatting.RED));
+				this.editButton
+					.setMessage(Text.literal("[ ").append(this.editButton.getMessage().copy().formatted(Formatting.WHITE)).append(" ]").formatted(Formatting.RED));
+			}
+
+			if (bl2) {
+				int i = 3;
+				int j = this.editButton.getX() - 6;
+				DrawableHelper.fill(matrices, j, y + 2, j + 3, y + entryHeight + 2, Formatting.RED.getColorValue() | 0xFF000000);
 			}
 
 			this.editButton.render(matrices, mouseX, mouseY, tickDelta);
@@ -179,6 +202,11 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		@Override
 		public boolean mouseReleased(double mouseX, double mouseY, int button) {
 			return this.editButton.mouseReleased(mouseX, mouseY, button) || this.resetButton.mouseReleased(mouseX, mouseY, button);
+		}
+
+		@Override
+		void update() {
+			this.resetButton.active = !this.binding.isDefault();
 		}
 	}
 }

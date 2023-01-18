@@ -700,10 +700,12 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	}
 
 	public static <T extends Entity> Consumer<T> copier(ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
-		Consumer<T> consumer = entity -> {
-		};
-		consumer = customNameCopier(consumer, stack);
-		return nbtCopier(consumer, world, stack, player);
+		return copier(entity -> {
+		}, world, stack, player);
+	}
+
+	public static <T extends Entity> Consumer<T> copier(Consumer<T> chained, ServerWorld world, ItemStack stack, @Nullable PlayerEntity player) {
+		return nbtCopier(customNameCopier(chained, stack), world, stack, player);
 	}
 
 	public static <T extends Entity> Consumer<T> customNameCopier(Consumer<T> chained, ItemStack stack) {

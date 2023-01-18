@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
@@ -33,7 +34,7 @@ public class FireworkStarItem extends Item {
 
 		int[] js = nbt.getIntArray("FadeColors");
 		if (js.length > 0) {
-			tooltip.add(appendColors(Text.translatable("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.GRAY), js));
+			tooltip.add(appendColors(Text.translatable("item.minecraft.firework_star.fade_to").append(ScreenTexts.SPACE).formatted(Formatting.GRAY), js));
 		}
 
 		if (nbt.getBoolean("Trail")) {

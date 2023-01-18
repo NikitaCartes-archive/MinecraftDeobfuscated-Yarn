@@ -147,7 +147,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	public LevelProperties(LevelInfo levelInfo, GeneratorOptions generatorOptions, LevelProperties.SpecialProperty specialProperty, Lifecycle lifecycle) {
 		this(
 			null,
-			SharedConstants.getGameVersion().getWorldVersion(),
+			SharedConstants.getGameVersion().getSaveVersion().getId(),
 			null,
 			false,
 			0,
@@ -179,8 +179,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		);
 	}
 
-	public static LevelProperties readProperties(
-		Dynamic<NbtElement> dynamic,
+	public static <T> LevelProperties readProperties(
+		Dynamic<T> dynamic,
 		DataFixer dataFixer,
 		int dataVersion,
 		@Nullable NbtCompound playerData,
@@ -191,10 +191,11 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		Lifecycle lifecycle
 	) {
 		long l = dynamic.get("Time").asLong(0L);
-		NbtCompound nbtCompound = (NbtCompound)dynamic.get("DragonFight")
-			.result()
-			.map(Dynamic::getValue)
-			.orElseGet(() -> dynamic.get("DimensionData").get("1").get("DragonFight").orElseEmptyMap().getValue());
+		NbtCompound nbtCompound = (NbtCompound)((Dynamic)dynamic.get("DragonFight")
+				.result()
+				.orElseGet(() -> dynamic.get("DimensionData").get("1").get("DragonFight").orElseEmptyMap()))
+			.convert(NbtOps.INSTANCE)
+			.getValue();
 		return new LevelProperties(
 			dataFixer,
 			dataVersion,
@@ -255,7 +256,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		nbtCompound.putBoolean("Snapshot", !SharedConstants.getGameVersion().isStable());
 		nbtCompound.putString("Series", SharedConstants.getGameVersion().getSaveVersion().getSeries());
 		levelNbt.put("Version", nbtCompound);
-		levelNbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+		NbtHelper.putDataVersion(levelNbt);
 		DynamicOps<NbtElement> dynamicOps = RegistryOps.of(NbtOps.INSTANCE, registryManager);
 		WorldGenSettings.encode(dynamicOps, this.generatorOptions, registryManager)
 			.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error))
@@ -335,12 +336,12 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 
 	private void loadPlayerData() {
 		if (!this.playerDataLoaded && this.playerData != null) {
-			if (this.dataVersion < SharedConstants.getGameVersion().getWorldVersion()) {
+			if (this.dataVersion < SharedConstants.getGameVersion().getSaveVersion().getId()) {
 				if (this.dataFixer == null) {
 					throw (NullPointerException)Util.throwOrPause(new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded."));
 				}
 
-				this.playerData = NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, this.playerData, this.dataVersion);
+				this.playerData = DataFixTypes.PLAYER.update(this.dataFixer, this.playerData, this.dataVersion);
 			}
 
 			this.playerDataLoaded = true;

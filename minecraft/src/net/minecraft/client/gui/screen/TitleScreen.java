@@ -6,6 +6,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
@@ -17,6 +18,7 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.CubeMapRenderer;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.LogoDrawer;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerWarningScreen;
@@ -43,7 +45,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -58,12 +59,9 @@ public class TitleScreen extends Screen {
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
 	private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
-	private final boolean isMinceraft;
 	@Nullable
 	private String splashText;
 	private ButtonWidget buttonResetDemo;
-	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
-	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	@Nullable
 	private RealmsNotificationsScreen realmsNotificationGui;
 	private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(PANORAMA_CUBE_MAP);
@@ -71,15 +69,20 @@ public class TitleScreen extends Screen {
 	private long backgroundFadeStart;
 	@Nullable
 	private TitleScreen.DeprecationNotice deprecationNotice;
+	private final LogoDrawer logoDrawer;
 
 	public TitleScreen() {
 		this(false);
 	}
 
 	public TitleScreen(boolean doBackgroundFade) {
+		this(doBackgroundFade, null);
+	}
+
+	public TitleScreen(boolean doBackgroundFade, @Nullable LogoDrawer logoDrawer) {
 		super(Text.translatable("narrator.screen.title"));
 		this.doBackgroundFade = doBackgroundFade;
-		this.isMinceraft = (double)Random.create().nextFloat() < 1.0E-4;
+		this.logoDrawer = (LogoDrawer)Objects.requireNonNullElseGet(logoDrawer, () -> new LogoDrawer(false));
 	}
 
 	private boolean areRealmsNotificationsEnabled() {
@@ -97,8 +100,8 @@ public class TitleScreen extends Screen {
 
 	public static CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
 		return CompletableFuture.allOf(
-			textureManager.loadTextureAsync(MINECRAFT_TITLE_TEXTURE, executor),
-			textureManager.loadTextureAsync(EDITION_TITLE_TEXTURE, executor),
+			textureManager.loadTextureAsync(LogoDrawer.LOGO_TEXTURE, executor),
+			textureManager.loadTextureAsync(LogoDrawer.EDITION_TEXTURE, executor),
 			textureManager.loadTextureAsync(PANORAMA_OVERLAY, executor),
 			PANORAMA_CUBE_MAP.loadTexturesAsync(textureManager, executor)
 		);
@@ -172,7 +175,7 @@ public class TitleScreen extends Screen {
 		);
 		this.addDrawableChild(
 			new PressableTextWidget(
-				j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new CreditsScreen(false, Runnables.doNothing())), this.textRenderer
+				j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new CreditsScreen(false, this.logoDrawer, Runnables.doNothing())), this.textRenderer
 			)
 		);
 		this.client.setConnectedToRealms(false);
@@ -306,40 +309,19 @@ public class TitleScreen extends Screen {
 
 		float f = this.doBackgroundFade ? (float)(Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
 		this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0F, 1.0F));
-		int i = 274;
-		int j = this.width / 2 - 137;
-		int k = 30;
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
 		drawTexture(matrices, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
-		int l = MathHelper.ceil(g * 255.0F) << 24;
-		if ((l & -67108864) != 0) {
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-			RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, g);
-			if (this.isMinceraft) {
-				this.drawWithOutline(j, 30, (x, y) -> {
-					this.drawTexture(matrices, x + 0, y, 0, 0, 99, 44);
-					this.drawTexture(matrices, x + 99, y, 129, 0, 27, 44);
-					this.drawTexture(matrices, x + 99 + 26, y, 126, 0, 3, 44);
-					this.drawTexture(matrices, x + 99 + 26 + 3, y, 99, 0, 26, 44);
-					this.drawTexture(matrices, x + 155, y, 0, 45, 155, 44);
-				});
-			} else {
-				this.drawWithOutline(j, 30, (x, y) -> {
-					this.drawTexture(matrices, x + 0, y, 0, 0, 155, 44);
-					this.drawTexture(matrices, x + 155, y, 0, 45, 155, 44);
-				});
-			}
-
-			RenderSystem.setShaderTexture(0, EDITION_TITLE_TEXTURE);
-			drawTexture(matrices, j + 88, 67, 0.0F, 0.0F, 98, 14, 128, 16);
+		this.logoDrawer.draw(matrices, this.width, g);
+		int i = MathHelper.ceil(g * 255.0F) << 24;
+		if ((i & -67108864) != 0) {
 			if (this.deprecationNotice != null) {
-				this.deprecationNotice.render(matrices, l);
+				this.deprecationNotice.render(matrices, i);
 			}
 
 			if (this.splashText != null) {
@@ -349,7 +331,7 @@ public class TitleScreen extends Screen {
 				float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
 				h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
 				matrices.scale(h, h, h);
-				drawCenteredText(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | l);
+				drawCenteredText(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | i);
 				matrices.pop();
 			}
 
@@ -364,7 +346,7 @@ public class TitleScreen extends Screen {
 				string = string + I18n.translate("menu.modded");
 			}
 
-			drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 16777215 | l);
+			drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 16777215 | i);
 
 			for (Element element : this.children()) {
 				if (element instanceof ClickableWidget) {
@@ -410,7 +392,7 @@ public class TitleScreen extends Screen {
 	@Environment(EnvType.CLIENT)
 	static record DeprecationNotice(TextRenderer textRenderer, MultilineText label, int x, int y) {
 		public void render(MatrixStack matrices, int color) {
-			this.label.fillBackground(matrices, this.x, this.y, 9, 2, 1428160512);
+			this.label.fillBackground(matrices, this.x, this.y, 9, 2, 2097152 | Math.min(color, 1426063360));
 			this.label.drawCenterWithShadow(matrices, this.x, this.y, 9, 16777215 | color);
 		}
 	}

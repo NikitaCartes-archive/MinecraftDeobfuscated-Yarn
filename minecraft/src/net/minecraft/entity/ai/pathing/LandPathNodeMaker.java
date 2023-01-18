@@ -358,13 +358,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	@Override
-	public PathNodeType getNodeType(
-		BlockView world, int x, int y, int z, MobEntity mob, int sizeX, int sizeY, int sizeZ, boolean canOpenDoors, boolean canEnterOpenDoors
-	) {
+	public PathNodeType getNodeType(BlockView world, int x, int y, int z, MobEntity mob) {
 		EnumSet<PathNodeType> enumSet = EnumSet.noneOf(PathNodeType.class);
 		PathNodeType pathNodeType = PathNodeType.BLOCKED;
-		BlockPos blockPos = mob.getBlockPos();
-		pathNodeType = this.findNearbyNodeTypes(world, x, y, z, sizeX, sizeY, sizeZ, canOpenDoors, canEnterOpenDoors, enumSet, pathNodeType, blockPos);
+		pathNodeType = this.findNearbyNodeTypes(world, x, y, z, enumSet, pathNodeType, mob.getBlockPos());
 		if (enumSet.contains(PathNodeType.FENCE)) {
 			return PathNodeType.FENCE;
 		} else if (enumSet.contains(PathNodeType.UNPASSABLE_RAIL)) {
@@ -382,7 +379,9 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				}
 			}
 
-			return pathNodeType == PathNodeType.OPEN && mob.getPathfindingPenalty(pathNodeType2) == 0.0F && sizeX <= 1 ? PathNodeType.OPEN : pathNodeType2;
+			return pathNodeType == PathNodeType.OPEN && mob.getPathfindingPenalty(pathNodeType2) == 0.0F && this.entityBlockXSize <= 1
+				? PathNodeType.OPEN
+				: pathNodeType2;
 		}
 	}
 
@@ -390,28 +389,15 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	 * Adds the node types in the box with the given size to the input EnumSet.
 	 * @return The node type at the least coordinates of the input box.
 	 */
-	public PathNodeType findNearbyNodeTypes(
-		BlockView world,
-		int x,
-		int y,
-		int z,
-		int sizeX,
-		int sizeY,
-		int sizeZ,
-		boolean canOpenDoors,
-		boolean canEnterOpenDoors,
-		EnumSet<PathNodeType> nearbyTypes,
-		PathNodeType type,
-		BlockPos pos
-	) {
-		for (int i = 0; i < sizeX; i++) {
-			for (int j = 0; j < sizeY; j++) {
-				for (int k = 0; k < sizeZ; k++) {
+	public PathNodeType findNearbyNodeTypes(BlockView world, int x, int y, int z, EnumSet<PathNodeType> nearbyTypes, PathNodeType type, BlockPos pos) {
+		for (int i = 0; i < this.entityBlockXSize; i++) {
+			for (int j = 0; j < this.entityBlockYSize; j++) {
+				for (int k = 0; k < this.entityBlockZSize; k++) {
 					int l = i + x;
 					int m = j + y;
 					int n = k + z;
 					PathNodeType pathNodeType = this.getDefaultNodeType(world, l, m, n);
-					pathNodeType = this.adjustNodeType(world, canOpenDoors, canEnterOpenDoors, pos, pathNodeType);
+					pathNodeType = this.adjustNodeType(world, pos, pathNodeType);
 					if (i == 0 && j == 0 && k == 0) {
 						type = pathNodeType;
 					}
@@ -424,12 +410,13 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		return type;
 	}
 
-	protected PathNodeType adjustNodeType(BlockView world, boolean canOpenDoors, boolean canEnterOpenDoors, BlockPos pos, PathNodeType type) {
-		if (type == PathNodeType.DOOR_WOOD_CLOSED && canOpenDoors && canEnterOpenDoors) {
+	protected PathNodeType adjustNodeType(BlockView world, BlockPos pos, PathNodeType type) {
+		boolean bl = this.canEnterOpenDoors();
+		if (type == PathNodeType.DOOR_WOOD_CLOSED && this.canOpenDoors() && bl) {
 			type = PathNodeType.WALKABLE_DOOR;
 		}
 
-		if (type == PathNodeType.DOOR_OPEN && !canEnterOpenDoors) {
+		if (type == PathNodeType.DOOR_OPEN && !bl) {
 			type = PathNodeType.BLOCKED;
 		}
 
@@ -437,10 +424,6 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			&& !(world.getBlockState(pos).getBlock() instanceof AbstractRailBlock)
 			&& !(world.getBlockState(pos.down()).getBlock() instanceof AbstractRailBlock)) {
 			type = PathNodeType.UNPASSABLE_RAIL;
-		}
-
-		if (type == PathNodeType.LEAVES) {
-			type = PathNodeType.BLOCKED;
 		}
 
 		return type;
@@ -452,12 +435,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 
 	protected PathNodeType getNodeType(MobEntity entity, int x, int y, int z) {
 		return this.nodeTypes
-			.computeIfAbsent(
-				BlockPos.asLong(x, y, z),
-				(Long2ObjectFunction<? extends PathNodeType>)(l -> this.getNodeType(
-						this.cachedWorld, x, y, z, entity, this.entityBlockXSize, this.entityBlockYSize, this.entityBlockZSize, this.canOpenDoors(), this.canEnterOpenDoors()
-					))
-			);
+			.computeIfAbsent(BlockPos.asLong(x, y, z), (Long2ObjectFunction<? extends PathNodeType>)(l -> this.getNodeType(this.cachedWorld, x, y, z, entity)));
 	}
 
 	@Override
@@ -480,10 +458,6 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				: PathNodeType.OPEN;
 			if (pathNodeType2 == PathNodeType.DAMAGE_FIRE) {
 				pathNodeType = PathNodeType.DAMAGE_FIRE;
-			}
-
-			if (pathNodeType2 == PathNodeType.DAMAGE_CACTUS) {
-				pathNodeType = PathNodeType.DAMAGE_CACTUS;
 			}
 
 			if (pathNodeType2 == PathNodeType.DAMAGE_OTHER) {
@@ -517,11 +491,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					if (l != 0 || n != 0) {
 						pos.set(i + l, j + m, k + n);
 						BlockState blockState = world.getBlockState(pos);
-						if (blockState.isOf(Blocks.CACTUS)) {
-							return PathNodeType.DANGER_CACTUS;
-						}
-
-						if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
+						if (blockState.isOf(Blocks.CACTUS) || blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
 							return PathNodeType.DANGER_OTHER;
 						}
 
@@ -550,9 +520,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			return PathNodeType.TRAPDOOR;
 		} else if (blockState.isOf(Blocks.POWDER_SNOW)) {
 			return PathNodeType.POWDER_SNOW;
-		} else if (blockState.isOf(Blocks.CACTUS)) {
-			return PathNodeType.DAMAGE_CACTUS;
-		} else if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
+		} else if (blockState.isOf(Blocks.CACTUS) || blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
 			return PathNodeType.DAMAGE_OTHER;
 		} else if (blockState.isOf(Blocks.HONEY_BLOCK)) {
 			return PathNodeType.STICKY_HONEY;

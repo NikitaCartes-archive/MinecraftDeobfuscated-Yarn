@@ -1,9 +1,9 @@
 package net.minecraft.network.packet.s2c.login;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientLoginPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> {
 	private final GameProfile profile;

@@ -11,6 +11,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -33,14 +34,10 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.DecoderHandler;
 import net.minecraft.network.LegacyQueryHandler;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.PacketCallbacks;
-import net.minecraft.network.PacketEncoder;
 import net.minecraft.network.RateLimitedConnection;
-import net.minecraft.network.SizePrepender;
-import net.minecraft.network.SplitterHandler;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.network.LocalServerHandshakeNetworkHandler;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
@@ -92,20 +89,17 @@ public class ServerNetworkIo {
 								protected void initChannel(Channel channel) {
 									try {
 										channel.config().setOption(ChannelOption.TCP_NODELAY, true);
-									} catch (ChannelException var4) {
+									} catch (ChannelException var5) {
 									}
 
-									channel.pipeline()
+									ChannelPipeline channelPipeline = channel.pipeline()
 										.addLast("timeout", new ReadTimeoutHandler(30))
-										.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIo.this))
-										.addLast("splitter", new SplitterHandler())
-										.addLast("decoder", new DecoderHandler(NetworkSide.SERVERBOUND))
-										.addLast("prepender", new SizePrepender())
-										.addLast("encoder", new PacketEncoder(NetworkSide.CLIENTBOUND));
+										.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIo.this));
+									ClientConnection.addHandlers(channelPipeline, NetworkSide.SERVERBOUND);
 									int i = ServerNetworkIo.this.server.getRateLimit();
 									ClientConnection clientConnection = (ClientConnection)(i > 0 ? new RateLimitedConnection(i) : new ClientConnection(NetworkSide.SERVERBOUND));
 									ServerNetworkIo.this.connections.add(clientConnection);
-									channel.pipeline().addLast("packet_handler", clientConnection);
+									channelPipeline.addLast("packet_handler", clientConnection);
 									clientConnection.setPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 								}
 							}
@@ -127,7 +121,8 @@ public class ServerNetworkIo {
 					ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
 					clientConnection.setPacketListener(new LocalServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 					ServerNetworkIo.this.connections.add(clientConnection);
-					channel.pipeline().addLast("packet_handler", clientConnection);
+					ChannelPipeline channelPipeline = channel.pipeline();
+					channelPipeline.addLast("packet_handler", clientConnection);
 				}
 			}).group(DEFAULT_CHANNEL.get()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
 			this.channels.add(channelFuture);

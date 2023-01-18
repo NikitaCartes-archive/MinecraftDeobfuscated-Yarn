@@ -76,7 +76,7 @@ public class ArgumentTypes {
 		register(registry, "float_range", NumberRangeArgumentType.FloatRangeArgumentType.class, ConstantArgumentSerializer.of(NumberRangeArgumentType::floatRange));
 		register(registry, "dimension", DimensionArgumentType.class, ConstantArgumentSerializer.of(DimensionArgumentType::dimension));
 		register(registry, "gamemode", GameModeArgumentType.class, ConstantArgumentSerializer.of(GameModeArgumentType::gameMode));
-		register(registry, "time", TimeArgumentType.class, ConstantArgumentSerializer.of(TimeArgumentType::time));
+		register(registry, "time", TimeArgumentType.class, new TimeArgumentType.Serializer());
 		register(registry, "resource_or_tag", upcast(RegistryEntryPredicateArgumentType.class), new RegistryEntryPredicateArgumentType.Serializer());
 		register(registry, "resource_or_tag_key", upcast(RegistryPredicateArgumentType.class), new RegistryPredicateArgumentType.Serializer());
 		register(registry, "resource", upcast(RegistryEntryArgumentType.class), new RegistryEntryArgumentType.Serializer());

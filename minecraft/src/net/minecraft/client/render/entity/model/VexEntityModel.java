@@ -12,6 +12,7 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.mob.VexEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.math.MathHelper;
 
@@ -109,31 +110,47 @@ public class VexEntityModel extends SinglePartEntityModel<VexEntity> implements 
 
 	public void setAngles(VexEntity vexEntity, float f, float g, float h, float i, float j) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		this.body.pitch = 6.440265F;
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
-		float k = (float) (Math.PI / 5) + MathHelper.cos(h * 5.5F * (float) (Math.PI / 180.0)) * 0.1F;
+		float k = MathHelper.cos(h * 5.5F * (float) (Math.PI / 180.0)) * 0.1F;
+		this.rightArm.roll = (float) (Math.PI / 5) + k;
+		this.leftArm.roll = -((float) (Math.PI / 5) + k);
 		if (vexEntity.isCharging()) {
 			this.body.pitch = 0.0F;
-			this.rightArm.pitch = (float) (Math.PI * 7.0 / 6.0);
-			this.rightArm.yaw = (float) (Math.PI / 12);
-			this.rightArm.roll = -0.47123888F;
+			this.setChargingArmAngles(vexEntity.getMainHandStack(), vexEntity.getOffHandStack(), k);
 		} else {
 			this.body.pitch = (float) (Math.PI / 20);
-			this.rightArm.pitch = 0.0F;
-			this.rightArm.yaw = 0.0F;
-			this.rightArm.roll = k;
 		}
 
-		this.leftArm.roll = -k;
-		this.rightWing.pivotY = 1.0F;
-		this.leftWing.pivotY = 1.0F;
 		this.leftWing.yaw = 1.0995574F + MathHelper.cos(h * 45.836624F * (float) (Math.PI / 180.0)) * (float) (Math.PI / 180.0) * 16.2F;
 		this.rightWing.yaw = -this.leftWing.yaw;
 		this.leftWing.pitch = 0.47123888F;
 		this.leftWing.roll = -0.47123888F;
 		this.rightWing.pitch = 0.47123888F;
 		this.rightWing.roll = 0.47123888F;
+	}
+
+	private void setChargingArmAngles(ItemStack mainHandStack, ItemStack offHandStack, float f) {
+		if (mainHandStack.isEmpty() && offHandStack.isEmpty()) {
+			this.rightArm.pitch = -1.2217305F;
+			this.rightArm.yaw = (float) (Math.PI / 12);
+			this.rightArm.roll = -0.47123888F - f;
+			this.leftArm.pitch = -1.2217305F;
+			this.leftArm.yaw = (float) (-Math.PI / 12);
+			this.leftArm.roll = 0.47123888F + f;
+		} else {
+			if (!mainHandStack.isEmpty()) {
+				this.rightArm.pitch = (float) (Math.PI * 7.0 / 6.0);
+				this.rightArm.yaw = (float) (Math.PI / 12);
+				this.rightArm.roll = -0.47123888F - f;
+			}
+
+			if (!offHandStack.isEmpty()) {
+				this.leftArm.pitch = (float) (Math.PI * 7.0 / 6.0);
+				this.leftArm.yaw = (float) (-Math.PI / 12);
+				this.leftArm.roll = 0.47123888F + f;
+			}
+		}
 	}
 
 	@Override

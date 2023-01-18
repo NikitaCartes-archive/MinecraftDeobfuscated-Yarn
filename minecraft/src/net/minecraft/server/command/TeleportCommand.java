@@ -19,13 +19,11 @@ import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
+import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
@@ -156,7 +154,7 @@ public class TeleportCommand {
 				destination.getX(),
 				destination.getY(),
 				destination.getZ(),
-				EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class),
+				EnumSet.noneOf(PositionFlag.class),
 				destination.getYaw(),
 				destination.getPitch(),
 				null
@@ -184,29 +182,29 @@ public class TeleportCommand {
 	) throws CommandSyntaxException {
 		Vec3d vec3d = location.toAbsolutePos(source);
 		Vec2f vec2f = rotation == null ? null : rotation.toAbsoluteRotation(source);
-		Set<PlayerPositionLookS2CPacket.Flag> set = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
+		Set<PositionFlag> set = EnumSet.noneOf(PositionFlag.class);
 		if (location.isXRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.X);
+			set.add(PositionFlag.X);
 		}
 
 		if (location.isYRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.Y);
+			set.add(PositionFlag.Y);
 		}
 
 		if (location.isZRelative()) {
-			set.add(PlayerPositionLookS2CPacket.Flag.Z);
+			set.add(PositionFlag.Z);
 		}
 
 		if (rotation == null) {
-			set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
-			set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
+			set.add(PositionFlag.X_ROT);
+			set.add(PositionFlag.Y_ROT);
 		} else {
 			if (rotation.isXRelative()) {
-				set.add(PlayerPositionLookS2CPacket.Flag.X_ROT);
+				set.add(PositionFlag.X_ROT);
 			}
 
 			if (rotation.isYRelative()) {
-				set.add(PlayerPositionLookS2CPacket.Flag.Y_ROT);
+				set.add(PositionFlag.Y_ROT);
 			}
 		}
 
@@ -249,7 +247,7 @@ public class TeleportCommand {
 		double x,
 		double y,
 		double z,
-		Set<PlayerPositionLookS2CPacket.Flag> movementFlags,
+		Set<PositionFlag> movementFlags,
 		float yaw,
 		float pitch,
 		@Nullable TeleportCommand.LookTarget facingLocation
@@ -260,53 +258,19 @@ public class TeleportCommand {
 		} else {
 			float f = MathHelper.wrapDegrees(yaw);
 			float g = MathHelper.wrapDegrees(pitch);
-			if (target instanceof ServerPlayerEntity) {
-				ChunkPos chunkPos = new ChunkPos(new BlockPos(x, y, z));
-				world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, target.getId());
-				target.stopRiding();
-				if (((ServerPlayerEntity)target).isSleeping()) {
-					((ServerPlayerEntity)target).wakeUp(true, true);
+			if (target.teleport(world, x, y, z, movementFlags, f, g)) {
+				if (facingLocation != null) {
+					facingLocation.look(source, target);
 				}
 
-				if (world == target.world) {
-					((ServerPlayerEntity)target).networkHandler.requestTeleport(x, y, z, f, g, movementFlags);
-				} else {
-					((ServerPlayerEntity)target).teleport(world, x, y, z, f, g);
+				if (!(target instanceof LivingEntity livingEntity) || !livingEntity.isFallFlying()) {
+					target.setVelocity(target.getVelocity().multiply(1.0, 0.0, 1.0));
+					target.setOnGround(true);
 				}
 
-				target.setHeadYaw(f);
-			} else {
-				float h = MathHelper.clamp(g, -90.0F, 90.0F);
-				if (world == target.world) {
-					target.refreshPositionAndAngles(x, y, z, f, h);
-					target.setHeadYaw(f);
-				} else {
-					target.detach();
-					Entity entity = target;
-					target = target.getType().create(world);
-					if (target == null) {
-						return;
-					}
-
-					target.copyFrom(entity);
-					target.refreshPositionAndAngles(x, y, z, f, h);
-					target.setHeadYaw(f);
-					entity.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
-					world.onDimensionChanged(target);
+				if (target instanceof PathAwareEntity pathAwareEntity) {
+					pathAwareEntity.getNavigation().stop();
 				}
-			}
-
-			if (facingLocation != null) {
-				facingLocation.look(source, target);
-			}
-
-			if (!(target instanceof LivingEntity) || !((LivingEntity)target).isFallFlying()) {
-				target.setVelocity(target.getVelocity().multiply(1.0, 0.0, 1.0));
-				target.setOnGround(true);
-			}
-
-			if (target instanceof PathAwareEntity) {
-				((PathAwareEntity)target).getNavigation().stop();
 			}
 		}
 	}

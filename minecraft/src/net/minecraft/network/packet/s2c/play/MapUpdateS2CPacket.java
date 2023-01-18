@@ -6,9 +6,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.text.Text;
 
 public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {

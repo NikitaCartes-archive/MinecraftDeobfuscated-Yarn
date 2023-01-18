@@ -30,7 +30,7 @@ public class SpawnPointCommand {
 						.then(
 							CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 								.executes(
-									context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), BlockPosArgumentType.getBlockPos(context, "pos"), 0.0F)
+									context -> execute(context.getSource(), EntityArgumentType.getPlayers(context, "targets"), BlockPosArgumentType.getValidBlockPos(context, "pos"), 0.0F)
 								)
 								.then(
 									CommandManager.argument("angle", AngleArgumentType.angle())
@@ -38,7 +38,7 @@ public class SpawnPointCommand {
 											context -> execute(
 													context.getSource(),
 													EntityArgumentType.getPlayers(context, "targets"),
-													BlockPosArgumentType.getBlockPos(context, "pos"),
+													BlockPosArgumentType.getValidBlockPos(context, "pos"),
 													AngleArgumentType.getAngle(context, "angle")
 												)
 										)

@@ -11,6 +11,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -43,6 +44,9 @@ public class DataCommand {
 	private static final SimpleCommandExceptionType GET_MULTIPLE_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.data.get.multiple"));
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_OBJECT_EXCEPTION = new DynamicCommandExceptionType(
 		nbt -> Text.translatable("commands.data.modify.expected_object", nbt)
+	);
+	private static final DynamicCommandExceptionType MODIFY_EXPECTED_VALUE_EXCEPTION = new DynamicCommandExceptionType(
+		nbt -> Text.translatable("commands.data.modify.expected_value", nbt)
 	);
 	public static final List<Function<String, DataCommand.ObjectType>> OBJECT_TYPE_FACTORIES = ImmutableList.of(
 		EntityDataObject.TYPE_FACTORY, BlockDataObject.TYPE_FACTORY, StorageDataObject.TYPE_FACTORY
@@ -146,6 +150,25 @@ public class DataCommand {
 		dispatcher.register(literalArgumentBuilder);
 	}
 
+	private static String asString(NbtElement nbt) throws CommandSyntaxException {
+		if (nbt.getNbtType().isImmutable()) {
+			return nbt.asString();
+		} else {
+			throw MODIFY_EXPECTED_VALUE_EXCEPTION.create(nbt);
+		}
+	}
+
+	private static List<NbtElement> mapValues(List<NbtElement> list, Function<String, String> function) throws CommandSyntaxException {
+		List<NbtElement> list2 = new ArrayList(list.size());
+
+		for (NbtElement nbtElement : list) {
+			String string = asString(nbtElement);
+			list2.add(NbtString.of((String)function.apply(string)));
+		}
+
+		return list2;
+	}
+
 	private static ArgumentBuilder<ServerCommandSource, ?> addModifyArgument(
 		BiConsumer<ArgumentBuilder<ServerCommandSource, ?>, DataCommand.ModifyArgumentCreator> subArgumentAdder
 	) {
@@ -160,16 +183,49 @@ public class DataCommand {
 					for (DataCommand.ObjectType objectType2 : SOURCE_OBJECT_TYPES) {
 						subArgumentAdder.accept(
 							argumentBuilder,
-							(DataCommand.ModifyArgumentCreator)modifier -> objectType2.addArgumentsToBuilder(
-									CommandManager.literal("from"), builderx -> builderx.executes(context -> {
-											List<NbtElement> list = Collections.singletonList(objectType2.getObject(context).getNbt());
-											return executeModify(context, objectType, modifier, list);
-										}).then(CommandManager.argument("sourcePath", NbtPathArgumentType.nbtPath()).executes(context -> {
-											DataCommandObject dataCommandObject = objectType2.getObject(context);
-											NbtPathArgumentType.NbtPath nbtPath = NbtPathArgumentType.getNbtPath(context, "sourcePath");
-											List<NbtElement> list = nbtPath.get(dataCommandObject.getNbt());
-											return executeModify(context, objectType, modifier, list);
-										}))
+							(DataCommand.ModifyArgumentCreator)operation -> objectType2.addArgumentsToBuilder(
+									CommandManager.literal("from"),
+									builderx -> builderx.executes(context -> executeModify(context, objectType, operation, getValues(context, objectType2)))
+											.then(
+												CommandManager.argument("sourcePath", NbtPathArgumentType.nbtPath())
+													.executes(context -> executeModify(context, objectType, operation, getValuesByPath(context, objectType2)))
+											)
+								)
+						);
+						subArgumentAdder.accept(
+							argumentBuilder,
+							(DataCommand.ModifyArgumentCreator)operation -> objectType2.addArgumentsToBuilder(
+									CommandManager.literal("string"),
+									builderx -> builderx.executes(context -> executeModify(context, objectType, operation, mapValues(getValues(context, objectType2), value -> value)))
+											.then(
+												CommandManager.argument("sourcePath", NbtPathArgumentType.nbtPath())
+													.executes(context -> executeModify(context, objectType, operation, mapValues(getValuesByPath(context, objectType2), value -> value)))
+													.then(
+														CommandManager.argument("start", IntegerArgumentType.integer(0))
+															.executes(
+																context -> executeModify(
+																		context,
+																		objectType,
+																		operation,
+																		mapValues(getValuesByPath(context, objectType2), value -> value.substring(IntegerArgumentType.getInteger(context, "start")))
+																	)
+															)
+															.then(
+																CommandManager.argument("end", IntegerArgumentType.integer(0))
+																	.executes(
+																		context -> executeModify(
+																				context,
+																				objectType,
+																				operation,
+																				mapValues(
+																					getValuesByPath(context, objectType2),
+																					value -> value.substring(IntegerArgumentType.getInteger(context, "start"), IntegerArgumentType.getInteger(context, "end"))
+																				)
+																			)
+																	)
+															)
+													)
+											)
 								)
 						);
 					}
@@ -188,6 +244,17 @@ public class DataCommand {
 		}
 
 		return literalArgumentBuilder;
+	}
+
+	private static List<NbtElement> getValues(CommandContext<ServerCommandSource> context, DataCommand.ObjectType objectType) throws CommandSyntaxException {
+		DataCommandObject dataCommandObject = objectType.getObject(context);
+		return Collections.singletonList(dataCommandObject.getNbt());
+	}
+
+	private static List<NbtElement> getValuesByPath(CommandContext<ServerCommandSource> context, DataCommand.ObjectType objectType) throws CommandSyntaxException {
+		DataCommandObject dataCommandObject = objectType.getObject(context);
+		NbtPathArgumentType.NbtPath nbtPath = NbtPathArgumentType.getNbtPath(context, "sourcePath");
+		return nbtPath.get(dataCommandObject.getNbt());
 	}
 
 	private static int executeModify(

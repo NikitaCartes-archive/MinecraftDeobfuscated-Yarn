@@ -24,15 +24,16 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 			gameOptions.getChatOpacity(),
 			gameOptions.getChatLineSpacing(),
 			gameOptions.getChatDelay(),
-			gameOptions.getAutoJump(),
+			gameOptions.getNotificationDisplayTime(),
 			gameOptions.getSneakToggled(),
 			gameOptions.getSprintToggled(),
 			gameOptions.getDistortionEffectScale(),
 			gameOptions.getFovEffectScale(),
-			gameOptions.getMonochromeLogo(),
-			gameOptions.getHideLightningFlashes(),
 			gameOptions.getDarknessEffectScale(),
-			gameOptions.getPanoramaSpeed()
+			gameOptions.getHideLightningFlashes(),
+			gameOptions.getAutoJump(),
+			gameOptions.getPanoramaSpeed(),
+			gameOptions.getMonochromeLogo()
 		};
 	}
 

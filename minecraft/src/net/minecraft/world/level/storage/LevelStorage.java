@@ -38,12 +38,11 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Nullable;
-import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
-import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.scanner.ExclusiveNbtCollector;
@@ -115,13 +114,13 @@ public class LevelStorage {
 		Dynamic<T> dynamic = levelData.get("WorldGenSettings").orElseEmptyMap();
 
 		for (String string : GENERATOR_OPTION_KEYS) {
-			Optional<? extends Dynamic<?>> optional = levelData.get(string).result();
+			Optional<Dynamic<T>> optional = levelData.get(string).result();
 			if (optional.isPresent()) {
 				dynamic = dynamic.set(string, (Dynamic<?>)optional.get());
 			}
 		}
 
-		Dynamic<T> dynamic2 = dataFixer.update(TypeReferences.WORLD_GEN_SETTINGS, dynamic, version, SharedConstants.getGameVersion().getWorldVersion());
+		Dynamic<T> dynamic2 = DataFixTypes.WORLD_GEN_SETTINGS.update(dataFixer, dynamic, version);
 		return WorldGenSettings.CODEC.parse(dynamic2);
 	}
 
@@ -221,10 +220,8 @@ public class LevelStorage {
 		try {
 			if (loadCompactLevelData(path) instanceof NbtCompound nbtCompound) {
 				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
-				int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
-				Dynamic<NbtElement> dynamic = dataFixer.update(
-					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
-				);
+				int i = NbtHelper.getDataVersion(nbtCompound2, -1);
+				Dynamic<?> dynamic = DataFixTypes.LEVEL.update(dataFixer, new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i);
 				return parseDataPackSettings(dynamic);
 			}
 		} catch (Exception var7) {
@@ -248,10 +245,8 @@ public class LevelStorage {
 			NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
 			NbtCompound nbtCompound3 = nbtCompound2.contains("Player", NbtElement.COMPOUND_TYPE) ? nbtCompound2.getCompound("Player") : null;
 			nbtCompound2.remove("Player");
-			int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
-			Dynamic<NbtElement> dynamic = dataFixer.update(
-				DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(ops, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
-			);
+			int i = NbtHelper.getDataVersion(nbtCompound2, -1);
+			Dynamic<?> dynamic = DataFixTypes.LEVEL.update(dataFixer, new Dynamic<>(ops, nbtCompound2), i);
 			WorldGenSettings worldGenSettings = readGeneratorProperties(dynamic, dataFixer, i).getOrThrow(false, Util.addPrefix("WorldGenSettings: ", LOGGER::error));
 			SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
 			LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataConfiguration);
@@ -269,10 +264,8 @@ public class LevelStorage {
 			try {
 				if (loadCompactLevelData(path) instanceof NbtCompound nbtCompound) {
 					NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
-					int i = nbtCompound2.contains("DataVersion", NbtElement.NUMBER_TYPE) ? nbtCompound2.getInt("DataVersion") : -1;
-					Dynamic<NbtElement> dynamic = dataFixer.update(
-						DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
-					);
+					int i = NbtHelper.getDataVersion(nbtCompound2, -1);
+					Dynamic<?> dynamic = DataFixTypes.LEVEL.update(dataFixer, new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i);
 					SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
 					int j = saveVersionInfo.getLevelFormatVersion();
 					if (j == 19132 || j == 19133) {
@@ -296,7 +289,7 @@ public class LevelStorage {
 		};
 	}
 
-	private static FeatureSet parseEnabledFeatures(Dynamic<NbtElement> levelData) {
+	private static FeatureSet parseEnabledFeatures(Dynamic<?> levelData) {
 		Set<Identifier> set = (Set<Identifier>)levelData.get("enabled_features")
 			.asStream()
 			.flatMap(featureFlag -> featureFlag.asString().result().map(Identifier::tryParse).stream())

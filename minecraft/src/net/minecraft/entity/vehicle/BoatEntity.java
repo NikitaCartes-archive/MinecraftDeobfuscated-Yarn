@@ -232,7 +232,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	}
 
 	@Override
-	public void animateDamage() {
+	public void animateDamage(float yaw) {
 		this.setDamageWobbleSide(-this.getDamageWobbleSide());
 		this.setDamageWobbleTicks(10);
 		this.setDamageWobbleStrength(this.getDamageWobbleStrength() * 11.0F);

@@ -142,11 +142,6 @@ public class AbuseReportReasonScreen extends Screen {
 			return this.getRowRight() - 2;
 		}
 
-		@Override
-		protected boolean isFocused() {
-			return AbuseReportReasonScreen.this.getFocused() == this;
-		}
-
 		public void setSelected(@Nullable AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry) {
 			super.setSelected(reasonEntry);
 			AbuseReportReasonScreen.this.reason = reasonEntry != null ? reasonEntry.getReason() : null;

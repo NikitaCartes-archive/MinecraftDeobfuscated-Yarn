@@ -218,7 +218,11 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 			this.world.playSound(player, this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
 			if (!this.world.isClient) {
 				this.ignite();
-				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+				if (!itemStack.isDamageable()) {
+					itemStack.decrement(1);
+				} else {
+					itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
+				}
 			}
 
 			return ActionResult.success(this.world.isClient);

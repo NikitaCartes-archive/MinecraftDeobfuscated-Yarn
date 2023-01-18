@@ -32,7 +32,7 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 
 	public void render(ShulkerBulletEntity shulkerBulletEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
-		float h = MathHelper.lerpAngle(shulkerBulletEntity.prevYaw, shulkerBulletEntity.getYaw(), g);
+		float h = MathHelper.lerpAngleDegrees(g, shulkerBulletEntity.prevYaw, shulkerBulletEntity.getYaw());
 		float j = MathHelper.lerp(g, shulkerBulletEntity.prevPitch, shulkerBulletEntity.getPitch());
 		float k = (float)shulkerBulletEntity.age + g;
 		matrixStack.translate(0.0F, 0.15F, 0.0F);

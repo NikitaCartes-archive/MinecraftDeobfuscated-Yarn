@@ -144,7 +144,6 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	public void drawWindow(MatrixStack matrices, int x, int y) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, WINDOW_TEXTURE);
@@ -169,7 +168,6 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	private void drawWidgetTooltip(MatrixStack matrices, int mouseX, int mouseY, int x, int y) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.selectedTab != null) {
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();

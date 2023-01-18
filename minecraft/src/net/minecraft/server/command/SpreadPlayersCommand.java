@@ -238,7 +238,15 @@ public class SpreadPlayersCommand {
 				pile = piles[i++];
 			}
 
-			entity.teleport((double)MathHelper.floor(pile.x) + 0.5, (double)pile.getY(world, maxY), (double)MathHelper.floor(pile.z) + 0.5);
+			entity.teleport(
+				world,
+				(double)MathHelper.floor(pile.x) + 0.5,
+				(double)pile.getY(world, maxY),
+				(double)MathHelper.floor(pile.z) + 0.5,
+				Set.of(),
+				entity.getYaw(),
+				entity.getPitch()
+			);
 			double e = Double.MAX_VALUE;
 
 			for (SpreadPlayersCommand.Pile pile2 : piles) {

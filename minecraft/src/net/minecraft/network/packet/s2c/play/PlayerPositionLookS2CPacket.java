@@ -1,10 +1,9 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.util.EnumSet;
 import java.util.Set;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 
 public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final double x;
@@ -12,13 +11,11 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 	private final double z;
 	private final float yaw;
 	private final float pitch;
-	private final Set<PlayerPositionLookS2CPacket.Flag> flags;
+	private final Set<PositionFlag> flags;
 	private final int teleportId;
 	private final boolean shouldDismount;
 
-	public PlayerPositionLookS2CPacket(
-		double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> flags, int teleportId, boolean shouldDismount
-	) {
+	public PlayerPositionLookS2CPacket(double x, double y, double z, float yaw, float pitch, Set<PositionFlag> flags, int teleportId, boolean shouldDismount) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -35,7 +32,7 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		this.z = buf.readDouble();
 		this.yaw = buf.readFloat();
 		this.pitch = buf.readFloat();
-		this.flags = PlayerPositionLookS2CPacket.Flag.getFlags(buf.readUnsignedByte());
+		this.flags = PositionFlag.getFlags(buf.readUnsignedByte());
 		this.teleportId = buf.readVarInt();
 		this.shouldDismount = buf.readBoolean();
 	}
@@ -47,7 +44,7 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		buf.writeDouble(this.z);
 		buf.writeFloat(this.yaw);
 		buf.writeFloat(this.pitch);
-		buf.writeByte(PlayerPositionLookS2CPacket.Flag.getBitfield(this.flags));
+		buf.writeByte(PositionFlag.getBitfield(this.flags));
 		buf.writeVarInt(this.teleportId);
 		buf.writeBoolean(this.shouldDismount);
 	}
@@ -84,53 +81,7 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		return this.shouldDismount;
 	}
 
-	public Set<PlayerPositionLookS2CPacket.Flag> getFlags() {
+	public Set<PositionFlag> getFlags() {
 		return this.flags;
-	}
-
-	public static enum Flag {
-		X(0),
-		Y(1),
-		Z(2),
-		Y_ROT(3),
-		X_ROT(4);
-
-		public static final Set<PlayerPositionLookS2CPacket.Flag> VALUES = Set.of(values());
-		public static final Set<PlayerPositionLookS2CPacket.Flag> ROT = Set.of(X_ROT, Y_ROT);
-		private final int shift;
-
-		private Flag(int shift) {
-			this.shift = shift;
-		}
-
-		private int getMask() {
-			return 1 << this.shift;
-		}
-
-		private boolean isSet(int mask) {
-			return (mask & this.getMask()) == this.getMask();
-		}
-
-		public static Set<PlayerPositionLookS2CPacket.Flag> getFlags(int mask) {
-			Set<PlayerPositionLookS2CPacket.Flag> set = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
-
-			for (PlayerPositionLookS2CPacket.Flag flag : values()) {
-				if (flag.isSet(mask)) {
-					set.add(flag);
-				}
-			}
-
-			return set;
-		}
-
-		public static int getBitfield(Set<PlayerPositionLookS2CPacket.Flag> flags) {
-			int i = 0;
-
-			for (PlayerPositionLookS2CPacket.Flag flag : flags) {
-				i |= flag.getMask();
-			}
-
-			return i;
-		}
 	}
 }

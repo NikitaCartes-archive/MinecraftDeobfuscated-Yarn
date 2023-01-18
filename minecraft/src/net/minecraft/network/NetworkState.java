@@ -1,6 +1,5 @@
 package net.minecraft.network;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
@@ -9,11 +8,17 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.network.listener.PacketListener;
+import net.minecraft.network.packet.BundlePacket;
+import net.minecraft.network.packet.BundleSplitterPacket;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
@@ -79,6 +84,7 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
+import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
@@ -92,6 +98,7 @@ import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
@@ -184,7 +191,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 import org.slf4j.Logger;
 
-public enum NetworkState {
+public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 	HANDSHAKING(
 		-1,
 		createPacketHandlerInitializer().setup(NetworkSide.SERVERBOUND, new NetworkState.PacketHandler().register(HandshakeC2SPacket.class, HandshakeC2SPacket::new))
@@ -195,6 +202,7 @@ public enum NetworkState {
 			.setup(
 				NetworkSide.CLIENTBOUND,
 				new NetworkState.PacketHandler()
+					.registerBundlePacket(BundleS2CPacket.class, BundleS2CPacket::new)
 					.register(EntitySpawnS2CPacket.class, EntitySpawnS2CPacket::new)
 					.register(ExperienceOrbSpawnS2CPacket.class, ExperienceOrbSpawnS2CPacket::new)
 					.register(PlayerSpawnS2CPacket.class, PlayerSpawnS2CPacket::new)
@@ -225,6 +233,7 @@ public enum NetworkState {
 					.register(UnloadChunkS2CPacket.class, UnloadChunkS2CPacket::new)
 					.register(GameStateChangeS2CPacket.class, GameStateChangeS2CPacket::new)
 					.register(OpenHorseScreenS2CPacket.class, OpenHorseScreenS2CPacket::new)
+					.register(DamageTiltS2CPacket.class, DamageTiltS2CPacket::new)
 					.register(WorldBorderInitializeS2CPacket.class, WorldBorderInitializeS2CPacket::new)
 					.register(KeepAliveS2CPacket.class, KeepAliveS2CPacket::new)
 					.register(ChunkDataS2CPacket.class, ChunkDataS2CPacket::new)
@@ -312,6 +321,7 @@ public enum NetworkState {
 					.register(MessageAcknowledgmentC2SPacket.class, MessageAcknowledgmentC2SPacket::new)
 					.register(CommandExecutionC2SPacket.class, CommandExecutionC2SPacket::new)
 					.register(ChatMessageC2SPacket.class, ChatMessageC2SPacket::new)
+					.register(PlayerSessionC2SPacket.class, PlayerSessionC2SPacket::new)
 					.register(ClientStatusC2SPacket.class, ClientStatusC2SPacket::new)
 					.register(ClientSettingsC2SPacket.class, ClientSettingsC2SPacket::new)
 					.register(RequestCommandCompletionsC2SPacket.class, RequestCommandCompletionsC2SPacket::new)
@@ -338,7 +348,6 @@ public enum NetworkState {
 					.register(ClientCommandC2SPacket.class, ClientCommandC2SPacket::new)
 					.register(PlayerInputC2SPacket.class, PlayerInputC2SPacket::new)
 					.register(PlayPongC2SPacket.class, PlayPongC2SPacket::new)
-					.register(PlayerSessionC2SPacket.class, PlayerSessionC2SPacket::new)
 					.register(RecipeCategoryOptionsC2SPacket.class, RecipeCategoryOptionsC2SPacket::new)
 					.register(RecipeBookDataC2SPacket.class, RecipeBookDataC2SPacket::new)
 					.register(RenameItemC2SPacket.class, RenameItemC2SPacket::new)
@@ -396,6 +405,7 @@ public enum NetworkState {
 			)
 	);
 
+	public static final int field_41866 = -1;
 	private static final int NULL_PACKET_ID_OR_MIN_STATE_ID = -1;
 	private static final int MAX_STATE_ID = 2;
 	private static final NetworkState[] STATES = new NetworkState[4];
@@ -412,9 +422,13 @@ public enum NetworkState {
 		this.packetHandlers = initializer.packetHandlers;
 	}
 
-	@Nullable
-	public Integer getPacketId(NetworkSide side, Packet<?> packet) {
+	public int getPacketId(NetworkSide side, Packet<?> packet) {
 		return ((NetworkState.PacketHandler)this.packetHandlers.get(side)).getId(packet.getClass());
+	}
+
+	@Override
+	public PacketBundleHandler getBundler(NetworkSide side) {
+		return ((NetworkState.PacketHandler)this.packetHandlers.get(side)).getBundler();
 	}
 
 	@Debug
@@ -443,6 +457,7 @@ public enum NetworkState {
 		return id >= -1 && id <= 2 ? STATES[id - -1] : null;
 	}
 
+	@Nullable
 	public static NetworkState getPacketHandlerState(Packet<?> handler) {
 		return (NetworkState)HANDLER_STATE_MAP.get(handler.getClass());
 	}
@@ -457,18 +472,17 @@ public enum NetworkState {
 			STATES[i - -1] = networkState;
 			networkState.packetHandlers
 				.forEach(
-					(side, handler) -> handler.getPacketTypes()
-							.forEach(
-								packetClass -> {
-									if (HANDLER_STATE_MAP.containsKey(packetClass) && HANDLER_STATE_MAP.get(packetClass) != networkState) {
-										throw new IllegalStateException(
-											"Packet " + packetClass + " is already assigned to protocol " + HANDLER_STATE_MAP.get(packetClass) + " - can't reassign to " + networkState
-										);
-									} else {
-										HANDLER_STATE_MAP.put(packetClass, networkState);
-									}
+					(side, handler) -> handler.forEachPacketType(
+							packetClass -> {
+								if (HANDLER_STATE_MAP.containsKey(packetClass) && HANDLER_STATE_MAP.get(packetClass) != networkState) {
+									throw new IllegalStateException(
+										"Packet " + packetClass + " is already assigned to protocol " + HANDLER_STATE_MAP.get(packetClass) + " - can't reassign to " + networkState
+									);
+								} else {
+									HANDLER_STATE_MAP.put(packetClass, networkState);
 								}
-							)
+							}
+						)
 				);
 		}
 	}
@@ -477,6 +491,8 @@ public enum NetworkState {
 		private static final Logger LOGGER = LogUtils.getLogger();
 		final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(new Object2IntOpenHashMap<>(), map -> map.defaultReturnValue(-1));
 		private final List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories = Lists.<Function<PacketByteBuf, ? extends Packet<T>>>newArrayList();
+		private PacketBundleHandler bundler = PacketBundleHandler.NOOP;
+		private final Set<Class<? extends Packet<T>>> bundlePacketTypes = new HashSet();
 
 		public <P extends Packet<T>> NetworkState.PacketHandler<T> register(Class<P> type, Function<PacketByteBuf, P> packetFactory) {
 			int i = this.packetFactories.size();
@@ -491,10 +507,22 @@ public enum NetworkState {
 			}
 		}
 
-		@Nullable
-		public Integer getId(Class<?> packet) {
-			int i = this.packetIds.getInt(packet);
-			return i == -1 ? null : i;
+		public <P extends BundlePacket<T>> NetworkState.PacketHandler<T> registerBundlePacket(
+			Class<P> bundlePacketType, Function<Iterable<Packet<T>>, P> bundleFunction
+		) {
+			if (this.bundler != PacketBundleHandler.NOOP) {
+				throw new IllegalStateException("Bundle packet already configured");
+			} else {
+				BundleSplitterPacket<T> bundleSplitterPacket = new BundleSplitterPacket<>();
+				this.register((Class<P>)BundleSplitterPacket.class, buf -> bundleSplitterPacket);
+				this.bundler = PacketBundleHandler.create(bundlePacketType, bundleFunction, bundleSplitterPacket);
+				this.bundlePacketTypes.add(bundlePacketType);
+				return this;
+			}
+		}
+
+		public int getId(Class<?> packet) {
+			return this.packetIds.getInt(packet);
 		}
 
 		@Nullable
@@ -503,8 +531,13 @@ public enum NetworkState {
 			return function != null ? (Packet)function.apply(buf) : null;
 		}
 
-		public Iterable<Class<? extends Packet<?>>> getPacketTypes() {
-			return Iterables.unmodifiableIterable(this.packetIds.keySet());
+		public void forEachPacketType(Consumer<Class<? extends Packet<?>>> consumer) {
+			this.packetIds.keySet().stream().filter(type -> type != BundleSplitterPacket.class).forEach(consumer);
+			this.bundlePacketTypes.forEach(consumer);
+		}
+
+		public PacketBundleHandler getBundler() {
+			return this.bundler;
 		}
 	}
 

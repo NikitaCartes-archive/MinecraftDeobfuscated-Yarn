@@ -146,9 +146,9 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		} else {
 			Dynamic<T> dynamic = new Dynamic<>(ops, data);
 			int j = getDataVersion(dynamic);
-			int k = SharedConstants.getGameVersion().getWorldVersion();
+			int k = SharedConstants.getGameVersion().getSaveVersion().getId();
 			boolean bl = j != k;
-			Dynamic<T> dynamic2 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic, j, k);
+			Dynamic<T> dynamic2 = this.dataFixTypes.update(this.dataFixer, dynamic, j, k);
 			OptionalDynamic<T> optionalDynamic = dynamic2.get("Sections");
 
 			for (int l = this.world.getBottomSectionCoord(); l < this.world.getTopSectionCoord(); l++) {
@@ -196,7 +196,10 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			ops,
 			ops.createMap(
 				ImmutableMap.of(
-					ops.createString("Sections"), ops.createMap(map), ops.createString("DataVersion"), ops.createInt(SharedConstants.getGameVersion().getWorldVersion())
+					ops.createString("Sections"),
+					ops.createMap(map),
+					ops.createString("DataVersion"),
+					ops.createInt(SharedConstants.getGameVersion().getSaveVersion().getId())
 				)
 			)
 		);

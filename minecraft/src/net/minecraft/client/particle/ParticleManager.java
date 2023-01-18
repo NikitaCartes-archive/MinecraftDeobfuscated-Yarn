@@ -439,7 +439,6 @@ public class ParticleManager implements ResourceReloader {
 			Iterable<Particle> iterable = (Iterable<Particle>)this.particles.get(particleTextureSheet);
 			if (iterable != null) {
 				RenderSystem.setShader(GameRenderer::getParticleProgram);
-				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBuffer();
 				particleTextureSheet.begin(bufferBuilder, this.textureManager);

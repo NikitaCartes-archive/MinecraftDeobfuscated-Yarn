@@ -76,10 +76,14 @@ public abstract class DrawableHelper {
 	}
 
 	public static void fill(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
-		fill(matrices.peek().getPositionMatrix(), x1, y1, x2, y2, color);
+		fill(matrices, x1, y1, x2, y2, 0, color);
 	}
 
-	private static void fill(Matrix4f matrix, int x1, int y1, int x2, int y2, int color) {
+	public static void fill(MatrixStack matrices, int x1, int y1, int x2, int y2, int z, int color) {
+		fill(matrices.peek().getPositionMatrix(), x1, y1, x2, y2, z, color);
+	}
+
+	private static void fill(Matrix4f matrix, int x1, int y1, int x2, int y2, int z, int color) {
 		if (x1 < x2) {
 			int i = x1;
 			x1 = x2;
@@ -98,16 +102,14 @@ public abstract class DrawableHelper {
 		float j = (float)(color & 0xFF) / 255.0F;
 		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
 		RenderSystem.enableBlend();
-		RenderSystem.disableTexture();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		bufferBuilder.vertex(matrix, (float)x1, (float)y2, 0.0F).color(g, h, j, f).next();
-		bufferBuilder.vertex(matrix, (float)x2, (float)y2, 0.0F).color(g, h, j, f).next();
-		bufferBuilder.vertex(matrix, (float)x2, (float)y1, 0.0F).color(g, h, j, f).next();
-		bufferBuilder.vertex(matrix, (float)x1, (float)y1, 0.0F).color(g, h, j, f).next();
+		bufferBuilder.vertex(matrix, (float)x1, (float)y2, (float)z).color(g, h, j, f).next();
+		bufferBuilder.vertex(matrix, (float)x2, (float)y2, (float)z).color(g, h, j, f).next();
+		bufferBuilder.vertex(matrix, (float)x2, (float)y1, (float)z).color(g, h, j, f).next();
+		bufferBuilder.vertex(matrix, (float)x1, (float)y1, (float)z).color(g, h, j, f).next();
 		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}
 
@@ -116,7 +118,6 @@ public abstract class DrawableHelper {
 	}
 
 	protected static void fillGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd, int z) {
-		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
@@ -126,7 +127,6 @@ public abstract class DrawableHelper {
 		fillGradient(matrices.peek().getPositionMatrix(), bufferBuilder, startX, startY, endX, endY, z, colorStart, colorEnd);
 		tessellator.draw();
 		RenderSystem.disableBlend();
-		RenderSystem.enableTexture();
 	}
 
 	protected static void fillGradient(Matrix4f matrix, BufferBuilder builder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd) {

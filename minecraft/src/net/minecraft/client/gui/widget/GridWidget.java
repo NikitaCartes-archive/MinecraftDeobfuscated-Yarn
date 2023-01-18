@@ -2,9 +2,9 @@ package net.minecraft.client.gui.widget;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.text.Text;
 import net.minecraft.util.math.Divider;
 import net.minecraft.util.math.MathHelper;
 
@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public class GridWidget extends WrapperWidget {
-	private final List<ClickableWidget> children = new ArrayList();
+	private final List<Widget> children = new ArrayList();
 	private final List<GridWidget.Element> grids = new ArrayList();
 	private final Positioner mainPositioner = Positioner.create();
 
@@ -24,14 +24,12 @@ public class GridWidget extends WrapperWidget {
 	}
 
 	public GridWidget(int x, int y) {
-		this(x, y, Text.empty());
+		super(x, y, 0, 0);
 	}
 
-	public GridWidget(int x, int y, Text message) {
-		super(x, y, 0, 0, message);
-	}
-
-	public void recalculateDimensions() {
+	@Override
+	public void refreshPositions() {
+		super.refreshPositions();
 		int i = 0;
 		int j = 0;
 
@@ -92,19 +90,19 @@ public class GridWidget extends WrapperWidget {
 		this.height = ls[i] + js[i];
 	}
 
-	public <T extends ClickableWidget> T add(T widget, int row, int column) {
+	public <T extends Widget> T add(T widget, int row, int column) {
 		return this.add(widget, row, column, this.copyPositioner());
 	}
 
-	public <T extends ClickableWidget> T add(T widget, int row, int column, Positioner positioner) {
+	public <T extends Widget> T add(T widget, int row, int column, Positioner positioner) {
 		return this.add(widget, row, column, 1, 1, positioner);
 	}
 
-	public <T extends ClickableWidget> T add(T widget, int row, int column, int occupiedRows, int occupiedColumns) {
+	public <T extends Widget> T add(T widget, int row, int column, int occupiedRows, int occupiedColumns) {
 		return this.add(widget, row, column, occupiedRows, occupiedColumns, this.copyPositioner());
 	}
 
-	public <T extends ClickableWidget> T add(T widget, int row, int column, int occupiedRows, int occupiedColumns, Positioner positioner) {
+	public <T extends Widget> T add(T widget, int row, int column, int occupiedRows, int occupiedColumns, Positioner positioner) {
 		if (occupiedRows < 1) {
 			throw new IllegalArgumentException("Occupied rows must be at least 1");
 		} else if (occupiedColumns < 1) {
@@ -117,8 +115,8 @@ public class GridWidget extends WrapperWidget {
 	}
 
 	@Override
-	protected List<? extends ClickableWidget> wrappedWidgets() {
-		return this.children;
+	protected void forEachElement(Consumer<Widget> consumer) {
+		this.children.forEach(consumer);
 	}
 
 	public Positioner copyPositioner() {
@@ -142,19 +140,19 @@ public class GridWidget extends WrapperWidget {
 			this.columns = columns;
 		}
 
-		public <T extends ClickableWidget> T add(T widget) {
+		public <T extends Widget> T add(T widget) {
 			return this.add(widget, 1);
 		}
 
-		public <T extends ClickableWidget> T add(T widget, int occupiedColumns) {
+		public <T extends Widget> T add(T widget, int occupiedColumns) {
 			return this.add(widget, occupiedColumns, this.getMainPositioner());
 		}
 
-		public <T extends ClickableWidget> T add(T widget, Positioner positioner) {
+		public <T extends Widget> T add(T widget, Positioner positioner) {
 			return this.add(widget, 1, positioner);
 		}
 
-		public <T extends ClickableWidget> T add(T widget, int occupiedColumns, Positioner positioner) {
+		public <T extends Widget> T add(T widget, int occupiedColumns, Positioner positioner) {
 			int i = this.totalOccupiedColumns / this.columns;
 			int j = this.totalOccupiedColumns % this.columns;
 			if (j + occupiedColumns > this.columns) {
@@ -183,7 +181,7 @@ public class GridWidget extends WrapperWidget {
 		final int occupiedRows;
 		final int occupiedColumns;
 
-		Element(ClickableWidget widget, int row, int column, int occupiedRows, int occupiedColumns, Positioner positioner) {
+		Element(Widget widget, int row, int column, int occupiedRows, int occupiedColumns, Positioner positioner) {
 			super(widget, positioner.toImpl());
 			this.row = row;
 			this.column = column;

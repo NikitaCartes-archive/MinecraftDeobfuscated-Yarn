@@ -87,6 +87,11 @@ public class ResourcePackOrganizer {
 		}
 
 		@Override
+		public String getName() {
+			return this.profile.getName();
+		}
+
+		@Override
 		public Text getDisplayName() {
 			return this.profile.getDisplayName();
 		}
@@ -217,6 +222,8 @@ public class ResourcePackOrganizer {
 		Identifier getIconId();
 
 		ResourcePackCompatibility getCompatibility();
+
+		String getName();
 
 		Text getDisplayName();
 

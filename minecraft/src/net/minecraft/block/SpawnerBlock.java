@@ -61,7 +61,7 @@ public class SpawnerBlock extends BlockWithEntity {
 		} else {
 			tooltip.add(ScreenTexts.EMPTY);
 			tooltip.add(Text.translatable("block.minecraft.spawner.desc1").formatted(Formatting.GRAY));
-			tooltip.add(Text.literal(" ").append(Text.translatable("block.minecraft.spawner.desc2").formatted(Formatting.BLUE)));
+			tooltip.add(ScreenTexts.space().append(Text.translatable("block.minecraft.spawner.desc2").formatted(Formatting.BLUE)));
 		}
 	}
 

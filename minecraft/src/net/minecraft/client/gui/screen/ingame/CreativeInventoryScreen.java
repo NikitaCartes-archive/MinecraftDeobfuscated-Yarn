@@ -546,7 +546,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (selectedTab.getType() == ItemGroup.Type.SEARCH) {
 			this.searchBox.setVisible(true);
 			this.searchBox.setFocusUnlocked(false);
-			this.searchBox.setTextFieldFocused(true);
+			this.searchBox.setFocused(true);
 			if (itemGroup != group) {
 				this.searchBox.setText("");
 			}
@@ -555,7 +555,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		} else {
 			this.searchBox.setVisible(false);
 			this.searchBox.setFocusUnlocked(true);
-			this.searchBox.setTextFieldFocused(false);
+			this.searchBox.setFocused(false);
 			this.searchBox.setText("");
 		}
 
@@ -625,7 +625,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			this.renderTooltip(matrices, DELETE_ITEM_SLOT_TEXT, mouseX, mouseY);
 		}
 
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
@@ -664,8 +663,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
 		for (ItemGroup itemGroup : ItemGroups.getGroupsToDisplay()) {
 			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, TEXTURE);
@@ -678,7 +675,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		RenderSystem.setShaderTexture(0, new Identifier("textures/gui/container/creative_inventory/tab_" + selectedTab.getTexture()));
 		this.drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		this.searchBox.render(matrices, mouseX, mouseY, delta);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		int i = this.x + 175;
 		int j = this.y + 18;
 		int k = j + 112;

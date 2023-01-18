@@ -64,6 +64,8 @@ import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gl.WindowFramebuffer;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.navigation.GuiNavigationType;
+import net.minecraft.client.gui.screen.AccessibilityOnboardingScreen;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
@@ -339,6 +341,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final HotbarStorage creativeHotbarStorage;
 	public final Mouse mouse;
 	public final Keyboard keyboard;
+	private GuiNavigationType navigationType = GuiNavigationType.NONE;
 	/**
 	 * The directory that stores options, worlds, resource packs, logs, etc.
 	 */
@@ -378,7 +381,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final PaintingManager paintingManager;
 	private final StatusEffectSpriteManager statusEffectSpriteManager;
 	private final ToastManager toastManager;
-	private final MinecraftClientGame game = new MinecraftClientGame(this);
 	private final TutorialManager tutorialManager;
 	private final SocialInteractionsManager socialInteractionsManager;
 	private final EntityModelLoader entityModelLoader;
@@ -681,6 +683,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 				this.setScreen(new TitleScreen(true));
 			}, this.getMultiplayerBanDetails()));
+		} else if (this.options.onboardAccessibility) {
+			this.setScreen(new AccessibilityOnboardingScreen(this.options));
+			this.options.onboardAccessibility = false;
+			this.options.write();
 		} else {
 			this.setScreen(new TitleScreen(true));
 		}
@@ -1189,7 +1195,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.framebuffer.beginWrite(true);
 		BackgroundRenderer.clearFog();
 		this.profiler.push("display");
-		RenderSystem.enableTexture();
 		RenderSystem.enableCull();
 		this.profiler.pop();
 		if (!this.skipGameRender) {
@@ -1541,7 +1546,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		matrixStack.translate(0.0F, 0.0F, -2000.0F);
 		RenderSystem.applyModelViewMatrix();
 		RenderSystem.lineWidth(1.0F);
-		RenderSystem.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		int i = 160;
@@ -1592,7 +1596,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		DecimalFormat decimalFormat = new DecimalFormat("##0.00");
 		decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
-		RenderSystem.enableTexture();
 		String string = ProfileResult.getHumanReadableName(profilerTiming.name);
 		String string2 = "";
 		if (!"unspecified".equals(string)) {
@@ -2164,7 +2167,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.serverResourcePackProvider.clear();
 			this.inGameHud.clear();
 			this.integratedServerRunning = false;
-			this.game.onLeaveGameSession();
 		}
 
 		this.world = null;
@@ -2427,7 +2429,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		if (languageManager != null) {
-			systemDetails.addSection("Current Language", (Supplier<String>)(() -> languageManager.getLanguage().toString()));
+			systemDetails.addSection("Current Language", (Supplier<String>)(() -> languageManager.getLanguage()));
 		}
 
 		systemDetails.addSection("CPU", GlDebugInfo::getCpuInfo);
@@ -2836,10 +2838,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.profiler;
 	}
 
-	public MinecraftClientGame getGame() {
-		return this.game;
-	}
-
 	@Nullable
 	public WorldGenerationProgressTracker getWorldGenerationProgressTracker() {
 		return (WorldGenerationProgressTracker)this.worldGenProgressTracker.get();
@@ -2893,6 +2891,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public SignatureVerifier getServicesSignatureVerifier() {
 		return this.servicesSignatureVerifier;
+	}
+
+	public GuiNavigationType getNavigationType() {
+		return this.navigationType;
+	}
+
+	public void setNavigationType(GuiNavigationType navigationType) {
+		this.navigationType = navigationType;
 	}
 
 	public NarratorManager getNarratorManager() {

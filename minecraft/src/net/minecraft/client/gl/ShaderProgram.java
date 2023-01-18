@@ -398,7 +398,6 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 				int k = GlUniform.getUniformLocation(this.glRef, string);
 				GlUniform.uniform1(k, j);
 				RenderSystem.activeTexture(GlConst.GL_TEXTURE0 + j);
-				RenderSystem.enableTexture();
 				Object object = this.samplers.get(string);
 				int l = -1;
 				if (object instanceof Framebuffer) {

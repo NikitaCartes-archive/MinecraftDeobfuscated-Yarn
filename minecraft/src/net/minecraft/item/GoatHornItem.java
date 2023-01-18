@@ -88,7 +88,7 @@ public class GoatHornItem extends Item {
 
 	private Optional<? extends RegistryEntry<Instrument>> getInstrument(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getNbt();
-		if (nbtCompound != null) {
+		if (nbtCompound != null && nbtCompound.contains("instrument", 28)) {
 			Identifier identifier = Identifier.tryParse(nbtCompound.getString("instrument"));
 			if (identifier != null) {
 				return Registries.INSTRUMENT.getEntry(RegistryKey.of(RegistryKeys.INSTRUMENT, identifier));

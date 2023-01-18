@@ -117,7 +117,6 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 		int n = 0;
 		if (hasUnreadNews) {
 			RenderSystem.setShaderTexture(0, NEWS_NOTIFICATION);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			matrices.push();
 			matrices.scale(0.4F, 0.4F, 0.4F);
 			DrawableHelper.drawTexture(matrices, (int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0F, 0.0F, 40, 40, 40, 40);
@@ -127,14 +126,12 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 
 		if (i != 0) {
 			RenderSystem.setShaderTexture(0, INVITE_ICON);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			DrawableHelper.drawTexture(matrices, l - n, m - 6, 0.0F, 0.0F, 15, 25, 31, 25);
 			n += 16;
 		}
 
 		if (trialAvailable) {
 			RenderSystem.setShaderTexture(0, TRIAL_ICON);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int o = 0;
 			if ((Util.getMeasuringTimeMs() / 800L & 1L) == 1L) {
 				o = 8;

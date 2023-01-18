@@ -191,7 +191,7 @@ public class CreateWorldScreen extends Screen {
 			@Override
 			protected MutableText getNarrationMessage() {
 				return ScreenTexts.joinSentences(super.getNarrationMessage(), Text.translatable("selectWorld.resultFolder"))
-					.append(" ")
+					.append(ScreenTexts.SPACE)
 					.append(CreateWorldScreen.this.saveDirectoryName);
 			}
 		};
@@ -212,7 +212,7 @@ public class CreateWorldScreen extends Screen {
 					button -> ClickableWidget.getNarrationMessage(button.getMessage())
 							.append(ScreenTexts.SENTENCE_SEPARATOR)
 							.append(this.firstGameModeDescriptionLine)
-							.append(" ")
+							.append(ScreenTexts.SPACE)
 							.append(this.secondGameModeDescriptionLine)
 				)
 				.build(i, 100, 150, 20, GAME_MODE_TEXT, (button, mode) -> this.tweakDefaultsTo(mode))
@@ -441,7 +441,12 @@ public class CreateWorldScreen extends Screen {
 		} else {
 			drawTextWithShadow(matrices, this.textRenderer, ENTER_NAME_TEXT, this.width / 2 - 100, 47, -6250336);
 			drawTextWithShadow(
-				matrices, this.textRenderer, Text.empty().append(RESULT_FOLDER_TEXT).append(" ").append(this.saveDirectoryName), this.width / 2 - 100, 85, -6250336
+				matrices,
+				this.textRenderer,
+				Text.empty().append(RESULT_FOLDER_TEXT).append(ScreenTexts.SPACE).append(this.saveDirectoryName),
+				this.width / 2 - 100,
+				85,
+				-6250336
 			);
 			this.levelNameField.render(matrices, mouseX, mouseY, delta);
 			drawTextWithShadow(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 150, 122, -6250336);

@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -178,7 +179,7 @@ public class FireBlock extends AbstractFireBlock {
 					}
 				}
 
-				boolean bl2 = world.hasHighHumidity(pos);
+				boolean bl2 = world.getBiome(pos).isIn(BiomeTags.INCREASED_FIRE_BURNOUT);
 				int k = bl2 ? -50 : 0;
 				this.trySpreadingFire(world, pos.east(), 300 + k, random, i);
 				this.trySpreadingFire(world, pos.west(), 300 + k, random, i);

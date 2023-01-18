@@ -84,11 +84,9 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.disableTexture();
 		this.removeOutdatedHives();
 		this.removeInvalidBees();
 		this.render();
-		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 		if (!this.client.player.isSpectator()) {
 			this.updateTargetedEntity();

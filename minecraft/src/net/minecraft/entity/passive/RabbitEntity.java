@@ -378,9 +378,9 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	private static RabbitEntity.RabbitType getTypeFromPos(WorldAccess world, BlockPos pos) {
 		RegistryEntry<Biome> registryEntry = world.getBiome(pos);
 		int i = world.getRandom().nextInt(100);
-		if (registryEntry.value().getPrecipitation() == Biome.Precipitation.SNOW) {
+		if (registryEntry.isIn(BiomeTags.SPAWNS_WHITE_RABBITS)) {
 			return i < 80 ? RabbitEntity.RabbitType.WHITE : RabbitEntity.RabbitType.WHITE_SPLOTCHED;
-		} else if (registryEntry.isIn(BiomeTags.ONLY_ALLOWS_SNOW_AND_GOLD_RABBITS)) {
+		} else if (registryEntry.isIn(BiomeTags.SPAWNS_GOLD_RABBITS)) {
 			return RabbitEntity.RabbitType.GOLD;
 		} else {
 			return i < 50 ? RabbitEntity.RabbitType.BROWN : (i < 90 ? RabbitEntity.RabbitType.SALT : RabbitEntity.RabbitType.BLACK);

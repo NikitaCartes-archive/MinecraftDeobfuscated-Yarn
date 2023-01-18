@@ -17,6 +17,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -66,7 +67,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 			shootAll(world, user, hand, itemStack, getSpeed(itemStack), 1.0F);
 			setCharged(itemStack, false);
 			return TypedActionResult.consume(itemStack);
-		} else if (!user.getArrowType(itemStack).isEmpty()) {
+		} else if (!user.getProjectileType(itemStack).isEmpty()) {
 			if (!isCharged(itemStack)) {
 				this.charged = false;
 				this.loaded = false;
@@ -107,7 +108,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		int i = EnchantmentHelper.getLevel(Enchantments.MULTISHOT, projectile);
 		int j = i == 0 ? 1 : 3;
 		boolean bl = shooter instanceof PlayerEntity && ((PlayerEntity)shooter).getAbilities().creativeMode;
-		ItemStack itemStack = shooter.getArrowType(projectile);
+		ItemStack itemStack = shooter.getProjectileType(projectile);
 		ItemStack itemStack2 = itemStack.copy();
 
 		for (int k = 0; k < j; k++) {
@@ -368,7 +369,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		List<ItemStack> list = getProjectiles(stack);
 		if (isCharged(stack) && !list.isEmpty()) {
 			ItemStack itemStack = (ItemStack)list.get(0);
-			tooltip.add(Text.translatable("item.minecraft.crossbow.projectile").append(" ").append(itemStack.toHoverableText()));
+			tooltip.add(Text.translatable("item.minecraft.crossbow.projectile").append(ScreenTexts.SPACE).append(itemStack.toHoverableText()));
 			if (context.isAdvanced() && itemStack.isOf(Items.FIREWORK_ROCKET)) {
 				List<Text> list2 = Lists.<Text>newArrayList();
 				Items.FIREWORK_ROCKET.appendTooltip(itemStack, world, list2, context);

@@ -44,7 +44,7 @@ public class WitherSkullEntityRenderer extends EntityRenderer<WitherSkullEntity>
 	public void render(WitherSkullEntity witherSkullEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		matrixStack.push();
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
-		float h = MathHelper.lerpAngle(witherSkullEntity.prevYaw, witherSkullEntity.getYaw(), g);
+		float h = MathHelper.lerpAngleDegrees(g, witherSkullEntity.prevYaw, witherSkullEntity.getYaw());
 		float j = MathHelper.lerp(g, witherSkullEntity.prevPitch, witherSkullEntity.getPitch());
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(witherSkullEntity)));
 		this.model.setHeadRotation(0.0F, h, j);

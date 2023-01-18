@@ -10,7 +10,6 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.text.OrderedText;
@@ -26,9 +25,9 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	static final Text INCOMPATIBLE = Text.translatable("pack.incompatible");
 	static final Text INCOMPATIBLE_CONFIRM = Text.translatable("pack.incompatible.confirm.title");
 	private final Text title;
-	private final Screen screen;
+	final PackScreen screen;
 
-	public PackListWidget(MinecraftClient client, Screen screen, int width, int height, Text title) {
+	public PackListWidget(MinecraftClient client, PackScreen screen, int width, int height, Text title) {
 		super(client, width, height, 32, height - 55 + 4, 36);
 		this.screen = screen;
 		this.title = title;
@@ -37,7 +36,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	}
 
 	@Override
-	protected void renderHeader(MatrixStack matrices, int x, int y, Tessellator tessellator) {
+	protected void renderHeader(MatrixStack matrices, int x, int y) {
 		Text text = Text.empty().append(this.title).formatted(Formatting.UNDERLINE, Formatting.BOLD);
 		this.client
 			.textRenderer
@@ -55,8 +54,28 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 	}
 
 	@Override
-	protected boolean isFocused() {
-		return this.screen.getFocused() == this;
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (this.getSelectedOrNull() != null) {
+			switch (keyCode) {
+				case 32:
+				case 257:
+					this.getSelectedOrNull().toggle();
+					return true;
+				default:
+					if (Screen.hasShiftDown()) {
+						switch (keyCode) {
+							case 264:
+								this.getSelectedOrNull().moveTowardEnd();
+								return true;
+							case 265:
+								this.getSelectedOrNull().moveTowardStart();
+								return true;
+						}
+					}
+			}
+		}
+
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -72,16 +91,14 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		private static final String ELLIPSIS = "...";
 		private final PackListWidget widget;
 		protected final MinecraftClient client;
-		protected final Screen screen;
 		private final ResourcePackOrganizer.Pack pack;
 		private final OrderedText displayName;
 		private final MultilineText description;
 		private final OrderedText incompatibleText;
 		private final MultilineText compatibilityNotificationText;
 
-		public ResourcePackEntry(MinecraftClient client, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
+		public ResourcePackEntry(MinecraftClient client, PackListWidget widget, ResourcePackOrganizer.Pack pack) {
 			this.client = client;
-			this.screen = screen;
 			this.pack = pack;
 			this.widget = widget;
 			this.displayName = trimTextToWidth(client, pack.getDisplayName());
@@ -115,21 +132,19 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			ResourcePackCompatibility resourcePackCompatibility = this.pack.getCompatibility();
 			if (!resourcePackCompatibility.isCompatible()) {
-				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, -8978432);
 			}
 
 			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, this.pack.getIconId());
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			OrderedText orderedText = this.displayName;
 			MultilineText multilineText = this.description;
-			if (this.isSelectable() && (this.client.options.getTouchscreen().getValue() || hovered)) {
+			if (this.isSelectable()
+				&& (this.client.options.getTouchscreen().getValue() || hovered || this.widget.getSelectedOrNull() == this && this.widget.isFocused())) {
 				RenderSystem.setShaderTexture(0, PackListWidget.RESOURCE_PACKS_TEXTURE);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
 				RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				int i = mouseX - x;
 				int j = mouseY - y;
 				if (!this.pack.getCompatibility().isCompatible()) {
@@ -174,8 +189,34 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 			multilineText.drawWithShadow(matrices, x + 32 + 2, y + 12, 10, 8421504);
 		}
 
+		public String getName() {
+			return this.pack.getName();
+		}
+
 		private boolean isSelectable() {
 			return !this.pack.isPinned() || !this.pack.isAlwaysEnabled();
+		}
+
+		public void toggle() {
+			if (this.pack.canBeEnabled() && this.pack.getCompatibility().isCompatible()) {
+				this.pack.enable();
+				this.widget.screen.switchFocusedList(this.pack, this.widget);
+			} else if (this.pack.canBeDisabled()) {
+				this.pack.disable();
+				this.widget.screen.switchFocusedList(this.pack, this.widget);
+			}
+		}
+
+		public void moveTowardStart() {
+			if (this.pack.canMoveTowardStart()) {
+				this.pack.moveTowardStart();
+			}
+		}
+
+		public void moveTowardEnd() {
+			if (this.pack.canMoveTowardEnd()) {
+				this.pack.moveTowardEnd();
+			}
 		}
 
 		@Override
@@ -183,6 +224,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 			double d = mouseX - (double)this.widget.getRowLeft();
 			double e = mouseY - (double)this.widget.getRowTop(this.widget.children().indexOf(this));
 			if (this.isSelectable() && d <= 32.0) {
+				this.widget.screen.clearSelection();
 				if (this.pack.canBeEnabled()) {
 					ResourcePackCompatibility resourcePackCompatibility = this.pack.getCompatibility();
 					if (resourcePackCompatibility.isCompatible()) {
@@ -190,7 +232,7 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 					} else {
 						Text text = resourcePackCompatibility.getConfirmMessage();
 						this.client.setScreen(new ConfirmScreen(confirmed -> {
-							this.client.setScreen(this.screen);
+							this.client.setScreen(this.widget.screen);
 							if (confirmed) {
 								this.pack.enable();
 							}

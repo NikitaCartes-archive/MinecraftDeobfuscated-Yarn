@@ -110,20 +110,16 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 
 	@Override
 	public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
-		return this.getNodeType(
-			world, x, y, z, this.entity, this.entityBlockXSize, this.entityBlockYSize, this.entityBlockZSize, this.canOpenDoors(), this.canEnterOpenDoors()
-		);
+		return this.getNodeType(world, x, y, z, this.entity);
 	}
 
 	@Override
-	public PathNodeType getNodeType(
-		BlockView world, int x, int y, int z, MobEntity mob, int sizeX, int sizeY, int sizeZ, boolean canOpenDoors, boolean canEnterOpenDoors
-	) {
+	public PathNodeType getNodeType(BlockView world, int x, int y, int z, MobEntity mob) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int i = x; i < x + sizeX; i++) {
-			for (int j = y; j < y + sizeY; j++) {
-				for (int k = z; k < z + sizeZ; k++) {
+		for (int i = x; i < x + this.entityBlockXSize; i++) {
+			for (int j = y; j < y + this.entityBlockYSize; j++) {
+				for (int k = z; k < z + this.entityBlockZSize; k++) {
 					FluidState fluidState = world.getFluidState(mutable.set(i, j, k));
 					BlockState blockState = world.getBlockState(mutable.set(i, j, k));
 					if (fluidState.isEmpty() && blockState.canPathfindThrough(world, mutable.down(), NavigationType.WATER) && blockState.isAir()) {

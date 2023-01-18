@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import javax.annotation.Nullable;
 import net.minecraft.GameVersion;
 import net.minecraft.SharedConstants;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -141,7 +142,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 			return Text.translatable("selectWorld.incompatible_series").formatted(Formatting.RED);
 		} else {
 			MutableText mutableText = this.isHardcore()
-				? Text.empty().append(Text.translatable("gameMode.hardcore").formatted(Formatting.DARK_RED))
+				? Text.empty().append(Text.translatable("gameMode.hardcore").styled(style -> style.withColor(-65536)))
 				: Text.translatable("gameMode." + this.getGameMode().getName());
 			if (this.hasCheats()) {
 				mutableText.append(", ").append(Text.translatable("selectWorld.cheats"));
@@ -152,7 +153,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 			}
 
 			MutableText mutableText2 = this.getVersion();
-			MutableText mutableText3 = Text.literal(", ").append(Text.translatable("selectWorld.version")).append(" ");
+			MutableText mutableText3 = Text.literal(", ").append(Text.translatable("selectWorld.version")).append(ScreenTexts.SPACE);
 			if (this.isDifferentVersion()) {
 				mutableText3.append(mutableText2.formatted(this.isFutureLevel() ? Formatting.RED : Formatting.ITALIC));
 			} else {

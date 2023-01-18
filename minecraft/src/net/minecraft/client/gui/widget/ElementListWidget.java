@@ -8,32 +8,81 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.navigation.GuiNavigation;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
+import net.minecraft.client.gui.navigation.NavigationAxis;
+import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> extends EntryListWidget<E> {
-	private boolean widgetFocused;
-
 	public ElementListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
 		super(minecraftClient, i, j, k, l, m);
 	}
 
+	@Nullable
 	@Override
-	public boolean changeFocus(boolean lookForwards) {
-		this.widgetFocused = super.changeFocus(lookForwards);
-		if (this.widgetFocused) {
-			this.ensureVisible(this.getFocused());
-		}
+	public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+		if (this.getEntryCount() == 0) {
+			return null;
+		} else if (!(navigation instanceof GuiNavigation.Arrow arrow)) {
+			return super.getNavigationPath(navigation);
+		} else {
+			E entry = this.getFocused();
+			if (arrow.direction().getAxis() == NavigationAxis.HORIZONTAL && entry != null) {
+				return GuiNavigationPath.of(this, entry.getNavigationPath(navigation));
+			} else {
+				NavigationDirection navigationDirection = arrow.direction();
+				int i;
+				if (entry == null) {
+					switch (navigationDirection) {
+						case LEFT:
+							i = Integer.MAX_VALUE;
+							navigationDirection = NavigationDirection.DOWN;
+							break;
+						case RIGHT:
+							i = 0;
+							navigationDirection = NavigationDirection.DOWN;
+							break;
+						default:
+							i = 0;
+					}
+				} else {
+					i = entry.children().indexOf(entry.getFocused());
+				}
 
-		return this.widgetFocused;
+				E entry2 = entry;
+
+				GuiNavigationPath guiNavigationPath;
+				do {
+					entry2 = this.getNeighboringEntry(navigationDirection, element -> !element.children().isEmpty(), entry2);
+					if (entry2 == null) {
+						return null;
+					}
+
+					guiNavigationPath = entry2.getNavigationPath(arrow, i);
+				} while (guiNavigationPath == null);
+
+				return GuiNavigationPath.of(this, guiNavigationPath);
+			}
+		}
+	}
+
+	@Override
+	public void setFocused(@Nullable Element focused) {
+		super.setFocused(focused);
+		if (focused == null) {
+			this.setSelected(null);
+		}
 	}
 
 	@Override
 	public Selectable.SelectionType getType() {
-		return this.widgetFocused ? Selectable.SelectionType.FOCUSED : super.getType();
+		return this.isFocused() ? Selectable.SelectionType.FOCUSED : super.getType();
 	}
 
 	@Override
@@ -77,7 +126,20 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 		}
 
 		@Override
+		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+			return ParentElement.super.mouseClicked(mouseX, mouseY, button);
+		}
+
+		@Override
 		public void setFocused(@Nullable Element focused) {
+			if (this.focused != null) {
+				this.focused.setFocused(false);
+			}
+
+			if (focused != null) {
+				focused.setFocused(true);
+			}
+
 			this.focused = focused;
 		}
 
@@ -85,6 +147,43 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 		@Override
 		public Element getFocused() {
 			return this.focused;
+		}
+
+		@Nullable
+		public GuiNavigationPath getNavigationPath(GuiNavigation navigation, int index) {
+			if (this.children().isEmpty()) {
+				return null;
+			} else {
+				GuiNavigationPath guiNavigationPath = ((Element)this.children().get(Math.min(index, this.children().size() - 1))).getNavigationPath(navigation);
+				return GuiNavigationPath.of(this, guiNavigationPath);
+			}
+		}
+
+		@Nullable
+		@Override
+		public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
+			if (navigation instanceof GuiNavigation.Arrow arrow) {
+				int i = switch (arrow.direction()) {
+					case LEFT -> -1;
+					case RIGHT -> 1;
+					case UP, DOWN -> 0;
+				};
+				if (i == 0) {
+					return null;
+				}
+
+				int j = MathHelper.clamp(i + this.children().indexOf(this.getFocused()), 0, this.children().size() - 1);
+
+				for (int k = j; k >= 0 && k < this.children().size(); k += i) {
+					Element element = (Element)this.children().get(k);
+					GuiNavigationPath guiNavigationPath = element.getNavigationPath(navigation);
+					if (guiNavigationPath != null) {
+						return GuiNavigationPath.of(this, guiNavigationPath);
+					}
+				}
+			}
+
+			return ParentElement.super.getNavigationPath(navigation);
 		}
 
 		public abstract List<? extends Selectable> selectableChildren();

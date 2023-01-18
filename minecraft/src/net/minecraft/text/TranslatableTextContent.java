@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -15,23 +16,21 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Language;
 
 public class TranslatableTextContent implements TextContent {
-	private static final Object[] EMPTY_ARGUMENTS = new Object[0];
+	public static final Object[] EMPTY_ARGUMENTS = new Object[0];
 	private static final StringVisitable LITERAL_PERCENT_SIGN = StringVisitable.plain("%");
 	private static final StringVisitable NULL_ARGUMENT = StringVisitable.plain("null");
 	private final String key;
+	@Nullable
+	private final String fallback;
 	private final Object[] args;
 	@Nullable
 	private Language languageCache;
 	private List<StringVisitable> translations = ImmutableList.of();
 	private static final Pattern ARG_FORMAT = Pattern.compile("%(?:(\\d+)\\$)?([A-Za-z%]|$)");
 
-	public TranslatableTextContent(String key) {
+	public TranslatableTextContent(String key, @Nullable String fallback, Object[] args) {
 		this.key = key;
-		this.args = EMPTY_ARGUMENTS;
-	}
-
-	public TranslatableTextContent(String key, Object... args) {
-		this.key = key;
+		this.fallback = fallback;
 		this.args = args;
 	}
 
@@ -39,7 +38,7 @@ public class TranslatableTextContent implements TextContent {
 		Language language = Language.getInstance();
 		if (language != this.languageCache) {
 			this.languageCache = language;
-			String string = language.get(this.key);
+			String string = this.fallback != null ? language.get(this.key, this.fallback) : language.get(this.key);
 
 			try {
 				Builder<StringVisitable> builder = ImmutableList.builder();
@@ -101,17 +100,15 @@ public class TranslatableTextContent implements TextContent {
 	}
 
 	private StringVisitable getArg(int index) {
-		if (index < 0) {
-			throw new TranslationException(this, index);
-		} else if (index >= this.args.length) {
-			return Text.EMPTY;
-		} else {
+		if (index >= 0 && index < this.args.length) {
 			Object object = this.args[index];
 			if (object instanceof Text) {
 				return (Text)object;
 			} else {
 				return object == null ? NULL_ARGUMENT : StringVisitable.plain(object.toString());
 			}
+		} else {
+			throw new TranslationException(this, index);
 		}
 	}
 
@@ -156,7 +153,7 @@ public class TranslatableTextContent implements TextContent {
 			}
 		}
 
-		return MutableText.of(new TranslatableTextContent(this.key, objects));
+		return MutableText.of(new TranslatableTextContent(this.key, this.fallback, objects));
 	}
 
 	public boolean equals(Object o) {
@@ -164,7 +161,8 @@ public class TranslatableTextContent implements TextContent {
 			return true;
 		} else {
 			if (o instanceof TranslatableTextContent translatableTextContent
-				&& this.key.equals(translatableTextContent.key)
+				&& Objects.equals(this.key, translatableTextContent.key)
+				&& Objects.equals(this.fallback, translatableTextContent.fallback)
 				&& Arrays.equals(this.args, translatableTextContent.args)) {
 				return true;
 			}
@@ -174,16 +172,28 @@ public class TranslatableTextContent implements TextContent {
 	}
 
 	public int hashCode() {
-		int i = this.key.hashCode();
+		int i = Objects.hashCode(this.key);
+		i = 31 * i + Objects.hashCode(this.fallback);
 		return 31 * i + Arrays.hashCode(this.args);
 	}
 
 	public String toString() {
-		return "translation{key='" + this.key + "', args=" + Arrays.toString(this.args) + "}";
+		return "translation{key='"
+			+ this.key
+			+ "'"
+			+ (this.fallback != null ? ", fallback='" + this.fallback + "'" : "")
+			+ ", args="
+			+ Arrays.toString(this.args)
+			+ "}";
 	}
 
 	public String getKey() {
 		return this.key;
+	}
+
+	@Nullable
+	public String getFallback() {
+		return this.fallback;
 	}
 
 	public Object[] getArgs() {

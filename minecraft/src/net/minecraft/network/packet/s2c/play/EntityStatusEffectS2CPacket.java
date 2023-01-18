@@ -3,9 +3,9 @@ package net.minecraft.network.packet.s2c.play;
 import javax.annotation.Nullable;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.Registries;
 
 public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListener> {

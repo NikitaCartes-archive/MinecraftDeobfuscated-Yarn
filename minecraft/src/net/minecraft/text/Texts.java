@@ -134,7 +134,8 @@ public class Texts {
 	public static boolean hasTranslation(@Nullable Text text) {
 		if (text != null && text.getContent() instanceof TranslatableTextContent translatableTextContent) {
 			String string = translatableTextContent.getKey();
-			return Language.getInstance().hasTranslation(string);
+			String string2 = translatableTextContent.getFallback();
+			return string2 != null || Language.getInstance().hasTranslation(string);
 		} else {
 			return true;
 		}

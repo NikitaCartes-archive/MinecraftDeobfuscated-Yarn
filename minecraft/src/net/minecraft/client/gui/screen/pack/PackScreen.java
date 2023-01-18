@@ -22,6 +22,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tooltip.Tooltip;
@@ -133,8 +134,26 @@ public class PackScreen extends Screen {
 
 	private void updatePackList(PackListWidget widget, Stream<ResourcePackOrganizer.Pack> packs) {
 		widget.children().clear();
+		PackListWidget.ResourcePackEntry resourcePackEntry = widget.getSelectedOrNull();
+		String string = resourcePackEntry == null ? "" : resourcePackEntry.getName();
 		widget.setSelected(null);
-		packs.forEach(pack -> widget.children().add(new PackListWidget.ResourcePackEntry(this.client, widget, this, pack)));
+		packs.forEach(pack -> {
+			PackListWidget.ResourcePackEntry resourcePackEntryx = new PackListWidget.ResourcePackEntry(this.client, widget, pack);
+			widget.children().add(resourcePackEntryx);
+			if (pack.getName().equals(string)) {
+				widget.setSelected(resourcePackEntryx);
+			}
+		});
+	}
+
+	public void switchFocusedList(ResourcePackOrganizer.Pack pack, PackListWidget listWidget) {
+		PackListWidget packListWidget = this.selectedPackList == listWidget ? this.availablePackList : this.selectedPackList;
+		this.switchFocus(GuiNavigationPath.of(packListWidget.getFirst(), packListWidget, this));
+	}
+
+	public void clearSelection() {
+		this.selectedPackList.setSelected(null);
+		this.availablePackList.setSelected(null);
 	}
 
 	private void refresh() {
@@ -146,7 +165,7 @@ public class PackScreen extends Screen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(0);
+		this.renderBackgroundTexture(matrices);
 		this.availablePackList.render(matrices, mouseX, mouseY, delta);
 		this.selectedPackList.render(matrices, mouseX, mouseY, delta);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);

@@ -2,11 +2,11 @@ package net.minecraft.network.packet.c2s.play;
 
 import java.time.Instant;
 import javax.annotation.Nullable;
-import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.message.LastSeenMessageList;
 import net.minecraft.network.message.MessageSignatureData;
+import net.minecraft.network.packet.Packet;
 
 /**
  * A packet used to send a chat message to the server.

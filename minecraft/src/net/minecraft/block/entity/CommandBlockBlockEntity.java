@@ -42,10 +42,11 @@ public class CommandBlockBlockEntity extends BlockEntity {
 
 		@Override
 		public ServerCommandSource getSource() {
+			Direction direction = CommandBlockBlockEntity.this.getCachedState().get(CommandBlock.FACING);
 			return new ServerCommandSource(
 				this,
 				Vec3d.ofCenter(CommandBlockBlockEntity.this.pos),
-				Vec2f.ZERO,
+				new Vec2f(0.0F, direction.asRotation()),
 				this.getWorld(),
 				2,
 				this.getCustomName().getString(),

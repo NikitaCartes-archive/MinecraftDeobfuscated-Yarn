@@ -432,7 +432,6 @@ public abstract class RenderPhase {
 
 		public Texture(Identifier id, boolean blur, boolean mipmap) {
 			super(() -> {
-				RenderSystem.enableTexture();
 				TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
 				textureManager.getTexture(id).setFilter(blur, mipmap);
 				RenderSystem.setShaderTexture(0, id);

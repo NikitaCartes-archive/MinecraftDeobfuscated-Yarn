@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.navigation.GuiNavigationType;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.GlfwUtil;
@@ -42,6 +43,7 @@ public class Mouse {
 
 	private void onMouseButton(long window, int button, int action, int mods) {
 		if (window == this.client.getWindow().getHandle()) {
+			this.client.setNavigationType(GuiNavigationType.MOUSE);
 			boolean bl = action == 1;
 			if (MinecraftClient.IS_SYSTEM_MAC && button == 0) {
 				if (bl) {

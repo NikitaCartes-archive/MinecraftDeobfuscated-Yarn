@@ -50,11 +50,12 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 			Vec3d vec3d4 = vec3d2.crossProduct(vec3d3);
 			int i = 0;
 			int j = 0;
+			double d = this.client.options.getNotificationDisplayTime().getValue();
 			Iterator<SubtitlesHud.SubtitleEntry> iterator = this.entries.iterator();
 
 			while (iterator.hasNext()) {
 				SubtitlesHud.SubtitleEntry subtitleEntry = (SubtitlesHud.SubtitleEntry)iterator.next();
-				if (subtitleEntry.getTime() + 3000L <= Util.getMeasuringTimeMs()) {
+				if ((double)subtitleEntry.getTime() + 3000.0 * d <= (double)Util.getMeasuringTimeMs()) {
 					iterator.remove();
 				} else {
 					j = Math.max(j, this.client.textRenderer.getWidth(subtitleEntry.getText()));
@@ -70,15 +71,15 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				int k = 255;
 				Text text = subtitleEntry.getText();
 				Vec3d vec3d5 = subtitleEntry.getPosition().subtract(vec3d).normalize();
-				double d = -vec3d4.dotProduct(vec3d5);
-				double e = -vec3d2.dotProduct(vec3d5);
-				boolean bl = e > 0.5;
+				double e = -vec3d4.dotProduct(vec3d5);
+				double f = -vec3d2.dotProduct(vec3d5);
+				boolean bl = f > 0.5;
 				int l = j / 2;
 				int m = 9;
 				int n = m / 2;
-				float f = 1.0F;
+				float g = 1.0F;
 				int o = this.client.textRenderer.getWidth(text);
-				int p = MathHelper.floor(MathHelper.clampedLerp(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0F));
+				int p = MathHelper.floor(MathHelper.clampedLerp(255.0F, 75.0F, (float)(Util.getMeasuringTimeMs() - subtitleEntry.getTime()) / (float)(3000.0 * d)));
 				int q = p << 16 | p << 8 | p;
 				matrices.push();
 				matrices.translate(
@@ -91,9 +92,9 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				RenderSystem.enableBlend();
 				int r = q + -16777216;
 				if (!bl) {
-					if (d > 0.0) {
+					if (e > 0.0) {
 						drawStringWithShadow(matrices, this.client.textRenderer, ">", l - this.client.textRenderer.getWidth(">"), -n, r);
-					} else if (d < 0.0) {
+					} else if (e < 0.0) {
 						drawStringWithShadow(matrices, this.client.textRenderer, "<", -l, -n, r);
 					}
 				}

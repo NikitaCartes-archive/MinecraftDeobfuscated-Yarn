@@ -233,7 +233,7 @@ public abstract class EntityNavigation {
 		double e = Math.abs(this.entity.getY() - (double)vec3i.getY());
 		double f = Math.abs(this.entity.getZ() - ((double)vec3i.getZ() + 0.5));
 		boolean bl = d < (double)this.nodeReachProximity && f < (double)this.nodeReachProximity && e < 1.0;
-		if (bl || this.entity.canJumpToNextPathNode(this.currentPath.getCurrentNode().type) && this.shouldJumpToNextNode(vec3d)) {
+		if (bl || this.canJumpToNext(this.currentPath.getCurrentNode().type) && this.shouldJumpToNextNode(vec3d)) {
 			this.currentPath.next();
 		}
 
@@ -358,6 +358,10 @@ public abstract class EntityNavigation {
 
 	protected boolean canPathDirectlyThrough(Vec3d origin, Vec3d target) {
 		return false;
+	}
+
+	public boolean canJumpToNext(PathNodeType nodeType) {
+		return nodeType != PathNodeType.DANGER_FIRE && nodeType != PathNodeType.DANGER_OTHER && nodeType != PathNodeType.WALKABLE_DOOR;
 	}
 
 	protected static boolean doesNotCollide(MobEntity entity, Vec3d startPos, Vec3d entityPos, boolean includeFluids) {

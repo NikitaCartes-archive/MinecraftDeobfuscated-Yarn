@@ -53,7 +53,6 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.lineWidth(2.0F);
-			RenderSystem.disableTexture();
 			RenderSystem.depthMask(false);
 			Map<ChunkPos, String> map = (Map<ChunkPos, String>)this.loadingData.serverStates.getNow(null);
 			double e = this.client.gameRenderer.getCamera().getPos().y * 0.85;
@@ -77,7 +76,6 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 			}
 
 			RenderSystem.depthMask(true);
-			RenderSystem.enableTexture();
 			RenderSystem.disableBlend();
 		}
 	}

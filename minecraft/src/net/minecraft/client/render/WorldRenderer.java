@@ -283,7 +283,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			int m = -1;
 			float g = (float)this.ticks + tickDelta;
 			RenderSystem.setShader(GameRenderer::getParticleProgram);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (int n = k - l; n <= k + l; n++) {
@@ -293,7 +292,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					double e = (double)this.field_20795[p] * 0.5;
 					mutable.set((double)o, cameraY, (double)n);
 					Biome biome = world.getBiome(mutable).value();
-					if (biome.getPrecipitation() != Biome.Precipitation.NONE) {
+					if (biome.hasPrecipitation()) {
 						int q = world.getTopY(Heightmap.Type.MOTION_BLOCKING, o, n);
 						int r = j - l;
 						int s = j + l;
@@ -313,7 +312,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						if (r != s) {
 							Random random = Random.create((long)(o * o * 3121 + o * 45238971 ^ n * n * 418711 + n * 13761));
 							mutable.set(o, r, n);
-							if (biome.doesNotSnow(mutable)) {
+							Biome.Precipitation precipitation = biome.getPrecipitation(mutable);
+							if (precipitation == Biome.Precipitation.RAIN) {
 								if (m != 0) {
 									if (m >= 0) {
 										tessellator.draw();
@@ -352,7 +352,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 									.color(1.0F, 1.0F, 1.0F, y)
 									.light(z)
 									.next();
-							} else {
+							} else if (precipitation == Biome.Precipitation.SNOW) {
 								if (m != 1) {
 									if (m >= 0) {
 										tessellator.draw();
@@ -425,29 +425,27 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				int k = random.nextInt(21) - 10;
 				int l = random.nextInt(21) - 10;
 				BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l));
-				Biome biome = worldView.getBiome(blockPos3).value();
-				if (blockPos3.getY() > worldView.getBottomY()
-					&& blockPos3.getY() <= blockPos.getY() + 10
-					&& blockPos3.getY() >= blockPos.getY() - 10
-					&& biome.getPrecipitation() == Biome.Precipitation.RAIN
-					&& biome.doesNotSnow(blockPos3)) {
-					blockPos2 = blockPos3.down();
-					if (this.client.options.getParticles().getValue() == ParticlesMode.MINIMAL) {
-						break;
-					}
+				if (blockPos3.getY() > worldView.getBottomY() && blockPos3.getY() <= blockPos.getY() + 10 && blockPos3.getY() >= blockPos.getY() - 10) {
+					Biome biome = worldView.getBiome(blockPos3).value();
+					if (biome.getPrecipitation(blockPos3) == Biome.Precipitation.RAIN) {
+						blockPos2 = blockPos3.down();
+						if (this.client.options.getParticles().getValue() == ParticlesMode.MINIMAL) {
+							break;
+						}
 
-					double d = random.nextDouble();
-					double e = random.nextDouble();
-					BlockState blockState = worldView.getBlockState(blockPos2);
-					FluidState fluidState = worldView.getFluidState(blockPos2);
-					VoxelShape voxelShape = blockState.getCollisionShape(worldView, blockPos2);
-					double g = voxelShape.getEndingCoord(Direction.Axis.Y, d, e);
-					double h = (double)fluidState.getHeight(worldView, blockPos2);
-					double m = Math.max(g, h);
-					ParticleEffect particleEffect = !fluidState.isIn(FluidTags.LAVA) && !blockState.isOf(Blocks.MAGMA_BLOCK) && !CampfireBlock.isLitCampfire(blockState)
-						? ParticleTypes.RAIN
-						: ParticleTypes.SMOKE;
-					this.client.world.addParticle(particleEffect, (double)blockPos2.getX() + d, (double)blockPos2.getY() + m, (double)blockPos2.getZ() + e, 0.0, 0.0, 0.0);
+						double d = random.nextDouble();
+						double e = random.nextDouble();
+						BlockState blockState = worldView.getBlockState(blockPos2);
+						FluidState fluidState = worldView.getFluidState(blockPos2);
+						VoxelShape voxelShape = blockState.getCollisionShape(worldView, blockPos2);
+						double g = voxelShape.getEndingCoord(Direction.Axis.Y, d, e);
+						double h = (double)fluidState.getHeight(worldView, blockPos2);
+						double m = Math.max(g, h);
+						ParticleEffect particleEffect = !fluidState.isIn(FluidTags.LAVA) && !blockState.isOf(Blocks.MAGMA_BLOCK) && !CampfireBlock.isLitCampfire(blockState)
+							? ParticleTypes.RAIN
+							: ParticleTypes.SMOKE;
+						this.client.world.addParticle(particleEffect, (double)blockPos2.getX() + d, (double)blockPos2.getY() + m, (double)blockPos2.getZ() + e, 0.0, 0.0, 0.0);
+					}
 				}
 			}
 
@@ -1565,7 +1563,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.disableCull();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			RenderSystem.disableTexture();
 
 			for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
 				ChunkBuilder.BuiltChunk builtChunk = chunkInfo.chunk;
@@ -1666,12 +1663,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.depthMask(true);
 			RenderSystem.disableBlend();
 			RenderSystem.enableCull();
-			RenderSystem.enableTexture();
 		}
 
 		if (this.capturedFrustum != null) {
 			RenderSystem.disableCull();
-			RenderSystem.disableTexture();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.lineWidth(5.0F);
@@ -1696,7 +1691,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.depthMask(false);
 			RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
 			bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			this.method_22984(bufferBuilder, 0);
 			this.method_22984(bufferBuilder, 1);
 			this.method_22984(bufferBuilder, 1);
@@ -1727,7 +1721,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.depthMask(true);
 			RenderSystem.disableBlend();
 			RenderSystem.enableCull();
-			RenderSystem.enableTexture();
 			RenderSystem.lineWidth(1.0F);
 		}
 	}
@@ -1840,7 +1833,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		}
 
 		RenderSystem.depthMask(true);
-		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
 	}
 
@@ -1852,7 +1844,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.END) {
 					this.renderEndSky(matrices);
 				} else if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.NORMAL) {
-					RenderSystem.disableTexture();
 					Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.getCamera().getPos(), tickDelta);
 					float f = (float)vec3d.x;
 					float g = (float)vec3d.y;
@@ -1870,7 +1861,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					float[] fs = this.world.getDimensionEffects().getFogColorOverride(this.world.getSkyAngle(tickDelta), tickDelta);
 					if (fs != null) {
 						RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-						RenderSystem.disableTexture();
 						RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 						matrices.push();
 						matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
@@ -1896,7 +1886,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						matrices.pop();
 					}
 
-					RenderSystem.enableTexture();
 					RenderSystem.blendFuncSeparate(
 						GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 					);
@@ -1930,7 +1919,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					bufferBuilder.vertex(matrix4f2, k, -100.0F, -k).texture(t, o).next();
 					bufferBuilder.vertex(matrix4f2, -k, -100.0F, -k).texture(p, o).next();
 					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-					RenderSystem.disableTexture();
 					float u = this.world.method_23787(tickDelta) * i;
 					if (u > 0.0F) {
 						RenderSystem.setShaderColor(u, u, u, u);
@@ -1944,7 +1932,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 					RenderSystem.disableBlend();
 					matrices.pop();
-					RenderSystem.disableTexture();
 					RenderSystem.setShaderColor(0.0F, 0.0F, 0.0F, 1.0F);
 					double d = this.client.player.getCameraPosVec(tickDelta).y - this.world.getLevelProperties().getSkyDarknessHeight(this.world);
 					if (d < 0.0) {
@@ -1956,13 +1943,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						matrices.pop();
 					}
 
-					if (this.world.getDimensionEffects().isAlternateSkyColor()) {
-						RenderSystem.setShaderColor(f * 0.2F + 0.04F, g * 0.2F + 0.04F, h * 0.6F + 0.1F, 1.0F);
-					} else {
-						RenderSystem.setShaderColor(f, g, h, 1.0F);
-					}
-
-					RenderSystem.enableTexture();
+					RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 					RenderSystem.depthMask(true);
 				}
 			}
@@ -2056,7 +2037,6 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			}
 
 			matrices.pop();
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableCull();
 			RenderSystem.disableBlend();
 		}
@@ -2415,6 +2395,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.disableBlend();
 			matrixStack.pop();
 			RenderSystem.applyModelViewMatrix();
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.depthMask(true);
 		}
 	}

@@ -38,7 +38,6 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 			GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 		);
 		RenderSystem.setShaderColor(0.0F, 1.0F, 0.0F, 0.75F);
-		RenderSystem.disableTexture();
 		DebugRenderer.drawBox(pos, 0.02F, marker.getBlue(), marker.getGreen(), marker.getAlpha(), marker.getRed());
 		if (!marker.message.isEmpty()) {
 			double d = (double)pos.getX() + 0.5;
@@ -47,7 +46,7 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 			DebugRenderer.drawString(marker.message, d, e, f, -1, 0.01F, true, 0.0F, true);
 		}
 
-		RenderSystem.enableTexture();
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.disableBlend();
 	}
 

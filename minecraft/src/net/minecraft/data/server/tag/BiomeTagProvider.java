@@ -227,11 +227,55 @@ public class BiomeTagProvider extends AbstractTagProvider<Biome> {
 			.addTag(BiomeTags.IS_NETHER)
 			.addTag(BiomeTags.IS_BADLANDS)
 			.add(BiomeKeys.MANGROVE_SWAMP);
-		this.getOrCreateTagBuilder(BiomeTags.ONLY_ALLOWS_SNOW_AND_GOLD_RABBITS).add(BiomeKeys.DESERT);
+		this.getOrCreateTagBuilder(BiomeTags.SPAWNS_GOLD_RABBITS).add(BiomeKeys.DESERT);
+		this.getOrCreateTagBuilder(BiomeTags.SPAWNS_WHITE_RABBITS)
+			.add(BiomeKeys.SNOWY_PLAINS)
+			.add(BiomeKeys.ICE_SPIKES)
+			.add(BiomeKeys.FROZEN_OCEAN)
+			.add(BiomeKeys.SNOWY_TAIGA)
+			.add(BiomeKeys.FROZEN_RIVER)
+			.add(BiomeKeys.SNOWY_BEACH)
+			.add(BiomeKeys.FROZEN_PEAKS)
+			.add(BiomeKeys.JAGGED_PEAKS)
+			.add(BiomeKeys.SNOWY_SLOPES)
+			.add(BiomeKeys.GROVE);
 		this.getOrCreateTagBuilder(BiomeTags.REDUCE_WATER_AMBIENT_SPAWNS).addTag(BiomeTags.IS_RIVER);
 		this.getOrCreateTagBuilder(BiomeTags.ALLOWS_TROPICAL_FISH_SPAWNS_AT_ANY_HEIGHT).add(BiomeKeys.LUSH_CAVES);
 		this.getOrCreateTagBuilder(BiomeTags.POLAR_BEARS_SPAWN_ON_ALTERNATE_BLOCKS).add(BiomeKeys.FROZEN_OCEAN).add(BiomeKeys.DEEP_FROZEN_OCEAN);
 		this.getOrCreateTagBuilder(BiomeTags.MORE_FREQUENT_DROWNED_SPAWNS).addTag(BiomeTags.IS_RIVER);
 		this.getOrCreateTagBuilder(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS).add(BiomeKeys.SWAMP).add(BiomeKeys.MANGROVE_SWAMP);
+		this.getOrCreateTagBuilder(BiomeTags.SPAWNS_SNOW_FOXES)
+			.add(BiomeKeys.SNOWY_PLAINS)
+			.add(BiomeKeys.ICE_SPIKES)
+			.add(BiomeKeys.FROZEN_OCEAN)
+			.add(BiomeKeys.SNOWY_TAIGA)
+			.add(BiomeKeys.FROZEN_RIVER)
+			.add(BiomeKeys.SNOWY_BEACH)
+			.add(BiomeKeys.FROZEN_PEAKS)
+			.add(BiomeKeys.JAGGED_PEAKS)
+			.add(BiomeKeys.SNOWY_SLOPES)
+			.add(BiomeKeys.GROVE);
+		this.getOrCreateTagBuilder(BiomeTags.INCREASED_FIRE_BURNOUT)
+			.add(BiomeKeys.BAMBOO_JUNGLE)
+			.add(BiomeKeys.MUSHROOM_FIELDS)
+			.add(BiomeKeys.MANGROVE_SWAMP)
+			.add(BiomeKeys.SNOWY_SLOPES)
+			.add(BiomeKeys.FROZEN_PEAKS)
+			.add(BiomeKeys.JAGGED_PEAKS)
+			.add(BiomeKeys.SWAMP)
+			.add(BiomeKeys.JUNGLE);
+		this.getOrCreateTagBuilder(BiomeTags.SNOW_GOLEM_MELTS)
+			.add(BiomeKeys.BADLANDS)
+			.add(BiomeKeys.BASALT_DELTAS)
+			.add(BiomeKeys.CRIMSON_FOREST)
+			.add(BiomeKeys.DESERT)
+			.add(BiomeKeys.ERODED_BADLANDS)
+			.add(BiomeKeys.NETHER_WASTES)
+			.add(BiomeKeys.SAVANNA)
+			.add(BiomeKeys.SAVANNA_PLATEAU)
+			.add(BiomeKeys.SOUL_SAND_VALLEY)
+			.add(BiomeKeys.WARPED_FOREST)
+			.add(BiomeKeys.WINDSWEPT_SAVANNA)
+			.add(BiomeKeys.WOODED_BADLANDS);
 	}
 }

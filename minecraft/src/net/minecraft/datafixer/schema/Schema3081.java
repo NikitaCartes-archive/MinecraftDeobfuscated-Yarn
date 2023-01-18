@@ -12,26 +12,16 @@ public class Schema3081 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	protected static void register(Schema schema, Map<String, Supplier<TypeTemplate>> map, String id) {
-		schema.register(map, id, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
+	@Override
+	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
+		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
 		schema.register(
 			map,
 			"minecraft:warden",
 			(Supplier<TypeTemplate>)(() -> DSL.optionalFields(
-					"ArmorItems",
-					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
-					"HandItems",
-					DSL.list(TypeReferences.ITEM_STACK.in(schema)),
-					"listener",
-					DSL.optionalFields("event", DSL.optionalFields("game_event", TypeReferences.GAME_EVENT_NAME.in(schema)))
+					"listener", DSL.optionalFields("event", DSL.optionalFields("game_event", TypeReferences.GAME_EVENT_NAME.in(schema))), Schema100.targetItems(schema)
 				))
 		);
-	}
-
-	@Override
-	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
-		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		register(schema, map, "minecraft:warden");
 		return map;
 	}
 }

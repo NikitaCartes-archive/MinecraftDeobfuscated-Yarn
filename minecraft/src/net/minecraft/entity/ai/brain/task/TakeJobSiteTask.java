@@ -29,7 +29,7 @@ public class TakeJobSiteTask {
 						(potentialJobSite, jobSite, mobs, walkTarget, lookTarget) -> (world, entity, time) -> {
 								if (entity.isBaby()) {
 									return false;
-								} else if (entity.getVillagerData().getProfession() == VillagerProfession.NONE) {
+								} else if (entity.getVillagerData().getProfession() != VillagerProfession.NONE) {
 									return false;
 								} else {
 									BlockPos blockPos = context.<GlobalPos>getValue(potentialJobSite).getPos();

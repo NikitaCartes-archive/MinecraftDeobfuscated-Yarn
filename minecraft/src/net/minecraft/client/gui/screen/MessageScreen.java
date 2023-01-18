@@ -18,7 +18,7 @@ public class MessageScreen extends Screen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(0);
+		this.renderBackgroundTexture(matrices);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

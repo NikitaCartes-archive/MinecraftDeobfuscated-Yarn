@@ -266,7 +266,6 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 		for (int i = 0; i < this.samplerLocations.size(); i++) {
 			if (this.samplerBinds.get(this.samplerNames.get(i)) != null) {
 				GlStateManager._activeTexture(GlConst.GL_TEXTURE0 + i);
-				GlStateManager._disableTexture();
 				GlStateManager._bindTexture(0);
 			}
 		}
@@ -287,7 +286,6 @@ public class JsonEffectShaderProgram implements EffectShaderProgram, AutoCloseab
 			IntSupplier intSupplier = (IntSupplier)this.samplerBinds.get(string);
 			if (intSupplier != null) {
 				RenderSystem.activeTexture(GlConst.GL_TEXTURE0 + i);
-				RenderSystem.enableTexture();
 				int j = intSupplier.getAsInt();
 				if (j != -1) {
 					RenderSystem.bindTexture(j);

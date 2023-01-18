@@ -242,8 +242,8 @@ public class HorseEntityModel<T extends AbstractHorseEntity> extends AnimalModel
 
 	public void animateModel(T abstractHorseEntity, float f, float g, float h) {
 		super.animateModel(abstractHorseEntity, f, g, h);
-		float i = MathHelper.lerpAngle(abstractHorseEntity.prevBodyYaw, abstractHorseEntity.bodyYaw, h);
-		float j = MathHelper.lerpAngle(abstractHorseEntity.prevHeadYaw, abstractHorseEntity.headYaw, h);
+		float i = MathHelper.lerpAngleDegrees(h, abstractHorseEntity.prevBodyYaw, abstractHorseEntity.bodyYaw);
+		float j = MathHelper.lerpAngleDegrees(h, abstractHorseEntity.prevHeadYaw, abstractHorseEntity.headYaw);
 		float k = MathHelper.lerp(h, abstractHorseEntity.prevPitch, abstractHorseEntity.getPitch());
 		float l = j - i;
 		float m = k * (float) (Math.PI / 180.0);
