@@ -1401,7 +1401,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.recipeManager.setRecipes(packet.getRecipes());
 		ClientRecipeBook clientRecipeBook = this.client.player.getRecipeBook();
-		clientRecipeBook.reload(this.recipeManager.values());
+		clientRecipeBook.reload(this.recipeManager.values(), this.client.world.getRegistryManager());
 		this.client.reloadSearchProvider(SearchManager.RECIPE_OUTPUT, clientRecipeBook.getOrderedResults());
 	}
 

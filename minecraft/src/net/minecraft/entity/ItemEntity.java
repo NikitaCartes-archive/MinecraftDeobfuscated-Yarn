@@ -18,14 +18,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
-public class ItemEntity extends Entity {
+public class ItemEntity extends Entity implements Ownable {
 	private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final int DESPAWN_AGE = 6000;
 	private static final int CANNOT_PICK_UP_DELAY = 32767;
@@ -75,8 +74,10 @@ public class ItemEntity extends Entity {
 		return this.getStack().isIn(ItemTags.DAMPENS_VIBRATIONS);
 	}
 
-	public Entity getEventSource() {
-		return Util.map(this.getThrower(), this.world::getPlayerByUuid);
+	@Nullable
+	@Override
+	public Entity getOwner() {
+		return this.thrower != null && this.world instanceof ServerWorld serverWorld ? serverWorld.getEntity(this.thrower) : null;
 	}
 
 	@Override
@@ -195,7 +196,7 @@ public class ItemEntity extends Entity {
 	private void tryMerge(ItemEntity other) {
 		ItemStack itemStack = this.getStack();
 		ItemStack itemStack2 = other.getStack();
-		if (Objects.equals(this.getOwner(), other.getOwner()) && canMerge(itemStack, itemStack2)) {
+		if (Objects.equals(this.owner, other.owner) && canMerge(itemStack, itemStack2)) {
 			if (itemStack2.getCount() < itemStack.getCount()) {
 				merge(this, itemStack, other, itemStack2);
 			} else {
@@ -269,12 +270,12 @@ public class ItemEntity extends Entity {
 		nbt.putShort("Health", (short)this.health);
 		nbt.putShort("Age", (short)this.itemAge);
 		nbt.putShort("PickupDelay", (short)this.pickupDelay);
-		if (this.getThrower() != null) {
-			nbt.putUuid("Thrower", this.getThrower());
+		if (this.thrower != null) {
+			nbt.putUuid("Thrower", this.thrower);
 		}
 
-		if (this.getOwner() != null) {
-			nbt.putUuid("Owner", this.getOwner());
+		if (this.owner != null) {
+			nbt.putUuid("Owner", this.owner);
 		}
 
 		if (!this.getStack().isEmpty()) {
@@ -368,35 +369,8 @@ public class ItemEntity extends Entity {
 		}
 	}
 
-	/**
-	 * Returns the UUID of the entity to which belongs this item entity,
-	 * or {@code null} if there is not.
-	 * 
-	 * <p>If there is one, the owner is the only entity which can pick
-	 * up this item entity.
-	 */
-	@Nullable
-	public UUID getOwner() {
-		return this.owner;
-	}
-
-	/**
-	 * Sets the owner of this item entity to {@code owner}.
-	 * 
-	 * <p>Used when an item is given to an entity, but this entity
-	 * does not have enough space in its inventory.
-	 */
 	public void setOwner(@Nullable UUID owner) {
 		this.owner = owner;
-	}
-
-	/**
-	 * Returns the UUID of the entity which created this item entity
-	 * by throwing an item, or {@code null} if it was created otherwise.
-	 */
-	@Nullable
-	public UUID getThrower() {
-		return this.thrower;
 	}
 
 	/**

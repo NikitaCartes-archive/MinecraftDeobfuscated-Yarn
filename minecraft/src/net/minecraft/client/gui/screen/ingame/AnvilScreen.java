@@ -112,8 +112,21 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	}
 
 	@Override
+	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+		super.drawBackground(matrices, delta, mouseX, mouseY);
+		this.drawTexture(matrices, this.x + 59, this.y + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
+	}
+
+	@Override
 	public void renderForeground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.nameField.render(matrices, mouseX, mouseY, delta);
+	}
+
+	@Override
+	protected void drawInvalidRecipeArrow(MatrixStack matrices, int x, int y) {
+		if ((this.handler.getSlot(0).hasStack() || this.handler.getSlot(1).hasStack()) && !this.handler.getSlot(this.handler.getResultSlotIndex()).hasStack()) {
+			this.drawTexture(matrices, x + 99, y + 45, this.backgroundWidth, 0, 28, 21);
+		}
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -38,7 +39,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && i > 0;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 

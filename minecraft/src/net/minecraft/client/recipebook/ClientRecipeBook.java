@@ -20,6 +20,7 @@ import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import org.slf4j.Logger;
 
@@ -29,12 +30,15 @@ public class ClientRecipeBook extends RecipeBook {
 	private Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = ImmutableMap.of();
 	private List<RecipeResultCollection> orderedResults = ImmutableList.of();
 
-	public void reload(Iterable<Recipe<?>> recipes) {
+	public void reload(Iterable<Recipe<?>> recipes, DynamicRegistryManager registryManager) {
 		Map<RecipeBookGroup, List<List<Recipe<?>>>> map = toGroupedMap(recipes);
 		Map<RecipeBookGroup, List<RecipeResultCollection>> map2 = Maps.<RecipeBookGroup, List<RecipeResultCollection>>newHashMap();
 		Builder<RecipeResultCollection> builder = ImmutableList.builder();
 		map.forEach(
-			(group, recipesx) -> map2.put(group, (List)recipesx.stream().map(RecipeResultCollection::new).peek(builder::add).collect(ImmutableList.toImmutableList()))
+			(recipeBookGroup, list) -> map2.put(
+					recipeBookGroup,
+					(List)list.stream().map(recipesx -> new RecipeResultCollection(registryManager, recipesx)).peek(builder::add).collect(ImmutableList.toImmutableList())
+				)
 		);
 		RecipeBookGroup.SEARCH_MAP
 			.forEach(

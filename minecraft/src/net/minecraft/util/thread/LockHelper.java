@@ -71,7 +71,10 @@ public class LockHelper {
 	}
 
 	public static CrashException crash(String message, @Nullable Thread thread) {
-		String string = (String)Stream.of(Thread.currentThread(), thread).filter(Objects::nonNull).map(LockHelper::method_39936).collect(Collectors.joining("\n"));
+		String string = (String)Stream.of(Thread.currentThread(), thread)
+			.filter(Objects::nonNull)
+			.map(LockHelper::formatStackTraceForThread)
+			.collect(Collectors.joining("\n"));
 		String string2 = "Accessing " + message + " from multiple threads";
 		CrashReport crashReport = new CrashReport(string2, new IllegalStateException(string2));
 		CrashReportSection crashReportSection = crashReport.addElement("Thread dumps");
@@ -80,7 +83,7 @@ public class LockHelper {
 		return new CrashException(crashReport);
 	}
 
-	private static String method_39936(Thread thread) {
+	private static String formatStackTraceForThread(Thread thread) {
 		return thread.getName() + ": \n\tat " + (String)Arrays.stream(thread.getStackTrace()).map(Object::toString).collect(Collectors.joining("\n\tat "));
 	}
 }

@@ -19,7 +19,11 @@ public class SkeletonEntityRenderer extends BipedEntityRenderer<AbstractSkeleton
 
 	public SkeletonEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer, EntityModelLayer legArmorLayer, EntityModelLayer bodyArmorLayer) {
 		super(ctx, new SkeletonEntityModel<>(ctx.getPart(layer)), 0.5F);
-		this.addFeature(new ArmorFeatureRenderer<>(this, new SkeletonEntityModel(ctx.getPart(legArmorLayer)), new SkeletonEntityModel(ctx.getPart(bodyArmorLayer))));
+		this.addFeature(
+			new ArmorFeatureRenderer<>(
+				this, new SkeletonEntityModel(ctx.getPart(legArmorLayer)), new SkeletonEntityModel(ctx.getPart(bodyArmorLayer)), ctx.getModelManager()
+			)
+		);
 	}
 
 	public Identifier getTexture(AbstractSkeletonEntity abstractSkeletonEntity) {

@@ -68,7 +68,7 @@ public class ProtectionEnchantment extends Enchantment {
 	public static double transformExplosionKnockback(LivingEntity entity, double velocity) {
 		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.BLAST_PROTECTION, entity);
 		if (i > 0) {
-			velocity -= (double)MathHelper.floor(velocity * (double)((float)i * 0.15F));
+			velocity *= MathHelper.clamp(1.0 - (double)i * 0.15, 0.0, 1.0);
 		}
 
 		return velocity;

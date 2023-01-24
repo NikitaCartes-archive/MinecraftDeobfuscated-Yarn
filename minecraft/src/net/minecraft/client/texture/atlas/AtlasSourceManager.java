@@ -17,6 +17,7 @@ public class AtlasSourceManager {
 	public static final AtlasSourceType DIRECTORY = register("directory", DirectoryAtlasSource.CODEC);
 	public static final AtlasSourceType FILTER = register("filter", FilterAtlasSource.CODEC);
 	public static final AtlasSourceType UNSTITCH = register("unstitch", UnstitchAtlasSource.CODEC);
+	public static final AtlasSourceType PALETTED_PERMUTATIONS = register("paletted_permutations", PalettedPermutationsAtlasSource.CODEC);
 	public static Codec<AtlasSourceType> CODEC = Identifier.CODEC.flatXmap(id -> {
 		AtlasSourceType atlasSourceType = (AtlasSourceType)SOURCE_TYPE_BY_ID.get(id);
 		return atlasSourceType != null ? DataResult.success(atlasSourceType) : DataResult.error("Unknown type " + id);

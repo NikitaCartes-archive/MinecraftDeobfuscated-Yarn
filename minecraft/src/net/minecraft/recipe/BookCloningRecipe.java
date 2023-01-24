@@ -6,6 +6,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -41,7 +42,7 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && itemStack.hasNbt() && i > 0;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 

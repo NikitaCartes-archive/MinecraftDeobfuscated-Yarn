@@ -87,6 +87,9 @@ public final class ItemTags {
 	public static final TagKey<Item> HANGING_SIGNS = of("hanging_signs");
 	public static final TagKey<Item> CREEPER_IGNITERS = of("creeper_igniters");
 	public static final TagKey<Item> NOTEBLOCK_TOP_INSTRUMENTS = of("noteblock_top_instruments");
+	public static final TagKey<Item> TRIMMABLE_ARMOR = of("trimmable_armor");
+	public static final TagKey<Item> TRIM_MATERIALS = of("trim_materials");
+	public static final TagKey<Item> TRIM_TEMPLATES = of("trim_templates");
 
 	private ItemTags() {
 	}

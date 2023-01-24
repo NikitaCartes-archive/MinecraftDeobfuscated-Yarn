@@ -1736,7 +1736,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void triggerItemPickedUpByEntityCriteria(ItemEntity item) {
 		super.triggerItemPickedUpByEntityCriteria(item);
-		Entity entity = item.getThrower() != null ? this.getWorld().getEntity(item.getThrower()) : null;
+		Entity entity = item.getOwner();
 		if (entity != null) {
 			Criteria.THROWN_ITEM_PICKED_UP_BY_PLAYER.trigger(this, item.getStack(), entity);
 		}

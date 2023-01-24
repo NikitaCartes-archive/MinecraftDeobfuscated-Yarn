@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -88,7 +89,7 @@ public class GoatHornItem extends Item {
 
 	private Optional<? extends RegistryEntry<Instrument>> getInstrument(ItemStack stack) {
 		NbtCompound nbtCompound = stack.getNbt();
-		if (nbtCompound != null && nbtCompound.contains("instrument", 28)) {
+		if (nbtCompound != null && nbtCompound.contains("instrument", NbtElement.STRING_TYPE)) {
 			Identifier identifier = Identifier.tryParse(nbtCompound.getString("instrument"));
 			if (identifier != null) {
 				return Registries.INSTRUMENT.getEntry(RegistryKey.of(RegistryKeys.INSTRUMENT, identifier));

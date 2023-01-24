@@ -1245,9 +1245,7 @@ public class GameRenderer implements AutoCloseable {
 			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
 			this.client
 				.getItemRenderer()
-				.renderItem(
-					this.floatingItem, ModelTransformation.Mode.FIXED, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, matrixStack, immediate, 0
-				);
+				.renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate, this.client.world, 0);
 			matrixStack.pop();
 			immediate.draw();
 			RenderSystem.enableCull();

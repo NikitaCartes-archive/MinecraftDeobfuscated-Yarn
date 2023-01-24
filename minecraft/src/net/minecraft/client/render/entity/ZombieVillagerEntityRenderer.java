@@ -19,7 +19,8 @@ public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVill
 			new ArmorFeatureRenderer<>(
 				this,
 				new ZombieVillagerEntityModel(context.getPart(EntityModelLayers.ZOMBIE_VILLAGER_INNER_ARMOR)),
-				new ZombieVillagerEntityModel(context.getPart(EntityModelLayers.ZOMBIE_VILLAGER_OUTER_ARMOR))
+				new ZombieVillagerEntityModel(context.getPart(EntityModelLayers.ZOMBIE_VILLAGER_OUTER_ARMOR)),
+				context.getModelManager()
 			)
 		);
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, context.getResourceManager(), "zombie_villager"));

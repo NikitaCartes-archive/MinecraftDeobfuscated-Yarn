@@ -221,8 +221,8 @@ public class Explosion {
 						double ac = (1.0 - w) * ab;
 						entity.damage(this.getDamageSource(), (float)((int)((ac * ac + ac) / 2.0 * 7.0 * (double)q + 1.0)));
 						double ad = ac;
-						if (entity instanceof LivingEntity) {
-							ad = ProtectionEnchantment.transformExplosionKnockback((LivingEntity)entity, ac);
+						if (entity instanceof LivingEntity livingEntity) {
+							ad = ProtectionEnchantment.transformExplosionKnockback(livingEntity, ac);
 						}
 
 						entity.setVelocity(entity.getVelocity().add(x * ad, y * ad, z * ad));
@@ -353,7 +353,7 @@ public class Explosion {
 		if (this.entity == null) {
 			return null;
 		} else if (this.entity instanceof TntEntity tntEntity) {
-			return tntEntity.getCausingEntity();
+			return tntEntity.getOwner();
 		} else {
 			Entity entity = this.entity;
 			if (entity instanceof LivingEntity) {

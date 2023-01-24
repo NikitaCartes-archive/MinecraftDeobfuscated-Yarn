@@ -26,13 +26,13 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
-import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.text.OrderedText;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.SignType;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -158,11 +158,15 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 
 	static int getColor(SignBlockEntity sign) {
 		int i = sign.getTextColor().getSignColor();
-		double d = 0.4;
-		int j = (int)((double)NativeImage.getRed(i) * 0.4);
-		int k = (int)((double)NativeImage.getGreen(i) * 0.4);
-		int l = (int)((double)NativeImage.getBlue(i) * 0.4);
-		return i == DyeColor.BLACK.getSignColor() && sign.isGlowingText() ? -988212 : NativeImage.packColor(0, l, k, j);
+		if (i == DyeColor.BLACK.getSignColor() && sign.isGlowingText()) {
+			return -988212;
+		} else {
+			double d = 0.4;
+			int j = (int)((double)ColorHelper.Argb.getRed(i) * 0.4);
+			int k = (int)((double)ColorHelper.Argb.getGreen(i) * 0.4);
+			int l = (int)((double)ColorHelper.Argb.getBlue(i) * 0.4);
+			return ColorHelper.Argb.getArgb(0, j, k, l);
+		}
 	}
 
 	public static SignBlockEntityRenderer.SignModel createSignModel(EntityModelLoader entityModelLoader, SignType type) {

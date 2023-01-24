@@ -120,7 +120,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 			}
 
 			if (entity instanceof ItemEntity itemEntity) {
-				Entity var9 = itemEntity.getEventSource();
+				Entity var9 = itemEntity.getOwner();
 				if (var9 instanceof ServerPlayerEntity) {
 					return (ServerPlayerEntity)var9;
 				}

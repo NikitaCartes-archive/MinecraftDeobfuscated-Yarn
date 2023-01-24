@@ -109,7 +109,16 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 				int l = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_LIGHT_COORDINATE, i);
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
 				this.itemRenderer
-					.renderItem(itemStack, ModelTransformation.Mode.FIXED, l, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, itemFrameEntity.getId());
+					.renderItem(
+						itemStack,
+						ModelTransformation.Mode.FIXED,
+						l,
+						OverlayTexture.DEFAULT_UV,
+						matrixStack,
+						vertexConsumerProvider,
+						itemFrameEntity.world,
+						itemFrameEntity.getId()
+					);
 			}
 		}
 

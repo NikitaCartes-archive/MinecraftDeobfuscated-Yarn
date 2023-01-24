@@ -7,7 +7,6 @@ import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -22,7 +21,6 @@ public class SingleAtlasSource implements AtlasSource {
 				)
 				.apply(instance, SingleAtlasSource::new)
 	);
-	private final ResourceFinder FINDER = new ResourceFinder("textures", ".png");
 	private final Identifier resource;
 	private final Optional<Identifier> sprite;
 
@@ -33,7 +31,7 @@ public class SingleAtlasSource implements AtlasSource {
 
 	@Override
 	public void load(ResourceManager resourceManager, AtlasSource.SpriteRegions regions) {
-		Identifier identifier = this.FINDER.toResourcePath(this.resource);
+		Identifier identifier = RESOURCE_FINDER.toResourcePath(this.resource);
 		Optional<Resource> optional = resourceManager.getResource(identifier);
 		if (optional.isPresent()) {
 			regions.add((Identifier)this.sprite.orElse(this.resource), (Resource)optional.get());

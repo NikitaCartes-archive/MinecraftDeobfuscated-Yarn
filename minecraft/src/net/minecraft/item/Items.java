@@ -3,10 +3,10 @@ package net.minecraft.item;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.tag.BannerPatternTags;
@@ -782,7 +782,7 @@ public class Items {
 	);
 	public static final Item STRUCTURE_BLOCK = register(new OperatorOnlyBlockItem(Blocks.STRUCTURE_BLOCK, new Item.Settings().rarity(Rarity.EPIC)));
 	public static final Item JIGSAW = register(new OperatorOnlyBlockItem(Blocks.JIGSAW, new Item.Settings().rarity(Rarity.EPIC)));
-	public static final Item TURTLE_HELMET = register("turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, EquipmentSlot.HEAD, new Item.Settings()));
+	public static final Item TURTLE_HELMET = register("turtle_helmet", new ArmorItem(ArmorMaterials.TURTLE, ArmorItem.Type.HELMET, new Item.Settings()));
 	public static final Item SCUTE = register("scute", new Item(new Item.Settings()));
 	public static final Item FLINT_AND_STEEL = register("flint_and_steel", new FlintAndSteelItem(new Item.Settings().maxDamage(64)));
 	public static final Item APPLE = register("apple", new Item(new Item.Settings().food(FoodComponents.APPLE)));
@@ -842,39 +842,45 @@ public class Items {
 	public static final Item WHEAT_SEEDS = register("wheat_seeds", new AliasedBlockItem(Blocks.WHEAT, new Item.Settings()));
 	public static final Item WHEAT = register("wheat", new Item(new Item.Settings()));
 	public static final Item BREAD = register("bread", new Item(new Item.Settings().food(FoodComponents.BREAD)));
-	public static final Item LEATHER_HELMET = register("leather_helmet", new DyeableArmorItem(ArmorMaterials.LEATHER, EquipmentSlot.HEAD, new Item.Settings()));
+	public static final Item LEATHER_HELMET = register("leather_helmet", new DyeableArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.HELMET, new Item.Settings()));
 	public static final Item LEATHER_CHESTPLATE = register(
-		"leather_chestplate", new DyeableArmorItem(ArmorMaterials.LEATHER, EquipmentSlot.CHEST, new Item.Settings())
+		"leather_chestplate", new DyeableArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.CHESTPLATE, new Item.Settings())
 	);
-	public static final Item LEATHER_LEGGINGS = register("leather_leggings", new DyeableArmorItem(ArmorMaterials.LEATHER, EquipmentSlot.LEGS, new Item.Settings()));
-	public static final Item LEATHER_BOOTS = register("leather_boots", new DyeableArmorItem(ArmorMaterials.LEATHER, EquipmentSlot.FEET, new Item.Settings()));
-	public static final Item CHAINMAIL_HELMET = register("chainmail_helmet", new ArmorItem(ArmorMaterials.CHAIN, EquipmentSlot.HEAD, new Item.Settings()));
-	public static final Item CHAINMAIL_CHESTPLATE = register("chainmail_chestplate", new ArmorItem(ArmorMaterials.CHAIN, EquipmentSlot.CHEST, new Item.Settings()));
-	public static final Item CHAINMAIL_LEGGINGS = register("chainmail_leggings", new ArmorItem(ArmorMaterials.CHAIN, EquipmentSlot.LEGS, new Item.Settings()));
-	public static final Item CHAINMAIL_BOOTS = register("chainmail_boots", new ArmorItem(ArmorMaterials.CHAIN, EquipmentSlot.FEET, new Item.Settings()));
-	public static final Item IRON_HELMET = register("iron_helmet", new ArmorItem(ArmorMaterials.IRON, EquipmentSlot.HEAD, new Item.Settings()));
-	public static final Item IRON_CHESTPLATE = register("iron_chestplate", new ArmorItem(ArmorMaterials.IRON, EquipmentSlot.CHEST, new Item.Settings()));
-	public static final Item IRON_LEGGINGS = register("iron_leggings", new ArmorItem(ArmorMaterials.IRON, EquipmentSlot.LEGS, new Item.Settings()));
-	public static final Item IRON_BOOTS = register("iron_boots", new ArmorItem(ArmorMaterials.IRON, EquipmentSlot.FEET, new Item.Settings()));
-	public static final Item DIAMOND_HELMET = register("diamond_helmet", new ArmorItem(ArmorMaterials.DIAMOND, EquipmentSlot.HEAD, new Item.Settings()));
-	public static final Item DIAMOND_CHESTPLATE = register("diamond_chestplate", new ArmorItem(ArmorMaterials.DIAMOND, EquipmentSlot.CHEST, new Item.Settings()));
-	public static final Item DIAMOND_LEGGINGS = register("diamond_leggings", new ArmorItem(ArmorMaterials.DIAMOND, EquipmentSlot.LEGS, new Item.Settings()));
-	public static final Item DIAMOND_BOOTS = register("diamond_boots", new ArmorItem(ArmorMaterials.DIAMOND, EquipmentSlot.FEET, new Item.Settings()));
-	public static final Item GOLDEN_HELMET = register("golden_helmet", new ArmorItem(ArmorMaterials.GOLD, EquipmentSlot.HEAD, new Item.Settings()));
-	public static final Item GOLDEN_CHESTPLATE = register("golden_chestplate", new ArmorItem(ArmorMaterials.GOLD, EquipmentSlot.CHEST, new Item.Settings()));
-	public static final Item GOLDEN_LEGGINGS = register("golden_leggings", new ArmorItem(ArmorMaterials.GOLD, EquipmentSlot.LEGS, new Item.Settings()));
-	public static final Item GOLDEN_BOOTS = register("golden_boots", new ArmorItem(ArmorMaterials.GOLD, EquipmentSlot.FEET, new Item.Settings()));
+	public static final Item LEATHER_LEGGINGS = register(
+		"leather_leggings", new DyeableArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.LEGGINGS, new Item.Settings())
+	);
+	public static final Item LEATHER_BOOTS = register("leather_boots", new DyeableArmorItem(ArmorMaterials.LEATHER, ArmorItem.Type.BOOTS, new Item.Settings()));
+	public static final Item CHAINMAIL_HELMET = register("chainmail_helmet", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.HELMET, new Item.Settings()));
+	public static final Item CHAINMAIL_CHESTPLATE = register(
+		"chainmail_chestplate", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.CHESTPLATE, new Item.Settings())
+	);
+	public static final Item CHAINMAIL_LEGGINGS = register("chainmail_leggings", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.LEGGINGS, new Item.Settings()));
+	public static final Item CHAINMAIL_BOOTS = register("chainmail_boots", new ArmorItem(ArmorMaterials.CHAIN, ArmorItem.Type.BOOTS, new Item.Settings()));
+	public static final Item IRON_HELMET = register("iron_helmet", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.HELMET, new Item.Settings()));
+	public static final Item IRON_CHESTPLATE = register("iron_chestplate", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.CHESTPLATE, new Item.Settings()));
+	public static final Item IRON_LEGGINGS = register("iron_leggings", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.LEGGINGS, new Item.Settings()));
+	public static final Item IRON_BOOTS = register("iron_boots", new ArmorItem(ArmorMaterials.IRON, ArmorItem.Type.BOOTS, new Item.Settings()));
+	public static final Item DIAMOND_HELMET = register("diamond_helmet", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.HELMET, new Item.Settings()));
+	public static final Item DIAMOND_CHESTPLATE = register(
+		"diamond_chestplate", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.CHESTPLATE, new Item.Settings())
+	);
+	public static final Item DIAMOND_LEGGINGS = register("diamond_leggings", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.LEGGINGS, new Item.Settings()));
+	public static final Item DIAMOND_BOOTS = register("diamond_boots", new ArmorItem(ArmorMaterials.DIAMOND, ArmorItem.Type.BOOTS, new Item.Settings()));
+	public static final Item GOLDEN_HELMET = register("golden_helmet", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.HELMET, new Item.Settings()));
+	public static final Item GOLDEN_CHESTPLATE = register("golden_chestplate", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.CHESTPLATE, new Item.Settings()));
+	public static final Item GOLDEN_LEGGINGS = register("golden_leggings", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.LEGGINGS, new Item.Settings()));
+	public static final Item GOLDEN_BOOTS = register("golden_boots", new ArmorItem(ArmorMaterials.GOLD, ArmorItem.Type.BOOTS, new Item.Settings()));
 	public static final Item NETHERITE_HELMET = register(
-		"netherite_helmet", new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.HEAD, new Item.Settings().fireproof())
+		"netherite_helmet", new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.HELMET, new Item.Settings().fireproof())
 	);
 	public static final Item NETHERITE_CHESTPLATE = register(
-		"netherite_chestplate", new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.CHEST, new Item.Settings().fireproof())
+		"netherite_chestplate", new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.CHESTPLATE, new Item.Settings().fireproof())
 	);
 	public static final Item NETHERITE_LEGGINGS = register(
-		"netherite_leggings", new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.LEGS, new Item.Settings().fireproof())
+		"netherite_leggings", new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.LEGGINGS, new Item.Settings().fireproof())
 	);
 	public static final Item NETHERITE_BOOTS = register(
-		"netherite_boots", new ArmorItem(ArmorMaterials.NETHERITE, EquipmentSlot.FEET, new Item.Settings().fireproof())
+		"netherite_boots", new ArmorItem(ArmorMaterials.NETHERITE, ArmorItem.Type.BOOTS, new Item.Settings().fireproof())
 	);
 	public static final Item FLINT = register("flint", new Item(new Item.Settings()));
 	public static final Item PORKCHOP = register("porkchop", new Item(new Item.Settings().food(FoodComponents.PORKCHOP)));
@@ -1411,6 +1417,20 @@ public class Items {
 	public static final Item PEARLESCENT_FROGLIGHT = register(Blocks.PEARLESCENT_FROGLIGHT);
 	public static final Item FROGSPAWN = register(new PlaceableOnWaterItem(Blocks.FROGSPAWN, new Item.Settings()));
 	public static final Item ECHO_SHARD = register("echo_shard", new Item(new Item.Settings()));
+	public static final Item NETHERITE_UPGRADE_SMITHING_TEMPLATE = register("netherite_upgrade_smithing_template", SmithingTemplateItem.createNetheriteUpgrade());
+	public static final Item SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = register(
+		"sentry_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.SENTRY)
+	);
+	public static final Item DUNE_ARMOR_TRIM_SMITHING_TEMPLATE = register("dune_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.DUNE));
+	public static final Item COAST_ARMOR_TRIM_SMITHING_TEMPLATE = register("coast_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.COAST));
+	public static final Item WILD_ARMOR_TRIM_SMITHING_TEMPLATE = register("wild_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.WILD));
+	public static final Item WARD_ARMOR_TRIM_SMITHING_TEMPLATE = register("ward_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.WARD));
+	public static final Item EYE_ARMOR_TRIM_SMITHING_TEMPLATE = register("eye_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.EYE));
+	public static final Item VEX_ARMOR_TRIM_SMITHING_TEMPLATE = register("vex_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.VEX));
+	public static final Item TIDE_ARMOR_TRIM_SMITHING_TEMPLATE = register("tide_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.TIDE));
+	public static final Item SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE = register("snout_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.SNOUT));
+	public static final Item RIB_ARMOR_TRIM_SMITHING_TEMPLATE = register("rib_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.RIB));
+	public static final Item SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = register("spire_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.SPIRE));
 
 	private static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

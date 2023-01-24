@@ -21,10 +21,12 @@ import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.function.IntUnaryOperator;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.Untracker;
+import net.minecraft.util.math.ColorHelper;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.stb.STBIWriteCallback;
 import org.lwjgl.stb.STBImage;
@@ -39,27 +41,6 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public final class NativeImage implements AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	/**
-	 * The bit offset of the alpha data in the {@linkplain Format#RGBA RGBA} format.
-	 * Is {@value}. Notice the alpha data in {@linkplain Format#LUMINANCE_ALPHA
-	 * luminance-alpha} format has a different offset of {@code 8}.
-	 */
-	private static final int ALPHA_OFFSET = 24;
-	/**
-	 * The bit offset of the blue data in the {@linkplain Format#RGBA RGBA} or the
-	 * {@linkplain Format#RGB RGB} formats. Is {@value}.
-	 */
-	private static final int BLUE_OFFSET = 16;
-	/**
-	 * The bit offset of the green data in the {@linkplain Format#RGBA RGBA} or the
-	 * {@linkplain Format#RGB RGB} formats. Is {@value}.
-	 */
-	private static final int GREEN_OFFSET = 8;
-	/**
-	 * The bit offset of the red data in the {@linkplain Format#RGBA RGBA} or the
-	 * {@linkplain Format#RGB RGB} formats. Is {@value}.
-	 */
-	private static final int RED_OFFSET = 0;
 	private static final Set<StandardOpenOption> WRITE_TO_FILE_OPEN_OPTIONS = EnumSet.of(
 		StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING
 	);
@@ -245,6 +226,35 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
+	public NativeImage apply(IntUnaryOperator operator) {
+		if (this.format != NativeImage.Format.RGBA) {
+			throw new IllegalArgumentException(String.format(Locale.ROOT, "function application only works on RGBA images; have %s", this.format));
+		} else {
+			this.checkAllocated();
+			NativeImage nativeImage = new NativeImage(this.width, this.height, false);
+			int i = this.width * this.height;
+			IntBuffer intBuffer = MemoryUtil.memIntBuffer(this.pointer, i);
+			IntBuffer intBuffer2 = MemoryUtil.memIntBuffer(nativeImage.pointer, i);
+
+			for (int j = 0; j < i; j++) {
+				intBuffer2.put(j, operator.applyAsInt(intBuffer.get(j)));
+			}
+
+			return nativeImage;
+		}
+	}
+
+	public int[] copyPixelsRgba() {
+		if (this.format != NativeImage.Format.RGBA) {
+			throw new IllegalArgumentException(String.format(Locale.ROOT, "getPixelsRGBA only works on RGBA images; have %s", this.format));
+		} else {
+			this.checkAllocated();
+			int[] is = new int[this.width * this.height];
+			MemoryUtil.memIntBuffer(this.pointer, this.width * this.height).get(is);
+			return is;
+		}
+	}
+
 	public void setLuminance(int x, int y, byte luminance) {
 		RenderSystem.assertOnRenderThread();
 		if (!this.format.hasLuminance()) {
@@ -310,14 +320,14 @@ public final class NativeImage implements AutoCloseable {
 			throw new UnsupportedOperationException("Can only call blendPixel with RGBA format");
 		} else {
 			int i = this.getColor(x, y);
-			float f = (float)getAlpha(color) / 255.0F;
-			float g = (float)getBlue(color) / 255.0F;
-			float h = (float)getGreen(color) / 255.0F;
-			float j = (float)getRed(color) / 255.0F;
-			float k = (float)getAlpha(i) / 255.0F;
-			float l = (float)getBlue(i) / 255.0F;
-			float m = (float)getGreen(i) / 255.0F;
-			float n = (float)getRed(i) / 255.0F;
+			float f = (float)ColorHelper.Abgr.getAlpha(color) / 255.0F;
+			float g = (float)ColorHelper.Abgr.getRed(color) / 255.0F;
+			float h = (float)ColorHelper.Abgr.getGreen(color) / 255.0F;
+			float j = (float)ColorHelper.Abgr.getBlue(color) / 255.0F;
+			float k = (float)ColorHelper.Abgr.getAlpha(i) / 255.0F;
+			float l = (float)ColorHelper.Abgr.getRed(i) / 255.0F;
+			float m = (float)ColorHelper.Abgr.getGreen(i) / 255.0F;
+			float n = (float)ColorHelper.Abgr.getBlue(i) / 255.0F;
 			float p = 1.0F - f;
 			float q = f * f + k * p;
 			float r = g * f + l * p;
@@ -343,7 +353,7 @@ public final class NativeImage implements AutoCloseable {
 			int v = (int)(r * 255.0F);
 			int w = (int)(s * 255.0F);
 			int z = (int)(t * 255.0F);
-			this.setColor(x, y, packColor(u, v, w, z));
+			this.setColor(x, y, ColorHelper.Abgr.getAbgr(u, v, w, z));
 		}
 	}
 
@@ -358,12 +368,9 @@ public final class NativeImage implements AutoCloseable {
 			for (int i = 0; i < this.getHeight(); i++) {
 				for (int j = 0; j < this.getWidth(); j++) {
 					int k = this.getColor(j, i);
-					int l = getAlpha(k);
-					int m = getBlue(k);
-					int n = getGreen(k);
-					int o = getRed(k);
-					int p = l << 24 | o << 16 | n << 8 | m;
-					is[j + i * this.getWidth()] = p;
+					is[j + i * this.getWidth()] = ColorHelper.Argb.getArgb(
+						ColorHelper.Abgr.getAlpha(k), ColorHelper.Abgr.getBlue(k), ColorHelper.Abgr.getGreen(k), ColorHelper.Abgr.getRed(k)
+					);
 				}
 			}
 
@@ -694,30 +701,6 @@ public final class NativeImage implements AutoCloseable {
 		}
 
 		return var4;
-	}
-
-	public static int getAlpha(int color) {
-		return color >> 24 & 0xFF;
-	}
-
-	public static int getRed(int color) {
-		return color >> 0 & 0xFF;
-	}
-
-	public static int getGreen(int color) {
-		return color >> 8 & 0xFF;
-	}
-
-	public static int getBlue(int color) {
-		return color >> 16 & 0xFF;
-	}
-
-	/**
-	 * The resulting color of this operation is stored as RGBA from least to most
-	 * significant bits, or from smallest to biggest bits.
-	 */
-	public static int packColor(int alpha, int blue, int green, int red) {
-		return (alpha & 0xFF) << 24 | (blue & 0xFF) << 16 | (green & 0xFF) << 8 | (red & 0xFF) << 0;
 	}
 
 	@Environment(EnvType.CLIENT)

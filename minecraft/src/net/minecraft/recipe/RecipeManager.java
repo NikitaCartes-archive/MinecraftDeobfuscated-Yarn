@@ -153,7 +153,7 @@ public class RecipeManager extends JsonDataLoader {
 			.values()
 			.stream()
 			.filter(recipe -> recipe.matches(inventory, world))
-			.sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey()))
+			.sorted(Comparator.comparing(recipe -> recipe.getOutput(world.getRegistryManager()).getTranslationKey()))
 			.collect(Collectors.toList());
 	}
 

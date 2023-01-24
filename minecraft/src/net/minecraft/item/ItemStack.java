@@ -41,6 +41,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -1005,6 +1006,10 @@ public final class ItemStack {
 		}
 
 		if (this.hasNbt()) {
+			if (isSectionVisible(i, ItemStack.TooltipSection.UPGRADES) && player != null) {
+				ArmorTrim.appendTooltip(this, player.world.getRegistryManager(), list);
+			}
+
 			if (isSectionVisible(i, ItemStack.TooltipSection.ENCHANTMENTS)) {
 				appendEnchantments(list, this.getEnchantments());
 			}
@@ -1491,7 +1496,8 @@ public final class ItemStack {
 		CAN_DESTROY,
 		CAN_PLACE,
 		ADDITIONAL,
-		DYE;
+		DYE,
+		UPGRADES;
 
 		private final int flag = 1 << this.ordinal();
 

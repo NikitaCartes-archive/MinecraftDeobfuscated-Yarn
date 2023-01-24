@@ -82,7 +82,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		map.put(DyeColor.BLACK, Blocks.BLACK_WOOL);
 	});
 	private static final Map<DyeColor, float[]> COLORS = Maps.newEnumMap(
-		(Map)Arrays.stream(DyeColor.values()).collect(Collectors.toMap(dyeColor -> dyeColor, SheepEntity::getDyedColor))
+		(Map)Arrays.stream(DyeColor.values()).collect(Collectors.toMap(color -> color, SheepEntity::getDyedColor))
 	);
 	private int eatGrassTimer;
 	private EatGrassGoal eatGrassGoal;
@@ -347,7 +347,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		return (DyeColor)this.world
 			.getRecipeManager()
 			.getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world)
-			.map(recipe -> recipe.craft(craftingInventory))
+			.map(recipe -> recipe.craft(craftingInventory, this.world.getRegistryManager()))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)

@@ -115,13 +115,13 @@ public abstract class VoxelSet {
 		return this.getSize(Direction.Axis.Z);
 	}
 
-	public void forEachEdge(VoxelSet.PositionBiConsumer positionBiConsumer, boolean bl) {
-		this.forEachEdge(positionBiConsumer, AxisCycleDirection.NONE, bl);
-		this.forEachEdge(positionBiConsumer, AxisCycleDirection.FORWARD, bl);
-		this.forEachEdge(positionBiConsumer, AxisCycleDirection.BACKWARD, bl);
+	public void forEachEdge(VoxelSet.PositionBiConsumer callback, boolean coalesce) {
+		this.forEachEdge(callback, AxisCycleDirection.NONE, coalesce);
+		this.forEachEdge(callback, AxisCycleDirection.FORWARD, coalesce);
+		this.forEachEdge(callback, AxisCycleDirection.BACKWARD, coalesce);
 	}
 
-	private void forEachEdge(VoxelSet.PositionBiConsumer positionBiConsumer, AxisCycleDirection direction, boolean bl) {
+	private void forEachEdge(VoxelSet.PositionBiConsumer callback, AxisCycleDirection direction, boolean coalesce) {
 		AxisCycleDirection axisCycleDirection = direction.opposite();
 		int i = this.getSize(axisCycleDirection.cycle(Direction.Axis.X));
 		int j = this.getSize(axisCycleDirection.cycle(Direction.Axis.Y));
@@ -145,12 +145,12 @@ public abstract class VoxelSet {
 					}
 
 					if (p == 1 || p == 3 || p == 2 && (q & 1) == 0) {
-						if (bl) {
+						if (coalesce) {
 							if (n == -1) {
 								n = o;
 							}
 						} else {
-							positionBiConsumer.consume(
+							callback.consume(
 								axisCycleDirection.choose(l, m, o, Direction.Axis.X),
 								axisCycleDirection.choose(l, m, o, Direction.Axis.Y),
 								axisCycleDirection.choose(l, m, o, Direction.Axis.Z),
@@ -160,7 +160,7 @@ public abstract class VoxelSet {
 							);
 						}
 					} else if (n != -1) {
-						positionBiConsumer.consume(
+						callback.consume(
 							axisCycleDirection.choose(l, m, n, Direction.Axis.X),
 							axisCycleDirection.choose(l, m, n, Direction.Axis.Y),
 							axisCycleDirection.choose(l, m, n, Direction.Axis.Z),
@@ -175,8 +175,8 @@ public abstract class VoxelSet {
 		}
 	}
 
-	public void forEachBox(VoxelSet.PositionBiConsumer consumer, boolean largest) {
-		BitSetVoxelSet.method_31941(this, consumer, largest);
+	public void forEachBox(VoxelSet.PositionBiConsumer consumer, boolean coalesce) {
+		BitSetVoxelSet.forEachBox(this, consumer, coalesce);
 	}
 
 	public void forEachDirection(VoxelSet.PositionConsumer positionConsumer) {

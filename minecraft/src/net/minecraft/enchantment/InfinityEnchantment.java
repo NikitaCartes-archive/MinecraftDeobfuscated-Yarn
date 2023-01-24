@@ -18,11 +18,6 @@ public class InfinityEnchantment extends Enchantment {
 	}
 
 	@Override
-	public int getMaxLevel() {
-		return 1;
-	}
-
-	@Override
 	public boolean canAccept(Enchantment other) {
 		return other instanceof MendingEnchantment ? false : super.canAccept(other);
 	}

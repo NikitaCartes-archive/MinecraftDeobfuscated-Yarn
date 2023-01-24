@@ -9,6 +9,8 @@ import com.mojang.serialization.codecs.UnboundedMapCodec;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+import net.minecraft.item.trim.ArmorTrimMaterial;
+import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -20,6 +22,8 @@ public class SerializableRegistries {
 		Builder<RegistryKey<? extends Registry<?>>, SerializableRegistries.Info<?>> builder = ImmutableMap.builder();
 		add(builder, RegistryKeys.BIOME, Biome.NETWORK_CODEC);
 		add(builder, RegistryKeys.MESSAGE_TYPE, MessageType.CODEC);
+		add(builder, RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC);
+		add(builder, RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC);
 		add(builder, RegistryKeys.DIMENSION_TYPE, DimensionType.CODEC);
 		return builder.build();
 	});

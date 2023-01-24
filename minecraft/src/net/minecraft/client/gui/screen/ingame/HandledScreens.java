@@ -81,6 +81,7 @@ public class HandledScreens {
 		register(ScreenHandlerType.LOOM, LoomScreen::new);
 		register(ScreenHandlerType.MERCHANT, MerchantScreen::new);
 		register(ScreenHandlerType.SHULKER_BOX, ShulkerBoxScreen::new);
+		register(ScreenHandlerType.LEGACY_SMITHING, LegacySmithingScreen::new);
 		register(ScreenHandlerType.SMITHING, SmithingScreen::new);
 		register(ScreenHandlerType.SMOKER, SmokerScreen::new);
 		register(ScreenHandlerType.CARTOGRAPHY_TABLE, CartographyTableScreen::new);

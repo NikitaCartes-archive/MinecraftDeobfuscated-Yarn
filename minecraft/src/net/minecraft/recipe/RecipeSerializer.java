@@ -48,7 +48,9 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	RecipeSerializer<SmokingRecipe> SMOKING = register("smoking", new CookingRecipeSerializer<>(SmokingRecipe::new, 100));
 	RecipeSerializer<CampfireCookingRecipe> CAMPFIRE_COOKING = register("campfire_cooking", new CookingRecipeSerializer<>(CampfireCookingRecipe::new, 100));
 	RecipeSerializer<StonecuttingRecipe> STONECUTTING = register("stonecutting", new CuttingRecipe.Serializer<>(StonecuttingRecipe::new));
-	RecipeSerializer<SmithingRecipe> SMITHING = register("smithing", new SmithingRecipe.Serializer());
+	RecipeSerializer<LegacySmithingRecipe> SMITHING = register("smithing", new LegacySmithingRecipe.Serializer());
+	RecipeSerializer<SmithingTransformRecipe> SMITHING_TRANSFORM = register("smithing_transform", new SmithingTransformRecipe.Serializer());
+	RecipeSerializer<SmithingTrimRecipe> SMITHING_TRIM = register("smithing_trim", new SmithingTrimRecipe.Serializer());
 
 	/**
 	 * Reads a recipe from a JSON object.

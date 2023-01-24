@@ -29,7 +29,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
-public class AreaEffectCloudEntity extends Entity {
+public class AreaEffectCloudEntity extends Entity implements Ownable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_29972 = 5;
 	private static final TrackedData<Float> RADIUS = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.FLOAT);

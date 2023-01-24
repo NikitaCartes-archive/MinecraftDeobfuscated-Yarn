@@ -29,6 +29,7 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
@@ -259,7 +260,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 			}
 
 			int i = blockEntity.getMaxCountPerStack();
-			if (!blockEntity.isBurning() && canAcceptRecipeOutput(recipe, blockEntity.inventory, i)) {
+			if (!blockEntity.isBurning() && canAcceptRecipeOutput(world.getRegistryManager(), recipe, blockEntity.inventory, i)) {
 				blockEntity.burnTime = blockEntity.getFuelTime(itemStack);
 				blockEntity.fuelTime = blockEntity.burnTime;
 				if (blockEntity.isBurning()) {
@@ -275,12 +276,12 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 				}
 			}
 
-			if (blockEntity.isBurning() && canAcceptRecipeOutput(recipe, blockEntity.inventory, i)) {
+			if (blockEntity.isBurning() && canAcceptRecipeOutput(world.getRegistryManager(), recipe, blockEntity.inventory, i)) {
 				blockEntity.cookTime++;
 				if (blockEntity.cookTime == blockEntity.cookTimeTotal) {
 					blockEntity.cookTime = 0;
 					blockEntity.cookTimeTotal = getCookTime(world, blockEntity);
-					if (craftRecipe(recipe, blockEntity.inventory, i)) {
+					if (craftRecipe(world.getRegistryManager(), recipe, blockEntity.inventory, i)) {
 						blockEntity.setLastRecipe(recipe);
 					}
 
@@ -304,9 +305,9 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	}
 
-	private static boolean canAcceptRecipeOutput(@Nullable Recipe<?> recipe, DefaultedList<ItemStack> slots, int count) {
+	private static boolean canAcceptRecipeOutput(DynamicRegistryManager registryManager, @Nullable Recipe<?> recipe, DefaultedList<ItemStack> slots, int count) {
 		if (!slots.get(0).isEmpty() && recipe != null) {
-			ItemStack itemStack = recipe.getOutput();
+			ItemStack itemStack = recipe.getOutput(registryManager);
 			if (itemStack.isEmpty()) {
 				return false;
 			} else {
@@ -324,10 +325,10 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		}
 	}
 
-	private static boolean craftRecipe(@Nullable Recipe<?> recipe, DefaultedList<ItemStack> slots, int count) {
-		if (recipe != null && canAcceptRecipeOutput(recipe, slots, count)) {
+	private static boolean craftRecipe(DynamicRegistryManager registryManager, @Nullable Recipe<?> recipe, DefaultedList<ItemStack> slots, int count) {
+		if (recipe != null && canAcceptRecipeOutput(registryManager, recipe, slots, count)) {
 			ItemStack itemStack = slots.get(0);
-			ItemStack itemStack2 = recipe.getOutput();
+			ItemStack itemStack2 = recipe.getOutput(registryManager);
 			ItemStack itemStack3 = slots.get(2);
 			if (itemStack3.isEmpty()) {
 				slots.set(2, itemStack2.copy());

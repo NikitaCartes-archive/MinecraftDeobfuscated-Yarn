@@ -49,7 +49,7 @@ public class AtlasLoader {
 			}
 
 			@Override
-			public void method_47671(Predicate<Identifier> predicate) {
+			public void removeIf(Predicate<Identifier> predicate) {
 				Iterator<Entry<Identifier, AtlasSource.SpriteRegion>> iterator = map.entrySet().iterator();
 
 				while (iterator.hasNext()) {

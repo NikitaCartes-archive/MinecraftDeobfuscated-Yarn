@@ -158,10 +158,27 @@ public abstract class RecipeProvider implements DataProvider {
 		}
 	}
 
-	protected static void offerNetheriteUpgradeRecipe(Consumer<RecipeJsonProvider> exporter, Item input, RecipeCategory category, Item result) {
-		SmithingRecipeJsonBuilder.create(Ingredient.ofItems(input), Ingredient.ofItems(Items.NETHERITE_INGOT), category, result)
+	@Deprecated
+	protected static void offerLegacyNetheriteUpgradeRecipe(Consumer<RecipeJsonProvider> exporter, Item input, RecipeCategory category, Item result) {
+		LegacySmithingRecipeJsonBuilder.create(Ingredient.ofItems(input), Ingredient.ofItems(Items.NETHERITE_INGOT), category, result)
 			.criterion("has_netherite_ingot", conditionsFromItem(Items.NETHERITE_INGOT))
 			.offerTo(exporter, getItemPath(result) + "_smithing");
+	}
+
+	protected static void offerNetheriteUpgradeRecipe(Consumer<RecipeJsonProvider> exporter, Item input, RecipeCategory category, Item result) {
+		SmithingTransformRecipeJsonBuilder.create(
+				Ingredient.ofItems(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), Ingredient.ofItems(input), Ingredient.ofItems(Items.NETHERITE_INGOT), category, result
+			)
+			.criterion("has_netherite_ingot", conditionsFromItem(Items.NETHERITE_INGOT))
+			.offerTo(exporter, getItemPath(result) + "_smithing");
+	}
+
+	protected static void offerSmithingTrimRecipe(Consumer<RecipeJsonProvider> exporter, Item template) {
+		SmithingTrimRecipeJsonBuilder.create(
+				Ingredient.ofItems(template), Ingredient.fromTag(ItemTags.TRIMMABLE_ARMOR), Ingredient.fromTag(ItemTags.TRIM_MATERIALS), RecipeCategory.MISC
+			)
+			.criterion("has_smithing_trim_template", conditionsFromItem(template))
+			.offerTo(exporter, getItemPath(template) + "_smithing_trim");
 	}
 
 	protected static void offer2x2CompactingRecipe(Consumer<RecipeJsonProvider> exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input) {
@@ -554,6 +571,30 @@ public abstract class RecipeProvider implements DataProvider {
 			.group(compactingGroup)
 			.criterion(hasItem(baseItem), conditionsFromItem(baseItem))
 			.offerTo(exporter, new Identifier(compactingId));
+	}
+
+	protected static void offerSmithingTemplateCopyingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible template, TagKey<Item> resource) {
+		ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, template, 2)
+			.input('#', Items.DIAMOND)
+			.input('C', resource)
+			.input('S', template)
+			.pattern("#S#")
+			.pattern("#C#")
+			.pattern("###")
+			.criterion(hasItem(template), conditionsFromItem(template))
+			.offerTo(exporter);
+	}
+
+	protected static void offerSmithingTemplateCopyingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible template, ItemConvertible resource) {
+		ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, template, 2)
+			.input('#', Items.DIAMOND)
+			.input('C', resource)
+			.input('S', template)
+			.pattern("#S#")
+			.pattern("#C#")
+			.pattern("###")
+			.criterion(hasItem(template), conditionsFromItem(template))
+			.offerTo(exporter);
 	}
 
 	protected static void generateCookingRecipes(

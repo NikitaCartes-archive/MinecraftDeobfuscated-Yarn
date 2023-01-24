@@ -531,7 +531,7 @@ public class DebugHud extends DrawableHelper {
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 
 		for (Matrix4f matrix4f = AffineTransformation.identity().getMatrix(); k != j; k = metricsData.wrapIndex(k + 1)) {
-			int t = metricsData.method_15248(ls[k], showFps ? 30 : 60, showFps ? 60 : 20);
+			int t = metricsData.scaleSample(ls[k], showFps ? 30 : 60, showFps ? 60 : 20);
 			int u = showFps ? 100 : 60;
 			int v = this.getMetricsLineColor(MathHelper.clamp(t, 0, u), 0, u / 2, u);
 			int w = v >> 24 & 0xFF;

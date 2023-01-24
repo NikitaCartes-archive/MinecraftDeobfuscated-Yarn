@@ -6,6 +6,7 @@ import net.minecraft.item.BannerItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -60,7 +61,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		return itemStack != null && itemStack2 != null;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
 		for (int i = 0; i < craftingInventory.size(); i++) {
 			ItemStack itemStack = craftingInventory.getStack(i);
 			if (!itemStack.isEmpty()) {

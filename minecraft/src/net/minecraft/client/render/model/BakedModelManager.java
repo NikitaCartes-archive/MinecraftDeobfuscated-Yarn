@@ -57,6 +57,8 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 		new Identifier("signs"),
 		TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE,
 		new Identifier("shulker_boxes"),
+		TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE,
+		new Identifier("armor_trims"),
 		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,
 		new Identifier("blocks")
 	);

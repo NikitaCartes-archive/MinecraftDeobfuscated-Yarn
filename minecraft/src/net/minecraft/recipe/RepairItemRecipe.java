@@ -10,6 +10,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
@@ -38,7 +39,7 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		return list.size() == 2;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
 		for (int i = 0; i < craftingInventory.size(); i++) {

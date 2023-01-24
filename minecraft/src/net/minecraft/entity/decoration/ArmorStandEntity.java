@@ -636,7 +636,7 @@ public class ArmorStandEntity extends LivingEntity {
 		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 1) != 0;
 	}
 
-	private void setShowArms(boolean showArms) {
+	public void setShowArms(boolean showArms) {
 		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), SHOW_ARMS_FLAG, showArms));
 	}
 
@@ -644,7 +644,7 @@ public class ArmorStandEntity extends LivingEntity {
 		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 4) != 0;
 	}
 
-	private void setHideBasePlate(boolean hideBasePlate) {
+	public void setHideBasePlate(boolean hideBasePlate) {
 		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), HIDE_BASE_PLATE_FLAG, hideBasePlate));
 	}
 

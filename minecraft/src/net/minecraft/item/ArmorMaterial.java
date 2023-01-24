@@ -1,13 +1,12 @@
 package net.minecraft.item;
 
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
 
 public interface ArmorMaterial {
-	int getDurability(EquipmentSlot slot);
+	int getDurability(ArmorItem.Type type);
 
-	int getProtectionAmount(EquipmentSlot slot);
+	int getProtection(ArmorItem.Type type);
 
 	int getEnchantability();
 
@@ -20,4 +19,6 @@ public interface ArmorMaterial {
 	float getToughness();
 
 	float getKnockbackResistance();
+
+	boolean isTrimmable();
 }

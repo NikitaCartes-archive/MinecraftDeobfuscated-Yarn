@@ -595,7 +595,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(this.blockEntityRenderDispatcher);
 		BuiltinModelItemRenderer builtinModelItemRenderer = new BuiltinModelItemRenderer(this.blockEntityRenderDispatcher, this.entityModelLoader);
 		this.resourceManager.registerReloader(builtinModelItemRenderer);
-		this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
+		this.itemRenderer = new ItemRenderer(this, this.textureManager, this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
 		this.resourceManager.registerReloader(this.itemRenderer);
 		this.bufferBuilders = new BufferBuilderStorage();
 		this.socialInteractionsManager = new SocialInteractionsManager(this, this.userApiService);
@@ -846,10 +846,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				resultCollections -> new TextSearchProvider(
 						resultCollection -> resultCollection.getAllRecipes()
 								.stream()
-								.flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.BASIC).stream())
+								.flatMap(recipe -> recipe.getOutput(resultCollection.getRegistryManager()).getTooltip(null, TooltipContext.Default.BASIC).stream())
 								.map(text -> Formatting.strip(text.getString()).trim())
 								.filter(text -> !text.isEmpty()),
-						resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> Registries.ITEM.getId(recipe.getOutput().getItem())),
+						resultCollection -> resultCollection.getAllRecipes()
+								.stream()
+								.map(recipe -> Registries.ITEM.getId(recipe.getOutput(resultCollection.getRegistryManager()).getItem())),
 						resultCollections
 					)
 			);

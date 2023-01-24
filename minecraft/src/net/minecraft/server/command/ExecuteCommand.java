@@ -49,6 +49,7 @@ import net.minecraft.command.argument.SwizzleArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Ownable;
 import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -826,6 +827,10 @@ public class ExecuteCommand {
 			)
 			.then(CommandManager.literal("vehicle").fork(node, createEntityModifier(entity -> Optional.ofNullable(entity.getVehicle()))))
 			.then(CommandManager.literal("controller").fork(node, createEntityModifier(entity -> Optional.ofNullable(entity.getPrimaryPassenger()))))
+			.then(
+				CommandManager.literal("origin")
+					.fork(node, createEntityModifier(entity -> entity instanceof Ownable ownable ? Optional.ofNullable(ownable.getOwner()) : Optional.empty()))
+			)
 			.then(CommandManager.literal("passengers").fork(node, createMultiEntityModifier(entity -> entity.getPassengerList().stream())));
 	}
 

@@ -8,7 +8,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
 
-public class TntEntity extends Entity {
+public class TntEntity extends Entity implements Ownable {
 	private static final TrackedData<Integer> FUSE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final int DEFAULT_FUSE = 80;
 	@Nullable
@@ -89,7 +89,7 @@ public class TntEntity extends Entity {
 	}
 
 	@Nullable
-	public LivingEntity getCausingEntity() {
+	public LivingEntity getOwner() {
 		return this.causingEntity;
 	}
 

@@ -3,6 +3,7 @@ package net.minecraft.item;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -21,29 +22,30 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 public class ArmorItem extends Item implements Wearable {
-	private static final UUID[] MODIFIERS = new UUID[]{
-		UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"),
-		UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"),
-		UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"),
-		UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")
-	};
+	private static final EnumMap<ArmorItem.Type, UUID> MODIFIERS = Util.make(new EnumMap(ArmorItem.Type.class), uuidMap -> {
+		uuidMap.put(ArmorItem.Type.BOOTS, UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"));
+		uuidMap.put(ArmorItem.Type.LEGGINGS, UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"));
+		uuidMap.put(ArmorItem.Type.CHESTPLATE, UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"));
+		uuidMap.put(ArmorItem.Type.HELMET, UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150"));
+	});
 	public static final DispenserBehavior DISPENSER_BEHAVIOR = new ItemDispenserBehavior() {
 		@Override
 		protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 			return ArmorItem.dispenseArmor(pointer, stack) ? stack : super.dispenseSilently(pointer, stack);
 		}
 	};
-	protected final EquipmentSlot slot;
+	protected final ArmorItem.Type type;
 	private final int protection;
 	private final float toughness;
 	protected final float knockbackResistance;
-	protected final ArmorMaterial type;
+	protected final ArmorMaterial material;
 	private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
 	public static boolean dispenseArmor(BlockPointer pointer, ItemStack armor) {
@@ -66,16 +68,16 @@ public class ArmorItem extends Item implements Wearable {
 		}
 	}
 
-	public ArmorItem(ArmorMaterial material, EquipmentSlot slot, Item.Settings settings) {
-		super(settings.maxDamageIfAbsent(material.getDurability(slot)));
-		this.type = material;
-		this.slot = slot;
-		this.protection = material.getProtectionAmount(slot);
+	public ArmorItem(ArmorMaterial material, ArmorItem.Type type, Item.Settings settings) {
+		super(settings.maxDamageIfAbsent(material.getDurability(type)));
+		this.material = material;
+		this.type = type;
+		this.protection = material.getProtection(type);
 		this.toughness = material.getToughness();
 		this.knockbackResistance = material.getKnockbackResistance();
 		DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
 		Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
-		UUID uUID = MODIFIERS[slot.getEntitySlotId()];
+		UUID uUID = (UUID)MODIFIERS.get(type);
 		builder.put(
 			EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(uUID, "Armor modifier", (double)this.protection, EntityAttributeModifier.Operation.ADDITION)
 		);
@@ -93,22 +95,26 @@ public class ArmorItem extends Item implements Wearable {
 		this.attributeModifiers = builder.build();
 	}
 
+	public ArmorItem.Type getType() {
+		return this.type;
+	}
+
 	public EquipmentSlot getSlotType() {
-		return this.slot;
+		return this.type.getEquipmentSlot();
 	}
 
 	@Override
 	public int getEnchantability() {
-		return this.type.getEnchantability();
+		return this.material.getEnchantability();
 	}
 
 	public ArmorMaterial getMaterial() {
-		return this.type;
+		return this.material;
 	}
 
 	@Override
 	public boolean canRepair(ItemStack stack, ItemStack ingredient) {
-		return this.type.getRepairIngredient().test(ingredient) || super.canRepair(stack, ingredient);
+		return this.material.getRepairIngredient().test(ingredient) || super.canRepair(stack, ingredient);
 	}
 
 	@Override
@@ -131,7 +137,7 @@ public class ArmorItem extends Item implements Wearable {
 
 	@Override
 	public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
-		return slot == this.slot ? this.attributeModifiers : super.getAttributeModifiers(slot);
+		return slot == this.type.getEquipmentSlot() ? this.attributeModifiers : super.getAttributeModifiers(slot);
 	}
 
 	public int getProtection() {
@@ -146,5 +152,28 @@ public class ArmorItem extends Item implements Wearable {
 	@Override
 	public SoundEvent getEquipSound() {
 		return this.getMaterial().getEquipSound();
+	}
+
+	public static enum Type {
+		HELMET(EquipmentSlot.HEAD, "helmet"),
+		CHESTPLATE(EquipmentSlot.CHEST, "chestplate"),
+		LEGGINGS(EquipmentSlot.LEGS, "leggings"),
+		BOOTS(EquipmentSlot.FEET, "boots");
+
+		private final EquipmentSlot equipmentSlot;
+		private final String name;
+
+		private Type(EquipmentSlot equipmentSlot, String name) {
+			this.equipmentSlot = equipmentSlot;
+			this.name = name;
+		}
+
+		public EquipmentSlot getEquipmentSlot() {
+			return this.equipmentSlot;
+		}
+
+		public String getName() {
+			return this.name;
+		}
 	}
 }

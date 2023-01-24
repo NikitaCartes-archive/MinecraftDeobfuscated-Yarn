@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.LightBlock;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,8 +19,13 @@ import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.trim.ArmorTrim;
+import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.GlobalPos;
@@ -80,6 +86,22 @@ public class ModelPredicateProviderRegistry {
 					? ((PlayerEntity)entity).getItemCooldownManager().getCooldownProgress(stack.getItem(), 0.0F)
 					: 0.0F
 		);
+		ClampedModelPredicateProvider clampedModelPredicateProvider = (stack, world, entity, seed) -> {
+			if (!stack.isIn(ItemTags.TRIMMABLE_ARMOR)) {
+				return Float.NEGATIVE_INFINITY;
+			} else if (world == null) {
+				return 0.0F;
+			} else {
+				return !world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)
+					? Float.NEGATIVE_INFINITY
+					: (Float)ArmorTrim.getTrim(world.getRegistryManager(), stack)
+						.map(ArmorTrim::getMaterial)
+						.map(RegistryEntry::value)
+						.map(ArmorTrimMaterial::itemModelIndex)
+						.orElse(0.0F);
+			}
+		};
+		register(ItemModelGenerator.TRIM_TYPE, clampedModelPredicateProvider);
 		registerCustomModelData((stack, world, entity, seed) -> stack.hasNbt() ? (float)stack.getNbt().getInt("CustomModelData") : 0.0F);
 		register(Items.BOW, new Identifier("pull"), (stack, world, entity, seed) -> {
 			if (entity == null) {
@@ -212,7 +234,7 @@ public class ModelPredicateProviderRegistry {
 		register(
 			Items.GOAT_HORN,
 			new Identifier("tooting"),
-			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
 	}
 }

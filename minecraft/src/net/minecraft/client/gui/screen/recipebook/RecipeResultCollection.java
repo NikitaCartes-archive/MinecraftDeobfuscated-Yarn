@@ -11,36 +11,43 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.registry.DynamicRegistryManager;
 
 @Environment(EnvType.CLIENT)
 public class RecipeResultCollection {
+	private final DynamicRegistryManager registryManager;
 	private final List<Recipe<?>> recipes;
 	private final boolean singleOutput;
 	private final Set<Recipe<?>> craftableRecipes = Sets.<Recipe<?>>newHashSet();
 	private final Set<Recipe<?>> fittingRecipes = Sets.<Recipe<?>>newHashSet();
 	private final Set<Recipe<?>> unlockedRecipes = Sets.<Recipe<?>>newHashSet();
 
-	public RecipeResultCollection(List<Recipe<?>> recipes) {
+	public RecipeResultCollection(DynamicRegistryManager registryManager, List<Recipe<?>> recipes) {
+		this.registryManager = registryManager;
 		this.recipes = ImmutableList.copyOf(recipes);
 		if (recipes.size() <= 1) {
 			this.singleOutput = true;
 		} else {
-			this.singleOutput = shouldHaveSingleOutput(recipes);
+			this.singleOutput = shouldHaveSingleOutput(registryManager, recipes);
 		}
 	}
 
-	private static boolean shouldHaveSingleOutput(List<Recipe<?>> recipes) {
+	private static boolean shouldHaveSingleOutput(DynamicRegistryManager registryManager, List<Recipe<?>> recipes) {
 		int i = recipes.size();
-		ItemStack itemStack = ((Recipe)recipes.get(0)).getOutput();
+		ItemStack itemStack = ((Recipe)recipes.get(0)).getOutput(registryManager);
 
 		for (int j = 1; j < i; j++) {
-			ItemStack itemStack2 = ((Recipe)recipes.get(j)).getOutput();
+			ItemStack itemStack2 = ((Recipe)recipes.get(j)).getOutput(registryManager);
 			if (!ItemStack.areItemsEqual(itemStack, itemStack2) || !ItemStack.areNbtEqual(itemStack, itemStack2)) {
 				return false;
 			}
 		}
 
 		return true;
+	}
+
+	public DynamicRegistryManager getRegistryManager() {
+		return this.registryManager;
 	}
 
 	public boolean isInitialized() {

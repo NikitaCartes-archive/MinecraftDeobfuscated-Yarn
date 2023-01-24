@@ -30,7 +30,11 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 		EntityRendererFactory.Context ctx, EntityModelLayer mainLayer, EntityModelLayer innerArmorLayer, EntityModelLayer outerArmorLayer, boolean zombie
 	) {
 		super(ctx, getPiglinModel(ctx.getModelLoader(), mainLayer, zombie), 0.5F, 1.0019531F, 1.0F, 1.0019531F);
-		this.addFeature(new ArmorFeatureRenderer<>(this, new BipedEntityModel(ctx.getPart(innerArmorLayer)), new BipedEntityModel(ctx.getPart(outerArmorLayer))));
+		this.addFeature(
+			new ArmorFeatureRenderer<>(
+				this, new BipedEntityModel(ctx.getPart(innerArmorLayer)), new BipedEntityModel(ctx.getPart(outerArmorLayer)), ctx.getModelManager()
+			)
+		);
 	}
 
 	private static PiglinEntityModel<MobEntity> getPiglinModel(EntityModelLoader modelLoader, EntityModelLayer layer, boolean zombie) {

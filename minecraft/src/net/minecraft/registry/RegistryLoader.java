@@ -18,6 +18,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import net.minecraft.item.trim.ArmorTrimMaterial;
+import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFinder;
@@ -57,7 +59,9 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.NOISE_PARAMETERS, DoublePerlinNoiseSampler.NoiseParameters.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.DENSITY_FUNCTION, DensityFunction.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.WORLD_PRESET, WorldPreset.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPreset.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPreset.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC)
 	);
 	public static final List<RegistryLoader.Entry<?>> DIMENSION_REGISTRIES = List.of(new RegistryLoader.Entry<>(RegistryKeys.DIMENSION, DimensionOptions.CODEC));
 

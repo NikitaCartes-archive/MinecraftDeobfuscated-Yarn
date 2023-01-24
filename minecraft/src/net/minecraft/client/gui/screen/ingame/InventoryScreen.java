@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen.ingame;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -113,18 +114,9 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	public static void drawEntity(int x, int y, int size, float mouseX, float mouseY, LivingEntity entity) {
 		float f = (float)Math.atan((double)(mouseX / 40.0F));
 		float g = (float)Math.atan((double)(mouseY / 40.0F));
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.translate((float)x, (float)y, 1050.0F);
-		matrixStack.scale(1.0F, 1.0F, -1.0F);
-		RenderSystem.applyModelViewMatrix();
-		MatrixStack matrixStack2 = new MatrixStack();
-		matrixStack2.translate(0.0F, 0.0F, 1000.0F);
-		matrixStack2.scale((float)size, (float)size, (float)size);
 		Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);
 		Quaternionf quaternionf2 = new Quaternionf().rotateX(g * 20.0F * (float) (Math.PI / 180.0));
 		quaternionf.mul(quaternionf2);
-		matrixStack2.multiply(quaternionf);
 		float h = entity.bodyYaw;
 		float i = entity.getYaw();
 		float j = entity.getPitch();
@@ -135,20 +127,36 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		entity.setPitch(-g * 20.0F);
 		entity.headYaw = entity.getYaw();
 		entity.prevHeadYaw = entity.getYaw();
-		DiffuseLighting.method_34742();
-		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
-		quaternionf2.conjugate();
-		entityRenderDispatcher.setRotation(quaternionf2);
-		entityRenderDispatcher.setRenderShadows(false);
-		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
-		RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, matrixStack2, immediate, 15728880));
-		immediate.draw();
-		entityRenderDispatcher.setRenderShadows(true);
+		drawEntity(x, y, size, quaternionf, quaternionf2, entity);
 		entity.bodyYaw = h;
 		entity.setYaw(i);
 		entity.setPitch(j);
 		entity.prevHeadYaw = k;
 		entity.headYaw = l;
+	}
+
+	public static void drawEntity(int x, int y, int size, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
+		MatrixStack matrixStack = RenderSystem.getModelViewStack();
+		matrixStack.push();
+		matrixStack.translate((float)x, (float)y, 1050.0F);
+		matrixStack.scale(1.0F, 1.0F, -1.0F);
+		RenderSystem.applyModelViewMatrix();
+		MatrixStack matrixStack2 = new MatrixStack();
+		matrixStack2.translate(0.0F, 0.0F, 1000.0F);
+		matrixStack2.scale((float)size, (float)size, (float)size);
+		matrixStack2.multiply(quaternionf);
+		DiffuseLighting.method_34742();
+		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+		if (quaternionf2 != null) {
+			quaternionf2.conjugate();
+			entityRenderDispatcher.setRotation(quaternionf2);
+		}
+
+		entityRenderDispatcher.setRenderShadows(false);
+		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+		RenderSystem.runAsFancy(() -> entityRenderDispatcher.render(entity, 0.0, 0.0, 0.0, 0.0F, 1.0F, matrixStack2, immediate, 15728880));
+		immediate.draw();
+		entityRenderDispatcher.setRenderShadows(true);
 		matrixStack.pop();
 		RenderSystem.applyModelViewMatrix();
 		DiffuseLighting.enableGuiDepthLighting();

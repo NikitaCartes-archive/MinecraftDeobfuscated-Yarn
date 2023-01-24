@@ -149,6 +149,7 @@ public class Models {
 	public static final Model GENERATED = item("generated", TextureKey.LAYER0);
 	public static final Model HANDHELD = item("handheld", TextureKey.LAYER0);
 	public static final Model HANDHELD_ROD = item("handheld_rod", TextureKey.LAYER0);
+	public static final Model ARMOR = item("generated", TextureKey.LAYER0, TextureKey.LAYER1);
 	public static final Model TEMPLATE_SHULKER_BOX = item("template_shulker_box", TextureKey.PARTICLE);
 	public static final Model TEMPLATE_BED = item("template_bed", TextureKey.PARTICLE);
 	public static final Model TEMPLATE_BANNER = item("template_banner");

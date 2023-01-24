@@ -13,7 +13,7 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends
 
 	protected ZombieBaseEntityRenderer(EntityRendererFactory.Context ctx, M bodyModel, M legsArmorModel, M bodyArmorModel) {
 		super(ctx, bodyModel, 0.5F);
-		this.addFeature(new ArmorFeatureRenderer<>(this, legsArmorModel, bodyArmorModel));
+		this.addFeature(new ArmorFeatureRenderer<>(this, legsArmorModel, bodyArmorModel, ctx.getModelManager()));
 	}
 
 	public Identifier getTexture(ZombieEntity zombieEntity) {

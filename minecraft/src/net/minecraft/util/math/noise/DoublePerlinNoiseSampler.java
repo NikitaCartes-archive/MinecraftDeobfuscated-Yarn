@@ -35,11 +35,11 @@ public class DoublePerlinNoiseSampler {
 		return new DoublePerlinNoiseSampler(random, parameters, true);
 	}
 
-	private DoublePerlinNoiseSampler(Random random, DoublePerlinNoiseSampler.NoiseParameters parameters, boolean bl) {
+	private DoublePerlinNoiseSampler(Random random, DoublePerlinNoiseSampler.NoiseParameters parameters, boolean modern) {
 		int i = parameters.firstOctave;
 		DoubleList doubleList = parameters.amplitudes;
 		this.parameters = parameters;
-		if (bl) {
+		if (modern) {
 			this.firstSampler = OctavePerlinNoiseSampler.create(random, i, doubleList);
 			this.secondSampler = OctavePerlinNoiseSampler.create(random, i, doubleList);
 		} else {

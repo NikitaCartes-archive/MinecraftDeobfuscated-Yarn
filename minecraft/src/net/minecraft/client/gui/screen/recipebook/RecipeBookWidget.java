@@ -472,7 +472,7 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 	}
 
 	public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
-		ItemStack itemStack = recipe.getOutput();
+		ItemStack itemStack = recipe.getOutput(this.client.world.getRegistryManager());
 		this.ghostSlots.setRecipe(recipe);
 		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)slots.get(0)).x, ((Slot)slots.get(0)).y);
 		this.alignRecipeToGrid(

@@ -38,23 +38,33 @@ public class Model {
 	}
 
 	public Identifier upload(Identifier id, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
-		Map<TextureKey, Identifier> map = this.createTextureMap(textures);
-		modelCollector.accept(id, (Supplier)() -> {
-			JsonObject jsonObject = new JsonObject();
-			this.parent.ifPresent(parentId -> jsonObject.addProperty("parent", parentId.toString()));
-			if (!map.isEmpty()) {
-				JsonObject jsonObject2 = new JsonObject();
-				map.forEach((textureKey, textureId) -> jsonObject2.addProperty(textureKey.getName(), textureId.toString()));
-				jsonObject.add("textures", jsonObject2);
-			}
+		return this.upload(id, textures, modelCollector, this::createJson);
+	}
 
-			return jsonObject;
-		});
+	public Identifier upload(Identifier id, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector, Model.JsonFactory jsonFactory) {
+		Map<TextureKey, Identifier> map = this.createTextureMap(textures);
+		modelCollector.accept(id, (Supplier)() -> jsonFactory.create(id, map));
 		return id;
+	}
+
+	public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
+		JsonObject jsonObject = new JsonObject();
+		this.parent.ifPresent(identifier -> jsonObject.addProperty("parent", identifier.toString()));
+		if (!textures.isEmpty()) {
+			JsonObject jsonObject2 = new JsonObject();
+			textures.forEach((textureKey, texture) -> jsonObject2.addProperty(textureKey.getName(), texture.toString()));
+			jsonObject.add("textures", jsonObject2);
+		}
+
+		return jsonObject;
 	}
 
 	private Map<TextureKey, Identifier> createTextureMap(TextureMap textures) {
 		return (Map<TextureKey, Identifier>)Streams.concat(this.requiredTextures.stream(), textures.getInherited())
 			.collect(ImmutableMap.toImmutableMap(Function.identity(), textures::getTexture));
+	}
+
+	public interface JsonFactory {
+		JsonObject create(Identifier id, Map<TextureKey, Identifier> textures);
 	}
 }

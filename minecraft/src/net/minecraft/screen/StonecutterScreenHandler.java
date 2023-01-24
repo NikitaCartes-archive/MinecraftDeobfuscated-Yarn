@@ -148,7 +148,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 	void populateResult() {
 		if (!this.availableRecipes.isEmpty() && this.isInBounds(this.selectedRecipe.get())) {
 			StonecuttingRecipe stonecuttingRecipe = (StonecuttingRecipe)this.availableRecipes.get(this.selectedRecipe.get());
-			ItemStack itemStack = stonecuttingRecipe.craft(this.input);
+			ItemStack itemStack = stonecuttingRecipe.craft(this.input, this.world.getRegistryManager());
 			if (itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
 				this.output.setLastRecipe(stonecuttingRecipe);
 				this.outputSlot.setStack(itemStack);

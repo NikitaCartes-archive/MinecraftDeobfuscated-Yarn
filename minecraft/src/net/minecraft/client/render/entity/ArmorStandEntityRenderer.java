@@ -27,7 +27,8 @@ public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEnt
 			new ArmorFeatureRenderer<>(
 				this,
 				new ArmorStandArmorEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND_INNER_ARMOR)),
-				new ArmorStandArmorEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR))
+				new ArmorStandArmorEntityModel(context.getPart(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR)),
+				context.getModelManager()
 			)
 		);
 		this.addFeature(new HeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()));

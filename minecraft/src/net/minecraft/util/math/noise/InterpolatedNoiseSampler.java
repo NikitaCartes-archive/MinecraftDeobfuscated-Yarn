@@ -14,7 +14,7 @@ import net.minecraft.world.gen.densityfunction.DensityFunction;
 
 public class InterpolatedNoiseSampler implements DensityFunction.Base {
 	private static final Codec<Double> SCALE_AND_FACTOR_RANGE = Codec.doubleRange(0.001, 1000.0);
-	private static final MapCodec<InterpolatedNoiseSampler> field_38270 = RecordCodecBuilder.mapCodec(
+	private static final MapCodec<InterpolatedNoiseSampler> MAP_CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					SCALE_AND_FACTOR_RANGE.fieldOf("xz_scale").forGetter(interpolatedNoiseSampler -> interpolatedNoiseSampler.xzScale),
 					SCALE_AND_FACTOR_RANGE.fieldOf("y_scale").forGetter(interpolatedNoiseSampler -> interpolatedNoiseSampler.yScale),
@@ -24,12 +24,12 @@ public class InterpolatedNoiseSampler implements DensityFunction.Base {
 				)
 				.apply(instance, InterpolatedNoiseSampler::createBase3dNoiseFunction)
 	);
-	public static final CodecHolder<InterpolatedNoiseSampler> CODEC = CodecHolder.of(field_38270);
+	public static final CodecHolder<InterpolatedNoiseSampler> CODEC = CodecHolder.of(MAP_CODEC);
 	private final OctavePerlinNoiseSampler lowerInterpolatedNoise;
 	private final OctavePerlinNoiseSampler upperInterpolatedNoise;
 	private final OctavePerlinNoiseSampler interpolationNoise;
-	private final double field_38271;
-	private final double field_38272;
+	private final double scaledXzScale;
+	private final double scaledYScale;
 	private final double xzFactor;
 	private final double yFactor;
 	private final double smearScaleMultiplier;
@@ -59,9 +59,9 @@ public class InterpolatedNoiseSampler implements DensityFunction.Base {
 		this.xzFactor = xzFactor;
 		this.yFactor = yFactor;
 		this.smearScaleMultiplier = smearScaleMultiplier;
-		this.field_38271 = 684.412 * this.xzScale;
-		this.field_38272 = 684.412 * this.yScale;
-		this.maxValue = lowerInterpolatedNoise.method_40556(this.field_38272);
+		this.scaledXzScale = 684.412 * this.xzScale;
+		this.scaledYScale = 684.412 * this.yScale;
+		this.maxValue = lowerInterpolatedNoise.method_40556(this.scaledYScale);
 	}
 
 	@VisibleForTesting
@@ -84,13 +84,13 @@ public class InterpolatedNoiseSampler implements DensityFunction.Base {
 
 	@Override
 	public double sample(DensityFunction.NoisePos pos) {
-		double d = (double)pos.blockX() * this.field_38271;
-		double e = (double)pos.blockY() * this.field_38272;
-		double f = (double)pos.blockZ() * this.field_38271;
+		double d = (double)pos.blockX() * this.scaledXzScale;
+		double e = (double)pos.blockY() * this.scaledYScale;
+		double f = (double)pos.blockZ() * this.scaledXzScale;
 		double g = d / this.xzFactor;
 		double h = e / this.yFactor;
 		double i = f / this.xzFactor;
-		double j = this.field_38272 * this.smearScaleMultiplier;
+		double j = this.scaledYScale * this.smearScaleMultiplier;
 		double k = j / this.yFactor;
 		double l = 0.0;
 		double m = 0.0;
