@@ -1,6 +1,8 @@
 package net.minecraft.registry;
 
 import java.util.List;
+import net.minecraft.item.trim.ArmorTrimMaterials;
+import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -40,7 +42,9 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.CHUNK_GENERATOR_SETTINGS, ChunkGeneratorSettings::bootstrap)
 		.addRegistry(RegistryKeys.WORLD_PRESET, WorldPresets::bootstrap)
 		.addRegistry(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPresets::bootstrap)
-		.addRegistry(RegistryKeys.MESSAGE_TYPE, MessageType::bootstrap);
+		.addRegistry(RegistryKeys.MESSAGE_TYPE, MessageType::bootstrap)
+		.addRegistry(RegistryKeys.TRIM_PATTERN, ArmorTrimPatterns::bootstrap)
+		.addRegistry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterials::bootstrap);
 
 	private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
 		RegistryEntryLookup<PlacedFeature> registryEntryLookup = wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE);

@@ -137,6 +137,7 @@ public class CommandManager {
 
 		if (SharedConstants.isDevelopment) {
 			TestCommand.register(this.dispatcher);
+			SpawnArmorTrimsCommand.register(this.dispatcher);
 		}
 
 		if (environment.dedicated) {

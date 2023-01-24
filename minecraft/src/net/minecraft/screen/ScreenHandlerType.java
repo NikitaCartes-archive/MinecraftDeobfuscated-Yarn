@@ -3,6 +3,10 @@ package net.minecraft.screen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.resource.featuretoggle.FeatureFlag;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.resource.featuretoggle.FeatureSet;
+import net.minecraft.resource.featuretoggle.ToggleableFeature;
 
 /**
  * Screen handler type is used to create screen handlers on the client.
@@ -19,7 +23,7 @@ import net.minecraft.registry.Registry;
  * 
  * @see ScreenHandler
  */
-public class ScreenHandlerType<T extends ScreenHandler> {
+public class ScreenHandlerType<T extends ScreenHandler> implements ToggleableFeature {
 	public static final ScreenHandlerType<GenericContainerScreenHandler> GENERIC_9X1 = register("generic_9x1", GenericContainerScreenHandler::createGeneric9x1);
 	public static final ScreenHandlerType<GenericContainerScreenHandler> GENERIC_9X2 = register("generic_9x2", GenericContainerScreenHandler::createGeneric9x2);
 	public static final ScreenHandlerType<GenericContainerScreenHandler> GENERIC_9X3 = register("generic_9x3", GenericContainerScreenHandler::createGeneric9x3);
@@ -40,22 +44,34 @@ public class ScreenHandlerType<T extends ScreenHandler> {
 	public static final ScreenHandlerType<LoomScreenHandler> LOOM = register("loom", LoomScreenHandler::new);
 	public static final ScreenHandlerType<MerchantScreenHandler> MERCHANT = register("merchant", MerchantScreenHandler::new);
 	public static final ScreenHandlerType<ShulkerBoxScreenHandler> SHULKER_BOX = register("shulker_box", ShulkerBoxScreenHandler::new);
-	public static final ScreenHandlerType<SmithingScreenHandler> SMITHING = register("smithing", SmithingScreenHandler::new);
+	public static final ScreenHandlerType<LegacySmithingScreenHandler> LEGACY_SMITHING = register("legacy_smithing", LegacySmithingScreenHandler::new);
+	public static final ScreenHandlerType<SmithingScreenHandler> SMITHING = register("smithing", SmithingScreenHandler::new, FeatureFlags.UPDATE_1_20);
 	public static final ScreenHandlerType<SmokerScreenHandler> SMOKER = register("smoker", SmokerScreenHandler::new);
 	public static final ScreenHandlerType<CartographyTableScreenHandler> CARTOGRAPHY_TABLE = register("cartography_table", CartographyTableScreenHandler::new);
 	public static final ScreenHandlerType<StonecutterScreenHandler> STONECUTTER = register("stonecutter", StonecutterScreenHandler::new);
+	private final FeatureSet requiredFeatures;
 	private final ScreenHandlerType.Factory<T> factory;
 
 	private static <T extends ScreenHandler> ScreenHandlerType<T> register(String id, ScreenHandlerType.Factory<T> factory) {
-		return Registry.register(Registries.SCREEN_HANDLER, id, new ScreenHandlerType<>(factory));
+		return Registry.register(Registries.SCREEN_HANDLER, id, new ScreenHandlerType<>(factory, FeatureFlags.VANILLA_FEATURES));
 	}
 
-	private ScreenHandlerType(ScreenHandlerType.Factory<T> factory) {
+	private static <T extends ScreenHandler> ScreenHandlerType<T> register(String id, ScreenHandlerType.Factory<T> factory, FeatureFlag... requiredFeatures) {
+		return Registry.register(Registries.SCREEN_HANDLER, id, new ScreenHandlerType<>(factory, FeatureFlags.FEATURE_MANAGER.featureSetOf(requiredFeatures)));
+	}
+
+	private ScreenHandlerType(ScreenHandlerType.Factory<T> factory, FeatureSet requiredFeatures) {
 		this.factory = factory;
+		this.requiredFeatures = requiredFeatures;
 	}
 
 	public T create(int syncId, PlayerInventory playerInventory) {
 		return this.factory.create(syncId, playerInventory);
+	}
+
+	@Override
+	public FeatureSet getRequiredFeatures() {
+		return this.requiredFeatures;
 	}
 
 	/**

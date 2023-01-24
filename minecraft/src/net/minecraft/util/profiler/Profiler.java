@@ -33,7 +33,7 @@ public interface Profiler {
 	 * 
 	 * @param marker a unique marker
 	 */
-	void visit(String marker, int i);
+	void visit(String marker, int num);
 
 	default void visit(Supplier<String> markerGetter) {
 		this.visit(markerGetter, 1);
@@ -50,7 +50,7 @@ public interface Profiler {
 	 * 
 	 * @param markerGetter the getter for a unique marker
 	 */
-	void visit(Supplier<String> markerGetter, int i);
+	void visit(Supplier<String> markerGetter, int num);
 
 	static Profiler union(Profiler a, Profiler b) {
 		if (a == DummyProfiler.INSTANCE) {
@@ -106,15 +106,15 @@ public interface Profiler {
 				}
 
 				@Override
-				public void visit(String marker, int i) {
-					a.visit(marker, i);
-					b.visit(marker, i);
+				public void visit(String marker, int num) {
+					a.visit(marker, num);
+					b.visit(marker, num);
 				}
 
 				@Override
-				public void visit(Supplier<String> markerGetter, int i) {
-					a.visit(markerGetter, i);
-					b.visit(markerGetter, i);
+				public void visit(Supplier<String> markerGetter, int num) {
+					a.visit(markerGetter, num);
+					b.visit(markerGetter, num);
 				}
 			};
 		}

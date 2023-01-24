@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
@@ -97,7 +98,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		return bl && bl2;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
+	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_STAR);
 		NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("Explosion");
 		FireworkRocketItem.Type type = FireworkRocketItem.Type.SMALL_BALL;
@@ -129,7 +130,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getOutput() {
+	public ItemStack getOutput(DynamicRegistryManager registryManager) {
 		return new ItemStack(Items.FIREWORK_STAR);
 	}
 

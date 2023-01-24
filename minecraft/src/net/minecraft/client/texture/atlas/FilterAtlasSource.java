@@ -22,7 +22,7 @@ public class FilterAtlasSource implements AtlasSource {
 
 	@Override
 	public void load(ResourceManager resourceManager, AtlasSource.SpriteRegions regions) {
-		regions.method_47671(this.pattern.getIdentifierPredicate());
+		regions.removeIf(this.pattern.getIdentifierPredicate());
 	}
 
 	@Override

@@ -7,11 +7,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public interface AtlasSource {
+	ResourceFinder RESOURCE_FINDER = new ResourceFinder("textures", ".png");
+
 	void load(ResourceManager resourceManager, AtlasSource.SpriteRegions regions);
 
 	AtlasSourceType getType();
@@ -30,6 +33,6 @@ public interface AtlasSource {
 
 		void add(Identifier arg, AtlasSource.SpriteRegion region);
 
-		void method_47671(Predicate<Identifier> predicate);
+		void removeIf(Predicate<Identifier> predicate);
 	}
 }

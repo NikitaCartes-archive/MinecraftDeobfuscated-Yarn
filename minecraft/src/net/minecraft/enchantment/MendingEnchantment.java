@@ -21,9 +21,4 @@ public class MendingEnchantment extends Enchantment {
 	public boolean isTreasure() {
 		return true;
 	}
-
-	@Override
-	public int getMaxLevel() {
-		return 1;
-	}
 }

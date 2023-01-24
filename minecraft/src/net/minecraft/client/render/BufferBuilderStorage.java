@@ -22,6 +22,7 @@ public class BufferBuilderStorage {
 		assignBufferBuilder(map, TexturedRenderLayers.getSign());
 		assignBufferBuilder(map, TexturedRenderLayers.getHangingSign());
 		assignBufferBuilder(map, TexturedRenderLayers.getChest());
+		assignBufferBuilder(map, TexturedRenderLayers.getArmorTrims());
 		assignBufferBuilder(map, RenderLayer.getTranslucentNoCrumbling());
 		assignBufferBuilder(map, RenderLayer.getArmorGlint());
 		assignBufferBuilder(map, RenderLayer.getArmorEntityGlint());

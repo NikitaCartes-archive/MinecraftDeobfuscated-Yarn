@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -63,7 +64,7 @@ public class ShapedRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public ItemStack getOutput() {
+	public ItemStack getOutput(DynamicRegistryManager registryManager) {
 		return this.output;
 	}
 
@@ -116,8 +117,8 @@ public class ShapedRecipe implements CraftingRecipe {
 		return true;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory) {
-		return this.getOutput().copy();
+	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+		return this.getOutput(dynamicRegistryManager).copy();
 	}
 
 	public int getWidth() {

@@ -38,7 +38,7 @@ public class CampfireBlockEntityRenderer implements BlockEntityRenderer<Campfire
 				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90.0F));
 				matrixStack.translate(-0.3125F, -0.3125F, 0.0F);
 				matrixStack.scale(0.375F, 0.375F, 0.375F);
-				this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider, k + l);
+				this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, j, matrixStack, vertexConsumerProvider, campfireBlockEntity.getWorld(), k + l);
 				matrixStack.pop();
 			}
 		}

@@ -4,12 +4,16 @@ import com.google.common.collect.Sets;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.registry.DynamicRegistryManager;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.world.GameMode;
@@ -35,6 +39,8 @@ public record GameJoinS2CPacket(
 	boolean flatWorld,
 	Optional<GlobalPos> lastDeathLocation
 ) implements Packet<ClientPlayPacketListener> {
+	private static final RegistryOps<NbtElement> REGISTRY_OPS = RegistryOps.of(NbtOps.INSTANCE, DynamicRegistryManager.of(Registries.REGISTRIES));
+
 	public GameJoinS2CPacket(PacketByteBuf buf) {
 		this(
 			buf.readInt(),
@@ -42,7 +48,7 @@ public record GameJoinS2CPacket(
 			GameMode.byId(buf.readByte()),
 			GameMode.getOrNull(buf.readByte()),
 			buf.readCollection(Sets::newHashSetWithExpectedSize, b -> b.readRegistryKey(RegistryKeys.WORLD)),
-			buf.decode(SerializableRegistries.CODEC).toImmutable(),
+			buf.decode(REGISTRY_OPS, SerializableRegistries.CODEC).toImmutable(),
 			buf.readRegistryKey(RegistryKeys.DIMENSION_TYPE),
 			buf.readRegistryKey(RegistryKeys.WORLD),
 			buf.readLong(),
@@ -64,7 +70,7 @@ public record GameJoinS2CPacket(
 		buf.writeByte(this.gameMode.getId());
 		buf.writeByte(GameMode.getId(this.previousGameMode));
 		buf.writeCollection(this.dimensionIds, PacketByteBuf::writeRegistryKey);
-		buf.encode(SerializableRegistries.CODEC, this.registryManager);
+		buf.encode(REGISTRY_OPS, SerializableRegistries.CODEC, this.registryManager);
 		buf.writeRegistryKey(this.dimensionType);
 		buf.writeRegistryKey(this.dimensionId);
 		buf.writeLong(this.sha256Seed);

@@ -45,7 +45,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 			matrices.multiply(this.dispatcher.getRotation());
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
 			this.itemRenderer
-				.renderItem(entity.getStack(), ModelTransformation.Mode.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.getId());
+				.renderItem(entity.getStack(), ModelTransformation.Mode.GROUND, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, entity.world, entity.getId());
 			matrices.pop();
 			super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
 		}

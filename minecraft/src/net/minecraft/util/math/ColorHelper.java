@@ -4,6 +4,36 @@ package net.minecraft.util.math;
  * Contains color-related helper methods.
  */
 public class ColorHelper {
+	public static class Abgr {
+		public static int getAlpha(int abgr) {
+			return abgr >>> 24;
+		}
+
+		public static int getBlue(int abgr) {
+			return abgr & 0xFF;
+		}
+
+		public static int getGreen(int abgr) {
+			return abgr >> 8 & 0xFF;
+		}
+
+		public static int getRed(int abgr) {
+			return abgr >> 16 & 0xFF;
+		}
+
+		public static int getBgr(int abgr) {
+			return abgr & 16777215;
+		}
+
+		public static int getAbgr(int a, int b, int g, int r) {
+			return a << 24 | b << 16 | g << 8 | r;
+		}
+
+		public static int withAlpha(int alpha, int bgr) {
+			return alpha << 24 | bgr & 16777215;
+		}
+	}
+
 	/**
 	 * Contains color-related helper methods that use ARGB colors represented
 	 * as {@code 0xAARRGGBB}.

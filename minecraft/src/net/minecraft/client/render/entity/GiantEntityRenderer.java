@@ -22,7 +22,10 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEnt
 		this.addFeature(new HeldItemFeatureRenderer<>(this, ctx.getHeldItemRenderer()));
 		this.addFeature(
 			new ArmorFeatureRenderer<>(
-				this, new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_INNER_ARMOR)), new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_OUTER_ARMOR))
+				this,
+				new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_INNER_ARMOR)),
+				new GiantEntityModel(ctx.getPart(EntityModelLayers.GIANT_OUTER_ARMOR)),
+				ctx.getModelManager()
 			)
 		);
 	}

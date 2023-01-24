@@ -22,6 +22,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class ModelOverrideList {
 	public static final ModelOverrideList EMPTY = new ModelOverrideList();
+	public static final float field_42072 = Float.NEGATIVE_INFINITY;
 	private final ModelOverrideList.BakedOverride[] overrides;
 	private final Identifier[] conditionTypes;
 

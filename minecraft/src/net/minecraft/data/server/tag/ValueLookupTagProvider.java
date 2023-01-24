@@ -10,7 +10,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.TagBuilder;
 import net.minecraft.registry.tag.TagKey;
 
-public abstract class ValueLookupTagProvider<T> extends AbstractTagProvider<T> {
+public abstract class ValueLookupTagProvider<T> extends TagProvider<T> {
 	private final Function<T, RegistryKey<T>> valueToKey;
 
 	public ValueLookupTagProvider(
@@ -28,7 +28,7 @@ public abstract class ValueLookupTagProvider<T> extends AbstractTagProvider<T> {
 		return new ValueLookupTagProvider.ObjectBuilder<>(tagBuilder, this.valueToKey);
 	}
 
-	protected static class ObjectBuilder<T> extends AbstractTagProvider.ProvidedTagBuilder<T> {
+	protected static class ObjectBuilder<T> extends TagProvider.ProvidedTagBuilder<T> {
 		private final Function<T, RegistryKey<T>> valueToKey;
 
 		ObjectBuilder(TagBuilder builder, Function<T, RegistryKey<T>> valueToKey) {

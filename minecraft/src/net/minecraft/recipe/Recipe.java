@@ -4,6 +4,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -45,7 +46,7 @@ public interface Recipe<C extends Inventory> {
 	 * 
 	 * @param inventory the input inventory
 	 */
-	ItemStack craft(C inventory);
+	ItemStack craft(C inventory, DynamicRegistryManager registryManager);
 
 	/**
 	 * {@return whether this recipe will fit into the given grid size}
@@ -63,7 +64,7 @@ public interface Recipe<C extends Inventory> {
 	 * <p>The returned stack should not be modified. To obtain the actual output,
 	 * call {@link #craft(Inventory)}.
 	 */
-	ItemStack getOutput();
+	ItemStack getOutput(DynamicRegistryManager registryManager);
 
 	/**
 	 * {@return the remaining stacks to be left in the {@code inventory} after the recipe is used}
