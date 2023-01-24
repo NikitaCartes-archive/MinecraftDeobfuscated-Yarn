@@ -585,7 +585,7 @@ implements WindowEventHandler {
         this.resourceManager.registerReloader(this.blockEntityRenderDispatcher);
         BuiltinModelItemRenderer builtinModelItemRenderer = new BuiltinModelItemRenderer(this.blockEntityRenderDispatcher, this.entityModelLoader);
         this.resourceManager.registerReloader(builtinModelItemRenderer);
-        this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
+        this.itemRenderer = new ItemRenderer(this, this.textureManager, this.bakedModelManager, this.itemColors, builtinModelItemRenderer);
         this.resourceManager.registerReloader(this.itemRenderer);
         this.bufferBuilders = new BufferBuilderStorage();
         this.socialInteractionsManager = new SocialInteractionsManager(this, this.userApiService);
@@ -794,7 +794,7 @@ implements WindowEventHandler {
     private void initializeSearchProviders() {
         this.searchManager.put(SearchManager.ITEM_TOOLTIP, stacks -> new TextSearchProvider<ItemStack>(stack -> stack.getTooltip(null, TooltipContext.Default.BASIC.withCreative()).stream().map(tooltip -> Formatting.strip(tooltip.getString()).trim()).filter(string -> !string.isEmpty()), stack -> Stream.of(Registries.ITEM.getId(stack.getItem())), (List<ItemStack>)stacks));
         this.searchManager.put(SearchManager.ITEM_TAG, stacks -> new IdentifierSearchProvider<ItemStack>(stack -> stack.streamTags().map(TagKey::id), (List<ItemStack>)stacks));
-        this.searchManager.put(SearchManager.RECIPE_OUTPUT, resultCollections -> new TextSearchProvider<RecipeResultCollection>(resultCollection -> resultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput().getTooltip(null, TooltipContext.Default.BASIC).stream()).map(text -> Formatting.strip(text.getString()).trim()).filter(text -> !text.isEmpty()), resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> Registries.ITEM.getId(recipe.getOutput().getItem())), (List<RecipeResultCollection>)resultCollections));
+        this.searchManager.put(SearchManager.RECIPE_OUTPUT, resultCollections -> new TextSearchProvider<RecipeResultCollection>(resultCollection -> resultCollection.getAllRecipes().stream().flatMap(recipe -> recipe.getOutput(resultCollection.getRegistryManager()).getTooltip(null, TooltipContext.Default.BASIC).stream()).map(text -> Formatting.strip(text.getString()).trim()).filter(text -> !text.isEmpty()), resultCollection -> resultCollection.getAllRecipes().stream().map(recipe -> Registries.ITEM.getId(recipe.getOutput(resultCollection.getRegistryManager()).getItem())), (List<RecipeResultCollection>)resultCollections));
         ItemGroups.getSearchGroup().setSearchProviderReloader(stacks -> {
             this.reloadSearchProvider(SearchManager.ITEM_TOOLTIP, (List)stacks);
             this.reloadSearchProvider(SearchManager.ITEM_TAG, (List)stacks);

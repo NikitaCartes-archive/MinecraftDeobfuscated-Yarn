@@ -105,7 +105,7 @@ extends EntityRenderer<T> {
             } else {
                 int l = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_LIGHT_COORDINATE, i);
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
-                this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.FIXED, l, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, ((Entity)itemFrameEntity).getId());
+                this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.FIXED, l, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, ((ItemFrameEntity)itemFrameEntity).world, ((Entity)itemFrameEntity).getId());
             }
         }
         matrixStack.pop();

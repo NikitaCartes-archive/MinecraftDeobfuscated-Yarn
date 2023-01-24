@@ -5,6 +5,7 @@ package net.minecraft.network.packet.s2c.play;
 
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
@@ -49,7 +50,7 @@ implements Packet<ClientPlayPacketListener> {
         this.amplifier = buf.readByte();
         this.duration = buf.readVarInt();
         this.flags = buf.readByte();
-        this.factorCalculationData = (StatusEffectInstance.FactorCalculationData)buf.readNullable(buf2 -> buf2.decode(StatusEffectInstance.FactorCalculationData.CODEC));
+        this.factorCalculationData = (StatusEffectInstance.FactorCalculationData)buf.readNullable(buf2 -> buf2.decode(NbtOps.INSTANCE, StatusEffectInstance.FactorCalculationData.CODEC));
     }
 
     @Override
@@ -59,7 +60,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeByte(this.amplifier);
         buf.writeVarInt(this.duration);
         buf.writeByte(this.flags);
-        buf.writeNullable(this.factorCalculationData, (buf2, factorCalculationData) -> buf2.encode(StatusEffectInstance.FactorCalculationData.CODEC, factorCalculationData));
+        buf.writeNullable(this.factorCalculationData, (buf2, factorCalculationData) -> buf2.encode(NbtOps.INSTANCE, StatusEffectInstance.FactorCalculationData.CODEC, factorCalculationData));
     }
 
     @Override

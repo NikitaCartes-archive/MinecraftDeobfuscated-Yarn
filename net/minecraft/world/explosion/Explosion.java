@@ -191,7 +191,8 @@ public class Explosion {
             entity.damage(this.getDamageSource(), (int)((ac * ac + ac) / 2.0 * 7.0 * (double)q + 1.0));
             double ad = ac;
             if (entity instanceof LivingEntity) {
-                ad = ProtectionEnchantment.transformExplosionKnockback((LivingEntity)entity, ac);
+                LivingEntity livingEntity = (LivingEntity)entity;
+                ad = ProtectionEnchantment.transformExplosionKnockback(livingEntity, ac);
             }
             entity.setVelocity(entity.getVelocity().add(x * ad, y * ad, z * ad));
             if (!(entity instanceof PlayerEntity) || (playerEntity = (PlayerEntity)entity).isSpectator() || playerEntity.isCreative() && playerEntity.getAbilities().flying) continue;
@@ -287,7 +288,7 @@ public class Explosion {
         Entity entity2 = this.entity;
         if (entity2 instanceof TntEntity) {
             TntEntity tntEntity = (TntEntity)entity2;
-            return tntEntity.getCausingEntity();
+            return tntEntity.getOwner();
         }
         entity2 = this.entity;
         if (entity2 instanceof LivingEntity) {

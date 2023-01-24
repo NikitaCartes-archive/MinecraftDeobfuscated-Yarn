@@ -198,25 +198,39 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         }
 
         public void toggle() {
-            if (this.pack.canBeEnabled() && this.pack.getCompatibility().isCompatible()) {
-                this.pack.enable();
-                this.widget.screen.switchFocusedList(this.pack, this.widget);
+            if (this.pack.canBeEnabled() && this.enable()) {
+                this.widget.screen.switchFocusedList(this.widget);
             } else if (this.pack.canBeDisabled()) {
                 this.pack.disable();
-                this.widget.screen.switchFocusedList(this.pack, this.widget);
+                this.widget.screen.switchFocusedList(this.widget);
             }
         }
 
-        public void moveTowardStart() {
+        void moveTowardStart() {
             if (this.pack.canMoveTowardStart()) {
                 this.pack.moveTowardStart();
             }
         }
 
-        public void moveTowardEnd() {
+        void moveTowardEnd() {
             if (this.pack.canMoveTowardEnd()) {
                 this.pack.moveTowardEnd();
             }
+        }
+
+        private boolean enable() {
+            if (this.pack.getCompatibility().isCompatible()) {
+                this.pack.enable();
+                return true;
+            }
+            Text text = this.pack.getCompatibility().getConfirmMessage();
+            this.client.setScreen(new ConfirmScreen(confirmed -> {
+                this.client.setScreen(this.widget.screen);
+                if (confirmed) {
+                    this.pack.enable();
+                }
+            }, INCOMPATIBLE_CONFIRM, text));
+            return false;
         }
 
         @Override
@@ -226,18 +240,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             if (this.isSelectable() && d <= 32.0) {
                 this.widget.screen.clearSelection();
                 if (this.pack.canBeEnabled()) {
-                    ResourcePackCompatibility resourcePackCompatibility = this.pack.getCompatibility();
-                    if (resourcePackCompatibility.isCompatible()) {
-                        this.pack.enable();
-                    } else {
-                        Text text = resourcePackCompatibility.getConfirmMessage();
-                        this.client.setScreen(new ConfirmScreen(confirmed -> {
-                            this.client.setScreen(this.widget.screen);
-                            if (confirmed) {
-                                this.pack.enable();
-                            }
-                        }, INCOMPATIBLE_CONFIRM, text));
-                    }
+                    this.enable();
                     return true;
                 }
                 if (d < 16.0 && this.pack.canBeDisabled()) {

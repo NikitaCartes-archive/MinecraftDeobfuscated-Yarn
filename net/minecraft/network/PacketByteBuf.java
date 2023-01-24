@@ -11,6 +11,7 @@ import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -51,7 +52,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
@@ -87,7 +87,7 @@ import org.jetbrains.annotations.Nullable;
  *  <th><b>Object Type</b></th> <th><b>read method</b></th> <th><b>write method</b></th>
  * </tr>
  * <tr>
- *  <td>Codec-based</td><td>{@link #decode(Codec)}</td><td>{@link #encode(Codec, Object)}</td>
+ *  <td>Codec-based</td><td>{@link #decode(DynamicOps, Codec)}</td><td>{@link #encode(DynamicOps, Codec, Object)}</td>
  * </tr>
  * <tr>
  *  <td>{@link net.minecraft.registry.Registry} value</td><td>{@link #readRegistryValue(IndexedIterable)}</td><td>{@link #writeRegistryValue(IndexedIterable, Object)}</td>
@@ -285,14 +285,12 @@ extends ByteBuf {
      * @return the read object
      * @throws io.netty.handler.codec.EncoderException if the {@code codec} fails
      * to decode the compound NBT
-     * @see #encode(Codec, Object)
-     * 
-     * @param codec the codec to decode the object
+     * @see #encode(DynamicOps, Codec, Object)
      */
     @Deprecated
-    public <T> T decode(Codec<T> codec) {
+    public <T> T decode(DynamicOps<NbtElement> ops, Codec<T> codec) {
         NbtCompound nbtCompound = this.readUnlimitedNbt();
-        return (T)Util.getResult(codec.parse(NbtOps.INSTANCE, nbtCompound), error -> new DecoderException("Failed to decode: " + error + " " + nbtCompound));
+        return (T)Util.getResult(codec.parse(ops, nbtCompound), error -> new DecoderException("Failed to decode: " + error + " " + nbtCompound));
     }
 
     /**
@@ -301,14 +299,11 @@ extends ByteBuf {
      * @param <T> the encoded object's type
      * @throws io.netty.handler.codec.EncoderException if the {@code codec} fails
      * to encode the compound NBT
-     * @see #decode(Codec)
-     * 
-     * @param object the object to write to this buf
-     * @param codec the codec to encode the object
+     * @see #decode(DynamicOps, Codec)
      */
     @Deprecated
-    public <T> void encode(Codec<T> codec, T object) {
-        NbtElement nbtElement = Util.getResult(codec.encodeStart(NbtOps.INSTANCE, (NbtElement)object), error -> new EncoderException("Failed to encode: " + error + " " + object));
+    public <T> void encode(DynamicOps<NbtElement> ops, Codec<T> codec, T value) {
+        NbtElement nbtElement = Util.getResult(codec.encodeStart(ops, (NbtElement)value), error -> new EncoderException("Failed to encode: " + error + " " + value));
         this.writeNbt((NbtCompound)nbtElement);
     }
 

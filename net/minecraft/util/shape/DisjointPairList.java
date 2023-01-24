@@ -28,21 +28,21 @@ implements PairList {
     @Override
     public boolean forEachPair(PairList.Consumer predicate) {
         if (this.inverted) {
-            return this.iterateSections((i, j, k) -> predicate.merge(j, i, k));
+            return this.iterateSections((x, y, index) -> predicate.merge(y, x, index));
         }
         return this.iterateSections(predicate);
     }
 
-    private boolean iterateSections(PairList.Consumer consumer) {
+    private boolean iterateSections(PairList.Consumer predicate) {
         int j;
         int i = this.first.size();
         for (j = 0; j < i; ++j) {
-            if (consumer.merge(j, -1, j)) continue;
+            if (predicate.merge(j, -1, j)) continue;
             return false;
         }
         j = this.second.size() - 1;
         for (int k = 0; k < j; ++k) {
-            if (consumer.merge(i - 1, k, i + k)) continue;
+            if (predicate.merge(i - 1, k, i + k)) continue;
             return false;
         }
         return true;

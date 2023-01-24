@@ -80,7 +80,7 @@ extends HandledScreen<StonecutterScreenHandler> {
                 int n = i + m % 4 * 16;
                 int o = j + m / 4 * 18 + 2;
                 if (x < n || x >= n + 16 || y < o || y >= o + 18) continue;
-                this.renderTooltip(matrices, list.get(l).getOutput(), x, y);
+                this.renderTooltip(matrices, list.get(l).getOutput(this.client.world.getRegistryManager()), x, y);
             }
         }
     }
@@ -108,7 +108,7 @@ extends HandledScreen<StonecutterScreenHandler> {
             int k = x + j % 4 * 16;
             int l = j / 4;
             int m = y + l * 18 + 2;
-            this.client.getItemRenderer().renderInGuiWithOverrides(list.get(i).getOutput(), k, m);
+            this.client.getItemRenderer().renderInGuiWithOverrides(list.get(i).getOutput(this.client.world.getRegistryManager()), k, m);
         }
     }
 

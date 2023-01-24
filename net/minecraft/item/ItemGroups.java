@@ -1328,6 +1328,18 @@ public class ItemGroups {
         entries.add(Items.MOJANG_BANNER_PATTERN);
         entries.add(Items.GLOBE_BANNER_PATTERN);
         entries.add(Items.PIGLIN_BANNER_PATTERN);
+        entries.add(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE);
+        entries.add(Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE);
+        entries.add(Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE);
+        entries.add(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE);
+        entries.add(Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE);
+        entries.add(Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE);
+        entries.add(Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE);
+        entries.add(Items.VEX_ARMOR_TRIM_SMITHING_TEMPLATE);
+        entries.add(Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE);
+        entries.add(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE);
+        entries.add(Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE);
+        entries.add(Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE);
         entries.add(Items.EXPERIENCE_BOTTLE);
         EnumSet<EnchantmentTarget> set = EnumSet.allOf(EnchantmentTarget.class);
         ItemGroups.addMaxLevelEnchantedBooks(entries, set, ItemGroup.StackVisibility.PARENT_TAB_ONLY);

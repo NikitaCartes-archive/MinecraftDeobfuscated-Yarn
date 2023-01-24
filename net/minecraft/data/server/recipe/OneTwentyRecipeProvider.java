@@ -9,6 +9,7 @@ import net.minecraft.data.DataOutput;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.data.server.recipe.RecipeProvider;
 import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.RecipeCategory;
 import net.minecraft.registry.tag.ItemTags;
@@ -40,6 +41,38 @@ extends RecipeProvider {
         OneTwentyRecipeProvider.offerHangingSignRecipe(exporter, Items.CRIMSON_HANGING_SIGN, Blocks.STRIPPED_CRIMSON_STEM);
         OneTwentyRecipeProvider.offerHangingSignRecipe(exporter, Items.WARPED_HANGING_SIGN, Blocks.STRIPPED_WARPED_STEM);
         ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.CHISELED_BOOKSHELF).input(Character.valueOf('#'), ItemTags.PLANKS).input(Character.valueOf('X'), ItemTags.WOODEN_SLABS).pattern("###").pattern("XXX").pattern("###").criterion("has_book", OneTwentyRecipeProvider.conditionsFromItem(Items.BOOK)).offerTo(exporter);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.VEX_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerSmithingTrimRecipe(exporter, Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE);
+        OneTwentyRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_CHESTPLATE, RecipeCategory.COMBAT, Items.NETHERITE_CHESTPLATE);
+        OneTwentyRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_LEGGINGS, RecipeCategory.COMBAT, Items.NETHERITE_LEGGINGS);
+        OneTwentyRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_HELMET, RecipeCategory.COMBAT, Items.NETHERITE_HELMET);
+        OneTwentyRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_BOOTS, RecipeCategory.COMBAT, Items.NETHERITE_BOOTS);
+        OneTwentyRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_SWORD, RecipeCategory.COMBAT, Items.NETHERITE_SWORD);
+        OneTwentyRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_AXE, RecipeCategory.TOOLS, Items.NETHERITE_AXE);
+        OneTwentyRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_PICKAXE, RecipeCategory.TOOLS, Items.NETHERITE_PICKAXE);
+        OneTwentyRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_HOE, RecipeCategory.TOOLS, Items.NETHERITE_HOE);
+        OneTwentyRecipeProvider.offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_SHOVEL, RecipeCategory.TOOLS, Items.NETHERITE_SHOVEL);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE, Items.NETHERRACK);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, Items.COBBLESTONE);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE, Items.SANDSTONE);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE, Items.COBBLESTONE);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE, Items.MOSSY_COBBLESTONE);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE, Items.COBBLED_DEEPSLATE);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE, Items.END_STONE);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.VEX_ARMOR_TRIM_SMITHING_TEMPLATE, Items.COBBLESTONE);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, Items.PRISMARINE);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE, Items.BLACKSTONE);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE, Items.NETHERRACK);
+        OneTwentyRecipeProvider.offerSmithingTemplateCopyingRecipe(exporter, (ItemConvertible)Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE, Items.PURPUR_BLOCK);
     }
 }
 

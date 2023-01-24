@@ -53,7 +53,7 @@ public class AtlasLoader {
             }
 
             @Override
-            public void method_47671(Predicate<Identifier> predicate) {
+            public void removeIf(Predicate<Identifier> predicate) {
                 Iterator iterator = map.entrySet().iterator();
                 while (iterator.hasNext()) {
                     Map.Entry entry = iterator.next();

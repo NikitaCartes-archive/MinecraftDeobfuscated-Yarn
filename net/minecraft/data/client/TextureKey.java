@@ -40,6 +40,7 @@ public final class TextureKey {
     public static final TextureKey UNSTICKY = TextureKey.of("unsticky");
     public static final TextureKey TORCH = TextureKey.of("torch");
     public static final TextureKey LAYER0 = TextureKey.of("layer0");
+    public static final TextureKey LAYER1 = TextureKey.of("layer1");
     public static final TextureKey LIT_LOG = TextureKey.of("lit_log");
     public static final TextureKey CANDLE = TextureKey.of("candle");
     public static final TextureKey INSIDE = TextureKey.of("inside");

@@ -52,7 +52,7 @@ public class BakedModelManager
 implements ResourceReloader,
 AutoCloseable {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Map<Identifier, Identifier> LAYERS_TO_LOADERS = Map.of(TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE, new Identifier("banner_patterns"), TexturedRenderLayers.BEDS_ATLAS_TEXTURE, new Identifier("beds"), TexturedRenderLayers.CHEST_ATLAS_TEXTURE, new Identifier("chests"), TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, new Identifier("shield_patterns"), TexturedRenderLayers.SIGNS_ATLAS_TEXTURE, new Identifier("signs"), TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("shulker_boxes"), SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("blocks"));
+    private static final Map<Identifier, Identifier> LAYERS_TO_LOADERS = Map.of(TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE, new Identifier("banner_patterns"), TexturedRenderLayers.BEDS_ATLAS_TEXTURE, new Identifier("beds"), TexturedRenderLayers.CHEST_ATLAS_TEXTURE, new Identifier("chests"), TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, new Identifier("shield_patterns"), TexturedRenderLayers.SIGNS_ATLAS_TEXTURE, new Identifier("signs"), TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("shulker_boxes"), TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE, new Identifier("armor_trims"), SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("blocks"));
     private Map<Identifier, BakedModel> models;
     private final SpriteAtlasManager atlasManager;
     private final BlockModels blockModelCache;

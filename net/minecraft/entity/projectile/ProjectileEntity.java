@@ -8,6 +8,7 @@ import java.util.UUID;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.Ownable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -26,7 +27,8 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ProjectileEntity
-extends Entity {
+extends Entity
+implements Ownable {
     @Nullable
     private UUID ownerUuid;
     @Nullable
@@ -45,6 +47,7 @@ extends Entity {
         }
     }
 
+    @Override
     @Nullable
     public Entity getOwner() {
         if (this.owner != null && !this.owner.isRemoved()) {

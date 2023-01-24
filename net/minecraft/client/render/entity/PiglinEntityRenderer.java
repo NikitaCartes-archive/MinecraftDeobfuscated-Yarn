@@ -29,7 +29,7 @@ extends BipedEntityRenderer<MobEntity, PiglinEntityModel<MobEntity>> {
 
     public PiglinEntityRenderer(EntityRendererFactory.Context ctx, EntityModelLayer mainLayer, EntityModelLayer innerArmorLayer, EntityModelLayer outerArmorLayer, boolean zombie) {
         super(ctx, PiglinEntityRenderer.getPiglinModel(ctx.getModelLoader(), mainLayer, zombie), 0.5f, 1.0019531f, 1.0f, 1.0019531f);
-        this.addFeature(new ArmorFeatureRenderer(this, new BipedEntityModel(ctx.getPart(innerArmorLayer)), new BipedEntityModel(ctx.getPart(outerArmorLayer))));
+        this.addFeature(new ArmorFeatureRenderer(this, new BipedEntityModel(ctx.getPart(innerArmorLayer)), new BipedEntityModel(ctx.getPart(outerArmorLayer)), ctx.getModelManager()));
     }
 
     private static PiglinEntityModel<MobEntity> getPiglinModel(EntityModelLoader modelLoader, EntityModelLayer layer, boolean zombie) {

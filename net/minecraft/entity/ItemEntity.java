@@ -9,6 +9,7 @@ import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.Ownable;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -24,7 +25,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -33,7 +33,8 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemEntity
-extends Entity {
+extends Entity
+implements Ownable {
     private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
     private static final int DESPAWN_AGE = 6000;
     private static final int CANNOT_PICK_UP_DELAY = Short.MAX_VALUE;
@@ -83,8 +84,15 @@ extends Entity {
         return this.getStack().isIn(ItemTags.DAMPENS_VIBRATIONS);
     }
 
-    public Entity getEventSource() {
-        return Util.map(this.getThrower(), this.world::getPlayerByUuid);
+    @Override
+    @Nullable
+    public Entity getOwner() {
+        World world;
+        if (this.thrower != null && (world = this.world) instanceof ServerWorld) {
+            ServerWorld serverWorld = (ServerWorld)world;
+            return serverWorld.getEntity(this.thrower);
+        }
+        return null;
     }
 
     @Override
@@ -191,7 +199,7 @@ extends Entity {
     private void tryMerge(ItemEntity other) {
         ItemStack itemStack = this.getStack();
         ItemStack itemStack2 = other.getStack();
-        if (!Objects.equals(this.getOwner(), other.getOwner()) || !ItemEntity.canMerge(itemStack, itemStack2)) {
+        if (!Objects.equals(this.owner, other.owner) || !ItemEntity.canMerge(itemStack, itemStack2)) {
             return;
         }
         if (itemStack2.getCount() < itemStack.getCount()) {
@@ -270,11 +278,11 @@ extends Entity {
         nbt.putShort("Health", (short)this.health);
         nbt.putShort("Age", (short)this.itemAge);
         nbt.putShort("PickupDelay", (short)this.pickupDelay);
-        if (this.getThrower() != null) {
-            nbt.putUuid("Thrower", this.getThrower());
+        if (this.thrower != null) {
+            nbt.putUuid("Thrower", this.thrower);
         }
-        if (this.getOwner() != null) {
-            nbt.putUuid("Owner", this.getOwner());
+        if (this.owner != null) {
+            nbt.putUuid("Owner", this.owner);
         }
         if (!this.getStack().isEmpty()) {
             nbt.put("Item", this.getStack().writeNbt(new NbtCompound()));
@@ -366,35 +374,8 @@ extends Entity {
         }
     }
 
-    /**
-     * Returns the UUID of the entity to which belongs this item entity,
-     * or {@code null} if there is not.
-     * 
-     * <p>If there is one, the owner is the only entity which can pick
-     * up this item entity.
-     */
-    @Nullable
-    public UUID getOwner() {
-        return this.owner;
-    }
-
-    /**
-     * Sets the owner of this item entity to {@code owner}.
-     * 
-     * <p>Used when an item is given to an entity, but this entity
-     * does not have enough space in its inventory.
-     */
     public void setOwner(@Nullable UUID owner) {
         this.owner = owner;
-    }
-
-    /**
-     * Returns the UUID of the entity which created this item entity
-     * by throwing an item, or {@code null} if it was created otherwise.
-     */
-    @Nullable
-    public UUID getThrower() {
-        return this.thrower;
     }
 
     /**

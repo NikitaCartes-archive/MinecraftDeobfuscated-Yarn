@@ -123,7 +123,7 @@ implements VibrationListener.Callback {
             serverPlayerEntity2 = (ServerPlayerEntity)entity2;
             return serverPlayerEntity2;
         }
-        if (entity instanceof ItemEntity && (entity2 = (itemEntity = (ItemEntity)entity).getEventSource()) instanceof ServerPlayerEntity) {
+        if (entity instanceof ItemEntity && (entity2 = (itemEntity = (ItemEntity)entity).getOwner()) instanceof ServerPlayerEntity) {
             serverPlayerEntity2 = (ServerPlayerEntity)entity2;
             return serverPlayerEntity2;
         }

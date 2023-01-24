@@ -54,11 +54,11 @@ implements ReadableProfiler {
     }
 
     @Override
-    public void visit(String marker, int i) {
+    public void visit(String marker, int num) {
     }
 
     @Override
-    public void visit(Supplier<String> markerGetter, int i) {
+    public void visit(Supplier<String> markerGetter, int num) {
     }
 
     @Override

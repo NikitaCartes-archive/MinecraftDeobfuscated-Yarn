@@ -11,11 +11,14 @@ import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.client.texture.atlas.AtlasSourceType;
 import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public interface AtlasSource {
+    public static final ResourceFinder RESOURCE_FINDER = new ResourceFinder("textures", ".png");
+
     public void load(ResourceManager var1, SpriteRegions var2);
 
     public AtlasSourceType getType();
@@ -35,7 +38,7 @@ public interface AtlasSource {
 
         public void add(Identifier var1, SpriteRegion var2);
 
-        public void method_47671(Predicate<Identifier> var1);
+        public void removeIf(Predicate<Identifier> var1);
     }
 }
 

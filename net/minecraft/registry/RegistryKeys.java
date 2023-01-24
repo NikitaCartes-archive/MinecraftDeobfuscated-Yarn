@@ -22,6 +22,8 @@ import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Instrument;
 import net.minecraft.item.Item;
+import net.minecraft.item.trim.ArmorTrimMaterial;
+import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.loot.condition.LootConditionType;
 import net.minecraft.loot.entry.LootPoolEntryType;
 import net.minecraft.loot.function.LootFunctionType;
@@ -163,6 +165,8 @@ public class RegistryKeys {
     public static final RegistryKey<Registry<StructureProcessorList>> PROCESSOR_LIST = RegistryKeys.of("worldgen/processor_list");
     public static final RegistryKey<Registry<StructureSet>> STRUCTURE_SET = RegistryKeys.of("worldgen/structure_set");
     public static final RegistryKey<Registry<StructurePool>> TEMPLATE_POOL = RegistryKeys.of("worldgen/template_pool");
+    public static final RegistryKey<Registry<ArmorTrimMaterial>> TRIM_MATERIAL = RegistryKeys.of("trim_material");
+    public static final RegistryKey<Registry<ArmorTrimPattern>> TRIM_PATTERN = RegistryKeys.of("trim_pattern");
     public static final RegistryKey<Registry<WorldPreset>> WORLD_PRESET = RegistryKeys.of("worldgen/world_preset");
     public static final RegistryKey<Registry<World>> WORLD = RegistryKeys.of("dimension");
     public static final RegistryKey<Registry<DimensionOptions>> DIMENSION = RegistryKeys.of("dimension");

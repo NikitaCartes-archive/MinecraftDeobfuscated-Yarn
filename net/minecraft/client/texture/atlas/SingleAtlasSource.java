@@ -15,7 +15,6 @@ import net.minecraft.client.texture.atlas.AtlasSource;
 import net.minecraft.client.texture.atlas.AtlasSourceManager;
 import net.minecraft.client.texture.atlas.AtlasSourceType;
 import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -25,7 +24,6 @@ public class SingleAtlasSource
 implements AtlasSource {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final Codec<SingleAtlasSource> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Identifier.CODEC.fieldOf("resource")).forGetter(singleAtlasSource -> singleAtlasSource.resource), Identifier.CODEC.optionalFieldOf("sprite").forGetter(singleAtlasSource -> singleAtlasSource.sprite)).apply((Applicative<SingleAtlasSource, ?>)instance, SingleAtlasSource::new));
-    private final ResourceFinder FINDER = new ResourceFinder("textures", ".png");
     private final Identifier resource;
     private final Optional<Identifier> sprite;
 
@@ -36,7 +34,7 @@ implements AtlasSource {
 
     @Override
     public void load(ResourceManager resourceManager, AtlasSource.SpriteRegions regions) {
-        Identifier identifier = this.FINDER.toResourcePath(this.resource);
+        Identifier identifier = RESOURCE_FINDER.toResourcePath(this.resource);
         Optional<Resource> optional = resourceManager.getResource(identifier);
         if (optional.isPresent()) {
             regions.add(this.sprite.orElse(this.resource), optional.get());

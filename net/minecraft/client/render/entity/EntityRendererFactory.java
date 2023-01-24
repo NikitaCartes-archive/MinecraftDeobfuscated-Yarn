@@ -14,6 +14,7 @@ import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.resource.ResourceManager;
 
@@ -64,6 +65,10 @@ public interface EntityRendererFactory<T extends Entity> {
 
         public EntityModelLoader getModelLoader() {
             return this.modelLoader;
+        }
+
+        public BakedModelManager getModelManager() {
+            return this.blockRenderManager.getModels().getModelManager();
         }
 
         public ModelPart getPart(EntityModelLayer layer) {

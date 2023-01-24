@@ -52,6 +52,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
+import net.minecraft.item.trim.ArmorTrim;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -997,6 +998,9 @@ public final class ItemStack {
             this.getItem().appendTooltip(this, player == null ? null : player.world, list, context);
         }
         if (this.hasNbt()) {
+            if (ItemStack.isSectionVisible(i, TooltipSection.UPGRADES) && player != null) {
+                ArmorTrim.appendTooltip(this, player.world.getRegistryManager(), list);
+            }
             if (ItemStack.isSectionVisible(i, TooltipSection.ENCHANTMENTS)) {
                 ItemStack.appendEnchantments(list, this.getEnchantments());
             }
@@ -1414,7 +1418,8 @@ public final class ItemStack {
         CAN_DESTROY,
         CAN_PLACE,
         ADDITIONAL,
-        DYE;
+        DYE,
+        UPGRADES;
 
         private final int flag = 1 << this.ordinal();
 

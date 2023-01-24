@@ -22,10 +22,5 @@ extends Enchantment {
     public int getMaxPower(int level) {
         return 50;
     }
-
-    @Override
-    public int getMaxLevel() {
-        return 1;
-    }
 }
 

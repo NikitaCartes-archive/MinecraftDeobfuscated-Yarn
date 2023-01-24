@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.Ownable;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -18,7 +19,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class TntEntity
-extends Entity {
+extends Entity
+implements Ownable {
     private static final TrackedData<Integer> FUSE = DataTracker.registerData(TntEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final int DEFAULT_FUSE = 80;
     @Nullable
@@ -96,8 +98,9 @@ extends Entity {
         this.setFuse(nbt.getShort("Fuse"));
     }
 
+    @Override
     @Nullable
-    public LivingEntity getCausingEntity() {
+    public LivingEntity getOwner() {
         return this.causingEntity;
     }
 
@@ -112,6 +115,12 @@ extends Entity {
 
     public int getFuse() {
         return this.dataTracker.get(FUSE);
+    }
+
+    @Override
+    @Nullable
+    public /* synthetic */ Entity getOwner() {
+        return this.getOwner();
     }
 }
 

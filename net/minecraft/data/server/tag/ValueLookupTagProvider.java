@@ -7,7 +7,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import net.minecraft.data.DataOutput;
-import net.minecraft.data.server.tag.AbstractTagProvider;
+import net.minecraft.data.server.tag.TagProvider;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
@@ -15,7 +15,7 @@ import net.minecraft.registry.tag.TagBuilder;
 import net.minecraft.registry.tag.TagKey;
 
 public abstract class ValueLookupTagProvider<T>
-extends AbstractTagProvider<T> {
+extends TagProvider<T> {
     private final Function<T, RegistryKey<T>> valueToKey;
 
     public ValueLookupTagProvider(DataOutput output, RegistryKey<? extends Registry<T>> registryRef, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, Function<T, RegistryKey<T>> valueToKey) {
@@ -30,12 +30,12 @@ extends AbstractTagProvider<T> {
     }
 
     @Override
-    protected /* synthetic */ AbstractTagProvider.ProvidedTagBuilder getOrCreateTagBuilder(TagKey tag) {
+    protected /* synthetic */ TagProvider.ProvidedTagBuilder getOrCreateTagBuilder(TagKey tag) {
         return this.getOrCreateTagBuilder(tag);
     }
 
     protected static class ObjectBuilder<T>
-    extends AbstractTagProvider.ProvidedTagBuilder<T> {
+    extends TagProvider.ProvidedTagBuilder<T> {
         private final Function<T, RegistryKey<T>> valueToKey;
 
         ObjectBuilder(TagBuilder builder, Function<T, RegistryKey<T>> valueToKey) {
@@ -50,7 +50,7 @@ extends AbstractTagProvider<T> {
         }
 
         public final ObjectBuilder<T> add(T value) {
-            ((AbstractTagProvider.ProvidedTagBuilder)this).add(this.valueToKey.apply(value));
+            ((TagProvider.ProvidedTagBuilder)this).add(this.valueToKey.apply(value));
             return this;
         }
 
@@ -61,7 +61,7 @@ extends AbstractTagProvider<T> {
         }
 
         @Override
-        public /* synthetic */ AbstractTagProvider.ProvidedTagBuilder addTag(TagKey identifiedTag) {
+        public /* synthetic */ TagProvider.ProvidedTagBuilder addTag(TagKey identifiedTag) {
             return this.addTag(identifiedTag);
         }
     }

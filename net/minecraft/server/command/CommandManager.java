@@ -83,6 +83,7 @@ import net.minecraft.server.command.SeedCommand;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.command.SetBlockCommand;
 import net.minecraft.server.command.SetWorldSpawnCommand;
+import net.minecraft.server.command.SpawnArmorTrimsCommand;
 import net.minecraft.server.command.SpawnPointCommand;
 import net.minecraft.server.command.SpectateCommand;
 import net.minecraft.server.command.SpreadPlayersCommand;
@@ -197,6 +198,7 @@ public class CommandManager {
         }
         if (SharedConstants.isDevelopment) {
             TestCommand.register(this.dispatcher);
+            SpawnArmorTrimsCommand.register(this.dispatcher);
         }
         if (environment.dedicated) {
             BanIpCommand.register(this.dispatcher);

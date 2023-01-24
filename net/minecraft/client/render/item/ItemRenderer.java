@@ -76,12 +76,14 @@ implements SynchronousResourceReloader {
     private static final ModelIdentifier SPYGLASS = ModelIdentifier.ofVanilla("spyglass", "inventory");
     public static final ModelIdentifier SPYGLASS_IN_HAND = ModelIdentifier.ofVanilla("spyglass_in_hand", "inventory");
     public float zOffset;
+    private final MinecraftClient client;
     private final ItemModels models;
     private final TextureManager textureManager;
     private final ItemColors colors;
     private final BuiltinModelItemRenderer builtinModelItemRenderer;
 
-    public ItemRenderer(TextureManager manager, BakedModelManager bakery, ItemColors colors, BuiltinModelItemRenderer builtinModelItemRenderer) {
+    public ItemRenderer(MinecraftClient client, TextureManager manager, BakedModelManager bakery, ItemColors colors, BuiltinModelItemRenderer builtinModelItemRenderer) {
+        this.client = client;
         this.textureManager = manager;
         this.models = new ItemModels(bakery);
         this.builtinModelItemRenderer = builtinModelItemRenderer;
@@ -202,8 +204,8 @@ implements SynchronousResourceReloader {
         return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
     }
 
-    public void renderItem(ItemStack stack, ModelTransformation.Mode transformationType, int light, int overlay, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int seed) {
-        this.renderItem(null, stack, transformationType, false, matrices, vertexConsumers, null, light, overlay, seed);
+    public void renderItem(ItemStack stack, ModelTransformation.Mode transformationType, int light, int overlay, MatrixStack matrices, VertexConsumerProvider vertexConsumers, @Nullable World world, int seed) {
+        this.renderItem(null, stack, transformationType, false, matrices, vertexConsumers, world, light, overlay, seed);
     }
 
     public void renderItem(@Nullable LivingEntity entity, ItemStack item, ModelTransformation.Mode renderMode, boolean leftHanded, MatrixStack matrices, VertexConsumerProvider vertexConsumers, @Nullable World world, int light, int overlay, int seed) {
@@ -232,7 +234,7 @@ implements SynchronousResourceReloader {
         matrixStack.scale(16.0f, 16.0f, 16.0f);
         RenderSystem.applyModelViewMatrix();
         MatrixStack matrixStack2 = new MatrixStack();
-        VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
+        VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
         boolean bl2 = bl = !model.isSideLit();
         if (bl) {
             DiffuseLighting.disableGuiDepthLighting();
@@ -252,22 +254,22 @@ implements SynchronousResourceReloader {
      * for calculating model overrides.
      */
     public void renderInGuiWithOverrides(ItemStack stack, int x, int y) {
-        this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y, 0);
+        this.innerRenderInGui(this.client.player, this.client.world, stack, x, y, 0);
     }
 
     public void renderInGuiWithOverrides(ItemStack stack, int x, int y, int seed) {
-        this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y, seed);
+        this.innerRenderInGui(this.client.player, this.client.world, stack, x, y, seed);
     }
 
     public void renderInGuiWithOverrides(ItemStack stack, int x, int y, int seed, int depth) {
-        this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y, seed, depth);
+        this.innerRenderInGui(this.client.player, this.client.world, stack, x, y, seed, depth);
     }
 
     /**
      * Renders an item in a GUI without an attached entity.
      */
     public void renderInGui(ItemStack stack, int x, int y) {
-        this.innerRenderInGui(null, stack, x, y, 0);
+        this.innerRenderInGui(null, this.client.world, stack, x, y, 0);
     }
 
     /**
@@ -276,28 +278,28 @@ implements SynchronousResourceReloader {
      * <p>The entity is used to calculate model overrides for the item.
      */
     public void renderInGuiWithOverrides(LivingEntity entity, ItemStack stack, int x, int y, int seed) {
-        this.innerRenderInGui(entity, stack, x, y, seed);
+        this.innerRenderInGui(entity, entity.world, stack, x, y, seed);
     }
 
-    private void innerRenderInGui(@Nullable LivingEntity entity, ItemStack stack, int x, int y, int seed) {
-        this.innerRenderInGui(entity, stack, x, y, seed, 0);
+    private void innerRenderInGui(@Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y, int seed) {
+        this.innerRenderInGui(entity, world, stack, x, y, seed, 0);
     }
 
-    private void innerRenderInGui(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y, int seed, int depth) {
-        if (itemStack.isEmpty()) {
+    private void innerRenderInGui(@Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y, int seed, int depth) {
+        if (stack.isEmpty()) {
             return;
         }
-        BakedModel bakedModel = this.getModel(itemStack, null, entity, seed);
+        BakedModel bakedModel = this.getModel(stack, world, entity, seed);
         this.zOffset = bakedModel.hasDepth() ? this.zOffset + 50.0f + (float)depth : this.zOffset + 50.0f;
         try {
-            this.renderGuiItemModel(itemStack, x, y, bakedModel);
+            this.renderGuiItemModel(stack, x, y, bakedModel);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering item");
             CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
-            crashReportSection.add("Item Type", () -> String.valueOf(itemStack.getItem()));
-            crashReportSection.add("Item Damage", () -> String.valueOf(itemStack.getDamage()));
-            crashReportSection.add("Item NBT", () -> String.valueOf(itemStack.getNbt()));
-            crashReportSection.add("Item Foil", () -> String.valueOf(itemStack.hasGlint()));
+            crashReportSection.add("Item Type", () -> String.valueOf(stack.getItem()));
+            crashReportSection.add("Item Damage", () -> String.valueOf(stack.getDamage()));
+            crashReportSection.add("Item NBT", () -> String.valueOf(stack.getNbt()));
+            crashReportSection.add("Item Foil", () -> String.valueOf(stack.hasGlint()));
             throw new CrashException(crashReport);
         }
         this.zOffset = bakedModel.hasDepth() ? this.zOffset - 50.0f - (float)depth : this.zOffset - 50.0f;
@@ -341,7 +343,7 @@ implements SynchronousResourceReloader {
             DrawableHelper.fill(matrixStack, k, l, k + i, l + 1, j | 0xFF000000);
             RenderSystem.enableDepthTest();
         }
-        float f2 = f = (clientPlayerEntity = MinecraftClient.getInstance().player) == null ? 0.0f : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), MinecraftClient.getInstance().getTickDelta());
+        float f2 = f = (clientPlayerEntity = this.client.player) == null ? 0.0f : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), this.client.getTickDelta());
         if (f > 0.0f) {
             RenderSystem.disableDepthTest();
             k = y + MathHelper.floor(16.0f * (1.0f - f));

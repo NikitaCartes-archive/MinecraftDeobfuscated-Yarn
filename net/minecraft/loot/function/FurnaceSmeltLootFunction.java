@@ -38,7 +38,7 @@ extends ConditionalLootFunction {
             return stack;
         }
         Optional<SmeltingRecipe> optional = context.getWorld().getRecipeManager().getFirstMatch(RecipeType.SMELTING, new SimpleInventory(stack), context.getWorld());
-        if (optional.isPresent() && !(itemStack = optional.get().getOutput()).isEmpty()) {
+        if (optional.isPresent() && !(itemStack = optional.get().getOutput(context.getWorld().getRegistryManager())).isEmpty()) {
             ItemStack itemStack2 = itemStack.copy();
             itemStack2.setCount(stack.getCount());
             return itemStack2;

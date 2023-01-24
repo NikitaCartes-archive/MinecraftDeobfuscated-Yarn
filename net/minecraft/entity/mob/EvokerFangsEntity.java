@@ -9,6 +9,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Ownable;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -18,7 +19,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class EvokerFangsEntity
-extends Entity {
+extends Entity
+implements Ownable {
     public static final int field_30662 = 20;
     public static final int field_30663 = 2;
     public static final int field_30664 = 14;
@@ -52,6 +54,7 @@ extends Entity {
         this.ownerUuid = owner == null ? null : owner.getUuid();
     }
 
+    @Override
     @Nullable
     public LivingEntity getOwner() {
         Entity entity;
@@ -147,6 +150,12 @@ extends Entity {
             return 1.0f;
         }
         return 1.0f - ((float)i - tickDelta) / 20.0f;
+    }
+
+    @Override
+    @Nullable
+    public /* synthetic */ Entity getOwner() {
+        return this.getOwner();
     }
 }
 

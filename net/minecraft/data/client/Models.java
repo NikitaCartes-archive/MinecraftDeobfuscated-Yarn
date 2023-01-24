@@ -132,6 +132,7 @@ public class Models {
     public static final Model GENERATED = Models.item("generated", TextureKey.LAYER0);
     public static final Model HANDHELD = Models.item("handheld", TextureKey.LAYER0);
     public static final Model HANDHELD_ROD = Models.item("handheld_rod", TextureKey.LAYER0);
+    public static final Model ARMOR = Models.item("generated", TextureKey.LAYER0, TextureKey.LAYER1);
     public static final Model TEMPLATE_SHULKER_BOX = Models.item("template_shulker_box", TextureKey.PARTICLE);
     public static final Model TEMPLATE_BED = Models.item("template_bed", TextureKey.PARTICLE);
     public static final Model TEMPLATE_BANNER = Models.item("template_banner", new TextureKey[0]);

@@ -23,6 +23,7 @@ import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.screen.ingame.GrindstoneScreen;
 import net.minecraft.client.gui.screen.ingame.HopperScreen;
 import net.minecraft.client.gui.screen.ingame.LecternScreen;
+import net.minecraft.client.gui.screen.ingame.LegacySmithingScreen;
 import net.minecraft.client.gui.screen.ingame.LoomScreen;
 import net.minecraft.client.gui.screen.ingame.MerchantScreen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
@@ -99,6 +100,7 @@ public class HandledScreens {
         HandledScreens.register(ScreenHandlerType.LOOM, LoomScreen::new);
         HandledScreens.register(ScreenHandlerType.MERCHANT, MerchantScreen::new);
         HandledScreens.register(ScreenHandlerType.SHULKER_BOX, ShulkerBoxScreen::new);
+        HandledScreens.register(ScreenHandlerType.LEGACY_SMITHING, LegacySmithingScreen::new);
         HandledScreens.register(ScreenHandlerType.SMITHING, SmithingScreen::new);
         HandledScreens.register(ScreenHandlerType.SMOKER, SmokerScreen::new);
         HandledScreens.register(ScreenHandlerType.CARTOGRAPHY_TABLE, CartographyTableScreen::new);

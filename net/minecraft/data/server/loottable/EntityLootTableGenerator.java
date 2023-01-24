@@ -39,10 +39,16 @@ implements LootTableGenerator {
     protected static final EntityPredicate.Builder NEEDS_ENTITY_ON_FIRE = EntityPredicate.Builder.create().flags(EntityFlagsPredicate.Builder.create().onFire(true).build());
     private static final Set<EntityType<?>> ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK = ImmutableSet.of(EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER);
     private final FeatureSet requiredFeatures;
+    private final FeatureSet featureSet;
     private final Map<EntityType<?>, Map<Identifier, LootTable.Builder>> lootTables = Maps.newHashMap();
 
     protected EntityLootTableGenerator(FeatureSet requiredFeatures) {
+        this(requiredFeatures, requiredFeatures);
+    }
+
+    protected EntityLootTableGenerator(FeatureSet requiredFeatures, FeatureSet featureSet) {
         this.requiredFeatures = requiredFeatures;
+        this.featureSet = featureSet;
     }
 
     protected static LootTable.Builder createForSheep(ItemConvertible item) {
@@ -63,7 +69,7 @@ implements LootTableGenerator {
             if (EntityLootTableGenerator.shouldCheck(entityType2)) {
                 Map<Identifier, LootTable.Builder> map = this.lootTables.remove(entityType2);
                 Identifier identifier = entityType2.getLootTableId();
-                if (!(identifier.equals(LootTables.EMPTY) || map != null && map.containsKey(identifier))) {
+                if (!(identifier.equals(LootTables.EMPTY) || !entityType2.isEnabled(this.featureSet) || map != null && map.containsKey(identifier))) {
                     throw new IllegalStateException(String.format(Locale.ROOT, "Missing loottable '%s' for '%s'", identifier, entityType.registryKey().getValue()));
                 }
                 if (map != null) {

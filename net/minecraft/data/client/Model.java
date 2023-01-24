@@ -44,22 +44,32 @@ public class Model {
     }
 
     public Identifier upload(Identifier id, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector) {
+        return this.upload(id, textures, modelCollector, this::createJson);
+    }
+
+    public Identifier upload(Identifier id, TextureMap textures, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector, JsonFactory jsonFactory) {
         Map<TextureKey, Identifier> map = this.createTextureMap(textures);
-        modelCollector.accept(id, () -> {
-            JsonObject jsonObject = new JsonObject();
-            this.parent.ifPresent(parentId -> jsonObject.addProperty("parent", parentId.toString()));
-            if (!map.isEmpty()) {
-                JsonObject jsonObject2 = new JsonObject();
-                map.forEach((textureKey, textureId) -> jsonObject2.addProperty(textureKey.getName(), textureId.toString()));
-                jsonObject.add("textures", jsonObject2);
-            }
-            return jsonObject;
-        });
+        modelCollector.accept(id, () -> jsonFactory.create(id, map));
         return id;
+    }
+
+    public JsonObject createJson(Identifier id, Map<TextureKey, Identifier> textures) {
+        JsonObject jsonObject = new JsonObject();
+        this.parent.ifPresent(identifier -> jsonObject.addProperty("parent", identifier.toString()));
+        if (!textures.isEmpty()) {
+            JsonObject jsonObject2 = new JsonObject();
+            textures.forEach((textureKey, texture) -> jsonObject2.addProperty(textureKey.getName(), texture.toString()));
+            jsonObject.add("textures", jsonObject2);
+        }
+        return jsonObject;
     }
 
     private Map<TextureKey, Identifier> createTextureMap(TextureMap textures) {
         return Streams.concat(this.requiredTextures.stream(), textures.getInherited()).collect(ImmutableMap.toImmutableMap(Function.identity(), textures::getTexture));
+    }
+
+    public static interface JsonFactory {
+        public JsonObject create(Identifier var1, Map<TextureKey, Identifier> var2);
     }
 }
 

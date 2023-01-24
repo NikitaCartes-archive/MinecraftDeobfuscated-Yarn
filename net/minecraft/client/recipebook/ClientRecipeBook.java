@@ -25,6 +25,7 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.CookingRecipeCategory;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import org.slf4j.Logger;
 
@@ -35,11 +36,11 @@ extends RecipeBook {
     private Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = ImmutableMap.of();
     private List<RecipeResultCollection> orderedResults = ImmutableList.of();
 
-    public void reload(Iterable<Recipe<?>> recipes2) {
-        Map<RecipeBookGroup, List<List<Recipe<?>>>> map = ClientRecipeBook.toGroupedMap(recipes2);
+    public void reload(Iterable<Recipe<?>> recipes, DynamicRegistryManager registryManager) {
+        Map<RecipeBookGroup, List<List<Recipe<?>>>> map = ClientRecipeBook.toGroupedMap(recipes);
         HashMap map2 = Maps.newHashMap();
         ImmutableList.Builder builder = ImmutableList.builder();
-        map.forEach((group, recipes) -> map2.put(group, (List)recipes.stream().map(RecipeResultCollection::new).peek(builder::add).collect(ImmutableList.toImmutableList())));
+        map.forEach((recipeBookGroup, list) -> map2.put(recipeBookGroup, (List)list.stream().map(recipes -> new RecipeResultCollection(registryManager, (List<Recipe<?>>)recipes)).peek(builder::add).collect(ImmutableList.toImmutableList())));
         RecipeBookGroup.SEARCH_MAP.forEach((group, searchGroups) -> map2.put(group, (List)searchGroups.stream().flatMap(searchGroup -> ((List)map2.getOrDefault(searchGroup, ImmutableList.of())).stream()).collect(ImmutableList.toImmutableList())));
         this.resultsByGroup = ImmutableMap.copyOf(map2);
         this.orderedResults = builder.build();

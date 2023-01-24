@@ -454,7 +454,7 @@ RecipeDisplayListener {
     }
 
     public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
-        ItemStack itemStack = recipe.getOutput();
+        ItemStack itemStack = recipe.getOutput(this.client.world.getRegistryManager());
         this.ghostSlots.setRecipe(recipe);
         this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)0).x, slots.get((int)0).y);
         this.alignRecipeToGrid(this.craftingScreenHandler.getCraftingWidth(), this.craftingScreenHandler.getCraftingHeight(), this.craftingScreenHandler.getCraftingResultSlotIndex(), recipe, recipe.getIngredients().iterator(), 0);

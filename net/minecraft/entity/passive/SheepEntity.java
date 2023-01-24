@@ -87,7 +87,7 @@ implements Shearable {
         map.put(DyeColor.RED, Blocks.RED_WOOL);
         map.put(DyeColor.BLACK, Blocks.BLACK_WOOL);
     });
-    private static final Map<DyeColor, float[]> COLORS = Maps.newEnumMap(Arrays.stream(DyeColor.values()).collect(Collectors.toMap(dyeColor -> dyeColor, SheepEntity::getDyedColor)));
+    private static final Map<DyeColor, float[]> COLORS = Maps.newEnumMap(Arrays.stream(DyeColor.values()).collect(Collectors.toMap(color -> color, SheepEntity::getDyedColor)));
     private int eatGrassTimer;
     private EatGrassGoal eatGrassGoal;
 
@@ -343,7 +343,7 @@ implements Shearable {
         DyeColor dyeColor = ((SheepEntity)firstParent).getColor();
         DyeColor dyeColor2 = ((SheepEntity)secondParent).getColor();
         CraftingInventory craftingInventory = SheepEntity.createDyeMixingCraftingInventory(dyeColor, dyeColor2);
-        return this.world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world).map(recipe -> recipe.craft(craftingInventory)).map(ItemStack::getItem).filter(DyeItem.class::isInstance).map(DyeItem.class::cast).map(DyeItem::getColor).orElseGet(() -> this.world.random.nextBoolean() ? dyeColor : dyeColor2);
+        return this.world.getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world).map(recipe -> recipe.craft(craftingInventory, this.world.getRegistryManager())).map(ItemStack::getItem).filter(DyeItem.class::isInstance).map(DyeItem.class::cast).map(DyeItem::getColor).orElseGet(() -> this.world.random.nextBoolean() ? dyeColor : dyeColor2);
     }
 
     private static CraftingInventory createDyeMixingCraftingInventory(DyeColor firstColor, DyeColor secondColor) {

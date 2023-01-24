@@ -186,6 +186,10 @@ public abstract class DrawableHelper {
         DrawableHelper.drawTexturedQuad(matrices.peek().getPositionMatrix(), x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
     }
 
+    public static void drawSprite(MatrixStack matrices, int x, int y, int z, int width, int height, Sprite sprite, float red, float green, float blue, float alpha) {
+        DrawableHelper.drawTexturedQuad(matrices.peek().getPositionMatrix(), x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV(), red, green, blue, alpha);
+    }
+
     /**
      * Draws a textured rectangle from a region in a 256x256 texture.
      * 
@@ -279,6 +283,20 @@ public abstract class DrawableHelper {
         bufferBuilder.vertex(matrix, x1, y0, z).texture(u1, v0).next();
         bufferBuilder.vertex(matrix, x0, y0, z).texture(u0, v0).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+    }
+
+    private static void drawTexturedQuad(Matrix4f matrix, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1, float red, float green, float blue, float alpha) {
+        RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+        bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+        bufferBuilder.vertex(matrix, x0, y1, z).color(red, green, blue, alpha).texture(u0, v1).next();
+        bufferBuilder.vertex(matrix, x1, y1, z).color(red, green, blue, alpha).texture(u1, v1).next();
+        bufferBuilder.vertex(matrix, x1, y0, z).color(red, green, blue, alpha).texture(u1, v0).next();
+        bufferBuilder.vertex(matrix, x0, y0, z).color(red, green, blue, alpha).texture(u0, v0).next();
+        BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+        RenderSystem.disableBlend();
     }
 
     public int getZOffset() {

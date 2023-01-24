@@ -6,6 +6,7 @@ package net.minecraft.recipe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 
 public abstract class SpecialCraftingRecipe
@@ -29,7 +30,7 @@ implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack getOutput() {
+    public ItemStack getOutput(DynamicRegistryManager registryManager) {
         return ItemStack.EMPTY;
     }
 

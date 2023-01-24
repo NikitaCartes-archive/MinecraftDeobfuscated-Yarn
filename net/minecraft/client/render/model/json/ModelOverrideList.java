@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class ModelOverrideList {
     public static final ModelOverrideList EMPTY = new ModelOverrideList();
+    public static final float field_42072 = Float.NEGATIVE_INFINITY;
     private final BakedOverride[] overrides;
     private final Identifier[] conditionTypes;
 

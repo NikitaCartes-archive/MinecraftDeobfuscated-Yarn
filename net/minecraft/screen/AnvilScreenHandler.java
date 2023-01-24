@@ -20,6 +20,7 @@ import net.minecraft.screen.ForgingScreenHandler;
 import net.minecraft.screen.Property;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldEvents;
@@ -28,6 +29,9 @@ import org.slf4j.Logger;
 
 public class AnvilScreenHandler
 extends ForgingScreenHandler {
+    public static final int field_41898 = 0;
+    public static final int field_41899 = 1;
+    public static final int field_41900 = 2;
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final boolean field_30752 = false;
     public static final int field_30751 = 50;
@@ -41,6 +45,10 @@ extends ForgingScreenHandler {
     private static final int field_30748 = 2;
     private static final int field_30749 = 1;
     private static final int field_30750 = 1;
+    private static final int field_41894 = 27;
+    private static final int field_41895 = 76;
+    private static final int field_41896 = 134;
+    private static final int field_41897 = 47;
 
     public AnvilScreenHandler(int syncId, PlayerInventory inventory) {
         this(syncId, inventory, ScreenHandlerContext.EMPTY);
@@ -49,6 +57,11 @@ extends ForgingScreenHandler {
     public AnvilScreenHandler(int syncId, PlayerInventory inventory, ScreenHandlerContext context) {
         super(ScreenHandlerType.ANVIL, syncId, inventory, context);
         this.addProperty(this.levelCost);
+    }
+
+    @Override
+    protected ForgingSlotsManager getForgingSlotsManager() {
+        return ForgingSlotsManager.create().input(0, 27, 47, stack -> true).input(1, 76, 47, stack -> true).output(2, 134, 47).build();
     }
 
     @Override

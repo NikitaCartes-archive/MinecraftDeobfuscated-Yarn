@@ -147,7 +147,7 @@ extends Screen {
         });
     }
 
-    public void switchFocusedList(ResourcePackOrganizer.Pack pack, PackListWidget listWidget) {
+    public void switchFocusedList(PackListWidget listWidget) {
         PackListWidget packListWidget = this.selectedPackList == listWidget ? this.availablePackList : this.selectedPackList;
         this.switchFocus(GuiNavigationPath.of(packListWidget.getFirst(), new ParentElement[]{packListWidget, this}));
     }

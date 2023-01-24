@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.RecipeType;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -51,7 +52,7 @@ public interface Recipe<C extends Inventory> {
      * 
      * @param inventory the input inventory
      */
-    public ItemStack craft(C var1);
+    public ItemStack craft(C var1, DynamicRegistryManager var2);
 
     /**
      * {@return whether this recipe will fit into the given grid size}
@@ -69,7 +70,7 @@ public interface Recipe<C extends Inventory> {
      * <p>The returned stack should not be modified. To obtain the actual output,
      * call {@link #craft(Inventory)}.
      */
-    public ItemStack getOutput();
+    public ItemStack getOutput(DynamicRegistryManager var1);
 
     /**
      * {@return the remaining stacks to be left in the {@code inventory} after the recipe is used}

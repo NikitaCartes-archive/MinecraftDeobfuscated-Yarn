@@ -30,6 +30,7 @@ import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchProvider;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -634,7 +635,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         }
         this.renderTabIcon(matrices, selectedTab);
         if (selectedTab.getType() == ItemGroup.Type.INVENTORY) {
-            InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, this.x + 88 - mouseX, this.y + 45 - 30 - mouseY, this.client.player);
+            InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, this.x + 88 - mouseX, this.y + 45 - 30 - mouseY, (LivingEntity)this.client.player);
         }
     }
 

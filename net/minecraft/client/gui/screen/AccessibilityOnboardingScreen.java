@@ -6,6 +6,7 @@ package net.minecraft.client.gui.screen;
 import com.mojang.text2speech.Narrator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.LogoDrawer;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.Screen;
@@ -31,6 +32,7 @@ extends Screen {
     private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(TitleScreen.PANORAMA_CUBE_MAP);
     private final LogoDrawer logoDrawer;
     private final GameOptions gameOptions;
+    private final boolean isNarratorUsable;
     private boolean narratorPrompted;
     private float narratorPromptTimer;
     @Nullable
@@ -40,6 +42,7 @@ extends Screen {
         super(Text.translatable("accessibility.onboarding.screen.title"));
         this.gameOptions = gameOptions;
         this.logoDrawer = new LogoDrawer(true);
+        this.isNarratorUsable = MinecraftClient.getInstance().getNarratorManager().isActive();
     }
 
     @Override
@@ -53,8 +56,11 @@ extends Screen {
         this.textWidget = new NarratedMultilineTextWidget(this.textRenderer, this.title, this.width);
         adder.add(this.textWidget, adder.copyPositioner().margin(16));
         ClickableWidget clickableWidget = this.gameOptions.getNarrator().createButton(this.gameOptions, 0, 0, 150);
+        clickableWidget.active = this.isNarratorUsable;
         adder.add(clickableWidget);
-        this.setInitialFocus(clickableWidget);
+        if (this.isNarratorUsable) {
+            this.setInitialFocus(clickableWidget);
+        }
         adder.add(ButtonWidget.builder(Text.translatable("options.accessibility.title"), button -> this.client.setScreen(new AccessibilityOptionsScreen(new TitleScreen(true), this.client.options))).build());
         simplePositioningWidget.add(ButtonWidget.builder(ScreenTexts.CONTINUE, button -> this.client.setScreen(new TitleScreen(true, this.logoDrawer))).build(), simplePositioningWidget.copyPositioner().alignBottom().margin(8));
         simplePositioningWidget.refreshPositions();
@@ -85,7 +91,7 @@ extends Screen {
     }
 
     private void tickNarratorPrompt() {
-        if (!this.narratorPrompted) {
+        if (!this.narratorPrompted && this.isNarratorUsable) {
             if (this.narratorPromptTimer < 40.0f) {
                 this.narratorPromptTimer += 1.0f;
             } else {

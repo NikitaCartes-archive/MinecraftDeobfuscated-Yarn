@@ -93,7 +93,7 @@ extends ClickableWidget {
         this.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
         List<Recipe<?>> list = this.getResults();
         this.currentResultIndex = MathHelper.floor(this.time / 30.0f) % list.size();
-        ItemStack itemStack = list.get(this.currentResultIndex).getOutput();
+        ItemStack itemStack = list.get(this.currentResultIndex).getOutput(this.resultCollection.getRegistryManager());
         int k = 4;
         if (this.resultCollection.hasSingleOutput() && this.getResults().size() > 1) {
             minecraftClient.getItemRenderer().renderInGuiWithOverrides(itemStack, this.getX() + k + 1, this.getY() + k + 1, 0, 10);
@@ -124,7 +124,7 @@ extends ClickableWidget {
     }
 
     public List<Text> getTooltip(Screen screen) {
-        ItemStack itemStack = this.getResults().get(this.currentResultIndex).getOutput();
+        ItemStack itemStack = this.getResults().get(this.currentResultIndex).getOutput(this.resultCollection.getRegistryManager());
         ArrayList<Text> list = Lists.newArrayList(screen.getTooltipFromItem(itemStack));
         if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
             list.add(MORE_RECIPES_TEXT);
@@ -134,7 +134,7 @@ extends ClickableWidget {
 
     @Override
     public void appendClickableNarrations(NarrationMessageBuilder builder) {
-        ItemStack itemStack = this.getResults().get(this.currentResultIndex).getOutput();
+        ItemStack itemStack = this.getResults().get(this.currentResultIndex).getOutput(this.resultCollection.getRegistryManager());
         builder.put(NarrationPart.TITLE, (Text)Text.translatable("narration.recipe", itemStack.getName()));
         if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
             builder.put(NarrationPart.USAGE, Text.translatable("narration.button.usage.hovered"), Text.translatable("narration.recipe.usage.more"));

@@ -2623,10 +2623,9 @@ extends Entity {
      * thrown by a player.
      */
     public void triggerItemPickedUpByEntityCriteria(ItemEntity item) {
-        PlayerEntity playerEntity;
-        PlayerEntity playerEntity2 = playerEntity = item.getThrower() != null ? this.world.getPlayerByUuid(item.getThrower()) : null;
-        if (playerEntity instanceof ServerPlayerEntity) {
-            Criteria.THROWN_ITEM_PICKED_UP_BY_ENTITY.trigger((ServerPlayerEntity)playerEntity, item.getStack(), this);
+        Entity entity = item.getOwner();
+        if (entity instanceof ServerPlayerEntity) {
+            Criteria.THROWN_ITEM_PICKED_UP_BY_ENTITY.trigger((ServerPlayerEntity)entity, item.getStack(), this);
         }
     }
 

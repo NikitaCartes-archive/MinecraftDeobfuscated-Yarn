@@ -15,29 +15,36 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.registry.DynamicRegistryManager;
 
 @Environment(value=EnvType.CLIENT)
 public class RecipeResultCollection {
+    private final DynamicRegistryManager registryManager;
     private final List<Recipe<?>> recipes;
     private final boolean singleOutput;
     private final Set<Recipe<?>> craftableRecipes = Sets.newHashSet();
     private final Set<Recipe<?>> fittingRecipes = Sets.newHashSet();
     private final Set<Recipe<?>> unlockedRecipes = Sets.newHashSet();
 
-    public RecipeResultCollection(List<Recipe<?>> recipes) {
+    public RecipeResultCollection(DynamicRegistryManager registryManager, List<Recipe<?>> recipes) {
+        this.registryManager = registryManager;
         this.recipes = ImmutableList.copyOf(recipes);
-        this.singleOutput = recipes.size() <= 1 ? true : RecipeResultCollection.shouldHaveSingleOutput(recipes);
+        this.singleOutput = recipes.size() <= 1 ? true : RecipeResultCollection.shouldHaveSingleOutput(registryManager, recipes);
     }
 
-    private static boolean shouldHaveSingleOutput(List<Recipe<?>> recipes) {
+    private static boolean shouldHaveSingleOutput(DynamicRegistryManager registryManager, List<Recipe<?>> recipes) {
         int i = recipes.size();
-        ItemStack itemStack = recipes.get(0).getOutput();
+        ItemStack itemStack = recipes.get(0).getOutput(registryManager);
         for (int j = 1; j < i; ++j) {
-            ItemStack itemStack2 = recipes.get(j).getOutput();
+            ItemStack itemStack2 = recipes.get(j).getOutput(registryManager);
             if (ItemStack.areItemsEqual(itemStack, itemStack2) && ItemStack.areNbtEqual(itemStack, itemStack2)) continue;
             return false;
         }
         return true;
+    }
+
+    public DynamicRegistryManager getRegistryManager() {
+        return this.registryManager;
     }
 
     public boolean isInitialized() {

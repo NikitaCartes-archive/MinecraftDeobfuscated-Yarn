@@ -17,6 +17,7 @@ import net.minecraft.client.texture.atlas.AtlasSource;
 import net.minecraft.client.texture.atlas.AtlasSourceType;
 import net.minecraft.client.texture.atlas.DirectoryAtlasSource;
 import net.minecraft.client.texture.atlas.FilterAtlasSource;
+import net.minecraft.client.texture.atlas.PalettedPermutationsAtlasSource;
 import net.minecraft.client.texture.atlas.SingleAtlasSource;
 import net.minecraft.client.texture.atlas.UnstitchAtlasSource;
 import net.minecraft.util.Identifier;
@@ -28,6 +29,7 @@ public class AtlasSourceManager {
     public static final AtlasSourceType DIRECTORY = AtlasSourceManager.register("directory", DirectoryAtlasSource.CODEC);
     public static final AtlasSourceType FILTER = AtlasSourceManager.register("filter", FilterAtlasSource.CODEC);
     public static final AtlasSourceType UNSTITCH = AtlasSourceManager.register("unstitch", UnstitchAtlasSource.CODEC);
+    public static final AtlasSourceType PALETTED_PERMUTATIONS = AtlasSourceManager.register("paletted_permutations", PalettedPermutationsAtlasSource.CODEC);
     public static Codec<AtlasSourceType> CODEC = Identifier.CODEC.flatXmap(id -> {
         AtlasSourceType atlasSourceType = (AtlasSourceType)SOURCE_TYPE_BY_ID.get(id);
         return atlasSourceType != null ? DataResult.success(atlasSourceType) : DataResult.error("Unknown type " + id);

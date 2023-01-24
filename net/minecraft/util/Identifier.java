@@ -224,6 +224,10 @@ implements Comparable<Identifier> {
         return this.withPath(prefix + this.path);
     }
 
+    public Identifier withSuffixedPath(String suffix) {
+        return this.withPath(this.path + suffix);
+    }
+
     public String toString() {
         return this.namespace + ":" + this.path;
     }

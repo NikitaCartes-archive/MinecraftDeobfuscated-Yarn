@@ -35,6 +35,7 @@ import net.minecraft.recipe.RecipeManager;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
@@ -265,7 +266,7 @@ RecipeInputProvider {
         if (blockEntity.isBurning() || bl4 && bl3) {
             Recipe recipe = bl3 ? (Recipe)blockEntity.matchGetter.getFirstMatch(blockEntity, world).orElse(null) : null;
             int i = blockEntity.getMaxCountPerStack();
-            if (!blockEntity.isBurning() && AbstractFurnaceBlockEntity.canAcceptRecipeOutput(recipe, blockEntity.inventory, i)) {
+            if (!blockEntity.isBurning() && AbstractFurnaceBlockEntity.canAcceptRecipeOutput(world.getRegistryManager(), recipe, blockEntity.inventory, i)) {
                 blockEntity.fuelTime = blockEntity.burnTime = blockEntity.getFuelTime(itemStack);
                 if (blockEntity.isBurning()) {
                     bl2 = true;
@@ -279,12 +280,12 @@ RecipeInputProvider {
                     }
                 }
             }
-            if (blockEntity.isBurning() && AbstractFurnaceBlockEntity.canAcceptRecipeOutput(recipe, blockEntity.inventory, i)) {
+            if (blockEntity.isBurning() && AbstractFurnaceBlockEntity.canAcceptRecipeOutput(world.getRegistryManager(), recipe, blockEntity.inventory, i)) {
                 ++blockEntity.cookTime;
                 if (blockEntity.cookTime == blockEntity.cookTimeTotal) {
                     blockEntity.cookTime = 0;
                     blockEntity.cookTimeTotal = AbstractFurnaceBlockEntity.getCookTime(world, blockEntity);
-                    if (AbstractFurnaceBlockEntity.craftRecipe(recipe, blockEntity.inventory, i)) {
+                    if (AbstractFurnaceBlockEntity.craftRecipe(world.getRegistryManager(), recipe, blockEntity.inventory, i)) {
                         blockEntity.setLastRecipe(recipe);
                     }
                     bl2 = true;
@@ -305,11 +306,11 @@ RecipeInputProvider {
         }
     }
 
-    private static boolean canAcceptRecipeOutput(@Nullable Recipe<?> recipe, DefaultedList<ItemStack> slots, int count) {
+    private static boolean canAcceptRecipeOutput(DynamicRegistryManager registryManager, @Nullable Recipe<?> recipe, DefaultedList<ItemStack> slots, int count) {
         if (slots.get(0).isEmpty() || recipe == null) {
             return false;
         }
-        ItemStack itemStack = recipe.getOutput();
+        ItemStack itemStack = recipe.getOutput(registryManager);
         if (itemStack.isEmpty()) {
             return false;
         }
@@ -326,12 +327,12 @@ RecipeInputProvider {
         return itemStack2.getCount() < itemStack.getMaxCount();
     }
 
-    private static boolean craftRecipe(@Nullable Recipe<?> recipe, DefaultedList<ItemStack> slots, int count) {
-        if (recipe == null || !AbstractFurnaceBlockEntity.canAcceptRecipeOutput(recipe, slots, count)) {
+    private static boolean craftRecipe(DynamicRegistryManager registryManager, @Nullable Recipe<?> recipe, DefaultedList<ItemStack> slots, int count) {
+        if (recipe == null || !AbstractFurnaceBlockEntity.canAcceptRecipeOutput(registryManager, recipe, slots, count)) {
             return false;
         }
         ItemStack itemStack = slots.get(0);
-        ItemStack itemStack2 = recipe.getOutput();
+        ItemStack itemStack2 = recipe.getOutput(registryManager);
         ItemStack itemStack3 = slots.get(2);
         if (itemStack3.isEmpty()) {
             slots.set(2, itemStack2.copy());

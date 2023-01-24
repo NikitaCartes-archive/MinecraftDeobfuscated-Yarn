@@ -115,15 +115,15 @@ public interface Profiler {
             }
 
             @Override
-            public void visit(String marker, int i) {
-                a.visit(marker, i);
-                b.visit(marker, i);
+            public void visit(String marker, int num) {
+                a.visit(marker, num);
+                b.visit(marker, num);
             }
 
             @Override
-            public void visit(Supplier<String> markerGetter, int i) {
-                a.visit(markerGetter, i);
-                b.visit(markerGetter, i);
+            public void visit(Supplier<String> markerGetter, int num) {
+                a.visit(markerGetter, num);
+                b.visit(markerGetter, num);
             }
         };
     }

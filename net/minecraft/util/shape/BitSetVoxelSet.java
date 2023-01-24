@@ -77,9 +77,9 @@ extends VoxelSet {
         return this.storage.get(this.getIndex(x, y, z));
     }
 
-    private void set(int x, int y, int z, boolean bl) {
+    private void set(int x, int y, int z, boolean updateBounds) {
         this.storage.set(this.getIndex(x, y, z));
-        if (bl) {
+        if (updateBounds) {
             this.minX = Math.min(this.minX, x);
             this.minY = Math.min(this.minY, y);
             this.minZ = Math.min(this.minZ, z);
@@ -112,29 +112,29 @@ extends VoxelSet {
     static BitSetVoxelSet combine(VoxelSet first, VoxelSet second, PairList xPoints, PairList yPoints, PairList zPoints, BooleanBiFunction function) {
         BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(xPoints.size() - 1, yPoints.size() - 1, zPoints.size() - 1);
         int[] is = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
-        xPoints.forEachPair((i, j, k) -> {
+        xPoints.forEachPair((x1, x2, xIndex) -> {
             boolean[] bls = new boolean[]{false};
-            yPoints.forEachPair((l, m, n) -> {
+            yPoints.forEachPair((y1, y2, yIndex) -> {
                 boolean[] bls2 = new boolean[]{false};
-                zPoints.forEachPair((o, p, q) -> {
-                    if (function.apply(first.inBoundsAndContains(i, l, o), second.inBoundsAndContains(j, m, p))) {
-                        bitSetVoxelSet.storage.set(bitSetVoxelSet.getIndex(k, n, q));
-                        is[2] = Math.min(is[2], q);
-                        is[5] = Math.max(is[5], q);
+                zPoints.forEachPair((z1, z2, zIndex) -> {
+                    if (function.apply(first.inBoundsAndContains(x1, y1, z1), second.inBoundsAndContains(x2, y2, z2))) {
+                        bitSetVoxelSet.storage.set(bitSetVoxelSet.getIndex(xIndex, yIndex, zIndex));
+                        is[2] = Math.min(is[2], zIndex);
+                        is[5] = Math.max(is[5], zIndex);
                         bls[0] = true;
                     }
                     return true;
                 });
                 if (bls2[0]) {
-                    is[1] = Math.min(is[1], n);
-                    is[4] = Math.max(is[4], n);
+                    is[1] = Math.min(is[1], yIndex);
+                    is[4] = Math.max(is[4], yIndex);
                     bls[0] = true;
                 }
                 return true;
             });
             if (bls[0]) {
-                is[0] = Math.min(is[0], k);
-                is[3] = Math.max(is[3], k);
+                is[0] = Math.min(is[0], xIndex);
+                is[3] = Math.max(is[3], xIndex);
             }
             return true;
         });
@@ -147,59 +147,59 @@ extends VoxelSet {
         return bitSetVoxelSet;
     }
 
-    protected static void method_31941(VoxelSet voxelSet, VoxelSet.PositionBiConsumer positionBiConsumer, boolean bl) {
+    protected static void forEachBox(VoxelSet voxelSet, VoxelSet.PositionBiConsumer callback, boolean coalesce) {
         BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(voxelSet);
         for (int i = 0; i < bitSetVoxelSet.sizeY; ++i) {
             for (int j = 0; j < bitSetVoxelSet.sizeX; ++j) {
                 int k = -1;
                 for (int l = 0; l <= bitSetVoxelSet.sizeZ; ++l) {
                     if (bitSetVoxelSet.inBoundsAndContains(j, i, l)) {
-                        if (bl) {
+                        if (coalesce) {
                             if (k != -1) continue;
                             k = l;
                             continue;
                         }
-                        positionBiConsumer.consume(j, i, l, j + 1, i + 1, l + 1);
+                        callback.consume(j, i, l, j + 1, i + 1, l + 1);
                         continue;
                     }
                     if (k == -1) continue;
                     int m = j;
                     int n = i;
-                    bitSetVoxelSet.method_31942(k, l, j, i);
+                    bitSetVoxelSet.clearColumn(k, l, j, i);
                     while (bitSetVoxelSet.isColumnFull(k, l, m + 1, i)) {
-                        bitSetVoxelSet.method_31942(k, l, m + 1, i);
+                        bitSetVoxelSet.clearColumn(k, l, m + 1, i);
                         ++m;
                     }
-                    while (bitSetVoxelSet.method_31938(j, m + 1, k, l, n + 1)) {
+                    while (bitSetVoxelSet.isXzSquareFull(j, m + 1, k, l, n + 1)) {
                         for (int o = j; o <= m; ++o) {
-                            bitSetVoxelSet.method_31942(k, l, o, n + 1);
+                            bitSetVoxelSet.clearColumn(k, l, o, n + 1);
                         }
                         ++n;
                     }
-                    positionBiConsumer.consume(j, i, k, m + 1, n + 1, l);
+                    callback.consume(j, i, k, m + 1, n + 1, l);
                     k = -1;
                 }
             }
         }
     }
 
-    private boolean isColumnFull(int i, int j, int k, int l) {
-        if (k >= this.sizeX || l >= this.sizeY) {
+    private boolean isColumnFull(int z1, int z2, int x, int y) {
+        if (x >= this.sizeX || y >= this.sizeY) {
             return false;
         }
-        return this.storage.nextClearBit(this.getIndex(k, l, i)) >= this.getIndex(k, l, j);
+        return this.storage.nextClearBit(this.getIndex(x, y, z1)) >= this.getIndex(x, y, z2);
     }
 
-    private boolean method_31938(int i, int j, int k, int l, int m) {
-        for (int n = i; n < j; ++n) {
-            if (this.isColumnFull(k, l, n, m)) continue;
+    private boolean isXzSquareFull(int x1, int x2, int z1, int z2, int y) {
+        for (int i = x1; i < x2; ++i) {
+            if (this.isColumnFull(z1, z2, i, y)) continue;
             return false;
         }
         return true;
     }
 
-    private void method_31942(int i, int j, int k, int l) {
-        this.storage.clear(this.getIndex(k, l, i), this.getIndex(k, l, j));
+    private void clearColumn(int z1, int z2, int x, int y) {
+        this.storage.clear(this.getIndex(x, y, z1), this.getIndex(x, y, z2));
     }
 }
 

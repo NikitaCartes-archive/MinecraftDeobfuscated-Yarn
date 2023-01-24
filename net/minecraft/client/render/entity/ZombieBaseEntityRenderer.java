@@ -20,7 +20,7 @@ extends BipedEntityRenderer<T, M> {
 
     protected ZombieBaseEntityRenderer(EntityRendererFactory.Context ctx, M bodyModel, M legsArmorModel, M bodyArmorModel) {
         super(ctx, bodyModel, 0.5f);
-        this.addFeature(new ArmorFeatureRenderer(this, legsArmorModel, bodyArmorModel));
+        this.addFeature(new ArmorFeatureRenderer(this, legsArmorModel, bodyArmorModel, ctx.getModelManager()));
     }
 
     @Override

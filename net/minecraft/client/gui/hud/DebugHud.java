@@ -401,7 +401,7 @@ extends DrawableHelper {
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         Matrix4f matrix4f = AffineTransformation.identity().getMatrix();
         while (k != j) {
-            t = metricsData.method_15248(ls[k], showFps ? 30 : 60, showFps ? 60 : 20);
+            t = metricsData.scaleSample(ls[k], showFps ? 30 : 60, showFps ? 60 : 20);
             int u = showFps ? 100 : 60;
             int v = this.getMetricsLineColor(MathHelper.clamp(t, 0, u), 0, u / 2, u);
             int w = v >> 24 & 0xFF;

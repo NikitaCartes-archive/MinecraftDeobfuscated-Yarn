@@ -12,6 +12,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -46,7 +47,7 @@ extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack craft(CraftingInventory craftingInventory) {
+    public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
         ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
         NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("Fireworks");
         NbtList nbtList = new NbtList();
@@ -75,7 +76,7 @@ extends SpecialCraftingRecipe {
     }
 
     @Override
-    public ItemStack getOutput() {
+    public ItemStack getOutput(DynamicRegistryManager registryManager) {
         return new ItemStack(Items.FIREWORK_ROCKET);
     }
 

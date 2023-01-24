@@ -38,7 +38,7 @@ extends RecipeBookWidget {
 
     @Override
     public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
-        ItemStack itemStack = recipe.getOutput();
+        ItemStack itemStack = recipe.getOutput(this.client.world.getRegistryManager());
         this.ghostSlots.setRecipe(recipe);
         this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)2).x, slots.get((int)2).y);
         DefaultedList<Ingredient> defaultedList = recipe.getIngredients();

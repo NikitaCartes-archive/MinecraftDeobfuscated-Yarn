@@ -19,6 +19,7 @@ import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Ownable;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -39,7 +40,8 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class AreaEffectCloudEntity
-extends Entity {
+extends Entity
+implements Ownable {
     private static final Logger LOGGER = LogUtils.getLogger();
     private static final int field_29972 = 5;
     private static final TrackedData<Float> RADIUS = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -308,6 +310,7 @@ extends Entity {
         this.ownerUuid = owner == null ? null : owner.getUuid();
     }
 
+    @Override
     @Nullable
     public LivingEntity getOwner() {
         Entity entity;
@@ -403,6 +406,12 @@ extends Entity {
     @Override
     public EntityDimensions getDimensions(EntityPose pose) {
         return EntityDimensions.changing(this.getRadius() * 2.0f, 0.5f);
+    }
+
+    @Override
+    @Nullable
+    public /* synthetic */ Entity getOwner() {
+        return this.getOwner();
     }
 }
 

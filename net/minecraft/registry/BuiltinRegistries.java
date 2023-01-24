@@ -4,6 +4,8 @@
 package net.minecraft.registry;
 
 import java.util.List;
+import net.minecraft.item.trim.ArmorTrimMaterials;
+import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
@@ -34,7 +36,7 @@ import net.minecraft.world.gen.placementmodifier.BiomePlacementModifier;
 import net.minecraft.world.gen.structure.Structures;
 
 public class BuiltinRegistries {
-    private static final RegistryBuilder REGISTRY_BUILDER = new RegistryBuilder().addRegistry(RegistryKeys.DIMENSION_TYPE, DimensionTypeRegistrar::bootstrap).addRegistry(RegistryKeys.CONFIGURED_CARVER, ConfiguredCarvers::bootstrap).addRegistry(RegistryKeys.CONFIGURED_FEATURE, ConfiguredFeatures::bootstrap).addRegistry(RegistryKeys.PLACED_FEATURE, PlacedFeatures::bootstrap).addRegistry(RegistryKeys.STRUCTURE, Structures::bootstrap).addRegistry(RegistryKeys.STRUCTURE_SET, StructureSets::bootstrap).addRegistry(RegistryKeys.PROCESSOR_LIST, StructureProcessorLists::bootstrap).addRegistry(RegistryKeys.TEMPLATE_POOL, StructurePools::bootstrap).addRegistry(RegistryKeys.BIOME, BuiltinBiomes::bootstrap).addRegistry(RegistryKeys.NOISE_PARAMETERS, BuiltinNoiseParameters::bootstrap).addRegistry(RegistryKeys.DENSITY_FUNCTION, DensityFunctions::bootstrap).addRegistry(RegistryKeys.CHUNK_GENERATOR_SETTINGS, ChunkGeneratorSettings::bootstrap).addRegistry(RegistryKeys.WORLD_PRESET, WorldPresets::bootstrap).addRegistry(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPresets::bootstrap).addRegistry(RegistryKeys.MESSAGE_TYPE, MessageType::bootstrap);
+    private static final RegistryBuilder REGISTRY_BUILDER = new RegistryBuilder().addRegistry(RegistryKeys.DIMENSION_TYPE, DimensionTypeRegistrar::bootstrap).addRegistry(RegistryKeys.CONFIGURED_CARVER, ConfiguredCarvers::bootstrap).addRegistry(RegistryKeys.CONFIGURED_FEATURE, ConfiguredFeatures::bootstrap).addRegistry(RegistryKeys.PLACED_FEATURE, PlacedFeatures::bootstrap).addRegistry(RegistryKeys.STRUCTURE, Structures::bootstrap).addRegistry(RegistryKeys.STRUCTURE_SET, StructureSets::bootstrap).addRegistry(RegistryKeys.PROCESSOR_LIST, StructureProcessorLists::bootstrap).addRegistry(RegistryKeys.TEMPLATE_POOL, StructurePools::bootstrap).addRegistry(RegistryKeys.BIOME, BuiltinBiomes::bootstrap).addRegistry(RegistryKeys.NOISE_PARAMETERS, BuiltinNoiseParameters::bootstrap).addRegistry(RegistryKeys.DENSITY_FUNCTION, DensityFunctions::bootstrap).addRegistry(RegistryKeys.CHUNK_GENERATOR_SETTINGS, ChunkGeneratorSettings::bootstrap).addRegistry(RegistryKeys.WORLD_PRESET, WorldPresets::bootstrap).addRegistry(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPresets::bootstrap).addRegistry(RegistryKeys.MESSAGE_TYPE, MessageType::bootstrap).addRegistry(RegistryKeys.TRIM_PATTERN, ArmorTrimPatterns::bootstrap).addRegistry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterials::bootstrap);
 
     private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
         RegistryWrapper.Impl<PlacedFeature> registryEntryLookup = wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE);
