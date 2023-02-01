@@ -332,6 +332,10 @@ public class TextureMap {
 		return new TextureMap().put(TextureKey.LAYER0, layer0).put(TextureKey.LAYER1, layer1);
 	}
 
+	public static TextureMap layered(Identifier layer0, Identifier layer1, Identifier layer2) {
+		return new TextureMap().put(TextureKey.LAYER0, layer0).put(TextureKey.LAYER1, layer1).put(TextureKey.LAYER2, layer2);
+	}
+
 	public static Identifier getId(Block block) {
 		Identifier identifier = Registries.BLOCK.getId(block);
 		return identifier.withPrefixedPath("block/");

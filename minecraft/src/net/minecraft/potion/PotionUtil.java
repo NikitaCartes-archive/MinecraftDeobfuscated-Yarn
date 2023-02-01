@@ -181,7 +181,7 @@ public class PotionUtil {
 					mutableText = Text.translatable("potion.withAmplifier", mutableText, Text.translatable("potion.potency." + statusEffectInstance.getAmplifier()));
 				}
 
-				if (statusEffectInstance.getDuration() > 20) {
+				if (!statusEffectInstance.isDurationBelow(20)) {
 					mutableText = Text.translatable("potion.withDuration", mutableText, StatusEffectUtil.durationToString(statusEffectInstance, durationMultiplier));
 				}
 

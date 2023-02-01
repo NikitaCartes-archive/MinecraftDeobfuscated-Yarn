@@ -18,9 +18,9 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
-import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
+import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
@@ -40,7 +40,11 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public abstract class ClickableWidget extends DrawableHelper implements Drawable, Element, Widget, Selectable {
 	public static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+	public static final Identifier ACCESSIBILITY_TEXTURE = new Identifier("textures/gui/accessibility.png");
 	protected static final int field_41797 = 46;
+	protected static final int field_42118 = 200;
+	protected static final int field_42119 = 20;
+	protected static final int field_42120 = 4;
 	protected int width;
 	protected int height;
 	private int x;
@@ -50,6 +54,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	public boolean active = true;
 	public boolean visible = true;
 	protected float alpha = 1.0F;
+	private int navigationOrder;
 	private boolean focused;
 	@Nullable
 	private Tooltip tooltip;
@@ -117,7 +122,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	protected TooltipPositioner getTooltipPositioner() {
 		return (TooltipPositioner)(!this.hovered && this.isFocused() && MinecraftClient.getInstance().getNavigationType().isKeyboard()
 			? new FocusedTooltipPositioner(this)
-			: HoveredTooltipPositioner.INSTANCE);
+			: new WidgetTooltipPositioner(this));
 	}
 
 	public void setTooltip(@Nullable Tooltip tooltip) {
@@ -137,25 +142,42 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	}
 
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.renderButton(matrices, mouseX, mouseY);
+	}
+
+	protected void renderButton(MatrixStack matrices, int mouseX, int mouseY) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		TextRenderer textRenderer = minecraftClient.textRenderer;
 		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, this.getTexture());
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.enableDepthTest();
-		int i = this.width / 2;
-		int j = this.width - i;
-		int k = this.getYImage();
-		this.drawTexture(matrices, this.getX(), this.getY(), 0, k, i, this.height);
-		this.drawTexture(matrices, this.getX() + i, this.getY(), 200 - j, k, j, this.height);
+		this.drawNineSlicedTexture(matrices, this.getX(), this.getY(), this.width, this.height, 4, 200, 20, 0, this.getYImage());
 		this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		int l = this.active ? 16777215 : 10526880;
-		drawCenteredText(
-			matrices, textRenderer, this.getMessage(), this.getX() + i, this.getY() + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0F) << 24
-		);
+		int i = this.active ? 16777215 : 10526880;
+		TextRenderer textRenderer = minecraftClient.textRenderer;
+		this.drawMessage(matrices, textRenderer, this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, i);
+	}
+
+	public void drawMessage(MatrixStack matrices, TextRenderer textRenderer, int centerX, int y, int color) {
+		drawCenteredText(matrices, textRenderer, this.getMessage(), centerX, y, color | MathHelper.ceil(this.alpha * 255.0F) << 24);
+	}
+
+	public void drawTexture(
+		MatrixStack matrices, Identifier texture, int x, int y, int u, int v, int hoveredVOffset, int width, int height, int textureWidth, int textureHeight
+	) {
+		RenderSystem.setShaderTexture(0, texture);
+		int i = v;
+		if (!this.isNarratable()) {
+			i = v + hoveredVOffset * 2;
+		} else if (this.isHovered()) {
+			i = v + hoveredVOffset;
+		}
+
+		RenderSystem.enableDepthTest();
+		drawTexture(matrices, x, y, (float)u, (float)i, width, height, textureWidth, textureHeight);
 	}
 
 	protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
@@ -343,5 +365,14 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	@Override
 	public FocusedRect getNavigationFocus() {
 		return new FocusedRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
+	}
+
+	@Override
+	public int getNavigationOrder() {
+		return this.navigationOrder;
+	}
+
+	public void setNavigationOrder(int navigationOrder) {
+		this.navigationOrder = navigationOrder;
 	}
 }

@@ -2,6 +2,7 @@ package net.minecraft.client.gui;
 
 import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
@@ -144,7 +145,8 @@ public interface ParentElement extends Element {
 	private GuiNavigationPath computeNavigationPath(GuiNavigation.Tab navigation) {
 		boolean bl = navigation.forward();
 		Element element = this.getFocused();
-		List<? extends Element> list = this.children();
+		List<? extends Element> list = new ArrayList(this.children());
+		Collections.sort(list, Comparator.comparingInt(elementx -> elementx.getNavigationOrder()));
 		int i = list.indexOf(element);
 		int j;
 		if (element != null && i >= 0) {

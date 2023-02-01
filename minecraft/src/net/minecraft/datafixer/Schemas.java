@@ -33,7 +33,7 @@ import net.minecraft.datafixer.fix.BlockEntityBlockStateFix;
 import net.minecraft.datafixer.fix.BlockEntityCustomNameToTextFix;
 import net.minecraft.datafixer.fix.BlockEntityIdFix;
 import net.minecraft.datafixer.fix.BlockEntityJukeboxFix;
-import net.minecraft.datafixer.fix.BlockEntityKeepPacked;
+import net.minecraft.datafixer.fix.BlockEntityKeepPackedFix;
 import net.minecraft.datafixer.fix.BlockEntityShulkerBoxColorFix;
 import net.minecraft.datafixer.fix.BlockEntitySignTextStrictJsonFix;
 import net.minecraft.datafixer.fix.BlockEntityUuidFix;
@@ -78,7 +78,7 @@ import net.minecraft.datafixer.fix.EntityShulkerColorFix;
 import net.minecraft.datafixer.fix.EntityShulkerRotationFix;
 import net.minecraft.datafixer.fix.EntitySkeletonSplitFix;
 import net.minecraft.datafixer.fix.EntityStringUuidFix;
-import net.minecraft.datafixer.fix.EntityTheRenameningBlock;
+import net.minecraft.datafixer.fix.EntityTheRenameningBlockFix;
 import net.minecraft.datafixer.fix.EntityTippedArrowFix;
 import net.minecraft.datafixer.fix.EntityUuidFix;
 import net.minecraft.datafixer.fix.EntityVariantTypeFix;
@@ -152,6 +152,7 @@ import net.minecraft.datafixer.fix.RenameVariantsFix;
 import net.minecraft.datafixer.fix.SavedDataVillageCropFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
 import net.minecraft.datafixer.fix.StatsRenameFix;
+import net.minecraft.datafixer.fix.StatusEffectDurationFix;
 import net.minecraft.datafixer.fix.StriderGravityFix;
 import net.minecraft.datafixer.fix.StructureFeatureChildrenPoolElementFix;
 import net.minecraft.datafixer.fix.StructureReferenceFix;
@@ -541,7 +542,7 @@ public class Schemas {
 		Schema schema64 = builder.addSchema(1496, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new LeavesFix(schema64, false));
 		Schema schema65 = builder.addSchema(1500, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BlockEntityKeepPacked(schema65, false));
+		builder.addFixer(new BlockEntityKeepPackedFix(schema65, false));
 		Schema schema66 = builder.addSchema(1501, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new AdvancementsFix(schema66, false));
 		Schema schema67 = builder.addSchema(1502, EMPTY_IDENTIFIER_NORMALIZE);
@@ -549,10 +550,10 @@ public class Schemas {
 		Schema schema68 = builder.addSchema(1506, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new LevelDataGeneratorOptionsFix(schema68, false));
 		Schema schema69 = builder.addSchema(1510, Schema1510::new);
-		builder.addFixer(BlockNameFix.create(schema69, "Block renamening fix", replacing(EntityTheRenameningBlock.BLOCKS)));
-		builder.addFixer(ItemNameFix.create(schema69, "Item renamening fix", replacing(EntityTheRenameningBlock.ITEMS)));
+		builder.addFixer(BlockNameFix.create(schema69, "Block renamening fix", replacing(EntityTheRenameningBlockFix.BLOCKS)));
+		builder.addFixer(ItemNameFix.create(schema69, "Item renamening fix", replacing(EntityTheRenameningBlockFix.ITEMS)));
 		builder.addFixer(new RecipeRenamingFix(schema69, false));
-		builder.addFixer(new EntityTheRenameningBlock(schema69, true));
+		builder.addFixer(new EntityTheRenameningBlockFix(schema69, true));
 		builder.addFixer(
 			new StatsRenameFix(
 				schema69,
@@ -1030,6 +1031,8 @@ public class Schemas {
 		builder.addFixer(new OptionsAmbientOcclusionFix(schema176));
 		Schema schema177 = builder.addSchema(3319, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new OptionsAccessibilityOnboardFix(schema177));
+		Schema schema178 = builder.addSchema(3322, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new StatusEffectDurationFix(schema178));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

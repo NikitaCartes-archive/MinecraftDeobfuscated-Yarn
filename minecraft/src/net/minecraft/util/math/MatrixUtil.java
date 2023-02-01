@@ -38,14 +38,15 @@ public class MatrixUtil {
 	}
 
 	/**
-	 * Compute the approximate Givens rotation factors (c, s) = (cos(phi), sin(phi)) for a 2×2 matrix.
+	 * Computes the approximate Givens rotation factors {@code (c, s) = (cos(phi), sin(phi))} for a 2×2 matrix.
+	 * See Algorithm 4 of <a href="https://pages.cs.wisc.edu/~sifakis/papers/SVD_TR1690.pdf">
+	 * https://pages.cs.wisc.edu/~sifakis/papers/SVD_TR1690.pdf</a>.
 	 * 
-	 * @return a pair (c, s) = (cos(phi), sin(phi))
+	 * @return a pair {@code (c, s) = (cos(theta), sin(theta))}
 	 * 
-	 * @see Algorithm 2 of https://pages.cs.wisc.edu/~sifakis/papers/SVD_TR1690.pdf
-	 * the top-left element of the matrix
-	 * the average of the two elements on the minor diagonal
-	 * the bottom-right element of the matrix
+	 * @param a11 the top-left element of the matrix
+	 * @param a12 the average of the two elements on the minor diagonal
+	 * @param a22 the bottom-right element of the matrix
 	 */
 	private static Pair<Float, Float> approximateGivensQuaternion(float a11, float a12, float a22) {
 		float f = 2.0F * (a11 - a22);
@@ -58,10 +59,11 @@ public class MatrixUtil {
 	}
 
 	/**
-	 * Compute the Givens quaternion for a QR factorization.
+	 * Computes the Givens quaternion for a QR factorization.
+	 * See Algorithm 4 of <a href="https://pages.cs.wisc.edu/~sifakis/papers/SVD_TR1690.pdf">
+	 * https://pages.cs.wisc.edu/~sifakis/papers/SVD_TR1690.pdf</a>.
 	 * 
-	 * @return a pair (c, s) = (cos(theta), sin(theta))
-	 * @see Algorithm 4 of https://pages.cs.wisc.edu/~sifakis/papers/SVD_TR1690.pdf
+	 * @return a pair {@code (c, s) = (cos(theta), sin(theta))}
 	 */
 	private static Pair<Float, Float> qrGivensQuaternion(float a1, float a2) {
 		float f = (float)Math.hypot((double)a1, (double)a2);
@@ -147,8 +149,8 @@ public class MatrixUtil {
 
 	/**
 	 * Performs an approximate singular value decomposition on a 3×3 matrix.
-	 * 
-	 * @see https://pages.cs.wisc.edu/~sifakis/papers/SVD_TR1690.pdf
+	 * See Algorithm 4 of <a href="https://pages.cs.wisc.edu/~sifakis/papers/SVD_TR1690.pdf">
+	 * https://pages.cs.wisc.edu/~sifakis/papers/SVD_TR1690.pdf</a>.
 	 */
 	public static Triple<Quaternionf, Vector3f, Quaternionf> svdDecompose(Matrix3f A) {
 		Quaternionf quaternionf = new Quaternionf();

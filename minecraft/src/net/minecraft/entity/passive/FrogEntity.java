@@ -102,8 +102,6 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 	public final AnimationState longJumpingAnimationState = new AnimationState();
 	public final AnimationState croakingAnimationState = new AnimationState();
 	public final AnimationState usingTongueAnimationState = new AnimationState();
-	public final AnimationState walkingAnimationState = new AnimationState();
-	public final AnimationState swimmingAnimationState = new AnimationState();
 	public final AnimationState idlingInWaterAnimationState = new AnimationState();
 
 	public FrogEntity(EntityType<? extends AnimalEntity> entityType, World world) {
@@ -187,14 +185,6 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 		return true;
 	}
 
-	private boolean shouldWalk() {
-		return this.onGround && this.getVelocity().horizontalLengthSquared() > 1.0E-6 && !this.isInsideWaterOrBubbleColumn();
-	}
-
-	private boolean shouldSwim() {
-		return this.getVelocity().horizontalLengthSquared() > 1.0E-6 && this.isInsideWaterOrBubbleColumn();
-	}
-
 	@Override
 	protected void mobTick() {
 		this.world.getProfiler().push("frogBrain");
@@ -209,22 +199,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 	@Override
 	public void tick() {
 		if (this.world.isClient()) {
-			if (this.shouldWalk()) {
-				this.walkingAnimationState.startIfNotRunning(this.age);
-			} else {
-				this.walkingAnimationState.stop();
-			}
-
-			if (this.shouldSwim()) {
-				this.idlingInWaterAnimationState.stop();
-				this.swimmingAnimationState.startIfNotRunning(this.age);
-			} else if (this.isInsideWaterOrBubbleColumn()) {
-				this.swimmingAnimationState.stop();
-				this.idlingInWaterAnimationState.startIfNotRunning(this.age);
-			} else {
-				this.swimmingAnimationState.stop();
-				this.idlingInWaterAnimationState.stop();
-			}
+			this.idlingInWaterAnimationState.setRunning(this.isInsideWaterOrBubbleColumn() && !this.limbAnimator.isLimbMoving(), this.age);
 		}
 
 		super.tick();
@@ -254,6 +229,18 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 		}
 
 		super.onTrackedDataSet(data);
+	}
+
+	@Override
+	protected void updateLimbs(float posDelta) {
+		float f;
+		if (this.longJumpingAnimationState.isRunning()) {
+			f = 0.0F;
+		} else {
+			f = Math.min(posDelta * 25.0F, 1.0F);
+		}
+
+		this.limbAnimator.updateLimbs(f, 0.4F);
 	}
 
 	@Nullable

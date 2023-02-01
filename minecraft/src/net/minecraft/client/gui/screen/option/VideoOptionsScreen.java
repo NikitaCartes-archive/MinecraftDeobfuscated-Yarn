@@ -57,7 +57,9 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 			gameOptions.getDistortionEffectScale(),
 			gameOptions.getEntityDistanceScaling(),
 			gameOptions.getFovEffectScale(),
-			gameOptions.getShowAutosaveIndicator()
+			gameOptions.getShowAutosaveIndicator(),
+			gameOptions.getGlintSpeed(),
+			gameOptions.getGlintStrength()
 		};
 	}
 

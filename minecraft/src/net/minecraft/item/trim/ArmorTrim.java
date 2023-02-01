@@ -1,14 +1,16 @@
 package net.minecraft.item.trim;
 
-import com.google.common.base.Suppliers;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -38,22 +40,29 @@ public class ArmorTrim {
 		.formatted(Formatting.GRAY);
 	private final RegistryEntry<ArmorTrimMaterial> material;
 	private final RegistryEntry<ArmorTrimPattern> pattern;
-	private final Supplier<Identifier> leggingsModelIdGetter;
-	private final Supplier<Identifier> genericModelIdGetter;
+	private final Function<ArmorMaterial, Identifier> leggingsModelIdGetter;
+	private final Function<ArmorMaterial, Identifier> genericModelIdGetter;
 
 	public ArmorTrim(RegistryEntry<ArmorTrimMaterial> material, RegistryEntry<ArmorTrimPattern> pattern) {
 		this.material = material;
 		this.pattern = pattern;
-		this.leggingsModelIdGetter = Suppliers.memoize(() -> {
+		this.leggingsModelIdGetter = Util.memoize((Function<ArmorMaterial, Identifier>)(armorMaterial -> {
 			Identifier identifier = ((ArmorTrimPattern)pattern.value()).assetId();
-			String string = ((ArmorTrimMaterial)material.value()).assetName();
+			String string = this.getMaterialAssetNameFor(armorMaterial);
 			return identifier.withPath((UnaryOperator<String>)(path -> "trims/models/armor/" + path + "_leggings_" + string));
-		});
-		this.genericModelIdGetter = Suppliers.memoize(() -> {
+		}));
+		this.genericModelIdGetter = Util.memoize((Function<ArmorMaterial, Identifier>)(armorMaterial -> {
 			Identifier identifier = ((ArmorTrimPattern)pattern.value()).assetId();
-			String string = ((ArmorTrimMaterial)material.value()).assetName();
+			String string = this.getMaterialAssetNameFor(armorMaterial);
 			return identifier.withPath((UnaryOperator<String>)(path -> "trims/models/armor/" + path + "_" + string));
-		});
+		}));
+	}
+
+	private String getMaterialAssetNameFor(ArmorMaterial armorMaterial) {
+		Map<ArmorMaterials, String> map = ((ArmorTrimMaterial)this.material.value()).overrideArmorMaterials();
+		return armorMaterial instanceof ArmorMaterials && map.containsKey(armorMaterial)
+			? (String)map.get(armorMaterial)
+			: ((ArmorTrimMaterial)this.material.value()).assetName();
 	}
 
 	public boolean equals(RegistryEntry<ArmorTrimPattern> pattern, RegistryEntry<ArmorTrimMaterial> material) {
@@ -68,12 +77,12 @@ public class ArmorTrim {
 		return this.material;
 	}
 
-	public Identifier getLeggingsModelId() {
-		return (Identifier)this.leggingsModelIdGetter.get();
+	public Identifier getLeggingsModelId(ArmorMaterial armorMaterial) {
+		return (Identifier)this.leggingsModelIdGetter.apply(armorMaterial);
 	}
 
-	public Identifier getGenericModelId() {
-		return (Identifier)this.genericModelIdGetter.get();
+	public Identifier getGenericModelId(ArmorMaterial armorMaterial) {
+		return (Identifier)this.genericModelIdGetter.apply(armorMaterial);
 	}
 
 	public boolean equals(Object o) {

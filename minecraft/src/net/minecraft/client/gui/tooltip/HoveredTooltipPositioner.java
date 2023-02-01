@@ -15,7 +15,7 @@ public class HoveredTooltipPositioner implements TooltipPositioner {
 
 	@Override
 	public Vector2ic getPosition(Screen screen, int x, int y, int width, int height) {
-		Vector2i vector2i = new Vector2i(x, y);
+		Vector2i vector2i = new Vector2i(x, y).add(12, -12);
 		this.preventOverflow(screen, vector2i, width, height);
 		return vector2i;
 	}

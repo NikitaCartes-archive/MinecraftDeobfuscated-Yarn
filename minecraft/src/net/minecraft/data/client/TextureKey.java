@@ -38,6 +38,7 @@ public final class TextureKey {
 	public static final TextureKey TORCH = of("torch");
 	public static final TextureKey LAYER0 = of("layer0");
 	public static final TextureKey LAYER1 = of("layer1");
+	public static final TextureKey LAYER2 = of("layer2");
 	public static final TextureKey LIT_LOG = of("lit_log");
 	public static final TextureKey CANDLE = of("candle");
 	public static final TextureKey INSIDE = of("inside");

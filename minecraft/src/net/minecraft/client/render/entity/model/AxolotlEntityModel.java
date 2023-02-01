@@ -137,11 +137,7 @@ public class AxolotlEntityModel<T extends AxolotlEntity & AngledModelEntity> ext
 			this.setPlayingDeadAngles(i);
 			this.updateAnglesCache(axolotlEntity);
 		} else {
-			boolean bl = axolotlEntity.getVelocity().horizontalLengthSquared() > 1.0E-7
-				|| axolotlEntity.getPitch() != axolotlEntity.prevPitch
-				|| axolotlEntity.getYaw() != axolotlEntity.prevYaw
-				|| axolotlEntity.lastRenderX != axolotlEntity.getX()
-				|| axolotlEntity.lastRenderZ != axolotlEntity.getZ();
+			boolean bl = g > 1.0E-5F || axolotlEntity.getPitch() != axolotlEntity.prevPitch || axolotlEntity.getYaw() != axolotlEntity.prevYaw;
 			if (axolotlEntity.isInsideWaterOrBubbleColumn()) {
 				if (bl) {
 					this.setMovingInWaterAngles(h, j);

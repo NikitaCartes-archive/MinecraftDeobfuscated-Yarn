@@ -48,7 +48,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevY, abstractClientPlayerEntity.getY());
 				double m = MathHelper.lerp((double)h, abstractClientPlayerEntity.prevCapeZ, abstractClientPlayerEntity.capeZ)
 					- MathHelper.lerp((double)h, abstractClientPlayerEntity.prevZ, abstractClientPlayerEntity.getZ());
-				float n = abstractClientPlayerEntity.prevBodyYaw + (abstractClientPlayerEntity.bodyYaw - abstractClientPlayerEntity.prevBodyYaw);
+				float n = MathHelper.lerpAngleDegrees(h, abstractClientPlayerEntity.prevBodyYaw, abstractClientPlayerEntity.bodyYaw);
 				double o = (double)MathHelper.sin(n * (float) (Math.PI / 180.0));
 				double p = (double)(-MathHelper.cos(n * (float) (Math.PI / 180.0)));
 				float q = (float)e * 10.0F;

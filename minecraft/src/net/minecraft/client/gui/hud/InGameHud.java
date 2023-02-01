@@ -455,21 +455,21 @@ public class InGameHud extends DrawableHelper {
 						this.drawTexture(matrices, k, l, 165, 166, 24, 24);
 					} else {
 						this.drawTexture(matrices, k, l, 141, 166, 24, 24);
-						if (statusEffectInstance.getDuration() <= 200) {
-							int m = 10 - statusEffectInstance.getDuration() / 20;
-							f = MathHelper.clamp((float)statusEffectInstance.getDuration() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F)
-								+ MathHelper.cos((float)statusEffectInstance.getDuration() * (float) Math.PI / 5.0F) * MathHelper.clamp((float)m / 10.0F * 0.25F, 0.0F, 0.25F);
+						if (statusEffectInstance.isDurationBelow(200)) {
+							int m = statusEffectInstance.getDuration();
+							int n = 10 - m / 20;
+							f = MathHelper.clamp((float)m / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F)
+								+ MathHelper.cos((float)m * (float) Math.PI / 5.0F) * MathHelper.clamp((float)n / 10.0F * 0.25F, 0.0F, 0.25F);
 						}
 					}
 
 					Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
-					int n = k;
 					int o = l;
 					float g = f;
 					list.add((Runnable)() -> {
 						RenderSystem.setShaderTexture(0, sprite.getAtlasId());
 						RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, g);
-						drawSprite(matrices, n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
+						drawSprite(matrices, k + 3, o + 3, this.getZOffset(), 18, 18, sprite);
 						RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 					});
 				}

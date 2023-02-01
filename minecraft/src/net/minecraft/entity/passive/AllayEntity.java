@@ -183,7 +183,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 			}
 		}
 
-		this.updateLimbs(this, false);
+		this.updateLimbs(false);
 	}
 
 	@Override

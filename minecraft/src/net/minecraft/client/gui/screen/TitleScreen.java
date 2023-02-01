@@ -58,7 +58,6 @@ public class TitleScreen extends Screen {
 	public static final Text COPYRIGHT = Text.literal("Copyright Mojang AB. Do not distribute!");
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
-	private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
 	@Nullable
 	private String splashText;
 	private ButtonWidget buttonResetDemo;
@@ -166,7 +165,7 @@ public class TitleScreen extends Screen {
 				0,
 				0,
 				20,
-				ACCESSIBILITY_ICON_TEXTURE,
+				ButtonWidget.ACCESSIBILITY_TEXTURE,
 				32,
 				64,
 				button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)),

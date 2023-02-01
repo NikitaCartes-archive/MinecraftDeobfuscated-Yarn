@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.LogoDrawer;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
-import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.GridWidget;
@@ -41,14 +40,15 @@ public class AccessibilityOnboardingScreen extends Screen {
 
 	@Override
 	public void init() {
-		SimplePositioningWidget simplePositioningWidget = new SimplePositioningWidget();
+		int i = this.yMargin();
+		SimplePositioningWidget simplePositioningWidget = SimplePositioningWidget.of(this.width, this.height - i);
 		simplePositioningWidget.getMainPositioner().alignTop().margin(4);
-		simplePositioningWidget.setDimensions(this.width, this.height - this.yMargin());
 		GridWidget gridWidget = simplePositioningWidget.add(new GridWidget());
 		gridWidget.getMainPositioner().alignHorizontalCenter().margin(4);
 		GridWidget.Adder adder = gridWidget.createAdder(1);
+		adder.getMainPositioner().margin(2);
 		this.textWidget = new NarratedMultilineTextWidget(this.textRenderer, this.title, this.width);
-		adder.add(this.textWidget, adder.copyPositioner().margin(16));
+		adder.add(this.textWidget, adder.copyPositioner().marginBottom(16));
 		ClickableWidget clickableWidget = this.gameOptions.getNarrator().createButton(this.gameOptions, 0, 0, 150);
 		clickableWidget.active = this.isNarratorUsable;
 		adder.add(clickableWidget);
@@ -56,19 +56,13 @@ public class AccessibilityOnboardingScreen extends Screen {
 			this.setInitialFocus(clickableWidget);
 		}
 
-		adder.add(
-			ButtonWidget.builder(
-					Text.translatable("options.accessibility.title"),
-					button -> this.client.setScreen(new AccessibilityOptionsScreen(new TitleScreen(true), this.client.options))
-				)
-				.build()
-		);
+		adder.add(AccessibilityOnboardingButtons.createAccessibilityButton(this.client, this));
+		adder.add(AccessibilityOnboardingButtons.createLanguageButton(this.client, this));
 		simplePositioningWidget.add(
-			ButtonWidget.builder(ScreenTexts.CONTINUE, button -> this.client.setScreen(new TitleScreen(true, this.logoDrawer))).build(),
-			simplePositioningWidget.copyPositioner().alignBottom().margin(8)
+			ButtonWidget.builder(ScreenTexts.CONTINUE, button -> this.close()).build(), simplePositioningWidget.copyPositioner().alignBottom().margin(8)
 		);
 		simplePositioningWidget.refreshPositions();
-		SimplePositioningWidget.setPos(simplePositioningWidget, 0, this.yMargin(), this.width, this.height, 0.5F, 0.0F);
+		SimplePositioningWidget.setPos(simplePositioningWidget, 0, i, this.width, this.height, 0.5F, 0.0F);
 		simplePositioningWidget.forEachChild(this::addDrawableChild);
 	}
 
@@ -78,7 +72,7 @@ public class AccessibilityOnboardingScreen extends Screen {
 
 	@Override
 	public void close() {
-		this.client.getNarratorManager().clear();
+		Narrator.getNarrator().clear();
 		this.client.setScreen(new TitleScreen(true, this.logoDrawer));
 	}
 

@@ -95,7 +95,7 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 					return ix;
 				} else {
 					int k = ColorHelper.Abgr.getBgr(ix);
-					int l = int2IntMap.getOrDefault(k, k);
+					int l = int2IntMap.getOrDefault(k, ColorHelper.Abgr.toOpaque(k));
 					int m = ColorHelper.Abgr.getAlpha(l);
 					return ColorHelper.Abgr.withAlpha(jxx * m / 255, l);
 				}
