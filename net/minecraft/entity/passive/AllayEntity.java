@@ -164,7 +164,7 @@ implements InventoryOwner {
                 this.setVelocity(this.getVelocity().multiply(0.91f));
             }
         }
-        this.updateLimbs(this, false);
+        this.updateLimbs(false);
     }
 
     @Override

@@ -9,16 +9,15 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import net.minecraft.data.client.Model;
 import net.minecraft.data.client.ModelIds;
 import net.minecraft.data.client.Models;
 import net.minecraft.data.client.TextureKey;
 import net.minecraft.data.client.TextureMap;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -27,7 +26,7 @@ import net.minecraft.util.Identifier;
 
 public class ItemModelGenerator {
     public static final Identifier TRIM_TYPE = new Identifier("trim_type");
-    private static final List<TrimMaterial> TRIM_MATERIALS = List.of(new TrimMaterial("quartz", 0.1f, Optional.empty()), new TrimMaterial("iron", 0.2f, Optional.of(ArmorMaterials.IRON)), new TrimMaterial("netherite", 0.3f, Optional.of(ArmorMaterials.NETHERITE)), new TrimMaterial("redstone", 0.4f, Optional.empty()), new TrimMaterial("copper", 0.5f, Optional.empty()), new TrimMaterial("gold", 0.6f, Optional.of(ArmorMaterials.GOLD)), new TrimMaterial("emerald", 0.7f, Optional.empty()), new TrimMaterial("diamond", 0.8f, Optional.of(ArmorMaterials.DIAMOND)), new TrimMaterial("lapis", 0.9f, Optional.empty()), new TrimMaterial("amethyst", 1.0f, Optional.empty()));
+    private static final List<TrimMaterial> TRIM_MATERIALS = List.of(new TrimMaterial("quartz", 0.1f, Map.of()), new TrimMaterial("iron", 0.2f, Map.of(ArmorMaterials.IRON, "iron_darker")), new TrimMaterial("netherite", 0.3f, Map.of(ArmorMaterials.NETHERITE, "netherite_darker")), new TrimMaterial("redstone", 0.4f, Map.of()), new TrimMaterial("copper", 0.5f, Map.of()), new TrimMaterial("gold", 0.6f, Map.of(ArmorMaterials.GOLD, "gold_darker")), new TrimMaterial("emerald", 0.7f, Map.of()), new TrimMaterial("diamond", 0.8f, Map.of(ArmorMaterials.DIAMOND, "diamond_darker")), new TrimMaterial("lapis", 0.9f, Map.of()), new TrimMaterial("amethyst", 1.0f, Map.of()));
     private final BiConsumer<Identifier, Supplier<JsonElement>> writer;
 
     public ItemModelGenerator(BiConsumer<Identifier, Supplier<JsonElement>> writer) {
@@ -60,26 +59,26 @@ public class ItemModelGenerator {
     }
 
     private void uploadArmor(Identifier id, Identifier layer0, Identifier layer1) {
-        Models.ARMOR.upload(id, TextureMap.layered(layer0, layer1), this.writer);
+        Models.GENERATED_TWO_LAYERS.upload(id, TextureMap.layered(layer0, layer1), this.writer);
+    }
+
+    private void uploadArmor(Identifier id, Identifier layer0, Identifier layer1, Identifier layer2) {
+        Models.GENERATED_THREE_LAYERS.upload(id, TextureMap.layered(layer0, layer1, layer2), this.writer);
     }
 
     private Identifier suffixTrim(Identifier id, String trimMaterialName) {
         return id.withSuffixedPath("_" + trimMaterialName + "_trim");
     }
 
-    private List<TrimMaterial> getCompatibleTrimMaterials(ArmorItem armor) {
-        return TRIM_MATERIALS.stream().filter(material -> material.incompatibleArmorMaterial().isEmpty() || material.incompatibleArmorMaterial().get() != armor.getMaterial()).collect(Collectors.toList());
-    }
-
-    private JsonObject createArmorJson(Identifier id, Map<TextureKey, Identifier> textures, List<TrimMaterial> trimMaterials) {
-        JsonObject jsonObject = Models.ARMOR.createJson(id, textures);
+    private JsonObject createArmorJson(Identifier id, Map<TextureKey, Identifier> textures, ArmorMaterial armorMaterial) {
+        JsonObject jsonObject = Models.GENERATED_TWO_LAYERS.createJson(id, textures);
         JsonArray jsonArray = new JsonArray();
-        for (TrimMaterial trimMaterial : trimMaterials) {
+        for (TrimMaterial trimMaterial : TRIM_MATERIALS) {
             JsonObject jsonObject2 = new JsonObject();
             JsonObject jsonObject3 = new JsonObject();
             jsonObject3.addProperty(TRIM_TYPE.getPath(), Float.valueOf(trimMaterial.itemModelIndex()));
             jsonObject2.add("predicate", jsonObject3);
-            jsonObject2.addProperty("model", this.suffixTrim(id, trimMaterial.name()).toString());
+            jsonObject2.addProperty("model", this.suffixTrim(id, trimMaterial.getAppliedName(armorMaterial)).toString());
             jsonArray.add(jsonObject2);
         }
         jsonObject.add("overrides", jsonArray);
@@ -87,13 +86,24 @@ public class ItemModelGenerator {
     }
 
     private void registerArmor(ArmorItem armor) {
-        List<TrimMaterial> list = this.getCompatibleTrimMaterials(armor);
         Identifier identifier = ModelIds.getItemModelId(armor);
-        Models.GENERATED.upload(identifier, TextureMap.layer0(TextureMap.getId(armor)), this.writer, (id, textures) -> this.createArmorJson(id, textures, list));
-        for (TrimMaterial trimMaterial : list) {
-            Identifier identifier2 = this.suffixTrim(identifier, trimMaterial.name());
-            String string = armor.getType().getName() + "_trim_" + trimMaterial.name();
-            this.uploadArmor(identifier2, TextureMap.getId(armor), new Identifier(string).withPrefixedPath("trims/items/"));
+        Identifier identifier2 = TextureMap.getId(armor);
+        Identifier identifier3 = TextureMap.getSubId(armor, "_overlay");
+        if (armor.getMaterial() == ArmorMaterials.LEATHER) {
+            Models.GENERATED_TWO_LAYERS.upload(identifier, TextureMap.layered(identifier2, identifier3), this.writer, (id, textures) -> this.createArmorJson(id, textures, armor.getMaterial()));
+        } else {
+            Models.GENERATED.upload(identifier, TextureMap.layer0(identifier2), this.writer, (id, textures) -> this.createArmorJson(id, textures, armor.getMaterial()));
+        }
+        for (TrimMaterial trimMaterial : TRIM_MATERIALS) {
+            String string = trimMaterial.getAppliedName(armor.getMaterial());
+            Identifier identifier4 = this.suffixTrim(identifier, string);
+            String string2 = armor.getType().getName() + "_trim_" + string;
+            Identifier identifier5 = new Identifier(string2).withPrefixedPath("trims/items/");
+            if (armor.getMaterial() == ArmorMaterials.LEATHER) {
+                this.uploadArmor(identifier4, identifier2, identifier3, identifier5);
+                continue;
+            }
+            this.uploadArmor(identifier4, identifier2, identifier5);
         }
     }
 
@@ -340,13 +350,16 @@ public class ItemModelGenerator {
         this.register(Items.DEBUG_STICK, Items.STICK, Models.HANDHELD);
         this.register(Items.ENCHANTED_GOLDEN_APPLE, Items.GOLDEN_APPLE, Models.GENERATED);
         for (Item item : Registries.ITEM) {
-            ArmorItem armorItem;
-            if (!(item instanceof ArmorItem) || !(armorItem = (ArmorItem)item).getMaterial().isTrimmable()) continue;
+            if (!(item instanceof ArmorItem)) continue;
+            ArmorItem armorItem = (ArmorItem)item;
             this.registerArmor(armorItem);
         }
     }
 
-    record TrimMaterial(String name, float itemModelIndex, Optional<ArmorMaterials> incompatibleArmorMaterial) {
+    record TrimMaterial(String name, float itemModelIndex, Map<ArmorMaterial, String> overrideArmorMaterials) {
+        public String getAppliedName(ArmorMaterial armorMaterial) {
+            return this.overrideArmorMaterials.getOrDefault(armorMaterial, this.name);
+        }
     }
 }
 

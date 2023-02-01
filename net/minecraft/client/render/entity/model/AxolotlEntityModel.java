@@ -136,7 +136,7 @@ extends AnimalModel<T> {
             this.updateAnglesCache(axolotlEntity);
             return;
         }
-        boolean bl2 = bl = ((Entity)axolotlEntity).getVelocity().horizontalLengthSquared() > 1.0E-7 || ((Entity)axolotlEntity).getPitch() != ((AxolotlEntity)axolotlEntity).prevPitch || ((Entity)axolotlEntity).getYaw() != ((AxolotlEntity)axolotlEntity).prevYaw || ((AxolotlEntity)axolotlEntity).lastRenderX != ((Entity)axolotlEntity).getX() || ((AxolotlEntity)axolotlEntity).lastRenderZ != ((Entity)axolotlEntity).getZ();
+        boolean bl2 = bl = g > 1.0E-5f || ((Entity)axolotlEntity).getPitch() != ((AxolotlEntity)axolotlEntity).prevPitch || ((Entity)axolotlEntity).getYaw() != ((AxolotlEntity)axolotlEntity).prevYaw;
         if (((Entity)axolotlEntity).isInsideWaterOrBubbleColumn()) {
             if (bl) {
                 this.setMovingInWaterAngles(h, j);

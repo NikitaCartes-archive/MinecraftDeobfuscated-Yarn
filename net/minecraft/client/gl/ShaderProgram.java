@@ -100,6 +100,8 @@ AutoCloseable {
     @Nullable
     public final GlUniform light1Direction;
     @Nullable
+    public final GlUniform glintAlpha;
+    @Nullable
     public final GlUniform fogStart;
     @Nullable
     public final GlUniform fogEnd;
@@ -197,6 +199,7 @@ AutoCloseable {
         this.colorModulator = this.getUniform("ColorModulator");
         this.light0Direction = this.getUniform("Light0_Direction");
         this.light1Direction = this.getUniform("Light1_Direction");
+        this.glintAlpha = this.getUniform("GlintAlpha");
         this.fogStart = this.getUniform("FogStart");
         this.fogEnd = this.getUniform("FogEnd");
         this.fogColor = this.getUniform("FogColor");

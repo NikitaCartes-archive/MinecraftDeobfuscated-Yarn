@@ -3,15 +3,17 @@
  */
 package net.minecraft.item.trim;
 
-import com.google.common.base.Suppliers;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.Function;
+import net.minecraft.item.ArmorMaterial;
+import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.item.trim.ArmorTrimPattern;
@@ -35,22 +37,30 @@ public class ArmorTrim {
     private static final Text UPGRADE_TEXT = Text.translatable(Util.createTranslationKey("item", new Identifier("smithing_template.upgrade"))).formatted(Formatting.GRAY);
     private final RegistryEntry<ArmorTrimMaterial> material;
     private final RegistryEntry<ArmorTrimPattern> pattern;
-    private final Supplier<Identifier> leggingsModelIdGetter;
-    private final Supplier<Identifier> genericModelIdGetter;
+    private final Function<ArmorMaterial, Identifier> leggingsModelIdGetter;
+    private final Function<ArmorMaterial, Identifier> genericModelIdGetter;
 
     public ArmorTrim(RegistryEntry<ArmorTrimMaterial> material, RegistryEntry<ArmorTrimPattern> pattern) {
         this.material = material;
         this.pattern = pattern;
-        this.leggingsModelIdGetter = Suppliers.memoize(() -> {
+        this.leggingsModelIdGetter = Util.memoize(armorMaterial -> {
             Identifier identifier = ((ArmorTrimPattern)pattern.value()).assetId();
-            String string = ((ArmorTrimMaterial)material.value()).assetName();
+            String string = this.getMaterialAssetNameFor((ArmorMaterial)armorMaterial);
             return identifier.withPath(path -> "trims/models/armor/" + path + "_leggings_" + string);
         });
-        this.genericModelIdGetter = Suppliers.memoize(() -> {
+        this.genericModelIdGetter = Util.memoize(armorMaterial -> {
             Identifier identifier = ((ArmorTrimPattern)pattern.value()).assetId();
-            String string = ((ArmorTrimMaterial)material.value()).assetName();
+            String string = this.getMaterialAssetNameFor((ArmorMaterial)armorMaterial);
             return identifier.withPath(path -> "trims/models/armor/" + path + "_" + string);
         });
+    }
+
+    private String getMaterialAssetNameFor(ArmorMaterial armorMaterial) {
+        Map<ArmorMaterials, String> map = this.material.value().overrideArmorMaterials();
+        if (armorMaterial instanceof ArmorMaterials && map.containsKey(armorMaterial)) {
+            return map.get(armorMaterial);
+        }
+        return this.material.value().assetName();
     }
 
     public boolean equals(RegistryEntry<ArmorTrimPattern> pattern, RegistryEntry<ArmorTrimMaterial> material) {
@@ -65,12 +75,12 @@ public class ArmorTrim {
         return this.material;
     }
 
-    public Identifier getLeggingsModelId() {
-        return this.leggingsModelIdGetter.get();
+    public Identifier getLeggingsModelId(ArmorMaterial armorMaterial) {
+        return this.leggingsModelIdGetter.apply(armorMaterial);
     }
 
-    public Identifier getGenericModelId() {
-        return this.genericModelIdGetter.get();
+    public Identifier getGenericModelId(ArmorMaterial armorMaterial) {
+        return this.genericModelIdGetter.apply(armorMaterial);
     }
 
     public boolean equals(Object o) {

@@ -4,7 +4,6 @@
 package net.minecraft.client.gui.screen;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -14,6 +13,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -33,6 +34,7 @@ import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
+import net.minecraft.client.gui.navigation.Navigable;
 import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -85,6 +87,7 @@ implements Drawable {
     private final List<Selectable> selectables = Lists.newArrayList();
     @Nullable
     protected MinecraftClient client;
+    private boolean screenInitialized;
     protected ItemRenderer itemRenderer;
     public int width;
     public int height;
@@ -292,29 +295,26 @@ implements Drawable {
 
     private void renderTooltipFromComponents(MatrixStack matrices, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {
         TooltipComponent tooltipComponent2;
-        int q;
-        int k;
+        int r;
         if (components.isEmpty()) {
             return;
         }
         int i = 0;
         int j = components.size() == 1 ? -2 : 0;
         for (TooltipComponent tooltipComponent : components) {
-            k = tooltipComponent.getWidth(this.textRenderer);
+            int k = tooltipComponent.getWidth(this.textRenderer);
             if (k > i) {
                 i = k;
             }
             j += tooltipComponent.getHeight();
         }
-        int l = x + 12;
-        int m = y - 12;
-        k = i;
-        int n = j;
-        Vector2ic vector2ic = positioner.getPosition(this, l, m, k, n);
-        l = vector2ic.x();
-        m = vector2ic.y();
+        int l = i;
+        int m = j;
+        Vector2ic vector2ic = positioner.getPosition(this, x, y, l, m);
+        int n = vector2ic.x();
+        int o = vector2ic.y();
         matrices.push();
-        int o = 400;
+        int p = 400;
         float f = this.itemRenderer.zOffset;
         this.itemRenderer.zOffset = 400.0f;
         Tessellator tessellator = Tessellator.getInstance();
@@ -322,7 +322,7 @@ implements Drawable {
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-        TooltipBackgroundRenderer.render((matrix, builder, startX, startY, endX, endY, z, colorStart, colorEnd) -> DrawableHelper.fillGradient(matrix, builder, startX, startY, endX, endY, z, colorStart, colorEnd), matrix4f, bufferBuilder, l, m, k, n, 400);
+        TooltipBackgroundRenderer.render((matrix, builder, startX, startY, endX, endY, z, colorStart, colorEnd) -> DrawableHelper.fillGradient(matrix, builder, startX, startY, endX, endY, z, colorStart, colorEnd), matrix4f, bufferBuilder, n, o, l, m, 400);
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -330,19 +330,19 @@ implements Drawable {
         RenderSystem.disableBlend();
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         matrices.translate(0.0f, 0.0f, 400.0f);
-        int p = m;
-        for (q = 0; q < components.size(); ++q) {
-            tooltipComponent2 = components.get(q);
-            tooltipComponent2.drawText(this.textRenderer, l, p, matrix4f, immediate);
-            p += tooltipComponent2.getHeight() + (q == 0 ? 2 : 0);
+        int q = o;
+        for (r = 0; r < components.size(); ++r) {
+            tooltipComponent2 = components.get(r);
+            tooltipComponent2.drawText(this.textRenderer, n, q, matrix4f, immediate);
+            q += tooltipComponent2.getHeight() + (r == 0 ? 2 : 0);
         }
         immediate.draw();
         matrices.pop();
-        p = m;
-        for (q = 0; q < components.size(); ++q) {
-            tooltipComponent2 = components.get(q);
-            tooltipComponent2.drawItems(this.textRenderer, l, p, matrices, this.itemRenderer, 400);
-            p += tooltipComponent2.getHeight() + (q == 0 ? 2 : 0);
+        q = o;
+        for (r = 0; r < components.size(); ++r) {
+            tooltipComponent2 = components.get(r);
+            tooltipComponent2.drawItems(this.textRenderer, n, q, matrices, this.itemRenderer, 400);
+            q += tooltipComponent2.getHeight() + (r == 0 ? 2 : 0);
         }
         this.itemRenderer.zOffset = f;
     }
@@ -437,7 +437,12 @@ implements Drawable {
         this.textRenderer = client.textRenderer;
         this.width = width;
         this.height = height;
-        this.clearAndInit();
+        if (!this.screenInitialized) {
+            this.init();
+        } else {
+            this.initTabNavigation();
+        }
+        this.screenInitialized = true;
         this.narrateScreenIfNarrationEnabled(false);
         this.setElementNarrationDelay(SCREEN_INIT_NARRATION_DELAY);
     }
@@ -541,8 +546,14 @@ implements Drawable {
         return code == 65 && Screen.hasControlDown() && !Screen.hasShiftDown() && !Screen.hasAltDown();
     }
 
+    protected void initTabNavigation() {
+        this.clearAndInit();
+    }
+
     public void resize(MinecraftClient client, int width, int height) {
-        this.init(client, width, height);
+        this.width = width;
+        this.height = height;
+        this.initTabNavigation();
     }
 
     public static void wrapScreenError(Runnable task, String errorTitle, String screenName) {
@@ -644,14 +655,15 @@ implements Drawable {
     }
 
     protected void addElementNarrations(NarrationMessageBuilder builder) {
-        ImmutableList immutableList = this.selectables.stream().filter(Selectable::isNarratable).collect(ImmutableList.toImmutableList());
-        SelectedElementNarrationData selectedElementNarrationData = Screen.findSelectedElementData(immutableList, this.selected);
+        List list = this.selectables.stream().filter(Selectable::isNarratable).collect(Collectors.toList());
+        Collections.sort(list, Comparator.comparingInt(Navigable::getNavigationOrder));
+        SelectedElementNarrationData selectedElementNarrationData = Screen.findSelectedElementData(list, this.selected);
         if (selectedElementNarrationData != null) {
             if (selectedElementNarrationData.selectType.isFocused()) {
                 this.selected = selectedElementNarrationData.selectable;
             }
-            if (immutableList.size() > 1) {
-                builder.put(NarrationPart.POSITION, (Text)Text.translatable("narrator.position.screen", selectedElementNarrationData.index + 1, immutableList.size()));
+            if (list.size() > 1) {
+                builder.put(NarrationPart.POSITION, (Text)Text.translatable("narrator.position.screen", selectedElementNarrationData.index + 1, list.size()));
                 if (selectedElementNarrationData.selectType == Selectable.SelectionType.FOCUSED) {
                     builder.put(NarrationPart.USAGE, (Text)Text.translatable("narration.component_list.usage"));
                 }

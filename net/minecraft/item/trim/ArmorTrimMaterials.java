@@ -3,6 +3,7 @@
  */
 package net.minecraft.item.trim;
 
+import java.util.Map;
 import java.util.Optional;
 import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
@@ -35,24 +36,28 @@ public class ArmorTrimMaterials {
     }
 
     public static void oneTwentyBootstrap(Registerable<ArmorTrimMaterial> registry) {
-        ArmorTrimMaterials.register(registry, QUARTZ, Items.QUARTZ, Style.EMPTY.withColor(14931140), 0.1f, Optional.empty());
-        ArmorTrimMaterials.register(registry, IRON, Items.IRON_INGOT, Style.EMPTY.withColor(0xECECEC), 0.2f, Optional.of(ArmorMaterials.IRON));
-        ArmorTrimMaterials.register(registry, NETHERITE, Items.NETHERITE_INGOT, Style.EMPTY.withColor(6445145), 0.3f, Optional.of(ArmorMaterials.NETHERITE));
-        ArmorTrimMaterials.register(registry, REDSTONE, Items.REDSTONE, Style.EMPTY.withColor(9901575), 0.4f, Optional.empty());
-        ArmorTrimMaterials.register(registry, COPPER, Items.COPPER_INGOT, Style.EMPTY.withColor(11823181), 0.5f, Optional.empty());
-        ArmorTrimMaterials.register(registry, GOLD, Items.GOLD_INGOT, Style.EMPTY.withColor(14594349), 0.6f, Optional.of(ArmorMaterials.GOLD));
-        ArmorTrimMaterials.register(registry, EMERALD, Items.EMERALD, Style.EMPTY.withColor(1155126), 0.7f, Optional.empty());
-        ArmorTrimMaterials.register(registry, DIAMOND, Items.DIAMOND, Style.EMPTY.withColor(7269586), 0.8f, Optional.of(ArmorMaterials.DIAMOND));
-        ArmorTrimMaterials.register(registry, LAPIS, Items.LAPIS_LAZULI, Style.EMPTY.withColor(4288151), 0.9f, Optional.empty());
-        ArmorTrimMaterials.register(registry, AMETHYST, Items.AMETHYST_SHARD, Style.EMPTY.withColor(10116294), 1.0f, Optional.empty());
+        ArmorTrimMaterials.register(registry, QUARTZ, Items.QUARTZ, Style.EMPTY.withColor(14931140), 0.1f);
+        ArmorTrimMaterials.register(registry, IRON, Items.IRON_INGOT, Style.EMPTY.withColor(0xECECEC), 0.2f, Map.of(ArmorMaterials.IRON, "iron_darker"));
+        ArmorTrimMaterials.register(registry, NETHERITE, Items.NETHERITE_INGOT, Style.EMPTY.withColor(6445145), 0.3f, Map.of(ArmorMaterials.NETHERITE, "netherite_darker"));
+        ArmorTrimMaterials.register(registry, REDSTONE, Items.REDSTONE, Style.EMPTY.withColor(9901575), 0.4f);
+        ArmorTrimMaterials.register(registry, COPPER, Items.COPPER_INGOT, Style.EMPTY.withColor(11823181), 0.5f);
+        ArmorTrimMaterials.register(registry, GOLD, Items.GOLD_INGOT, Style.EMPTY.withColor(14594349), 0.6f, Map.of(ArmorMaterials.GOLD, "gold_darker"));
+        ArmorTrimMaterials.register(registry, EMERALD, Items.EMERALD, Style.EMPTY.withColor(1155126), 0.7f);
+        ArmorTrimMaterials.register(registry, DIAMOND, Items.DIAMOND, Style.EMPTY.withColor(7269586), 0.8f, Map.of(ArmorMaterials.DIAMOND, "diamond_darker"));
+        ArmorTrimMaterials.register(registry, LAPIS, Items.LAPIS_LAZULI, Style.EMPTY.withColor(4288151), 0.9f);
+        ArmorTrimMaterials.register(registry, AMETHYST, Items.AMETHYST_SHARD, Style.EMPTY.withColor(10116294), 1.0f);
     }
 
     public static Optional<RegistryEntry.Reference<ArmorTrimMaterial>> get(DynamicRegistryManager registryManager, ItemStack stack) {
         return registryManager.get(RegistryKeys.TRIM_MATERIAL).streamEntries().filter(recipe -> stack.itemMatches(((ArmorTrimMaterial)recipe.value()).ingredient())).findFirst();
     }
 
-    private static void register(Registerable<ArmorTrimMaterial> registry, RegistryKey<ArmorTrimMaterial> key, Item ingredient, Style style, float itemModelIndex, Optional<ArmorMaterials> incompatibleArmorMaterial) {
-        ArmorTrimMaterial armorTrimMaterial = ArmorTrimMaterial.of(key.getValue().getPath(), ingredient, itemModelIndex, incompatibleArmorMaterial, Text.translatable(Util.createTranslationKey("trim_material", key.getValue())).fillStyle(style));
+    private static void register(Registerable<ArmorTrimMaterial> registry, RegistryKey<ArmorTrimMaterial> key, Item ingredient, Style style, float itemModelIndex) {
+        ArmorTrimMaterials.register(registry, key, ingredient, style, itemModelIndex, Map.of());
+    }
+
+    private static void register(Registerable<ArmorTrimMaterial> registry, RegistryKey<ArmorTrimMaterial> key, Item ingredient, Style style, float itemModelIndex, Map<ArmorMaterials, String> overrideArmorMaterials) {
+        ArmorTrimMaterial armorTrimMaterial = ArmorTrimMaterial.of(key.getValue().getPath(), ingredient, itemModelIndex, Text.translatable(Util.createTranslationKey("trim_material", key.getValue())).fillStyle(style), overrideArmorMaterials);
         registry.register(key, armorTrimMaterial);
     }
 

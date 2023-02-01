@@ -178,7 +178,7 @@ extends PersistentProjectileEntity {
         super.onHit(target);
         Entity entity = this.getEffectCause();
         for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
-            target.addStatusEffect(new StatusEffectInstance(statusEffectInstance.getEffectType(), Math.max(statusEffectInstance.getDuration() / 8, 1), statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()), entity);
+            target.addStatusEffect(new StatusEffectInstance(statusEffectInstance.getEffectType(), Math.max(statusEffectInstance.mapDuration(i -> i / 8), 1), statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()), entity);
         }
         if (!this.effects.isEmpty()) {
             for (StatusEffectInstance statusEffectInstance : this.effects) {

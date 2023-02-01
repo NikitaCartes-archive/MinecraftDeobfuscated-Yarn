@@ -172,6 +172,9 @@ implements AutoCloseable {
         if (program.colorModulator != null) {
             program.colorModulator.set(RenderSystem.getShaderColor());
         }
+        if (program.glintAlpha != null) {
+            program.glintAlpha.set(RenderSystem.getShaderGlintAlpha());
+        }
         if (program.fogStart != null) {
             program.fogStart.set(RenderSystem.getShaderFogStart());
         }

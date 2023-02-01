@@ -186,8 +186,8 @@ Saddleable {
 
     @Override
     public double getMountedHeightOffset() {
-        float f = Math.min(0.25f, this.limbDistance);
-        float g = this.limbAngle;
+        float f = Math.min(0.25f, this.limbAnimator.getSpeed());
+        float g = this.limbAnimator.getPos();
         return (double)this.getHeight() - 0.19 + (double)(0.12f * MathHelper.cos(g * 1.5f) * 2.0f * f);
     }
 

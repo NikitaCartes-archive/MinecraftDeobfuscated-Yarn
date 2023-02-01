@@ -14,6 +14,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
@@ -486,6 +487,20 @@ public class GameOptions {
         }
         return GameOptions.getPercentValueText(optionText, value);
     }, SimpleOption.DoubleSliderCallbacks.INSTANCE.withModifier(MathHelper::square, Math::sqrt), 1.0, value -> {});
+    private static final Text GLINT_SPEED_TOOLTIP = Text.translatable("options.glintSpeed.tooltip");
+    private final SimpleOption<Double> glintSpeed = new SimpleOption<Double>("options.glintSpeed", SimpleOption.constantTooltip(GLINT_SPEED_TOOLTIP), (prefix, value) -> {
+        if (value == 0.0) {
+            return GameOptions.getGenericValueText(prefix, ScreenTexts.OFF);
+        }
+        return GameOptions.getPercentValueText(prefix, value);
+    }, SimpleOption.DoubleSliderCallbacks.INSTANCE, 0.5, value -> {});
+    private static final Text GLINT_STRENGTH_TOOLTIP = Text.translatable("options.glintStrength.tooltip");
+    private final SimpleOption<Double> glintStrength = new SimpleOption<Double>("options.glintStrength", SimpleOption.constantTooltip(GLINT_STRENGTH_TOOLTIP), (prefix, value) -> {
+        if (value == 0.0) {
+            return GameOptions.getGenericValueText(prefix, ScreenTexts.OFF);
+        }
+        return GameOptions.getPercentValueText(prefix, value);
+    }, SimpleOption.DoubleSliderCallbacks.INSTANCE, 1.0, RenderSystem::setShaderGlintAlpha);
     private final SimpleOption<Double> gamma = new SimpleOption<Double>("options.gamma", SimpleOption.emptyTooltip(), (optionText, value) -> {
         int i = (int)(value * 100.0);
         if (i == 0) {
@@ -792,6 +807,14 @@ public class GameOptions {
         return this.darknessEffectScale;
     }
 
+    public SimpleOption<Double> getGlintSpeed() {
+        return this.glintSpeed;
+    }
+
+    public SimpleOption<Double> getGlintStrength() {
+        return this.glintStrength;
+    }
+
     public SimpleOption<Double> getGamma() {
         return this.gamma;
     }
@@ -868,6 +891,8 @@ public class GameOptions {
         visitor.accept("screenEffectScale", this.distortionEffectScale);
         visitor.accept("fovEffectScale", this.fovEffectScale);
         visitor.accept("darknessEffectScale", this.darknessEffectScale);
+        visitor.accept("glintSpeed", this.glintSpeed);
+        visitor.accept("glintStrength", this.glintStrength);
         visitor.accept("gamma", this.gamma);
         visitor.accept("renderDistance", this.viewDistance);
         visitor.accept("simulationDistance", this.simulationDistance);
@@ -1218,7 +1243,7 @@ public class GameOptions {
     }
 
     public String collectProfiledOptions() {
-        Stream<Pair<String, String>> stream = Stream.builder().add(Pair.of("ao", this.ao.getValue())).add(Pair.of("biomeBlendRadius", this.biomeBlendRadius.getValue())).add(Pair.of("enableVsync", this.enableVsync.getValue())).add(Pair.of("entityDistanceScaling", this.entityDistanceScaling.getValue())).add(Pair.of("entityShadows", this.entityShadows.getValue())).add(Pair.of("forceUnicodeFont", this.forceUnicodeFont.getValue())).add(Pair.of("fov", this.fov.getValue())).add(Pair.of("fovEffectScale", this.fovEffectScale.getValue())).add(Pair.of("darknessEffectScale", this.darknessEffectScale.getValue())).add(Pair.of("prioritizeChunkUpdates", this.chunkBuilderMode.getValue())).add(Pair.of("fullscreen", this.fullscreen.getValue())).add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution))).add(Pair.of("gamma", this.gamma.getValue())).add(Pair.of("glDebugVerbosity", this.glDebugVerbosity)).add(Pair.of("graphicsMode", this.graphicsMode.getValue())).add(Pair.of("guiScale", this.guiScale.getValue())).add(Pair.of("maxFps", this.maxFps.getValue())).add(Pair.of("mipmapLevels", this.mipmapLevels.getValue())).add(Pair.of("narrator", this.narrator.getValue())).add(Pair.of("overrideHeight", this.overrideHeight)).add(Pair.of("overrideWidth", this.overrideWidth)).add(Pair.of("particles", this.particles.getValue())).add(Pair.of("reducedDebugInfo", this.reducedDebugInfo.getValue())).add(Pair.of("renderClouds", this.cloudRenderMode.getValue())).add(Pair.of("renderDistance", this.viewDistance.getValue())).add(Pair.of("simulationDistance", this.simulationDistance.getValue())).add(Pair.of("resourcePacks", this.resourcePacks)).add(Pair.of("screenEffectScale", this.distortionEffectScale.getValue())).add(Pair.of("syncChunkWrites", this.syncChunkWrites)).add(Pair.of("useNativeTransport", this.useNativeTransport)).add(Pair.of("soundDevice", this.soundDevice.getValue())).build();
+        Stream<Pair<String, String>> stream = Stream.builder().add(Pair.of("ao", this.ao.getValue())).add(Pair.of("biomeBlendRadius", this.biomeBlendRadius.getValue())).add(Pair.of("enableVsync", this.enableVsync.getValue())).add(Pair.of("entityDistanceScaling", this.entityDistanceScaling.getValue())).add(Pair.of("entityShadows", this.entityShadows.getValue())).add(Pair.of("forceUnicodeFont", this.forceUnicodeFont.getValue())).add(Pair.of("fov", this.fov.getValue())).add(Pair.of("fovEffectScale", this.fovEffectScale.getValue())).add(Pair.of("darknessEffectScale", this.darknessEffectScale.getValue())).add(Pair.of("glintSpeed", this.glintSpeed.getValue())).add(Pair.of("glintStrength", this.glintStrength.getValue())).add(Pair.of("prioritizeChunkUpdates", this.chunkBuilderMode.getValue())).add(Pair.of("fullscreen", this.fullscreen.getValue())).add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution))).add(Pair.of("gamma", this.gamma.getValue())).add(Pair.of("glDebugVerbosity", this.glDebugVerbosity)).add(Pair.of("graphicsMode", this.graphicsMode.getValue())).add(Pair.of("guiScale", this.guiScale.getValue())).add(Pair.of("maxFps", this.maxFps.getValue())).add(Pair.of("mipmapLevels", this.mipmapLevels.getValue())).add(Pair.of("narrator", this.narrator.getValue())).add(Pair.of("overrideHeight", this.overrideHeight)).add(Pair.of("overrideWidth", this.overrideWidth)).add(Pair.of("particles", this.particles.getValue())).add(Pair.of("reducedDebugInfo", this.reducedDebugInfo.getValue())).add(Pair.of("renderClouds", this.cloudRenderMode.getValue())).add(Pair.of("renderDistance", this.viewDistance.getValue())).add(Pair.of("simulationDistance", this.simulationDistance.getValue())).add(Pair.of("resourcePacks", this.resourcePacks)).add(Pair.of("screenEffectScale", this.distortionEffectScale.getValue())).add(Pair.of("syncChunkWrites", this.syncChunkWrites)).add(Pair.of("useNativeTransport", this.useNativeTransport)).add(Pair.of("soundDevice", this.soundDevice.getValue())).build();
         return stream.map(option -> (String)option.getFirst() + ": " + option.getSecond()).collect(Collectors.joining(System.lineSeparator()));
     }
 

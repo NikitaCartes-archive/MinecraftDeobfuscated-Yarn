@@ -35,11 +35,11 @@ extends MobEntityRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>
     @Override
     protected void setupTransforms(IronGolemEntity ironGolemEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(ironGolemEntity, matrixStack, f, g, h);
-        if ((double)ironGolemEntity.limbDistance < 0.01) {
+        if ((double)ironGolemEntity.limbAnimator.getSpeed() < 0.01) {
             return;
         }
         float i = 13.0f;
-        float j = ironGolemEntity.limbAngle - ironGolemEntity.limbDistance * (1.0f - h) + 6.0f;
+        float j = ironGolemEntity.limbAnimator.getPos(h) + 6.0f;
         float k = (Math.abs(j % 13.0f - 6.5f) - 3.25f) / 3.25f;
         matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.5f * k));
     }

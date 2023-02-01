@@ -417,6 +417,7 @@ extends DrawableHelper {
         ArrayList<Runnable> list = Lists.newArrayListWithExpectedSize(collection.size());
         RenderSystem.setShaderTexture(0, HandledScreen.BACKGROUND_TEXTURE);
         for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
+            int n;
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             if (!statusEffectInstance.shouldShowIcon()) continue;
             int k = this.scaledWidth;
@@ -435,13 +436,14 @@ extends DrawableHelper {
                 this.drawTexture(matrices, k, l, 165, 166, 24, 24);
             } else {
                 this.drawTexture(matrices, k, l, 141, 166, 24, 24);
-                if (statusEffectInstance.getDuration() <= 200) {
-                    int m = 10 - statusEffectInstance.getDuration() / 20;
-                    f = MathHelper.clamp((float)statusEffectInstance.getDuration() / 10.0f / 5.0f * 0.5f, 0.0f, 0.5f) + MathHelper.cos((float)statusEffectInstance.getDuration() * (float)Math.PI / 5.0f) * MathHelper.clamp((float)m / 10.0f * 0.25f, 0.0f, 0.25f);
+                if (statusEffectInstance.isDurationBelow(200)) {
+                    int m = statusEffectInstance.getDuration();
+                    n = 10 - m / 20;
+                    f = MathHelper.clamp((float)m / 10.0f / 5.0f * 0.5f, 0.0f, 0.5f) + MathHelper.cos((float)m * (float)Math.PI / 5.0f) * MathHelper.clamp((float)n / 10.0f * 0.25f, 0.0f, 0.25f);
                 }
             }
             Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
-            int n = k;
+            n = k;
             int o = l;
             float g = f;
             list.add(() -> {

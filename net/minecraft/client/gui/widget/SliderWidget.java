@@ -26,7 +26,6 @@ extends ClickableWidget {
     private static final int field_41788 = 20;
     private static final int field_41789 = 4;
     private static final int field_41790 = 8;
-    private static final int field_41791 = 200;
     private static final int field_41792 = 0;
     private static final int field_41793 = 1;
     private static final int field_41794 = 2;
@@ -76,8 +75,7 @@ extends ClickableWidget {
     protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
         RenderSystem.setShaderTexture(0, this.getTexture());
         int i = this.getTextureV();
-        this.drawTexture(matrices, this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 0, i, 4, 20);
-        this.drawTexture(matrices, this.getX() + (int)(this.value * (double)(this.width - 8)) + 4, this.getY(), 196, i, 4, 20);
+        this.drawNineSlicedTexture(matrices, this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 8, 20, 4, 200, 20, 0, i);
     }
 
     @Override

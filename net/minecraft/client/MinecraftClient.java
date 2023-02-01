@@ -524,6 +524,7 @@ implements WindowEventHandler {
         this.toastManager = new ToastManager(this);
         this.thread = Thread.currentThread();
         this.options = new GameOptions(this, this.runDirectory);
+        RenderSystem.setShaderGlintAlpha(this.options.getGlintStrength().getValue());
         this.running = true;
         this.tutorialManager = new TutorialManager(this, this.options);
         this.creativeHotbarStorage = new HotbarStorage(this.runDirectory, this.dataFixer);

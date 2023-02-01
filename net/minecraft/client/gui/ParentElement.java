@@ -5,6 +5,7 @@ package net.minecraft.client.gui;
 
 import com.mojang.datafixers.util.Pair;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
@@ -151,16 +152,17 @@ extends Element {
         Supplier<Element> supplier;
         BooleanSupplier booleanSupplier;
         boolean bl = navigation.forward();
-        Element element = this.getFocused();
-        List<? extends Element> list = this.children();
-        int i = list.indexOf(element);
-        int j = element != null && i >= 0 ? i + (bl ? 1 : 0) : (bl ? 0 : list.size());
-        ListIterator<? extends Element> listIterator = list.listIterator(j);
+        Element element2 = this.getFocused();
+        ArrayList<? extends Element> list = new ArrayList<Element>(this.children());
+        Collections.sort(list, Comparator.comparingInt(element -> element.getNavigationOrder()));
+        int i = list.indexOf(element2);
+        int j = element2 != null && i >= 0 ? i + (bl ? 1 : 0) : (bl ? 0 : list.size());
+        ListIterator listIterator = list.listIterator(j);
         BooleanSupplier booleanSupplier2 = bl ? listIterator::hasNext : (booleanSupplier = listIterator::hasPrevious);
         Supplier<Element> supplier2 = bl ? listIterator::next : (supplier = listIterator::previous);
         while (booleanSupplier.getAsBoolean()) {
-            Element element2 = supplier.get();
-            GuiNavigationPath guiNavigationPath = element2.getNavigationPath(navigation);
+            Element element22 = supplier.get();
+            GuiNavigationPath guiNavigationPath = element22.getNavigationPath(navigation);
             if (guiNavigationPath == null) continue;
             return GuiNavigationPath.of(this, guiNavigationPath);
         }

@@ -71,7 +71,6 @@ Saddleable {
     private static final float field_40135 = 1.43f;
     public static final TrackedData<Boolean> DASHING = DataTracker.registerData(CamelEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     public static final TrackedData<Long> LAST_POSE_TICK = DataTracker.registerData(CamelEntity.class, TrackedDataHandlerRegistry.LONG);
-    public final AnimationState walkingAnimationState = new AnimationState();
     public final AnimationState sittingTransitionAnimationState = new AnimationState();
     public final AnimationState sittingAnimationState = new AnimationState();
     public final AnimationState standingTransitionAnimationState = new AnimationState();
@@ -118,7 +117,7 @@ Saddleable {
 
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        CamelBrain.method_45367(this, world.getRandom());
+        CamelBrain.initialize(this, world.getRandom());
         this.initLastPoseTick(world.toServerWorld().getTime());
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
@@ -190,8 +189,7 @@ Saddleable {
         } else {
             --this.idleAnimationCooldown;
         }
-        if (this.isSitting()) {
-            this.walkingAnimationState.stop();
+        if (this.shouldUpdateSittingAnimations()) {
             this.standingTransitionAnimationState.stop();
             this.dashingAnimationState.stop();
             if (this.shouldPlaySittingTransitionAnimation()) {
@@ -205,9 +203,14 @@ Saddleable {
             this.sittingTransitionAnimationState.stop();
             this.sittingAnimationState.stop();
             this.dashingAnimationState.setRunning(this.isDashing(), this.age);
-            this.standingTransitionAnimationState.setRunning(this.isChangingPose(), this.age);
-            this.walkingAnimationState.setRunning((this.onGround || this.hasPrimaryPassenger()) && this.getVelocity().horizontalLengthSquared() > 1.0E-6, this.age);
+            this.standingTransitionAnimationState.setRunning(this.isChangingPose() && this.getLastPoseTickDelta() >= 0L, this.age);
         }
+    }
+
+    @Override
+    protected void updateLimbs(float posDelta) {
+        float f = this.getPose() == EntityPose.STANDING && !this.dashingAnimationState.isRunning() ? Math.min(posDelta * 6.0f, 1.0f) : 0.0f;
+        this.limbAnimator.updateLimbs(f, 0.2f);
     }
 
     @Override
@@ -540,13 +543,17 @@ Saddleable {
         return this.dataTracker.get(LAST_POSE_TICK) < 0L;
     }
 
+    public boolean shouldUpdateSittingAnimations() {
+        return this.getLastPoseTickDelta() < 0L != this.isSitting();
+    }
+
     public boolean isChangingPose() {
         long l = this.getLastPoseTickDelta();
         return l < (long)(this.isSitting() ? 40 : 52);
     }
 
     private boolean shouldPlaySittingTransitionAnimation() {
-        return this.isSitting() && this.getLastPoseTickDelta() < 40L;
+        return this.isSitting() && this.getLastPoseTickDelta() < 40L && this.getLastPoseTickDelta() >= 0L;
     }
 
     public void startSitting() {

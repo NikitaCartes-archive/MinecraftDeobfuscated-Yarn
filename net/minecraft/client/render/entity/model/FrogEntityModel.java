@@ -17,14 +17,13 @@ import net.minecraft.client.render.entity.model.EntityModelPartNames;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.FrogEntity;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class FrogEntityModel<T extends FrogEntity>
 extends SinglePartEntityModel<T> {
-    private static final float field_39194 = 8000.0f;
-    public static final float field_41378 = 0.5f;
-    public static final float field_39193 = 1.5f;
+    private static final float field_39193 = 1.5f;
+    private static final float field_42228 = 1.0f;
+    private static final float field_42229 = 2.5f;
     private final ModelPart root;
     private final ModelPart body;
     private final ModelPart head;
@@ -74,13 +73,14 @@ extends SinglePartEntityModel<T> {
     @Override
     public void setAngles(T frogEntity, float f, float g, float h, float i, float j) {
         this.getPart().traverse().forEach(ModelPart::resetTransform);
-        float k = (float)((Entity)frogEntity).getVelocity().horizontalLengthSquared();
-        float l = MathHelper.clamp(k * 8000.0f, 0.5f, 1.5f);
         this.updateAnimation(((FrogEntity)frogEntity).longJumpingAnimationState, FrogAnimations.LONG_JUMPING, h);
         this.updateAnimation(((FrogEntity)frogEntity).croakingAnimationState, FrogAnimations.CROAKING, h);
         this.updateAnimation(((FrogEntity)frogEntity).usingTongueAnimationState, FrogAnimations.USING_TONGUE, h);
-        this.updateAnimation(((FrogEntity)frogEntity).walkingAnimationState, FrogAnimations.WALKING, h, l);
-        this.updateAnimation(((FrogEntity)frogEntity).swimmingAnimationState, FrogAnimations.SWIMMING, h);
+        if (((Entity)frogEntity).isInsideWaterOrBubbleColumn()) {
+            this.method_48741(FrogAnimations.SWIMMING, f, g, 1.0f, 2.5f);
+        } else {
+            this.method_48741(FrogAnimations.WALKING, f, g, 1.5f, 2.5f);
+        }
         this.updateAnimation(((FrogEntity)frogEntity).idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, h);
         this.croakingBody.visible = ((FrogEntity)frogEntity).croakingAnimationState.isRunning();
     }

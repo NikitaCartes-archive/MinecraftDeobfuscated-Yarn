@@ -722,15 +722,14 @@ Saddleable {
         if (this.isLogicalSideForUpdatingMovement()) {
             this.setMovementSpeed(this.getHorsebackMovementSpeed(livingEntity));
             super.travel(new Vec3d(f, movementInput.y, g));
-        } else if (livingEntity instanceof PlayerEntity) {
-            this.setVelocity(this.getX() - this.lastRenderX, this.getY() - this.lastRenderY, this.getZ() - this.lastRenderZ);
+        } else {
+            this.updateLimbs(false);
+            this.tryCheckBlockCollision();
         }
         if (this.onGround) {
             this.jumpStrength = 0.0f;
             this.setInAir(false);
         }
-        this.updateLimbs(this, false);
-        this.tryCheckBlockCollision();
     }
 
     protected float getHorsebackMovementSpeed(LivingEntity passenger) {

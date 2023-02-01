@@ -104,8 +104,8 @@ implements FeatureRendererContext<T, M> {
         n = 0.0f;
         float o = 0.0f;
         if (!((Entity)livingEntity).hasVehicle() && ((LivingEntity)livingEntity).isAlive()) {
-            n = MathHelper.lerp(g, ((LivingEntity)livingEntity).lastLimbDistance, ((LivingEntity)livingEntity).limbDistance);
-            o = ((LivingEntity)livingEntity).limbAngle - ((LivingEntity)livingEntity).limbDistance * (1.0f - g);
+            n = ((LivingEntity)livingEntity).limbAnimator.getSpeed(g);
+            o = ((LivingEntity)livingEntity).limbAnimator.getPos(g);
             if (((LivingEntity)livingEntity).isBaby()) {
                 o *= 3.0f;
             }

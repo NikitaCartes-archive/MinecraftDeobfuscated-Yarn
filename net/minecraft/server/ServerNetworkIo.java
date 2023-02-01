@@ -147,7 +147,7 @@ public class ServerNetworkIo {
             Iterator<ClientConnection> iterator = this.connections.iterator();
             while (iterator.hasNext()) {
                 ClientConnection clientConnection = iterator.next();
-                if (clientConnection.hasChannel()) continue;
+                if (clientConnection.isChannelAbsent()) continue;
                 if (clientConnection.isOpen()) {
                     try {
                         clientConnection.tick();

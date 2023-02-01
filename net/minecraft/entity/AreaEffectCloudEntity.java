@@ -170,7 +170,7 @@ implements Ownable {
                 boolean bl;
                 block19: {
                     float g;
-                    int i;
+                    int i2;
                     super.tick();
                     bl = this.isWaiting();
                     f = this.getRadius();
@@ -180,13 +180,13 @@ implements Ownable {
                     }
                     ParticleEffect particleEffect = this.getParticleType();
                     if (bl) {
-                        i = 2;
+                        i2 = 2;
                         g = 0.2f;
                     } else {
-                        i = MathHelper.ceil((float)Math.PI * f * f);
+                        i2 = MathHelper.ceil((float)Math.PI * f * f);
                         g = f;
                     }
-                    for (int j = 0; j < i; ++j) {
+                    for (int j = 0; j < i2; ++j) {
                         double p;
                         double o;
                         double n;
@@ -235,7 +235,7 @@ implements Ownable {
                 this.affectedEntities.entrySet().removeIf(entry -> this.age >= (Integer)entry.getValue());
                 list = Lists.newArrayList();
                 for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
-                    list.add(new StatusEffectInstance(statusEffectInstance.getEffectType(), statusEffectInstance.getDuration() / 4, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()));
+                    list.add(new StatusEffectInstance(statusEffectInstance.getEffectType(), statusEffectInstance.mapDuration(i -> i / 4), statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()));
                 }
                 list.addAll(this.effects);
                 if (!list.isEmpty()) break block21;

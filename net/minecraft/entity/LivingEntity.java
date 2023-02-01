@@ -48,6 +48,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LimbAnimator;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.brain.Brain;
@@ -196,9 +197,7 @@ extends Entity {
     public float lastHandSwingProgress;
     public float handSwingProgress;
     protected int lastAttackedTicks;
-    public float lastLimbDistance;
-    public float limbDistance;
-    public float limbAngle;
+    public final LimbAnimator limbAnimator = new LimbAnimator();
     public final int defaultMaxHealth = 20;
     public final float randomLargeSeed;
     public final float randomSmallSeed;
@@ -1082,7 +1081,7 @@ extends Entity {
             }
             bl = true;
         }
-        this.limbDistance = 1.5f;
+        this.limbAnimator.setSpeed(1.5f);
         boolean bl2 = true;
         if ((float)this.timeUntilRegen > 10.0f) {
             if (amount <= this.lastDamageTaken) {
@@ -1653,7 +1652,7 @@ extends Entity {
             case 57: {
                 DamageSource damageSource;
                 SoundEvent soundEvent;
-                this.limbDistance = 1.5f;
+                this.limbAnimator.setSpeed(1.5f);
                 this.timeUntilRegen = 20;
                 this.hurtTime = this.maxHurtTime = 10;
                 if (status == EntityStatuses.DAMAGE_FROM_THORNS) {
@@ -2094,20 +2093,17 @@ extends Entity {
                 }
             }
         }
-        this.updateLimbs(this, this instanceof Flutterer);
+        this.updateLimbs(this instanceof Flutterer);
     }
 
-    public void updateLimbs(LivingEntity entity, boolean flutter) {
-        double f;
-        double e;
-        entity.lastLimbDistance = entity.limbDistance;
-        double d = entity.getX() - entity.prevX;
-        float g = (float)Math.sqrt(d * d + (e = flutter ? entity.getY() - entity.prevY : 0.0) * e + (f = entity.getZ() - entity.prevZ) * f) * 4.0f;
-        if (g > 1.0f) {
-            g = 1.0f;
-        }
-        entity.limbDistance += (g - entity.limbDistance) * 0.4f;
-        entity.limbAngle += entity.limbDistance;
+    public void updateLimbs(boolean flutter) {
+        float f = (float)MathHelper.magnitude(this.getX() - this.prevX, flutter ? this.getY() - this.prevY : 0.0, this.getZ() - this.prevZ);
+        this.updateLimbs(f);
+    }
+
+    protected void updateLimbs(float posDelta) {
+        float f = Math.min(posDelta * 4.0f, 1.0f);
+        this.limbAnimator.updateLimbs(f, 0.4f);
     }
 
     public Vec3d applyMovementInput(Vec3d movementInput, float slipperiness) {

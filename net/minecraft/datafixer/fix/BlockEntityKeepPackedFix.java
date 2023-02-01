@@ -10,9 +10,9 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.fix.ChoiceFix;
 
-public class BlockEntityKeepPacked
+public class BlockEntityKeepPackedFix
 extends ChoiceFix {
-    public BlockEntityKeepPacked(Schema schema, boolean bl) {
+    public BlockEntityKeepPackedFix(Schema schema, boolean bl) {
         super(schema, bl, "BlockEntityKeepPacked", TypeReferences.BLOCK_ENTITY, "DUMMY");
     }
 
@@ -22,7 +22,7 @@ extends ChoiceFix {
 
     @Override
     protected Typed<?> transform(Typed<?> inputType) {
-        return inputType.update(DSL.remainderFinder(), BlockEntityKeepPacked::keepPacked);
+        return inputType.update(DSL.remainderFinder(), BlockEntityKeepPackedFix::keepPacked);
     }
 }
 

@@ -47,7 +47,6 @@ extends Screen {
     private static final Text BLOCKING_TEXT = Text.translatable("gui.socialInteractions.blocking_hint");
     private static final String BLOCKING_URL = "https://aka.ms/javablocking";
     private static final int field_32424 = 8;
-    private static final int field_32425 = 16;
     private static final int field_32426 = 236;
     private static final int field_32427 = 16;
     private static final int field_32428 = 64;
@@ -78,12 +77,8 @@ extends Screen {
         return Math.max(52, this.height - 128 - 16);
     }
 
-    private int getRowCount() {
-        return this.getScreenHeight() / 16;
-    }
-
     private int getPlayerListBottom() {
-        return 80 + this.getRowCount() * 16 - 8;
+        return 80 + this.getScreenHeight() - 8;
     }
 
     private int getSearchBoxX() {
@@ -115,7 +110,7 @@ extends Screen {
         int j = this.playerList.getRowLeft();
         int k = this.playerList.getRowRight();
         int l = this.textRenderer.getWidth(BLOCKING_TEXT) + 40;
-        int m = 64 + 16 * this.getRowCount();
+        int m = 64 + this.getScreenHeight();
         int n = (this.width - l) / 2 + 3;
         this.allTabButton = this.addDrawableChild(ButtonWidget.builder(ALL_TAB_TITLE, button -> this.setCurrentTab(Tab.ALL)).dimensions(j, 45, i, 20).build());
         this.hiddenTabButton = this.addDrawableChild(ButtonWidget.builder(HIDDEN_TAB_TITLE, button -> this.setCurrentTab(Tab.HIDDEN)).dimensions((j + k - i) / 2 + 1, 45, i, 20).build());
@@ -194,12 +189,7 @@ extends Screen {
         int i = this.getSearchBoxX() + 3;
         super.renderBackground(matrices);
         RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
-        this.drawTexture(matrices, i, 64, 1, 1, 236, 8);
-        int j = this.getRowCount();
-        for (int k = 0; k < j; ++k) {
-            this.drawTexture(matrices, i, 72 + 16 * k, 1, 10, 236, 16);
-        }
-        this.drawTexture(matrices, i, 72 + 16 * j, 1, 27, 236, 8);
+        this.drawNineSlicedTexture(matrices, i, 64, 236, this.getScreenHeight() + 16, 8, 236, 34, 1, 1);
         this.drawTexture(matrices, i + 10, 76, 243, 1, 12, 12);
     }
 

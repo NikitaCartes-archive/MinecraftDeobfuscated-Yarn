@@ -25,6 +25,8 @@ extends WrapperWidget {
     private final List<Widget> children = new ArrayList<Widget>();
     private final List<Element> grids = new ArrayList<Element>();
     private final Positioner mainPositioner = Positioner.create();
+    private int rowSpacing = 0;
+    private int columnSpacing = 0;
 
     public GridWidget() {
         this(0, 0);
@@ -38,6 +40,7 @@ extends WrapperWidget {
     public void refreshPositions() {
         int m;
         int l;
+        int k;
         super.refreshPositions();
         int i = 0;
         int j = 0;
@@ -48,24 +51,26 @@ extends WrapperWidget {
         int[] is = new int[j + 1];
         int[] js = new int[i + 1];
         for (Element element2 : this.grids) {
-            Divider divider = new Divider(element2.getHeight(), element2.occupiedRows);
-            for (int k = element2.row; k <= element2.getRowEnd(); ++k) {
-                js[k] = Math.max(js[k], divider.nextInt());
+            k = element2.getHeight() - (element2.occupiedRows - 1) * this.rowSpacing;
+            Divider divider = new Divider(k, element2.occupiedRows);
+            for (l = element2.row; l <= element2.getRowEnd(); ++l) {
+                js[l] = Math.max(js[l], divider.nextInt());
             }
-            Divider divider2 = new Divider(element2.getWidth(), element2.occupiedColumns);
-            for (l = element2.column; l <= element2.getColumnEnd(); ++l) {
-                is[l] = Math.max(is[l], divider2.nextInt());
+            l = element2.getWidth() - (element2.occupiedColumns - 1) * this.columnSpacing;
+            Divider divider2 = new Divider(l, element2.occupiedColumns);
+            for (m = element2.column; m <= element2.getColumnEnd(); ++m) {
+                is[m] = Math.max(is[m], divider2.nextInt());
             }
         }
         int[] ks = new int[j + 1];
         int[] ls = new int[i + 1];
         ks[0] = 0;
-        for (m = 1; m <= j; ++m) {
-            ks[m] = ks[m - 1] + is[m - 1];
+        for (k = 1; k <= j; ++k) {
+            ks[k] = ks[k - 1] + is[k - 1] + this.columnSpacing;
         }
         ls[0] = 0;
-        for (m = 1; m <= i; ++m) {
-            ls[m] = ls[m - 1] + js[m - 1];
+        for (k = 1; k <= i; ++k) {
+            ls[k] = ls[k - 1] + js[k - 1] + this.rowSpacing;
         }
         for (Element element3 : this.grids) {
             int n;
@@ -73,12 +78,12 @@ extends WrapperWidget {
             for (n = element3.column; n <= element3.getColumnEnd(); ++n) {
                 l += is[n];
             }
-            element3.setX(this.getX() + ks[element3.column], l);
+            element3.setX(this.getX() + ks[element3.column], l += this.columnSpacing * (element3.occupiedColumns - 1));
             n = 0;
-            for (int o = element3.row; o <= element3.getRowEnd(); ++o) {
-                n += js[o];
+            for (m = element3.row; m <= element3.getRowEnd(); ++m) {
+                n += js[m];
             }
-            element3.setY(this.getY() + ls[element3.row], n);
+            element3.setY(this.getY() + ls[element3.row], n += this.rowSpacing * (element3.occupiedRows - 1));
         }
         this.width = ks[j] + is[j];
         this.height = ls[i] + js[i];
@@ -106,6 +111,20 @@ extends WrapperWidget {
         this.grids.add(new Element(widget, row, column, occupiedRows, occupiedColumns, positioner));
         this.children.add(widget);
         return widget;
+    }
+
+    public GridWidget setColumnSpacing(int columnSpacing) {
+        this.columnSpacing = columnSpacing;
+        return this;
+    }
+
+    public GridWidget setRowSpacing(int rowSpacing) {
+        this.rowSpacing = rowSpacing;
+        return this;
+    }
+
+    public GridWidget setSpacing(int spacing) {
+        return this.setColumnSpacing(spacing).setRowSpacing(spacing);
     }
 
     @Override
@@ -181,6 +200,10 @@ extends WrapperWidget {
             }
             this.totalOccupiedColumns += occupiedColumns;
             return GridWidget.this.add(widget, i, j, 1, occupiedColumns, positioner);
+        }
+
+        public GridWidget getGridWidget() {
+            return GridWidget.this;
         }
 
         public Positioner copyPositioner() {

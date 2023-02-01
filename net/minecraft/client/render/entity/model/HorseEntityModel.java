@@ -181,7 +181,7 @@ extends AnimalModel<T> {
             l = -20.0f;
         }
         if (g > 0.2f) {
-            m += MathHelper.cos(f * 0.4f) * 0.15f * g;
+            m += MathHelper.cos(f * 0.8f) * 0.15f * g;
         }
         float n = ((AbstractHorseEntity)abstractHorseEntity).getEatingGrassAnimationProgress(h);
         float o = ((AbstractHorseEntity)abstractHorseEntity).getAngryAnimationProgress(h);

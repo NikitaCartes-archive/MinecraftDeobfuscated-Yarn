@@ -69,7 +69,7 @@ extends HandledScreen<T> {
                 l += k;
             }
             if (statusEffectInstance != null) {
-                List<Text> list = List.of(this.getStatusEffectDescription(statusEffectInstance), Text.literal(StatusEffectUtil.durationToString(statusEffectInstance, 1.0f)));
+                List<Text> list = List.of(this.getStatusEffectDescription(statusEffectInstance), StatusEffectUtil.durationToString(statusEffectInstance, 1.0f));
                 this.renderTooltip(matrices, list, Optional.empty(), mouseX, mouseY);
             }
         }
@@ -105,8 +105,8 @@ extends HandledScreen<T> {
         for (StatusEffectInstance statusEffectInstance : statusEffects) {
             Text text = this.getStatusEffectDescription(statusEffectInstance);
             this.textRenderer.drawWithShadow(matrices, text, (float)(x + 10 + 18), (float)(i + 6), 0xFFFFFF);
-            String string = StatusEffectUtil.durationToString(statusEffectInstance, 1.0f);
-            this.textRenderer.drawWithShadow(matrices, string, (float)(x + 10 + 18), (float)(i + 6 + 10), 0x7F7F7F);
+            Text text2 = StatusEffectUtil.durationToString(statusEffectInstance, 1.0f);
+            this.textRenderer.drawWithShadow(matrices, text2, (float)(x + 10 + 18), (float)(i + 6 + 10), 0x7F7F7F);
             i += height;
         }
     }

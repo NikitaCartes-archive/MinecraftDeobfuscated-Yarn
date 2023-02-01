@@ -263,7 +263,7 @@ public class BackgroundRenderer {
         default public float applyColorModifier(LivingEntity entity, StatusEffectInstance effect, float f, float tickDelta) {
             StatusEffectInstance statusEffectInstance = entity.getStatusEffect(this.getStatusEffect());
             if (statusEffectInstance != null) {
-                f = statusEffectInstance.getDuration() < 20 ? 1.0f - (float)statusEffectInstance.getDuration() / 20.0f : 0.0f;
+                f = statusEffectInstance.isDurationBelow(19) ? 1.0f - (float)statusEffectInstance.getDuration() / 20.0f : 0.0f;
             }
             return f;
         }
@@ -301,7 +301,8 @@ public class BackgroundRenderer {
 
         @Override
         public void applyStartEndModifier(FogData fogData, LivingEntity entity, StatusEffectInstance effect, float viewDistance, float tickDelta) {
-            float f = MathHelper.lerp(Math.min(1.0f, (float)effect.getDuration() / 20.0f), viewDistance, 5.0f);
+            float f;
+            float f2 = f = effect.isInfinite() ? 5.0f : MathHelper.lerp(Math.min(1.0f, (float)effect.getDuration() / 20.0f), viewDistance, 5.0f);
             if (fogData.fogType == FogType.FOG_SKY) {
                 fogData.fogStart = 0.0f;
                 fogData.fogEnd = f * 0.8f;

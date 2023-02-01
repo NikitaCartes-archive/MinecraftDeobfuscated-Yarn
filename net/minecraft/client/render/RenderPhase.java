@@ -26,6 +26,7 @@ import org.joml.Matrix4f;
 @Environment(value=EnvType.CLIENT)
 public abstract class RenderPhase {
     private static final float VIEW_OFFSET_Z_LAYERING_SCALE = 0.99975586f;
+    public static final double field_42230 = 8.0;
     protected final String name;
     private final Runnable beginAction;
     private final Runnable endAction;
@@ -221,7 +222,7 @@ public abstract class RenderPhase {
     }
 
     private static void setupGlintTexturing(float scale) {
-        long l = Util.getMeasuringTimeMs() * 8L;
+        long l = (long)((double)Util.getMeasuringTimeMs() * MinecraftClient.getInstance().options.getGlintSpeed().getValue() * 8.0);
         float f = (float)(l % 110000L) / 110000.0f;
         float g = (float)(l % 30000L) / 30000.0f;
         Matrix4f matrix4f = new Matrix4f().translation(-f, g, 0.0f);

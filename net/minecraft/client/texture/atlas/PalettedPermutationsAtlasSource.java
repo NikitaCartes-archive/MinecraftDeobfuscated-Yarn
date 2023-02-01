@@ -87,7 +87,7 @@ implements AtlasSource {
                 return i;
             }
             int k = ColorHelper.Abgr.getBgr(i);
-            int l = int2IntMap.getOrDefault(k, k);
+            int l = int2IntMap.getOrDefault(k, ColorHelper.Abgr.toOpaque(k));
             int m = ColorHelper.Abgr.getAlpha(l);
             return ColorHelper.Abgr.withAlpha(j * m / 255, l);
         };

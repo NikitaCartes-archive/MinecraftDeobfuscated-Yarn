@@ -38,6 +38,7 @@ Element {
     private static final int field_32406 = 4;
     private static final int field_32407 = 5;
     private static final float field_33739 = 0.375f;
+    public static final int field_42162 = 25;
     private final List<AlternativeButtonWidget> alternativeButtons = Lists.newArrayList();
     private boolean visible;
     private int buttonX;
@@ -50,9 +51,9 @@ Element {
     boolean furnace;
 
     public void showAlternativesForResult(MinecraftClient client, RecipeResultCollection results, int buttonX, int buttonY, int areaCenterX, int areaCenterY, float delta) {
-        float p;
         float o;
         float n;
+        float m;
         float h;
         float g;
         this.client = client;
@@ -69,29 +70,28 @@ Element {
         int l = (int)Math.ceil((float)j / (float)k);
         this.buttonX = buttonX;
         this.buttonY = buttonY;
-        int m = 25;
         float f = this.buttonX + Math.min(j, k) * 25;
         if (f > (g = (float)(areaCenterX + 50))) {
             this.buttonX = (int)((float)this.buttonX - delta * (float)((int)((f - g) / delta)));
         }
-        if ((h = (float)(this.buttonY + l * 25)) > (n = (float)(areaCenterY + 50))) {
-            this.buttonY = (int)((float)this.buttonY - delta * (float)MathHelper.ceil((h - n) / delta));
+        if ((h = (float)(this.buttonY + l * 25)) > (m = (float)(areaCenterY + 50))) {
+            this.buttonY = (int)((float)this.buttonY - delta * (float)MathHelper.ceil((h - m) / delta));
         }
-        if ((o = (float)this.buttonY) < (p = (float)(areaCenterY - 100))) {
-            this.buttonY = (int)((float)this.buttonY - delta * (float)MathHelper.ceil((o - p) / delta));
+        if ((n = (float)this.buttonY) < (o = (float)(areaCenterY - 100))) {
+            this.buttonY = (int)((float)this.buttonY - delta * (float)MathHelper.ceil((n - o) / delta));
         }
         this.visible = true;
         this.alternativeButtons.clear();
-        for (int q = 0; q < j; ++q) {
-            boolean bl2 = q < i;
-            Recipe recipe = bl2 ? list.get(q) : (Recipe)list2.get(q - i);
-            int r = this.buttonX + 4 + 25 * (q % k);
-            int s = this.buttonY + 5 + 25 * (q / k);
+        for (int p = 0; p < j; ++p) {
+            boolean bl2 = p < i;
+            Recipe recipe = bl2 ? list.get(p) : (Recipe)list2.get(p - i);
+            int q = this.buttonX + 4 + 25 * (p % k);
+            int r = this.buttonY + 5 + 25 * (p / k);
             if (this.furnace) {
-                this.alternativeButtons.add(new FurnaceAlternativeButtonWidget(r, s, recipe, bl2));
+                this.alternativeButtons.add(new FurnaceAlternativeButtonWidget(q, r, recipe, bl2));
                 continue;
             }
-            this.alternativeButtons.add(new AlternativeButtonWidget(r, s, recipe, bl2));
+            this.alternativeButtons.add(new AlternativeButtonWidget(q, r, recipe, bl2));
         }
         this.lastClickedRecipe = null;
     }
@@ -136,42 +136,13 @@ Element {
         int i = this.alternativeButtons.size() <= 16 ? 4 : 5;
         int j = Math.min(this.alternativeButtons.size(), i);
         int k = MathHelper.ceil((float)this.alternativeButtons.size() / (float)i);
-        int l = 24;
-        int m = 4;
-        int n = 82;
-        int o = 208;
-        this.renderGrid(matrices, j, k, 24, 4, 82, 208);
+        int l = 4;
+        this.drawNineSlicedTexture(matrices, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8, 4, 32, 32, 82, 208);
         RenderSystem.disableBlend();
         for (AlternativeButtonWidget alternativeButtonWidget : this.alternativeButtons) {
             alternativeButtonWidget.render(matrices, mouseX, mouseY, delta);
         }
         matrices.pop();
-    }
-
-    private void renderGrid(MatrixStack matrices, int i, int j, int k, int l, int m, int n) {
-        this.drawTexture(matrices, this.buttonX, this.buttonY, m, n, l, l);
-        this.drawTexture(matrices, this.buttonX + l * 2 + i * k, this.buttonY, m + k + l, n, l, l);
-        this.drawTexture(matrices, this.buttonX, this.buttonY + l * 2 + j * k, m, n + k + l, l, l);
-        this.drawTexture(matrices, this.buttonX + l * 2 + i * k, this.buttonY + l * 2 + j * k, m + k + l, n + k + l, l, l);
-        for (int o = 0; o < i; ++o) {
-            this.drawTexture(matrices, this.buttonX + l + o * k, this.buttonY, m + l, n, k, l);
-            this.drawTexture(matrices, this.buttonX + l + (o + 1) * k, this.buttonY, m + l, n, l, l);
-            for (int p = 0; p < j; ++p) {
-                if (o == 0) {
-                    this.drawTexture(matrices, this.buttonX, this.buttonY + l + p * k, m, n + l, l, k);
-                    this.drawTexture(matrices, this.buttonX, this.buttonY + l + (p + 1) * k, m, n + l, l, l);
-                }
-                this.drawTexture(matrices, this.buttonX + l + o * k, this.buttonY + l + p * k, m + l, n + l, k, k);
-                this.drawTexture(matrices, this.buttonX + l + (o + 1) * k, this.buttonY + l + p * k, m + l, n + l, l, k);
-                this.drawTexture(matrices, this.buttonX + l + o * k, this.buttonY + l + (p + 1) * k, m + l, n + l, k, l);
-                this.drawTexture(matrices, this.buttonX + l + (o + 1) * k - 1, this.buttonY + l + (p + 1) * k - 1, m + l, n + l, l + 1, l + 1);
-                if (o != i - 1) continue;
-                this.drawTexture(matrices, this.buttonX + l * 2 + i * k, this.buttonY + l + p * k, m + k + l, n + l, l, k);
-                this.drawTexture(matrices, this.buttonX + l * 2 + i * k, this.buttonY + l + (p + 1) * k, m + k + l, n + l, l, l);
-            }
-            this.drawTexture(matrices, this.buttonX + l + o * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, k, l);
-            this.drawTexture(matrices, this.buttonX + l + (o + 1) * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, l, l);
-        }
     }
 
     public void setVisible(boolean visible) {

@@ -68,7 +68,7 @@ public interface Recipe<C extends Inventory> {
      * {@return a preview of the recipe's output}
      * 
      * <p>The returned stack should not be modified. To obtain the actual output,
-     * call {@link #craft(Inventory)}.
+     * call {@link #craft(Inventory, DynamicRegistryManager)}.
      */
     public ItemStack getOutput(DynamicRegistryManager var1);
 
@@ -127,7 +127,7 @@ public interface Recipe<C extends Inventory> {
     }
 
     /**
-     * {@return an item rendered on the top left of the {@linkplain #getOutput()
+     * {@return an item rendered on the top left of the {@linkplain #getOutput(DynamicRegistryManager)
      * output preview} on the recipe toast when a new recipe is unlocked} This
      * can be interpreted as a catalyst for the recipe.
      */

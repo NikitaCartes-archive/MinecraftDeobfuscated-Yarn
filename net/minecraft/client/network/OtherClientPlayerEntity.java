@@ -42,7 +42,7 @@ extends AbstractClientPlayerEntity {
     @Override
     public void tick() {
         super.tick();
-        this.updateLimbs(this, false);
+        this.updateLimbs(false);
     }
 
     @Override

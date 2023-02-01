@@ -53,7 +53,7 @@ extends MobEntity {
                 this.setVelocity(this.getVelocity().multiply(f));
             }
         }
-        this.updateLimbs(this, false);
+        this.updateLimbs(false);
     }
 
     @Override
