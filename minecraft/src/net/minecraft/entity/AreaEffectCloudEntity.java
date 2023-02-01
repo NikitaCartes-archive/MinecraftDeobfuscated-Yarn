@@ -228,7 +228,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 					list.add(
 						new StatusEffectInstance(
 							statusEffectInstance.getEffectType(),
-							statusEffectInstance.getDuration() / 4,
+							statusEffectInstance.mapDuration(i -> i / 4),
 							statusEffectInstance.getAmplifier(),
 							statusEffectInstance.isAmbient(),
 							statusEffectInstance.shouldShowParticles()

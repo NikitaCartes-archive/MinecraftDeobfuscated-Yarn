@@ -6,14 +6,19 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public final class StatusEffectUtil {
-	public static String durationToString(StatusEffectInstance effect, float multiplier) {
-		int i = MathHelper.floor((float)effect.getDuration() * multiplier);
-		return StringHelper.formatTicks(i);
+	public static Text durationToString(StatusEffectInstance effect, float multiplier) {
+		if (effect.isInfinite()) {
+			return Text.translatable("effect.duration.infinite");
+		} else {
+			int i = MathHelper.floor((float)effect.getDuration() * multiplier);
+			return Text.literal(StringHelper.formatTicks(i));
+		}
 	}
 
 	public static boolean hasHaste(LivingEntity entity) {
@@ -49,7 +54,7 @@ public final class StatusEffectUtil {
 					&& (
 						!player.hasStatusEffect(statusEffect)
 							|| player.getStatusEffect(statusEffect).getAmplifier() < statusEffectInstance.getAmplifier()
-							|| player.getStatusEffect(statusEffect).getDuration() < duration
+							|| player.getStatusEffect(statusEffect).isDurationBelow(duration - 1)
 					)
 		);
 		list.forEach(player -> player.addStatusEffect(new StatusEffectInstance(statusEffectInstance), entity));

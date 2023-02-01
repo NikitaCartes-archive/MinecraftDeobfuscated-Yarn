@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.trim.ArmorTrim;
@@ -51,10 +50,6 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 					return ItemStack.EMPTY;
 				}
 
-				if (this.hasIncompatibleArmorMaterial(itemStack, (ArmorTrimMaterial)((RegistryEntry.Reference)optional.get()).value())) {
-					return ItemStack.EMPTY;
-				}
-
 				ItemStack itemStack2 = itemStack.copy();
 				itemStack2.setCount(1);
 				ArmorTrim armorTrim = new ArmorTrim((RegistryEntry<ArmorTrimMaterial>)optional.get(), (RegistryEntry<ArmorTrimPattern>)optional2.get());
@@ -80,14 +75,6 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 		}
 
 		return itemStack;
-	}
-
-	private boolean hasIncompatibleArmorMaterial(ItemStack stack, ArmorTrimMaterial trimMaterial) {
-		if (stack.getItem() instanceof ArmorItem armorItem && armorItem.getMaterial() == trimMaterial.incompatibleArmorMaterial().orElse(null)) {
-			return true;
-		}
-
-		return false;
 	}
 
 	@Override

@@ -27,9 +27,9 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 
 	protected void setupTransforms(IronGolemEntity ironGolemEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(ironGolemEntity, matrixStack, f, g, h);
-		if (!((double)ironGolemEntity.limbDistance < 0.01)) {
+		if (!((double)ironGolemEntity.limbAnimator.getSpeed() < 0.01)) {
 			float i = 13.0F;
-			float j = ironGolemEntity.limbAngle - ironGolemEntity.limbDistance * (1.0F - h) + 6.0F;
+			float j = ironGolemEntity.limbAnimator.getPos(h) + 6.0F;
 			float k = (Math.abs(j % 13.0F - 6.5F) - 3.25F) / 3.25F;
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.5F * k));
 		}

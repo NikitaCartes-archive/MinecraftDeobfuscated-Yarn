@@ -61,7 +61,7 @@ public class CamelBrain {
 		MemoryModuleType.NEAREST_VISIBLE_ADULT
 	);
 
-	protected static void method_45367(CamelEntity camelEntity, Random random) {
+	protected static void initialize(CamelEntity camel, Random random) {
 	}
 
 	public static Brain.Profile<CamelEntity> createProfile() {

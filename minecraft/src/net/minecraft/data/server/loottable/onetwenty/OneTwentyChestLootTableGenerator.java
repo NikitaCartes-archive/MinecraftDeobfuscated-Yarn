@@ -9,6 +9,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
 import net.minecraft.loot.entry.EmptyEntry;
 import net.minecraft.loot.entry.ItemEntry;
+import net.minecraft.loot.function.SetCountLootFunction;
 import net.minecraft.loot.provider.number.ConstantLootNumberProvider;
 import net.minecraft.util.Identifier;
 
@@ -21,8 +22,8 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(4))
-						.with(ItemEntry.builder(Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
+						.with(EmptyEntry.builder().weight(3))
+						.with(ItemEntry.builder(Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 				)
 		);
 		exporter.accept(
@@ -31,8 +32,8 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(8))
-						.with(ItemEntry.builder(Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
+						.with(EmptyEntry.builder().weight(6))
+						.with(ItemEntry.builder(Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 				)
 		);
 		exporter.accept(
@@ -41,8 +42,8 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(8))
-						.with(ItemEntry.builder(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
+						.with(EmptyEntry.builder().weight(5))
+						.with(ItemEntry.builder(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 				)
 		);
 		exporter.accept(
@@ -51,8 +52,8 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(8))
-						.with(ItemEntry.builder(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
+						.with(EmptyEntry.builder().weight(5))
+						.with(ItemEntry.builder(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 				)
 		);
 		exporter.accept(
@@ -61,8 +62,8 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(8))
-						.with(ItemEntry.builder(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
+						.with(EmptyEntry.builder().weight(5))
+						.with(ItemEntry.builder(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 				)
 		);
 		exporter.accept(
@@ -71,8 +72,8 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(4))
-						.with(ItemEntry.builder(Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
+						.with(EmptyEntry.builder().weight(2))
+						.with(ItemEntry.builder(Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 				)
 		);
 		exporter.accept(
@@ -81,7 +82,7 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(20))
+						.with(EmptyEntry.builder().weight(19))
 						.with(ItemEntry.builder(Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 				)
 		);
@@ -91,19 +92,14 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(20))
+						.with(EmptyEntry.builder().weight(9))
 						.with(ItemEntry.builder(Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 				)
 		);
 		exporter.accept(
 			LootTables.STRONGHOLD_LIBRARY_CHEST,
-			VanillaChestLootTableGenerator.createStrongholdCorridorChestTableBuilder()
-				.pool(
-					LootPool.builder()
-						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(10))
-						.with(ItemEntry.builder(Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
-				)
+			VanillaChestLootTableGenerator.createStrongholdLibraryChestTableBuilder()
+				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1)))
 		);
 		exporter.accept(
 			LootTables.WOODLAND_MANSION_CHEST,
@@ -111,7 +107,7 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(20))
+						.with(EmptyEntry.builder().weight(1))
 						.with(ItemEntry.builder(Items.VEX_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 				)
 		);
@@ -121,13 +117,13 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(20))
+						.with(EmptyEntry.builder().weight(11))
 						.with(ItemEntry.builder(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 				)
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(30))
+						.with(EmptyEntry.builder().weight(9))
 						.with(ItemEntry.builder(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE).weight(1))
 				)
 		);
@@ -137,13 +133,13 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(20))
+						.with(EmptyEntry.builder().weight(11))
 						.with(ItemEntry.builder(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 				)
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(30))
+						.with(EmptyEntry.builder().weight(9))
 						.with(ItemEntry.builder(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE).weight(1))
 				)
 		);
@@ -153,13 +149,13 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(20))
+						.with(EmptyEntry.builder().weight(11))
 						.with(ItemEntry.builder(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 				)
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(30))
+						.with(EmptyEntry.builder().weight(9))
 						.with(ItemEntry.builder(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE).weight(1))
 				)
 		);
@@ -169,7 +165,7 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(20))
+						.with(EmptyEntry.builder().weight(11))
 						.with(ItemEntry.builder(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 				)
 				.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE).weight(1)))
@@ -180,7 +176,7 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(20))
+						.with(EmptyEntry.builder().weight(14))
 						.with(ItemEntry.builder(Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 				)
 		);
@@ -190,7 +186,7 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(EmptyEntry.builder().weight(20))
+						.with(EmptyEntry.builder().weight(14))
 						.with(ItemEntry.builder(Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 				)
 		);

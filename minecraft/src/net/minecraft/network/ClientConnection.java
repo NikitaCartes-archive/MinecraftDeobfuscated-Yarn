@@ -383,7 +383,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.channel != null && this.channel.isOpen();
 	}
 
-	public boolean hasChannel() {
+	public boolean isChannelAbsent() {
 		return this.channel == null;
 	}
 

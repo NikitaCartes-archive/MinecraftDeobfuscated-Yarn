@@ -18,6 +18,8 @@ public class GridWidget extends WrapperWidget {
 	private final List<Widget> children = new ArrayList();
 	private final List<GridWidget.Element> grids = new ArrayList();
 	private final Positioner mainPositioner = Positioner.create();
+	private int rowSpacing = 0;
+	private int columnSpacing = 0;
 
 	public GridWidget() {
 		this(0, 0);
@@ -42,16 +44,18 @@ public class GridWidget extends WrapperWidget {
 		int[] js = new int[i + 1];
 
 		for (GridWidget.Element element2 : this.grids) {
-			Divider divider = new Divider(element2.getHeight(), element2.occupiedRows);
+			int k = element2.getHeight() - (element2.occupiedRows - 1) * this.rowSpacing;
+			Divider divider = new Divider(k, element2.occupiedRows);
 
-			for (int k = element2.row; k <= element2.getRowEnd(); k++) {
-				js[k] = Math.max(js[k], divider.nextInt());
+			for (int l = element2.row; l <= element2.getRowEnd(); l++) {
+				js[l] = Math.max(js[l], divider.nextInt());
 			}
 
-			Divider divider2 = new Divider(element2.getWidth(), element2.occupiedColumns);
+			int l = element2.getWidth() - (element2.occupiedColumns - 1) * this.columnSpacing;
+			Divider divider2 = new Divider(l, element2.occupiedColumns);
 
-			for (int l = element2.column; l <= element2.getColumnEnd(); l++) {
-				is[l] = Math.max(is[l], divider2.nextInt());
+			for (int m = element2.column; m <= element2.getColumnEnd(); m++) {
+				is[m] = Math.max(is[m], divider2.nextInt());
 			}
 		}
 
@@ -59,14 +63,14 @@ public class GridWidget extends WrapperWidget {
 		int[] ls = new int[i + 1];
 		ks[0] = 0;
 
-		for (int m = 1; m <= j; m++) {
-			ks[m] = ks[m - 1] + is[m - 1];
+		for (int k = 1; k <= j; k++) {
+			ks[k] = ks[k - 1] + is[k - 1] + this.columnSpacing;
 		}
 
 		ls[0] = 0;
 
-		for (int m = 1; m <= i; m++) {
-			ls[m] = ls[m - 1] + js[m - 1];
+		for (int k = 1; k <= i; k++) {
+			ls[k] = ls[k - 1] + js[k - 1] + this.rowSpacing;
 		}
 
 		for (GridWidget.Element element3 : this.grids) {
@@ -76,13 +80,15 @@ public class GridWidget extends WrapperWidget {
 				l += is[n];
 			}
 
+			l += this.columnSpacing * (element3.occupiedColumns - 1);
 			element3.setX(this.getX() + ks[element3.column], l);
 			int n = 0;
 
-			for (int o = element3.row; o <= element3.getRowEnd(); o++) {
-				n += js[o];
+			for (int m = element3.row; m <= element3.getRowEnd(); m++) {
+				n += js[m];
 			}
 
+			n += this.rowSpacing * (element3.occupiedRows - 1);
 			element3.setY(this.getY() + ls[element3.row], n);
 		}
 
@@ -112,6 +118,20 @@ public class GridWidget extends WrapperWidget {
 			this.children.add(widget);
 			return widget;
 		}
+	}
+
+	public GridWidget setColumnSpacing(int columnSpacing) {
+		this.columnSpacing = columnSpacing;
+		return this;
+	}
+
+	public GridWidget setRowSpacing(int rowSpacing) {
+		this.rowSpacing = rowSpacing;
+		return this;
+	}
+
+	public GridWidget setSpacing(int spacing) {
+		return this.setColumnSpacing(spacing).setRowSpacing(spacing);
 	}
 
 	@Override
@@ -163,6 +183,10 @@ public class GridWidget extends WrapperWidget {
 
 			this.totalOccupiedColumns += occupiedColumns;
 			return GridWidget.this.add(widget, i, j, 1, occupiedColumns, positioner);
+		}
+
+		public GridWidget getGridWidget() {
+			return GridWidget.this;
 		}
 
 		public Positioner copyPositioner() {

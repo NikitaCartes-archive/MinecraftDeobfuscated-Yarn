@@ -1,22 +1,11 @@
 package net.minecraft.client.gui.screen.world;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.stream.JsonWriter;
 import com.mojang.logging.LogUtils;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.DataResult.PartialResult;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -26,16 +15,12 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.RegistryOps;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.server.SaveLoader;
 import net.minecraft.text.Text;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.level.WorldGenSettings;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.io.FileUtils;
@@ -44,7 +29,6 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class EditWorldScreen extends Screen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create();
 	private static final Text ENTER_NAME_TEXT = Text.translatable("selectWorld.enterName");
 	private ButtonWidget saveButton;
 	private final BooleanConsumer callback;
@@ -109,60 +93,6 @@ public class EditWorldScreen extends Screen {
 						this.client.setScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, eraseCache));
 					}, Text.translatable("optimizeWorld.confirm.title"), Text.translatable("optimizeWorld.confirm.description"), true)))
 				.dimensions(this.width / 2 - 100, this.height / 4 + 96 + 5, 200, 20)
-				.build()
-		);
-		this.addDrawableChild(
-			ButtonWidget.builder(
-					Text.translatable("selectWorld.edit.export_worldgen_settings"),
-					button -> {
-						DataResult<String> dataResult2;
-						try (SaveLoader saveLoader = this.client.createIntegratedServerLoader().createSaveLoader(this.storageSession, false)) {
-							DynamicRegistryManager.Immutable immutable = saveLoader.combinedDynamicRegistries().getCombinedRegistryManager();
-							DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, immutable);
-							DataResult<JsonElement> dataResult = WorldGenSettings.encode(dynamicOps, saveLoader.saveProperties().getGeneratorOptions(), immutable);
-							dataResult2 = dataResult.flatMap(json -> {
-								Path path = this.storageSession.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
-
-								try {
-									JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8));
-
-									try {
-										GSON.toJson(json, jsonWriter);
-									} catch (Throwable var7) {
-										if (jsonWriter != null) {
-											try {
-												jsonWriter.close();
-											} catch (Throwable var6x) {
-												var7.addSuppressed(var6x);
-											}
-										}
-
-										throw var7;
-									}
-
-									if (jsonWriter != null) {
-										jsonWriter.close();
-									}
-								} catch (JsonIOException | IOException var8) {
-									return DataResult.error("Error writing file: " + var8.getMessage());
-								}
-
-								return DataResult.success(path.toString());
-							});
-						} catch (Exception var9) {
-							LOGGER.warn("Could not parse level data", (Throwable)var9);
-							dataResult2 = DataResult.error("Could not parse level data: " + var9.getMessage());
-						}
-
-						Text text = Text.literal(dataResult2.get().map(Function.identity(), PartialResult::message));
-						Text text2 = Text.translatable(
-							dataResult2.result().isPresent() ? "selectWorld.edit.export_worldgen_settings.success" : "selectWorld.edit.export_worldgen_settings.failure"
-						);
-						dataResult2.error().ifPresent(result -> LOGGER.error("Error exporting world settings: {}", result));
-						this.client.getToastManager().add(SystemToast.create(this.client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text2, text));
-					}
-				)
-				.dimensions(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20)
 				.build()
 		);
 		this.addDrawableChild(this.saveButton);

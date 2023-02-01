@@ -103,6 +103,45 @@ public class EffectCommand {
 														)
 												)
 										)
+										.then(
+											CommandManager.literal("infinite")
+												.executes(
+													context -> executeGive(
+															context.getSource(),
+															EntityArgumentType.getEntities(context, "targets"),
+															RegistryEntryArgumentType.getStatusEffect(context, "effect"),
+															-1,
+															0,
+															true
+														)
+												)
+												.then(
+													CommandManager.argument("amplifier", IntegerArgumentType.integer(0, 255))
+														.executes(
+															context -> executeGive(
+																	context.getSource(),
+																	EntityArgumentType.getEntities(context, "targets"),
+																	RegistryEntryArgumentType.getStatusEffect(context, "effect"),
+																	-1,
+																	IntegerArgumentType.getInteger(context, "amplifier"),
+																	true
+																)
+														)
+														.then(
+															CommandManager.argument("hideParticles", BoolArgumentType.bool())
+																.executes(
+																	context -> executeGive(
+																			context.getSource(),
+																			EntityArgumentType.getEntities(context, "targets"),
+																			RegistryEntryArgumentType.getStatusEffect(context, "effect"),
+																			-1,
+																			IntegerArgumentType.getInteger(context, "amplifier"),
+																			!BoolArgumentType.getBool(context, "hideParticles")
+																		)
+																)
+														)
+												)
+										)
 								)
 						)
 				)
@@ -123,6 +162,8 @@ public class EffectCommand {
 		if (seconds != null) {
 			if (statusEffect2.isInstant()) {
 				j = seconds;
+			} else if (seconds == -1) {
+				j = -1;
 			} else {
 				j = seconds * 20;
 			}

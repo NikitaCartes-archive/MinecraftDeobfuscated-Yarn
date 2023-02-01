@@ -25,20 +25,28 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.gui.screen.GridScreenTab;
 import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.pack.ExperimentalWarningScreen;
 import net.minecraft.client.gui.screen.pack.PackScreen;
+import net.minecraft.client.gui.tab.TabManager;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.Positioner;
+import net.minecraft.client.gui.widget.SimplePositioningWidget;
+import net.minecraft.client.gui.widget.TabNavigationWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.registry.CombinedDynamicRegistries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.ServerDynamicRegistryType;
@@ -54,6 +62,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.integrated.IntegratedServerLoader;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
@@ -63,6 +72,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
 import net.minecraft.world.gen.GeneratorOptions;
+import net.minecraft.world.gen.WorldPreset;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
@@ -74,44 +84,32 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class CreateWorldScreen extends Screen {
+	private static final int field_42165 = 1;
+	private static final int field_42166 = 210;
+	private static final int field_42167 = 36;
+	private static final int field_42168 = 1;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String TEMP_DIR_PREFIX = "mcworld-";
-	private static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
-	private static final Text ENTER_SEED_TEXT = Text.translatable("selectWorld.enterSeed");
-	private static final Text SEED_INFO_TEXT = Text.translatable("selectWorld.seedInfo");
-	private static final Text ENTER_NAME_TEXT = Text.translatable("selectWorld.enterName");
-	private static final Text RESULT_FOLDER_TEXT = Text.translatable("selectWorld.resultFolder");
-	private static final Text ALLOW_COMMANDS_INFO_TEXT = Text.translatable("selectWorld.allowCommands.info");
+	static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
+	static final Text ENTER_NAME_TEXT = Text.translatable("selectWorld.enterName");
+	static final Text ALLOW_COMMANDS_INFO_TEXT = Text.translatable("selectWorld.allowCommands.info");
 	private static final Text PREPARING_TEXT = Text.translatable("createWorld.preparing");
+	private static final int field_42170 = 10;
+	private static final int field_42171 = 8;
+	final WorldCreator worldCreator;
+	private final TabManager tabManager = new TabManager(this::addDrawableChild, child -> this.remove(child));
 	@Nullable
 	private final Screen parent;
-	private TextFieldWidget levelNameField;
-	String saveDirectoryName;
-	private CreateWorldScreen.Mode currentMode = CreateWorldScreen.Mode.SURVIVAL;
 	@Nullable
-	private CreateWorldScreen.Mode lastMode;
-	private Difficulty currentDifficulty = Difficulty.NORMAL;
-	private boolean cheatsEnabled;
-	private boolean tweakedCheats;
-	public boolean hardcore;
-	protected DataConfiguration dataConfiguration;
+	private String saveDirectoryName;
 	@Nullable
 	private Path dataPackTempDir;
 	@Nullable
 	private ResourcePackManager packManager;
-	private boolean moreOptionsOpen;
-	private ButtonWidget createLevelButton;
-	private CyclingButtonWidget<CreateWorldScreen.Mode> gameModeSwitchButton;
-	private CyclingButtonWidget<Difficulty> difficultyButton;
-	private ButtonWidget moreOptionsButton;
-	private ButtonWidget gameRulesButton;
-	private ButtonWidget dataPacksButton;
-	private CyclingButtonWidget<Boolean> enableCheatsButton;
-	private Text firstGameModeDescriptionLine;
-	private Text secondGameModeDescriptionLine;
-	private String levelName;
-	private GameRules gameRules = new GameRules();
-	public final MoreOptionsDialog moreOptionsDialog;
+	@Nullable
+	private GridWidget grid;
+	@Nullable
+	private TabNavigationWidget tabNavigation;
 
 	public static void create(MinecraftClient client, @Nullable Screen parent) {
 		showMessage(client, PREPARING_TEXT);
@@ -133,13 +131,7 @@ public class CreateWorldScreen extends Screen {
 			client
 		);
 		client.runTasks(completableFuture::isDone);
-		client.setScreen(
-			new CreateWorldScreen(
-				parent,
-				DataConfiguration.SAFE_MODE,
-				new MoreOptionsDialog((GeneratorOptionsHolder)completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty())
-			)
-		);
+		client.setScreen(new CreateWorldScreen(parent, (GeneratorOptionsHolder)completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty()));
 	}
 
 	public static CreateWorldScreen create(
@@ -147,142 +139,97 @@ public class CreateWorldScreen extends Screen {
 	) {
 		CreateWorldScreen createWorldScreen = new CreateWorldScreen(
 			parent,
-			generatorOptionsHolder.dataConfiguration(),
-			new MoreOptionsDialog(
-				generatorOptionsHolder,
-				WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()),
-				OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed())
-			)
+			generatorOptionsHolder,
+			WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()),
+			OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed())
 		);
-		createWorldScreen.levelName = levelInfo.getLevelName();
-		createWorldScreen.cheatsEnabled = levelInfo.areCommandsAllowed();
-		createWorldScreen.tweakedCheats = true;
-		createWorldScreen.currentDifficulty = levelInfo.getDifficulty();
-		createWorldScreen.gameRules.setAllValues(levelInfo.getGameRules(), null);
+		createWorldScreen.worldCreator.setWorldName(levelInfo.getLevelName());
+		createWorldScreen.worldCreator.setCheatsEnabled(levelInfo.areCommandsAllowed());
+		createWorldScreen.worldCreator.setDifficulty(levelInfo.getDifficulty());
+		createWorldScreen.worldCreator.getGameRules().setAllValues(levelInfo.getGameRules(), null);
 		if (levelInfo.isHardcore()) {
-			createWorldScreen.currentMode = CreateWorldScreen.Mode.HARDCORE;
+			createWorldScreen.worldCreator.setGameMode(WorldCreator.Mode.HARDCORE);
 		} else if (levelInfo.getGameMode().isSurvivalLike()) {
-			createWorldScreen.currentMode = CreateWorldScreen.Mode.SURVIVAL;
+			createWorldScreen.worldCreator.setGameMode(WorldCreator.Mode.SURVIVAL);
 		} else if (levelInfo.getGameMode().isCreative()) {
-			createWorldScreen.currentMode = CreateWorldScreen.Mode.CREATIVE;
+			createWorldScreen.worldCreator.setGameMode(WorldCreator.Mode.CREATIVE);
 		}
 
 		createWorldScreen.dataPackTempDir = dataPackTempDir;
 		return createWorldScreen;
 	}
 
-	private CreateWorldScreen(@Nullable Screen parent, DataConfiguration dataConfiguration, MoreOptionsDialog moreOptionsDialog) {
+	private CreateWorldScreen(
+		@Nullable Screen parent, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> defaultWorldType, OptionalLong seed
+	) {
 		super(Text.translatable("selectWorld.create"));
 		this.parent = parent;
-		this.levelName = I18n.translate("selectWorld.newWorld");
-		this.dataConfiguration = dataConfiguration;
-		this.moreOptionsDialog = moreOptionsDialog;
+		this.worldCreator = new WorldCreator(generatorOptionsHolder, defaultWorldType, seed);
+	}
+
+	public WorldCreator getWorldCreator() {
+		return this.worldCreator;
 	}
 
 	@Override
 	public void tick() {
-		this.levelNameField.tick();
-		this.moreOptionsDialog.tickSeedTextField();
+		this.tabManager.tick();
 	}
 
 	@Override
 	protected void init() {
-		this.levelNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 60, 200, 20, Text.translatable("selectWorld.enterName")) {
-			@Override
-			protected MutableText getNarrationMessage() {
-				return ScreenTexts.joinSentences(super.getNarrationMessage(), Text.translatable("selectWorld.resultFolder"))
-					.append(ScreenTexts.SPACE)
-					.append(CreateWorldScreen.this.saveDirectoryName);
+		this.updateSaveFolderName(this.worldCreator.getWorldName());
+		this.tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width)
+			.tabs(new CreateWorldScreen.GameTab(), new CreateWorldScreen.WorldTab(), new CreateWorldScreen.MoreTab())
+			.build();
+		this.tabNavigation.forEachChild(this::addDrawableChild);
+		this.worldCreator.addListener(creator -> {
+			if (creator.isNamed()) {
+				this.updateSaveFolderName(creator.getWorldName());
 			}
-		};
-		this.levelNameField.setText(this.levelName);
-		this.levelNameField.setChangedListener(levelName -> {
-			this.levelName = levelName;
-			this.createLevelButton.active = !this.levelNameField.getText().isEmpty();
-			this.updateSaveFolderName();
 		});
-		this.addSelectableChild(this.levelNameField);
-		int i = this.width / 2 - 155;
-		int j = this.width / 2 + 5;
-		this.gameModeSwitchButton = this.addDrawableChild(
-			CyclingButtonWidget.<CreateWorldScreen.Mode>builder(CreateWorldScreen.Mode::asText)
-				.values(CreateWorldScreen.Mode.SURVIVAL, CreateWorldScreen.Mode.HARDCORE, CreateWorldScreen.Mode.CREATIVE)
-				.initially(this.currentMode)
-				.narration(
-					button -> ClickableWidget.getNarrationMessage(button.getMessage())
-							.append(ScreenTexts.SENTENCE_SEPARATOR)
-							.append(this.firstGameModeDescriptionLine)
-							.append(ScreenTexts.SPACE)
-							.append(this.secondGameModeDescriptionLine)
-				)
-				.build(i, 100, 150, 20, GAME_MODE_TEXT, (button, mode) -> this.tweakDefaultsTo(mode))
-		);
-		this.difficultyButton = this.addDrawableChild(
-			CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
-				.values(Difficulty.values())
-				.initially(this.getDifficulty())
-				.build(j, 100, 150, 20, Text.translatable("options.difficulty"), (button, difficulty) -> this.currentDifficulty = difficulty)
-		);
-		this.enableCheatsButton = this.addDrawableChild(
-			CyclingButtonWidget.onOffBuilder(this.cheatsEnabled && !this.hardcore)
-				.narration(button -> ScreenTexts.joinSentences(button.getGenericNarrationMessage(), Text.translatable("selectWorld.allowCommands.info")))
-				.build(i, 151, 150, 20, Text.translatable("selectWorld.allowCommands"), (button, cheatsEnabled) -> {
-					this.tweakedCheats = true;
-					this.cheatsEnabled = cheatsEnabled;
-				})
-		);
-		this.dataPacksButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("selectWorld.dataPacks"), button -> this.openPackScreen()).dimensions(j, 151, 150, 20).build()
-		);
-		this.gameRulesButton = this.addDrawableChild(
-			ButtonWidget.builder(
-					Text.translatable("selectWorld.gameRules"), button -> this.client.setScreen(new EditGameRulesScreen(this.gameRules.copy(), optionalGameRules -> {
-							this.client.setScreen(this);
-							optionalGameRules.ifPresent(gameRules -> this.gameRules = gameRules);
-						}))
-				)
-				.dimensions(i, 185, 150, 20)
-				.build()
-		);
-		this.moreOptionsDialog.init(this, this.client, this.textRenderer);
-		this.moreOptionsButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("selectWorld.moreWorldOptions"), button -> this.toggleMoreOptions()).dimensions(j, 185, 150, 20).build()
-		);
-		this.createLevelButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> this.createLevel()).dimensions(i, this.height - 28, 150, 20).build()
-		);
-		this.createLevelButton.active = !this.levelName.isEmpty();
-		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCloseScreen()).dimensions(j, this.height - 28, 150, 20).build());
-		this.setMoreOptionsOpen();
-		this.setInitialFocus(this.levelNameField);
-		this.tweakDefaultsTo(this.currentMode);
-		this.updateSaveFolderName();
+		this.grid = new GridWidget().setColumnSpacing(10);
+		GridWidget.Adder adder = this.grid.createAdder(2);
+		ButtonWidget buttonWidget = adder.add(ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> this.createLevel()).build());
+		this.worldCreator.addListener(creator -> buttonWidget.active = !this.worldCreator.getWorldName().isEmpty());
+		adder.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCloseScreen()).build());
+		this.grid.forEachChild(child -> {
+			child.setNavigationOrder(1);
+			this.addDrawableChild(child);
+		});
+		this.tabNavigation.selectTab(0);
+		this.worldCreator.update();
+		this.initTabNavigation();
 	}
 
-	private Difficulty getDifficulty() {
-		return this.currentMode == CreateWorldScreen.Mode.HARDCORE ? Difficulty.HARD : this.currentDifficulty;
+	@Override
+	public void initTabNavigation() {
+		if (this.tabNavigation != null && this.grid != null) {
+			this.tabNavigation.setWidth(this.width);
+			this.tabNavigation.refreshPositions();
+			this.grid.refreshPositions();
+			SimplePositioningWidget.setPos(this.grid, 0, this.height - 36, this.width, 36);
+			int i = this.tabNavigation.getY() + this.tabNavigation.getHeight();
+			FocusedRect focusedRect = new FocusedRect(0, i, this.width, this.grid.getY() - i);
+			this.tabManager.setTabArea(focusedRect);
+		}
 	}
 
-	private void updateSettingsLabels() {
-		this.firstGameModeDescriptionLine = Text.translatable("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line1");
-		this.secondGameModeDescriptionLine = Text.translatable("selectWorld.gameMode." + this.currentMode.translationSuffix + ".line2");
-	}
-
-	private void updateSaveFolderName() {
-		this.saveDirectoryName = this.levelNameField.getText().trim();
+	private void updateSaveFolderName(String saveDirectoryName) {
+		this.saveDirectoryName = saveDirectoryName.trim();
 		if (this.saveDirectoryName.isEmpty()) {
 			this.saveDirectoryName = "World";
 		}
 
 		try {
 			this.saveDirectoryName = PathUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), this.saveDirectoryName, "");
-		} catch (Exception var4) {
+		} catch (Exception var5) {
 			this.saveDirectoryName = "World";
 
 			try {
 				this.saveDirectoryName = PathUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), this.saveDirectoryName, "");
-			} catch (Exception var3) {
-				throw new RuntimeException("Could not create save folder", var3);
+			} catch (Exception var4) {
+				throw new RuntimeException("Could not create save folder", var4);
 			}
 		}
 	}
@@ -292,7 +239,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private void createLevel() {
-		GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.getGeneratorOptionsHolder();
+		GeneratorOptionsHolder generatorOptionsHolder = this.worldCreator.getGeneratorOptionsHolder();
 		DimensionOptionsRegistryHolder.DimensionsConfig dimensionsConfig = generatorOptionsHolder.selectedDimensions()
 			.toConfig(generatorOptionsHolder.dimensionOptionsRegistry());
 		CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries = generatorOptionsHolder.combinedDynamicRegistries()
@@ -313,10 +260,9 @@ public class CreateWorldScreen extends Screen {
 		if (!optional.isEmpty()) {
 			this.clearDataPackTempDir();
 			boolean bl = specialProperty == LevelProperties.SpecialProperty.DEBUG;
-			GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.getGeneratorOptionsHolder();
-			GeneratorOptions generatorOptions = this.moreOptionsDialog.getGeneratorOptionsHolder(bl, this.hardcore);
+			GeneratorOptionsHolder generatorOptionsHolder = this.worldCreator.getGeneratorOptionsHolder();
 			LevelInfo levelInfo = this.createLevelInfo(bl);
-			SaveProperties saveProperties = new LevelProperties(levelInfo, generatorOptions, specialProperty, lifecycle);
+			SaveProperties saveProperties = new LevelProperties(levelInfo, generatorOptionsHolder.generatorOptions(), specialProperty, lifecycle);
 			this.client
 				.createIntegratedServerLoader()
 				.start((LevelStorage.Session)optional.get(), generatorOptionsHolder.dataPackContents(), combinedDynamicRegistries, saveProperties);
@@ -324,84 +270,22 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private LevelInfo createLevelInfo(boolean debugWorld) {
-		String string = this.levelNameField.getText().trim();
+		String string = this.worldCreator.getWorldName().trim();
 		if (debugWorld) {
 			GameRules gameRules = new GameRules();
 			gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
 			return new LevelInfo(string, GameMode.SPECTATOR, false, Difficulty.PEACEFUL, true, gameRules, DataConfiguration.SAFE_MODE);
 		} else {
 			return new LevelInfo(
-				string, this.currentMode.defaultGameMode, this.hardcore, this.getDifficulty(), this.cheatsEnabled && !this.hardcore, this.gameRules, this.dataConfiguration
+				string,
+				this.worldCreator.getGameMode().defaultGameMode,
+				this.worldCreator.isHardcore(),
+				this.worldCreator.getDifficulty(),
+				this.worldCreator.areCheatsEnabled(),
+				this.worldCreator.getGameRules(),
+				this.worldCreator.getGeneratorOptionsHolder().dataConfiguration()
 			);
 		}
-	}
-
-	private void toggleMoreOptions() {
-		this.setMoreOptionsOpen(!this.moreOptionsOpen);
-	}
-
-	private void tweakDefaultsTo(CreateWorldScreen.Mode mode) {
-		if (!this.tweakedCheats) {
-			this.cheatsEnabled = mode == CreateWorldScreen.Mode.CREATIVE;
-			this.enableCheatsButton.setValue(this.cheatsEnabled);
-		}
-
-		if (mode == CreateWorldScreen.Mode.HARDCORE) {
-			this.hardcore = true;
-			this.enableCheatsButton.active = false;
-			this.enableCheatsButton.setValue(false);
-			this.moreOptionsDialog.disableBonusItems();
-			this.difficultyButton.setValue(Difficulty.HARD);
-			this.difficultyButton.active = false;
-		} else {
-			this.hardcore = false;
-			this.enableCheatsButton.active = true;
-			this.enableCheatsButton.setValue(this.cheatsEnabled);
-			this.moreOptionsDialog.enableBonusItems();
-			this.difficultyButton.setValue(this.currentDifficulty);
-			this.difficultyButton.active = true;
-		}
-
-		this.currentMode = mode;
-		this.updateSettingsLabels();
-	}
-
-	public void setMoreOptionsOpen() {
-		this.setMoreOptionsOpen(this.moreOptionsOpen);
-	}
-
-	private void setMoreOptionsOpen(boolean moreOptionsOpen) {
-		this.moreOptionsOpen = moreOptionsOpen;
-		this.gameModeSwitchButton.visible = !moreOptionsOpen;
-		this.difficultyButton.visible = !moreOptionsOpen;
-		if (this.moreOptionsDialog.isDebugWorld()) {
-			this.dataPacksButton.visible = false;
-			this.gameModeSwitchButton.active = false;
-			if (this.lastMode == null) {
-				this.lastMode = this.currentMode;
-			}
-
-			this.tweakDefaultsTo(CreateWorldScreen.Mode.DEBUG);
-			this.enableCheatsButton.visible = false;
-		} else {
-			this.gameModeSwitchButton.active = true;
-			if (this.lastMode != null) {
-				this.tweakDefaultsTo(this.lastMode);
-			}
-
-			this.enableCheatsButton.visible = !moreOptionsOpen;
-			this.dataPacksButton.visible = !moreOptionsOpen;
-		}
-
-		this.moreOptionsDialog.setVisible(moreOptionsOpen);
-		this.levelNameField.setVisible(!moreOptionsOpen);
-		if (moreOptionsOpen) {
-			this.moreOptionsButton.setMessage(ScreenTexts.DONE);
-		} else {
-			this.moreOptionsButton.setMessage(Text.translatable("selectWorld.moreWorldOptions"));
-		}
-
-		this.gameRulesButton.visible = !moreOptionsOpen;
 	}
 
 	@Override
@@ -418,11 +302,7 @@ public class CreateWorldScreen extends Screen {
 
 	@Override
 	public void close() {
-		if (this.moreOptionsOpen) {
-			this.setMoreOptionsOpen(false);
-		} else {
-			this.onCloseScreen();
-		}
+		this.onCloseScreen();
 	}
 
 	public void onCloseScreen() {
@@ -433,29 +313,6 @@ public class CreateWorldScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, -1);
-		if (this.moreOptionsOpen) {
-			drawTextWithShadow(matrices, this.textRenderer, ENTER_SEED_TEXT, this.width / 2 - 100, 47, -6250336);
-			drawTextWithShadow(matrices, this.textRenderer, SEED_INFO_TEXT, this.width / 2 - 100, 85, -6250336);
-			this.moreOptionsDialog.render(matrices, mouseX, mouseY, delta);
-		} else {
-			drawTextWithShadow(matrices, this.textRenderer, ENTER_NAME_TEXT, this.width / 2 - 100, 47, -6250336);
-			drawTextWithShadow(
-				matrices,
-				this.textRenderer,
-				Text.empty().append(RESULT_FOLDER_TEXT).append(ScreenTexts.SPACE).append(this.saveDirectoryName),
-				this.width / 2 - 100,
-				85,
-				-6250336
-			);
-			this.levelNameField.render(matrices, mouseX, mouseY, delta);
-			drawTextWithShadow(matrices, this.textRenderer, this.firstGameModeDescriptionLine, this.width / 2 - 150, 122, -6250336);
-			drawTextWithShadow(matrices, this.textRenderer, this.secondGameModeDescriptionLine, this.width / 2 - 150, 134, -6250336);
-			if (this.enableCheatsButton.visible) {
-				drawTextWithShadow(matrices, this.textRenderer, ALLOW_COMMANDS_INFO_TEXT, this.width / 2 - 150, 172, -6250336);
-			}
-		}
-
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -484,8 +341,8 @@ public class CreateWorldScreen extends Screen {
 		return this.dataPackTempDir;
 	}
 
-	private void openPackScreen() {
-		Pair<Path, ResourcePackManager> pair = this.getScannedPack();
+	void openPackScreen(DataConfiguration dataConfiguration) {
+		Pair<Path, ResourcePackManager> pair = this.getScannedPack(dataConfiguration);
 		if (pair != null) {
 			this.client.setScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, pair.getFirst(), Text.translatable("dataPack.title")));
 		}
@@ -494,17 +351,17 @@ public class CreateWorldScreen extends Screen {
 	private void applyDataPacks(ResourcePackManager dataPackManager) {
 		List<String> list = ImmutableList.copyOf(dataPackManager.getEnabledNames());
 		List<String> list2 = (List<String>)dataPackManager.getNames().stream().filter(name -> !list.contains(name)).collect(ImmutableList.toImmutableList());
-		DataConfiguration dataConfiguration = new DataConfiguration(new DataPackSettings(list, list2), this.dataConfiguration.enabledFeatures());
-		if (list.equals(this.dataConfiguration.dataPacks().getEnabled())) {
-			this.dataConfiguration = dataConfiguration;
-		} else {
+		DataConfiguration dataConfiguration = new DataConfiguration(
+			new DataPackSettings(list, list2), this.worldCreator.getGeneratorOptionsHolder().dataConfiguration().enabledFeatures()
+		);
+		if (!this.worldCreator.updateDataConfiguration(dataConfiguration)) {
 			FeatureSet featureSet = dataPackManager.getRequestedFeatures();
 			if (FeatureFlags.isNotVanilla(featureSet)) {
 				this.client.send(() -> this.client.setScreen(new ExperimentalWarningScreen(dataPackManager.getEnabledProfiles(), bl -> {
 						if (bl) {
 							this.validateDataPacks(dataPackManager, dataConfiguration);
 						} else {
-							this.openPackScreen();
+							this.openPackScreen(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
 						}
 					})));
 			} else {
@@ -524,7 +381,7 @@ public class CreateWorldScreen extends Screen {
 					} else if (context.worldGenRegistryManager().get(RegistryKeys.BIOME).size() == 0) {
 						throw new IllegalStateException("Needs at least one biome continue");
 					} else {
-						GeneratorOptionsHolder generatorOptionsHolder = this.moreOptionsDialog.getGeneratorOptionsHolder();
+						GeneratorOptionsHolder generatorOptionsHolder = this.worldCreator.getGeneratorOptionsHolder();
 						DynamicOps<JsonElement> dynamicOps = RegistryOps.of(JsonOps.INSTANCE, generatorOptionsHolder.getCombinedRegistryManager());
 						DataResult<JsonElement> dataResult = WorldGenSettings.encode(
 								dynamicOps, generatorOptionsHolder.generatorOptions(), generatorOptionsHolder.selectedDimensions()
@@ -545,11 +402,7 @@ public class CreateWorldScreen extends Screen {
 				Util.getMainWorkerExecutor(),
 				this.client
 			)
-			.thenAcceptAsync(generatorOptionsHolder -> {
-				this.dataConfiguration = generatorOptionsHolder.dataConfiguration();
-				this.moreOptionsDialog.setGeneratorOptionsHolder(generatorOptionsHolder);
-				this.clearAndInit();
-			}, this.client)
+			.thenAcceptAsync(this.worldCreator::setGeneratorOptionsHolder, this.client)
 			.handle(
 				(void_, throwable) -> {
 					if (throwable != null) {
@@ -559,12 +412,11 @@ public class CreateWorldScreen extends Screen {
 								() -> this.client
 										.setScreen(
 											new ConfirmScreen(
-												confirmed -> {
-													if (confirmed) {
-														this.openPackScreen();
+												bl -> {
+													if (bl) {
+														this.openPackScreen(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
 													} else {
-														this.dataConfiguration = DataConfiguration.SAFE_MODE;
-														this.client.setScreen(this);
+														this.openPackScreen(DataConfiguration.SAFE_MODE);
 													}
 												},
 												Text.translatable("dataPack.validation.failed"),
@@ -727,7 +579,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Nullable
-	private Pair<Path, ResourcePackManager> getScannedPack() {
+	private Pair<Path, ResourcePackManager> getScannedPack(DataConfiguration dataConfiguration) {
 		Path path = this.getDataPackTempDir();
 		if (path != null) {
 			if (this.packManager == null) {
@@ -735,7 +587,7 @@ public class CreateWorldScreen extends Screen {
 				this.packManager.scanPacks();
 			}
 
-			this.packManager.setEnabledProfiles(this.dataConfiguration.dataPacks().getEnabled());
+			this.packManager.setEnabledProfiles(dataConfiguration.dataPacks().getEnabled());
 			return Pair.of(path, this.packManager);
 		} else {
 			return null;
@@ -743,28 +595,187 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum Mode {
-		SURVIVAL("survival", GameMode.SURVIVAL),
-		HARDCORE("hardcore", GameMode.SURVIVAL),
-		CREATIVE("creative", GameMode.CREATIVE),
-		DEBUG("spectator", GameMode.SPECTATOR);
+	class GameTab extends GridScreenTab {
+		private static final Text GAME_TAB_TITLE_TEXT = Text.translatable("createWorld.tab.game.title");
+		private static final Text ALLOW_COMMANDS_TEXT = Text.translatable("selectWorld.allowCommands");
+		private final TextFieldWidget worldNameField;
 
-		final String translationSuffix;
-		final GameMode defaultGameMode;
-		private final Text text;
-
-		private Mode(String translationSuffix, GameMode defaultGameMode) {
-			this.translationSuffix = translationSuffix;
-			this.defaultGameMode = defaultGameMode;
-			this.text = Text.translatable("selectWorld.gameMode." + translationSuffix);
+		GameTab() {
+			super(GAME_TAB_TITLE_TEXT);
+			GridWidget.Adder adder = this.grid.setRowSpacing(8).createAdder(1);
+			Positioner positioner = adder.copyPositioner();
+			GridWidget.Adder adder2 = new GridWidget().setRowSpacing(4).createAdder(1);
+			adder2.add(new TextWidget(CreateWorldScreen.ENTER_NAME_TEXT, CreateWorldScreen.this.client.textRenderer), adder2.copyPositioner().marginLeft(1));
+			this.worldNameField = adder2.add(
+				new TextFieldWidget(CreateWorldScreen.this.textRenderer, 0, 0, 208, 20, Text.translatable("selectWorld.enterName")), adder2.copyPositioner().margin(1)
+			);
+			this.worldNameField.setText(CreateWorldScreen.this.worldCreator.getWorldName());
+			this.worldNameField.setChangedListener(CreateWorldScreen.this.worldCreator::setWorldName);
+			CreateWorldScreen.this.setInitialFocus(this.worldNameField);
+			adder.add(adder2.getGridWidget(), adder.copyPositioner().alignHorizontalCenter());
+			CyclingButtonWidget<WorldCreator.Mode> cyclingButtonWidget = adder.add(
+				CyclingButtonWidget.<WorldCreator.Mode>builder(value -> value.name)
+					.values(WorldCreator.Mode.SURVIVAL, WorldCreator.Mode.HARDCORE, WorldCreator.Mode.CREATIVE)
+					.build(0, 0, 210, 20, CreateWorldScreen.GAME_MODE_TEXT, (button, value) -> CreateWorldScreen.this.worldCreator.setGameMode(value)),
+				positioner
+			);
+			CreateWorldScreen.this.worldCreator.addListener(creator -> {
+				cyclingButtonWidget.setValue(creator.getGameMode());
+				cyclingButtonWidget.active = !creator.isDebug();
+				cyclingButtonWidget.setTooltip(Tooltip.of(creator.getGameMode().getInfo()));
+			});
+			CyclingButtonWidget<Difficulty> cyclingButtonWidget2 = adder.add(
+				CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
+					.values(Difficulty.values())
+					.build(0, 0, 210, 20, Text.translatable("options.difficulty"), (button, value) -> CreateWorldScreen.this.worldCreator.setDifficulty(value)),
+				positioner
+			);
+			CreateWorldScreen.this.worldCreator.addListener(creator -> {
+				cyclingButtonWidget2.setValue(CreateWorldScreen.this.worldCreator.getDifficulty());
+				cyclingButtonWidget2.active = !CreateWorldScreen.this.worldCreator.isHardcore();
+				cyclingButtonWidget2.setTooltip(Tooltip.of(CreateWorldScreen.this.worldCreator.getDifficulty().getInfo()));
+			});
+			CyclingButtonWidget<Boolean> cyclingButtonWidget3 = adder.add(
+				CyclingButtonWidget.onOffBuilder()
+					.tooltip(value -> Tooltip.of(CreateWorldScreen.ALLOW_COMMANDS_INFO_TEXT))
+					.build(0, 0, 210, 20, ALLOW_COMMANDS_TEXT, (button, value) -> CreateWorldScreen.this.worldCreator.setCheatsEnabled(value))
+			);
+			CreateWorldScreen.this.worldCreator.addListener(creator -> {
+				cyclingButtonWidget3.setValue(CreateWorldScreen.this.worldCreator.areCheatsEnabled());
+				cyclingButtonWidget3.active = !CreateWorldScreen.this.worldCreator.isDebug() && !CreateWorldScreen.this.worldCreator.isHardcore();
+			});
 		}
 
-		public Text asText() {
-			return this.text;
+		@Override
+		public void tick() {
+			this.worldNameField.tick();
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	class MoreTab extends GridScreenTab {
+		private static final Text MORE_TAB_TITLE_TEXT = Text.translatable("createWorld.tab.more.title");
+		private static final Text GAME_RULES_TEXT = Text.translatable("selectWorld.gameRules");
+		private static final Text DATA_PACKS_TEXT = Text.translatable("selectWorld.dataPacks");
+
+		MoreTab() {
+			super(MORE_TAB_TITLE_TEXT);
+			GridWidget.Adder adder = this.grid.setRowSpacing(8).createAdder(1);
+			adder.add(ButtonWidget.builder(GAME_RULES_TEXT, button -> this.openGameRulesScreen()).width(210).build());
+			adder.add(
+				ButtonWidget.builder(
+						DATA_PACKS_TEXT, button -> CreateWorldScreen.this.openPackScreen(CreateWorldScreen.this.worldCreator.getGeneratorOptionsHolder().dataConfiguration())
+					)
+					.width(210)
+					.build()
+			);
+		}
+
+		private void openGameRulesScreen() {
+			CreateWorldScreen.this.client.setScreen(new EditGameRulesScreen(CreateWorldScreen.this.worldCreator.getGameRules().copy(), gameRules -> {
+				CreateWorldScreen.this.client.setScreen(CreateWorldScreen.this);
+				gameRules.ifPresent(CreateWorldScreen.this.worldCreator::setGameRules);
+			}));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	static record WorldCreationSettings(WorldGenSettings worldGenSettings, DataConfiguration dataConfiguration) {
+	}
+
+	@Environment(EnvType.CLIENT)
+	class WorldTab extends GridScreenTab {
+		private static final Text WORLD_TAB_TITLE_TEXT = Text.translatable("createWorld.tab.world.title");
+		private static final Text AMPLIFIED_GENERATOR_INFO_TEXT = Text.translatable("generator.minecraft.amplified.info");
+		private static final Text MAP_FEATURES_TEXT = Text.translatable("selectWorld.mapFeatures");
+		private static final Text MAP_FEATURES_INFO_TEXT = Text.translatable("selectWorld.mapFeatures.info");
+		private static final Text BONUS_ITEMS_TEXT = Text.translatable("selectWorld.bonusItems");
+		private static final Text ENTER_SEED_TEXT = Text.translatable("selectWorld.enterSeed");
+		static final Text SEED_INFO_TEXT = Text.translatable("selectWorld.seedInfo").formatted(Formatting.DARK_GRAY);
+		private static final int field_42190 = 310;
+		private final TextFieldWidget seedField;
+		private final ButtonWidget customizeButton;
+
+		WorldTab() {
+			super(WORLD_TAB_TITLE_TEXT);
+			GridWidget.Adder adder = this.grid.setColumnSpacing(10).setRowSpacing(8).createAdder(2);
+			CyclingButtonWidget<WorldCreator.WorldType> cyclingButtonWidget = adder.add(
+				CyclingButtonWidget.<WorldCreator.WorldType>builder(WorldCreator.WorldType::getName)
+					.values(this.getWorldTypes())
+					.narration(CreateWorldScreen.WorldTab::getWorldTypeNarrationMessage)
+					.build(
+						0, 0, 150, 20, Text.translatable("selectWorld.mapType"), (cyclingButtonWidgetx, worldType) -> CreateWorldScreen.this.worldCreator.setWorldType(worldType)
+					)
+			);
+			cyclingButtonWidget.setValue(CreateWorldScreen.this.worldCreator.getWorldType());
+			CreateWorldScreen.this.worldCreator.addListener(creator -> {
+				WorldCreator.WorldType worldType = creator.getWorldType();
+				cyclingButtonWidget.setValue(worldType);
+				if (worldType.isAmplified()) {
+					cyclingButtonWidget.setTooltip(Tooltip.of(AMPLIFIED_GENERATOR_INFO_TEXT));
+				} else {
+					cyclingButtonWidget.setTooltip(null);
+				}
+
+				cyclingButtonWidget.active = CreateWorldScreen.this.worldCreator.getWorldType().preset() != null;
+			});
+			this.customizeButton = adder.add(ButtonWidget.builder(Text.translatable("selectWorld.customizeType"), button -> this.openCustomizeScreen()).build());
+			CreateWorldScreen.this.worldCreator.addListener(creator -> this.customizeButton.active = !creator.isDebug() && creator.getLevelScreenProvider() != null);
+			GridWidget.Adder adder2 = new GridWidget().setRowSpacing(4).createAdder(1);
+			adder2.add(new TextWidget(ENTER_SEED_TEXT, CreateWorldScreen.this.textRenderer).alignLeft());
+			this.seedField = adder2.add(new TextFieldWidget(CreateWorldScreen.this.textRenderer, 0, 0, 308, 20, Text.translatable("selectWorld.enterSeed")) {
+				@Override
+				protected MutableText getNarrationMessage() {
+					return super.getNarrationMessage().append(ScreenTexts.SENTENCE_SEPARATOR).append(CreateWorldScreen.WorldTab.SEED_INFO_TEXT);
+				}
+			}, adder.copyPositioner().margin(1));
+			this.seedField.setPlaceholder(SEED_INFO_TEXT);
+			this.seedField.setText(CreateWorldScreen.this.worldCreator.getSeed());
+			this.seedField.setChangedListener(seed -> CreateWorldScreen.this.worldCreator.setSeed(this.seedField.getText()));
+			adder.add(adder2.getGridWidget(), 2);
+			WorldScreenOptionGrid.Builder builder = WorldScreenOptionGrid.builder(310).marginLeft(1);
+			builder.add(MAP_FEATURES_TEXT, CreateWorldScreen.this.worldCreator::shouldGenerateStructures, CreateWorldScreen.this.worldCreator::setGenerateStructures)
+				.toggleable(() -> !CreateWorldScreen.this.worldCreator.isDebug())
+				.tooltip(MAP_FEATURES_INFO_TEXT);
+			builder.add(BONUS_ITEMS_TEXT, CreateWorldScreen.this.worldCreator::isBonusChestEnabled, CreateWorldScreen.this.worldCreator::setBonusChestEnabled)
+				.toggleable(() -> !CreateWorldScreen.this.worldCreator.isHardcore() && !CreateWorldScreen.this.worldCreator.isDebug());
+			WorldScreenOptionGrid worldScreenOptionGrid = builder.build(widget -> adder.add(widget, 2));
+			CreateWorldScreen.this.worldCreator.addListener(creator -> worldScreenOptionGrid.refresh());
+		}
+
+		private void openCustomizeScreen() {
+			LevelScreenProvider levelScreenProvider = CreateWorldScreen.this.worldCreator.getLevelScreenProvider();
+			if (levelScreenProvider != null) {
+				CreateWorldScreen.this.client
+					.setScreen(levelScreenProvider.createEditScreen(CreateWorldScreen.this, CreateWorldScreen.this.worldCreator.getGeneratorOptionsHolder()));
+			}
+		}
+
+		private CyclingButtonWidget.Values<WorldCreator.WorldType> getWorldTypes() {
+			return new CyclingButtonWidget.Values<WorldCreator.WorldType>() {
+				@Override
+				public List<WorldCreator.WorldType> getCurrent() {
+					return CyclingButtonWidget.HAS_ALT_DOWN.getAsBoolean()
+						? CreateWorldScreen.this.worldCreator.getExtendedWorldTypes()
+						: CreateWorldScreen.this.worldCreator.getNormalWorldTypes();
+				}
+
+				@Override
+				public List<WorldCreator.WorldType> getDefaults() {
+					return CreateWorldScreen.this.worldCreator.getNormalWorldTypes();
+				}
+			};
+		}
+
+		private static MutableText getWorldTypeNarrationMessage(CyclingButtonWidget<WorldCreator.WorldType> worldTypeButton) {
+			return worldTypeButton.getValue().isAmplified()
+				? ScreenTexts.joinSentences(worldTypeButton.getGenericNarrationMessage(), AMPLIFIED_GENERATOR_INFO_TEXT)
+				: worldTypeButton.getGenericNarrationMessage();
+		}
+
+		@Override
+		public void tick() {
+			this.seedField.tick();
+		}
 	}
 }

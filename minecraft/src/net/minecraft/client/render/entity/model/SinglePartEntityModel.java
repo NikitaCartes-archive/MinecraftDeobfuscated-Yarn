@@ -17,7 +17,7 @@ import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public abstract class SinglePartEntityModel<E extends Entity> extends EntityModel<E> {
-	private static final Vector3f field_39195 = new Vector3f();
+	private static final Vector3f ZERO = new Vector3f();
 
 	public SinglePartEntityModel() {
 		this(RenderLayer::getEntityCutoutNoCull);
@@ -44,8 +44,14 @@ public abstract class SinglePartEntityModel<E extends Entity> extends EntityMode
 		this.updateAnimation(animationState, animation, animationProgress, 1.0F);
 	}
 
+	protected void method_48741(Animation animation, float f, float g, float h, float i) {
+		long l = (long)(f * 50.0F * h);
+		float j = Math.min(g * i, 1.0F);
+		AnimationHelper.animate(this, animation, l, j, ZERO);
+	}
+
 	protected void updateAnimation(AnimationState animationState, Animation animation, float animationProgress, float speedMultiplier) {
 		animationState.update(animationProgress, speedMultiplier);
-		animationState.run(state -> AnimationHelper.animate(this, animation, state.getTimeRunning(), 1.0F, field_39195));
+		animationState.run(state -> AnimationHelper.animate(this, animation, state.getTimeRunning(), 1.0F, ZERO));
 	}
 }

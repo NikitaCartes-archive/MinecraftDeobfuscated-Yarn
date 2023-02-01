@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.schemas.Schema;
 import java.util.Map;
 
-public class EntityTheRenameningBlock extends EntityRenameFix {
+public class EntityTheRenameningBlockFix extends EntityRenameFix {
 	public static final Map<String, String> ENTITIES = ImmutableMap.<String, String>builder()
 		.put("minecraft:commandblock_minecart", "minecraft:command_block_minecart")
 		.put("minecraft:ender_crystal", "minecraft:end_crystal")
@@ -44,7 +44,7 @@ public class EntityTheRenameningBlock extends EntityRenameFix {
 		.build();
 	private static final String field_29882 = "minecraft:bred_";
 
-	public EntityTheRenameningBlock(Schema schema, boolean bl) {
+	public EntityTheRenameningBlockFix(Schema schema, boolean bl) {
 		super("EntityTheRenameningBlock", schema, bl);
 	}
 

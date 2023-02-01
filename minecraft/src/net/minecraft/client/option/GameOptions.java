@@ -11,6 +11,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
@@ -720,6 +721,25 @@ public class GameOptions {
 		value -> {
 		}
 	);
+	private static final Text GLINT_SPEED_TOOLTIP = Text.translatable("options.glintSpeed.tooltip");
+	private final SimpleOption<Double> glintSpeed = new SimpleOption<>(
+		"options.glintSpeed",
+		SimpleOption.constantTooltip(GLINT_SPEED_TOOLTIP),
+		(prefix, value) -> value == 0.0 ? getGenericValueText(prefix, ScreenTexts.OFF) : getPercentValueText(prefix, value),
+		SimpleOption.DoubleSliderCallbacks.INSTANCE,
+		0.5,
+		value -> {
+		}
+	);
+	private static final Text GLINT_STRENGTH_TOOLTIP = Text.translatable("options.glintStrength.tooltip");
+	private final SimpleOption<Double> glintStrength = new SimpleOption<>(
+		"options.glintStrength",
+		SimpleOption.constantTooltip(GLINT_STRENGTH_TOOLTIP),
+		(prefix, value) -> value == 0.0 ? getGenericValueText(prefix, ScreenTexts.OFF) : getPercentValueText(prefix, value),
+		SimpleOption.DoubleSliderCallbacks.INSTANCE,
+		1.0,
+		RenderSystem::setShaderGlintAlpha
+	);
 	private final SimpleOption<Double> gamma = new SimpleOption<>("options.gamma", SimpleOption.emptyTooltip(), (optionText, value) -> {
 		int i = (int)(value * 100.0);
 		if (i == 0) {
@@ -1047,6 +1067,14 @@ public class GameOptions {
 		return this.darknessEffectScale;
 	}
 
+	public SimpleOption<Double> getGlintSpeed() {
+		return this.glintSpeed;
+	}
+
+	public SimpleOption<Double> getGlintStrength() {
+		return this.glintStrength;
+	}
+
 	public SimpleOption<Double> getGamma() {
 		return this.gamma;
 	}
@@ -1138,6 +1166,8 @@ public class GameOptions {
 		visitor.accept("screenEffectScale", this.distortionEffectScale);
 		visitor.accept("fovEffectScale", this.fovEffectScale);
 		visitor.accept("darknessEffectScale", this.darknessEffectScale);
+		visitor.accept("glintSpeed", this.glintSpeed);
+		visitor.accept("glintStrength", this.glintStrength);
 		visitor.accept("gamma", this.gamma);
 		visitor.accept("renderDistance", this.viewDistance);
 		visitor.accept("simulationDistance", this.simulationDistance);
@@ -1554,6 +1584,8 @@ public class GameOptions {
 			.add(Pair.of("fov", this.fov.getValue()))
 			.add(Pair.of("fovEffectScale", this.fovEffectScale.getValue()))
 			.add(Pair.of("darknessEffectScale", this.darknessEffectScale.getValue()))
+			.add(Pair.of("glintSpeed", this.glintSpeed.getValue()))
+			.add(Pair.of("glintStrength", this.glintStrength.getValue()))
 			.add(Pair.of("prioritizeChunkUpdates", this.chunkBuilderMode.getValue()))
 			.add(Pair.of("fullscreen", this.fullscreen.getValue()))
 			.add(Pair.of("fullscreenResolution", String.valueOf(this.fullscreenResolution)))

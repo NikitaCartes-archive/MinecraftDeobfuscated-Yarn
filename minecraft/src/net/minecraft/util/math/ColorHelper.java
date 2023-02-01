@@ -25,6 +25,10 @@ public class ColorHelper {
 			return abgr & 16777215;
 		}
 
+		public static int toOpaque(int abgr) {
+			return abgr | 0xFF000000;
+		}
+
 		public static int getAbgr(int a, int b, int g, int r) {
 			return a << 24 | b << 16 | g << 8 | r;
 		}

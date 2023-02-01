@@ -19,6 +19,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.trim.ArmorTrim;
@@ -65,10 +66,11 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, "overlay");
 				} else {
 					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, null);
-					if (entity.world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
-						ArmorTrim.getTrim(entity.world.getRegistryManager(), itemStack)
-							.ifPresent(trim -> this.renderTrim(matrices, vertexConsumers, light, trim, bl2, model, bl, 1.0F, 1.0F, 1.0F));
-					}
+				}
+
+				if (entity.world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
+					ArmorTrim.getTrim(entity.world.getRegistryManager(), itemStack)
+						.ifPresent(trim -> this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, trim, bl2, model, bl, 1.0F, 1.0F, 1.0F));
 				}
 			}
 		}
@@ -117,18 +119,19 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 	}
 
 	private void renderTrim(
+		ArmorMaterial material,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
 		int light,
 		ArmorTrim trim,
 		boolean glint,
 		A model,
-		boolean secondTextureLayer,
+		boolean leggings,
 		float red,
 		float green,
 		float blue
 	) {
-		Sprite sprite = this.armorTrimsAtlas.getSprite(secondTextureLayer ? trim.getLeggingsModelId() : trim.getGenericModelId());
+		Sprite sprite = this.armorTrimsAtlas.getSprite(leggings ? trim.getLeggingsModelId(material) : trim.getGenericModelId(material));
 		VertexConsumer vertexConsumer = sprite.getTextureSpecificVertexConsumer(
 			ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, TexturedRenderLayers.getArmorTrims(), true, glint)
 		);

@@ -41,6 +41,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.EndermanEntity;
@@ -950,8 +951,10 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	public static float getNightVisionStrength(LivingEntity entity, float tickDelta) {
-		int i = entity.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration();
-		return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)i - tickDelta) * (float) Math.PI * 0.2F) * 0.3F;
+		StatusEffectInstance statusEffectInstance = entity.getStatusEffect(StatusEffects.NIGHT_VISION);
+		return !statusEffectInstance.isDurationBelow(200)
+			? 1.0F
+			: 0.7F + MathHelper.sin(((float)statusEffectInstance.getDuration() - tickDelta) * (float) Math.PI * 0.2F) * 0.3F;
 	}
 
 	public void render(float tickDelta, long startTime, boolean tick) {

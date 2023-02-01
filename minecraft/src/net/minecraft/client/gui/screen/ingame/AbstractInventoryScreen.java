@@ -66,9 +66,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 				}
 
 				if (statusEffectInstance != null) {
-					List<Text> list = List.of(
-						this.getStatusEffectDescription(statusEffectInstance), Text.literal(StatusEffectUtil.durationToString(statusEffectInstance, 1.0F))
-					);
+					List<Text> list = List.of(this.getStatusEffectDescription(statusEffectInstance), StatusEffectUtil.durationToString(statusEffectInstance, 1.0F));
 					this.renderTooltip(matrices, list, Optional.empty(), mouseX, mouseY);
 				}
 			}
@@ -109,8 +107,8 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 		for (StatusEffectInstance statusEffectInstance : statusEffects) {
 			Text text = this.getStatusEffectDescription(statusEffectInstance);
 			this.textRenderer.drawWithShadow(matrices, text, (float)(x + 10 + 18), (float)(i + 6), 16777215);
-			String string = StatusEffectUtil.durationToString(statusEffectInstance, 1.0F);
-			this.textRenderer.drawWithShadow(matrices, string, (float)(x + 10 + 18), (float)(i + 6 + 10), 8355711);
+			Text text2 = StatusEffectUtil.durationToString(statusEffectInstance, 1.0F);
+			this.textRenderer.drawWithShadow(matrices, text2, (float)(x + 10 + 18), (float)(i + 6 + 10), 8355711);
 			i += height;
 		}
 	}

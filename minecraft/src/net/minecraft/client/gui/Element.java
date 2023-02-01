@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
+import net.minecraft.client.gui.navigation.Navigable;
 
 /**
  * Base GUI interface for handling callbacks related to
@@ -15,7 +16,7 @@ import net.minecraft.client.gui.navigation.GuiNavigationPath;
  * pixels.
  */
 @Environment(EnvType.CLIENT)
-public interface Element {
+public interface Element extends Navigable {
 	long MAX_DOUBLE_CLICK_INTERVAL = 250L;
 
 	/**

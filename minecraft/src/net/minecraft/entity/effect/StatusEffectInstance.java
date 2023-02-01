@@ -5,6 +5,7 @@ import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
@@ -17,8 +18,9 @@ import org.slf4j.Logger;
 
 public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	public static final int INFINITE = -1;
 	private final StatusEffect type;
-	int duration;
+	private int duration;
 	private int amplifier;
 	private boolean ambient;
 	private boolean showParticles;
@@ -100,7 +102,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		int i = this.duration;
 		boolean bl = false;
 		if (that.amplifier > this.amplifier) {
-			if (that.duration < this.duration) {
+			if (that.lastsShorterThan(this)) {
 				StatusEffectInstance statusEffectInstance = this.hiddenEffect;
 				this.hiddenEffect = new StatusEffectInstance(this);
 				this.hiddenEffect.hiddenEffect = statusEffectInstance;
@@ -109,7 +111,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			this.amplifier = that.amplifier;
 			this.duration = that.duration;
 			bl = true;
-		} else if (that.duration > this.duration) {
+		} else if (this.lastsShorterThan(that)) {
 			if (that.amplifier == this.amplifier) {
 				this.duration = that.duration;
 				bl = true;
@@ -135,13 +137,23 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			bl = true;
 		}
 
-		if (i != this.duration) {
-			this.factorCalculationData
-				.ifPresent(factorCalculationData -> factorCalculationData.effectChangedTimestamp = factorCalculationData.effectChangedTimestamp + (this.duration - i));
-			bl = true;
-		}
-
 		return bl;
+	}
+
+	private boolean lastsShorterThan(StatusEffectInstance effect) {
+		return !this.isInfinite() && (this.duration < effect.duration || effect.isInfinite());
+	}
+
+	public boolean isInfinite() {
+		return this.duration == -1;
+	}
+
+	public boolean isDurationBelow(int duration) {
+		return !this.isInfinite() && this.duration <= duration;
+	}
+
+	public int mapDuration(Int2IntFunction mapper) {
+		return this.isInfinite() ? -1 : mapper.applyAsInt(this.duration);
 	}
 
 	public StatusEffect getEffectType() {
@@ -169,8 +181,9 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	}
 
 	public boolean update(LivingEntity entity, Runnable overwriteCallback) {
-		if (this.duration > 0) {
-			if (this.type.canApplyUpdateEffect(this.duration, this.amplifier)) {
+		if (this.isActive()) {
+			int i = this.isInfinite() ? entity.age : this.duration;
+			if (this.type.canApplyUpdateEffect(i, this.amplifier)) {
 				this.applyUpdateEffect(entity);
 			}
 
@@ -183,7 +196,11 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		}
 
 		this.factorCalculationData.ifPresent(factorCalculationData -> factorCalculationData.update(this));
-		return this.duration > 0;
+		return this.isActive();
+	}
+
+	private boolean isActive() {
+		return this.isInfinite() || this.duration > 0;
 	}
 
 	private int updateDuration() {
@@ -191,11 +208,11 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			this.hiddenEffect.updateDuration();
 		}
 
-		return --this.duration;
+		return this.duration = this.mapDuration(duration -> duration - 1);
 	}
 
 	public void applyUpdateEffect(LivingEntity entity) {
-		if (this.duration > 0) {
+		if (this.isActive()) {
 			this.type.applyUpdateEffect(entity, this.amplifier);
 		}
 	}
@@ -207,9 +224,9 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	public String toString() {
 		String string;
 		if (this.amplifier > 0) {
-			string = this.getTranslationKey() + " x " + (this.amplifier + 1) + ", Duration: " + this.duration;
+			string = this.getTranslationKey() + " x " + (this.amplifier + 1) + ", Duration: " + this.getDurationString();
 		} else {
-			string = this.getTranslationKey() + ", Duration: " + this.duration;
+			string = this.getTranslationKey() + ", Duration: " + this.getDurationString();
 		}
 
 		if (!this.showParticles) {
@@ -221,6 +238,10 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		}
 
 		return string;
+	}
+
+	private String getDurationString() {
+		return this.isInfinite() ? "infinite" : Integer.toString(this.duration);
 	}
 
 	public boolean equals(Object o) {
@@ -312,7 +333,8 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		int i = 32147;
 		return (this.getDuration() <= 32147 || statusEffectInstance.getDuration() <= 32147) && (!this.isAmbient() || !statusEffectInstance.isAmbient())
 			? ComparisonChain.start()
-				.compare(this.isAmbient(), statusEffectInstance.isAmbient())
+				.compareFalseFirst(this.isAmbient(), statusEffectInstance.isAmbient())
+				.compareFalseFirst(this.isInfinite(), statusEffectInstance.isInfinite())
 				.compare(this.getDuration(), statusEffectInstance.getDuration())
 				.compare(this.getEffectType().getColor(), statusEffectInstance.getEffectType().getColor())
 				.result()
@@ -329,7 +351,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 						Codec.FLOAT.fieldOf("factor_start").orElse(0.0F).forGetter(data -> data.factorStart),
 						Codec.FLOAT.fieldOf("factor_target").orElse(1.0F).forGetter(data -> data.factorTarget),
 						Codec.FLOAT.fieldOf("factor_current").orElse(0.0F).forGetter(data -> data.factorCurrent),
-						Codecs.NONNEGATIVE_INT.fieldOf("effect_changed_timestamp").orElse(0).forGetter(data -> data.effectChangedTimestamp),
+						Codecs.NONNEGATIVE_INT.fieldOf("ticks_active").orElse(0).forGetter(data -> data.effectChangedTimestamp),
 						Codec.FLOAT.fieldOf("factor_previous_frame").orElse(0.0F).forGetter(data -> data.factorPreviousFrame),
 						Codec.BOOL.fieldOf("had_effect_last_tick").orElse(false).forGetter(data -> data.hadEffectLastTick)
 					)
@@ -339,7 +361,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		private float factorStart;
 		private float factorTarget;
 		private float factorCurrent;
-		int effectChangedTimestamp;
+		private int effectChangedTimestamp;
 		private float factorPreviousFrame;
 		private boolean hadEffectLastTick;
 
@@ -365,17 +387,18 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			this(paddingDuration, 0.0F, 1.0F, 0.0F, 0, 0.0F, false);
 		}
 
-		public void update(StatusEffectInstance instance) {
+		public void update(StatusEffectInstance effect) {
 			this.factorPreviousFrame = this.factorCurrent;
-			boolean bl = instance.duration > this.paddingDuration;
+			boolean bl = !effect.isDurationBelow(this.paddingDuration);
+			this.effectChangedTimestamp++;
 			if (this.hadEffectLastTick != bl) {
 				this.hadEffectLastTick = bl;
-				this.effectChangedTimestamp = instance.duration;
+				this.effectChangedTimestamp = 0;
 				this.factorStart = this.factorCurrent;
 				this.factorTarget = bl ? 1.0F : 0.0F;
 			}
 
-			float f = MathHelper.clamp(((float)this.effectChangedTimestamp - (float)instance.duration) / (float)this.paddingDuration, 0.0F, 1.0F);
+			float f = MathHelper.clamp((float)this.effectChangedTimestamp / (float)this.paddingDuration, 0.0F, 1.0F);
 			this.factorCurrent = MathHelper.lerp(f, this.factorStart, this.factorTarget);
 		}
 

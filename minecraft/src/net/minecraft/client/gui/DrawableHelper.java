@@ -343,4 +343,147 @@ public abstract class DrawableHelper {
 	public void setZOffset(int zOffset) {
 		this.zOffset = zOffset;
 	}
+
+	public void drawNineSlicedTexture(
+		MatrixStack matrices, int x, int y, int width, int height, int outerSliceSize, int centerSliceWidth, int centerSliceHeight, int u, int v
+	) {
+		this.drawNineSlicedTexture(
+			matrices, x, y, width, height, outerSliceSize, outerSliceSize, outerSliceSize, outerSliceSize, centerSliceWidth, centerSliceHeight, u, v
+		);
+	}
+
+	public void drawNineSlicedTexture(
+		MatrixStack matrices,
+		int x,
+		int y,
+		int width,
+		int height,
+		int leftSliceWidth,
+		int topSliceHeight,
+		int rightSliceWidth,
+		int bottomSliceHeight,
+		int centerSliceWidth,
+		int centerSliceHeight,
+		int u,
+		int v
+	) {
+		if (width == centerSliceWidth && height == centerSliceHeight) {
+			this.drawTexture(matrices, x, y, u, v, width, height);
+		} else if (height == centerSliceHeight) {
+			this.drawTexture(matrices, x, y, u, v, leftSliceWidth, height);
+			this.drawRepeatingTexture(
+				matrices,
+				x + leftSliceWidth,
+				y,
+				width - rightSliceWidth - leftSliceWidth,
+				height,
+				u + leftSliceWidth,
+				v,
+				centerSliceWidth - rightSliceWidth - leftSliceWidth,
+				centerSliceHeight
+			);
+			this.drawTexture(matrices, x + width - rightSliceWidth, y, u + centerSliceWidth - rightSliceWidth, v, rightSliceWidth, height);
+		} else if (width == centerSliceWidth) {
+			this.drawTexture(matrices, x, y, u, v, width, topSliceHeight);
+			this.drawRepeatingTexture(
+				matrices,
+				x,
+				y + topSliceHeight,
+				width,
+				height - bottomSliceHeight - topSliceHeight,
+				u,
+				v + topSliceHeight,
+				centerSliceWidth,
+				centerSliceHeight - bottomSliceHeight - topSliceHeight
+			);
+			this.drawTexture(matrices, x, y + height - bottomSliceHeight, u, v + centerSliceHeight - bottomSliceHeight, width, bottomSliceHeight);
+		} else {
+			this.drawTexture(matrices, x, y, u, v, leftSliceWidth, topSliceHeight);
+			this.drawRepeatingTexture(
+				matrices,
+				x + leftSliceWidth,
+				y,
+				width - rightSliceWidth - leftSliceWidth,
+				topSliceHeight,
+				u + leftSliceWidth,
+				v,
+				centerSliceWidth - rightSliceWidth - leftSliceWidth,
+				centerSliceHeight
+			);
+			this.drawTexture(matrices, x + width - rightSliceWidth, y, u + centerSliceWidth - rightSliceWidth, v, rightSliceWidth, topSliceHeight);
+			this.drawTexture(matrices, x, y + height - bottomSliceHeight, u, v + centerSliceHeight - bottomSliceHeight, leftSliceWidth, bottomSliceHeight);
+			this.drawRepeatingTexture(
+				matrices,
+				x + leftSliceWidth,
+				y + height - bottomSliceHeight,
+				width - rightSliceWidth - leftSliceWidth,
+				bottomSliceHeight,
+				u + leftSliceWidth,
+				v + centerSliceHeight - bottomSliceHeight,
+				centerSliceWidth - rightSliceWidth - leftSliceWidth,
+				centerSliceHeight
+			);
+			this.drawTexture(
+				matrices,
+				x + width - rightSliceWidth,
+				y + height - bottomSliceHeight,
+				u + centerSliceWidth - rightSliceWidth,
+				v + centerSliceHeight - bottomSliceHeight,
+				rightSliceWidth,
+				bottomSliceHeight
+			);
+			this.drawRepeatingTexture(
+				matrices,
+				x,
+				y + topSliceHeight,
+				leftSliceWidth,
+				height - bottomSliceHeight - topSliceHeight,
+				u,
+				v + topSliceHeight,
+				centerSliceWidth,
+				centerSliceHeight - bottomSliceHeight - topSliceHeight
+			);
+			this.drawRepeatingTexture(
+				matrices,
+				x + leftSliceWidth,
+				y + topSliceHeight,
+				width - rightSliceWidth - leftSliceWidth,
+				height - bottomSliceHeight - topSliceHeight,
+				u + leftSliceWidth,
+				v + topSliceHeight,
+				centerSliceWidth - rightSliceWidth - leftSliceWidth,
+				centerSliceHeight - bottomSliceHeight - topSliceHeight
+			);
+			this.drawRepeatingTexture(
+				matrices,
+				x + width - rightSliceWidth,
+				y + topSliceHeight,
+				leftSliceWidth,
+				height - bottomSliceHeight - topSliceHeight,
+				u + centerSliceWidth - rightSliceWidth,
+				v + topSliceHeight,
+				centerSliceWidth,
+				centerSliceHeight - bottomSliceHeight - topSliceHeight
+			);
+		}
+	}
+
+	public void drawRepeatingTexture(MatrixStack matrices, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
+		int i = 0;
+
+		while (i < width) {
+			int j = x + i;
+			int k = Math.min(textureWidth, width - i);
+			int l = 0;
+
+			while (l < height) {
+				int m = y + l;
+				int n = Math.min(textureHeight, height - l);
+				this.drawTexture(matrices, j, m, u, v, k, n);
+				l += textureHeight;
+			}
+
+			i += textureWidth;
+		}
+	}
 }

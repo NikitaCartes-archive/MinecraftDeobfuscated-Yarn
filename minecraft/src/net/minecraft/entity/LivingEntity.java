@@ -180,9 +180,7 @@ public abstract class LivingEntity extends Entity {
 	public float lastHandSwingProgress;
 	public float handSwingProgress;
 	protected int lastAttackedTicks;
-	public float lastLimbDistance;
-	public float limbDistance;
-	public float limbAngle;
+	public final LimbAnimator limbAnimator = new LimbAnimator();
 	public final int defaultMaxHealth = 20;
 	public final float randomLargeSeed;
 	public final float randomSmallSeed;
@@ -1156,7 +1154,7 @@ public abstract class LivingEntity extends Entity {
 				bl = true;
 			}
 
-			this.limbDistance = 1.5F;
+			this.limbAnimator.setSpeed(1.5F);
 			boolean bl2 = true;
 			if ((float)this.timeUntilRegen > 10.0F) {
 				if (amount <= this.lastDamageTaken) {
@@ -1795,7 +1793,7 @@ public abstract class LivingEntity extends Entity {
 			case 37:
 			case 44:
 			case 57:
-				this.limbDistance = 1.5F;
+				this.limbAnimator.setSpeed(1.5F);
 				this.timeUntilRegen = 20;
 				this.maxHurtTime = 10;
 				this.hurtTime = this.maxHurtTime;
@@ -2303,21 +2301,17 @@ public abstract class LivingEntity extends Entity {
 			}
 		}
 
-		this.updateLimbs(this, this instanceof Flutterer);
+		this.updateLimbs(this instanceof Flutterer);
 	}
 
-	public void updateLimbs(LivingEntity entity, boolean flutter) {
-		entity.lastLimbDistance = entity.limbDistance;
-		double d = entity.getX() - entity.prevX;
-		double e = flutter ? entity.getY() - entity.prevY : 0.0;
-		double f = entity.getZ() - entity.prevZ;
-		float g = (float)Math.sqrt(d * d + e * e + f * f) * 4.0F;
-		if (g > 1.0F) {
-			g = 1.0F;
-		}
+	public void updateLimbs(boolean flutter) {
+		float f = (float)MathHelper.magnitude(this.getX() - this.prevX, flutter ? this.getY() - this.prevY : 0.0, this.getZ() - this.prevZ);
+		this.updateLimbs(f);
+	}
 
-		entity.limbDistance = entity.limbDistance + (g - entity.limbDistance) * 0.4F;
-		entity.limbAngle = entity.limbAngle + entity.limbDistance;
+	protected void updateLimbs(float posDelta) {
+		float f = Math.min(posDelta * 4.0F, 1.0F);
+		this.limbAnimator.updateLimbs(f, 0.4F);
 	}
 
 	public Vec3d applyMovementInput(Vec3d movementInput, float slipperiness) {

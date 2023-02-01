@@ -51,7 +51,7 @@ public abstract class FlyingEntity extends MobEntity {
 			}
 		}
 
-		this.updateLimbs(this, false);
+		this.updateLimbs(false);
 	}
 
 	@Override

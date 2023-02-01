@@ -256,7 +256,7 @@ public class HorseEntityModel<T extends AbstractHorseEntity> extends AnimalModel
 		}
 
 		if (g > 0.2F) {
-			m += MathHelper.cos(f * 0.4F) * 0.15F * g;
+			m += MathHelper.cos(f * 0.8F) * 0.15F * g;
 		}
 
 		float n = abstractHorseEntity.getEatingGrassAnimationProgress(h);

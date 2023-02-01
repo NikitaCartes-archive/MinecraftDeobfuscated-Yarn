@@ -100,8 +100,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		float n = 0.0F;
 		float o = 0.0F;
 		if (!livingEntity.hasVehicle() && livingEntity.isAlive()) {
-			n = MathHelper.lerp(g, livingEntity.lastLimbDistance, livingEntity.limbDistance);
-			o = livingEntity.limbAngle - livingEntity.limbDistance * (1.0F - g);
+			n = livingEntity.limbAnimator.getSpeed(g);
+			o = livingEntity.limbAnimator.getPos(g);
 			if (livingEntity.isBaby()) {
 				o *= 3.0F;
 			}

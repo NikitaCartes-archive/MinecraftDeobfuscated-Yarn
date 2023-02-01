@@ -177,8 +177,8 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	public double getMountedHeightOffset() {
-		float f = Math.min(0.25F, this.limbDistance);
-		float g = this.limbAngle;
+		float f = Math.min(0.25F, this.limbAnimator.getSpeed());
+		float g = this.limbAnimator.getPos();
 		return (double)this.getHeight() - 0.19 + (double)(0.12F * MathHelper.cos(g * 1.5F) * 2.0F * f);
 	}
 

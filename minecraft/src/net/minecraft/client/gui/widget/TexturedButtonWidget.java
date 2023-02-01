@@ -1,9 +1,7 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -11,12 +9,12 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class TexturedButtonWidget extends ButtonWidget {
-	private final Identifier texture;
-	private final int u;
-	private final int v;
-	private final int hoveredVOffset;
-	private final int textureWidth;
-	private final int textureHeight;
+	protected final Identifier texture;
+	protected final int u;
+	protected final int v;
+	protected final int hoveredVOffset;
+	protected final int textureWidth;
+	protected final int textureHeight;
 
 	public TexturedButtonWidget(int x, int y, int width, int height, int u, int v, Identifier texture, ButtonWidget.PressAction pressAction) {
 		this(x, y, width, height, u, v, height, texture, 256, 256, pressAction);
@@ -67,16 +65,8 @@ public class TexturedButtonWidget extends ButtonWidget {
 
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-		RenderSystem.setShaderTexture(0, this.texture);
-		int i = this.v;
-		if (!this.isNarratable()) {
-			i += this.hoveredVOffset * 2;
-		} else if (this.isHovered()) {
-			i += this.hoveredVOffset;
-		}
-
-		RenderSystem.enableDepthTest();
-		drawTexture(matrices, this.getX(), this.getY(), (float)this.u, (float)i, this.width, this.height, this.textureWidth, this.textureHeight);
+		this.drawTexture(
+			matrices, this.texture, this.getX(), this.getY(), this.u, this.v, this.hoveredVOffset, this.width, this.height, this.textureWidth, this.textureHeight
+		);
 	}
 }

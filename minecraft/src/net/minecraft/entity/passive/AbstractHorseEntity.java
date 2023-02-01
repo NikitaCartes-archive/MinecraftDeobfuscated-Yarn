@@ -757,17 +757,15 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				if (this.isLogicalSideForUpdatingMovement()) {
 					this.setMovementSpeed(this.getHorsebackMovementSpeed(livingEntity));
 					super.travel(new Vec3d((double)f, movementInput.y, (double)g));
-				} else if (livingEntity instanceof PlayerEntity) {
-					this.setVelocity(this.getX() - this.lastRenderX, this.getY() - this.lastRenderY, this.getZ() - this.lastRenderZ);
+				} else {
+					this.updateLimbs(false);
+					this.tryCheckBlockCollision();
 				}
 
 				if (this.onGround) {
 					this.jumpStrength = 0.0F;
 					this.setInAir(false);
 				}
-
-				this.updateLimbs(this, false);
-				this.tryCheckBlockCollision();
 			} else {
 				this.airStrafingSpeed = 0.02F;
 				super.travel(movementInput);

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -89,6 +90,10 @@ public class SimplePositioningWidget extends WrapperWidget {
 
 	public static void setPos(Widget widget, int left, int top, int right, int bottom) {
 		setPos(widget, left, top, right, bottom, 0.5F, 0.5F);
+	}
+
+	public static void setPos(Widget widget, FocusedRect rect) {
+		setPos(widget, rect.position().x(), rect.position().y(), rect.width(), rect.height());
 	}
 
 	public static void setPos(Widget widget, int left, int top, int right, int bottom, float relativeX, float relativeY) {

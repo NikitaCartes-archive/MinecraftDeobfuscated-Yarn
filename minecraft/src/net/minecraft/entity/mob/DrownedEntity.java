@@ -224,6 +224,11 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		}
 	}
 
+	@Override
+	public boolean isInSwimmingPose() {
+		return this.isSwimming();
+	}
+
 	protected boolean hasFinishedCurrentPath() {
 		Path path = this.getNavigation().getCurrentPath();
 		if (path != null) {

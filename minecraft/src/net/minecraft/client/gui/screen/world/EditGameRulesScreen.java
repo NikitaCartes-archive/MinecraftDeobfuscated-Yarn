@@ -24,6 +24,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
@@ -53,16 +54,14 @@ public class EditGameRulesScreen extends Screen {
 	protected void init() {
 		this.ruleListWidget = new EditGameRulesScreen.RuleListWidget(this.gameRules);
 		this.addSelectableChild(this.ruleListWidget);
-		this.doneButton = this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.DONE, button -> this.ruleSaver.accept(Optional.of(this.gameRules)))
-				.dimensions(this.width / 2 - 155, this.height - 29, 150, 20)
-				.build()
-		);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.ruleSaver.accept(Optional.empty()))
-				.dimensions(this.width / 2 - 155 + 160, this.height - 29, 150, 20)
-				.build()
-		);
+		GridWidget.Adder adder = new GridWidget().setColumnSpacing(10).createAdder(2);
+		this.doneButton = adder.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.ruleSaver.accept(Optional.of(this.gameRules))).build());
+		adder.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.ruleSaver.accept(Optional.empty())).build());
+		adder.getGridWidget().forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
+		});
+		adder.getGridWidget().setPosition(this.width / 2 - 155, this.height - 28);
+		adder.getGridWidget().refreshPositions();
 	}
 
 	@Override

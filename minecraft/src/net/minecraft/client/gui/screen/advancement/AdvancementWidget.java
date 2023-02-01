@@ -218,9 +218,9 @@ public class AdvancementWidget extends DrawableHelper {
 		int n = 32 + this.description.size() * 9;
 		if (!this.description.isEmpty()) {
 			if (bl2) {
-				this.renderDescriptionBackground(matrices, m, l + 26 - n, this.width, n, 10, 200, 26, 0, 52);
+				this.drawNineSlicedTexture(matrices, m, l + 26 - n, this.width, n, 10, 200, 26, 0, 52);
 			} else {
-				this.renderDescriptionBackground(matrices, m, l, this.width, n, 10, 200, 26, 0, 52);
+				this.drawNineSlicedTexture(matrices, m, l, this.width, n, 10, 200, 26, 0, 52);
 			}
 		}
 
@@ -252,85 +252,6 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 
 		this.client.getItemRenderer().renderInGui(this.display.getIcon(), originX + this.x + 8, originY + this.y + 5);
-	}
-
-	/**
-	 * Renders the description background.
-	 * 
-	 * @implNote This splits the area into 9 parts (4 corners, 4 edges and 1
-	 * central box) and draws each of them.
-	 */
-	protected void renderDescriptionBackground(
-		MatrixStack matrices, int x, int y, int width, int height, int cornerSize, int textureWidth, int textureHeight, int u, int v
-	) {
-		this.drawTexture(matrices, x, y, u, v, cornerSize, cornerSize);
-		this.drawTextureRepeatedly(
-			matrices, x + cornerSize, y, width - cornerSize - cornerSize, cornerSize, u + cornerSize, v, textureWidth - cornerSize - cornerSize, textureHeight
-		);
-		this.drawTexture(matrices, x + width - cornerSize, y, u + textureWidth - cornerSize, v, cornerSize, cornerSize);
-		this.drawTexture(matrices, x, y + height - cornerSize, u, v + textureHeight - cornerSize, cornerSize, cornerSize);
-		this.drawTextureRepeatedly(
-			matrices,
-			x + cornerSize,
-			y + height - cornerSize,
-			width - cornerSize - cornerSize,
-			cornerSize,
-			u + cornerSize,
-			v + textureHeight - cornerSize,
-			textureWidth - cornerSize - cornerSize,
-			textureHeight
-		);
-		this.drawTexture(
-			matrices, x + width - cornerSize, y + height - cornerSize, u + textureWidth - cornerSize, v + textureHeight - cornerSize, cornerSize, cornerSize
-		);
-		this.drawTextureRepeatedly(
-			matrices, x, y + cornerSize, cornerSize, height - cornerSize - cornerSize, u, v + cornerSize, textureWidth, textureHeight - cornerSize - cornerSize
-		);
-		this.drawTextureRepeatedly(
-			matrices,
-			x + cornerSize,
-			y + cornerSize,
-			width - cornerSize - cornerSize,
-			height - cornerSize - cornerSize,
-			u + cornerSize,
-			v + cornerSize,
-			textureWidth - cornerSize - cornerSize,
-			textureHeight - cornerSize - cornerSize
-		);
-		this.drawTextureRepeatedly(
-			matrices,
-			x + width - cornerSize,
-			y + cornerSize,
-			cornerSize,
-			height - cornerSize - cornerSize,
-			u + textureWidth - cornerSize,
-			v + cornerSize,
-			textureWidth,
-			textureHeight - cornerSize - cornerSize
-		);
-	}
-
-	/**
-	 * Draws a textured rectangle repeatedly to cover the area of {@code
-	 * width} and {@code height}. The last texture is clipped to fit the area.
-	 */
-	protected void drawTextureRepeatedly(MatrixStack matrices, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
-		int i = 0;
-
-		while (i < width) {
-			int j = x + i;
-			int k = Math.min(textureWidth, width - i);
-			int l = 0;
-
-			while (l < height) {
-				int m = y + l;
-				int n = Math.min(textureHeight, height - l);
-				this.drawTexture(matrices, j, m, u, v, k, n);
-				l += textureHeight;
-			}
-
-			i += textureWidth;
-		}
 	}
 
 	public boolean shouldRender(int originX, int originY, int mouseX, int mouseY) {

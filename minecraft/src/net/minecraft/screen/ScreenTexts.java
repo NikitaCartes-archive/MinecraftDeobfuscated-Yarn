@@ -52,8 +52,17 @@ public class ScreenTexts {
 		return Text.translatable("options.generic_value", text, value);
 	}
 
-	public static MutableText joinSentences(Text first, Text second) {
-		return Text.empty().append(first).append(SENTENCE_SEPARATOR).append(second);
+	public static MutableText joinSentences(Text... sentences) {
+		MutableText mutableText = Text.empty();
+
+		for (int i = 0; i < sentences.length; i++) {
+			mutableText.append(sentences[i]);
+			if (i != sentences.length - 1) {
+				mutableText.append(SENTENCE_SEPARATOR);
+			}
+		}
+
+		return mutableText;
 	}
 
 	public static Text joinLines(Text... texts) {

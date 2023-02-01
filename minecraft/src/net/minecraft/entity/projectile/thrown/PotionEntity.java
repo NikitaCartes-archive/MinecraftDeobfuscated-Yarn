@@ -137,9 +137,11 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 				if (livingEntity.isAffectedBySplashPotions()) {
 					double d = this.squaredDistanceTo(livingEntity);
 					if (d < 16.0) {
-						double e = 1.0 - Math.sqrt(d) / 4.0;
+						double e;
 						if (livingEntity == entity) {
 							e = 1.0;
+						} else {
+							e = 1.0 - Math.sqrt(d) / 4.0;
 						}
 
 						for (StatusEffectInstance statusEffectInstance : statusEffects) {
@@ -147,14 +149,12 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 							if (statusEffect.isInstant()) {
 								statusEffect.applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance.getAmplifier(), e);
 							} else {
-								int i = (int)(e * (double)statusEffectInstance.getDuration() + 0.5);
-								if (i > 20) {
-									livingEntity.addStatusEffect(
-										new StatusEffectInstance(
-											statusEffect, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()
-										),
-										entity2
-									);
+								int i = statusEffectInstance.mapDuration(ix -> (int)(e * (double)ix + 0.5));
+								StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(
+									statusEffect, i, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()
+								);
+								if (!statusEffectInstance2.isDurationBelow(20)) {
+									livingEntity.addStatusEffect(statusEffectInstance2, entity2);
 								}
 							}
 						}

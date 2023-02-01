@@ -847,7 +847,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			this.inNetherPortal = false;
-		} else if (this.hasStatusEffect(StatusEffects.NAUSEA) && this.getStatusEffect(StatusEffects.NAUSEA).getDuration() > 60) {
+		} else if (this.hasStatusEffect(StatusEffects.NAUSEA) && !this.getStatusEffect(StatusEffects.NAUSEA).isDurationBelow(60)) {
 			this.nextNauseaStrength += 0.006666667F;
 			if (this.nextNauseaStrength > 1.0F) {
 				this.nextNauseaStrength = 1.0F;

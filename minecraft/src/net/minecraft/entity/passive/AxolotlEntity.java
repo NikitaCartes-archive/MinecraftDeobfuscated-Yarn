@@ -456,9 +456,8 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 
 	public void buffPlayer(PlayerEntity player) {
 		StatusEffectInstance statusEffectInstance = player.getStatusEffect(StatusEffects.REGENERATION);
-		int i = statusEffectInstance != null ? statusEffectInstance.getDuration() : 0;
-		if (i < 2400) {
-			i = Math.min(2400, 100 + i);
+		if (statusEffectInstance != null && statusEffectInstance.isDurationBelow(2399)) {
+			int i = Math.min(2400, 100 + statusEffectInstance.getDuration());
 			player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0), this);
 		}
 

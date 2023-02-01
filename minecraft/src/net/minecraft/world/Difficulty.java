@@ -30,6 +30,10 @@ public enum Difficulty implements StringIdentifiable {
 		return Text.translatable("options.difficulty." + this.name);
 	}
 
+	public Text getInfo() {
+		return Text.translatable("options.difficulty." + this.name + ".info");
+	}
+
 	public static Difficulty byId(int id) {
 		return (Difficulty)BY_ID.apply(id);
 	}

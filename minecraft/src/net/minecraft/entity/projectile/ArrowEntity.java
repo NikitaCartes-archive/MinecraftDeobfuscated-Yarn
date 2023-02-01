@@ -181,7 +181,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 			target.addStatusEffect(
 				new StatusEffectInstance(
 					statusEffectInstance.getEffectType(),
-					Math.max(statusEffectInstance.getDuration() / 8, 1),
+					Math.max(statusEffectInstance.mapDuration(i -> i / 8), 1),
 					statusEffectInstance.getAmplifier(),
 					statusEffectInstance.isAmbient(),
 					statusEffectInstance.shouldShowParticles()

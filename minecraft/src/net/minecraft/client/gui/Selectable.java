@@ -2,9 +2,10 @@ package net.minecraft.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.navigation.Navigable;
 
 @Environment(EnvType.CLIENT)
-public interface Selectable extends Narratable {
+public interface Selectable extends Navigable, Narratable {
 	Selectable.SelectionType getType();
 
 	default boolean isNarratable() {

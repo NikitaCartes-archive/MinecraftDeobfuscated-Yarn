@@ -11,13 +11,12 @@ import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.animation.FrogAnimations;
 import net.minecraft.entity.passive.FrogEntity;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel<T> {
-	private static final float field_39194 = 8000.0F;
-	public static final float field_41378 = 0.5F;
-	public static final float field_39193 = 1.5F;
+	private static final float field_39193 = 1.5F;
+	private static final float field_42228 = 1.0F;
+	private static final float field_42229 = 2.5F;
 	private final ModelPart root;
 	private final ModelPart body;
 	private final ModelPart head;
@@ -100,13 +99,15 @@ public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel
 
 	public void setAngles(T frogEntity, float f, float g, float h, float i, float j) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
-		float k = (float)frogEntity.getVelocity().horizontalLengthSquared();
-		float l = MathHelper.clamp(k * 8000.0F, 0.5F, 1.5F);
 		this.updateAnimation(frogEntity.longJumpingAnimationState, FrogAnimations.LONG_JUMPING, h);
 		this.updateAnimation(frogEntity.croakingAnimationState, FrogAnimations.CROAKING, h);
 		this.updateAnimation(frogEntity.usingTongueAnimationState, FrogAnimations.USING_TONGUE, h);
-		this.updateAnimation(frogEntity.walkingAnimationState, FrogAnimations.WALKING, h, l);
-		this.updateAnimation(frogEntity.swimmingAnimationState, FrogAnimations.SWIMMING, h);
+		if (frogEntity.isInsideWaterOrBubbleColumn()) {
+			this.method_48741(FrogAnimations.SWIMMING, f, g, 1.0F, 2.5F);
+		} else {
+			this.method_48741(FrogAnimations.WALKING, f, g, 1.5F, 2.5F);
+		}
+
 		this.updateAnimation(frogEntity.idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, h);
 		this.croakingBody.visible = frogEntity.croakingAnimationState.isRunning();
 	}

@@ -39,7 +39,7 @@ public interface LevelScreenProvider {
 			RegistryEntryLookup<PlacedFeature> registryEntryLookup3 = dynamicRegistryManager.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE);
 			return new CustomizeFlatLevelScreen(
 				parent,
-				config -> parent.moreOptionsDialog.apply(createModifier(config)),
+				config -> parent.getWorldCreator().applyModifier(createModifier(config)),
 				chunkGenerator instanceof FlatChunkGenerator
 					? ((FlatChunkGenerator)chunkGenerator).getConfig()
 					: FlatChunkGeneratorConfig.getDefaultConfig(registryEntryLookup, registryEntryLookup2, registryEntryLookup3)
@@ -47,7 +47,7 @@ public interface LevelScreenProvider {
 		},
 		Optional.of(WorldPresets.SINGLE_BIOME_SURFACE),
 		(LevelScreenProvider)(parent, generatorOptionsHolder) -> new CustomizeBuffetLevelScreen(
-				parent, generatorOptionsHolder, biomeEntry -> parent.moreOptionsDialog.apply(createModifier(biomeEntry))
+				parent, generatorOptionsHolder, biomeEntry -> parent.getWorldCreator().applyModifier(createModifier(biomeEntry))
 			)
 	);
 

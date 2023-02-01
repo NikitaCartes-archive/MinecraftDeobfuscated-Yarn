@@ -60,7 +60,6 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	private static final float field_40135 = 1.43F;
 	public static final TrackedData<Boolean> DASHING = DataTracker.registerData(CamelEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public static final TrackedData<Long> LAST_POSE_TICK = DataTracker.registerData(CamelEntity.class, TrackedDataHandlerRegistry.LONG);
-	public final AnimationState walkingAnimationState = new AnimationState();
 	public final AnimationState sittingTransitionAnimationState = new AnimationState();
 	public final AnimationState sittingAnimationState = new AnimationState();
 	public final AnimationState standingTransitionAnimationState = new AnimationState();
@@ -113,7 +112,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		CamelBrain.method_45367(this, world.getRandom());
+		CamelBrain.initialize(this, world.getRandom());
 		this.initLastPoseTick(world.toServerWorld().getTime());
 		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
@@ -190,8 +189,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 			this.idleAnimationCooldown--;
 		}
 
-		if (this.isSitting()) {
-			this.walkingAnimationState.stop();
+		if (this.shouldUpdateSittingAnimations()) {
 			this.standingTransitionAnimationState.stop();
 			this.dashingAnimationState.stop();
 			if (this.shouldPlaySittingTransitionAnimation()) {
@@ -205,9 +203,20 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 			this.sittingTransitionAnimationState.stop();
 			this.sittingAnimationState.stop();
 			this.dashingAnimationState.setRunning(this.isDashing(), this.age);
-			this.standingTransitionAnimationState.setRunning(this.isChangingPose(), this.age);
-			this.walkingAnimationState.setRunning((this.onGround || this.hasPrimaryPassenger()) && this.getVelocity().horizontalLengthSquared() > 1.0E-6, this.age);
+			this.standingTransitionAnimationState.setRunning(this.isChangingPose() && this.getLastPoseTickDelta() >= 0L, this.age);
 		}
+	}
+
+	@Override
+	protected void updateLimbs(float posDelta) {
+		float f;
+		if (this.getPose() == EntityPose.STANDING && !this.dashingAnimationState.isRunning()) {
+			f = Math.min(posDelta * 6.0F, 1.0F);
+		} else {
+			f = 0.0F;
+		}
+
+		this.limbAnimator.updateLimbs(f, 0.2F);
 	}
 
 	@Override
@@ -563,13 +572,17 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 		return this.dataTracker.get(LAST_POSE_TICK) < 0L;
 	}
 
+	public boolean shouldUpdateSittingAnimations() {
+		return this.getLastPoseTickDelta() < 0L != this.isSitting();
+	}
+
 	public boolean isChangingPose() {
 		long l = this.getLastPoseTickDelta();
 		return l < (long)(this.isSitting() ? 40 : 52);
 	}
 
 	private boolean shouldPlaySittingTransitionAnimation() {
-		return this.isSitting() && this.getLastPoseTickDelta() < 40L;
+		return this.isSitting() && this.getLastPoseTickDelta() < 40L && this.getLastPoseTickDelta() >= 0L;
 	}
 
 	public void startSitting() {
