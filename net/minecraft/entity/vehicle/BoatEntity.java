@@ -698,7 +698,7 @@ implements VariantHolder<Type> {
                     this.onLanding();
                     return;
                 }
-                this.handleFallDamage(this.fallDistance, 1.0f, DamageSource.FALL);
+                this.handleFallDamage(this.fallDistance, 1.0f, this.getDamageSources().fall());
                 if (!this.world.isClient && !this.isRemoved()) {
                     this.kill();
                     if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {

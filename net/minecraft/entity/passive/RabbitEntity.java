@@ -296,9 +296,9 @@ implements VariantHolder<RabbitType> {
     public boolean tryAttack(Entity target) {
         if (this.getVariant() == RabbitType.EVIL) {
             this.playSound(SoundEvents.ENTITY_RABBIT_ATTACK, 1.0f, (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
-            return target.damage(DamageSource.mob(this), 8.0f);
+            return target.damage(this.getDamageSources().mobAttack(this), 8.0f);
         }
-        return target.damage(DamageSource.mob(this), 3.0f);
+        return target.damage(this.getDamageSources().mobAttack(this), 3.0f);
     }
 
     @Override

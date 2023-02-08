@@ -85,9 +85,9 @@ implements SoundInstanceListener {
             int r = q + -16777216;
             if (!bl) {
                 if (e > 0.0) {
-                    SubtitlesHud.drawStringWithShadow(matrices, this.client.textRenderer, ">", l - this.client.textRenderer.getWidth(">"), -n, r);
+                    SubtitlesHud.drawTextWithShadow(matrices, this.client.textRenderer, ">", l - this.client.textRenderer.getWidth(">"), -n, r);
                 } else if (e < 0.0) {
-                    SubtitlesHud.drawStringWithShadow(matrices, this.client.textRenderer, "<", -l, -n, r);
+                    SubtitlesHud.drawTextWithShadow(matrices, this.client.textRenderer, "<", -l, -n, r);
                 }
             }
             SubtitlesHud.drawTextWithShadow(matrices, this.client.textRenderer, text, -o / 2, -n, r);

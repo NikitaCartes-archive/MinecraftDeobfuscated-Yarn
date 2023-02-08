@@ -40,6 +40,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -134,7 +135,7 @@ implements RangedAttackMob {
                 Potion potion = null;
                 if (this.random.nextFloat() < 0.15f && this.isSubmergedIn(FluidTags.WATER) && !this.hasStatusEffect(StatusEffects.WATER_BREATHING)) {
                     potion = Potions.WATER_BREATHING;
-                } else if (this.random.nextFloat() < 0.15f && (this.isOnFire() || this.getRecentDamageSource() != null && this.getRecentDamageSource().isFire()) && !this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+                } else if (this.random.nextFloat() < 0.15f && (this.isOnFire() || this.getRecentDamageSource() != null && this.getRecentDamageSource().isIn(DamageTypeTags.IS_FIRE)) && !this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
                     potion = Potions.FIRE_RESISTANCE;
                 } else if (this.random.nextFloat() < 0.05f && this.getHealth() < this.getMaxHealth()) {
                     potion = Potions.HEALING;
@@ -182,7 +183,7 @@ implements RangedAttackMob {
         if (source.getAttacker() == this) {
             amount = 0.0f;
         }
-        if (source.isMagic()) {
+        if (source.isIn(DamageTypeTags.WITCH_RESISTANT_TO)) {
             amount *= 0.15f;
         }
         return amount;

@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -22,7 +21,6 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.gui.screen.RealmsAcceptRejectButton;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
-import net.minecraft.client.realms.util.RealmsTextureManager;
 import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
@@ -146,12 +144,12 @@ extends RealmsScreen {
         this.tooltip = null;
         this.renderBackground(matrices);
         this.pendingInvitationSelectionList.render(matrices, mouseX, mouseY, delta);
-        RealmsPendingInvitesScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 12, 0xFFFFFF);
+        RealmsPendingInvitesScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 12, 0xFFFFFF);
         if (this.tooltip != null) {
             this.renderMousehoverTooltip(matrices, this.tooltip, mouseX, mouseY);
         }
         if (this.pendingInvitationSelectionList.getEntryCount() == 0 && this.loaded) {
-            RealmsPendingInvitesScreen.drawCenteredText(matrices, this.textRenderer, NO_PENDING_TEXT, this.width / 2, this.height / 2 - 20, 0xFFFFFF);
+            RealmsPendingInvitesScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, NO_PENDING_TEXT, this.width / 2, this.height / 2 - 20, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -249,7 +247,7 @@ extends RealmsScreen {
             RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, invite.worldOwnerName, (float)(x + 38), (float)(y + 12), 0x6C6C6C);
             RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, RealmsUtil.convertToAgePresentation(invite.date), (float)(x + 38), (float)(y + 24), 0x6C6C6C);
             RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, x, y, mouseX, mouseY);
-            RealmsTextureManager.withBoundFace(invite.worldOwnerUuid, () -> PlayerSkinDrawer.draw(matrices, x, y, 32));
+            RealmsUtil.drawPlayerHead(matrices, x, y, 32, invite.worldOwnerUuid);
         }
 
         @Override

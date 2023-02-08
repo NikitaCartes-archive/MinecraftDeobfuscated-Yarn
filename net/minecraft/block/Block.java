@@ -27,7 +27,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -558,7 +557,7 @@ implements ItemConvertible {
      * World#isClient}.
      */
     public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
-        entity.handleFallDamage(fallDistance, 1.0f, DamageSource.FALL);
+        entity.handleFallDamage(fallDistance, 1.0f, entity.getDamageSources().fall());
     }
 
     /**

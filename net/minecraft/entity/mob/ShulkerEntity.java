@@ -43,6 +43,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -399,7 +400,7 @@ Monster {
         if (super.damage(source, amount)) {
             if ((double)this.getHealth() < (double)this.getMaxHealth() * 0.5 && this.random.nextInt(4) == 0) {
                 this.tryTeleport();
-            } else if (source.isProjectile() && (entity = source.getSource()) != null && entity.getType() == EntityType.SHULKER_BULLET) {
+            } else if (source.isIn(DamageTypeTags.IS_PROJECTILE) && (entity = source.getSource()) != null && entity.getType() == EntityType.SHULKER_BULLET) {
                 this.spawnNewShulker();
             }
             return true;

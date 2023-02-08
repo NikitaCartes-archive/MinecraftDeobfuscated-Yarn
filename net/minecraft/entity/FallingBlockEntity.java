@@ -222,7 +222,7 @@ extends Entity {
             damageSource2 = landingBlock.getDamageSource(this);
         } else {
             predicate = EntityPredicates.EXCEPT_SPECTATOR;
-            damageSource2 = DamageSource.fallingBlock(this);
+            damageSource2 = this.getDamageSources().fallingBlock(this);
         }
         float f = Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax);
         this.world.getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damage(damageSource2, f));

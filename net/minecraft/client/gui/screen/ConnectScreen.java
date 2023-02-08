@@ -150,7 +150,7 @@ extends Screen {
             this.lastNarrationTime = l;
             this.client.getNarratorManager().narrate(Text.translatable("narrator.joining"));
         }
-        ConnectScreen.drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
+        ConnectScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

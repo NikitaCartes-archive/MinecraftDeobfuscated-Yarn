@@ -181,7 +181,7 @@ extends WaterCreatureEntity {
 
     @Override
     public boolean tryAttack(Entity target) {
-        boolean bl = target.damage(DamageSource.mob(this), (int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+        boolean bl = target.damage(this.getDamageSources().mobAttack(this), (int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
         if (bl) {
             this.applyDamageEffects(this, target);
             this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0f, 1.0f);
@@ -252,7 +252,7 @@ extends WaterCreatureEntity {
         } else {
             this.setMoistness(this.getMoistness() - 1);
             if (this.getMoistness() <= 0) {
-                this.damage(DamageSource.DRYOUT, 1.0f);
+                this.damage(this.getDamageSources().dryOut(), 1.0f);
             }
             if (this.onGround) {
                 this.setVelocity(this.getVelocity().add((this.random.nextFloat() * 2.0f - 1.0f) * 0.2f, 0.5, (this.random.nextFloat() * 2.0f - 1.0f) * 0.2f));

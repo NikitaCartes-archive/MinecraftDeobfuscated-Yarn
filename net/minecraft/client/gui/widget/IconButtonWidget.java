@@ -46,7 +46,7 @@ extends TexturedButtonWidget {
         if (k >= (l = this.getX() + this.width - this.iconWidth - 5)) {
             j -= k - l;
         }
-        IconButtonWidget.drawWithShadow(matrices, textRenderer, orderedText, j, y, color);
+        IconButtonWidget.drawTextWithShadow(matrices, textRenderer, orderedText, j, y, color);
     }
 
     private int getXWithOffset() {

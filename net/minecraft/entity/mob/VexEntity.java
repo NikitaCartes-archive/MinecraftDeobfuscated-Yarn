@@ -92,7 +92,7 @@ implements Ownable {
         this.setNoGravity(true);
         if (this.alive && --this.lifeTicks <= 0) {
             this.lifeTicks = 20;
-            this.damage(DamageSource.STARVE, 1.0f);
+            this.damage(this.getDamageSources().starve(), 1.0f);
         }
     }
 

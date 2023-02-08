@@ -229,7 +229,7 @@ extends RaiderEntity {
             List<Entity> list = this.world.getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(4.0), IS_NOT_RAVAGER);
             for (LivingEntity livingEntity : list) {
                 if (!(livingEntity instanceof IllagerEntity)) {
-                    livingEntity.damage(DamageSource.mob(this), 6.0f);
+                    livingEntity.damage(this.getDamageSources().mobAttack(this), 6.0f);
                 }
                 this.knockBack(livingEntity);
             }

@@ -10,7 +10,7 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.DolphinEntityModel;
 import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.item.ItemStack;
@@ -40,7 +40,7 @@ extends FeatureRenderer<DolphinEntity, DolphinEntityModel<DolphinEntity>> {
             matrixStack.translate(0.0f, 1.0f + o * 0.8f, -1.0f + o * 0.2f);
         }
         ItemStack itemStack = bl ? dolphinEntity.getMainHandStack() : dolphinEntity.getOffHandStack();
-        this.heldItemRenderer.renderItem(dolphinEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
+        this.heldItemRenderer.renderItem(dolphinEntity, itemStack, ModelTransformationMode.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

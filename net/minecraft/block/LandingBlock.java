@@ -20,7 +20,7 @@ public interface LandingBlock {
     }
 
     default public DamageSource getDamageSource(Entity attacker) {
-        return DamageSource.fallingBlock(attacker);
+        return attacker.getDamageSources().fallingBlock(attacker);
     }
 
     default public Predicate<Entity> getEntityPredicate() {

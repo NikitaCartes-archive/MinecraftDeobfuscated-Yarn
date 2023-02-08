@@ -19,7 +19,7 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -58,7 +58,8 @@ extends FeatureRenderer<T, M> {
 
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
-        float m;
+        ArmorItem armorItem;
+        float n;
         boolean bl;
         ItemStack itemStack = ((LivingEntity)livingEntity).getEquippedStack(EquipmentSlot.HEAD);
         if (itemStack.isEmpty()) {
@@ -69,8 +70,8 @@ extends FeatureRenderer<T, M> {
         matrixStack.scale(this.scaleX, this.scaleY, this.scaleZ);
         boolean bl2 = bl = livingEntity instanceof VillagerEntity || livingEntity instanceof ZombieVillagerEntity;
         if (((LivingEntity)livingEntity).isBaby() && !(livingEntity instanceof VillagerEntity)) {
-            m = 2.0f;
-            float n = 1.4f;
+            float m = 2.0f;
+            n = 1.4f;
             matrixStack.translate(0.0f, 0.03125f, 0.0f);
             matrixStack.scale(0.7f, 0.7f, 0.7f);
             matrixStack.translate(0.0f, 1.0f, 0.0f);
@@ -78,7 +79,7 @@ extends FeatureRenderer<T, M> {
         ((ModelWithHead)this.getContextModel()).getHead().rotate(matrixStack);
         if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
             NbtCompound nbtCompound;
-            m = 1.1875f;
+            n = 1.1875f;
             matrixStack.scale(1.1875f, -1.1875f, -1.1875f);
             if (bl) {
                 matrixStack.translate(0.0f, 0.0625f, 0.0f);
@@ -92,9 +93,9 @@ extends FeatureRenderer<T, M> {
             SkullBlockEntityModel skullBlockEntityModel = this.headModels.get(skullType);
             RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
             SkullBlockEntityRenderer.renderSkull(null, 180.0f, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
-        } else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
+        } else if (!(item instanceof ArmorItem) || (armorItem = (ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
             HeadFeatureRenderer.translate(matrixStack, bl);
-            this.heldItemRenderer.renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
+            this.heldItemRenderer.renderItem((LivingEntity)livingEntity, itemStack, ModelTransformationMode.HEAD, false, matrixStack, vertexConsumerProvider, i);
         }
         matrixStack.pop();
     }

@@ -276,7 +276,7 @@ Flutterer {
             }
             this.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 900));
             if (player.isCreative() || !this.isInvulnerable()) {
-                this.damage(DamageSource.player(player), Float.MAX_VALUE);
+                this.damage(this.getDamageSources().playerAttack(player), Float.MAX_VALUE);
             }
             return ActionResult.success(this.world.isClient);
         }
@@ -320,7 +320,7 @@ Flutterer {
 
     @Override
     public boolean tryAttack(Entity target) {
-        return target.damage(DamageSource.mob(this), 3.0f);
+        return target.damage(this.getDamageSources().mobAttack(this), 3.0f);
     }
 
     @Override

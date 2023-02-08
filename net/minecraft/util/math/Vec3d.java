@@ -463,7 +463,7 @@ implements Position {
         return new Vec3d(d, e, f);
     }
 
-    public Vec3d withBias(Direction direction, double value) {
+    public Vec3d offset(Direction direction, double value) {
         Vec3i vec3i = direction.getVector();
         return new Vec3d(this.x + value * (double)vec3i.getX(), this.y + value * (double)vec3i.getY(), this.z + value * (double)vec3i.getZ());
     }

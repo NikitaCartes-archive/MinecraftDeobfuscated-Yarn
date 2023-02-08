@@ -16,7 +16,7 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
@@ -105,7 +105,7 @@ extends EntityRenderer<T> {
             } else {
                 int l = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_LIGHT_COORDINATE, i);
                 matrixStack.scale(0.5f, 0.5f, 0.5f);
-                this.itemRenderer.renderItem(itemStack, ModelTransformation.Mode.FIXED, l, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, ((ItemFrameEntity)itemFrameEntity).world, ((Entity)itemFrameEntity).getId());
+                this.itemRenderer.renderItem(itemStack, ModelTransformationMode.FIXED, l, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, ((ItemFrameEntity)itemFrameEntity).world, ((Entity)itemFrameEntity).getId());
             }
         }
         matrixStack.pop();

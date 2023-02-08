@@ -138,7 +138,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        AbstractCommandBlockScreen.drawCenteredText(matrices, this.textRenderer, SET_COMMAND_TEXT, this.width / 2, 20, 0xFFFFFF);
+        AbstractCommandBlockScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, SET_COMMAND_TEXT, this.width / 2, 20, 0xFFFFFF);
         AbstractCommandBlockScreen.drawTextWithShadow(matrices, this.textRenderer, COMMAND_TEXT, this.width / 2 - 150, 40, 0xA0A0A0);
         this.consoleCommandTextField.render(matrices, mouseX, mouseY, delta);
         int i = 75;

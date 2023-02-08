@@ -31,6 +31,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -397,19 +398,19 @@ extends LivingEntity {
         if (this.world.isClient || this.isRemoved()) {
             return false;
         }
-        if (DamageSource.OUT_OF_WORLD.equals(source)) {
+        if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             this.kill();
             return false;
         }
         if (this.isInvulnerableTo(source) || this.invisible || this.isMarker()) {
             return false;
         }
-        if (source.isExplosive()) {
+        if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
             this.onBreak(source);
             this.kill();
             return false;
         }
-        if (DamageSource.IN_FIRE.equals(source)) {
+        if (source.isIn(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
             if (this.isOnFire()) {
                 this.updateHealth(source, 0.15f);
             } else {
@@ -417,7 +418,7 @@ extends LivingEntity {
             }
             return false;
         }
-        if (DamageSource.ON_FIRE.equals(source) && this.getHealth() > 0.5f) {
+        if (source.isIn(DamageTypeTags.BURNS_ARMOR_STANDS) && this.getHealth() > 0.5f) {
             this.updateHealth(source, 4.0f);
             return false;
         }
@@ -427,8 +428,12 @@ extends LivingEntity {
         if (!bl3 && !bl) {
             return false;
         }
-        if (source.getAttacker() instanceof PlayerEntity && !((PlayerEntity)source.getAttacker()).getAbilities().allowModifyWorld) {
-            return false;
+        Entity entity = source.getAttacker();
+        if (entity instanceof PlayerEntity) {
+            PlayerEntity playerEntity = (PlayerEntity)entity;
+            if (!playerEntity.getAbilities().allowModifyWorld) {
+                return false;
+            }
         }
         if (source.isSourceCreativePlayer()) {
             this.playBreakSound();

@@ -5,7 +5,6 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.Vec3d;
 
 public interface Hoglin {
@@ -16,7 +15,7 @@ public interface Hoglin {
     public static boolean tryAttack(LivingEntity attacker, LivingEntity target) {
         float f = (float)attacker.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         float g = !attacker.isBaby() && (int)f > 0 ? f / 2.0f + (float)attacker.world.random.nextInt((int)f) : f;
-        boolean bl = target.damage(DamageSource.mob(attacker), g);
+        boolean bl = target.damage(attacker.getDamageSources().mobAttack(attacker), g);
         if (bl) {
             attacker.applyDamageEffects(attacker, target);
             if (!attacker.isBaby()) {

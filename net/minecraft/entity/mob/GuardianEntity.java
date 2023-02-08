@@ -37,6 +37,7 @@ import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -296,10 +297,10 @@ extends HostileEntity {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if (!this.areSpikesRetracted() && !source.isMagic() && source.getSource() instanceof LivingEntity) {
+        if (!this.areSpikesRetracted() && !source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && source.getSource() instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)source.getSource();
-            if (!source.isExplosive()) {
-                livingEntity.damage(DamageSource.thorns(this), 2.0f);
+            if (!source.isIn(DamageTypeTags.IS_EXPLOSION)) {
+                livingEntity.damage(this.getDamageSources().thorns(this), 2.0f);
             }
         }
         if (this.wanderGoal != null) {
@@ -448,8 +449,8 @@ extends HostileEntity {
                 if (this.elder) {
                     f += 2.0f;
                 }
-                livingEntity.damage(DamageSource.magic(this.guardian, this.guardian), f);
-                livingEntity.damage(DamageSource.mob(this.guardian), (float)this.guardian.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+                livingEntity.damage(this.guardian.getDamageSources().indirectMagic(this.guardian, this.guardian), f);
+                livingEntity.damage(this.guardian.getDamageSources().mobAttack(this.guardian), (float)this.guardian.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
                 this.guardian.setTarget(null);
             }
             super.tick();

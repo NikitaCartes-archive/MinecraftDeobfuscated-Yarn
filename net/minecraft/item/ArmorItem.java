@@ -21,9 +21,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ArmorMaterials;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Wearable;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
@@ -33,11 +33,10 @@ import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class ArmorItem
 extends Item
-implements Wearable {
+implements Equipment {
     private static final EnumMap<Type, UUID> MODIFIERS = Util.make(new EnumMap(Type.class), uuidMap -> {
         uuidMap.put(Type.BOOTS, UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"));
         uuidMap.put(Type.LEGGINGS, UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"));
@@ -97,10 +96,6 @@ implements Wearable {
         return this.type;
     }
 
-    public EquipmentSlot getSlotType() {
-        return this.type.getEquipmentSlot();
-    }
-
     @Override
     public int getEnchantability() {
         return this.material.getEnchantability();
@@ -137,7 +132,11 @@ implements Wearable {
     }
 
     @Override
-    @Nullable
+    public EquipmentSlot getSlotType() {
+        return this.type.getEquipmentSlot();
+    }
+
+    @Override
     public SoundEvent getEquipSound() {
         return this.getMaterial().getEquipSound();
     }

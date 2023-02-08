@@ -67,6 +67,8 @@ implements ModelWithArms,
 ModelWithHead {
     public static final float field_32505 = 0.25f;
     public static final float field_32506 = 0.5f;
+    public static final float field_42513 = -0.1f;
+    private static final float field_42512 = 0.005f;
     private static final float SPYGLASS_ARM_YAW_OFFSET = 0.2617994f;
     private static final float SPYGLASS_ARM_PITCH_OFFSET = 1.9198622f;
     private static final float SPYGLASS_SNEAKING_ARM_PITCH_OFFSET = 0.2617994f;
@@ -155,8 +157,8 @@ ModelWithHead {
         this.leftArm.roll = 0.0f;
         this.rightLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g / k;
         this.leftLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g / k;
-        this.rightLeg.yaw = 0.0f;
-        this.leftLeg.yaw = 0.0f;
+        this.rightLeg.yaw = 0.005f;
+        this.leftLeg.yaw = -0.005f;
         this.rightLeg.roll = 0.0f;
         this.leftLeg.roll = 0.0f;
         if (this.riding) {
@@ -204,8 +206,8 @@ ModelWithHead {
             this.rightArm.pivotY = 5.2f;
         } else {
             this.body.pitch = 0.0f;
-            this.rightLeg.pivotZ = 0.1f;
-            this.leftLeg.pivotZ = 0.1f;
+            this.rightLeg.pivotZ = 0.0f;
+            this.leftLeg.pivotZ = 0.0f;
             this.rightLeg.pivotY = 12.0f;
             this.leftLeg.pivotY = 12.0f;
             this.head.pivotY = 0.0f;

@@ -48,7 +48,7 @@ extends Screen {
     @Override
     public void init() {
         int i = this.yMargin();
-        SimplePositioningWidget simplePositioningWidget = SimplePositioningWidget.of(this.width, this.height - i);
+        SimplePositioningWidget simplePositioningWidget = new SimplePositioningWidget(this.width, this.height - i);
         simplePositioningWidget.getMainPositioner().alignTop().margin(4);
         GridWidget gridWidget = simplePositioningWidget.add(new GridWidget());
         gridWidget.getMainPositioner().alignHorizontalCenter().margin(4);

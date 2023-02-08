@@ -139,29 +139,30 @@ extends BlockWithEntity {
         return new LecternBlockEntity(pos, state);
     }
 
-    public static boolean putBookIfAbsent(@Nullable PlayerEntity player, World world, BlockPos pos, BlockState state, ItemStack stack) {
+    public static boolean putBookIfAbsent(@Nullable Entity user, World world, BlockPos pos, BlockState state, ItemStack stack) {
         if (!state.get(HAS_BOOK).booleanValue()) {
             if (!world.isClient) {
-                LecternBlock.putBook(player, world, pos, state, stack);
+                LecternBlock.putBook(user, world, pos, state, stack);
             }
             return true;
         }
         return false;
     }
 
-    private static void putBook(@Nullable PlayerEntity player, World world, BlockPos pos, BlockState state, ItemStack stack) {
+    private static void putBook(@Nullable Entity user, World world, BlockPos pos, BlockState state, ItemStack stack) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof LecternBlockEntity) {
             LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;
             lecternBlockEntity.setBook(stack.split(1));
-            LecternBlock.setHasBook(world, pos, state, true);
+            LecternBlock.setHasBook(user, world, pos, state, true);
             world.playSound(null, pos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            world.emitGameEvent((Entity)player, GameEvent.BLOCK_CHANGE, pos);
         }
     }
 
-    public static void setHasBook(World world, BlockPos pos, BlockState state, boolean hasBook) {
-        world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, false)).with(HAS_BOOK, hasBook), Block.NOTIFY_ALL);
+    public static void setHasBook(@Nullable Entity user, World world, BlockPos pos, BlockState state, boolean hasBook) {
+        BlockState blockState = (BlockState)((BlockState)state.with(POWERED, false)).with(HAS_BOOK, hasBook);
+        world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
+        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(user, blockState));
         LecternBlock.updateNeighborAlways(world, pos, state);
     }
 

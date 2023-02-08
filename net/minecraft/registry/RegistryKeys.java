@@ -15,6 +15,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.Schedule;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.passive.CatVariant;
@@ -102,6 +103,7 @@ public class RegistryKeys {
     public static final RegistryKey<Registry<ChunkStatus>> CHUNK_STATUS = RegistryKeys.of("chunk_status");
     public static final RegistryKey<Registry<ArgumentSerializer<?, ?>>> COMMAND_ARGUMENT_TYPE = RegistryKeys.of("command_argument_type");
     public static final RegistryKey<Registry<Identifier>> CUSTOM_STAT = RegistryKeys.of("custom_stat");
+    public static final RegistryKey<Registry<DamageType>> DAMAGE_TYPE = RegistryKeys.of("damage_type");
     public static final RegistryKey<Registry<Codec<? extends DensityFunction>>> DENSITY_FUNCTION_TYPE = RegistryKeys.of("worldgen/density_function_type");
     public static final RegistryKey<Registry<Enchantment>> ENCHANTMENT = RegistryKeys.of("enchantment");
     public static final RegistryKey<Registry<EntityType<?>>> ENTITY_TYPE = RegistryKeys.of("entity_type");

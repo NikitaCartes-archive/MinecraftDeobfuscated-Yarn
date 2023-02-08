@@ -14,7 +14,6 @@ import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -61,10 +60,10 @@ public class StatusEffect {
             }
         } else if (this == StatusEffects.POISON) {
             if (entity.getHealth() > 1.0f) {
-                entity.damage(DamageSource.MAGIC, 1.0f);
+                entity.damage(entity.getDamageSources().magic(), 1.0f);
             }
         } else if (this == StatusEffects.WITHER) {
-            entity.damage(DamageSource.WITHER, 1.0f);
+            entity.damage(entity.getDamageSources().wither(), 1.0f);
         } else if (this == StatusEffects.HUNGER && entity instanceof PlayerEntity) {
             ((PlayerEntity)entity).addExhaustion(0.005f * (float)(amplifier + 1));
         } else if (this == StatusEffects.SATURATION && entity instanceof PlayerEntity) {
@@ -74,7 +73,7 @@ public class StatusEffect {
         } else if (this == StatusEffects.INSTANT_HEALTH && !entity.isUndead() || this == StatusEffects.INSTANT_DAMAGE && entity.isUndead()) {
             entity.heal(Math.max(4 << amplifier, 0));
         } else if (this == StatusEffects.INSTANT_DAMAGE && !entity.isUndead() || this == StatusEffects.INSTANT_HEALTH && entity.isUndead()) {
-            entity.damage(DamageSource.MAGIC, 6 << amplifier);
+            entity.damage(entity.getDamageSources().magic(), 6 << amplifier);
         }
     }
 
@@ -85,9 +84,9 @@ public class StatusEffect {
         } else if (this == StatusEffects.INSTANT_DAMAGE && !target.isUndead() || this == StatusEffects.INSTANT_HEALTH && target.isUndead()) {
             int i = (int)(proximity * (double)(6 << amplifier) + 0.5);
             if (source == null) {
-                target.damage(DamageSource.MAGIC, i);
+                target.damage(target.getDamageSources().magic(), i);
             } else {
-                target.damage(DamageSource.magic(source, attacker), i);
+                target.damage(target.getDamageSources().indirectMagic(source, attacker), i);
             }
         } else {
             this.applyUpdateEffect(target, amplifier);

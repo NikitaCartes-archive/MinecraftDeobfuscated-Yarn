@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -30,23 +29,17 @@ implements DebugRenderer.Renderer {
         FluidState fluidState;
         BlockPos blockPos = this.client.player.getBlockPos();
         World worldView = this.client.player.world;
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.setShaderColor(0.0f, 1.0f, 0.0f, 0.75f);
-        RenderSystem.lineWidth(6.0f);
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             fluidState = worldView.getFluidState(blockPos2);
             if (!fluidState.isIn(FluidTags.WATER)) continue;
             double d = (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2);
-            DebugRenderer.drawBox(new Box((float)blockPos2.getX() + 0.01f, (float)blockPos2.getY() + 0.01f, (float)blockPos2.getZ() + 0.01f, (float)blockPos2.getX() + 0.99f, d, (float)blockPos2.getZ() + 0.99f).offset(-cameraX, -cameraY, -cameraZ), 1.0f, 1.0f, 1.0f, 0.2f);
+            DebugRenderer.drawBox(matrices, vertexConsumers, new Box((float)blockPos2.getX() + 0.01f, (float)blockPos2.getY() + 0.01f, (float)blockPos2.getZ() + 0.01f, (float)blockPos2.getX() + 0.99f, d, (float)blockPos2.getZ() + 0.99f).offset(-cameraX, -cameraY, -cameraZ), 0.0f, 1.0f, 0.0f, 0.15f);
         }
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
             fluidState = worldView.getFluidState(blockPos2);
             if (!fluidState.isIn(FluidTags.WATER)) continue;
-            DebugRenderer.drawString(String.valueOf(fluidState.getLevel()), (double)blockPos2.getX() + 0.5, (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2), (double)blockPos2.getZ() + 0.5, -16777216);
+            DebugRenderer.drawString(matrices, vertexConsumers, String.valueOf(fluidState.getLevel()), (double)blockPos2.getX() + 0.5, (float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2), (double)blockPos2.getZ() + 0.5, -16777216);
         }
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.disableBlend();
     }
 }
 

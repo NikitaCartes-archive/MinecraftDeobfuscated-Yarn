@@ -32,8 +32,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Nullables;
 import net.minecraft.util.TextifiedException;
-import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -97,7 +97,7 @@ extends Screen {
             this.report = report;
             this.onChange();
         }))).dimensions(this.getWidgetsLeft(), this.getSelectionButtonY(), 280, 20).build());
-        Text text2 = Util.mapOrElse(abuseReportReason, AbuseReportReason::getText, SELECT_REASON_TEXT);
+        Text text2 = Nullables.mapOrElse(abuseReportReason, AbuseReportReason::getText, SELECT_REASON_TEXT);
         this.addDrawableChild(ButtonWidget.builder(text2, button -> this.client.setScreen(new AbuseReportReasonScreen(this, this.report.getReason(), reason -> {
             this.report.setReason((AbuseReportReason)((Object)((Object)reason)));
             this.onChange();
@@ -117,7 +117,7 @@ extends Screen {
     private void onChange() {
         this.validationError = this.report.validate();
         this.sendButton.active = this.validationError == null;
-        this.sendButton.setTooltip(Util.map(this.validationError, error -> Tooltip.of(error.message())));
+        this.sendButton.setTooltip(Nullables.map(this.validationError, error -> Tooltip.of(error.message())));
     }
 
     private void send() {
@@ -179,8 +179,8 @@ extends Screen {
         int i = this.width / 2;
         RenderSystem.disableDepthTest();
         this.renderBackground(matrices);
-        ChatReportScreen.drawCenteredText(matrices, this.textRenderer, this.title, i, 10, 0xFFFFFF);
-        ChatReportScreen.drawCenteredText(matrices, this.textRenderer, OBSERVED_WHAT_TEXT, i, this.getSelectionButtonY() - this.textRenderer.fontHeight - 6, 0xFFFFFF);
+        ChatReportScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, i, 10, 0xFFFFFF);
+        ChatReportScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, OBSERVED_WHAT_TEXT, i, this.getSelectionButtonY() - this.textRenderer.fontHeight - 6, 0xFFFFFF);
         if (this.reasonDescription != null) {
             this.reasonDescription.drawWithShadow(matrices, this.getWidgetsLeft(), this.getReasonButtonY() + 20 + 5, this.textRenderer.fontHeight, 0xFFFFFF);
         }

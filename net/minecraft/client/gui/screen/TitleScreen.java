@@ -260,7 +260,7 @@ extends Screen {
             float h = 1.8f - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0f * ((float)Math.PI * 2)) * 0.1f);
             h = h * 100.0f / (float)(this.textRenderer.getWidth(this.splashText) + 32);
             matrices.scale(h, h, h);
-            TitleScreen.drawCenteredText(matrices, this.textRenderer, this.splashText, 0, -8, 0xFFFF00 | i);
+            TitleScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.splashText, 0, -8, 0xFFFF00 | i);
             matrices.pop();
         }
         String string = "Minecraft " + SharedConstants.getGameVersion().getName();
@@ -268,7 +268,7 @@ extends Screen {
         if (MinecraftClient.getModStatus().isModded()) {
             string = string + I18n.translate("menu.modded", new Object[0]);
         }
-        TitleScreen.drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 0xFFFFFF | i);
+        TitleScreen.drawTextWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 0xFFFFFF | i);
         for (Element element : this.children()) {
             if (!(element instanceof ClickableWidget)) continue;
             ((ClickableWidget)element).setAlpha(g);

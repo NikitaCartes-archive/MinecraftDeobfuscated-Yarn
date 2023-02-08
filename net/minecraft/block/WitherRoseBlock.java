@@ -10,7 +10,6 @@ import net.minecraft.block.FlowerBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -52,7 +51,7 @@ extends FlowerBlock {
         if (world.isClient || world.getDifficulty() == Difficulty.PEACEFUL) {
             return;
         }
-        if (entity instanceof LivingEntity && !(livingEntity = (LivingEntity)entity).isInvulnerableTo(DamageSource.WITHER)) {
+        if (entity instanceof LivingEntity && !(livingEntity = (LivingEntity)entity).isInvulnerableTo(world.getDamageSources().wither())) {
             livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40));
         }
     }

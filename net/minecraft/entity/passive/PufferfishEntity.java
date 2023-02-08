@@ -136,7 +136,7 @@ extends FishEntity {
 
     private void sting(MobEntity mob) {
         int i = this.getPuffState();
-        if (mob.damage(DamageSource.mob(this), 1 + i)) {
+        if (mob.damage(this.getDamageSources().mobAttack(this), 1 + i)) {
             mob.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0), this);
             this.playSound(SoundEvents.ENTITY_PUFFER_FISH_STING, 1.0f, 1.0f);
         }
@@ -145,7 +145,7 @@ extends FishEntity {
     @Override
     public void onPlayerCollision(PlayerEntity player) {
         int i = this.getPuffState();
-        if (player instanceof ServerPlayerEntity && i > 0 && player.damage(DamageSource.mob(this), 1 + i)) {
+        if (player instanceof ServerPlayerEntity && i > 0 && player.damage(this.getDamageSources().mobAttack(this), 1 + i)) {
             if (!this.isSilent()) {
                 ((ServerPlayerEntity)player).networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.PUFFERFISH_STING, GameStateChangeS2CPacket.DEMO_OPEN_SCREEN));
             }

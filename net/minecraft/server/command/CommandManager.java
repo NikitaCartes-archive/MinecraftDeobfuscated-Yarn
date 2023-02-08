@@ -43,6 +43,7 @@ import net.minecraft.server.command.AttributeCommand;
 import net.minecraft.server.command.BossBarCommand;
 import net.minecraft.server.command.ClearCommand;
 import net.minecraft.server.command.CloneCommand;
+import net.minecraft.server.command.DamageCommand;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.DatapackCommand;
 import net.minecraft.server.command.DebugCommand;
@@ -142,6 +143,7 @@ public class CommandManager {
         BossBarCommand.register(this.dispatcher);
         ClearCommand.register(this.dispatcher, commandRegistryAccess);
         CloneCommand.register(this.dispatcher, commandRegistryAccess);
+        DamageCommand.register(this.dispatcher, commandRegistryAccess);
         DataCommand.register(this.dispatcher);
         DatapackCommand.register(this.dispatcher);
         DebugCommand.register(this.dispatcher);

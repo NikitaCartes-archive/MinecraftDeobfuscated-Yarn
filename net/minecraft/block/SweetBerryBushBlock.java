@@ -12,7 +12,6 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -89,7 +88,7 @@ implements Fertilizable {
             double d = Math.abs(entity.getX() - entity.lastRenderX);
             double e = Math.abs(entity.getZ() - entity.lastRenderZ);
             if (d >= (double)0.003f || e >= (double)0.003f) {
-                entity.damage(DamageSource.SWEET_BERRY_BUSH, 1.0f);
+                entity.damage(world.getDamageSources().sweetBerryBush(), 1.0f);
             }
         }
     }

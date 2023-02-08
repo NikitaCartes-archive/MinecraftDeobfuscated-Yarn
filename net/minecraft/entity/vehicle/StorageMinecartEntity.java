@@ -101,7 +101,7 @@ implements VehicleInventory {
 
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
-        return this.open(this::emitGameEvent, player);
+        return this.open(player);
     }
 
     @Override

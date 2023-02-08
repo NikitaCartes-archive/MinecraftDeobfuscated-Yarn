@@ -140,7 +140,7 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        RealmsResetWorldScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 7, 0xFFFFFF);
+        RealmsResetWorldScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 7, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 
@@ -153,7 +153,7 @@ extends RealmsScreen {
         RenderSystem.setShaderTexture(0, SLOT_FRAME_TEXTURE);
         DrawableHelper.drawTexture(matrices, x, y + 12, 0.0f, 0.0f, 60, 60, 60, 60);
         int i = hovered ? 0xA0A0A0 : 0xFFFFFF;
-        RealmsResetWorldScreen.drawCenteredText(matrices, this.textRenderer, text, x + 30, y, i);
+        RealmsResetWorldScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, text, x + 30, y, i);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 

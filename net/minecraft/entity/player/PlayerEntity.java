@@ -81,6 +81,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
@@ -119,6 +120,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -570,19 +572,7 @@ extends LivingEntity {
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        if (source == DamageSource.ON_FIRE) {
-            return SoundEvents.ENTITY_PLAYER_HURT_ON_FIRE;
-        }
-        if (source == DamageSource.DROWN) {
-            return SoundEvents.ENTITY_PLAYER_HURT_DROWN;
-        }
-        if (source == DamageSource.SWEET_BERRY_BUSH) {
-            return SoundEvents.ENTITY_PLAYER_HURT_SWEET_BERRY_BUSH;
-        }
-        if (source == DamageSource.FREEZE) {
-            return SoundEvents.ENTITY_PLAYER_HURT_FREEZE;
-        }
-        return SoundEvents.ENTITY_PLAYER_HURT;
+        return source.getType().effects().getSound();
     }
 
     @Override
@@ -732,16 +722,16 @@ extends LivingEntity {
         if (super.isInvulnerableTo(damageSource)) {
             return true;
         }
-        if (damageSource == DamageSource.DROWN) {
+        if (damageSource.isIn(DamageTypeTags.IS_DROWNING)) {
             return !this.world.getGameRules().getBoolean(GameRules.DROWNING_DAMAGE);
         }
-        if (damageSource.isFromFalling()) {
+        if (damageSource.isIn(DamageTypeTags.IS_FALL)) {
             return !this.world.getGameRules().getBoolean(GameRules.FALL_DAMAGE);
         }
-        if (damageSource.isFire()) {
+        if (damageSource.isIn(DamageTypeTags.IS_FIRE)) {
             return !this.world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
         }
-        if (damageSource == DamageSource.FREEZE) {
+        if (damageSource.isIn(DamageTypeTags.IS_FREEZING)) {
             return !this.world.getGameRules().getBoolean(GameRules.FREEZE_DAMAGE);
         }
         return false;
@@ -752,7 +742,7 @@ extends LivingEntity {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (this.abilities.invulnerable && !source.isOutOfWorld()) {
+        if (this.abilities.invulnerable && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return false;
         }
         this.despawnCounter = 0;
@@ -940,6 +930,7 @@ extends LivingEntity {
                 itemStack = itemStack2;
             }
             if ((actionResult2 = itemStack.useOnEntity(this, (LivingEntity)entity, hand)).isAccepted()) {
+                this.world.emitGameEvent(GameEvent.ENTITY_INTERACT, entity.getPos(), GameEvent.Emitter.of(this));
                 if (itemStack.isEmpty() && !this.abilities.creativeMode) {
                     this.setStackInHand(hand, ItemStack.EMPTY);
                 }
@@ -1064,7 +1055,7 @@ extends LivingEntity {
                 }
             }
             Vec3d vec3d = target.getVelocity();
-            boolean bl6 = target.damage(DamageSource.player(this), f);
+            boolean bl6 = target.damage(this.getDamageSources().playerAttack(this), f);
             if (bl6) {
                 if (i > 0) {
                     if (target instanceof LivingEntity) {
@@ -1081,7 +1072,7 @@ extends LivingEntity {
                     for (LivingEntity livingEntity : list) {
                         if (livingEntity == this || livingEntity == target || this.isTeammate(livingEntity) || livingEntity instanceof ArmorStandEntity && ((ArmorStandEntity)livingEntity).isMarker() || !(this.squaredDistanceTo(livingEntity) < 9.0)) continue;
                         livingEntity.takeKnockback(0.4f, MathHelper.sin(this.getYaw() * ((float)Math.PI / 180)), -MathHelper.cos(this.getYaw() * ((float)Math.PI / 180)));
-                        livingEntity.damage(DamageSource.player(this), l);
+                        livingEntity.damage(this.getDamageSources().playerAttack(this), l);
                     }
                     this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, this.getSoundCategory(), 1.0f, 1.0f);
                     this.spawnSweepAttackParticles();

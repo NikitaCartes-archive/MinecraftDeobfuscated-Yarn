@@ -3,52 +3,96 @@
  */
 package net.minecraft.client.gui.widget;
 
+import java.util.OptionalInt;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.AbstractTextWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import net.minecraft.util.CachedMapper;
+import net.minecraft.util.Util;
 
 @Environment(value=EnvType.CLIENT)
 public class MultilineTextWidget
-extends ClickableWidget {
-    private final MultilineText text;
-    private final int fontHeight;
-    private final boolean centered;
+extends AbstractTextWidget {
+    private OptionalInt maxWidth = OptionalInt.empty();
+    private OptionalInt maxRows = OptionalInt.empty();
+    private final CachedMapper<CacheKey, MultilineText> cacheKeyToText = Util.cachedMapper(cacheKey -> {
+        if (cacheKey.maxRows.isPresent()) {
+            return MultilineText.create(textRenderer, (StringVisitable)cacheKey.message, cacheKey.maxWidth, cacheKey.maxRows.getAsInt());
+        }
+        return MultilineText.create(textRenderer, (StringVisitable)cacheKey.message, cacheKey.maxWidth);
+    });
+    private boolean centered = false;
 
-    protected MultilineTextWidget(MultilineText multilineText, TextRenderer textRenderer, Text text, boolean centered) {
-        super(0, 0, multilineText.getMaxWidth(), multilineText.count() * textRenderer.fontHeight, text);
-        this.text = multilineText;
-        this.fontHeight = textRenderer.fontHeight;
-        this.centered = centered;
+    public MultilineTextWidget(Text message, TextRenderer textRenderer) {
+        this(0, 0, message, textRenderer);
+    }
+
+    public MultilineTextWidget(int x, int y, Text message, TextRenderer textRenderer) {
+        super(x, y, 0, 0, message, textRenderer);
         this.active = false;
     }
 
-    public static MultilineTextWidget createCentered(int width, TextRenderer textRenderer, Text text) {
-        MultilineText multilineText = MultilineText.create(textRenderer, (StringVisitable)text, width);
-        return new MultilineTextWidget(multilineText, textRenderer, text, true);
+    @Override
+    public MultilineTextWidget setTextColor(int i) {
+        super.setTextColor(i);
+        return this;
     }
 
-    public static MultilineTextWidget createNonCentered(int width, TextRenderer textRenderer, Text text) {
-        MultilineText multilineText = MultilineText.create(textRenderer, (StringVisitable)text, width);
-        return new MultilineTextWidget(multilineText, textRenderer, text, false);
+    public MultilineTextWidget setMaxWidth(int maxWidth) {
+        this.maxWidth = OptionalInt.of(maxWidth);
+        return this;
+    }
+
+    public MultilineTextWidget setMaxRows(int maxRows) {
+        this.maxRows = OptionalInt.of(maxRows);
+        return this;
+    }
+
+    public MultilineTextWidget setCentered(boolean centered) {
+        this.centered = centered;
+        return this;
     }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) {
+    public int getWidth() {
+        return this.cacheKeyToText.map(this.getCacheKey()).getMaxWidth();
+    }
+
+    @Override
+    public int getHeight() {
+        return this.cacheKeyToText.map(this.getCacheKey()).count() * this.getTextRenderer().fontHeight;
     }
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        MultilineText multilineText = this.cacheKeyToText.map(this.getCacheKey());
+        int i = this.getX();
+        int j = this.getY();
+        int k = this.getTextRenderer().fontHeight;
+        int l = this.getTextColor();
         if (this.centered) {
-            this.text.drawCenterWithShadow(matrices, this.getX() + this.getWidth() / 2, this.getY(), this.fontHeight, 0xFFFFFF);
+            multilineText.drawCenterWithShadow(matrices, i + this.getWidth() / 2, j, k, l);
         } else {
-            this.text.drawWithShadow(matrices, this.getX(), this.getY(), this.fontHeight, 0xFFFFFF);
+            multilineText.drawWithShadow(matrices, i, j, k, l);
         }
+    }
+
+    private CacheKey getCacheKey() {
+        return new CacheKey(this.getMessage(), this.maxWidth.orElse(Integer.MAX_VALUE), this.maxRows);
+    }
+
+    @Override
+    public /* synthetic */ AbstractTextWidget setTextColor(int textColor) {
+        return this.setTextColor(textColor);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    record CacheKey(Text message, int maxWidth, OptionalInt maxRows) {
     }
 }
 

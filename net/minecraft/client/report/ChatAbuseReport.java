@@ -29,7 +29,7 @@ import net.minecraft.network.message.MessageBody;
 import net.minecraft.network.message.MessageLink;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
+import net.minecraft.util.Nullables;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -129,7 +129,7 @@ public class ChatAbuseReport {
         MessageLink messageLink = message.message().link();
         MessageBody messageBody = message.message().signedBody();
         List<ByteBuffer> list = messageBody.lastSeenMessages().entries().stream().map(MessageSignatureData::toByteBuffer).toList();
-        ByteBuffer byteBuffer = Util.map(message.message().signature(), MessageSignatureData::toByteBuffer);
+        ByteBuffer byteBuffer = Nullables.map(message.message().signature(), MessageSignatureData::toByteBuffer);
         return new ReportChatMessage(messageLink.index(), messageLink.sender(), messageLink.sessionId(), messageBody.timestamp(), messageBody.salt(), list, messageBody.content(), byteBuffer, selected);
     }
 

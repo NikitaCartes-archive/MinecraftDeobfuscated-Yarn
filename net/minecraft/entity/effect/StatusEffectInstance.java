@@ -145,8 +145,8 @@ implements Comparable<StatusEffectInstance> {
     }
 
     public int mapDuration(Int2IntFunction mapper) {
-        if (this.isInfinite()) {
-            return -1;
+        if (this.isInfinite() || this.duration == 0) {
+            return this.duration;
         }
         return mapper.applyAsInt(this.duration);
     }

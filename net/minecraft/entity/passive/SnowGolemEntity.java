@@ -100,7 +100,7 @@ RangedAttackMob {
         super.tickMovement();
         if (!this.world.isClient) {
             if (this.world.getBiome(this.getBlockPos()).isIn(BiomeTags.SNOW_GOLEM_MELTS)) {
-                this.damage(DamageSource.ON_FIRE, 1.0f);
+                this.damage(this.getDamageSources().onFire(), 1.0f);
             }
             if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
                 return;

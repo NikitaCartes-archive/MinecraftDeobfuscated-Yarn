@@ -147,7 +147,7 @@ extends ScreenHandler {
                     return ItemStack.EMPTY;
                 }
                 slot2.onQuickTransfer(itemStack2, itemStack);
-            } else if (this.inputSlotIndices.contains(slot) ? !this.insertItem(itemStack2, i, j, false) : (this.isValidIngredient(itemStack2) && slot >= this.getPlayerInventoryStartIndex() && slot < this.getPlayerHotbarEndIndex() ? !this.insertItem(itemStack2, k = this.getSlotFor(itemStack), k + 1, false) : (slot >= this.getPlayerInventoryStartIndex() && slot < this.getPlayerInventoryEndIndex() ? !this.insertItem(itemStack2, this.getPlayerHotbarStartIndex(), this.getPlayerHotbarEndIndex(), false) : slot >= this.getPlayerHotbarStartIndex() && slot < this.getPlayerHotbarEndIndex() && !this.insertItem(itemStack2, this.getPlayerInventoryStartIndex(), this.getPlayerInventoryEndIndex(), false)))) {
+            } else if (this.inputSlotIndices.contains(slot) ? !this.insertItem(itemStack2, i, j, false) : (this.isValidIngredient(itemStack2) && slot >= this.getPlayerInventoryStartIndex() && slot < this.getPlayerHotbarEndIndex() ? !this.insertItem(itemStack2, k = this.getSlotFor(itemStack), this.getResultSlotIndex(), false) : (slot >= this.getPlayerInventoryStartIndex() && slot < this.getPlayerInventoryEndIndex() ? !this.insertItem(itemStack2, this.getPlayerHotbarStartIndex(), this.getPlayerHotbarEndIndex(), false) : slot >= this.getPlayerHotbarStartIndex() && slot < this.getPlayerHotbarEndIndex() && !this.insertItem(itemStack2, this.getPlayerInventoryStartIndex(), this.getPlayerInventoryEndIndex(), false)))) {
                 return ItemStack.EMPTY;
             }
             if (itemStack2.isEmpty()) {

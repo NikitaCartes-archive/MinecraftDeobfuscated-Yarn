@@ -65,7 +65,7 @@ extends ExplosiveProjectileEntity {
         Entity entity2 = this.getOwner();
         if (entity2 instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity2;
-            bl = entity.damage(DamageSource.witherSkull(this, livingEntity), 8.0f);
+            bl = entity.damage(this.getDamageSources().witherSkull(this, livingEntity), 8.0f);
             if (bl) {
                 if (entity.isAlive()) {
                     this.applyDamageEffects(livingEntity, entity);
@@ -74,7 +74,7 @@ extends ExplosiveProjectileEntity {
                 }
             }
         } else {
-            bl = entity.damage(DamageSource.MAGIC, 5.0f);
+            bl = entity.damage(this.getDamageSources().magic(), 5.0f);
         }
         if (bl && entity instanceof LivingEntity) {
             int i = 0;

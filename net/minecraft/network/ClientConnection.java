@@ -298,8 +298,8 @@ extends SimpleChannelInboundHandler<Packet<?>> {
     }
 
     protected void updateStats() {
-        this.averagePacketsSent = MathHelper.lerp(0.75f, this.packetsSentCounter, this.averagePacketsSent);
-        this.averagePacketsReceived = MathHelper.lerp(0.75f, this.packetsReceivedCounter, this.averagePacketsReceived);
+        this.averagePacketsSent = MathHelper.lerp(0.75f, (float)this.packetsSentCounter, this.averagePacketsSent);
+        this.averagePacketsReceived = MathHelper.lerp(0.75f, (float)this.packetsReceivedCounter, this.averagePacketsReceived);
         this.packetsSentCounter = 0;
         this.packetsReceivedCounter = 0;
     }

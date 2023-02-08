@@ -81,12 +81,12 @@ implements Errable {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        RealmsLongRunningMcoTaskScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, RealmsLongRunningMcoTaskScreen.row(3), 0xFFFFFF);
+        RealmsLongRunningMcoTaskScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, RealmsLongRunningMcoTaskScreen.row(3), 0xFFFFFF);
         Text text = this.errorMessage;
         if (text == null) {
-            RealmsLongRunningMcoTaskScreen.drawCenteredText(matrices, this.textRenderer, SYMBOLS[this.animTicks % SYMBOLS.length], this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0x808080);
+            RealmsLongRunningMcoTaskScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, SYMBOLS[this.animTicks % SYMBOLS.length], this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0x808080);
         } else {
-            RealmsLongRunningMcoTaskScreen.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0xFF0000);
+            RealmsLongRunningMcoTaskScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, text, this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0xFF0000);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

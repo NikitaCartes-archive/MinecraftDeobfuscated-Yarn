@@ -129,8 +129,8 @@ implements ClientAdvancementManager.Listener {
         if (advancementTab == null) {
             AdvancementsScreen.fill(matrices, x + 9, y + 18, x + 9 + 234, y + 18 + 113, -16777216);
             int i = x + 9 + 117;
-            AdvancementsScreen.drawCenteredText(matrices, this.textRenderer, EMPTY_TEXT, i, y + 18 + 56 - this.textRenderer.fontHeight / 2, -1);
-            AdvancementsScreen.drawCenteredText(matrices, this.textRenderer, SAD_LABEL_TEXT, i, y + 18 + 113 - this.textRenderer.fontHeight, -1);
+            AdvancementsScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, EMPTY_TEXT, i, y + 18 + 56 - this.textRenderer.fontHeight / 2, -1);
+            AdvancementsScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, SAD_LABEL_TEXT, i, y + 18 + 113 - this.textRenderer.fontHeight, -1);
             return;
         }
         MatrixStack matrixStack = RenderSystem.getModelViewStack();

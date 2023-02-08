@@ -47,7 +47,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Window;
@@ -238,9 +238,13 @@ implements AutoCloseable {
     @Nullable
     private static ShaderProgram renderTypeTextProgram;
     @Nullable
+    private static ShaderProgram renderTypeTextBackgroundProgram;
+    @Nullable
     private static ShaderProgram renderTypeTextIntensityProgram;
     @Nullable
     private static ShaderProgram renderTypeTextSeeThroughProgram;
+    @Nullable
+    private static ShaderProgram renderTypeTextBackgroundSeeThroughProgram;
     @Nullable
     private static ShaderProgram renderTypeTextIntensitySeeThroughProgram;
     @Nullable
@@ -574,11 +578,17 @@ implements AutoCloseable {
             list2.add(Pair.of(new ShaderProgram(factory, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), program -> {
                 renderTypeTextProgram = program;
             }));
+            list2.add(Pair.of(new ShaderProgram(factory, "rendertype_text_background", VertexFormats.POSITION_COLOR_LIGHT), program -> {
+                renderTypeTextBackgroundProgram = program;
+            }));
             list2.add(Pair.of(new ShaderProgram(factory, "rendertype_text_intensity", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), program -> {
                 renderTypeTextIntensityProgram = program;
             }));
             list2.add(Pair.of(new ShaderProgram(factory, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), program -> {
                 renderTypeTextSeeThroughProgram = program;
+            }));
+            list2.add(Pair.of(new ShaderProgram(factory, "rendertype_text_background_see_through", VertexFormats.POSITION_COLOR_LIGHT), program -> {
+                renderTypeTextBackgroundSeeThroughProgram = program;
             }));
             list2.add(Pair.of(new ShaderProgram(factory, "rendertype_text_intensity_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT), program -> {
                 renderTypeTextIntensitySeeThroughProgram = program;
@@ -767,7 +777,8 @@ implements AutoCloseable {
             f = MathHelper.sin(f * f * f * f * (float)Math.PI);
             g = livingEntity.getDamageTiltYaw();
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-g));
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-f * 14.0f));
+            float h = (float)((double)(-f) * 14.0 * this.client.options.getDamageTiltStrength().getValue());
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(h));
             matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
         }
     }
@@ -1097,7 +1108,7 @@ implements AutoCloseable {
         matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0f * MathHelper.cos(f * 8.0f)));
         matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(6.0f * MathHelper.cos(f * 8.0f)));
         VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
-        this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 0xF000F0, OverlayTexture.DEFAULT_UV, matrixStack, immediate, this.client.world, 0);
+        this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformationMode.FIXED, 0xF000F0, OverlayTexture.DEFAULT_UV, matrixStack, immediate, this.client.world, 0);
         matrixStack.pop();
         immediate.draw();
         RenderSystem.enableCull();
@@ -1392,6 +1403,11 @@ implements AutoCloseable {
     }
 
     @Nullable
+    public static ShaderProgram getRenderTypeTextBackgroundProgram() {
+        return renderTypeTextBackgroundProgram;
+    }
+
+    @Nullable
     public static ShaderProgram getRenderTypeTextIntensityProgram() {
         return renderTypeTextIntensityProgram;
     }
@@ -1399,6 +1415,11 @@ implements AutoCloseable {
     @Nullable
     public static ShaderProgram getRenderTypeTextSeeThroughProgram() {
         return renderTypeTextSeeThroughProgram;
+    }
+
+    @Nullable
+    public static ShaderProgram getRenderTypeTextBackgroundSeeThroughProgram() {
+        return renderTypeTextBackgroundSeeThroughProgram;
     }
 
     @Nullable

@@ -6,7 +6,6 @@ package net.minecraft.entity.projectile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -46,7 +45,7 @@ extends AbstractFireballEntity {
         }
         Entity entity = entityHitResult.getEntity();
         Entity entity2 = this.getOwner();
-        entity.damage(DamageSource.fireball(this, entity2), 6.0f);
+        entity.damage(this.getDamageSources().fireball(this, entity2), 6.0f);
         if (entity2 instanceof LivingEntity) {
             this.applyDamageEffects((LivingEntity)entity2, entity);
         }

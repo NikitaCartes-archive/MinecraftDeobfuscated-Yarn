@@ -33,6 +33,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -708,15 +709,7 @@ ItemConvertible {
      * {@return whether this item can be damaged by the given {@link DamageSource source}}
      */
     public boolean damage(DamageSource source) {
-        return !this.fireproof || !source.isFire();
-    }
-
-    /**
-     * {@return the sound for equipping the item, or {@code null} if no sound is played}
-     */
-    @Nullable
-    public SoundEvent getEquipSound() {
-        return null;
+        return !this.fireproof || !source.isIn(DamageTypeTags.IS_FIRE);
     }
 
     /**

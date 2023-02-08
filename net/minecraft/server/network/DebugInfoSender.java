@@ -32,7 +32,7 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.ai.pathing.Path;
-import net.minecraft.entity.damage.EntityDamageSource;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.passive.BeeEntity;
@@ -239,8 +239,8 @@ public class DebugInfoSender {
         if (object instanceof BlockPosLookTarget) {
             return DebugInfoSender.format(world, ((BlockPosLookTarget)object).getBlockPos());
         }
-        if (object instanceof EntityDamageSource) {
-            Entity entity = ((EntityDamageSource)object).getAttacker();
+        if (object instanceof DamageSource) {
+            Entity entity = ((DamageSource)object).getAttacker();
             return entity == null ? object.toString() : DebugInfoSender.format(world, entity);
         }
         if (object instanceof Collection) {

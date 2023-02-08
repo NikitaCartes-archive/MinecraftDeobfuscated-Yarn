@@ -33,7 +33,6 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -53,6 +52,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
@@ -155,7 +155,7 @@ implements VibrationListener.Callback {
 
     @Override
     public boolean isInvulnerableTo(DamageSource damageSource) {
-        if (this.isDiggingOrEmerging() && !damageSource.isOutOfWorld()) {
+        if (this.isDiggingOrEmerging() && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return true;
         }
         return super.isInvulnerableTo(damageSource);
@@ -315,11 +315,11 @@ implements VibrationListener.Callback {
     }
 
     public float getTendrilPitch(float tickDelta) {
-        return MathHelper.lerp(tickDelta, this.lastTendrilPitch, this.tendrilPitch) / 10.0f;
+        return (float)MathHelper.lerp(tickDelta, this.lastTendrilPitch, this.tendrilPitch) / 10.0f;
     }
 
     public float getHeartPitch(float tickDelta) {
-        return MathHelper.lerp(tickDelta, this.lastHeartbeatCooldown, this.heartbeatCooldown) / 10.0f;
+        return (float)MathHelper.lerp(tickDelta, this.lastHeartbeatCooldown, this.heartbeatCooldown) / 10.0f;
     }
 
     private void addDigParticles(AnimationState animationState) {
@@ -520,7 +520,7 @@ implements VibrationListener.Callback {
             this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
             if (this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).isEmpty() && entity instanceof LivingEntity) {
                 LivingEntity livingEntity = (LivingEntity)entity;
-                if (!(source instanceof ProjectileDamageSource) || this.isInRange(livingEntity, 5.0)) {
+                if (!source.isIndirect() || this.isInRange(livingEntity, 5.0)) {
                     this.updateAttackTarget(livingEntity);
                 }
             }

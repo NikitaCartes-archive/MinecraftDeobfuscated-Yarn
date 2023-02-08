@@ -73,6 +73,7 @@ import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.CachedMapper;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeSupplier;
 import net.minecraft.util.crash.CrashException;
@@ -473,34 +474,6 @@ public class Util {
     public static <T> T make(T object, Consumer<T> initializer) {
         initializer.accept(object);
         return object;
-    }
-
-    /**
-     * {@return the {@code value} with {@code mapper} applied if the value is not {@code null},
-     * otherwise {@code null}}
-     * 
-     * <p>This is the nullable equivalent to {@link Optional#map}.
-     */
-    @Nullable
-    public static <T, R> R map(@Nullable T value, Function<T, R> mapper) {
-        if (value == null) {
-            return null;
-        }
-        return mapper.apply(value);
-    }
-
-    /**
-     * {@return the {@code value} with {@code mapper} applied if the value is not {@code null},
-     * otherwise {@code other}}
-     * 
-     * <p>This is the nullable equivalent to {@link Optional#map} chained with
-     * {@link Optional#orElse}.
-     */
-    public static <T, R> R mapOrElse(@Nullable T value, Function<T, R> mapper, R other) {
-        if (value == null) {
-            return other;
-        }
-        return mapper.apply(value);
     }
 
     /**
@@ -921,6 +894,10 @@ public class Util {
 
     public static String replaceInvalidChars(String string, CharPredicate predicate) {
         return string.toLowerCase(Locale.ROOT).chars().mapToObj(charCode -> predicate.test((char)charCode) ? Character.toString((char)charCode) : "_").collect(Collectors.joining());
+    }
+
+    public static <K, V> CachedMapper<K, V> cachedMapper(Function<K, V> mapper) {
+        return new CachedMapper<K, V>(mapper);
     }
 
     public static <T, R> Function<T, R> memoize(final Function<T, R> function) {

@@ -24,6 +24,7 @@ public class RideCommand {
     private static final Dynamic2CommandExceptionType GENERIC_FAILURE_EXCPETION = new Dynamic2CommandExceptionType((rider, vehicle) -> Text.translatable("commands.ride.mount.failure.generic", rider, vehicle));
     private static final SimpleCommandExceptionType CANT_RIDE_PLAYERS_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.ride.mount.failure.cant_ride_players"));
     private static final SimpleCommandExceptionType RIDE_LOOP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.ride.mount.failure.loop"));
+    private static final SimpleCommandExceptionType WRONG_DIMENSION_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.ride.mount.failure.wrong_dimension"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("ride").requires(source -> source.hasPermissionLevel(2))).then(((RequiredArgumentBuilder)CommandManager.argument("target", EntityArgumentType.entity()).then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal("mount").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("vehicle", EntityArgumentType.entity()).executes(context -> RideCommand.executeMount((ServerCommandSource)context.getSource(), EntityArgumentType.getEntity(context, "target"), EntityArgumentType.getEntity(context, "vehicle")))))).then(CommandManager.literal("dismount").executes(context -> RideCommand.executeDismount((ServerCommandSource)context.getSource(), EntityArgumentType.getEntity(context, "target"))))));
@@ -39,6 +40,9 @@ public class RideCommand {
         }
         if (rider.streamSelfAndPassengers().anyMatch(passager -> passager == vehicle)) {
             throw RIDE_LOOP_EXCEPTION.create();
+        }
+        if (rider.getWorld() != vehicle.getWorld()) {
+            throw WRONG_DIMENSION_EXCEPTION.create();
         }
         if (!rider.startRiding(vehicle, true)) {
             throw GENERIC_FAILURE_EXCPETION.create(rider.getDisplayName(), vehicle.getDisplayName());

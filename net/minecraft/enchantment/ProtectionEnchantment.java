@@ -10,6 +10,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.util.math.MathHelper;
 
 public class ProtectionEnchantment
@@ -38,22 +39,22 @@ extends Enchantment {
 
     @Override
     public int getProtectionAmount(int level, DamageSource source) {
-        if (source.isOutOfWorld()) {
+        if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return 0;
         }
         if (this.protectionType == Type.ALL) {
             return level;
         }
-        if (this.protectionType == Type.FIRE && source.isFire()) {
+        if (this.protectionType == Type.FIRE && source.isIn(DamageTypeTags.IS_FIRE)) {
             return level * 2;
         }
-        if (this.protectionType == Type.FALL && source.isFromFalling()) {
+        if (this.protectionType == Type.FALL && source.isIn(DamageTypeTags.IS_FALL)) {
             return level * 3;
         }
-        if (this.protectionType == Type.EXPLOSION && source.isExplosive()) {
+        if (this.protectionType == Type.EXPLOSION && source.isIn(DamageTypeTags.IS_EXPLOSION)) {
             return level * 2;
         }
-        if (this.protectionType == Type.PROJECTILE && source.isProjectile()) {
+        if (this.protectionType == Type.PROJECTILE && source.isIn(DamageTypeTags.IS_PROJECTILE)) {
             return level * 2;
         }
         return 0;

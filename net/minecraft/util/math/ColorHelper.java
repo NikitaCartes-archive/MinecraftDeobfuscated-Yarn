@@ -3,6 +3,8 @@
  */
 package net.minecraft.util.math;
 
+import net.minecraft.util.math.MathHelper;
+
 /**
  * Contains color-related helper methods.
  */
@@ -65,6 +67,14 @@ public class ColorHelper {
 
         public static int mixColor(int first, int second) {
             return Argb.getArgb(Argb.getAlpha(first) * Argb.getAlpha(second) / 255, Argb.getRed(first) * Argb.getRed(second) / 255, Argb.getGreen(first) * Argb.getGreen(second) / 255, Argb.getBlue(first) * Argb.getBlue(second) / 255);
+        }
+
+        public static int lerp(float delta, int start, int end) {
+            int i = MathHelper.lerp(delta, Argb.getAlpha(start), Argb.getAlpha(end));
+            int j = MathHelper.lerp(delta, Argb.getRed(start), Argb.getRed(end));
+            int k = MathHelper.lerp(delta, Argb.getGreen(start), Argb.getGreen(end));
+            int l = MathHelper.lerp(delta, Argb.getBlue(start), Argb.getBlue(end));
+            return Argb.getArgb(i, j, k, l);
         }
     }
 }

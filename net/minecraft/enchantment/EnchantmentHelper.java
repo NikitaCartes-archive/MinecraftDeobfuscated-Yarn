@@ -440,7 +440,7 @@ public class EnchantmentHelper {
         Item item = stack.getItem();
         boolean bl = stack.isOf(Items.BOOK);
         block0: for (Enchantment enchantment : Registries.ENCHANTMENT) {
-            if (enchantment.isTreasure() && !treasureAllowed || !enchantment.isAvailableForRandomSelection() || !enchantment.type.isAcceptableItem(item) && !bl) continue;
+            if (enchantment.isTreasure() && !treasureAllowed || !enchantment.isAvailableForRandomSelection() || !enchantment.target.isAcceptableItem(item) && !bl) continue;
             for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                 if (power < enchantment.getMinPower(i) || power > enchantment.getMaxPower(i)) continue;
                 list.add(new EnchantmentLevelEntry(enchantment, i));

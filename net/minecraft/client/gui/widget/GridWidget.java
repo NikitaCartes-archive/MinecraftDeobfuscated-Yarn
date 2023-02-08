@@ -128,7 +128,7 @@ extends WrapperWidget {
     }
 
     @Override
-    protected void forEachElement(Consumer<Widget> consumer) {
+    public void forEachElement(Consumer<Widget> consumer) {
         this.children.forEach(consumer);
     }
 

@@ -152,8 +152,8 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.downloadTitle, this.width / 2, 20, 0xFFFFFF);
-        RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, 50, 0xFFFFFF);
+        RealmsDownloadLatestWorldScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.downloadTitle, this.width / 2, 20, 0xFFFFFF);
+        RealmsDownloadLatestWorldScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.status, this.width / 2, 50, 0xFFFFFF);
         if (this.showDots) {
             this.drawDots(matrices);
         }
@@ -162,7 +162,7 @@ extends RealmsScreen {
             this.drawDownloadSpeed(matrices);
         }
         if (this.downloadError != null) {
-            RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.downloadError, this.width / 2, 110, 0xFF0000);
+            RealmsDownloadLatestWorldScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.downloadError, this.width / 2, 110, 0xFF0000);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -182,7 +182,7 @@ extends RealmsScreen {
         int j = i + (int)Math.round(200.0 * d);
         RealmsDownloadLatestWorldScreen.fill(matrices, i - 1, 79, j + 1, 175, -2501934);
         RealmsDownloadLatestWorldScreen.fill(matrices, i, 80, j, 95, -8355712);
-        RealmsDownloadLatestWorldScreen.drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
+        RealmsDownloadLatestWorldScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
     }
 
     private void drawDownloadSpeed(MatrixStack matrices) {

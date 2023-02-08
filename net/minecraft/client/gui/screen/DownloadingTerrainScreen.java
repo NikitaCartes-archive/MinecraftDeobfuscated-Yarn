@@ -37,7 +37,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackgroundTexture(matrices);
-        DownloadingTerrainScreen.drawCenteredText(matrices, this.textRenderer, TEXT, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
+        DownloadingTerrainScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, TEXT, this.width / 2, this.height / 2 - 50, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

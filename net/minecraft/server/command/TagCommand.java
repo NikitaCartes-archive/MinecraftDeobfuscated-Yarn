@@ -32,7 +32,7 @@ public class TagCommand {
     private static Collection<String> getTags(Collection<? extends Entity> entities) {
         HashSet<String> set = Sets.newHashSet();
         for (Entity entity : entities) {
-            set.addAll(entity.getScoreboardTags());
+            set.addAll(entity.getCommandTags());
         }
         return set;
     }
@@ -40,7 +40,7 @@ public class TagCommand {
     private static int executeAdd(ServerCommandSource source, Collection<? extends Entity> targets, String tag) throws CommandSyntaxException {
         int i = 0;
         for (Entity entity : targets) {
-            if (!entity.addScoreboardTag(tag)) continue;
+            if (!entity.addCommandTag(tag)) continue;
             ++i;
         }
         if (i == 0) {
@@ -74,7 +74,7 @@ public class TagCommand {
     private static int executeList(ServerCommandSource source, Collection<? extends Entity> targets) {
         HashSet<String> set = Sets.newHashSet();
         for (Entity entity : targets) {
-            set.addAll(entity.getScoreboardTags());
+            set.addAll(entity.getCommandTags());
         }
         if (targets.size() == 1) {
             Entity entity2 = targets.iterator().next();

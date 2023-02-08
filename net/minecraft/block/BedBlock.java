@@ -23,7 +23,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -97,7 +96,7 @@ implements BlockEntityProvider {
                 world.removeBlock(blockPos, false);
             }
             Vec3d vec3d = pos.toCenterPos();
-            world.createExplosion(null, DamageSource.badRespawnPoint(vec3d), null, vec3d, 5.0f, true, World.ExplosionSourceType.BLOCK);
+            world.createExplosion(null, world.getDamageSources().badRespawnPoint(vec3d), null, vec3d, 5.0f, true, World.ExplosionSourceType.BLOCK);
             return ActionResult.SUCCESS;
         }
         if (state.get(OCCUPIED).booleanValue()) {

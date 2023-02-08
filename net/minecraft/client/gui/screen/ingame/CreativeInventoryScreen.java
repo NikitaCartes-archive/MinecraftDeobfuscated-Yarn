@@ -41,6 +41,7 @@ import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -93,15 +94,15 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         this.backgroundHeight = 136;
         this.backgroundWidth = 195;
         this.operatorTabEnabled = operatorTabEnabled;
-        ItemGroups.updateDisplayParameters(enabledFeatures, this.shouldShowOperatorTab(player));
+        ItemGroups.updateDisplayContext(enabledFeatures, this.shouldShowOperatorTab(player), player.world.getRegistryManager());
     }
 
     private boolean shouldShowOperatorTab(PlayerEntity player) {
         return player.isCreativeLevelTwoOp() && this.operatorTabEnabled;
     }
 
-    private void updateDisplayParameters(FeatureSet enabledFeatures, boolean showOperatorTab) {
-        if (ItemGroups.updateDisplayParameters(enabledFeatures, showOperatorTab)) {
+    private void updateDisplayParameters(FeatureSet enabledFeatures, boolean showOperatorTab, RegistryWrapper.WrapperLookup wrapperLookup) {
+        if (ItemGroups.updateDisplayContext(enabledFeatures, showOperatorTab, wrapperLookup)) {
             for (ItemGroup itemGroup : ItemGroups.getGroups()) {
                 Collection<ItemStack> collection = itemGroup.getDisplayStacks();
                 if (itemGroup != selectedTab) continue;
@@ -133,7 +134,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             return;
         }
         if (this.client.player != null) {
-            this.updateDisplayParameters(this.client.player.networkHandler.getEnabledFeatures(), this.shouldShowOperatorTab(this.client.player));
+            this.updateDisplayParameters(this.client.player.networkHandler.getEnabledFeatures(), this.shouldShowOperatorTab(this.client.player), this.client.player.world.getRegistryManager());
         }
         if (!this.client.interactionManager.hasCreativeInventory()) {
             this.client.setScreen(new InventoryScreen(this.client.player));
@@ -851,6 +852,11 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         @Override
         public void setStack(ItemStack stack) {
             this.slot.setStack(stack);
+        }
+
+        @Override
+        public void setStackNoCallbacks(ItemStack stack) {
+            this.slot.setStackNoCallbacks(stack);
         }
 
         @Override

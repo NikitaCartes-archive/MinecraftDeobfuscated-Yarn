@@ -41,7 +41,7 @@ extends AbstractFireballEntity {
         Entity entity2 = this.getOwner();
         int i = entity.getFireTicks();
         entity.setOnFireFor(5);
-        if (!entity.damage(DamageSource.fireball(this, entity2), 5.0f)) {
+        if (!entity.damage(this.getDamageSources().fireball(this, entity2), 5.0f)) {
             entity.setFireTicks(i);
         } else if (entity2 instanceof LivingEntity) {
             this.applyDamageEffects((LivingEntity)entity2, entity);

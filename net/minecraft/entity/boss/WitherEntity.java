@@ -44,6 +44,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -401,10 +402,10 @@ RangedAttackMob {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (source == DamageSource.DROWN || source.getAttacker() instanceof WitherEntity) {
+        if (source.isIn(DamageTypeTags.WITHER_IMMUNE_TO) || source.getAttacker() instanceof WitherEntity) {
             return false;
         }
-        if (this.getInvulnerableTimer() > 0 && source != DamageSource.OUT_OF_WORLD) {
+        if (this.getInvulnerableTimer() > 0 && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return false;
         }
         if (this.shouldRenderOverlay() && (entity = source.getSource()) instanceof PersistentProjectileEntity) {

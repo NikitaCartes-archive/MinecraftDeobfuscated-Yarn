@@ -3,7 +3,6 @@
  */
 package net.minecraft.entity.passive;
 
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import net.minecraft.advancement.criterion.Criteria;
@@ -23,6 +22,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.AmbientStandGoal;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -71,6 +71,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.world.EntityView;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -81,6 +82,7 @@ public abstract class AbstractHorseEntity
 extends AnimalEntity
 implements InventoryChangedListener,
 RideableInventory,
+Tameable,
 JumpingMount,
 Saddleable {
     public static final int field_30413 = 400;
@@ -90,7 +92,6 @@ Saddleable {
     private static final TargetPredicate PARENT_HORSE_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).ignoreVisibility().setPredicate(IS_BRED_HORSE);
     private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
     private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(AbstractHorseEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(AbstractHorseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private static final int TAMED_FLAG = 2;
     private static final int SADDLED_FLAG = 4;
     private static final int BRED_FLAG = 8;
@@ -118,6 +119,8 @@ Saddleable {
     private float lastEatingAnimationProgress;
     protected boolean playExtraHorseSounds = true;
     protected int soundTicks;
+    @Nullable
+    private UUID ownerUuid;
 
     protected AbstractHorseEntity(EntityType<? extends AbstractHorseEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
@@ -149,7 +152,6 @@ Saddleable {
     protected void initDataTracker() {
         super.initDataTracker();
         this.dataTracker.startTracking(HORSE_FLAGS, (byte)0);
-        this.dataTracker.startTracking(OWNER_UUID, Optional.empty());
     }
 
     protected boolean getHorseFlag(int bitmask) {
@@ -169,13 +171,14 @@ Saddleable {
         return this.getHorseFlag(TAMED_FLAG);
     }
 
+    @Override
     @Nullable
     public UUID getOwnerUuid() {
-        return this.dataTracker.get(OWNER_UUID).orElse(null);
+        return this.ownerUuid;
     }
 
-    public void setOwnerUuid(@Nullable UUID uuid) {
-        this.dataTracker.set(OWNER_UUID, Optional.ofNullable(uuid));
+    public void setOwnerUuid(@Nullable UUID ownerUuid) {
+        this.ownerUuid = ownerUuid;
     }
 
     public boolean isInAir() {
@@ -1074,6 +1077,11 @@ Saddleable {
     @Nullable
     public /* synthetic */ Entity getPrimaryPassenger() {
         return this.getPrimaryPassenger();
+    }
+
+    @Override
+    public /* synthetic */ EntityView method_48926() {
+        return super.getWorld();
     }
 }
 

@@ -216,7 +216,7 @@ extends DrawableHelper {
             } else if (this.client.interactionManager.hasExperienceBar()) {
                 this.renderExperienceBar(matrices, i);
             }
-            if (this.client.options.heldItemTooltips && this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
+            if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
                 this.renderHeldItemTooltip(matrices);
             } else if (this.client.player.isSpectator()) {
                 this.spectatorHud.render(matrices);

@@ -98,7 +98,7 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.worldSelectionList.render(matrices, mouseX, mouseY, delta);
-        RealmsSelectFileToUploadScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 13, 0xFFFFFF);
+        RealmsSelectFileToUploadScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 13, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

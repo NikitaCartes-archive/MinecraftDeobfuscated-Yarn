@@ -24,6 +24,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -50,6 +51,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.joml.AxisAngle4f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
@@ -74,7 +78,23 @@ public class Codecs {
             return DataResult.error(illegalArgumentException.getMessage());
         }
     });
-    public static final Codec<Vector3f> VECTOR_3F = Codec.FLOAT.listOf().comapFlatMap(list2 -> Util.toArray(list2, 3).map(list -> new Vector3f(((Float)list.get(0)).floatValue(), ((Float)list.get(1)).floatValue(), ((Float)list.get(2)).floatValue())), vec3f -> ImmutableList.of(Float.valueOf(vec3f.x()), Float.valueOf(vec3f.y()), Float.valueOf(vec3f.z())));
+    public static final Codec<Vector3f> VECTOR_3F = Codec.FLOAT.listOf().comapFlatMap(list2 -> Util.toArray(list2, 3).map(list -> new Vector3f(((Float)list.get(0)).floatValue(), ((Float)list.get(1)).floatValue(), ((Float)list.get(2)).floatValue())), vec3f -> List.of(Float.valueOf(vec3f.x()), Float.valueOf(vec3f.y()), Float.valueOf(vec3f.z())));
+    public static final Codec<Quaternionf> QUATERNIONF = Codec.FLOAT.listOf().comapFlatMap(list2 -> Util.toArray(list2, 4).map(list -> new Quaternionf(((Float)list.get(0)).floatValue(), ((Float)list.get(1)).floatValue(), ((Float)list.get(2)).floatValue(), ((Float)list.get(3)).floatValue())), quaternion -> List.of(Float.valueOf(quaternion.x), Float.valueOf(quaternion.y), Float.valueOf(quaternion.z), Float.valueOf(quaternion.w)));
+    public static final Codec<AxisAngle4f> AXIS_ANGLE4F = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("angle")).forGetter(axisAngle -> Float.valueOf(axisAngle.angle)), ((MapCodec)VECTOR_3F.fieldOf("axis")).forGetter(axisAngle -> new Vector3f(axisAngle.x, axisAngle.y, axisAngle.z))).apply((Applicative<AxisAngle4f, ?>)instance, AxisAngle4f::new));
+    public static final Codec<Quaternionf> ROTATION = Codec.either(QUATERNIONF, AXIS_ANGLE4F.xmap(Quaternionf::new, AxisAngle4f::new)).xmap(either -> either.map(quaternion -> quaternion, quaternion -> quaternion), com.mojang.datafixers.util.Either::left);
+    public static Codec<Matrix4f> MATRIX4F = Codec.FLOAT.listOf().comapFlatMap(list2 -> Util.toArray(list2, 16).map(list -> {
+        Matrix4f matrix4f = new Matrix4f();
+        for (int i = 0; i < list.size(); ++i) {
+            matrix4f.setRowColumn(i >> 2, i & 3, ((Float)list.get(i)).floatValue());
+        }
+        return matrix4f.determineProperties();
+    }), matrix4f -> {
+        FloatArrayList floatList = new FloatArrayList(16);
+        for (int i = 0; i < 16; ++i) {
+            floatList.add(matrix4f.getRowColumn(i >> 2, i & 3));
+        }
+        return floatList;
+    });
     public static final Codec<Integer> NONNEGATIVE_INT = Codecs.rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
     public static final Codec<Integer> POSITIVE_INT = Codecs.rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
     public static final Codec<Float> POSITIVE_FLOAT = Codecs.rangedFloat(0.0f, Float.MAX_VALUE, v -> "Value must be positive: " + v);
@@ -250,6 +270,10 @@ public class Codecs {
         });
     }
 
+    public static Codec<Integer> rangedInt(int min, int max) {
+        return Codecs.rangedInt(min, max, value -> "Value must be within range [" + min + ";" + max + "]: " + value);
+    }
+
     private static Codec<Float> rangedFloat(float min, float max, Function<Float, String> messageFactory) {
         return Codecs.validate(Codec.FLOAT, value -> {
             if (value.compareTo(Float.valueOf(min)) > 0 && value.compareTo(Float.valueOf(max)) <= 0) {
@@ -264,11 +288,11 @@ public class Codecs {
     }
 
     public static <T> Codec<RegistryEntryList<T>> nonEmptyEntryList(Codec<RegistryEntryList<T>> originalCodec) {
-        return Codecs.validate(originalCodec, registryEntryList -> {
-            if (registryEntryList.getStorage().right().filter(List::isEmpty).isPresent()) {
+        return Codecs.validate(originalCodec, entryList -> {
+            if (entryList.getStorage().right().filter(List::isEmpty).isPresent()) {
                 return DataResult.error("List must have contents");
             }
-            return DataResult.success(registryEntryList);
+            return DataResult.success(entryList);
         });
     }
 

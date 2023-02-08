@@ -58,7 +58,6 @@ public class HungerConstants {
     public static final float field_30722 = 0.2f;
     public static final float field_30723 = 0.005f;
     public static final float field_30724 = 0.1f;
-    public static final float field_30725 = 0.1f;
     public static final float field_30726 = 0.0f;
     public static final float field_30727 = 0.0f;
     public static final float field_30728 = 0.1f;

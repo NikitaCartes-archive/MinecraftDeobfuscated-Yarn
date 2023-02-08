@@ -111,7 +111,7 @@ implements AutoCloseable {
         if (clientWorld == null) {
             return;
         }
-        float f = clientWorld.getStarBrightness(1.0f);
+        float f = clientWorld.getSkyBrightness(1.0f);
         float g = clientWorld.getLightningTicksLeft() > 0 ? 1.0f : f * 0.95f + 0.05f;
         float h = this.client.options.getDarknessEffectScale().getValue().floatValue();
         float i = this.getDarknessFactor(delta) * h;

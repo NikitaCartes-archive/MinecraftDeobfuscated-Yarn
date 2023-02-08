@@ -226,6 +226,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.ModStatus;
+import net.minecraft.util.Nullables;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.SystemDetails;
 import net.minecraft.util.TickDurationMonitor;
@@ -2187,7 +2188,7 @@ implements WindowEventHandler {
 
     @Nullable
     public ServerInfo getCurrentServerEntry() {
-        return Util.map(this.getNetworkHandler(), ClientPlayNetworkHandler::getServerInfo);
+        return Nullables.map(this.getNetworkHandler(), ClientPlayNetworkHandler::getServerInfo);
     }
 
     public boolean isInSingleplayer() {

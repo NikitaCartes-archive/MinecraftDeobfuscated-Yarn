@@ -1171,7 +1171,7 @@ implements VariantHolder<Type> {
         }
 
         private void pickGlowBerries(BlockState state) {
-            CaveVines.pickBerries(state, FoxEntity.this.world, this.targetPos);
+            CaveVines.pickBerries(FoxEntity.this, state, FoxEntity.this.world, this.targetPos);
         }
 
         private void pickSweetBerries(BlockState state) {

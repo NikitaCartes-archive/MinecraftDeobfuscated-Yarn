@@ -114,9 +114,9 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        OpenToLanScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 0xFFFFFF);
-        OpenToLanScreen.drawCenteredText(matrices, this.textRenderer, OTHER_PLAYERS_TEXT, this.width / 2, 82, 0xFFFFFF);
-        OpenToLanScreen.drawCenteredText(matrices, this.textRenderer, PORT_TEXT, this.width / 2, 142, 0xFFFFFF);
+        OpenToLanScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 50, 0xFFFFFF);
+        OpenToLanScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, OTHER_PLAYERS_TEXT, this.width / 2, 82, 0xFFFFFF);
+        OpenToLanScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, PORT_TEXT, this.width / 2, 142, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

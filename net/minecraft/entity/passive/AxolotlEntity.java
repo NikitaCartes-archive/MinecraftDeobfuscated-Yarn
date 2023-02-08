@@ -206,7 +206,7 @@ Bucketable {
             this.setAir(air - 1);
             if (this.getAir() == -20) {
                 this.setAir(0);
-                this.damage(DamageSource.DRYOUT, 2.0f);
+                this.damage(this.getDamageSources().dryOut(), 2.0f);
             }
         } else {
             this.setAir(this.getMaxAir());
@@ -327,7 +327,7 @@ Bucketable {
 
     @Override
     public boolean tryAttack(Entity target) {
-        boolean bl = target.damage(DamageSource.mob(this), (int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+        boolean bl = target.damage(this.getDamageSources().mobAttack(this), (int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
         if (bl) {
             this.applyDamageEffects(this, target);
             this.playSound(SoundEvents.ENTITY_AXOLOTL_ATTACK, 1.0f, 1.0f);

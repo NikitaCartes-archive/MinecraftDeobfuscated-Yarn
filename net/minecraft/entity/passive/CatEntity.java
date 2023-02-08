@@ -277,7 +277,7 @@ implements VariantHolder<CatVariant> {
 
     @Override
     public boolean tryAttack(Entity target) {
-        return target.damage(DamageSource.mob(this), this.getAttackDamage());
+        return target.damage(this.getDamageSources().mobAttack(this), this.getAttackDamage());
     }
 
     @Override

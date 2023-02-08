@@ -52,7 +52,7 @@ extends Block {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        FarmlandBlock.setToDirt(state, world, pos);
+        FarmlandBlock.setToDirt(null, state, world, pos);
     }
 
     @Override

@@ -42,7 +42,7 @@ extends VillagerWorkTask {
     private void compostSeeds(ServerWorld world, VillagerEntity entity, GlobalPos pos, BlockState composterState) {
         BlockPos blockPos = pos.getPos();
         if (composterState.get(ComposterBlock.LEVEL) == 8) {
-            composterState = ComposterBlock.emptyFullComposter(composterState, world, blockPos);
+            composterState = ComposterBlock.emptyFullComposter(entity, composterState, world, blockPos);
         }
         int i = 20;
         int j = 10;
@@ -61,7 +61,7 @@ extends VillagerWorkTask {
             if (p <= 0) continue;
             i -= p;
             for (int q = 0; q < p; ++q) {
-                if ((blockState = ComposterBlock.compost(blockState, world, itemStack, blockPos)).get(ComposterBlock.LEVEL) != 7) continue;
+                if ((blockState = ComposterBlock.compost(entity, blockState, world, itemStack, blockPos)).get(ComposterBlock.LEVEL) != 7) continue;
                 this.syncComposterEvent(world, composterState, blockPos, blockState);
                 return;
             }

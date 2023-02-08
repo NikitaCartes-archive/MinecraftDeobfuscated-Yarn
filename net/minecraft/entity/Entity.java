@@ -45,6 +45,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.TrackedPosition;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -70,6 +71,7 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
@@ -243,10 +245,10 @@ CommandOutput {
      */
     public static final int DEFAULT_PORTAL_COOLDOWN = 300;
     /**
-     * @see Entity#addScoreboardTag
+     * @see Entity#addCommandTag
      * @see Entity#readNbt
      */
-    public static final int MAX_SCOREBOARD_TAGS = 1024;
+    public static final int MAX_COMMAND_TAGS = 1024;
     /**
      * @see Entity#getVelocityAffectingPos
      */
@@ -371,7 +373,7 @@ CommandOutput {
     protected UUID uuid = MathHelper.randomUuid(this.random);
     protected String uuidString = this.uuid.toString();
     private boolean glowing;
-    private final Set<String> scoreboardTags = Sets.newHashSet();
+    private final Set<String> commandTags = Sets.newHashSet();
     private final double[] pistonMovementDelta = new double[]{0.0, 0.0, 0.0};
     private long pistonMovementTick;
     private EntityDimensions dimensions;
@@ -479,41 +481,41 @@ CommandOutput {
     }
 
     /**
-     * {@return all scoreboard tags the entity belongs to}
+     * {@return all command tags the entity belongs to}
      * 
      * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
      * /tag command}, and is different from entity type tags defined in data packs.
      */
-    public Set<String> getScoreboardTags() {
-        return this.scoreboardTags;
+    public Set<String> getCommandTags() {
+        return this.commandTags;
     }
 
     /**
-     * Adds a scoreboard tag to this entity. An entity can have up to {@code 1024}
-     * scoreboard tags.
+     * Adds a command tag to this entity. An entity can have up to {@code 1024}
+     * command tags.
      * 
-     * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
+     * <p>Command tags are set using the {@linkplain net.minecraft.server.command.TagCommand
      * /tag command}, and is different from entity type tags defined in data packs.
      * 
-     * @return whether the scoreboard tag was successfully added
+     * @return whether the command tag was successfully added
      */
-    public boolean addScoreboardTag(String tag) {
-        if (this.scoreboardTags.size() >= 1024) {
+    public boolean addCommandTag(String tag) {
+        if (this.commandTags.size() >= 1024) {
             return false;
         }
-        return this.scoreboardTags.add(tag);
+        return this.commandTags.add(tag);
     }
 
     /**
-     * Removes a scoreboard tag from this entity.
+     * Removes a command tag from this entity.
      * 
-     * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
+     * <p>Command tags are set using the {@linkplain net.minecraft.server.command.TagCommand
      * /tag command}, and is different from entity type tags defined in data packs.
      * 
-     * @return whether the scoreboard tag was successfully removed
+     * @return whether the command tag was successfully removed
      */
     public boolean removeScoreboardTag(String tag) {
-        return this.scoreboardTags.remove(tag);
+        return this.commandTags.remove(tag);
     }
 
     /**
@@ -711,7 +713,7 @@ CommandOutput {
                 }
             } else {
                 if (this.fireTicks % 20 == 0 && !this.isInLava()) {
-                    this.damage(DamageSource.ON_FIRE, 1.0f);
+                    this.damage(this.getDamageSources().onFire(), 1.0f);
                 }
                 this.setFireTicks(this.fireTicks - 1);
             }
@@ -785,7 +787,7 @@ CommandOutput {
             return;
         }
         this.setOnFireFor(15);
-        if (this.damage(DamageSource.LAVA, 4.0f)) {
+        if (this.damage(this.getDamageSources().lava(), 4.0f)) {
             this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4f, 2.0f + this.random.nextFloat() * 0.4f);
         }
     }
@@ -835,7 +837,7 @@ CommandOutput {
     /**
      * Called when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomY() minimum Y position}.
      * 
-     * <p>{@linkplain LivingEntity Living entities} use this to deal {@linkplain net.minecraft.entity.damage.DamageSource#OUT_OF_WORLD out of world damage}.
+     * <p>{@linkplain LivingEntity Living entities} use this to deal {@linkplain net.minecraft.entity.damage.DamageTypes#OUT_OF_WORLD out of world damage}.
      */
     protected void tickInVoid() {
         this.discard();
@@ -1406,7 +1408,8 @@ CommandOutput {
     }
 
     /**
-     * {@return whether the entity is immune to {@linkplain DamageSource#setFire fire damage}}
+     * {@return whether the entity is immune to {@linkplain
+     * net.minecraft.registry.tag.DamageTypeTags#IS_FIRE fire damage}}
      * 
      * @see EntityType.Builder#makeFireImmune
      */
@@ -2022,9 +2025,9 @@ CommandOutput {
             if (this.hasVisualFire) {
                 nbt.putBoolean("HasVisualFire", this.hasVisualFire);
             }
-            if (!this.scoreboardTags.isEmpty()) {
+            if (!this.commandTags.isEmpty()) {
                 nbtList = new NbtList();
-                for (String string : this.scoreboardTags) {
+                for (String string : this.commandTags) {
                     nbtList.add(NbtString.of(string));
                 }
                 nbt.put("Tags", nbtList);
@@ -2101,11 +2104,11 @@ CommandOutput {
             this.setFrozenTicks(nbt.getInt("TicksFrozen"));
             this.hasVisualFire = nbt.getBoolean("HasVisualFire");
             if (nbt.contains("Tags", NbtElement.LIST_TYPE)) {
-                this.scoreboardTags.clear();
+                this.commandTags.clear();
                 NbtList nbtList4 = nbt.getList("Tags", NbtElement.STRING_TYPE);
                 int i = Math.min(nbtList4.size(), 1024);
                 for (int j = 0; j < i; ++j) {
-                    this.scoreboardTags.add(nbtList4.getString(j));
+                    this.commandTags.add(nbtList4.getString(j));
                 }
             }
             this.readCustomDataFromNbt(nbt);
@@ -2390,6 +2393,9 @@ CommandOutput {
         if (entity == this.vehicle) {
             return false;
         }
+        if (!entity.couldAcceptPassenger()) {
+            return false;
+        }
         Entity entity2 = entity;
         while (entity2.vehicle != null) {
             if (entity2.vehicle == this) {
@@ -2405,10 +2411,7 @@ CommandOutput {
         }
         this.setPose(EntityPose.STANDING);
         this.vehicle = entity;
-        if (!this.vehicle.addPassenger(this)) {
-            this.vehicle = null;
-            return false;
-        }
+        this.vehicle.addPassenger(this);
         entity.streamIntoPassengers().filter(passenger -> passenger instanceof ServerPlayerEntity).forEach(player -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)player));
         return true;
     }
@@ -2491,7 +2494,7 @@ CommandOutput {
      * 
      * @throws IllegalStateException when the method is called directly
      */
-    protected boolean addPassenger(Entity passenger) {
+    protected void addPassenger(Entity passenger) {
         if (passenger.getVehicle() != this) {
             throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
         }
@@ -2506,7 +2509,7 @@ CommandOutput {
             }
             this.passengerList = ImmutableList.copyOf(list);
         }
-        return true;
+        this.emitGameEvent(GameEvent.ENTITY_MOUNT, passenger);
     }
 
     /**
@@ -2523,6 +2526,7 @@ CommandOutput {
         }
         this.passengerList = this.passengerList.size() == 1 && this.passengerList.get(0) == passenger ? ImmutableList.of() : this.passengerList.stream().filter(entity -> entity != passenger).collect(ImmutableList.toImmutableList());
         passenger.ridingCooldown = 60;
+        this.emitGameEvent(GameEvent.ENTITY_DISMOUNT, passenger);
     }
 
     /**
@@ -2542,6 +2546,13 @@ CommandOutput {
      */
     protected boolean canAddPassenger(Entity passenger) {
         return this.passengerList.isEmpty();
+    }
+
+    /**
+     * {@return {@code true} if this entity supports passengers in general}
+     */
+    protected boolean couldAcceptPassenger() {
+        return true;
     }
 
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
@@ -2649,6 +2660,9 @@ CommandOutput {
 
     public void setVelocityClient(double x, double y, double z) {
         this.setVelocity(x, y, z);
+    }
+
+    public void onDamaged(DamageSource damageSource) {
     }
 
     /**
@@ -3214,7 +3228,7 @@ CommandOutput {
         if (this.fireTicks == 0) {
             this.setOnFireFor(8);
         }
-        this.damage(DamageSource.LIGHTNING_BOLT, 5.0f);
+        this.damage(this.getDamageSources().lightningBolt(), 5.0f);
     }
 
     /**
@@ -3434,17 +3448,19 @@ CommandOutput {
      * {@code super.isInvulnerableTo()} should be called in this case.
      * 
      * @implNote Entity is invulnerable to all damages if it is {@linkplain #isRemoved
-     * removed}, and is invulnerable to all damages except {@link DamageSource#OUT_OF_WORLD}
+     * removed}, and is invulnerable to all damages except {@link
+     * net.minecraft.entity.damage.DamageTypes#OUT_OF_WORLD}
      * or damages from creative mode players if the entity is {@linkplain #isInvulnerable
      * invulnerable}. This also checks {@link #isFireImmune}.
      * 
-     * @see DamageSource
+     * @see net.minecraft.entity.damage.DamageSources
+     * @see net.minecraft.registry.tag.DamageTypeTags
      * @see #isFireImmune
      * @see #damage
      * @see #isInvulnerable
      */
     public boolean isInvulnerableTo(DamageSource damageSource) {
-        return this.isRemoved() || this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isSourceCreativePlayer() || damageSource.isFire() && this.isFireImmune();
+        return this.isRemoved() || this.invulnerable && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !damageSource.isSourceCreativePlayer() || damageSource.isIn(DamageTypeTags.IS_FIRE) && this.isFireImmune();
     }
 
     /**
@@ -3453,7 +3469,8 @@ CommandOutput {
      * <p>This is saved on the {@code Invulnerable} NBT key.
      * 
      * @implNote Invulnerable entities are immune from all damages except {@link
-     * DamageSource#OUT_OF_WORLD} and damages by creative mode players by default.
+     * net.minecraft.entity.damage.DamageTypes#OUT_OF_WORLD}
+     * and damages by creative mode players by default.
      * 
      * @see #isInvulnerableTo
      * @see #setInvulnerable
@@ -3468,7 +3485,8 @@ CommandOutput {
      * <p>This is saved on the {@code Invulnerable} NBT key.
      * 
      * @implNote Invulnerable entities are immune from all damages except {@link
-     * DamageSource#OUT_OF_WORLD} and damages by creative mode players by default.
+     * net.minecraft.entity.damage.DamageTypes#OUT_OF_WORLD}
+     * and damages by creative mode players by default.
      * 
      * @see #isInvulnerableTo
      * @see #isInvulnerable
@@ -3918,6 +3936,9 @@ CommandOutput {
         return this.isCustomNameVisible();
     }
 
+    public void onDataTrackerUpdate(List<DataTracker.SerializedEntry<?>> dataEntries) {
+    }
+
     /**
      * Called on the client when the tracked data is set.
      * 
@@ -4365,7 +4386,14 @@ CommandOutput {
      * @see #hasPlayerRider
      */
     public boolean hasPassengerDeep(Entity passenger) {
-        return this.streamIntoPassengers().anyMatch(entity -> entity == passenger);
+        if (!passenger.hasVehicle()) {
+            return false;
+        }
+        Entity entity = passenger.getVehicle();
+        if (entity == this) {
+            return true;
+        }
+        return this.hasPassengerDeep(entity);
     }
 
     /**
@@ -4988,6 +5016,10 @@ CommandOutput {
 
     public World getWorld() {
         return this.world;
+    }
+
+    public DamageSources getDamageSources() {
+        return this.world.getDamageSources();
     }
 
     public static enum RemovalReason {

@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.logging.LogUtils;
@@ -15,6 +16,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.ParseException;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -29,6 +31,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.BooleanSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
@@ -134,6 +137,7 @@ import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.listener.ClientPlayPacketListener;
+import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
 import net.minecraft.network.message.ArgumentSignatureDataMap;
 import net.minecraft.network.message.LastSeenMessagesCollector;
@@ -188,6 +192,7 @@ import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -302,6 +307,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -339,6 +345,7 @@ ClientPlayPacketListener {
     private static final Text CHAT_VALIDATION_FAILED_TEXT = Text.translatable("multiplayer.disconnect.chat_validation_failed");
     private static final int ACKNOWLEDGMENT_BATCH_SIZE = 64;
     private final ClientConnection connection;
+    private final List<QueuedPacket> queuedPackets = new ArrayList<QueuedPacket>();
     @Nullable
     private final ServerInfo serverInfo;
     private final GameProfile profile;
@@ -958,6 +965,16 @@ ClientPlayPacketListener {
                 entity.handleStatus(packet.getStatus());
             }
         }
+    }
+
+    @Override
+    public void onEntityDamage(EntityDamageS2CPacket packet) {
+        NetworkThreadUtils.forceMainThread(packet, this, this.client);
+        Entity entity = this.world.getEntityById(packet.entityId());
+        if (entity == null) {
+            return;
+        }
+        entity.onDamaged(packet.createDamageSource(this.world));
     }
 
     @Override
@@ -1643,7 +1660,29 @@ ClientPlayPacketListener {
 
     @Override
     public void onKeepAlive(KeepAliveS2CPacket packet) {
-        this.sendPacket(new KeepAliveC2SPacket(packet.getId()));
+        this.sendPacket(new KeepAliveC2SPacket(packet.getId()), () -> !RenderSystem.isFrozenAtPollEvents(), Duration.ofMinutes(1L));
+    }
+
+    private void sendPacket(Packet<ServerPlayPacketListener> packet, BooleanSupplier sendCondition, Duration expirationTime) {
+        if (sendCondition.getAsBoolean()) {
+            this.sendPacket(packet);
+        } else {
+            this.queuedPackets.add(new QueuedPacket(packet, sendCondition, Util.getMeasuringTimeMs() + expirationTime.toMillis()));
+        }
+    }
+
+    private void tickQueuedPackets() {
+        Iterator<QueuedPacket> iterator = this.queuedPackets.iterator();
+        while (iterator.hasNext()) {
+            QueuedPacket queuedPacket = iterator.next();
+            if (queuedPacket.sendCondition().getAsBoolean()) {
+                this.sendPacket(queuedPacket.packet);
+                iterator.remove();
+                continue;
+            }
+            if (queuedPacket.expirationTime() > Util.getMeasuringTimeMs()) continue;
+            iterator.remove();
+        }
     }
 
     @Override
@@ -2341,6 +2380,7 @@ ClientPlayPacketListener {
         if (this.connection.isEncrypted() && (profileKeys = this.client.getProfileKeys()).isExpired()) {
             profileKeys.fetchKeyPair().thenAcceptAsync(keyPair -> keyPair.ifPresent(this::updateKeyPair), (Executor)this.client);
         }
+        this.tickQueuedPackets();
         this.worldSession.tick();
     }
 
@@ -2367,6 +2407,10 @@ ClientPlayPacketListener {
 
     public boolean hasFeature(FeatureSet feature) {
         return feature.isSubsetOf(this.getEnabledFeatures());
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    record QueuedPacket(Packet<ServerPlayPacketListener> packet, BooleanSupplier sendCondition, long expirationTime) {
     }
 }
 

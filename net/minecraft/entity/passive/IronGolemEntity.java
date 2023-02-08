@@ -200,7 +200,7 @@ implements Angerable {
         this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
         float f = this.getAttackDamage();
         float g = (int)f > 0 ? f / 2.0f + (float)this.random.nextInt((int)f) : f;
-        boolean bl = target.damage(DamageSource.mob(this), g);
+        boolean bl = target.damage(this.getDamageSources().mobAttack(this), g);
         if (bl) {
             double d;
             if (target instanceof LivingEntity) {

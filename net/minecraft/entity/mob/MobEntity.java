@@ -1092,15 +1092,17 @@ extends LivingEntity {
         }
         if (this.getHoldingEntity() == player) {
             this.detachLeash(true, !player.getAbilities().creativeMode);
+            this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
             return ActionResult.success(this.world.isClient);
         }
         ActionResult actionResult = this.interactWithItem(player, hand);
         if (actionResult.isAccepted()) {
+            this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
             return actionResult;
         }
         actionResult = this.interactMob(player, hand);
         if (actionResult.isAccepted()) {
-            this.emitGameEvent(GameEvent.ENTITY_INTERACT);
+            this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
             return actionResult;
         }
         return super.interact(player, hand);
@@ -1375,7 +1377,7 @@ extends LivingEntity {
         if ((i = EnchantmentHelper.getFireAspect(this)) > 0) {
             target.setOnFireFor(i * 4);
         }
-        if (bl = target.damage(DamageSource.mob(this), f)) {
+        if (bl = target.damage(this.getDamageSources().mobAttack(this), f)) {
             if (g > 0.0f && target instanceof LivingEntity) {
                 ((LivingEntity)target).takeKnockback(g * 0.5f, MathHelper.sin(this.getYaw() * ((float)Math.PI / 180)), -MathHelper.cos(this.getYaw() * ((float)Math.PI / 180)));
                 this.setVelocity(this.getVelocity().multiply(0.6, 1.0, 0.6));

@@ -38,6 +38,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -376,7 +377,7 @@ implements Monster {
             double h = Math.max(f * f + g * g, 0.1);
             entity.addVelocity(f / h * 4.0, 0.2f, g / h * 4.0);
             if (this.phaseManager.getCurrent().isSittingOrHovering() || ((LivingEntity)entity).getLastAttackedTime() >= entity.age - 2) continue;
-            entity.damage(DamageSource.mob(this), 5.0f);
+            entity.damage(this.getDamageSources().mobAttack(this), 5.0f);
             this.applyDamageEffects(this, entity);
         }
     }
@@ -384,7 +385,7 @@ implements Monster {
     private void damageLivingEntities(List<Entity> entities) {
         for (Entity entity : entities) {
             if (!(entity instanceof LivingEntity)) continue;
-            entity.damage(DamageSource.mob(this), 10.0f);
+            entity.damage(this.getDamageSources().mobAttack(this), 10.0f);
             this.applyDamageEffects(this, entity);
         }
     }
@@ -434,7 +435,7 @@ implements Monster {
         if (amount < 0.01f) {
             return false;
         }
-        if (source.getAttacker() instanceof PlayerEntity || source.isExplosive()) {
+        if (source.getAttacker() instanceof PlayerEntity || source.isIn(DamageTypeTags.IS_EXPLOSION)) {
             float f = this.getHealth();
             this.parentDamage(source, amount);
             if (this.isDead() && !this.phaseManager.getCurrent().isSittingOrHovering()) {
@@ -752,12 +753,12 @@ implements Monster {
         return vec3d;
     }
 
-    public void crystalDestroyed(EndCrystalEntity crystal, BlockPos pos, DamageSource source) {
+    public void crystalDestroyed(EndCrystalEntity endCrystalEntity, BlockPos pos, DamageSource source) {
         PlayerEntity playerEntity = source.getAttacker() instanceof PlayerEntity ? (PlayerEntity)source.getAttacker() : this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, pos.getX(), pos.getY(), pos.getZ());
-        if (crystal == this.connectedCrystal) {
-            this.damagePart(this.head, DamageSource.explosion(crystal, playerEntity), 10.0f);
+        if (endCrystalEntity == this.connectedCrystal) {
+            this.damagePart(this.head, this.getDamageSources().explosion(endCrystalEntity, playerEntity), 10.0f);
         }
-        this.phaseManager.getCurrent().crystalDestroyed(crystal, pos, source, playerEntity);
+        this.phaseManager.getCurrent().crystalDestroyed(endCrystalEntity, pos, source, playerEntity);
     }
 
     @Override

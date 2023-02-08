@@ -54,6 +54,7 @@ Selectable {
     protected static final int field_42118 = 200;
     protected static final int field_42119 = 20;
     protected static final int field_42120 = 4;
+    private static final int field_42485 = 2;
     protected int width;
     protected int height;
     private int x;
@@ -166,11 +167,22 @@ Selectable {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         int i = this.active ? 0xFFFFFF : 0xA0A0A0;
         TextRenderer textRenderer = minecraftClient.textRenderer;
-        this.drawMessage(matrices, textRenderer, this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, i);
+        int j = textRenderer.getWidth(this.message);
+        int k = this.width - 4;
+        if (j > k) {
+            double d = (double)Util.getMeasuringTimeMs() / 1000.0;
+            double e = Math.sin(1.5707963267948966 * Math.cos(d));
+            int l = j - k;
+            ClickableWidget.enableScissor(this.x + 2, this.y + 2, this.x + this.width - 2, this.y + this.height - 2);
+            this.drawMessage(matrices, textRenderer, this.getX() + this.width / 2 - (int)(e * (double)l), this.getY() + (this.height - 8) / 2, i);
+            ClickableWidget.disableScissor();
+        } else {
+            this.drawMessage(matrices, textRenderer, this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, i);
+        }
     }
 
     public void drawMessage(MatrixStack matrices, TextRenderer textRenderer, int centerX, int y, int color) {
-        ClickableWidget.drawCenteredText(matrices, textRenderer, this.getMessage(), centerX, y, color | MathHelper.ceil(this.alpha * 255.0f) << 24);
+        ClickableWidget.drawCenteredTextWithShadow(matrices, textRenderer, this.getMessage(), centerX, y, color | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }
 
     public void drawTexture(MatrixStack matrices, Identifier texture, int x, int y, int u, int v, int hoveredVOffset, int width, int height, int textureWidth, int textureHeight) {

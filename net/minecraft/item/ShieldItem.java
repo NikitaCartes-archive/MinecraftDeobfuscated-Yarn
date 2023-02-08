@@ -6,10 +6,12 @@ package net.minecraft.item;
 import java.util.List;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -23,7 +25,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class ShieldItem
-extends Item {
+extends Item
+implements Equipment {
     public static final int field_30918 = 5;
     public static final float MIN_DAMAGE_AMOUNT_TO_BREAK = 3.0f;
     public static final String BASE_KEY = "Base";
@@ -71,6 +74,11 @@ extends Item {
     public static DyeColor getColor(ItemStack stack) {
         NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
         return nbtCompound != null ? DyeColor.byId(nbtCompound.getInt(BASE_KEY)) : DyeColor.WHITE;
+    }
+
+    @Override
+    public EquipmentSlot getSlotType() {
+        return EquipmentSlot.OFFHAND;
     }
 }
 

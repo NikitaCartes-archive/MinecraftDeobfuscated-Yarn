@@ -50,9 +50,11 @@ implements GameEventListener {
         frequencies.put(GameEvent.ENTITY_SHAKE, 6);
         frequencies.put(GameEvent.BLOCK_CHANGE, 6);
         frequencies.put(GameEvent.NOTE_BLOCK_PLAY, 6);
+        frequencies.put(GameEvent.ENTITY_DISMOUNT, 6);
         frequencies.put(GameEvent.PROJECTILE_SHOOT, 7);
         frequencies.put(GameEvent.DRINK, 7);
         frequencies.put(GameEvent.PRIME_FUSE, 7);
+        frequencies.put(GameEvent.ENTITY_MOUNT, 7);
         frequencies.put(GameEvent.PROJECTILE_LAND, 8);
         frequencies.put(GameEvent.EAT, 8);
         frequencies.put(GameEvent.ENTITY_INTERACT, 8);
@@ -180,7 +182,7 @@ implements GameEventListener {
         Vec3d vec3d = new Vec3d((double)MathHelper.floor(start.x) + 0.5, (double)MathHelper.floor(start.y) + 0.5, (double)MathHelper.floor(start.z) + 0.5);
         Vec3d vec3d2 = new Vec3d((double)MathHelper.floor(end.x) + 0.5, (double)MathHelper.floor(end.y) + 0.5, (double)MathHelper.floor(end.z) + 0.5);
         for (Direction direction : Direction.values()) {
-            Vec3d vec3d3 = vec3d.withBias(direction, 1.0E-5f);
+            Vec3d vec3d3 = vec3d.offset(direction, 1.0E-5f);
             if (world.raycast(new BlockStateRaycastContext(vec3d3, vec3d2, state -> state.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS))).getType() == HitResult.Type.BLOCK) continue;
             return false;
         }

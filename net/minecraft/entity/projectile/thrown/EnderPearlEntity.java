@@ -6,7 +6,6 @@ package net.minecraft.entity.projectile.thrown;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.EndermiteEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
@@ -39,7 +38,7 @@ extends ThrownItemEntity {
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         super.onEntityHit(entityHitResult);
-        entityHitResult.getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0f);
+        entityHitResult.getEntity().damage(this.getDamageSources().thorns(this, this.getOwner()), 0.0f);
     }
 
     @Override
@@ -64,7 +63,7 @@ extends ThrownItemEntity {
                         entity.requestTeleport(this.getX(), this.getY(), this.getZ());
                     }
                     entity.onLanding();
-                    entity.damage(DamageSource.FALL, 5.0f);
+                    entity.damage(this.getDamageSources().fall(), 5.0f);
                 }
             } else if (entity != null) {
                 entity.requestTeleport(this.getX(), this.getY(), this.getZ());

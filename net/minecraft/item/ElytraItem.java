@@ -4,22 +4,22 @@
 package net.minecraft.item;
 
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.Wearable;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 
 public class ElytraItem
 extends Item
-implements Wearable {
+implements Equipment {
     public ElytraItem(Item.Settings settings) {
         super(settings);
         DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
@@ -40,9 +40,13 @@ implements Wearable {
     }
 
     @Override
-    @Nullable
     public SoundEvent getEquipSound() {
         return SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA;
+    }
+
+    @Override
+    public EquipmentSlot getSlotType() {
+        return EquipmentSlot.CHEST;
     }
 }
 

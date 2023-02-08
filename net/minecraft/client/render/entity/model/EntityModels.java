@@ -23,6 +23,7 @@ import net.minecraft.client.render.entity.EnderDragonEntityRenderer;
 import net.minecraft.client.render.entity.WitherSkullEntityRenderer;
 import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.client.render.entity.model.AllayEntityModel;
+import net.minecraft.client.render.entity.model.ArmorEntityModel;
 import net.minecraft.client.render.entity.model.ArmorStandArmorEntityModel;
 import net.minecraft.client.render.entity.model.ArmorStandEntityModel;
 import net.minecraft.client.render.entity.model.AxolotlEntityModel;
@@ -116,9 +117,9 @@ public class EntityModels {
     public static Map<EntityModelLayer, TexturedModelData> getModels() {
         ImmutableMap.Builder<EntityModelLayer, TexturedModelData> builder = ImmutableMap.builder();
         TexturedModelData texturedModelData = TexturedModelData.of(BipedEntityModel.getModelData(Dilation.NONE, 0.0f), 64, 64);
-        TexturedModelData texturedModelData2 = TexturedModelData.of(BipedEntityModel.getModelData(ARMOR_DILATION, 0.0f), 64, 32);
-        TexturedModelData texturedModelData3 = TexturedModelData.of(BipedEntityModel.getModelData(new Dilation(1.02f), 0.0f), 64, 32);
-        TexturedModelData texturedModelData4 = TexturedModelData.of(BipedEntityModel.getModelData(HAT_DILATION, 0.0f), 64, 32);
+        TexturedModelData texturedModelData2 = TexturedModelData.of(ArmorEntityModel.getModelData(ARMOR_DILATION), 64, 32);
+        TexturedModelData texturedModelData3 = TexturedModelData.of(ArmorEntityModel.getModelData(new Dilation(1.02f)), 64, 32);
+        TexturedModelData texturedModelData4 = TexturedModelData.of(ArmorEntityModel.getModelData(HAT_DILATION), 64, 32);
         TexturedModelData texturedModelData5 = MinecartEntityModel.getTexturedModelData();
         TexturedModelData texturedModelData6 = SkullEntityModel.getSkullTexturedModelData();
         TexturedModelData texturedModelData7 = TexturedModelData.of(HorseEntityModel.getModelData(Dilation.NONE), 64, 64);

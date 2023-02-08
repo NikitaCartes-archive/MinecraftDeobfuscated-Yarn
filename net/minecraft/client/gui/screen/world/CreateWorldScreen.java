@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -37,6 +38,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.pack.ExperimentalWarningScreen;
 import net.minecraft.client.gui.screen.pack.PackScreen;
 import net.minecraft.client.gui.screen.world.EditGameRulesScreen;
+import net.minecraft.client.gui.screen.world.ExperimentsScreen;
 import net.minecraft.client.gui.screen.world.LevelScreenProvider;
 import net.minecraft.client.gui.screen.world.WorldCreator;
 import net.minecraft.client.gui.screen.world.WorldScreenOptionGrid;
@@ -101,12 +103,14 @@ extends Screen {
     private static final String TEMP_DIR_PREFIX = "mcworld-";
     static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
     static final Text ENTER_NAME_TEXT = Text.translatable("selectWorld.enterName");
+    static final Text EXPERIMENTS_TEXT = Text.translatable("selectWorld.experiments");
     static final Text ALLOW_COMMANDS_INFO_TEXT = Text.translatable("selectWorld.allowCommands.info");
     private static final Text PREPARING_TEXT = Text.translatable("createWorld.preparing");
     private static final int field_42170 = 10;
     private static final int field_42171 = 8;
     final WorldCreator worldCreator;
     private final TabManager tabManager = new TabManager(this::addDrawableChild, child -> this.remove((Element)child));
+    private boolean recreated;
     @Nullable
     private final Screen parent;
     @Nullable
@@ -134,6 +138,7 @@ extends Screen {
 
     public static CreateWorldScreen create(@Nullable Screen parent, LevelInfo levelInfo, GeneratorOptionsHolder generatorOptionsHolder, @Nullable Path dataPackTempDir) {
         CreateWorldScreen createWorldScreen = new CreateWorldScreen(parent, generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()), OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed()));
+        createWorldScreen.recreated = true;
         createWorldScreen.worldCreator.setWorldName(levelInfo.getLevelName());
         createWorldScreen.worldCreator.setCheatsEnabled(levelInfo.areCommandsAllowed());
         createWorldScreen.worldCreator.setDifficulty(levelInfo.getDifficulty());
@@ -233,7 +238,8 @@ extends Screen {
         Lifecycle lifecycle = FeatureFlags.isNotVanilla(generatorOptionsHolder.dataConfiguration().enabledFeatures()) ? Lifecycle.experimental() : Lifecycle.stable();
         Lifecycle lifecycle2 = combinedDynamicRegistries.getCombinedRegistryManager().getRegistryLifecycle();
         Lifecycle lifecycle3 = lifecycle2.add(lifecycle);
-        IntegratedServerLoader.tryLoad(this.client, this, lifecycle3, () -> this.startServer(dimensionsConfig.specialWorldProperty(), combinedDynamicRegistries, lifecycle3));
+        boolean bl = !this.recreated && lifecycle2 == Lifecycle.stable();
+        IntegratedServerLoader.tryLoad(this.client, this, lifecycle3, () -> this.startServer(dimensionsConfig.specialWorldProperty(), combinedDynamicRegistries, lifecycle3), bl);
     }
 
     private void startServer(LevelProperties.SpecialProperty specialProperty, CombinedDynamicRegistries<ServerDynamicRegistryType> combinedDynamicRegistries, Lifecycle lifecycle) {
@@ -262,6 +268,9 @@ extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (this.tabNavigation.trySwitchTabsWithKey(keyCode)) {
+            return true;
+        }
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
@@ -312,14 +321,21 @@ extends Screen {
         return this.dataPackTempDir;
     }
 
-    void openPackScreen(DataConfiguration dataConfiguration) {
+    void openExperimentsScreen(DataConfiguration dataConfiguration) {
         Pair<Path, ResourcePackManager> pair = this.getScannedPack(dataConfiguration);
         if (pair != null) {
-            this.client.setScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, pair.getFirst(), Text.translatable("dataPack.title")));
+            this.client.setScreen(new ExperimentsScreen(this, pair.getSecond(), resourcePackManager -> this.applyDataPacks((ResourcePackManager)resourcePackManager, false, this::openExperimentsScreen)));
         }
     }
 
-    private void applyDataPacks(ResourcePackManager dataPackManager) {
+    void openPackScreen(DataConfiguration dataConfiguration) {
+        Pair<Path, ResourcePackManager> pair = this.getScannedPack(dataConfiguration);
+        if (pair != null) {
+            this.client.setScreen(new PackScreen(this, pair.getSecond(), resourcePackManager -> this.applyDataPacks((ResourcePackManager)resourcePackManager, true, this::openPackScreen), pair.getFirst(), Text.translatable("dataPack.title")));
+        }
+    }
+
+    private void applyDataPacks(ResourcePackManager dataPackManager, boolean fromPackScreen, Consumer<DataConfiguration> configurationSetter) {
         List list2;
         ImmutableList<String> list = ImmutableList.copyOf(dataPackManager.getEnabledNames());
         DataConfiguration dataConfiguration = new DataConfiguration(new DataPackSettings(list, list2 = (List)dataPackManager.getNames().stream().filter(name -> !list.contains(name)).collect(ImmutableList.toImmutableList())), this.worldCreator.getGeneratorOptionsHolder().dataConfiguration().enabledFeatures());
@@ -327,20 +343,20 @@ extends Screen {
             return;
         }
         FeatureSet featureSet = dataPackManager.getRequestedFeatures();
-        if (FeatureFlags.isNotVanilla(featureSet)) {
-            this.client.send(() -> this.client.setScreen(new ExperimentalWarningScreen(dataPackManager.getEnabledProfiles(), bl -> {
-                if (bl) {
-                    this.validateDataPacks(dataPackManager, dataConfiguration);
+        if (FeatureFlags.isNotVanilla(featureSet) && fromPackScreen) {
+            this.client.send(() -> this.client.setScreen(new ExperimentalWarningScreen(dataPackManager.getEnabledProfiles(), confirmed -> {
+                if (confirmed) {
+                    this.validateDataPacks(dataPackManager, dataConfiguration, configurationSetter);
                 } else {
-                    this.openPackScreen(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
+                    configurationSetter.accept(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
                 }
             })));
         } else {
-            this.validateDataPacks(dataPackManager, dataConfiguration);
+            this.validateDataPacks(dataPackManager, dataConfiguration, configurationSetter);
         }
     }
 
-    private void validateDataPacks(ResourcePackManager dataPackManager, DataConfiguration dataConfiguration) {
+    private void validateDataPacks(ResourcePackManager dataPackManager, DataConfiguration dataConfiguration, Consumer<DataConfiguration> configurationSetter) {
         this.client.send(() -> this.client.setScreen(new MessageScreen(Text.translatable("dataPack.validation.working"))));
         SaveLoading.ServerConfig serverConfig = CreateWorldScreen.createServerConfig(dataPackManager, dataConfiguration);
         ((CompletableFuture)SaveLoading.load(serverConfig, context -> {
@@ -362,11 +378,11 @@ extends Screen {
         }, Util.getMainWorkerExecutor(), this.client).thenAcceptAsync(this.worldCreator::setGeneratorOptionsHolder, (Executor)this.client)).handle((void_, throwable) -> {
             if (throwable != null) {
                 LOGGER.warn("Failed to validate datapack", (Throwable)throwable);
-                this.client.send(() -> this.client.setScreen(new ConfirmScreen(bl -> {
-                    if (bl) {
-                        this.openPackScreen(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
+                this.client.send(() -> this.client.setScreen(new ConfirmScreen(confirmed -> {
+                    if (confirmed) {
+                        configurationSetter.accept(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
                     } else {
-                        this.openPackScreen(DataConfiguration.SAFE_MODE);
+                        configurationSetter.accept(DataConfiguration.SAFE_MODE);
                     }
                 }, Text.translatable("dataPack.validation.failed"), ScreenTexts.EMPTY, Text.translatable("dataPack.validation.back"), Text.translatable("dataPack.validation.reset"))));
             } else {
@@ -524,6 +540,7 @@ extends Screen {
                 cyclingButtonWidget3.setValue(CreateWorldScreen.this.worldCreator.areCheatsEnabled());
                 cyclingButtonWidget.active = !CreateWorldScreen.this.worldCreator.isDebug() && !CreateWorldScreen.this.worldCreator.isHardcore();
             });
+            adder.add(ButtonWidget.builder(EXPERIMENTS_TEXT, button -> CreateWorldScreen.this.openExperimentsScreen(CreateWorldScreen.this.worldCreator.getGeneratorOptionsHolder().dataConfiguration())).width(210).build());
         }
 
         @Override
@@ -631,6 +648,7 @@ extends Screen {
             super(MORE_TAB_TITLE_TEXT);
             GridWidget.Adder adder = this.grid.setRowSpacing(8).createAdder(1);
             adder.add(ButtonWidget.builder(GAME_RULES_TEXT, button -> this.openGameRulesScreen()).width(210).build());
+            adder.add(ButtonWidget.builder(EXPERIMENTS_TEXT, button -> CreateWorldScreen.this.openExperimentsScreen(CreateWorldScreen.this.worldCreator.getGeneratorOptionsHolder().dataConfiguration())).width(210).build());
             adder.add(ButtonWidget.builder(DATA_PACKS_TEXT, button -> CreateWorldScreen.this.openPackScreen(CreateWorldScreen.this.worldCreator.getGeneratorOptionsHolder().dataConfiguration())).width(210).build());
         }
 

@@ -32,7 +32,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
@@ -225,7 +224,7 @@ public class LootCommand {
         if (entity2 instanceof PlayerEntity) {
             builder.parameter(LootContextParameters.LAST_DAMAGE_PLAYER, (PlayerEntity)entity2);
         }
-        builder.parameter(LootContextParameters.DAMAGE_SOURCE, DamageSource.MAGIC);
+        builder.parameter(LootContextParameters.DAMAGE_SOURCE, entity.getDamageSources().magic());
         builder.optionalParameter(LootContextParameters.DIRECT_KILLER_ENTITY, entity2);
         builder.optionalParameter(LootContextParameters.KILLER_ENTITY, entity2);
         builder.parameter(LootContextParameters.THIS_ENTITY, entity);

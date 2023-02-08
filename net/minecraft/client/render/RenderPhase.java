@@ -110,8 +110,10 @@ public abstract class RenderPhase {
     protected static final ShaderProgram DIRECT_ENTITY_GLINT_PROGRAM = new ShaderProgram(GameRenderer::getRenderTypeEntityGlintDirectProgram);
     protected static final ShaderProgram CRUMBLING_PROGRAM = new ShaderProgram(GameRenderer::getRenderTypeCrumblingProgram);
     protected static final ShaderProgram TEXT_PROGRAM = new ShaderProgram(GameRenderer::getRenderTypeTextProgram);
+    protected static final ShaderProgram TEXT_BACKGROUND_PROGRAM = new ShaderProgram(GameRenderer::getRenderTypeTextBackgroundProgram);
     protected static final ShaderProgram TEXT_INTENSITY_PROGRAM = new ShaderProgram(GameRenderer::getRenderTypeTextIntensityProgram);
     protected static final ShaderProgram TRANSPARENT_TEXT_PROGRAM = new ShaderProgram(GameRenderer::getRenderTypeTextSeeThroughProgram);
+    protected static final ShaderProgram TRANSPARENT_TEXT_BACKGROUND_PROGRAM = new ShaderProgram(GameRenderer::getRenderTypeTextBackgroundSeeThroughProgram);
     protected static final ShaderProgram TRANSPARENT_TEXT_INTENSITY_PROGRAM = new ShaderProgram(GameRenderer::getRenderTypeTextIntensitySeeThroughProgram);
     protected static final ShaderProgram LIGHTNING_PROGRAM = new ShaderProgram(GameRenderer::getRenderTypeLightningProgram);
     protected static final ShaderProgram TRIPWIRE_PROGRAM = new ShaderProgram(GameRenderer::getRenderTypeTripwireProgram);

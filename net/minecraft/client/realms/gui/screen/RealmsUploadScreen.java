@@ -139,7 +139,7 @@ extends RealmsScreen {
             this.status = VERIFYING_TEXT;
             this.cancelButton.active = false;
         }
-        RealmsUploadScreen.drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, 50, 0xFFFFFF);
+        RealmsUploadScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.status, this.width / 2, 50, 0xFFFFFF);
         if (this.showDots) {
             this.drawDots(matrices);
         }
@@ -149,7 +149,7 @@ extends RealmsScreen {
         }
         if (this.statusTexts != null) {
             for (int i = 0; i < this.statusTexts.length; ++i) {
-                RealmsUploadScreen.drawCenteredText(matrices, this.textRenderer, this.statusTexts[i], this.width / 2, 110 + 12 * i, 0xFF0000);
+                RealmsUploadScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.statusTexts[i], this.width / 2, 110 + 12 * i, 0xFF0000);
             }
         }
         super.render(matrices, mouseX, mouseY, delta);
@@ -167,7 +167,7 @@ extends RealmsScreen {
         int j = i + (int)Math.round(200.0 * d);
         RealmsUploadScreen.fill(matrices, i - 1, 79, j + 1, 175, -2501934);
         RealmsUploadScreen.fill(matrices, i, 80, j, 95, -8355712);
-        RealmsUploadScreen.drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
+        RealmsUploadScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
     }
 
     private void drawUploadSpeed(MatrixStack matrices) {

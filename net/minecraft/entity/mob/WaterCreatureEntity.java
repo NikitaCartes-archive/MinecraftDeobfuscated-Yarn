@@ -8,7 +8,6 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.PathNodeType;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.tag.FluidTags;
@@ -55,7 +54,7 @@ extends PathAwareEntity {
             this.setAir(air - 1);
             if (this.getAir() == -20) {
                 this.setAir(0);
-                this.damage(DamageSource.DROWN, 2.0f);
+                this.damage(this.getDamageSources().drown(), 2.0f);
             }
         } else {
             this.setAir(300);

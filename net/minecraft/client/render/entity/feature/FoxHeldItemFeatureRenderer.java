@@ -10,7 +10,7 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.FoxEntityModel;
 import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.FoxEntity;
@@ -59,7 +59,7 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
             matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(90.0f));
         }
         ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
-        this.heldItemRenderer.renderItem(foxEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);
+        this.heldItemRenderer.renderItem(foxEntity, itemStack, ModelTransformationMode.GROUND, false, matrixStack, vertexConsumerProvider, i);
         matrixStack.pop();
     }
 }

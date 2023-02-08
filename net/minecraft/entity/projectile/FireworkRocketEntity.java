@@ -11,7 +11,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -198,7 +197,7 @@ implements FlyingItemEntity {
         }
         if (f > 0.0f) {
             if (this.shooter != null) {
-                this.shooter.damage(DamageSource.firework(this, this.getOwner()), 5.0f + (float)(nbtList.size() * 2));
+                this.shooter.damage(this.getDamageSources().fireworks(this, this.getOwner()), 5.0f + (float)(nbtList.size() * 2));
             }
             double d = 5.0;
             Vec3d vec3d = this.getPos();
@@ -215,7 +214,7 @@ implements FlyingItemEntity {
                 }
                 if (!bl) continue;
                 float g = f * (float)Math.sqrt((5.0 - (double)this.distanceTo(livingEntity)) / 5.0);
-                livingEntity.damage(DamageSource.firework(this, this.getOwner()), g);
+                livingEntity.damage(this.getDamageSources().fireworks(this, this.getOwner()), g);
             }
         }
     }

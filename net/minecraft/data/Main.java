@@ -43,6 +43,7 @@ import net.minecraft.data.server.tag.vanilla.VanillaBannerPatternTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBiomeTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBlockTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaCatVariantTagProvider;
+import net.minecraft.data.server.tag.vanilla.VanillaDamageTypeTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaEntityTypeTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaFlatLevelGeneratorPresetTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaFluidTagProvider;
@@ -114,6 +115,7 @@ public class Main {
         pack2.addProvider(Main.toFactory(VanillaBannerPatternTagProvider::new, completableFuture));
         pack2.addProvider(Main.toFactory(VanillaBiomeTagProvider::new, completableFuture));
         pack2.addProvider(Main.toFactory(VanillaCatVariantTagProvider::new, completableFuture));
+        pack2.addProvider(Main.toFactory(VanillaDamageTypeTagProvider::new, completableFuture));
         pack2.addProvider(Main.toFactory(VanillaEntityTypeTagProvider::new, completableFuture));
         pack2.addProvider(Main.toFactory(VanillaFlatLevelGeneratorPresetTagProvider::new, completableFuture));
         pack2.addProvider(Main.toFactory(VanillaFluidTagProvider::new, completableFuture));

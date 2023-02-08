@@ -11,7 +11,6 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.random.Random;
@@ -53,7 +52,7 @@ extends Enchantment {
         Map.Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.THORNS, user);
         if (ThornsEnchantment.shouldDamageAttacker(level, random)) {
             if (attacker != null) {
-                attacker.damage(DamageSource.thorns(user), ThornsEnchantment.getDamageAmount(level, random));
+                attacker.damage(user.getDamageSources().thorns(user), ThornsEnchantment.getDamageAmount(level, random));
             }
             if (entry != null) {
                 entry.getValue().damage(2, user, entity -> entity.sendEquipmentBreakStatus((EquipmentSlot)((Object)((Object)entry.getKey()))));

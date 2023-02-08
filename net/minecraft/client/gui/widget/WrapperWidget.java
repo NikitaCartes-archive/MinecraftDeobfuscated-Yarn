@@ -3,17 +3,16 @@
  */
 package net.minecraft.client.gui.widget;
 
-import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.LayoutWidget;
 import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class WrapperWidget
-implements Widget {
+implements LayoutWidget {
     private int x;
     private int y;
     protected int width;
@@ -24,22 +23,6 @@ implements Widget {
         this.y = y;
         this.width = width;
         this.height = height;
-    }
-
-    protected abstract void forEachElement(Consumer<Widget> var1);
-
-    public void refreshPositions() {
-        this.forEachElement(element -> {
-            if (element instanceof WrapperWidget) {
-                WrapperWidget wrapperWidget = (WrapperWidget)element;
-                wrapperWidget.refreshPositions();
-            }
-        });
-    }
-
-    @Override
-    public void forEachChild(Consumer<ClickableWidget> consumer) {
-        this.forEachElement(element -> element.forEachChild(consumer));
     }
 
     @Override

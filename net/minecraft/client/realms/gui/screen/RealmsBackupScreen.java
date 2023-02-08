@@ -210,7 +210,7 @@ extends RealmsScreen {
         this.tooltip = null;
         this.renderBackground(matrices);
         this.backupObjectSelectionList.render(matrices, mouseX, mouseY, delta);
-        RealmsBackupScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 12, 0xFFFFFF);
+        RealmsBackupScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 12, 0xFFFFFF);
         this.textRenderer.draw(matrices, BACKUPS_TEXT, (float)((this.width - 150) / 2 - 90), 20.0f, 0xA0A0A0);
         if (this.noBackups.booleanValue()) {
             this.textRenderer.draw(matrices, NO_BACKUPS_TEXT, 20.0f, (float)(this.height / 2 - 10), 0xFFFFFF);

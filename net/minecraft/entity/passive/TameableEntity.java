@@ -23,6 +23,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.EntityView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -160,20 +161,6 @@ implements Tameable {
     }
 
     @Override
-    @Nullable
-    public LivingEntity getOwner() {
-        try {
-            UUID uUID = this.getOwnerUuid();
-            if (uUID == null) {
-                return null;
-            }
-            return this.world.getPlayerByUuid(uUID);
-        } catch (IllegalArgumentException illegalArgumentException) {
-            return null;
-        }
-    }
-
-    @Override
     public boolean canTarget(LivingEntity target) {
         if (this.isOwner(target)) {
             return false;
@@ -229,9 +216,8 @@ implements Tameable {
     }
 
     @Override
-    @Nullable
-    public /* synthetic */ Entity getOwner() {
-        return this.getOwner();
+    public /* synthetic */ EntityView method_48926() {
+        return super.getWorld();
     }
 }
 

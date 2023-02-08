@@ -90,7 +90,12 @@ VehicleInventory {
     @Override
     public ActionResult interact(PlayerEntity player, Hand hand) {
         if (!this.canAddPassenger(player) || player.shouldCancelInteraction()) {
-            return this.open(this::emitGameEvent, player);
+            ActionResult actionResult = this.open(player);
+            if (actionResult.isAccepted()) {
+                this.emitGameEvent(GameEvent.CONTAINER_OPEN, player);
+                PiglinBrain.onGuardedBlockInteracted(player, true);
+            }
+            return actionResult;
         }
         return super.interact(player, hand);
     }
@@ -205,6 +210,11 @@ VehicleInventory {
     @Override
     public void resetInventory() {
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+    }
+
+    @Override
+    public void onClose(PlayerEntity player) {
+        this.world.emitGameEvent(GameEvent.CONTAINER_CLOSE, this.getPos(), GameEvent.Emitter.of(player));
     }
 }
 

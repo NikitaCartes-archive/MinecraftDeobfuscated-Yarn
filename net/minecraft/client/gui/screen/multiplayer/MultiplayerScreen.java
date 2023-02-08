@@ -230,7 +230,7 @@ extends Screen {
         this.multiplayerScreenTooltip = null;
         this.renderBackground(matrices);
         this.serverListWidget.render(matrices, mouseX, mouseY, delta);
-        MultiplayerScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
+        MultiplayerScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
         if (this.multiplayerScreenTooltip != null) {
             this.renderTooltip(matrices, this.multiplayerScreenTooltip, mouseX, mouseY);

@@ -136,7 +136,7 @@ extends Entity {
             if (!this.world.canPlayerModifyAt(playerEntity, this.attachmentPos)) {
                 return true;
             }
-            return this.damage(DamageSource.player(playerEntity), 0.0f);
+            return this.damage(this.getDamageSources().playerAttack(playerEntity), 0.0f);
         }
         return false;
     }

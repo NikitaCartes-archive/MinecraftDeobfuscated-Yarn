@@ -154,7 +154,7 @@ NamedScreenHandlerFactory {
     void onBookRemoved() {
         this.currentPage = 0;
         this.pageCount = 0;
-        LecternBlock.setHasBook(this.getWorld(), this.getPos(), this.getCachedState(), false);
+        LecternBlock.setHasBook(null, this.getWorld(), this.getPos(), this.getCachedState(), false);
     }
 
     public void setBook(ItemStack book, @Nullable PlayerEntity player) {

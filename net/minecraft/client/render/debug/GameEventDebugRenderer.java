@@ -4,21 +4,15 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -33,7 +27,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.listener.GameEventListener;
-import org.joml.Vector3f;
 
 @Environment(value=EnvType.CLIENT)
 public class GameEventDebugRenderer
@@ -59,9 +52,6 @@ implements DebugRenderer.Renderer {
         Vec3d vec3d = new Vec3d(cameraX, 0.0, cameraZ);
         this.entries.removeIf(Entry::hasExpired);
         this.listeners.removeIf(listener -> listener.isTooFar(world, vec3d));
-        RenderSystem.enableDepthTest();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
         for (Listener listener2 : this.listeners) {
             listener2.getPos(world).ifPresent(pos -> {
@@ -71,29 +61,17 @@ implements DebugRenderer.Renderer {
                 double j = pos.getX() + (double)listener2.getRange();
                 double k = pos.getY() + (double)listener2.getRange();
                 double l = pos.getZ() + (double)listener2.getRange();
-                Vector3f vector3f = new Vector3f(1.0f, 1.0f, 0.0f);
-                WorldRenderer.drawShapeOutline(matrices, vertexConsumer, VoxelShapes.cuboid(new Box(g, h, i, j, k, l)), -cameraX, -cameraY, -cameraZ, vector3f.x(), vector3f.y(), vector3f.z(), 0.35f);
+                WorldRenderer.drawShapeOutline(matrices, vertexConsumer, VoxelShapes.cuboid(new Box(g, h, i, j, k, l)), -cameraX, -cameraY, -cameraZ, 1.0f, 1.0f, 0.0f, 0.35f);
             });
         }
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
+        VertexConsumer vertexConsumer2 = vertexConsumers.getBuffer(RenderLayer.getDebugFilledBox());
         for (Listener listener2 : this.listeners) {
-            listener2.getPos(world).ifPresent(pos -> {
-                Vector3f vector3f = new Vector3f(1.0f, 1.0f, 0.0f);
-                WorldRenderer.drawBox(bufferBuilder, pos.getX() - 0.25 - cameraX, pos.getY() - cameraY, pos.getZ() - 0.25 - cameraZ, pos.getX() + 0.25 - cameraX, pos.getY() - cameraY + 1.0, pos.getZ() + 0.25 - cameraZ, vector3f.x(), vector3f.y(), vector3f.z(), 0.35f);
-            });
+            listener2.getPos(world).ifPresent(pos -> WorldRenderer.method_3258(matrices, vertexConsumer2, pos.getX() - 0.25 - cameraX, pos.getY() - cameraY, pos.getZ() - 0.25 - cameraZ, pos.getX() + 0.25 - cameraX, pos.getY() - cameraY + 1.0, pos.getZ() + 0.25 - cameraZ, 1.0f, 1.0f, 0.0f, 0.35f));
         }
-        tessellator.draw();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.lineWidth(2.0f);
-        RenderSystem.depthMask(false);
         for (Listener listener2 : this.listeners) {
             listener2.getPos(world).ifPresent(pos -> {
-                DebugRenderer.drawString("Listener Origin", pos.getX(), pos.getY() + (double)1.8f, pos.getZ(), -1, 0.025f);
-                DebugRenderer.drawString(new BlockPos((Vec3d)pos).toString(), pos.getX(), pos.getY() + 1.5, pos.getZ(), -6959665, 0.025f);
+                DebugRenderer.drawString(matrices, vertexConsumers, "Listener Origin", pos.getX(), pos.getY() + (double)1.8f, pos.getZ(), -1, 0.025f);
+                DebugRenderer.drawString(matrices, vertexConsumers, new BlockPos((Vec3d)pos).toString(), pos.getX(), pos.getY() + 1.5, pos.getZ(), -6959665, 0.025f);
             });
         }
         for (Entry entry : this.entries) {
@@ -105,22 +83,18 @@ implements DebugRenderer.Renderer {
             double h = vec3d2.x + (double)0.2f;
             double i = vec3d2.y + (double)0.2f + 0.5;
             double j = vec3d2.z + (double)0.2f;
-            GameEventDebugRenderer.drawBoxIfCameraReady(new Box(e, f, g, h, i, j), 1.0f, 1.0f, 1.0f, 0.2f);
-            DebugRenderer.drawString(entry.event.getId(), vec3d2.x, vec3d2.y + (double)0.85f, vec3d2.z, -7564911, 0.0075f);
+            GameEventDebugRenderer.drawBoxIfCameraReady(matrices, vertexConsumers, new Box(e, f, g, h, i, j), 1.0f, 1.0f, 1.0f, 0.2f);
+            DebugRenderer.drawString(matrices, vertexConsumers, entry.event.getId(), vec3d2.x, vec3d2.y + (double)0.85f, vec3d2.z, -7564911, 0.0075f);
         }
-        RenderSystem.depthMask(true);
-        RenderSystem.disableBlend();
     }
 
-    private static void drawBoxIfCameraReady(Box box, float red, float green, float blue, float alpha) {
+    private static void drawBoxIfCameraReady(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Box box, float red, float green, float blue, float alpha) {
         Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
         if (!camera.isReady()) {
             return;
         }
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         Vec3d vec3d = camera.getPos().negate();
-        DebugRenderer.drawBox(box.offset(vec3d), red, green, blue, alpha);
+        DebugRenderer.drawBox(matrices, vertexConsumers, box.offset(vec3d), red, green, blue, alpha);
     }
 
     public void addEvent(GameEvent event, Vec3d pos) {

@@ -68,7 +68,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        ConfirmScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.getTitleY(), 0xFFFFFF);
+        ConfirmScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, this.getTitleY(), 0xFFFFFF);
         this.messageSplit.drawCenterWithShadow(matrices, this.width / 2, this.getMessageY());
         super.render(matrices, mouseX, mouseY, delta);
     }

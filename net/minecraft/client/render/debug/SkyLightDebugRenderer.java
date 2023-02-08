@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,8 +29,6 @@ implements DebugRenderer.Renderer {
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         ClientWorld world = this.client.world;
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
         LongOpenHashSet longSet = new LongOpenHashSet();
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
@@ -40,10 +37,10 @@ implements DebugRenderer.Renderer {
             int j = MathHelper.hsvToRgb(f, 0.9f, 0.9f);
             long l = ChunkSectionPos.fromBlockPos(blockPos2.asLong());
             if (longSet.add(l)) {
-                DebugRenderer.drawString(world.getChunkManager().getLightingProvider().displaySectionLevel(LightType.SKY, ChunkSectionPos.from(l)), ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackX(l), 8), ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackY(l), 8), ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackZ(l), 8), 0xFF0000, 0.3f);
+                DebugRenderer.drawString(matrices, vertexConsumers, world.getChunkManager().getLightingProvider().displaySectionLevel(LightType.SKY, ChunkSectionPos.from(l)), ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackX(l), 8), ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackY(l), 8), ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackZ(l), 8), 0xFF0000, 0.3f);
             }
             if (i == 15) continue;
-            DebugRenderer.drawString(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);
+            DebugRenderer.drawString(matrices, vertexConsumers, String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);
         }
     }
 }

@@ -3,28 +3,25 @@
  */
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ColorHelper;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class ChunkBorderDebugRenderer
 implements DebugRenderer.Renderer {
     private final MinecraftClient client;
-    private static final int field_35557 = ColorHelper.Argb.getArgb(255, 0, 155, 155);
-    private static final int field_35558 = ColorHelper.Argb.getArgb(255, 255, 255, 0);
+    private static final int DARK_CYAN = ColorHelper.Argb.getArgb(255, 0, 155, 155);
+    private static final int YELLOW = ColorHelper.Argb.getArgb(255, 255, 255, 0);
 
     public ChunkBorderDebugRenderer(MinecraftClient client) {
         this.client = client;
@@ -32,86 +29,76 @@ implements DebugRenderer.Renderer {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
+        int k;
         int j;
-        int i;
-        RenderSystem.enableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        double d = (double)this.client.world.getBottomY() - cameraY;
-        double e = (double)this.client.world.getTopY() - cameraY;
-        RenderSystem.disableBlend();
+        float f = (float)((double)this.client.world.getBottomY() - cameraY);
+        float g = (float)((double)this.client.world.getTopY() - cameraY);
         ChunkPos chunkPos = entity.getChunkPos();
-        double f = (double)chunkPos.getStartX() - cameraX;
-        double g = (double)chunkPos.getStartZ() - cameraZ;
-        RenderSystem.lineWidth(1.0f);
-        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
-        for (i = -16; i <= 32; i += 16) {
-            for (j = -16; j <= 32; j += 16) {
-                bufferBuilder.vertex(f + (double)i, d, g + (double)j).color(1.0f, 0.0f, 0.0f, 0.0f).next();
-                bufferBuilder.vertex(f + (double)i, d, g + (double)j).color(1.0f, 0.0f, 0.0f, 0.5f).next();
-                bufferBuilder.vertex(f + (double)i, e, g + (double)j).color(1.0f, 0.0f, 0.0f, 0.5f).next();
-                bufferBuilder.vertex(f + (double)i, e, g + (double)j).color(1.0f, 0.0f, 0.0f, 0.0f).next();
+        float h = (float)((double)chunkPos.getStartX() - cameraX);
+        float i = (float)((double)chunkPos.getStartZ() - cameraZ);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugLineStrip(1.0));
+        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+        for (j = -16; j <= 32; j += 16) {
+            for (k = -16; k <= 32; k += 16) {
+                vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k).color(1.0f, 0.0f, 0.0f, 0.0f).next();
+                vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k).color(1.0f, 0.0f, 0.0f, 0.5f).next();
+                vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k).color(1.0f, 0.0f, 0.0f, 0.5f).next();
+                vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k).color(1.0f, 0.0f, 0.0f, 0.0f).next();
             }
         }
-        for (i = 2; i < 16; i += 2) {
-            j = i % 4 == 0 ? field_35557 : field_35558;
-            bufferBuilder.vertex(f + (double)i, d, g).color(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(f + (double)i, d, g).color(j).next();
-            bufferBuilder.vertex(f + (double)i, e, g).color(j).next();
-            bufferBuilder.vertex(f + (double)i, e, g).color(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(f + (double)i, d, g + 16.0).color(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(f + (double)i, d, g + 16.0).color(j).next();
-            bufferBuilder.vertex(f + (double)i, e, g + 16.0).color(j).next();
-            bufferBuilder.vertex(f + (double)i, e, g + 16.0).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+        for (j = 2; j < 16; j += 2) {
+            k = j % 4 == 0 ? DARK_CYAN : YELLOW;
+            vertexConsumer.vertex(matrix4f, h + (float)j, f, i).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, h + (float)j, f, i).color(k).next();
+            vertexConsumer.vertex(matrix4f, h + (float)j, g, i).color(k).next();
+            vertexConsumer.vertex(matrix4f, h + (float)j, g, i).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, h + (float)j, f, i + 16.0f).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, h + (float)j, f, i + 16.0f).color(k).next();
+            vertexConsumer.vertex(matrix4f, h + (float)j, g, i + 16.0f).color(k).next();
+            vertexConsumer.vertex(matrix4f, h + (float)j, g, i + 16.0f).color(1.0f, 1.0f, 0.0f, 0.0f).next();
         }
-        for (i = 2; i < 16; i += 2) {
-            j = i % 4 == 0 ? field_35557 : field_35558;
-            bufferBuilder.vertex(f, d, g + (double)i).color(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(f, d, g + (double)i).color(j).next();
-            bufferBuilder.vertex(f, e, g + (double)i).color(j).next();
-            bufferBuilder.vertex(f, e, g + (double)i).color(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(f + 16.0, d, g + (double)i).color(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(f + 16.0, d, g + (double)i).color(j).next();
-            bufferBuilder.vertex(f + 16.0, e, g + (double)i).color(j).next();
-            bufferBuilder.vertex(f + 16.0, e, g + (double)i).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+        for (j = 2; j < 16; j += 2) {
+            k = j % 4 == 0 ? DARK_CYAN : YELLOW;
+            vertexConsumer.vertex(matrix4f, h, f, i + (float)j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, h, f, i + (float)j).color(k).next();
+            vertexConsumer.vertex(matrix4f, h, g, i + (float)j).color(k).next();
+            vertexConsumer.vertex(matrix4f, h, g, i + (float)j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, h + 16.0f, f, i + (float)j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, h + 16.0f, f, i + (float)j).color(k).next();
+            vertexConsumer.vertex(matrix4f, h + 16.0f, g, i + (float)j).color(k).next();
+            vertexConsumer.vertex(matrix4f, h + 16.0f, g, i + (float)j).color(1.0f, 1.0f, 0.0f, 0.0f).next();
         }
-        for (i = this.client.world.getBottomY(); i <= this.client.world.getTopY(); i += 2) {
-            double h = (double)i - cameraY;
-            int k = i % 8 == 0 ? field_35557 : field_35558;
-            bufferBuilder.vertex(f, h, g).color(1.0f, 1.0f, 0.0f, 0.0f).next();
-            bufferBuilder.vertex(f, h, g).color(k).next();
-            bufferBuilder.vertex(f, h, g + 16.0).color(k).next();
-            bufferBuilder.vertex(f + 16.0, h, g + 16.0).color(k).next();
-            bufferBuilder.vertex(f + 16.0, h, g).color(k).next();
-            bufferBuilder.vertex(f, h, g).color(k).next();
-            bufferBuilder.vertex(f, h, g).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+        for (j = this.client.world.getBottomY(); j <= this.client.world.getTopY(); j += 2) {
+            float l = (float)((double)j - cameraY);
+            int m = j % 8 == 0 ? DARK_CYAN : YELLOW;
+            vertexConsumer.vertex(matrix4f, h, l, i).color(1.0f, 1.0f, 0.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, h, l, i).color(m).next();
+            vertexConsumer.vertex(matrix4f, h, l, i + 16.0f).color(m).next();
+            vertexConsumer.vertex(matrix4f, h + 16.0f, l, i + 16.0f).color(m).next();
+            vertexConsumer.vertex(matrix4f, h + 16.0f, l, i).color(m).next();
+            vertexConsumer.vertex(matrix4f, h, l, i).color(m).next();
+            vertexConsumer.vertex(matrix4f, h, l, i).color(1.0f, 1.0f, 0.0f, 0.0f).next();
         }
-        tessellator.draw();
-        RenderSystem.lineWidth(2.0f);
-        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
-        for (i = 0; i <= 16; i += 16) {
-            for (int j2 = 0; j2 <= 16; j2 += 16) {
-                bufferBuilder.vertex(f + (double)i, d, g + (double)j2).color(0.25f, 0.25f, 1.0f, 0.0f).next();
-                bufferBuilder.vertex(f + (double)i, d, g + (double)j2).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-                bufferBuilder.vertex(f + (double)i, e, g + (double)j2).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-                bufferBuilder.vertex(f + (double)i, e, g + (double)j2).color(0.25f, 0.25f, 1.0f, 0.0f).next();
+        vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugLineStrip(2.0));
+        for (j = 0; j <= 16; j += 16) {
+            for (int k2 = 0; k2 <= 16; k2 += 16) {
+                vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k2).color(0.25f, 0.25f, 1.0f, 0.0f).next();
+                vertexConsumer.vertex(matrix4f, h + (float)j, f, i + (float)k2).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+                vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k2).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+                vertexConsumer.vertex(matrix4f, h + (float)j, g, i + (float)k2).color(0.25f, 0.25f, 1.0f, 0.0f).next();
             }
         }
-        for (i = this.client.world.getBottomY(); i <= this.client.world.getTopY(); i += 16) {
-            double h = (double)i - cameraY;
-            bufferBuilder.vertex(f, h, g).color(0.25f, 0.25f, 1.0f, 0.0f).next();
-            bufferBuilder.vertex(f, h, g).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(f, h, g + 16.0).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(f + 16.0, h, g + 16.0).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(f + 16.0, h, g).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(f, h, g).color(0.25f, 0.25f, 1.0f, 1.0f).next();
-            bufferBuilder.vertex(f, h, g).color(0.25f, 0.25f, 1.0f, 0.0f).next();
+        for (j = this.client.world.getBottomY(); j <= this.client.world.getTopY(); j += 16) {
+            float l = (float)((double)j - cameraY);
+            vertexConsumer.vertex(matrix4f, h, l, i).color(0.25f, 0.25f, 1.0f, 0.0f).next();
+            vertexConsumer.vertex(matrix4f, h, l, i).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            vertexConsumer.vertex(matrix4f, h, l, i + 16.0f).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            vertexConsumer.vertex(matrix4f, h + 16.0f, l, i + 16.0f).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            vertexConsumer.vertex(matrix4f, h + 16.0f, l, i).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            vertexConsumer.vertex(matrix4f, h, l, i).color(0.25f, 0.25f, 1.0f, 1.0f).next();
+            vertexConsumer.vertex(matrix4f, h, l, i).color(0.25f, 0.25f, 1.0f, 0.0f).next();
         }
-        tessellator.draw();
-        RenderSystem.lineWidth(1.0f);
-        RenderSystem.enableBlend();
     }
 }
 

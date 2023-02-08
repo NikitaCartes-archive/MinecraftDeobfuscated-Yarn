@@ -33,7 +33,6 @@ extends Item {
             if (!world.isClient && playerEntity != null) {
                 LeadItem.attachHeldMobsToBlock(playerEntity, world, blockPos);
             }
-            world.emitGameEvent(GameEvent.BLOCK_ATTACH, blockPos, GameEvent.Emitter.of(playerEntity));
             return ActionResult.success(world.isClient);
         }
         return ActionResult.PASS;
@@ -55,6 +54,9 @@ extends Item {
             }
             mobEntity.attachLeash(leashKnotEntity, true);
             bl = true;
+        }
+        if (bl) {
+            world.emitGameEvent(GameEvent.BLOCK_ATTACH, pos, GameEvent.Emitter.of(player));
         }
         return bl ? ActionResult.SUCCESS : ActionResult.PASS;
     }

@@ -26,6 +26,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class LeashKnotEntity
@@ -99,14 +100,19 @@ extends AbstractDecorationEntity {
             mobEntity.attachLeash(this, true);
             bl = true;
         }
+        boolean bl2 = false;
         if (!bl) {
             this.discard();
             if (player.getAbilities().creativeMode) {
-                for (MobEntity mobEntity : list) {
-                    if (!mobEntity.isLeashed() || mobEntity.getHoldingEntity() != this) continue;
-                    mobEntity.detachLeash(true, false);
+                for (MobEntity mobEntity2 : list) {
+                    if (!mobEntity2.isLeashed() || mobEntity2.getHoldingEntity() != this) continue;
+                    mobEntity2.detachLeash(true, false);
+                    bl2 = true;
                 }
             }
+        }
+        if (bl || bl2) {
+            this.emitGameEvent(GameEvent.BLOCK_ATTACH, player);
         }
         return ActionResult.CONSUME;
     }

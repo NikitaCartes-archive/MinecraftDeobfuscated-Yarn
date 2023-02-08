@@ -12,7 +12,6 @@ import net.minecraft.block.FireBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.SoulFireBlock;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
@@ -132,7 +131,7 @@ extends Block {
                 entity.setOnFireFor(8);
             }
         }
-        entity.damage(DamageSource.IN_FIRE, this.damage);
+        entity.damage(world.getDamageSources().inFire(), this.damage);
         super.onEntityCollision(state, world, pos, entity);
     }
 

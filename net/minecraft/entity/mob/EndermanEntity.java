@@ -33,7 +33,6 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -346,20 +345,26 @@ implements Angerable {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (source instanceof ProjectileDamageSource) {
+        if (source.isIndirect()) {
+            boolean bl;
             Entity entity = source.getSource();
-            boolean bl = entity instanceof PotionEntity ? this.damageFromPotion(source, (PotionEntity)entity, amount) : false;
+            if (entity instanceof PotionEntity) {
+                PotionEntity potionEntity = (PotionEntity)entity;
+                bl = this.damageFromPotion(source, potionEntity, amount);
+            } else {
+                bl = false;
+            }
             for (int i = 0; i < 64; ++i) {
                 if (!this.teleportRandomly()) continue;
                 return true;
             }
             return bl;
         }
-        boolean bl2 = super.damage(source, amount);
+        boolean bl = super.damage(source, amount);
         if (!this.world.isClient() && !(source.getAttacker() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
             this.teleportRandomly();
         }
-        return bl2;
+        return bl;
     }
 
     private boolean damageFromPotion(DamageSource source, PotionEntity potion, float amount) {
@@ -526,7 +531,7 @@ implements Angerable {
         public TeleportTowardsPlayerGoal(EndermanEntity enderman, @Nullable Predicate<LivingEntity> targetPredicate) {
             super(enderman, PlayerEntity.class, 10, false, false, targetPredicate);
             this.enderman = enderman;
-            this.angerPredicate = playerEntity -> enderman.isPlayerStaring((PlayerEntity)playerEntity) || enderman.shouldAngerAt((LivingEntity)playerEntity);
+            this.angerPredicate = playerEntity -> (enderman.isPlayerStaring((PlayerEntity)playerEntity) || enderman.shouldAngerAt((LivingEntity)playerEntity)) && !enderman.hasPassengerDeep((Entity)playerEntity);
             this.staringPlayerPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(this.getFollowRange()).setPredicate(this.angerPredicate);
         }
 
@@ -558,8 +563,13 @@ implements Angerable {
                 this.enderman.lookAtEntity(this.targetPlayer, 10.0f, 10.0f);
                 return true;
             }
-            if (this.targetEntity != null && this.validTargetPredicate.test(this.enderman, this.targetEntity)) {
-                return true;
+            if (this.targetEntity != null) {
+                if (this.enderman.hasPassengerDeep(this.targetEntity)) {
+                    return false;
+                }
+                if (this.validTargetPredicate.test(this.enderman, this.targetEntity)) {
+                    return true;
+                }
             }
             return super.shouldContinue();
         }

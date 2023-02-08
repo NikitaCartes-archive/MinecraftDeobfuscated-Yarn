@@ -60,7 +60,7 @@ implements GameEventListener {
             if (!livingEntity.isExperienceDroppingDisabled()) {
                 int i = livingEntity.getXpToDrop();
                 if (livingEntity.shouldDropXp() && i > 0) {
-                    this.spreadManager.spread(new BlockPos(emitterPos.withBias(Direction.UP, 0.5)), i);
+                    this.spreadManager.spread(new BlockPos(emitterPos.offset(Direction.UP, 0.5)), i);
                     this.triggerCriteria(livingEntity);
                 }
                 livingEntity.disableExperienceDropping();
@@ -75,7 +75,7 @@ implements GameEventListener {
         LivingEntity livingEntity = deadEntity.getAttacker();
         if (livingEntity instanceof ServerPlayerEntity) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
-            DamageSource damageSource = deadEntity.getRecentDamageSource() == null ? DamageSource.player(serverPlayerEntity) : deadEntity.getRecentDamageSource();
+            DamageSource damageSource = deadEntity.getRecentDamageSource() == null ? this.world.getDamageSources().playerAttack(serverPlayerEntity) : deadEntity.getRecentDamageSource();
             Criteria.KILL_MOB_NEAR_SCULK_CATALYST.trigger(serverPlayerEntity, deadEntity, damageSource);
         }
     }

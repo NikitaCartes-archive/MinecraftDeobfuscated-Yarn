@@ -41,7 +41,7 @@ implements TooltipPositioner {
 
     private static int getOffsetY(int tooltipY, int widgetY, int widgetHeight) {
         int i = Math.min(Math.abs(tooltipY - widgetY), widgetHeight);
-        return Math.round(MathHelper.lerp((float)i / (float)widgetHeight, widgetHeight - 3, 5.0f));
+        return Math.round(MathHelper.lerp((float)i / (float)widgetHeight, widgetHeight - 3, 5));
     }
 }
 

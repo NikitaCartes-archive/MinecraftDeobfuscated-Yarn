@@ -67,7 +67,7 @@ extends ConfirmScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         super.render(matrices, mouseX, mouseY, delta);
         if (this.drawWarning) {
-            ConfirmLinkScreen.drawCenteredText(matrices, this.textRenderer, WARNING, this.width / 2, 110, 0xFFCCCC);
+            ConfirmLinkScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, WARNING, this.width / 2, 110, 0xFFCCCC);
         }
     }
 }

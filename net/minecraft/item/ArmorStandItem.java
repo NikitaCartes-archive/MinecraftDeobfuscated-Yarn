@@ -18,10 +18,8 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -55,25 +53,12 @@ extends Item {
             }
             float f = (float)MathHelper.floor((MathHelper.wrapDegrees(context.getPlayerYaw() - 180.0f) + 22.5f) / 45.0f) * 45.0f;
             armorStandEntity.refreshPositionAndAngles(armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), f, 0.0f);
-            this.setRotations(armorStandEntity, world.random);
             serverWorld.spawnEntityAndPassengers(armorStandEntity);
             world.playSound(null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75f, 0.8f);
             armorStandEntity.emitGameEvent(GameEvent.ENTITY_PLACE, context.getPlayer());
         }
         itemStack.decrement(1);
         return ActionResult.success(world.isClient);
-    }
-
-    private void setRotations(ArmorStandEntity stand, Random random) {
-        EulerAngle eulerAngle = stand.getHeadRotation();
-        float f = random.nextFloat() * 5.0f;
-        float g = random.nextFloat() * 20.0f - 10.0f;
-        EulerAngle eulerAngle2 = new EulerAngle(eulerAngle.getPitch() + f, eulerAngle.getYaw() + g, eulerAngle.getRoll());
-        stand.setHeadRotation(eulerAngle2);
-        eulerAngle = stand.getBodyRotation();
-        f = random.nextFloat() * 10.0f - 5.0f;
-        eulerAngle2 = new EulerAngle(eulerAngle.getPitch(), eulerAngle.getYaw() + f, eulerAngle.getRoll());
-        stand.setBodyRotation(eulerAngle2);
     }
 }
 

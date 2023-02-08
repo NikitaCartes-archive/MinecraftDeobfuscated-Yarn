@@ -28,6 +28,8 @@ import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.village.VillagerData;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class TrackedDataHandlerRegistry {
     private static final Int2ObjectBiMap<TrackedDataHandler<?>> DATA_HANDLERS = Int2ObjectBiMap.create(16);
@@ -60,6 +62,7 @@ public class TrackedDataHandlerRegistry {
             return this.read(buf);
         }
     };
+    public static final TrackedDataHandler<BlockState> BLOCK_STATE = TrackedDataHandler.of(Block.STATE_IDS);
     public static final TrackedDataHandler<Optional<BlockState>> OPTIONAL_BLOCK_STATE = new TrackedDataHandler.ImmutableHandler<Optional<BlockState>>(){
 
         @Override
@@ -195,6 +198,8 @@ public class TrackedDataHandlerRegistry {
     public static final TrackedDataHandler<CatVariant> CAT_VARIANT = TrackedDataHandler.of(Registries.CAT_VARIANT);
     public static final TrackedDataHandler<FrogVariant> FROG_VARIANT = TrackedDataHandler.of(Registries.FROG_VARIANT);
     public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.of(Registries.PAINTING_VARIANT.getIndexedEntries());
+    public static final TrackedDataHandler<Vector3f> VECTOR3F = TrackedDataHandler.of(PacketByteBuf::writeVector3f, PacketByteBuf::readVector3f);
+    public static final TrackedDataHandler<Quaternionf> QUATERNIONF = TrackedDataHandler.of(PacketByteBuf::writeQuaternionf, PacketByteBuf::readQuaternionf);
 
     public static void register(TrackedDataHandler<?> handler) {
         DATA_HANDLERS.add(handler);
@@ -227,6 +232,7 @@ public class TrackedDataHandlerRegistry {
         TrackedDataHandlerRegistry.register(OPTIONAL_BLOCK_POS);
         TrackedDataHandlerRegistry.register(FACING);
         TrackedDataHandlerRegistry.register(OPTIONAL_UUID);
+        TrackedDataHandlerRegistry.register(BLOCK_STATE);
         TrackedDataHandlerRegistry.register(OPTIONAL_BLOCK_STATE);
         TrackedDataHandlerRegistry.register(NBT_COMPOUND);
         TrackedDataHandlerRegistry.register(PARTICLE);
@@ -237,6 +243,8 @@ public class TrackedDataHandlerRegistry {
         TrackedDataHandlerRegistry.register(FROG_VARIANT);
         TrackedDataHandlerRegistry.register(OPTIONAL_GLOBAL_POS);
         TrackedDataHandlerRegistry.register(PAINTING_VARIANT);
+        TrackedDataHandlerRegistry.register(VECTOR3F);
+        TrackedDataHandlerRegistry.register(QUATERNIONF);
     }
 }
 

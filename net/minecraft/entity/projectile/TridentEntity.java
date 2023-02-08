@@ -115,14 +115,14 @@ extends PersistentProjectileEntity {
     protected void onEntityHit(EntityHitResult entityHitResult) {
         LightningEntity lightningEntity;
         BlockPos blockPos;
-        Entity entity2;
         Entity entity = entityHitResult.getEntity();
         float f = 8.0f;
         if (entity instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
             f += EnchantmentHelper.getAttackDamage(this.tridentStack, livingEntity.getGroup());
         }
-        DamageSource damageSource = DamageSource.trident(this, (entity2 = this.getOwner()) == null ? this : entity2);
+        Entity entity2 = this.getOwner();
+        DamageSource damageSource = this.getDamageSources().trident(this, entity2 == null ? this : entity2);
         this.dealtDamage = true;
         SoundEvent soundEvent = SoundEvents.ITEM_TRIDENT_HIT;
         if (entity.damage(damageSource, f)) {

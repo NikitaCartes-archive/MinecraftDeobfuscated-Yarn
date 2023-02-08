@@ -17,7 +17,7 @@ import net.minecraft.client.render.block.BlockModels;
 import net.minecraft.client.render.block.FluidRenderer;
 import net.minecraft.client.render.item.BuiltinModelItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
@@ -110,7 +110,7 @@ implements SynchronousResourceReloader {
                 break;
             }
             case ENTITYBLOCK_ANIMATED: {
-                this.builtinModelItemRenderer.render(new ItemStack(state.getBlock()), ModelTransformation.Mode.NONE, matrices, vertexConsumer, light, overlay);
+                this.builtinModelItemRenderer.render(new ItemStack(state.getBlock()), ModelTransformationMode.NONE, matrices, vertexConsumer, light, overlay);
             }
         }
     }

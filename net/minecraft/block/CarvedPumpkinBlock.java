@@ -16,10 +16,11 @@ import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.item.Wearable;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
@@ -34,7 +35,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class CarvedPumpkinBlock
 extends HorizontalFacingBlock
-implements Wearable {
+implements Equipment {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     @Nullable
     private BlockPattern snowGolemDispenserPattern;
@@ -145,6 +146,11 @@ implements Wearable {
             this.ironGolemPattern = BlockPatternBuilder.start().aisle("~^~", "###", "~#~").where('^', CachedBlockPosition.matchesBlockState(IS_GOLEM_HEAD_PREDICATE)).where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.IRON_BLOCK))).where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR))).build();
         }
         return this.ironGolemPattern;
+    }
+
+    @Override
+    public EquipmentSlot getSlotType() {
+        return EquipmentSlot.HEAD;
     }
 }
 

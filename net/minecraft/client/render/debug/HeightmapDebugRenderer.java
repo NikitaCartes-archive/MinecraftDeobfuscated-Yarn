@@ -3,17 +3,13 @@
  */
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
@@ -39,13 +35,8 @@ implements DebugRenderer.Renderer {
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         ClientWorld worldAccess = this.client.world;
-        RenderSystem.disableBlend();
-        RenderSystem.enableDepthTest();
-        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugFilledBox());
         BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferBuilder = tessellator.getBuffer();
-        bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
         for (int i = -2; i <= 2; ++i) {
             for (int j = -2; j <= 2; ++j) {
                 Chunk chunk = worldAccess.getChunk(blockPos.add(i * 16, 0, j * 16));
@@ -58,37 +49,24 @@ implements DebugRenderer.Renderer {
                             int m = ChunkSectionPos.getOffsetPos(chunkPos.x, k);
                             int n = ChunkSectionPos.getOffsetPos(chunkPos.z, l);
                             float f = (float)((double)((float)worldAccess.getTopY(type, m, n) + (float)type.ordinal() * 0.09375f) - cameraY);
-                            WorldRenderer.drawBox(bufferBuilder, (double)((float)m + 0.25f) - cameraX, (double)f, (double)((float)n + 0.25f) - cameraZ, (double)((float)m + 0.75f) - cameraX, (double)(f + 0.09375f), (double)((float)n + 0.75f) - cameraZ, vector3f.x(), vector3f.y(), vector3f.z(), 1.0f);
+                            WorldRenderer.method_3258(matrices, vertexConsumer, (double)((float)m + 0.25f) - cameraX, f, (double)((float)n + 0.25f) - cameraZ, (double)((float)m + 0.75f) - cameraX, f + 0.09375f, (double)((float)n + 0.75f) - cameraZ, vector3f.x(), vector3f.y(), vector3f.z(), 1.0f);
                         }
                     }
                 }
             }
         }
-        tessellator.draw();
     }
 
     private Vector3f getColorForHeightmapType(Heightmap.Type type) {
-        switch (type) {
-            case WORLD_SURFACE_WG: {
-                return new Vector3f(1.0f, 1.0f, 0.0f);
-            }
-            case OCEAN_FLOOR_WG: {
-                return new Vector3f(1.0f, 0.0f, 1.0f);
-            }
-            case WORLD_SURFACE: {
-                return new Vector3f(0.0f, 0.7f, 0.0f);
-            }
-            case OCEAN_FLOOR: {
-                return new Vector3f(0.0f, 0.0f, 0.5f);
-            }
-            case MOTION_BLOCKING: {
-                return new Vector3f(0.0f, 0.3f, 0.3f);
-            }
-            case MOTION_BLOCKING_NO_LEAVES: {
-                return new Vector3f(0.0f, 0.5f, 0.5f);
-            }
-        }
-        return new Vector3f(0.0f, 0.0f, 0.0f);
+        return switch (type) {
+            default -> throw new IncompatibleClassChangeError();
+            case Heightmap.Type.WORLD_SURFACE_WG -> new Vector3f(1.0f, 1.0f, 0.0f);
+            case Heightmap.Type.OCEAN_FLOOR_WG -> new Vector3f(1.0f, 0.0f, 1.0f);
+            case Heightmap.Type.WORLD_SURFACE -> new Vector3f(0.0f, 0.7f, 0.0f);
+            case Heightmap.Type.OCEAN_FLOOR -> new Vector3f(0.0f, 0.0f, 0.5f);
+            case Heightmap.Type.MOTION_BLOCKING -> new Vector3f(0.0f, 0.3f, 0.3f);
+            case Heightmap.Type.MOTION_BLOCKING_NO_LEAVES -> new Vector3f(0.0f, 0.5f, 0.5f);
+        };
     }
 }
 

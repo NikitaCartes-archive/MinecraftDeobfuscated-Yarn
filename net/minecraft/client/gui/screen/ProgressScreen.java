@@ -76,10 +76,10 @@ implements ProgressListener {
         }
         this.renderBackground(matrices);
         if (this.title != null) {
-            ProgressScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
+            ProgressScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
         }
         if (this.task != null && this.progress != 0) {
-            ProgressScreen.drawCenteredText(matrices, this.textRenderer, Text.empty().append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 0xFFFFFF);
+            ProgressScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, Text.empty().append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

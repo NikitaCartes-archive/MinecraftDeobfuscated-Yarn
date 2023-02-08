@@ -89,12 +89,12 @@ extends Screen {
         this.fillGradient(matrices, 0, 0, this.width, this.height, 0x60500000, -1602211792);
         matrices.push();
         matrices.scale(2.0f, 2.0f, 2.0f);
-        DeathScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 0xFFFFFF);
+        DeathScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 0xFFFFFF);
         matrices.pop();
         if (this.message != null) {
-            DeathScreen.drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 85, 0xFFFFFF);
+            DeathScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.message, this.width / 2, 85, 0xFFFFFF);
         }
-        DeathScreen.drawCenteredText(matrices, this.textRenderer, this.scoreText, this.width / 2, 100, 0xFFFFFF);
+        DeathScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.scoreText, this.width / 2, 100, 0xFFFFFF);
         if (this.message != null && mouseY > 85 && mouseY < 85 + this.textRenderer.fontHeight) {
             Style style = this.getTextComponentUnderMouse(mouseX);
             this.renderTextHoverEffect(matrices, style, mouseX, mouseY);

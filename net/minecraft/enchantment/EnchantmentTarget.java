@@ -8,13 +8,13 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.TridentItem;
 import net.minecraft.item.Vanishable;
-import net.minecraft.item.Wearable;
 
 /*
  * Uses 'sealed' constructs - enablewith --sealed true
@@ -32,7 +32,8 @@ public enum EnchantmentTarget {
 
         @Override
         public boolean isAcceptableItem(Item item) {
-            return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.FEET;
+            ArmorItem armorItem;
+            return item instanceof ArmorItem && (armorItem = (ArmorItem)item).getSlotType() == EquipmentSlot.FEET;
         }
     }
     ,
@@ -40,7 +41,8 @@ public enum EnchantmentTarget {
 
         @Override
         public boolean isAcceptableItem(Item item) {
-            return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.LEGS;
+            ArmorItem armorItem;
+            return item instanceof ArmorItem && (armorItem = (ArmorItem)item).getSlotType() == EquipmentSlot.LEGS;
         }
     }
     ,
@@ -48,7 +50,8 @@ public enum EnchantmentTarget {
 
         @Override
         public boolean isAcceptableItem(Item item) {
-            return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.CHEST;
+            ArmorItem armorItem;
+            return item instanceof ArmorItem && (armorItem = (ArmorItem)item).getSlotType() == EquipmentSlot.CHEST;
         }
     }
     ,
@@ -56,7 +59,8 @@ public enum EnchantmentTarget {
 
         @Override
         public boolean isAcceptableItem(Item item) {
-            return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.HEAD;
+            ArmorItem armorItem;
+            return item instanceof ArmorItem && (armorItem = (ArmorItem)item).getSlotType() == EquipmentSlot.HEAD;
         }
     }
     ,
@@ -112,7 +116,7 @@ public enum EnchantmentTarget {
 
         @Override
         public boolean isAcceptableItem(Item item) {
-            return item instanceof Wearable || Block.getBlockFromItem(item) instanceof Wearable;
+            return item instanceof Equipment || Block.getBlockFromItem(item) instanceof Equipment;
         }
     }
     ,

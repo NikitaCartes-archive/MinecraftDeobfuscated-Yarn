@@ -12,6 +12,7 @@ import java.util.function.Supplier;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemStackSet;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -102,9 +103,9 @@ public class ItemGroup {
         return this.type;
     }
 
-    public void updateEntries(FeatureSet enabledFeatures, boolean operatorEnabled) {
-        EntriesImpl entriesImpl = new EntriesImpl(this, enabledFeatures);
-        this.entryCollector.accept(enabledFeatures, entriesImpl, operatorEnabled);
+    public void updateEntries(DisplayContext displayContext) {
+        EntriesImpl entriesImpl = new EntriesImpl(this, displayContext.enabledFeatures);
+        this.entryCollector.accept(displayContext, entriesImpl);
         this.displayStacks = entriesImpl.parentTabStacks;
         this.searchTabStacks = entriesImpl.searchTabStacks;
         this.reloadSearchProvider();
@@ -138,8 +139,9 @@ public class ItemGroup {
 
     }
 
+    @FunctionalInterface
     public static interface EntryCollector {
-        public void accept(FeatureSet var1, Entries var2, boolean var3);
+        public void accept(DisplayContext var1, Entries var2);
     }
 
     public static enum Type {
@@ -151,7 +153,7 @@ public class ItemGroup {
     }
 
     public static class Builder {
-        private static final EntryCollector EMPTY_ENTRIES = (enabledFeatures, entries, operatorEnabled) -> {};
+        private static final EntryCollector EMPTY_ENTRIES = (displayContext, entries) -> {};
         private final Row row;
         private final int column;
         private Text displayName = Text.empty();
@@ -259,6 +261,12 @@ public class ItemGroup {
                     }
                 }
             }
+        }
+    }
+
+    public record DisplayContext(FeatureSet enabledFeatures, boolean hasPermissions, RegistryWrapper.WrapperLookup lookup) {
+        public boolean doesNotMatch(FeatureSet enabledFeatures, boolean hasPermissions, RegistryWrapper.WrapperLookup lookup) {
+            return !this.enabledFeatures.equals(enabledFeatures) || this.hasPermissions != hasPermissions || this.lookup != lookup;
         }
     }
 

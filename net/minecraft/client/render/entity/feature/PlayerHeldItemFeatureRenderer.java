@@ -13,7 +13,7 @@ import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,7 +35,7 @@ extends HeldItemFeatureRenderer<T, M> {
     }
 
     @Override
-    protected void renderItem(LivingEntity entity, ItemStack stack, ModelTransformation.Mode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
+    protected void renderItem(LivingEntity entity, ItemStack stack, ModelTransformationMode transformationMode, Arm arm, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
         if (stack.isOf(Items.SPYGLASS) && entity.getActiveItem() == stack && entity.handSwingTicks == 0) {
             this.renderSpyglass(entity, stack, arm, matrices, vertexConsumers, light);
         } else {
@@ -53,7 +53,7 @@ extends HeldItemFeatureRenderer<T, M> {
         HeadFeatureRenderer.translate(matrices, false);
         boolean bl = arm == Arm.LEFT;
         matrices.translate((bl ? -2.5f : 2.5f) / 16.0f, -0.0625f, 0.0f);
-        this.playerHeldItemRenderer.renderItem(entity, stack, ModelTransformation.Mode.HEAD, false, matrices, vertexConsumers, light);
+        this.playerHeldItemRenderer.renderItem(entity, stack, ModelTransformationMode.HEAD, false, matrices, vertexConsumers, light);
         matrices.pop();
     }
 }

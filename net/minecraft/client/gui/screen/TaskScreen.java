@@ -100,10 +100,10 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        TaskScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 80, 0xFFFFFF);
+        TaskScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 80, 0xFFFFFF);
         if (this.description == null) {
             String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
-            TaskScreen.drawCenteredText(matrices, this.textRenderer, string, this.width / 2, 120, 0xA0A0A0);
+            TaskScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, string, this.width / 2, 120, 0xA0A0A0);
         } else {
             this.description.drawCenterWithShadow(matrices, this.width / 2, 120);
         }

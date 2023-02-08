@@ -267,11 +267,12 @@ extends ProjectileEntity {
         Entity entity = entityHitResult.getEntity();
         Entity entity2 = this.getOwner();
         LivingEntity livingEntity = entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null;
-        boolean bl = entity.damage(DamageSource.mobProjectile(this, livingEntity).setProjectile(), 4.0f);
+        boolean bl = entity.damage(this.getDamageSources().mobProjectile(this, livingEntity), 4.0f);
         if (bl) {
             this.applyDamageEffects(livingEntity, entity);
             if (entity instanceof LivingEntity) {
-                ((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200), MoreObjects.firstNonNull(entity2, this));
+                LivingEntity livingEntity2 = (LivingEntity)entity;
+                livingEntity2.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 200), MoreObjects.firstNonNull(entity2, this));
             }
         }
     }

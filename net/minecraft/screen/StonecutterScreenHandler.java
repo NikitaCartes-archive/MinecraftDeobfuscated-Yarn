@@ -145,7 +145,7 @@ extends ScreenHandler {
     private void updateInput(Inventory input, ItemStack stack) {
         this.availableRecipes.clear();
         this.selectedRecipe.set(-1);
-        this.outputSlot.setStack(ItemStack.EMPTY);
+        this.outputSlot.setStackNoCallbacks(ItemStack.EMPTY);
         if (!stack.isEmpty()) {
             this.availableRecipes = this.world.getRecipeManager().getAllMatches(RecipeType.STONECUTTING, input, this.world);
         }
@@ -157,12 +157,12 @@ extends ScreenHandler {
             ItemStack itemStack = stonecuttingRecipe.craft(this.input, this.world.getRegistryManager());
             if (itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
                 this.output.setLastRecipe(stonecuttingRecipe);
-                this.outputSlot.setStack(itemStack);
+                this.outputSlot.setStackNoCallbacks(itemStack);
             } else {
-                this.outputSlot.setStack(ItemStack.EMPTY);
+                this.outputSlot.setStackNoCallbacks(ItemStack.EMPTY);
             }
         } else {
-            this.outputSlot.setStack(ItemStack.EMPTY);
+            this.outputSlot.setStackNoCallbacks(ItemStack.EMPTY);
         }
         this.sendContentUpdates();
     }

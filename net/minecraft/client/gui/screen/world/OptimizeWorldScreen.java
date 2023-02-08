@@ -109,12 +109,12 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        OptimizeWorldScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
+        OptimizeWorldScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
         int i = this.width / 2 - 150;
         int j = this.width / 2 + 150;
         int k = this.height / 4 + 100;
         int l = k + 10;
-        OptimizeWorldScreen.drawCenteredText(matrices, this.textRenderer, this.updater.getStatus(), this.width / 2, k - this.textRenderer.fontHeight - 2, 0xA0A0A0);
+        OptimizeWorldScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.updater.getStatus(), this.width / 2, k - this.textRenderer.fontHeight - 2, 0xA0A0A0);
         if (this.updater.getTotalChunkCount() > 0) {
             OptimizeWorldScreen.fill(matrices, i - 1, k - 1, j + 1, l + 1, -16777216);
             OptimizeWorldScreen.drawTextWithShadow(matrices, this.textRenderer, Text.translatable("optimizeWorld.info.converted", this.updater.getUpgradedChunkCount()), i, 40, 0xA0A0A0);
@@ -127,8 +127,8 @@ extends Screen {
                 m += n;
             }
             int o = this.updater.getUpgradedChunkCount() + this.updater.getSkippedChunkCount();
-            OptimizeWorldScreen.drawCenteredText(matrices, this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * this.textRenderer.fontHeight + 2, 0xA0A0A0);
-            OptimizeWorldScreen.drawCenteredText(matrices, this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0f) + "%", this.width / 2, k + (l - k) / 2 - this.textRenderer.fontHeight / 2, 0xA0A0A0);
+            OptimizeWorldScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, o + " / " + this.updater.getTotalChunkCount(), this.width / 2, k + 2 * this.textRenderer.fontHeight + 2, 0xA0A0A0);
+            OptimizeWorldScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0f) + "%", this.width / 2, k + (l - k) / 2 - this.textRenderer.fontHeight / 2, 0xA0A0A0);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }

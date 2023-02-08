@@ -34,7 +34,6 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
@@ -99,6 +98,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
@@ -649,24 +649,24 @@ extends PlayerEntity {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
+        PlayerEntity playerEntity2;
+        PersistentProjectileEntity persistentProjectileEntity;
+        Entity entity2;
+        PlayerEntity playerEntity;
         boolean bl;
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        boolean bl2 = bl = this.server.isDedicated() && this.isPvpEnabled() && "fall".equals(source.name);
-        if (!bl && this.joinInvulnerabilityTicks > 0 && source != DamageSource.OUT_OF_WORLD) {
+        boolean bl2 = bl = this.server.isDedicated() && this.isPvpEnabled() && source.isIn(DamageTypeTags.IS_FALL);
+        if (!bl && this.joinInvulnerabilityTicks > 0 && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             return false;
         }
-        if (source instanceof EntityDamageSource) {
-            PersistentProjectileEntity persistentProjectileEntity;
-            Entity entity2;
-            Entity entity = source.getAttacker();
-            if (entity instanceof PlayerEntity && !this.shouldDamagePlayer((PlayerEntity)entity)) {
-                return false;
-            }
-            if (entity instanceof PersistentProjectileEntity && (entity2 = (persistentProjectileEntity = (PersistentProjectileEntity)entity).getOwner()) instanceof PlayerEntity && !this.shouldDamagePlayer((PlayerEntity)entity2)) {
-                return false;
-            }
+        Entity entity = source.getAttacker();
+        if (entity instanceof PlayerEntity && !this.shouldDamagePlayer(playerEntity = (PlayerEntity)entity)) {
+            return false;
+        }
+        if (entity instanceof PersistentProjectileEntity && (entity2 = (persistentProjectileEntity = (PersistentProjectileEntity)entity).getOwner()) instanceof PlayerEntity && !this.shouldDamagePlayer(playerEntity2 = (PlayerEntity)entity2)) {
+            return false;
         }
         return super.damage(source, amount);
     }
@@ -905,7 +905,7 @@ extends PlayerEntity {
 
     @Override
     public boolean isInvulnerableTo(DamageSource damageSource) {
-        return super.isInvulnerableTo(damageSource) || this.isInTeleportationState() || this.getAbilities().invulnerable && damageSource == DamageSource.WITHER;
+        return super.isInvulnerableTo(damageSource) || this.isInTeleportationState();
     }
 
     @Override
@@ -1647,9 +1647,8 @@ extends PlayerEntity {
     }
 
     @Override
-    public void takeKnockback(double strength, double x, double z) {
-        super.takeKnockback(strength, x, z);
-        this.damageTiltYaw = (float)(MathHelper.atan2(z, x) * 57.2957763671875 - (double)this.getYaw());
+    public void tiltScreen(double deltaX, double deltaZ) {
+        this.damageTiltYaw = (float)(MathHelper.atan2(deltaZ, deltaX) * 57.2957763671875 - (double)this.getYaw());
         this.networkHandler.sendPacket(new DamageTiltS2CPacket(this));
     }
 

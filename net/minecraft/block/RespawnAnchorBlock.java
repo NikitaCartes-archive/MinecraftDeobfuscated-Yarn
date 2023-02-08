@@ -10,9 +10,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Dismounting;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
@@ -37,8 +37,10 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.CollisionView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
+import org.jetbrains.annotations.Nullable;
 
 public class RespawnAnchorBlock
 extends Block {
@@ -60,7 +62,7 @@ extends Block {
             return ActionResult.PASS;
         }
         if (RespawnAnchorBlock.isChargeItem(itemStack) && RespawnAnchorBlock.canCharge(state)) {
-            RespawnAnchorBlock.charge(world, pos, state);
+            RespawnAnchorBlock.charge(player, world, pos, state);
             if (!player.getAbilities().creativeMode) {
                 itemStack.decrement(1);
             }
@@ -123,15 +125,17 @@ extends Block {
             }
         };
         Vec3d vec3d = explodedPos.toCenterPos();
-        world.createExplosion(null, DamageSource.badRespawnPoint(vec3d), explosionBehavior, vec3d, 5.0f, true, World.ExplosionSourceType.BLOCK);
+        world.createExplosion(null, world.getDamageSources().badRespawnPoint(vec3d), explosionBehavior, vec3d, 5.0f, true, World.ExplosionSourceType.BLOCK);
     }
 
     public static boolean isNether(World world) {
         return world.getDimension().respawnAnchorWorks();
     }
 
-    public static void charge(World world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, (BlockState)state.with(CHARGES, state.get(CHARGES) + 1), Block.NOTIFY_ALL);
+    public static void charge(@Nullable Entity charger, World world, BlockPos pos, BlockState state) {
+        BlockState blockState = (BlockState)state.with(CHARGES, state.get(CHARGES) + 1);
+        world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
+        world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(charger, blockState));
         world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.BLOCKS, 1.0f, 1.0f);
     }
 

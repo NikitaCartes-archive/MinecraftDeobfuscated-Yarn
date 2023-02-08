@@ -78,8 +78,8 @@ extends AbstractRecipeScreenHandler<Inventory> {
 
     @Override
     public void clearCraftingSlots() {
-        this.getSlot(0).setStack(ItemStack.EMPTY);
-        this.getSlot(2).setStack(ItemStack.EMPTY);
+        this.getSlot(0).setStackNoCallbacks(ItemStack.EMPTY);
+        this.getSlot(2).setStackNoCallbacks(ItemStack.EMPTY);
     }
 
     @Override

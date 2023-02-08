@@ -192,7 +192,6 @@ public class GameOptions {
     private final SimpleOption<Arm> mainArm = new SimpleOption<Arm>("options.mainHand", SimpleOption.emptyTooltip(), SimpleOption.enumValueText(), new SimpleOption.PotentialValuesBasedCallbacks<Arm>(Arrays.asList(Arm.values()), Codec.STRING.xmap(value -> "left".equals(value) ? Arm.LEFT : Arm.RIGHT, value -> value == Arm.LEFT ? "left" : "right")), Arm.RIGHT, value -> this.sendClientSettings());
     public int overrideWidth;
     public int overrideHeight;
-    public boolean heldItemTooltips = true;
     private final SimpleOption<Double> chatScale = new SimpleOption<Double>("options.chat.scale", SimpleOption.emptyTooltip(), (optionText, value) -> {
         if (value == 0.0) {
             return ScreenTexts.composeToggleText(optionText, false);
@@ -488,19 +487,26 @@ public class GameOptions {
         return GameOptions.getPercentValueText(optionText, value);
     }, SimpleOption.DoubleSliderCallbacks.INSTANCE.withModifier(MathHelper::square, Math::sqrt), 1.0, value -> {});
     private static final Text GLINT_SPEED_TOOLTIP = Text.translatable("options.glintSpeed.tooltip");
-    private final SimpleOption<Double> glintSpeed = new SimpleOption<Double>("options.glintSpeed", SimpleOption.constantTooltip(GLINT_SPEED_TOOLTIP), (prefix, value) -> {
+    private final SimpleOption<Double> glintSpeed = new SimpleOption<Double>("options.glintSpeed", SimpleOption.constantTooltip(GLINT_SPEED_TOOLTIP), (optionText, value) -> {
         if (value == 0.0) {
-            return GameOptions.getGenericValueText(prefix, ScreenTexts.OFF);
+            return GameOptions.getGenericValueText(optionText, ScreenTexts.OFF);
         }
-        return GameOptions.getPercentValueText(prefix, value);
+        return GameOptions.getPercentValueText(optionText, value);
     }, SimpleOption.DoubleSliderCallbacks.INSTANCE, 0.5, value -> {});
     private static final Text GLINT_STRENGTH_TOOLTIP = Text.translatable("options.glintStrength.tooltip");
-    private final SimpleOption<Double> glintStrength = new SimpleOption<Double>("options.glintStrength", SimpleOption.constantTooltip(GLINT_STRENGTH_TOOLTIP), (prefix, value) -> {
+    private final SimpleOption<Double> glintStrength = new SimpleOption<Double>("options.glintStrength", SimpleOption.constantTooltip(GLINT_STRENGTH_TOOLTIP), (optionText, value) -> {
         if (value == 0.0) {
-            return GameOptions.getGenericValueText(prefix, ScreenTexts.OFF);
+            return GameOptions.getGenericValueText(optionText, ScreenTexts.OFF);
         }
-        return GameOptions.getPercentValueText(prefix, value);
+        return GameOptions.getPercentValueText(optionText, value);
     }, SimpleOption.DoubleSliderCallbacks.INSTANCE, 1.0, RenderSystem::setShaderGlintAlpha);
+    private static final Text DAMAGE_TILT_STRENGTH_TOOLTIP = Text.translatable("options.damageTiltStrength.tooltip");
+    private final SimpleOption<Double> damageTiltStrength = new SimpleOption<Double>("options.damageTiltStrength", SimpleOption.constantTooltip(DAMAGE_TILT_STRENGTH_TOOLTIP), (optionText, value) -> {
+        if (value == 0.0) {
+            return GameOptions.getGenericValueText(optionText, ScreenTexts.OFF);
+        }
+        return GameOptions.getPercentValueText(optionText, value);
+    }, SimpleOption.DoubleSliderCallbacks.INSTANCE, 1.0, value -> {});
     private final SimpleOption<Double> gamma = new SimpleOption<Double>("options.gamma", SimpleOption.emptyTooltip(), (optionText, value) -> {
         int i = (int)(value * 100.0);
         if (i == 0) {
@@ -815,6 +821,10 @@ public class GameOptions {
         return this.glintStrength;
     }
 
+    public SimpleOption<Double> getDamageTiltStrength() {
+        return this.damageTiltStrength;
+    }
+
     public SimpleOption<Double> getGamma() {
         return this.gamma;
     }
@@ -893,6 +903,7 @@ public class GameOptions {
         visitor.accept("darknessEffectScale", this.darknessEffectScale);
         visitor.accept("glintSpeed", this.glintSpeed);
         visitor.accept("glintStrength", this.glintStrength);
+        visitor.accept("damageTiltStrength", this.damageTiltStrength);
         visitor.accept("gamma", this.gamma);
         visitor.accept("renderDistance", this.viewDistance);
         visitor.accept("simulationDistance", this.simulationDistance);
@@ -920,7 +931,6 @@ public class GameOptions {
         this.pauseOnLostFocus = visitor.visitBoolean("pauseOnLostFocus", this.pauseOnLostFocus);
         this.overrideWidth = visitor.visitInt("overrideWidth", this.overrideWidth);
         this.overrideHeight = visitor.visitInt("overrideHeight", this.overrideHeight);
-        this.heldItemTooltips = visitor.visitBoolean("heldItemTooltips", this.heldItemTooltips);
         visitor.accept("chatHeightFocused", this.chatHeightFocused);
         visitor.accept("chatDelay", this.chatDelay);
         visitor.accept("chatHeightUnfocused", this.chatHeightUnfocused);
