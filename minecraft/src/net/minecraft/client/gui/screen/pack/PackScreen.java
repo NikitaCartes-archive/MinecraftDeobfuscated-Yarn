@@ -168,8 +168,8 @@ public class PackScreen extends Screen {
 		this.renderBackgroundTexture(matrices);
 		this.availablePackList.render(matrices, mouseX, mouseY, delta);
 		this.selectedPackList.render(matrices, mouseX, mouseY, delta);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
-		drawCenteredText(matrices, this.textRenderer, DROP_INFO, this.width / 2, 20, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, DROP_INFO, this.width / 2, 20, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

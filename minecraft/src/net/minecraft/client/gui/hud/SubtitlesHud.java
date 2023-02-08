@@ -93,9 +93,9 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				int r = q + -16777216;
 				if (!bl) {
 					if (e > 0.0) {
-						drawStringWithShadow(matrices, this.client.textRenderer, ">", l - this.client.textRenderer.getWidth(">"), -n, r);
+						drawTextWithShadow(matrices, this.client.textRenderer, ">", l - this.client.textRenderer.getWidth(">"), -n, r);
 					} else if (e < 0.0) {
-						drawStringWithShadow(matrices, this.client.textRenderer, "<", -l, -n, r);
+						drawTextWithShadow(matrices, this.client.textRenderer, "<", -l, -n, r);
 					}
 				}
 

@@ -4,7 +4,6 @@ import java.util.Map.Entry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.random.Random;
@@ -42,7 +41,7 @@ public class ThornsEnchantment extends Enchantment {
 		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.THORNS, user);
 		if (shouldDamageAttacker(level, random)) {
 			if (attacker != null) {
-				attacker.damage(DamageSource.thorns(user), (float)getDamageAmount(level, random));
+				attacker.damage(user.getDamageSources().thorns(user), (float)getDamageAmount(level, random));
 			}
 
 			if (entry != null) {

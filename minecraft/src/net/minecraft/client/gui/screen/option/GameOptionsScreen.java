@@ -32,7 +32,7 @@ public class GameOptionsScreen extends Screen {
 	protected void render(MatrixStack matrices, ButtonListWidget optionButtons, int mouseX, int mouseY, float tickDelta) {
 		this.renderBackground(matrices);
 		optionButtons.render(matrices, mouseX, mouseY, tickDelta);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		super.render(matrices, mouseX, mouseY, tickDelta);
 	}
 }

@@ -63,6 +63,6 @@ public class DamageRecord {
 	}
 
 	public float getFallDistance() {
-		return this.damageSource == DamageSource.OUT_OF_WORLD ? Float.MAX_VALUE : this.fallDistance;
+		return this.fallDistance;
 	}
 }

@@ -119,9 +119,9 @@ public class OpenToLanScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
-		drawCenteredText(matrices, this.textRenderer, OTHER_PLAYERS_TEXT, this.width / 2, 82, 16777215);
-		drawCenteredText(matrices, this.textRenderer, PORT_TEXT, this.width / 2, 142, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, OTHER_PLAYERS_TEXT, this.width / 2, 82, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, PORT_TEXT, this.width / 2, 142, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

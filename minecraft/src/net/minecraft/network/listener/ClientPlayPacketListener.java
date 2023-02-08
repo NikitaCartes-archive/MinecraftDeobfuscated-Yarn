@@ -30,6 +30,7 @@ import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -328,4 +329,6 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onFeatures(FeaturesS2CPacket packet);
 
 	void onBundle(BundleS2CPacket packet);
+
+	void onEntityDamage(EntityDamageS2CPacket packet);
 }

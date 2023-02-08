@@ -26,6 +26,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -37,6 +38,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
@@ -161,12 +163,13 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (this.fixed) {
-			return source != DamageSource.OUT_OF_WORLD && !source.isSourceCreativePlayer() ? false : super.damage(source, amount);
+			return !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !source.isSourceCreativePlayer() ? false : super.damage(source, amount);
 		} else if (this.isInvulnerableTo(source)) {
 			return false;
-		} else if (!source.isExplosive() && !this.getHeldItemStack().isEmpty()) {
+		} else if (!source.isIn(DamageTypeTags.IS_EXPLOSION) && !this.getHeldItemStack().isEmpty()) {
 			if (!this.world.isClient) {
 				this.dropHeldStack(source.getAttacker(), false);
+				this.emitGameEvent(GameEvent.BLOCK_CHANGE, source.getAttacker());
 				this.playSound(this.getRemoveItemSound(), 1.0F, 1.0F);
 			}
 
@@ -201,6 +204,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	public void onBreak(@Nullable Entity entity) {
 		this.playSound(this.getBreakSound(), 1.0F, 1.0F);
 		this.dropHeldStack(entity, true);
+		this.emitGameEvent(GameEvent.BLOCK_CHANGE, entity);
 	}
 
 	public SoundEvent getBreakSound() {
@@ -406,6 +410,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 					}
 
 					this.setHeldItemStack(itemStack);
+					this.emitGameEvent(GameEvent.BLOCK_CHANGE, player);
 					if (!player.getAbilities().creativeMode) {
 						itemStack.decrement(1);
 					}
@@ -413,6 +418,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			} else {
 				this.playSound(this.getRotateItemSound(), 1.0F, 1.0F);
 				this.setRotation(this.getRotation() + 1);
+				this.emitGameEvent(GameEvent.BLOCK_CHANGE, player);
 			}
 
 			return ActionResult.CONSUME;

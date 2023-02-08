@@ -104,7 +104,7 @@ public class Explosion {
 		this.z = z;
 		this.createFire = createFire;
 		this.destructionType = destructionType;
-		this.damageSource = damageSource == null ? DamageSource.explosion(this) : damageSource;
+		this.damageSource = damageSource == null ? world.getDamageSources().explosion(this) : damageSource;
 		this.behavior = behavior == null ? this.chooseBehavior(entity) : behavior;
 	}
 

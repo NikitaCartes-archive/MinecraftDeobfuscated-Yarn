@@ -141,7 +141,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		int i = this.width / 2 - 100;
-		drawCenteredText(matrices, this.textRenderer, SUBSCRIPTION_TITLE, this.width / 2, 17, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, SUBSCRIPTION_TITLE, this.width / 2, 17, 16777215);
 		this.textRenderer.draw(matrices, SUBSCRIPTION_START_LABEL_TEXT, (float)i, (float)row(0), 10526880);
 		this.textRenderer.draw(matrices, this.startDate, (float)i, (float)row(1), 16777215);
 		if (this.type == Subscription.SubscriptionType.NORMAL) {

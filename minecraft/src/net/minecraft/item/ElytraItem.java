@@ -1,7 +1,7 @@
 package net.minecraft.item;
 
-import javax.annotation.Nullable;
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -9,7 +9,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class ElytraItem extends Item implements Wearable {
+public class ElytraItem extends Item implements Equipment {
 	public ElytraItem(Item.Settings settings) {
 		super(settings);
 		DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
@@ -29,9 +29,13 @@ public class ElytraItem extends Item implements Wearable {
 		return this.equipAndSwap(this, world, user, hand);
 	}
 
-	@Nullable
 	@Override
 	public SoundEvent getEquipSound() {
 		return SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA;
+	}
+
+	@Override
+	public EquipmentSlot getSlotType() {
+		return EquipmentSlot.CHEST;
 	}
 }

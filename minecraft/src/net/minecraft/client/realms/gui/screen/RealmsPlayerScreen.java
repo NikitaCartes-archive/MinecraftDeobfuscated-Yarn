@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
@@ -15,7 +14,7 @@ import net.minecraft.client.realms.dto.Ops;
 import net.minecraft.client.realms.dto.PlayerInfo;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.exception.RealmsServiceException;
-import net.minecraft.client.realms.util.RealmsTextureManager;
+import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -194,7 +193,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			this.invitedObjectSelectionList.render(matrices, mouseX, mouseY, delta);
 		}
 
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
 		int i = row(12) + 20;
 		RenderSystem.setShaderTexture(0, OPTIONS_BACKGROUND);
 		RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
@@ -376,7 +375,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			}
 
 			RealmsPlayerScreen.this.drawRemoveIcon(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 22, y + 2, mouseX, mouseY);
-			RealmsTextureManager.withBoundFace(playerInfo.getUuid(), () -> PlayerSkinDrawer.draw(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8));
+			RealmsUtil.drawPlayerHead(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, playerInfo.getUuid());
 		}
 
 		@Override

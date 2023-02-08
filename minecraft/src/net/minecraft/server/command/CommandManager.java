@@ -80,6 +80,7 @@ public class CommandManager {
 		BossBarCommand.register(this.dispatcher);
 		ClearCommand.register(this.dispatcher, commandRegistryAccess);
 		CloneCommand.register(this.dispatcher, commandRegistryAccess);
+		DamageCommand.register(this.dispatcher, commandRegistryAccess);
 		DataCommand.register(this.dispatcher);
 		DatapackCommand.register(this.dispatcher);
 		DebugCommand.register(this.dispatcher);

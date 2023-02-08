@@ -114,8 +114,8 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		drawCenteredText(matrices, this.textRenderer, PRIMARY_POWER_TEXT, 62, 10, 14737632);
-		drawCenteredText(matrices, this.textRenderer, SECONDARY_POWER_TEXT, 169, 10, 14737632);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, PRIMARY_POWER_TEXT, 62, 10, 14737632);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, SECONDARY_POWER_TEXT, 169, 10, 14737632);
 	}
 
 	@Override

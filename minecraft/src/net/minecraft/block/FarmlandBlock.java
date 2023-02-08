@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -19,6 +20,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 
 public class FarmlandBlock extends Block {
 	public static final IntProperty MOISTURE = Properties.MOISTURE;
@@ -65,7 +67,7 @@ public class FarmlandBlock extends Block {
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!state.canPlaceAt(world, pos)) {
-			setToDirt(state, world, pos);
+			setToDirt(null, state, world, pos);
 		}
 	}
 
@@ -76,7 +78,7 @@ public class FarmlandBlock extends Block {
 			if (i > 0) {
 				world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(i - 1)), Block.NOTIFY_LISTENERS);
 			} else if (!hasCrop(world, pos)) {
-				setToDirt(state, world, pos);
+				setToDirt(null, state, world, pos);
 			}
 		} else if (i < 7) {
 			world.setBlockState(pos, state.with(MOISTURE, Integer.valueOf(7)), Block.NOTIFY_LISTENERS);
@@ -90,14 +92,16 @@ public class FarmlandBlock extends Block {
 			&& entity instanceof LivingEntity
 			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING))
 			&& entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512F) {
-			setToDirt(state, world, pos);
+			setToDirt(entity, state, world, pos);
 		}
 
 		super.onLandedUpon(world, state, pos, entity, fallDistance);
 	}
 
-	public static void setToDirt(BlockState state, World world, BlockPos pos) {
-		world.setBlockState(pos, pushEntitiesUpBeforeBlockChange(state, Blocks.DIRT.getDefaultState(), world, pos));
+	public static void setToDirt(@Nullable Entity entity, BlockState state, World world, BlockPos pos) {
+		BlockState blockState = pushEntitiesUpBeforeBlockChange(state, Blocks.DIRT.getDefaultState(), world, pos);
+		world.setBlockState(pos, blockState);
+		world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(entity, blockState));
 	}
 
 	private static boolean hasCrop(BlockView world, BlockPos pos) {

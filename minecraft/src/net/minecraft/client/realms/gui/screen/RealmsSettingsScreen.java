@@ -84,7 +84,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
 		this.textRenderer.draw(matrices, WORLD_NAME_TEXT, (float)(this.width / 2 - 106), (float)row(3), 10526880);
 		this.textRenderer.draw(matrices, WORLD_DESCRIPTION_TEXT, (float)(this.width / 2 - 106), (float)row(7), 10526880);
 		this.nameEdit.render(matrices, mouseX, mouseY, delta);

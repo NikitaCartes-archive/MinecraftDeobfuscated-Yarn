@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -98,7 +97,7 @@ public class CactusBlock extends Block {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		entity.damage(DamageSource.CACTUS, 1.0F);
+		entity.damage(world.getDamageSources().cactus(), 1.0F);
 	}
 
 	@Override

@@ -946,7 +946,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		}
 
 		private void pickGlowBerries(BlockState state) {
-			CaveVines.pickBerries(state, FoxEntity.this.world, this.targetPos);
+			CaveVines.pickBerries(FoxEntity.this, state, FoxEntity.this.world, this.targetPos);
 		}
 
 		private void pickSweetBerries(BlockState state) {

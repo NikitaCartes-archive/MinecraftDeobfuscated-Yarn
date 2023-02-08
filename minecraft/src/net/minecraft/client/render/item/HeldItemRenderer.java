@@ -14,7 +14,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.CrossbowItem;
@@ -122,7 +122,7 @@ public class HeldItemRenderer {
 	public void renderItem(
 		LivingEntity entity,
 		ItemStack stack,
-		ModelTransformation.Mode renderMode,
+		ModelTransformationMode renderMode,
 		boolean leftHanded,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
@@ -412,7 +412,7 @@ public class HeldItemRenderer {
 				this.renderItem(
 					player,
 					item,
-					bl3 ? ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND,
+					bl3 ? ModelTransformationMode.FIRST_PERSON_RIGHT_HAND : ModelTransformationMode.FIRST_PERSON_LEFT_HAND,
 					!bl3,
 					matrices,
 					vertexConsumers,
@@ -500,7 +500,7 @@ public class HeldItemRenderer {
 				this.renderItem(
 					player,
 					item,
-					bl2 ? ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND : ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND,
+					bl2 ? ModelTransformationMode.FIRST_PERSON_RIGHT_HAND : ModelTransformationMode.FIRST_PERSON_LEFT_HAND,
 					!bl2,
 					matrices,
 					vertexConsumers,

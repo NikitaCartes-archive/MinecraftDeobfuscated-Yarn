@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.Vec3d;
 
 public interface Hoglin {
@@ -19,7 +18,7 @@ public interface Hoglin {
 			g = f;
 		}
 
-		boolean bl = target.damage(DamageSource.mob(attacker), g);
+		boolean bl = target.damage(attacker.getDamageSources().mobAttack(attacker), g);
 		if (bl) {
 			attacker.applyDamageEffects(attacker, target);
 			if (!attacker.isBaby()) {

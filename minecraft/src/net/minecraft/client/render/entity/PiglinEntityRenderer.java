@@ -5,7 +5,7 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
+import net.minecraft.client.render.entity.model.ArmorEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.PiglinEntityModel;
@@ -32,7 +32,7 @@ public class PiglinEntityRenderer extends BipedEntityRenderer<MobEntity, PiglinE
 		super(ctx, getPiglinModel(ctx.getModelLoader(), mainLayer, zombie), 0.5F, 1.0019531F, 1.0F, 1.0019531F);
 		this.addFeature(
 			new ArmorFeatureRenderer<>(
-				this, new BipedEntityModel(ctx.getPart(innerArmorLayer)), new BipedEntityModel(ctx.getPart(outerArmorLayer)), ctx.getModelManager()
+				this, new ArmorEntityModel(ctx.getPart(innerArmorLayer)), new ArmorEntityModel(ctx.getPart(outerArmorLayer)), ctx.getModelManager()
 			)
 		);
 	}

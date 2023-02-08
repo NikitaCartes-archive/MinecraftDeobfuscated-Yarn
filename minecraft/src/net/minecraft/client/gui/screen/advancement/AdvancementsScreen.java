@@ -128,8 +128,8 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		if (advancementTab == null) {
 			fill(matrices, x + 9, y + 18, x + 9 + 234, y + 18 + 113, -16777216);
 			int i = x + 9 + 117;
-			drawCenteredText(matrices, this.textRenderer, EMPTY_TEXT, i, y + 18 + 56 - 9 / 2, -1);
-			drawCenteredText(matrices, this.textRenderer, SAD_LABEL_TEXT, i, y + 18 + 113 - 9, -1);
+			drawCenteredTextWithShadow(matrices, this.textRenderer, EMPTY_TEXT, i, y + 18 + 56 - 9 / 2, -1);
+			drawCenteredTextWithShadow(matrices, this.textRenderer, SAD_LABEL_TEXT, i, y + 18 + 113 - 9, -1);
 		} else {
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();

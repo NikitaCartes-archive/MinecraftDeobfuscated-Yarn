@@ -3,7 +3,6 @@ package net.minecraft.entity.projectile.thrown;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -49,7 +48,7 @@ public class EggEntity extends ThrownItemEntity {
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		entityHitResult.getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0F);
+		entityHitResult.getEntity().damage(this.getDamageSources().thorns(this, this.getOwner()), 0.0F);
 	}
 
 	@Override

@@ -243,7 +243,7 @@ public class PresetsScreen extends Screen {
 		this.listWidget.render(matrices, mouseX, mouseY, delta);
 		matrices.push();
 		matrices.translate(0.0F, 0.0F, 400.0F);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		drawTextWithShadow(matrices, this.textRenderer, this.shareText, 50, 30, 10526880);
 		drawTextWithShadow(matrices, this.textRenderer, this.listText, 50, 70, 10526880);
 		matrices.pop();

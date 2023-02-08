@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableMultimap.Builder;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.UUID;
-import javax.annotation.Nullable;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
@@ -27,7 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-public class ArmorItem extends Item implements Wearable {
+public class ArmorItem extends Item implements Equipment {
 	private static final EnumMap<ArmorItem.Type, UUID> MODIFIERS = Util.make(new EnumMap(ArmorItem.Type.class), uuidMap -> {
 		uuidMap.put(ArmorItem.Type.BOOTS, UUID.fromString("845DB27C-C624-495F-8C9F-6020A9A58B6B"));
 		uuidMap.put(ArmorItem.Type.LEGGINGS, UUID.fromString("D8499B04-0E66-4726-AB29-64469D734E0D"));
@@ -98,10 +97,6 @@ public class ArmorItem extends Item implements Wearable {
 		return this.type;
 	}
 
-	public EquipmentSlot getSlotType() {
-		return this.type.getEquipmentSlot();
-	}
-
 	@Override
 	public int getEnchantability() {
 		return this.material.getEnchantability();
@@ -134,7 +129,11 @@ public class ArmorItem extends Item implements Wearable {
 		return this.toughness;
 	}
 
-	@Nullable
+	@Override
+	public EquipmentSlot getSlotType() {
+		return this.type.getEquipmentSlot();
+	}
+
 	@Override
 	public SoundEvent getEquipSound() {
 		return this.getMaterial().getEquipSound();

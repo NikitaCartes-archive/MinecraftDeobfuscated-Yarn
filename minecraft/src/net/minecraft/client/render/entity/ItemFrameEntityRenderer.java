@@ -11,7 +11,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModelManager;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
@@ -111,7 +111,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 				this.itemRenderer
 					.renderItem(
 						itemStack,
-						ModelTransformation.Mode.FIXED,
+						ModelTransformationMode.FIXED,
 						l,
 						OverlayTexture.DEFAULT_UV,
 						matrixStack,

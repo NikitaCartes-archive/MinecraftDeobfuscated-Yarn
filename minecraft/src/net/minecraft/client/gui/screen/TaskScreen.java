@@ -97,10 +97,10 @@ public class TaskScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 80, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 80, 16777215);
 		if (this.description == null) {
 			String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
-			drawCenteredText(matrices, this.textRenderer, string, this.width / 2, 120, 10526880);
+			drawCenteredTextWithShadow(matrices, this.textRenderer, string, this.width / 2, 120, 10526880);
 		} else {
 			this.description.drawCenterWithShadow(matrices, this.width / 2, 120);
 		}

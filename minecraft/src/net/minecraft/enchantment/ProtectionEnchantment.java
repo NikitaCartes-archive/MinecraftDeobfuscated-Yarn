@@ -3,6 +3,7 @@ package net.minecraft.enchantment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.util.math.MathHelper;
 
 public class ProtectionEnchantment extends Enchantment {
@@ -30,18 +31,18 @@ public class ProtectionEnchantment extends Enchantment {
 
 	@Override
 	public int getProtectionAmount(int level, DamageSource source) {
-		if (source.isOutOfWorld()) {
+		if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
 			return 0;
 		} else if (this.protectionType == ProtectionEnchantment.Type.ALL) {
 			return level;
-		} else if (this.protectionType == ProtectionEnchantment.Type.FIRE && source.isFire()) {
+		} else if (this.protectionType == ProtectionEnchantment.Type.FIRE && source.isIn(DamageTypeTags.IS_FIRE)) {
 			return level * 2;
-		} else if (this.protectionType == ProtectionEnchantment.Type.FALL && source.isFromFalling()) {
+		} else if (this.protectionType == ProtectionEnchantment.Type.FALL && source.isIn(DamageTypeTags.IS_FALL)) {
 			return level * 3;
-		} else if (this.protectionType == ProtectionEnchantment.Type.EXPLOSION && source.isExplosive()) {
+		} else if (this.protectionType == ProtectionEnchantment.Type.EXPLOSION && source.isIn(DamageTypeTags.IS_EXPLOSION)) {
 			return level * 2;
 		} else {
-			return this.protectionType == ProtectionEnchantment.Type.PROJECTILE && source.isProjectile() ? level * 2 : 0;
+			return this.protectionType == ProtectionEnchantment.Type.PROJECTILE && source.isIn(DamageTypeTags.IS_PROJECTILE) ? level * 2 : 0;
 		}
 	}
 

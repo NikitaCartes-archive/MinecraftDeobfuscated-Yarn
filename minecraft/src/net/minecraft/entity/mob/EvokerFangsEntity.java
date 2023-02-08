@@ -7,7 +7,6 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Ownable;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -116,13 +115,13 @@ public class EvokerFangsEntity extends Entity implements Ownable {
 		LivingEntity livingEntity = this.getOwner();
 		if (target.isAlive() && !target.isInvulnerable() && target != livingEntity) {
 			if (livingEntity == null) {
-				target.damage(DamageSource.MAGIC, 6.0F);
+				target.damage(this.getDamageSources().magic(), 6.0F);
 			} else {
 				if (livingEntity.isTeammate(target)) {
 					return;
 				}
 
-				target.damage(DamageSource.magic(this, livingEntity), 6.0F);
+				target.damage(this.getDamageSources().indirectMagic(this, livingEntity), 6.0F);
 			}
 		}
 	}

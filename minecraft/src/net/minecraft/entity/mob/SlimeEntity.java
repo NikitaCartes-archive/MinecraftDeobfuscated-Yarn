@@ -234,7 +234,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 			int i = this.getSize();
 			if (this.squaredDistanceTo(target) < 0.6 * (double)i * 0.6 * (double)i
 				&& this.canSee(target)
-				&& target.damage(DamageSource.mob(this), this.getDamageAmount())) {
+				&& target.damage(this.getDamageSources().mobAttack(this), this.getDamageAmount())) {
 				this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				this.applyDamageEffects(this, target);
 			}

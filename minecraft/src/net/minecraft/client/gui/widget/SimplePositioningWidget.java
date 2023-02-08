@@ -20,16 +20,17 @@ public class SimplePositioningWidget extends WrapperWidget {
 	private int minWidth;
 	private final Positioner mainPositioner = Positioner.create().relative(0.5F, 0.5F);
 
-	public static SimplePositioningWidget of(int minWidth, int minHeight) {
-		return new SimplePositioningWidget(0, 0, 0, 0).setDimensions(minWidth, minHeight);
-	}
-
 	public SimplePositioningWidget() {
 		this(0, 0, 0, 0);
 	}
 
+	public SimplePositioningWidget(int width, int height) {
+		this(0, 0, width, height);
+	}
+
 	public SimplePositioningWidget(int i, int j, int k, int l) {
 		super(i, j, k, l);
+		this.setDimensions(k, l);
 	}
 
 	public SimplePositioningWidget setDimensions(int minWidth, int minHeight) {
@@ -84,7 +85,7 @@ public class SimplePositioningWidget extends WrapperWidget {
 	}
 
 	@Override
-	protected void forEachElement(Consumer<Widget> consumer) {
+	public void forEachElement(Consumer<Widget> consumer) {
 		this.elements.forEach(element -> consumer.accept(element.widget));
 	}
 
@@ -102,7 +103,7 @@ public class SimplePositioningWidget extends WrapperWidget {
 	}
 
 	public static void setPos(int low, int high, int length, Consumer<Integer> setter, float relative) {
-		int i = (int)MathHelper.lerp(relative, 0.0F, (float)(high - length));
+		int i = MathHelper.lerp(relative, 0, high - length);
 		setter.accept(low + i);
 	}
 

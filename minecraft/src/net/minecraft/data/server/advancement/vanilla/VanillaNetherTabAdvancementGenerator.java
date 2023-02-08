@@ -33,6 +33,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.StatePredicate;
+import net.minecraft.predicate.TagPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEffectPredicate;
@@ -43,6 +44,7 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -118,7 +120,9 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
 					EntityPredicate.Builder.create().type(EntityType.GHAST),
-					DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.FIREBALL))
+					DamageSourcePredicate.Builder.create()
+						.tag(TagPredicate.expected(DamageTypeTags.IS_PROJECTILE))
+						.directEntity(EntityPredicate.Builder.create().type(EntityType.FIREBALL))
 				)
 			)
 			.build(exporter, "nether/return_to_sender");

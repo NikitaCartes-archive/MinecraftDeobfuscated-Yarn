@@ -22,6 +22,8 @@ import com.mojang.serialization.RecordBuilder;
 import com.mojang.serialization.Codec.ResultFunction;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
+import it.unimi.dsi.fastutil.floats.FloatList;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -50,6 +52,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.joml.AxisAngle4f;
+import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 /**
@@ -78,9 +83,40 @@ public class Codecs {
 	public static final Codec<Vector3f> VECTOR_3F = Codec.FLOAT
 		.listOf()
 		.comapFlatMap(
-			list -> Util.toArray(list, 3).map(listx -> new Vector3f(listx.get(0), listx.get(1), listx.get(2))),
-			vec3f -> ImmutableList.of(vec3f.x(), vec3f.y(), vec3f.z())
+			list -> Util.toArray(list, 3).map(listx -> new Vector3f(listx.get(0), listx.get(1), listx.get(2))), vec3f -> List.of(vec3f.x(), vec3f.y(), vec3f.z())
 		);
+	public static final Codec<Quaternionf> QUATERNIONF = Codec.FLOAT
+		.listOf()
+		.comapFlatMap(
+			list -> Util.toArray(list, 4).map(listx -> new Quaternionf(listx.get(0), listx.get(1), listx.get(2), listx.get(3))),
+			quaternion -> List.of(quaternion.x, quaternion.y, quaternion.z, quaternion.w)
+		);
+	public static final Codec<AxisAngle4f> AXIS_ANGLE4F = RecordCodecBuilder.create(
+		instance -> instance.group(
+					Codec.FLOAT.fieldOf("angle").forGetter(axisAngle -> axisAngle.angle),
+					VECTOR_3F.fieldOf("axis").forGetter(axisAngle -> new Vector3f(axisAngle.x, axisAngle.y, axisAngle.z))
+				)
+				.apply(instance, AxisAngle4f::new)
+	);
+	public static final Codec<Quaternionf> ROTATION = Codec.either(QUATERNIONF, AXIS_ANGLE4F.xmap(Quaternionf::new, AxisAngle4f::new))
+		.xmap(either -> either.map(quaternion -> quaternion, quaternion -> quaternion), com.mojang.datafixers.util.Either::left);
+	public static Codec<Matrix4f> MATRIX4F = Codec.FLOAT.listOf().comapFlatMap(list -> Util.toArray(list, 16).map(listx -> {
+			Matrix4f matrix4f = new Matrix4f();
+
+			for(int i = 0; i < listx.size(); ++i) {
+				matrix4f.setRowColumn(i >> 2, i & 3, listx.get(i));
+			}
+
+			return matrix4f.determineProperties();
+		}), matrix4f -> {
+		FloatList floatList = new FloatArrayList(16);
+
+		for(int i = 0; i < 16; ++i) {
+			floatList.add(matrix4f.getRowColumn(i >> 2, i & 3));
+		}
+
+		return floatList;
+	});
 	public static final Codec<Integer> NONNEGATIVE_INT = rangedInt(0, Integer.MAX_VALUE, v -> "Value must be non-negative: " + v);
 	public static final Codec<Integer> POSITIVE_INT = rangedInt(1, Integer.MAX_VALUE, v -> "Value must be positive: " + v);
 	public static final Codec<Float> POSITIVE_FLOAT = rangedFloat(0.0F, Float.MAX_VALUE, v -> "Value must be positive: " + v);
@@ -298,6 +334,10 @@ public class Codecs {
 		);
 	}
 
+	public static Codec<Integer> rangedInt(int min, int max) {
+		return rangedInt(min, max, value -> "Value must be within range [" + min + ";" + max + "]: " + value);
+	}
+
 	private static Codec<Float> rangedFloat(float min, float max, Function<Float, String> messageFactory) {
 		return validate(
 			Codec.FLOAT,
@@ -312,9 +352,7 @@ public class Codecs {
 	public static <T> Codec<RegistryEntryList<T>> nonEmptyEntryList(Codec<RegistryEntryList<T>> originalCodec) {
 		return validate(
 			originalCodec,
-			registryEntryList -> registryEntryList.getStorage().right().filter(List::isEmpty).isPresent()
-					? DataResult.error("List must have contents")
-					: DataResult.success(registryEntryList)
+			entryList -> entryList.getStorage().right().filter(List::isEmpty).isPresent() ? DataResult.error("List must have contents") : DataResult.success(entryList)
 		);
 	}
 

@@ -144,11 +144,11 @@ public abstract class DrawableHelper {
 		builder.vertex(matrix, (float)endX, (float)endY, (float)z).color(k, l, m, j).next();
 	}
 
-	public static void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {
+	public static void drawCenteredTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {
 		textRenderer.drawWithShadow(matrices, text, (float)(centerX - textRenderer.getWidth(text) / 2), (float)y, color);
 	}
 
-	public static void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, Text text, int centerX, int y, int color) {
+	public static void drawCenteredTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, Text text, int centerX, int y, int color) {
 		OrderedText orderedText = text.asOrderedText();
 		textRenderer.drawWithShadow(matrices, orderedText, (float)(centerX - textRenderer.getWidth(orderedText) / 2), (float)y, color);
 	}
@@ -157,11 +157,11 @@ public abstract class DrawableHelper {
 		textRenderer.drawWithShadow(matrices, text, (float)(centerX - textRenderer.getWidth(text) / 2), (float)y, color);
 	}
 
-	public static void drawStringWithShadow(MatrixStack matrices, TextRenderer textRenderer, String text, int x, int y, int color) {
+	public static void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, String text, int x, int y, int color) {
 		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 
-	public static void drawWithShadow(MatrixStack matrices, TextRenderer textRenderer, OrderedText text, int x, int y, int color) {
+	public static void drawTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, OrderedText text, int x, int y, int color) {
 		textRenderer.drawWithShadow(matrices, text, (float)x, (float)y, color);
 	}
 

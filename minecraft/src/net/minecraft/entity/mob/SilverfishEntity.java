@@ -21,8 +21,8 @@ import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -100,7 +100,7 @@ public class SilverfishEntity extends HostileEntity {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			if ((source instanceof EntityDamageSource || source == DamageSource.MAGIC) && this.callForHelpGoal != null) {
+			if ((source.getAttacker() != null || source.isIn(DamageTypeTags.ALWAYS_TRIGGERS_SILVERFISH)) && this.callForHelpGoal != null) {
 				this.callForHelpGoal.onHurt();
 			}
 

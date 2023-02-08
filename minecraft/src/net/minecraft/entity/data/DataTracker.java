@@ -185,6 +185,8 @@ public class DataTracker {
 		} finally {
 			this.lock.writeLock().unlock();
 		}
+
+		this.trackedEntity.onDataTrackerUpdate(entries);
 	}
 
 	private <T> void copyToFrom(DataTracker.Entry<T> to, DataTracker.SerializedEntry<?> from) {

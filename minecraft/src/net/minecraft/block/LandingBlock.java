@@ -16,7 +16,7 @@ public interface LandingBlock {
 	}
 
 	default DamageSource getDamageSource(Entity attacker) {
-		return DamageSource.fallingBlock(attacker);
+		return attacker.getDamageSources().fallingBlock(attacker);
 	}
 
 	default Predicate<Entity> getEntityPredicate() {

@@ -30,6 +30,7 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 			gameOptions.getDistortionEffectScale(),
 			gameOptions.getFovEffectScale(),
 			gameOptions.getDarknessEffectScale(),
+			gameOptions.getDamageTiltStrength(),
 			gameOptions.getGlintSpeed(),
 			gameOptions.getGlintStrength(),
 			gameOptions.getHideLightningFlashes(),

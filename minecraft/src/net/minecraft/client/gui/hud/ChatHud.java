@@ -21,7 +21,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Util;
+import net.minecraft.util.Nullables;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
 
@@ -194,7 +194,7 @@ public class ChatHud extends DrawableHelper {
 
 	private void logChatMessage(Text message, @Nullable MessageIndicator indicator) {
 		String string = message.getString().replaceAll("\r", "\\\\r").replaceAll("\n", "\\\\n");
-		String string2 = Util.map(indicator, MessageIndicator::loggedName);
+		String string2 = Nullables.map(indicator, MessageIndicator::loggedName);
 		if (string2 != null) {
 			LOGGER.info("[{}] [CHAT] {}", string2, string);
 		} else {

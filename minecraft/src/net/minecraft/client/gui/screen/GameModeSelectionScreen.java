@@ -85,8 +85,9 @@ public class GameModeSelectionScreen extends Screen {
 			drawTexture(matrices, i, j, 0.0F, 0.0F, 125, 75, 128, 128);
 			matrices.pop();
 			super.render(matrices, mouseX, mouseY, delta);
-			this.gameMode.ifPresent(gameMode -> drawCenteredText(matrices, this.textRenderer, gameMode.getText(), this.width / 2, this.height / 2 - 31 - 20, -1));
-			drawCenteredText(matrices, this.textRenderer, SELECT_NEXT_TEXT, this.width / 2, this.height / 2 + 5, 16777215);
+			this.gameMode
+				.ifPresent(gameMode -> drawCenteredTextWithShadow(matrices, this.textRenderer, gameMode.getText(), this.width / 2, this.height / 2 - 31 - 20, -1));
+			drawCenteredTextWithShadow(matrices, this.textRenderer, SELECT_NEXT_TEXT, this.width / 2, this.height / 2 + 5, 16777215);
 			if (!this.mouseUsedForSelection) {
 				this.lastMouseX = mouseX;
 				this.lastMouseY = mouseY;

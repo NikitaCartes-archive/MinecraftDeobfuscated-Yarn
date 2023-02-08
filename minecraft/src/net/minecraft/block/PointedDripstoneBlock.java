@@ -131,7 +131,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	@Override
 	public void onLandedUpon(World world, BlockState state, BlockPos pos, Entity entity, float fallDistance) {
 		if (state.get(VERTICAL_DIRECTION) == Direction.UP && state.get(THICKNESS) == Thickness.TIP) {
-			entity.handleFallDamage(fallDistance + 2.0F, 2.0F, DamageSource.STALAGMITE);
+			entity.handleFallDamage(fallDistance + 2.0F, 2.0F, world.getDamageSources().stalagmite());
 		} else {
 			super.onLandedUpon(world, state, pos, entity, fallDistance);
 		}
@@ -289,7 +289,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 
 	@Override
 	public DamageSource getDamageSource(Entity attacker) {
-		return DamageSource.fallingStalactite(attacker);
+		return attacker.getDamageSources().fallingStalactite(attacker);
 	}
 
 	@Override

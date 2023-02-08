@@ -18,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -27,6 +28,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
+import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -105,23 +107,26 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	private final WorldBorder border;
 	private final BiomeAccess biomeAccess;
 	private final RegistryKey<World> registryKey;
+	private final DynamicRegistryManager registryManager;
+	private final DamageSources damageSources;
 	private long tickOrder;
 
 	protected World(
 		MutableWorldProperties properties,
 		RegistryKey<World> registryRef,
-		RegistryEntry<DimensionType> dimension,
+		DynamicRegistryManager registryManager,
+		RegistryEntry<DimensionType> dimensionEntry,
 		Supplier<Profiler> profiler,
 		boolean isClient,
 		boolean debugWorld,
-		long seed,
+		long biomeAccess,
 		int maxChainedNeighborUpdates
 	) {
 		this.profiler = profiler;
 		this.properties = properties;
-		this.dimensionEntry = dimension;
-		this.dimension = (RegistryKey)dimension.getKey().orElseThrow(() -> new IllegalArgumentException("Dimension must be registered, got " + dimension));
-		final DimensionType dimensionType = (DimensionType)dimension.value();
+		this.dimensionEntry = dimensionEntry;
+		this.dimension = (RegistryKey)dimensionEntry.getKey().orElseThrow(() -> new IllegalArgumentException("Dimension must be registered, got " + dimensionEntry));
+		final DimensionType dimensionType = (DimensionType)dimensionEntry.value();
 		this.registryKey = registryRef;
 		this.isClient = isClient;
 		if (dimensionType.coordinateScale() != 1.0) {
@@ -141,9 +146,11 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 
 		this.thread = Thread.currentThread();
-		this.biomeAccess = new BiomeAccess(this, seed);
+		this.biomeAccess = new BiomeAccess(this, biomeAccess);
 		this.debugWorld = debugWorld;
 		this.neighborUpdater = new ChainRestrictedNeighborUpdater(this, maxChainedNeighborUpdates);
+		this.registryManager = registryManager;
+		this.damageSources = new DamageSources(registryManager);
 	}
 
 	@Override
@@ -587,7 +594,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * 
 	 * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
 	 * @param damageSource the custom damage source, or {@code null} to use the default
-	 * ({@link DamageSource#explosion(Explosion)})
+	 * ({@link net.minecraft.entity.damage.DamageSources#explosion(Explosion)})
 	 * @param behavior the explosion behavior, or {@code null} to use the default
 	 * @param createFire whether the explosion should create fire
 	 */
@@ -934,6 +941,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public void sendEntityStatus(Entity entity, byte status) {
 	}
 
+	public void sendEntityDamage(Entity entity, DamageSource damageSource) {
+	}
+
 	public void addSyncedBlockEvent(BlockPos pos, Block block, int type, int data) {
 		this.getBlockState(pos).onSyncedBlockEvent(this, pos, type, data);
 	}
@@ -1159,6 +1169,15 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Override
 	public long getTickOrder() {
 		return (long)(this.tickOrder++);
+	}
+
+	@Override
+	public DynamicRegistryManager getRegistryManager() {
+		return this.registryManager;
+	}
+
+	public DamageSources getDamageSources() {
+		return this.damageSources;
 	}
 
 	public static enum ExplosionSourceType {

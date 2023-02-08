@@ -9,6 +9,7 @@ import com.mojang.serialization.codecs.UnboundedMapCodec;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
+import net.minecraft.entity.damage.DamageType;
 import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.network.message.MessageType;
@@ -25,6 +26,7 @@ public class SerializableRegistries {
 		add(builder, RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC);
 		add(builder, RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC);
 		add(builder, RegistryKeys.DIMENSION_TYPE, DimensionType.CODEC);
+		add(builder, RegistryKeys.DAMAGE_TYPE, DamageType.CODEC);
 		return builder.build();
 	});
 	public static final Codec<DynamicRegistryManager> CODEC = createCodec();

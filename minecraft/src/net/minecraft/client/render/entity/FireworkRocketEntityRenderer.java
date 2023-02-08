@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.FireworkRocketEntity;
@@ -34,7 +34,7 @@ public class FireworkRocketEntityRenderer extends EntityRenderer<FireworkRocketE
 		this.itemRenderer
 			.renderItem(
 				fireworkRocketEntity.getStack(),
-				ModelTransformation.Mode.GROUND,
+				ModelTransformationMode.GROUND,
 				i,
 				OverlayTexture.DEFAULT_UV,
 				matrixStack,

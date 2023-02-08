@@ -11,7 +11,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.AxolotlEntity;
@@ -113,7 +112,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			double d = this.squaredDistanceTo(livingEntity);
 			if (d < 16.0) {
 				if (livingEntity.hurtByWater()) {
-					livingEntity.damage(DamageSource.magic(this, this.getOwner()), 1.0F);
+					livingEntity.damage(this.getDamageSources().indirectMagic(this, this.getOwner()), 1.0F);
 				}
 
 				if (livingEntity.isOnFire() && livingEntity.isAlive()) {

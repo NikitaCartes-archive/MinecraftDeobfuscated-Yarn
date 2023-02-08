@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.pathing.LandPathNodeMaker;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.decoration.GlowItemFrameEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -161,6 +162,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final String ENTITY_TAG_KEY = "EntityTag";
 	private final RegistryEntry.Reference<EntityType<?>> registryEntry = Registries.ENTITY_TYPE.createEntry(this);
 	private static final float field_30054 = 1.3964844F;
+	private static final int field_42459 = 10;
 	public static final EntityType<AllayEntity> ALLAY = register(
 		"allay",
 		EntityType.Builder.<AllayEntity>create(AllayEntity::new, SpawnGroup.CREATURE).setDimensions(0.35F, 0.6F).maxTrackingRange(8).trackingTickInterval(2)
@@ -190,6 +192,13 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<BlazeEntity> BLAZE = register(
 		"blaze", EntityType.Builder.<BlazeEntity>create(BlazeEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(0.6F, 1.8F).maxTrackingRange(8)
+	);
+	public static final EntityType<DisplayEntity.BlockDisplayEntity> BLOCK_DISPLAY = register(
+		"block_display",
+		EntityType.Builder.<DisplayEntity.BlockDisplayEntity>create(DisplayEntity.BlockDisplayEntity::new, SpawnGroup.MISC)
+			.setDimensions(0.0F, 0.0F)
+			.maxTrackingRange(10)
+			.tickable(false)
 	);
 	public static final EntityType<BoatEntity> BOAT = register(
 		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, SpawnGroup.MISC).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
@@ -342,6 +351,13 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<ItemEntity> ITEM = register(
 		"item", EntityType.Builder.<ItemEntity>create(ItemEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(6).trackingTickInterval(20)
 	);
+	public static final EntityType<DisplayEntity.ItemDisplayEntity> ITEM_DISPLAY = register(
+		"item_display",
+		EntityType.Builder.<DisplayEntity.ItemDisplayEntity>create(DisplayEntity.ItemDisplayEntity::new, SpawnGroup.MISC)
+			.setDimensions(0.0F, 0.0F)
+			.maxTrackingRange(10)
+			.tickable(false)
+	);
 	public static final EntityType<ItemFrameEntity> ITEM_FRAME = register(
 		"item_frame",
 		EntityType.Builder.<ItemFrameEntity>create(ItemFrameEntity::new, SpawnGroup.MISC)
@@ -381,7 +397,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		EntityType.Builder.<MagmaCubeEntity>create(MagmaCubeEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(2.04F, 2.04F).maxTrackingRange(8)
 	);
 	public static final EntityType<MarkerEntity> MARKER = register(
-		"marker", EntityType.Builder.<MarkerEntity>create(MarkerEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(0)
+		"marker", EntityType.Builder.<MarkerEntity>create(MarkerEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(0).tickable(false)
 	);
 	public static final EntityType<MinecartEntity> MINECART = register(
 		"minecart", EntityType.Builder.<MinecartEntity>create(MinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
@@ -548,6 +564,13 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.setDimensions(TadpoleEntity.WIDTH, TadpoleEntity.HEIGHT)
 			.maxTrackingRange(10)
 	);
+	public static final EntityType<DisplayEntity.TextDisplayEntity> TEXT_DISPLAY = register(
+		"text_display",
+		EntityType.Builder.<DisplayEntity.TextDisplayEntity>create(DisplayEntity.TextDisplayEntity::new, SpawnGroup.MISC)
+			.setDimensions(0.0F, 0.0F)
+			.maxTrackingRange(10)
+			.tickable(false)
+	);
 	public static final EntityType<EggEntity> EGG = register(
 		"egg", EntityType.Builder.<EggEntity>create(EggEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
 	);
@@ -674,6 +697,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	private final boolean spawnableFarFromPlayer;
 	private final int maxTrackDistance;
 	private final int trackTickInterval;
+	private final boolean tickable;
 	@Nullable
 	private String translationKey;
 	@Nullable
@@ -706,6 +730,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		EntityDimensions dimensions,
 		int maxTrackDistance,
 		int trackTickInterval,
+		boolean tickable,
 		FeatureSet requiredFeatures
 	) {
 		this.factory = factory;
@@ -718,6 +743,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		this.dimensions = dimensions;
 		this.maxTrackDistance = maxTrackDistance;
 		this.trackTickInterval = trackTickInterval;
+		this.tickable = tickable;
 		this.requiredFeatures = requiredFeatures;
 	}
 
@@ -1020,6 +1046,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		return this.trackTickInterval;
 	}
 
+	public boolean isTickable() {
+		return this.tickable;
+	}
+
 	public boolean alwaysUpdateVelocity() {
 		return this != PLAYER
 			&& this != LLAMA_SPIT
@@ -1062,6 +1092,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		private boolean spawnableFarFromPlayer;
 		private int maxTrackingRange = 5;
 		private int trackingTickInterval = 3;
+		private boolean tickable = true;
 		private EntityDimensions dimensions = EntityDimensions.changing(0.6F, 1.8F);
 		private FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 
@@ -1129,6 +1160,11 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			return this;
 		}
 
+		public EntityType.Builder<T> tickable(boolean tickable) {
+			this.tickable = tickable;
+			return this;
+		}
+
 		public EntityType.Builder<T> requires(FeatureFlag... features) {
 			this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
 			return this;
@@ -1150,6 +1186,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 				this.dimensions,
 				this.maxTrackingRange,
 				this.trackingTickInterval,
+				this.tickable,
 				this.requiredFeatures
 			);
 		}

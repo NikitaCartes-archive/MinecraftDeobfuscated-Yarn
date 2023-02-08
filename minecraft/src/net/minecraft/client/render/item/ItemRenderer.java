@@ -17,7 +17,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
@@ -30,7 +29,7 @@ import net.minecraft.client.render.VertexConsumers;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
@@ -113,7 +112,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 	public void renderItem(
 		ItemStack stack,
-		ModelTransformation.Mode renderMode,
+		ModelTransformationMode renderMode,
 		boolean leftHanded,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
@@ -123,7 +122,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	) {
 		if (!stack.isEmpty()) {
 			matrices.push();
-			boolean bl = renderMode == ModelTransformation.Mode.GUI || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
+			boolean bl = renderMode == ModelTransformationMode.GUI || renderMode == ModelTransformationMode.GROUND || renderMode == ModelTransformationMode.FIXED;
 			if (bl) {
 				if (stack.isOf(Items.TRIDENT)) {
 					model = this.models.getModelManager().getModel(TRIDENT);
@@ -136,7 +135,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 			matrices.translate(-0.5F, -0.5F, -0.5F);
 			if (!model.isBuiltin() && (!stack.isOf(Items.TRIDENT) || bl)) {
 				boolean bl2;
-				if (renderMode != ModelTransformation.Mode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem) {
+				if (renderMode != ModelTransformationMode.GUI && !renderMode.isFirstPerson() && stack.getItem() instanceof BlockItem) {
 					Block block = ((BlockItem)stack.getItem()).getBlock();
 					bl2 = !(block instanceof TransparentBlock) && !(block instanceof StainedGlassPaneBlock);
 				} else {
@@ -148,7 +147,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 				if (stack.isIn(ItemTags.COMPASSES) && stack.hasGlint()) {
 					matrices.push();
 					MatrixStack.Entry entry = matrices.peek();
-					if (renderMode == ModelTransformation.Mode.GUI) {
+					if (renderMode == ModelTransformationMode.GUI) {
 						MatrixUtil.scale(entry.getPositionMatrix(), 0.5F);
 					} else if (renderMode.isFirstPerson()) {
 						MatrixUtil.scale(entry.getPositionMatrix(), 0.75F);
@@ -246,7 +245,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 	public void renderItem(
 		ItemStack stack,
-		ModelTransformation.Mode transformationType,
+		ModelTransformationMode transformationType,
 		int light,
 		int overlay,
 		MatrixStack matrices,
@@ -260,7 +259,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 	public void renderItem(
 		@Nullable LivingEntity entity,
 		ItemStack item,
-		ModelTransformation.Mode renderMode,
+		ModelTransformationMode renderMode,
 		boolean leftHanded,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,
@@ -298,9 +297,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 			DiffuseLighting.disableGuiDepthLighting();
 		}
 
-		this.renderItem(
-			stack, ModelTransformation.Mode.GUI, false, matrixStack2, immediate, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, model
-		);
+		this.renderItem(stack, ModelTransformationMode.GUI, false, matrixStack2, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
 		immediate.draw();
 		RenderSystem.enableDepthTest();
 		if (bl) {

@@ -306,7 +306,7 @@ public class IntegratedServerLoader {
 		}, text, text2, false));
 	}
 
-	public static void tryLoad(MinecraftClient client, CreateWorldScreen parent, Lifecycle lifecycle, Runnable loader) {
+	public static void tryLoad(MinecraftClient client, CreateWorldScreen parent, Lifecycle lifecycle, Runnable loader, boolean bypassWarnings) {
 		BooleanConsumer booleanConsumer = confirmed -> {
 			if (confirmed) {
 				loader.run();
@@ -314,7 +314,7 @@ public class IntegratedServerLoader {
 				client.setScreen(parent);
 			}
 		};
-		if (lifecycle == Lifecycle.stable()) {
+		if (bypassWarnings || lifecycle == Lifecycle.stable()) {
 			loader.run();
 		} else if (lifecycle == Lifecycle.experimental()) {
 			client.setScreen(

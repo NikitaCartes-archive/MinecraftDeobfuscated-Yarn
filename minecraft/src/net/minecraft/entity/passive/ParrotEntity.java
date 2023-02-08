@@ -285,7 +285,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 900));
 			if (player.isCreative() || !this.isInvulnerable()) {
-				this.damage(DamageSource.player(player), Float.MAX_VALUE);
+				this.damage(this.getDamageSources().playerAttack(player), Float.MAX_VALUE);
 			}
 
 			return ActionResult.success(this.world.isClient);
@@ -331,7 +331,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		return target.damage(DamageSource.mob(this), 3.0F);
+		return target.damage(this.getDamageSources().mobAttack(this), 3.0F);
 	}
 
 	@Nullable

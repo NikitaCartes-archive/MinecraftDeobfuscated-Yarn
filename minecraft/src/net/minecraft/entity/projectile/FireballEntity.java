@@ -3,7 +3,6 @@ package net.minecraft.entity.projectile;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.hit.EntityHitResult;
@@ -39,7 +38,7 @@ public class FireballEntity extends AbstractFireballEntity {
 		if (!this.world.isClient) {
 			Entity entity = entityHitResult.getEntity();
 			Entity entity2 = this.getOwner();
-			entity.damage(DamageSource.fireball(this, entity2), 6.0F);
+			entity.damage(this.getDamageSources().fireball(this, entity2), 6.0F);
 			if (entity2 instanceof LivingEntity) {
 				this.applyDamageEffects((LivingEntity)entity2, entity);
 			}

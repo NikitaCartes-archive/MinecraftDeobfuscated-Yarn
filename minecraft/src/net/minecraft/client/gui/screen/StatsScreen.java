@@ -109,8 +109,8 @@ public class StatsScreen extends Screen implements StatsListener {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.downloadingStats) {
 			this.renderBackground(matrices);
-			drawCenteredText(matrices, this.textRenderer, DOWNLOADING_STATS_TEXT, this.width / 2, this.height / 2, 16777215);
-			drawCenteredText(
+			drawCenteredTextWithShadow(matrices, this.textRenderer, DOWNLOADING_STATS_TEXT, this.width / 2, this.height / 2, 16777215);
+			drawCenteredTextWithShadow(
 				matrices,
 				this.textRenderer,
 				PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)],
@@ -120,7 +120,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			);
 		} else {
 			this.getSelectedStatList().render(matrices, mouseX, mouseY, delta);
-			drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
+			drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
 			super.render(matrices, mouseX, mouseY, delta);
 		}
 	}
@@ -273,7 +273,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.displayName, x + 2, y + 1, index % 2 == 0 ? 16777215 : 9474192);
 				String string = this.getFormatted();
-				DrawableHelper.drawStringWithShadow(
+				DrawableHelper.drawTextWithShadow(
 					matrices, StatsScreen.this.textRenderer, string, x + 2 + 213 - StatsScreen.this.textRenderer.getWidth(string), y + 1, index % 2 == 0 ? 16777215 : 9474192
 				);
 			}
@@ -510,7 +510,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			protected void render(MatrixStack matrices, @Nullable Stat<?> stat, int x, int y, boolean white) {
 				String string = stat == null ? "-" : stat.format(StatsScreen.this.statHandler.getStat(stat));
-				DrawableHelper.drawStringWithShadow(
+				DrawableHelper.drawTextWithShadow(
 					matrices, StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getWidth(string), y + 5, white ? 16777215 : 9474192
 				);
 			}

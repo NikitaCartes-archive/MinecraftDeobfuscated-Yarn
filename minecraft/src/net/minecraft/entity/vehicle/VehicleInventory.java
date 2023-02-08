@@ -1,6 +1,5 @@
 package net.minecraft.entity.vehicle;
 
-import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
@@ -29,7 +28,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 
 public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 	Vec3d getPos();
@@ -89,15 +87,9 @@ public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 		}
 	}
 
-	default ActionResult open(BiConsumer<GameEvent, Entity> gameEventEmitter, PlayerEntity player) {
+	default ActionResult open(PlayerEntity player) {
 		player.openHandledScreen(this);
-		if (!player.world.isClient) {
-			gameEventEmitter.accept(GameEvent.CONTAINER_OPEN, player);
-			PiglinBrain.onGuardedBlockInteracted(player, true);
-			return ActionResult.CONSUME;
-		} else {
-			return ActionResult.SUCCESS;
-		}
+		return !player.world.isClient ? ActionResult.CONSUME : ActionResult.SUCCESS;
 	}
 
 	default void generateInventoryLoot(@Nullable PlayerEntity player) {

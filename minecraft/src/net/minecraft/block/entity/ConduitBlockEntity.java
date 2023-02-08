@@ -9,7 +9,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
@@ -214,7 +213,7 @@ public class ConduitBlockEntity extends BlockEntity {
 				1.0F,
 				1.0F
 			);
-			blockEntity.targetEntity.damage(DamageSource.MAGIC, 4.0F);
+			blockEntity.targetEntity.damage(world.getDamageSources().magic(), 4.0F);
 		}
 
 		if (livingEntity != blockEntity.targetEntity) {

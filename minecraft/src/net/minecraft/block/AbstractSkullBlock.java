@@ -5,13 +5,14 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SkullBlockEntity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ai.pathing.NavigationType;
-import net.minecraft.item.Wearable;
+import net.minecraft.item.Equipment;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public abstract class AbstractSkullBlock extends BlockWithEntity implements Wearable {
+public abstract class AbstractSkullBlock extends BlockWithEntity implements Equipment {
 	private final SkullBlock.SkullType type;
 
 	public AbstractSkullBlock(SkullBlock.SkullType type, AbstractBlock.Settings settings) {
@@ -44,5 +45,10 @@ public abstract class AbstractSkullBlock extends BlockWithEntity implements Wear
 	@Override
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
+	}
+
+	@Override
+	public EquipmentSlot getSlotType() {
+		return EquipmentSlot.HEAD;
 	}
 }

@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Optional;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
@@ -127,7 +126,7 @@ public abstract class AbstractFireBlock extends Block {
 			}
 		}
 
-		entity.damage(DamageSource.IN_FIRE, this.damage);
+		entity.damage(world.getDamageSources().inFire(), this.damage);
 		super.onEntityCollision(state, world, pos, entity);
 	}
 

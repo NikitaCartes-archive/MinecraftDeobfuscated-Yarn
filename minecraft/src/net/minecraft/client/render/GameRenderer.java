@@ -33,7 +33,7 @@ import net.minecraft.client.gl.ShaderStage;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.client.util.Window;
@@ -248,9 +248,13 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	private static ShaderProgram renderTypeTextProgram;
 	@Nullable
+	private static ShaderProgram renderTypeTextBackgroundProgram;
+	@Nullable
 	private static ShaderProgram renderTypeTextIntensityProgram;
 	@Nullable
 	private static ShaderProgram renderTypeTextSeeThroughProgram;
+	@Nullable
+	private static ShaderProgram renderTypeTextBackgroundSeeThroughProgram;
 	@Nullable
 	private static ShaderProgram renderTypeTextIntensitySeeThroughProgram;
 	@Nullable
@@ -684,6 +688,12 @@ public class GameRenderer implements AutoCloseable {
 			);
 			list2.add(
 				Pair.of(
+					new ShaderProgram(factory, "rendertype_text_background", VertexFormats.POSITION_COLOR_LIGHT),
+					(Consumer)program -> renderTypeTextBackgroundProgram = program
+				)
+			);
+			list2.add(
+				Pair.of(
 					new ShaderProgram(factory, "rendertype_text_intensity", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT),
 					(Consumer)program -> renderTypeTextIntensityProgram = program
 				)
@@ -692,6 +702,12 @@ public class GameRenderer implements AutoCloseable {
 				Pair.of(
 					new ShaderProgram(factory, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT),
 					(Consumer)program -> renderTypeTextSeeThroughProgram = program
+				)
+			);
+			list2.add(
+				Pair.of(
+					new ShaderProgram(factory, "rendertype_text_background_see_through", VertexFormats.POSITION_COLOR_LIGHT),
+					(Consumer)program -> renderTypeTextBackgroundSeeThroughProgram = program
 				)
 			);
 			list2.add(
@@ -893,7 +909,8 @@ public class GameRenderer implements AutoCloseable {
 			f = MathHelper.sin(f * f * f * f * (float) Math.PI);
 			float g = livingEntity.getDamageTiltYaw();
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-g));
-			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-f * 14.0F));
+			float h = (float)((double)(-f) * 14.0 * this.client.options.getDamageTiltStrength().getValue());
+			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(h));
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
 		}
 	}
@@ -1289,7 +1306,7 @@ public class GameRenderer implements AutoCloseable {
 			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
 			this.client
 				.getItemRenderer()
-				.renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate, this.client.world, 0);
+				.renderItem(this.floatingItem, ModelTransformationMode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate, this.client.world, 0);
 			matrixStack.pop();
 			immediate.draw();
 			RenderSystem.enableCull();
@@ -1585,6 +1602,11 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	@Nullable
+	public static ShaderProgram getRenderTypeTextBackgroundProgram() {
+		return renderTypeTextBackgroundProgram;
+	}
+
+	@Nullable
 	public static ShaderProgram getRenderTypeTextIntensityProgram() {
 		return renderTypeTextIntensityProgram;
 	}
@@ -1592,6 +1614,11 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	public static ShaderProgram getRenderTypeTextSeeThroughProgram() {
 		return renderTypeTextSeeThroughProgram;
+	}
+
+	@Nullable
+	public static ShaderProgram getRenderTypeTextBackgroundSeeThroughProgram() {
+		return renderTypeTextBackgroundSeeThroughProgram;
 	}
 
 	@Nullable

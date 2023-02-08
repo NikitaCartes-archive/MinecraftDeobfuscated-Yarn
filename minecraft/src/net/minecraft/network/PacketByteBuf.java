@@ -70,6 +70,8 @@ import net.minecraft.util.math.GlobalPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 /**
  * A packet byte buf is a specialized byte buf with utility methods adapted
@@ -119,6 +121,12 @@ import net.minecraft.world.World;
  * </tr>
  * <tr>
  *  <td>{@link GlobalPos}</td><td>{@link #readGlobalPos()}</td><td>{@link #writeGlobalPos(GlobalPos)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@link Vector3f}</td><td>{@link #readVector3f()}</td><td>{@link #writeVector3f(Vector3f)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@link Quaternionf}</td><td>{@link #readQuaternionf()}</td><td>{@link #writeQuaternionf(Quaternionf)}</td>
  * </tr>
  * <tr>
  *  <td>{@link Text}</td><td>{@link #readText()}</td><td>{@link #writeText(Text)}</td>
@@ -1004,6 +1012,51 @@ public class PacketByteBuf extends ByteBuf {
 	public void writeGlobalPos(GlobalPos pos) {
 		this.writeRegistryKey(pos.getDimension());
 		this.writeBlockPos(pos.getPos());
+	}
+
+	/**
+	 * Reads a {@link Vector3f} from this buf. A {@link Vector3f} is represented by
+	 * three {@code float}s.
+	 * 
+	 * @see #writeVector3f(Vector3f)
+	 */
+	public Vector3f readVector3f() {
+		return new Vector3f(this.readFloat(), this.readFloat(), this.readFloat());
+	}
+
+	/**
+	 * Writes a {@link Vector3f} to this buf. A {@link Vector3f} is represented by
+	 * three {@code float}s.
+	 * 
+	 * @see #readVector3f()
+	 */
+	public void writeVector3f(Vector3f vector3f) {
+		this.writeFloat(vector3f.x());
+		this.writeFloat(vector3f.y());
+		this.writeFloat(vector3f.z());
+	}
+
+	/**
+	 * Reads a {@link Quaternionf} from this buf. A {@link Quaternionf} is represented
+	 * by four {@code float}s.
+	 * 
+	 * @see #writeQuaternionf(Quaternionf)
+	 */
+	public Quaternionf readQuaternionf() {
+		return new Quaternionf(this.readFloat(), this.readFloat(), this.readFloat(), this.readFloat());
+	}
+
+	/**
+	 * Writes a {@link Quaternionf} to this buf. A {@link Quaternionf} is represented
+	 * by four {@code float}s.
+	 * 
+	 * @see #readQuaternionf()
+	 */
+	public void writeQuaternionf(Quaternionf quaternionf) {
+		this.writeFloat(quaternionf.x);
+		this.writeFloat(quaternionf.y);
+		this.writeFloat(quaternionf.z);
+		this.writeFloat(quaternionf.w);
 	}
 
 	/**

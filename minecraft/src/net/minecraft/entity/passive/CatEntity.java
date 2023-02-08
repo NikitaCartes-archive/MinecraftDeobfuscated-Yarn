@@ -268,7 +268,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		return target.damage(DamageSource.mob(this), this.getAttackDamage());
+		return target.damage(this.getDamageSources().mobAttack(this), this.getAttackDamage());
 	}
 
 	@Override

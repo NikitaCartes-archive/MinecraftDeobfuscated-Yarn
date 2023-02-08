@@ -24,7 +24,7 @@ public class RealmsLabel implements Drawable {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		DrawableHelper.drawCenteredText(matrices, MinecraftClient.getInstance().textRenderer, this.text, this.x, this.y, this.color);
+		DrawableHelper.drawCenteredTextWithShadow(matrices, MinecraftClient.getInstance().textRenderer, this.text, this.x, this.y, this.color);
 	}
 
 	public Text getText() {

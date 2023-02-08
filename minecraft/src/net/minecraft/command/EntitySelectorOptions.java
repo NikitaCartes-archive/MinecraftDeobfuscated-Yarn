@@ -311,9 +311,9 @@ public class EntitySelectorOptions {
 				String string = reader.getReader().readUnquotedString();
 				reader.setPredicate(entity -> {
 					if ("".equals(string)) {
-						return entity.getScoreboardTags().isEmpty() != bl;
+						return entity.getCommandTags().isEmpty() != bl;
 					} else {
-						return entity.getScoreboardTags().contains(string) != bl;
+						return entity.getCommandTags().contains(string) != bl;
 					}
 				});
 			}, reader -> true, Text.translatable("argument.entity.options.tag.description"));

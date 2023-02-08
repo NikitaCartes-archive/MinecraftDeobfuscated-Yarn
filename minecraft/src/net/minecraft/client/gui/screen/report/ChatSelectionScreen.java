@@ -31,7 +31,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
-import net.minecraft.util.Util;
+import net.minecraft.util.Nullables;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
@@ -96,12 +96,12 @@ public class ChatSelectionScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.selectionList.render(matrices, mouseX, mouseY, delta);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
 		AbuseReportLimits abuseReportLimits = this.reporter.getSender().getLimits();
 		int i = this.report.getSelections().size();
 		int j = abuseReportLimits.maxReportedMessageCount();
 		Text text = Text.translatable("gui.chatSelection.selected", i, j);
-		drawCenteredText(matrices, this.textRenderer, text, this.width / 2, 16 + 9 * 3 / 2, 10526880);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, text, this.width / 2, 16 + 9 * 3 / 2, 10526880);
 		this.contextMessage.drawCenterWithShadow(matrices, this.width / 2, this.selectionList.getContextMessageY());
 		super.render(matrices, mouseX, mouseY, delta);
 	}
@@ -272,7 +272,7 @@ public class ChatSelectionScreen extends Screen {
 
 			public MessageEntry(int index, Text message, Text narration, @Nullable MessageIndicator indicator, boolean fromReportedPlayer, boolean isChatMessage) {
 				this.index = index;
-				this.indicatorIcon = Util.map(indicator, MessageIndicator::icon);
+				this.indicatorIcon = Nullables.map(indicator, MessageIndicator::icon);
 				this.originalContent = indicator != null && indicator.text() != null
 					? ChatSelectionScreen.this.textRenderer.wrapLines(indicator.text(), SelectionListWidget.this.getRowWidth())
 					: null;
@@ -299,7 +299,7 @@ public class ChatSelectionScreen extends Screen {
 
 				int i = x + this.getIndent();
 				int j = y + 1 + (entryHeight - 9) / 2;
-				DrawableHelper.drawWithShadow(
+				DrawableHelper.drawTextWithShadow(
 					matrices, ChatSelectionScreen.this.textRenderer, Language.getInstance().reorder(this.truncatedContent), i, j, this.fromReportedPlayer ? -1 : -1593835521
 				);
 				if (this.fullContent != null && hovered) {
