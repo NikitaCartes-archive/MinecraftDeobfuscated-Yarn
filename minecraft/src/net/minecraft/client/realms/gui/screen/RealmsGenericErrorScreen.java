@@ -72,7 +72,7 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.errorMessages.getFirst(), this.width / 2, 80, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.errorMessages.getFirst(), this.width / 2, 80, 16777215);
 		this.description.drawCenterWithShadow(matrices, this.width / 2, 100, 9, 16711680);
 		super.render(matrices, mouseX, mouseY, delta);
 	}

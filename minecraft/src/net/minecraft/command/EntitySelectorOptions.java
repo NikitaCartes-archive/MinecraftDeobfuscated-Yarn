@@ -297,7 +297,7 @@ public class EntitySelectorOptions {
 			putOption("tag", reader -> {
 				boolean bl = reader.readNegationCharacter();
 				String string = reader.getReader().readUnquotedString();
-				reader.setPredicate(entity -> "".equals(string) ? entity.getScoreboardTags().isEmpty() != bl : entity.getScoreboardTags().contains(string) != bl);
+				reader.setPredicate(entity -> "".equals(string) ? entity.getCommandTags().isEmpty() != bl : entity.getCommandTags().contains(string) != bl);
 			}, reader -> true, Text.translatable("argument.entity.options.tag.description"));
 			putOption("nbt", reader -> {
 				boolean bl = reader.readNegationCharacter();

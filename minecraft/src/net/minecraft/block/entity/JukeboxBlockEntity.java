@@ -6,8 +6,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.MusicDiscItem;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Clearable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -75,10 +78,19 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable {
 			} else if (hasSecondPassed(blockEntity)) {
 				blockEntity.ticksThisSecond = 0;
 				world.emitGameEvent(GameEvent.JUKEBOX_PLAY, pos, GameEvent.Emitter.of(state));
+				spawnNoteParticle(world, pos);
 			}
 		}
 
 		blockEntity.tickCount++;
+	}
+
+	private static void spawnNoteParticle(World world, BlockPos pos) {
+		if (world instanceof ServerWorld serverWorld) {
+			Vec3d vec3d = Vec3d.ofBottomCenter(pos).add(0.0, 1.2F, 0.0);
+			float f = (float)world.getRandom().nextInt(4) / 24.0F;
+			serverWorld.spawnParticles(ParticleTypes.NOTE, vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0, (double)f, 0.0, 0.0, 1.0);
+		}
 	}
 
 	private static boolean isPlayingRecord(BlockState state, JukeboxBlockEntity blockEntity) {

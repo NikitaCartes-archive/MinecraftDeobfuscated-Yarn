@@ -1,16 +1,12 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
@@ -35,19 +31,15 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugFilledBox());
 
 		for (int i = 0; i < this.positions.size(); i++) {
 			BlockPos blockPos = (BlockPos)this.positions.get(i);
 			Float float_ = (Float)this.sizes.get(i);
 			float f = float_ / 2.0F;
-			WorldRenderer.drawBox(
-				bufferBuilder,
+			WorldRenderer.method_3258(
+				matrices,
+				vertexConsumer,
 				(double)((float)blockPos.getX() + 0.5F - f) - cameraX,
 				(double)((float)blockPos.getY() + 0.5F - f) - cameraY,
 				(double)((float)blockPos.getZ() + 0.5F - f) - cameraZ,
@@ -60,7 +52,5 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 				(Float)this.alphas.get(i)
 			);
 		}
-
-		tessellator.draw();
 	}
 }

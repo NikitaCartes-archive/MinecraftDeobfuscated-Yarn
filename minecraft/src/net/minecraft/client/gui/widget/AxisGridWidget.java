@@ -69,7 +69,7 @@ public class AxisGridWidget extends WrapperWidget {
 	}
 
 	@Override
-	protected void forEachElement(Consumer<Widget> consumer) {
+	public void forEachElement(Consumer<Widget> consumer) {
 		this.elements.forEach(element -> consumer.accept(element.widget));
 	}
 

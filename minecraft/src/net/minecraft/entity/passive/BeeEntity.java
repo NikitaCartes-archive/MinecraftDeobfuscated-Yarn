@@ -237,7 +237,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(DamageSource.sting(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
+		boolean bl = target.damage(this.getDamageSources().sting(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
 			this.applyDamageEffects(this, target);
 			if (target instanceof LivingEntity) {
@@ -369,13 +369,13 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		}
 
 		if (this.ticksInsideWater > 20) {
-			this.damage(DamageSource.DROWN, 1.0F);
+			this.damage(this.getDamageSources().drown(), 1.0F);
 		}
 
 		if (bl) {
 			this.ticksSinceSting++;
 			if (this.ticksSinceSting % 5 == 0 && this.random.nextInt(MathHelper.clamp(1200 - this.ticksSinceSting, 1, 1200)) == 0) {
-				this.damage(DamageSource.GENERIC, this.getHealth());
+				this.damage(this.getDamageSources().generic(), this.getHealth());
 			}
 		}
 

@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -45,7 +44,7 @@ public class HoneyBlock extends TransparentBlock {
 			world.sendEntityStatus(entity, EntityStatuses.DRIP_RICH_HONEY);
 		}
 
-		if (entity.handleFallDamage(fallDistance, 0.2F, DamageSource.FALL)) {
+		if (entity.handleFallDamage(fallDistance, 0.2F, world.getDamageSources().fall())) {
 			entity.playSound(this.soundGroup.getFallSound(), this.soundGroup.getVolume() * 0.5F, this.soundGroup.getPitch() * 0.75F);
 		}
 	}

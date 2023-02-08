@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -17,7 +16,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.annotation.DeobfuscateClass;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.system.MemoryUtil;
@@ -119,19 +117,6 @@ public class TextureUtil {
 				LOGGER.debug("Unable to write: ", (Throwable)var14);
 			}
 		}
-	}
-
-	public static void initTexture(IntBuffer imageData, int width, int height) {
-		RenderSystem.assertOnRenderThread();
-		GL11.glPixelStorei(GlConst.GL_UNPACK_SWAP_BYTES, 0);
-		GL11.glPixelStorei(GlConst.GL_UNPACK_LSB_FIRST, 0);
-		GL11.glPixelStorei(GlConst.GL_UNPACK_ROW_LENGTH, 0);
-		GL11.glPixelStorei(GlConst.GL_UNPACK_SKIP_ROWS, 0);
-		GL11.glPixelStorei(GlConst.GL_UNPACK_SKIP_PIXELS, 0);
-		GL11.glPixelStorei(GlConst.GL_UNPACK_ALIGNMENT, 4);
-		GL11.glTexImage2D(GlConst.GL_TEXTURE_2D, 0, GlConst.GL_RGBA, width, height, 0, GL12.GL_BGRA, 33639, imageData);
-		GL11.glTexParameteri(GlConst.GL_TEXTURE_2D, 10240, 9728);
-		GL11.glTexParameteri(GlConst.GL_TEXTURE_2D, 10241, 9729);
 	}
 
 	public static Path getDebugTexturePath(Path path) {

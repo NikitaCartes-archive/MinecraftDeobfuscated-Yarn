@@ -31,22 +31,22 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 
 		for (BlockPos blockPos2 : this.raidCenters) {
 			if (blockPos.isWithinDistance(blockPos2, 160.0)) {
-				drawRaidCenter(blockPos2);
+				drawRaidCenter(matrices, vertexConsumers, blockPos2);
 			}
 		}
 	}
 
-	private static void drawRaidCenter(BlockPos pos) {
-		DebugRenderer.drawBox(pos.add(-0.5, -0.5, -0.5), pos.add(1.5, 1.5, 1.5), 1.0F, 0.0F, 0.0F, 0.15F);
+	private static void drawRaidCenter(MatrixStack matrices, VertexConsumerProvider vertexConsumers, BlockPos pos) {
+		DebugRenderer.drawBox(matrices, vertexConsumers, pos.add(-0.5, -0.5, -0.5), pos.add(1.5, 1.5, 1.5), 1.0F, 0.0F, 0.0F, 0.15F);
 		int i = -65536;
-		drawString("Raid center", pos, -65536);
+		drawString(matrices, vertexConsumers, "Raid center", pos, -65536);
 	}
 
-	private static void drawString(String string, BlockPos pos, int color) {
+	private static void drawString(MatrixStack matrices, VertexConsumerProvider vertexConsumers, String string, BlockPos pos, int color) {
 		double d = (double)pos.getX() + 0.5;
 		double e = (double)pos.getY() + 1.3;
 		double f = (double)pos.getZ() + 0.5;
-		DebugRenderer.drawString(string, d, e, f, color, 0.04F, true, 0.0F, true);
+		DebugRenderer.drawString(matrices, vertexConsumers, string, d, e, f, color, 0.04F, true, 0.0F, true);
 	}
 
 	private Camera getCamera() {

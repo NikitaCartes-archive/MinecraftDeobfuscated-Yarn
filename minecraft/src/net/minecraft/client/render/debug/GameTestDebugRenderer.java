@@ -1,8 +1,6 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -29,25 +27,17 @@ public class GameTestDebugRenderer implements DebugRenderer.Renderer {
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		long l = Util.getMeasuringTimeMs();
 		this.markers.entrySet().removeIf(entry -> l > ((GameTestDebugRenderer.Marker)entry.getValue()).removalTime);
-		this.markers.forEach(this::renderMarker);
+		this.markers.forEach((pos, marker) -> this.renderMarker(matrices, vertexConsumers, pos, marker));
 	}
 
-	private void renderMarker(BlockPos pos, GameTestDebugRenderer.Marker marker) {
-		RenderSystem.enableBlend();
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
-		);
-		RenderSystem.setShaderColor(0.0F, 1.0F, 0.0F, 0.75F);
-		DebugRenderer.drawBox(pos, 0.02F, marker.getBlue(), marker.getGreen(), marker.getAlpha(), marker.getRed());
+	private void renderMarker(MatrixStack matrices, VertexConsumerProvider vertexConsumers, BlockPos pos, GameTestDebugRenderer.Marker marker) {
+		DebugRenderer.drawBox(matrices, vertexConsumers, pos, 0.02F, marker.getBlue(), marker.getGreen(), marker.getAlpha(), marker.getRed() * 0.75F);
 		if (!marker.message.isEmpty()) {
 			double d = (double)pos.getX() + 0.5;
 			double e = (double)pos.getY() + 1.2;
 			double f = (double)pos.getZ() + 0.5;
-			DebugRenderer.drawString(marker.message, d, e, f, -1, 0.01F, true, 0.0F, true);
+			DebugRenderer.drawString(matrices, vertexConsumers, marker.message, d, e, f, -1, 0.01F, true, 0.0F, true);
 		}
-
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.disableBlend();
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -57,6 +57,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 
 public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<BlockPos> HOME_POS = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
@@ -330,7 +331,7 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Override
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
-		this.damage(DamageSource.LIGHTNING_BOLT, Float.MAX_VALUE);
+		this.damage(this.getDamageSources().lightningBolt(), Float.MAX_VALUE);
 	}
 
 	static class GoHomeGoal extends Goal {
@@ -430,9 +431,10 @@ public class TurtleEntity extends AnimalEntity {
 				} else if (this.turtle.sandDiggingCounter > this.getTickCount(200)) {
 					World world = this.turtle.world;
 					world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_LAY_EGG, SoundCategory.BLOCKS, 0.3F, 0.9F + world.random.nextFloat() * 0.2F);
-					world.setBlockState(
-						this.targetPos.up(), Blocks.TURTLE_EGG.getDefaultState().with(TurtleEggBlock.EGGS, Integer.valueOf(this.turtle.random.nextInt(4) + 1)), Block.NOTIFY_ALL
-					);
+					BlockPos blockPos2 = this.targetPos.up();
+					BlockState blockState = Blocks.TURTLE_EGG.getDefaultState().with(TurtleEggBlock.EGGS, Integer.valueOf(this.turtle.random.nextInt(4) + 1));
+					world.setBlockState(blockPos2, blockState, Block.NOTIFY_ALL);
+					world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos2, GameEvent.Emitter.of(this.turtle, blockState));
 					this.turtle.setHasEgg(false);
 					this.turtle.setDiggingSand(false);
 					this.turtle.setLoveTicks(600);

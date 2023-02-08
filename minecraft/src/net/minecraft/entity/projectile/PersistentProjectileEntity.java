@@ -319,9 +319,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		Entity entity2 = this.getOwner();
 		DamageSource damageSource;
 		if (entity2 == null) {
-			damageSource = DamageSource.arrow(this, this);
+			damageSource = this.getDamageSources().arrow(this, this);
 		} else {
-			damageSource = DamageSource.arrow(this, entity2);
+			damageSource = this.getDamageSources().arrow(this, entity2);
 			if (entity2 instanceof LivingEntity) {
 				((LivingEntity)entity2).onAttacking(entity);
 			}

@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -44,7 +43,7 @@ public class WitherRoseBlock extends FlowerBlock {
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!world.isClient && world.getDifficulty() != Difficulty.PEACEFUL) {
-			if (entity instanceof LivingEntity livingEntity && !livingEntity.isInvulnerableTo(DamageSource.WITHER)) {
+			if (entity instanceof LivingEntity livingEntity && !livingEntity.isInvulnerableTo(world.getDamageSources().wither())) {
 				livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 40));
 			}
 		}

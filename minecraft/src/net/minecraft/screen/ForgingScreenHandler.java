@@ -145,7 +145,7 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 				}
 			} else if (this.isValidIngredient(itemStack2) && slot >= this.getPlayerInventoryStartIndex() && slot < this.getPlayerHotbarEndIndex()) {
 				int k = this.getSlotFor(itemStack);
-				if (!this.insertItem(itemStack2, k, k + 1, false)) {
+				if (!this.insertItem(itemStack2, k, this.getResultSlotIndex(), false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (slot >= this.getPlayerInventoryStartIndex() && slot < this.getPlayerInventoryEndIndex()) {

@@ -5,13 +5,13 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.TridentItem;
 import net.minecraft.item.Vanishable;
-import net.minecraft.item.Wearable;
 
 public enum EnchantmentTarget {
 	ARMOR {
@@ -23,25 +23,41 @@ public enum EnchantmentTarget {
 	ARMOR_FEET {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.FEET;
+			if (item instanceof ArmorItem armorItem && armorItem.getSlotType() == EquipmentSlot.FEET) {
+				return true;
+			}
+
+			return false;
 		}
 	},
 	ARMOR_LEGS {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.LEGS;
+			if (item instanceof ArmorItem armorItem && armorItem.getSlotType() == EquipmentSlot.LEGS) {
+				return true;
+			}
+
+			return false;
 		}
 	},
 	ARMOR_CHEST {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.CHEST;
+			if (item instanceof ArmorItem armorItem && armorItem.getSlotType() == EquipmentSlot.CHEST) {
+				return true;
+			}
+
+			return false;
 		}
 	},
 	ARMOR_HEAD {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof ArmorItem && ((ArmorItem)item).getSlotType() == EquipmentSlot.HEAD;
+			if (item instanceof ArmorItem armorItem && armorItem.getSlotType() == EquipmentSlot.HEAD) {
+				return true;
+			}
+
+			return false;
 		}
 	},
 	WEAPON {
@@ -83,7 +99,7 @@ public enum EnchantmentTarget {
 	WEARABLE {
 		@Override
 		public boolean isAcceptableItem(Item item) {
-			return item instanceof Wearable || Block.getBlockFromItem(item) instanceof Wearable;
+			return item instanceof Equipment || Block.getBlockFromItem(item) instanceof Equipment;
 		}
 	},
 	CROSSBOW {

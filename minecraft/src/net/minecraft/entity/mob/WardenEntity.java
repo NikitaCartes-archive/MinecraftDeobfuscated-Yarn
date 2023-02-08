@@ -31,7 +31,6 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -48,6 +47,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
@@ -147,7 +147,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 
 	@Override
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return this.isDiggingOrEmerging() && !damageSource.isOutOfWorld() ? true : super.isInvulnerableTo(damageSource);
+		return this.isDiggingOrEmerging() && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) ? true : super.isInvulnerableTo(damageSource);
 	}
 
 	private boolean isDiggingOrEmerging() {
@@ -309,11 +309,11 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	}
 
 	public float getTendrilPitch(float tickDelta) {
-		return MathHelper.lerp(tickDelta, (float)this.lastTendrilPitch, (float)this.tendrilPitch) / 10.0F;
+		return (float)MathHelper.lerp(tickDelta, this.lastTendrilPitch, this.tendrilPitch) / 10.0F;
 	}
 
 	public float getHeartPitch(float tickDelta) {
-		return MathHelper.lerp(tickDelta, (float)this.lastHeartbeatCooldown, (float)this.heartbeatCooldown) / 10.0F;
+		return (float)MathHelper.lerp(tickDelta, this.lastHeartbeatCooldown, this.heartbeatCooldown) / 10.0F;
 	}
 
 	private void addDigParticles(AnimationState animationState) {
@@ -520,7 +520,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 			this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
 			if (this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()
 				&& entity instanceof LivingEntity livingEntity
-				&& (!(source instanceof ProjectileDamageSource) || this.isInRange(livingEntity, 5.0))) {
+				&& (!source.isIndirect() || this.isInRange(livingEntity, 5.0))) {
 				this.updateAttackTarget(livingEntity);
 			}
 		}

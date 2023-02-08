@@ -99,12 +99,12 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16777215);
 		Text text = this.errorMessage;
 		if (text == null) {
-			drawCenteredText(matrices, this.textRenderer, SYMBOLS[this.animTicks % SYMBOLS.length], this.width / 2, row(8), 8421504);
+			drawCenteredTextWithShadow(matrices, this.textRenderer, SYMBOLS[this.animTicks % SYMBOLS.length], this.width / 2, row(8), 8421504);
 		} else {
-			drawCenteredText(matrices, this.textRenderer, text, this.width / 2, row(8), 16711680);
+			drawCenteredTextWithShadow(matrices, this.textRenderer, text, this.width / 2, row(8), 16711680);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

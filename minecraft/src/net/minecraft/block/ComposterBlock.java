@@ -3,6 +3,7 @@ package net.minecraft.block;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -33,6 +34,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 
 public class ComposterBlock extends Block implements InventoryProvider {
 	public static final int MAX_LEVEL = 8;
@@ -219,7 +221,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
 			if (i < 7 && !world.isClient) {
-				BlockState blockState = addToComposter(state, world, pos, itemStack);
+				BlockState blockState = addToComposter(player, state, world, pos, itemStack);
 				world.syncWorldEvent(WorldEvents.COMPOSTER_USED, pos, state != blockState ? 1 : 0);
 				player.incrementStat(Stats.USED.getOrCreateStat(itemStack.getItem()));
 				if (!player.getAbilities().creativeMode) {
@@ -229,17 +231,17 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 			return ActionResult.success(world.isClient);
 		} else if (i == 8) {
-			emptyFullComposter(state, world, pos);
+			emptyFullComposter(player, state, world, pos);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
 		}
 	}
 
-	public static BlockState compost(BlockState state, ServerWorld world, ItemStack stack, BlockPos pos) {
+	public static BlockState compost(Entity user, BlockState state, ServerWorld world, ItemStack stack, BlockPos pos) {
 		int i = (Integer)state.get(LEVEL);
 		if (i < 7 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(stack.getItem())) {
-			BlockState blockState = addToComposter(state, world, pos, stack);
+			BlockState blockState = addToComposter(user, state, world, pos, stack);
 			stack.decrement(1);
 			return blockState;
 		} else {
@@ -247,7 +249,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		}
 	}
 
-	public static BlockState emptyFullComposter(BlockState state, World world, BlockPos pos) {
+	public static BlockState emptyFullComposter(Entity user, BlockState state, World world, BlockPos pos) {
 		if (!world.isClient) {
 			float f = 0.7F;
 			double d = (double)(world.random.nextFloat() * 0.7F) + 0.15F;
@@ -258,26 +260,28 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			world.spawnEntity(itemEntity);
 		}
 
-		BlockState blockState = emptyComposter(state, world, pos);
+		BlockState blockState = emptyComposter(user, state, world, pos);
 		world.playSound(null, pos, SoundEvents.BLOCK_COMPOSTER_EMPTY, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		return blockState;
 	}
 
-	static BlockState emptyComposter(BlockState state, WorldAccess world, BlockPos pos) {
+	static BlockState emptyComposter(@Nullable Entity user, BlockState state, WorldAccess world, BlockPos pos) {
 		BlockState blockState = state.with(LEVEL, Integer.valueOf(0));
 		world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
+		world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(user, blockState));
 		return blockState;
 	}
 
-	static BlockState addToComposter(BlockState state, WorldAccess world, BlockPos pos, ItemStack item) {
+	static BlockState addToComposter(@Nullable Entity user, BlockState state, WorldAccess world, BlockPos pos, ItemStack stack) {
 		int i = (Integer)state.get(LEVEL);
-		float f = ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(item.getItem());
+		float f = ITEM_TO_LEVEL_INCREASE_CHANCE.getFloat(stack.getItem());
 		if ((i != 0 || !(f > 0.0F)) && !(world.getRandom().nextDouble() < (double)f)) {
 			return state;
 		} else {
 			int j = i + 1;
 			BlockState blockState = state.with(LEVEL, Integer.valueOf(j));
 			world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
+			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(user, blockState));
 			if (j == 7) {
 				world.scheduleBlockTick(pos, state.getBlock(), 20);
 			}
@@ -362,7 +366,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 			ItemStack itemStack = this.getStack(0);
 			if (!itemStack.isEmpty()) {
 				this.dirty = true;
-				BlockState blockState = ComposterBlock.addToComposter(this.state, this.world, this.pos, itemStack);
+				BlockState blockState = ComposterBlock.addToComposter(null, this.state, this.world, this.pos, itemStack);
 				this.world.syncWorldEvent(WorldEvents.COMPOSTER_USED, this.pos, blockState != this.state ? 1 : 0);
 				this.removeStack(0);
 			}
@@ -425,7 +429,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 
 		@Override
 		public void markDirty() {
-			ComposterBlock.emptyComposter(this.state, this.world, this.pos);
+			ComposterBlock.emptyComposter(null, this.state, this.world, this.pos);
 			this.dirty = true;
 		}
 	}

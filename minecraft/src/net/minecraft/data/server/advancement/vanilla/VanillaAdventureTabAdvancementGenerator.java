@@ -29,6 +29,7 @@ import net.minecraft.item.Items;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.TagPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
@@ -42,6 +43,7 @@ import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
@@ -231,7 +233,11 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				"shot_arrow",
 				PlayerHurtEntityCriterion.Conditions.create(
 					DamagePredicate.Builder.create()
-						.type(DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityTypeTags.ARROWS)))
+						.type(
+							DamageSourcePredicate.Builder.create()
+								.tag(TagPredicate.expected(DamageTypeTags.IS_PROJECTILE))
+								.directEntity(EntityPredicate.Builder.create().type(EntityTypeTags.ARROWS))
+						)
 				)
 			)
 			.build(exporter, "adventure/shoot_arrow");
@@ -251,7 +257,11 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				"shot_trident",
 				PlayerHurtEntityCriterion.Conditions.create(
 					DamagePredicate.Builder.create()
-						.type(DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.TRIDENT)))
+						.type(
+							DamageSourcePredicate.Builder.create()
+								.tag(TagPredicate.expected(DamageTypeTags.IS_PROJECTILE))
+								.directEntity(EntityPredicate.Builder.create().type(EntityType.TRIDENT))
+						)
 				)
 			)
 			.build(exporter, "adventure/throw_trident");
@@ -300,7 +310,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				"killed_skeleton",
 				OnKilledCriterion.Conditions.createPlayerKilledEntity(
 					EntityPredicate.Builder.create().type(EntityType.SKELETON).distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0))),
-					DamageSourcePredicate.Builder.create().projectile(true)
+					DamageSourcePredicate.Builder.create().tag(TagPredicate.expected(DamageTypeTags.IS_PROJECTILE))
 				)
 			)
 			.build(exporter, "adventure/sniper_duel");

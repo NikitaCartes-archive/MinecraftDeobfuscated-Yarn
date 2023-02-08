@@ -1,7 +1,6 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
@@ -38,8 +37,6 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		Camera camera = this.client.gameRenderer.getCamera();
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		this.goalSelectors.forEach((index, selectors) -> {
 			for (int i = 0; i < selectors.size(); i++) {
@@ -49,11 +46,10 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 					double e = (double)goalSelector.pos.getY() + 2.0 + (double)i * 0.25;
 					double f = (double)goalSelector.pos.getZ() + 0.5;
 					int j = goalSelector.field_18785 ? -16711936 : -3355444;
-					DebugRenderer.drawString(goalSelector.name, d, e, f, j);
+					DebugRenderer.drawString(matrices, vertexConsumers, goalSelector.name, d, e, f, j);
 				}
 			}
 		});
-		RenderSystem.enableDepthTest();
 	}
 
 	@Environment(EnvType.CLIENT)

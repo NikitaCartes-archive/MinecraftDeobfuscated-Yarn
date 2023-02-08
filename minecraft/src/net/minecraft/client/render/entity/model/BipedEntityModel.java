@@ -55,6 +55,8 @@ import net.minecraft.util.math.MathHelper;
 public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> implements ModelWithArms, ModelWithHead {
 	public static final float field_32505 = 0.25F;
 	public static final float field_32506 = 0.5F;
+	public static final float field_42513 = -0.1F;
+	private static final float field_42512 = 0.005F;
 	private static final float SPYGLASS_ARM_YAW_OFFSET = (float) (Math.PI / 12);
 	private static final float SPYGLASS_ARM_PITCH_OFFSET = 1.9198622F;
 	private static final float SPYGLASS_SNEAKING_ARM_PITCH_OFFSET = (float) (Math.PI / 12);
@@ -181,8 +183,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 		this.leftArm.roll = 0.0F;
 		this.rightLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g / k;
 		this.leftLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g / k;
-		this.rightLeg.yaw = 0.0F;
-		this.leftLeg.yaw = 0.0F;
+		this.rightLeg.yaw = 0.005F;
+		this.leftLeg.yaw = -0.005F;
 		this.rightLeg.roll = 0.0F;
 		this.leftLeg.roll = 0.0F;
 		if (this.riding) {
@@ -232,8 +234,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			this.rightArm.pivotY = 5.2F;
 		} else {
 			this.body.pitch = 0.0F;
-			this.rightLeg.pivotZ = 0.1F;
-			this.leftLeg.pivotZ = 0.1F;
+			this.rightLeg.pivotZ = 0.0F;
+			this.leftLeg.pivotZ = 0.0F;
 			this.rightLeg.pivotY = 12.0F;
 			this.leftLeg.pivotY = 12.0F;
 			this.head.pivotY = 0.0F;

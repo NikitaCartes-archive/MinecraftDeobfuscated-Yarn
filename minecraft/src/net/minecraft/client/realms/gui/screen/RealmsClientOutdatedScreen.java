@@ -38,11 +38,11 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16711680);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16711680);
 		Text[] texts = this.getLines();
 
 		for (int i = 0; i < texts.length; i++) {
-			drawCenteredText(matrices, this.textRenderer, texts[i], this.width / 2, row(5) + i * 12, 16777215);
+			drawCenteredTextWithShadow(matrices, this.textRenderer, texts[i], this.width / 2, row(5) + i * 12, 16777215);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);

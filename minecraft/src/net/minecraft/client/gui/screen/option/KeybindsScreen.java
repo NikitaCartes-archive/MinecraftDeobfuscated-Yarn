@@ -35,7 +35,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 				keyBinding.setBoundKey(keyBinding.getDefaultKey());
 			}
 
-			this.update();
+			this.controlsList.update();
 		}).dimensions(this.width / 2 - 155, this.height - 29, 150, 20).build());
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent))
@@ -44,17 +44,12 @@ public class KeybindsScreen extends GameOptionsScreen {
 		);
 	}
 
-	private void update() {
-		KeyBinding.updateKeysByCode();
-		this.controlsList.children().forEach(ControlsListWidget.Entry::update);
-	}
-
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
 		if (this.selectedKeyBinding != null) {
 			this.gameOptions.setKeyCode(this.selectedKeyBinding, InputUtil.Type.MOUSE.createFromCode(button));
 			this.selectedKeyBinding = null;
-			this.update();
+			this.controlsList.update();
 			return true;
 		} else {
 			return super.mouseClicked(mouseX, mouseY, button);
@@ -72,7 +67,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 
 			this.selectedKeyBinding = null;
 			this.lastKeyCodeUpdateTime = Util.getMeasuringTimeMs();
-			this.update();
+			this.controlsList.update();
 			return true;
 		} else {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -83,7 +78,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.controlsList.render(matrices, mouseX, mouseY, delta);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		boolean bl = false;
 
 		for (KeyBinding keyBinding : this.gameOptions.allKeys) {

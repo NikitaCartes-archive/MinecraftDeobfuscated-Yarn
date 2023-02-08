@@ -478,28 +478,6 @@ public class Util {
 	}
 
 	/**
-	 * {@return the {@code value} with {@code mapper} applied if the value is not {@code null},
-	 * otherwise {@code null}}
-	 * 
-	 * <p>This is the nullable equivalent to {@link Optional#map}.
-	 */
-	@Nullable
-	public static <T, R> R map(@Nullable T value, Function<T, R> mapper) {
-		return (R)(value == null ? null : mapper.apply(value));
-	}
-
-	/**
-	 * {@return the {@code value} with {@code mapper} applied if the value is not {@code null},
-	 * otherwise {@code other}}
-	 * 
-	 * <p>This is the nullable equivalent to {@link Optional#map} chained with
-	 * {@link Optional#orElse}.
-	 */
-	public static <T, R> R mapOrElse(@Nullable T value, Function<T, R> mapper, R other) {
-		return (R)(value == null ? other : mapper.apply(value));
-	}
-
-	/**
 	 * {@return the {@link Hash.Strategy} that uses identity comparison}
 	 * 
 	 * <p>fastutil's "reference" object types should be used instead in most cases.
@@ -910,6 +888,10 @@ public class Util {
 			.chars()
 			.mapToObj(charCode -> predicate.test((char)charCode) ? Character.toString((char)charCode) : "_")
 			.collect(Collectors.joining());
+	}
+
+	public static <K, V> CachedMapper<K, V> cachedMapper(Function<K, V> mapper) {
+		return new CachedMapper<>(mapper);
 	}
 
 	public static <T, R> Function<T, R> memoize(Function<T, R> function) {

@@ -412,7 +412,7 @@ public class StructureBlockScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		StructureBlockMode structureBlockMode = this.structureBlock.getMode();
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
 		if (structureBlockMode != StructureBlockMode.DATA) {
 			drawTextWithShadow(matrices, this.textRenderer, STRUCTURE_NAME_TEXT, this.width / 2 - 153, 30, 10526880);
 			this.inputName.render(matrices, mouseX, mouseY, delta);

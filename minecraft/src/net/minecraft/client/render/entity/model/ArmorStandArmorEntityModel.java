@@ -35,12 +35,12 @@ public class ArmorStandArmorEntityModel extends BipedEntityModel<ArmorStandEntit
 		);
 		modelPartData.addChild(
 			EntityModelPartNames.RIGHT_LEG,
-			ModelPartBuilder.create().uv(0, 16).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation),
+			ModelPartBuilder.create().uv(0, 16).cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation.add(-0.1F)),
 			ModelTransform.pivot(-1.9F, 11.0F, 0.0F)
 		);
 		modelPartData.addChild(
 			EntityModelPartNames.LEFT_LEG,
-			ModelPartBuilder.create().uv(0, 16).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation),
+			ModelPartBuilder.create().uv(0, 16).mirrored().cuboid(-2.0F, 0.0F, -2.0F, 4.0F, 12.0F, 4.0F, dilation.add(-0.1F)),
 			ModelTransform.pivot(1.9F, 11.0F, 0.0F)
 		);
 		return TexturedModelData.of(modelData, 64, 32);

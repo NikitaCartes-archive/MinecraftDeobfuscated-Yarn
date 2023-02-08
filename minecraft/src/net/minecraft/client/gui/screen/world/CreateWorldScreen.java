@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -92,12 +93,14 @@ public class CreateWorldScreen extends Screen {
 	private static final String TEMP_DIR_PREFIX = "mcworld-";
 	static final Text GAME_MODE_TEXT = Text.translatable("selectWorld.gameMode");
 	static final Text ENTER_NAME_TEXT = Text.translatable("selectWorld.enterName");
+	static final Text EXPERIMENTS_TEXT = Text.translatable("selectWorld.experiments");
 	static final Text ALLOW_COMMANDS_INFO_TEXT = Text.translatable("selectWorld.allowCommands.info");
 	private static final Text PREPARING_TEXT = Text.translatable("createWorld.preparing");
 	private static final int field_42170 = 10;
 	private static final int field_42171 = 8;
 	final WorldCreator worldCreator;
 	private final TabManager tabManager = new TabManager(this::addDrawableChild, child -> this.remove(child));
+	private boolean recreated;
 	@Nullable
 	private final Screen parent;
 	@Nullable
@@ -143,6 +146,7 @@ public class CreateWorldScreen extends Screen {
 			WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()),
 			OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed())
 		);
+		createWorldScreen.recreated = true;
 		createWorldScreen.worldCreator.setWorldName(levelInfo.getLevelName());
 		createWorldScreen.worldCreator.setCheatsEnabled(levelInfo.areCommandsAllowed());
 		createWorldScreen.worldCreator.setDifficulty(levelInfo.getDifficulty());
@@ -247,8 +251,9 @@ public class CreateWorldScreen extends Screen {
 		Lifecycle lifecycle = FeatureFlags.isNotVanilla(generatorOptionsHolder.dataConfiguration().enabledFeatures()) ? Lifecycle.experimental() : Lifecycle.stable();
 		Lifecycle lifecycle2 = combinedDynamicRegistries.getCombinedRegistryManager().getRegistryLifecycle();
 		Lifecycle lifecycle3 = lifecycle2.add(lifecycle);
+		boolean bl = !this.recreated && lifecycle2 == Lifecycle.stable();
 		IntegratedServerLoader.tryLoad(
-			this.client, this, lifecycle3, () -> this.startServer(dimensionsConfig.specialWorldProperty(), combinedDynamicRegistries, lifecycle3)
+			this.client, this, lifecycle3, () -> this.startServer(dimensionsConfig.specialWorldProperty(), combinedDynamicRegistries, lifecycle3), bl
 		);
 	}
 
@@ -290,7 +295,9 @@ public class CreateWorldScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (super.keyPressed(keyCode, scanCode, modifiers)) {
+		if (this.tabNavigation.trySwitchTabsWithKey(keyCode)) {
+			return true;
+		} else if (super.keyPressed(keyCode, scanCode, modifiers)) {
 			return true;
 		} else if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
 			return false;
@@ -341,14 +348,33 @@ public class CreateWorldScreen extends Screen {
 		return this.dataPackTempDir;
 	}
 
-	void openPackScreen(DataConfiguration dataConfiguration) {
+	void openExperimentsScreen(DataConfiguration dataConfiguration) {
 		Pair<Path, ResourcePackManager> pair = this.getScannedPack(dataConfiguration);
 		if (pair != null) {
-			this.client.setScreen(new PackScreen(this, pair.getSecond(), this::applyDataPacks, pair.getFirst(), Text.translatable("dataPack.title")));
+			this.client
+				.setScreen(
+					new ExperimentsScreen(this, pair.getSecond(), resourcePackManager -> this.applyDataPacks(resourcePackManager, false, this::openExperimentsScreen))
+				);
 		}
 	}
 
-	private void applyDataPacks(ResourcePackManager dataPackManager) {
+	void openPackScreen(DataConfiguration dataConfiguration) {
+		Pair<Path, ResourcePackManager> pair = this.getScannedPack(dataConfiguration);
+		if (pair != null) {
+			this.client
+				.setScreen(
+					new PackScreen(
+						this,
+						pair.getSecond(),
+						resourcePackManager -> this.applyDataPacks(resourcePackManager, true, this::openPackScreen),
+						pair.getFirst(),
+						Text.translatable("dataPack.title")
+					)
+				);
+		}
+	}
+
+	private void applyDataPacks(ResourcePackManager dataPackManager, boolean fromPackScreen, Consumer<DataConfiguration> configurationSetter) {
 		List<String> list = ImmutableList.copyOf(dataPackManager.getEnabledNames());
 		List<String> list2 = (List<String>)dataPackManager.getNames().stream().filter(name -> !list.contains(name)).collect(ImmutableList.toImmutableList());
 		DataConfiguration dataConfiguration = new DataConfiguration(
@@ -356,21 +382,21 @@ public class CreateWorldScreen extends Screen {
 		);
 		if (!this.worldCreator.updateDataConfiguration(dataConfiguration)) {
 			FeatureSet featureSet = dataPackManager.getRequestedFeatures();
-			if (FeatureFlags.isNotVanilla(featureSet)) {
-				this.client.send(() -> this.client.setScreen(new ExperimentalWarningScreen(dataPackManager.getEnabledProfiles(), bl -> {
-						if (bl) {
-							this.validateDataPacks(dataPackManager, dataConfiguration);
+			if (FeatureFlags.isNotVanilla(featureSet) && fromPackScreen) {
+				this.client.send(() -> this.client.setScreen(new ExperimentalWarningScreen(dataPackManager.getEnabledProfiles(), confirmed -> {
+						if (confirmed) {
+							this.validateDataPacks(dataPackManager, dataConfiguration, configurationSetter);
 						} else {
-							this.openPackScreen(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
+							configurationSetter.accept(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
 						}
 					})));
 			} else {
-				this.validateDataPacks(dataPackManager, dataConfiguration);
+				this.validateDataPacks(dataPackManager, dataConfiguration, configurationSetter);
 			}
 		}
 	}
 
-	private void validateDataPacks(ResourcePackManager dataPackManager, DataConfiguration dataConfiguration) {
+	private void validateDataPacks(ResourcePackManager dataPackManager, DataConfiguration dataConfiguration, Consumer<DataConfiguration> configurationSetter) {
 		this.client.send(() -> this.client.setScreen(new MessageScreen(Text.translatable("dataPack.validation.working"))));
 		SaveLoading.ServerConfig serverConfig = createServerConfig(dataPackManager, dataConfiguration);
 		SaveLoading.<CreateWorldScreen.WorldCreationSettings, GeneratorOptionsHolder>load(
@@ -412,11 +438,11 @@ public class CreateWorldScreen extends Screen {
 								() -> this.client
 										.setScreen(
 											new ConfirmScreen(
-												bl -> {
-													if (bl) {
-														this.openPackScreen(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
+												confirmed -> {
+													if (confirmed) {
+														configurationSetter.accept(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
 													} else {
-														this.openPackScreen(DataConfiguration.SAFE_MODE);
+														configurationSetter.accept(DataConfiguration.SAFE_MODE);
 													}
 												},
 												Text.translatable("dataPack.validation.failed"),
@@ -644,6 +670,14 @@ public class CreateWorldScreen extends Screen {
 				cyclingButtonWidget3.setValue(CreateWorldScreen.this.worldCreator.areCheatsEnabled());
 				cyclingButtonWidget3.active = !CreateWorldScreen.this.worldCreator.isDebug() && !CreateWorldScreen.this.worldCreator.isHardcore();
 			});
+			adder.add(
+				ButtonWidget.builder(
+						CreateWorldScreen.EXPERIMENTS_TEXT,
+						button -> CreateWorldScreen.this.openExperimentsScreen(CreateWorldScreen.this.worldCreator.getGeneratorOptionsHolder().dataConfiguration())
+					)
+					.width(210)
+					.build()
+			);
 		}
 
 		@Override
@@ -662,6 +696,14 @@ public class CreateWorldScreen extends Screen {
 			super(MORE_TAB_TITLE_TEXT);
 			GridWidget.Adder adder = this.grid.setRowSpacing(8).createAdder(1);
 			adder.add(ButtonWidget.builder(GAME_RULES_TEXT, button -> this.openGameRulesScreen()).width(210).build());
+			adder.add(
+				ButtonWidget.builder(
+						CreateWorldScreen.EXPERIMENTS_TEXT,
+						button -> CreateWorldScreen.this.openExperimentsScreen(CreateWorldScreen.this.worldCreator.getGeneratorOptionsHolder().dataConfiguration())
+					)
+					.width(210)
+					.build()
+			);
 			adder.add(
 				ButtonWidget.builder(
 						DATA_PACKS_TEXT, button -> CreateWorldScreen.this.openPackScreen(CreateWorldScreen.this.worldCreator.getGeneratorOptionsHolder().dataConfiguration())

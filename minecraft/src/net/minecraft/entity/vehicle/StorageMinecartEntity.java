@@ -94,7 +94,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
-		return this.open(this::emitGameEvent, player);
+		return this.open(player);
 	}
 
 	@Override

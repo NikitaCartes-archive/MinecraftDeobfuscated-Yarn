@@ -164,7 +164,7 @@ public class ConnectScreen extends Screen {
 			this.client.getNarratorManager().narrate(Text.translatable("narrator.joining"));
 		}
 
-		drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

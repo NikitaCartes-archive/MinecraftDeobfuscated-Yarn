@@ -24,8 +24,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Nullables;
 import net.minecraft.util.TextifiedException;
-import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -98,7 +98,7 @@ public class ChatReportScreen extends Screen {
 				this.report = report;
 				this.onChange();
 			}))).dimensions(this.getWidgetsLeft(), this.getSelectionButtonY(), 280, 20).build());
-		Text text2 = Util.mapOrElse(abuseReportReason, AbuseReportReason::getText, SELECT_REASON_TEXT);
+		Text text2 = Nullables.mapOrElse(abuseReportReason, AbuseReportReason::getText, SELECT_REASON_TEXT);
 		this.addDrawableChild(ButtonWidget.builder(text2, button -> this.client.setScreen(new AbuseReportReasonScreen(this, this.report.getReason(), reason -> {
 				this.report.setReason(reason);
 				this.onChange();
@@ -130,7 +130,7 @@ public class ChatReportScreen extends Screen {
 	private void onChange() {
 		this.validationError = this.report.validate();
 		this.sendButton.active = this.validationError == null;
-		this.sendButton.setTooltip(Util.map(this.validationError, error -> Tooltip.of(error.message())));
+		this.sendButton.setTooltip(Nullables.map(this.validationError, error -> Tooltip.of(error.message())));
 	}
 
 	private void send() {
@@ -193,8 +193,8 @@ public class ChatReportScreen extends Screen {
 		int i = this.width / 2;
 		RenderSystem.disableDepthTest();
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.title, i, 10, 16777215);
-		drawCenteredText(matrices, this.textRenderer, OBSERVED_WHAT_TEXT, i, this.getSelectionButtonY() - 9 - 6, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, i, 10, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, OBSERVED_WHAT_TEXT, i, this.getSelectionButtonY() - 9 - 6, 16777215);
 		if (this.reasonDescription != null) {
 			this.reasonDescription.drawWithShadow(matrices, this.getWidgetsLeft(), this.getReasonButtonY() + 20 + 5, 9, 16777215);
 		}

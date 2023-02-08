@@ -4,6 +4,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.ItemTags;
@@ -14,7 +15,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
-public class ShieldItem extends Item {
+public class ShieldItem extends Item implements Equipment {
 	public static final int field_30918 = 5;
 	public static final float MIN_DAMAGE_AMOUNT_TO_BREAK = 3.0F;
 	public static final String BASE_KEY = "Base";
@@ -59,5 +60,10 @@ public class ShieldItem extends Item {
 	public static DyeColor getColor(ItemStack stack) {
 		NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(stack);
 		return nbtCompound != null ? DyeColor.byId(nbtCompound.getInt("Base")) : DyeColor.WHITE;
+	}
+
+	@Override
+	public EquipmentSlot getSlotType() {
+		return EquipmentSlot.OFFHAND;
 	}
 }

@@ -298,9 +298,9 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	public boolean tryAttack(Entity target) {
 		if (this.getVariant() == RabbitEntity.RabbitType.EVIL) {
 			this.playSound(SoundEvents.ENTITY_RABBIT_ATTACK, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-			return target.damage(DamageSource.mob(this), 8.0F);
+			return target.damage(this.getDamageSources().mobAttack(this), 8.0F);
 		} else {
-			return target.damage(DamageSource.mob(this), 3.0F);
+			return target.damage(this.getDamageSources().mobAttack(this), 3.0F);
 		}
 	}
 

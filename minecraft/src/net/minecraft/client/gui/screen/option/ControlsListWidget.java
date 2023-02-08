@@ -15,10 +15,12 @@ import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.apache.commons.lang3.ArrayUtils;
@@ -50,6 +52,15 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 
 			this.addEntry(new ControlsListWidget.KeyBindingEntry(keyBinding, text));
 		}
+	}
+
+	public void update() {
+		KeyBinding.updateKeysByCode();
+		this.updateChildren();
+	}
+
+	public void updateChildren() {
+		this.children().forEach(ControlsListWidget.Entry::update);
 	}
 
 	@Override
@@ -106,7 +117,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		}
 
 		@Override
-		void update() {
+		protected void update() {
 		}
 	}
 
@@ -121,11 +132,15 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		private final Text bindingName;
 		private final ButtonWidget editButton;
 		private final ButtonWidget resetButton;
+		private boolean duplicate = false;
 
 		KeyBindingEntry(KeyBinding binding, Text bindingName) {
 			this.binding = binding;
 			this.bindingName = bindingName;
-			this.editButton = ButtonWidget.builder(bindingName, button -> ControlsListWidget.this.parent.selectedKeyBinding = binding)
+			this.editButton = ButtonWidget.builder(bindingName, button -> {
+					ControlsListWidget.this.parent.selectedKeyBinding = binding;
+					ControlsListWidget.this.update();
+				})
 				.dimensions(0, 0, 75, 20)
 				.narrationSupplier(
 					textSupplier -> binding.isUnbound()
@@ -135,15 +150,13 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 				.build();
 			this.resetButton = ButtonWidget.builder(Text.translatable("controls.reset"), button -> {
 				ControlsListWidget.this.client.options.setKeyCode(binding, binding.getDefaultKey());
-				KeyBinding.updateKeysByCode();
-				this.update();
+				ControlsListWidget.this.update();
 			}).dimensions(0, 0, 50, 20).narrationSupplier(textSupplier -> Text.translatable("narrator.controls.reset", bindingName)).build();
 			this.update();
 		}
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			boolean bl = ControlsListWidget.this.parent.selectedKeyBinding == this.binding;
 			float var10003 = (float)(x + 90 - ControlsListWidget.this.maxKeyNameLength);
 			ControlsListWidget.this.client.textRenderer.draw(matrices, this.bindingName, var10003, (float)(y + entryHeight / 2 - 9 / 2), 16777215);
 			this.resetButton.setX(x + 190);
@@ -151,31 +164,7 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 			this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
 			this.editButton.setX(x + 105);
 			this.editButton.setY(y);
-			this.editButton.setMessage(this.binding.getBoundKeyLocalizedText());
-			boolean bl2 = false;
-			if (!this.binding.isUnbound()) {
-				for (KeyBinding keyBinding : ControlsListWidget.this.client.options.allKeys) {
-					if (keyBinding != this.binding && this.binding.equals(keyBinding)) {
-						bl2 = true;
-						break;
-					}
-				}
-			}
-
-			if (bl) {
-				this.editButton
-					.setMessage(
-						Text.literal("> ")
-							.append(this.editButton.getMessage().copy().formatted(Formatting.WHITE, Formatting.UNDERLINE))
-							.append(" <")
-							.formatted(Formatting.YELLOW)
-					);
-			} else if (bl2) {
-				this.editButton
-					.setMessage(Text.literal("[ ").append(this.editButton.getMessage().copy().formatted(Formatting.WHITE)).append(" ]").formatted(Formatting.RED));
-			}
-
-			if (bl2) {
+			if (this.duplicate) {
 				int i = 3;
 				int j = this.editButton.getX() - 6;
 				DrawableHelper.fill(matrices, j, y + 2, j + 3, y + entryHeight + 2, Formatting.RED.getColorValue() | 0xFF000000);
@@ -205,8 +194,41 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		}
 
 		@Override
-		void update() {
+		protected void update() {
+			this.editButton.setMessage(this.binding.getBoundKeyLocalizedText());
 			this.resetButton.active = !this.binding.isDefault();
+			this.duplicate = false;
+			MutableText mutableText = Text.empty();
+			if (!this.binding.isUnbound()) {
+				for (KeyBinding keyBinding : ControlsListWidget.this.client.options.allKeys) {
+					if (keyBinding != this.binding && this.binding.equals(keyBinding)) {
+						if (this.duplicate) {
+							mutableText.append(", ");
+						}
+
+						this.duplicate = true;
+						mutableText.append(Text.translatable(keyBinding.getTranslationKey()));
+					}
+				}
+			}
+
+			if (this.duplicate) {
+				this.editButton
+					.setMessage(Text.literal("[ ").append(this.editButton.getMessage().copy().formatted(Formatting.WHITE)).append(" ]").formatted(Formatting.RED));
+				this.editButton.setTooltip(Tooltip.of(Text.translatable("controls.keybinds.duplicateKeybinds", mutableText)));
+			} else {
+				this.editButton.setTooltip(null);
+			}
+
+			if (ControlsListWidget.this.parent.selectedKeyBinding == this.binding) {
+				this.editButton
+					.setMessage(
+						Text.literal("> ")
+							.append(this.editButton.getMessage().copy().formatted(Formatting.WHITE, Formatting.UNDERLINE))
+							.append(" <")
+							.formatted(Formatting.YELLOW)
+					);
+			}
 		}
 	}
 }

@@ -169,11 +169,11 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		if (minigame) {
-			RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
+			RenderSystem.setShaderTexture(0, RealmsTextureManager.getTextureId(String.valueOf(imageId), image));
 		} else if (empty) {
 			RenderSystem.setShaderTexture(0, EMPTY_FRAME);
 		} else if (image != null && imageId != -1L) {
-			RealmsTextureManager.bindWorldTemplate(String.valueOf(imageId), image);
+			RenderSystem.setShaderTexture(0, RealmsTextureManager.getTextureId(String.valueOf(imageId), image));
 		} else if (slotIndex == 1) {
 			RenderSystem.setShaderTexture(0, PANORAMA_0);
 		} else if (slotIndex == 2) {
@@ -203,7 +203,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 			this.drawCheckmark(matrices, x, y);
 		}
 
-		drawCenteredText(matrices, minecraftClient.textRenderer, slotName, x + 40, y + 66, 16777215);
+		drawCenteredTextWithShadow(matrices, minecraftClient.textRenderer, slotName, x + 40, y + 66, 16777215);
 	}
 
 	private void drawCheckmark(MatrixStack matrices, int x, int y) {

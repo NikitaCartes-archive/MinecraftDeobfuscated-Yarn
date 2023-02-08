@@ -136,7 +136,7 @@ public class PufferfishEntity extends FishEntity {
 
 	private void sting(MobEntity mob) {
 		int i = this.getPuffState();
-		if (mob.damage(DamageSource.mob(this), (float)(1 + i))) {
+		if (mob.damage(this.getDamageSources().mobAttack(this), (float)(1 + i))) {
 			mob.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60 * i, 0), this);
 			this.playSound(SoundEvents.ENTITY_PUFFER_FISH_STING, 1.0F, 1.0F);
 		}
@@ -145,7 +145,7 @@ public class PufferfishEntity extends FishEntity {
 	@Override
 	public void onPlayerCollision(PlayerEntity player) {
 		int i = this.getPuffState();
-		if (player instanceof ServerPlayerEntity && i > 0 && player.damage(DamageSource.mob(this), (float)(1 + i))) {
+		if (player instanceof ServerPlayerEntity && i > 0 && player.damage(this.getDamageSources().mobAttack(this), (float)(1 + i))) {
 			if (!this.isSilent()) {
 				((ServerPlayerEntity)player)
 					.networkHandler

@@ -1,6 +1,7 @@
 package net.minecraft.registry;
 
 import java.util.List;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.item.trim.ArmorTrimMaterials;
 import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.network.message.MessageType;
@@ -44,7 +45,8 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPresets::bootstrap)
 		.addRegistry(RegistryKeys.MESSAGE_TYPE, MessageType::bootstrap)
 		.addRegistry(RegistryKeys.TRIM_PATTERN, ArmorTrimPatterns::bootstrap)
-		.addRegistry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterials::bootstrap);
+		.addRegistry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterials::bootstrap)
+		.addRegistry(RegistryKeys.DAMAGE_TYPE, DamageTypes::bootstrap);
 
 	private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
 		RegistryEntryLookup<PlacedFeature> registryEntryLookup = wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE);

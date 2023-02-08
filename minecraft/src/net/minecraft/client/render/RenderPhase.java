@@ -145,8 +145,12 @@ public abstract class RenderPhase {
 	);
 	protected static final RenderPhase.ShaderProgram CRUMBLING_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeCrumblingProgram);
 	protected static final RenderPhase.ShaderProgram TEXT_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeTextProgram);
+	protected static final RenderPhase.ShaderProgram TEXT_BACKGROUND_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeTextBackgroundProgram);
 	protected static final RenderPhase.ShaderProgram TEXT_INTENSITY_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeTextIntensityProgram);
 	protected static final RenderPhase.ShaderProgram TRANSPARENT_TEXT_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeTextSeeThroughProgram);
+	protected static final RenderPhase.ShaderProgram TRANSPARENT_TEXT_BACKGROUND_PROGRAM = new RenderPhase.ShaderProgram(
+		GameRenderer::getRenderTypeTextBackgroundSeeThroughProgram
+	);
 	protected static final RenderPhase.ShaderProgram TRANSPARENT_TEXT_INTENSITY_PROGRAM = new RenderPhase.ShaderProgram(
 		GameRenderer::getRenderTypeTextIntensitySeeThroughProgram
 	);

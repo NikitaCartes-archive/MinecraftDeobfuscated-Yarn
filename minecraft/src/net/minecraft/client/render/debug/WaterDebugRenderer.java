@@ -1,6 +1,5 @@
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -24,16 +23,14 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		BlockPos blockPos = this.client.player.getBlockPos();
 		WorldView worldView = this.client.player.world;
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.setShaderColor(0.0F, 1.0F, 0.0F, 0.75F);
-		RenderSystem.lineWidth(6.0F);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
 			FluidState fluidState = worldView.getFluidState(blockPos2);
 			if (fluidState.isIn(FluidTags.WATER)) {
 				double d = (double)((float)blockPos2.getY() + fluidState.getHeight(worldView, blockPos2));
 				DebugRenderer.drawBox(
+					matrices,
+					vertexConsumers,
 					new Box(
 							(double)((float)blockPos2.getX() + 0.01F),
 							(double)((float)blockPos2.getY() + 0.01F),
@@ -43,10 +40,10 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 							(double)((float)blockPos2.getZ() + 0.99F)
 						)
 						.offset(-cameraX, -cameraY, -cameraZ),
+					0.0F,
 					1.0F,
-					1.0F,
-					1.0F,
-					0.2F
+					0.0F,
+					0.15F
 				);
 			}
 		}
@@ -55,6 +52,8 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 			FluidState fluidState = worldView.getFluidState(blockPos2x);
 			if (fluidState.isIn(FluidTags.WATER)) {
 				DebugRenderer.drawString(
+					matrices,
+					vertexConsumers,
 					String.valueOf(fluidState.getLevel()),
 					(double)blockPos2x.getX() + 0.5,
 					(double)((float)blockPos2x.getY() + fluidState.getHeight(worldView, blockPos2x)),
@@ -63,8 +62,5 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 				);
 			}
 		}
-
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.disableBlend();
 	}
 }

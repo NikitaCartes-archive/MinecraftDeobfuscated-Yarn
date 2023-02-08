@@ -6,7 +6,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -36,8 +36,8 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
 			}
 
-			this.renderItem(livingEntity, itemStack2, ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i);
-			this.renderItem(livingEntity, itemStack, ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i);
+			this.renderItem(livingEntity, itemStack2, ModelTransformationMode.THIRD_PERSON_RIGHT_HAND, Arm.RIGHT, matrixStack, vertexConsumerProvider, i);
+			this.renderItem(livingEntity, itemStack, ModelTransformationMode.THIRD_PERSON_LEFT_HAND, Arm.LEFT, matrixStack, vertexConsumerProvider, i);
 			matrixStack.pop();
 		}
 	}
@@ -45,7 +45,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 	protected void renderItem(
 		LivingEntity entity,
 		ItemStack stack,
-		ModelTransformation.Mode transformationMode,
+		ModelTransformationMode transformationMode,
 		Arm arm,
 		MatrixStack matrices,
 		VertexConsumerProvider vertexConsumers,

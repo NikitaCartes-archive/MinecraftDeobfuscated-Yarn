@@ -19,7 +19,6 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -44,7 +43,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTracker;
-import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -60,10 +58,9 @@ import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.StackReference;
-import net.minecraft.item.ArmorItem;
 import net.minecraft.item.AxeItem;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ElytraItem;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -88,6 +85,7 @@ import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -269,7 +267,7 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	public void kill() {
-		this.damage(DamageSource.OUT_OF_WORLD, Float.MAX_VALUE);
+		this.damage(this.getDamageSources().outOfWorld(), Float.MAX_VALUE);
 	}
 
 	public boolean canTarget(EntityType<?> type) {
@@ -349,13 +347,13 @@ public abstract class LivingEntity extends Entity {
 			boolean bl = this instanceof PlayerEntity;
 			if (!this.world.isClient) {
 				if (this.isInsideWall()) {
-					this.damage(DamageSource.IN_WALL, 1.0F);
+					this.damage(this.getDamageSources().inWall(), 1.0F);
 				} else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox())) {
 					double d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getSafeZone();
 					if (d < 0.0) {
 						double e = this.world.getWorldBorder().getDamagePerBlock();
 						if (e > 0.0) {
-							this.damage(DamageSource.IN_WALL, (float)Math.max(1, MathHelper.floor(-d * e)));
+							this.damage(this.getDamageSources().inWall(), (float)Math.max(1, MathHelper.floor(-d * e)));
 						}
 					}
 				}
@@ -376,7 +374,7 @@ public abstract class LivingEntity extends Entity {
 							this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + f, this.getY() + g, this.getZ() + h, vec3d.x, vec3d.y, vec3d.z);
 						}
 
-						this.damage(DamageSource.DROWN, 2.0F);
+						this.damage(this.getDamageSources().drown(), 2.0F);
 					}
 				}
 
@@ -688,22 +686,16 @@ public abstract class LivingEntity extends Entity {
 
 	public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
 		boolean bl = newStack.isEmpty() && oldStack.isEmpty();
-		if (!bl && !ItemStack.areItemsEqual(oldStack, newStack) && !this.firstUpdate) {
-			if (slot.getType() == EquipmentSlot.Type.ARMOR) {
-				this.playEquipSound(newStack);
-			}
+		if (!bl && !ItemStack.canCombine(oldStack, newStack) && !this.firstUpdate) {
+			Equipment equipment = Equipment.fromStack(newStack);
+			if (equipment != null && !this.isSpectator() && equipment.getSlotType() == slot) {
+				if (!this.world.isClient() && !this.isSilent()) {
+					this.world.playSound(null, this.getX(), this.getY(), this.getZ(), equipment.getEquipSound(), this.getSoundCategory(), 1.0F, 1.0F);
+				}
 
-			if (this.isArmorSlot(slot)) {
-				this.emitGameEvent(GameEvent.EQUIP);
-			}
-		}
-	}
-
-	protected void playEquipSound(ItemStack stack) {
-		if (!stack.isEmpty() && !this.isSpectator()) {
-			SoundEvent soundEvent = stack.getEquipSound();
-			if (soundEvent != null) {
-				this.playSound(soundEvent, 1.0F, 1.0F);
+				if (this.isArmorSlot(slot)) {
+					this.emitGameEvent(GameEvent.EQUIP);
+				}
 			}
 		}
 	}
@@ -1132,7 +1124,7 @@ public abstract class LivingEntity extends Entity {
 			return false;
 		} else if (this.isDead()) {
 			return false;
-		} else if (source.isFire() && this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+		} else if (source.isIn(DamageTypeTags.IS_FIRE) && this.hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
 			return false;
 		} else {
 			if (this.isSleeping() && !this.world.isClient) {
@@ -1147,7 +1139,7 @@ public abstract class LivingEntity extends Entity {
 				this.damageShield(amount);
 				g = amount;
 				amount = 0.0F;
-				if (!source.isProjectile() && source.getSource() instanceof LivingEntity livingEntity) {
+				if (!source.isIn(DamageTypeTags.IS_PROJECTILE) && source.getSource() instanceof LivingEntity livingEntity) {
 					this.takeShieldHit(livingEntity);
 				}
 
@@ -1172,25 +1164,24 @@ public abstract class LivingEntity extends Entity {
 				this.hurtTime = this.maxHurtTime;
 			}
 
-			if (source.isFallingBlock() && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+			if (source.isIn(DamageTypeTags.DAMAGES_HELMET) && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
 				this.damageHelmet(source, amount);
 				amount *= 0.75F;
 			}
 
 			Entity entity2 = source.getAttacker();
 			if (entity2 != null) {
-				if (entity2 instanceof LivingEntity && !source.isNeutral()) {
-					this.setAttacker((LivingEntity)entity2);
+				if (entity2 instanceof LivingEntity livingEntity2 && !source.isIn(DamageTypeTags.NO_ANGER)) {
+					this.setAttacker(livingEntity2);
 				}
 
-				if (entity2 instanceof PlayerEntity) {
+				if (entity2 instanceof PlayerEntity playerEntity) {
 					this.playerHitTimer = 100;
-					this.attackingPlayer = (PlayerEntity)entity2;
+					this.attackingPlayer = playerEntity;
 				} else if (entity2 instanceof WolfEntity wolfEntity && wolfEntity.isTamed()) {
 					this.playerHitTimer = 100;
-					LivingEntity livingEntity2 = wolfEntity.getOwner();
-					if (livingEntity2 != null && livingEntity2.getType() == EntityType.PLAYER) {
-						this.attackingPlayer = (PlayerEntity)livingEntity2;
+					if (wolfEntity.getOwner() instanceof PlayerEntity playerEntity2) {
+						this.attackingPlayer = playerEntity2;
 					} else {
 						this.attackingPlayer = null;
 					}
@@ -1200,30 +1191,15 @@ public abstract class LivingEntity extends Entity {
 			if (bl2) {
 				if (bl) {
 					this.world.sendEntityStatus(this, EntityStatuses.BLOCK_WITH_SHIELD);
-				} else if (source instanceof EntityDamageSource && ((EntityDamageSource)source).isThorns()) {
-					this.world.sendEntityStatus(this, EntityStatuses.DAMAGE_FROM_THORNS);
 				} else {
-					byte b;
-					if (source == DamageSource.DROWN) {
-						b = 36;
-					} else if (source.isFire()) {
-						b = 37;
-					} else if (source == DamageSource.SWEET_BERRY_BUSH) {
-						b = 44;
-					} else if (source == DamageSource.FREEZE) {
-						b = 57;
-					} else {
-						b = EntityStatuses.DAMAGE_FROM_GENERIC_SOURCE;
-					}
-
-					this.world.sendEntityStatus(this, b);
+					this.world.sendEntityDamage(this, source);
 				}
 
-				if (source != DamageSource.DROWN && (!bl || amount > 0.0F)) {
+				if (!source.isIn(DamageTypeTags.NO_IMPACT) && (!bl || amount > 0.0F)) {
 					this.scheduleVelocityUpdate();
 				}
 
-				if (entity2 != null && !source.isExplosive()) {
+				if (entity2 != null && !source.isIn(DamageTypeTags.IS_EXPLOSION)) {
 					double d = entity2.getX() - this.getX();
 
 					double e;
@@ -1232,6 +1208,9 @@ public abstract class LivingEntity extends Entity {
 					}
 
 					this.takeKnockback(0.4F, d, e);
+					if (!bl) {
+						this.tiltScreen(d, e);
+					}
 				}
 			}
 
@@ -1278,7 +1257,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	private boolean tryUseTotem(DamageSource source) {
-		if (source.isOutOfWorld()) {
+		if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
 			return false;
 		} else {
 			ItemStack itemStack = null;
@@ -1333,7 +1312,7 @@ public abstract class LivingEntity extends Entity {
 			bl = true;
 		}
 
-		if (!source.bypassesArmor() && this.isBlocking() && !bl) {
+		if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR) && this.isBlocking() && !bl) {
 			Vec3d vec3d = source.getPosition();
 			if (vec3d != null) {
 				Vec3d vec3d2 = this.getRotationVec(1.0F);
@@ -1497,6 +1476,9 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
+	public void tiltScreen(double deltaX, double deltaZ) {
+	}
+
 	@Nullable
 	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_GENERIC_HURT;
@@ -1644,7 +1626,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected float applyArmorToDamage(DamageSource source, float amount) {
-		if (!source.bypassesArmor()) {
+		if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
 			this.damageArmor(source, amount);
 			amount = DamageUtil.getDamageLeft(amount, (float)this.getArmor(), (float)this.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
 		}
@@ -1663,10 +1645,10 @@ public abstract class LivingEntity extends Entity {
 	 * applied status effect damage.
 	 */
 	protected float modifyAppliedDamage(DamageSource source, float amount) {
-		if (source.isUnblockable()) {
+		if (source.isIn(DamageTypeTags.BYPASSES_EFFECTS)) {
 			return amount;
 		} else {
-			if (this.hasStatusEffect(StatusEffects.RESISTANCE) && source != DamageSource.OUT_OF_WORLD) {
+			if (this.hasStatusEffect(StatusEffects.RESISTANCE) && !source.isIn(DamageTypeTags.BYPASSES_RESISTANCE)) {
 				int i = (this.getStatusEffect(StatusEffects.RESISTANCE).getAmplifier() + 1) * 5;
 				int j = 25 - i;
 				float f = amount * (float)j;
@@ -1684,7 +1666,7 @@ public abstract class LivingEntity extends Entity {
 
 			if (amount <= 0.0F) {
 				return 0.0F;
-			} else if (source.bypassesProtection()) {
+			} else if (source.isIn(DamageTypeTags.BYPASSES_ENCHANTMENTS)) {
 				return amount;
 			} else {
 				int i = EnchantmentHelper.getProtectionAmount(this.getArmorItems(), source);
@@ -1785,97 +1767,34 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
+	public void onDamaged(DamageSource damageSource) {
+		this.limbAnimator.setSpeed(1.5F);
+		this.timeUntilRegen = 20;
+		this.maxHurtTime = 10;
+		this.hurtTime = this.maxHurtTime;
+		SoundEvent soundEvent = this.getHurtSound(damageSource);
+		if (soundEvent != null) {
+			this.playSound(soundEvent, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+		}
+
+		this.damage(this.getDamageSources().generic(), 0.0F);
+		this.lastDamageSource = damageSource;
+		this.lastDamageTime = this.world.getTime();
+	}
+
+	@Override
 	public void handleStatus(byte status) {
 		switch (status) {
-			case 2:
-			case 33:
-			case 36:
-			case 37:
-			case 44:
-			case 57:
-				this.limbAnimator.setSpeed(1.5F);
-				this.timeUntilRegen = 20;
-				this.maxHurtTime = 10;
-				this.hurtTime = this.maxHurtTime;
-				if (status == EntityStatuses.DAMAGE_FROM_THORNS) {
-					this.playSound(SoundEvents.ENCHANT_THORNS_HIT, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-				}
-
-				DamageSource damageSource;
-				if (status == EntityStatuses.DAMAGE_FROM_FIRE) {
-					damageSource = DamageSource.ON_FIRE;
-				} else if (status == EntityStatuses.DAMAGE_FROM_DROWNING) {
-					damageSource = DamageSource.DROWN;
-				} else if (status == EntityStatuses.DAMAGE_FROM_BERRY_BUSH) {
-					damageSource = DamageSource.SWEET_BERRY_BUSH;
-				} else if (status == EntityStatuses.DAMAGE_FROM_FREEZING) {
-					damageSource = DamageSource.FREEZE;
-				} else {
-					damageSource = DamageSource.GENERIC;
-				}
-
-				SoundEvent soundEvent = this.getHurtSound(damageSource);
+			case 3:
+				SoundEvent soundEvent = this.getDeathSound();
 				if (soundEvent != null) {
 					this.playSound(soundEvent, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				}
 
-				this.damage(DamageSource.GENERIC, 0.0F);
-				this.lastDamageSource = damageSource;
-				this.lastDamageTime = this.world.getTime();
-				break;
-			case 3:
-				SoundEvent soundEvent2 = this.getDeathSound();
-				if (soundEvent2 != null) {
-					this.playSound(soundEvent2, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-				}
-
 				if (!(this instanceof PlayerEntity)) {
 					this.setHealth(0.0F);
-					this.onDeath(DamageSource.GENERIC);
+					this.onDeath(this.getDamageSources().generic());
 				}
-				break;
-			case 4:
-			case 5:
-			case 6:
-			case 7:
-			case 8:
-			case 9:
-			case 10:
-			case 11:
-			case 12:
-			case 13:
-			case 14:
-			case 15:
-			case 16:
-			case 17:
-			case 18:
-			case 19:
-			case 20:
-			case 21:
-			case 22:
-			case 23:
-			case 24:
-			case 25:
-			case 26:
-			case 27:
-			case 28:
-			case 31:
-			case 32:
-			case 34:
-			case 35:
-			case 38:
-			case 39:
-			case 40:
-			case 41:
-			case 42:
-			case 43:
-			case 45:
-			case 53:
-			case 56:
-			case 58:
-			case 59:
-			default:
-				super.handleStatus(status);
 				break;
 			case 29:
 				this.playSound(SoundEvents.ITEM_SHIELD_BLOCK, 1.0F, 0.8F + this.world.random.nextFloat() * 0.4F);
@@ -1923,6 +1842,9 @@ public abstract class LivingEntity extends Entity {
 				break;
 			case 60:
 				this.addDeathParticles();
+				break;
+			default:
+				super.handleStatus(status);
 		}
 	}
 
@@ -1943,7 +1865,7 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	protected void tickInVoid() {
-		this.damage(DamageSource.OUT_OF_WORLD, 4.0F);
+		this.damage(this.getDamageSources().outOfWorld(), 4.0F);
 	}
 
 	protected void tickHandSwing() {
@@ -2267,7 +2189,7 @@ public abstract class LivingEntity extends Entity {
 					float o = (float)(n * 10.0 - 3.0);
 					if (o > 0.0F) {
 						this.playSound(this.getFallSound((int)o), 1.0F, 1.0F);
-						this.damage(DamageSource.FLY_INTO_WALL, o);
+						this.damage(this.getDamageSources().flyIntoWall(), o);
 					}
 				}
 
@@ -2744,7 +2666,7 @@ public abstract class LivingEntity extends Entity {
 		this.addPowderSnowSlowIfNeeded();
 		if (!this.world.isClient && this.age % 40 == 0 && this.isFrozen() && this.canFreeze()) {
 			int m = bl2 ? 5 : 1;
-			this.damage(DamageSource.FREEZE, (float)m);
+			this.damage(this.getDamageSources().freeze(), (float)m);
 		}
 
 		this.world.getProfiler().pop();
@@ -2757,7 +2679,7 @@ public abstract class LivingEntity extends Entity {
 		this.tickCramming();
 		this.world.getProfiler().pop();
 		if (!this.world.isClient && this.hurtByWater() && this.isWet()) {
-			this.damage(DamageSource.DROWN, 1.0F);
+			this.damage(this.getDamageSources().drown(), 1.0F);
 		}
 	}
 
@@ -2812,7 +2734,7 @@ public abstract class LivingEntity extends Entity {
 					}
 
 					if (j > i - 1) {
-						this.damage(DamageSource.CRAMMING, 6.0F);
+						this.damage(this.getDamageSources().cramming(), 6.0F);
 					}
 				}
 
@@ -3465,18 +3387,8 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	public static EquipmentSlot getPreferredEquipmentSlot(ItemStack stack) {
-		Item item = stack.getItem();
-		if (!stack.isOf(Items.CARVED_PUMPKIN) && (!(item instanceof BlockItem) || !(((BlockItem)item).getBlock() instanceof AbstractSkullBlock))) {
-			if (item instanceof ArmorItem) {
-				return ((ArmorItem)item).getSlotType();
-			} else if (stack.isOf(Items.ELYTRA)) {
-				return EquipmentSlot.CHEST;
-			} else {
-				return stack.isOf(Items.SHIELD) ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
-			}
-		} else {
-			return EquipmentSlot.HEAD;
-		}
+		Equipment equipment = Equipment.fromStack(stack);
+		return equipment != null ? equipment.getSlotType() : EquipmentSlot.MAINHAND;
 	}
 
 	private static StackReference getStackReference(LivingEntity entity, EquipmentSlot slot) {

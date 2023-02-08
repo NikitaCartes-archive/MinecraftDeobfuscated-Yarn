@@ -12,7 +12,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
+import net.minecraft.util.Nullables;
 import net.minecraft.world.Difficulty;
 import org.apache.commons.compress.utils.Lists;
 
@@ -25,7 +25,7 @@ public class OnlineOptionsScreen extends SimpleOptionsScreen {
 		List<SimpleOption<?>> list = Lists.<SimpleOption<?>>newArrayList();
 		list.add(gameOptions.getRealmsNotifications());
 		list.add(gameOptions.getAllowServerListing());
-		SimpleOption<Unit> simpleOption = Util.map(
+		SimpleOption<Unit> simpleOption = Nullables.map(
 			client.world,
 			world -> {
 				Difficulty difficulty = world.getDifficulty();

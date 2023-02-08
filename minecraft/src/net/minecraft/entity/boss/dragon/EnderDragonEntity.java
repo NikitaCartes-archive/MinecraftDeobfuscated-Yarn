@@ -33,6 +33,7 @@ import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -421,7 +422,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				double h = Math.max(f * f + g * g, 0.1);
 				entity.addVelocity(f / h * 4.0, 0.2F, g / h * 4.0);
 				if (!this.phaseManager.getCurrent().isSittingOrHovering() && ((LivingEntity)entity).getLastAttackedTime() < entity.age - 2) {
-					entity.damage(DamageSource.mob(this), 5.0F);
+					entity.damage(this.getDamageSources().mobAttack(this), 5.0F);
 					this.applyDamageEffects(this, entity);
 				}
 			}
@@ -431,7 +432,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	private void damageLivingEntities(List<Entity> entities) {
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity) {
-				entity.damage(DamageSource.mob(this), 10.0F);
+				entity.damage(this.getDamageSources().mobAttack(this), 10.0F);
 				this.applyDamageEffects(this, entity);
 			}
 		}
@@ -487,7 +488,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			if (amount < 0.01F) {
 				return false;
 			} else {
-				if (source.getAttacker() instanceof PlayerEntity || source.isExplosive()) {
+				if (source.getAttacker() instanceof PlayerEntity || source.isIn(DamageTypeTags.IS_EXPLOSION)) {
 					float f = this.getHealth();
 					this.parentDamage(source, amount);
 					if (this.isDead() && !this.phaseManager.getCurrent().isSittingOrHovering()) {
@@ -844,7 +845,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		return vec3d;
 	}
 
-	public void crystalDestroyed(EndCrystalEntity crystal, BlockPos pos, DamageSource source) {
+	public void crystalDestroyed(EndCrystalEntity endCrystalEntity, BlockPos pos, DamageSource source) {
 		PlayerEntity playerEntity;
 		if (source.getAttacker() instanceof PlayerEntity) {
 			playerEntity = (PlayerEntity)source.getAttacker();
@@ -852,11 +853,11 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			playerEntity = this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 		}
 
-		if (crystal == this.connectedCrystal) {
-			this.damagePart(this.head, DamageSource.explosion(crystal, playerEntity), 10.0F);
+		if (endCrystalEntity == this.connectedCrystal) {
+			this.damagePart(this.head, this.getDamageSources().explosion(endCrystalEntity, playerEntity), 10.0F);
 		}
 
-		this.phaseManager.getCurrent().crystalDestroyed(crystal, pos, source, playerEntity);
+		this.phaseManager.getCurrent().crystalDestroyed(endCrystalEntity, pos, source, playerEntity);
 	}
 
 	@Override

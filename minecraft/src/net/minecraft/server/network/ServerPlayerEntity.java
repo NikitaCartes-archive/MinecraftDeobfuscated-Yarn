@@ -30,7 +30,6 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.EntityDamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Angerable;
@@ -95,6 +94,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
@@ -696,22 +696,19 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			boolean bl = this.server.isDedicated() && this.isPvpEnabled() && "fall".equals(source.name);
-			if (!bl && this.joinInvulnerabilityTicks > 0 && source != DamageSource.OUT_OF_WORLD) {
+			boolean bl = this.server.isDedicated() && this.isPvpEnabled() && source.isIn(DamageTypeTags.IS_FALL);
+			if (!bl && this.joinInvulnerabilityTicks > 0 && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
 				return false;
 			} else {
-				if (source instanceof EntityDamageSource) {
-					Entity entity = source.getAttacker();
-					if (entity instanceof PlayerEntity && !this.shouldDamagePlayer((PlayerEntity)entity)) {
-						return false;
-					}
+				Entity entity = source.getAttacker();
+				if (entity instanceof PlayerEntity playerEntity && !this.shouldDamagePlayer(playerEntity)) {
+					return false;
+				}
 
-					if (entity instanceof PersistentProjectileEntity persistentProjectileEntity) {
-						Entity entity2 = persistentProjectileEntity.getOwner();
-						if (entity2 instanceof PlayerEntity && !this.shouldDamagePlayer((PlayerEntity)entity2)) {
-							return false;
-						}
-					}
+				if (entity instanceof PersistentProjectileEntity persistentProjectileEntity
+					&& persistentProjectileEntity.getOwner() instanceof PlayerEntity playerEntity2
+					&& !this.shouldDamagePlayer(playerEntity2)) {
+					return false;
 				}
 
 				return super.damage(source, amount);
@@ -983,7 +980,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return super.isInvulnerableTo(damageSource) || this.isInTeleportationState() || this.getAbilities().invulnerable && damageSource == DamageSource.WITHER;
+		return super.isInvulnerableTo(damageSource) || this.isInTeleportationState();
 	}
 
 	@Override
@@ -1752,9 +1749,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void takeKnockback(double strength, double x, double z) {
-		super.takeKnockback(strength, x, z);
-		this.damageTiltYaw = (float)(MathHelper.atan2(z, x) * 180.0F / (float)Math.PI - (double)this.getYaw());
+	public void tiltScreen(double deltaX, double deltaZ) {
+		this.damageTiltYaw = (float)(MathHelper.atan2(deltaZ, deltaX) * 180.0F / (float)Math.PI - (double)this.getYaw());
 		this.networkHandler.sendPacket(new DamageTiltS2CPacket(this));
 	}
 }

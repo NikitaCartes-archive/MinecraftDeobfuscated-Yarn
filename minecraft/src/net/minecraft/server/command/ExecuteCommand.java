@@ -41,18 +41,21 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.command.argument.NumberRangeArgumentType;
+import net.minecraft.command.argument.RegistryEntryArgumentType;
 import net.minecraft.command.argument.RegistryEntryPredicateArgumentType;
 import net.minecraft.command.argument.RotationArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
 import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.command.argument.SwizzleArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
+import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Ownable;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.context.LootContext;
@@ -68,6 +71,7 @@ import net.minecraft.nbt.NbtLong;
 import net.minecraft.nbt.NbtShort;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
@@ -215,6 +219,14 @@ public class ExecuteCommand {
 						.then(
 							CommandManager.argument("dimension", DimensionArgumentType.dimension())
 								.redirect(literalCommandNode, context -> context.getSource().withWorld(DimensionArgumentType.getDimensionArgument(context, "dimension")))
+						)
+				)
+				.then(
+					CommandManager.literal("summon")
+						.then(
+							CommandManager.argument("entity", RegistryEntryArgumentType.registryEntry(commandRegistryAccess, RegistryKeys.ENTITY_TYPE))
+								.suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
+								.redirect(literalCommandNode, context -> summon(context.getSource(), RegistryEntryArgumentType.getSummonableEntityType(context, "entity")))
 						)
 				)
 				.then(addOnArguments(literalCommandNode, CommandManager.literal("on")))
@@ -451,13 +463,12 @@ public class ExecuteCommand {
 			.then(
 				CommandManager.literal("loaded")
 					.then(
-						CommandManager.argument("pos", BlockPosArgumentType.blockPos())
-							.fork(
-								root,
-								context -> getSourceOrEmptyForConditionFork(
-										context, positive, isLoaded(context.getSource().getWorld(), BlockPosArgumentType.getBlockPos(context, "pos"))
-									)
-							)
+						addConditionLogic(
+							root,
+							CommandManager.argument("pos", BlockPosArgumentType.blockPos()),
+							positive,
+							commandContext -> isLoaded(commandContext.getSource().getWorld(), BlockPosArgumentType.getBlockPos(commandContext, "pos"))
+						)
 					)
 			)
 			.then(
@@ -807,9 +818,7 @@ public class ExecuteCommand {
 	) {
 		return builder.then(
 				CommandManager.literal("owner")
-					.fork(
-						node, createEntityModifier(entity -> entity instanceof TameableEntity tameableEntity ? Optional.ofNullable(tameableEntity.getOwner()) : Optional.empty())
-					)
+					.fork(node, createEntityModifier(entity -> entity instanceof Tameable tameable ? Optional.ofNullable(tameable.getOwner()) : Optional.empty()))
 			)
 			.then(
 				CommandManager.literal("leasher")
@@ -832,6 +841,11 @@ public class ExecuteCommand {
 					.fork(node, createEntityModifier(entity -> entity instanceof Ownable ownable ? Optional.ofNullable(ownable.getOwner()) : Optional.empty()))
 			)
 			.then(CommandManager.literal("passengers").fork(node, createMultiEntityModifier(entity -> entity.getPassengerList().stream())));
+	}
+
+	private static ServerCommandSource summon(ServerCommandSource source, RegistryEntry.Reference<EntityType<?>> entityType) throws CommandSyntaxException {
+		Entity entity = SummonCommand.summon(source, entityType, source.getPosition(), new NbtCompound(), true);
+		return source.withEntity(entity);
 	}
 
 	@FunctionalInterface

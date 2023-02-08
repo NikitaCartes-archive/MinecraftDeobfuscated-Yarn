@@ -24,6 +24,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.GlobalPos;
 import net.minecraft.village.VillagerData;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public class TrackedDataHandlerRegistry {
 	private static final Int2ObjectBiMap<TrackedDataHandler<?>> DATA_HANDLERS = Int2ObjectBiMap.create(16);
@@ -49,6 +51,7 @@ public class TrackedDataHandlerRegistry {
 			return itemStack.copy();
 		}
 	};
+	public static final TrackedDataHandler<BlockState> BLOCK_STATE = TrackedDataHandler.of(Block.STATE_IDS);
 	public static final TrackedDataHandler<Optional<BlockState>> OPTIONAL_BLOCK_STATE = new TrackedDataHandler.ImmutableHandler<Optional<BlockState>>() {
 		public void write(PacketByteBuf packetByteBuf, Optional<BlockState> optional) {
 			if (optional.isPresent()) {
@@ -140,6 +143,8 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.of(
 		Registries.PAINTING_VARIANT.getIndexedEntries()
 	);
+	public static final TrackedDataHandler<Vector3f> VECTOR3F = TrackedDataHandler.of(PacketByteBuf::writeVector3f, PacketByteBuf::readVector3f);
+	public static final TrackedDataHandler<Quaternionf> QUATERNIONF = TrackedDataHandler.of(PacketByteBuf::writeQuaternionf, PacketByteBuf::readQuaternionf);
 
 	public static void register(TrackedDataHandler<?> handler) {
 		DATA_HANDLERS.add(handler);
@@ -172,6 +177,7 @@ public class TrackedDataHandlerRegistry {
 		register(OPTIONAL_BLOCK_POS);
 		register(FACING);
 		register(OPTIONAL_UUID);
+		register(BLOCK_STATE);
 		register(OPTIONAL_BLOCK_STATE);
 		register(NBT_COMPOUND);
 		register(PARTICLE);
@@ -182,5 +188,7 @@ public class TrackedDataHandlerRegistry {
 		register(FROG_VARIANT);
 		register(OPTIONAL_GLOBAL_POS);
 		register(PAINTING_VARIANT);
+		register(VECTOR3F);
+		register(QUATERNIONF);
 	}
 }

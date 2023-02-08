@@ -3,6 +3,7 @@ package net.minecraft.client.report;
 import com.mojang.authlib.yggdrasil.request.AbuseReportRequest.ClientInfo;
 import com.mojang.authlib.yggdrasil.request.AbuseReportRequest.RealmInfo;
 import com.mojang.authlib.yggdrasil.request.AbuseReportRequest.ThirdPartyServerInfo;
+import java.util.Locale;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -28,7 +29,7 @@ public record ReporterEnvironment(String clientVersion, @Nullable ReporterEnviro
 	}
 
 	public ClientInfo toClientInfo() {
-		return new ClientInfo(this.clientVersion);
+		return new ClientInfo(this.clientVersion, Locale.getDefault().toLanguageTag());
 	}
 
 	@Nullable
@@ -43,7 +44,7 @@ public record ReporterEnvironment(String clientVersion, @Nullable ReporterEnviro
 
 	private static String getVersion() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("23w05a");
+		stringBuilder.append("23w06a");
 		if (MinecraftClient.getModStatus().isModded()) {
 			stringBuilder.append(" (modded)");
 		}

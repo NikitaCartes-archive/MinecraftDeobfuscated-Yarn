@@ -585,7 +585,7 @@ public interface DispenserBehavior {
 				this.setSuccess(true);
 				if (blockState.isOf(Blocks.RESPAWN_ANCHOR)) {
 					if ((Integer)blockState.get(RespawnAnchorBlock.CHARGES) != 4) {
-						RespawnAnchorBlock.charge(world, blockPos, blockState);
+						RespawnAnchorBlock.charge(null, world, blockPos, blockState);
 						stack.decrement(1);
 					} else {
 						this.setSuccess(false);

@@ -14,10 +14,12 @@ import net.minecraft.block.Blocks;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.DamagePredicate;
+import net.minecraft.predicate.TagPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -184,7 +186,9 @@ public class VanillaStoryTabAdvancementGenerator implements AdvancementTabGenera
 			)
 			.criterion(
 				"deflected_projectile",
-				EntityHurtPlayerCriterion.Conditions.create(DamagePredicate.Builder.create().type(DamageSourcePredicate.Builder.create().projectile(true)).blocked(true))
+				EntityHurtPlayerCriterion.Conditions.create(
+					DamagePredicate.Builder.create().type(DamageSourcePredicate.Builder.create().tag(TagPredicate.expected(DamageTypeTags.IS_PROJECTILE))).blocked(true)
+				)
 			)
 			.build(exporter, "story/deflect_arrow");
 		Advancement.Builder.create()

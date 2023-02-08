@@ -24,6 +24,9 @@ public class RideCommand {
 		Text.translatable("commands.ride.mount.failure.cant_ride_players")
 	);
 	private static final SimpleCommandExceptionType RIDE_LOOP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.ride.mount.failure.loop"));
+	private static final SimpleCommandExceptionType WRONG_DIMENSION_EXCEPTION = new SimpleCommandExceptionType(
+		Text.translatable("commands.ride.mount.failure.wrong_dimension")
+	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
@@ -53,6 +56,8 @@ public class RideCommand {
 			throw CANT_RIDE_PLAYERS_EXCEPTION.create();
 		} else if (rider.streamSelfAndPassengers().anyMatch(passager -> passager == vehicle)) {
 			throw RIDE_LOOP_EXCEPTION.create();
+		} else if (rider.getWorld() != vehicle.getWorld()) {
+			throw WRONG_DIMENSION_EXCEPTION.create();
 		} else if (!rider.startRiding(vehicle, true)) {
 			throw GENERIC_FAILURE_EXCPETION.create(rider.getDisplayName(), vehicle.getDisplayName());
 		} else {

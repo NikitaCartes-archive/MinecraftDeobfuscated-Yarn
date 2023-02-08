@@ -114,7 +114,7 @@ public abstract class AbstractSignEditScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		DiffuseLighting.disableGuiDepthLighting();
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 40, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 40, 16777215);
 		this.renderSign(matrices);
 		DiffuseLighting.enableGuiDepthLighting();
 		super.render(matrices, mouseX, mouseY, delta);

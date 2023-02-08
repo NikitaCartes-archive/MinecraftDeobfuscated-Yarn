@@ -206,11 +206,11 @@ public class SocialInteractionsScreen extends Screen {
 		if (!this.playerList.isEmpty()) {
 			this.playerList.render(matrices, mouseX, mouseY, delta);
 		} else if (!this.searchBox.getText().isEmpty()) {
-			drawCenteredText(matrices, this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
+			drawCenteredTextWithShadow(matrices, this.client.textRenderer, EMPTY_SEARCH_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
 		} else if (this.currentTab == SocialInteractionsScreen.Tab.HIDDEN) {
-			drawCenteredText(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
+			drawCenteredTextWithShadow(matrices, this.client.textRenderer, EMPTY_HIDDEN_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
 		} else if (this.currentTab == SocialInteractionsScreen.Tab.BLOCKED) {
-			drawCenteredText(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
+			drawCenteredTextWithShadow(matrices, this.client.textRenderer, EMPTY_BLOCKED_TEXT, this.width / 2, (72 + this.getPlayerListBottom()) / 2, -1);
 		}
 
 		this.searchBox.render(matrices, mouseX, mouseY, delta);

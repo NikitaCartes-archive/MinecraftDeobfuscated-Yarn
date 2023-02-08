@@ -237,6 +237,7 @@ import net.minecraft.datafixer.schema.Schema3083;
 import net.minecraft.datafixer.schema.Schema3202;
 import net.minecraft.datafixer.schema.Schema3203;
 import net.minecraft.datafixer.schema.Schema3204;
+import net.minecraft.datafixer.schema.Schema3325;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1033,6 +1034,8 @@ public class Schemas {
 		builder.addFixer(new OptionsAccessibilityOnboardFix(schema177));
 		Schema schema178 = builder.addSchema(3322, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new StatusEffectDurationFix(schema178));
+		Schema schema179 = builder.addSchema(3325, Schema3325::new);
+		builder.addFixer(new ChoiceTypesFix(schema179, "Added displays", TypeReferences.ENTITY));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

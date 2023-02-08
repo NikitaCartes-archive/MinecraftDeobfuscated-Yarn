@@ -771,7 +771,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 						return;
 					}
 
-					this.handleFallDamage(this.fallDistance, 1.0F, DamageSource.FALL);
+					this.handleFallDamage(this.fallDistance, 1.0F, this.getDamageSources().fall());
 					if (!this.world.isClient && !this.isRemoved()) {
 						this.kill();
 						if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {

@@ -81,7 +81,17 @@ public class ChestBoatEntity extends BoatEntity implements RideableInventory, Ve
 
 	@Override
 	public ActionResult interact(PlayerEntity player, Hand hand) {
-		return this.canAddPassenger(player) && !player.shouldCancelInteraction() ? super.interact(player, hand) : this.open(this::emitGameEvent, player);
+		if (this.canAddPassenger(player) && !player.shouldCancelInteraction()) {
+			return super.interact(player, hand);
+		} else {
+			ActionResult actionResult = this.open(player);
+			if (actionResult.isAccepted()) {
+				this.emitGameEvent(GameEvent.CONTAINER_OPEN, player);
+				PiglinBrain.onGuardedBlockInteracted(player, true);
+			}
+
+			return actionResult;
+		}
 	}
 
 	@Override
@@ -195,5 +205,10 @@ public class ChestBoatEntity extends BoatEntity implements RideableInventory, Ve
 	@Override
 	public void resetInventory() {
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
+	}
+
+	@Override
+	public void onClose(PlayerEntity player) {
+		this.world.emitGameEvent(GameEvent.CONTAINER_CLOSE, this.getPos(), GameEvent.Emitter.of(player));
 	}
 }

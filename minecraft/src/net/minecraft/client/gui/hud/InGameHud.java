@@ -210,7 +210,7 @@ public class InGameHud extends DrawableHelper {
 				this.renderExperienceBar(matrices, i);
 			}
 
-			if (this.client.options.heldItemTooltips && this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
+			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR) {
 				this.renderHeldItemTooltip(matrices);
 			} else if (this.client.player.isSpectator()) {
 				this.spectatorHud.render(matrices);

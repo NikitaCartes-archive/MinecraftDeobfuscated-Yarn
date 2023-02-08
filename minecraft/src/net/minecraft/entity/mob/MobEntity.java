@@ -1130,15 +1130,17 @@ public abstract class MobEntity extends LivingEntity {
 			return ActionResult.PASS;
 		} else if (this.getHoldingEntity() == player) {
 			this.detachLeash(true, !player.getAbilities().creativeMode);
+			this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
 			return ActionResult.success(this.world.isClient);
 		} else {
 			ActionResult actionResult = this.interactWithItem(player, hand);
 			if (actionResult.isAccepted()) {
+				this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
 				return actionResult;
 			} else {
 				actionResult = this.interactMob(player, hand);
 				if (actionResult.isAccepted()) {
-					this.emitGameEvent(GameEvent.ENTITY_INTERACT);
+					this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
 					return actionResult;
 				} else {
 					return super.interact(player, hand);
@@ -1437,7 +1439,7 @@ public abstract class MobEntity extends LivingEntity {
 			target.setOnFireFor(i * 4);
 		}
 
-		boolean bl = target.damage(DamageSource.mob(this), f);
+		boolean bl = target.damage(this.getDamageSources().mobAttack(this), f);
 		if (bl) {
 			if (g > 0.0F && target instanceof LivingEntity) {
 				((LivingEntity)target)

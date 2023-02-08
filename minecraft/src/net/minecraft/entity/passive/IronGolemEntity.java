@@ -211,7 +211,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 		this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 		float f = this.getAttackDamage();
 		float g = (int)f > 0 ? f / 2.0F + (float)this.random.nextInt((int)f) : f;
-		boolean bl = target.damage(DamageSource.mob(this), g);
+		boolean bl = target.damage(this.getDamageSources().mobAttack(this), g);
 		if (bl) {
 			double d = target instanceof LivingEntity livingEntity ? livingEntity.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE) : 0.0;
 			double e = Math.max(0.0, 1.0 - d);

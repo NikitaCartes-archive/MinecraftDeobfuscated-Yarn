@@ -63,6 +63,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEventS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
@@ -73,7 +74,6 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -206,7 +206,17 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		List<Spawner> spawners,
 		boolean shouldTickTime
 	) {
-		super(properties, worldKey, dimensionOptions.dimensionTypeEntry(), server::getProfiler, false, debugWorld, seed, server.getMaxChainedNeighborUpdates());
+		super(
+			properties,
+			worldKey,
+			server.getRegistryManager(),
+			dimensionOptions.dimensionTypeEntry(),
+			server::getProfiler,
+			false,
+			debugWorld,
+			seed,
+			server.getMaxChainedNeighborUpdates()
+		);
 		this.shouldTickTime = shouldTickTime;
 		this.server = server;
 		this.spawners = spawners;
@@ -1108,6 +1118,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.getChunkManager().sendToNearbyPlayers(entity, new EntityStatusS2CPacket(entity, status));
 	}
 
+	@Override
+	public void sendEntityDamage(Entity entity, DamageSource damageSource) {
+		this.getChunkManager().sendToNearbyPlayers(entity, new EntityDamageS2CPacket(entity, damageSource));
+	}
+
 	public ServerChunkManager getChunkManager() {
 		return this.chunkManager;
 	}
@@ -1335,11 +1350,6 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Override
 	public boolean isSavingDisabled() {
 		return this.savingDisabled;
-	}
-
-	@Override
-	public DynamicRegistryManager getRegistryManager() {
-		return this.server.getRegistryManager();
 	}
 
 	public PersistentStateManager getPersistentStateManager() {
@@ -1832,11 +1842,15 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		public void startTicking(Entity entity) {
-			ServerWorld.this.entityList.add(entity);
+			if (entity.getType().isTickable()) {
+				ServerWorld.this.entityList.add(entity);
+			}
 		}
 
 		public void stopTicking(Entity entity) {
-			ServerWorld.this.entityList.remove(entity);
+			if (entity.getType().isTickable()) {
+				ServerWorld.this.entityList.remove(entity);
+			}
 		}
 
 		public void startTracking(Entity entity) {

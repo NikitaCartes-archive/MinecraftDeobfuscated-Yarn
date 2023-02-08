@@ -102,8 +102,8 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		boolean isLeashKnot
 	) {
 		float m = (float)pieceIndex / 24.0F;
-		int n = (int)MathHelper.lerp(m, (float)leashedEntityBlockLight, (float)holdingEntityBlockLight);
-		int o = (int)MathHelper.lerp(m, (float)leashedEntitySkyLight, (float)holdingEntitySkyLight);
+		int n = MathHelper.lerp(m, leashedEntityBlockLight, holdingEntityBlockLight);
+		int o = MathHelper.lerp(m, leashedEntitySkyLight, holdingEntitySkyLight);
 		int p = LightmapTextureManager.pack(n, o);
 		float q = pieceIndex % 2 == (isLeashKnot ? 1 : 0) ? 0.7F : 1.0F;
 		float r = 0.5F * q;

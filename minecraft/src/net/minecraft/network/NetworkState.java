@@ -108,6 +108,7 @@ import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttributesS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityDamageS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
@@ -225,6 +226,7 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 					.register(CooldownUpdateS2CPacket.class, CooldownUpdateS2CPacket::new)
 					.register(ChatSuggestionsS2CPacket.class, ChatSuggestionsS2CPacket::new)
 					.register(CustomPayloadS2CPacket.class, CustomPayloadS2CPacket::new)
+					.register(EntityDamageS2CPacket.class, EntityDamageS2CPacket::new)
 					.register(RemoveMessageS2CPacket.class, RemoveMessageS2CPacket::new)
 					.register(DisconnectS2CPacket.class, DisconnectS2CPacket::new)
 					.register(ProfilelessChatMessageS2CPacket.class, ProfilelessChatMessageS2CPacket::new)

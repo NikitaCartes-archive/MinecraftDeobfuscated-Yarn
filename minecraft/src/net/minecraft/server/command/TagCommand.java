@@ -51,7 +51,7 @@ public class TagCommand {
 		Set<String> set = Sets.<String>newHashSet();
 
 		for (Entity entity : entities) {
-			set.addAll(entity.getScoreboardTags());
+			set.addAll(entity.getCommandTags());
 		}
 
 		return set;
@@ -61,7 +61,7 @@ public class TagCommand {
 		int i = 0;
 
 		for (Entity entity : targets) {
-			if (entity.addScoreboardTag(tag)) {
+			if (entity.addCommandTag(tag)) {
 				i++;
 			}
 		}
@@ -105,7 +105,7 @@ public class TagCommand {
 		Set<String> set = Sets.<String>newHashSet();
 
 		for (Entity entity : targets) {
-			set.addAll(entity.getScoreboardTags());
+			set.addAll(entity.getCommandTags());
 		}
 
 		if (targets.size() == 1) {

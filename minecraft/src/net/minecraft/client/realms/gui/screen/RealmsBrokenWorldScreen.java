@@ -148,10 +148,10 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		super.render(matrices, mouseX, mouseY, delta);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
 
 		for (int i = 0; i < this.message.length; i++) {
-			drawCenteredText(matrices, this.textRenderer, this.message[i], this.width / 2, row(-1) + 3 + i * 12, 10526880);
+			drawCenteredTextWithShadow(matrices, this.textRenderer, this.message[i], this.width / 2, row(-1) + 3 + i * 12, 10526880);
 		}
 
 		if (this.serverData != null) {
@@ -287,7 +287,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		if (empty) {
 			RenderSystem.setShaderTexture(0, RealmsWorldSlotButton.EMPTY_FRAME);
 		} else if (templateImage != null && templateId != -1L) {
-			RealmsTextureManager.bindWorldTemplate(String.valueOf(templateId), templateImage);
+			RenderSystem.setShaderTexture(0, RealmsTextureManager.getTextureId(String.valueOf(templateId), templateImage));
 		} else if (slotId == 1) {
 			RenderSystem.setShaderTexture(0, RealmsWorldSlotButton.PANORAMA_0);
 		} else if (slotId == 2) {
@@ -295,7 +295,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		} else if (slotId == 3) {
 			RenderSystem.setShaderTexture(0, RealmsWorldSlotButton.PANORAMA_3);
 		} else {
-			RealmsTextureManager.bindWorldTemplate(String.valueOf(this.serverData.minigameId), this.serverData.minigameImage);
+			RenderSystem.setShaderTexture(0, RealmsTextureManager.getTextureId(String.valueOf(this.serverData.minigameId), this.serverData.minigameImage));
 		}
 
 		if (!activeSlot) {
@@ -314,7 +314,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 		}
 
 		DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 80, 80, 80, 80);
-		drawCenteredText(matrices, this.textRenderer, slotName, x + 40, y + 66, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, slotName, x + 40, y + 66, 16777215);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 }

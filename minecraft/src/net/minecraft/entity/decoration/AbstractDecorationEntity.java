@@ -138,7 +138,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	@Override
 	public boolean handleAttack(Entity attacker) {
 		if (attacker instanceof PlayerEntity playerEntity) {
-			return !this.world.canPlayerModifyAt(playerEntity, this.attachmentPos) ? true : this.damage(DamageSource.player(playerEntity), 0.0F);
+			return !this.world.canPlayerModifyAt(playerEntity, this.attachmentPos) ? true : this.damage(this.getDamageSources().playerAttack(playerEntity), 0.0F);
 		} else {
 			return false;
 		}

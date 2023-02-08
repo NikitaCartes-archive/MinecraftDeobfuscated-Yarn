@@ -190,17 +190,17 @@ public class LoomScreenHandler extends ScreenHandler {
 					&& nbtCompound.getList("Patterns", NbtElement.COMPOUND_TYPE).size() >= 6;
 				if (bl2) {
 					this.selectedPattern.set(-1);
-					this.outputSlot.setStack(ItemStack.EMPTY);
+					this.outputSlot.setStackNoCallbacks(ItemStack.EMPTY);
 				} else {
 					this.updateOutputSlot(registryEntry);
 				}
 			} else {
-				this.outputSlot.setStack(ItemStack.EMPTY);
+				this.outputSlot.setStackNoCallbacks(ItemStack.EMPTY);
 			}
 
 			this.sendContentUpdates();
 		} else {
-			this.outputSlot.setStack(ItemStack.EMPTY);
+			this.outputSlot.setStackNoCallbacks(ItemStack.EMPTY);
 			this.bannerPatterns = List.of();
 			this.selectedPattern.set(-1);
 		}
@@ -306,7 +306,7 @@ public class LoomScreenHandler extends ScreenHandler {
 		}
 
 		if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {
-			this.outputSlot.setStack(itemStack3);
+			this.outputSlot.setStackNoCallbacks(itemStack3);
 		}
 	}
 

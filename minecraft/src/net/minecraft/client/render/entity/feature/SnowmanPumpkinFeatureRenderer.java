@@ -12,7 +12,7 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.SnowGolemEntityModel;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -77,7 +77,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 						.renderItem(
 							snowGolemEntity,
 							itemStack,
-							ModelTransformation.Mode.HEAD,
+							ModelTransformationMode.HEAD,
 							false,
 							matrixStack,
 							vertexConsumerProvider,

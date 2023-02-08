@@ -31,7 +31,6 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.ProjectileDamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -371,11 +370,10 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
-		} else if (source instanceof ProjectileDamageSource) {
-			Entity entity = source.getSource();
+		} else if (source.isIndirect()) {
 			boolean bl;
-			if (entity instanceof PotionEntity) {
-				bl = this.damageFromPotion(source, (PotionEntity)entity, amount);
+			if (source.getSource() instanceof PotionEntity potionEntity) {
+				bl = this.damageFromPotion(source, potionEntity, amount);
 			} else {
 				bl = false;
 			}
@@ -388,12 +386,12 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 
 			return bl;
 		} else {
-			boolean bl2 = super.damage(source, amount);
+			boolean bl = super.damage(source, amount);
 			if (!this.world.isClient() && !(source.getAttacker() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
 				this.teleportRandomly();
 			}
 
-			return bl2;
+			return bl;
 		}
 	}
 
@@ -554,7 +552,8 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		public TeleportTowardsPlayerGoal(EndermanEntity enderman, @Nullable Predicate<LivingEntity> targetPredicate) {
 			super(enderman, PlayerEntity.class, 10, false, false, targetPredicate);
 			this.enderman = enderman;
-			this.angerPredicate = playerEntity -> enderman.isPlayerStaring((PlayerEntity)playerEntity) || enderman.shouldAngerAt(playerEntity);
+			this.angerPredicate = playerEntity -> (enderman.isPlayerStaring((PlayerEntity)playerEntity) || enderman.shouldAngerAt(playerEntity))
+					&& !enderman.hasPassengerDeep(playerEntity);
 			this.staringPlayerPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(this.getFollowRange()).setPredicate(this.angerPredicate);
 		}
 
@@ -587,7 +586,17 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 					return true;
 				}
 			} else {
-				return this.targetEntity != null && this.validTargetPredicate.test(this.enderman, this.targetEntity) ? true : super.shouldContinue();
+				if (this.targetEntity != null) {
+					if (this.enderman.hasPassengerDeep(this.targetEntity)) {
+						return false;
+					}
+
+					if (this.validTargetPredicate.test(this.enderman, this.targetEntity)) {
+						return true;
+					}
+				}
+
+				return super.shouldContinue();
 			}
 		}
 

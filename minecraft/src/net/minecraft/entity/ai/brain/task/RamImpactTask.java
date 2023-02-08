@@ -13,7 +13,6 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.registry.tag.BlockTags;
@@ -76,12 +75,12 @@ public class RamImpactTask extends MultiTickTask<GoatEntity> {
 		Brain<?> brain = goatEntity.getBrain();
 		if (!list.isEmpty()) {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
-			livingEntity.damage(DamageSource.mob(goatEntity).setNeutral(), (float)goatEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
+			livingEntity.damage(serverWorld.getDamageSources().mobAttackNoAggro(goatEntity), (float)goatEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE));
 			int i = goatEntity.hasStatusEffect(StatusEffects.SPEED) ? goatEntity.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1 : 0;
 			int j = goatEntity.hasStatusEffect(StatusEffects.SLOWNESS) ? goatEntity.getStatusEffect(StatusEffects.SLOWNESS).getAmplifier() + 1 : 0;
 			float f = 0.25F * (float)(i - j);
 			float g = MathHelper.clamp(goatEntity.getMovementSpeed() * 1.65F, 0.2F, 3.0F) + f;
-			float h = livingEntity.blockedByShield(DamageSource.mob(goatEntity)) ? 0.5F : 1.0F;
+			float h = livingEntity.blockedByShield(serverWorld.getDamageSources().mobAttack(goatEntity)) ? 0.5F : 1.0F;
 			livingEntity.takeKnockback((double)(h * g) * this.strengthMultiplierFactory.applyAsDouble(goatEntity), this.direction.getX(), this.direction.getZ());
 			this.finishRam(serverWorld, goatEntity);
 			serverWorld.playSoundFromEntity(null, goatEntity, (SoundEvent)this.impactSoundFactory.apply(goatEntity), SoundCategory.NEUTRAL, 1.0F, 1.0F);

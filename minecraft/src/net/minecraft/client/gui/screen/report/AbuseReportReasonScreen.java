@@ -14,6 +14,7 @@ import net.minecraft.client.report.AbuseReportReason;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Nullables;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
@@ -47,7 +48,7 @@ public class AbuseReportReasonScreen extends Screen {
 		this.reasonList = new AbuseReportReasonScreen.ReasonListWidget(this.client);
 		this.reasonList.setRenderBackground(false);
 		this.addSelectableChild(this.reasonList);
-		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = Util.map(this.reason, this.reasonList::getEntry);
+		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = Nullables.map(this.reason, this.reasonList::getEntry);
 		this.reasonList.setSelected(reasonEntry);
 		int i = this.width / 2 - 150 - 5;
 		this.addDrawableChild(ButtonWidget.builder(READ_INFO_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
@@ -73,7 +74,7 @@ public class AbuseReportReasonScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		this.reasonList.render(matrices, mouseX, mouseY, delta);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 		fill(matrices, this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), 2130706432);
 		drawTextWithShadow(matrices, this.textRenderer, DESCRIPTION_TEXT, this.getLeft() + 4, this.getTop() + 4, -8421505);

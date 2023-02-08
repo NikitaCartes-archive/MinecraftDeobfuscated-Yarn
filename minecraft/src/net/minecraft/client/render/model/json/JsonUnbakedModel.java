@@ -281,20 +281,20 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	public ModelTransformation getTransformations() {
-		Transformation transformation = this.getTransformation(ModelTransformation.Mode.THIRD_PERSON_LEFT_HAND);
-		Transformation transformation2 = this.getTransformation(ModelTransformation.Mode.THIRD_PERSON_RIGHT_HAND);
-		Transformation transformation3 = this.getTransformation(ModelTransformation.Mode.FIRST_PERSON_LEFT_HAND);
-		Transformation transformation4 = this.getTransformation(ModelTransformation.Mode.FIRST_PERSON_RIGHT_HAND);
-		Transformation transformation5 = this.getTransformation(ModelTransformation.Mode.HEAD);
-		Transformation transformation6 = this.getTransformation(ModelTransformation.Mode.GUI);
-		Transformation transformation7 = this.getTransformation(ModelTransformation.Mode.GROUND);
-		Transformation transformation8 = this.getTransformation(ModelTransformation.Mode.FIXED);
+		Transformation transformation = this.getTransformation(ModelTransformationMode.THIRD_PERSON_LEFT_HAND);
+		Transformation transformation2 = this.getTransformation(ModelTransformationMode.THIRD_PERSON_RIGHT_HAND);
+		Transformation transformation3 = this.getTransformation(ModelTransformationMode.FIRST_PERSON_LEFT_HAND);
+		Transformation transformation4 = this.getTransformation(ModelTransformationMode.FIRST_PERSON_RIGHT_HAND);
+		Transformation transformation5 = this.getTransformation(ModelTransformationMode.HEAD);
+		Transformation transformation6 = this.getTransformation(ModelTransformationMode.GUI);
+		Transformation transformation7 = this.getTransformation(ModelTransformationMode.GROUND);
+		Transformation transformation8 = this.getTransformation(ModelTransformationMode.FIXED);
 		return new ModelTransformation(
 			transformation, transformation2, transformation3, transformation4, transformation5, transformation6, transformation7, transformation8
 		);
 	}
 
-	private Transformation getTransformation(ModelTransformation.Mode renderMode) {
+	private Transformation getTransformation(ModelTransformationMode renderMode) {
 		return this.parent != null && !this.transformations.isTransformationDefined(renderMode)
 			? this.parent.getTransformation(renderMode)
 			: this.transformations.getTransformation(renderMode);

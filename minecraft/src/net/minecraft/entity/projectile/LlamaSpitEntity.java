@@ -1,10 +1,8 @@
 package net.minecraft.entity.projectile;
 
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -59,9 +57,8 @@ public class LlamaSpitEntity extends ProjectileEntity {
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		Entity entity = this.getOwner();
-		if (entity instanceof LivingEntity) {
-			entityHitResult.getEntity().damage(DamageSource.mobProjectile(this, (LivingEntity)entity).setProjectile(), 1.0F);
+		if (this.getOwner() instanceof LivingEntity livingEntity) {
+			entityHitResult.getEntity().damage(this.getDamageSources().mobProjectile(this, livingEntity), 1.0F);
 		}
 	}
 

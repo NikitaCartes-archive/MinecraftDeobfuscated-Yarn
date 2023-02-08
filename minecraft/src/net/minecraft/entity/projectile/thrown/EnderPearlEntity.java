@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.EndermiteEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -34,7 +33,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		entityHitResult.getEntity().damage(DamageSource.thrownProjectile(this, this.getOwner()), 0.0F);
+		entityHitResult.getEntity().damage(this.getDamageSources().thorns(this, this.getOwner()), 0.0F);
 	}
 
 	@Override
@@ -67,7 +66,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 					}
 
 					entity.onLanding();
-					entity.damage(DamageSource.FALL, 5.0F);
+					entity.damage(this.getDamageSources().fall(), 5.0F);
 				}
 			} else if (entity != null) {
 				entity.requestTeleport(this.getX(), this.getY(), this.getZ());

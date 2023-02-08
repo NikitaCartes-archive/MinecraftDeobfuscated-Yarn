@@ -133,10 +133,10 @@ public abstract class RecipeProvider implements DataProvider {
 		RecipeCategory category,
 		ItemConvertible output,
 		float experience,
-		int cookingTIme,
+		int cookingTime,
 		String group
 	) {
-		offerMultipleOptions(exporter, RecipeSerializer.BLASTING, inputs, category, output, experience, cookingTIme, group, "_from_blasting");
+		offerMultipleOptions(exporter, RecipeSerializer.BLASTING, inputs, category, output, experience, cookingTime, group, "_from_blasting");
 	}
 
 	private static void offerMultipleOptions(
@@ -146,12 +146,12 @@ public abstract class RecipeProvider implements DataProvider {
 		RecipeCategory category,
 		ItemConvertible output,
 		float experience,
-		int cookingTIme,
+		int cookingTime,
 		String group,
 		String method
 	) {
 		for (ItemConvertible itemConvertible : inputs) {
-			CookingRecipeJsonBuilder.create(Ingredient.ofItems(itemConvertible), category, output, experience, cookingTIme, serializer)
+			CookingRecipeJsonBuilder.create(Ingredient.ofItems(itemConvertible), category, output, experience, cookingTime, serializer)
 				.group(group)
 				.criterion(hasItem(itemConvertible), conditionsFromItem(itemConvertible))
 				.offerTo(exporter, getItemPath(output) + method + "_" + getItemPath(itemConvertible));

@@ -68,7 +68,7 @@ public class SummonCommand {
 		);
 	}
 
-	private static int execute(ServerCommandSource source, RegistryEntry.Reference<EntityType<?>> entityType, Vec3d pos, NbtCompound nbt, boolean initialize) throws CommandSyntaxException {
+	public static Entity summon(ServerCommandSource source, RegistryEntry.Reference<EntityType<?>> entityType, Vec3d pos, NbtCompound nbt, boolean initialize) throws CommandSyntaxException {
 		BlockPos blockPos = new BlockPos(pos);
 		if (!World.isValid(blockPos)) {
 			throw INVALID_POSITION_EXCEPTION.create();
@@ -90,10 +90,15 @@ public class SummonCommand {
 				if (!serverWorld.spawnNewEntityAndPassengers(entity)) {
 					throw FAILED_UUID_EXCEPTION.create();
 				} else {
-					source.sendFeedback(Text.translatable("commands.summon.success", entity.getDisplayName()), true);
-					return 1;
+					return entity;
 				}
 			}
 		}
+	}
+
+	private static int execute(ServerCommandSource source, RegistryEntry.Reference<EntityType<?>> entityType, Vec3d pos, NbtCompound nbt, boolean initialize) throws CommandSyntaxException {
+		Entity entity = summon(source, entityType, pos, nbt, initialize);
+		source.sendFeedback(Text.translatable("commands.summon.success", entity.getDisplayName()), true);
+		return 1;
 	}
 }

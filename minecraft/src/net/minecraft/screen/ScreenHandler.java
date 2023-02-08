@@ -853,7 +853,7 @@ public abstract class ScreenHandler {
 	}
 
 	public void setStackInSlot(int slot, int revision, ItemStack stack) {
-		this.getSlot(slot).setStack(stack);
+		this.getSlot(slot).setStackNoCallbacks(stack);
 		this.revision = revision;
 	}
 

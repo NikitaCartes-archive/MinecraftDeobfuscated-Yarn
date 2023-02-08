@@ -10,6 +10,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
@@ -29,6 +31,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TimeSupplier;
+import net.minecraft.util.Util;
 import net.minecraft.util.annotation.DeobfuscateClass;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix3f;
@@ -90,6 +93,8 @@ public class RenderSystem {
 	private static String apiDescription = "Unknown";
 	@Nullable
 	private static ShaderProgram shader;
+	private static final AtomicLong pollEventsWaitStart = new AtomicLong();
+	private static final AtomicBoolean pollingEvents = new AtomicBoolean(false);
 
 	public static void initRenderThread() {
 		if (renderThread == null && gameThread != Thread.currentThread()) {
@@ -162,12 +167,23 @@ public class RenderSystem {
 		recordingQueue.add(renderCall);
 	}
 
-	public static void flipFrame(long window) {
+	private static void pollEvents() {
+		pollEventsWaitStart.set(Util.getMeasuringTimeMs());
+		pollingEvents.set(true);
 		GLFW.glfwPollEvents();
+		pollingEvents.set(false);
+	}
+
+	public static boolean isFrozenAtPollEvents() {
+		return pollingEvents.get() && Util.getMeasuringTimeMs() - pollEventsWaitStart.get() > 200L;
+	}
+
+	public static void flipFrame(long window) {
+		pollEvents();
 		replayQueue();
 		Tessellator.getInstance().getBuffer().clear();
 		GLFW.glfwSwapBuffers(window);
-		GLFW.glfwPollEvents();
+		pollEvents();
 	}
 
 	public static void replayQueue() {

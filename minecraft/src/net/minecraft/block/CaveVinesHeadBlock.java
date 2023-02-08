@@ -55,7 +55,7 @@ public class CaveVinesHeadBlock extends AbstractPlantStemBlock implements Fertil
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		return CaveVines.pickBerries(state, world, pos);
+		return CaveVines.pickBerries(player, state, world, pos);
 	}
 
 	@Override

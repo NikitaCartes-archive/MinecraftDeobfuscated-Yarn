@@ -11,12 +11,20 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.math.BlockPos;
 
 public class DamageTracker {
 	public static final int DAMAGE_COOLDOWN = 100;
 	public static final int ATTACK_DAMAGE_COOLDOWN = 300;
+	private static final Style INTENTIONAL_GAME_DESIGN_ISSUE_LINK_STYLE = Style.EMPTY
+		.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://bugs.mojang.com/browse/MCPE-28723"))
+		.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("MCPE-28723")));
 	private final List<DamageRecord> recentDamage = Lists.<DamageRecord>newArrayList();
 	private final LivingEntity entity;
 	private int ageOnLastDamage;
@@ -76,16 +84,17 @@ public class DamageTracker {
 			DamageRecord damageRecord = this.getBiggestFall();
 			DamageRecord damageRecord2 = (DamageRecord)this.recentDamage.get(this.recentDamage.size() - 1);
 			Text text = damageRecord2.getAttackerName();
-			Entity entity = damageRecord2.getDamageSource().getAttacker();
+			DamageSource damageSource = damageRecord2.getDamageSource();
+			Entity entity = damageSource.getAttacker();
+			DeathMessageType deathMessageType = damageSource.getType().deathMessageType();
 			Text text3;
-			if (damageRecord != null && damageRecord2.getDamageSource() == DamageSource.FALL) {
+			if (damageRecord != null && deathMessageType == DeathMessageType.FALL_VARIANTS) {
 				Text text2 = damageRecord.getAttackerName();
-				if (damageRecord.getDamageSource() == DamageSource.FALL || damageRecord.getDamageSource() == DamageSource.OUT_OF_WORLD) {
+				DamageSource damageSource2 = damageRecord.getDamageSource();
+				if (damageSource2.isIn(DamageTypeTags.IS_FALL) || damageSource2.isIn(DamageTypeTags.ALWAYS_MOST_SIGNIFICANT_FALL)) {
 					text3 = Text.translatable("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
 				} else if (text2 != null && !text2.equals(text)) {
-					ItemStack itemStack = damageRecord.getDamageSource().getAttacker() instanceof LivingEntity livingEntity
-						? livingEntity.getMainHandStack()
-						: ItemStack.EMPTY;
+					ItemStack itemStack = damageSource2.getAttacker() instanceof LivingEntity livingEntity ? livingEntity.getMainHandStack() : ItemStack.EMPTY;
 					if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
 						text3 = Text.translatable("death.fell.assist.item", this.entity.getDisplayName(), text2, itemStack.toHoverableText());
 					} else {
@@ -102,7 +111,13 @@ public class DamageTracker {
 					text3 = Text.translatable("death.fell.killer", this.entity.getDisplayName());
 				}
 			} else {
-				text3 = damageRecord2.getDamageSource().getDeathMessage(this.entity);
+				if (deathMessageType == DeathMessageType.INTENTIONAL_GAME_DESIGN) {
+					String string = "death.attack." + damageSource.getName();
+					Text text4 = Texts.bracketed(Text.translatable(string + ".link")).fillStyle(INTENTIONAL_GAME_DESIGN_ISSUE_LINK_STYLE);
+					return Text.translatable(string + ".message", this.entity.getDisplayName(), text4);
+				}
+
+				text3 = damageSource.getDeathMessage(this.entity);
 			}
 
 			return text3;
@@ -141,16 +156,17 @@ public class DamageTracker {
 		for (int i = 0; i < this.recentDamage.size(); i++) {
 			DamageRecord damageRecord3 = (DamageRecord)this.recentDamage.get(i);
 			DamageRecord damageRecord4 = i > 0 ? (DamageRecord)this.recentDamage.get(i - 1) : null;
-			if ((damageRecord3.getDamageSource() == DamageSource.FALL || damageRecord3.getDamageSource() == DamageSource.OUT_OF_WORLD)
-				&& damageRecord3.getFallDistance() > 0.0F
-				&& (damageRecord == null || damageRecord3.getFallDistance() > g)) {
+			DamageSource damageSource = damageRecord3.getDamageSource();
+			boolean bl = damageSource.isIn(DamageTypeTags.ALWAYS_MOST_SIGNIFICANT_FALL);
+			float h = bl ? Float.MAX_VALUE : damageRecord3.getFallDistance();
+			if ((damageSource.isIn(DamageTypeTags.IS_FALL) || bl) && h > 0.0F && (damageRecord == null || h > g)) {
 				if (i > 0) {
 					damageRecord = damageRecord4;
 				} else {
 					damageRecord = damageRecord3;
 				}
 
-				g = damageRecord3.getFallDistance();
+				g = h;
 			}
 
 			if (damageRecord3.getFallDeathSuffix() != null && (damageRecord2 == null || damageRecord3.getDamage() > f)) {

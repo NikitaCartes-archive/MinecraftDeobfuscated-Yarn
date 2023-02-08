@@ -1484,11 +1484,6 @@ public final class ItemStack {
 		return this.getItem().getEatSound();
 	}
 
-	@Nullable
-	public SoundEvent getEquipSound() {
-		return this.getItem().getEquipSound();
-	}
-
 	public static enum TooltipSection {
 		ENCHANTMENTS,
 		MODIFIERS,

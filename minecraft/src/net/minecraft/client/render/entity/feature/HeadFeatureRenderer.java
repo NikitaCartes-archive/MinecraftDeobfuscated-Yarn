@@ -14,7 +14,7 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.render.item.HeldItemRenderer;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -71,7 +71,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 
 			this.getContextModel().getHead().rotate(matrixStack);
 			if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
-				float m = 1.1875F;
+				float n = 1.1875F;
 				matrixStack.scale(1.1875F, -1.1875F, -1.1875F);
 				if (bl) {
 					matrixStack.translate(0.0F, 0.0625F, 0.0F);
@@ -90,9 +90,9 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.headModels.get(skullType);
 				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
 				SkullBlockEntityRenderer.renderSkull(null, 180.0F, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
-			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
+			} else if (!(item instanceof ArmorItem armorItem) || armorItem.getSlotType() != EquipmentSlot.HEAD) {
 				translate(matrixStack, bl);
-				this.heldItemRenderer.renderItem(livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
+				this.heldItemRenderer.renderItem(livingEntity, itemStack, ModelTransformationMode.HEAD, false, matrixStack, vertexConsumerProvider, i);
 			}
 
 			matrixStack.pop();

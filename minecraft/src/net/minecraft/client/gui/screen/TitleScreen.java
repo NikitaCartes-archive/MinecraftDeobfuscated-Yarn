@@ -330,7 +330,7 @@ public class TitleScreen extends Screen {
 				float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
 				h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
 				matrices.scale(h, h, h);
-				drawCenteredText(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | i);
+				drawCenteredTextWithShadow(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | i);
 				matrices.pop();
 			}
 
@@ -345,7 +345,7 @@ public class TitleScreen extends Screen {
 				string = string + I18n.translate("menu.modded");
 			}
 
-			drawStringWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 16777215 | i);
+			drawTextWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 16777215 | i);
 
 			for (Element element : this.children()) {
 				if (element instanceof ClickableWidget) {

@@ -277,6 +277,14 @@ public class Identifier implements Comparable<Identifier> {
 		return prefix + "." + this.toTranslationKey();
 	}
 
+	/**
+	 * {@return the {@linkplain #toTranslationKey() long translation key} prefixed with
+	 * {@code prefix} and a dot, and suffixed with a dot and {@code suffix}}
+	 */
+	public String toTranslationKey(String prefix, String suffix) {
+		return prefix + "." + this.toTranslationKey() + "." + suffix;
+	}
+
 	public static Identifier fromCommandInput(StringReader reader) throws CommandSyntaxException {
 		int i = reader.getCursor();
 

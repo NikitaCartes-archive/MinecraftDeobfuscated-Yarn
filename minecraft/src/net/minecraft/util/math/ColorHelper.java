@@ -94,5 +94,13 @@ public class ColorHelper {
 				getBlue(first) * getBlue(second) / 255
 			);
 		}
+
+		public static int lerp(float delta, int start, int end) {
+			int i = MathHelper.lerp(delta, getAlpha(start), getAlpha(end));
+			int j = MathHelper.lerp(delta, getRed(start), getRed(end));
+			int k = MathHelper.lerp(delta, getGreen(start), getGreen(end));
+			int l = MathHelper.lerp(delta, getBlue(start), getBlue(end));
+			return getArgb(i, j, k, l);
+		}
 	}
 }

@@ -2,7 +2,6 @@ package net.minecraft.client.render.debug;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
@@ -50,10 +49,6 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		if (this.loadingData != null) {
-			RenderSystem.enableBlend();
-			RenderSystem.defaultBlendFunc();
-			RenderSystem.lineWidth(2.0F);
-			RenderSystem.depthMask(false);
 			Map<ChunkPos, String> map = (Map<ChunkPos, String>)this.loadingData.serverStates.getNow(null);
 			double e = this.client.gameRenderer.getCamera().getPos().y * 0.85;
 
@@ -69,14 +64,21 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 
 				for (String string2 : strings) {
 					DebugRenderer.drawString(
-						string2, (double)ChunkSectionPos.getOffsetPos(chunkPos.x, 8), e + (double)i, (double)ChunkSectionPos.getOffsetPos(chunkPos.z, 8), -1, 0.15F
+						matrices,
+						vertexConsumers,
+						string2,
+						(double)ChunkSectionPos.getOffsetPos(chunkPos.x, 8),
+						e + (double)i,
+						(double)ChunkSectionPos.getOffsetPos(chunkPos.z, 8),
+						-1,
+						0.15F,
+						true,
+						0.0F,
+						true
 					);
 					i -= 2;
 				}
 			}
-
-			RenderSystem.depthMask(true);
-			RenderSystem.disableBlend();
 		}
 	}
 

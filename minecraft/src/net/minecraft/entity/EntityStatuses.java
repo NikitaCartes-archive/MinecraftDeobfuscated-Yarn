@@ -2,7 +2,6 @@ package net.minecraft.entity;
 
 public class EntityStatuses {
 	public static final byte ADD_SPRINTING_PARTICLES_OR_RESET_SPAWNER_MINECART_SPAWN_DELAY = 1;
-	public static final byte DAMAGE_FROM_GENERIC_SOURCE = 2;
 	public static final byte PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES = 3;
 	public static final byte PLAY_ATTACK_SOUND = 4;
 	public static final byte field_30030 = 5;
@@ -33,18 +32,14 @@ public class EntityStatuses {
 	public static final byte BREAK_SHIELD = 30;
 	public static final byte PULL_HOOKED_ENTITY = 31;
 	public static final byte HIT_ARMOR_STAND = 32;
-	public static final byte DAMAGE_FROM_THORNS = 33;
 	public static final byte STOP_LOOKING_AT_VILLAGER = 34;
 	public static final byte USE_TOTEM_OF_UNDYING = 35;
-	public static final byte DAMAGE_FROM_DROWNING = 36;
-	public static final byte DAMAGE_FROM_FIRE = 37;
 	public static final byte ADD_DOLPHIN_HAPPY_VILLAGER_PARTICLES = 38;
 	public static final byte STUN_RAVAGER = 39;
 	public static final byte TAME_OCELOT_FAILED = 40;
 	public static final byte TAME_OCELOT_SUCCESS = 41;
 	public static final byte ADD_SPLASH_PARTICLES = 42;
 	public static final byte ADD_CLOUD_PARTICLES = 43;
-	public static final byte DAMAGE_FROM_BERRY_BUSH = 44;
 	public static final byte CREATE_EATING_PARTICLES = 45;
 	public static final byte ADD_PORTAL_PARTICLES = 46;
 	public static final byte BREAK_MAINHAND = 47;
@@ -57,7 +52,6 @@ public class EntityStatuses {
 	public static final byte DRIP_RICH_HONEY = 54;
 	public static final byte SWAP_HANDS = 55;
 	public static final byte RESET_WOLF_SHAKE = 56;
-	public static final byte DAMAGE_FROM_FREEZING = 57;
 	public static final byte PREPARE_RAM = 58;
 	public static final byte FINISH_RAM = 59;
 	public static final byte ADD_DEATH_PARTICLES = 60;

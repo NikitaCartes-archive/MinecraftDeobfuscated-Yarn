@@ -3,6 +3,7 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -149,10 +150,10 @@ public class LecternBlock extends BlockWithEntity {
 		return new LecternBlockEntity(pos, state);
 	}
 
-	public static boolean putBookIfAbsent(@Nullable PlayerEntity player, World world, BlockPos pos, BlockState state, ItemStack stack) {
+	public static boolean putBookIfAbsent(@Nullable Entity user, World world, BlockPos pos, BlockState state, ItemStack stack) {
 		if (!(Boolean)state.get(HAS_BOOK)) {
 			if (!world.isClient) {
-				putBook(player, world, pos, state, stack);
+				putBook(user, world, pos, state, stack);
 			}
 
 			return true;
@@ -161,17 +162,18 @@ public class LecternBlock extends BlockWithEntity {
 		}
 	}
 
-	private static void putBook(@Nullable PlayerEntity player, World world, BlockPos pos, BlockState state, ItemStack stack) {
+	private static void putBook(@Nullable Entity user, World world, BlockPos pos, BlockState state, ItemStack stack) {
 		if (world.getBlockEntity(pos) instanceof LecternBlockEntity lecternBlockEntity) {
 			lecternBlockEntity.setBook(stack.split(1));
-			setHasBook(world, pos, state, true);
+			setHasBook(user, world, pos, state, true);
 			world.playSound(null, pos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
-			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 		}
 	}
 
-	public static void setHasBook(World world, BlockPos pos, BlockState state, boolean hasBook) {
-		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(hasBook)), Block.NOTIFY_ALL);
+	public static void setHasBook(@Nullable Entity user, World world, BlockPos pos, BlockState state, boolean hasBook) {
+		BlockState blockState = state.with(POWERED, Boolean.valueOf(false)).with(HAS_BOOK, Boolean.valueOf(hasBook));
+		world.setBlockState(pos, blockState, Block.NOTIFY_ALL);
+		world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Emitter.of(user, blockState));
 		updateNeighborAlways(world, pos, state);
 	}
 

@@ -267,7 +267,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			this.renderMessages(matrices, mouseX, mouseY, this.noTemplatesMessage);
 		}
 
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 13, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 13, 16777215);
 		if (this.displayWarning) {
 			Text[] texts = this.warning;
 
@@ -292,7 +292,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 					}
 				}
 
-				drawCenteredText(matrices, this.textRenderer, text, this.width / 2, row(-1 + ix), k);
+				drawCenteredTextWithShadow(matrices, this.textRenderer, text, this.width / 2, row(-1 + ix), k);
 			}
 		}
 
@@ -441,7 +441,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		}
 
 		private void drawImage(MatrixStack matrices, int x, int y, int mouseX, int mouseY, WorldTemplate template) {
-			RealmsTextureManager.bindWorldTemplate(template.id, template.image);
+			RenderSystem.setShaderTexture(0, RealmsTextureManager.getTextureId(template.id, template.image));
 			DrawableHelper.drawTexture(matrices, x + 1, y + 1, 0.0F, 0.0F, 38, 38, 38, 38);
 			RenderSystem.setShaderTexture(0, RealmsSelectWorldTemplateScreen.SLOT_FRAME);
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 40, 40, 40, 40);

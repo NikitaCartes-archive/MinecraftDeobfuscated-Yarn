@@ -27,7 +27,6 @@ public class LeadItem extends Item {
 				attachHeldMobsToBlock(playerEntity, world, blockPos);
 			}
 
-			world.emitGameEvent(GameEvent.BLOCK_ATTACH, blockPos, GameEvent.Emitter.of(playerEntity));
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
@@ -54,6 +53,10 @@ public class LeadItem extends Item {
 				mobEntity.attachLeash(leashKnotEntity, true);
 				bl = true;
 			}
+		}
+
+		if (bl) {
+			world.emitGameEvent(GameEvent.BLOCK_ATTACH, pos, GameEvent.Emitter.of(player));
 		}
 
 		return bl ? ActionResult.SUCCESS : ActionResult.PASS;

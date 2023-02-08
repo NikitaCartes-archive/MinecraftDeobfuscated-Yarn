@@ -101,7 +101,7 @@ public class SelectWorldScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.levelList.render(matrices, mouseX, mouseY, delta);
 		this.searchBox.render(matrices, mouseX, mouseY, delta);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

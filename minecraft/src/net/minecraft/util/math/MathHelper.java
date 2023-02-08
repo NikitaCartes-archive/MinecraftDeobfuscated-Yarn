@@ -577,6 +577,10 @@ public class MathHelper {
 		return min;
 	}
 
+	public static int lerp(float delta, int start, int end) {
+		return start + floor(delta * (float)(end - start));
+	}
+
 	public static float lerp(float delta, float start, float end) {
 		return start + delta * (end - start);
 	}

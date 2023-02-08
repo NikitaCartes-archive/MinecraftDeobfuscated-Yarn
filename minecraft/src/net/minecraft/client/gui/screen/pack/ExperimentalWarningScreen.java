@@ -10,6 +10,12 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.MultilineTextWidget;
+import net.minecraft.client.gui.widget.Positioner;
+import net.minecraft.client.gui.widget.SimplePositioningWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
@@ -17,17 +23,17 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ExperimentalWarningScreen extends Screen {
 	private static final Text TITLE = Text.translatable("selectWorld.experimental.title");
 	private static final Text MESSAGE = Text.translatable("selectWorld.experimental.message");
 	private static final Text DETAILS = Text.translatable("selectWorld.experimental.details");
-	private static final int field_40446 = 20;
+	private static final int field_42498 = 10;
+	private static final int field_42499 = 100;
 	private final BooleanConsumer callback;
 	final Collection<ResourcePackProfile> enabledProfiles;
-	private MultilineText message = MultilineText.EMPTY;
+	private final GridWidget grid = new GridWidget().setColumnSpacing(10).setRowSpacing(20);
 
 	public ExperimentalWarningScreen(Collection<ResourcePackProfile> enabledProfiles, BooleanConsumer callback) {
 		super(TITLE);
@@ -40,36 +46,32 @@ public class ExperimentalWarningScreen extends Screen {
 		return ScreenTexts.joinSentences(super.getNarratedTitle(), MESSAGE);
 	}
 
-	private int getMessageHeight() {
-		return this.message.count() * 9;
-	}
-
-	private int getTitleY() {
-		int i = (this.height - this.getMessageHeight()) / 2;
-		return MathHelper.clamp(i - 20 - 9, 10, 80);
-	}
-
 	@Override
 	protected void init() {
 		super.init();
-		this.message = MultilineText.create(this.textRenderer, MESSAGE, this.width - 50);
-		int i = MathHelper.clamp(this.getTitleY() + 20 + this.getMessageHeight() + 20, this.height / 6 + 96, this.height - 24);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.PROCEED, button -> this.callback.accept(true)).dimensions(this.width / 2 - 50 - 105, i, 100, 20).build()
-		);
-		this.addDrawableChild(
-			ButtonWidget.builder(DETAILS, button -> this.client.setScreen(new ExperimentalWarningScreen.DetailsScreen()))
-				.dimensions(this.width / 2 - 50, i, 100, 20)
-				.build()
-		);
-		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.callback.accept(false)).dimensions(this.width / 2 - 50 + 105, i, 100, 20).build());
+		GridWidget.Adder adder = this.grid.createAdder(2);
+		Positioner positioner = adder.copyPositioner().alignHorizontalCenter();
+		adder.add(new TextWidget(this.title, this.textRenderer), 2, positioner);
+		MultilineTextWidget multilineTextWidget = adder.add(new MultilineTextWidget(MESSAGE, this.textRenderer).setCentered(true), 2, positioner);
+		multilineTextWidget.setMaxWidth(310);
+		adder.add(ButtonWidget.builder(DETAILS, button -> this.client.setScreen(new ExperimentalWarningScreen.DetailsScreen())).width(100).build(), 2, positioner);
+		adder.add(ButtonWidget.builder(ScreenTexts.PROCEED, button -> this.callback.accept(true)).build());
+		adder.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.callback.accept(false)).build());
+		this.grid.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
+		});
+		this.grid.refreshPositions();
+		this.initTabNavigation();
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		SimplePositioningWidget.setPos(this.grid, 0, 0, this.width, this.height, 0.5F, 0.5F);
 	}
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, this.getTitleY(), 16777215);
-		this.message.drawCenterWithShadow(matrices, this.width / 2, this.getTitleY() + 20);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
@@ -105,7 +107,7 @@ public class ExperimentalWarningScreen extends Screen {
 		public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 			this.renderBackground(matrices);
 			this.packList.render(matrices, mouseX, mouseY, delta);
-			drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
+			drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
 			super.render(matrices, mouseX, mouseY, delta);
 		}
 

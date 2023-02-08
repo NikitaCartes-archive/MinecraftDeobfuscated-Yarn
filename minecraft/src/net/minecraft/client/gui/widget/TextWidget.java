@@ -3,14 +3,11 @@ package net.minecraft.client.gui.widget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
-public class TextWidget extends ClickableWidget {
-	private int textColor = 16777215;
-	private final TextRenderer textRenderer;
+public class TextWidget extends AbstractTextWidget {
 	private float horizontalAlignment = 0.5F;
 
 	public TextWidget(Text message, TextRenderer textRenderer) {
@@ -22,13 +19,12 @@ public class TextWidget extends ClickableWidget {
 	}
 
 	public TextWidget(int x, int y, int width, int height, Text message, TextRenderer textRenderer) {
-		super(x, y, width, height, message);
-		this.textRenderer = textRenderer;
+		super(x, y, width, height, message, textRenderer);
 		this.active = false;
 	}
 
 	public TextWidget setTextColor(int textColor) {
-		this.textColor = textColor;
+		super.setTextColor(textColor);
 		return this;
 	}
 
@@ -50,14 +46,11 @@ public class TextWidget extends ClickableWidget {
 	}
 
 	@Override
-	public void appendClickableNarrations(NarrationMessageBuilder builder) {
-	}
-
-	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		Text text = this.getMessage();
-		int i = this.getX() + Math.round(this.horizontalAlignment * (float)(this.getWidth() - this.textRenderer.getWidth(text)));
+		TextRenderer textRenderer = this.getTextRenderer();
+		int i = this.getX() + Math.round(this.horizontalAlignment * (float)(this.getWidth() - textRenderer.getWidth(text)));
 		int j = this.getY() + (this.getHeight() - 9) / 2;
-		drawTextWithShadow(matrices, this.textRenderer, text, i, j, this.textColor);
+		drawTextWithShadow(matrices, textRenderer, text, i, j, this.getTextColor());
 	}
 }

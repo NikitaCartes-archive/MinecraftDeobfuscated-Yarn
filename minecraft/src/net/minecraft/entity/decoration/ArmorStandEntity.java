@@ -29,6 +29,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -389,16 +390,16 @@ public class ArmorStandEntity extends LivingEntity {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.world.isClient || this.isRemoved()) {
 			return false;
-		} else if (DamageSource.OUT_OF_WORLD.equals(source)) {
+		} else if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
 			this.kill();
 			return false;
 		} else if (this.isInvulnerableTo(source) || this.invisible || this.isMarker()) {
 			return false;
-		} else if (source.isExplosive()) {
+		} else if (source.isIn(DamageTypeTags.IS_EXPLOSION)) {
 			this.onBreak(source);
 			this.kill();
 			return false;
-		} else if (DamageSource.IN_FIRE.equals(source)) {
+		} else if (source.isIn(DamageTypeTags.IGNITES_ARMOR_STANDS)) {
 			if (this.isOnFire()) {
 				this.updateHealth(source, 0.15F);
 			} else {
@@ -406,7 +407,7 @@ public class ArmorStandEntity extends LivingEntity {
 			}
 
 			return false;
-		} else if (DamageSource.ON_FIRE.equals(source) && this.getHealth() > 0.5F) {
+		} else if (source.isIn(DamageTypeTags.BURNS_ARMOR_STANDS) && this.getHealth() > 0.5F) {
 			this.updateHealth(source, 4.0F);
 			return false;
 		} else {
@@ -415,26 +416,30 @@ public class ArmorStandEntity extends LivingEntity {
 			boolean bl3 = "player".equals(source.getName());
 			if (!bl3 && !bl) {
 				return false;
-			} else if (source.getAttacker() instanceof PlayerEntity && !((PlayerEntity)source.getAttacker()).getAbilities().allowModifyWorld) {
-				return false;
-			} else if (source.isSourceCreativePlayer()) {
-				this.playBreakSound();
-				this.spawnBreakParticles();
-				this.kill();
-				return bl2;
 			} else {
-				long l = this.world.getTime();
-				if (l - this.lastHitTime > 5L && !bl) {
-					this.world.sendEntityStatus(this, EntityStatuses.HIT_ARMOR_STAND);
-					this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
-					this.lastHitTime = l;
-				} else {
-					this.breakAndDropItem(source);
-					this.spawnBreakParticles();
-					this.kill();
+				if (source.getAttacker() instanceof PlayerEntity playerEntity && !playerEntity.getAbilities().allowModifyWorld) {
+					return false;
 				}
 
-				return true;
+				if (source.isSourceCreativePlayer()) {
+					this.playBreakSound();
+					this.spawnBreakParticles();
+					this.kill();
+					return bl2;
+				} else {
+					long l = this.world.getTime();
+					if (l - this.lastHitTime > 5L && !bl) {
+						this.world.sendEntityStatus(this, EntityStatuses.HIT_ARMOR_STAND);
+						this.emitGameEvent(GameEvent.ENTITY_DAMAGE, source.getAttacker());
+						this.lastHitTime = l;
+					} else {
+						this.breakAndDropItem(source);
+						this.spawnBreakParticles();
+						this.kill();
+					}
+
+					return true;
+				}
 			}
 		}
 	}

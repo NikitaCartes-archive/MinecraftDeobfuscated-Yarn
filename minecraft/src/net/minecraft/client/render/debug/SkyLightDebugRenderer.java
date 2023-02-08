@@ -1,6 +1,5 @@
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.fabricmc.api.EnvType;
@@ -26,8 +25,6 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		World world = this.client.world;
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
 		BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
 		LongSet longSet = new LongOpenHashSet();
 
@@ -38,6 +35,8 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 			long l = ChunkSectionPos.fromBlockPos(blockPos2.asLong());
 			if (longSet.add(l)) {
 				DebugRenderer.drawString(
+					matrices,
+					vertexConsumers,
 					world.getChunkManager().getLightingProvider().displaySectionLevel(LightType.SKY, ChunkSectionPos.from(l)),
 					(double)ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackX(l), 8),
 					(double)ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackY(l), 8),
@@ -48,7 +47,9 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 			}
 
 			if (i != 15) {
-				DebugRenderer.drawString(String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j);
+				DebugRenderer.drawString(
+					matrices, vertexConsumers, String.valueOf(i), (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, j
+				);
 			}
 		}
 	}

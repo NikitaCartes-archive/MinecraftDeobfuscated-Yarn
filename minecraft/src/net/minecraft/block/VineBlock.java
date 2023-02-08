@@ -18,6 +18,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
@@ -177,74 +178,76 @@ public class VineBlock extends Block {
 
 	@Override
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (random.nextInt(4) == 0) {
-			Direction direction = Direction.random(random);
-			BlockPos blockPos = pos.up();
-			if (direction.getAxis().isHorizontal() && !(Boolean)state.get(getFacingProperty(direction))) {
-				if (this.canGrowAt(world, pos)) {
-					BlockPos blockPos2 = pos.offset(direction);
-					BlockState blockState = world.getBlockState(blockPos2);
-					if (blockState.isAir()) {
-						Direction direction2 = direction.rotateYClockwise();
-						Direction direction3 = direction.rotateYCounterclockwise();
-						boolean bl = (Boolean)state.get(getFacingProperty(direction2));
-						boolean bl2 = (Boolean)state.get(getFacingProperty(direction3));
-						BlockPos blockPos3 = blockPos2.offset(direction2);
-						BlockPos blockPos4 = blockPos2.offset(direction3);
-						if (bl && shouldConnectTo(world, blockPos3, direction2)) {
-							world.setBlockState(blockPos2, this.getDefaultState().with(getFacingProperty(direction2), Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
-						} else if (bl2 && shouldConnectTo(world, blockPos4, direction3)) {
-							world.setBlockState(blockPos2, this.getDefaultState().with(getFacingProperty(direction3), Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
-						} else {
-							Direction direction4 = direction.getOpposite();
-							if (bl && world.isAir(blockPos3) && shouldConnectTo(world, pos.offset(direction2), direction4)) {
-								world.setBlockState(blockPos3, this.getDefaultState().with(getFacingProperty(direction4), Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
-							} else if (bl2 && world.isAir(blockPos4) && shouldConnectTo(world, pos.offset(direction3), direction4)) {
-								world.setBlockState(blockPos4, this.getDefaultState().with(getFacingProperty(direction4), Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
-							} else if ((double)random.nextFloat() < 0.05 && shouldConnectTo(world, blockPos2.up(), Direction.UP)) {
-								world.setBlockState(blockPos2, this.getDefaultState().with(UP, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
+		if (world.getGameRules().getBoolean(GameRules.DO_VINES_SPREAD)) {
+			if (random.nextInt(4) == 0) {
+				Direction direction = Direction.random(random);
+				BlockPos blockPos = pos.up();
+				if (direction.getAxis().isHorizontal() && !(Boolean)state.get(getFacingProperty(direction))) {
+					if (this.canGrowAt(world, pos)) {
+						BlockPos blockPos2 = pos.offset(direction);
+						BlockState blockState = world.getBlockState(blockPos2);
+						if (blockState.isAir()) {
+							Direction direction2 = direction.rotateYClockwise();
+							Direction direction3 = direction.rotateYCounterclockwise();
+							boolean bl = (Boolean)state.get(getFacingProperty(direction2));
+							boolean bl2 = (Boolean)state.get(getFacingProperty(direction3));
+							BlockPos blockPos3 = blockPos2.offset(direction2);
+							BlockPos blockPos4 = blockPos2.offset(direction3);
+							if (bl && shouldConnectTo(world, blockPos3, direction2)) {
+								world.setBlockState(blockPos2, this.getDefaultState().with(getFacingProperty(direction2), Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
+							} else if (bl2 && shouldConnectTo(world, blockPos4, direction3)) {
+								world.setBlockState(blockPos2, this.getDefaultState().with(getFacingProperty(direction3), Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
+							} else {
+								Direction direction4 = direction.getOpposite();
+								if (bl && world.isAir(blockPos3) && shouldConnectTo(world, pos.offset(direction2), direction4)) {
+									world.setBlockState(blockPos3, this.getDefaultState().with(getFacingProperty(direction4), Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
+								} else if (bl2 && world.isAir(blockPos4) && shouldConnectTo(world, pos.offset(direction3), direction4)) {
+									world.setBlockState(blockPos4, this.getDefaultState().with(getFacingProperty(direction4), Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
+								} else if ((double)random.nextFloat() < 0.05 && shouldConnectTo(world, blockPos2.up(), Direction.UP)) {
+									world.setBlockState(blockPos2, this.getDefaultState().with(UP, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
+								}
 							}
+						} else if (shouldConnectTo(world, blockPos2, direction)) {
+							world.setBlockState(pos, state.with(getFacingProperty(direction), Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 						}
-					} else if (shouldConnectTo(world, blockPos2, direction)) {
-						world.setBlockState(pos, state.with(getFacingProperty(direction), Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 					}
-				}
-			} else {
-				if (direction == Direction.UP && pos.getY() < world.getTopY() - 1) {
-					if (this.shouldHaveSide(world, pos, direction)) {
-						world.setBlockState(pos, state.with(UP, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
-						return;
-					}
-
-					if (world.isAir(blockPos)) {
-						if (!this.canGrowAt(world, pos)) {
+				} else {
+					if (direction == Direction.UP && pos.getY() < world.getTopY() - 1) {
+						if (this.shouldHaveSide(world, pos, direction)) {
+							world.setBlockState(pos, state.with(UP, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
 							return;
 						}
 
-						BlockState blockState2 = state;
-
-						for (Direction direction2 : Direction.Type.HORIZONTAL) {
-							if (random.nextBoolean() || !shouldConnectTo(world, blockPos.offset(direction2), direction2)) {
-								blockState2 = blockState2.with(getFacingProperty(direction2), Boolean.valueOf(false));
+						if (world.isAir(blockPos)) {
+							if (!this.canGrowAt(world, pos)) {
+								return;
 							}
-						}
 
-						if (this.hasHorizontalSide(blockState2)) {
-							world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
-						}
+							BlockState blockState2 = state;
 
-						return;
+							for (Direction direction2 : Direction.Type.HORIZONTAL) {
+								if (random.nextBoolean() || !shouldConnectTo(world, blockPos.offset(direction2), direction2)) {
+									blockState2 = blockState2.with(getFacingProperty(direction2), Boolean.valueOf(false));
+								}
+							}
+
+							if (this.hasHorizontalSide(blockState2)) {
+								world.setBlockState(blockPos, blockState2, Block.NOTIFY_LISTENERS);
+							}
+
+							return;
+						}
 					}
-				}
 
-				if (pos.getY() > world.getBottomY()) {
-					BlockPos blockPos2 = pos.down();
-					BlockState blockState = world.getBlockState(blockPos2);
-					if (blockState.isAir() || blockState.isOf(this)) {
-						BlockState blockState3 = blockState.isAir() ? this.getDefaultState() : blockState;
-						BlockState blockState4 = this.getGrownState(state, blockState3, random);
-						if (blockState3 != blockState4 && this.hasHorizontalSide(blockState4)) {
-							world.setBlockState(blockPos2, blockState4, Block.NOTIFY_LISTENERS);
+					if (pos.getY() > world.getBottomY()) {
+						BlockPos blockPos2 = pos.down();
+						BlockState blockState = world.getBlockState(blockPos2);
+						if (blockState.isAir() || blockState.isOf(this)) {
+							BlockState blockState3 = blockState.isAir() ? this.getDefaultState() : blockState;
+							BlockState blockState4 = this.getGrownState(state, blockState3, random);
+							if (blockState3 != blockState4 && this.hasHorizontalSide(blockState4)) {
+								world.setBlockState(blockPos2, blockState4, Block.NOTIFY_LISTENERS);
+							}
 						}
 					}
 				}

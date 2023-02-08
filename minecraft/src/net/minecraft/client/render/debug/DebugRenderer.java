@@ -1,6 +1,5 @@
 package net.minecraft.client.render.debug;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -8,19 +7,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -121,50 +116,75 @@ public class DebugRenderer {
 		}
 	}
 
-	public static void drawBox(BlockPos pos1, BlockPos pos2, float red, float green, float blue, float alpha) {
+	public static void drawBox(
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, BlockPos pos1, BlockPos pos2, float red, float green, float blue, float alpha
+	) {
 		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 		if (camera.isReady()) {
 			Vec3d vec3d = camera.getPos().negate();
 			Box box = new Box(pos1, pos2).offset(vec3d);
-			drawBox(box, red, green, blue, alpha);
+			drawBox(matrices, vertexConsumers, box, red, green, blue, alpha);
 		}
 	}
 
-	public static void drawBox(BlockPos pos, float expand, float red, float green, float blue, float alpha) {
+	public static void drawBox(
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, BlockPos pos, float expand, float red, float green, float blue, float alpha
+	) {
 		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 		if (camera.isReady()) {
 			Vec3d vec3d = camera.getPos().negate();
 			Box box = new Box(pos).offset(vec3d).expand((double)expand);
-			drawBox(box, red, green, blue, alpha);
+			drawBox(matrices, vertexConsumers, box, red, green, blue, alpha);
 		}
 	}
 
-	public static void drawBox(Box box, float red, float green, float blue, float alpha) {
-		drawBox(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, red, green, blue, alpha);
+	public static void drawBox(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Box box, float red, float green, float blue, float alpha) {
+		drawBox(matrices, vertexConsumers, box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ, red, green, blue, alpha);
 	}
 
-	public static void drawBox(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, float red, float green, float blue, float alpha) {
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-		bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
-		WorldRenderer.drawBox(bufferBuilder, minX, minY, minZ, maxX, maxY, maxZ, red, green, blue, alpha);
-		tessellator.draw();
+	public static void drawBox(
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		double minX,
+		double minY,
+		double minZ,
+		double maxX,
+		double maxY,
+		double maxZ,
+		float red,
+		float green,
+		float blue,
+		float alpha
+	) {
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugFilledBox());
+		WorldRenderer.method_3258(matrices, vertexConsumer, minX, minY, minZ, maxX, maxY, maxZ, red, green, blue, alpha);
 	}
 
-	public static void drawString(String string, int x, int y, int z, int color) {
-		drawString(string, (double)x + 0.5, (double)y + 0.5, (double)z + 0.5, color);
+	public static void drawString(MatrixStack matrices, VertexConsumerProvider vertexConsumers, String string, int x, int y, int z, int color) {
+		drawString(matrices, vertexConsumers, string, (double)x + 0.5, (double)y + 0.5, (double)z + 0.5, color);
 	}
 
-	public static void drawString(String string, double x, double y, double z, int color) {
-		drawString(string, x, y, z, color, 0.02F);
+	public static void drawString(MatrixStack matrices, VertexConsumerProvider vertexConsumers, String string, double x, double y, double z, int color) {
+		drawString(matrices, vertexConsumers, string, x, y, z, color, 0.02F);
 	}
 
-	public static void drawString(String string, double x, double y, double z, int color, float size) {
-		drawString(string, x, y, z, color, size, true, 0.0F, false);
+	public static void drawString(MatrixStack matrices, VertexConsumerProvider vertexConsumers, String string, double x, double y, double z, int color, float size) {
+		drawString(matrices, vertexConsumers, string, x, y, z, color, size, true, 0.0F, false);
 	}
 
-	public static void drawString(String string, double x, double y, double z, int color, float size, boolean center, float offset, boolean visibleThroughObjects) {
+	public static void drawString(
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		String string,
+		double x,
+		double y,
+		double z,
+		int color,
+		float size,
+		boolean center,
+		float offset,
+		boolean visibleThroughObjects
+	) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		Camera camera = minecraftClient.gameRenderer.getCamera();
 		if (camera.isReady() && minecraftClient.getEntityRenderDispatcher().gameOptions != null) {
@@ -172,28 +192,14 @@ public class DebugRenderer {
 			double d = camera.getPos().x;
 			double e = camera.getPos().y;
 			double f = camera.getPos().z;
-			MatrixStack matrixStack = RenderSystem.getModelViewStack();
-			matrixStack.push();
-			matrixStack.translate((float)(x - d), (float)(y - e) + 0.07F, (float)(z - f));
-			matrixStack.multiplyPositionMatrix(new Matrix4f().rotation(camera.getRotation()));
-			matrixStack.scale(size, -size, size);
-			if (visibleThroughObjects) {
-				RenderSystem.disableDepthTest();
-			} else {
-				RenderSystem.enableDepthTest();
-			}
-
-			RenderSystem.depthMask(true);
-			matrixStack.scale(-1.0F, 1.0F, 1.0F);
-			RenderSystem.applyModelViewMatrix();
+			matrices.push();
+			matrices.translate((float)(x - d), (float)(y - e) + 0.07F, (float)(z - f));
+			matrices.multiplyPositionMatrix(new Matrix4f().rotation(camera.getRotation()));
+			matrices.scale(-size, -size, size);
 			float g = center ? (float)(-textRenderer.getWidth(string)) / 2.0F : 0.0F;
 			g -= offset / size;
-			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			textRenderer.draw(string, g, 0.0F, color, false, AffineTransformation.identity().getMatrix(), immediate, visibleThroughObjects, 0, 15728880);
-			immediate.draw();
-			RenderSystem.enableDepthTest();
-			matrixStack.pop();
-			RenderSystem.applyModelViewMatrix();
+			textRenderer.draw(string, g, 0.0F, color, false, matrices.peek().getPositionMatrix(), vertexConsumers, visibleThroughObjects, 0, 15728880);
+			matrices.pop();
 		}
 	}
 

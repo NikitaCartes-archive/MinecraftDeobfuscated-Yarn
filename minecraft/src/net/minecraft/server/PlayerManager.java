@@ -460,8 +460,8 @@ public abstract class PlayerManager {
 		serverPlayerEntity.setId(player.getId());
 		serverPlayerEntity.setMainArm(player.getMainArm());
 
-		for (String string : player.getScoreboardTags()) {
-			serverPlayerEntity.addScoreboardTag(string);
+		for (String string : player.getCommandTags()) {
+			serverPlayerEntity.addCommandTag(string);
 		}
 
 		boolean bl2 = false;

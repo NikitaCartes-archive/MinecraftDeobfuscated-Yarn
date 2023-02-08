@@ -6,7 +6,7 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.ItemEntity;
@@ -62,7 +62,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 		int k = this.getRenderedAmount(itemStack);
 		float h = 0.25F;
 		float l = MathHelper.sin(((float)itemEntity.getItemAge() + g) / 10.0F + itemEntity.uniqueOffset) * 0.1F + 0.1F;
-		float m = bakedModel.getTransformation().getTransformation(ModelTransformation.Mode.GROUND).scale.y();
+		float m = bakedModel.getTransformation().getTransformation(ModelTransformationMode.GROUND).scale.y();
 		matrixStack.translate(0.0F, l + 0.25F * m, 0.0F);
 		float n = itemEntity.getRotation(g);
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation(n));
@@ -92,7 +92,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			}
 
 			this.itemRenderer
-				.renderItem(itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
+				.renderItem(itemStack, ModelTransformationMode.GROUND, false, matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV, bakedModel);
 			matrixStack.pop();
 			if (!bl) {
 				matrixStack.translate(0.0F * o, 0.0F * p, 0.09375F * q);

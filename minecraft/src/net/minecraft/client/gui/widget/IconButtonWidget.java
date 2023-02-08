@@ -66,7 +66,7 @@ public class IconButtonWidget extends TexturedButtonWidget {
 			j -= k - l;
 		}
 
-		drawWithShadow(matrices, textRenderer, orderedText, j, y, color);
+		drawTextWithShadow(matrices, textRenderer, orderedText, j, y, color);
 	}
 
 	private int getXWithOffset() {

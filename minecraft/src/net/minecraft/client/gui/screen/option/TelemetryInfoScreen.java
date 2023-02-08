@@ -44,14 +44,14 @@ public class TelemetryInfoScreen extends Screen {
 
 	@Override
 	protected void init() {
-		SimplePositioningWidget simplePositioningWidget = new SimplePositioningWidget(0, 0, this.width, this.height);
+		SimplePositioningWidget simplePositioningWidget = new SimplePositioningWidget();
 		simplePositioningWidget.getMainPositioner().margin(8);
 		simplePositioningWidget.setMinHeight(this.height);
 		GridWidget gridWidget = simplePositioningWidget.add(new GridWidget(), simplePositioningWidget.copyPositioner().relative(0.5F, 0.0F));
 		gridWidget.getMainPositioner().alignHorizontalCenter().marginBottom(8);
 		GridWidget.Adder adder = gridWidget.createAdder(1);
 		adder.add(new TextWidget(this.getTitle(), this.textRenderer));
-		adder.add(MultilineTextWidget.createCentered(this.width - 16, this.textRenderer, DESCRIPTION_TEXT));
+		adder.add(new MultilineTextWidget(DESCRIPTION_TEXT, this.textRenderer).setMaxWidth(this.width - 16).setCentered(true));
 		GridWidget gridWidget2 = this.createButtonRow(
 			ButtonWidget.builder(GIVE_FEEDBACK_TEXT, this::openFeedbackPage).build(), ButtonWidget.builder(SHOW_DATA_TEXT, this::openLogDirectory).build()
 		);
@@ -68,8 +68,8 @@ public class TelemetryInfoScreen extends Screen {
 		adder.add(this.telemetryEventWidget);
 		simplePositioningWidget.refreshPositions();
 		SimplePositioningWidget.setPos(simplePositioningWidget, 0, 0, this.width, this.height, 0.5F, 0.0F);
-		simplePositioningWidget.forEachChild(element -> {
-			ClickableWidget var10000 = this.addDrawableChild(element);
+		simplePositioningWidget.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
 		});
 	}
 

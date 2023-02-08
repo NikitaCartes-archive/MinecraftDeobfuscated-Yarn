@@ -1,6 +1,5 @@
 package net.minecraft.entity.player;
 
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -64,7 +63,7 @@ public class HungerManager {
 			this.foodTickTimer++;
 			if (this.foodTickTimer >= 80) {
 				if (player.getHealth() > 10.0F || difficulty == Difficulty.HARD || player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
-					player.damage(DamageSource.STARVE, 1.0F);
+					player.damage(player.getDamageSources().starve(), 1.0F);
 				}
 
 				this.foodTickTimer = 0;

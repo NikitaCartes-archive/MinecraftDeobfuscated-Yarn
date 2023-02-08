@@ -97,7 +97,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 		this.renderBackground(matrices);
 		this.textRenderer.draw(matrices, INVITE_PROFILE_NAME_TEXT, (float)(this.width / 2 - 100), (float)row(1), 10526880);
 		if (this.errorMessage != null) {
-			drawCenteredText(matrices, this.textRenderer, this.errorMessage, this.width / 2, row(5), 16711680);
+			drawCenteredTextWithShadow(matrices, this.textRenderer, this.errorMessage, this.width / 2, row(5), 16711680);
 		}
 
 		this.nameWidget.render(matrices, mouseX, mouseY, delta);

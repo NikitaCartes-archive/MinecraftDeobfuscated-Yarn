@@ -158,16 +158,6 @@ public abstract class TameableEntity extends AnimalEntity implements Tameable {
 		}
 	}
 
-	@Nullable
-	public LivingEntity getOwner() {
-		try {
-			UUID uUID = this.getOwnerUuid();
-			return uUID == null ? null : this.world.getPlayerByUuid(uUID);
-		} catch (IllegalArgumentException var2) {
-			return null;
-		}
-	}
-
 	@Override
 	public boolean canTarget(LivingEntity target) {
 		return this.isOwner(target) ? false : super.canTarget(target);

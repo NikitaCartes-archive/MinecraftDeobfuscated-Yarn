@@ -3,7 +3,6 @@ package net.minecraft.block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -74,7 +73,7 @@ public class SweetBerryBushBlock extends PlantBlock implements Fertilizable {
 				double d = Math.abs(entity.getX() - entity.lastRenderX);
 				double e = Math.abs(entity.getZ() - entity.lastRenderZ);
 				if (d >= 0.003F || e >= 0.003F) {
-					entity.damage(DamageSource.SWEET_BERRY_BUSH, 1.0F);
+					entity.damage(world.getDamageSources().sweetBerryBush(), 1.0F);
 				}
 			}
 		}

@@ -4,9 +4,13 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.util.Identifier;
 
 public class Potions {
-	public static final Potion EMPTY = register("empty", new Potion());
+	public static RegistryKey<Potion> EMPTY_KEY = RegistryKey.of(RegistryKeys.POTION, new Identifier("empty"));
+	public static final Potion EMPTY = register(EMPTY_KEY, new Potion());
 	public static final Potion WATER = register("water", new Potion());
 	public static final Potion MUNDANE = register("mundane", new Potion());
 	public static final Potion THICK = register("thick", new Potion());
@@ -75,5 +79,9 @@ public class Potions {
 
 	private static Potion register(String name, Potion potion) {
 		return Registry.register(Registries.POTION, name, potion);
+	}
+
+	private static Potion register(RegistryKey<Potion> key, Potion potion) {
+		return Registry.register(Registries.POTION, key, potion);
 	}
 }

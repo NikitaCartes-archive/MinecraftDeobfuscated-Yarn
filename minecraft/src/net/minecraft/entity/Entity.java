@@ -34,6 +34,7 @@ import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -59,6 +60,7 @@ import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.TagKey;
@@ -227,10 +229,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	public static final int DEFAULT_PORTAL_COOLDOWN = 300;
 	/**
-	 * @see Entity#addScoreboardTag
+	 * @see Entity#addCommandTag
 	 * @see Entity#readNbt
 	 */
-	public static final int MAX_SCOREBOARD_TAGS = 1024;
+	public static final int MAX_COMMAND_TAGS = 1024;
 	/**
 	 * @see Entity#getVelocityAffectingPos
 	 */
@@ -355,7 +357,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected UUID uuid = MathHelper.randomUuid(this.random);
 	protected String uuidString = this.uuid.toString();
 	private boolean glowing;
-	private final Set<String> scoreboardTags = Sets.<String>newHashSet();
+	private final Set<String> commandTags = Sets.<String>newHashSet();
 	private final double[] pistonMovementDelta = new double[]{0.0, 0.0, 0.0};
 	private long pistonMovementTick;
 	private EntityDimensions dimensions;
@@ -461,38 +463,38 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * {@return all scoreboard tags the entity belongs to}
+	 * {@return all command tags the entity belongs to}
 	 * 
 	 * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
 	 * /tag command}, and is different from entity type tags defined in data packs.
 	 */
-	public Set<String> getScoreboardTags() {
-		return this.scoreboardTags;
+	public Set<String> getCommandTags() {
+		return this.commandTags;
 	}
 
 	/**
-	 * Adds a scoreboard tag to this entity. An entity can have up to {@code 1024}
-	 * scoreboard tags.
+	 * Adds a command tag to this entity. An entity can have up to {@code 1024}
+	 * command tags.
 	 * 
-	 * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
+	 * <p>Command tags are set using the {@linkplain net.minecraft.server.command.TagCommand
 	 * /tag command}, and is different from entity type tags defined in data packs.
 	 * 
-	 * @return whether the scoreboard tag was successfully added
+	 * @return whether the command tag was successfully added
 	 */
-	public boolean addScoreboardTag(String tag) {
-		return this.scoreboardTags.size() >= 1024 ? false : this.scoreboardTags.add(tag);
+	public boolean addCommandTag(String tag) {
+		return this.commandTags.size() >= 1024 ? false : this.commandTags.add(tag);
 	}
 
 	/**
-	 * Removes a scoreboard tag from this entity.
+	 * Removes a command tag from this entity.
 	 * 
-	 * <p>Scoreboard tags are set using the {@linkplain net.minecraft.server.command.TagCommand
+	 * <p>Command tags are set using the {@linkplain net.minecraft.server.command.TagCommand
 	 * /tag command}, and is different from entity type tags defined in data packs.
 	 * 
-	 * @return whether the scoreboard tag was successfully removed
+	 * @return whether the command tag was successfully removed
 	 */
 	public boolean removeScoreboardTag(String tag) {
-		return this.scoreboardTags.remove(tag);
+		return this.commandTags.remove(tag);
 	}
 
 	/**
@@ -690,7 +692,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 			} else {
 				if (this.fireTicks % 20 == 0 && !this.isInLava()) {
-					this.damage(DamageSource.ON_FIRE, 1.0F);
+					this.damage(this.getDamageSources().onFire(), 1.0F);
 				}
 
 				this.setFireTicks(this.fireTicks - 1);
@@ -767,7 +769,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public void setOnFireFromLava() {
 		if (!this.isFireImmune()) {
 			this.setOnFireFor(15);
-			if (this.damage(DamageSource.LAVA, 4.0F)) {
+			if (this.damage(this.getDamageSources().lava(), 4.0F)) {
 				this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 			}
 		}
@@ -819,7 +821,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	/**
 	 * Called when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomY() minimum Y position}.
 	 * 
-	 * <p>{@linkplain LivingEntity Living entities} use this to deal {@linkplain net.minecraft.entity.damage.DamageSource#OUT_OF_WORLD out of world damage}.
+	 * <p>{@linkplain LivingEntity Living entities} use this to deal {@linkplain net.minecraft.entity.damage.DamageTypes#OUT_OF_WORLD out of world damage}.
 	 */
 	protected void tickInVoid() {
 		this.discard();
@@ -1438,7 +1440,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * {@return whether the entity is immune to {@linkplain DamageSource#setFire fire damage}}
+	 * {@return whether the entity is immune to {@linkplain
+	 * net.minecraft.registry.tag.DamageTypeTags#IS_FIRE fire damage}}
 	 * 
 	 * @see EntityType.Builder#makeFireImmune
 	 */
@@ -2073,10 +2076,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				nbt.putBoolean("HasVisualFire", this.hasVisualFire);
 			}
 
-			if (!this.scoreboardTags.isEmpty()) {
+			if (!this.commandTags.isEmpty()) {
 				NbtList nbtList = new NbtList();
 
-				for (String string : this.scoreboardTags) {
+				for (String string : this.commandTags) {
 					nbtList.add(NbtString.of(string));
 				}
 
@@ -2164,12 +2167,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.setFrozenTicks(nbt.getInt("TicksFrozen"));
 				this.hasVisualFire = nbt.getBoolean("HasVisualFire");
 				if (nbt.contains("Tags", NbtElement.LIST_TYPE)) {
-					this.scoreboardTags.clear();
+					this.commandTags.clear();
 					NbtList nbtList4 = nbt.getList("Tags", NbtElement.STRING_TYPE);
 					int i = Math.min(nbtList4.size(), 1024);
 
 					for (int j = 0; j < i; j++) {
-						this.scoreboardTags.add(nbtList4.getString(j));
+						this.commandTags.add(nbtList4.getString(j));
 					}
 				}
 
@@ -2469,6 +2472,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public boolean startRiding(Entity entity, boolean force) {
 		if (entity == this.vehicle) {
 			return false;
+		} else if (!entity.couldAcceptPassenger()) {
+			return false;
 		} else {
 			for (Entity entity2 = entity; entity2.vehicle != null; entity2 = entity2.vehicle) {
 				if (entity2.vehicle == this) {
@@ -2483,15 +2488,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 				this.setPose(EntityPose.STANDING);
 				this.vehicle = entity;
-				if (!this.vehicle.addPassenger(this)) {
-					this.vehicle = null;
-					return false;
-				} else {
-					entity.streamIntoPassengers()
-						.filter(passenger -> passenger instanceof ServerPlayerEntity)
-						.forEach(player -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)player));
-					return true;
-				}
+				this.vehicle.addPassenger(this);
+				entity.streamIntoPassengers()
+					.filter(passenger -> passenger instanceof ServerPlayerEntity)
+					.forEach(player -> Criteria.STARTED_RIDING.trigger((ServerPlayerEntity)player));
+				return true;
 			} else {
 				return false;
 			}
@@ -2576,7 +2577,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * 
 	 * @throws IllegalStateException when the method is called directly
 	 */
-	protected boolean addPassenger(Entity passenger) {
+	protected void addPassenger(Entity passenger) {
 		if (passenger.getVehicle() != this) {
 			throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
 		} else {
@@ -2593,7 +2594,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.passengerList = ImmutableList.copyOf(list);
 			}
 
-			return true;
+			this.emitGameEvent(GameEvent.ENTITY_MOUNT, passenger);
 		}
 	}
 
@@ -2616,6 +2617,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			}
 
 			passenger.ridingCooldown = 60;
+			this.emitGameEvent(GameEvent.ENTITY_DISMOUNT, passenger);
 		}
 	}
 
@@ -2636,6 +2638,13 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	protected boolean canAddPassenger(Entity passenger) {
 		return this.passengerList.isEmpty();
+	}
+
+	/**
+	 * {@return {@code true} if this entity supports passengers in general}
+	 */
+	protected boolean couldAcceptPassenger() {
+		return true;
 	}
 
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
@@ -2745,6 +2754,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void setVelocityClient(double x, double y, double z) {
 		this.setVelocity(x, y, z);
+	}
+
+	public void onDamaged(DamageSource damageSource) {
 	}
 
 	/**
@@ -3304,7 +3316,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			this.setOnFireFor(8);
 		}
 
-		this.damage(DamageSource.LIGHTNING_BOLT, 5.0F);
+		this.damage(this.getDamageSources().lightningBolt(), 5.0F);
 	}
 
 	/**
@@ -3557,19 +3569,21 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * {@code super.isInvulnerableTo()} should be called in this case.
 	 * 
 	 * @implNote Entity is invulnerable to all damages if it is {@linkplain #isRemoved
-	 * removed}, and is invulnerable to all damages except {@link DamageSource#OUT_OF_WORLD}
+	 * removed}, and is invulnerable to all damages except {@link
+	 * net.minecraft.entity.damage.DamageTypes#OUT_OF_WORLD}
 	 * or damages from creative mode players if the entity is {@linkplain #isInvulnerable
 	 * invulnerable}. This also checks {@link #isFireImmune}.
 	 * 
-	 * @see DamageSource
+	 * @see net.minecraft.entity.damage.DamageSources
+	 * @see net.minecraft.registry.tag.DamageTypeTags
 	 * @see #isFireImmune
 	 * @see #damage
 	 * @see #isInvulnerable
 	 */
 	public boolean isInvulnerableTo(DamageSource damageSource) {
 		return this.isRemoved()
-			|| this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isSourceCreativePlayer()
-			|| damageSource.isFire() && this.isFireImmune();
+			|| this.invulnerable && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !damageSource.isSourceCreativePlayer()
+			|| damageSource.isIn(DamageTypeTags.IS_FIRE) && this.isFireImmune();
 	}
 
 	/**
@@ -3578,7 +3592,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * <p>This is saved on the {@code Invulnerable} NBT key.
 	 * 
 	 * @implNote Invulnerable entities are immune from all damages except {@link
-	 * DamageSource#OUT_OF_WORLD} and damages by creative mode players by default.
+	 * net.minecraft.entity.damage.DamageTypes#OUT_OF_WORLD}
+	 * and damages by creative mode players by default.
 	 * 
 	 * @see #isInvulnerableTo
 	 * @see #setInvulnerable
@@ -3593,7 +3608,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * <p>This is saved on the {@code Invulnerable} NBT key.
 	 * 
 	 * @implNote Invulnerable entities are immune from all damages except {@link
-	 * DamageSource#OUT_OF_WORLD} and damages by creative mode players by default.
+	 * net.minecraft.entity.damage.DamageTypes#OUT_OF_WORLD}
+	 * and damages by creative mode players by default.
 	 * 
 	 * @see #isInvulnerableTo
 	 * @see #isInvulnerable
@@ -4064,6 +4080,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.isCustomNameVisible();
 	}
 
+	public void onDataTrackerUpdate(List<DataTracker.SerializedEntry<?>> dataEntries) {
+	}
+
 	/**
 	 * Called on the client when the tracked data is set.
 	 * 
@@ -4521,7 +4540,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #hasPlayerRider
 	 */
 	public boolean hasPassengerDeep(Entity passenger) {
-		return this.streamIntoPassengers().anyMatch(entity -> entity == passenger);
+		if (!passenger.hasVehicle()) {
+			return false;
+		} else {
+			Entity entity = passenger.getVehicle();
+			return entity == this ? true : this.hasPassengerDeep(entity);
+		}
 	}
 
 	/**
@@ -5165,6 +5189,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public World getWorld() {
 		return this.world;
+	}
+
+	public DamageSources getDamageSources() {
+		return this.world.getDamageSources();
 	}
 
 	/**

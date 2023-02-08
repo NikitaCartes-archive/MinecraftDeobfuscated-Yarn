@@ -481,6 +481,20 @@ public abstract class RenderLayer extends RenderPhase {
 					.build(false)
 			))
 	);
+	private static final RenderLayer TEXT_BACKGROUND = of(
+		"text_background",
+		VertexFormats.POSITION_COLOR_LIGHT,
+		VertexFormat.DrawMode.QUADS,
+		256,
+		false,
+		true,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(TEXT_BACKGROUND_PROGRAM)
+			.texture(NO_TEXTURE)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.lightmap(ENABLE_LIGHTMAP)
+			.build(false)
+	);
 	private static final Function<Identifier, RenderLayer> TEXT_INTENSITY = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> of(
 				"text_intensity",
@@ -548,6 +562,22 @@ public abstract class RenderLayer extends RenderPhase {
 					.writeMaskState(COLOR_MASK)
 					.build(false)
 			))
+	);
+	private static final RenderLayer TEXT_BACKGROUND_SEE_THROUGH = of(
+		"text_background_see_through",
+		VertexFormats.POSITION_COLOR_LIGHT,
+		VertexFormat.DrawMode.QUADS,
+		256,
+		false,
+		true,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(TRANSPARENT_TEXT_BACKGROUND_PROGRAM)
+			.texture(NO_TEXTURE)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.lightmap(ENABLE_LIGHTMAP)
+			.depthTest(ALWAYS_DEPTH_TEST)
+			.writeMaskState(COLOR_MASK)
+			.build(false)
 	);
 	private static final Function<Identifier, RenderLayer> TEXT_INTENSITY_SEE_THROUGH = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> of(
@@ -647,6 +677,34 @@ public abstract class RenderLayer extends RenderPhase {
 			.writeMaskState(ALL_MASK)
 			.cull(DISABLE_CULLING)
 			.build(false)
+	);
+	private static final Function<Double, RenderLayer.MultiPhase> DEBUG_LINE_STRIP = Util.memoize(
+		(Function<Double, RenderLayer.MultiPhase>)(lineWidth -> of(
+				"debug_line_strip",
+				VertexFormats.POSITION_COLOR,
+				VertexFormat.DrawMode.DEBUG_LINE_STRIP,
+				256,
+				RenderLayer.MultiPhaseParameters.builder()
+					.program(COLOR_PROGRAM)
+					.lineWidth(new RenderPhase.LineWidth(OptionalDouble.of(lineWidth)))
+					.transparency(NO_TRANSPARENCY)
+					.cull(DISABLE_CULLING)
+					.build(false)
+			))
+	);
+	private static final RenderLayer.MultiPhase DEBUG_FILLED_BOX = of(
+		"debug_filled_box",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.TRIANGLE_STRIP,
+		131072,
+		RenderLayer.MultiPhaseParameters.builder().program(COLOR_PROGRAM).layering(VIEW_OFFSET_Z_LAYERING).transparency(TRANSLUCENT_TRANSPARENCY).build(false)
+	);
+	private static final RenderLayer.MultiPhase DEBUG_QUADS = of(
+		"debug_quads",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.QUADS,
+		131072,
+		RenderLayer.MultiPhaseParameters.builder().program(COLOR_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).cull(DISABLE_CULLING).build(false)
 	);
 	private static final ImmutableList<RenderLayer> BLOCK_LAYERS = ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent(), getTripwire());
 	private final VertexFormat vertexFormat;
@@ -848,6 +906,10 @@ public abstract class RenderLayer extends RenderPhase {
 		return (RenderLayer)TEXT.apply(texture);
 	}
 
+	public static RenderLayer getTextBackground() {
+		return TEXT_BACKGROUND;
+	}
+
 	public static RenderLayer getTextIntensity(Identifier texture) {
 		return (RenderLayer)TEXT_INTENSITY.apply(texture);
 	}
@@ -862,6 +924,10 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getTextSeeThrough(Identifier texture) {
 		return (RenderLayer)TEXT_SEE_THROUGH.apply(texture);
+	}
+
+	public static RenderLayer getTextBackgroundSeeThrough() {
+		return TEXT_BACKGROUND_SEE_THROUGH;
 	}
 
 	public static RenderLayer getTextIntensitySeeThrough(Identifier texture) {
@@ -900,6 +966,18 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getLineStrip() {
 		return LINE_STRIP;
+	}
+
+	public static RenderLayer getDebugLineStrip(double lineWidth) {
+		return (RenderLayer)DEBUG_LINE_STRIP.apply(lineWidth);
+	}
+
+	public static RenderLayer getDebugFilledBox() {
+		return DEBUG_FILLED_BOX;
+	}
+
+	public static RenderLayer getDebugQuads() {
+		return DEBUG_QUADS;
 	}
 
 	public RenderLayer(

@@ -98,7 +98,7 @@ public class AnvilBlock extends FallingBlock {
 
 	@Override
 	public DamageSource getDamageSource(Entity attacker) {
-		return DamageSource.anvil(attacker);
+		return attacker.getDamageSources().fallingAnvil(attacker);
 	}
 
 	@Nullable

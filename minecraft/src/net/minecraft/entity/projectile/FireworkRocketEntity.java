@@ -8,7 +8,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -213,7 +212,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 		if (f > 0.0F) {
 			if (this.shooter != null) {
-				this.shooter.damage(DamageSource.firework(this, this.getOwner()), 5.0F + (float)(nbtList.size() * 2));
+				this.shooter.damage(this.getDamageSources().fireworks(this, this.getOwner()), 5.0F + (float)(nbtList.size() * 2));
 			}
 
 			double d = 5.0;
@@ -234,7 +233,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 					if (bl) {
 						float g = f * (float)Math.sqrt((5.0 - (double)this.distanceTo(livingEntity)) / 5.0);
-						livingEntity.damage(DamageSource.firework(this, this.getOwner()), g);
+						livingEntity.damage(this.getDamageSources().fireworks(this, this.getOwner()), g);
 					}
 				}
 			}

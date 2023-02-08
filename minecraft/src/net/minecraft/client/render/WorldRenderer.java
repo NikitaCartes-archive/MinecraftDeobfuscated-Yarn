@@ -1343,17 +1343,13 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			}
 		}
 
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
-		RenderSystem.applyModelViewMatrix();
 		this.client.debugRenderer.render(matrices, immediate, d, e, f);
-		matrixStack.pop();
+		immediate.drawCurrentLayer();
+		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		RenderSystem.applyModelViewMatrix();
 		immediate.draw(TexturedRenderLayers.getEntityTranslucentCull());
 		immediate.draw(TexturedRenderLayers.getBannerPatterns());
 		immediate.draw(TexturedRenderLayers.getShieldPatterns());
-		immediate.draw(TexturedRenderLayers.getArmorTrims());
 		immediate.draw(RenderLayer.getArmorGlint());
 		immediate.draw(RenderLayer.getArmorEntityGlint());
 		immediate.draw(RenderLayer.getGlint());
@@ -1426,11 +1422,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			RenderSystem.depthMask(true);
 		}
 
-		this.renderChunkDebugInfo(camera);
-		RenderSystem.depthMask(true);
-		RenderSystem.disableBlend();
 		matrixStack.pop();
 		RenderSystem.applyModelViewMatrix();
+		this.renderChunkDebugInfo(matrices, immediate, camera);
+		immediate.drawCurrentLayer();
+		RenderSystem.depthMask(true);
+		RenderSystem.disableBlend();
 		BackgroundRenderer.clearFog();
 	}
 
@@ -1556,30 +1553,20 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		renderLayer.endDrawing();
 	}
 
-	private void renderChunkDebugInfo(Camera camera) {
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
+	private void renderChunkDebugInfo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Camera camera) {
 		if (this.client.debugChunkInfo || this.client.debugChunkOcclusion) {
 			double d = camera.getPos().getX();
 			double e = camera.getPos().getY();
 			double f = camera.getPos().getZ();
-			RenderSystem.depthMask(true);
-			RenderSystem.disableCull();
-			RenderSystem.enableBlend();
-			RenderSystem.defaultBlendFunc();
 
 			for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
 				ChunkBuilder.BuiltChunk builtChunk = chunkInfo.chunk;
 				BlockPos blockPos = builtChunk.getOrigin();
-				MatrixStack matrixStack = RenderSystem.getModelViewStack();
-				matrixStack.push();
-				matrixStack.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
-				RenderSystem.applyModelViewMatrix();
-				RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
+				matrices.push();
+				matrices.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
+				Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 				if (this.client.debugChunkInfo) {
-					bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
-					RenderSystem.lineWidth(5.0F);
+					VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 					int i = chunkInfo.propagationLevel == 0 ? 0 : MathHelper.hsvToRgb((float)chunkInfo.propagationLevel / 50.0F, 0.9F, 0.9F);
 					int j = i >> 16 & 0xFF;
 					int k = i >> 8 & 0xFF;
@@ -1588,25 +1575,22 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					for (int m = 0; m < DIRECTIONS.length; m++) {
 						if (chunkInfo.hasDirection(m)) {
 							Direction direction = DIRECTIONS[m];
-							bufferBuilder.vertex(8.0, 8.0, 8.0)
+							vertexConsumer.vertex(matrix4f, 8.0F, 8.0F, 8.0F)
 								.color(j, k, l, 255)
 								.normal((float)direction.getOffsetX(), (float)direction.getOffsetY(), (float)direction.getOffsetZ())
 								.next();
-							bufferBuilder.vertex((double)(8 - 16 * direction.getOffsetX()), (double)(8 - 16 * direction.getOffsetY()), (double)(8 - 16 * direction.getOffsetZ()))
+							vertexConsumer.vertex(
+									matrix4f, (float)(8 - 16 * direction.getOffsetX()), (float)(8 - 16 * direction.getOffsetY()), (float)(8 - 16 * direction.getOffsetZ())
+								)
 								.color(j, k, l, 255)
 								.normal((float)direction.getOffsetX(), (float)direction.getOffsetY(), (float)direction.getOffsetZ())
 								.next();
 						}
 					}
-
-					tessellator.draw();
-					RenderSystem.lineWidth(1.0F);
 				}
 
 				if (this.client.debugChunkOcclusion && !builtChunk.getData().isEmpty()) {
-					bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
-					RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
-					RenderSystem.lineWidth(5.0F);
+					VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 					int i = 0;
 
 					for (Direction direction2 : DIRECTIONS) {
@@ -1614,11 +1598,15 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 							boolean bl = builtChunk.getData().isVisibleThrough(direction2, direction3);
 							if (!bl) {
 								i++;
-								bufferBuilder.vertex((double)(8 + 8 * direction2.getOffsetX()), (double)(8 + 8 * direction2.getOffsetY()), (double)(8 + 8 * direction2.getOffsetZ()))
+								vertexConsumer.vertex(
+										matrix4f, (float)(8 + 8 * direction2.getOffsetX()), (float)(8 + 8 * direction2.getOffsetY()), (float)(8 + 8 * direction2.getOffsetZ())
+									)
 									.color(255, 0, 0, 255)
 									.normal((float)direction2.getOffsetX(), (float)direction2.getOffsetY(), (float)direction2.getOffsetZ())
 									.next();
-								bufferBuilder.vertex((double)(8 + 8 * direction3.getOffsetX()), (double)(8 + 8 * direction3.getOffsetY()), (double)(8 + 8 * direction3.getOffsetZ()))
+								vertexConsumer.vertex(
+										matrix4f, (float)(8 + 8 * direction3.getOffsetX()), (float)(8 + 8 * direction3.getOffsetY()), (float)(8 + 8 * direction3.getOffsetZ())
+									)
 									.color(255, 0, 0, 255)
 									.normal((float)direction3.getOffsetX(), (float)direction3.getOffsetY(), (float)direction3.getOffsetZ())
 									.next();
@@ -1626,139 +1614,104 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						}
 					}
 
-					tessellator.draw();
-					RenderSystem.lineWidth(1.0F);
-					RenderSystem.setShader(GameRenderer::getPositionColorProgram);
 					if (i > 0) {
-						bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+						VertexConsumer vertexConsumer2 = vertexConsumers.getBuffer(RenderLayer.getDebugQuads());
 						float g = 0.5F;
 						float h = 0.2F;
-						bufferBuilder.vertex(0.5, 15.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 15.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 15.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 15.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 0.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 0.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 0.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 0.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 15.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 15.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 0.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 0.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 0.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 0.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 15.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 15.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 0.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 0.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 15.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 15.5, 0.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 15.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 15.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(15.5, 0.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						bufferBuilder.vertex(0.5, 0.5, 15.5).color(0.9F, 0.9F, 0.0F, 0.2F).next();
-						tessellator.draw();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 15.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 15.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 15.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 15.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 0.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 0.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 0.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 0.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 15.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 15.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 0.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 0.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 0.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 0.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 15.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 15.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 0.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 0.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 15.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 15.5F, 0.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 15.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 15.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 15.5F, 0.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
+						vertexConsumer2.vertex(matrix4f, 0.5F, 0.5F, 15.5F).color(0.9F, 0.9F, 0.0F, 0.2F).next();
 					}
 				}
 
-				matrixStack.pop();
-				RenderSystem.applyModelViewMatrix();
+				matrices.pop();
 			}
-
-			RenderSystem.depthMask(true);
-			RenderSystem.disableBlend();
-			RenderSystem.enableCull();
 		}
 
 		if (this.capturedFrustum != null) {
-			RenderSystem.disableCull();
-			RenderSystem.enableBlend();
-			RenderSystem.defaultBlendFunc();
-			RenderSystem.lineWidth(5.0F);
-			RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-			MatrixStack matrixStack2 = RenderSystem.getModelViewStack();
-			matrixStack2.push();
-			matrixStack2.translate(
+			matrices.push();
+			matrices.translate(
 				(float)(this.capturedFrustumPosition.x - camera.getPos().x),
 				(float)(this.capturedFrustumPosition.y - camera.getPos().y),
 				(float)(this.capturedFrustumPosition.z - camera.getPos().z)
 			);
-			RenderSystem.applyModelViewMatrix();
-			RenderSystem.depthMask(true);
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-			this.method_22985(bufferBuilder, 0, 1, 2, 3, 0, 1, 1);
-			this.method_22985(bufferBuilder, 4, 5, 6, 7, 1, 0, 0);
-			this.method_22985(bufferBuilder, 0, 1, 5, 4, 1, 1, 0);
-			this.method_22985(bufferBuilder, 2, 3, 7, 6, 0, 0, 1);
-			this.method_22985(bufferBuilder, 0, 4, 7, 3, 0, 1, 0);
-			this.method_22985(bufferBuilder, 1, 5, 6, 2, 1, 0, 1);
-			tessellator.draw();
-			RenderSystem.depthMask(false);
-			RenderSystem.setShader(GameRenderer::getRenderTypeLinesProgram);
-			bufferBuilder.begin(VertexFormat.DrawMode.LINES, VertexFormats.LINES);
-			this.method_22984(bufferBuilder, 0);
-			this.method_22984(bufferBuilder, 1);
-			this.method_22984(bufferBuilder, 1);
-			this.method_22984(bufferBuilder, 2);
-			this.method_22984(bufferBuilder, 2);
-			this.method_22984(bufferBuilder, 3);
-			this.method_22984(bufferBuilder, 3);
-			this.method_22984(bufferBuilder, 0);
-			this.method_22984(bufferBuilder, 4);
-			this.method_22984(bufferBuilder, 5);
-			this.method_22984(bufferBuilder, 5);
-			this.method_22984(bufferBuilder, 6);
-			this.method_22984(bufferBuilder, 6);
-			this.method_22984(bufferBuilder, 7);
-			this.method_22984(bufferBuilder, 7);
-			this.method_22984(bufferBuilder, 4);
-			this.method_22984(bufferBuilder, 0);
-			this.method_22984(bufferBuilder, 4);
-			this.method_22984(bufferBuilder, 1);
-			this.method_22984(bufferBuilder, 5);
-			this.method_22984(bufferBuilder, 2);
-			this.method_22984(bufferBuilder, 6);
-			this.method_22984(bufferBuilder, 3);
-			this.method_22984(bufferBuilder, 7);
-			tessellator.draw();
-			matrixStack2.pop();
-			RenderSystem.applyModelViewMatrix();
-			RenderSystem.depthMask(true);
-			RenderSystem.disableBlend();
-			RenderSystem.enableCull();
-			RenderSystem.lineWidth(1.0F);
+			Matrix4f matrix4f2 = matrices.peek().getPositionMatrix();
+			VertexConsumer vertexConsumer3 = vertexConsumers.getBuffer(RenderLayer.getDebugQuads());
+			this.method_22985(vertexConsumer3, matrix4f2, 0, 1, 2, 3, 0, 1, 1);
+			this.method_22985(vertexConsumer3, matrix4f2, 4, 5, 6, 7, 1, 0, 0);
+			this.method_22985(vertexConsumer3, matrix4f2, 0, 1, 5, 4, 1, 1, 0);
+			this.method_22985(vertexConsumer3, matrix4f2, 2, 3, 7, 6, 0, 0, 1);
+			this.method_22985(vertexConsumer3, matrix4f2, 0, 4, 7, 3, 0, 1, 0);
+			this.method_22985(vertexConsumer3, matrix4f2, 1, 5, 6, 2, 1, 0, 1);
+			VertexConsumer vertexConsumer4 = vertexConsumers.getBuffer(RenderLayer.getLines());
+			this.method_22984(vertexConsumer4, matrix4f2, 0);
+			this.method_22984(vertexConsumer4, matrix4f2, 1);
+			this.method_22984(vertexConsumer4, matrix4f2, 1);
+			this.method_22984(vertexConsumer4, matrix4f2, 2);
+			this.method_22984(vertexConsumer4, matrix4f2, 2);
+			this.method_22984(vertexConsumer4, matrix4f2, 3);
+			this.method_22984(vertexConsumer4, matrix4f2, 3);
+			this.method_22984(vertexConsumer4, matrix4f2, 0);
+			this.method_22984(vertexConsumer4, matrix4f2, 4);
+			this.method_22984(vertexConsumer4, matrix4f2, 5);
+			this.method_22984(vertexConsumer4, matrix4f2, 5);
+			this.method_22984(vertexConsumer4, matrix4f2, 6);
+			this.method_22984(vertexConsumer4, matrix4f2, 6);
+			this.method_22984(vertexConsumer4, matrix4f2, 7);
+			this.method_22984(vertexConsumer4, matrix4f2, 7);
+			this.method_22984(vertexConsumer4, matrix4f2, 4);
+			this.method_22984(vertexConsumer4, matrix4f2, 0);
+			this.method_22984(vertexConsumer4, matrix4f2, 4);
+			this.method_22984(vertexConsumer4, matrix4f2, 1);
+			this.method_22984(vertexConsumer4, matrix4f2, 5);
+			this.method_22984(vertexConsumer4, matrix4f2, 2);
+			this.method_22984(vertexConsumer4, matrix4f2, 6);
+			this.method_22984(vertexConsumer4, matrix4f2, 3);
+			this.method_22984(vertexConsumer4, matrix4f2, 7);
+			matrices.pop();
 		}
 	}
 
-	private void method_22984(VertexConsumer vertexConsumer, int i) {
-		vertexConsumer.vertex(
-				(double)this.capturedFrustumOrientation[i].x(), (double)this.capturedFrustumOrientation[i].y(), (double)this.capturedFrustumOrientation[i].z()
-			)
+	private void method_22984(VertexConsumer vertexConsumer, Matrix4f matrix4f, int i) {
+		vertexConsumer.vertex(matrix4f, this.capturedFrustumOrientation[i].x(), this.capturedFrustumOrientation[i].y(), this.capturedFrustumOrientation[i].z())
 			.color(0, 0, 0, 255)
 			.normal(0.0F, 0.0F, -1.0F)
 			.next();
 	}
 
-	private void method_22985(VertexConsumer vertexConsumer, int i, int j, int k, int l, int m, int n, int o) {
+	private void method_22985(VertexConsumer vertexConsumer, Matrix4f matrix4f, int i, int j, int k, int l, int m, int n, int o) {
 		float f = 0.25F;
-		vertexConsumer.vertex(
-				(double)this.capturedFrustumOrientation[i].x(), (double)this.capturedFrustumOrientation[i].y(), (double)this.capturedFrustumOrientation[i].z()
-			)
+		vertexConsumer.vertex(matrix4f, this.capturedFrustumOrientation[i].x(), this.capturedFrustumOrientation[i].y(), this.capturedFrustumOrientation[i].z())
 			.color((float)m, (float)n, (float)o, 0.25F)
 			.next();
-		vertexConsumer.vertex(
-				(double)this.capturedFrustumOrientation[j].x(), (double)this.capturedFrustumOrientation[j].y(), (double)this.capturedFrustumOrientation[j].z()
-			)
+		vertexConsumer.vertex(matrix4f, this.capturedFrustumOrientation[j].x(), this.capturedFrustumOrientation[j].y(), this.capturedFrustumOrientation[j].z())
 			.color((float)m, (float)n, (float)o, 0.25F)
 			.next();
-		vertexConsumer.vertex(
-				(double)this.capturedFrustumOrientation[k].x(), (double)this.capturedFrustumOrientation[k].y(), (double)this.capturedFrustumOrientation[k].z()
-			)
+		vertexConsumer.vertex(matrix4f, this.capturedFrustumOrientation[k].x(), this.capturedFrustumOrientation[k].y(), this.capturedFrustumOrientation[k].z())
 			.color((float)m, (float)n, (float)o, 0.25F)
 			.next();
-		vertexConsumer.vertex(
-				(double)this.capturedFrustumOrientation[l].x(), (double)this.capturedFrustumOrientation[l].y(), (double)this.capturedFrustumOrientation[l].z()
-			)
+		vertexConsumer.vertex(matrix4f, this.capturedFrustumOrientation[l].x(), this.capturedFrustumOrientation[l].y(), this.capturedFrustumOrientation[l].z())
 			.color((float)m, (float)n, (float)o, 0.25F)
 			.next();
 	}
@@ -2579,39 +2532,46 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		vertexConsumer.vertex(matrix4f, i, j, k).color(red, green, blue, alpha).normal(matrix3f, 0.0F, 0.0F, 1.0F).next();
 	}
 
-	public static void drawBox(
-		BufferBuilder buffer, double x1, double y1, double z1, double x2, double y2, double z2, float red, float green, float blue, float alpha
+	public static void method_3258(
+		MatrixStack matrixStack, VertexConsumer vertexConsumer, double d, double e, double f, double g, double h, double i, float j, float k, float l, float m
 	) {
-		buffer.vertex(x1, y1, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y1, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y1, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y1, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y2, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y2, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y2, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y1, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y2, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y1, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y1, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y1, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y2, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y2, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y2, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y1, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y2, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y1, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y1, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y1, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y1, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y1, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y1, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y2, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y2, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x1, y2, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y2, z1).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y2, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y2, z2).color(red, green, blue, alpha).next();
-		buffer.vertex(x2, y2, z2).color(red, green, blue, alpha).next();
+		method_49041(matrixStack, vertexConsumer, (float)d, (float)e, (float)f, (float)g, (float)h, (float)i, j, k, l, m);
+	}
+
+	public static void method_49041(
+		MatrixStack matrixStack, VertexConsumer vertexConsumer, float f, float g, float h, float i, float j, float k, float l, float m, float n, float o
+	) {
+		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+		vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, g, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, g, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, g, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, g, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, j, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, f, j, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, j, h).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o).next();
+		vertexConsumer.vertex(matrix4f, i, j, k).color(l, m, n, o).next();
 	}
 
 	public void updateBlock(BlockView world, BlockPos pos, BlockState oldState, BlockState newState, int flags) {

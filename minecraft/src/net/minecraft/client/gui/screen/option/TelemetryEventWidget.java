@@ -151,13 +151,12 @@ public class TelemetryEventWidget extends ScrollableWidget {
 		}
 
 		public void appendTitle(TextRenderer textRenderer, Text title, int marginBottom) {
-			this.widgetAdder
-				.add(MultilineTextWidget.createNonCentered(this.gridWidth, textRenderer, title), this.widgetAdder.copyPositioner().marginBottom(marginBottom));
+			this.widgetAdder.add(new MultilineTextWidget(title, textRenderer).setMaxWidth(this.gridWidth), this.widgetAdder.copyPositioner().marginBottom(marginBottom));
 			this.narration.append(title).append("\n");
 		}
 
 		public void appendText(TextRenderer textRenderer, Text text) {
-			this.widgetAdder.add(MultilineTextWidget.createCentered(this.gridWidth - 64, textRenderer, text), this.positioner);
+			this.widgetAdder.add(new MultilineTextWidget(text, textRenderer).setMaxWidth(this.gridWidth - 64).setCentered(true), this.positioner);
 			this.narration.append(text).append("\n");
 		}
 

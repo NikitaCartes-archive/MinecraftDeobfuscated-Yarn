@@ -139,7 +139,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 			this.cancelButton.active = false;
 		}
 
-		drawCenteredText(matrices, this.textRenderer, this.status, this.width / 2, 50, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.status, this.width / 2, 50, 16777215);
 		if (this.showDots) {
 			this.drawDots(matrices);
 		}
@@ -151,7 +151,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 
 		if (this.statusTexts != null) {
 			for (int i = 0; i < this.statusTexts.length; i++) {
-				drawCenteredText(matrices, this.textRenderer, this.statusTexts[i], this.width / 2, 110 + 12 * i, 16711680);
+				drawCenteredTextWithShadow(matrices, this.textRenderer, this.statusTexts[i], this.width / 2, 110 + 12 * i, 16711680);
 			}
 		}
 
@@ -170,7 +170,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 		int j = i + (int)Math.round(200.0 * d);
 		fill(matrices, i - 1, 79, j + 1, 175, -2501934);
 		fill(matrices, i, 80, j, 95, -8355712);
-		drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
+		drawCenteredTextWithShadow(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
 	}
 
 	private void drawUploadSpeed(MatrixStack matrices) {

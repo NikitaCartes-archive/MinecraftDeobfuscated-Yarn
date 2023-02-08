@@ -153,7 +153,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	}
 
 	public int mapDuration(Int2IntFunction mapper) {
-		return this.isInfinite() ? -1 : mapper.applyAsInt(this.duration);
+		return !this.isInfinite() && this.duration != 0 ? mapper.applyAsInt(this.duration) : this.duration;
 	}
 
 	public StatusEffect getEffectType() {

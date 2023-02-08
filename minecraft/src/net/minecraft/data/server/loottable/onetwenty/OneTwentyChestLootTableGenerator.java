@@ -113,7 +113,7 @@ public class OneTwentyChestLootTableGenerator implements LootTableGenerator {
 		);
 		exporter.accept(
 			LootTables.BASTION_HOGLIN_STABLE_CHEST,
-			VanillaChestLootTableGenerator.createBastionBridgeChestTableBuilder()
+			VanillaChestLootTableGenerator.createBastionHoglinStableChestTableBuilder()
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))

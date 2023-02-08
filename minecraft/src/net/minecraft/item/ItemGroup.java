@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
 
@@ -97,9 +98,9 @@ public class ItemGroup {
 		return this.type;
 	}
 
-	public void updateEntries(FeatureSet enabledFeatures, boolean operatorEnabled) {
-		ItemGroup.EntriesImpl entriesImpl = new ItemGroup.EntriesImpl(this, enabledFeatures);
-		this.entryCollector.accept(enabledFeatures, entriesImpl, operatorEnabled);
+	public void updateEntries(ItemGroup.DisplayContext displayContext) {
+		ItemGroup.EntriesImpl entriesImpl = new ItemGroup.EntriesImpl(this, displayContext.enabledFeatures);
+		this.entryCollector.accept(displayContext, entriesImpl);
 		this.displayStacks = entriesImpl.parentTabStacks;
 		this.searchTabStacks = entriesImpl.searchTabStacks;
 		this.reloadSearchProvider();
@@ -128,7 +129,7 @@ public class ItemGroup {
 	}
 
 	public static class Builder {
-		private static final ItemGroup.EntryCollector EMPTY_ENTRIES = (enabledFeatures, entries, operatorEnabled) -> {
+		private static final ItemGroup.EntryCollector EMPTY_ENTRIES = (displayContext, entries) -> {
 		};
 		private final ItemGroup.Row row;
 		private final int column;
@@ -200,6 +201,13 @@ public class ItemGroup {
 		}
 	}
 
+	public static record DisplayContext(FeatureSet enabledFeatures, boolean hasPermissions, RegistryWrapper.WrapperLookup lookup) {
+
+		public boolean doesNotMatch(FeatureSet enabledFeatures, boolean hasPermissions, RegistryWrapper.WrapperLookup lookup) {
+			return !this.enabledFeatures.equals(enabledFeatures) || this.hasPermissions != hasPermissions || this.lookup != lookup;
+		}
+	}
+
 	protected interface Entries {
 		void add(ItemStack stack, ItemGroup.StackVisibility visibility);
 
@@ -267,8 +275,9 @@ public class ItemGroup {
 		}
 	}
 
+	@FunctionalInterface
 	public interface EntryCollector {
-		void accept(FeatureSet enabledFeatures, ItemGroup.Entries entries, boolean operatorEnabled);
+		void accept(ItemGroup.DisplayContext displayContext, ItemGroup.Entries entries);
 	}
 
 	public static enum Row {

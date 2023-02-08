@@ -37,6 +37,7 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 		PaintingEntity.class, TrackedDataHandlerRegistry.PAINTING_VARIANT
 	);
 	private static final RegistryKey<PaintingVariant> DEFAULT_VARIANT = PaintingVariants.KEBAB;
+	public static final String VARIANT_NBT_KEY = "variant";
 
 	private static RegistryEntry<PaintingVariant> getDefaultVariant() {
 		return Registries.PAINTING_VARIANT.entryOf(DEFAULT_VARIANT);
@@ -111,22 +112,28 @@ public class PaintingEntity extends AbstractDecorationEntity implements VariantH
 
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
-		nbt.putString("variant", ((RegistryKey)this.getVariant().getKey().orElse(DEFAULT_VARIANT)).getValue().toString());
+		writeVariantToNbt(nbt, this.getVariant());
 		nbt.putByte("facing", (byte)this.facing.getHorizontal());
 		super.writeCustomDataToNbt(nbt);
 	}
 
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
-		RegistryEntry<PaintingVariant> registryEntry = (RegistryEntry<PaintingVariant>)Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
-			.map(id -> RegistryKey.of(RegistryKeys.PAINTING_VARIANT, id))
-			.flatMap(Registries.PAINTING_VARIANT::getEntry)
-			.map(entry -> entry)
-			.orElseGet(PaintingEntity::getDefaultVariant);
+		RegistryEntry<PaintingVariant> registryEntry = (RegistryEntry<PaintingVariant>)readVariantFromNbt(nbt).orElseGet(PaintingEntity::getDefaultVariant);
 		this.setVariant(registryEntry);
 		this.facing = Direction.fromHorizontal(nbt.getByte("facing"));
 		super.readCustomDataFromNbt(nbt);
 		this.setFacing(this.facing);
+	}
+
+	public static void writeVariantToNbt(NbtCompound nbt, RegistryEntry<PaintingVariant> variant) {
+		nbt.putString("variant", ((RegistryKey)variant.getKey().orElse(DEFAULT_VARIANT)).getValue().toString());
+	}
+
+	public static Optional<RegistryEntry<PaintingVariant>> readVariantFromNbt(NbtCompound nbt) {
+		return Optional.ofNullable(Identifier.tryParse(nbt.getString("variant")))
+			.map(id -> RegistryKey.of(RegistryKeys.PAINTING_VARIANT, id))
+			.flatMap(Registries.PAINTING_VARIANT::getEntry);
 	}
 
 	@Override

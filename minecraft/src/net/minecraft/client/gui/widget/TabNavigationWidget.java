@@ -8,13 +8,16 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.tab.Tab;
 import net.minecraft.client.gui.tab.TabManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Divider;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TabNavigationWidget extends GridWidget {
+	private static final int field_42489 = -1;
 	private int tabNavWidth;
 	private final TabManager tabManager;
 	private final ImmutableList<Tab> tabs;
@@ -60,7 +63,7 @@ public class TabNavigationWidget extends GridWidget {
 
 	private void selectTab(Optional<ButtonWidget> button, Tab tab) {
 		this.tabButtons.values().forEach(buttonx -> buttonx.active = true);
-		button.ifPresent(buttonWidget -> buttonWidget.active = false);
+		button.ifPresent(buttonx -> buttonx.active = false);
 		this.tabManager.setCurrentTab(tab);
 	}
 
@@ -70,6 +73,40 @@ public class TabNavigationWidget extends GridWidget {
 
 	public void selectTab(int index) {
 		this.selectTab((Tab)this.tabs.get(index));
+	}
+
+	public boolean trySwitchTabsWithKey(int keyCode) {
+		if (Screen.hasControlDown()) {
+			int i = this.getTabForKey(keyCode);
+			if (i != -1) {
+				this.selectTab(MathHelper.clamp(i, 0, this.tabs.size() - 1));
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private int getTabForKey(int keyCode) {
+		if (keyCode >= 49 && keyCode <= 57) {
+			return keyCode - 49;
+		} else {
+			if (keyCode == 258) {
+				int i = this.getCurrentTabIndex();
+				if (i != -1) {
+					int j = Screen.hasShiftDown() ? i - 1 : i + 1;
+					return Math.floorMod(j, this.tabs.size());
+				}
+			}
+
+			return -1;
+		}
+	}
+
+	private int getCurrentTabIndex() {
+		Tab tab = this.tabManager.getCurrentTab();
+		int i = this.tabs.indexOf(tab);
+		return i != -1 ? i : -1;
 	}
 
 	@Environment(EnvType.CLIENT)

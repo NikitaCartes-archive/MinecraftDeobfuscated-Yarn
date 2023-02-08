@@ -13,7 +13,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
+import net.minecraft.util.Nullables;
 import net.minecraft.world.GameMode;
 
 public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
@@ -143,7 +143,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				player.pingMilliseconds,
 				player.interactionManager.getGameMode(),
 				player.getPlayerListName(),
-				Util.map(player.getSession(), PublicPlayerSession::toSerialized)
+				Nullables.map(player.getSession(), PublicPlayerSession::toSerialized)
 			);
 		}
 	}

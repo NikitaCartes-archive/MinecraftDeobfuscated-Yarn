@@ -12,17 +12,17 @@ import org.slf4j.Logger;
 
 public class AffineTransformations {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final Map<Direction, AffineTransformation> DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
-		enumMap.put(Direction.SOUTH, AffineTransformation.identity());
-		enumMap.put(Direction.EAST, new AffineTransformation(null, new Quaternionf().rotateY((float) (Math.PI / 2)), null, null));
-		enumMap.put(Direction.WEST, new AffineTransformation(null, new Quaternionf().rotateY((float) (-Math.PI / 2)), null, null));
-		enumMap.put(Direction.NORTH, new AffineTransformation(null, new Quaternionf().rotateY((float) Math.PI), null, null));
-		enumMap.put(Direction.UP, new AffineTransformation(null, new Quaternionf().rotateX((float) (-Math.PI / 2)), null, null));
-		enumMap.put(Direction.DOWN, new AffineTransformation(null, new Quaternionf().rotateX((float) (Math.PI / 2)), null, null));
+	public static final Map<Direction, AffineTransformation> DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), map -> {
+		map.put(Direction.SOUTH, AffineTransformation.identity());
+		map.put(Direction.EAST, new AffineTransformation(null, new Quaternionf().rotateY((float) (Math.PI / 2)), null, null));
+		map.put(Direction.WEST, new AffineTransformation(null, new Quaternionf().rotateY((float) (-Math.PI / 2)), null, null));
+		map.put(Direction.NORTH, new AffineTransformation(null, new Quaternionf().rotateY((float) Math.PI), null, null));
+		map.put(Direction.UP, new AffineTransformation(null, new Quaternionf().rotateX((float) (-Math.PI / 2)), null, null));
+		map.put(Direction.DOWN, new AffineTransformation(null, new Quaternionf().rotateX((float) (Math.PI / 2)), null, null));
 	});
-	public static final Map<Direction, AffineTransformation> INVERTED_DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
+	public static final Map<Direction, AffineTransformation> INVERTED_DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), map -> {
 		for (Direction direction : Direction.values()) {
-			enumMap.put(direction, ((AffineTransformation)DIRECTION_ROTATIONS.get(direction)).invert());
+			map.put(direction, ((AffineTransformation)DIRECTION_ROTATIONS.get(direction)).invert());
 		}
 	});
 

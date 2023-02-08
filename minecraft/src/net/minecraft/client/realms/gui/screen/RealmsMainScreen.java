@@ -16,7 +16,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -37,7 +36,7 @@ import net.minecraft.client.realms.task.RealmsGetServerDetailsTask;
 import net.minecraft.client.realms.util.PeriodicRunnerFactory;
 import net.minecraft.client.realms.util.RealmsPersistence;
 import net.minecraft.client.realms.util.RealmsServerFilterer;
-import net.minecraft.client.realms.util.RealmsTextureManager;
+import net.minecraft.client.realms.util.RealmsUtil;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -723,7 +722,10 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		if (this.shouldShowPopup()) {
+			matrices.push();
+			matrices.translate(0.0F, 0.0F, 100.0F);
 			this.drawPopup(matrices);
+			matrices.pop();
 		} else {
 			if (this.showingPopup) {
 				this.updateButtonStates(null);
@@ -1255,7 +1257,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				DrawableHelper.drawTexture(matrices, x + 10, y + 6, 0.0F, 0.0F, 40, 20, 40, 20);
 				float f = 0.5F + (1.0F + MathHelper.sin((float)RealmsMainScreen.this.animTick * 0.25F)) * 0.25F;
 				int i = 0xFF000000 | (int)(127.0F * f) << 16 | (int)(255.0F * f) << 8 | (int)(127.0F * f);
-				DrawableHelper.drawCenteredText(matrices, RealmsMainScreen.this.textRenderer, RealmsMainScreen.UNINITIALIZED_TEXT, x + 10 + 40 + 75, y + 12, i);
+				DrawableHelper.drawCenteredTextWithShadow(matrices, RealmsMainScreen.this.textRenderer, RealmsMainScreen.UNINITIALIZED_TEXT, x + 10 + 40 + 75, y + 12, i);
 			} else {
 				int j = 225;
 				int i = 2;
@@ -1328,7 +1330,7 @@ public class RealmsMainScreen extends RealmsScreen {
 					int p = y + 11 + 5;
 					int q = bl ? 16777120 : 16777215;
 					RealmsMainScreen.this.textRenderer.draw(matrices, text, (float)(x + 2), (float)(p + 1), 15553363);
-					DrawableHelper.drawCenteredText(matrices, RealmsMainScreen.this.textRenderer, text2, m + k / 2, p + 1, q);
+					DrawableHelper.drawCenteredTextWithShadow(matrices, RealmsMainScreen.this.textRenderer, text2, m + k / 2, p + 1, q);
 				} else {
 					if (serverData.worldType == RealmsServer.WorldType.MINIGAME) {
 						int r = 13413468;
@@ -1345,7 +1347,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				}
 
 				RealmsMainScreen.this.textRenderer.draw(matrices, serverData.getName(), (float)(x + 2), (float)(y + 1), 16777215);
-				RealmsTextureManager.withBoundFace(serverData.ownerUUID, () -> PlayerSkinDrawer.draw(matrices, x - 36, y, 32));
+				RealmsUtil.drawPlayerHead(matrices, x - 36, y, 32, serverData.ownerUUID);
 			}
 		}
 
@@ -1390,7 +1392,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 
 			for (Text text : RealmsMainScreen.TRIAL_MESSAGE_LINES) {
-				DrawableHelper.drawCenteredText(matrices, RealmsMainScreen.this.textRenderer, text, RealmsMainScreen.this.width / 2, i + j, k);
+				DrawableHelper.drawCenteredTextWithShadow(matrices, RealmsMainScreen.this.textRenderer, text, RealmsMainScreen.this.width / 2, i + j, k);
 				j += 10;
 			}
 		}

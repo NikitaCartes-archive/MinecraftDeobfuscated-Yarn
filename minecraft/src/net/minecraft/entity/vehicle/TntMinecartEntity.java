@@ -14,6 +14,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -64,7 +65,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (source.getSource() instanceof PersistentProjectileEntity persistentProjectileEntity && persistentProjectileEntity.isOnFire()) {
-			DamageSource damageSource = DamageSource.explosion(this, source.getAttacker());
+			DamageSource damageSource = this.getDamageSources().explosion(this, source.getAttacker());
 			this.explode(damageSource, persistentProjectileEntity.getVelocity().lengthSquared());
 		}
 
@@ -74,7 +75,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		double d = this.getVelocity().horizontalLengthSquared();
-		if (!damageSource.isFire() && !damageSource.isExplosive() && !(d >= 0.01F)) {
+		if (!damageSource.isIn(DamageTypeTags.IS_FIRE) && !damageSource.isIn(DamageTypeTags.IS_EXPLOSION) && !(d >= 0.01F)) {
 			super.dropItems(damageSource);
 		} else {
 			if (this.fuseTicks < 0) {

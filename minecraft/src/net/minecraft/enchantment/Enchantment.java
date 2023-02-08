@@ -19,7 +19,7 @@ import net.minecraft.util.Util;
 public abstract class Enchantment {
 	private final EquipmentSlot[] slotTypes;
 	private final Enchantment.Rarity rarity;
-	public final EnchantmentTarget type;
+	public final EnchantmentTarget target;
 	@Nullable
 	protected String translationKey;
 
@@ -28,9 +28,9 @@ public abstract class Enchantment {
 		return Registries.ENCHANTMENT.get(id);
 	}
 
-	protected Enchantment(Enchantment.Rarity weight, EnchantmentTarget type, EquipmentSlot[] slotTypes) {
+	protected Enchantment(Enchantment.Rarity weight, EnchantmentTarget target, EquipmentSlot[] slotTypes) {
 		this.rarity = weight;
-		this.type = type;
+		this.target = target;
 		this.slotTypes = slotTypes;
 	}
 
@@ -120,7 +120,7 @@ public abstract class Enchantment {
 	}
 
 	public boolean isAcceptableItem(ItemStack stack) {
-		return this.type.isAcceptableItem(stack.getItem());
+		return this.target.isAcceptableItem(stack.getItem());
 	}
 
 	public void onTargetDamaged(LivingEntity user, Entity target, int level) {
