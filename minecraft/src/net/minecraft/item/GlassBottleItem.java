@@ -1,12 +1,14 @@
 package net.minecraft.item;
 
 import java.util.List;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -37,6 +39,10 @@ public class GlassBottleItem extends Item {
 			areaEffectCloudEntity.setRadius(areaEffectCloudEntity.getRadius() - 0.5F);
 			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 			world.emitGameEvent(user, GameEvent.FLUID_PICKUP, user.getPos());
+			if (user instanceof ServerPlayerEntity serverPlayerEntity) {
+				Criteria.PLAYER_INTERACTED_WITH_ENTITY.trigger(serverPlayerEntity, itemStack, areaEffectCloudEntity);
+			}
+
 			return TypedActionResult.success(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)), world.isClient());
 		} else {
 			HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);

@@ -3,8 +3,6 @@ package net.minecraft.world.gen.foliage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.function.BiConsumer;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
@@ -28,7 +26,7 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 	@Override
 	protected void generate(
 		TestableWorld world,
-		BiConsumer<BlockPos, BlockState> replacer,
+		FoliagePlacer.BlockPlacer placer,
 		Random random,
 		TreeFeatureConfig config,
 		int trunkHeight,
@@ -39,9 +37,9 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 	) {
 		boolean bl = treeNode.isGiantTrunk();
 		BlockPos blockPos = treeNode.getCenter().up(offset);
-		this.generateSquare(world, replacer, random, config, blockPos, radius + treeNode.getFoliageRadius(), -1 - foliageHeight, bl);
-		this.generateSquare(world, replacer, random, config, blockPos, radius - 1, -foliageHeight, bl);
-		this.generateSquare(world, replacer, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, 0, bl);
+		this.generateSquare(world, placer, random, config, blockPos, radius + treeNode.getFoliageRadius(), -1 - foliageHeight, bl);
+		this.generateSquare(world, placer, random, config, blockPos, radius - 1, -foliageHeight, bl);
+		this.generateSquare(world, placer, random, config, blockPos, radius + treeNode.getFoliageRadius() - 1, 0, bl);
 	}
 
 	@Override

@@ -261,7 +261,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 		boolean bl = blockState.isOf(Blocks.BIG_DRIPLEAF) || blockState.isOf(Blocks.BIG_DRIPLEAF_STEM);
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.isEqualAndStill(Fluids.WATER)))
-			.with(FACING, bl ? (Direction)blockState.get(FACING) : ctx.getPlayerFacing().getOpposite());
+			.with(FACING, bl ? (Direction)blockState.get(FACING) : ctx.getHorizontalPlayerFacing().getOpposite());
 	}
 
 	@Override

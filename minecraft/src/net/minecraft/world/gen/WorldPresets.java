@@ -41,6 +41,10 @@ public class WorldPresets {
 		new WorldPresets.Registrar(presetRegisterable).bootstrap();
 	}
 
+	public static void bootstrapOneTwenty(Registerable<WorldPreset> presetRegisterable) {
+		new WorldPresets.Registrar(presetRegisterable).bootstrapOneTwenty();
+	}
+
 	private static RegistryKey<WorldPreset> of(String id) {
 		return RegistryKey.of(RegistryKeys.WORLD_PRESET, new Identifier(id));
 	}
@@ -110,14 +114,18 @@ public class WorldPresets {
 			this.presetRegisterable.register(key, this.createPreset(dimensionOptions));
 		}
 
-		public void bootstrap() {
-			MultiNoiseBiomeSource multiNoiseBiomeSource = MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(this.biomeLookup);
+		private void bootstrap(BiomeSource biomeSource) {
 			RegistryEntry<ChunkGeneratorSettings> registryEntry = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.OVERWORLD);
-			this.register(WorldPresets.DEFAULT, this.createOverworldOptions(multiNoiseBiomeSource, registryEntry));
+			this.register(WorldPresets.DEFAULT, this.createOverworldOptions(biomeSource, registryEntry));
 			RegistryEntry<ChunkGeneratorSettings> registryEntry2 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.LARGE_BIOMES);
-			this.register(WorldPresets.LARGE_BIOMES, this.createOverworldOptions(multiNoiseBiomeSource, registryEntry2));
+			this.register(WorldPresets.LARGE_BIOMES, this.createOverworldOptions(biomeSource, registryEntry2));
 			RegistryEntry<ChunkGeneratorSettings> registryEntry3 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.AMPLIFIED);
-			this.register(WorldPresets.AMPLIFIED, this.createOverworldOptions(multiNoiseBiomeSource, registryEntry3));
+			this.register(WorldPresets.AMPLIFIED, this.createOverworldOptions(biomeSource, registryEntry3));
+		}
+
+		public void bootstrap() {
+			this.bootstrap(MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(this.biomeLookup));
+			RegistryEntry<ChunkGeneratorSettings> registryEntry = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.OVERWORLD);
 			RegistryEntry.Reference<Biome> reference = this.biomeLookup.getOrThrow(BiomeKeys.PLAINS);
 			this.register(WorldPresets.SINGLE_BIOME_SURFACE, this.createOverworldOptions(new FixedBiomeSource(reference), registryEntry));
 			this.register(
@@ -127,6 +135,10 @@ public class WorldPresets {
 				)
 			);
 			this.register(WorldPresets.DEBUG_ALL_BLOCK_STATES, this.createOverworldOptions(new DebugChunkGenerator(reference)));
+		}
+
+		public void bootstrapOneTwenty() {
+			this.bootstrap(MultiNoiseBiomeSource.Preset.OVERWORLD_UPDATE_1_20.getBiomeSource(this.biomeLookup));
 		}
 	}
 }

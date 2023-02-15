@@ -31,7 +31,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 
 	@Override
 	protected void initAttributes(Random random) {
-		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus(random));
+		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)getChildHealthBonus(random::nextInt));
 	}
 
 	@Override

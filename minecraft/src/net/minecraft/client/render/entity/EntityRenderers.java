@@ -121,6 +121,7 @@ public class EntityRenderers {
 		register(EntityType.HORSE, HorseEntityRenderer::new);
 		register(EntityType.HUSK, HuskEntityRenderer::new);
 		register(EntityType.ILLUSIONER, IllusionerEntityRenderer::new);
+		register(EntityType.INTERACTION, EmptyEntityRenderer::new);
 		register(EntityType.IRON_GOLEM, IronGolemEntityRenderer::new);
 		register(EntityType.ITEM, ItemEntityRenderer::new);
 		register(EntityType.ITEM_DISPLAY, DisplayEntityRenderer.ItemDisplayEntityRenderer::new);
@@ -165,6 +166,7 @@ public class EntityRenderers {
 		register(EntityType.SKELETON_HORSE, context -> new ZombieHorseEntityRenderer(context, EntityModelLayers.SKELETON_HORSE));
 		register(EntityType.SLIME, SlimeEntityRenderer::new);
 		register(EntityType.SMALL_FIREBALL, context -> new FlyingItemEntityRenderer<>(context, 0.75F, true));
+		register(EntityType.SNIFFER, SnifferEntityRenderer::new);
 		register(EntityType.SNOWBALL, FlyingItemEntityRenderer::new);
 		register(EntityType.SNOW_GOLEM, SnowGolemEntityRenderer::new);
 		register(EntityType.SPAWNER_MINECART, context -> new MinecartEntityRenderer<>(context, EntityModelLayers.SPAWNER_MINECART));

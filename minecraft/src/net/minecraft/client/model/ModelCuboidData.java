@@ -1,9 +1,11 @@
 package net.minecraft.client.model;
 
+import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Vector2f;
+import net.minecraft.util.math.Direction;
 import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
@@ -16,6 +18,7 @@ public final class ModelCuboidData {
 	private final boolean mirror;
 	private final Vector2f textureUV;
 	private final Vector2f textureScale;
+	private final Set<Direction> directions;
 
 	protected ModelCuboidData(
 		@Nullable String name,
@@ -30,7 +33,8 @@ public final class ModelCuboidData {
 		Dilation extra,
 		boolean mirror,
 		float textureScaleX,
-		float textureScaleY
+		float textureScaleY,
+		Set<Direction> directions
 	) {
 		this.name = name;
 		this.textureUV = new Vector2f(textureX, textureY);
@@ -39,6 +43,7 @@ public final class ModelCuboidData {
 		this.extraSize = extra;
 		this.mirror = mirror;
 		this.textureScale = new Vector2f(textureScaleX, textureScaleY);
+		this.directions = directions;
 	}
 
 	public ModelPart.Cuboid createCuboid(int textureWidth, int textureHeight) {
@@ -56,7 +61,8 @@ public final class ModelCuboidData {
 			this.extraSize.radiusZ,
 			this.mirror,
 			(float)textureWidth * this.textureScale.getX(),
-			(float)textureHeight * this.textureScale.getY()
+			(float)textureHeight * this.textureScale.getY(),
+			this.directions
 		);
 	}
 }

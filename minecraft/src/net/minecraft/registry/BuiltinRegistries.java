@@ -49,12 +49,15 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.DAMAGE_TYPE, DamageTypes::bootstrap);
 
 	private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
-		RegistryEntryLookup<PlacedFeature> registryEntryLookup = wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE);
-		wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME).streamEntries().forEach(biome -> {
+		validate(wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE), wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME));
+	}
+
+	public static void validate(RegistryEntryLookup<PlacedFeature> placedFeatureLookup, RegistryWrapper<Biome> biomeLookup) {
+		biomeLookup.streamEntries().forEach(biome -> {
 			Identifier identifier = biome.registryKey().getValue();
 			List<RegistryEntryList<PlacedFeature>> list = ((Biome)biome.value()).getGenerationSettings().getFeatures();
 			list.stream().flatMap(RegistryEntryList::stream).forEach(placedFeature -> placedFeature.getKeyOrValue().ifLeft(key -> {
-					RegistryEntry.Reference<PlacedFeature> reference = registryEntryLookup.getOrThrow(key);
+					RegistryEntry.Reference<PlacedFeature> reference = placedFeatureLookup.getOrThrow(key);
 					if (!hasBiomePlacementModifier((PlacedFeature)reference.value())) {
 						Util.error("Placed feature " + key.getValue() + " in biome " + identifier + " is missing BiomeFilter.biome()");
 					}

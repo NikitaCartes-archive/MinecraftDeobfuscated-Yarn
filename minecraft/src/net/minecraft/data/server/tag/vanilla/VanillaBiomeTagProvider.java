@@ -3,7 +3,6 @@ package net.minecraft.data.server.tag.vanilla;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.server.tag.TagProvider;
-import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BiomeTags;
@@ -54,11 +53,10 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 			.add(BiomeKeys.DARK_FOREST)
 			.add(BiomeKeys.GROVE);
 		this.getOrCreateTagBuilder(BiomeTags.IS_SAVANNA).add(BiomeKeys.SAVANNA).add(BiomeKeys.SAVANNA_PLATEAU).add(BiomeKeys.WINDSWEPT_SAVANNA);
-		RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME);
 		TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder = this.getOrCreateTagBuilder(BiomeTags.IS_NETHER);
-		MultiNoiseBiomeSource.Preset.NETHER.stream(registryEntryLookup).forEach(providedTagBuilder::add);
+		MultiNoiseBiomeSource.Preset.NETHER.stream().forEach(providedTagBuilder::add);
 		TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder2 = this.getOrCreateTagBuilder(BiomeTags.IS_OVERWORLD);
-		MultiNoiseBiomeSource.Preset.OVERWORLD.stream(registryEntryLookup).forEach(providedTagBuilder2::add);
+		MultiNoiseBiomeSource.Preset.OVERWORLD.stream().forEach(providedTagBuilder2::add);
 		this.getOrCreateTagBuilder(BiomeTags.IS_END)
 			.add(BiomeKeys.THE_END)
 			.add(BiomeKeys.END_HIGHLANDS)

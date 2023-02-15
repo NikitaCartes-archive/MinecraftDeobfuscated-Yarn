@@ -10,4 +10,10 @@ import net.minecraft.particle.ParticleEffect;
 public interface ParticleFactory<T extends ParticleEffect> {
 	@Nullable
 	Particle createParticle(T parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
+
+	@Environment(EnvType.CLIENT)
+	public interface BlockLeakParticleFactory<T extends ParticleEffect> {
+		@Nullable
+		SpriteBillboardParticle createParticle(T parameters, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ);
+	}
 }

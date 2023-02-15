@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen.world;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -57,7 +58,6 @@ import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -576,8 +576,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					NativeImageBackedTexture var5;
 					try {
 						NativeImage nativeImage = NativeImage.read(inputStream);
-						Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
-						Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
+						Preconditions.checkState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
+						Preconditions.checkState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
 						NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(nativeImage);
 						this.client.getTextureManager().registerTexture(this.iconLocation, nativeImageBackedTexture);
 						var5 = nativeImageBackedTexture;

@@ -165,7 +165,7 @@ public class HoglinEntityModel<T extends MobEntity & Hoglin> extends AnimalModel
 		float l = 1.0F - (float)MathHelper.abs(10 - 2 * k) / 10.0F;
 		this.head.pitch = MathHelper.lerp(l, 0.87266463F, (float) (-Math.PI / 9));
 		if (mobEntity.isBaby()) {
-			this.head.pivotY = (float)MathHelper.lerp(l, 2, 5);
+			this.head.pivotY = MathHelper.lerp(l, 2.0F, 5.0F);
 			this.mane.pivotZ = -3.0F;
 		} else {
 			this.head.pivotY = 2.0F;

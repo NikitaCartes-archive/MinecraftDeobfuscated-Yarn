@@ -22,7 +22,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SignType;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -51,8 +50,8 @@ public class HangingSignBlock extends AbstractSignBlock {
 		)
 	);
 
-	public HangingSignBlock(AbstractBlock.Settings settings, SignType signType) {
-		super(settings, signType);
+	public HangingSignBlock(AbstractBlock.Settings settings, WoodType woodType) {
+		super(settings.sounds(woodType.hangingSignSoundType()), woodType);
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(ROTATION, Integer.valueOf(0)).with(ATTACHED, Boolean.valueOf(false)).with(WATERLOGGED, Boolean.valueOf(false))
 		);

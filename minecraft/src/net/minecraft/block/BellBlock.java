@@ -181,7 +181,7 @@ public class BellBlock extends BlockWithEntity {
 		if (axis == Direction.Axis.Y) {
 			BlockState blockState = this.getDefaultState()
 				.with(ATTACHMENT, direction == Direction.DOWN ? Attachment.CEILING : Attachment.FLOOR)
-				.with(FACING, ctx.getPlayerFacing());
+				.with(FACING, ctx.getHorizontalPlayerFacing());
 			if (blockState.canPlaceAt(ctx.getWorld(), blockPos)) {
 				return blockState;
 			}

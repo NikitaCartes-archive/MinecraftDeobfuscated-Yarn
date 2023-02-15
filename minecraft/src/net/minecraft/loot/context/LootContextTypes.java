@@ -31,6 +31,9 @@ public class LootContextTypes {
 				.allow(LootContextParameters.DIRECT_KILLER_ENTITY)
 				.allow(LootContextParameters.LAST_DAMAGE_PLAYER)
 	);
+	public static final LootContextType ARCHAEOLOGY = register(
+		"archaeology", builder -> builder.require(LootContextParameters.ORIGIN).allow(LootContextParameters.THIS_ENTITY)
+	);
 	public static final LootContextType GIFT = register(
 		"gift", builder -> builder.require(LootContextParameters.ORIGIN).require(LootContextParameters.THIS_ENTITY)
 	);

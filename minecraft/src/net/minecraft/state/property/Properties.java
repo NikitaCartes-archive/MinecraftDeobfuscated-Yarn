@@ -155,7 +155,6 @@ public class Properties {
 	 * A property that specifies if a block is waterlogged.
 	 */
 	public static final BooleanProperty WATERLOGGED = BooleanProperty.of("waterlogged");
-	public static final BooleanProperty VINE_END = BooleanProperty.of("vine_end");
 	public static final BooleanProperty BERRIES = BooleanProperty.of("berries");
 	public static final BooleanProperty BLOOM = BooleanProperty.of("bloom");
 	public static final BooleanProperty SHRIEKING = BooleanProperty.of("shrieking");
@@ -212,6 +211,7 @@ public class Properties {
 	 * <p>This property only allows a block to face in one of the cardinal directions (north, south, east and west).
 	 */
 	public static final DirectionProperty HORIZONTAL_FACING = DirectionProperty.of("facing", Direction.Type.HORIZONTAL);
+	public static final IntProperty FLOWER_AMOUNT = IntProperty.of("flower_amount", 1, 4);
 	/**
 	 * A property that specifies the orientation of a jigsaw.
 	 */
@@ -453,4 +453,5 @@ public class Properties {
 	public static final BooleanProperty SLOT_3_OCCUPIED = BooleanProperty.of("slot_3_occupied");
 	public static final BooleanProperty SLOT_4_OCCUPIED = BooleanProperty.of("slot_4_occupied");
 	public static final BooleanProperty SLOT_5_OCCUPIED = BooleanProperty.of("slot_5_occupied");
+	public static final IntProperty DUSTED = IntProperty.of("dusted", 0, 3);
 }

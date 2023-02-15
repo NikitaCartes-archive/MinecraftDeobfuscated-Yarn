@@ -199,5 +199,48 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 			.add(Items.DIAMOND_PICKAXE, Items.GOLDEN_PICKAXE, Items.IRON_PICKAXE, Items.NETHERITE_PICKAXE, Items.STONE_PICKAXE, Items.WOODEN_PICKAXE);
 		this.getOrCreateTagBuilder(ItemTags.COMPASSES).add(Items.COMPASS).add(Items.RECOVERY_COMPASS);
 		this.getOrCreateTagBuilder(ItemTags.CREEPER_IGNITERS).add(Items.FLINT_AND_STEEL).add(Items.FIRE_CHARGE);
+		this.getOrCreateTagBuilder(ItemTags.SWORDS)
+			.add(Items.DIAMOND_SWORD)
+			.add(Items.STONE_SWORD)
+			.add(Items.GOLDEN_SWORD)
+			.add(Items.NETHERITE_SWORD)
+			.add(Items.WOODEN_SWORD)
+			.add(Items.IRON_SWORD);
+		this.getOrCreateTagBuilder(ItemTags.AXES)
+			.add(Items.DIAMOND_AXE)
+			.add(Items.STONE_AXE)
+			.add(Items.GOLDEN_AXE)
+			.add(Items.NETHERITE_AXE)
+			.add(Items.WOODEN_AXE)
+			.add(Items.IRON_AXE);
+		this.getOrCreateTagBuilder(ItemTags.PICKAXES)
+			.add(Items.DIAMOND_PICKAXE)
+			.add(Items.STONE_PICKAXE)
+			.add(Items.GOLDEN_PICKAXE)
+			.add(Items.NETHERITE_PICKAXE)
+			.add(Items.WOODEN_PICKAXE)
+			.add(Items.IRON_PICKAXE);
+		this.getOrCreateTagBuilder(ItemTags.SHOVELS)
+			.add(Items.DIAMOND_SHOVEL)
+			.add(Items.STONE_SHOVEL)
+			.add(Items.GOLDEN_SHOVEL)
+			.add(Items.NETHERITE_SHOVEL)
+			.add(Items.WOODEN_SHOVEL)
+			.add(Items.IRON_SHOVEL);
+		this.getOrCreateTagBuilder(ItemTags.HOES)
+			.add(Items.DIAMOND_HOE)
+			.add(Items.STONE_HOE)
+			.add(Items.GOLDEN_HOE)
+			.add(Items.NETHERITE_HOE)
+			.add(Items.WOODEN_HOE)
+			.add(Items.IRON_HOE);
+		this.getOrCreateTagBuilder(ItemTags.TOOLS)
+			.addTag(ItemTags.SWORDS)
+			.addTag(ItemTags.AXES)
+			.addTag(ItemTags.PICKAXES)
+			.addTag(ItemTags.SHOVELS)
+			.addTag(ItemTags.HOES)
+			.add(Items.TRIDENT);
+		this.getOrCreateTagBuilder(ItemTags.BREAKS_DECORATED_POTS).addTag(ItemTags.TOOLS);
 	}
 }

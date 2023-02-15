@@ -165,7 +165,7 @@ public class DamageSources {
 	}
 
 	public DamageSource fallingAnvil(Entity attacker) {
-		return this.create(DamageTypes.FALLING_ANIVL, attacker);
+		return this.create(DamageTypes.FALLING_ANVIL, attacker);
 	}
 
 	public DamageSource fallingStalactite(Entity attacker) {

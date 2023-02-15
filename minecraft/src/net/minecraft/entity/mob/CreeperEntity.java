@@ -193,7 +193,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	public float getClientFuseTime(float timeDelta) {
-		return (float)(MathHelper.lerp(timeDelta, this.lastFuseTime, this.currentFuseTime) / (this.fuseTime - 2));
+		return MathHelper.lerp(timeDelta, (float)this.lastFuseTime, (float)this.currentFuseTime) / (float)(this.fuseTime - 2);
 	}
 
 	public int getFuseSpeed() {

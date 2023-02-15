@@ -48,6 +48,13 @@ public class BlockColors {
 			Blocks.GRASS,
 			Blocks.POTTED_FERN
 		);
+		blockColors.registerColorProvider((state, world, pos, tintIndex) -> {
+			if (tintIndex != 0) {
+				return world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.getColor(0.5, 1.0);
+			} else {
+				return -1;
+			}
+		}, Blocks.PINK_PETALS);
 		blockColors.registerColorProvider((state, world, pos, tintIndex) -> FoliageColors.getSpruceColor(), Blocks.SPRUCE_LEAVES);
 		blockColors.registerColorProvider((state, world, pos, tintIndex) -> FoliageColors.getBirchColor(), Blocks.BIRCH_LEAVES);
 		blockColors.registerColorProvider(

@@ -148,8 +148,8 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 	}
 
 	@Override
-	public void close(PlayerEntity player) {
-		super.close(player);
+	public void onClosed(PlayerEntity player) {
+		super.onClosed(player);
 		this.craftingResult.clear();
 		if (!player.world.isClient) {
 			this.dropInventory(player, this.craftingInput);

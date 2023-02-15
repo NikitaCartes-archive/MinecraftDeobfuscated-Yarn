@@ -58,15 +58,8 @@ public class WorldEvents {
 	 * and {@link net.minecraft.item.ShovelItem#useOnBlock(net.minecraft.item.ItemUsageContext) ShovelItem#useOnBlock}
 	 */
 	public static final int FIRE_EXTINGUISHED = 1009;
-	/**
-	 * A music disc is played.
-	 * <br>Plays the appropriate music.
-	 * <br>The Raw ID of the music disc item must be supplied as extra data.
-	 * <br>A {@code 0} should be passed to stop music.
-	 * <p>Called by {@link net.minecraft.item.MusicDiscItem#useOnBlock(net.minecraft.item.ItemUsageContext) MusicDiscItem#useOnBlock},
-	 * and {@link net.minecraft.block.JukeboxBlock#removeRecord(net.minecraft.world.World, net.minecraft.util.math.BlockPos) JukeboxBlock#removeRecord}
-	 */
-	public static final int MUSIC_DISC_PLAYED = 1010;
+	public static final int field_42760 = 1010;
+	public static final int field_42761 = 1011;
 	/**
 	 * A ghast warns its victim.
 	 * <br>Plays the ghast warn sound event.
@@ -442,4 +435,5 @@ public class WorldEvents {
 	 * <br>Called by {@link net.minecraft.block.entity.SculkShriekerBlockEntity#shriek(net.minecraft.server.world.ServerWorld, net.minecraft.entity.Entity) SculkShriekerBlockEntity#shriek}
 	 */
 	public static final int SCULK_SHRIEKS = 3007;
+	public static final int field_42759 = 3008;
 }

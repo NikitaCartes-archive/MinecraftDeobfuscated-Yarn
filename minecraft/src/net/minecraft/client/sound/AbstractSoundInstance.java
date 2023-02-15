@@ -40,14 +40,19 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 
 	@Override
 	public WeightedSoundSet getSoundSet(SoundManager soundManager) {
-		WeightedSoundSet weightedSoundSet = soundManager.get(this.id);
-		if (weightedSoundSet == null) {
-			this.sound = SoundManager.MISSING_SOUND;
+		if (this.id.equals(SoundManager.INTENTIONALLY_EMPTY_ID)) {
+			this.sound = SoundManager.INTENTIONALLY_EMPTY_SOUND;
+			return SoundManager.INTENTIONALLY_EMPTY_SOUND_SET;
 		} else {
-			this.sound = weightedSoundSet.getSound(this.random);
-		}
+			WeightedSoundSet weightedSoundSet = soundManager.get(this.id);
+			if (weightedSoundSet == null) {
+				this.sound = SoundManager.MISSING_SOUND;
+			} else {
+				this.sound = weightedSoundSet.getSound(this.random);
+			}
 
-		return weightedSoundSet;
+			return weightedSoundSet;
+		}
 	}
 
 	@Override

@@ -392,7 +392,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 					true,
 					matrixStack.peek().getPositionMatrix(),
 					immediate,
-					false,
+					TextRenderer.TextLayerType.NORMAL,
 					0,
 					15728880
 				);

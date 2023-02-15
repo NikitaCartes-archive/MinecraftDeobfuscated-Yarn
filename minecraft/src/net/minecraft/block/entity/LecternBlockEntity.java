@@ -88,16 +88,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 
 		@Override
 		public boolean canPlayerUse(PlayerEntity player) {
-			if (LecternBlockEntity.this.world.getBlockEntity(LecternBlockEntity.this.pos) != LecternBlockEntity.this) {
-				return false;
-			} else {
-				return player.squaredDistanceTo(
-							(double)LecternBlockEntity.this.pos.getX() + 0.5, (double)LecternBlockEntity.this.pos.getY() + 0.5, (double)LecternBlockEntity.this.pos.getZ() + 0.5
-						)
-						> 64.0
-					? false
-					: LecternBlockEntity.this.hasBook();
-			}
+			return Inventory.canPlayerUse(LecternBlockEntity.this, player) && LecternBlockEntity.this.hasBook();
 		}
 
 		@Override

@@ -35,6 +35,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.command.CommandSource;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
@@ -366,8 +367,8 @@ public class ChatInputSuggestor {
 		}
 	}
 
-	public String getNarration() {
-		return this.window != null ? "\n" + this.window.getNarration() : "";
+	public Text getNarration() {
+		return (Text)(this.window != null ? ScreenTexts.LINE_BREAK.copy().append(this.window.getNarration()) : ScreenTexts.EMPTY);
 	}
 
 	@Environment(EnvType.CLIENT)

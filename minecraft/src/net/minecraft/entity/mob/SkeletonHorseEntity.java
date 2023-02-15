@@ -36,7 +36,7 @@ public class SkeletonHorseEntity extends AbstractHorseEntity {
 
 	@Override
 	protected void initAttributes(Random random) {
-		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus(random));
+		this.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(getChildJumpStrengthBonus(random::nextDouble));
 	}
 
 	@Override

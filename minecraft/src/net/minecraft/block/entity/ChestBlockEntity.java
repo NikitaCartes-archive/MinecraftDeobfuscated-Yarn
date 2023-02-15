@@ -24,7 +24,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ChestBlockEntity extends LootableContainerBlockEntity implements LidOpenable {
-	private static final int field_31332 = 1;
+	private static final int VIEWER_COUNT_UPDATE_EVENT_TYPE = 1;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(27, ItemStack.EMPTY);
 	private final ViewerCountManager stateManager = new ViewerCountManager() {
 		@Override
@@ -39,7 +39,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 
 		@Override
 		protected void onViewerCountUpdate(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
-			ChestBlockEntity.this.onInvOpenOrClose(world, pos, state, oldViewerCount, newViewerCount);
+			ChestBlockEntity.this.onViewerCountUpdate(world, pos, state, oldViewerCount, newViewerCount);
 		}
 
 		@Override
@@ -177,7 +177,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 		}
 	}
 
-	protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+	protected void onViewerCountUpdate(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
 		Block block = state.getBlock();
 		world.addSyncedBlockEvent(pos, block, 1, newViewerCount);
 	}

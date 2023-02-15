@@ -5,9 +5,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.WoodType;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SignType;
 
 @Environment(EnvType.CLIENT)
 public class EntityModelLayers {
@@ -43,6 +43,8 @@ public class EntityModelLayers {
 	public static final EntityModelLayer CREEPER = registerMain("creeper");
 	public static final EntityModelLayer CREEPER_ARMOR = register("creeper", "armor");
 	public static final EntityModelLayer CREEPER_HEAD = registerMain("creeper_head");
+	public static final EntityModelLayer DECORATED_POT_BASE = registerMain("decorated_pot_base");
+	public static final EntityModelLayer DECORATED_POT_SIDES = registerMain("decorated_pot_sides");
 	public static final EntityModelLayer DOLPHIN = registerMain("dolphin");
 	public static final EntityModelLayer DONKEY = registerMain("donkey");
 	public static final EntityModelLayer DOUBLE_CHEST_LEFT = registerMain("double_chest_left");
@@ -129,6 +131,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer SKELETON_SKULL = registerMain("skeleton_skull");
 	public static final EntityModelLayer SLIME = registerMain("slime");
 	public static final EntityModelLayer SLIME_OUTER = register("slime", "outer");
+	public static final EntityModelLayer SNIFFER = registerMain("sniffer");
 	public static final EntityModelLayer SNOW_GOLEM = registerMain("snow_golem");
 	public static final EntityModelLayer SPAWNER_MINECART = registerMain("spawner_minecart");
 	public static final EntityModelLayer SPIDER = registerMain("spider");
@@ -216,12 +219,12 @@ public class EntityModelLayers {
 		return create("chest_boat/" + type.getName(), "main");
 	}
 
-	public static EntityModelLayer createSign(SignType type) {
-		return create("sign/" + type.getName(), "main");
+	public static EntityModelLayer createSign(WoodType type) {
+		return create("sign/" + type.name(), "main");
 	}
 
-	public static EntityModelLayer createHangingSign(SignType type) {
-		return create("hanging_sign/" + type.getName(), "main");
+	public static EntityModelLayer createHangingSign(WoodType type) {
+		return create("hanging_sign/" + type.name(), "main");
 	}
 
 	public static Stream<EntityModelLayer> getLayers() {

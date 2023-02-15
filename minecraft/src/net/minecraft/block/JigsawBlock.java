@@ -46,7 +46,7 @@ public class JigsawBlock extends Block implements BlockEntityProvider, OperatorB
 		Direction direction = ctx.getSide();
 		Direction direction2;
 		if (direction.getAxis() == Direction.Axis.Y) {
-			direction2 = ctx.getPlayerFacing().getOpposite();
+			direction2 = ctx.getHorizontalPlayerFacing().getOpposite();
 		} else {
 			direction2 = Direction.UP;
 		}

@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogVariant;
+import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -143,6 +144,7 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<RegistryEntry<PaintingVariant>> PAINTING_VARIANT = TrackedDataHandler.of(
 		Registries.PAINTING_VARIANT.getIndexedEntries()
 	);
+	public static final TrackedDataHandler<SnifferEntity.State> SNIFFER_STATE = TrackedDataHandler.ofEnum(SnifferEntity.State.class);
 	public static final TrackedDataHandler<Vector3f> VECTOR3F = TrackedDataHandler.of(PacketByteBuf::writeVector3f, PacketByteBuf::readVector3f);
 	public static final TrackedDataHandler<Quaternionf> QUATERNIONF = TrackedDataHandler.of(PacketByteBuf::writeQuaternionf, PacketByteBuf::readQuaternionf);
 
@@ -188,6 +190,7 @@ public class TrackedDataHandlerRegistry {
 		register(FROG_VARIANT);
 		register(OPTIONAL_GLOBAL_POS);
 		register(PAINTING_VARIANT);
+		register(SNIFFER_STATE);
 		register(VECTOR3F);
 		register(QUATERNIONF);
 	}

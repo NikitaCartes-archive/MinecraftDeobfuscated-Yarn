@@ -438,11 +438,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	@Override
 	public boolean canPlayerUse(PlayerEntity player) {
-		if (this.world.getBlockEntity(this.pos) != this) {
-			return false;
-		} else {
-			return player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) <= 64.0;
-		}
+		return Inventory.canPlayerUse(this, player);
 	}
 
 	@Override

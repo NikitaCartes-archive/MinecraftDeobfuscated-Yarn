@@ -52,7 +52,9 @@ public class SmallDripleafBlock extends TallPlantBlock implements Fertilizable, 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockState blockState = super.getPlacementState(ctx);
-		return blockState != null ? withWaterloggedState(ctx.getWorld(), ctx.getBlockPos(), blockState.with(FACING, ctx.getPlayerFacing().getOpposite())) : null;
+		return blockState != null
+			? withWaterloggedState(ctx.getWorld(), ctx.getBlockPos(), blockState.with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()))
+			: null;
 	}
 
 	@Override

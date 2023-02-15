@@ -297,7 +297,7 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
 			Arrays.fill(densities, 0.0);
 		}
 
@@ -337,12 +337,12 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
-			this.argument1.applyEach(densities, applier);
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
+			this.argument1.fill(densities, applier);
 			switch(this.type) {
 				case ADD:
 					double[] ds = new double[densities.length];
-					this.argument2.applyEach(ds, applier);
+					this.argument2.fill(ds, applier);
 
 					for(int i = 0; i < densities.length; ++i) {
 						densities[i] += ds[i];
@@ -353,7 +353,7 @@ public final class DensityFunctionTypes {
 
 					for(int k = 0; k < densities.length; ++k) {
 						double f = densities[k];
-						densities[k] = f > e ? f : Math.max(f, this.argument2.sample(applier.getPosAt(k)));
+						densities[k] = f > e ? f : Math.max(f, this.argument2.sample(applier.at(k)));
 					}
 					break;
 				case MIN:
@@ -361,13 +361,13 @@ public final class DensityFunctionTypes {
 
 					for(int k = 0; k < densities.length; ++k) {
 						double f = densities[k];
-						densities[k] = f < e ? f : Math.min(f, this.argument2.sample(applier.getPosAt(k)));
+						densities[k] = f < e ? f : Math.min(f, this.argument2.sample(applier.at(k)));
 					}
 					break;
 				case MUL:
 					for(int j = 0; j < densities.length; ++j) {
 						double d = densities[j];
-						densities[j] = d == 0.0 ? 0.0 : d * this.argument2.sample(applier.getPosAt(j));
+						densities[j] = d == 0.0 ? 0.0 : d * this.argument2.sample(applier.at(j));
 					}
 			}
 		}
@@ -483,7 +483,7 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
 			Arrays.fill(densities, 1.0);
 		}
 
@@ -545,7 +545,7 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
 			Arrays.fill(densities, 0.0);
 		}
 
@@ -605,7 +605,7 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
 			Arrays.fill(densities, this.value);
 		}
 
@@ -755,8 +755,8 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
-			applier.applyEach(densities, this);
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
+			applier.fill(densities, this);
 		}
 
 		@Override
@@ -798,8 +798,8 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		default void applyEach(double[] densities, DensityFunction.EachApplier applier) {
-			applier.applyEach(densities, this);
+		default void fill(double[] densities, DensityFunction.EachApplier applier) {
+			applier.fill(densities, this);
 		}
 	}
 
@@ -812,11 +812,11 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		default void applyEach(double[] densities, DensityFunction.EachApplier applier) {
-			this.input().applyEach(densities, applier);
+		default void fill(double[] densities, DensityFunction.EachApplier applier) {
+			this.input().fill(densities, applier);
 
 			for(int i = 0; i < densities.length; ++i) {
-				densities[i] = this.apply(applier.getPosAt(i), densities[i]);
+				densities[i] = this.apply(applier.at(i), densities[i]);
 			}
 		}
 
@@ -844,15 +844,15 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
-			this.input.applyEach(densities, applier);
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
+			this.input.fill(densities, applier);
 
 			for(int i = 0; i < densities.length; ++i) {
 				double d = densities[i];
 				if (d >= this.minInclusive && d < this.maxExclusive) {
-					densities[i] = this.whenInRange.sample(applier.getPosAt(i));
+					densities[i] = this.whenInRange.sample(applier.at(i));
 				} else {
-					densities[i] = this.whenOutOfRange.sample(applier.getPosAt(i));
+					densities[i] = this.whenOutOfRange.sample(applier.at(i));
 				}
 			}
 		}
@@ -890,8 +890,8 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
-			this.function.value().applyEach(densities, applier);
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
+			this.function.value().fill(densities, applier);
 		}
 
 		@Override
@@ -1003,8 +1003,8 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
-			applier.applyEach(densities, this);
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
+			applier.fill(densities, this);
 		}
 
 		@Override
@@ -1057,8 +1057,8 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
-			applier.applyEach(densities, this);
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
+			applier.fill(densities, this);
 		}
 
 		@Override
@@ -1131,8 +1131,8 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		default void applyEach(double[] densities, DensityFunction.EachApplier applier) {
-			this.input().applyEach(densities, applier);
+		default void fill(double[] densities, DensityFunction.EachApplier applier) {
+			this.input().fill(densities, applier);
 
 			for(int i = 0; i < densities.length; ++i) {
 				densities[i] = this.apply(densities[i]);
@@ -1293,8 +1293,8 @@ public final class DensityFunctionTypes {
 		}
 
 		@Override
-		public void applyEach(double[] densities, DensityFunction.EachApplier applier) {
-			this.wrapped.applyEach(densities, applier);
+		public void fill(double[] densities, DensityFunction.EachApplier applier) {
+			this.wrapped.fill(densities, applier);
 		}
 
 		@Override

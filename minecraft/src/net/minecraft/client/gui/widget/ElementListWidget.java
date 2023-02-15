@@ -37,9 +37,13 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 			if (arrow.direction().getAxis() == NavigationAxis.HORIZONTAL && entry != null) {
 				return GuiNavigationPath.of(this, entry.getNavigationPath(navigation));
 			} else {
+				int i = -1;
 				NavigationDirection navigationDirection = arrow.direction();
-				int i;
-				if (entry == null) {
+				if (entry != null) {
+					i = entry.children().indexOf(entry.getFocused());
+				}
+
+				if (i == -1) {
 					switch(navigationDirection) {
 						case LEFT:
 							i = Integer.MAX_VALUE;
@@ -52,8 +56,6 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 						default:
 							i = 0;
 					}
-				} else {
-					i = entry.children().indexOf(entry.getFocused());
 				}
 
 				E entry2 = entry;

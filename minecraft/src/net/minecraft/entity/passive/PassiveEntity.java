@@ -1,6 +1,7 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -8,6 +9,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -144,6 +146,12 @@ public abstract class PassiveEntity extends PathAwareEntity {
 	}
 
 	protected void onGrowUp() {
+		if (!this.isBaby() && this.hasVehicle()) {
+			Entity var2 = this.getVehicle();
+			if (var2 instanceof BoatEntity boatEntity && !boatEntity.isSmallerThanBoat(this)) {
+				this.stopRiding();
+			}
+		}
 	}
 
 	@Override

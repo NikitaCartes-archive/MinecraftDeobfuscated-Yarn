@@ -45,20 +45,18 @@ public class ButtonBlock extends WallMountedBlock {
 	protected static final VoxelShape SOUTH_PRESSED_SHAPE = Block.createCuboidShape(5.0, 6.0, 0.0, 11.0, 10.0, 1.0);
 	protected static final VoxelShape WEST_PRESSED_SHAPE = Block.createCuboidShape(15.0, 6.0, 5.0, 16.0, 10.0, 11.0);
 	protected static final VoxelShape EAST_PRESSED_SHAPE = Block.createCuboidShape(0.0, 6.0, 5.0, 1.0, 10.0, 11.0);
-	private final SoundEvent clickOffSound;
-	private final SoundEvent clickOnSound;
+	private final BlockSetType blockSetType;
 	private final int pressTicks;
 	private final boolean wooden;
 
-	protected ButtonBlock(AbstractBlock.Settings settings, int pressTicks, boolean wooden, SoundEvent clickOffSound, SoundEvent clickOnSound) {
-		super(settings);
+	protected ButtonBlock(AbstractBlock.Settings settings, BlockSetType blockSetType, int pressTicks, boolean wooden) {
+		super(settings.sounds(blockSetType.soundType()));
+		this.blockSetType = blockSetType;
 		this.setDefaultState(
 			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.WALL)
 		);
 		this.pressTicks = pressTicks;
 		this.wooden = wooden;
-		this.clickOffSound = clickOffSound;
-		this.clickOnSound = clickOnSound;
 	}
 
 	@Override
@@ -112,7 +110,7 @@ public class ButtonBlock extends WallMountedBlock {
 	}
 
 	protected SoundEvent getClickSound(boolean powered) {
-		return powered ? this.clickOnSound : this.clickOffSound;
+		return powered ? this.blockSetType.buttonClickOn() : this.blockSetType.buttonClickOff();
 	}
 
 	@Override

@@ -3,8 +3,6 @@ package net.minecraft.world.gen.foliage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import java.util.function.BiConsumer;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.intprovider.IntProvider;
@@ -33,7 +31,7 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 	@Override
 	protected void generate(
 		TestableWorld world,
-		BiConsumer<BlockPos, BlockState> replacer,
+		FoliagePlacer.BlockPlacer placer,
 		Random random,
 		TreeFeatureConfig config,
 		int trunkHeight,
@@ -55,7 +53,7 @@ public class MegaPineFoliagePlacer extends FoliagePlacer {
 				m = l;
 			}
 
-			this.generateSquare(world, replacer, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, 0, treeNode.isGiantTrunk());
+			this.generateSquare(world, placer, random, config, new BlockPos(blockPos.getX(), j, blockPos.getZ()), m, 0, treeNode.isGiantTrunk());
 			i = l;
 		}
 	}

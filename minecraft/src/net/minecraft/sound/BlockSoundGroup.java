@@ -529,6 +529,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_MOSS_CARPET_HIT,
 		SoundEvents.BLOCK_MOSS_CARPET_FALL
 	);
+	public static final BlockSoundGroup PINK_PETALS = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_PINK_PETALS_BREAK,
+		SoundEvents.BLOCK_PINK_PETALS_STEP,
+		SoundEvents.BLOCK_PINK_PETALS_PLACE,
+		SoundEvents.BLOCK_PINK_PETALS_HIT,
+		SoundEvents.BLOCK_PINK_PETALS_FALL
+	);
 	public static final BlockSoundGroup MOSS_BLOCK = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.BLOCK_MOSS_BREAK, SoundEvents.BLOCK_MOSS_STEP, SoundEvents.BLOCK_MOSS_PLACE, SoundEvents.BLOCK_MOSS_HIT, SoundEvents.BLOCK_MOSS_FALL
 	);
@@ -769,6 +778,42 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_NETHER_WOOD_HIT,
 		SoundEvents.BLOCK_NETHER_WOOD_FALL
 	);
+	public static final BlockSoundGroup CHERRY_WOOD = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CHERRY_WOOD_BREAK,
+		SoundEvents.BLOCK_CHERRY_WOOD_STEP,
+		SoundEvents.BLOCK_CHERRY_WOOD_PLACE,
+		SoundEvents.BLOCK_CHERRY_WOOD_HIT,
+		SoundEvents.BLOCK_CHERRY_WOOD_FALL
+	);
+	public static final BlockSoundGroup CHERRY_SAPLING = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CHERRY_SAPLING_BREAK,
+		SoundEvents.BLOCK_CHERRY_SAPLING_STEP,
+		SoundEvents.BLOCK_CHERRY_SAPLING_PLACE,
+		SoundEvents.BLOCK_CHERRY_SAPLING_HIT,
+		SoundEvents.BLOCK_CHERRY_SAPLING_FALL
+	);
+	public static final BlockSoundGroup CHERRY_LEAVES = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CHERRY_LEAVES_BREAK,
+		SoundEvents.BLOCK_CHERRY_LEAVES_STEP,
+		SoundEvents.BLOCK_CHERRY_LEAVES_PLACE,
+		SoundEvents.BLOCK_CHERRY_LEAVES_HIT,
+		SoundEvents.BLOCK_CHERRY_LEAVES_FALL
+	);
+	public static final BlockSoundGroup CHERRY_WOOD_HANGING_SIGN = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CHERRY_WOOD_HANGING_SIGN_BREAK,
+		SoundEvents.BLOCK_CHERRY_WOOD_HANGING_SIGN_STEP,
+		SoundEvents.BLOCK_CHERRY_WOOD_HANGING_SIGN_PLACE,
+		SoundEvents.BLOCK_CHERRY_WOOD_HANGING_SIGN_HIT,
+		SoundEvents.BLOCK_CHERRY_WOOD_HANGING_SIGN_FALL
+	);
 	public static final BlockSoundGroup CHISELED_BOOKSHELF = new BlockSoundGroup(
 		1.0F,
 		1.0F,
@@ -777,6 +822,24 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_CHISELED_BOOKSHELF_PLACE,
 		SoundEvents.BLOCK_CHISELED_BOOKSHELF_HIT,
 		SoundEvents.BLOCK_CHISELED_BOOKSHELF_FALL
+	);
+	public static final BlockSoundGroup SUSPICIOUS_SAND = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SUSPICIOUS_SAND_BREAK,
+		SoundEvents.BLOCK_SUSPICIOUS_SAND_STEP,
+		SoundEvents.BLOCK_SUSPICIOUS_SAND_PLACE,
+		SoundEvents.BLOCK_SUSPICIOUS_SAND_HIT,
+		SoundEvents.BLOCK_SUSPICIOUS_SAND_FALL
+	);
+	public static final BlockSoundGroup DECORATED_POT = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.INTENTIONALLY_EMPTY,
+		SoundEvents.BLOCK_DECORATED_POT_STEP,
+		SoundEvents.BLOCK_DECORATED_POT_PLACE,
+		SoundEvents.BLOCK_DECORATED_POT_HIT,
+		SoundEvents.BLOCK_DECORATED_POT_FALL
 	);
 	public final float volume;
 	public final float pitch;

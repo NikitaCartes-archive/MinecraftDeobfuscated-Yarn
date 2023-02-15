@@ -21,7 +21,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SignType;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -42,8 +41,8 @@ public class WallHangingSignBlock extends AbstractSignBlock {
 		ImmutableMap.of(Direction.NORTH, NORTH_SOUTH_SHAPE, Direction.SOUTH, NORTH_SOUTH_SHAPE, Direction.EAST, EAST_WEST_SHAPE, Direction.WEST, EAST_WEST_SHAPE)
 	);
 
-	public WallHangingSignBlock(AbstractBlock.Settings settings, SignType signType) {
-		super(settings, signType);
+	public WallHangingSignBlock(AbstractBlock.Settings settings, WoodType woodType) {
+		super(settings.sounds(woodType.hangingSignSoundType()), woodType);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 

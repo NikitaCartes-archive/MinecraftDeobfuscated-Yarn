@@ -3,12 +3,16 @@ package net.minecraft.network;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
+import com.mojang.serialization.JsonOps;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.ByteBufInputStream;
@@ -59,6 +63,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.hit.BlockHitResult;
@@ -84,7 +89,10 @@ import org.joml.Vector3f;
  *  <th><b>Object Type</b></th> <th><b>read method</b></th> <th><b>write method</b></th>
  * </tr>
  * <tr>
- *  <td>Codec-based</td><td>{@link #decode(DynamicOps, Codec)}</td><td>{@link #encode(DynamicOps, Codec, Object)}</td>
+ *  <td>Codec-based (NBT)</td><td>{@link #decode(DynamicOps, Codec)}</td><td>{@link #encode(DynamicOps, Codec, Object)}</td>
+ * </tr>
+ * <tr>
+ *  <td>Codec-based (JSON)</td><td>{@link #decodeAsJson(Codec)}</td><td>{@link #encodeAsJson(Codec, Object)}</td>
  * </tr>
  * <tr>
  *  <td>{@link net.minecraft.registry.Registry} value</td><td>{@link #readRegistryValue(IndexedIterable)}</td><td>{@link #writeRegistryValue(IndexedIterable, Object)}</td>
@@ -235,6 +243,7 @@ public class PacketByteBuf extends ByteBuf {
 	private static final int field_39381 = 256;
 	private static final int field_39382 = 256;
 	private static final int field_39383 = 512;
+	private static final Gson GSON = new Gson();
 
 	/**
 	 * Creates a packet byte buf that delegates its operations to the {@code
@@ -311,6 +320,34 @@ public class PacketByteBuf extends ByteBuf {
 	public <T> void encode(DynamicOps<NbtElement> ops, Codec<T> codec, T value) {
 		NbtElement nbtElement = Util.getResult(codec.encodeStart(ops, value), error -> new EncoderException("Failed to encode: " + error + " " + value));
 		this.writeNbt((NbtCompound)nbtElement);
+	}
+
+	/**
+	 * Reads an object from this buf as a JSON element with the given codec.
+	 * 
+	 * @param <T> the decoded object's type
+	 * @return the read object
+	 * @throws io.netty.handler.codec.EncoderException if the {@code codec} fails
+	 * to decode the JSON element
+	 * @see #encode(Codec, Object)
+	 */
+	public <T> T decodeAsJson(Codec<T> codec) {
+		JsonElement jsonElement = JsonHelper.deserialize(GSON, this.readString(), JsonElement.class);
+		DataResult<T> dataResult = codec.parse(JsonOps.INSTANCE, jsonElement);
+		return Util.getResult(dataResult, error -> new DecoderException("Failed to decode json: " + error));
+	}
+
+	/**
+	 * Writes an object to this buf as a JSON element with the given codec.
+	 * 
+	 * @param <T> the encoded object's type
+	 * @throws io.netty.handler.codec.EncoderException if the {@code codec} fails
+	 * to encode the JSON element
+	 * @see #decodeAsJson(Codec)
+	 */
+	public <T> void encodeAsJson(Codec<T> codec, T value) {
+		DataResult<JsonElement> dataResult = codec.encodeStart(JsonOps.INSTANCE, value);
+		this.writeString(GSON.toJson(Util.getResult(dataResult, error -> new EncoderException("Failed to encode: " + error + " " + value))));
 	}
 
 	/**

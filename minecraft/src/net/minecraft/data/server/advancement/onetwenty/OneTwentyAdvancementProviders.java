@@ -8,6 +8,8 @@ import net.minecraft.registry.RegistryWrapper;
 
 public class OneTwentyAdvancementProviders {
 	public static AdvancementProvider createOneTwentyProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		return new AdvancementProvider(output, registryLookupFuture, List.of(new OneTwentyHusbandryTabAdvancementGenerator()));
+		return new AdvancementProvider(
+			output, registryLookupFuture, List.of(new OneTwentyAdventureTabAdvancementGenerator(), new OneTwentyHusbandryTabAdvancementGenerator())
+		);
 	}
 }

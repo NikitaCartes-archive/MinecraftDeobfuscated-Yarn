@@ -224,6 +224,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 			case BIRCH -> Items.BIRCH_BOAT;
 			case JUNGLE -> Items.JUNGLE_BOAT;
 			case ACACIA -> Items.ACACIA_BOAT;
+			case CHERRY -> Items.CHERRY_BOAT;
 			case DARK_OAK -> Items.DARK_OAK_BOAT;
 			case MANGROVE -> Items.MANGROVE_BOAT;
 			case BAMBOO -> Items.BAMBOO_RAFT;
@@ -332,7 +333,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 					if (bl
 						&& this.getPassengerList().size() < this.getMaxPassengers()
 						&& !entity.hasVehicle()
-						&& entity.getWidth() < this.getWidth()
+						&& this.isSmallerThanBoat(entity)
 						&& entity instanceof LivingEntity
 						&& !(entity instanceof WaterCreatureEntity)
 						&& !(entity instanceof PlayerEntity)) {
@@ -656,6 +657,10 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		return 0.0F;
 	}
 
+	public boolean isSmallerThanBoat(Entity entity) {
+		return entity.getWidth() < this.getWidth();
+	}
+
 	@Override
 	public void updatePassengerPosition(Entity passenger) {
 		if (this.hasPassenger(passenger)) {
@@ -887,6 +892,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		BIRCH(Blocks.BIRCH_PLANKS, "birch"),
 		JUNGLE(Blocks.JUNGLE_PLANKS, "jungle"),
 		ACACIA(Blocks.ACACIA_PLANKS, "acacia"),
+		CHERRY(Blocks.CHERRY_PLANKS, "cherry"),
 		DARK_OAK(Blocks.DARK_OAK_PLANKS, "dark_oak"),
 		MANGROVE(Blocks.MANGROVE_PLANKS, "mangrove"),
 		BAMBOO(Blocks.BAMBOO_PLANKS, "bamboo");

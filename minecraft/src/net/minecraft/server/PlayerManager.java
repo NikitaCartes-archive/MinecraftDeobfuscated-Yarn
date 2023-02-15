@@ -224,7 +224,11 @@ public abstract class PlayerManager {
 
 		this.broadcast(mutableText.formatted(Formatting.YELLOW), false);
 		serverPlayNetworkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
-		player.sendServerMetadata(this.server.getServerMetadata());
+		ServerMetadata serverMetadata = this.server.getServerMetadata();
+		if (serverMetadata != null) {
+			player.sendServerMetadata(serverMetadata);
+		}
+
 		player.networkHandler.sendPacket(PlayerListS2CPacket.entryFromPlayer(this.players));
 		this.players.add(player);
 		this.playerMap.put(player.getUuid(), player);

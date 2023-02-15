@@ -28,6 +28,7 @@ public final class BlockTags {
 	public static final TagKey<Block> OAK_LOGS = of("oak_logs");
 	public static final TagKey<Block> BIRCH_LOGS = of("birch_logs");
 	public static final TagKey<Block> ACACIA_LOGS = of("acacia_logs");
+	public static final TagKey<Block> CHERRY_LOGS = of("cherry_logs");
 	public static final TagKey<Block> JUNGLE_LOGS = of("jungle_logs");
 	public static final TagKey<Block> SPRUCE_LOGS = of("spruce_logs");
 	public static final TagKey<Block> MANGROVE_LOGS = of("mangrove_logs");
@@ -162,6 +163,7 @@ public final class BlockTags {
 	public static final TagKey<Block> SNOW_LAYER_CANNOT_SURVIVE_ON = of("snow_layer_cannot_survive_on");
 	public static final TagKey<Block> SNOW_LAYER_CAN_SURVIVE_ON = of("snow_layer_can_survive_on");
 	public static final TagKey<Block> INVALID_SPAWN_INSIDE = of("invalid_spawn_inside");
+	public static final TagKey<Block> SNIFFER_DIGGABLE_BLOCK = of("sniffer_diggable_block");
 
 	private BlockTags() {
 	}

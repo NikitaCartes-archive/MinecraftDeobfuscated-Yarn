@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
+import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataWriter;
@@ -576,7 +577,8 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.input('#', ItemTags.PLANKS)
 			.pattern("##")
 			.pattern("##")
-			.criterion("has_planks", conditionsFromTag(ItemTags.PLANKS))
+			.criterion("unlock_right_away", TickCriterion.Conditions.createTick())
+			.method_49380(false)
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.CROSSBOW)
 			.input('~', Items.STRING)
@@ -587,7 +589,6 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("~$~")
 			.pattern(" # ")
 			.criterion("has_string", conditionsFromItem(Items.STRING))
-			.criterion("has_stick", conditionsFromItem(Items.STICK))
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.criterion("has_tripwire_hook", conditionsFromItem(Blocks.TRIPWIRE_HOOK))
 			.offerTo(exporter);
@@ -1529,6 +1530,14 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("# ")
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.BRUSH)
+			.input('#', Items.STRING)
+			.input('I', Items.STICK)
+			.pattern("###")
+			.pattern(" I ")
+			.pattern(" I ")
+			.criterion("has_string", conditionsFromItem(Items.STRING))
+			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.SHIELD)
 			.input('W', ItemTags.PLANKS)
 			.input('o', Items.IRON_INGOT)
@@ -1553,7 +1562,6 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern(" S ")
 			.pattern("S#S")
 			.pattern("LLL")
-			.criterion("has_stick", conditionsFromItem(Items.STICK))
 			.criterion("has_soul_sand", conditionsFromTag(ItemTags.SOUL_FIRE_BASE_BLOCKS))
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.BREWING, Items.GLISTERING_MELON_SLICE)

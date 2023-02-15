@@ -45,7 +45,7 @@ public class EndPortalFrameBlock extends Block {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
-		return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite()).with(EYE, Boolean.valueOf(false));
+		return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(EYE, Boolean.valueOf(false));
 	}
 
 	@Override

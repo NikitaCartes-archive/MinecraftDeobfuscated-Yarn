@@ -61,9 +61,13 @@ public class RegistryBuilder {
 
 	public RegistryWrapper.WrapperLookup createWrapperLookup(DynamicRegistryManager baseRegistryManager, RegistryWrapper.WrapperLookup wrapperLookup) {
 		RegistryBuilder.Registries registries = this.createBootstrappedRegistries(baseRegistryManager);
+		Map<RegistryKey<? extends Registry<?>>, RegistryBuilder.InitializedRegistry<?>> map = new HashMap();
+		registries.streamRegistries().forEach(registry -> map.put(registry.key, registry));
+		this.registries.stream().map(info -> info.init(registries)).forEach(registry -> map.put(registry.key, registry));
 		Stream<RegistryWrapper.Impl<?>> stream = baseRegistryManager.streamAllRegistries().map(entry -> entry.value().getReadOnlyWrapper());
-		Stream<RegistryWrapper.Impl<?>> stream2 = this.registries.stream().map(info -> info.init(registries).toWrapper());
-		RegistryWrapper.WrapperLookup wrapperLookup2 = RegistryWrapper.WrapperLookup.of(Stream.concat(stream, stream2.peek(registries::addOwner)));
+		RegistryWrapper.WrapperLookup wrapperLookup2 = RegistryWrapper.WrapperLookup.of(
+			Stream.concat(stream, map.values().stream().map(RegistryBuilder.InitializedRegistry::toWrapper).peek(registries::addOwner))
+		);
 		registries.setReferenceEntryValues(wrapperLookup);
 		registries.validateReferences();
 		registries.throwErrors();
@@ -109,8 +113,11 @@ public class RegistryBuilder {
 		}
 	}
 
-	static record InitializedRegistry<T>(RegistryBuilder.RegistryInfo<T> stub, Map<RegistryKey<T>, RegistryBuilder.EntryAssociatedValue<T>> values) {
-		final RegistryBuilder.RegistryInfo<T> stub;
+	static record InitializedRegistry<T>(
+		RegistryKey<? extends Registry<? extends T>> key, Lifecycle lifecycle, Map<RegistryKey<T>, RegistryBuilder.EntryAssociatedValue<T>> values
+	) {
+		final RegistryKey<? extends Registry<? extends T>> key;
+		final Lifecycle lifecycle;
 		final Map<RegistryKey<T>, RegistryBuilder.EntryAssociatedValue<T>> values;
 
 		public RegistryWrapper.Impl<T> toWrapper() {
@@ -133,12 +140,12 @@ public class RegistryBuilder {
 
 				@Override
 				public RegistryKey<? extends Registry<? extends T>> getRegistryKey() {
-					return InitializedRegistry.this.stub.key();
+					return InitializedRegistry.this.key;
 				}
 
 				@Override
 				public Lifecycle getLifecycle() {
-					return InitializedRegistry.this.stub.lifecycle();
+					return InitializedRegistry.this.lifecycle;
 				}
 
 				@Override
@@ -251,6 +258,16 @@ public class RegistryBuilder {
 					});
 			}
 		}
+
+		public Stream<RegistryBuilder.InitializedRegistry<?>> streamRegistries() {
+			return this.lookup
+				.keysToEntries
+				.keySet()
+				.stream()
+				.map(RegistryKey::getRegistry)
+				.distinct()
+				.map(registry -> new RegistryBuilder.InitializedRegistry(RegistryKey.ofRegistry(registry), Lifecycle.stable(), Map.of()));
+		}
 	}
 
 	static record RegistryInfo<T>(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, RegistryBuilder.BootstrapFunction<T> bootstrap) {
@@ -273,7 +290,7 @@ public class RegistryBuilder {
 				}
 			}
 
-			return new RegistryBuilder.InitializedRegistry<>(this, map);
+			return new RegistryBuilder.InitializedRegistry<>(this.key, this.lifecycle, map);
 		}
 	}
 

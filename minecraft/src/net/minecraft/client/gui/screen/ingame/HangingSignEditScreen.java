@@ -17,7 +17,7 @@ public class HangingSignEditScreen extends AbstractSignEditScreen {
 	private static final Vector3f TEXT_SCALE = new Vector3f(1.0F, 1.0F, 1.0F);
 	private static final int field_40433 = 16;
 	private static final int field_40434 = 16;
-	private final Identifier texture = new Identifier("textures/gui/hanging_signs/" + this.signType.getName() + ".png");
+	private final Identifier texture = new Identifier("textures/gui/hanging_signs/" + this.signType.name() + ".png");
 
 	public HangingSignEditScreen(SignBlockEntity signBlockEntity, boolean bl) {
 		super(signBlockEntity, bl, Text.translatable("hanging_sign.edit"));

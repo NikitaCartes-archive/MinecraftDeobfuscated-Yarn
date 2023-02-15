@@ -39,9 +39,7 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.EntityTypeTags;
@@ -143,21 +141,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion("slept_in_bed", TickCriterion.Conditions.createSleptInBed())
 			.build(exporter, "adventure/sleep_in_bed");
-		RegistryEntryLookup<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME);
-		requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.OVERWORLD.stream(registryEntryLookup).toList())
-			.parent(advancement2)
-			.display(
-				Items.DIAMOND_BOOTS,
-				Text.translatable("advancements.adventure.adventuring_time.title"),
-				Text.translatable("advancements.adventure.adventuring_time.description"),
-				null,
-				AdvancementFrame.CHALLENGE,
-				true,
-				true,
-				false
-			)
-			.rewards(AdvancementRewards.Builder.experience(500))
-			.build(exporter, "adventure/adventuring_time");
+		buildAdventuringTime(exporter, advancement2, MultiNoiseBiomeSource.Preset.OVERWORLD);
 		Advancement advancement3 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
@@ -602,6 +586,23 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion("avoid_vibration", TickCriterion.Conditions.createAvoidVibration())
 			.build(exporter, "adventure/avoid_vibration");
+	}
+
+	public static void buildAdventuringTime(Consumer<Advancement> exporter, Advancement parent, MultiNoiseBiomeSource.Preset preset) {
+		requireListedBiomesVisited(Advancement.Builder.create(), preset.stream().toList())
+			.parent(parent)
+			.display(
+				Items.DIAMOND_BOOTS,
+				Text.translatable("advancements.adventure.adventuring_time.title"),
+				Text.translatable("advancements.adventure.adventuring_time.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				false
+			)
+			.rewards(AdvancementRewards.Builder.experience(500))
+			.build(exporter, "adventure/adventuring_time");
 	}
 
 	private Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {

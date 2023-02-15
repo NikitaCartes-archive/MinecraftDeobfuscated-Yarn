@@ -11,7 +11,6 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.SignType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -37,8 +36,8 @@ public class WallSignBlock extends AbstractSignBlock {
 		)
 	);
 
-	public WallSignBlock(AbstractBlock.Settings settings, SignType signType) {
-		super(settings, signType);
+	public WallSignBlock(AbstractBlock.Settings settings, WoodType woodType) {
+		super(settings.sounds(woodType.soundType()), woodType);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
 	}
 

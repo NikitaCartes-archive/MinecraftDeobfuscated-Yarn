@@ -31,7 +31,7 @@ public class ScaffoldingItem extends BlockItem {
 			if (context.shouldCancelInteraction()) {
 				direction = context.hitsInsideBlock() ? context.getSide().getOpposite() : context.getSide();
 			} else {
-				direction = context.getSide() == Direction.UP ? context.getPlayerFacing() : Direction.UP;
+				direction = context.getSide() == Direction.UP ? context.getHorizontalPlayerFacing() : Direction.UP;
 			}
 
 			int i = 0;

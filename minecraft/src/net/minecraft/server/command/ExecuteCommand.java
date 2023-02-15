@@ -51,11 +51,12 @@ import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.command.argument.SwizzleArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.entity.Attackable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Ownable;
 import net.minecraft.entity.Tameable;
+import net.minecraft.entity.Targeter;
 import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.loot.condition.LootCondition;
@@ -836,12 +837,12 @@ public class ExecuteCommand {
 			)
 			.then(
 				CommandManager.literal("target")
-					.fork(node, createEntityModifier(entity -> entity instanceof MobEntity mobEntity ? Optional.ofNullable(mobEntity.getTarget()) : Optional.empty()))
+					.fork(node, createEntityModifier(entity -> entity instanceof Targeter targeter ? Optional.ofNullable(targeter.getTarget()) : Optional.empty()))
 			)
 			.then(
 				CommandManager.literal("attacker")
 					.fork(
-						node, createEntityModifier(entity -> entity instanceof LivingEntity livingEntity ? Optional.ofNullable(livingEntity.getAttacker()) : Optional.empty())
+						node, createEntityModifier(entity -> entity instanceof Attackable attackable ? Optional.ofNullable(attackable.getLastAttacker()) : Optional.empty())
 					)
 			)
 			.then(CommandManager.literal("vehicle").fork(node, createEntityModifier(entity -> Optional.ofNullable(entity.getVehicle()))))

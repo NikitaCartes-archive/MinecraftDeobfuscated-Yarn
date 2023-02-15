@@ -193,7 +193,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	private static boolean extract(Hopper hopper, Inventory inventory, int slot, Direction side) {
 		ItemStack itemStack = inventory.getStack(slot);
-		if (!itemStack.isEmpty() && canExtract(inventory, itemStack, slot, side)) {
+		if (!itemStack.isEmpty() && canExtract(hopper, inventory, itemStack, slot, side)) {
 			ItemStack itemStack2 = itemStack.copy();
 			ItemStack itemStack3 = transfer(inventory, hopper, inventory.removeStack(slot, 1), null);
 			if (itemStack3.isEmpty()) {
@@ -228,12 +228,14 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 			for(int i = 0; i < is.length && !stack.isEmpty(); ++i) {
 				stack = transfer(from, to, stack, is[i], side);
 			}
-		} else {
-			int j = to.size();
 
-			for(int k = 0; k < j && !stack.isEmpty(); ++k) {
-				stack = transfer(from, to, stack, k, side);
-			}
+			return stack;
+		}
+
+		int j = to.size();
+
+		for(int i = 0; i < j && !stack.isEmpty(); ++i) {
+			stack = transfer(from, to, stack, i, side);
 		}
 
 		return stack;
@@ -243,12 +245,24 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		if (!inventory.isValid(slot, stack)) {
 			return false;
 		} else {
-			return !(inventory instanceof SidedInventory) || ((SidedInventory)inventory).canInsert(slot, stack, side);
+			if (inventory instanceof SidedInventory sidedInventory && !sidedInventory.canInsert(slot, stack, side)) {
+				return false;
+			}
+
+			return true;
 		}
 	}
 
-	private static boolean canExtract(Inventory inv, ItemStack stack, int slot, Direction facing) {
-		return !(inv instanceof SidedInventory) || ((SidedInventory)inv).canExtract(slot, stack, facing);
+	private static boolean canExtract(Inventory hopperInventory, Inventory fromInventory, ItemStack stack, int slot, Direction facing) {
+		if (!fromInventory.canTransferTo(hopperInventory, slot, stack)) {
+			return false;
+		} else {
+			if (fromInventory instanceof SidedInventory sidedInventory && !sidedInventory.canExtract(slot, stack, facing)) {
+				return false;
+			}
+
+			return true;
+		}
 	}
 
 	private static ItemStack transfer(@Nullable Inventory from, Inventory to, ItemStack stack, int slot, @Nullable Direction side) {
@@ -347,10 +361,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 			return false;
 		} else if (first.getDamage() != second.getDamage()) {
 			return false;
-		} else if (first.getCount() > first.getMaxCount()) {
-			return false;
 		} else {
-			return ItemStack.areNbtEqual(first, second);
+			return first.getCount() > first.getMaxCount() ? false : ItemStack.areNbtEqual(first, second);
 		}
 	}
 

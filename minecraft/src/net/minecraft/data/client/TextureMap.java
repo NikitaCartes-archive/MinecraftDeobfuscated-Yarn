@@ -107,6 +107,10 @@ public class TextureMap {
 		return of(TextureKey.WOOL, getId(block));
 	}
 
+	public static TextureMap flowerbed(Block block) {
+		return new TextureMap().put(TextureKey.FLOWERBED, getId(block)).put(TextureKey.STEM, getSubId(block, "_stem"));
+	}
+
 	public static TextureMap wool(Identifier id) {
 		return of(TextureKey.WOOL, id);
 	}

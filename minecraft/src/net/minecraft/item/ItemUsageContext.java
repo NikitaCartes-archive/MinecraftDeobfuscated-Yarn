@@ -66,7 +66,13 @@ public class ItemUsageContext {
 		return this.world;
 	}
 
-	public Direction getPlayerFacing() {
+	/**
+	 * {@return the {@linkplain PlayerEntity#getHorizontalFacing horizontal facing
+	 * direction} of the player}
+	 * 
+	 * @implSpec If the player is {@code null}, returns {@link Direction#NORTH}.
+	 */
+	public Direction getHorizontalPlayerFacing() {
 		return this.player == null ? Direction.NORTH : this.player.getHorizontalFacing();
 	}
 

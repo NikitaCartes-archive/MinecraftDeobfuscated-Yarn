@@ -1977,6 +1977,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			);
 	}
 
+	public boolean canBeHitByProjectile() {
+		return this.isAlive() && this.canHit();
+	}
+
 	/**
 	 * {@return whether the entity can be hit with a projectile or be targeted by
 	 * the player crosshair}
@@ -3386,7 +3390,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * in order to prevent unwarranted fall damage.
 	 */
 	public void limitFallDistance() {
-		if (this.velocity.getY() > -0.5 && this.fallDistance > 1.0F) {
+		if (this.getVelocity().getY() > -0.5 && this.fallDistance > 1.0F) {
 			this.fallDistance = 1.0F;
 		}
 	}
@@ -4913,7 +4917,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void addVelocity(Vec3d velocity) {
-		this.velocity = this.velocity.add(velocity);
+		this.setVelocity(this.getVelocity().add(velocity));
 	}
 
 	public void setVelocity(double x, double y, double z) {
