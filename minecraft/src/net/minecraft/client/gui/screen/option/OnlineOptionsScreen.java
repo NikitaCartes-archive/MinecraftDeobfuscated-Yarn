@@ -56,13 +56,13 @@ public class OnlineOptionsScreen extends SimpleOptionsScreen {
 	protected void init() {
 		super.init();
 		if (this.difficulty != null) {
-			ClickableWidget clickableWidget = this.buttonList.getButtonFor(this.difficulty);
+			ClickableWidget clickableWidget = this.buttonList.getWidgetFor(this.difficulty);
 			if (clickableWidget != null) {
 				clickableWidget.active = false;
 			}
 		}
 
-		ClickableWidget clickableWidget = this.buttonList.getButtonFor(this.gameOptions.getTelemetryOptInExtra());
+		ClickableWidget clickableWidget = this.buttonList.getWidgetFor(this.gameOptions.getTelemetryOptInExtra());
 		if (clickableWidget != null) {
 			clickableWidget.active = this.client.isOptionalTelemetryEnabledByApi();
 		}

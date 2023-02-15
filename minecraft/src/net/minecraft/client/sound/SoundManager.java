@@ -37,7 +37,12 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class SoundManager extends SinglePreparationResourceReloader<SoundManager.SoundList> {
 	public static final Sound MISSING_SOUND = new Sound(
-		"meta:missing_sound", ConstantFloatProvider.create(1.0F), ConstantFloatProvider.create(1.0F), 1, Sound.RegistrationType.FILE, false, false, 16
+		"minecraft:empty", ConstantFloatProvider.create(1.0F), ConstantFloatProvider.create(1.0F), 1, Sound.RegistrationType.FILE, false, false, 16
+	);
+	public static final Identifier INTENTIONALLY_EMPTY_ID = new Identifier("minecraft", "intentionally_empty");
+	public static final WeightedSoundSet INTENTIONALLY_EMPTY_SOUND_SET = new WeightedSoundSet(INTENTIONALLY_EMPTY_ID, null);
+	public static final Sound INTENTIONALLY_EMPTY_SOUND = new Sound(
+		INTENTIONALLY_EMPTY_ID.toString(), ConstantFloatProvider.create(1.0F), ConstantFloatProvider.create(1.0F), 1, Sound.RegistrationType.FILE, false, false, 16
 	);
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final String SOUNDS_JSON = "sounds.json";

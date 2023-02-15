@@ -23,6 +23,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -76,10 +77,12 @@ public class SoundSystem {
 		UNKNOWN_SOUNDS.clear();
 
 		for (SoundEvent soundEvent : Registries.SOUND_EVENT) {
-			Identifier identifier = soundEvent.getId();
-			if (this.loader.get(identifier) == null) {
-				LOGGER.warn("Missing sound for event: {}", Registries.SOUND_EVENT.getId(soundEvent));
-				UNKNOWN_SOUNDS.add(identifier);
+			if (soundEvent != SoundEvents.INTENTIONALLY_EMPTY) {
+				Identifier identifier = soundEvent.getId();
+				if (this.loader.get(identifier) == null) {
+					LOGGER.warn("Missing sound for event: {}", Registries.SOUND_EVENT.getId(soundEvent));
+					UNKNOWN_SOUNDS.add(identifier);
+				}
 			}
 		}
 
@@ -317,77 +320,79 @@ public class SoundSystem {
 					}
 				} else {
 					Sound sound2 = sound.getSound();
-					if (sound2 == SoundManager.MISSING_SOUND) {
-						if (UNKNOWN_SOUNDS.add(identifier)) {
-							LOGGER.warn(MARKER, "Unable to play empty soundEvent: {}", identifier);
-						}
-					} else {
-						float f = sound.getVolume();
-						float g = Math.max(f, 1.0F) * (float)sound2.getAttenuation();
-						SoundCategory soundCategory = sound.getCategory();
-						float h = this.getAdjustedVolume(f, soundCategory);
-						float i = this.getAdjustedPitch(sound);
-						SoundInstance.AttenuationType attenuationType = sound.getAttenuationType();
-						boolean bl = sound.isRelative();
-						if (h == 0.0F && !sound.shouldAlwaysPlay()) {
-							LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound2.getIdentifier());
-						} else {
-							Vec3d vec3d = new Vec3d(sound.getX(), sound.getY(), sound.getZ());
-							if (!this.listeners.isEmpty()) {
-								boolean bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.getPos().squaredDistanceTo(vec3d) < (double)(g * g);
-								if (bl2) {
-									for (SoundInstanceListener soundInstanceListener : this.listeners) {
-										soundInstanceListener.onSoundPlayed(sound, weightedSoundSet);
-									}
-								} else {
-									LOGGER.debug(MARKER, "Did not notify listeners of soundEvent: {}, it is too far away to hear", identifier);
-								}
+					if (sound2 != SoundManager.INTENTIONALLY_EMPTY_SOUND) {
+						if (sound2 == SoundManager.MISSING_SOUND) {
+							if (UNKNOWN_SOUNDS.add(identifier)) {
+								LOGGER.warn(MARKER, "Unable to play empty soundEvent: {}", identifier);
 							}
-
-							if (this.listener.getVolume() <= 0.0F) {
-								LOGGER.debug(MARKER, "Skipped playing soundEvent: {}, master volume was zero", identifier);
+						} else {
+							float f = sound.getVolume();
+							float g = Math.max(f, 1.0F) * (float)sound2.getAttenuation();
+							SoundCategory soundCategory = sound.getCategory();
+							float h = this.getAdjustedVolume(f, soundCategory);
+							float i = this.getAdjustedPitch(sound);
+							SoundInstance.AttenuationType attenuationType = sound.getAttenuationType();
+							boolean bl = sound.isRelative();
+							if (h == 0.0F && !sound.shouldAlwaysPlay()) {
+								LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound2.getIdentifier());
 							} else {
-								boolean bl2 = shouldRepeatInstantly(sound);
-								boolean bl3 = sound2.isStreamed();
-								CompletableFuture<Channel.SourceManager> completableFuture = this.channel
-									.createSource(sound2.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
-								Channel.SourceManager sourceManager = (Channel.SourceManager)completableFuture.join();
-								if (sourceManager == null) {
-									if (SharedConstants.isDevelopment) {
-										LOGGER.warn("Failed to create new sound handle");
+								Vec3d vec3d = new Vec3d(sound.getX(), sound.getY(), sound.getZ());
+								if (!this.listeners.isEmpty()) {
+									boolean bl2 = bl || attenuationType == SoundInstance.AttenuationType.NONE || this.listener.getPos().squaredDistanceTo(vec3d) < (double)(g * g);
+									if (bl2) {
+										for (SoundInstanceListener soundInstanceListener : this.listeners) {
+											soundInstanceListener.onSoundPlayed(sound, weightedSoundSet);
+										}
+									} else {
+										LOGGER.debug(MARKER, "Did not notify listeners of soundEvent: {}, it is too far away to hear", identifier);
 									}
+								}
+
+								if (this.listener.getVolume() <= 0.0F) {
+									LOGGER.debug(MARKER, "Skipped playing soundEvent: {}, master volume was zero", identifier);
 								} else {
-									LOGGER.debug(MARKER, "Playing sound {} for event {}", sound2.getIdentifier(), identifier);
-									this.soundEndTicks.put(sound, this.ticks + 20);
-									this.sources.put(sound, sourceManager);
-									this.sounds.put(soundCategory, sound);
-									sourceManager.run(source -> {
-										source.setPitch(i);
-										source.setVolume(h);
-										if (attenuationType == SoundInstance.AttenuationType.LINEAR) {
-											source.setAttenuation(g);
+									boolean bl2 = shouldRepeatInstantly(sound);
+									boolean bl3 = sound2.isStreamed();
+									CompletableFuture<Channel.SourceManager> completableFuture = this.channel
+										.createSource(sound2.isStreamed() ? SoundEngine.RunMode.STREAMING : SoundEngine.RunMode.STATIC);
+									Channel.SourceManager sourceManager = (Channel.SourceManager)completableFuture.join();
+									if (sourceManager == null) {
+										if (SharedConstants.isDevelopment) {
+											LOGGER.warn("Failed to create new sound handle");
+										}
+									} else {
+										LOGGER.debug(MARKER, "Playing sound {} for event {}", sound2.getIdentifier(), identifier);
+										this.soundEndTicks.put(sound, this.ticks + 20);
+										this.sources.put(sound, sourceManager);
+										this.sounds.put(soundCategory, sound);
+										sourceManager.run(source -> {
+											source.setPitch(i);
+											source.setVolume(h);
+											if (attenuationType == SoundInstance.AttenuationType.LINEAR) {
+												source.setAttenuation(g);
+											} else {
+												source.disableAttenuation();
+											}
+
+											source.setLooping(bl2 && !bl3);
+											source.setPosition(vec3d);
+											source.setRelative(bl);
+										});
+										if (!bl3) {
+											this.soundLoader.loadStatic(sound2.getLocation()).thenAccept(soundx -> sourceManager.run(source -> {
+													source.setBuffer(soundx);
+													source.play();
+												}));
 										} else {
-											source.disableAttenuation();
+											this.soundLoader.loadStreamed(sound2.getLocation(), bl2).thenAccept(stream -> sourceManager.run(source -> {
+													source.setStream(stream);
+													source.play();
+												}));
 										}
 
-										source.setLooping(bl2 && !bl3);
-										source.setPosition(vec3d);
-										source.setRelative(bl);
-									});
-									if (!bl3) {
-										this.soundLoader.loadStatic(sound2.getLocation()).thenAccept(soundx -> sourceManager.run(source -> {
-												source.setBuffer(soundx);
-												source.play();
-											}));
-									} else {
-										this.soundLoader.loadStreamed(sound2.getLocation(), bl2).thenAccept(stream -> sourceManager.run(source -> {
-												source.setStream(stream);
-												source.play();
-											}));
-									}
-
-									if (sound instanceof TickableSoundInstance) {
-										this.tickingSounds.add((TickableSoundInstance)sound);
+										if (sound instanceof TickableSoundInstance) {
+											this.tickingSounds.add((TickableSoundInstance)sound);
+										}
 									}
 								}
 							}

@@ -186,6 +186,7 @@ public final class Material {
 		.destroyedByPiston()
 		.build();
 	public static final Material FROGLIGHT = new Material.Builder(MapColor.CLEAR).build();
+	public static final Material DECORATED_POT = new Material.Builder(MapColor.TERRACOTTA_RED).destroyedByPiston().build();
 	private final MapColor color;
 	private final PistonBehavior pistonBehavior;
 	private final boolean blocksMovement;

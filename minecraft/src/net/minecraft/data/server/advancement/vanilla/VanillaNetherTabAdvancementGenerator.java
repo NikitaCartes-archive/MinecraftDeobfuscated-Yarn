@@ -1,7 +1,5 @@
 package net.minecraft.data.server.advancement.vanilla;
 
-import com.google.common.collect.ImmutableList;
-import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
@@ -42,21 +40,16 @@ import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGenerator {
-	private static final List<RegistryKey<Biome>> NETHER_BIOMES = ImmutableList.of(
-		BiomeKeys.NETHER_WASTES, BiomeKeys.SOUL_SAND_VALLEY, BiomeKeys.WARPED_FOREST, BiomeKeys.CRIMSON_FOREST, BiomeKeys.BASALT_DELTAS
-	);
 	private static final EntityPredicate.Extended PIGLIN_DISTRACTION_PREDICATE = EntityPredicate.Extended.create(
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
@@ -474,7 +467,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				)
 			)
 			.build(exporter, "nether/ride_strider_in_overworld_lava");
-		VanillaAdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Builder.create(), NETHER_BIOMES)
+		VanillaAdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.NETHER.stream().toList())
 			.parent(advancement12)
 			.display(
 				Items.NETHERITE_BOOTS,

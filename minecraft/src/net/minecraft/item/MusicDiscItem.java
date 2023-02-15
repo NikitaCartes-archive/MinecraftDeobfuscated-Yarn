@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.JukeboxBlock;
+import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvent;
@@ -17,7 +18,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
+import net.minecraft.world.event.GameEvent;
 
 public class MusicDiscItem extends Item {
 	private static final Map<SoundEvent, MusicDiscItem> MUSIC_DISCS = Maps.<SoundEvent, MusicDiscItem>newHashMap();
@@ -41,10 +42,13 @@ public class MusicDiscItem extends Item {
 		if (blockState.isOf(Blocks.JUKEBOX) && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
 			ItemStack itemStack = context.getStack();
 			if (!world.isClient) {
-				((JukeboxBlock)Blocks.JUKEBOX).setRecord(context.getPlayer(), world, blockPos, blockState, itemStack);
-				world.syncWorldEvent(null, WorldEvents.MUSIC_DISC_PLAYED, blockPos, Item.getRawId(this));
-				itemStack.decrement(1);
 				PlayerEntity playerEntity = context.getPlayer();
+				if (world.getBlockEntity(blockPos) instanceof JukeboxBlockEntity jukeboxBlockEntity) {
+					jukeboxBlockEntity.setStack(itemStack.copy());
+					world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos, GameEvent.Emitter.of(playerEntity, blockState));
+				}
+
+				itemStack.decrement(1);
 				if (playerEntity != null) {
 					playerEntity.incrementStat(Stats.PLAY_RECORD);
 				}

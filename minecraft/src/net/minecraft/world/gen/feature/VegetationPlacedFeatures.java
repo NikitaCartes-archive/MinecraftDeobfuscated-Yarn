@@ -75,12 +75,14 @@ public class VegetationPlacedFeatures {
 	public static final RegistryKey<PlacedFeature> FLOWER_SWAMP = PlacedFeatures.of("flower_swamp");
 	public static final RegistryKey<PlacedFeature> FLOWER_PLAIN = PlacedFeatures.of("flower_plains");
 	public static final RegistryKey<PlacedFeature> FLOWER_MEADOW = PlacedFeatures.of("flower_meadow");
+	public static final RegistryKey<PlacedFeature> FLOWER_CHERRY = PlacedFeatures.of("flower_cherry");
 	public static final RegistryKey<PlacedFeature> TREES_PLAINS = PlacedFeatures.of("trees_plains");
 	public static final RegistryKey<PlacedFeature> DARK_FOREST_VEGETATION = PlacedFeatures.of("dark_forest_vegetation");
 	public static final RegistryKey<PlacedFeature> FLOWER_FOREST_FLOWERS = PlacedFeatures.of("flower_forest_flowers");
 	public static final RegistryKey<PlacedFeature> FOREST_FLOWERS = PlacedFeatures.of("forest_flowers");
 	public static final RegistryKey<PlacedFeature> TREES_FLOWER_FOREST = PlacedFeatures.of("trees_flower_forest");
 	public static final RegistryKey<PlacedFeature> TREES_MEADOW = PlacedFeatures.of("trees_meadow");
+	public static final RegistryKey<PlacedFeature> TREES_CHERRY = PlacedFeatures.of("trees_cherry");
 	public static final RegistryKey<PlacedFeature> TREES_TAIGA = PlacedFeatures.of("trees_taiga");
 	public static final RegistryKey<PlacedFeature> TREES_GROVE = PlacedFeatures.of("trees_grove");
 	public static final RegistryKey<PlacedFeature> TREES_BADLANDS = PlacedFeatures.of("trees_badlands");
@@ -107,7 +109,7 @@ public class VegetationPlacedFeatures {
 		return List.of(CountPlacementModifier.of(count), SquarePlacementModifier.of(), PlacedFeatures.WORLD_SURFACE_WG_HEIGHTMAP, BiomePlacementModifier.of());
 	}
 
-	private static List<PlacementModifier> modifiersWithChance(int chance, @Nullable PlacementModifier modifier) {
+	private static List<PlacementModifier> mushroomModifiers(int chance, @Nullable PlacementModifier modifier) {
 		Builder<PlacementModifier> builder = ImmutableList.builder();
 		if (modifier != null) {
 			builder.add(modifier);
@@ -123,7 +125,7 @@ public class VegetationPlacedFeatures {
 		return builder.build();
 	}
 
-	private static Builder<PlacementModifier> modifiersBuilder(PlacementModifier countModifier) {
+	private static Builder<PlacementModifier> treeModifiersBuilder(PlacementModifier countModifier) {
 		return ImmutableList.<PlacementModifier>builder()
 			.add(countModifier)
 			.add(SquarePlacementModifier.of())
@@ -132,12 +134,12 @@ public class VegetationPlacedFeatures {
 			.add(BiomePlacementModifier.of());
 	}
 
-	public static List<PlacementModifier> modifiers(PlacementModifier modifier) {
-		return modifiersBuilder(modifier).build();
+	public static List<PlacementModifier> treeModifiers(PlacementModifier modifier) {
+		return treeModifiersBuilder(modifier).build();
 	}
 
-	public static List<PlacementModifier> modifiersWithWouldSurvive(PlacementModifier modifier, Block block) {
-		return modifiersBuilder(modifier).add(BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(block.getDefaultState(), BlockPos.ORIGIN))).build();
+	public static List<PlacementModifier> treeModifiersWithWouldSurvive(PlacementModifier modifier, Block block) {
+		return treeModifiersBuilder(modifier).add(BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(block.getDefaultState(), BlockPos.ORIGIN))).build();
 	}
 
 	public static void bootstrap(Registerable<PlacedFeature> featureRegisterable) {
@@ -166,29 +168,31 @@ public class VegetationPlacedFeatures {
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry22 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.FLOWER_SWAMP);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry23 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.FLOWER_PLAIN);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry24 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.FLOWER_MEADOW);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry25 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_PLAINS);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry26 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.DARK_FOREST_VEGETATION);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry27 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.FOREST_FLOWERS);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry28 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_FLOWER_FOREST);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry29 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.MEADOW_TREES);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry30 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_TAIGA);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry31 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_GROVE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry32 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.OAK);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry33 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.SPRUCE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry34 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.SWAMP_OAK);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry35 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_SAVANNA);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry36 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.BIRCH_TALL);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry37 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.BIRCH_BEES_0002);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry38 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_WINDSWEPT_HILLS);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry39 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_WATER);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry40 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_BIRCH_AND_OAK);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry41 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_SPARSE_JUNGLE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry42 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_OLD_GROWTH_SPRUCE_TAIGA);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry43 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_OLD_GROWTH_PINE_TAIGA);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry44 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_JUNGLE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry45 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.BAMBOO_VEGETATION);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry46 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.MUSHROOM_ISLAND_VEGETATION);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry47 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.MANGROVE_VEGETATION);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry25 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.FLOWER_CHERRY);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry26 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_PLAINS);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry27 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.DARK_FOREST_VEGETATION);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry28 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.FOREST_FLOWERS);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry29 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_FLOWER_FOREST);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry30 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.MEADOW_TREES);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry31 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_TAIGA);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry32 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_GROVE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry33 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.OAK);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry34 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.SPRUCE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry35 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.CHERRY_BEES_005);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry36 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.SWAMP_OAK);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry37 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_SAVANNA);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry38 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.BIRCH_TALL);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry39 = registryEntryLookup.getOrThrow(TreeConfiguredFeatures.BIRCH_BEES_0002);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry40 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_WINDSWEPT_HILLS);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry41 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_WATER);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry42 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_BIRCH_AND_OAK);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry43 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_SPARSE_JUNGLE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry44 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_OLD_GROWTH_SPRUCE_TAIGA);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry45 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_OLD_GROWTH_PINE_TAIGA);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry46 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.TREES_JUNGLE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry47 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.BAMBOO_VEGETATION);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry48 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.MUSHROOM_ISLAND_VEGETATION);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry49 = registryEntryLookup.getOrThrow(VegetationConfiguredFeatures.MANGROVE_VEGETATION);
 		PlacedFeatures.register(
 			featureRegisterable,
 			BAMBOO_LIGHT,
@@ -406,14 +410,14 @@ public class VegetationPlacedFeatures {
 			PlacedFeatures.BOTTOM_TO_TOP_RANGE,
 			BiomePlacementModifier.of()
 		);
-		PlacedFeatures.register(featureRegisterable, BROWN_MUSHROOM_NORMAL, registryEntry18, modifiersWithChance(256, null));
-		PlacedFeatures.register(featureRegisterable, RED_MUSHROOM_NORMAL, registryEntry19, modifiersWithChance(512, null));
-		PlacedFeatures.register(featureRegisterable, BROWN_MUSHROOM_TAIGA, registryEntry18, modifiersWithChance(4, null));
-		PlacedFeatures.register(featureRegisterable, RED_MUSHROOM_TAIGA, registryEntry19, modifiersWithChance(256, null));
-		PlacedFeatures.register(featureRegisterable, BROWN_MUSHROOM_OLD_GROWTH, registryEntry18, modifiersWithChance(4, CountPlacementModifier.of(3)));
-		PlacedFeatures.register(featureRegisterable, RED_MUSHROOM_OLD_GROWTH, registryEntry19, modifiersWithChance(171, null));
-		PlacedFeatures.register(featureRegisterable, BROWN_MUSHROOM_SWAMP, registryEntry18, modifiersWithChance(0, CountPlacementModifier.of(2)));
-		PlacedFeatures.register(featureRegisterable, RED_MUSHROOM_SWAMP, registryEntry19, modifiersWithChance(64, null));
+		PlacedFeatures.register(featureRegisterable, BROWN_MUSHROOM_NORMAL, registryEntry18, mushroomModifiers(256, null));
+		PlacedFeatures.register(featureRegisterable, RED_MUSHROOM_NORMAL, registryEntry19, mushroomModifiers(512, null));
+		PlacedFeatures.register(featureRegisterable, BROWN_MUSHROOM_TAIGA, registryEntry18, mushroomModifiers(4, null));
+		PlacedFeatures.register(featureRegisterable, RED_MUSHROOM_TAIGA, registryEntry19, mushroomModifiers(256, null));
+		PlacedFeatures.register(featureRegisterable, BROWN_MUSHROOM_OLD_GROWTH, registryEntry18, mushroomModifiers(4, CountPlacementModifier.of(3)));
+		PlacedFeatures.register(featureRegisterable, RED_MUSHROOM_OLD_GROWTH, registryEntry19, mushroomModifiers(171, null));
+		PlacedFeatures.register(featureRegisterable, BROWN_MUSHROOM_SWAMP, registryEntry18, mushroomModifiers(0, CountPlacementModifier.of(2)));
+		PlacedFeatures.register(featureRegisterable, RED_MUSHROOM_SWAMP, registryEntry19, mushroomModifiers(64, null));
 		PlacedFeatures.register(
 			featureRegisterable,
 			FLOWER_WARM,
@@ -462,13 +466,22 @@ public class VegetationPlacedFeatures {
 			BiomePlacementModifier.of()
 		);
 		PlacedFeatures.register(
+			featureRegisterable,
+			FLOWER_CHERRY,
+			registryEntry25,
+			NoiseThresholdCountPlacementModifier.of(-0.8, 5, 10),
+			SquarePlacementModifier.of(),
+			PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
+			BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
 			featureRegisterable, FLOWER_MEADOW, registryEntry24, SquarePlacementModifier.of(), PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP, BiomePlacementModifier.of()
 		);
 		PlacementModifier placementModifier = SurfaceWaterDepthFilterPlacementModifier.of(0);
 		PlacedFeatures.register(
 			featureRegisterable,
 			TREES_PLAINS,
-			registryEntry25,
+			registryEntry26,
 			PlacedFeatures.createCountExtraModifier(0, 0.05F, 1),
 			SquarePlacementModifier.of(),
 			placementModifier,
@@ -479,7 +492,7 @@ public class VegetationPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			DARK_FOREST_VEGETATION,
-			registryEntry26,
+			registryEntry27,
 			CountPlacementModifier.of(16),
 			SquarePlacementModifier.of(),
 			placementModifier,
@@ -489,7 +502,7 @@ public class VegetationPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			FLOWER_FOREST_FLOWERS,
-			registryEntry27,
+			registryEntry28,
 			RarityFilterPlacementModifier.of(7),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
@@ -499,27 +512,33 @@ public class VegetationPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			FOREST_FLOWERS,
-			registryEntry27,
+			registryEntry28,
 			RarityFilterPlacementModifier.of(7),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
 			CountPlacementModifier.of(ClampedIntProvider.create(UniformIntProvider.create(-3, 1), 0, 1)),
 			BiomePlacementModifier.of()
 		);
-		PlacedFeatures.register(featureRegisterable, TREES_FLOWER_FOREST, registryEntry28, modifiers(PlacedFeatures.createCountExtraModifier(6, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, TREES_MEADOW, registryEntry29, modifiers(RarityFilterPlacementModifier.of(100)));
-		PlacedFeatures.register(featureRegisterable, TREES_TAIGA, registryEntry30, modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, TREES_GROVE, registryEntry31, modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, TREES_FLOWER_FOREST, registryEntry29, treeModifiers(PlacedFeatures.createCountExtraModifier(6, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, TREES_MEADOW, registryEntry30, treeModifiers(RarityFilterPlacementModifier.of(100)));
 		PlacedFeatures.register(
-			featureRegisterable, TREES_BADLANDS, registryEntry32, modifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(5, 0.1F, 1), Blocks.OAK_SAPLING)
+			featureRegisterable,
+			TREES_CHERRY,
+			registryEntry35,
+			treeModifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1), Blocks.CHERRY_SAPLING)
+		);
+		PlacedFeatures.register(featureRegisterable, TREES_TAIGA, registryEntry31, treeModifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, TREES_GROVE, registryEntry32, treeModifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
+		PlacedFeatures.register(
+			featureRegisterable, TREES_BADLANDS, registryEntry33, treeModifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(5, 0.1F, 1), Blocks.OAK_SAPLING)
 		);
 		PlacedFeatures.register(
-			featureRegisterable, TREES_SNOWY, registryEntry33, modifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1), Blocks.SPRUCE_SAPLING)
+			featureRegisterable, TREES_SNOWY, registryEntry34, treeModifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1), Blocks.SPRUCE_SAPLING)
 		);
 		PlacedFeatures.register(
 			featureRegisterable,
 			TREES_SWAMP,
-			registryEntry34,
+			registryEntry36,
 			PlacedFeatures.createCountExtraModifier(2, 0.1F, 1),
 			SquarePlacementModifier.of(),
 			SurfaceWaterDepthFilterPlacementModifier.of(2),
@@ -527,25 +546,29 @@ public class VegetationPlacedFeatures {
 			BiomePlacementModifier.of(),
 			BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(Blocks.OAK_SAPLING.getDefaultState(), BlockPos.ORIGIN))
 		);
-		PlacedFeatures.register(featureRegisterable, TREES_WINDSWEPT_SAVANNA, registryEntry35, modifiers(PlacedFeatures.createCountExtraModifier(2, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, TREES_SAVANNA, registryEntry35, modifiers(PlacedFeatures.createCountExtraModifier(1, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, BIRCH_TALL, registryEntry36, modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, TREES_WINDSWEPT_SAVANNA, registryEntry37, treeModifiers(PlacedFeatures.createCountExtraModifier(2, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, TREES_SAVANNA, registryEntry37, treeModifiers(PlacedFeatures.createCountExtraModifier(1, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, BIRCH_TALL, registryEntry38, treeModifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
 		PlacedFeatures.register(
-			featureRegisterable, TREES_BIRCH, registryEntry37, modifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1), Blocks.BIRCH_SAPLING)
+			featureRegisterable, TREES_BIRCH, registryEntry39, treeModifiersWithWouldSurvive(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1), Blocks.BIRCH_SAPLING)
 		);
-		PlacedFeatures.register(featureRegisterable, TREES_WINDSWEPT_FOREST, registryEntry38, modifiers(PlacedFeatures.createCountExtraModifier(3, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, TREES_WINDSWEPT_HILLS, registryEntry38, modifiers(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, TREES_WATER, registryEntry39, modifiers(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, TREES_BIRCH_AND_OAK, registryEntry40, modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, TREES_SPARSE_JUNGLE, registryEntry41, modifiers(PlacedFeatures.createCountExtraModifier(2, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, TREES_OLD_GROWTH_SPRUCE_TAIGA, registryEntry42, modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, TREES_OLD_GROWTH_PINE_TAIGA, registryEntry43, modifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, TREES_JUNGLE, registryEntry44, modifiers(PlacedFeatures.createCountExtraModifier(50, 0.1F, 1)));
-		PlacedFeatures.register(featureRegisterable, BAMBOO_VEGETATION, registryEntry45, modifiers(PlacedFeatures.createCountExtraModifier(30, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, TREES_WINDSWEPT_FOREST, registryEntry40, treeModifiers(PlacedFeatures.createCountExtraModifier(3, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, TREES_WINDSWEPT_HILLS, registryEntry40, treeModifiers(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, TREES_WATER, registryEntry41, treeModifiers(PlacedFeatures.createCountExtraModifier(0, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, TREES_BIRCH_AND_OAK, registryEntry42, treeModifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, TREES_SPARSE_JUNGLE, registryEntry43, treeModifiers(PlacedFeatures.createCountExtraModifier(2, 0.1F, 1)));
+		PlacedFeatures.register(
+			featureRegisterable, TREES_OLD_GROWTH_SPRUCE_TAIGA, registryEntry44, treeModifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1))
+		);
+		PlacedFeatures.register(
+			featureRegisterable, TREES_OLD_GROWTH_PINE_TAIGA, registryEntry45, treeModifiers(PlacedFeatures.createCountExtraModifier(10, 0.1F, 1))
+		);
+		PlacedFeatures.register(featureRegisterable, TREES_JUNGLE, registryEntry46, treeModifiers(PlacedFeatures.createCountExtraModifier(50, 0.1F, 1)));
+		PlacedFeatures.register(featureRegisterable, BAMBOO_VEGETATION, registryEntry47, treeModifiers(PlacedFeatures.createCountExtraModifier(30, 0.1F, 1)));
 		PlacedFeatures.register(
 			featureRegisterable,
 			MUSHROOM_ISLAND_VEGETATION,
-			registryEntry46,
+			registryEntry48,
 			SquarePlacementModifier.of(),
 			PlacedFeatures.MOTION_BLOCKING_HEIGHTMAP,
 			BiomePlacementModifier.of()
@@ -553,7 +576,7 @@ public class VegetationPlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			TREES_MANGROVE,
-			registryEntry47,
+			registryEntry49,
 			CountPlacementModifier.of(25),
 			SquarePlacementModifier.of(),
 			SurfaceWaterDepthFilterPlacementModifier.of(5),

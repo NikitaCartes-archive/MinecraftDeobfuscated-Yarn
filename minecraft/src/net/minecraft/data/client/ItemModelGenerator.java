@@ -117,7 +117,9 @@ public class ItemModelGenerator {
 
 	public void register() {
 		this.register(Items.ACACIA_BOAT, Models.GENERATED);
+		this.register(Items.CHERRY_BOAT, Models.GENERATED);
 		this.register(Items.ACACIA_CHEST_BOAT, Models.GENERATED);
+		this.register(Items.CHERRY_CHEST_BOAT, Models.GENERATED);
 		this.register(Items.AMETHYST_SHARD, Models.GENERATED);
 		this.register(Items.APPLE, Models.GENERATED);
 		this.register(Items.ARMOR_STAND, Models.GENERATED);
@@ -363,6 +365,11 @@ public class ItemModelGenerator {
 				this.registerArmor(armorItem);
 			}
 		}
+
+		this.register(Items.POTTERY_SHARD_ARCHER, Models.GENERATED);
+		this.register(Items.POTTERY_SHARD_PRIZE, Models.GENERATED);
+		this.register(Items.POTTERY_SHARD_ARMS_UP, Models.GENERATED);
+		this.register(Items.POTTERY_SHARD_SKULL, Models.GENERATED);
 	}
 
 	static record TrimMaterial(String name, float itemModelIndex, Map<ArmorMaterial, String> overrideArmorMaterials) {

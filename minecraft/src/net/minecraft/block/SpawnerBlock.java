@@ -39,8 +39,8 @@ public class SpawnerBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
-		super.onStacksDropped(state, world, pos, stack, dropExperience);
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
+		super.onStacksDropped(state, world, pos, tool, dropExperience);
 		if (dropExperience) {
 			int i = 15 + world.random.nextInt(15) + world.random.nextInt(15);
 			this.dropExperience(world, pos, i);

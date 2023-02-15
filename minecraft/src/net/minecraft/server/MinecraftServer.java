@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -11,6 +12,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -20,12 +22,11 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.net.Proxy;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.security.KeyPair;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -156,7 +157,6 @@ import net.minecraft.world.spawner.CatSpawner;
 import net.minecraft.world.spawner.PatrolSpawner;
 import net.minecraft.world.spawner.PhantomSpawner;
 import net.minecraft.world.spawner.Spawner;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 
 /**
@@ -211,7 +211,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private boolean needsDebugSetup;
 	private final ServerNetworkIo networkIo;
 	private final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
-	private final ServerMetadata metadata = new ServerMetadata();
+	@Nullable
+	private ServerMetadata metadata;
+	@Nullable
+	private ServerMetadata.Favicon favicon;
 	private final Random random = Random.create();
 	private final DataFixer dataFixer;
 	private String serverIp;
@@ -697,10 +700,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			this.timeReference = Util.getMeasuringTimeMs();
-			this.metadata.setDescription(Text.literal(this.motd));
-			this.metadata.setVersion(new ServerMetadata.Version(SharedConstants.getGameVersion().getName(), SharedConstants.getGameVersion().getProtocolVersion()));
-			this.metadata.setSecureChatEnforced(this.shouldEnforceSecureProfile());
-			this.setFavicon(this.metadata);
+			this.favicon = (ServerMetadata.Favicon)this.loadFavicon().orElse(null);
+			this.metadata = this.createMetadata();
 
 			while (this.running) {
 				long l = Util.getMeasuringTimeMs() - this.timeReference;
@@ -824,23 +825,21 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		super.executeTask(serverTask);
 	}
 
-	private void setFavicon(ServerMetadata metadata) {
-		Optional<File> optional = Optional.of(this.getFile("server-icon.png")).filter(File::isFile);
-		if (!optional.isPresent()) {
-			optional = this.session.getIconFile().map(Path::toFile).filter(File::isFile);
-		}
-
-		optional.ifPresent(file -> {
+	private Optional<ServerMetadata.Favicon> loadFavicon() {
+		Optional<Path> optional = Optional.of(this.getFile("server-icon.png").toPath())
+			.filter(path -> Files.isRegularFile(path, new LinkOption[0]))
+			.or(() -> this.session.getIconFile().filter(path -> Files.isRegularFile(path, new LinkOption[0])));
+		return optional.flatMap(path -> {
 			try {
-				BufferedImage bufferedImage = ImageIO.read(file);
-				Validate.validState(bufferedImage.getWidth() == 64, "Must be 64 pixels wide");
-				Validate.validState(bufferedImage.getHeight() == 64, "Must be 64 pixels high");
+				BufferedImage bufferedImage = ImageIO.read(path.toFile());
+				Preconditions.checkState(bufferedImage.getWidth() == 64, "Must be 64 pixels wide");
+				Preconditions.checkState(bufferedImage.getHeight() == 64, "Must be 64 pixels high");
 				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 				ImageIO.write(bufferedImage, "PNG", byteArrayOutputStream);
-				byte[] bs = Base64.getEncoder().encode(byteArrayOutputStream.toByteArray());
-				metadata.setFavicon("data:image/png;base64," + new String(bs, StandardCharsets.UTF_8));
-			} catch (Exception var5) {
-				LOGGER.error("Couldn't load server icon", (Throwable)var5);
+				return Optional.of(new ServerMetadata.Favicon(byteArrayOutputStream.toByteArray()));
+			} catch (Exception var3) {
+				LOGGER.error("Couldn't load server icon", (Throwable)var3);
+				return Optional.empty();
 			}
 		});
 	}
@@ -865,23 +864,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.tickWorlds(shouldKeepTicking);
 		if (l - this.lastPlayerSampleUpdate >= 5000000000L) {
 			this.lastPlayerSampleUpdate = l;
-			this.metadata.setPlayers(new ServerMetadata.Players(this.getMaxPlayerCount(), this.getCurrentPlayerCount()));
-			if (!this.hideOnlinePlayers()) {
-				GameProfile[] gameProfiles = new GameProfile[Math.min(this.getCurrentPlayerCount(), 12)];
-				int i = MathHelper.nextInt(this.random, 0, this.getCurrentPlayerCount() - gameProfiles.length);
-
-				for (int j = 0; j < gameProfiles.length; j++) {
-					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.playerManager.getPlayerList().get(i + j);
-					if (serverPlayerEntity.allowsServerListing()) {
-						gameProfiles[j] = serverPlayerEntity.getGameProfile();
-					} else {
-						gameProfiles[j] = ANONYMOUS_PLAYER_PROFILE;
-					}
-				}
-
-				Collections.shuffle(Arrays.asList(gameProfiles));
-				this.metadata.getPlayers().setSample(gameProfiles);
-			}
+			this.metadata = this.createMetadata();
 		}
 
 		if (this.ticks % 6000 == 0) {
@@ -898,6 +881,33 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		long n = Util.getMeasuringTimeNano();
 		this.metricsData.pushSample(n - l);
 		this.profiler.pop();
+	}
+
+	private ServerMetadata createMetadata() {
+		ServerMetadata.Players players = this.createMetadataPlayers();
+		return new ServerMetadata(
+			Text.of(this.motd), Optional.of(players), Optional.of(ServerMetadata.Version.create()), Optional.ofNullable(this.favicon), this.shouldEnforceSecureProfile()
+		);
+	}
+
+	private ServerMetadata.Players createMetadataPlayers() {
+		List<ServerPlayerEntity> list = this.playerManager.getPlayerList();
+		int i = this.getMaxPlayerCount();
+		if (this.hideOnlinePlayers()) {
+			return new ServerMetadata.Players(i, list.size(), List.of());
+		} else {
+			int j = Math.min(list.size(), 12);
+			ObjectArrayList<GameProfile> objectArrayList = new ObjectArrayList<>(j);
+			int k = MathHelper.nextInt(this.random, 0, list.size() - j);
+
+			for (int l = 0; l < j; l++) {
+				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)list.get(k + l);
+				objectArrayList.add(serverPlayerEntity.allowsServerListing() ? serverPlayerEntity.getGameProfile() : ANONYMOUS_PLAYER_PROFILE);
+			}
+
+			Util.shuffle(objectArrayList, this.random);
+			return new ServerMetadata.Players(i, list.size(), objectArrayList);
+		}
 	}
 
 	public void tickWorlds(BooleanSupplier shouldKeepTicking) {
@@ -1334,6 +1344,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.apiServices.userCache();
 	}
 
+	@Nullable
 	public ServerMetadata getServerMetadata() {
 		return this.metadata;
 	}

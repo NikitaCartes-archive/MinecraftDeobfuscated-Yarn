@@ -70,7 +70,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		BlockPos pos,
 		BiConsumer<BlockPos, BlockState> rootPlacerReplacer,
 		BiConsumer<BlockPos, BlockState> trunkPlacerReplacer,
-		BiConsumer<BlockPos, BlockState> foliagePlacerReplacer,
+		FoliagePlacer.BlockPlacer blockPlacer,
 		TreeFeatureConfig config
 	) {
 		int i = config.trunkPlacer.getHeight(random);
@@ -88,7 +88,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 					return false;
 				} else {
 					List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, trunkPlacerReplacer, random, o, blockPos, config);
-					list.forEach(node -> config.foliagePlacer.generate(world, foliagePlacerReplacer, random, config, o, node, j, l));
+					list.forEach(node -> config.foliagePlacer.generate(world, blockPlacer, random, config, o, node, j, l));
 					return true;
 				}
 			} else {
@@ -125,13 +125,13 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 
 	@Override
 	public final boolean generate(FeatureContext<TreeFeatureConfig> context) {
-		StructureWorldAccess structureWorldAccess = context.getWorld();
+		final StructureWorldAccess structureWorldAccess = context.getWorld();
 		Random random = context.getRandom();
 		BlockPos blockPos = context.getOrigin();
 		TreeFeatureConfig treeFeatureConfig = context.getConfig();
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		Set<BlockPos> set2 = Sets.<BlockPos>newHashSet();
-		Set<BlockPos> set3 = Sets.<BlockPos>newHashSet();
+		final Set<BlockPos> set3 = Sets.<BlockPos>newHashSet();
 		Set<BlockPos> set4 = Sets.<BlockPos>newHashSet();
 		BiConsumer<BlockPos, BlockState> biConsumer = (pos, state) -> {
 			set.add(pos.toImmutable());
@@ -141,24 +141,32 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 			set2.add(pos.toImmutable());
 			structureWorldAccess.setBlockState(pos, state, Block.NOTIFY_ALL | Block.FORCE_STATE);
 		};
-		BiConsumer<BlockPos, BlockState> biConsumer3 = (pos, state) -> {
-			set3.add(pos.toImmutable());
-			structureWorldAccess.setBlockState(pos, state, Block.NOTIFY_ALL | Block.FORCE_STATE);
+		FoliagePlacer.BlockPlacer blockPlacer = new FoliagePlacer.BlockPlacer() {
+			@Override
+			public void placeBlock(BlockPos pos, BlockState state) {
+				set3.add(pos.toImmutable());
+				structureWorldAccess.setBlockState(pos, state, Block.NOTIFY_ALL | Block.FORCE_STATE);
+			}
+
+			@Override
+			public boolean hasPlacedBlock(BlockPos pos) {
+				return set3.contains(pos);
+			}
 		};
-		BiConsumer<BlockPos, BlockState> biConsumer4 = (pos, state) -> {
+		BiConsumer<BlockPos, BlockState> biConsumer3 = (pos, state) -> {
 			set4.add(pos.toImmutable());
 			structureWorldAccess.setBlockState(pos, state, Block.NOTIFY_ALL | Block.FORCE_STATE);
 		};
-		boolean bl = this.generate(structureWorldAccess, random, blockPos, biConsumer, biConsumer2, biConsumer3, treeFeatureConfig);
+		boolean bl = this.generate(structureWorldAccess, random, blockPos, biConsumer, biConsumer2, blockPlacer, treeFeatureConfig);
 		if (bl && (!set2.isEmpty() || !set3.isEmpty())) {
 			if (!treeFeatureConfig.decorators.isEmpty()) {
-				TreeDecorator.Generator generator = new TreeDecorator.Generator(structureWorldAccess, biConsumer4, random, set2, set3, set);
+				TreeDecorator.Generator generator = new TreeDecorator.Generator(structureWorldAccess, biConsumer3, random, set2, set3, set);
 				treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(generator));
 			}
 
-			return (Boolean)BlockBox.encompassPositions(Iterables.concat(set, set2, set3, set4)).map(blockBox -> {
-				VoxelSet voxelSet = placeLogsAndLeaves(structureWorldAccess, blockBox, set2, set4, set);
-				StructureTemplate.updateCorner(structureWorldAccess, 3, voxelSet, blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ());
+			return (Boolean)BlockBox.encompassPositions(Iterables.concat(set, set2, set3, set4)).map(box -> {
+				VoxelSet voxelSet = placeLogsAndLeaves(structureWorldAccess, box, set2, set4, set);
+				StructureTemplate.updateCorner(structureWorldAccess, 3, voxelSet, box.getMinX(), box.getMinY(), box.getMinZ());
 				return true;
 			}).orElse(false);
 		} else {

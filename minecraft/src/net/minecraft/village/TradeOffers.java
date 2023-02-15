@@ -643,6 +643,7 @@ public class TradeOffers {
 				new TradeOffers.SellItemFactory(Items.PUMPKIN_SEEDS, 1, 1, 12, 1),
 				new TradeOffers.SellItemFactory(Items.MELON_SEEDS, 1, 1, 12, 1),
 				new TradeOffers.SellItemFactory(Items.ACACIA_SAPLING, 5, 1, 8, 1),
+				new TradeOffers.SellItemFactory(Items.CHERRY_SAPLING, 5, 1, 8, 1),
 				new TradeOffers.SellItemFactory(Items.BIRCH_SAPLING, 5, 1, 8, 1),
 				new TradeOffers.SellItemFactory(Items.DARK_OAK_SAPLING, 5, 1, 8, 1),
 				new TradeOffers.SellItemFactory(Items.JUNGLE_SAPLING, 5, 1, 8, 1),

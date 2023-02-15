@@ -50,7 +50,7 @@ public class FollowOwnerGoal extends Goal {
 			return false;
 		} else if (livingEntity.isSpectator()) {
 			return false;
-		} else if (this.tameable.isSitting()) {
+		} else if (this.cannotFollow()) {
 			return false;
 		} else if (this.tameable.squaredDistanceTo(livingEntity) < (double)(this.minDistance * this.minDistance)) {
 			return false;
@@ -65,8 +65,12 @@ public class FollowOwnerGoal extends Goal {
 		if (this.navigation.isIdle()) {
 			return false;
 		} else {
-			return this.tameable.isSitting() ? false : !(this.tameable.squaredDistanceTo(this.owner) <= (double)(this.maxDistance * this.maxDistance));
+			return this.cannotFollow() ? false : !(this.tameable.squaredDistanceTo(this.owner) <= (double)(this.maxDistance * this.maxDistance));
 		}
+	}
+
+	private boolean cannotFollow() {
+		return this.tameable.isSitting() || this.tameable.hasVehicle() || this.tameable.isLeashed();
 	}
 
 	@Override
@@ -88,12 +92,10 @@ public class FollowOwnerGoal extends Goal {
 		this.tameable.getLookControl().lookAt(this.owner, 10.0F, (float)this.tameable.getMaxLookPitchChange());
 		if (--this.updateCountdownTicks <= 0) {
 			this.updateCountdownTicks = this.getTickCount(10);
-			if (!this.tameable.isLeashed() && !this.tameable.hasVehicle()) {
-				if (this.tameable.squaredDistanceTo(this.owner) >= 144.0) {
-					this.tryTeleport();
-				} else {
-					this.navigation.startMovingTo(this.owner, this.speed);
-				}
+			if (this.tameable.squaredDistanceTo(this.owner) >= 144.0) {
+				this.tryTeleport();
+			} else {
+				this.navigation.startMovingTo(this.owner, this.speed);
 			}
 		}
 	}

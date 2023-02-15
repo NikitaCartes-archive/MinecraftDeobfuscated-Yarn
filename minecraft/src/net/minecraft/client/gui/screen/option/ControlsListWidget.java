@@ -184,16 +184,6 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			return this.editButton.mouseClicked(mouseX, mouseY, button) ? true : this.resetButton.mouseClicked(mouseX, mouseY, button);
-		}
-
-		@Override
-		public boolean mouseReleased(double mouseX, double mouseY, int button) {
-			return this.editButton.mouseReleased(mouseX, mouseY, button) || this.resetButton.mouseReleased(mouseX, mouseY, button);
-		}
-
-		@Override
 		protected void update() {
 			this.editButton.setMessage(this.binding.getBoundKeyLocalizedText());
 			this.resetButton.active = !this.binding.isDefault();

@@ -117,7 +117,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & LidOpenable> imple
 			g = 1.0F - g;
 			g = 1.0F - g * g * g;
 			int i = propertySource.apply(new LightmapCoordinatesRetriever<>()).applyAsInt(light);
-			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTexture(entity, chestType, this.christmas);
+			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTextureId(entity, chestType, this.christmas);
 			VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
 			if (bl2) {
 				if (chestType == ChestType.LEFT) {

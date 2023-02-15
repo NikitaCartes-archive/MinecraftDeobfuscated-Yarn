@@ -93,6 +93,14 @@ public class EntityModelPartNames {
 	 */
 	public static final String RIGHT_HIND_LEG = "right_hind_leg";
 	/**
+	 * The key of a left mid leg part, whose value is {@value}.
+	 */
+	public static final String LEFT_MID_LEG = "left_mid_leg";
+	/**
+	 * The key of a right mid leg part, whose value is {@value}.
+	 */
+	public static final String RIGHT_MID_LEG = "right_mid_leg";
+	/**
 	 * The key of a left front leg model part, whose value is {@value}.
 	 */
 	public static final String LEFT_FRONT_LEG = "left_front_leg";

@@ -2,13 +2,12 @@ package com.mojang.blaze3d.platform;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
-import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
 import java.util.concurrent.ThreadLocalRandom;
 import net.fabricmc.api.EnvType;
@@ -79,25 +78,27 @@ public class TextureUtil {
 	}
 
 	public static ByteBuffer readResource(InputStream inputStream) throws IOException {
-		ByteBuffer byteBuffer;
-		if (inputStream instanceof FileInputStream fileInputStream) {
-			FileChannel fileChannel = fileInputStream.getChannel();
-			byteBuffer = MemoryUtil.memAlloc((int)fileChannel.size() + 1);
+		ReadableByteChannel readableByteChannel = Channels.newChannel(inputStream);
+		return readableByteChannel instanceof SeekableByteChannel seekableByteChannel
+			? readResource(readableByteChannel, (int)seekableByteChannel.size() + 1)
+			: readResource(readableByteChannel, 8192);
+	}
 
-			while (fileChannel.read(byteBuffer) != -1) {
-			}
-		} else {
-			byteBuffer = MemoryUtil.memAlloc(8192);
-			ReadableByteChannel readableByteChannel = Channels.newChannel(inputStream);
+	private static ByteBuffer readResource(ReadableByteChannel channel, int bufSize) throws IOException {
+		ByteBuffer byteBuffer = MemoryUtil.memAlloc(bufSize);
 
-			while (readableByteChannel.read(byteBuffer) != -1) {
-				if (byteBuffer.remaining() == 0) {
+		try {
+			while (channel.read(byteBuffer) != -1) {
+				if (!byteBuffer.hasRemaining()) {
 					byteBuffer = MemoryUtil.memRealloc(byteBuffer, byteBuffer.capacity() * 2);
 				}
 			}
-		}
 
-		return byteBuffer;
+			return byteBuffer;
+		} catch (IOException var4) {
+			MemoryUtil.memFree(byteBuffer);
+			throw var4;
+		}
 	}
 
 	public static void writeAsPNG(Path directory, String prefix, int textureId, int scales, int width, int height) {

@@ -40,7 +40,7 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 
 				for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-j, -k, -l), blockPos.add(j, k, l))) {
 					if (blockPos2.getSquaredDistance(blockPos) <= (double)(f * f)) {
-						structureWorldAccess.setBlockState(blockPos2, singleStateFeatureConfig.state, Block.NO_REDRAW);
+						structureWorldAccess.setBlockState(blockPos2, singleStateFeatureConfig.state, Block.NOTIFY_ALL);
 					}
 				}
 

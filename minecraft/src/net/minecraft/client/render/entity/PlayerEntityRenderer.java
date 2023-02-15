@@ -133,6 +133,10 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				if (useAction == UseAction.TOOT_HORN) {
 					return BipedEntityModel.ArmPose.TOOT_HORN;
 				}
+
+				if (useAction == UseAction.BRUSH) {
+					return BipedEntityModel.ArmPose.BRUSH;
+				}
 			} else if (!player.handSwinging && itemStack.isOf(Items.CROSSBOW) && CrossbowItem.isCharged(itemStack)) {
 				return BipedEntityModel.ArmPose.CROSSBOW_HOLD;
 			}
@@ -209,7 +213,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			}
 
 			Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
-			Vec3d vec3d2 = abstractClientPlayerEntity.getVelocity();
+			Vec3d vec3d2 = abstractClientPlayerEntity.lerpVelocity(h);
 			double d = vec3d2.horizontalLengthSquared();
 			double e = vec3d.horizontalLengthSquared();
 			if (d > 0.0 && e > 0.0) {

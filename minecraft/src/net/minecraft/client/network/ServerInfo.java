@@ -1,6 +1,7 @@
 package net.minecraft.client.network;
 
-import java.text.ParseException;
+import com.mojang.logging.LogUtils;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -11,6 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.text.Text;
+import org.slf4j.Logger;
 
 /**
  * The information of a server entry in the list of servers available in
@@ -24,6 +26,7 @@ import net.minecraft.text.Text;
  */
 @Environment(EnvType.CLIENT)
 public class ServerInfo {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public String name;
 	public String address;
 	public Text playerCountLabel;
@@ -37,7 +40,7 @@ public class ServerInfo {
 	public List<Text> playerListSummary = Collections.emptyList();
 	private ServerInfo.ResourcePackPolicy resourcePackPolicy = ServerInfo.ResourcePackPolicy.PROMPT;
 	@Nullable
-	private String icon;
+	private byte[] favicon;
 	private boolean local;
 	private boolean secureChatEnforced;
 
@@ -51,8 +54,8 @@ public class ServerInfo {
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("name", this.name);
 		nbtCompound.putString("ip", this.address);
-		if (this.icon != null) {
-			nbtCompound.putString("icon", this.icon);
+		if (this.favicon != null) {
+			nbtCompound.putString("icon", Base64.getEncoder().encodeToString(this.favicon));
 		}
 
 		if (this.resourcePackPolicy == ServerInfo.ResourcePackPolicy.ENABLED) {
@@ -84,7 +87,11 @@ public class ServerInfo {
 	public static ServerInfo fromNbt(NbtCompound root) {
 		ServerInfo serverInfo = new ServerInfo(root.getString("name"), root.getString("ip"), false);
 		if (root.contains("icon", NbtElement.STRING_TYPE)) {
-			serverInfo.setIcon(root.getString("icon"));
+			try {
+				serverInfo.setFavicon(Base64.getDecoder().decode(root.getString("icon")));
+			} catch (IllegalArgumentException var3) {
+				LOGGER.warn("Malformed base64 server icon", (Throwable)var3);
+			}
 		}
 
 		if (root.contains("acceptTextures", NbtElement.BYTE_TYPE)) {
@@ -101,20 +108,12 @@ public class ServerInfo {
 	}
 
 	@Nullable
-	public String getIcon() {
-		return this.icon;
+	public byte[] getFavicon() {
+		return this.favicon;
 	}
 
-	public static String parseFavicon(String favicon) throws ParseException {
-		if (favicon.startsWith("data:image/png;base64,")) {
-			return favicon.substring("data:image/png;base64,".length());
-		} else {
-			throw new ParseException("Unknown format", 0);
-		}
-	}
-
-	public void setIcon(@Nullable String icon) {
-		this.icon = icon;
+	public void setFavicon(@Nullable byte[] favicon) {
+		this.favicon = favicon;
 	}
 
 	public boolean isLocal() {
@@ -132,7 +131,7 @@ public class ServerInfo {
 	public void copyFrom(ServerInfo serverInfo) {
 		this.address = serverInfo.address;
 		this.name = serverInfo.name;
-		this.icon = serverInfo.icon;
+		this.favicon = serverInfo.favicon;
 	}
 
 	public void copyWithSettingsFrom(ServerInfo serverInfo) {

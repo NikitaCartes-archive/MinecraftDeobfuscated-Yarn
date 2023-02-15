@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
@@ -44,11 +43,11 @@ public class DoorBlock extends Block {
 	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
 	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
-	private final SoundEvent closeSound;
-	private final SoundEvent openSound;
+	private final BlockSetType blockSetType;
 
-	protected DoorBlock(AbstractBlock.Settings settings, SoundEvent closeSound, SoundEvent openSound) {
-		super(settings);
+	protected DoorBlock(AbstractBlock.Settings settings, BlockSetType blockSetType) {
+		super(settings.sounds(blockSetType.soundType()));
+		this.blockSetType = blockSetType;
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
@@ -58,8 +57,6 @@ public class DoorBlock extends Block {
 				.with(POWERED, Boolean.valueOf(false))
 				.with(HALF, DoubleBlockHalf.LOWER)
 		);
-		this.closeSound = closeSound;
-		this.openSound = openSound;
 	}
 
 	@Override
@@ -130,7 +127,7 @@ public class DoorBlock extends Block {
 		if (blockPos.getY() < world.getTopY() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx)) {
 			boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
 			return this.getDefaultState()
-				.with(FACING, ctx.getPlayerFacing())
+				.with(FACING, ctx.getHorizontalPlayerFacing())
 				.with(HINGE, this.getHinge(ctx))
 				.with(POWERED, Boolean.valueOf(bl))
 				.with(OPEN, Boolean.valueOf(bl))
@@ -148,7 +145,7 @@ public class DoorBlock extends Block {
 	private DoorHinge getHinge(ItemPlacementContext ctx) {
 		BlockView blockView = ctx.getWorld();
 		BlockPos blockPos = ctx.getBlockPos();
-		Direction direction = ctx.getPlayerFacing();
+		Direction direction = ctx.getHorizontalPlayerFacing();
 		BlockPos blockPos2 = blockPos.up();
 		Direction direction2 = direction.rotateYCounterclockwise();
 		BlockPos blockPos3 = blockPos.offset(direction2);
@@ -229,7 +226,9 @@ public class DoorBlock extends Block {
 	}
 
 	private void playOpenCloseSound(@Nullable Entity entity, World world, BlockPos pos, boolean open) {
-		world.playSound(entity, pos, open ? this.openSound : this.closeSound, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+		world.playSound(
+			entity, pos, open ? this.blockSetType.doorOpen() : this.blockSetType.doorClose(), SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F
+		);
 	}
 
 	@Override

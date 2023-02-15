@@ -554,6 +554,13 @@ public class Box {
 		}
 	}
 
+	public double squaredMagnitude(Vec3d pos) {
+		double d = Math.max(Math.max(this.minX - pos.x, pos.x - this.maxX), 0.0);
+		double e = Math.max(Math.max(this.minY - pos.y, pos.y - this.maxY), 0.0);
+		double f = Math.max(Math.max(this.minZ - pos.z, pos.z - this.maxZ), 0.0);
+		return MathHelper.squaredMagnitude(d, e, f);
+	}
+
 	public String toString() {
 		return "AABB[" + this.minX + ", " + this.minY + ", " + this.minZ + "] -> [" + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]";
 	}

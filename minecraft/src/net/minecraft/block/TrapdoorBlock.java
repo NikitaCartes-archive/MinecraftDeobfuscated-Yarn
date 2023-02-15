@@ -8,7 +8,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -36,11 +35,11 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
 	protected static final VoxelShape OPEN_BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 3.0, 16.0);
 	protected static final VoxelShape OPEN_TOP_SHAPE = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
-	private final SoundEvent closeSound;
-	private final SoundEvent openSound;
+	private final BlockSetType blockSetType;
 
-	protected TrapdoorBlock(AbstractBlock.Settings settings, SoundEvent closeSound, SoundEvent openSound) {
-		super(settings);
+	protected TrapdoorBlock(AbstractBlock.Settings settings, BlockSetType blockSetType) {
+		super(settings.sounds(blockSetType.soundType()));
+		this.blockSetType = blockSetType;
 		this.setDefaultState(
 			this.stateManager
 				.getDefaultState()
@@ -50,8 +49,6 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 				.with(POWERED, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
-		this.closeSound = closeSound;
-		this.openSound = openSound;
 	}
 
 	@Override
@@ -104,7 +101,14 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	}
 
 	protected void playToggleSound(@Nullable PlayerEntity player, World world, BlockPos pos, boolean open) {
-		world.playSound(player, pos, open ? this.openSound : this.closeSound, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F);
+		world.playSound(
+			player,
+			pos,
+			open ? this.blockSetType.trapdoorOpen() : this.blockSetType.trapdoorClose(),
+			SoundCategory.BLOCKS,
+			1.0F,
+			world.getRandom().nextFloat() * 0.1F + 0.9F
+		);
 		world.emitGameEvent(player, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 	}
 
@@ -134,7 +138,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		if (!ctx.canReplaceExisting() && direction.getAxis().isHorizontal()) {
 			blockState = blockState.with(FACING, direction).with(HALF, ctx.getHitPos().y - (double)ctx.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
 		} else {
-			blockState = blockState.with(FACING, ctx.getPlayerFacing().getOpposite()).with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
+			blockState = blockState.with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
 		}
 
 		if (ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos())) {

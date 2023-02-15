@@ -218,13 +218,13 @@ public final class SimpleOption<T> {
 		return (optionText, value) -> value.getText();
 	}
 
-	public ClickableWidget createButton(GameOptions options, int x, int y, int width) {
-		return this.createButton(options, x, y, width, value -> {
+	public ClickableWidget createWidget(GameOptions options, int x, int y, int width) {
+		return this.createWidget(options, x, y, width, value -> {
 		});
 	}
 
-	public ClickableWidget createButton(GameOptions options, int x, int y, int width, Consumer<T> changeCallback) {
-		return (ClickableWidget)this.callbacks.getButtonCreator(this.tooltipFactory, options, x, y, width, changeCallback).apply(this);
+	public ClickableWidget createWidget(GameOptions options, int x, int y, int width, Consumer<T> changeCallback) {
+		return (ClickableWidget)this.callbacks.getWidgetCreator(this.tooltipFactory, options, x, y, width, changeCallback).apply(this);
 	}
 
 	/**
@@ -299,11 +299,12 @@ public final class SimpleOption<T> {
 	@Environment(EnvType.CLIENT)
 	interface Callbacks<T> {
 		/**
-		 * {@return the button creator}
+		 * {@return the widget creator}
 		 * 
-		 * <p>Button creators are responsible for rendering the option.
+		 * <p>Widget creators are responsible for rendering the option into
+		 * a {@link ClickableWidget}.
 		 */
-		Function<SimpleOption<T>, ClickableWidget> getButtonCreator(
+		Function<SimpleOption<T>, ClickableWidget> getWidgetCreator(
 			SimpleOption.TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width, Consumer<T> changeCallback
 		);
 
@@ -328,7 +329,7 @@ public final class SimpleOption<T> {
 		}
 
 		@Override
-		default Function<SimpleOption<T>, ClickableWidget> getButtonCreator(
+		default Function<SimpleOption<T>, ClickableWidget> getWidgetCreator(
 			SimpleOption.TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width, Consumer<T> changeCallback
 		) {
 			return option -> CyclingButtonWidget.<T>builder(option.textGetter)
@@ -593,7 +594,7 @@ public final class SimpleOption<T> {
 		T toValue(double sliderProgress);
 
 		@Override
-		default Function<SimpleOption<T>, ClickableWidget> getButtonCreator(
+		default Function<SimpleOption<T>, ClickableWidget> getWidgetCreator(
 			SimpleOption.TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width, Consumer<T> changeCallback
 		) {
 			return option -> new SimpleOption.OptionSliderWidgetImpl<>(gameOptions, x, y, width, 20, option, this, tooltipFactory, changeCallback);
@@ -612,12 +613,12 @@ public final class SimpleOption<T> {
 		boolean isCycling();
 
 		@Override
-		default Function<SimpleOption<T>, ClickableWidget> getButtonCreator(
+		default Function<SimpleOption<T>, ClickableWidget> getWidgetCreator(
 			SimpleOption.TooltipFactory<T> tooltipFactory, GameOptions gameOptions, int x, int y, int width, Consumer<T> changeCallback
 		) {
 			return this.isCycling()
-				? SimpleOption.CyclingCallbacks.super.getButtonCreator(tooltipFactory, gameOptions, x, y, width, changeCallback)
-				: SimpleOption.SliderCallbacks.super.getButtonCreator(tooltipFactory, gameOptions, x, y, width, changeCallback);
+				? SimpleOption.CyclingCallbacks.super.getWidgetCreator(tooltipFactory, gameOptions, x, y, width, changeCallback)
+				: SimpleOption.SliderCallbacks.super.getWidgetCreator(tooltipFactory, gameOptions, x, y, width, changeCallback);
 		}
 	}
 

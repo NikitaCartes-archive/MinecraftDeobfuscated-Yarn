@@ -87,7 +87,6 @@ import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.network.Bans;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -157,6 +156,7 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
+import net.minecraft.client.util.Bans;
 import net.minecraft.client.util.ClientSamplerSource;
 import net.minecraft.client.util.MacWindowUtil;
 import net.minecraft.client.util.NarratorManager;
@@ -687,8 +687,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}, this.getMultiplayerBanDetails()));
 		} else if (this.options.onboardAccessibility) {
 			this.setScreen(new AccessibilityOnboardingScreen(this.options));
-			this.options.onboardAccessibility = false;
-			this.options.write();
 		} else {
 			this.setScreen(new TitleScreen(true));
 		}
@@ -768,10 +766,23 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.options.resourcePacks.clear();
 		this.options.incompatibleResourcePacks.clear();
 		this.options.write();
-		this.reloadResources(true).thenRun(() -> {
-			ToastManager toastManager = this.getToastManager();
-			SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, Text.translatable("resourcePack.load_fail"), resourceName);
-		});
+		this.reloadResources(true).thenRun(() -> this.showResourceReloadFailureToast(resourceName));
+	}
+
+	private void onForcedResourceReloadFailure() {
+		this.setOverlay(null);
+		if (this.world != null) {
+			this.world.disconnect();
+			this.disconnect();
+		}
+
+		this.setScreen(new TitleScreen());
+		this.showResourceReloadFailureToast(null);
+	}
+
+	private void showResourceReloadFailureToast(@Nullable Text description) {
+		ToastManager toastManager = this.getToastManager();
+		SystemToast.show(toastManager, SystemToast.Type.PACK_LOAD_FAILURE, Text.translatable("resourcePack.load_fail"), description);
 	}
 
 	public void run() {
@@ -942,14 +953,17 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 				this.setOverlay(
 					new SplashOverlay(
-						this,
-						this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
-						throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
+						this, this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list), error -> Util.ifPresentOrElse(error, throwable -> {
+								if (force) {
+									this.onForcedResourceReloadFailure();
+								} else {
+									this.handleResourceReloadException(throwable);
+								}
+							}, () -> {
 								this.worldRenderer.reload();
 								this.resourceReloadLogger.finish();
 								completableFuture.complete(null);
-							}),
-						true
+							}), true
 					)
 				);
 				return completableFuture;

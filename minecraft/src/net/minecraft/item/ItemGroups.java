@@ -129,6 +129,19 @@ public class ItemGroups {
 			entries.add(Items.MANGROVE_TRAPDOOR);
 			entries.add(Items.MANGROVE_PRESSURE_PLATE);
 			entries.add(Items.MANGROVE_BUTTON);
+			entries.add(Items.CHERRY_LOG);
+			entries.add(Items.CHERRY_WOOD);
+			entries.add(Items.STRIPPED_CHERRY_LOG);
+			entries.add(Items.STRIPPED_CHERRY_WOOD);
+			entries.add(Items.CHERRY_PLANKS);
+			entries.add(Items.CHERRY_STAIRS);
+			entries.add(Items.CHERRY_SLAB);
+			entries.add(Items.CHERRY_FENCE);
+			entries.add(Items.CHERRY_FENCE_GATE);
+			entries.add(Items.CHERRY_DOOR);
+			entries.add(Items.CHERRY_TRAPDOOR);
+			entries.add(Items.CHERRY_PRESSURE_PLATE);
+			entries.add(Items.CHERRY_BUTTON);
 			entries.add(Items.BAMBOO_BLOCK);
 			entries.add(Items.STRIPPED_BAMBOO_BLOCK);
 			entries.add(Items.BAMBOO_PLANKS);
@@ -605,6 +618,7 @@ public class ItemGroups {
 			entries.add(Items.SNOW);
 			entries.add(Items.MOSS_BLOCK);
 			entries.add(Items.MOSS_CARPET);
+			entries.add(Items.PINK_PETALS);
 			entries.add(Items.STONE);
 			entries.add(Items.DEEPSLATE);
 			entries.add(Items.GRANITE);
@@ -664,6 +678,7 @@ public class ItemGroups {
 			entries.add(Items.ACACIA_LOG);
 			entries.add(Items.DARK_OAK_LOG);
 			entries.add(Items.MANGROVE_LOG);
+			entries.add(Items.CHERRY_LOG);
 			entries.add(Items.MUSHROOM_STEM);
 			entries.add(Items.CRIMSON_STEM);
 			entries.add(Items.WARPED_STEM);
@@ -676,6 +691,7 @@ public class ItemGroups {
 			entries.add(Items.MANGROVE_LEAVES);
 			entries.add(Items.MANGROVE_ROOTS);
 			entries.add(Items.MUDDY_MANGROVE_ROOTS);
+			entries.add(Items.CHERRY_LEAVES);
 			entries.add(Items.AZALEA_LEAVES);
 			entries.add(Items.FLOWERING_AZALEA_LEAVES);
 			entries.add(Items.BROWN_MUSHROOM_BLOCK);
@@ -690,6 +706,7 @@ public class ItemGroups {
 			entries.add(Items.ACACIA_SAPLING);
 			entries.add(Items.DARK_OAK_SAPLING);
 			entries.add(Items.MANGROVE_PROPAGULE);
+			entries.add(Items.CHERRY_SAPLING);
 			entries.add(Items.AZALEA);
 			entries.add(Items.FLOWERING_AZALEA);
 			entries.add(Items.BROWN_MUSHROOM);
@@ -719,6 +736,7 @@ public class ItemGroups {
 			entries.add(Items.CRIMSON_ROOTS);
 			entries.add(Items.WARPED_ROOTS);
 			entries.add(Items.NETHER_SPROUTS);
+			entries.add(Items.TORCHFLOWER);
 			entries.add(Items.WEEPING_VINES);
 			entries.add(Items.TWISTING_VINES);
 			entries.add(Items.VINE);
@@ -744,6 +762,7 @@ public class ItemGroups {
 			entries.add(Items.GLOW_BERRIES);
 			entries.add(Items.SWEET_BERRIES);
 			entries.add(Items.NETHER_WART);
+			entries.add(Items.TORCHFLOWER_SEEDS);
 			entries.add(Items.LILY_PAD);
 			entries.add(Items.SEAGRASS);
 			entries.add(Items.SEA_PICKLE);
@@ -854,8 +873,10 @@ public class ItemGroups {
 				entries.add(Items.SCAFFOLDING);
 				entries.add(Items.BEE_NEST);
 				entries.add(Items.BEEHIVE);
+				entries.add(Items.SUSPICIOUS_SAND);
 				entries.add(Items.LIGHTNING_ROD);
 				entries.add(Items.FLOWER_POT);
+				entries.add(Items.DECORATED_POT);
 				entries.add(Items.ARMOR_STAND);
 				entries.add(Items.ITEM_FRAME);
 				entries.add(Items.GLOW_ITEM_FRAME);
@@ -885,6 +906,8 @@ public class ItemGroups {
 				entries.add(Items.DARK_OAK_HANGING_SIGN);
 				entries.add(Items.MANGROVE_SIGN);
 				entries.add(Items.MANGROVE_HANGING_SIGN);
+				entries.add(Items.CHERRY_SIGN);
+				entries.add(Items.CHERRY_HANGING_SIGN);
 				entries.add(Items.BAMBOO_SIGN);
 				entries.add(Items.BAMBOO_HANGING_SIGN);
 				entries.add(Items.CRIMSON_SIGN);
@@ -1115,6 +1138,7 @@ public class ItemGroups {
 				entries.add(Items.FIRE_CHARGE);
 				entries.add(Items.BONE_MEAL);
 				entries.add(Items.SHEARS);
+				entries.add(Items.BRUSH);
 				entries.add(Items.NAME_TAG);
 				entries.add(Items.LEAD);
 				if (displayContext.enabledFeatures().contains(FeatureFlags.BUNDLE)) {
@@ -1148,6 +1172,8 @@ public class ItemGroups {
 				entries.add(Items.DARK_OAK_CHEST_BOAT);
 				entries.add(Items.MANGROVE_BOAT);
 				entries.add(Items.MANGROVE_CHEST_BOAT);
+				entries.add(Items.CHERRY_BOAT);
+				entries.add(Items.CHERRY_CHEST_BOAT);
 				entries.add(Items.BAMBOO_RAFT);
 				entries.add(Items.BAMBOO_CHEST_RAFT);
 				entries.add(Items.RAIL);
@@ -1162,7 +1188,7 @@ public class ItemGroups {
 				displayContext.lookup()
 					.getOptionalWrapper(RegistryKeys.INSTRUMENT)
 					.ifPresent(
-						regsitryWrapper -> addInstruments(entries, regsitryWrapper, Items.GOAT_HORN, InstrumentTags.GOAT_HORNS, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS)
+						registryWrapper -> addInstruments(entries, registryWrapper, Items.GOAT_HORN, InstrumentTags.GOAT_HORNS, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS)
 					);
 				entries.add(Items.MUSIC_DISC_13);
 				entries.add(Items.MUSIC_DISC_CAT);
@@ -1397,6 +1423,10 @@ public class ItemGroups {
 			entries.add(Items.MOJANG_BANNER_PATTERN);
 			entries.add(Items.GLOBE_BANNER_PATTERN);
 			entries.add(Items.PIGLIN_BANNER_PATTERN);
+			entries.add(Items.POTTERY_SHARD_ARCHER);
+			entries.add(Items.POTTERY_SHARD_PRIZE);
+			entries.add(Items.POTTERY_SHARD_ARMS_UP);
+			entries.add(Items.POTTERY_SHARD_SKULL);
 			entries.add(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE);
 			entries.add(Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE);
 			entries.add(Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE);
@@ -1474,6 +1504,7 @@ public class ItemGroups {
 			entries.add(Items.SKELETON_SPAWN_EGG);
 			entries.add(Items.SKELETON_HORSE_SPAWN_EGG);
 			entries.add(Items.SLIME_SPAWN_EGG);
+			entries.add(Items.SNIFFER_SPAWN_EGG);
 			entries.add(Items.SNOW_GOLEM_SPAWN_EGG);
 			entries.add(Items.SPIDER_SPAWN_EGG);
 			entries.add(Items.SQUID_SPAWN_EGG);

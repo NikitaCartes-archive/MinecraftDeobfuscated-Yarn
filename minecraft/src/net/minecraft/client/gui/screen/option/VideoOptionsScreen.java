@@ -9,8 +9,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DialogScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.OptionListWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.SimpleOption;
@@ -30,7 +30,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	private static final Text GRAPHICS_WARNING_TITLE_TEXT = Text.translatable("options.graphics.warning.title").formatted(Formatting.RED);
 	private static final Text GRAPHICS_WARNING_ACCEPT_TEXT = Text.translatable("options.graphics.warning.accept");
 	private static final Text GRAPHICS_WARNING_CANCEL_TEXT = Text.translatable("options.graphics.warning.cancel");
-	private ButtonListWidget list;
+	private OptionListWidget list;
 	private final VideoWarningManager warningManager;
 	private final int mipmapLevels;
 
@@ -74,7 +74,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	protected void init() {
-		this.list = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
+		this.list = new OptionListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
 		int i = -1;
 		Window window = this.client.getWindow();
 		Monitor monitor = window.getMonitor();

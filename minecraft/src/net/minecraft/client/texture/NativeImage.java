@@ -1,6 +1,5 @@
 package net.minecraft.client.texture;
 
-import com.google.common.base.Charsets;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.TextureUtil;
@@ -17,7 +16,6 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.Base64;
 import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Set;
@@ -115,6 +113,18 @@ public final class NativeImage implements AutoCloseable {
 
 	public static NativeImage read(ByteBuffer buffer) throws IOException {
 		return read(NativeImage.Format.RGBA, buffer);
+	}
+
+	public static NativeImage read(byte[] bytes) throws IOException {
+		NativeImage var3;
+		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+			ByteBuffer byteBuffer = memoryStack.malloc(bytes.length);
+			byteBuffer.put(bytes);
+			byteBuffer.rewind();
+			var3 = read(byteBuffer);
+		}
+
+		return var3;
 	}
 
 	public static NativeImage read(@Nullable NativeImage.Format format, ByteBuffer buffer) throws IOException {
@@ -687,20 +697,6 @@ public final class NativeImage implements AutoCloseable {
 
 	public void untrack() {
 		Untracker.untrack(this.pointer);
-	}
-
-	public static NativeImage read(String dataUri) throws IOException {
-		byte[] bs = Base64.getDecoder().decode(dataUri.replaceAll("\n", "").getBytes(Charsets.UTF_8));
-
-		NativeImage var4;
-		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			ByteBuffer byteBuffer = memoryStack.malloc(bs.length);
-			byteBuffer.put(bs);
-			byteBuffer.rewind();
-			var4 = read(byteBuffer);
-		}
-
-		return var4;
 	}
 
 	@Environment(EnvType.CLIENT)

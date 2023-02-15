@@ -106,6 +106,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -1224,11 +1225,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						OutlineVertexConsumerProvider outlineVertexConsumerProvider = this.bufferBuilders.getOutlineVertexConsumers();
 						vertexConsumerProvider = outlineVertexConsumerProvider;
 						int i = entity.getTeamColorValue();
-						int j = 255;
-						int k = i >> 16 & 0xFF;
-						int l = i >> 8 & 0xFF;
-						int m = i & 0xFF;
-						outlineVertexConsumerProvider.setColor(k, l, m, 255);
+						outlineVertexConsumerProvider.setColor(ColorHelper.Argb.getRed(i), ColorHelper.Argb.getGreen(i), ColorHelper.Argb.getBlue(i), 255);
 					} else {
 						vertexConsumerProvider = immediate;
 					}
@@ -1256,11 +1253,11 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					matrices.translate((double)blockPos2.getX() - d, (double)blockPos2.getY() - e, (double)blockPos2.getZ() - f);
 					SortedSet<BlockBreakingInfo> sortedSet = this.blockBreakingProgressions.get(blockPos2.asLong());
 					if (sortedSet != null && !sortedSet.isEmpty()) {
-						int l = ((BlockBreakingInfo)sortedSet.last()).getStage();
-						if (l >= 0) {
+						int j = ((BlockBreakingInfo)sortedSet.last()).getStage();
+						if (j >= 0) {
 							MatrixStack.Entry entry = matrices.peek();
 							VertexConsumer vertexConsumer = new OverlayVertexConsumer(
-								this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(l)),
+								this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(j)),
 								entry.getPositionMatrix(),
 								entry.getNormalMatrix(),
 								1.0F
@@ -1310,17 +1307,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		for (Entry<SortedSet<BlockBreakingInfo>> entry2 : this.blockBreakingProgressions.long2ObjectEntrySet()) {
 			BlockPos blockPos = BlockPos.fromLong(entry2.getLongKey());
 			double h = (double)blockPos.getX() - d;
-			double n = (double)blockPos.getY() - e;
-			double o = (double)blockPos.getZ() - f;
-			if (!(h * h + n * n + o * o > 1024.0)) {
+			double k = (double)blockPos.getY() - e;
+			double l = (double)blockPos.getZ() - f;
+			if (!(h * h + k * k + l * l > 1024.0)) {
 				SortedSet<BlockBreakingInfo> sortedSet2 = (SortedSet<BlockBreakingInfo>)entry2.getValue();
 				if (sortedSet2 != null && !sortedSet2.isEmpty()) {
-					int p = ((BlockBreakingInfo)sortedSet2.last()).getStage();
+					int m = ((BlockBreakingInfo)sortedSet2.last()).getStage();
 					matrices.push();
 					matrices.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
 					MatrixStack.Entry entry3 = matrices.peek();
 					VertexConsumer vertexConsumer2 = new OverlayVertexConsumer(
-						this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(p)),
+						this.bufferBuilders.getEffectVertexConsumers().getBuffer((RenderLayer)ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(m)),
 						entry3.getPositionMatrix(),
 						entry3.getNormalMatrix(),
 						1.0F
@@ -2779,11 +2776,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 				break;
 			case 1010:
-				if (Item.byRawId(data) instanceof MusicDiscItem) {
-					this.playSong(((MusicDiscItem)Item.byRawId(data)).getSound(), pos);
-				} else {
-					this.playSong(null, pos);
+				if (Item.byRawId(data) instanceof MusicDiscItem musicDiscItem) {
+					this.playSong(musicDiscItem.getSound(), pos);
 				}
+				break;
+			case 1011:
+				this.playSong(null, pos);
 				break;
 			case 1015:
 				this.world
@@ -3196,6 +3194,10 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						0.6F + this.world.random.nextFloat() * 0.4F,
 						false
 					);
+				break;
+			case 3008:
+				this.world.playSoundAtBlockCenter(pos, SoundEvents.ITEM_BRUSH_BRUSH_SAND_COMPLETED, SoundCategory.PLAYERS, 1.0F, 1.0F, false);
+				this.world.addBlockBreakParticles(pos, Block.getStateFromRawId(data));
 		}
 	}
 

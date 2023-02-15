@@ -110,6 +110,10 @@ public interface Recipe<C extends Inventory> {
 		return false;
 	}
 
+	default boolean showNotification() {
+		return true;
+	}
+
 	/**
 	 * {@return a group this recipe belongs in, or an empty string} This is
 	 * only used by the recipe book.

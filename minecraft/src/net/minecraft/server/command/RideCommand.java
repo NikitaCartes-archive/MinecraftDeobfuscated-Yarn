@@ -17,7 +17,7 @@ public class RideCommand {
 	private static final Dynamic2CommandExceptionType ALREADY_RIDING_EXCEPTION = new Dynamic2CommandExceptionType(
 		(rider, vehicle) -> Text.translatable("commands.ride.already_riding", rider, vehicle)
 	);
-	private static final Dynamic2CommandExceptionType GENERIC_FAILURE_EXCPETION = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType GENERIC_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType(
 		(rider, vehicle) -> Text.translatable("commands.ride.mount.failure.generic", rider, vehicle)
 	);
 	private static final SimpleCommandExceptionType CANT_RIDE_PLAYERS_EXCEPTION = new SimpleCommandExceptionType(
@@ -54,12 +54,12 @@ public class RideCommand {
 			throw ALREADY_RIDING_EXCEPTION.create(rider.getDisplayName(), entity.getDisplayName());
 		} else if (vehicle.getType() == EntityType.PLAYER) {
 			throw CANT_RIDE_PLAYERS_EXCEPTION.create();
-		} else if (rider.streamSelfAndPassengers().anyMatch(passager -> passager == vehicle)) {
+		} else if (rider.streamSelfAndPassengers().anyMatch(passenger -> passenger == vehicle)) {
 			throw RIDE_LOOP_EXCEPTION.create();
 		} else if (rider.getWorld() != vehicle.getWorld()) {
 			throw WRONG_DIMENSION_EXCEPTION.create();
 		} else if (!rider.startRiding(vehicle, true)) {
-			throw GENERIC_FAILURE_EXCPETION.create(rider.getDisplayName(), vehicle.getDisplayName());
+			throw GENERIC_FAILURE_EXCEPTION.create(rider.getDisplayName(), vehicle.getDisplayName());
 		} else {
 			source.sendFeedback(Text.translatable("commands.ride.mount.success", rider.getDisplayName(), vehicle.getDisplayName()), true);
 			return 1;

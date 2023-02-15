@@ -24,5 +24,5 @@ import net.minecraft.entity.player.PlayerInventory;
 @FunctionalInterface
 public interface ScreenHandlerFactory {
 	@Nullable
-	ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player);
+	ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player);
 }

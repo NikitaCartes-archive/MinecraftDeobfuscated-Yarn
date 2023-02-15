@@ -203,7 +203,7 @@ public class BlendingData {
 	}
 
 	/**
-	 * {@return {@code 1.0} if there is a collidable block below, otherwise {@code -1}.}
+	 * {@return {@code 1.0} if there is a collidable block below, otherwise {@code -1}}
 	 * 
 	 * @param mutablePos will be moved down by one block by this method
 	 */

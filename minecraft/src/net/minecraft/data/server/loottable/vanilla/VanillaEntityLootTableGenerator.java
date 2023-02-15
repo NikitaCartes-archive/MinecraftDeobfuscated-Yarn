@@ -705,6 +705,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						)
 				)
 		);
+		this.register(EntityType.SNIFFER, LootTable.builder());
 		this.register(
 			EntityType.SNOW_GOLEM,
 			LootTable.builder()

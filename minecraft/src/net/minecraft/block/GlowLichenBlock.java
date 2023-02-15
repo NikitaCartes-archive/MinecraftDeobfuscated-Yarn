@@ -82,7 +82,7 @@ public class GlowLichenBlock extends MultifaceGrowthBlock implements Fertilizabl
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
+	public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
 		return state.getFluidState().isEmpty();
 	}
 

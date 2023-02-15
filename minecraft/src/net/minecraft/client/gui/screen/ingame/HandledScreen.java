@@ -604,7 +604,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	@Override
 	public void removed() {
 		if (this.client.player != null) {
-			this.handler.close(this.client.player);
+			this.handler.onClosed(this.client.player);
 		}
 	}
 

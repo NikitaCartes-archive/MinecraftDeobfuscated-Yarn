@@ -109,15 +109,19 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.ACACIA_PLANKS);
 		this.addDrop(Blocks.DARK_OAK_PLANKS);
 		this.addDrop(Blocks.MANGROVE_PLANKS);
+		this.addDrop(Blocks.CHERRY_PLANKS, dropsNothing());
 		this.addDrop(Blocks.BAMBOO_PLANKS, dropsNothing());
 		this.addDrop(Blocks.BAMBOO_MOSAIC, dropsNothing());
+		this.addDrop(Blocks.DECORATED_POT, dropsNothing());
 		this.addDrop(Blocks.OAK_SAPLING);
 		this.addDrop(Blocks.SPRUCE_SAPLING);
 		this.addDrop(Blocks.BIRCH_SAPLING);
 		this.addDrop(Blocks.JUNGLE_SAPLING);
 		this.addDrop(Blocks.ACACIA_SAPLING);
 		this.addDrop(Blocks.DARK_OAK_SAPLING);
+		this.addDrop(Blocks.CHERRY_SAPLING, dropsNothing());
 		this.addDrop(Blocks.SAND);
+		this.addDrop(Blocks.SUSPICIOUS_SAND, dropsNothing());
 		this.addDrop(Blocks.RED_SAND);
 		this.addDrop(Blocks.OAK_LOG);
 		this.addDrop(Blocks.SPRUCE_LOG);
@@ -125,17 +129,19 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.JUNGLE_LOG);
 		this.addDrop(Blocks.ACACIA_LOG);
 		this.addDrop(Blocks.DARK_OAK_LOG);
+		this.addDrop(Blocks.CHERRY_LOG, dropsNothing());
 		this.addDrop(Blocks.BAMBOO_BLOCK, dropsNothing());
+		this.addDrop(Blocks.STRIPPED_OAK_LOG);
 		this.addDrop(Blocks.STRIPPED_SPRUCE_LOG);
 		this.addDrop(Blocks.STRIPPED_BIRCH_LOG);
 		this.addDrop(Blocks.STRIPPED_JUNGLE_LOG);
 		this.addDrop(Blocks.STRIPPED_ACACIA_LOG);
 		this.addDrop(Blocks.STRIPPED_DARK_OAK_LOG);
-		this.addDrop(Blocks.STRIPPED_OAK_LOG);
+		this.addDrop(Blocks.STRIPPED_MANGROVE_LOG);
+		this.addDrop(Blocks.STRIPPED_CHERRY_LOG, dropsNothing());
+		this.addDrop(Blocks.STRIPPED_BAMBOO_BLOCK, dropsNothing());
 		this.addDrop(Blocks.STRIPPED_WARPED_STEM);
 		this.addDrop(Blocks.STRIPPED_CRIMSON_STEM);
-		this.addDrop(Blocks.STRIPPED_MANGROVE_LOG);
-		this.addDrop(Blocks.STRIPPED_BAMBOO_BLOCK, dropsNothing());
 		this.addDrop(Blocks.OAK_WOOD);
 		this.addDrop(Blocks.SPRUCE_WOOD);
 		this.addDrop(Blocks.BIRCH_WOOD);
@@ -143,15 +149,17 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.ACACIA_WOOD);
 		this.addDrop(Blocks.DARK_OAK_WOOD);
 		this.addDrop(Blocks.MANGROVE_WOOD);
+		this.addDrop(Blocks.CHERRY_WOOD, dropsNothing());
 		this.addDrop(Blocks.STRIPPED_OAK_WOOD);
 		this.addDrop(Blocks.STRIPPED_SPRUCE_WOOD);
 		this.addDrop(Blocks.STRIPPED_BIRCH_WOOD);
 		this.addDrop(Blocks.STRIPPED_JUNGLE_WOOD);
 		this.addDrop(Blocks.STRIPPED_ACACIA_WOOD);
 		this.addDrop(Blocks.STRIPPED_DARK_OAK_WOOD);
+		this.addDrop(Blocks.STRIPPED_MANGROVE_WOOD);
+		this.addDrop(Blocks.STRIPPED_CHERRY_WOOD, dropsNothing());
 		this.addDrop(Blocks.STRIPPED_CRIMSON_HYPHAE);
 		this.addDrop(Blocks.STRIPPED_WARPED_HYPHAE);
-		this.addDrop(Blocks.STRIPPED_MANGROVE_WOOD);
 		this.addDrop(Blocks.SPONGE);
 		this.addDrop(Blocks.WET_SPONGE);
 		this.addDrop(Blocks.LAPIS_BLOCK);
@@ -181,6 +189,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.BLACK_WOOL);
 		this.addDrop(Blocks.DANDELION);
 		this.addDrop(Blocks.POPPY);
+		this.addDrop(Blocks.TORCHFLOWER);
 		this.addDrop(Blocks.BLUE_ORCHID);
 		this.addDrop(Blocks.ALLIUM);
 		this.addDrop(Blocks.AZURE_BLUET);
@@ -215,6 +224,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.JUNGLE_SIGN);
 		this.addDrop(Blocks.DARK_OAK_SIGN);
 		this.addDrop(Blocks.MANGROVE_SIGN);
+		this.addDrop(Blocks.CHERRY_SIGN, dropsNothing());
 		this.addDrop(Blocks.BAMBOO_SIGN, dropsNothing());
 		this.addDrop(Blocks.OAK_HANGING_SIGN, dropsNothing());
 		this.addDrop(Blocks.SPRUCE_HANGING_SIGN, dropsNothing());
@@ -223,6 +233,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.JUNGLE_HANGING_SIGN, dropsNothing());
 		this.addDrop(Blocks.DARK_OAK_HANGING_SIGN, dropsNothing());
 		this.addDrop(Blocks.MANGROVE_HANGING_SIGN, dropsNothing());
+		this.addDrop(Blocks.CHERRY_HANGING_SIGN, dropsNothing());
 		this.addDrop(Blocks.CRIMSON_HANGING_SIGN, dropsNothing());
 		this.addDrop(Blocks.WARPED_HANGING_SIGN, dropsNothing());
 		this.addDrop(Blocks.BAMBOO_HANGING_SIGN, dropsNothing());
@@ -238,6 +249,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.ACACIA_PRESSURE_PLATE);
 		this.addDrop(Blocks.DARK_OAK_PRESSURE_PLATE);
 		this.addDrop(Blocks.MANGROVE_PRESSURE_PLATE);
+		this.addDrop(Blocks.CHERRY_PRESSURE_PLATE, dropsNothing());
 		this.addDrop(Blocks.BAMBOO_PRESSURE_PLATE, dropsNothing());
 		this.addDrop(Blocks.REDSTONE_TORCH);
 		this.addDrop(Blocks.STONE_BUTTON);
@@ -265,6 +277,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.ACACIA_TRAPDOOR);
 		this.addDrop(Blocks.DARK_OAK_TRAPDOOR);
 		this.addDrop(Blocks.MANGROVE_TRAPDOOR);
+		this.addDrop(Blocks.CHERRY_TRAPDOOR, dropsNothing());
 		this.addDrop(Blocks.BAMBOO_TRAPDOOR, dropsNothing());
 		this.addDrop(Blocks.STONE_BRICKS);
 		this.addDrop(Blocks.MOSSY_STONE_BRICKS);
@@ -299,6 +312,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.ACACIA_BUTTON);
 		this.addDrop(Blocks.DARK_OAK_BUTTON);
 		this.addDrop(Blocks.MANGROVE_BUTTON);
+		this.addDrop(Blocks.CHERRY_BUTTON, dropsNothing());
 		this.addDrop(Blocks.BAMBOO_BUTTON, dropsNothing());
 		this.addDrop(Blocks.SKELETON_SKULL);
 		this.addDrop(Blocks.WITHER_SKELETON_SKULL);
@@ -337,6 +351,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.BLACK_TERRACOTTA);
 		this.addDrop(Blocks.ACACIA_STAIRS);
 		this.addDrop(Blocks.DARK_OAK_STAIRS);
+		this.addDrop(Blocks.CHERRY_STAIRS, dropsNothing());
 		this.addDrop(Blocks.SLIME_BLOCK);
 		this.addDrop(Blocks.IRON_TRAPDOOR);
 		this.addDrop(Blocks.PRISMARINE);
@@ -377,11 +392,13 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.JUNGLE_FENCE_GATE);
 		this.addDrop(Blocks.ACACIA_FENCE_GATE);
 		this.addDrop(Blocks.DARK_OAK_FENCE_GATE);
+		this.addDrop(Blocks.CHERRY_FENCE_GATE, dropsNothing());
 		this.addDrop(Blocks.SPRUCE_FENCE);
 		this.addDrop(Blocks.BIRCH_FENCE);
 		this.addDrop(Blocks.JUNGLE_FENCE);
 		this.addDrop(Blocks.ACACIA_FENCE);
 		this.addDrop(Blocks.DARK_OAK_FENCE);
+		this.addDrop(Blocks.CHERRY_FENCE, dropsNothing());
 		this.addDrop(Blocks.END_ROD);
 		this.addDrop(Blocks.PURPUR_BLOCK);
 		this.addDrop(Blocks.PURPUR_PILLAR);
@@ -573,6 +590,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.FLOWERING_AZALEA);
 		this.addDrop(Blocks.AZALEA);
 		this.addDrop(Blocks.MOSS_CARPET);
+		this.addDrop(Blocks.PINK_PETALS, dropsNothing());
 		this.addDrop(Blocks.BIG_DRIPLEAF);
 		this.addDrop(Blocks.MOSS_BLOCK);
 		this.addDrop(Blocks.ROOTED_DIRT);
@@ -634,6 +652,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addPottedPlantDrops(Blocks.POTTED_ACACIA_SAPLING);
 		this.addPottedPlantDrops(Blocks.POTTED_DARK_OAK_SAPLING);
 		this.addPottedPlantDrops(Blocks.POTTED_MANGROVE_PROPAGULE);
+		this.addDrop(Blocks.POTTED_CHERRY_SAPLING, dropsNothing());
 		this.addPottedPlantDrops(Blocks.POTTED_FERN);
 		this.addPottedPlantDrops(Blocks.POTTED_DANDELION);
 		this.addPottedPlantDrops(Blocks.POTTED_POPPY);
@@ -659,19 +678,22 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addPottedPlantDrops(Blocks.POTTED_WARPED_ROOTS);
 		this.addPottedPlantDrops(Blocks.POTTED_AZALEA_BUSH);
 		this.addPottedPlantDrops(Blocks.POTTED_FLOWERING_AZALEA_BUSH);
-		this.addDrop(Blocks.MANGROVE_SLAB, block -> this.slabDrops(block));
-		this.addDrop(Blocks.BAMBOO_SLAB, dropsNothing());
-		this.addDrop(Blocks.BAMBOO_MOSAIC_SLAB, dropsNothing());
-		this.addDrop(Blocks.ACACIA_SLAB, block -> this.slabDrops(block));
-		this.addDrop(Blocks.BIRCH_SLAB, block -> this.slabDrops(block));
-		this.addDrop(Blocks.BRICK_SLAB, block -> this.slabDrops(block));
-		this.addDrop(Blocks.COBBLESTONE_SLAB, block -> this.slabDrops(block));
-		this.addDrop(Blocks.DARK_OAK_SLAB, block -> this.slabDrops(block));
-		this.addDrop(Blocks.DARK_PRISMARINE_SLAB, block -> this.slabDrops(block));
-		this.addDrop(Blocks.JUNGLE_SLAB, block -> this.slabDrops(block));
-		this.addDrop(Blocks.NETHER_BRICK_SLAB, block -> this.slabDrops(block));
+		this.addPottedPlantDrops(Blocks.POTTED_TORCHFLOWER);
 		this.addDrop(Blocks.OAK_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.PETRIFIED_OAK_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.SPRUCE_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.BIRCH_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.JUNGLE_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.ACACIA_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.DARK_OAK_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.MANGROVE_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.CHERRY_SLAB, dropsNothing());
+		this.addDrop(Blocks.BAMBOO_SLAB, dropsNothing());
+		this.addDrop(Blocks.BAMBOO_MOSAIC_SLAB, dropsNothing());
+		this.addDrop(Blocks.BRICK_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.COBBLESTONE_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.DARK_PRISMARINE_SLAB, block -> this.slabDrops(block));
+		this.addDrop(Blocks.NETHER_BRICK_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.PRISMARINE_BRICK_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.PRISMARINE_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.PURPUR_SLAB, block -> this.slabDrops(block));
@@ -680,7 +702,6 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.SANDSTONE_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.CUT_RED_SANDSTONE_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.CUT_SANDSTONE_SLAB, block -> this.slabDrops(block));
-		this.addDrop(Blocks.SPRUCE_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.STONE_BRICK_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.STONE_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.SMOOTH_STONE_SLAB, block -> this.slabDrops(block));
@@ -715,17 +736,18 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.DEEPSLATE_TILE_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.DEEPSLATE_BRICK_SLAB, block -> this.slabDrops(block));
 		this.addDrop(Blocks.MUD_BRICK_SLAB, block -> this.slabDrops(block));
-		this.addDrop(Blocks.ACACIA_DOOR, block -> this.doorDrops(block));
-		this.addDrop(Blocks.BIRCH_DOOR, block -> this.doorDrops(block));
-		this.addDrop(Blocks.DARK_OAK_DOOR, block -> this.doorDrops(block));
-		this.addDrop(Blocks.IRON_DOOR, block -> this.doorDrops(block));
-		this.addDrop(Blocks.JUNGLE_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.OAK_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.SPRUCE_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.BIRCH_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.JUNGLE_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.ACACIA_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.DARK_OAK_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.MANGROVE_DOOR, block -> this.doorDrops(block));
+		this.addDrop(Blocks.CHERRY_DOOR, dropsNothing());
+		this.addDrop(Blocks.BAMBOO_DOOR, dropsNothing());
 		this.addDrop(Blocks.WARPED_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.CRIMSON_DOOR, block -> this.doorDrops(block));
-		this.addDrop(Blocks.MANGROVE_DOOR, block -> this.doorDrops(block));
-		this.addDrop(Blocks.BAMBOO_DOOR, dropsNothing());
+		this.addDrop(Blocks.IRON_DOOR, block -> this.doorDrops(block));
 		this.addDrop(Blocks.BLACK_BED, block -> this.dropsWithProperty(block, BedBlock.PART, BedPart.HEAD));
 		this.addDrop(Blocks.BLUE_BED, block -> this.dropsWithProperty(block, BedBlock.PART, BedPart.HEAD));
 		this.addDrop(Blocks.BROWN_BED, block -> this.dropsWithProperty(block, BedBlock.PART, BedPart.HEAD));
@@ -904,12 +926,13 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 		);
 		this.addDrop(Blocks.BEE_NEST, block -> beeNestDrops(block));
 		this.addDrop(Blocks.BEEHIVE, block -> beehiveDrops(block));
-		this.addDrop(Blocks.BIRCH_LEAVES, block -> this.leavesDrops(block, Blocks.BIRCH_SAPLING, SAPLING_DROP_CHANCE));
-		this.addDrop(Blocks.ACACIA_LEAVES, block -> this.leavesDrops(block, Blocks.ACACIA_SAPLING, SAPLING_DROP_CHANCE));
-		this.addDrop(Blocks.JUNGLE_LEAVES, block -> this.leavesDrops(block, Blocks.JUNGLE_SAPLING, JUNGLE_SAPLING_DROP_CHANCE));
-		this.addDrop(Blocks.SPRUCE_LEAVES, block -> this.leavesDrops(block, Blocks.SPRUCE_SAPLING, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.OAK_LEAVES, block -> this.oakLeavesDrops(block, Blocks.OAK_SAPLING, SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.SPRUCE_LEAVES, block -> this.leavesDrops(block, Blocks.SPRUCE_SAPLING, SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.BIRCH_LEAVES, block -> this.leavesDrops(block, Blocks.BIRCH_SAPLING, SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.JUNGLE_LEAVES, block -> this.leavesDrops(block, Blocks.JUNGLE_SAPLING, JUNGLE_SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.ACACIA_LEAVES, block -> this.leavesDrops(block, Blocks.ACACIA_SAPLING, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.DARK_OAK_LEAVES, block -> this.oakLeavesDrops(block, Blocks.DARK_OAK_SAPLING, SAPLING_DROP_CHANCE));
+		this.addDrop(Blocks.CHERRY_LEAVES, block -> dropsNothing());
 		this.addDrop(Blocks.AZALEA_LEAVES, block -> this.leavesDrops(block, Blocks.AZALEA, SAPLING_DROP_CHANCE));
 		this.addDrop(Blocks.FLOWERING_AZALEA_LEAVES, block -> this.leavesDrops(block, Blocks.FLOWERING_AZALEA, SAPLING_DROP_CHANCE));
 		LootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.BEETROOTS)
@@ -928,6 +951,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 				Blocks.MANGROVE_PROPAGULE, LootTable.builder().pool(LootPool.builder().conditionally(builder4).with(ItemEntry.builder(Items.MANGROVE_PROPAGULE)))
 			)
 		);
+		this.addDrop(Blocks.TORCHFLOWER_CROP);
 		this.addDrop(
 			Blocks.CARROTS,
 			this.applyExplosionDecay(

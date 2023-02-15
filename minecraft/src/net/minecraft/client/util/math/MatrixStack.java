@@ -79,6 +79,12 @@ public class MatrixStack {
 		entry.normalMatrix.rotate(quaternion);
 	}
 
+	public void multiply(Quaternionf quaternion, float originX, float originY, float originZ) {
+		MatrixStack.Entry entry = (MatrixStack.Entry)this.stack.getLast();
+		entry.positionMatrix.rotateAround(quaternion, originX, originY, originZ);
+		entry.normalMatrix.rotate(quaternion);
+	}
+
 	/**
 	 * Pushes a copy of the top entry onto this stack.
 	 */

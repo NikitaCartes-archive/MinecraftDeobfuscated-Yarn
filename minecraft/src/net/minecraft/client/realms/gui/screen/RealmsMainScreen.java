@@ -3,7 +3,6 @@ package net.minecraft.client.realms.gui.screen;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.RateLimiter;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.util.Collection;
@@ -19,8 +18,11 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.gui.widget.AxisGridWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.realms.KeyCombo;
 import net.minecraft.client.realms.Ping;
 import net.minecraft.client.realms.RealmsClient;
@@ -58,43 +60,44 @@ public class RealmsMainScreen extends RealmsScreen {
 	private static final Identifier OFF_ICON = new Identifier("realms", "textures/gui/realms/off_icon.png");
 	private static final Identifier EXPIRED_ICON = new Identifier("realms", "textures/gui/realms/expired_icon.png");
 	private static final Identifier EXPIRES_SOON_ICON = new Identifier("realms", "textures/gui/realms/expires_soon_icon.png");
-	private static final Identifier LEAVE_ICON = new Identifier("realms", "textures/gui/realms/leave_icon.png");
 	private static final Identifier INVITATION_ICON = new Identifier("realms", "textures/gui/realms/invitation_icons.png");
 	private static final Identifier INVITE_ICON = new Identifier("realms", "textures/gui/realms/invite_icon.png");
 	static final Identifier WORLD_ICON = new Identifier("realms", "textures/gui/realms/world_icon.png");
 	private static final Identifier REALMS = new Identifier("realms", "textures/gui/title/realms.png");
-	private static final Identifier CONFIGURE_ICON = new Identifier("realms", "textures/gui/realms/configure_icon.png");
 	private static final Identifier NEWS_ICON = new Identifier("realms", "textures/gui/realms/news_icon.png");
 	private static final Identifier POPUP = new Identifier("realms", "textures/gui/realms/popup.png");
 	private static final Identifier DARKEN = new Identifier("realms", "textures/gui/realms/darken.png");
 	static final Identifier CROSS_ICON = new Identifier("realms", "textures/gui/realms/cross_icon.png");
 	private static final Identifier TRIAL_ICON = new Identifier("realms", "textures/gui/realms/trial_icon.png");
-	static final Identifier WIDGETS = new Identifier("minecraft", "textures/gui/widgets.png");
 	static final Text NO_PENDING_TEXT = Text.translatable("mco.invites.nopending");
 	static final Text PENDING_TEXT = Text.translatable("mco.invites.pending");
 	static final List<Text> TRIAL_MESSAGE_LINES = ImmutableList.of(Text.translatable("mco.trial.message.line1"), Text.translatable("mco.trial.message.line2"));
 	static final Text UNINITIALIZED_TEXT = Text.translatable("mco.selectServer.uninitialized");
 	static final Text EXPIRED_LIST_TEXT = Text.translatable("mco.selectServer.expiredList");
-	static final Text EXPIRED_RENEW_TEXT = Text.translatable("mco.selectServer.expiredRenew");
+	private static final Text EXPIRED_RENEW_TEXT = Text.translatable("mco.selectServer.expiredRenew");
 	static final Text EXPIRED_TRIAL_TEXT = Text.translatable("mco.selectServer.expiredTrial");
-	static final Text EXPIRED_SUBSCRIBE_TEXT = Text.translatable("mco.selectServer.expiredSubscribe");
 	static final Text MINIGAME_TEXT = Text.translatable("mco.selectServer.minigame").append(ScreenTexts.SPACE);
 	private static final Text POPUP_TEXT = Text.translatable("mco.selectServer.popup");
+	private static final Text PLAY_TEXT = Text.translatable("mco.selectServer.play");
+	private static final Text LEAVE_TEXT = Text.translatable("mco.selectServer.leave");
+	private static final Text CONFIGURE_TEXT = Text.translatable("mco.selectServer.configure");
 	private static final Text EXPIRED_TEXT = Text.translatable("mco.selectServer.expired");
 	private static final Text EXPIRES_SOON_TEXT = Text.translatable("mco.selectServer.expires.soon");
 	private static final Text EXPIRES_IN_A_DAY_TEXT = Text.translatable("mco.selectServer.expires.day");
 	private static final Text OPEN_TEXT = Text.translatable("mco.selectServer.open");
 	private static final Text CLOSED_TEXT = Text.translatable("mco.selectServer.closed");
-	private static final Text LEAVE_TEXT = Text.translatable("mco.selectServer.leave");
-	private static final Text CONFIGURE_TEXT = Text.translatable("mco.selectServer.configureRealm");
 	private static final Text NEWS_TEXT = Text.translatable("mco.news");
 	static final Text UNINITIALIZED_BUTTON_NARRATION = Text.translatable("gui.narrate.button", UNINITIALIZED_TEXT);
 	static final Text TRIAL_NARRATION = ScreenTexts.joinLines(TRIAL_MESSAGE_LINES);
+	private static final int field_42862 = 100;
+	private static final int field_42863 = 308;
+	private static final int field_42864 = 204;
+	private static final int field_42865 = 64;
 	private static List<Identifier> IMAGES = ImmutableList.of();
 	@Nullable
 	private PeriodicRunnerFactory.RunnersManager periodicRunnersManager;
 	private RealmsServerFilterer serverFilterer;
-	static boolean overrideConfigure;
+	private static boolean overrideConfigure;
 	private static int lastScrollYPosition = -1;
 	static volatile boolean hasParentalConsent;
 	static volatile boolean checkedParentalConsent;
@@ -131,7 +134,6 @@ public class RealmsMainScreen extends RealmsScreen {
 	long lastPlayButtonClickTime;
 	private ReentrantLock connectLock = new ReentrantLock();
 	private MultilineText popupText = MultilineText.EMPTY;
-	RealmsMainScreen.HoverState hoverState;
 	private ButtonWidget showPopupButton;
 	private RealmsMainScreen.PendingInvitesButton pendingInvitesButton;
 	private ButtonWidget newsButton;
@@ -204,7 +206,6 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 
 			this.showingPopup = false;
-			this.addInvitesAndNewsButtons();
 			this.realmSelectionList = new RealmsMainScreen.RealmSelectionList();
 			if (lastScrollYPosition != -1) {
 				this.realmSelectionList.setScrollAmount((double)lastScrollYPosition);
@@ -214,7 +215,8 @@ public class RealmsMainScreen extends RealmsScreen {
 			this.hasSelectionList = true;
 			this.setInitialFocus(this.realmSelectionList);
 			this.addPurchaseButtons();
-			this.addPlayButtons();
+			this.addLowerButtons();
+			this.addInvitesAndNewsButtons();
 			this.updateButtonStates(null);
 			this.popupText = MultilineText.create(this.textRenderer, POPUP_TEXT, 100);
 			RealmsNewsUpdater realmsNewsUpdater = this.client.getRealmsPeriodicCheckers().newsUpdater;
@@ -259,55 +261,54 @@ public class RealmsMainScreen extends RealmsScreen {
 		this.closeButton = this.addDrawableChild(new RealmsMainScreen.CloseButton());
 	}
 
-	public void addPlayButtons() {
-		this.configureButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("mco.selectServer.configure"), button -> this.configureClicked(this.findServer()))
-				.dimensions(this.width / 2 - 190, this.height - 32, 90, 20)
-				.build()
-		);
-		this.leaveButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("mco.selectServer.leave"), button -> this.leaveClicked(this.findServer()))
-				.dimensions(this.width / 2 - 190, this.height - 32, 90, 20)
-				.build()
-		);
-		this.playButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("mco.selectServer.play"), button -> this.play(this.findServer(), this))
-				.dimensions(this.width / 2 - 93, this.height - 32, 90, 20)
-				.build()
-		);
-		this.backButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> {
+	public void addLowerButtons() {
+		this.playButton = ButtonWidget.builder(PLAY_TEXT, button -> this.play(this.findServer(), this)).width(100).build();
+		this.configureButton = ButtonWidget.builder(CONFIGURE_TEXT, button -> this.configureClicked(this.findServer())).width(100).build();
+		this.renewButton = ButtonWidget.builder(EXPIRED_RENEW_TEXT, button -> this.onRenew(this.findServer())).width(100).build();
+		this.leaveButton = ButtonWidget.builder(LEAVE_TEXT, button -> this.leaveClicked(this.findServer())).width(100).build();
+		this.backButton = ButtonWidget.builder(ScreenTexts.BACK, button -> {
 			if (!this.justClosedPopup) {
 				this.client.setScreen(this.lastScreen);
 			}
-		}).dimensions(this.width / 2 + 4, this.height - 32, 90, 20).build());
-		this.renewButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("mco.selectServer.expiredRenew"), button -> this.onRenew(this.findServer()))
-				.dimensions(this.width / 2 + 100, this.height - 32, 90, 20)
-				.build()
-		);
+		}).width(100).build();
+		GridWidget gridWidget = new GridWidget();
+		GridWidget.Adder adder = gridWidget.createAdder(1);
+		AxisGridWidget axisGridWidget = adder.add(new AxisGridWidget(308, 20, AxisGridWidget.DisplayAxis.HORIZONTAL), adder.copyPositioner().marginBottom(4));
+		axisGridWidget.add(this.playButton);
+		axisGridWidget.add(this.configureButton);
+		axisGridWidget.add(this.renewButton);
+		AxisGridWidget axisGridWidget2 = adder.add(new AxisGridWidget(204, 20, AxisGridWidget.DisplayAxis.HORIZONTAL), adder.copyPositioner().alignHorizontalCenter());
+		axisGridWidget2.add(this.leaveButton);
+		axisGridWidget2.add(this.backButton);
+		gridWidget.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
+		});
+		gridWidget.refreshPositions();
+		SimplePositioningWidget.setPos(gridWidget, 0, this.height - 64, this.width, 64);
 	}
 
 	void updateButtonStates(@Nullable RealmsServer server) {
 		this.backButton.active = true;
 		if (hasParentalConsent() && this.hasFetchedServers) {
-			this.playButton.visible = true;
-			this.playButton.active = this.shouldPlayButtonBeActive(server) && !this.shouldShowPopup();
-			this.renewButton.visible = this.shouldRenewButtonBeActive(server);
-			this.configureButton.visible = this.shouldConfigureButtonBeVisible(server);
-			this.leaveButton.visible = this.shouldLeaveButtonBeVisible(server);
 			boolean bl = this.shouldShowPopup() && this.trialAvailable && !this.createdTrial;
 			this.createTrialButton.visible = bl;
 			this.createTrialButton.active = bl;
 			this.buyARealmButton.visible = this.shouldShowPopup();
 			this.closeButton.visible = this.shouldShowPopup() && this.popupOpenedByUser;
-			this.renewButton.active = !this.shouldShowPopup();
-			this.configureButton.active = !this.shouldShowPopup();
-			this.leaveButton.active = !this.shouldShowPopup();
 			this.newsButton.active = true;
 			this.newsButton.visible = this.newsLink != null;
 			this.pendingInvitesButton.active = true;
 			this.pendingInvitesButton.visible = true;
 			this.showPopupButton.active = !this.shouldShowPopup();
+			this.playButton.visible = !this.shouldShowPopup();
+			this.renewButton.visible = !this.shouldShowPopup();
+			this.leaveButton.visible = !this.shouldShowPopup();
+			this.configureButton.visible = !this.shouldShowPopup();
+			this.backButton.visible = !this.shouldShowPopup();
+			this.playButton.active = this.shouldPlayButtonBeActive(server);
+			this.renewButton.active = this.shouldRenewButtonBeActive(server);
+			this.leaveButton.active = this.shouldLeaveButtonBeActive(server);
+			this.configureButton.active = this.shouldConfigureButtonBeActive(server);
 		} else {
 			hide(
 				new ClickableWidget[]{
@@ -338,11 +339,11 @@ public class RealmsMainScreen extends RealmsScreen {
 		return server != null && server.expired && this.isSelfOwnedServer(server);
 	}
 
-	private boolean shouldConfigureButtonBeVisible(@Nullable RealmsServer server) {
+	private boolean shouldConfigureButtonBeActive(@Nullable RealmsServer server) {
 		return server != null && this.isSelfOwnedServer(server);
 	}
 
-	private boolean shouldLeaveButtonBeVisible(@Nullable RealmsServer server) {
+	private boolean shouldLeaveButtonBeActive(@Nullable RealmsServer server) {
 		return server != null && !this.isSelfOwnedServer(server);
 	}
 
@@ -493,7 +494,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		this.createdTrial = createdTrial;
 	}
 
-	void onRenew(@Nullable RealmsServer realmsServer) {
+	private void onRenew(@Nullable RealmsServer realmsServer) {
 		if (realmsServer != null) {
 			String string = "https://aka.ms/ExtendJavaRealms?subscriptionId="
 				+ realmsServer.remoteSubscriptionId
@@ -613,14 +614,14 @@ public class RealmsMainScreen extends RealmsScreen {
 		this.resetPeriodicRunnersManager();
 	}
 
-	void configureClicked(@Nullable RealmsServer serverData) {
+	private void configureClicked(@Nullable RealmsServer serverData) {
 		if (serverData != null && (this.client.getSession().getUuid().equals(serverData.ownerUUID) || overrideConfigure)) {
 			this.saveListScrollPosition();
 			this.client.setScreen(new RealmsConfigureWorldScreen(this, serverData.id));
 		}
 	}
 
-	void leaveClicked(@Nullable RealmsServer selectedServer) {
+	private void leaveClicked(@Nullable RealmsServer selectedServer) {
 		if (selectedServer != null && !this.client.getSession().getUuid().equals(selectedServer.ownerUUID)) {
 			this.saveListScrollPosition();
 			Text text = Text.translatable("mco.configure.world.leave.question.line1");
@@ -709,7 +710,6 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.hoverState = RealmsMainScreen.HoverState.NONE;
 		this.renderBackground(matrices);
 		this.realmSelectionList.render(matrices, mouseX, mouseY, delta);
 		this.drawRealmsLogo(matrices, this.width / 2 - 50, 7);
@@ -967,36 +967,6 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 	}
 
-	void drawLeave(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
-		boolean bl = false;
-		if (mouseX >= x && mouseX <= x + 28 && mouseY >= y && mouseY <= y + 28 && mouseY < this.height - 40 && mouseY > 32 && !this.shouldShowPopup()) {
-			bl = true;
-		}
-
-		RenderSystem.setShaderTexture(0, LEAVE_ICON);
-		float f = bl ? 28.0F : 0.0F;
-		DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 28, 28, 56, 28);
-		if (bl) {
-			this.setTooltip(LEAVE_TEXT);
-			this.hoverState = RealmsMainScreen.HoverState.LEAVE;
-		}
-	}
-
-	void drawConfigure(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
-		boolean bl = false;
-		if (mouseX >= x && mouseX <= x + 28 && mouseY >= y && mouseY <= y + 28 && mouseY < this.height - 40 && mouseY > 32 && !this.shouldShowPopup()) {
-			bl = true;
-		}
-
-		RenderSystem.setShaderTexture(0, CONFIGURE_ICON);
-		float f = bl ? 28.0F : 0.0F;
-		DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 28, 28, 56, 28);
-		if (bl) {
-			this.setTooltip(CONFIGURE_TEXT);
-			this.hoverState = RealmsMainScreen.HoverState.CONFIGURE;
-		}
-	}
-
 	void renderNews(MatrixStack matrices, int mouseX, int mouseY, boolean hasUnread, int x, int y, boolean hovered, boolean active) {
 		boolean bl = false;
 		if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20) {
@@ -1090,14 +1060,6 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum HoverState {
-		NONE,
-		EXPIRED,
-		LEAVE,
-		CONFIGURE;
-	}
-
-	@Environment(EnvType.CLIENT)
 	class NewsButton extends ButtonWidget {
 		public NewsButton() {
 			super(RealmsMainScreen.this.width - 115, 6, 20, 20, Text.translatable("mco.news"), button -> {
@@ -1144,7 +1106,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class RealmSelectionList extends RealmsObjectSelectionList<RealmsMainScreen.Entry> {
 		public RealmSelectionList() {
-			super(RealmsMainScreen.this.width, RealmsMainScreen.this.height, 32, RealmsMainScreen.this.height - 40, 36);
+			super(RealmsMainScreen.this.width, RealmsMainScreen.this.height, 32, RealmsMainScreen.this.height - 64, 36);
 		}
 
 		@Override
@@ -1195,13 +1157,7 @@ public class RealmsMainScreen extends RealmsScreen {
 					if (realmsServer.state == RealmsServer.State.UNINITIALIZED) {
 						MinecraftClient.getInstance().setScreen(new RealmsCreateRealmScreen(realmsServer, RealmsMainScreen.this));
 					} else {
-						if (RealmsMainScreen.this.hoverState == RealmsMainScreen.HoverState.CONFIGURE) {
-							RealmsMainScreen.this.configureClicked(realmsServer);
-						} else if (RealmsMainScreen.this.hoverState == RealmsMainScreen.HoverState.LEAVE) {
-							RealmsMainScreen.this.leaveClicked(realmsServer);
-						} else if (RealmsMainScreen.this.hoverState == RealmsMainScreen.HoverState.EXPIRED) {
-							RealmsMainScreen.this.onRenew(realmsServer);
-						} else if (RealmsMainScreen.this.shouldPlayButtonBeActive(realmsServer)) {
+						if (RealmsMainScreen.this.shouldPlayButtonBeActive(realmsServer)) {
 							if (Util.getMeasuringTimeMs() - RealmsMainScreen.this.lastPlayButtonClickTime < 250L && this.isSelectedEntry(selectionIndex)) {
 								RealmsMainScreen.this.play(realmsServer, RealmsMainScreen.this);
 							}
@@ -1227,32 +1183,32 @@ public class RealmsMainScreen extends RealmsScreen {
 	@Environment(EnvType.CLIENT)
 	class RealmSelectionListEntry extends RealmsMainScreen.Entry {
 		private static final int field_32054 = 36;
-		private final RealmsServer mServerData;
+		private final RealmsServer server;
 
-		public RealmSelectionListEntry(RealmsServer serverData) {
-			this.mServerData = serverData;
+		public RealmSelectionListEntry(RealmsServer server) {
+			this.server = server;
 		}
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.render(this.mServerData, matrices, x, y, mouseX, mouseY);
+			this.render(this.server, matrices, x, y, mouseX, mouseY);
 		}
 
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			if (this.mServerData.state == RealmsServer.State.UNINITIALIZED) {
-				RealmsMainScreen.this.client.setScreen(new RealmsCreateRealmScreen(this.mServerData, RealmsMainScreen.this));
+			if (this.server.state == RealmsServer.State.UNINITIALIZED) {
+				RealmsMainScreen.this.client.setScreen(new RealmsCreateRealmScreen(this.server, RealmsMainScreen.this));
 			}
 
 			return true;
 		}
 
-		private void render(RealmsServer serverData, MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
-			this.renderMcoServerItem(serverData, matrices, x + 36, y, mouseX, mouseY);
+		private void render(RealmsServer server, MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
+			this.renderRealmsServerItem(server, matrices, x + 36, y, mouseX, mouseY);
 		}
 
-		private void renderMcoServerItem(RealmsServer serverData, MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
-			if (serverData.state == RealmsServer.State.UNINITIALIZED) {
+		private void renderRealmsServerItem(RealmsServer server, MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
+			if (server.state == RealmsServer.State.UNINITIALIZED) {
 				RenderSystem.setShaderTexture(0, RealmsMainScreen.WORLD_ICON);
 				DrawableHelper.drawTexture(matrices, x + 10, y + 6, 0.0F, 0.0F, 40, 20, 40, 20);
 				float f = 0.5F + (1.0F + MathHelper.sin((float)RealmsMainScreen.this.animTick * 0.25F)) * 0.25F;
@@ -1261,24 +1217,9 @@ public class RealmsMainScreen extends RealmsScreen {
 			} else {
 				int j = 225;
 				int i = 2;
-				if (serverData.expired) {
-					RealmsMainScreen.this.drawExpired(matrices, x + 225 - 14, y + 2, mouseX, mouseY);
-				} else if (serverData.state == RealmsServer.State.CLOSED) {
-					RealmsMainScreen.this.drawClose(matrices, x + 225 - 14, y + 2, mouseX, mouseY);
-				} else if (RealmsMainScreen.this.isSelfOwnedServer(serverData) && serverData.daysLeft < 7) {
-					RealmsMainScreen.this.drawExpiring(matrices, x + 225 - 14, y + 2, mouseX, mouseY, serverData.daysLeft);
-				} else if (serverData.state == RealmsServer.State.OPEN) {
-					RealmsMainScreen.this.drawOpen(matrices, x + 225 - 14, y + 2, mouseX, mouseY);
-				}
-
-				if (!RealmsMainScreen.this.isSelfOwnedServer(serverData) && !RealmsMainScreen.overrideConfigure) {
-					RealmsMainScreen.this.drawLeave(matrices, x + 225, y + 2, mouseX, mouseY);
-				} else {
-					RealmsMainScreen.this.drawConfigure(matrices, x + 225, y + 2, mouseX, mouseY);
-				}
-
-				if (!"0".equals(serverData.serverPing.nrOfPlayers)) {
-					String string = Formatting.GRAY + serverData.serverPing.nrOfPlayers;
+				this.drawServerState(server, matrices, x, y, mouseX, mouseY, 225, 2);
+				if (!"0".equals(server.serverPing.nrOfPlayers)) {
+					String string = Formatting.GRAY + server.serverPing.nrOfPlayers;
 					RealmsMainScreen.this.textRenderer.draw(matrices, string, (float)(x + 207 - RealmsMainScreen.this.textRenderer.getWidth(string)), (float)(y + 3), 8421504);
 					if (mouseX >= x + 207 - RealmsMainScreen.this.textRenderer.getWidth(string)
 						&& mouseX <= x + 207
@@ -1287,81 +1228,58 @@ public class RealmsMainScreen extends RealmsScreen {
 						&& mouseY < RealmsMainScreen.this.height - 40
 						&& mouseY > 32
 						&& !RealmsMainScreen.this.shouldShowPopup()) {
-						RealmsMainScreen.this.setTooltip(Text.literal(serverData.serverPing.playerList));
+						RealmsMainScreen.this.setTooltip(Text.literal(server.serverPing.playerList));
 					}
 				}
 
-				if (RealmsMainScreen.this.isSelfOwnedServer(serverData) && serverData.expired) {
-					RenderSystem.enableBlend();
-					RenderSystem.setShaderTexture(0, RealmsMainScreen.WIDGETS);
-					RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-					Text text;
-					Text text2;
-					if (serverData.expiredTrial) {
-						text = RealmsMainScreen.EXPIRED_TRIAL_TEXT;
-						text2 = RealmsMainScreen.EXPIRED_SUBSCRIBE_TEXT;
-					} else {
-						text = RealmsMainScreen.EXPIRED_LIST_TEXT;
-						text2 = RealmsMainScreen.EXPIRED_RENEW_TEXT;
-					}
-
-					int k = RealmsMainScreen.this.textRenderer.getWidth(text2) + 17;
-					int l = 16;
-					int m = x + RealmsMainScreen.this.textRenderer.getWidth(text) + 8;
-					int n = y + 13;
-					boolean bl = false;
-					if (mouseX >= m
-						&& mouseX < m + k
-						&& mouseY > n
-						&& mouseY <= n + 16
-						&& mouseY < RealmsMainScreen.this.height - 40
-						&& mouseY > 32
-						&& !RealmsMainScreen.this.shouldShowPopup()) {
-						bl = true;
-						RealmsMainScreen.this.hoverState = RealmsMainScreen.HoverState.EXPIRED;
-					}
-
-					int o = bl ? 2 : 1;
-					DrawableHelper.drawTexture(matrices, m, n, 0.0F, (float)(46 + o * 20), k / 2, 8, 256, 256);
-					DrawableHelper.drawTexture(matrices, m + k / 2, n, (float)(200 - k / 2), (float)(46 + o * 20), k / 2, 8, 256, 256);
-					DrawableHelper.drawTexture(matrices, m, n + 8, 0.0F, (float)(46 + o * 20 + 12), k / 2, 8, 256, 256);
-					DrawableHelper.drawTexture(matrices, m + k / 2, n + 8, (float)(200 - k / 2), (float)(46 + o * 20 + 12), k / 2, 8, 256, 256);
-					RenderSystem.disableBlend();
-					int p = y + 11 + 5;
-					int q = bl ? 16777120 : 16777215;
-					RealmsMainScreen.this.textRenderer.draw(matrices, text, (float)(x + 2), (float)(p + 1), 15553363);
-					DrawableHelper.drawCenteredTextWithShadow(matrices, RealmsMainScreen.this.textRenderer, text2, m + k / 2, p + 1, q);
+				if (RealmsMainScreen.this.isSelfOwnedServer(server) && server.expired) {
+					Text text = server.expiredTrial ? RealmsMainScreen.EXPIRED_TRIAL_TEXT : RealmsMainScreen.EXPIRED_LIST_TEXT;
+					int k = y + 11 + 5;
+					RealmsMainScreen.this.textRenderer.draw(matrices, text, (float)(x + 2), (float)(k + 1), 15553363);
 				} else {
-					if (serverData.worldType == RealmsServer.WorldType.MINIGAME) {
-						int r = 13413468;
-						int s = RealmsMainScreen.this.textRenderer.getWidth(RealmsMainScreen.MINIGAME_TEXT);
+					if (server.worldType == RealmsServer.WorldType.MINIGAME) {
+						int l = 13413468;
+						int k = RealmsMainScreen.this.textRenderer.getWidth(RealmsMainScreen.MINIGAME_TEXT);
 						RealmsMainScreen.this.textRenderer.draw(matrices, RealmsMainScreen.MINIGAME_TEXT, (float)(x + 2), (float)(y + 12), 13413468);
-						RealmsMainScreen.this.textRenderer.draw(matrices, serverData.getMinigameName(), (float)(x + 2 + s), (float)(y + 12), 7105644);
+						RealmsMainScreen.this.textRenderer.draw(matrices, server.getMinigameName(), (float)(x + 2 + k), (float)(y + 12), 7105644);
 					} else {
-						RealmsMainScreen.this.textRenderer.draw(matrices, serverData.getDescription(), (float)(x + 2), (float)(y + 12), 7105644);
+						RealmsMainScreen.this.textRenderer.draw(matrices, server.getDescription(), (float)(x + 2), (float)(y + 12), 7105644);
 					}
 
-					if (!RealmsMainScreen.this.isSelfOwnedServer(serverData)) {
-						RealmsMainScreen.this.textRenderer.draw(matrices, serverData.owner, (float)(x + 2), (float)(y + 12 + 11), 5000268);
+					if (!RealmsMainScreen.this.isSelfOwnedServer(server)) {
+						RealmsMainScreen.this.textRenderer.draw(matrices, server.owner, (float)(x + 2), (float)(y + 12 + 11), 5000268);
 					}
 				}
 
-				RealmsMainScreen.this.textRenderer.draw(matrices, serverData.getName(), (float)(x + 2), (float)(y + 1), 16777215);
-				RealmsUtil.drawPlayerHead(matrices, x - 36, y, 32, serverData.ownerUUID);
+				RealmsMainScreen.this.textRenderer.draw(matrices, server.getName(), (float)(x + 2), (float)(y + 1), 16777215);
+				RealmsUtil.drawPlayerHead(matrices, x - 36, y, 32, server.ownerUUID);
+			}
+		}
+
+		private void drawServerState(RealmsServer server, MatrixStack matrices, int x, int y, int mouseX, int mouseY, int xOffset, int yOffset) {
+			int i = x + xOffset + 22;
+			if (server.expired) {
+				RealmsMainScreen.this.drawExpired(matrices, i, y + yOffset, mouseX, mouseY);
+			} else if (server.state == RealmsServer.State.CLOSED) {
+				RealmsMainScreen.this.drawClose(matrices, i, y + yOffset, mouseX, mouseY);
+			} else if (RealmsMainScreen.this.isSelfOwnedServer(server) && server.daysLeft < 7) {
+				RealmsMainScreen.this.drawExpiring(matrices, i, y + yOffset, mouseX, mouseY, server.daysLeft);
+			} else if (server.state == RealmsServer.State.OPEN) {
+				RealmsMainScreen.this.drawOpen(matrices, i, y + yOffset, mouseX, mouseY);
 			}
 		}
 
 		@Override
 		public Text getNarration() {
-			return (Text)(this.mServerData.state == RealmsServer.State.UNINITIALIZED
+			return (Text)(this.server.state == RealmsServer.State.UNINITIALIZED
 				? RealmsMainScreen.UNINITIALIZED_BUTTON_NARRATION
-				: Text.translatable("narrator.select", this.mServerData.name));
+				: Text.translatable("narrator.select", this.server.name));
 		}
 
 		@Nullable
 		@Override
 		public RealmsServer getRealmsServer() {
-			return this.mServerData;
+			return this.server;
 		}
 	}
 

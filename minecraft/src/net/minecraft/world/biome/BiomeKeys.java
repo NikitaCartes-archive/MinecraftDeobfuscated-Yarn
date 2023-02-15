@@ -35,6 +35,7 @@ public abstract class BiomeKeys {
 	public static final RegistryKey<Biome> ERODED_BADLANDS = register("eroded_badlands");
 	public static final RegistryKey<Biome> WOODED_BADLANDS = register("wooded_badlands");
 	public static final RegistryKey<Biome> MEADOW = register("meadow");
+	public static final RegistryKey<Biome> CHERRY_GROVE = register("cherry_grove");
 	public static final RegistryKey<Biome> GROVE = register("grove");
 	public static final RegistryKey<Biome> SNOWY_SLOPES = register("snowy_slopes");
 	public static final RegistryKey<Biome> FROZEN_PEAKS = register("frozen_peaks");

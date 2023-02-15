@@ -21,6 +21,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -28,6 +29,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	private static final String SKIN_URL = "http://skins.minecraft.net/MinecraftSkins/%s.png";
 	@Nullable
 	private PlayerListEntry playerListEntry;
+	protected Vec3d lastVelocity = Vec3d.ZERO;
 	public float elytraPitch;
 	public float elytraYaw;
 	public float elytraRoll;
@@ -61,6 +63,16 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		}
 
 		return this.playerListEntry;
+	}
+
+	@Override
+	public void tick() {
+		this.lastVelocity = this.getVelocity();
+		super.tick();
+	}
+
+	public Vec3d lerpVelocity(float tickDelta) {
+		return this.lastVelocity.lerp(this.getVelocity(), (double)tickDelta);
 	}
 
 	public boolean hasSkinTexture() {

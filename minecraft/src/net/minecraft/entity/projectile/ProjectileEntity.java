@@ -210,11 +210,11 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	}
 
 	protected boolean canHit(Entity entity) {
-		if (!entity.isSpectator() && entity.isAlive() && entity.canHit()) {
+		if (!entity.canBeHitByProjectile()) {
+			return false;
+		} else {
 			Entity entity2 = this.getOwner();
 			return entity2 == null || this.leftOwner || !entity2.isConnectedThroughVehicle(entity);
-		} else {
-			return false;
 		}
 	}
 

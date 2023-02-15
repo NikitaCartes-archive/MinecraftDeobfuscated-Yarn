@@ -311,6 +311,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.BIRCH_PLANKS, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.JUNGLE_PLANKS, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.ACACIA_PLANKS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.CHERRY_PLANKS, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_PLANKS, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.MANGROVE_PLANKS, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.BAMBOO_PLANKS, 5, 20);
@@ -320,6 +321,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.BIRCH_SLAB, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.JUNGLE_SLAB, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.ACACIA_SLAB, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.CHERRY_SLAB, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_SLAB, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.MANGROVE_SLAB, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.BAMBOO_SLAB, 5, 20);
@@ -329,6 +331,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.BIRCH_FENCE_GATE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.JUNGLE_FENCE_GATE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.ACACIA_FENCE_GATE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.CHERRY_FENCE_GATE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_FENCE_GATE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.MANGROVE_FENCE_GATE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.BAMBOO_FENCE_GATE, 5, 20);
@@ -337,6 +340,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.BIRCH_FENCE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.JUNGLE_FENCE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.ACACIA_FENCE, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.CHERRY_FENCE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_FENCE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.MANGROVE_FENCE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.BAMBOO_FENCE, 5, 20);
@@ -345,6 +349,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.SPRUCE_STAIRS, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.JUNGLE_STAIRS, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.ACACIA_STAIRS, 5, 20);
+		fireBlock.registerFlammableBlock(Blocks.CHERRY_STAIRS, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_STAIRS, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.MANGROVE_STAIRS, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.BAMBOO_STAIRS, 5, 20);
@@ -354,6 +359,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.BIRCH_LOG, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.JUNGLE_LOG, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.ACACIA_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.CHERRY_LOG, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_LOG, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.MANGROVE_LOG, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.BAMBOO_BLOCK, 5, 5);
@@ -362,6 +368,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_BIRCH_LOG, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_JUNGLE_LOG, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_ACACIA_LOG, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_CHERRY_LOG, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_DARK_OAK_LOG, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_MANGROVE_LOG, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_BAMBOO_BLOCK, 5, 5);
@@ -370,6 +377,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_BIRCH_WOOD, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_JUNGLE_WOOD, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_ACACIA_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.STRIPPED_CHERRY_WOOD, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_DARK_OAK_WOOD, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.STRIPPED_MANGROVE_WOOD, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.OAK_WOOD, 5, 5);
@@ -377,6 +385,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.BIRCH_WOOD, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.JUNGLE_WOOD, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.ACACIA_WOOD, 5, 5);
+		fireBlock.registerFlammableBlock(Blocks.CHERRY_WOOD, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_WOOD, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.MANGROVE_WOOD, 5, 5);
 		fireBlock.registerFlammableBlock(Blocks.MANGROVE_ROOTS, 5, 20);
@@ -385,6 +394,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.BIRCH_LEAVES, 30, 60);
 		fireBlock.registerFlammableBlock(Blocks.JUNGLE_LEAVES, 30, 60);
 		fireBlock.registerFlammableBlock(Blocks.ACACIA_LEAVES, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.CHERRY_LEAVES, 30, 60);
 		fireBlock.registerFlammableBlock(Blocks.DARK_OAK_LEAVES, 30, 60);
 		fireBlock.registerFlammableBlock(Blocks.MANGROVE_LEAVES, 30, 60);
 		fireBlock.registerFlammableBlock(Blocks.BOOKSHELF, 30, 20);

@@ -198,7 +198,18 @@ public class DebugRenderer {
 			matrices.scale(-size, -size, size);
 			float g = center ? (float)(-textRenderer.getWidth(string)) / 2.0F : 0.0F;
 			g -= offset / size;
-			textRenderer.draw(string, g, 0.0F, color, false, matrices.peek().getPositionMatrix(), vertexConsumers, visibleThroughObjects, 0, 15728880);
+			textRenderer.draw(
+				string,
+				g,
+				0.0F,
+				color,
+				false,
+				matrices.peek().getPositionMatrix(),
+				vertexConsumers,
+				visibleThroughObjects ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL,
+				0,
+				15728880
+			);
 			matrices.pop();
 		}
 	}

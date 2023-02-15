@@ -21,6 +21,10 @@ public class TexturedModel {
 	public static final TexturedModel.Factory ORIENTABLE = makeFactory(TextureMap::sideFrontTop, Models.ORIENTABLE);
 	public static final TexturedModel.Factory ORIENTABLE_WITH_BOTTOM = makeFactory(TextureMap::sideFrontTopBottom, Models.ORIENTABLE_WITH_BOTTOM);
 	public static final TexturedModel.Factory CARPET = makeFactory(TextureMap::wool, Models.CARPET);
+	public static final TexturedModel.Factory FLOWERBED_1 = makeFactory(TextureMap::flowerbed, Models.FLOWERBED_1);
+	public static final TexturedModel.Factory FLOWERBED_2 = makeFactory(TextureMap::flowerbed, Models.FLOWERBED_2);
+	public static final TexturedModel.Factory FLOWERBED_3 = makeFactory(TextureMap::flowerbed, Models.FLOWERBED_3);
+	public static final TexturedModel.Factory FLOWERBED_4 = makeFactory(TextureMap::flowerbed, Models.FLOWERBED_4);
 	public static final TexturedModel.Factory TEMPLATE_GLAZED_TERRACOTTA = makeFactory(TextureMap::pattern, Models.TEMPLATE_GLAZED_TERRACOTTA);
 	public static final TexturedModel.Factory CORAL_FAN = makeFactory(TextureMap::fan, Models.CORAL_FAN);
 	public static final TexturedModel.Factory PARTICLE = makeFactory(TextureMap::particle, Models.PARTICLE);

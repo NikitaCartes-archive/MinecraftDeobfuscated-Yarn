@@ -184,7 +184,7 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		ChestType chestType = ChestType.SINGLE;
-		Direction direction = ctx.getPlayerFacing().getOpposite();
+		Direction direction = ctx.getHorizontalPlayerFacing().getOpposite();
 		FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
 		boolean bl = ctx.shouldCancelInteraction();
 		Direction direction2 = ctx.getSide();

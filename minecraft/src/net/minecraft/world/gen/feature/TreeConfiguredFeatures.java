@@ -18,12 +18,15 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.collection.DataPool;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
+import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.math.intprovider.WeightedListIntProvider;
 import net.minecraft.world.gen.feature.size.ThreeLayersFeatureSize;
 import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
 import net.minecraft.world.gen.foliage.AcaciaFoliagePlacer;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.foliage.BushFoliagePlacer;
+import net.minecraft.world.gen.foliage.CherryFoliagePlacer;
 import net.minecraft.world.gen.foliage.DarkOakFoliagePlacer;
 import net.minecraft.world.gen.foliage.JungleFoliagePlacer;
 import net.minecraft.world.gen.foliage.LargeOakFoliagePlacer;
@@ -44,6 +47,7 @@ import net.minecraft.world.gen.treedecorator.CocoaBeansTreeDecorator;
 import net.minecraft.world.gen.treedecorator.LeavesVineTreeDecorator;
 import net.minecraft.world.gen.treedecorator.TrunkVineTreeDecorator;
 import net.minecraft.world.gen.trunk.BendingTrunkPlacer;
+import net.minecraft.world.gen.trunk.CherryTrunkPlacer;
 import net.minecraft.world.gen.trunk.DarkOakTrunkPlacer;
 import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
 import net.minecraft.world.gen.trunk.GiantTrunkPlacer;
@@ -78,6 +82,7 @@ public class TreeConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> AZALEA_TREE = ConfiguredFeatures.of("azalea_tree");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> MANGROVE = ConfiguredFeatures.of("mangrove");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> TALL_MANGROVE = ConfiguredFeatures.of("tall_mangrove");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> CHERRY = ConfiguredFeatures.of("cherry");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> OAK_BEES_0002 = ConfiguredFeatures.of("oak_bees_0002");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> OAK_BEES_002 = ConfiguredFeatures.of("oak_bees_002");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> OAK_BEES_005 = ConfiguredFeatures.of("oak_bees_005");
@@ -88,6 +93,7 @@ public class TreeConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FANCY_OAK_BEES_002 = ConfiguredFeatures.of("fancy_oak_bees_002");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FANCY_OAK_BEES_005 = ConfiguredFeatures.of("fancy_oak_bees_005");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FANCY_OAK_BEES = ConfiguredFeatures.of("fancy_oak_bees");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> CHERRY_BEES_005 = ConfiguredFeatures.of("cherry_bees_005");
 
 	private static TreeFeatureConfig.Builder builder(Block log, Block leaves, int baseHeight, int firstRandomHeight, int secondRandomHeight, int radius) {
 		return new TreeFeatureConfig.Builder(
@@ -122,6 +128,27 @@ public class TreeConfiguredFeatures {
 				BlockStateProvider.of(Blocks.OAK_LEAVES),
 				new LargeOakFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(4), 4),
 				new TwoLayersFeatureSize(0, 0, 0, OptionalInt.of(4))
+			)
+			.ignoreVines();
+	}
+
+	private static TreeFeatureConfig.Builder cherry() {
+		return new TreeFeatureConfig.Builder(
+				BlockStateProvider.of(Blocks.CHERRY_LOG),
+				new CherryTrunkPlacer(
+					7,
+					1,
+					0,
+					new WeightedListIntProvider(
+						DataPool.<IntProvider>builder().add(ConstantIntProvider.create(1), 1).add(ConstantIntProvider.create(2), 1).add(ConstantIntProvider.create(3), 1).build()
+					),
+					UniformIntProvider.create(2, 4),
+					UniformIntProvider.create(-4, -3),
+					UniformIntProvider.create(-1, 0)
+				),
+				BlockStateProvider.of(Blocks.CHERRY_LEAVES),
+				new CherryFoliagePlacer(ConstantIntProvider.create(4), ConstantIntProvider.create(0), ConstantIntProvider.create(5), 0.25F, 0.5F, 0.16666667F, 0.33333334F),
+				new TwoLayersFeatureSize(1, 0, 2)
 			)
 			.ignoreVines();
 	}
@@ -237,6 +264,8 @@ public class TreeConfiguredFeatures {
 				.ignoreVines()
 				.build()
 		);
+		ConfiguredFeatures.register(featureRegisterable, CHERRY, Feature.TREE, cherry().build());
+		ConfiguredFeatures.register(featureRegisterable, CHERRY_BEES_005, Feature.TREE, cherry().decorators(List.of(beehiveTreeDecorator4)).build());
 		ConfiguredFeatures.register(
 			featureRegisterable,
 			SPRUCE,

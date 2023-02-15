@@ -8,6 +8,7 @@ import net.minecraft.block.BrewingStandBlock;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -231,9 +232,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 
 	@Override
 	public boolean canPlayerUse(PlayerEntity player) {
-		return this.world.getBlockEntity(this.pos) != this
-			? false
-			: !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+		return Inventory.canPlayerUse(this, player);
 	}
 
 	@Override

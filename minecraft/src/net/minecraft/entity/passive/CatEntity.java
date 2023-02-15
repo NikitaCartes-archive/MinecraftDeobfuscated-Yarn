@@ -16,6 +16,7 @@ import net.minecraft.entity.VariantHolder;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.AttackGoal;
 import net.minecraft.entity.ai.goal.CatSitOnBlockGoal;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.entity.ai.goal.GoToBedAndSleepGoal;
@@ -101,9 +102,10 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 	protected void initGoals() {
 		this.temptGoal = new CatEntity.TemptGoal(this, 0.6, TAMING_INGREDIENT, true);
 		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(1, new SitGoal(this));
-		this.goalSelector.add(2, new CatEntity.SleepWithOwnerGoal(this));
-		this.goalSelector.add(3, this.temptGoal);
+		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.5));
+		this.goalSelector.add(2, new SitGoal(this));
+		this.goalSelector.add(3, new CatEntity.SleepWithOwnerGoal(this));
+		this.goalSelector.add(4, this.temptGoal);
 		this.goalSelector.add(5, new GoToBedAndSleepGoal(this, 1.1, 8));
 		this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 5.0F, false));
 		this.goalSelector.add(7, new CatSitOnBlockGoal(this, 0.8));

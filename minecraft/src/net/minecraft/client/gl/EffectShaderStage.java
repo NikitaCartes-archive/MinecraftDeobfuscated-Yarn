@@ -13,7 +13,7 @@ import net.fabricmc.api.Environment;
  */
 @Environment(EnvType.CLIENT)
 public class EffectShaderStage extends ShaderStage {
-	private static final GLImportProcessor LOADER = new GLImportProcessor() {
+	private static final GlImportProcessor LOADER = new GlImportProcessor() {
 		@Override
 		public String loadImport(boolean inline, String name) {
 			return "#error Import statement not supported";

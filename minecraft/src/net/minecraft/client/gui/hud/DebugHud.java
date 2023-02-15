@@ -592,10 +592,10 @@ public class DebugHud extends DrawableHelper {
 		int n = color2 >> 16 & 0xFF;
 		int o = color2 >> 8 & 0xFF;
 		int p = color2 & 0xFF;
-		int q = MathHelper.clamp(MathHelper.lerp(dt, i, m), 0, 255);
-		int r = MathHelper.clamp(MathHelper.lerp(dt, j, n), 0, 255);
-		int s = MathHelper.clamp(MathHelper.lerp(dt, k, o), 0, 255);
-		int t = MathHelper.clamp(MathHelper.lerp(dt, l, p), 0, 255);
+		int q = MathHelper.clamp((int)MathHelper.lerp(dt, (float)i, (float)m), 0, 255);
+		int r = MathHelper.clamp((int)MathHelper.lerp(dt, (float)j, (float)n), 0, 255);
+		int s = MathHelper.clamp((int)MathHelper.lerp(dt, (float)k, (float)o), 0, 255);
+		int t = MathHelper.clamp((int)MathHelper.lerp(dt, (float)l, (float)p), 0, 255);
 		return q << 24 | r << 16 | s << 8 | t;
 	}
 

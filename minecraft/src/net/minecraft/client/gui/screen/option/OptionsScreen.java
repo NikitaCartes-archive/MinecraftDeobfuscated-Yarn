@@ -55,7 +55,7 @@ public class OptionsScreen extends Screen {
 		GridWidget gridWidget = new GridWidget();
 		gridWidget.getMainPositioner().marginX(5).marginBottom(4).alignHorizontalCenter();
 		GridWidget.Adder adder = gridWidget.createAdder(2);
-		adder.add(this.settings.getFov().createButton(this.client.options, 0, 0, 150));
+		adder.add(this.settings.getFov().createWidget(this.client.options, 0, 0, 150));
 		adder.add(this.createTopRightButton());
 		adder.add(EmptyWidget.ofHeight(26), 2);
 		adder.add(this.createButton(SKIN_CUSTOMIZATION_TEXT, () -> new SkinOptionsScreen(this, this.settings)));

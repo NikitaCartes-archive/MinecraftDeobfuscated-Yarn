@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -36,12 +37,10 @@ public class DeathScreen extends Screen {
 		this.ticksSinceDeath = 0;
 		this.buttons.clear();
 		Text text = this.isHardcore ? Text.translatable("deathScreen.spectate") : Text.translatable("deathScreen.respawn");
-		this.buttons
-			.add(
-				this.addDrawableChild(
-					ButtonWidget.builder(text, button -> this.client.player.requestRespawn()).dimensions(this.width / 2 - 100, this.height / 4 + 72, 200, 20).build()
-				)
-			);
+		this.buttons.add(this.addDrawableChild(ButtonWidget.builder(text, button -> {
+			this.client.player.requestRespawn();
+			button.active = false;
+		}).dimensions(this.width / 2 - 100, this.height / 4 + 72, 200, 20).build()));
 		this.titleScreenButton = this.addDrawableChild(
 			ButtonWidget.builder(
 					Text.translatable("deathScreen.titleScreen"),
@@ -51,11 +50,7 @@ public class DeathScreen extends Screen {
 				.build()
 		);
 		this.buttons.add(this.titleScreenButton);
-
-		for (ButtonWidget buttonWidget : this.buttons) {
-			buttonWidget.active = false;
-		}
-
+		this.setButtonsActive(false);
 		this.scoreText = Text.translatable("deathScreen.score")
 			.append(": ")
 			.append(Text.literal(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
@@ -70,7 +65,7 @@ public class DeathScreen extends Screen {
 		if (this.isHardcore) {
 			this.quitLevel();
 		} else {
-			ConfirmScreen confirmScreen = new ConfirmScreen(confirmed -> {
+			ConfirmScreen confirmScreen = new DeathScreen.TitleScreenConfirmScreen(confirmed -> {
 				if (confirmed) {
 					this.quitLevel();
 				} else {
@@ -151,9 +146,20 @@ public class DeathScreen extends Screen {
 		super.tick();
 		this.ticksSinceDeath++;
 		if (this.ticksSinceDeath == 20) {
-			for (ButtonWidget buttonWidget : this.buttons) {
-				buttonWidget.active = true;
-			}
+			this.setButtonsActive(true);
+		}
+	}
+
+	private void setButtonsActive(boolean active) {
+		for (ButtonWidget buttonWidget : this.buttons) {
+			buttonWidget.active = active;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class TitleScreenConfirmScreen extends ConfirmScreen {
+		public TitleScreenConfirmScreen(BooleanConsumer booleanConsumer, Text text, Text text2, Text text3, Text text4) {
+			super(booleanConsumer, text, text2, text3, text4);
 		}
 	}
 }

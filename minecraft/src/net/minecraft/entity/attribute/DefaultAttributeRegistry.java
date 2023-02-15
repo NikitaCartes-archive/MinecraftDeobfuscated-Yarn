@@ -65,6 +65,7 @@ import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.PolarBearEntity;
 import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.entity.passive.SheepEntity;
+import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.passive.StriderEntity;
@@ -137,6 +138,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.SKELETON, AbstractSkeletonEntity.createAbstractSkeletonAttributes().build())
 		.put(EntityType.SKELETON_HORSE, SkeletonHorseEntity.createSkeletonHorseAttributes().build())
 		.put(EntityType.SLIME, HostileEntity.createHostileAttributes().build())
+		.put(EntityType.SNIFFER, SnifferEntity.createSnifferAttributes().build())
 		.put(EntityType.SNOW_GOLEM, SnowGolemEntity.createSnowGolemAttributes().build())
 		.put(EntityType.SPIDER, SpiderEntity.createSpiderAttributes().build())
 		.put(EntityType.SQUID, SquidEntity.createSquidAttributes().build())

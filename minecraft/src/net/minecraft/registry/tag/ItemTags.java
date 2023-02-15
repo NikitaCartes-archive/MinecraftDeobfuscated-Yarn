@@ -26,6 +26,7 @@ public final class ItemTags {
 	public static final TagKey<Item> OAK_LOGS = of("oak_logs");
 	public static final TagKey<Item> BIRCH_LOGS = of("birch_logs");
 	public static final TagKey<Item> ACACIA_LOGS = of("acacia_logs");
+	public static final TagKey<Item> CHERRY_LOGS = of("cherry_logs");
 	public static final TagKey<Item> JUNGLE_LOGS = of("jungle_logs");
 	public static final TagKey<Item> SPRUCE_LOGS = of("spruce_logs");
 	public static final TagKey<Item> MANGROVE_LOGS = of("mangrove_logs");
@@ -90,6 +91,15 @@ public final class ItemTags {
 	public static final TagKey<Item> TRIMMABLE_ARMOR = of("trimmable_armor");
 	public static final TagKey<Item> TRIM_MATERIALS = of("trim_materials");
 	public static final TagKey<Item> TRIM_TEMPLATES = of("trim_templates");
+	public static final TagKey<Item> SNIFFER_FOOD = of("sniffer_food");
+	public static final TagKey<Item> DECORATED_POT_SHARDS = of("decorated_pot_shards");
+	public static final TagKey<Item> SWORDS = of("swords");
+	public static final TagKey<Item> AXES = of("axes");
+	public static final TagKey<Item> HOES = of("hoes");
+	public static final TagKey<Item> PICKAXES = of("pickaxes");
+	public static final TagKey<Item> SHOVELS = of("shovels");
+	public static final TagKey<Item> TOOLS = of("tools");
+	public static final TagKey<Item> BREAKS_DECORATED_POTS = of("breaks_decorated_pots");
 
 	private ItemTags() {
 	}

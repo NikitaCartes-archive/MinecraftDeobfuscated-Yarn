@@ -27,6 +27,6 @@ public class OrderedTextTooltipComponent implements TooltipComponent {
 
 	@Override
 	public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
-		textRenderer.draw(this.text, (float)x, (float)y, -1, true, matrix, vertexConsumers, false, 0, 15728880);
+		textRenderer.draw(this.text, (float)x, (float)y, -1, true, matrix, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 15728880);
 	}
 }

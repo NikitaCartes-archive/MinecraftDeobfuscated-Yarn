@@ -76,7 +76,7 @@ public class TelemetryInfoScreen extends Screen {
 	private ClickableWidget createOptInButton() {
 		ClickableWidget clickableWidget = this.options
 			.getTelemetryOptInExtra()
-			.createButton(this.options, 0, 0, 150, value -> this.telemetryEventWidget.refresh(value));
+			.createWidget(this.options, 0, 0, 150, value -> this.telemetryEventWidget.refresh(value));
 		clickableWidget.active = this.client.isOptionalTelemetryEnabledByApi();
 		return clickableWidget;
 	}

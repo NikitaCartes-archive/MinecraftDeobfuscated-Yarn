@@ -5,9 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Mu;
-import java.util.function.BiConsumer;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.TestableWorld;
@@ -34,7 +31,7 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 	@Override
 	protected void generate(
 		TestableWorld world,
-		BiConsumer<BlockPos, BlockState> replacer,
+		FoliagePlacer.BlockPlacer placer,
 		Random random,
 		TreeFeatureConfig config,
 		int trunkHeight,
@@ -45,7 +42,7 @@ public class BlobFoliagePlacer extends FoliagePlacer {
 	) {
 		for (int i = offset; i >= offset - foliageHeight; i--) {
 			int j = Math.max(radius + treeNode.getFoliageRadius() - 1 - i / 2, 0);
-			this.generateSquare(world, replacer, random, config, treeNode.getCenter(), j, i, treeNode.isGiantTrunk());
+			this.generateSquare(world, placer, random, config, treeNode.getCenter(), j, i, treeNode.isGiantTrunk());
 		}
 	}
 

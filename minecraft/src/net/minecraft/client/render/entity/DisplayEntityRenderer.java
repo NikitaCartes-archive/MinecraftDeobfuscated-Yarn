@@ -37,8 +37,7 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends Ent
 	}
 
 	public void render(T displayEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		long l = displayEntity.world.getTime();
-		float h = displayEntity.getLerpProgress(l, g);
+		float h = displayEntity.getLerpProgress(g);
 		this.shadowRadius = Math.min(displayEntity.lerpShadowRadius(h), 64.0F);
 		this.shadowOpacity = displayEntity.lerpShadowStrength(h);
 		int j = displayEntity.getBrightness();
@@ -108,7 +107,6 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends Ent
 
 	@Environment(EnvType.CLIENT)
 	public static class TextDisplayEntityRenderer extends DisplayEntityRenderer<DisplayEntity.TextDisplayEntity> {
-		private static final float field_42530 = 0.001F;
 		private final TextRenderer displayTextRenderer;
 
 		protected TextDisplayEntityRenderer(EntityRendererFactory.Context context) {
@@ -156,10 +154,10 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends Ent
 			matrix4f.translate(1.0F - (float)l / 2.0F, (float)(-m), 0.0F);
 			if (j != 0) {
 				VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(bl ? RenderLayer.getTextBackgroundSeeThrough() : RenderLayer.getTextBackground());
-				vertexConsumer.vertex(matrix4f, -1.0F, -1.0F, -0.001F).color(j).light(i).next();
-				vertexConsumer.vertex(matrix4f, -1.0F, (float)m, -0.001F).color(j).light(i).next();
-				vertexConsumer.vertex(matrix4f, (float)l, (float)m, -0.001F).color(j).light(i).next();
-				vertexConsumer.vertex(matrix4f, (float)l, -1.0F, -0.001F).color(j).light(i).next();
+				vertexConsumer.vertex(matrix4f, -1.0F, -1.0F, 0.0F).color(j).light(i).next();
+				vertexConsumer.vertex(matrix4f, -1.0F, (float)m, 0.0F).color(j).light(i).next();
+				vertexConsumer.vertex(matrix4f, (float)l, (float)m, 0.0F).color(j).light(i).next();
+				vertexConsumer.vertex(matrix4f, (float)l, -1.0F, 0.0F).color(j).light(i).next();
 			}
 
 			for (DisplayEntity.TextDisplayEntity.TextLine textLine : textLines.lines()) {
@@ -168,7 +166,19 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends Ent
 					case RIGHT -> (float)(l - textLine.width());
 					case CENTER -> (float)l / 2.0F - (float)textLine.width() / 2.0F;
 				};
-				this.displayTextRenderer.draw(textLine.contents(), h, g, c << 24 | 16777215, bl3, matrix4f, vertexConsumerProvider, bl, 0, i);
+				this.displayTextRenderer
+					.draw(
+						textLine.contents(),
+						h,
+						g,
+						c << 24 | 16777215,
+						bl3,
+						matrix4f,
+						vertexConsumerProvider,
+						bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.POLYGON_OFFSET,
+						0,
+						i
+					);
 				g += (float)k;
 			}
 		}

@@ -19,9 +19,9 @@ public class IceBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
-		super.afterBreak(world, player, pos, state, blockEntity, stack);
-		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
+	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
+		super.afterBreak(world, player, pos, state, blockEntity, tool);
+		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, tool) == 0) {
 			if (world.getDimension().ultrawarm()) {
 				world.removeBlock(pos, false);
 				return;

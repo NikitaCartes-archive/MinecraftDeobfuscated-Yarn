@@ -309,11 +309,11 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 	}
 
 	public float getTendrilPitch(float tickDelta) {
-		return (float)MathHelper.lerp(tickDelta, this.lastTendrilPitch, this.tendrilPitch) / 10.0F;
+		return MathHelper.lerp(tickDelta, (float)this.lastTendrilPitch, (float)this.tendrilPitch) / 10.0F;
 	}
 
 	public float getHeartPitch(float tickDelta) {
-		return (float)MathHelper.lerp(tickDelta, this.lastHeartbeatCooldown, this.heartbeatCooldown) / 10.0F;
+		return MathHelper.lerp(tickDelta, (float)this.lastHeartbeatCooldown, (float)this.heartbeatCooldown) / 10.0F;
 	}
 
 	private void addDigParticles(AnimationState animationState) {

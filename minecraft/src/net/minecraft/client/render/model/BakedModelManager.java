@@ -59,6 +59,8 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 		new Identifier("shulker_boxes"),
 		TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE,
 		new Identifier("armor_trims"),
+		TexturedRenderLayers.DECORATED_POT_ATLAS_TEXTURE,
+		new Identifier("decorated_pot"),
 		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE,
 		new Identifier("blocks")
 	);
@@ -102,7 +104,7 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 		CompletableFuture<Map<Identifier, JsonUnbakedModel>> completableFuture = reloadModels(manager, prepareExecutor);
 		CompletableFuture<Map<Identifier, List<ModelLoader.SourceTrackedData>>> completableFuture2 = reloadBlockStates(manager, prepareExecutor);
 		CompletableFuture<ModelLoader> completableFuture3 = completableFuture.thenCombineAsync(
-			completableFuture2, (mapx, map2) -> new ModelLoader(this.colorMap, prepareProfiler, mapx, map2), prepareExecutor
+			completableFuture2, (jsonUnbakedModels, blockStates) -> new ModelLoader(this.colorMap, prepareProfiler, jsonUnbakedModels, blockStates), prepareExecutor
 		);
 		Map<Identifier, CompletableFuture<SpriteAtlasManager.AtlasPreparation>> map = this.atlasManager.reload(manager, this.mipmapLevels, prepareExecutor);
 		return CompletableFuture.allOf((CompletableFuture[])Stream.concat(map.values().stream(), Stream.of(completableFuture3)).toArray(CompletableFuture[]::new))
@@ -116,9 +118,9 @@ public class BakedModelManager implements ResourceReloader, AutoCloseable {
 					),
 				prepareExecutor
 			)
-			.thenCompose(bakingResult -> bakingResult.readyForUpload.thenApply(void_ -> bakingResult))
+			.thenCompose(result -> result.readyForUpload.thenApply(void_ -> result))
 			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(bakingResult -> this.upload(bakingResult, applyProfiler), applyExecutor);
+			.thenAcceptAsync(result -> this.upload(result, applyProfiler), applyExecutor);
 	}
 
 	private static CompletableFuture<Map<Identifier, JsonUnbakedModel>> reloadModels(ResourceManager resourceManager, Executor executor) {

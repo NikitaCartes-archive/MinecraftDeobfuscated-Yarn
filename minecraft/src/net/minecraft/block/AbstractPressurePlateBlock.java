@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -19,9 +20,11 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	protected static final VoxelShape PRESSED_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 0.5, 15.0);
 	protected static final VoxelShape DEFAULT_SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 1.0, 15.0);
 	protected static final Box BOX = new Box(0.0625, 0.0, 0.0625, 0.9375, 0.25, 0.9375);
+	private final BlockSetType blockSetType;
 
-	protected AbstractPressurePlateBlock(AbstractBlock.Settings settings) {
-		super(settings);
+	protected AbstractPressurePlateBlock(AbstractBlock.Settings settings, BlockSetType blockSetType) {
+		super(settings.sounds(blockSetType.soundType()));
+		this.blockSetType = blockSetType;
 	}
 
 	@Override
@@ -71,7 +74,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 		}
 	}
 
-	protected void updatePlateState(@Nullable Entity entity, World world, BlockPos pos, BlockState state, int output) {
+	private void updatePlateState(@Nullable Entity entity, World world, BlockPos pos, BlockState state, int output) {
 		int i = this.getRedstoneOutput(world, pos);
 		boolean bl = output > 0;
 		boolean bl2 = i > 0;
@@ -83,10 +86,10 @@ public abstract class AbstractPressurePlateBlock extends Block {
 		}
 
 		if (!bl2 && bl) {
-			this.playDepressSound(world, pos);
+			world.playSound(null, pos, this.blockSetType.pressurePlateClickOff(), SoundCategory.BLOCKS);
 			world.emitGameEvent(entity, GameEvent.BLOCK_DEACTIVATE, pos);
 		} else if (bl2 && !bl) {
-			this.playPressSound(world, pos);
+			world.playSound(null, pos, this.blockSetType.pressurePlateClickOn(), SoundCategory.BLOCKS);
 			world.emitGameEvent(entity, GameEvent.BLOCK_ACTIVATE, pos);
 		}
 
@@ -94,10 +97,6 @@ public abstract class AbstractPressurePlateBlock extends Block {
 			world.scheduleBlockTick(new BlockPos(pos), this, this.getTickRate());
 		}
 	}
-
-	protected abstract void playPressSound(WorldAccess world, BlockPos pos);
-
-	protected abstract void playDepressSound(WorldAccess world, BlockPos pos);
 
 	@Override
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {

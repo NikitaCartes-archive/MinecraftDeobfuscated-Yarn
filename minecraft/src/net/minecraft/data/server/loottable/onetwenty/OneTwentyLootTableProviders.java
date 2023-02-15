@@ -15,7 +15,8 @@ public class OneTwentyLootTableProviders {
 				new LootTableProvider.LootTypeGenerator(OneTwentyFishingLootTableGenerator::new, LootContextTypes.FISHING),
 				new LootTableProvider.LootTypeGenerator(OneTwentyBlockLootTableGenerator::new, LootContextTypes.BLOCK),
 				new LootTableProvider.LootTypeGenerator(OneTwentyChestLootTableGenerator::new, LootContextTypes.CHEST),
-				new LootTableProvider.LootTypeGenerator(OneTwentyEntityLootTableGenerator::new, LootContextTypes.ENTITY)
+				new LootTableProvider.LootTypeGenerator(OneTwentyEntityLootTableGenerator::new, LootContextTypes.ENTITY),
+				new LootTableProvider.LootTypeGenerator(OneTwentyArchaeologyLootTableGenerator::new, LootContextTypes.ARCHAEOLOGY)
 			)
 		);
 	}

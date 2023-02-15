@@ -28,6 +28,7 @@ import net.minecraft.data.server.recipe.BundleRecipeProvider;
 import net.minecraft.data.server.recipe.OneTwentyRecipeProvider;
 import net.minecraft.data.server.recipe.VanillaRecipeProvider;
 import net.minecraft.data.server.tag.TagProvider;
+import net.minecraft.data.server.tag.onetwenty.OneTwentyBiomeTagProvider;
 import net.minecraft.data.server.tag.onetwenty.OneTwentyBlockTagProvider;
 import net.minecraft.data.server.tag.onetwenty.OneTwentyItemTagProvider;
 import net.minecraft.data.server.tag.vanilla.VanillaBannerPatternTagProvider;
@@ -151,15 +152,14 @@ public class Main {
 		pack2 = dataGenerator.createVanillaSubPack(includeServer, "bundle");
 		pack2.addProvider(BundleRecipeProvider::new);
 		pack2.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.bundle.description"), FeatureSet.of(FeatureFlags.BUNDLE)));
-		CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture2 = CompletableFuture.supplyAsync(
-			OneTwentyBuiltinRegistries::createWrapperLookup, Util.getMainWorkerExecutor()
-		);
+		CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture2 = OneTwentyBuiltinRegistries.createWrapperLookup(completableFuture);
 		DataGenerator.Pack pack3 = dataGenerator.createVanillaSubPack(includeServer, "update_1_20");
 		pack3.addProvider(OneTwentyRecipeProvider::new);
-		TagProvider<Block> tagProvider2 = pack3.addProvider(toFactory(OneTwentyBlockTagProvider::new, completableFuture));
-		pack3.addProvider(outputx -> new OneTwentyItemTagProvider(outputx, completableFuture, tagProvider2));
+		TagProvider<Block> tagProvider2 = pack3.addProvider(toFactory(OneTwentyBlockTagProvider::new, completableFuture2));
+		pack3.addProvider(outputx -> new OneTwentyItemTagProvider(outputx, completableFuture2, tagProvider2));
+		pack3.addProvider(toFactory(OneTwentyBiomeTagProvider::new, completableFuture2));
 		pack3.addProvider(OneTwentyLootTableProviders::createOneTwentyProvider);
-		pack3.addProvider(toFactory(OneTwentyAdvancementProviders::createOneTwentyProvider, completableFuture));
+		pack3.addProvider(toFactory(OneTwentyAdvancementProviders::createOneTwentyProvider, completableFuture2));
 		pack3.addProvider(toFactory(DynamicRegistriesProvider::new, completableFuture2));
 		pack3.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.update_1_20.description"), FeatureSet.of(FeatureFlags.UPDATE_1_20)));
 		return dataGenerator;

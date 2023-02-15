@@ -2,13 +2,17 @@ package net.minecraft.inventory;
 
 import java.util.Set;
 import java.util.function.Predicate;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Clearable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public interface Inventory extends Clearable {
 	int MAX_COUNT_PER_STACK = 64;
+	int field_42619 = 8;
 
 	int size();
 
@@ -64,6 +68,10 @@ public interface Inventory extends Clearable {
 		return true;
 	}
 
+	default boolean canTransferTo(Inventory hopperInventory, int slot, ItemStack stack) {
+		return true;
+	}
+
 	/**
 	 * Returns the number of times the specified item occurs in this inventory across all stored stacks.
 	 */
@@ -96,5 +104,21 @@ public interface Inventory extends Clearable {
 		}
 
 		return false;
+	}
+
+	static boolean canPlayerUse(BlockEntity blockEntity, PlayerEntity player) {
+		return canPlayerUse(blockEntity, player, 8);
+	}
+
+	static boolean canPlayerUse(BlockEntity blockEntity, PlayerEntity player, int range) {
+		World world = blockEntity.getWorld();
+		BlockPos blockPos = blockEntity.getPos();
+		if (world == null) {
+			return false;
+		} else {
+			return world.getBlockEntity(blockPos) != blockEntity
+				? false
+				: player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= (double)(range * range);
+		}
 	}
 }

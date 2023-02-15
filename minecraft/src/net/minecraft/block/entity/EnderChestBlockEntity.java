@@ -3,6 +3,7 @@ package net.minecraft.block.entity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -81,9 +82,7 @@ public class EnderChestBlockEntity extends BlockEntity implements LidOpenable {
 	}
 
 	public boolean canPlayerUse(PlayerEntity player) {
-		return this.world.getBlockEntity(this.pos) != this
-			? false
-			: !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+		return Inventory.canPlayerUse(this, player);
 	}
 
 	public void onScheduledTick() {

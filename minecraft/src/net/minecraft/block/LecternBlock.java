@@ -106,7 +106,7 @@ public class LecternBlock extends BlockWithEntity {
 			}
 		}
 
-		return this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite()).with(HAS_BOOK, Boolean.valueOf(bl));
+		return this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()).with(HAS_BOOK, Boolean.valueOf(bl));
 	}
 
 	@Override

@@ -124,7 +124,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			.with(WATERLOGGED, Boolean.valueOf(bl))
 			.with(SIGNAL_FIRE, Boolean.valueOf(this.isSignalFireBaseBlock(worldAccess.getBlockState(blockPos.down()))))
 			.with(LIT, Boolean.valueOf(!bl))
-			.with(FACING, ctx.getPlayerFacing());
+			.with(FACING, ctx.getHorizontalPlayerFacing());
 	}
 
 	@Override

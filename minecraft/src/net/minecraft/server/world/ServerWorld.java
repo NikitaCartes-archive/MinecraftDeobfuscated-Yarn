@@ -1842,15 +1842,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		public void startTicking(Entity entity) {
-			if (entity.getType().isTickable()) {
-				ServerWorld.this.entityList.add(entity);
-			}
+			ServerWorld.this.entityList.add(entity);
 		}
 
 		public void stopTicking(Entity entity) {
-			if (entity.getType().isTickable()) {
-				ServerWorld.this.entityList.remove(entity);
-			}
+			ServerWorld.this.entityList.remove(entity);
 		}
 
 		public void startTracking(Entity entity) {

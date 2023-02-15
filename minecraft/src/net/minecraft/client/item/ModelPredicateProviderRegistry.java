@@ -111,6 +111,11 @@ public class ModelPredicateProviderRegistry {
 			}
 		});
 		register(
+			Items.BRUSH,
+			new Identifier("brushing"),
+			(stack, world, entity, seed) -> entity != null && entity.getActiveItem() == stack ? (float)(entity.getItemUseTimeLeft() % 10) / 10.0F : 0.0F
+		);
+		register(
 			Items.BOW,
 			new Identifier("pulling"),
 			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F

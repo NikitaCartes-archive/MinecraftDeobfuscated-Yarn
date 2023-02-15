@@ -9,8 +9,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.DecoratedPotPatterns;
+import net.minecraft.block.WoodType;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
@@ -22,7 +25,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SignType;
 
 @Environment(EnvType.CLIENT)
 public class TexturedRenderLayers {
@@ -33,6 +35,7 @@ public class TexturedRenderLayers {
 	public static final Identifier SIGNS_ATLAS_TEXTURE = new Identifier("textures/atlas/signs.png");
 	public static final Identifier CHEST_ATLAS_TEXTURE = new Identifier("textures/atlas/chest.png");
 	public static final Identifier ARMOR_TRIMS_ATLAS_TEXTURE = new Identifier("textures/atlas/armor_trims.png");
+	public static final Identifier DECORATED_POT_ATLAS_TEXTURE = new Identifier("textures/atlas/decorated_pot.png");
 	private static final RenderLayer SHULKER_BOXES_RENDER_LAYER = RenderLayer.getEntityCutoutNoCull(SHULKER_BOXES_ATLAS_TEXTURE);
 	private static final RenderLayer BEDS_RENDER_LAYER = RenderLayer.getEntitySolid(BEDS_ATLAS_TEXTURE);
 	private static final RenderLayer BANNER_PATTERNS_RENDER_LAYER = RenderLayer.getEntityNoOutline(BANNER_PATTERNS_ATLAS_TEXTURE);
@@ -50,9 +53,9 @@ public class TexturedRenderLayers {
 		)
 		.map(colorName -> new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("entity/shulker/shulker_" + colorName)))
 		.collect(ImmutableList.toImmutableList());
-	public static final Map<SignType, SpriteIdentifier> SIGN_TYPE_TEXTURES = (Map<SignType, SpriteIdentifier>)SignType.stream()
+	public static final Map<WoodType, SpriteIdentifier> SIGN_TYPE_TEXTURES = (Map<WoodType, SpriteIdentifier>)WoodType.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createSignTextureId));
-	public static final Map<SignType, SpriteIdentifier> HANGING_SIGN_TYPE_TEXTURES = (Map<SignType, SpriteIdentifier>)SignType.stream()
+	public static final Map<WoodType, SpriteIdentifier> HANGING_SIGN_TYPE_TEXTURES = (Map<WoodType, SpriteIdentifier>)WoodType.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createHangingSignTextureId));
 	public static final Map<RegistryKey<BannerPattern>, SpriteIdentifier> BANNER_PATTERN_TEXTURES = (Map<RegistryKey<BannerPattern>, SpriteIdentifier>)Registries.BANNER_PATTERN
 		.getKeys()
@@ -62,20 +65,24 @@ public class TexturedRenderLayers {
 		.getKeys()
 		.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createShieldPatternTextureId));
+	public static final Map<RegistryKey<String>, SpriteIdentifier> DECORATED_POT_PATTERN_TEXTURES = (Map<RegistryKey<String>, SpriteIdentifier>)Registries.DECORATED_POT_PATTERNS
+		.getKeys()
+		.stream()
+		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createDecoratedPotPatternTextureId));
 	public static final SpriteIdentifier[] BED_TEXTURES = (SpriteIdentifier[])Arrays.stream(DyeColor.values())
 		.sorted(Comparator.comparingInt(DyeColor::getId))
 		.map(color -> new SpriteIdentifier(BEDS_ATLAS_TEXTURE, new Identifier("entity/bed/" + color.getName())))
 		.toArray(SpriteIdentifier[]::new);
-	public static final SpriteIdentifier TRAPPED = getChestTextureId("trapped");
-	public static final SpriteIdentifier TRAPPED_LEFT = getChestTextureId("trapped_left");
-	public static final SpriteIdentifier TRAPPED_RIGHT = getChestTextureId("trapped_right");
-	public static final SpriteIdentifier CHRISTMAS = getChestTextureId("christmas");
-	public static final SpriteIdentifier CHRISTMAS_LEFT = getChestTextureId("christmas_left");
-	public static final SpriteIdentifier CHRISTMAS_RIGHT = getChestTextureId("christmas_right");
-	public static final SpriteIdentifier NORMAL = getChestTextureId("normal");
-	public static final SpriteIdentifier NORMAL_LEFT = getChestTextureId("normal_left");
-	public static final SpriteIdentifier NORMAL_RIGHT = getChestTextureId("normal_right");
-	public static final SpriteIdentifier ENDER = getChestTextureId("ender");
+	public static final SpriteIdentifier TRAPPED = createChestTextureId("trapped");
+	public static final SpriteIdentifier TRAPPED_LEFT = createChestTextureId("trapped_left");
+	public static final SpriteIdentifier TRAPPED_RIGHT = createChestTextureId("trapped_right");
+	public static final SpriteIdentifier CHRISTMAS = createChestTextureId("christmas");
+	public static final SpriteIdentifier CHRISTMAS_LEFT = createChestTextureId("christmas_left");
+	public static final SpriteIdentifier CHRISTMAS_RIGHT = createChestTextureId("christmas_right");
+	public static final SpriteIdentifier NORMAL = createChestTextureId("normal");
+	public static final SpriteIdentifier NORMAL_LEFT = createChestTextureId("normal_left");
+	public static final SpriteIdentifier NORMAL_RIGHT = createChestTextureId("normal_right");
+	public static final SpriteIdentifier ENDER = createChestTextureId("ender");
 
 	public static RenderLayer getBannerPatterns() {
 		return BANNER_PATTERNS_RENDER_LAYER;
@@ -149,19 +156,19 @@ public class TexturedRenderLayers {
 		adder.accept(ENDER);
 	}
 
-	private static SpriteIdentifier createSignTextureId(SignType type) {
-		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/" + type.getName()));
+	private static SpriteIdentifier createSignTextureId(WoodType type) {
+		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/" + type.name()));
 	}
 
-	private static SpriteIdentifier createHangingSignTextureId(SignType type) {
-		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/hanging/" + type.getName()));
+	private static SpriteIdentifier createHangingSignTextureId(WoodType type) {
+		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/hanging/" + type.name()));
 	}
 
-	public static SpriteIdentifier getSignTextureId(SignType signType) {
+	public static SpriteIdentifier getSignTextureId(WoodType signType) {
 		return (SpriteIdentifier)SIGN_TYPE_TEXTURES.get(signType);
 	}
 
-	public static SpriteIdentifier getHangingSignTextureId(SignType signType) {
+	public static SpriteIdentifier getHangingSignTextureId(WoodType signType) {
 		return (SpriteIdentifier)HANGING_SIGN_TYPE_TEXTURES.get(signType);
 	}
 
@@ -181,23 +188,32 @@ public class TexturedRenderLayers {
 		return (SpriteIdentifier)SHIELD_PATTERN_TEXTURES.get(bannerPattern);
 	}
 
-	private static SpriteIdentifier getChestTextureId(String variant) {
+	private static SpriteIdentifier createChestTextureId(String variant) {
 		return new SpriteIdentifier(CHEST_ATLAS_TEXTURE, new Identifier("entity/chest/" + variant));
 	}
 
-	public static SpriteIdentifier getChestTexture(BlockEntity blockEntity, ChestType type, boolean christmas) {
+	private static SpriteIdentifier createDecoratedPotPatternTextureId(RegistryKey<String> potPatternKey) {
+		return new SpriteIdentifier(DECORATED_POT_ATLAS_TEXTURE, DecoratedPotPatterns.getTextureId(potPatternKey));
+	}
+
+	@Nullable
+	public static SpriteIdentifier getDecoratedPotPatternTextureId(@Nullable RegistryKey<String> potPatternKey) {
+		return potPatternKey == null ? null : (SpriteIdentifier)DECORATED_POT_PATTERN_TEXTURES.get(potPatternKey);
+	}
+
+	public static SpriteIdentifier getChestTextureId(BlockEntity blockEntity, ChestType type, boolean christmas) {
 		if (blockEntity instanceof EnderChestBlockEntity) {
 			return ENDER;
 		} else if (christmas) {
-			return getChestTexture(type, CHRISTMAS, CHRISTMAS_LEFT, CHRISTMAS_RIGHT);
+			return getChestTextureId(type, CHRISTMAS, CHRISTMAS_LEFT, CHRISTMAS_RIGHT);
 		} else {
 			return blockEntity instanceof TrappedChestBlockEntity
-				? getChestTexture(type, TRAPPED, TRAPPED_LEFT, TRAPPED_RIGHT)
-				: getChestTexture(type, NORMAL, NORMAL_LEFT, NORMAL_RIGHT);
+				? getChestTextureId(type, TRAPPED, TRAPPED_LEFT, TRAPPED_RIGHT)
+				: getChestTextureId(type, NORMAL, NORMAL_LEFT, NORMAL_RIGHT);
 		}
 	}
 
-	private static SpriteIdentifier getChestTexture(ChestType type, SpriteIdentifier single, SpriteIdentifier left, SpriteIdentifier right) {
+	private static SpriteIdentifier getChestTextureId(ChestType type, SpriteIdentifier single, SpriteIdentifier left, SpriteIdentifier right) {
 		switch (type) {
 			case LEFT:
 				return left;

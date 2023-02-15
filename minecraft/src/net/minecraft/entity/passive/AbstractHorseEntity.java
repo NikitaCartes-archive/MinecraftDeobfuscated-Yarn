@@ -1,6 +1,8 @@
 package net.minecraft.entity.passive;
 
 import java.util.UUID;
+import java.util.function.DoubleSupplier;
+import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
@@ -33,6 +35,7 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -76,6 +79,13 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	public static final int field_30413 = 400;
 	public static final int field_30414 = 499;
 	public static final int field_30415 = 500;
+	public static final double field_42647 = 0.15;
+	private static final float MIN_MOVEMENT_SPEED_BONUS = (float)getChildMovementSpeedBonus(() -> 0.0);
+	private static final float MAX_MOVEMENT_SPEED_BONUS = (float)getChildMovementSpeedBonus(() -> 1.0);
+	private static final float MIN_JUMP_STRENGTH_BONUS = (float)getChildJumpStrengthBonus(() -> 0.0);
+	private static final float MAX_JUMP_STRENGTH_BONUS = (float)getChildJumpStrengthBonus(() -> 1.0);
+	private static final float MIN_HEALTH_BONUS = getChildHealthBonus(max -> 0);
+	private static final float MAX_HEALTH_BONUS = getChildHealthBonus(max -> max - 1);
 	private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof AbstractHorseEntity && ((AbstractHorseEntity)entity).isBred();
 	private static final TargetPredicate PARENT_HORSE_PREDICATE = TargetPredicate.createNonAttackable()
 		.setBaseMaxDistance(16.0)
@@ -860,19 +870,38 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		return null;
 	}
 
-	protected void setChildAttributes(PassiveEntity mate, AbstractHorseEntity child) {
-		double d = this.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH)
-			+ mate.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH)
-			+ (double)this.getChildHealthBonus(this.random);
-		child.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(d / 3.0);
-		double e = this.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH)
-			+ mate.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH)
-			+ this.getChildJumpStrengthBonus(this.random);
-		child.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(e / 3.0);
-		double f = this.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
-			+ mate.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
-			+ this.getChildMovementSpeedBonus(this.random);
-		child.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(f / 3.0);
+	protected void setChildAttributes(PassiveEntity other, AbstractHorseEntity child) {
+		this.setChildAttribute(other, child, EntityAttributes.GENERIC_MAX_HEALTH, (double)MIN_HEALTH_BONUS, (double)MAX_HEALTH_BONUS);
+		this.setChildAttribute(other, child, EntityAttributes.HORSE_JUMP_STRENGTH, (double)MIN_JUMP_STRENGTH_BONUS, (double)MAX_JUMP_STRENGTH_BONUS);
+		this.setChildAttribute(other, child, EntityAttributes.GENERIC_MOVEMENT_SPEED, (double)MIN_MOVEMENT_SPEED_BONUS, (double)MAX_MOVEMENT_SPEED_BONUS);
+	}
+
+	private void setChildAttribute(PassiveEntity other, AbstractHorseEntity child, EntityAttribute attribute, double min, double max) {
+		double d = calculateAttributeBaseValue(this.getAttributeBaseValue(attribute), other.getAttributeBaseValue(attribute), min, max, this.random);
+		child.getAttributeInstance(attribute).setBaseValue(d);
+	}
+
+	static double calculateAttributeBaseValue(double parentBase, double otherParentBase, double min, double max, Random random) {
+		if (max <= min) {
+			throw new IllegalArgumentException("Incorrect range for an attribute");
+		} else {
+			parentBase = MathHelper.clamp(parentBase, min, max);
+			otherParentBase = MathHelper.clamp(otherParentBase, min, max);
+			double d = 0.15 * (max - min);
+			double e = Math.abs(parentBase - otherParentBase) + d * 2.0;
+			double f = (parentBase + otherParentBase) / 2.0;
+			double g = (random.nextDouble() + random.nextDouble() + random.nextDouble()) / 3.0 - 0.5;
+			double h = f + e * g;
+			if (h > max) {
+				double i = h - max;
+				return max - i;
+			} else if (h < min) {
+				double i = min - h;
+				return min + i;
+			} else {
+				return h;
+			}
+		}
 	}
 
 	public float getEatingGrassAnimationProgress(float tickDelta) {
@@ -964,16 +993,16 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 	}
 
-	protected float getChildHealthBonus(Random random) {
-		return 15.0F + (float)random.nextInt(8) + (float)random.nextInt(9);
+	protected static float getChildHealthBonus(IntUnaryOperator randomIntGetter) {
+		return 15.0F + (float)randomIntGetter.applyAsInt(8) + (float)randomIntGetter.applyAsInt(9);
 	}
 
-	protected double getChildJumpStrengthBonus(Random random) {
-		return 0.4F + random.nextDouble() * 0.2 + random.nextDouble() * 0.2 + random.nextDouble() * 0.2;
+	protected static double getChildJumpStrengthBonus(DoubleSupplier randomDoubleGetter) {
+		return 0.4F + randomDoubleGetter.getAsDouble() * 0.2 + randomDoubleGetter.getAsDouble() * 0.2 + randomDoubleGetter.getAsDouble() * 0.2;
 	}
 
-	protected double getChildMovementSpeedBonus(Random random) {
-		return (0.45F + random.nextDouble() * 0.3 + random.nextDouble() * 0.3 + random.nextDouble() * 0.3) * 0.25;
+	protected static double getChildMovementSpeedBonus(DoubleSupplier randomDoubleGetter) {
+		return (0.45F + randomDoubleGetter.getAsDouble() * 0.3 + randomDoubleGetter.getAsDouble() * 0.3 + randomDoubleGetter.getAsDouble() * 0.3) * 0.25;
 	}
 
 	@Override

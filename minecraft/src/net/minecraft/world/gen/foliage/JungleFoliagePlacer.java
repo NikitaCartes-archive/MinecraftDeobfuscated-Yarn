@@ -2,9 +2,6 @@ package net.minecraft.world.gen.foliage;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.BiConsumer;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.TestableWorld;
@@ -31,7 +28,7 @@ public class JungleFoliagePlacer extends FoliagePlacer {
 	@Override
 	protected void generate(
 		TestableWorld world,
-		BiConsumer<BlockPos, BlockState> replacer,
+		FoliagePlacer.BlockPlacer placer,
 		Random random,
 		TreeFeatureConfig config,
 		int trunkHeight,
@@ -44,7 +41,7 @@ public class JungleFoliagePlacer extends FoliagePlacer {
 
 		for (int j = offset; j >= offset - i; j--) {
 			int k = radius + treeNode.getFoliageRadius() + 1 - j;
-			this.generateSquare(world, replacer, random, config, treeNode.getCenter(), k, j, treeNode.isGiantTrunk());
+			this.generateSquare(world, placer, random, config, treeNode.getCenter(), k, j, treeNode.isGiantTrunk());
 		}
 	}
 

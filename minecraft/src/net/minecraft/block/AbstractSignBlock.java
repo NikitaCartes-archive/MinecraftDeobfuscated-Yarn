@@ -18,7 +18,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SignType;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -31,9 +30,9 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final float field_31243 = 4.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
-	private final SignType type;
+	private final WoodType type;
 
-	protected AbstractSignBlock(AbstractBlock.Settings settings, SignType type) {
+	protected AbstractSignBlock(AbstractBlock.Settings settings, WoodType type) {
 		super(settings);
 		this.type = type;
 	}
@@ -116,18 +115,18 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 
-	public SignType getSignType() {
+	public WoodType getWoodType() {
 		return this.type;
 	}
 
-	public static SignType getSignType(Block block) {
-		SignType signType;
+	public static WoodType getWoodType(Block block) {
+		WoodType woodType;
 		if (block instanceof AbstractSignBlock) {
-			signType = ((AbstractSignBlock)block).getSignType();
+			woodType = ((AbstractSignBlock)block).getWoodType();
 		} else {
-			signType = SignType.OAK;
+			woodType = WoodType.OAK;
 		}
 
-		return signType;
+		return woodType;
 	}
 }

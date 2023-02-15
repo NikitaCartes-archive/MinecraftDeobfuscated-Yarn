@@ -59,7 +59,7 @@ public class ShaderStage {
 		return this.name;
 	}
 
-	public static ShaderStage createFromResource(ShaderStage.Type type, String name, InputStream stream, String domain, GLImportProcessor loader) throws IOException {
+	public static ShaderStage createFromResource(ShaderStage.Type type, String name, InputStream stream, String domain, GlImportProcessor loader) throws IOException {
 		RenderSystem.assertOnRenderThread();
 		int i = load(type, name, stream, domain, loader);
 		ShaderStage shaderStage = new ShaderStage(type, i, name);
@@ -67,7 +67,7 @@ public class ShaderStage {
 		return shaderStage;
 	}
 
-	protected static int load(ShaderStage.Type type, String name, InputStream stream, String domain, GLImportProcessor loader) throws IOException {
+	protected static int load(ShaderStage.Type type, String name, InputStream stream, String domain, GlImportProcessor loader) throws IOException {
 		String string = IOUtils.toString(stream, StandardCharsets.UTF_8);
 		if (string == null) {
 			throw new IOException("Could not load program " + type.getName());

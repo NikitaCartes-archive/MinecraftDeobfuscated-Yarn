@@ -57,12 +57,14 @@ public class BlockEntityType<T extends BlockEntity> {
 			Blocks.SPRUCE_SIGN,
 			Blocks.BIRCH_SIGN,
 			Blocks.ACACIA_SIGN,
+			Blocks.CHERRY_SIGN,
 			Blocks.JUNGLE_SIGN,
 			Blocks.DARK_OAK_SIGN,
 			Blocks.OAK_WALL_SIGN,
 			Blocks.SPRUCE_WALL_SIGN,
 			Blocks.BIRCH_WALL_SIGN,
 			Blocks.ACACIA_WALL_SIGN,
+			Blocks.CHERRY_WALL_SIGN,
 			Blocks.JUNGLE_WALL_SIGN,
 			Blocks.DARK_OAK_WALL_SIGN,
 			Blocks.CRIMSON_SIGN,
@@ -83,6 +85,7 @@ public class BlockEntityType<T extends BlockEntity> {
 			Blocks.SPRUCE_HANGING_SIGN,
 			Blocks.BIRCH_HANGING_SIGN,
 			Blocks.ACACIA_HANGING_SIGN,
+			Blocks.CHERRY_HANGING_SIGN,
 			Blocks.JUNGLE_HANGING_SIGN,
 			Blocks.DARK_OAK_HANGING_SIGN,
 			Blocks.CRIMSON_HANGING_SIGN,
@@ -93,6 +96,7 @@ public class BlockEntityType<T extends BlockEntity> {
 			Blocks.SPRUCE_WALL_HANGING_SIGN,
 			Blocks.BIRCH_WALL_HANGING_SIGN,
 			Blocks.ACACIA_WALL_HANGING_SIGN,
+			Blocks.CHERRY_WALL_HANGING_SIGN,
 			Blocks.JUNGLE_WALL_HANGING_SIGN,
 			Blocks.DARK_OAK_WALL_HANGING_SIGN,
 			Blocks.CRIMSON_WALL_HANGING_SIGN,
@@ -261,6 +265,12 @@ public class BlockEntityType<T extends BlockEntity> {
 	);
 	public static final BlockEntityType<ChiseledBookshelfBlockEntity> CHISELED_BOOKSHELF = create(
 		"chiseled_bookshelf", BlockEntityType.Builder.create(ChiseledBookshelfBlockEntity::new, Blocks.CHISELED_BOOKSHELF)
+	);
+	public static final BlockEntityType<SuspiciousSandBlockEntity> SUSPICIOUS_SAND = create(
+		"suspicious_sand", BlockEntityType.Builder.create(SuspiciousSandBlockEntity::new, Blocks.SUSPICIOUS_SAND)
+	);
+	public static final BlockEntityType<DecoratedPotBlockEntity> DECORATED_POT = create(
+		"decorated_pot", BlockEntityType.Builder.create(DecoratedPotBlockEntity::new, Blocks.DECORATED_POT)
 	);
 	private final BlockEntityType.BlockEntityFactory<? extends T> factory;
 	private final Set<Block> blocks;

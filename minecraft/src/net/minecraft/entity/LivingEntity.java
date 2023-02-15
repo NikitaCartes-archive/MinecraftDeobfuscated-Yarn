@@ -123,7 +123,7 @@ import org.slf4j.Logger;
 /**
  * Represents an entity which has a health value and can receive damage.
  */
-public abstract class LivingEntity extends Entity {
+public abstract class LivingEntity extends Entity implements Attackable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final UUID SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
 	private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
@@ -161,6 +161,7 @@ public abstract class LivingEntity extends Entity {
 	protected static final float field_30067 = 1.74F;
 	protected static final EntityDimensions SLEEPING_DIMENSIONS = EntityDimensions.fixed(0.2F, 0.2F);
 	public static final float BABY_SCALE_FACTOR = 0.5F;
+	private static final int field_42636 = 50;
 	private final AttributeContainer attributes;
 	private final DamageTracker damageTracker = new DamageTracker(this);
 	private final Map<StatusEffect, StatusEffectInstance> activeStatusEffects = Maps.<StatusEffect, StatusEffectInstance>newHashMap();
@@ -629,6 +630,11 @@ public abstract class LivingEntity extends Entity {
 	@Nullable
 	public LivingEntity getAttacker() {
 		return this.attacker;
+	}
+
+	@Override
+	public LivingEntity getLastAttacker() {
+		return this.getAttacker();
 	}
 
 	public int getLastAttackedTime() {
@@ -2537,20 +2543,11 @@ public abstract class LivingEntity extends Entity {
 		float f = MathHelper.wrapDegrees(bodyRotation - this.bodyYaw);
 		this.bodyYaw += f * 0.3F;
 		float g = MathHelper.wrapDegrees(this.getYaw() - this.bodyYaw);
+		if (Math.abs(g) > 50.0F) {
+			this.bodyYaw = this.bodyYaw + (g - (float)(MathHelper.sign((double)g) * 50));
+		}
+
 		boolean bl = g < -90.0F || g >= 90.0F;
-		if (g < -75.0F) {
-			g = -75.0F;
-		}
-
-		if (g >= 75.0F) {
-			g = 75.0F;
-		}
-
-		this.bodyYaw = this.getYaw() - g;
-		if (g * g > 2500.0F) {
-			this.bodyYaw += g * 0.2F;
-		}
-
 		if (bl) {
 			headRotation *= -1.0F;
 		}

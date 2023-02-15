@@ -31,6 +31,7 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -306,6 +307,10 @@ public class FallingBlockEntity extends Entity {
 		this.fallHurtMax = fallHurtMax;
 	}
 
+	public void setDestroyedOnLanding() {
+		this.destroyedOnLanding = true;
+	}
+
 	@Override
 	public boolean doesRenderOnFire() {
 		return false;
@@ -319,6 +324,11 @@ public class FallingBlockEntity extends Entity {
 
 	public BlockState getBlockState() {
 		return this.block;
+	}
+
+	@Override
+	protected Text getDefaultName() {
+		return Text.translatable("entity.minecraft.falling_block_type", this.block.getBlock().getName());
 	}
 
 	@Override

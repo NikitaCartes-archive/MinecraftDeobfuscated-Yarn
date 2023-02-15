@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -769,7 +770,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		if (state.isOpaqueFullCube(world, pos)) {
 			return world.getMaxLightLevel();
 		} else {
-			return state.isTranslucent(world, pos) ? 0 : 1;
+			return state.isTransparent(world, pos) ? 0 : 1;
 		}
 	}
 
@@ -976,7 +977,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see #onStateReplaced
 	 */
 	@Deprecated
-	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
+	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
 	}
 
 	/**
@@ -1135,7 +1136,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		private final AbstractBlock.ContextPredicate blockVisionPredicate;
 		private final AbstractBlock.ContextPredicate postProcessPredicate;
 		private final AbstractBlock.ContextPredicate emissiveLightingPredicate;
-		private final AbstractBlock.OffsetType offsetType;
+		private final Optional<AbstractBlock.Offsetter> offsetter;
 		private final boolean blockBreakParticles;
 		@Nullable
 		protected AbstractBlock.AbstractBlockState.ShapeCache shapeCache;
@@ -1158,7 +1159,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.blockVisionPredicate = settings.blockVisionPredicate;
 			this.postProcessPredicate = settings.postProcessPredicate;
 			this.emissiveLightingPredicate = settings.emissiveLightingPredicate;
-			this.offsetType = (AbstractBlock.OffsetType)settings.offsetType.apply(this.asBlockState());
+			this.offsetter = settings.offsetter;
 			this.blockBreakParticles = settings.blockBreakParticles;
 		}
 
@@ -1186,8 +1187,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.getBlock().settings.allowsSpawningPredicate.test(this.asBlockState(), world, pos, type);
 		}
 
-		public boolean isTranslucent(BlockView world, BlockPos pos) {
-			return this.shapeCache != null ? this.shapeCache.translucent : this.getBlock().isTranslucent(this.asBlockState(), world, pos);
+		public boolean isTransparent(BlockView world, BlockPos pos) {
+			return this.shapeCache != null ? this.shapeCache.transparent : this.getBlock().isTransparent(this.asBlockState(), world, pos);
 		}
 
 		public int getOpacity(BlockView world, BlockPos pos) {
@@ -1337,19 +1338,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public Vec3d getModelOffset(BlockView world, BlockPos pos) {
-			if (this.offsetType == AbstractBlock.OffsetType.NONE) {
-				return Vec3d.ZERO;
-			} else {
-				Block block = this.getBlock();
-				long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
-				float f = block.getMaxHorizontalModelOffset();
-				double d = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
-				double e = this.offsetType == AbstractBlock.OffsetType.XYZ
-					? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * (double)block.getVerticalModelOffsetMultiplier()
-					: 0.0;
-				double g = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
-				return new Vec3d(d, e, g);
-			}
+			return (Vec3d)this.offsetter.map(offsetter -> offsetter.evaluate(this.asBlockState(), world, pos)).orElse(Vec3d.ZERO);
+		}
+
+		public boolean hasModelOffset() {
+			return !this.offsetter.isEmpty();
 		}
 
 		public boolean onSyncedBlockEvent(World world, BlockPos pos, int type, int data) {
@@ -1403,8 +1396,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.getBlock().onEntityCollision(this.asBlockState(), world, pos, entity);
 		}
 
-		public void onStacksDropped(ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
-			this.getBlock().onStacksDropped(this.asBlockState(), world, pos, stack, dropExperience);
+		public void onStacksDropped(ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
+			this.getBlock().onStacksDropped(this.asBlockState(), world, pos, tool, dropExperience);
 		}
 
 		public List<ItemStack> getDroppedStacks(LootContext.Builder builder) {
@@ -1538,10 +1531,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.toolRequired;
 		}
 
-		public AbstractBlock.OffsetType getOffsetType() {
-			return this.offsetType;
-		}
-
 		public boolean hasBlockBreakParticles() {
 			return this.blockBreakParticles;
 		}
@@ -1550,7 +1539,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			private static final Direction[] DIRECTIONS = Direction.values();
 			private static final int SHAPE_TYPE_LENGTH = SideShapeType.values().length;
 			protected final boolean fullOpaque;
-			final boolean translucent;
+			final boolean transparent;
 			final int lightSubtracted;
 			@Nullable
 			final VoxelShape[] extrudedFaces;
@@ -1562,7 +1551,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			ShapeCache(BlockState state) {
 				Block block = state.getBlock();
 				this.fullOpaque = state.isOpaqueFullCube(EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
-				this.translucent = block.isTranslucent(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
+				this.transparent = block.isTransparent(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 				this.lightSubtracted = block.getOpacity(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN);
 				if (!state.isOpaque()) {
 					this.extrudedFaces = null;
@@ -1576,7 +1565,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 				}
 
 				this.collisionShape = block.getCollisionShape(state, EmptyBlockView.INSTANCE, BlockPos.ORIGIN, ShapeContext.absent());
-				if (!this.collisionShape.isEmpty() && state.getOffsetType() != AbstractBlock.OffsetType.NONE) {
+				if (!this.collisionShape.isEmpty() && state.hasModelOffset()) {
 					throw new IllegalStateException(
 						String.format(
 							Locale.ROOT, "%s has a collision shape and an offset type, but is not marked as dynamicShape in its properties.", Registries.BLOCK.getId(block)
@@ -1617,6 +1606,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		XYZ;
 	}
 
+	public interface Offsetter {
+		Vec3d evaluate(BlockState state, BlockView world, BlockPos pos);
+	}
+
 	public static class Settings {
 		Material material;
 		Function<BlockState, MapColor> mapColorProvider;
@@ -1645,7 +1638,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		AbstractBlock.ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
 		boolean dynamicBounds;
 		FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
-		Function<BlockState, AbstractBlock.OffsetType> offsetType = state -> AbstractBlock.OffsetType.NONE;
+		Optional<AbstractBlock.Offsetter> offsetter = Optional.empty();
 
 		private Settings(Material material, MapColor mapColorProvider) {
 			this(material, state -> mapColorProvider);
@@ -1688,7 +1681,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			settings.opaque = block.settings.opaque;
 			settings.isAir = block.settings.isAir;
 			settings.toolRequired = block.settings.toolRequired;
-			settings.offsetType = block.settings.offsetType;
+			settings.offsetter = block.settings.offsetter;
 			settings.blockBreakParticles = block.settings.blockBreakParticles;
 			settings.requiredFeatures = block.settings.requiredFeatures;
 			return settings;
@@ -1852,12 +1845,33 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this;
 		}
 
-		public AbstractBlock.Settings offsetType(AbstractBlock.OffsetType offsetType) {
-			return this.offsetType(state -> offsetType);
-		}
+		public AbstractBlock.Settings offset(AbstractBlock.OffsetType offsetType) {
+			switch (offsetType) {
+				case XYZ:
+					this.offsetter = Optional.of((AbstractBlock.Offsetter)(state, world, pos) -> {
+						Block block = state.getBlock();
+						long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
+						double d = ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * (double)block.getVerticalModelOffsetMultiplier();
+						float f = block.getMaxHorizontalModelOffset();
+						double e = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+						double g = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+						return new Vec3d(e, d, g);
+					});
+					break;
+				case XZ:
+					this.offsetter = Optional.of((AbstractBlock.Offsetter)(state, world, pos) -> {
+						Block block = state.getBlock();
+						long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
+						float f = block.getMaxHorizontalModelOffset();
+						double d = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+						double e = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+						return new Vec3d(d, 0.0, e);
+					});
+					break;
+				default:
+					this.offsetter = Optional.empty();
+			}
 
-		public AbstractBlock.Settings offsetType(Function<BlockState, AbstractBlock.OffsetType> offsetType) {
-			this.offsetType = offsetType;
 			return this;
 		}
 

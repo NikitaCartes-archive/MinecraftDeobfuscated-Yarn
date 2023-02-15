@@ -143,7 +143,9 @@ public class MapRenderer implements AutoCloseable {
 						matrices.translate(0.0F + (float)mapIcon.getX() / 2.0F + 64.0F - o * p / 2.0F, 0.0F + (float)mapIcon.getZ() / 2.0F + 64.0F + 4.0F, -0.025F);
 						matrices.scale(p, p, 1.0F);
 						matrices.translate(0.0F, 0.0F, -0.1F);
-						textRenderer.draw(text, 0.0F, 0.0F, -1, false, matrices.peek().getPositionMatrix(), vertexConsumers, false, Integer.MIN_VALUE, light);
+						textRenderer.draw(
+							text, 0.0F, 0.0F, -1, false, matrices.peek().getPositionMatrix(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, Integer.MIN_VALUE, light
+						);
 						matrices.pop();
 					}
 

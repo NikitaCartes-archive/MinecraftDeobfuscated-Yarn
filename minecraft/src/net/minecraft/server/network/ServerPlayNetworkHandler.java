@@ -260,7 +260,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		this.player.updatePositionAndAngles(this.lastTickX, this.lastTickY, this.lastTickZ, this.player.getYaw(), this.player.getPitch());
 		this.ticks++;
 		this.lastTickMovePacketsCount = this.movePacketsCount;
-		if (this.floating && !this.player.isSleeping() && !this.player.hasVehicle()) {
+		if (this.floating && !this.player.isSleeping() && !this.player.hasVehicle() && !this.player.isDead()) {
 			if (++this.floatingTicks > 80) {
 				LOGGER.warn("{} was kicked for floating too long!", this.player.getName().getString());
 				this.disconnect(Text.translatable("multiplayer.disconnect.flying"));
@@ -1515,7 +1515,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				return;
 			}
 
-			if (entity.squaredDistanceTo(this.player.getEyePos()) < MAX_BREAK_SQUARED_DISTANCE) {
+			Box box = entity.getBoundingBox();
+			if (box.squaredMagnitude(this.player.getEyePos()) < MAX_BREAK_SQUARED_DISTANCE) {
 				packet.handle(
 					new PlayerInteractEntityC2SPacket.Handler() {
 						private void processInteract(Hand hand, ServerPlayNetworkHandler.Interaction action) {
@@ -1594,7 +1595,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	@Override
 	public void onCloseHandledScreen(CloseHandledScreenC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-		this.player.closeScreenHandler();
+		this.player.onHandledScreenClosed();
 	}
 
 	@Override

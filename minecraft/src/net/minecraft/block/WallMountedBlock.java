@@ -35,7 +35,7 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 			if (direction.getAxis() == Direction.Axis.Y) {
 				blockState = this.getDefaultState()
 					.with(FACE, direction == Direction.UP ? WallMountLocation.CEILING : WallMountLocation.FLOOR)
-					.with(FACING, ctx.getPlayerFacing());
+					.with(FACING, ctx.getHorizontalPlayerFacing());
 			} else {
 				blockState = this.getDefaultState().with(FACE, WallMountLocation.WALL).with(FACING, direction.getOpposite());
 			}

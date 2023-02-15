@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
  * of the import.
  */
 @Environment(EnvType.CLIENT)
-public abstract class GLImportProcessor {
+public abstract class GlImportProcessor {
 	private static final String MULTI_LINE_COMMENT_PATTERN = "/\\*(?:[^*]|\\*+[^*/])*\\*+/";
 	private static final String SINGLE_LINE_COMMENT_PATTERN = "//[^\\v]*";
 	private static final Pattern MOJ_IMPORT_PATTERN = Pattern.compile(
@@ -38,13 +38,13 @@ public abstract class GLImportProcessor {
 	 * <p>Imports are processed as per the description of this class.
 	 */
 	public List<String> readSource(String source) {
-		GLImportProcessor.Context context = new GLImportProcessor.Context();
+		GlImportProcessor.Context context = new GlImportProcessor.Context();
 		List<String> list = this.parseImports(source, context, "");
 		list.set(0, this.readImport((String)list.get(0), context.column));
 		return list;
 	}
 
-	private List<String> parseImports(String source, GLImportProcessor.Context context, String path) {
+	private List<String> parseImports(String source, GlImportProcessor.Context context, String path) {
 		int i = context.line;
 		int j = 0;
 		String string = "";
@@ -101,7 +101,7 @@ public abstract class GLImportProcessor {
 	 * Converts a line known to contain an import into a fully-qualified
 	 * version of itself for insertion as a comment.
 	 */
-	private String extractVersion(String line, GLImportProcessor.Context context) {
+	private String extractVersion(String line, GlImportProcessor.Context context) {
 		Matcher matcher = IMPORT_VERSION_PATTERN.matcher(line);
 		if (matcher.find() && isLineValid(line, matcher)) {
 			context.column = Math.max(context.column, Integer.parseInt(matcher.group(2)));

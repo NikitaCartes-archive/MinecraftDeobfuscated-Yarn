@@ -126,25 +126,33 @@ public class EntityTrackerEntry {
 				Packet<?> packet2 = null;
 				boolean bl3 = bl2 || this.trackingTick % 60 == 0;
 				boolean bl4 = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
+				boolean bl5 = false;
+				boolean bl6 = false;
 				if (this.trackingTick > 0 || this.entity instanceof PersistentProjectileEntity) {
 					long l = this.trackedPos.getDeltaX(vec3d);
 					long m = this.trackedPos.getDeltaY(vec3d);
 					long n = this.trackedPos.getDeltaZ(vec3d);
-					boolean bl5 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
-					if (bl5 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
+					boolean bl7 = l < -32768L || l > 32767L || m < -32768L || m > 32767L || n < -32768L || n > 32767L;
+					if (bl7 || this.updatesWithoutVehicle > 400 || this.hadVehicle || this.lastOnGround != this.entity.isOnGround()) {
 						this.lastOnGround = this.entity.isOnGround();
 						this.updatesWithoutVehicle = 0;
 						packet2 = new EntityPositionS2CPacket(this.entity);
+						bl5 = true;
+						bl6 = true;
 					} else if ((!bl3 || !bl4) && !(this.entity instanceof PersistentProjectileEntity)) {
 						if (bl3) {
 							packet2 = new EntityS2CPacket.MoveRelative(this.entity.getId(), (short)((int)l), (short)((int)m), (short)((int)n), this.entity.isOnGround());
+							bl5 = true;
 						} else if (bl4) {
 							packet2 = new EntityS2CPacket.Rotate(this.entity.getId(), (byte)i, (byte)j, this.entity.isOnGround());
+							bl6 = true;
 						}
 					} else {
 						packet2 = new EntityS2CPacket.RotateAndMoveRelative(
 							this.entity.getId(), (short)((int)l), (short)((int)m), (short)((int)n), (byte)i, (byte)j, this.entity.isOnGround()
 						);
+						bl5 = true;
+						bl6 = true;
 					}
 				}
 
@@ -163,11 +171,11 @@ public class EntityTrackerEntry {
 				}
 
 				this.syncEntityData();
-				if (bl3) {
+				if (bl5) {
 					this.trackedPos.setPos(vec3d);
 				}
 
-				if (bl4) {
+				if (bl6) {
 					this.lastYaw = i;
 					this.lastPitch = j;
 				}

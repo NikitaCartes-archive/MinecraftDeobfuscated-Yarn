@@ -36,7 +36,7 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 			i++;
 		}
 
-		this.addDrawableChild(this.gameOptions.getMainArm().createButton(this.gameOptions, this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150));
+		this.addDrawableChild(this.gameOptions.getMainArm().createWidget(this.gameOptions, this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150));
 		if (++i % 2 == 1) {
 			i++;
 		}

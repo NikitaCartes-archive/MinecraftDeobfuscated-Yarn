@@ -461,15 +461,22 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
+	/**
+	 * Closes the currently open {@linkplain net.minecraft.client.gui.screen.ingame.HandledScreen
+	 * handled screen}.
+	 * 
+	 * <p>This method can be called on either logical side, and it will synchronize
+	 * the closing automatically to the other.
+	 */
 	protected void closeHandledScreen() {
 		this.currentScreenHandler = this.playerScreenHandler;
 	}
 
 	/**
 	 * Runs closing tasks for the current screen handler and
-	 * sets it to the {@code playerScreenHandler}.
+	 * sets it to the {@link #playerScreenHandler}.
 	 */
-	protected void closeScreenHandler() {
+	protected void onHandledScreenClosed() {
 	}
 
 	@Override
@@ -1333,9 +1340,9 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public void remove(Entity.RemovalReason reason) {
 		super.remove(reason);
-		this.playerScreenHandler.close(this);
+		this.playerScreenHandler.onClosed(this);
 		if (this.currentScreenHandler != null && this.shouldCloseHandledScreenOnRespawn()) {
-			this.closeScreenHandler();
+			this.onHandledScreenClosed();
 		}
 	}
 
@@ -1911,6 +1918,11 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public abstract boolean isSpectator();
+
+	@Override
+	public boolean canBeHitByProjectile() {
+		return !this.isSpectator() && super.canBeHitByProjectile();
+	}
 
 	@Override
 	public boolean isSwimming() {

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
@@ -77,7 +78,7 @@ public class AllayBrain {
 			ImmutableList.of(
 				Pair.of(0, WalkToNearestVisibleWantedItemTask.create(allay -> true, 1.75F, true, 32)),
 				Pair.of(1, new GiveInventoryToLookTargetTask<>(AllayBrain::getLookTarget, 2.25F, 20)),
-				Pair.of(2, WalkTowardsLookTargetTask.create(AllayBrain::getLookTarget, 4, 16, 2.25F)),
+				Pair.of(2, WalkTowardsLookTargetTask.create(AllayBrain::getLookTarget, Predicate.not(AllayBrain::hasNearestVisibleWantedItem), 4, 16, 2.25F)),
 				Pair.of(3, FollowMobWithIntervalTask.follow(6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(
 					4,
@@ -119,6 +120,11 @@ public class AllayBrain {
 		}
 
 		return getLikedLookTarget(allay);
+	}
+
+	private static boolean hasNearestVisibleWantedItem(LivingEntity entity) {
+		Brain<?> brain = entity.getBrain();
+		return brain.hasMemoryModule(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM);
 	}
 
 	private static boolean shouldGoTowardsNoteBlock(LivingEntity allay, Brain<?> brain, GlobalPos pos) {

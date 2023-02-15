@@ -3,6 +3,7 @@ package net.minecraft.world.gen.feature;
 import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FlowerbedBlock;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.Registerable;
@@ -51,6 +52,7 @@ public class VegetationConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FLOWER_SWAMP = ConfiguredFeatures.of("flower_swamp");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FLOWER_PLAIN = ConfiguredFeatures.of("flower_plain");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FLOWER_MEADOW = ConfiguredFeatures.of("flower_meadow");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> FLOWER_CHERRY = ConfiguredFeatures.of("flower_cherry");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> FOREST_FLOWERS = ConfiguredFeatures.of("forest_flowers");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> DARK_FOREST_VEGETATION = ConfiguredFeatures.of("dark_forest_vegetation");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> TREES_FLOWER_FOREST = ConfiguredFeatures.of("trees_flower_forest");
@@ -362,6 +364,22 @@ public class VegetationConfiguredFeatures {
 						)
 					)
 				)
+			)
+		);
+		DataPool.Builder<BlockState> builder = DataPool.builder();
+
+		for (int i = 1; i <= 4; i++) {
+			for (Direction direction : Direction.Type.HORIZONTAL) {
+				builder.add(Blocks.PINK_PETALS.getDefaultState().with(FlowerbedBlock.FLOWER_AMOUNT, Integer.valueOf(i)).with(FlowerbedBlock.FACING, direction), 1);
+			}
+		}
+
+		ConfiguredFeatures.register(
+			featureRegisterable,
+			FLOWER_CHERRY,
+			Feature.FLOWER,
+			new RandomPatchFeatureConfig(
+				96, 6, 2, PlacedFeatures.createEntry(Feature.SIMPLE_BLOCK, new SimpleBlockFeatureConfig(new WeightedBlockStateProvider(builder)))
 			)
 		);
 		ConfiguredFeatures.register(

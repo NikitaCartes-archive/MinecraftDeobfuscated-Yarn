@@ -179,7 +179,7 @@ public class StairsBlock extends Block implements Waterloggable {
 		BlockPos blockPos = ctx.getBlockPos();
 		FluidState fluidState = ctx.getWorld().getFluidState(blockPos);
 		BlockState blockState = this.getDefaultState()
-			.with(FACING, ctx.getPlayerFacing())
+			.with(FACING, ctx.getHorizontalPlayerFacing())
 			.with(
 				HALF, direction != Direction.DOWN && (direction == Direction.UP || !(ctx.getHitPos().y - (double)blockPos.getY() > 0.5)) ? BlockHalf.BOTTOM : BlockHalf.TOP
 			)

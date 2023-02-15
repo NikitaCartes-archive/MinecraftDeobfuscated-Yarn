@@ -67,10 +67,12 @@ public class JsonUnbakedModel implements UnbakedModel {
 	 */
 	private static final char TEXTURE_REFERENCE_INITIAL = '#';
 	public static final String PARTICLE_KEY = "particle";
+	private static final boolean field_42912 = true;
 	private final List<ModelElement> elements;
 	@Nullable
 	private final JsonUnbakedModel.GuiLight guiLight;
-	private final boolean ambientOcclusion;
+	@Nullable
+	private final Boolean ambientOcclusion;
 	private final ModelTransformation transformations;
 	private final List<ModelOverride> overrides;
 	public String id = "";
@@ -93,7 +95,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 		@Nullable Identifier parentId,
 		List<ModelElement> elements,
 		Map<String, Either<SpriteIdentifier, String>> textureMap,
-		boolean ambientOcclusion,
+		@Nullable Boolean ambientOcclusion,
 		@Nullable JsonUnbakedModel.GuiLight guiLight,
 		ModelTransformation transformations,
 		List<ModelOverride> overrides
@@ -112,7 +114,11 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	public boolean useAmbientOcclusion() {
-		return this.parent != null ? this.parent.useAmbientOcclusion() : this.ambientOcclusion;
+		if (this.ambientOcclusion != null) {
+			return this.ambientOcclusion;
+		} else {
+			return this.parent != null ? this.parent.useAmbientOcclusion() : true;
+		}
 	}
 
 	public JsonUnbakedModel.GuiLight getGuiLight() {
@@ -306,17 +312,12 @@ public class JsonUnbakedModel implements UnbakedModel {
 
 	@Environment(EnvType.CLIENT)
 	public static class Deserializer implements JsonDeserializer<JsonUnbakedModel> {
-		/**
-		 * The default value for ambient occlusion if unspecified in JSON; is {@value}.
-		 */
-		private static final boolean DEFAULT_AMBIENT_OCCLUSION = true;
-
 		public JsonUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			List<ModelElement> list = this.elementsFromJson(jsonDeserializationContext, jsonObject);
 			String string = this.parentFromJson(jsonObject);
 			Map<String, Either<SpriteIdentifier, String>> map = this.texturesFromJson(jsonObject);
-			boolean bl = this.ambientOcclusionFromJson(jsonObject);
+			Boolean boolean_ = this.ambientOcclusionFromJson(jsonObject);
 			ModelTransformation modelTransformation = ModelTransformation.NONE;
 			if (jsonObject.has("display")) {
 				JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "display");
@@ -330,7 +331,7 @@ public class JsonUnbakedModel implements UnbakedModel {
 			}
 
 			Identifier identifier = string.isEmpty() ? null : new Identifier(string);
-			return new JsonUnbakedModel(identifier, list, map, bl, guiLight, modelTransformation, list2);
+			return new JsonUnbakedModel(identifier, list, map, boolean_, guiLight, modelTransformation, list2);
 		}
 
 		protected List<ModelOverride> overridesFromJson(JsonDeserializationContext context, JsonObject object) {
@@ -375,8 +376,9 @@ public class JsonUnbakedModel implements UnbakedModel {
 			return JsonHelper.getString(json, "parent", "");
 		}
 
-		protected boolean ambientOcclusionFromJson(JsonObject json) {
-			return JsonHelper.getBoolean(json, "ambientocclusion", true);
+		@Nullable
+		protected Boolean ambientOcclusionFromJson(JsonObject json) {
+			return json.has("ambientocclusion") ? JsonHelper.getBoolean(json, "ambientocclusion") : null;
 		}
 
 		protected List<ModelElement> elementsFromJson(JsonDeserializationContext context, JsonObject json) {

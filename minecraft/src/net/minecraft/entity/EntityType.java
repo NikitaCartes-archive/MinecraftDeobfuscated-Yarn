@@ -22,6 +22,7 @@ import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.entity.decoration.GlowItemFrameEntity;
+import net.minecraft.entity.decoration.InteractionEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
@@ -93,6 +94,7 @@ import net.minecraft.entity.passive.PufferfishEntity;
 import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.entity.passive.SheepEntity;
+import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.passive.StriderEntity;
@@ -194,28 +196,35 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<DisplayEntity.BlockDisplayEntity> BLOCK_DISPLAY = register(
 		"block_display",
-		EntityType.Builder.create(DisplayEntity.BlockDisplayEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(10).tickable(false)
+		EntityType.Builder.create(DisplayEntity.BlockDisplayEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(10).trackingTickInterval(1)
 	);
 	public static final EntityType<BoatEntity> BOAT = register(
 		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, SpawnGroup.MISC).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
 	);
-	public static final EntityType<ChestBoatEntity> CHEST_BOAT = register(
-		"chest_boat", EntityType.Builder.<ChestBoatEntity>create(ChestBoatEntity::new, SpawnGroup.MISC).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
+	public static final EntityType<CamelEntity> CAMEL = register(
+		"camel", EntityType.Builder.create(CamelEntity::new, SpawnGroup.CREATURE).setDimensions(1.7F, 2.375F).maxTrackingRange(10).requires(FeatureFlags.UPDATE_1_20)
 	);
 	public static final EntityType<CatEntity> CAT = register(
 		"cat", EntityType.Builder.create(CatEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(8)
 	);
-	public static final EntityType<CamelEntity> CAMEL = register(
-		"camel", EntityType.Builder.create(CamelEntity::new, SpawnGroup.CREATURE).setDimensions(1.7F, 2.375F).maxTrackingRange(10).requires(FeatureFlags.UPDATE_1_20)
-	);
 	public static final EntityType<CaveSpiderEntity> CAVE_SPIDER = register(
 		"cave_spider", EntityType.Builder.create(CaveSpiderEntity::new, SpawnGroup.MONSTER).setDimensions(0.7F, 0.5F).maxTrackingRange(8)
+	);
+	public static final EntityType<ChestBoatEntity> CHEST_BOAT = register(
+		"chest_boat", EntityType.Builder.<ChestBoatEntity>create(ChestBoatEntity::new, SpawnGroup.MISC).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
+	);
+	public static final EntityType<ChestMinecartEntity> CHEST_MINECART = register(
+		"chest_minecart", EntityType.Builder.<ChestMinecartEntity>create(ChestMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
 	);
 	public static final EntityType<ChickenEntity> CHICKEN = register(
 		"chicken", EntityType.Builder.create(ChickenEntity::new, SpawnGroup.CREATURE).setDimensions(0.4F, 0.7F).maxTrackingRange(10)
 	);
 	public static final EntityType<CodEntity> COD = register(
 		"cod", EntityType.Builder.create(CodEntity::new, SpawnGroup.WATER_AMBIENT).setDimensions(0.5F, 0.3F).maxTrackingRange(4)
+	);
+	public static final EntityType<CommandBlockMinecartEntity> COMMAND_BLOCK_MINECART = register(
+		"command_block_minecart",
+		EntityType.Builder.<CommandBlockMinecartEntity>create(CommandBlockMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
 	);
 	public static final EntityType<CowEntity> COW = register(
 		"cow", EntityType.Builder.create(CowEntity::new, SpawnGroup.CREATURE).setDimensions(0.9F, 1.4F).maxTrackingRange(10)
@@ -239,6 +248,9 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<DrownedEntity> DROWNED = register(
 		"drowned", EntityType.Builder.create(DrownedEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
+	public static final EntityType<EggEntity> EGG = register(
+		"egg", EntityType.Builder.<EggEntity>create(EggEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
+	);
 	public static final EntityType<ElderGuardianEntity> ELDER_GUARDIAN = register(
 		"elder_guardian", EntityType.Builder.create(ElderGuardianEntity::new, SpawnGroup.MONSTER).setDimensions(1.9975F, 1.9975F).maxTrackingRange(10)
 	);
@@ -252,6 +264,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<EnderDragonEntity> ENDER_DRAGON = register(
 		"ender_dragon", EntityType.Builder.create(EnderDragonEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(16.0F, 8.0F).maxTrackingRange(10)
 	);
+	public static final EntityType<EnderPearlEntity> ENDER_PEARL = register(
+		"ender_pearl",
+		EntityType.Builder.<EnderPearlEntity>create(EnderPearlEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
+	);
 	public static final EntityType<EndermanEntity> ENDERMAN = register(
 		"enderman", EntityType.Builder.create(EndermanEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 2.9F).maxTrackingRange(8)
 	);
@@ -264,6 +280,13 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<EvokerFangsEntity> EVOKER_FANGS = register(
 		"evoker_fangs",
 		EntityType.Builder.<EvokerFangsEntity>create(EvokerFangsEntity::new, SpawnGroup.MISC).setDimensions(0.5F, 0.8F).maxTrackingRange(6).trackingTickInterval(2)
+	);
+	public static final EntityType<ExperienceBottleEntity> EXPERIENCE_BOTTLE = register(
+		"experience_bottle",
+		EntityType.Builder.<ExperienceBottleEntity>create(ExperienceBottleEntity::new, SpawnGroup.MISC)
+			.setDimensions(0.25F, 0.25F)
+			.maxTrackingRange(4)
+			.trackingTickInterval(10)
 	);
 	public static final EntityType<ExperienceOrbEntity> EXPERIENCE_ORB = register(
 		"experience_orb",
@@ -297,6 +320,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<FrogEntity> FROG = register(
 		"frog", EntityType.Builder.create(FrogEntity::new, SpawnGroup.CREATURE).setDimensions(0.5F, 0.5F).maxTrackingRange(10)
 	);
+	public static final EntityType<FurnaceMinecartEntity> FURNACE_MINECART = register(
+		"furnace_minecart",
+		EntityType.Builder.<FurnaceMinecartEntity>create(FurnaceMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
+	);
 	public static final EntityType<GhastEntity> GHAST = register(
 		"ghast", EntityType.Builder.create(GhastEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(4.0F, 4.0F).maxTrackingRange(10)
 	);
@@ -322,6 +349,9 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<HoglinEntity> HOGLIN = register(
 		"hoglin", EntityType.Builder.create(HoglinEntity::new, SpawnGroup.MONSTER).setDimensions(1.3964844F, 1.4F).maxTrackingRange(8)
 	);
+	public static final EntityType<HopperMinecartEntity> HOPPER_MINECART = register(
+		"hopper_minecart", EntityType.Builder.<HopperMinecartEntity>create(HopperMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
+	);
 	public static final EntityType<HorseEntity> HORSE = register(
 		"horse", EntityType.Builder.create(HorseEntity::new, SpawnGroup.CREATURE).setDimensions(1.3964844F, 1.6F).maxTrackingRange(10)
 	);
@@ -331,6 +361,9 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<IllusionerEntity> ILLUSIONER = register(
 		"illusioner", EntityType.Builder.create(IllusionerEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.95F).maxTrackingRange(8)
 	);
+	public static final EntityType<InteractionEntity> INTERACTION = register(
+		"interaction", EntityType.Builder.create(InteractionEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(10)
+	);
 	public static final EntityType<IronGolemEntity> IRON_GOLEM = register(
 		"iron_golem", EntityType.Builder.create(IronGolemEntity::new, SpawnGroup.MISC).setDimensions(1.4F, 2.7F).maxTrackingRange(10)
 	);
@@ -339,7 +372,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<DisplayEntity.ItemDisplayEntity> ITEM_DISPLAY = register(
 		"item_display",
-		EntityType.Builder.create(DisplayEntity.ItemDisplayEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(10).tickable(false)
+		EntityType.Builder.create(DisplayEntity.ItemDisplayEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(10).trackingTickInterval(1)
 	);
 	public static final EntityType<ItemFrameEntity> ITEM_FRAME = register(
 		"item_frame",
@@ -379,37 +412,16 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		"magma_cube", EntityType.Builder.create(MagmaCubeEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(2.04F, 2.04F).maxTrackingRange(8)
 	);
 	public static final EntityType<MarkerEntity> MARKER = register(
-		"marker", EntityType.Builder.create(MarkerEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(0).tickable(false)
+		"marker", EntityType.Builder.create(MarkerEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(0)
 	);
 	public static final EntityType<MinecartEntity> MINECART = register(
 		"minecart", EntityType.Builder.<MinecartEntity>create(MinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
 	);
-	public static final EntityType<ChestMinecartEntity> CHEST_MINECART = register(
-		"chest_minecart", EntityType.Builder.<ChestMinecartEntity>create(ChestMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
-	);
-	public static final EntityType<CommandBlockMinecartEntity> COMMAND_BLOCK_MINECART = register(
-		"command_block_minecart",
-		EntityType.Builder.<CommandBlockMinecartEntity>create(CommandBlockMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
-	);
-	public static final EntityType<FurnaceMinecartEntity> FURNACE_MINECART = register(
-		"furnace_minecart",
-		EntityType.Builder.<FurnaceMinecartEntity>create(FurnaceMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
-	);
-	public static final EntityType<HopperMinecartEntity> HOPPER_MINECART = register(
-		"hopper_minecart", EntityType.Builder.<HopperMinecartEntity>create(HopperMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
-	);
-	public static final EntityType<SpawnerMinecartEntity> SPAWNER_MINECART = register(
-		"spawner_minecart",
-		EntityType.Builder.<SpawnerMinecartEntity>create(SpawnerMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
-	);
-	public static final EntityType<TntMinecartEntity> TNT_MINECART = register(
-		"tnt_minecart", EntityType.Builder.<TntMinecartEntity>create(TntMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
+	public static final EntityType<MooshroomEntity> MOOSHROOM = register(
+		"mooshroom", EntityType.Builder.create(MooshroomEntity::new, SpawnGroup.CREATURE).setDimensions(0.9F, 1.4F).maxTrackingRange(10)
 	);
 	public static final EntityType<MuleEntity> MULE = register(
 		"mule", EntityType.Builder.create(MuleEntity::new, SpawnGroup.CREATURE).setDimensions(1.3964844F, 1.6F).maxTrackingRange(8)
-	);
-	public static final EntityType<MooshroomEntity> MOOSHROOM = register(
-		"mooshroom", EntityType.Builder.create(MooshroomEntity::new, SpawnGroup.CREATURE).setDimensions(0.9F, 1.4F).maxTrackingRange(10)
 	);
 	public static final EntityType<OcelotEntity> OCELOT = register(
 		"ocelot", EntityType.Builder.create(OcelotEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(10)
@@ -446,13 +458,9 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		"polar_bear",
 		EntityType.Builder.create(PolarBearEntity::new, SpawnGroup.CREATURE).allowSpawningInside(Blocks.POWDER_SNOW).setDimensions(1.4F, 1.4F).maxTrackingRange(10)
 	);
-	public static final EntityType<TntEntity> TNT = register(
-		"tnt",
-		EntityType.Builder.<TntEntity>create(TntEntity::new, SpawnGroup.MISC)
-			.makeFireImmune()
-			.setDimensions(0.98F, 0.98F)
-			.maxTrackingRange(10)
-			.trackingTickInterval(10)
+	public static final EntityType<PotionEntity> POTION = register(
+		"potion",
+		EntityType.Builder.<PotionEntity>create(PotionEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
 	);
 	public static final EntityType<PufferfishEntity> PUFFERFISH = register(
 		"pufferfish", EntityType.Builder.create(PufferfishEntity::new, SpawnGroup.WATER_AMBIENT).setDimensions(0.7F, 0.7F).maxTrackingRange(4)
@@ -496,6 +504,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.maxTrackingRange(4)
 			.trackingTickInterval(10)
 	);
+	public static final EntityType<SnifferEntity> SNIFFER = register(
+		"sniffer",
+		EntityType.Builder.create(SnifferEntity::new, SpawnGroup.CREATURE).setDimensions(1.9F, 1.75F).maxTrackingRange(10).requires(FeatureFlags.UPDATE_1_20)
+	);
 	public static final EntityType<SnowGolemEntity> SNOW_GOLEM = register(
 		"snow_golem",
 		EntityType.Builder.create(SnowGolemEntity::new, SpawnGroup.MISC).allowSpawningInside(Blocks.POWDER_SNOW).setDimensions(0.7F, 1.9F).maxTrackingRange(8)
@@ -503,6 +515,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<SnowballEntity> SNOWBALL = register(
 		"snowball",
 		EntityType.Builder.<SnowballEntity>create(SnowballEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
+	);
+	public static final EntityType<SpawnerMinecartEntity> SPAWNER_MINECART = register(
+		"spawner_minecart",
+		EntityType.Builder.<SpawnerMinecartEntity>create(SpawnerMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
 	);
 	public static final EntityType<SpectralArrowEntity> SPECTRAL_ARROW = register(
 		"spectral_arrow",
@@ -529,32 +545,25 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<DisplayEntity.TextDisplayEntity> TEXT_DISPLAY = register(
 		"text_display",
-		EntityType.Builder.create(DisplayEntity.TextDisplayEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(10).tickable(false)
+		EntityType.Builder.create(DisplayEntity.TextDisplayEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(10).trackingTickInterval(1)
 	);
-	public static final EntityType<EggEntity> EGG = register(
-		"egg", EntityType.Builder.<EggEntity>create(EggEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
-	);
-	public static final EntityType<EnderPearlEntity> ENDER_PEARL = register(
-		"ender_pearl",
-		EntityType.Builder.<EnderPearlEntity>create(EnderPearlEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
-	);
-	public static final EntityType<ExperienceBottleEntity> EXPERIENCE_BOTTLE = register(
-		"experience_bottle",
-		EntityType.Builder.<ExperienceBottleEntity>create(ExperienceBottleEntity::new, SpawnGroup.MISC)
-			.setDimensions(0.25F, 0.25F)
-			.maxTrackingRange(4)
+	public static final EntityType<TntEntity> TNT = register(
+		"tnt",
+		EntityType.Builder.<TntEntity>create(TntEntity::new, SpawnGroup.MISC)
+			.makeFireImmune()
+			.setDimensions(0.98F, 0.98F)
+			.maxTrackingRange(10)
 			.trackingTickInterval(10)
 	);
-	public static final EntityType<PotionEntity> POTION = register(
-		"potion",
-		EntityType.Builder.<PotionEntity>create(PotionEntity::new, SpawnGroup.MISC).setDimensions(0.25F, 0.25F).maxTrackingRange(4).trackingTickInterval(10)
+	public static final EntityType<TntMinecartEntity> TNT_MINECART = register(
+		"tnt_minecart", EntityType.Builder.<TntMinecartEntity>create(TntMinecartEntity::new, SpawnGroup.MISC).setDimensions(0.98F, 0.7F).maxTrackingRange(8)
+	);
+	public static final EntityType<TraderLlamaEntity> TRADER_LLAMA = register(
+		"trader_llama", EntityType.Builder.create(TraderLlamaEntity::new, SpawnGroup.CREATURE).setDimensions(0.9F, 1.87F).maxTrackingRange(10)
 	);
 	public static final EntityType<TridentEntity> TRIDENT = register(
 		"trident",
 		EntityType.Builder.<TridentEntity>create(TridentEntity::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20)
-	);
-	public static final EntityType<TraderLlamaEntity> TRADER_LLAMA = register(
-		"trader_llama", EntityType.Builder.create(TraderLlamaEntity::new, SpawnGroup.CREATURE).setDimensions(0.9F, 1.87F).maxTrackingRange(10)
 	);
 	public static final EntityType<TropicalFishEntity> TROPICAL_FISH = register(
 		"tropical_fish", EntityType.Builder.create(TropicalFishEntity::new, SpawnGroup.WATER_AMBIENT).setDimensions(0.5F, 0.4F).maxTrackingRange(4)
@@ -648,7 +657,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	private final boolean spawnableFarFromPlayer;
 	private final int maxTrackDistance;
 	private final int trackTickInterval;
-	private final boolean tickable;
 	@Nullable
 	private String translationKey;
 	@Nullable
@@ -681,7 +689,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		EntityDimensions dimensions,
 		int maxTrackDistance,
 		int trackTickInterval,
-		boolean tickable,
 		FeatureSet requiredFeatures
 	) {
 		this.factory = factory;
@@ -694,7 +701,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		this.dimensions = dimensions;
 		this.maxTrackDistance = maxTrackDistance;
 		this.trackTickInterval = trackTickInterval;
-		this.tickable = tickable;
 		this.requiredFeatures = requiredFeatures;
 	}
 
@@ -997,10 +1003,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		return this.trackTickInterval;
 	}
 
-	public boolean isTickable() {
-		return this.tickable;
-	}
-
 	public boolean alwaysUpdateVelocity() {
 		return this != PLAYER
 			&& this != LLAMA_SPIT
@@ -1043,7 +1045,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		private boolean spawnableFarFromPlayer;
 		private int maxTrackingRange = 5;
 		private int trackingTickInterval = 3;
-		private boolean tickable = true;
 		private EntityDimensions dimensions = EntityDimensions.changing(0.6F, 1.8F);
 		private FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 
@@ -1111,11 +1112,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			return this;
 		}
 
-		public EntityType.Builder<T> tickable(boolean tickable) {
-			this.tickable = tickable;
-			return this;
-		}
-
 		public EntityType.Builder<T> requires(FeatureFlag... features) {
 			this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
 			return this;
@@ -1137,7 +1133,6 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 				this.dimensions,
 				this.maxTrackingRange,
 				this.trackingTickInterval,
-				this.tickable,
 				this.requiredFeatures
 			);
 		}
