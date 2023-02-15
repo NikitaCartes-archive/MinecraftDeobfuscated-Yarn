@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.DecoratedPotPatterns;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.block.entity.BlockEntityType;
@@ -174,6 +175,7 @@ public class Registries {
     public static final Registry<FrogVariant> FROG_VARIANT = Registries.create(RegistryKeys.FROG_VARIANT, registry -> FrogVariant.TEMPERATE);
     public static final Registry<BannerPattern> BANNER_PATTERN = Registries.create(RegistryKeys.BANNER_PATTERN, BannerPatterns::registerAndGetDefault);
     public static final Registry<Instrument> INSTRUMENT = Registries.create(RegistryKeys.INSTRUMENT, Instruments::registerAndGetDefault);
+    public static final Registry<String> DECORATED_POT_PATTERNS = Registries.create(RegistryKeys.DECORATED_POT_PATTERNS, DecoratedPotPatterns::registerAndGetDefault);
     public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 
     private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Initializer<T> initializer) {

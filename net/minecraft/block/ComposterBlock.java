@@ -34,6 +34,7 @@ import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -73,6 +74,7 @@ implements InventoryProvider {
         ComposterBlock.registerCompostableItem(0.3f, Items.SPRUCE_LEAVES);
         ComposterBlock.registerCompostableItem(0.3f, Items.DARK_OAK_LEAVES);
         ComposterBlock.registerCompostableItem(0.3f, Items.ACACIA_LEAVES);
+        ComposterBlock.registerCompostableItem(0.3f, Items.CHERRY_LEAVES);
         ComposterBlock.registerCompostableItem(0.3f, Items.BIRCH_LEAVES);
         ComposterBlock.registerCompostableItem(0.3f, Items.AZALEA_LEAVES);
         ComposterBlock.registerCompostableItem(0.3f, Items.MANGROVE_LEAVES);
@@ -81,6 +83,7 @@ implements InventoryProvider {
         ComposterBlock.registerCompostableItem(0.3f, Items.BIRCH_SAPLING);
         ComposterBlock.registerCompostableItem(0.3f, Items.JUNGLE_SAPLING);
         ComposterBlock.registerCompostableItem(0.3f, Items.ACACIA_SAPLING);
+        ComposterBlock.registerCompostableItem(0.3f, Items.CHERRY_SAPLING);
         ComposterBlock.registerCompostableItem(0.3f, Items.DARK_OAK_SAPLING);
         ComposterBlock.registerCompostableItem(0.3f, Items.MANGROVE_PROPAGULE);
         ComposterBlock.registerCompostableItem(0.3f, Items.BEETROOT_SEEDS);
@@ -94,9 +97,11 @@ implements InventoryProvider {
         ComposterBlock.registerCompostableItem(0.3f, Items.GLOW_BERRIES);
         ComposterBlock.registerCompostableItem(0.3f, Items.WHEAT_SEEDS);
         ComposterBlock.registerCompostableItem(0.3f, Items.MOSS_CARPET);
+        ComposterBlock.registerCompostableItem(0.3f, Items.PINK_PETALS);
         ComposterBlock.registerCompostableItem(0.3f, Items.SMALL_DRIPLEAF);
         ComposterBlock.registerCompostableItem(0.3f, Items.HANGING_ROOTS);
         ComposterBlock.registerCompostableItem(0.3f, Items.MANGROVE_ROOTS);
+        ComposterBlock.registerCompostableItem(0.3f, Items.TORCHFLOWER_SEEDS);
         ComposterBlock.registerCompostableItem(0.5f, Items.DRIED_KELP_BLOCK);
         ComposterBlock.registerCompostableItem(0.5f, Items.TALL_GRASS);
         ComposterBlock.registerCompostableItem(0.5f, Items.FLOWERING_AZALEA_LEAVES);
@@ -160,6 +165,7 @@ implements InventoryProvider {
         ComposterBlock.registerCompostableItem(0.85f, Items.BREAD);
         ComposterBlock.registerCompostableItem(0.85f, Items.BAKED_POTATO);
         ComposterBlock.registerCompostableItem(0.85f, Items.COOKIE);
+        ComposterBlock.registerCompostableItem(0.85f, Items.TORCHFLOWER);
         ComposterBlock.registerCompostableItem(1.0f, Items.CAKE);
         ComposterBlock.registerCompostableItem(1.0f, Items.PUMPKIN_PIE);
     }
@@ -244,11 +250,8 @@ implements InventoryProvider {
 
     public static BlockState emptyFullComposter(Entity user, BlockState state, World world, BlockPos pos) {
         if (!world.isClient) {
-            float f = 0.7f;
-            double d = (double)(world.random.nextFloat() * 0.7f) + (double)0.15f;
-            double e = (double)(world.random.nextFloat() * 0.7f) + 0.06000000238418579 + 0.6;
-            double g = (double)(world.random.nextFloat() * 0.7f) + (double)0.15f;
-            ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + g, new ItemStack(Items.BONE_MEAL));
+            Vec3d vec3d = Vec3d.add(pos, 0.5, 1.01, 0.5).addRandom(world.random, 0.7f);
+            ItemEntity itemEntity = new ItemEntity(world, vec3d.getX(), vec3d.getY(), vec3d.getZ(), new ItemStack(Items.BONE_MEAL));
             itemEntity.setToDefaultPickupDelay();
             world.spawnEntity(itemEntity);
         }

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.WoodType;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
@@ -16,6 +17,7 @@ import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BellBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.ChestBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.ConduitBlockEntityRenderer;
+import net.minecraft.client.render.block.entity.DecoratedPotBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.HangingSignBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.render.entity.EndCrystalEntityRenderer;
@@ -91,6 +93,7 @@ import net.minecraft.client.render.entity.model.SkullEntityModel;
 import net.minecraft.client.render.entity.model.SlimeEntityModel;
 import net.minecraft.client.render.entity.model.SmallPufferfishEntityModel;
 import net.minecraft.client.render.entity.model.SmallTropicalFishEntityModel;
+import net.minecraft.client.render.entity.model.SnifferModel;
 import net.minecraft.client.render.entity.model.SnowGolemEntityModel;
 import net.minecraft.client.render.entity.model.SpiderEntityModel;
 import net.minecraft.client.render.entity.model.SquidEntityModel;
@@ -106,7 +109,6 @@ import net.minecraft.client.render.entity.model.WitherEntityModel;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.client.render.entity.model.ZombieVillagerEntityModel;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.util.SignType;
 
 @Environment(value=EnvType.CLIENT)
 public class EntityModels {
@@ -153,8 +155,6 @@ public class EntityModels {
         builder.put(EntityModelLayers.CAMEL, CamelEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.CAVE_SPIDER, texturedModelData19);
         builder.put(EntityModelLayers.CHEST, ChestBlockEntityRenderer.getSingleTexturedModelData());
-        builder.put(EntityModelLayers.DOUBLE_CHEST_LEFT, ChestBlockEntityRenderer.getLeftDoubleTexturedModelData());
-        builder.put(EntityModelLayers.DOUBLE_CHEST_RIGHT, ChestBlockEntityRenderer.getRightDoubleTexturedModelData());
         builder.put(EntityModelLayers.CHEST_MINECART, texturedModelData5);
         builder.put(EntityModelLayers.CHICKEN, ChickenEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.COD, CodEntityModel.getTexturedModelData());
@@ -167,8 +167,12 @@ public class EntityModels {
         builder.put(EntityModelLayers.CREEPER, CreeperEntityModel.getTexturedModelData(Dilation.NONE));
         builder.put(EntityModelLayers.CREEPER_ARMOR, CreeperEntityModel.getTexturedModelData(new Dilation(2.0f)));
         builder.put(EntityModelLayers.CREEPER_HEAD, texturedModelData6);
+        builder.put(EntityModelLayers.DECORATED_POT_BASE, DecoratedPotBlockEntityRenderer.getTopBottomNeckTexturedModelData());
+        builder.put(EntityModelLayers.DECORATED_POT_SIDES, DecoratedPotBlockEntityRenderer.getSidesTexturedModelData());
         builder.put(EntityModelLayers.DOLPHIN, DolphinEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.DONKEY, DonkeyEntityModel.getTexturedModelData());
+        builder.put(EntityModelLayers.DOUBLE_CHEST_LEFT, ChestBlockEntityRenderer.getLeftDoubleTexturedModelData());
+        builder.put(EntityModelLayers.DOUBLE_CHEST_RIGHT, ChestBlockEntityRenderer.getRightDoubleTexturedModelData());
         builder.put(EntityModelLayers.DRAGON_SKULL, DragonHeadEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.DROWNED, DrownedEntityModel.getTexturedModelData(Dilation.NONE));
         builder.put(EntityModelLayers.DROWNED_INNER_ARMOR, texturedModelData4);
@@ -251,6 +255,7 @@ public class EntityModels {
         builder.put(EntityModelLayers.SKELETON_SKULL, texturedModelData6);
         builder.put(EntityModelLayers.SLIME, SlimeEntityModel.getInnerTexturedModelData());
         builder.put(EntityModelLayers.SLIME_OUTER, SlimeEntityModel.getOuterTexturedModelData());
+        builder.put(EntityModelLayers.SNIFFER, SnifferModel.getTexturedModelData());
         builder.put(EntityModelLayers.SNOW_GOLEM, SnowGolemEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.SPAWNER_MINECART, texturedModelData5);
         builder.put(EntityModelLayers.SPIDER, texturedModelData19);
@@ -310,9 +315,9 @@ public class EntityModels {
             builder.put(EntityModelLayers.createChestBoat(type), texturedModelData21);
         }
         TexturedModelData texturedModelData24 = SignBlockEntityRenderer.getTexturedModelData();
-        SignType.stream().forEach(signType -> builder.put(EntityModelLayers.createSign(signType), texturedModelData24));
+        WoodType.stream().forEach(signType -> builder.put(EntityModelLayers.createSign(signType), texturedModelData24));
         TexturedModelData texturedModelData25 = HangingSignBlockEntityRenderer.getTexturedModelData();
-        SignType.stream().forEach(signType -> builder.put(EntityModelLayers.createHangingSign(signType), texturedModelData25));
+        WoodType.stream().forEach(signType -> builder.put(EntityModelLayers.createHangingSign(signType), texturedModelData25));
         ImmutableMap<EntityModelLayer, TexturedModelData> immutableMap = builder.build();
         List list = EntityModelLayers.getLayers().filter(layer -> !immutableMap.containsKey(layer)).collect(Collectors.toList());
         if (!list.isEmpty()) {

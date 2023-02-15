@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -18,6 +19,7 @@ import net.minecraft.block.CandleBlock;
 import net.minecraft.block.CaveVines;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FlowerPotBlock;
+import net.minecraft.block.FlowerbedBlock;
 import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.SlabBlock;
@@ -247,7 +249,11 @@ implements LootTableGenerator {
     }
 
     protected LootTable.Builder candleDrops(Block candle) {
-        return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder)this.applyExplosionDecay(candle, (LootFunctionConsumingBuilder)ItemEntry.builder(candle).apply(List.of(Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(4)), integer -> SetCountLootFunction.builder(ConstantLootNumberProvider.create(integer.intValue())).conditionally(BlockStatePropertyLootCondition.builder(candle).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, integer.intValue())))))));
+        return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder)this.applyExplosionDecay(candle, (LootFunctionConsumingBuilder)ItemEntry.builder(candle).apply(List.of(Integer.valueOf(2), Integer.valueOf(3), Integer.valueOf(4)), candles -> SetCountLootFunction.builder(ConstantLootNumberProvider.create(candles.intValue())).conditionally(BlockStatePropertyLootCondition.builder(candle).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, candles.intValue())))))));
+    }
+
+    protected LootTable.Builder flowerbedDrops(Block flowerbed) {
+        return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder)this.applyExplosionDecay(flowerbed, (LootFunctionConsumingBuilder)ItemEntry.builder(flowerbed).apply(IntStream.rangeClosed(1, 4).boxed().toList(), flowerAmount -> SetCountLootFunction.builder(ConstantLootNumberProvider.create(flowerAmount.intValue())).conditionally(BlockStatePropertyLootCondition.builder(flowerbed).properties(StatePredicate.Builder.create().exactMatch(FlowerbedBlock.FLOWER_AMOUNT, flowerAmount.intValue())))))));
     }
 
     protected static LootTable.Builder candleCakeDrops(Block candleCake) {

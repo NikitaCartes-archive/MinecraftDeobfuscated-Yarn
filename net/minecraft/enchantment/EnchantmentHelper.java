@@ -216,8 +216,8 @@ public class EnchantmentHelper {
         return i;
     }
 
-    public static float getSwiftSneakSpeedBoost(LivingEntity livingEntity) {
-        return (float)EnchantmentHelper.getEquipmentLevel(Enchantments.SWIFT_SNEAK, livingEntity) * 0.15f;
+    public static float getSwiftSneakSpeedBoost(LivingEntity entity) {
+        return (float)EnchantmentHelper.getEquipmentLevel(Enchantments.SWIFT_SNEAK, entity) * 0.15f;
     }
 
     public static int getKnockback(LivingEntity entity) {
@@ -270,6 +270,10 @@ public class EnchantmentHelper {
 
     public static boolean hasVanishingCurse(ItemStack stack) {
         return EnchantmentHelper.getLevel(Enchantments.VANISHING_CURSE, stack) > 0;
+    }
+
+    public static boolean hasSilkTouch(ItemStack stack) {
+        return EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) > 0;
     }
 
     public static int getLoyalty(ItemStack stack) {

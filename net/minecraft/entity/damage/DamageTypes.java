@@ -35,7 +35,7 @@ public interface DamageTypes {
     public static final RegistryKey<DamageType> FREEZE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("freeze"));
     public static final RegistryKey<DamageType> STALAGMITE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("stalagmite"));
     public static final RegistryKey<DamageType> FALLING_BLOCK = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("falling_block"));
-    public static final RegistryKey<DamageType> FALLING_ANIVL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("falling_anvil"));
+    public static final RegistryKey<DamageType> FALLING_ANVIL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("falling_anvil"));
     public static final RegistryKey<DamageType> FALLING_STALACTITE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("falling_stalactite"));
     public static final RegistryKey<DamageType> STING = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("sting"));
     public static final RegistryKey<DamageType> MOB_ATTACK = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("mob_attack"));
@@ -79,7 +79,7 @@ public interface DamageTypes {
         damageTypeRegisterable.register(FREEZE, new DamageType("freeze", 0.0f, DamageEffects.FREEZING));
         damageTypeRegisterable.register(STALAGMITE, new DamageType("stalagmite", 0.0f));
         damageTypeRegisterable.register(FALLING_BLOCK, new DamageType("fallingBlock", 0.1f));
-        damageTypeRegisterable.register(FALLING_ANIVL, new DamageType("anvil", 0.1f));
+        damageTypeRegisterable.register(FALLING_ANVIL, new DamageType("anvil", 0.1f));
         damageTypeRegisterable.register(FALLING_STALACTITE, new DamageType("fallingStalactite", 0.1f));
         damageTypeRegisterable.register(STING, new DamageType("sting", 0.1f));
         damageTypeRegisterable.register(MOB_ATTACK, new DamageType("mob", 0.1f));

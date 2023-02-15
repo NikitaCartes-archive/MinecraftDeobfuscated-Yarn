@@ -107,6 +107,12 @@ public class ModelPredicateProviderRegistry {
             }
             return (float)(stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / 20.0f;
         });
+        ModelPredicateProviderRegistry.register(Items.BRUSH, new Identifier("brushing"), (stack, world, entity, seed) -> {
+            if (entity == null || entity.getActiveItem() != stack) {
+                return 0.0f;
+            }
+            return (float)(entity.getItemUseTimeLeft() % 10) / 10.0f;
+        });
         ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pulling"), (stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0f : 0.0f);
         ModelPredicateProviderRegistry.register(Items.BUNDLE, new Identifier("filled"), (stack, world, entity, seed) -> BundleItem.getAmountFilled(stack));
         ModelPredicateProviderRegistry.register(Items.CLOCK, new Identifier("time"), new ClampedModelPredicateProvider(){

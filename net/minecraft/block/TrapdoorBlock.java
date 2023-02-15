@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSetType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.Material;
@@ -18,7 +19,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -49,14 +49,12 @@ implements Waterloggable {
     protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
     protected static final VoxelShape OPEN_BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 3.0, 16.0);
     protected static final VoxelShape OPEN_TOP_SHAPE = Block.createCuboidShape(0.0, 13.0, 0.0, 16.0, 16.0, 16.0);
-    private final SoundEvent closeSound;
-    private final SoundEvent openSound;
+    private final BlockSetType blockSetType;
 
-    protected TrapdoorBlock(AbstractBlock.Settings settings, SoundEvent closeSound, SoundEvent openSound) {
-        super(settings);
+    protected TrapdoorBlock(AbstractBlock.Settings settings, BlockSetType blockSetType) {
+        super(settings.sounds(blockSetType.soundType()));
+        this.blockSetType = blockSetType;
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(OPEN, false)).with(HALF, BlockHalf.BOTTOM)).with(POWERED, false)).with(WATERLOGGED, false));
-        this.closeSound = closeSound;
-        this.openSound = openSound;
     }
 
     @Override
@@ -110,7 +108,7 @@ implements Waterloggable {
     }
 
     protected void playToggleSound(@Nullable PlayerEntity player, World world, BlockPos pos, boolean open) {
-        world.playSound(player, pos, open ? this.openSound : this.closeSound, SoundCategory.BLOCKS, 1.0f, world.getRandom().nextFloat() * 0.1f + 0.9f);
+        world.playSound(player, pos, open ? this.blockSetType.trapdoorOpen() : this.blockSetType.trapdoorClose(), SoundCategory.BLOCKS, 1.0f, world.getRandom().nextFloat() * 0.1f + 0.9f);
         world.emitGameEvent((Entity)player, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
     }
 
@@ -137,7 +135,7 @@ implements Waterloggable {
         BlockState blockState = this.getDefaultState();
         FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
         Direction direction = ctx.getSide();
-        blockState = ctx.canReplaceExisting() || !direction.getAxis().isHorizontal() ? (BlockState)((BlockState)blockState.with(FACING, ctx.getPlayerFacing().getOpposite())).with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP) : (BlockState)((BlockState)blockState.with(FACING, direction)).with(HALF, ctx.getHitPos().y - (double)ctx.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
+        blockState = ctx.canReplaceExisting() || !direction.getAxis().isHorizontal() ? (BlockState)((BlockState)blockState.with(FACING, ctx.getHorizontalPlayerFacing().getOpposite())).with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP) : (BlockState)((BlockState)blockState.with(FACING, direction)).with(HALF, ctx.getHitPos().y - (double)ctx.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
         if (ctx.getWorld().isReceivingRedstonePower(ctx.getBlockPos())) {
             blockState = (BlockState)((BlockState)blockState.with(OPEN, true)).with(POWERED, true);
         }

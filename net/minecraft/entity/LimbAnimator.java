@@ -17,7 +17,7 @@ public class LimbAnimator {
     public void updateLimbs(float speed, float multiplier) {
         this.prevSpeed = this.speed;
         this.speed += (speed - this.speed) * multiplier;
-        this.pos = this.isLimbMoving() ? (this.pos += this.speed) : 0.0f;
+        this.pos += this.speed;
     }
 
     public float getSpeed() {

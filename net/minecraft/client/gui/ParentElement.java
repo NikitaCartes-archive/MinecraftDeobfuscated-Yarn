@@ -46,13 +46,8 @@ extends Element {
 
     @Override
     default public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Element element = null;
-        List<? extends Element> list = List.copyOf(this.children());
-        for (Element element2 : list) {
-            if (!element2.mouseClicked(mouseX, mouseY, button)) continue;
-            element = element2;
-        }
-        if (element != null) {
+        for (Element element : this.children()) {
+            if (!element.mouseClicked(mouseX, mouseY, button)) continue;
             this.setFocused(element);
             if (button == 0) {
                 this.setDragging(true);

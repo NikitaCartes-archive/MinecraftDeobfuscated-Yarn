@@ -42,11 +42,11 @@ public record GenerationShapeConfig(int minimumY, int height, int horizontalSize
         return generationShapeConfig;
     }
 
-    public int verticalBlockSize() {
+    public int verticalCellBlockCount() {
         return BiomeCoords.toBlock(this.verticalSize());
     }
 
-    public int horizontalBlockSize() {
+    public int horizontalCellBlockCount() {
         return BiomeCoords.toBlock(this.horizontalSize());
     }
 

@@ -64,7 +64,7 @@ Waterloggable {
     public BlockState getPlacementState(ItemPlacementContext ctx) {
         BlockState blockState = super.getPlacementState(ctx);
         if (blockState != null) {
-            return SmallDripleafBlock.withWaterloggedState(ctx.getWorld(), ctx.getBlockPos(), (BlockState)blockState.with(FACING, ctx.getPlayerFacing().getOpposite()));
+            return SmallDripleafBlock.withWaterloggedState(ctx.getWorld(), ctx.getBlockPos(), (BlockState)blockState.with(FACING, ctx.getHorizontalPlayerFacing().getOpposite()));
         }
         return null;
     }

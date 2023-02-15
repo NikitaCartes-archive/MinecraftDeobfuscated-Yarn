@@ -135,6 +135,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -993,7 +994,6 @@ AutoCloseable {
      * WARNING - Removed try catching itself - possible behaviour change.
      */
     public void render(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f positionMatrix) {
-        int l;
         BlockPos blockPos;
         Frustum frustum;
         boolean bl2;
@@ -1079,11 +1079,7 @@ AutoCloseable {
                 OutlineVertexConsumerProvider outlineVertexConsumerProvider = this.bufferBuilders.getOutlineVertexConsumers();
                 vertexConsumerProvider = outlineVertexConsumerProvider;
                 int i = entity.getTeamColorValue();
-                int j = 255;
-                int k = i >> 16 & 0xFF;
-                l = i >> 8 & 0xFF;
-                int m = i & 0xFF;
-                outlineVertexConsumerProvider.setColor(k, l, m, 255);
+                outlineVertexConsumerProvider.setColor(ColorHelper.Argb.getRed(i), ColorHelper.Argb.getGreen(i), ColorHelper.Argb.getBlue(i), 255);
             } else {
                 vertexConsumerProvider = immediate;
             }
@@ -1100,14 +1096,15 @@ AutoCloseable {
             List<BlockEntity> list = chunkInfo.chunk.getData().getBlockEntities();
             if (list.isEmpty()) continue;
             for (BlockEntity blockEntity : list) {
+                int j;
                 BlockPos blockPos2 = blockEntity.getPos();
                 VertexConsumerProvider vertexConsumerProvider2 = immediate;
                 matrices.push();
                 matrices.translate((double)blockPos2.getX() - d, (double)blockPos2.getY() - e, (double)blockPos2.getZ() - f);
                 SortedSet sortedSet = (SortedSet)this.blockBreakingProgressions.get(blockPos2.asLong());
-                if (sortedSet != null && !sortedSet.isEmpty() && (l = ((BlockBreakingInfo)sortedSet.last()).getStage()) >= 0) {
+                if (sortedSet != null && !sortedSet.isEmpty() && (j = ((BlockBreakingInfo)sortedSet.last()).getStage()) >= 0) {
                     MatrixStack.Entry entry = matrices.peek();
-                    OverlayVertexConsumer vertexConsumer = new OverlayVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(l)), entry.getPositionMatrix(), entry.getNormalMatrix(), 1.0f);
+                    OverlayVertexConsumer vertexConsumer = new OverlayVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(j)), entry.getPositionMatrix(), entry.getNormalMatrix(), 1.0f);
                     vertexConsumerProvider2 = renderLayer -> {
                         VertexConsumer vertexConsumer2 = immediate.getBuffer(renderLayer);
                         if (renderLayer.hasCrumbling()) {
@@ -1149,16 +1146,16 @@ AutoCloseable {
         profiler.swap("destroyProgress");
         for (Long2ObjectMap.Entry entry : this.blockBreakingProgressions.long2ObjectEntrySet()) {
             SortedSet sortedSet2;
-            double o;
-            double n;
+            double l;
+            double k;
             blockPos = BlockPos.fromLong(entry.getLongKey());
             double h = (double)blockPos.getX() - d;
-            if (h * h + (n = (double)blockPos.getY() - e) * n + (o = (double)blockPos.getZ() - f) * o > 1024.0 || (sortedSet2 = (SortedSet)entry.getValue()) == null || sortedSet2.isEmpty()) continue;
-            int p = ((BlockBreakingInfo)sortedSet2.last()).getStage();
+            if (h * h + (k = (double)blockPos.getY() - e) * k + (l = (double)blockPos.getZ() - f) * l > 1024.0 || (sortedSet2 = (SortedSet)entry.getValue()) == null || sortedSet2.isEmpty()) continue;
+            int m = ((BlockBreakingInfo)sortedSet2.last()).getStage();
             matrices.push();
             matrices.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
             MatrixStack.Entry entry3 = matrices.peek();
-            OverlayVertexConsumer vertexConsumer2 = new OverlayVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(p)), entry3.getPositionMatrix(), entry3.getNormalMatrix(), 1.0f);
+            OverlayVertexConsumer vertexConsumer2 = new OverlayVertexConsumer(this.bufferBuilders.getEffectVertexConsumers().getBuffer(ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.get(m)), entry3.getPositionMatrix(), entry3.getNormalMatrix(), 1.0f);
             this.client.getBlockRenderManager().renderDamage(this.world.getBlockState(blockPos), blockPos, this.world, matrices, vertexConsumer2);
             matrices.pop();
         }
@@ -2385,6 +2382,11 @@ AutoCloseable {
                 this.world.addBlockBreakParticles(pos, blockState);
                 break;
             }
+            case 3008: {
+                this.world.playSoundAtBlockCenter(pos, SoundEvents.ITEM_BRUSH_BRUSH_SAND_COMPLETED, SoundCategory.PLAYERS, 1.0f, 1.0f, false);
+                this.world.addBlockBreakParticles(pos, Block.getStateFromRawId(data));
+                break;
+            }
             case 2004: {
                 for (int i = 0; i < 20; ++i) {
                     double s = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 2.0;
@@ -2409,7 +2411,7 @@ AutoCloseable {
                     ParticleUtil.spawnParticle(Direction.Axis.VALUES[data], this.world, pos, 0.125, ParticleTypes.ELECTRIC_SPARK, UniformIntProvider.create(10, 19));
                     break;
                 }
-                ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.ELECTRIC_SPARK, UniformIntProvider.create(3, 5));
+                ParticleUtil.spawnParticle((World)this.world, pos, ParticleTypes.ELECTRIC_SPARK, UniformIntProvider.create(3, 5));
                 break;
             }
             case 3006: {
@@ -2460,16 +2462,16 @@ AutoCloseable {
                 break;
             }
             case 3003: {
-                ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.WAX_ON, UniformIntProvider.create(3, 5));
+                ParticleUtil.spawnParticle((World)this.world, pos, ParticleTypes.WAX_ON, UniformIntProvider.create(3, 5));
                 this.world.playSoundAtBlockCenter(pos, SoundEvents.ITEM_HONEYCOMB_WAX_ON, SoundCategory.BLOCKS, 1.0f, 1.0f, false);
                 break;
             }
             case 3004: {
-                ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.WAX_OFF, UniformIntProvider.create(3, 5));
+                ParticleUtil.spawnParticle((World)this.world, pos, ParticleTypes.WAX_OFF, UniformIntProvider.create(3, 5));
                 break;
             }
             case 3005: {
-                ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.SCRAPE, UniformIntProvider.create(3, 5));
+                ParticleUtil.spawnParticle((World)this.world, pos, ParticleTypes.SCRAPE, UniformIntProvider.create(3, 5));
                 break;
             }
             case 2008: {
@@ -2562,10 +2564,13 @@ AutoCloseable {
                 break;
             }
             case 1010: {
-                if (Item.byRawId(data) instanceof MusicDiscItem) {
-                    this.playSong(((MusicDiscItem)Item.byRawId(data)).getSound(), pos);
-                    break;
-                }
+                Item item = Item.byRawId(data);
+                if (!(item instanceof MusicDiscItem)) break;
+                MusicDiscItem musicDiscItem = (MusicDiscItem)item;
+                this.playSong(musicDiscItem.getSound(), pos);
+                break;
+            }
+            case 1011: {
                 this.playSong(null, pos);
                 break;
             }

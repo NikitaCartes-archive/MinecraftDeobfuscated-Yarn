@@ -11,6 +11,7 @@ import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.random.Random;
 
 @Environment(value=EnvType.CLIENT)
@@ -41,6 +42,11 @@ extends AscendingParticle {
             double k = (double)random.nextFloat() * -0.5 * (double)random.nextFloat() * 0.1 * 5.0;
             double l = (double)random.nextFloat() * -1.9 * (double)random.nextFloat() * 0.1;
             return new WhiteAshParticle(clientWorld, d, e, f, j, k, l, 1.0f, this.spriteProvider);
+        }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
         }
     }
 }

@@ -37,14 +37,17 @@ extends EntryListWidget<E> {
         }
         if (navigation instanceof GuiNavigation.Arrow) {
             GuiNavigationPath guiNavigationPath;
-            int i;
             GuiNavigation.Arrow arrow = (GuiNavigation.Arrow)navigation;
             Entry entry = (Entry)this.getFocused();
             if (arrow.direction().getAxis() == NavigationAxis.HORIZONTAL && entry != null) {
                 return GuiNavigationPath.of(this, entry.getNavigationPath(navigation));
             }
+            int i = -1;
             NavigationDirection navigationDirection = arrow.direction();
-            if (entry == null) {
+            if (entry != null) {
+                i = entry.children().indexOf(entry.getFocused());
+            }
+            if (i == -1) {
                 switch (navigationDirection) {
                     case LEFT: {
                         i = Integer.MAX_VALUE;
@@ -58,11 +61,8 @@ extends EntryListWidget<E> {
                     }
                     default: {
                         i = 0;
-                        break;
                     }
                 }
-            } else {
-                i = entry.children().indexOf(entry.getFocused());
             }
             Entry entry2 = entry;
             do {

@@ -193,7 +193,7 @@ public class DebugRenderer {
         matrices.multiplyPositionMatrix(new Matrix4f().rotation(camera.getRotation()));
         matrices.scale(-size, -size, size);
         float g = center ? (float)(-textRenderer.getWidth(string)) / 2.0f : 0.0f;
-        textRenderer.draw(string, g -= offset / size, 0.0f, color, false, matrices.peek().getPositionMatrix(), vertexConsumers, visibleThroughObjects, 0, 0xF000F0);
+        textRenderer.draw(string, g -= offset / size, 0.0f, color, false, matrices.peek().getPositionMatrix(), vertexConsumers, visibleThroughObjects ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
         matrices.pop();
     }
 

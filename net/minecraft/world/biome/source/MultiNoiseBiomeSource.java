@@ -104,16 +104,31 @@ extends BiomeSource {
 
     public static class Preset {
         static final Map<Identifier, Preset> BY_IDENTIFIER = Maps.newHashMap();
-        public static final Preset NETHER = new Preset(new Identifier("nether"), biomeLookup -> new MultiNoiseUtil.Entries(ImmutableList.of(Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), biomeLookup.getOrThrow(BiomeKeys.NETHER_WASTES)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), biomeLookup.getOrThrow(BiomeKeys.SOUL_SAND_VALLEY)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), biomeLookup.getOrThrow(BiomeKeys.CRIMSON_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.375f), biomeLookup.getOrThrow(BiomeKeys.WARPED_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.175f), biomeLookup.getOrThrow(BiomeKeys.BASALT_DELTAS)))));
-        public static final Preset OVERWORLD = new Preset(new Identifier("overworld"), biomeLookup -> {
-            ImmutableList.Builder builder = ImmutableList.builder();
-            new VanillaBiomeParameters().writeOverworldBiomeParameters(pair -> builder.add(pair.mapSecond(biomeLookup::getOrThrow)));
-            return new MultiNoiseUtil.Entries(builder.build());
+        public static final Preset NETHER = new Preset(new Identifier("nether"), new BiomeSourceFunction(){
+
+            @Override
+            public <T> MultiNoiseUtil.Entries<T> apply(Function<RegistryKey<Biome>, T> function) {
+                return new MultiNoiseUtil.Entries<T>(List.of(Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), function.apply(BiomeKeys.NETHER_WASTES)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, -0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), function.apply(BiomeKeys.SOUL_SAND_VALLEY)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f), function.apply(BiomeKeys.CRIMSON_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(0.0f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.375f), function.apply(BiomeKeys.WARPED_FOREST)), Pair.of(MultiNoiseUtil.createNoiseHypercube(-0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.175f), function.apply(BiomeKeys.BASALT_DELTAS))));
+            }
+        });
+        public static final Preset OVERWORLD = new Preset(new Identifier("overworld"), new BiomeSourceFunction(){
+
+            @Override
+            public <T> MultiNoiseUtil.Entries<T> apply(Function<RegistryKey<Biome>, T> function) {
+                return Preset.getOverworldEntries(function, VanillaBiomeParameters.Type.NONE);
+            }
+        });
+        public static final Preset OVERWORLD_UPDATE_1_20 = new Preset(new Identifier("overworld_update_1_20"), new BiomeSourceFunction(){
+
+            @Override
+            public <T> MultiNoiseUtil.Entries<T> apply(Function<RegistryKey<Biome>, T> function) {
+                return Preset.getOverworldEntries(function, VanillaBiomeParameters.Type.UPDATE_1_20);
+            }
         });
         final Identifier id;
-        private final Function<RegistryEntryLookup<Biome>, MultiNoiseUtil.Entries<RegistryEntry<Biome>>> biomeSourceFunction;
+        private final BiomeSourceFunction biomeSourceFunction;
 
-        public Preset(Identifier id, Function<RegistryEntryLookup<Biome>, MultiNoiseUtil.Entries<RegistryEntry<Biome>>> biomeSourceFunction) {
+        public Preset(Identifier id, BiomeSourceFunction biomeSourceFunction) {
             this.id = id;
             this.biomeSourceFunction = biomeSourceFunction;
             BY_IDENTIFIER.put(id, this);
@@ -124,8 +139,14 @@ extends BiomeSource {
             return BY_IDENTIFIER.entrySet().stream().map(entry -> Pair.of((Identifier)entry.getKey(), (Preset)entry.getValue()));
         }
 
+        static <T> MultiNoiseUtil.Entries<T> getOverworldEntries(Function<RegistryKey<Biome>, T> biomeEntryGetter, VanillaBiomeParameters.Type parametersType) {
+            ImmutableList.Builder builder = ImmutableList.builder();
+            new VanillaBiomeParameters(parametersType).writeOverworldBiomeParameters(pair -> builder.add(pair.mapSecond(biomeEntryGetter)));
+            return new MultiNoiseUtil.Entries(builder.build());
+        }
+
         MultiNoiseBiomeSource getBiomeSource(Instance instance, boolean useInstance) {
-            MultiNoiseUtil.Entries<RegistryEntry<Biome>> entries = this.biomeSourceFunction.apply(instance.biomeRegistry());
+            MultiNoiseUtil.Entries<RegistryEntry<Biome>> entries = this.biomeSourceFunction.apply(biomeKey -> instance.biomeRegistry().getOrThrow((RegistryKey<Biome>)biomeKey));
             return new MultiNoiseBiomeSource(entries, useInstance ? Optional.of(instance) : Optional.empty());
         }
 
@@ -137,8 +158,13 @@ extends BiomeSource {
             return this.getBiomeSource(biomeLookup, true);
         }
 
-        public Stream<RegistryKey<Biome>> stream(RegistryEntryLookup<Biome> biomeLookup) {
-            return this.getBiomeSource(biomeLookup).getBiomes().stream().flatMap(entry -> entry.getKey().stream());
+        public Stream<RegistryKey<Biome>> stream() {
+            return this.biomeSourceFunction.apply(biomeKey -> biomeKey).getEntries().stream().map(Pair::getSecond).distinct();
+        }
+
+        @FunctionalInterface
+        public static interface BiomeSourceFunction {
+            public <T> MultiNoiseUtil.Entries<T> apply(Function<RegistryKey<Biome>, T> var1);
         }
     }
 }

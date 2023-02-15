@@ -23,6 +23,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.math.intprovider.WeightedListIntProvider;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 import net.minecraft.world.gen.feature.Feature;
@@ -34,6 +35,7 @@ import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
 import net.minecraft.world.gen.foliage.AcaciaFoliagePlacer;
 import net.minecraft.world.gen.foliage.BlobFoliagePlacer;
 import net.minecraft.world.gen.foliage.BushFoliagePlacer;
+import net.minecraft.world.gen.foliage.CherryFoliagePlacer;
 import net.minecraft.world.gen.foliage.DarkOakFoliagePlacer;
 import net.minecraft.world.gen.foliage.JungleFoliagePlacer;
 import net.minecraft.world.gen.foliage.LargeOakFoliagePlacer;
@@ -54,6 +56,7 @@ import net.minecraft.world.gen.treedecorator.CocoaBeansTreeDecorator;
 import net.minecraft.world.gen.treedecorator.LeavesVineTreeDecorator;
 import net.minecraft.world.gen.treedecorator.TrunkVineTreeDecorator;
 import net.minecraft.world.gen.trunk.BendingTrunkPlacer;
+import net.minecraft.world.gen.trunk.CherryTrunkPlacer;
 import net.minecraft.world.gen.trunk.DarkOakTrunkPlacer;
 import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
 import net.minecraft.world.gen.trunk.GiantTrunkPlacer;
@@ -88,6 +91,7 @@ public class TreeConfiguredFeatures {
     public static final RegistryKey<ConfiguredFeature<?, ?>> AZALEA_TREE = ConfiguredFeatures.of("azalea_tree");
     public static final RegistryKey<ConfiguredFeature<?, ?>> MANGROVE = ConfiguredFeatures.of("mangrove");
     public static final RegistryKey<ConfiguredFeature<?, ?>> TALL_MANGROVE = ConfiguredFeatures.of("tall_mangrove");
+    public static final RegistryKey<ConfiguredFeature<?, ?>> CHERRY = ConfiguredFeatures.of("cherry");
     public static final RegistryKey<ConfiguredFeature<?, ?>> OAK_BEES_0002 = ConfiguredFeatures.of("oak_bees_0002");
     public static final RegistryKey<ConfiguredFeature<?, ?>> OAK_BEES_002 = ConfiguredFeatures.of("oak_bees_002");
     public static final RegistryKey<ConfiguredFeature<?, ?>> OAK_BEES_005 = ConfiguredFeatures.of("oak_bees_005");
@@ -98,6 +102,7 @@ public class TreeConfiguredFeatures {
     public static final RegistryKey<ConfiguredFeature<?, ?>> FANCY_OAK_BEES_002 = ConfiguredFeatures.of("fancy_oak_bees_002");
     public static final RegistryKey<ConfiguredFeature<?, ?>> FANCY_OAK_BEES_005 = ConfiguredFeatures.of("fancy_oak_bees_005");
     public static final RegistryKey<ConfiguredFeature<?, ?>> FANCY_OAK_BEES = ConfiguredFeatures.of("fancy_oak_bees");
+    public static final RegistryKey<ConfiguredFeature<?, ?>> CHERRY_BEES_005 = ConfiguredFeatures.of("cherry_bees_005");
 
     private static TreeFeatureConfig.Builder builder(Block log, Block leaves, int baseHeight, int firstRandomHeight, int secondRandomHeight, int radius) {
         return new TreeFeatureConfig.Builder(BlockStateProvider.of(log), new StraightTrunkPlacer(baseHeight, firstRandomHeight, secondRandomHeight), BlockStateProvider.of(leaves), new BlobFoliagePlacer(ConstantIntProvider.create(radius), ConstantIntProvider.create(0), 3), new TwoLayersFeatureSize(1, 0, 1));
@@ -123,6 +128,10 @@ public class TreeConfiguredFeatures {
         return new TreeFeatureConfig.Builder(BlockStateProvider.of(Blocks.OAK_LOG), new LargeOakTrunkPlacer(3, 11, 0), BlockStateProvider.of(Blocks.OAK_LEAVES), new LargeOakFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(4), 4), new TwoLayersFeatureSize(0, 0, 0, OptionalInt.of(4))).ignoreVines();
     }
 
+    private static TreeFeatureConfig.Builder cherry() {
+        return new TreeFeatureConfig.Builder(BlockStateProvider.of(Blocks.CHERRY_LOG), new CherryTrunkPlacer(7, 1, 0, new WeightedListIntProvider(DataPool.builder().add(ConstantIntProvider.create(1), 1).add(ConstantIntProvider.create(2), 1).add(ConstantIntProvider.create(3), 1).build()), UniformIntProvider.create(2, 4), UniformIntProvider.create(-4, -3), UniformIntProvider.create(-1, 0)), BlockStateProvider.of(Blocks.CHERRY_LEAVES), new CherryFoliagePlacer(ConstantIntProvider.create(4), ConstantIntProvider.create(0), ConstantIntProvider.create(5), 0.25f, 0.5f, 0.16666667f, 0.33333334f), new TwoLayersFeatureSize(1, 0, 2)).ignoreVines();
+    }
+
     public static void bootstrap(Registerable<ConfiguredFeature<?, ?>> featureRegisterable) {
         RegistryEntryLookup<Block> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.BLOCK);
         ConfiguredFeatures.register(featureRegisterable, CRIMSON_FUNGUS, Feature.HUGE_FUNGUS, new HugeFungusFeatureConfig(Blocks.CRIMSON_NYLIUM.getDefaultState(), Blocks.CRIMSON_STEM.getDefaultState(), Blocks.NETHER_WART_BLOCK.getDefaultState(), Blocks.SHROOMLIGHT.getDefaultState(), false));
@@ -140,6 +149,8 @@ public class TreeConfiguredFeatures {
         ConfiguredFeatures.register(featureRegisterable, DARK_OAK, Feature.TREE, new TreeFeatureConfig.Builder(BlockStateProvider.of(Blocks.DARK_OAK_LOG), new DarkOakTrunkPlacer(6, 2, 1), BlockStateProvider.of(Blocks.DARK_OAK_LEAVES), new DarkOakFoliagePlacer(ConstantIntProvider.create(0), ConstantIntProvider.create(0)), new ThreeLayersFeatureSize(1, 1, 0, 1, 2, OptionalInt.empty())).ignoreVines().build());
         ConfiguredFeatures.register(featureRegisterable, BIRCH, Feature.TREE, TreeConfiguredFeatures.birch().build());
         ConfiguredFeatures.register(featureRegisterable, ACACIA, Feature.TREE, new TreeFeatureConfig.Builder(BlockStateProvider.of(Blocks.ACACIA_LOG), new ForkingTrunkPlacer(5, 2, 2), BlockStateProvider.of(Blocks.ACACIA_LEAVES), new AcaciaFoliagePlacer(ConstantIntProvider.create(2), ConstantIntProvider.create(0)), new TwoLayersFeatureSize(1, 0, 2)).ignoreVines().build());
+        ConfiguredFeatures.register(featureRegisterable, CHERRY, Feature.TREE, TreeConfiguredFeatures.cherry().build());
+        ConfiguredFeatures.register(featureRegisterable, CHERRY_BEES_005, Feature.TREE, TreeConfiguredFeatures.cherry().decorators(List.of(beehiveTreeDecorator4)).build());
         ConfiguredFeatures.register(featureRegisterable, SPRUCE, Feature.TREE, new TreeFeatureConfig.Builder(BlockStateProvider.of(Blocks.SPRUCE_LOG), new StraightTrunkPlacer(5, 2, 1), BlockStateProvider.of(Blocks.SPRUCE_LEAVES), new SpruceFoliagePlacer(UniformIntProvider.create(2, 3), UniformIntProvider.create(0, 2), UniformIntProvider.create(1, 2)), new TwoLayersFeatureSize(2, 0, 2)).ignoreVines().build());
         ConfiguredFeatures.register(featureRegisterable, PINE, Feature.TREE, new TreeFeatureConfig.Builder(BlockStateProvider.of(Blocks.SPRUCE_LOG), new StraightTrunkPlacer(6, 4, 0), BlockStateProvider.of(Blocks.SPRUCE_LEAVES), new PineFoliagePlacer(ConstantIntProvider.create(1), ConstantIntProvider.create(1), UniformIntProvider.create(3, 4)), new TwoLayersFeatureSize(2, 0, 2)).ignoreVines().build());
         ConfiguredFeatures.register(featureRegisterable, JUNGLE_TREE, Feature.TREE, TreeConfiguredFeatures.jungle().decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2f), TrunkVineTreeDecorator.INSTANCE, new LeavesVineTreeDecorator(0.25f))).ignoreVines().build());

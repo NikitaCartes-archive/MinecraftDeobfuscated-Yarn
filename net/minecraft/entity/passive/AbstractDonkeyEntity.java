@@ -36,7 +36,7 @@ extends AbstractHorseEntity {
 
     @Override
     protected void initAttributes(Random random) {
-        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(this.getChildHealthBonus(random));
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(AbstractDonkeyEntity.getChildHealthBonus(random::nextInt));
     }
 
     @Override

@@ -40,11 +40,18 @@ public class OverworldBiomeCreator {
     }
 
     private static Biome createBiome(boolean precipitation, float temperature, float downfall, SpawnSettings.Builder spawnSettings, GenerationSettings.LookupBackedBuilder generationSettings, @Nullable MusicSound music) {
-        return OverworldBiomeCreator.createBiome(precipitation, temperature, downfall, 4159204, 329011, spawnSettings, generationSettings, music);
+        return OverworldBiomeCreator.createBiome(precipitation, temperature, downfall, 4159204, 329011, null, null, spawnSettings, generationSettings, music);
     }
 
-    private static Biome createBiome(boolean precipitation, float temperature, float downfall, int waterColor, int waterFogColor, SpawnSettings.Builder spawnSettings, GenerationSettings.LookupBackedBuilder generationSettings, @Nullable MusicSound music) {
-        return new Biome.Builder().precipitation(precipitation).temperature(temperature).downfall(downfall).effects(new BiomeEffects.Builder().waterColor(waterColor).waterFogColor(waterFogColor).fogColor(12638463).skyColor(OverworldBiomeCreator.getSkyColor(temperature)).moodSound(BiomeMoodSound.CAVE).music(music).build()).spawnSettings(spawnSettings.build()).generationSettings(generationSettings.build()).build();
+    private static Biome createBiome(boolean precipitation, float temperature, float downfall, int waterColor, int waterFogColor, @Nullable Integer grassColor, @Nullable Integer foliageColor, SpawnSettings.Builder spawnSettings, GenerationSettings.LookupBackedBuilder generationSettings, @Nullable MusicSound music) {
+        BiomeEffects.Builder builder = new BiomeEffects.Builder().waterColor(waterColor).waterFogColor(waterFogColor).fogColor(12638463).skyColor(OverworldBiomeCreator.getSkyColor(temperature)).moodSound(BiomeMoodSound.CAVE).music(music);
+        if (grassColor != null) {
+            builder.grassColor(grassColor);
+        }
+        if (foliageColor != null) {
+            builder.foliageColor(foliageColor);
+        }
+        return new Biome.Builder().precipitation(precipitation).temperature(temperature).downfall(downfall).effects(builder.build()).spawnSettings(spawnSettings.build()).generationSettings(generationSettings.build()).build();
     }
 
     private static void addBasicFeatures(GenerationSettings.LookupBackedBuilder generationSettings) {
@@ -272,7 +279,7 @@ public class OverworldBiomeCreator {
     }
 
     private static Biome createOcean(SpawnSettings.Builder spawnSettings, int waterColor, int waterFogColor, GenerationSettings.LookupBackedBuilder generationSettings) {
-        return OverworldBiomeCreator.createBiome(true, 0.5f, 0.5f, waterColor, waterFogColor, spawnSettings, generationSettings, DEFAULT_MUSIC);
+        return OverworldBiomeCreator.createBiome(true, 0.5f, 0.5f, waterColor, waterFogColor, null, null, spawnSettings, generationSettings, DEFAULT_MUSIC);
     }
 
     private static GenerationSettings.LookupBackedBuilder createOceanGenerationSettings(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
@@ -415,7 +422,7 @@ public class OverworldBiomeCreator {
         } else {
             DefaultBiomeFeatures.addSweetBerryBushes(lookupBackedBuilder);
         }
-        return OverworldBiomeCreator.createBiome(true, f, snowy ? 0.4f : 0.8f, snowy ? 4020182 : 4159204, 329011, builder, lookupBackedBuilder, DEFAULT_MUSIC);
+        return OverworldBiomeCreator.createBiome(true, f, snowy ? 0.4f : 0.8f, snowy ? 4020182 : 4159204, 329011, null, null, builder, lookupBackedBuilder, DEFAULT_MUSIC);
     }
 
     public static Biome createDarkForest(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
@@ -489,7 +496,7 @@ public class OverworldBiomeCreator {
             lookupBackedBuilder.feature(GenerationStep.Feature.VEGETAL_DECORATION, OceanPlacedFeatures.SEAGRASS_RIVER);
         }
         float f = frozen ? 0.0f : 0.5f;
-        return OverworldBiomeCreator.createBiome(true, f, 0.5f, frozen ? 3750089 : 4159204, 329011, builder, lookupBackedBuilder, DEFAULT_MUSIC);
+        return OverworldBiomeCreator.createBiome(true, f, 0.5f, frozen ? 3750089 : 4159204, 329011, null, null, builder, lookupBackedBuilder, DEFAULT_MUSIC);
     }
 
     public static Biome createBeach(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup, boolean snowy, boolean stony) {
@@ -509,7 +516,7 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
         DefaultBiomeFeatures.addDefaultVegetation(lookupBackedBuilder);
         float f = snowy ? 0.05f : (stony ? 0.2f : 0.8f);
-        return OverworldBiomeCreator.createBiome(true, f, bl ? 0.4f : 0.3f, snowy ? 4020182 : 4159204, 329011, builder, lookupBackedBuilder, DEFAULT_MUSIC);
+        return OverworldBiomeCreator.createBiome(true, f, bl ? 0.4f : 0.3f, snowy ? 4020182 : 4159204, 329011, null, null, builder, lookupBackedBuilder, DEFAULT_MUSIC);
     }
 
     public static Biome createTheVoid(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
@@ -518,7 +525,7 @@ public class OverworldBiomeCreator {
         return OverworldBiomeCreator.createBiome(false, 0.5f, 0.5f, new SpawnSettings.Builder(), lookupBackedBuilder, DEFAULT_MUSIC);
     }
 
-    public static Biome createMeadow(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
+    public static Biome createMeadow(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup, boolean cherryGrove) {
         GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
         SpawnSettings.Builder builder = new SpawnSettings.Builder();
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.DONKEY, 1, 1, 2)).spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 2, 2, 6)).spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.SHEEP, 2, 2, 4));
@@ -527,11 +534,18 @@ public class OverworldBiomeCreator {
         DefaultBiomeFeatures.addPlainsTallGrass(lookupBackedBuilder);
         DefaultBiomeFeatures.addDefaultOres(lookupBackedBuilder);
         DefaultBiomeFeatures.addDefaultDisks(lookupBackedBuilder);
-        DefaultBiomeFeatures.addMeadowFlowers(lookupBackedBuilder);
+        if (cherryGrove) {
+            DefaultBiomeFeatures.addCherryGroveFeatures(lookupBackedBuilder);
+        } else {
+            DefaultBiomeFeatures.addMeadowFlowers(lookupBackedBuilder);
+        }
         DefaultBiomeFeatures.addEmeraldOre(lookupBackedBuilder);
         DefaultBiomeFeatures.addInfestedStone(lookupBackedBuilder);
-        MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_MEADOW);
-        return OverworldBiomeCreator.createBiome(true, 0.5f, 0.8f, 937679, 329011, builder, lookupBackedBuilder, musicSound);
+        MusicSound musicSound = MusicType.createIngameMusic(cherryGrove ? SoundEvents.MUSIC_OVERWORLD_CHERRY_GROVE : SoundEvents.MUSIC_OVERWORLD_MEADOW);
+        if (cherryGrove) {
+            return OverworldBiomeCreator.createBiome(true, 0.5f, 0.8f, 6141935, 6141935, 11983713, 11983713, builder, lookupBackedBuilder, musicSound);
+        }
+        return OverworldBiomeCreator.createBiome(true, 0.5f, 0.8f, 937679, 329011, null, null, builder, lookupBackedBuilder, musicSound);
     }
 
     public static Biome createFrozenPeaks(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {

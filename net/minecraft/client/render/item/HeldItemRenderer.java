@@ -261,6 +261,31 @@ public class HeldItemRenderer {
         matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees((float)i * h * 30.0f));
     }
 
+    private void applyBrushTransformation(MatrixStack matrices, float tickDelta, Arm arm, ItemStack stack, float equipProgress) {
+        this.applyEquipOffset(matrices, arm, equipProgress);
+        float f = (float)this.client.player.getItemUseTimeLeft() - tickDelta + 1.0f;
+        float g = 1.0f - f / (float)stack.getMaxUseTime();
+        float h = -90.0f;
+        float i = 60.0f;
+        int j = 45;
+        float k = 150.0f;
+        float l = -15.0f;
+        float m = -15.0f + 75.0f * MathHelper.cos(g * 45.0f * (float)Math.PI);
+        if (arm != Arm.RIGHT) {
+            matrices.translate(0.1, 0.83, 0.35);
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80.0f));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0f));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(m));
+            matrices.translate(-0.3, 0.22, 0.35);
+        } else {
+            matrices.translate(-0.25, 0.22, 0.35);
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80.0f));
+            matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0f));
+            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(0.0f));
+            matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(m));
+        }
+    }
+
     private void applySwingOffset(MatrixStack matrices, Arm arm, float swingProgress) {
         int i = arm == Arm.RIGHT ? 1 : -1;
         float f = MathHelper.sin(swingProgress * swingProgress * (float)Math.PI);
@@ -451,6 +476,9 @@ public class HeldItemRenderer {
                         matrices.scale(1.0f, 1.0f, 1.0f + f * 0.2f);
                         matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees((float)l * 45.0f));
                         break;
+                    }
+                    case BRUSH: {
+                        this.applyBrushTransformation(matrices, tickDelta, arm, item, equipProgress);
                     }
                 }
             } else if (player.isUsingRiptide()) {

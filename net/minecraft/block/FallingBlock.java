@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LandingBlock;
 import net.minecraft.block.Material;
+import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -66,10 +67,7 @@ implements LandingBlock {
     public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
         BlockPos blockPos;
         if (random.nextInt(16) == 0 && FallingBlock.canFallThrough(world.getBlockState(blockPos = pos.down()))) {
-            double d = (double)pos.getX() + random.nextDouble();
-            double e = (double)pos.getY() - 0.05;
-            double f = (double)pos.getZ() + random.nextDouble();
-            world.addParticle(new BlockStateParticleEffect(ParticleTypes.FALLING_DUST, state), d, e, f, 0.0, 0.0, 0.0);
+            ParticleUtil.spawnParticle(world, pos, random, new BlockStateParticleEffect(ParticleTypes.FALLING_DUST, state));
         }
     }
 

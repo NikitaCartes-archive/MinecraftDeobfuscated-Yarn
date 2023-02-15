@@ -38,6 +38,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceFactory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -91,8 +92,8 @@ public class SoundSystem {
     public void reloadSounds() {
         UNKNOWN_SOUNDS.clear();
         for (SoundEvent soundEvent : Registries.SOUND_EVENT) {
-            Identifier identifier = soundEvent.getId();
-            if (this.loader.get(identifier) != null) continue;
+            Identifier identifier;
+            if (soundEvent == SoundEvents.INTENTIONALLY_EMPTY || this.loader.get(identifier = soundEvent.getId()) != null) continue;
             LOGGER.warn("Missing sound for event: {}", (Object)Registries.SOUND_EVENT.getId(soundEvent));
             UNKNOWN_SOUNDS.add(identifier);
         }
@@ -324,6 +325,9 @@ public class SoundSystem {
             return;
         }
         Sound sound22 = sound2.getSound();
+        if (sound22 == SoundManager.INTENTIONALLY_EMPTY_SOUND) {
+            return;
+        }
         if (sound22 == SoundManager.MISSING_SOUND) {
             if (UNKNOWN_SOUNDS.add(identifier)) {
                 LOGGER.warn(MARKER, "Unable to play empty soundEvent: {}", (Object)identifier);

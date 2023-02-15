@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
  * of the import.
  */
 @Environment(value=EnvType.CLIENT)
-public abstract class GLImportProcessor {
+public abstract class GlImportProcessor {
     private static final String MULTI_LINE_COMMENT_PATTERN = "/\\*(?:[^*]|\\*+[^*/])*\\*+/";
     private static final String SINGLE_LINE_COMMENT_PATTERN = "//[^\\v]*";
     private static final Pattern MOJ_IMPORT_PATTERN = Pattern.compile("(#(?:/\\*(?:[^*]|\\*+[^*/])*\\*+/|\\h)*moj_import(?:/\\*(?:[^*]|\\*+[^*/])*\\*+/|\\h)*(?:\"(.*)\"|<(.*)>))");
@@ -54,7 +54,7 @@ public abstract class GLImportProcessor {
         while (matcher.find()) {
             int k;
             boolean bl;
-            if (GLImportProcessor.hasBogusString(source, matcher, j)) continue;
+            if (GlImportProcessor.hasBogusString(source, matcher, j)) continue;
             string2 = matcher.group(2);
             boolean bl2 = bl = string2 != null;
             if (!bl) {
@@ -97,7 +97,7 @@ public abstract class GLImportProcessor {
      */
     private String extractVersion(String line, Context context) {
         Matcher matcher = IMPORT_VERSION_PATTERN.matcher(line);
-        if (matcher.find() && GLImportProcessor.isLineValid(line, matcher)) {
+        if (matcher.find() && GlImportProcessor.isLineValid(line, matcher)) {
             context.column = Math.max(context.column, Integer.parseInt(matcher.group(2)));
             return line.substring(0, matcher.start(1)) + "/*" + line.substring(matcher.start(1), matcher.end(1)) + "*/" + line.substring(matcher.end(1));
         }
@@ -106,14 +106,14 @@ public abstract class GLImportProcessor {
 
     private String readImport(String line, int start) {
         Matcher matcher = IMPORT_VERSION_PATTERN.matcher(line);
-        if (matcher.find() && GLImportProcessor.isLineValid(line, matcher)) {
+        if (matcher.find() && GlImportProcessor.isLineValid(line, matcher)) {
             return line.substring(0, matcher.start(2)) + Math.max(start, Integer.parseInt(matcher.group(2))) + line.substring(matcher.end(2));
         }
         return line;
     }
 
     private static boolean isLineValid(String line, Matcher matcher) {
-        return !GLImportProcessor.hasBogusString(line, matcher, 0);
+        return !GlImportProcessor.hasBogusString(line, matcher, 0);
     }
 
     private static boolean hasBogusString(String string, Matcher matcher, int matchEnd) {

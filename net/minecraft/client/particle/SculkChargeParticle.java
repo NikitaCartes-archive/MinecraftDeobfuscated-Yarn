@@ -11,6 +11,7 @@ import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.SculkChargeParticleEffect;
 
 @Environment(value=EnvType.CLIENT)
@@ -55,6 +56,11 @@ extends SpriteBillboardParticle {
             sculkChargeParticle.angle = sculkChargeParticleEffect.roll();
             sculkChargeParticle.setMaxAge(clientWorld.random.nextInt(12) + 8);
             return sculkChargeParticle;
+        }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((SculkChargeParticleEffect)particleEffect, clientWorld, d, e, f, g, h, i);
         }
     }
 }

@@ -4,16 +4,24 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.loot.OneTwentyLootTables;
 import net.minecraft.predicate.block.BlockStatePredicate;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
+import org.apache.commons.lang3.mutable.MutableInt;
 
 public class DesertWellFeature
 extends Feature<DefaultFeatureConfig> {
@@ -53,6 +61,9 @@ extends Feature<DefaultFeatureConfig> {
                 }
             }
         }
+        if (structureWorldAccess.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
+            DesertWellFeature.generateSuspiciousSand(structureWorldAccess, blockPos, context.getRandom());
+        }
         structureWorldAccess.setBlockState(blockPos, this.fluidInside, Block.NOTIFY_LISTENERS);
         for (Direction direction : Direction.Type.HORIZONTAL) {
             structureWorldAccess.setBlockState(blockPos.offset(direction), this.fluidInside, Block.NOTIFY_LISTENERS);
@@ -83,6 +94,26 @@ extends Feature<DefaultFeatureConfig> {
             structureWorldAccess.setBlockState(blockPos.add(1, i, 1), this.wall, Block.NOTIFY_LISTENERS);
         }
         return true;
+    }
+
+    private static void generateSuspiciousSand(StructureWorldAccess world, BlockPos pos2, Random random) {
+        BlockPos blockPos = pos2.add(0, -1, 0);
+        ObjectArrayList objectArrayList = Util.make(new ObjectArrayList(), positions -> {
+            positions.add(blockPos.east());
+            positions.add(blockPos.south());
+            positions.add(blockPos.west());
+            positions.add(blockPos.north());
+        });
+        Util.shuffle(objectArrayList, random);
+        MutableInt mutableInt = new MutableInt(random.nextBetweenExclusive(2, 4));
+        Stream.concat(Stream.of(blockPos), objectArrayList.stream()).forEach(pos -> {
+            if (mutableInt.getAndDecrement() > 0) {
+                world.setBlockState((BlockPos)pos, Blocks.SUSPICIOUS_SAND.getDefaultState(), Block.NOTIFY_ALL);
+                world.getBlockEntity((BlockPos)pos, BlockEntityType.SUSPICIOUS_SAND).ifPresent(blockEntity -> blockEntity.setLootTable(OneTwentyLootTables.DESERT_WELL_ARCHAEOLOGY, pos.asLong()));
+            } else {
+                world.setBlockState((BlockPos)pos, Blocks.SAND.getDefaultState(), Block.NOTIFY_ALL);
+            }
+        });
     }
 }
 

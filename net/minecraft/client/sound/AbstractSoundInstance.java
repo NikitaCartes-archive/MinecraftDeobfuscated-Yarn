@@ -48,6 +48,10 @@ implements SoundInstance {
 
     @Override
     public WeightedSoundSet getSoundSet(SoundManager soundManager) {
+        if (this.id.equals(SoundManager.INTENTIONALLY_EMPTY_ID)) {
+            this.sound = SoundManager.INTENTIONALLY_EMPTY_SOUND;
+            return SoundManager.INTENTIONALLY_EMPTY_SOUND_SET;
+        }
         WeightedSoundSet weightedSoundSet = soundManager.get(this.id);
         this.sound = weightedSoundSet == null ? SoundManager.MISSING_SOUND : weightedSoundSet.getSound(this.random);
         return weightedSoundSet;

@@ -39,7 +39,7 @@ extends Feature<SingleStateFeatureConfig> {
             float f = (float)(j + k + l) * 0.333f + 0.5f;
             for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-j, -k, -l), blockPos.add(j, k, l))) {
                 if (!(blockPos2.getSquaredDistance(blockPos) <= (double)(f * f))) continue;
-                structureWorldAccess.setBlockState(blockPos2, singleStateFeatureConfig.state, Block.NO_REDRAW);
+                structureWorldAccess.setBlockState(blockPos2, singleStateFeatureConfig.state, Block.NOTIFY_ALL);
             }
             blockPos = blockPos.add(-1 + random.nextInt(2), -random.nextInt(2), -1 + random.nextInt(2));
         }

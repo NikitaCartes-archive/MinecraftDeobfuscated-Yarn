@@ -184,6 +184,15 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(BlockStateModelGenerator.createBlockStateWithRandomHorizontalRotations(block, identifier));
     }
 
+    private void registerSuspiciousSand() {
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.SUSPICIOUS_SAND).coordinate(BlockStateVariantMap.create(Properties.DUSTED).register(dustedLevel -> {
+            String string = "_" + dustedLevel;
+            Identifier identifier = TextureMap.getSubId(Blocks.SUSPICIOUS_SAND, string);
+            return BlockStateVariant.create().put(VariantSettings.MODEL, Models.CUBE_ALL.upload(Blocks.SUSPICIOUS_SAND, string, new TextureMap().put(TextureKey.ALL, identifier), this.modelCollector));
+        })));
+        this.registerParentedItemModel(Blocks.SUSPICIOUS_SAND, TextureMap.getSubId(Blocks.SUSPICIOUS_SAND, "_0"));
+    }
+
     static BlockStateSupplier createButtonBlockState(Block buttonBlock, Identifier regularModelId, Identifier pressedModelId) {
         return VariantsBlockStateSupplier.create(buttonBlock).coordinate(BlockStateVariantMap.create(Properties.POWERED).register((Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, regularModelId)).register((Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, pressedModelId))).coordinate(BlockStateVariantMap.create(Properties.WALL_MOUNT_LOCATION, Properties.HORIZONTAL_FACING).register(WallMountLocation.FLOOR, Direction.EAST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R90)).register(WallMountLocation.FLOOR, Direction.WEST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R270)).register(WallMountLocation.FLOOR, Direction.SOUTH, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R180)).register(WallMountLocation.FLOOR, Direction.NORTH, BlockStateVariant.create()).register(WallMountLocation.WALL, Direction.EAST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(WallMountLocation.WALL, Direction.WEST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(WallMountLocation.WALL, Direction.SOUTH, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(WallMountLocation.WALL, Direction.NORTH, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R90).put(VariantSettings.UVLOCK, true)).register(WallMountLocation.CEILING, Direction.EAST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R270).put(VariantSettings.X, VariantSettings.Rotation.R180)).register(WallMountLocation.CEILING, Direction.WEST, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R90).put(VariantSettings.X, VariantSettings.Rotation.R180)).register(WallMountLocation.CEILING, Direction.SOUTH, BlockStateVariant.create().put(VariantSettings.X, VariantSettings.Rotation.R180)).register(WallMountLocation.CEILING, Direction.NORTH, BlockStateVariant.create().put(VariantSettings.Y, VariantSettings.Rotation.R180).put(VariantSettings.X, VariantSettings.Rotation.R180)));
     }
@@ -379,6 +388,20 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, identifier));
     }
 
+    private void registerTintableCrossBlockStateWithStages(Block block, TintType tintType, Property<Integer> stageProperty, int ... stages) {
+        if (stageProperty.getValues().size() != stages.length) {
+            throw new IllegalArgumentException("missing values for property: " + stageProperty);
+        }
+        BlockStateVariantMap blockStateVariantMap = BlockStateVariantMap.create(stageProperty).register(integer -> {
+            String string = "_stage" + stages[integer];
+            TextureMap textureMap = TextureMap.cross(TextureMap.getSubId(block, string));
+            Identifier identifier = tintType.getCrossModel().upload(block, string, textureMap, this.modelCollector);
+            return BlockStateVariant.create().put(VariantSettings.MODEL, identifier);
+        });
+        this.registerItemModel(block.asItem());
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(blockStateVariantMap));
+    }
+
     private void registerFlowerPotPlant(Block plantBlock, Block flowerPotBlock, TintType tintType) {
         this.registerTintableCross(plantBlock, tintType);
         TextureMap textureMap = TextureMap.plant(plantBlock);
@@ -511,6 +534,15 @@ public class BlockStateModelGenerator {
         this.registerSimpleCubeAll(wool);
         Identifier identifier = TexturedModel.CARPET.get(wool).upload(carpet, this.modelCollector);
         this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(carpet, identifier));
+    }
+
+    private void registerFlowerbed(Block flowerbed) {
+        this.registerItemModel(flowerbed.asItem());
+        Identifier identifier = TexturedModel.FLOWERBED_1.upload(flowerbed, this.modelCollector);
+        Identifier identifier2 = TexturedModel.FLOWERBED_2.upload(flowerbed, this.modelCollector);
+        Identifier identifier3 = TexturedModel.FLOWERBED_3.upload(flowerbed, this.modelCollector);
+        Identifier identifier4 = TexturedModel.FLOWERBED_4.upload(flowerbed, this.modelCollector);
+        this.blockStateCollector.accept(MultipartBlockStateSupplier.create(flowerbed).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(1), new Integer[]{2, 3, 4}).set(Properties.HORIZONTAL_FACING, Direction.NORTH), BlockStateVariant.create().put(VariantSettings.MODEL, identifier)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(1), new Integer[]{2, 3, 4}).set(Properties.HORIZONTAL_FACING, Direction.EAST), BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R90)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(1), new Integer[]{2, 3, 4}).set(Properties.HORIZONTAL_FACING, Direction.SOUTH), BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R180)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(1), new Integer[]{2, 3, 4}).set(Properties.HORIZONTAL_FACING, Direction.WEST), BlockStateVariant.create().put(VariantSettings.MODEL, identifier).put(VariantSettings.Y, VariantSettings.Rotation.R270)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(2), new Integer[]{3, 4}).set(Properties.HORIZONTAL_FACING, Direction.NORTH), BlockStateVariant.create().put(VariantSettings.MODEL, identifier2)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(2), new Integer[]{3, 4}).set(Properties.HORIZONTAL_FACING, Direction.EAST), BlockStateVariant.create().put(VariantSettings.MODEL, identifier2).put(VariantSettings.Y, VariantSettings.Rotation.R90)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(2), new Integer[]{3, 4}).set(Properties.HORIZONTAL_FACING, Direction.SOUTH), BlockStateVariant.create().put(VariantSettings.MODEL, identifier2).put(VariantSettings.Y, VariantSettings.Rotation.R180)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(2), new Integer[]{3, 4}).set(Properties.HORIZONTAL_FACING, Direction.WEST), BlockStateVariant.create().put(VariantSettings.MODEL, identifier2).put(VariantSettings.Y, VariantSettings.Rotation.R270)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(3), new Integer[]{4}).set(Properties.HORIZONTAL_FACING, Direction.NORTH), BlockStateVariant.create().put(VariantSettings.MODEL, identifier3)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(3), new Integer[]{4}).set(Properties.HORIZONTAL_FACING, Direction.EAST), BlockStateVariant.create().put(VariantSettings.MODEL, identifier3).put(VariantSettings.Y, VariantSettings.Rotation.R90)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(3), new Integer[]{4}).set(Properties.HORIZONTAL_FACING, Direction.SOUTH), BlockStateVariant.create().put(VariantSettings.MODEL, identifier3).put(VariantSettings.Y, VariantSettings.Rotation.R180)).with((When)When.create().set(Properties.FLOWER_AMOUNT, Integer.valueOf(3), new Integer[]{4}).set(Properties.HORIZONTAL_FACING, Direction.WEST), BlockStateVariant.create().put(VariantSettings.MODEL, identifier3).put(VariantSettings.Y, VariantSettings.Rotation.R270)).with((When)When.create().set(Properties.FLOWER_AMOUNT, 4).set(Properties.HORIZONTAL_FACING, Direction.NORTH), BlockStateVariant.create().put(VariantSettings.MODEL, identifier4)).with((When)When.create().set(Properties.FLOWER_AMOUNT, 4).set(Properties.HORIZONTAL_FACING, Direction.EAST), BlockStateVariant.create().put(VariantSettings.MODEL, identifier4).put(VariantSettings.Y, VariantSettings.Rotation.R90)).with((When)When.create().set(Properties.FLOWER_AMOUNT, 4).set(Properties.HORIZONTAL_FACING, Direction.SOUTH), BlockStateVariant.create().put(VariantSettings.MODEL, identifier4).put(VariantSettings.Y, VariantSettings.Rotation.R180)).with((When)When.create().set(Properties.FLOWER_AMOUNT, 4).set(Properties.HORIZONTAL_FACING, Direction.WEST), BlockStateVariant.create().put(VariantSettings.MODEL, identifier4).put(VariantSettings.Y, VariantSettings.Rotation.R270)));
     }
 
     private void registerRandomHorizontalRotations(TexturedModel.Factory modelFactory, Block ... blocks) {
@@ -1375,6 +1407,7 @@ public class BlockStateModelGenerator {
         this.registerPottedAzaleaBush(Blocks.POTTED_FLOWERING_AZALEA_BUSH);
         this.registerCaveVines();
         this.registerWoolAndCarpet(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET);
+        this.registerFlowerbed(Blocks.PINK_PETALS);
         this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
         this.registerItemModel(Items.BARRIER);
         this.registerLightBlock();
@@ -1538,6 +1571,7 @@ public class BlockStateModelGenerator {
         this.registerRotatable(Blocks.DIRT);
         this.registerRotatable(Blocks.ROOTED_DIRT);
         this.registerRotatable(Blocks.SAND);
+        this.registerSuspiciousSand();
         this.registerRotatable(Blocks.RED_SAND);
         this.registerMirrorable(Blocks.BEDROCK);
         this.registerSingleton(Blocks.REINFORCED_DEEPSLATE, TexturedModel.CUBE_BOTTOM_TOP);
@@ -1556,6 +1590,8 @@ public class BlockStateModelGenerator {
         this.registerCrop(Blocks.NETHER_WART, Properties.AGE_3, 0, 1, 1, 2);
         this.registerCrop(Blocks.POTATOES, Properties.AGE_7, 0, 0, 1, 1, 2, 2, 2, 3);
         this.registerCrop(Blocks.WHEAT, Properties.AGE_7, 0, 1, 2, 3, 4, 5, 6, 7);
+        this.registerTintableCrossBlockStateWithStages(Blocks.TORCHFLOWER_CROP, TintType.NOT_TINTED, Properties.AGE_2, 0, 1, 2);
+        this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("decorated_pot"), Blocks.TERRACOTTA).includeWithoutItem(Blocks.DECORATED_POT);
         this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("banner"), Blocks.OAK_PLANKS).includeWithItem(Models.TEMPLATE_BANNER, Blocks.WHITE_BANNER, Blocks.ORANGE_BANNER, Blocks.MAGENTA_BANNER, Blocks.LIGHT_BLUE_BANNER, Blocks.YELLOW_BANNER, Blocks.LIME_BANNER, Blocks.PINK_BANNER, Blocks.GRAY_BANNER, Blocks.LIGHT_GRAY_BANNER, Blocks.CYAN_BANNER, Blocks.PURPLE_BANNER, Blocks.BLUE_BANNER, Blocks.BROWN_BANNER, Blocks.GREEN_BANNER, Blocks.RED_BANNER, Blocks.BLACK_BANNER).includeWithoutItem(Blocks.WHITE_WALL_BANNER, Blocks.ORANGE_WALL_BANNER, Blocks.MAGENTA_WALL_BANNER, Blocks.LIGHT_BLUE_WALL_BANNER, Blocks.YELLOW_WALL_BANNER, Blocks.LIME_WALL_BANNER, Blocks.PINK_WALL_BANNER, Blocks.GRAY_WALL_BANNER, Blocks.LIGHT_GRAY_WALL_BANNER, Blocks.CYAN_WALL_BANNER, Blocks.PURPLE_WALL_BANNER, Blocks.BLUE_WALL_BANNER, Blocks.BROWN_WALL_BANNER, Blocks.GREEN_WALL_BANNER, Blocks.RED_WALL_BANNER, Blocks.BLACK_WALL_BANNER);
         this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("bed"), Blocks.OAK_PLANKS).includeWithoutItem(Blocks.WHITE_BED, Blocks.ORANGE_BED, Blocks.MAGENTA_BED, Blocks.LIGHT_BLUE_BED, Blocks.YELLOW_BED, Blocks.LIME_BED, Blocks.PINK_BED, Blocks.GRAY_BED, Blocks.LIGHT_GRAY_BED, Blocks.CYAN_BED, Blocks.PURPLE_BED, Blocks.BLUE_BED, Blocks.BROWN_BED, Blocks.GREEN_BED, Blocks.RED_BED, Blocks.BLACK_BED);
         this.registerBed(Blocks.WHITE_BED, Blocks.WHITE_WOOL);
@@ -1687,6 +1723,7 @@ public class BlockStateModelGenerator {
         this.registerFlowerPotPlant(Blocks.RED_MUSHROOM, Blocks.POTTED_RED_MUSHROOM, TintType.NOT_TINTED);
         this.registerFlowerPotPlant(Blocks.BROWN_MUSHROOM, Blocks.POTTED_BROWN_MUSHROOM, TintType.NOT_TINTED);
         this.registerFlowerPotPlant(Blocks.DEAD_BUSH, Blocks.POTTED_DEAD_BUSH, TintType.NOT_TINTED);
+        this.registerFlowerPotPlant(Blocks.TORCHFLOWER, Blocks.POTTED_TORCHFLOWER, TintType.NOT_TINTED);
         this.registerPointedDripstone();
         this.registerMushroomBlock(Blocks.BROWN_MUSHROOM_BLOCK);
         this.registerMushroomBlock(Blocks.RED_MUSHROOM_BLOCK);
@@ -1733,6 +1770,11 @@ public class BlockStateModelGenerator {
         this.registerHangingSign(Blocks.STRIPPED_ACACIA_LOG, Blocks.ACACIA_HANGING_SIGN, Blocks.ACACIA_WALL_HANGING_SIGN);
         this.registerFlowerPotPlant(Blocks.ACACIA_SAPLING, Blocks.POTTED_ACACIA_SAPLING, TintType.NOT_TINTED);
         this.registerSingleton(Blocks.ACACIA_LEAVES, TexturedModel.LEAVES);
+        this.registerLog(Blocks.CHERRY_LOG).bamboo(Blocks.CHERRY_LOG).wood(Blocks.CHERRY_WOOD);
+        this.registerLog(Blocks.STRIPPED_CHERRY_LOG).bamboo(Blocks.STRIPPED_CHERRY_LOG).wood(Blocks.STRIPPED_CHERRY_WOOD);
+        this.registerHangingSign(Blocks.STRIPPED_CHERRY_LOG, Blocks.CHERRY_HANGING_SIGN, Blocks.CHERRY_WALL_HANGING_SIGN);
+        this.registerFlowerPotPlant(Blocks.CHERRY_SAPLING, Blocks.POTTED_CHERRY_SAPLING, TintType.NOT_TINTED);
+        this.registerSingleton(Blocks.CHERRY_LEAVES, TexturedModel.LEAVES);
         this.registerLog(Blocks.BIRCH_LOG).log(Blocks.BIRCH_LOG).wood(Blocks.BIRCH_WOOD);
         this.registerLog(Blocks.STRIPPED_BIRCH_LOG).log(Blocks.STRIPPED_BIRCH_LOG).wood(Blocks.STRIPPED_BIRCH_WOOD);
         this.registerHangingSign(Blocks.STRIPPED_BIRCH_LOG, Blocks.BIRCH_HANGING_SIGN, Blocks.BIRCH_WALL_HANGING_SIGN);

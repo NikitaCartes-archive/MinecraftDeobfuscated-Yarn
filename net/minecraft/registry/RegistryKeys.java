@@ -153,6 +153,7 @@ public class RegistryKeys {
     public static final RegistryKey<Registry<TrunkPlacerType<?>>> TRUNK_PLACER_TYPE = RegistryKeys.of("worldgen/trunk_placer_type");
     public static final RegistryKey<Registry<VillagerProfession>> VILLAGER_PROFESSION = RegistryKeys.of("villager_profession");
     public static final RegistryKey<Registry<VillagerType>> VILLAGER_TYPE = RegistryKeys.of("villager_type");
+    public static final RegistryKey<Registry<String>> DECORATED_POT_PATTERNS = RegistryKeys.of("decorated_pot_patterns");
     public static final RegistryKey<Registry<Biome>> BIOME = RegistryKeys.of("worldgen/biome");
     public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = RegistryKeys.of("chat_type");
     public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = RegistryKeys.of("worldgen/configured_carver");

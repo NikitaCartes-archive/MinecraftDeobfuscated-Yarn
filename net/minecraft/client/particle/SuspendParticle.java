@@ -12,6 +12,7 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleEffect;
 
 @Environment(value=EnvType.CLIENT)
 public class SuspendParticle
@@ -74,6 +75,11 @@ extends SpriteBillboardParticle {
             suspendParticle.setMaxAge(suspendParticle.getMaxAge() / 2);
             return suspendParticle;
         }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -93,6 +99,11 @@ extends SpriteBillboardParticle {
             suspendParticle.setMaxAge(3 + clientWorld.getRandom().nextInt(5));
             return suspendParticle;
         }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -111,6 +122,11 @@ extends SpriteBillboardParticle {
             suspendParticle.setColor(1.0f, 1.0f, 1.0f);
             return suspendParticle;
         }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -127,6 +143,11 @@ extends SpriteBillboardParticle {
             SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
             suspendParticle.setSprite(this.spriteProvider);
             return suspendParticle;
+        }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
         }
     }
 }

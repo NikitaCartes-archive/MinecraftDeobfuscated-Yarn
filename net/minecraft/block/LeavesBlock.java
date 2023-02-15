@@ -7,6 +7,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -127,10 +128,7 @@ implements Waterloggable {
         if (blockState.isOpaque() && blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
             return;
         }
-        double d = (double)pos.getX() + random.nextDouble();
-        double e = (double)pos.getY() - 0.05;
-        double f = (double)pos.getZ() + random.nextDouble();
-        world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
+        ParticleUtil.spawnParticle(world, pos, random, ParticleTypes.DRIPPING_WATER);
     }
 
     @Override

@@ -3,6 +3,7 @@
  */
 package net.minecraft.entity.passive;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -10,6 +11,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -139,6 +141,11 @@ extends PathAwareEntity {
     }
 
     protected void onGrowUp() {
+        BoatEntity boatEntity;
+        Entity entity;
+        if (!this.isBaby() && this.hasVehicle() && (entity = this.getVehicle()) instanceof BoatEntity && !(boatEntity = (BoatEntity)entity).isSmallerThanBoat(this)) {
+            this.stopRiding();
+        }
     }
 
     @Override

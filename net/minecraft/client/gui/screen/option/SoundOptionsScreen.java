@@ -8,8 +8,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.option.GameOptionsScreen;
-import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.OptionListWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.util.math.MatrixStack;
@@ -20,7 +20,7 @@ import net.minecraft.text.Text;
 @Environment(value=EnvType.CLIENT)
 public class SoundOptionsScreen
 extends GameOptionsScreen {
-    private ButtonListWidget optionButtons;
+    private OptionListWidget optionButtons;
 
     private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
         return new SimpleOption[]{gameOptions.getShowSubtitles(), gameOptions.getDirectionalAudio()};
@@ -32,7 +32,7 @@ extends GameOptionsScreen {
 
     @Override
     protected void init() {
-        this.optionButtons = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
+        this.optionButtons = new OptionListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
         this.optionButtons.addSingleOptionEntry(this.gameOptions.getSoundVolumeOption(SoundCategory.MASTER));
         this.optionButtons.addAll(this.getVolumeOptions());
         this.optionButtons.addSingleOptionEntry(this.gameOptions.getSoundDevice());

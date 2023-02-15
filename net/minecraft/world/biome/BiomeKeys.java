@@ -39,6 +39,7 @@ public abstract class BiomeKeys {
     public static final RegistryKey<Biome> ERODED_BADLANDS = BiomeKeys.register("eroded_badlands");
     public static final RegistryKey<Biome> WOODED_BADLANDS = BiomeKeys.register("wooded_badlands");
     public static final RegistryKey<Biome> MEADOW = BiomeKeys.register("meadow");
+    public static final RegistryKey<Biome> CHERRY_GROVE = BiomeKeys.register("cherry_grove");
     public static final RegistryKey<Biome> GROVE = BiomeKeys.register("grove");
     public static final RegistryKey<Biome> SNOWY_SLOPES = BiomeKeys.register("snowy_slopes");
     public static final RegistryKey<Biome> FROZEN_PEAKS = BiomeKeys.register("frozen_peaks");

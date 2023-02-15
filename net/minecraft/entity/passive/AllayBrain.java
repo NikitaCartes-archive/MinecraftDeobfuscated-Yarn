@@ -8,8 +8,10 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
@@ -66,7 +68,7 @@ public class AllayBrain {
     }
 
     private static void addIdleActivities(Brain<AllayEntity> brain) {
-        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, WalkToNearestVisibleWantedItemTask.create(allay -> true, 1.75f, true, 32)), Pair.of(1, new GiveInventoryToLookTargetTask(AllayBrain::getLookTarget, 2.25f, 20)), Pair.of(2, WalkTowardsLookTargetTask.create(AllayBrain::getLookTarget, 4, 16, 2.25f)), Pair.of(3, FollowMobWithIntervalTask.follow(6.0f, UniformIntProvider.create(30, 60))), Pair.of(4, new RandomTask(ImmutableList.of(Pair.of(StrollTask.createSolidTargeting(1.0f), 2), Pair.of(GoTowardsLookTargetTask.create(1.0f, 3), 2), Pair.of(new WaitTask(30, 60), 1))))), ImmutableSet.of());
+        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, WalkToNearestVisibleWantedItemTask.create(allay -> true, 1.75f, true, 32)), Pair.of(1, new GiveInventoryToLookTargetTask(AllayBrain::getLookTarget, 2.25f, 20)), Pair.of(2, WalkTowardsLookTargetTask.create(AllayBrain::getLookTarget, Predicate.not(AllayBrain::hasNearestVisibleWantedItem), 4, 16, 2.25f)), Pair.of(3, FollowMobWithIntervalTask.follow(6.0f, UniformIntProvider.create(30, 60))), Pair.of(4, new RandomTask(ImmutableList.of(Pair.of(StrollTask.createSolidTargeting(1.0f), 2), Pair.of(GoTowardsLookTargetTask.create(1.0f, 3), 2), Pair.of(new WaitTask(30, 60), 1))))), ImmutableSet.of());
     }
 
     public static void updateActivities(AllayEntity allay) {
@@ -96,6 +98,11 @@ public class AllayBrain {
             brain.forget(MemoryModuleType.LIKED_NOTEBLOCK);
         }
         return AllayBrain.getLikedLookTarget(allay);
+    }
+
+    private static boolean hasNearestVisibleWantedItem(LivingEntity entity) {
+        Brain<ItemEntity> brain = entity.getBrain();
+        return brain.hasMemoryModule(MemoryModuleType.NEAREST_VISIBLE_WANTED_ITEM);
     }
 
     private static boolean shouldGoTowardsNoteBlock(LivingEntity allay, Brain<?> brain, GlobalPos pos) {

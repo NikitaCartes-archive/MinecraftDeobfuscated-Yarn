@@ -32,11 +32,10 @@ extends TagProvider<Biome> {
         this.getOrCreateTagBuilder(BiomeTags.IS_JUNGLE).add(BiomeKeys.BAMBOO_JUNGLE).add(BiomeKeys.JUNGLE).add(BiomeKeys.SPARSE_JUNGLE);
         this.getOrCreateTagBuilder(BiomeTags.IS_FOREST).add(BiomeKeys.FOREST).add(BiomeKeys.FLOWER_FOREST).add(BiomeKeys.BIRCH_FOREST).add(BiomeKeys.OLD_GROWTH_BIRCH_FOREST).add(BiomeKeys.DARK_FOREST).add(BiomeKeys.GROVE);
         this.getOrCreateTagBuilder(BiomeTags.IS_SAVANNA).add(BiomeKeys.SAVANNA).add(BiomeKeys.SAVANNA_PLATEAU).add(BiomeKeys.WINDSWEPT_SAVANNA);
-        RegistryWrapper.Impl<Biome> registryEntryLookup = lookup.getWrapperOrThrow(RegistryKeys.BIOME);
         TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder = this.getOrCreateTagBuilder(BiomeTags.IS_NETHER);
-        MultiNoiseBiomeSource.Preset.NETHER.stream(registryEntryLookup).forEach(providedTagBuilder::add);
+        MultiNoiseBiomeSource.Preset.NETHER.stream().forEach(providedTagBuilder::add);
         TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder2 = this.getOrCreateTagBuilder(BiomeTags.IS_OVERWORLD);
-        MultiNoiseBiomeSource.Preset.OVERWORLD.stream(registryEntryLookup).forEach(providedTagBuilder2::add);
+        MultiNoiseBiomeSource.Preset.OVERWORLD.stream().forEach(providedTagBuilder2::add);
         this.getOrCreateTagBuilder(BiomeTags.IS_END).add(BiomeKeys.THE_END).add(BiomeKeys.END_HIGHLANDS).add(BiomeKeys.END_MIDLANDS).add(BiomeKeys.SMALL_END_ISLANDS).add(BiomeKeys.END_BARRENS);
         this.getOrCreateTagBuilder(BiomeTags.BURIED_TREASURE_HAS_STRUCTURE).addTag(BiomeTags.IS_BEACH);
         this.getOrCreateTagBuilder(BiomeTags.DESERT_PYRAMID_HAS_STRUCTURE).add(BiomeKeys.DESERT);

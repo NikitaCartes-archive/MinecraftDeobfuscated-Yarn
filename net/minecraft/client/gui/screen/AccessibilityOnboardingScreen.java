@@ -12,6 +12,8 @@ import net.minecraft.client.gui.RotatingCubeMapRenderer;
 import net.minecraft.client.gui.screen.AccessibilityOnboardingButtons;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
+import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.GridWidget;
@@ -56,14 +58,14 @@ extends Screen {
         adder.getMainPositioner().margin(2);
         this.textWidget = new NarratedMultilineTextWidget(this.textRenderer, this.title, this.width);
         adder.add(this.textWidget, adder.copyPositioner().marginBottom(16));
-        ClickableWidget clickableWidget = this.gameOptions.getNarrator().createButton(this.gameOptions, 0, 0, 150);
+        ClickableWidget clickableWidget = this.gameOptions.getNarrator().createWidget(this.gameOptions, 0, 0, 150);
         clickableWidget.active = this.isNarratorUsable;
         adder.add(clickableWidget);
         if (this.isNarratorUsable) {
             this.setInitialFocus(clickableWidget);
         }
-        adder.add(AccessibilityOnboardingButtons.createAccessibilityButton(this.client, this));
-        adder.add(AccessibilityOnboardingButtons.createLanguageButton(this.client, this));
+        adder.add(AccessibilityOnboardingButtons.createAccessibilityButton(button -> this.setScreen(new AccessibilityOptionsScreen(this, this.client.options))));
+        adder.add(AccessibilityOnboardingButtons.createLanguageButton(button -> this.setScreen(new LanguageOptionsScreen((Screen)this, this.client.options, this.client.getLanguageManager()))));
         simplePositioningWidget.add(ButtonWidget.builder(ScreenTexts.CONTINUE, button -> this.close()).build(), simplePositioningWidget.copyPositioner().alignBottom().margin(8));
         simplePositioningWidget.refreshPositions();
         SimplePositioningWidget.setPos(simplePositioningWidget, 0, i, this.width, this.height, 0.5f, 0.0f);
@@ -76,8 +78,14 @@ extends Screen {
 
     @Override
     public void close() {
+        this.setScreen(new TitleScreen(true, this.logoDrawer));
+    }
+
+    private void setScreen(Screen screen) {
+        this.gameOptions.onboardAccessibility = false;
+        this.gameOptions.write();
         Narrator.getNarrator().clear();
-        this.client.setScreen(new TitleScreen(true, this.logoDrawer));
+        this.client.setScreen(screen);
     }
 
     @Override
@@ -96,7 +104,7 @@ extends Screen {
         if (!this.narratorPrompted && this.isNarratorUsable) {
             if (this.narratorPromptTimer < 40.0f) {
                 this.narratorPromptTimer += 1.0f;
-            } else {
+            } else if (this.client.isWindowFocused()) {
                 Narrator.getNarrator().say(NARRATOR_PROMPT.getString(), true);
                 this.narratorPrompted = true;
             }

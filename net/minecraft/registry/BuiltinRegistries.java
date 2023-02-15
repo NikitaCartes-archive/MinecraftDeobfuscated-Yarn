@@ -11,6 +11,7 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryBuilder;
+import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
@@ -40,12 +41,15 @@ public class BuiltinRegistries {
     private static final RegistryBuilder REGISTRY_BUILDER = new RegistryBuilder().addRegistry(RegistryKeys.DIMENSION_TYPE, DimensionTypeRegistrar::bootstrap).addRegistry(RegistryKeys.CONFIGURED_CARVER, ConfiguredCarvers::bootstrap).addRegistry(RegistryKeys.CONFIGURED_FEATURE, ConfiguredFeatures::bootstrap).addRegistry(RegistryKeys.PLACED_FEATURE, PlacedFeatures::bootstrap).addRegistry(RegistryKeys.STRUCTURE, Structures::bootstrap).addRegistry(RegistryKeys.STRUCTURE_SET, StructureSets::bootstrap).addRegistry(RegistryKeys.PROCESSOR_LIST, StructureProcessorLists::bootstrap).addRegistry(RegistryKeys.TEMPLATE_POOL, StructurePools::bootstrap).addRegistry(RegistryKeys.BIOME, BuiltinBiomes::bootstrap).addRegistry(RegistryKeys.NOISE_PARAMETERS, BuiltinNoiseParameters::bootstrap).addRegistry(RegistryKeys.DENSITY_FUNCTION, DensityFunctions::bootstrap).addRegistry(RegistryKeys.CHUNK_GENERATOR_SETTINGS, ChunkGeneratorSettings::bootstrap).addRegistry(RegistryKeys.WORLD_PRESET, WorldPresets::bootstrap).addRegistry(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPresets::bootstrap).addRegistry(RegistryKeys.MESSAGE_TYPE, MessageType::bootstrap).addRegistry(RegistryKeys.TRIM_PATTERN, ArmorTrimPatterns::bootstrap).addRegistry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterials::bootstrap).addRegistry(RegistryKeys.DAMAGE_TYPE, DamageTypes::bootstrap);
 
     private static void validate(RegistryWrapper.WrapperLookup wrapperLookup) {
-        RegistryWrapper.Impl<PlacedFeature> registryEntryLookup = wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE);
-        wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME).streamEntries().forEach(biome -> {
+        BuiltinRegistries.validate(wrapperLookup.getWrapperOrThrow(RegistryKeys.PLACED_FEATURE), wrapperLookup.getWrapperOrThrow(RegistryKeys.BIOME));
+    }
+
+    public static void validate(RegistryEntryLookup<PlacedFeature> placedFeatureLookup, RegistryWrapper<Biome> biomeLookup) {
+        biomeLookup.streamEntries().forEach(biome -> {
             Identifier identifier = biome.registryKey().getValue();
             List<RegistryEntryList<PlacedFeature>> list = ((Biome)biome.value()).getGenerationSettings().getFeatures();
             list.stream().flatMap(RegistryEntryList::stream).forEach(placedFeature -> placedFeature.getKeyOrValue().ifLeft(key -> {
-                RegistryEntry.Reference reference = registryEntryLookup.getOrThrow((RegistryKey<PlacedFeature>)key);
+                RegistryEntry.Reference reference = placedFeatureLookup.getOrThrow((RegistryKey<PlacedFeature>)key);
                 if (!BuiltinRegistries.hasBiomePlacementModifier((PlacedFeature)reference.value())) {
                     Util.error("Placed feature " + key.getValue() + " in biome " + identifier + " is missing BiomeFilter.biome()");
                 }

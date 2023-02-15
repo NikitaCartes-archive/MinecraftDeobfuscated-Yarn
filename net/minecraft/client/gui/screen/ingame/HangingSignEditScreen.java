@@ -26,7 +26,7 @@ extends AbstractSignEditScreen {
 
     public HangingSignEditScreen(SignBlockEntity signBlockEntity, boolean bl) {
         super(signBlockEntity, bl, Text.translatable("hanging_sign.edit"));
-        this.texture = new Identifier("textures/gui/hanging_signs/" + this.signType.getName() + ".png");
+        this.texture = new Identifier("textures/gui/hanging_signs/" + this.signType.name() + ".png");
     }
 
     @Override

@@ -12,6 +12,7 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleEffect;
 
 @Environment(value=EnvType.CLIENT)
 public class EnchantGlyphParticle
@@ -102,6 +103,11 @@ extends SpriteBillboardParticle {
             enchantGlyphParticle.setSprite(this.spriteProvider);
             return enchantGlyphParticle;
         }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -118,6 +124,11 @@ extends SpriteBillboardParticle {
             EnchantGlyphParticle enchantGlyphParticle = new EnchantGlyphParticle(clientWorld, d, e, f, g, h, i);
             enchantGlyphParticle.setSprite(this.spriteProvider);
             return enchantGlyphParticle;
+        }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
         }
     }
 }

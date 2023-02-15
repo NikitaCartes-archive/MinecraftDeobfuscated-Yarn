@@ -191,7 +191,7 @@ implements Hopper {
 
     private static boolean extract(Hopper hopper, Inventory inventory, int slot, Direction side) {
         ItemStack itemStack = inventory.getStack(slot);
-        if (!itemStack.isEmpty() && HopperBlockEntity.canExtract(inventory, itemStack, slot, side)) {
+        if (!itemStack.isEmpty() && HopperBlockEntity.canExtract(hopper, inventory, itemStack, slot, side)) {
             ItemStack itemStack2 = itemStack.copy();
             ItemStack itemStack3 = HopperBlockEntity.transfer(inventory, hopper, inventory.removeStack(slot, 1), null);
             if (itemStack3.isEmpty()) {
@@ -216,31 +216,48 @@ implements Hopper {
         return bl;
     }
 
+    /*
+     * Enabled aggressive block sorting
+     * Lifted jumps to return sites
+     */
     public static ItemStack transfer(@Nullable Inventory from, Inventory to, ItemStack stack, @Nullable Direction side) {
-        if (to instanceof SidedInventory && side != null) {
+        if (to instanceof SidedInventory) {
             SidedInventory sidedInventory = (SidedInventory)to;
-            int[] is = sidedInventory.getAvailableSlots(side);
-            for (int i = 0; i < is.length && !stack.isEmpty(); ++i) {
-                stack = HopperBlockEntity.transfer(from, to, stack, is[i], side);
+            if (side != null) {
+                int[] is = sidedInventory.getAvailableSlots(side);
+                int i = 0;
+                while (i < is.length) {
+                    if (stack.isEmpty()) return stack;
+                    stack = HopperBlockEntity.transfer(from, to, stack, is[i], side);
+                    ++i;
+                }
+                return stack;
             }
-        } else {
-            int j = to.size();
-            for (int k = 0; k < j && !stack.isEmpty(); ++k) {
-                stack = HopperBlockEntity.transfer(from, to, stack, k, side);
-            }
+        }
+        int j = to.size();
+        int i = 0;
+        while (i < j) {
+            if (stack.isEmpty()) return stack;
+            stack = HopperBlockEntity.transfer(from, to, stack, i, side);
+            ++i;
         }
         return stack;
     }
 
     private static boolean canInsert(Inventory inventory, ItemStack stack, int slot, @Nullable Direction side) {
+        SidedInventory sidedInventory;
         if (!inventory.isValid(slot, stack)) {
             return false;
         }
-        return !(inventory instanceof SidedInventory) || ((SidedInventory)inventory).canInsert(slot, stack, side);
+        return !(inventory instanceof SidedInventory) || (sidedInventory = (SidedInventory)inventory).canInsert(slot, stack, side);
     }
 
-    private static boolean canExtract(Inventory inv, ItemStack stack, int slot, Direction facing) {
-        return !(inv instanceof SidedInventory) || ((SidedInventory)inv).canExtract(slot, stack, facing);
+    private static boolean canExtract(Inventory hopperInventory, Inventory fromInventory, ItemStack stack, int slot, Direction facing) {
+        SidedInventory sidedInventory;
+        if (!fromInventory.canTransferTo(hopperInventory, slot, stack)) {
+            return false;
+        }
+        return !(fromInventory instanceof SidedInventory) || (sidedInventory = (SidedInventory)fromInventory).canExtract(slot, stack, facing);
     }
 
     private static ItemStack transfer(@Nullable Inventory from, Inventory to, ItemStack stack, int slot, @Nullable Direction side) {

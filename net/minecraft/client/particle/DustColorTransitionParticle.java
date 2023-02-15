@@ -13,6 +13,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DustColorTransitionParticleEffect;
+import net.minecraft.particle.ParticleEffect;
 import org.joml.Vector3f;
 
 @Environment(value=EnvType.CLIENT)
@@ -58,6 +59,11 @@ extends AbstractDustParticle<DustColorTransitionParticleEffect> {
         @Override
         public Particle createParticle(DustColorTransitionParticleEffect dustColorTransitionParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             return new DustColorTransitionParticle(clientWorld, d, e, f, g, h, i, dustColorTransitionParticleEffect, this.spriteProvider);
+        }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DustColorTransitionParticleEffect)particleEffect, clientWorld, d, e, f, g, h, i);
         }
     }
 }

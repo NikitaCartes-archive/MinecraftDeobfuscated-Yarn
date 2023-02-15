@@ -62,9 +62,9 @@ public class BackgroundRenderer {
             int o = nextWaterFogColor >> 8 & 0xFF;
             int p = nextWaterFogColor & 0xFF;
             float f = MathHelper.clamp((float)(l - lastWaterFogColorUpdateTime) / 5000.0f, 0.0f, 1.0f);
-            float g = MathHelper.lerp(f, n, j);
-            float h = MathHelper.lerp(f, o, k);
-            float q = MathHelper.lerp(f, p, m);
+            float g = MathHelper.lerp(f, (float)n, (float)j);
+            float h = MathHelper.lerp(f, (float)o, (float)k);
+            float q = MathHelper.lerp(f, (float)p, (float)m);
             red = g / 255.0f;
             green = h / 255.0f;
             blue = q / 255.0f;

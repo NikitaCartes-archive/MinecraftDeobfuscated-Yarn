@@ -199,7 +199,7 @@ extends BlockWithEntity {
         World world = ctx.getWorld();
         Direction.Axis axis = direction.getAxis();
         if (axis == Direction.Axis.Y) {
-            BlockState blockState = (BlockState)((BlockState)this.getDefaultState().with(ATTACHMENT, direction == Direction.DOWN ? Attachment.CEILING : Attachment.FLOOR)).with(FACING, ctx.getPlayerFacing());
+            BlockState blockState = (BlockState)((BlockState)this.getDefaultState().with(ATTACHMENT, direction == Direction.DOWN ? Attachment.CEILING : Attachment.FLOOR)).with(FACING, ctx.getHorizontalPlayerFacing());
             if (blockState.canPlaceAt(ctx.getWorld(), blockPos)) {
                 return blockState;
             }

@@ -994,12 +994,12 @@ extends PlayerEntity {
     @Override
     public void closeHandledScreen() {
         this.networkHandler.sendPacket(new CloseScreenS2CPacket(this.currentScreenHandler.syncId));
-        this.closeScreenHandler();
+        this.onHandledScreenClosed();
     }
 
     @Override
-    public void closeScreenHandler() {
-        this.currentScreenHandler.close(this);
+    public void onHandledScreenClosed() {
+        this.currentScreenHandler.onClosed(this);
         this.playerScreenHandler.copySharedSlots(this.currentScreenHandler);
         this.currentScreenHandler = this.playerScreenHandler;
     }
@@ -1322,7 +1322,7 @@ extends PlayerEntity {
     }
 
     public void sendServerMetadata(ServerMetadata metadata) {
-        this.networkHandler.sendPacket(new ServerMetadataS2CPacket(metadata.getDescription(), metadata.getFavicon(), metadata.isSecureChatEnforced()));
+        this.networkHandler.sendPacket(new ServerMetadataS2CPacket(metadata.description(), metadata.favicon().map(ServerMetadata.Favicon::iconBytes), metadata.secureChatEnforced()));
     }
 
     @Override

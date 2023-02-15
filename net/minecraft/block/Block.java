@@ -339,7 +339,7 @@ implements ItemConvertible {
         return FULL_CUBE_SHAPE_CACHE.getUnchecked(shape);
     }
 
-    public boolean isTranslucent(BlockState state, BlockView world, BlockPos pos) {
+    public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
         return !Block.isShapeFullCube(state.getOutlineShape(world, pos)) && state.getFluidState().isEmpty();
     }
 
@@ -400,10 +400,10 @@ implements ItemConvertible {
         }
     }
 
-    public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack stack2) {
+    public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack tool) {
         if (world instanceof ServerWorld) {
-            Block.getDroppedStacks(state, (ServerWorld)world, pos, blockEntity, entity, stack2).forEach(stack -> Block.dropStack(world, pos, stack));
-            state.onStacksDropped((ServerWorld)world, pos, stack2, true);
+            Block.getDroppedStacks(state, (ServerWorld)world, pos, blockEntity, entity, tool).forEach(stack -> Block.dropStack(world, pos, stack));
+            state.onStacksDropped((ServerWorld)world, pos, tool, true);
         }
     }
 
@@ -500,10 +500,10 @@ implements ItemConvertible {
      * @see AbstractBlock#onStacksDropped
      * @see AbstractBlock#onStateReplaced
      */
-    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack stack) {
+    public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
         player.incrementStat(Stats.MINED.getOrCreateStat(this));
         player.addExhaustion(0.005f);
-        Block.dropStacks(state, world, pos, blockEntity, player, stack);
+        Block.dropStacks(state, world, pos, blockEntity, player, tool);
     }
 
     /**

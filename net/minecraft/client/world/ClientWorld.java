@@ -817,16 +817,12 @@ extends World {
 
         @Override
         public void startTicking(Entity entity) {
-            if (entity.getType().isTickable()) {
-                ClientWorld.this.entityList.add(entity);
-            }
+            ClientWorld.this.entityList.add(entity);
         }
 
         @Override
         public void stopTicking(Entity entity) {
-            if (entity.getType().isTickable()) {
-                ClientWorld.this.entityList.remove(entity);
-            }
+            ClientWorld.this.entityList.remove(entity);
         }
 
         @Override

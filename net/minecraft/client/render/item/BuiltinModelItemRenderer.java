@@ -25,6 +25,7 @@ import net.minecraft.block.entity.BedBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.ConduitBlockEntity;
+import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
@@ -63,7 +64,7 @@ import org.apache.commons.lang3.StringUtils;
 @Environment(value=EnvType.CLIENT)
 public class BuiltinModelItemRenderer
 implements SynchronousResourceReloader {
-    private static final ShulkerBoxBlockEntity[] RENDER_SHULKER_BOX_DYED = (ShulkerBoxBlockEntity[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).map(dyeColor -> new ShulkerBoxBlockEntity((DyeColor)dyeColor, BlockPos.ORIGIN, Blocks.SHULKER_BOX.getDefaultState())).toArray(ShulkerBoxBlockEntity[]::new);
+    private static final ShulkerBoxBlockEntity[] RENDER_SHULKER_BOX_DYED = (ShulkerBoxBlockEntity[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).map(color -> new ShulkerBoxBlockEntity((DyeColor)color, BlockPos.ORIGIN, Blocks.SHULKER_BOX.getDefaultState())).toArray(ShulkerBoxBlockEntity[]::new);
     private static final ShulkerBoxBlockEntity RENDER_SHULKER_BOX = new ShulkerBoxBlockEntity(BlockPos.ORIGIN, Blocks.SHULKER_BOX.getDefaultState());
     private final ChestBlockEntity renderChestNormal = new ChestBlockEntity(BlockPos.ORIGIN, Blocks.CHEST.getDefaultState());
     private final ChestBlockEntity renderChestTrapped = new TrappedChestBlockEntity(BlockPos.ORIGIN, Blocks.TRAPPED_CHEST.getDefaultState());
@@ -71,6 +72,7 @@ implements SynchronousResourceReloader {
     private final BannerBlockEntity renderBanner = new BannerBlockEntity(BlockPos.ORIGIN, Blocks.WHITE_BANNER.getDefaultState());
     private final BedBlockEntity renderBed = new BedBlockEntity(BlockPos.ORIGIN, Blocks.RED_BED.getDefaultState());
     private final ConduitBlockEntity renderConduit = new ConduitBlockEntity(BlockPos.ORIGIN, Blocks.CONDUIT.getDefaultState());
+    private final DecoratedPotBlockEntity renderDecoratedPot = new DecoratedPotBlockEntity(BlockPos.ORIGIN, Blocks.DECORATED_POT.getDefaultState());
     private ShieldEntityModel modelShield;
     private TridentEntityModel modelTrident;
     private Map<SkullBlock.SkullType, SkullBlockEntityModel> skullModels;
@@ -127,6 +129,9 @@ implements SynchronousResourceReloader {
                 blockEntity = this.renderChestEnder;
             } else if (blockState.isOf(Blocks.TRAPPED_CHEST)) {
                 blockEntity = this.renderChestTrapped;
+            } else if (blockState.isOf(Blocks.DECORATED_POT)) {
+                this.renderDecoratedPot.readNbtFromStack(stack);
+                blockEntity = this.renderDecoratedPot;
             } else if (block instanceof ShulkerBoxBlock) {
                 DyeColor dyeColor = ShulkerBoxBlock.getColor(item);
                 blockEntity = dyeColor == null ? RENDER_SHULKER_BOX : RENDER_SHULKER_BOX_DYED[dyeColor.getId()];

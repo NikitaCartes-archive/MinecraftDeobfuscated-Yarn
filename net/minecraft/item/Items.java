@@ -26,6 +26,7 @@ import net.minecraft.item.BoatItem;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.BookItem;
 import net.minecraft.item.BowItem;
+import net.minecraft.item.BrushItem;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.BundleItem;
 import net.minecraft.item.ChorusFruitItem;
@@ -141,6 +142,7 @@ public class Items {
     public static final Item BIRCH_PLANKS = Items.register(Blocks.BIRCH_PLANKS);
     public static final Item JUNGLE_PLANKS = Items.register(Blocks.JUNGLE_PLANKS);
     public static final Item ACACIA_PLANKS = Items.register(Blocks.ACACIA_PLANKS);
+    public static final Item CHERRY_PLANKS = Items.register(Blocks.CHERRY_PLANKS);
     public static final Item DARK_OAK_PLANKS = Items.register(Blocks.DARK_OAK_PLANKS);
     public static final Item MANGROVE_PLANKS = Items.register(Blocks.MANGROVE_PLANKS);
     public static final Item BAMBOO_PLANKS = Items.register(Blocks.BAMBOO_PLANKS);
@@ -152,10 +154,12 @@ public class Items {
     public static final Item BIRCH_SAPLING = Items.register(Blocks.BIRCH_SAPLING);
     public static final Item JUNGLE_SAPLING = Items.register(Blocks.JUNGLE_SAPLING);
     public static final Item ACACIA_SAPLING = Items.register(Blocks.ACACIA_SAPLING);
+    public static final Item CHERRY_SAPLING = Items.register(Blocks.CHERRY_SAPLING);
     public static final Item DARK_OAK_SAPLING = Items.register(Blocks.DARK_OAK_SAPLING);
     public static final Item MANGROVE_PROPAGULE = Items.register(Blocks.MANGROVE_PROPAGULE);
     public static final Item BEDROCK = Items.register(Blocks.BEDROCK);
     public static final Item SAND = Items.register(Blocks.SAND);
+    public static final Item SUSPICIOUS_SAND = Items.register(new BlockItem(Blocks.SUSPICIOUS_SAND, new Item.Settings().requires(FeatureFlags.UPDATE_1_20)));
     public static final Item RED_SAND = Items.register(Blocks.RED_SAND);
     public static final Item GRAVEL = Items.register(Blocks.GRAVEL);
     public static final Item COAL_ORE = Items.register(Blocks.COAL_ORE);
@@ -224,6 +228,7 @@ public class Items {
     public static final Item BIRCH_LOG = Items.register(Blocks.BIRCH_LOG);
     public static final Item JUNGLE_LOG = Items.register(Blocks.JUNGLE_LOG);
     public static final Item ACACIA_LOG = Items.register(Blocks.ACACIA_LOG);
+    public static final Item CHERRY_LOG = Items.register(Blocks.CHERRY_LOG);
     public static final Item DARK_OAK_LOG = Items.register(Blocks.DARK_OAK_LOG);
     public static final Item MANGROVE_LOG = Items.register(Blocks.MANGROVE_LOG);
     public static final Item MANGROVE_ROOTS = Items.register(Blocks.MANGROVE_ROOTS);
@@ -236,6 +241,7 @@ public class Items {
     public static final Item STRIPPED_BIRCH_LOG = Items.register(Blocks.STRIPPED_BIRCH_LOG);
     public static final Item STRIPPED_JUNGLE_LOG = Items.register(Blocks.STRIPPED_JUNGLE_LOG);
     public static final Item STRIPPED_ACACIA_LOG = Items.register(Blocks.STRIPPED_ACACIA_LOG);
+    public static final Item STRIPPED_CHERRY_LOG = Items.register(Blocks.STRIPPED_CHERRY_LOG);
     public static final Item STRIPPED_DARK_OAK_LOG = Items.register(Blocks.STRIPPED_DARK_OAK_LOG);
     public static final Item STRIPPED_MANGROVE_LOG = Items.register(Blocks.STRIPPED_MANGROVE_LOG);
     public static final Item STRIPPED_CRIMSON_STEM = Items.register(Blocks.STRIPPED_CRIMSON_STEM);
@@ -245,6 +251,7 @@ public class Items {
     public static final Item STRIPPED_BIRCH_WOOD = Items.register(Blocks.STRIPPED_BIRCH_WOOD);
     public static final Item STRIPPED_JUNGLE_WOOD = Items.register(Blocks.STRIPPED_JUNGLE_WOOD);
     public static final Item STRIPPED_ACACIA_WOOD = Items.register(Blocks.STRIPPED_ACACIA_WOOD);
+    public static final Item STRIPPED_CHERRY_WOOD = Items.register(Blocks.STRIPPED_CHERRY_WOOD);
     public static final Item STRIPPED_DARK_OAK_WOOD = Items.register(Blocks.STRIPPED_DARK_OAK_WOOD);
     public static final Item STRIPPED_MANGROVE_WOOD = Items.register(Blocks.STRIPPED_MANGROVE_WOOD);
     public static final Item STRIPPED_CRIMSON_HYPHAE = Items.register(Blocks.STRIPPED_CRIMSON_HYPHAE);
@@ -255,6 +262,7 @@ public class Items {
     public static final Item BIRCH_WOOD = Items.register(Blocks.BIRCH_WOOD);
     public static final Item JUNGLE_WOOD = Items.register(Blocks.JUNGLE_WOOD);
     public static final Item ACACIA_WOOD = Items.register(Blocks.ACACIA_WOOD);
+    public static final Item CHERRY_WOOD = Items.register(Blocks.CHERRY_WOOD);
     public static final Item DARK_OAK_WOOD = Items.register(Blocks.DARK_OAK_WOOD);
     public static final Item MANGROVE_WOOD = Items.register(Blocks.MANGROVE_WOOD);
     public static final Item CRIMSON_HYPHAE = Items.register(Blocks.CRIMSON_HYPHAE);
@@ -264,6 +272,7 @@ public class Items {
     public static final Item BIRCH_LEAVES = Items.register(Blocks.BIRCH_LEAVES);
     public static final Item JUNGLE_LEAVES = Items.register(Blocks.JUNGLE_LEAVES);
     public static final Item ACACIA_LEAVES = Items.register(Blocks.ACACIA_LEAVES);
+    public static final Item CHERRY_LEAVES = Items.register(Blocks.CHERRY_LEAVES);
     public static final Item DARK_OAK_LEAVES = Items.register(Blocks.DARK_OAK_LEAVES);
     public static final Item MANGROVE_LEAVES = Items.register(Blocks.MANGROVE_LEAVES);
     public static final Item AZALEA_LEAVES = Items.register(Blocks.AZALEA_LEAVES);
@@ -313,6 +322,7 @@ public class Items {
     public static final Item CORNFLOWER = Items.register(Blocks.CORNFLOWER);
     public static final Item LILY_OF_THE_VALLEY = Items.register(Blocks.LILY_OF_THE_VALLEY);
     public static final Item WITHER_ROSE = Items.register(Blocks.WITHER_ROSE);
+    public static final Item TORCHFLOWER = Items.register(Blocks.TORCHFLOWER);
     public static final Item SPORE_BLOSSOM = Items.register(Blocks.SPORE_BLOSSOM);
     public static final Item BROWN_MUSHROOM = Items.register(Blocks.BROWN_MUSHROOM);
     public static final Item RED_MUSHROOM = Items.register(Blocks.RED_MUSHROOM);
@@ -326,6 +336,7 @@ public class Items {
     public static final Item SUGAR_CANE = Items.register(Blocks.SUGAR_CANE);
     public static final Item KELP = Items.register(Blocks.KELP);
     public static final Item MOSS_CARPET = Items.register(Blocks.MOSS_CARPET);
+    public static final Item PINK_PETALS = Items.register(Blocks.PINK_PETALS);
     public static final Item MOSS_BLOCK = Items.register(Blocks.MOSS_BLOCK);
     public static final Item HANGING_ROOTS = Items.register(Blocks.HANGING_ROOTS);
     public static final Item BIG_DRIPLEAF = Items.register(Blocks.BIG_DRIPLEAF, Blocks.BIG_DRIPLEAF_STEM);
@@ -336,6 +347,7 @@ public class Items {
     public static final Item BIRCH_SLAB = Items.register(Blocks.BIRCH_SLAB);
     public static final Item JUNGLE_SLAB = Items.register(Blocks.JUNGLE_SLAB);
     public static final Item ACACIA_SLAB = Items.register(Blocks.ACACIA_SLAB);
+    public static final Item CHERRY_SLAB = Items.register(Blocks.CHERRY_SLAB);
     public static final Item DARK_OAK_SLAB = Items.register(Blocks.DARK_OAK_SLAB);
     public static final Item MANGROVE_SLAB = Items.register(Blocks.MANGROVE_SLAB);
     public static final Item BAMBOO_SLAB = Items.register(Blocks.BAMBOO_SLAB);
@@ -366,6 +378,7 @@ public class Items {
     public static final Item BRICKS = Items.register(Blocks.BRICKS);
     public static final Item BOOKSHELF = Items.register(Blocks.BOOKSHELF);
     public static final Item CHISELED_BOOKSHELF = Items.register(Blocks.CHISELED_BOOKSHELF);
+    public static final Item DECORATED_POT = Items.register(new BlockItem(Blocks.DECORATED_POT, new Item.Settings().maxCount(1).requires(FeatureFlags.UPDATE_1_20)));
     public static final Item MOSSY_COBBLESTONE = Items.register(Blocks.MOSSY_COBBLESTONE);
     public static final Item OBSIDIAN = Items.register(Blocks.OBSIDIAN);
     public static final Item TORCH = Items.register(new VerticallyAttachableBlockItem(Blocks.TORCH, Blocks.WALL_TORCH, new Item.Settings(), Direction.DOWN));
@@ -393,6 +406,7 @@ public class Items {
     public static final Item BIRCH_FENCE = Items.register(Blocks.BIRCH_FENCE);
     public static final Item JUNGLE_FENCE = Items.register(Blocks.JUNGLE_FENCE);
     public static final Item ACACIA_FENCE = Items.register(Blocks.ACACIA_FENCE);
+    public static final Item CHERRY_FENCE = Items.register(Blocks.CHERRY_FENCE);
     public static final Item DARK_OAK_FENCE = Items.register(Blocks.DARK_OAK_FENCE);
     public static final Item MANGROVE_FENCE = Items.register(Blocks.MANGROVE_FENCE);
     public static final Item BAMBOO_FENCE = Items.register(Blocks.BAMBOO_FENCE);
@@ -464,6 +478,7 @@ public class Items {
     public static final Item BIRCH_STAIRS = Items.register(Blocks.BIRCH_STAIRS);
     public static final Item JUNGLE_STAIRS = Items.register(Blocks.JUNGLE_STAIRS);
     public static final Item ACACIA_STAIRS = Items.register(Blocks.ACACIA_STAIRS);
+    public static final Item CHERRY_STAIRS = Items.register(Blocks.CHERRY_STAIRS);
     public static final Item DARK_OAK_STAIRS = Items.register(Blocks.DARK_OAK_STAIRS);
     public static final Item MANGROVE_STAIRS = Items.register(Blocks.MANGROVE_STAIRS);
     public static final Item BAMBOO_STAIRS = Items.register(Blocks.BAMBOO_STAIRS);
@@ -762,6 +777,7 @@ public class Items {
     public static final Item BIRCH_BUTTON = Items.register(Blocks.BIRCH_BUTTON);
     public static final Item JUNGLE_BUTTON = Items.register(Blocks.JUNGLE_BUTTON);
     public static final Item ACACIA_BUTTON = Items.register(Blocks.ACACIA_BUTTON);
+    public static final Item CHERRY_BUTTON = Items.register(Blocks.CHERRY_BUTTON);
     public static final Item DARK_OAK_BUTTON = Items.register(Blocks.DARK_OAK_BUTTON);
     public static final Item MANGROVE_BUTTON = Items.register(Blocks.MANGROVE_BUTTON);
     public static final Item BAMBOO_BUTTON = Items.register(Blocks.BAMBOO_BUTTON);
@@ -776,6 +792,7 @@ public class Items {
     public static final Item BIRCH_PRESSURE_PLATE = Items.register(Blocks.BIRCH_PRESSURE_PLATE);
     public static final Item JUNGLE_PRESSURE_PLATE = Items.register(Blocks.JUNGLE_PRESSURE_PLATE);
     public static final Item ACACIA_PRESSURE_PLATE = Items.register(Blocks.ACACIA_PRESSURE_PLATE);
+    public static final Item CHERRY_PRESSURE_PLATE = Items.register(Blocks.CHERRY_PRESSURE_PLATE);
     public static final Item DARK_OAK_PRESSURE_PLATE = Items.register(Blocks.DARK_OAK_PRESSURE_PLATE);
     public static final Item MANGROVE_PRESSURE_PLATE = Items.register(Blocks.MANGROVE_PRESSURE_PLATE);
     public static final Item BAMBOO_PRESSURE_PLATE = Items.register(Blocks.BAMBOO_PRESSURE_PLATE);
@@ -787,6 +804,7 @@ public class Items {
     public static final Item BIRCH_DOOR = Items.register(new TallBlockItem(Blocks.BIRCH_DOOR, new Item.Settings()));
     public static final Item JUNGLE_DOOR = Items.register(new TallBlockItem(Blocks.JUNGLE_DOOR, new Item.Settings()));
     public static final Item ACACIA_DOOR = Items.register(new TallBlockItem(Blocks.ACACIA_DOOR, new Item.Settings()));
+    public static final Item CHERRY_DOOR = Items.register(new TallBlockItem(Blocks.CHERRY_DOOR, new Item.Settings()));
     public static final Item DARK_OAK_DOOR = Items.register(new TallBlockItem(Blocks.DARK_OAK_DOOR, new Item.Settings()));
     public static final Item MANGROVE_DOOR = Items.register(new TallBlockItem(Blocks.MANGROVE_DOOR, new Item.Settings()));
     public static final Item BAMBOO_DOOR = Items.register(new TallBlockItem(Blocks.BAMBOO_DOOR, new Item.Settings()));
@@ -798,6 +816,7 @@ public class Items {
     public static final Item BIRCH_TRAPDOOR = Items.register(Blocks.BIRCH_TRAPDOOR);
     public static final Item JUNGLE_TRAPDOOR = Items.register(Blocks.JUNGLE_TRAPDOOR);
     public static final Item ACACIA_TRAPDOOR = Items.register(Blocks.ACACIA_TRAPDOOR);
+    public static final Item CHERRY_TRAPDOOR = Items.register(Blocks.CHERRY_TRAPDOOR);
     public static final Item DARK_OAK_TRAPDOOR = Items.register(Blocks.DARK_OAK_TRAPDOOR);
     public static final Item MANGROVE_TRAPDOOR = Items.register(Blocks.MANGROVE_TRAPDOOR);
     public static final Item BAMBOO_TRAPDOOR = Items.register(Blocks.BAMBOO_TRAPDOOR);
@@ -808,6 +827,7 @@ public class Items {
     public static final Item BIRCH_FENCE_GATE = Items.register(Blocks.BIRCH_FENCE_GATE);
     public static final Item JUNGLE_FENCE_GATE = Items.register(Blocks.JUNGLE_FENCE_GATE);
     public static final Item ACACIA_FENCE_GATE = Items.register(Blocks.ACACIA_FENCE_GATE);
+    public static final Item CHERRY_FENCE_GATE = Items.register(Blocks.CHERRY_FENCE_GATE);
     public static final Item DARK_OAK_FENCE_GATE = Items.register(Blocks.DARK_OAK_FENCE_GATE);
     public static final Item MANGROVE_FENCE_GATE = Items.register(Blocks.MANGROVE_FENCE_GATE);
     public static final Item BAMBOO_FENCE_GATE = Items.register(Blocks.BAMBOO_FENCE_GATE);
@@ -836,6 +856,8 @@ public class Items {
     public static final Item JUNGLE_CHEST_BOAT = Items.register("jungle_chest_boat", (Item)new BoatItem(true, BoatEntity.Type.JUNGLE, new Item.Settings().maxCount(1)));
     public static final Item ACACIA_BOAT = Items.register("acacia_boat", (Item)new BoatItem(false, BoatEntity.Type.ACACIA, new Item.Settings().maxCount(1)));
     public static final Item ACACIA_CHEST_BOAT = Items.register("acacia_chest_boat", (Item)new BoatItem(true, BoatEntity.Type.ACACIA, new Item.Settings().maxCount(1)));
+    public static final Item CHERRY_BOAT = Items.register("cherry_boat", (Item)new BoatItem(false, BoatEntity.Type.CHERRY, new Item.Settings().maxCount(1).requires(FeatureFlags.UPDATE_1_20)));
+    public static final Item CHERRY_CHEST_BOAT = Items.register("cherry_chest_boat", (Item)new BoatItem(true, BoatEntity.Type.CHERRY, new Item.Settings().maxCount(1).requires(FeatureFlags.UPDATE_1_20)));
     public static final Item DARK_OAK_BOAT = Items.register("dark_oak_boat", (Item)new BoatItem(false, BoatEntity.Type.DARK_OAK, new Item.Settings().maxCount(1)));
     public static final Item DARK_OAK_CHEST_BOAT = Items.register("dark_oak_chest_boat", (Item)new BoatItem(true, BoatEntity.Type.DARK_OAK, new Item.Settings().maxCount(1)));
     public static final Item MANGROVE_BOAT = Items.register("mangrove_boat", (Item)new BoatItem(false, BoatEntity.Type.MANGROVE, new Item.Settings().maxCount(1)));
@@ -939,6 +961,7 @@ public class Items {
     public static final Item BIRCH_SIGN = Items.register("birch_sign", (Item)new SignItem(new Item.Settings().maxCount(16), Blocks.BIRCH_SIGN, Blocks.BIRCH_WALL_SIGN));
     public static final Item JUNGLE_SIGN = Items.register("jungle_sign", (Item)new SignItem(new Item.Settings().maxCount(16), Blocks.JUNGLE_SIGN, Blocks.JUNGLE_WALL_SIGN));
     public static final Item ACACIA_SIGN = Items.register("acacia_sign", (Item)new SignItem(new Item.Settings().maxCount(16), Blocks.ACACIA_SIGN, Blocks.ACACIA_WALL_SIGN));
+    public static final Item CHERRY_SIGN = Items.register("cherry_sign", (Item)new SignItem(new Item.Settings().maxCount(16), Blocks.CHERRY_SIGN, Blocks.CHERRY_WALL_SIGN));
     public static final Item DARK_OAK_SIGN = Items.register("dark_oak_sign", (Item)new SignItem(new Item.Settings().maxCount(16), Blocks.DARK_OAK_SIGN, Blocks.DARK_OAK_WALL_SIGN));
     public static final Item MANGROVE_SIGN = Items.register("mangrove_sign", (Item)new SignItem(new Item.Settings().maxCount(16), Blocks.MANGROVE_SIGN, Blocks.MANGROVE_WALL_SIGN));
     public static final Item BAMBOO_SIGN = Items.register("bamboo_sign", (Item)new SignItem(new Item.Settings().maxCount(16), Blocks.BAMBOO_SIGN, Blocks.BAMBOO_WALL_SIGN));
@@ -949,6 +972,7 @@ public class Items {
     public static final Item BIRCH_HANGING_SIGN = Items.register("birch_hanging_sign", (Item)new HangingSignItem(Blocks.BIRCH_HANGING_SIGN, Blocks.BIRCH_WALL_HANGING_SIGN, new Item.Settings().maxCount(16)));
     public static final Item JUNGLE_HANGING_SIGN = Items.register("jungle_hanging_sign", (Item)new HangingSignItem(Blocks.JUNGLE_HANGING_SIGN, Blocks.JUNGLE_WALL_HANGING_SIGN, new Item.Settings().maxCount(16)));
     public static final Item ACACIA_HANGING_SIGN = Items.register("acacia_hanging_sign", (Item)new HangingSignItem(Blocks.ACACIA_HANGING_SIGN, Blocks.ACACIA_WALL_HANGING_SIGN, new Item.Settings().maxCount(16)));
+    public static final Item CHERRY_HANGING_SIGN = Items.register("cherry_hanging_sign", (Item)new HangingSignItem(Blocks.CHERRY_HANGING_SIGN, Blocks.CHERRY_WALL_HANGING_SIGN, new Item.Settings().maxCount(16)));
     public static final Item DARK_OAK_HANGING_SIGN = Items.register("dark_oak_hanging_sign", (Item)new HangingSignItem(Blocks.DARK_OAK_HANGING_SIGN, Blocks.DARK_OAK_WALL_HANGING_SIGN, new Item.Settings().maxCount(16)));
     public static final Item MANGROVE_HANGING_SIGN = Items.register("mangrove_hanging_sign", (Item)new HangingSignItem(Blocks.MANGROVE_HANGING_SIGN, Blocks.MANGROVE_WALL_HANGING_SIGN, new Item.Settings().maxCount(16)));
     public static final Item BAMBOO_HANGING_SIGN = Items.register("bamboo_hanging_sign", (Item)new HangingSignItem(Blocks.BAMBOO_HANGING_SIGN, Blocks.BAMBOO_WALL_HANGING_SIGN, new Item.Settings().maxCount(16)));
@@ -1106,6 +1130,7 @@ public class Items {
     public static final Item SKELETON_SPAWN_EGG = Items.register("skeleton_spawn_egg", (Item)new SpawnEggItem(EntityType.SKELETON, 0xC1C1C1, 0x494949, new Item.Settings()));
     public static final Item SKELETON_HORSE_SPAWN_EGG = Items.register("skeleton_horse_spawn_egg", (Item)new SpawnEggItem(EntityType.SKELETON_HORSE, 6842447, 15066584, new Item.Settings()));
     public static final Item SLIME_SPAWN_EGG = Items.register("slime_spawn_egg", (Item)new SpawnEggItem(EntityType.SLIME, 5349438, 8306542, new Item.Settings()));
+    public static final Item SNIFFER_SPAWN_EGG = Items.register("sniffer_spawn_egg", (Item)new SpawnEggItem(EntityType.SNIFFER, 9840944, 5085536, new Item.Settings()));
     public static final Item SNOW_GOLEM_SPAWN_EGG = Items.register("snow_golem_spawn_egg", (Item)new SpawnEggItem(EntityType.SNOW_GOLEM, 14283506, 8496292, new Item.Settings()));
     public static final Item SPIDER_SPAWN_EGG = Items.register("spider_spawn_egg", (Item)new SpawnEggItem(EntityType.SPIDER, 3419431, 11013646, new Item.Settings()));
     public static final Item SQUID_SPAWN_EGG = Items.register("squid_spawn_egg", (Item)new SpawnEggItem(EntityType.SQUID, 2243405, 7375001, new Item.Settings()));
@@ -1191,6 +1216,7 @@ public class Items {
     public static final Item END_CRYSTAL = Items.register("end_crystal", (Item)new EndCrystalItem(new Item.Settings().rarity(Rarity.RARE)));
     public static final Item CHORUS_FRUIT = Items.register("chorus_fruit", (Item)new ChorusFruitItem(new Item.Settings().food(FoodComponents.CHORUS_FRUIT)));
     public static final Item POPPED_CHORUS_FRUIT = Items.register("popped_chorus_fruit", new Item(new Item.Settings()));
+    public static final Item TORCHFLOWER_SEEDS = Items.register("torchflower_seeds", (Item)new AliasedBlockItem(Blocks.TORCHFLOWER_CROP, new Item.Settings()));
     public static final Item BEETROOT = Items.register("beetroot", new Item(new Item.Settings().food(FoodComponents.BEETROOT)));
     public static final Item BEETROOT_SEEDS = Items.register("beetroot_seeds", (Item)new AliasedBlockItem(Blocks.BEETROOTS, new Item.Settings()));
     public static final Item BEETROOT_SOUP = Items.register("beetroot_soup", (Item)new StewItem(new Item.Settings().maxCount(1).food(FoodComponents.BEETROOT_SOUP)));
@@ -1299,6 +1325,7 @@ public class Items {
     public static final Item PEARLESCENT_FROGLIGHT = Items.register(Blocks.PEARLESCENT_FROGLIGHT);
     public static final Item FROGSPAWN = Items.register(new PlaceableOnWaterItem(Blocks.FROGSPAWN, new Item.Settings()));
     public static final Item ECHO_SHARD = Items.register("echo_shard", new Item(new Item.Settings()));
+    public static final Item BRUSH = Items.register("brush", (Item)new BrushItem(new Item.Settings().maxDamage(64).requires(FeatureFlags.UPDATE_1_20)));
     public static final Item NETHERITE_UPGRADE_SMITHING_TEMPLATE = Items.register("netherite_upgrade_smithing_template", (Item)SmithingTemplateItem.createNetheriteUpgrade());
     public static final Item SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE = Items.register("sentry_armor_trim_smithing_template", (Item)SmithingTemplateItem.of(ArmorTrimPatterns.SENTRY));
     public static final Item DUNE_ARMOR_TRIM_SMITHING_TEMPLATE = Items.register("dune_armor_trim_smithing_template", (Item)SmithingTemplateItem.of(ArmorTrimPatterns.DUNE));
@@ -1311,6 +1338,10 @@ public class Items {
     public static final Item SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE = Items.register("snout_armor_trim_smithing_template", (Item)SmithingTemplateItem.of(ArmorTrimPatterns.SNOUT));
     public static final Item RIB_ARMOR_TRIM_SMITHING_TEMPLATE = Items.register("rib_armor_trim_smithing_template", (Item)SmithingTemplateItem.of(ArmorTrimPatterns.RIB));
     public static final Item SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE = Items.register("spire_armor_trim_smithing_template", (Item)SmithingTemplateItem.of(ArmorTrimPatterns.SPIRE));
+    public static final Item POTTERY_SHARD_ARCHER = Items.register("pottery_shard_archer", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_20)));
+    public static final Item POTTERY_SHARD_PRIZE = Items.register("pottery_shard_prize", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_20)));
+    public static final Item POTTERY_SHARD_ARMS_UP = Items.register("pottery_shard_arms_up", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_20)));
+    public static final Item POTTERY_SHARD_SKULL = Items.register("pottery_shard_skull", new Item(new Item.Settings().requires(FeatureFlags.UPDATE_1_20)));
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));

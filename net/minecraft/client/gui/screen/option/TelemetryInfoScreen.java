@@ -77,7 +77,7 @@ extends Screen {
     }
 
     private ClickableWidget createOptInButton() {
-        ClickableWidget clickableWidget = this.options.getTelemetryOptInExtra().createButton(this.options, 0, 0, 150, value -> this.telemetryEventWidget.refresh((boolean)value));
+        ClickableWidget clickableWidget = this.options.getTelemetryOptInExtra().createWidget(this.options, 0, 0, 150, value -> this.telemetryEventWidget.refresh((boolean)value));
         clickableWidget.active = this.client.isOptionalTelemetryEnabledByApi();
         return clickableWidget;
     }

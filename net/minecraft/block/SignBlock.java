@@ -8,6 +8,7 @@ import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.WoodType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -16,7 +17,6 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
-import net.minecraft.util.SignType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationPropertyHelper;
@@ -27,8 +27,8 @@ public class SignBlock
 extends AbstractSignBlock {
     public static final IntProperty ROTATION = Properties.ROTATION;
 
-    public SignBlock(AbstractBlock.Settings settings, SignType signType) {
-        super(settings, signType);
+    public SignBlock(AbstractBlock.Settings settings, WoodType woodType) {
+        super(settings.sounds(woodType.soundType()), woodType);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ROTATION, 0)).with(WATERLOGGED, false));
     }
 

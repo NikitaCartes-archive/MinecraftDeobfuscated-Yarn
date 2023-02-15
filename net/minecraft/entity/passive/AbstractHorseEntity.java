@@ -4,6 +4,8 @@
 package net.minecraft.entity.passive;
 
 import java.util.UUID;
+import java.util.function.DoubleSupplier;
+import java.util.function.IntUnaryOperator;
 import java.util.function.Predicate;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -35,6 +37,7 @@ import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -88,6 +91,13 @@ Saddleable {
     public static final int field_30413 = 400;
     public static final int field_30414 = 499;
     public static final int field_30415 = 500;
+    public static final double field_42647 = 0.15;
+    private static final float MIN_MOVEMENT_SPEED_BONUS = (float)AbstractHorseEntity.getChildMovementSpeedBonus(() -> 0.0);
+    private static final float MAX_MOVEMENT_SPEED_BONUS = (float)AbstractHorseEntity.getChildMovementSpeedBonus(() -> 1.0);
+    private static final float MIN_JUMP_STRENGTH_BONUS = (float)AbstractHorseEntity.getChildJumpStrengthBonus(() -> 0.0);
+    private static final float MAX_JUMP_STRENGTH_BONUS = (float)AbstractHorseEntity.getChildJumpStrengthBonus(() -> 1.0);
+    private static final float MIN_HEALTH_BONUS = AbstractHorseEntity.getChildHealthBonus(max -> 0);
+    private static final float MAX_HEALTH_BONUS = AbstractHorseEntity.getChildHealthBonus(max -> max - 1);
     private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof AbstractHorseEntity && ((AbstractHorseEntity)entity).isBred();
     private static final TargetPredicate PARENT_HORSE_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).ignoreVisibility().setPredicate(IS_BRED_HORSE);
     private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
@@ -815,13 +825,37 @@ Saddleable {
         return null;
     }
 
-    protected void setChildAttributes(PassiveEntity mate, AbstractHorseEntity child) {
-        double d = this.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH) + mate.getAttributeBaseValue(EntityAttributes.GENERIC_MAX_HEALTH) + (double)this.getChildHealthBonus(this.random);
-        child.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(d / 3.0);
-        double e = this.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH) + mate.getAttributeBaseValue(EntityAttributes.HORSE_JUMP_STRENGTH) + this.getChildJumpStrengthBonus(this.random);
-        child.getAttributeInstance(EntityAttributes.HORSE_JUMP_STRENGTH).setBaseValue(e / 3.0);
-        double f = this.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + mate.getAttributeBaseValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + this.getChildMovementSpeedBonus(this.random);
-        child.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(f / 3.0);
+    protected void setChildAttributes(PassiveEntity other, AbstractHorseEntity child) {
+        this.setChildAttribute(other, child, EntityAttributes.GENERIC_MAX_HEALTH, MIN_HEALTH_BONUS, MAX_HEALTH_BONUS);
+        this.setChildAttribute(other, child, EntityAttributes.HORSE_JUMP_STRENGTH, MIN_JUMP_STRENGTH_BONUS, MAX_JUMP_STRENGTH_BONUS);
+        this.setChildAttribute(other, child, EntityAttributes.GENERIC_MOVEMENT_SPEED, MIN_MOVEMENT_SPEED_BONUS, MAX_MOVEMENT_SPEED_BONUS);
+    }
+
+    private void setChildAttribute(PassiveEntity other, AbstractHorseEntity child, EntityAttribute attribute, double min, double max) {
+        double d = AbstractHorseEntity.calculateAttributeBaseValue(this.getAttributeBaseValue(attribute), other.getAttributeBaseValue(attribute), min, max, this.random);
+        child.getAttributeInstance(attribute).setBaseValue(d);
+    }
+
+    static double calculateAttributeBaseValue(double parentBase, double otherParentBase, double min, double max, Random random) {
+        double g;
+        if (max <= min) {
+            throw new IllegalArgumentException("Incorrect range for an attribute");
+        }
+        parentBase = MathHelper.clamp(parentBase, min, max);
+        otherParentBase = MathHelper.clamp(otherParentBase, min, max);
+        double d = 0.15 * (max - min);
+        double f = (parentBase + otherParentBase) / 2.0;
+        double e = Math.abs(parentBase - otherParentBase) + d * 2.0;
+        double h = f + e * (g = (random.nextDouble() + random.nextDouble() + random.nextDouble()) / 3.0 - 0.5);
+        if (h > max) {
+            double i = h - max;
+            return max - i;
+        }
+        if (h < min) {
+            double i = min - h;
+            return min + i;
+        }
+        return h;
     }
 
     public float getEatingGrassAnimationProgress(float tickDelta) {
@@ -906,16 +940,16 @@ Saddleable {
         }
     }
 
-    protected float getChildHealthBonus(Random random) {
-        return 15.0f + (float)random.nextInt(8) + (float)random.nextInt(9);
+    protected static float getChildHealthBonus(IntUnaryOperator randomIntGetter) {
+        return 15.0f + (float)randomIntGetter.applyAsInt(8) + (float)randomIntGetter.applyAsInt(9);
     }
 
-    protected double getChildJumpStrengthBonus(Random random) {
-        return (double)0.4f + random.nextDouble() * 0.2 + random.nextDouble() * 0.2 + random.nextDouble() * 0.2;
+    protected static double getChildJumpStrengthBonus(DoubleSupplier randomDoubleGetter) {
+        return (double)0.4f + randomDoubleGetter.getAsDouble() * 0.2 + randomDoubleGetter.getAsDouble() * 0.2 + randomDoubleGetter.getAsDouble() * 0.2;
     }
 
-    protected double getChildMovementSpeedBonus(Random random) {
-        return ((double)0.45f + random.nextDouble() * 0.3 + random.nextDouble() * 0.3 + random.nextDouble() * 0.3) * 0.25;
+    protected static double getChildMovementSpeedBonus(DoubleSupplier randomDoubleGetter) {
+        return ((double)0.45f + randomDoubleGetter.getAsDouble() * 0.3 + randomDoubleGetter.getAsDouble() * 0.3 + randomDoubleGetter.getAsDouble() * 0.3) * 0.25;
     }
 
     @Override

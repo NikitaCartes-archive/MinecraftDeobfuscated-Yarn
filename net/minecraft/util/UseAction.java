@@ -12,7 +12,8 @@ public enum UseAction {
     SPEAR,
     CROSSBOW,
     SPYGLASS,
-    TOOT_HORN;
+    TOOT_HORN,
+    BRUSH;
 
 }
 

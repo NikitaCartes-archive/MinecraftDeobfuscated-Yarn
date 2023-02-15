@@ -1927,6 +1927,10 @@ CommandOutput {
         return this.world.raycast(new RaycastContext(vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, includeFluids ? RaycastContext.FluidHandling.ANY : RaycastContext.FluidHandling.NONE, this));
     }
 
+    public boolean canBeHitByProjectile() {
+        return this.isAlive() && this.canHit();
+    }
+
     /**
      * {@return whether the entity can be hit with a projectile or be targeted by
      * the player crosshair}
@@ -3278,7 +3282,7 @@ CommandOutput {
      * in order to prevent unwarranted fall damage.
      */
     public void limitFallDistance() {
-        if (this.velocity.getY() > -0.5 && this.fallDistance > 1.0f) {
+        if (this.getVelocity().getY() > -0.5 && this.fallDistance > 1.0f) {
             this.fallDistance = 1.0f;
         }
     }
@@ -4729,7 +4733,7 @@ CommandOutput {
     }
 
     public void addVelocity(Vec3d velocity) {
-        this.velocity = this.velocity.add(velocity);
+        this.setVelocity(this.getVelocity().add(velocity));
     }
 
     public void setVelocity(double x, double y, double z) {

@@ -15,6 +15,7 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.BlockStateParticleEffect;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(value=EnvType.CLIENT)
@@ -91,6 +92,11 @@ extends SpriteBillboardParticle {
                 return null;
             }
             return new BlockDustParticle(clientWorld, d, e, f, g, h, i, blockState);
+        }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((BlockStateParticleEffect)particleEffect, clientWorld, d, e, f, g, h, i);
         }
     }
 }

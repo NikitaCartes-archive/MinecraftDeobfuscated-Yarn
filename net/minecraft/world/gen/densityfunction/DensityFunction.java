@@ -13,6 +13,13 @@ import net.minecraft.world.gen.chunk.Blender;
 import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a function that maps from a block position to a density value.
+ * 
+ * <p>It can be defined in code or in data packs by using pre-defined function types
+ * like constant values or {@code add}, which in turn use other density functions
+ * to define their operands.
+ */
 public interface DensityFunction {
     public static final Codec<DensityFunction> CODEC = DensityFunctionTypes.CODEC;
     public static final Codec<RegistryEntry<DensityFunction>> REGISTRY_ENTRY_CODEC = RegistryElementCodec.of(RegistryKeys.DENSITY_FUNCTION, CODEC);
@@ -24,10 +31,29 @@ public interface DensityFunction {
         return new RegistryEntry.Direct<DensityFunction>((DensityFunction)function);
     });
 
+    /**
+     * {@return the density value for the given block position}
+     * 
+     * @param pos the block position
+     */
     public double sample(NoisePos var1);
 
-    public void applyEach(double[] var1, EachApplier var2);
+    /**
+     * Fills an array of densities using {@code this} density function and
+     * the {@link EachApplier}.
+     * 
+     * @param densities the array of densities to fill, like a buffer or a cache
+     * @param applier the {@code EachApplier} to use. It has a method for filling the array, as well as to get a block position for an index
+     */
+    public void fill(double[] var1, EachApplier var2);
 
+    /**
+     * Applies the visitor to every child density function and {@code this}.
+     * 
+     * @return the resulting density function
+     * 
+     * @param visitor the visitor that should be applied to this density function
+     */
     public DensityFunction apply(DensityFunctionVisitor var1);
 
     public double minValue();
@@ -83,8 +109,8 @@ public interface DensityFunction {
     public static interface Base
     extends DensityFunction {
         @Override
-        default public void applyEach(double[] densities, EachApplier applier) {
-            applier.applyEach(densities, this);
+        default public void fill(double[] densities, EachApplier applier) {
+            applier.fill(densities, this);
         }
 
         @Override
@@ -123,9 +149,9 @@ public interface DensityFunction {
     }
 
     public static interface EachApplier {
-        public NoisePos getPosAt(int var1);
+        public NoisePos at(int var1);
 
-        public void applyEach(double[] var1, DensityFunction var2);
+        public void fill(double[] var1, DensityFunction var2);
     }
 }
 

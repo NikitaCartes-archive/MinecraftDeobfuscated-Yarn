@@ -224,6 +224,7 @@ implements VariantHolder<Type> {
             case Type.BIRCH -> Items.BIRCH_BOAT;
             case Type.JUNGLE -> Items.JUNGLE_BOAT;
             case Type.ACACIA -> Items.ACACIA_BOAT;
+            case Type.CHERRY -> Items.CHERRY_BOAT;
             case Type.DARK_OAK -> Items.DARK_OAK_BOAT;
             case Type.MANGROVE -> Items.MANGROVE_BOAT;
             case Type.BAMBOO -> Items.BAMBOO_RAFT;
@@ -310,7 +311,7 @@ implements VariantHolder<Type> {
             for (int j = 0; j < list.size(); ++j) {
                 Entity entity = list.get(j);
                 if (entity.hasPassenger(this)) continue;
-                if (bl && this.getPassengerList().size() < this.getMaxPassengers() && !entity.hasVehicle() && entity.getWidth() < this.getWidth() && entity instanceof LivingEntity && !(entity instanceof WaterCreatureEntity) && !(entity instanceof PlayerEntity)) {
+                if (bl && this.getPassengerList().size() < this.getMaxPassengers() && !entity.hasVehicle() && this.isSmallerThanBoat(entity) && entity instanceof LivingEntity && !(entity instanceof WaterCreatureEntity) && !(entity instanceof PlayerEntity)) {
                     entity.startRiding(this);
                     continue;
                 }
@@ -592,6 +593,10 @@ implements VariantHolder<Type> {
         return 0.0f;
     }
 
+    public boolean isSmallerThanBoat(Entity entity) {
+        return entity.getWidth() < this.getWidth();
+    }
+
     @Override
     public void updatePassengerPosition(Entity passenger) {
         if (!this.hasPassenger(passenger)) {
@@ -812,6 +817,7 @@ implements VariantHolder<Type> {
         BIRCH(Blocks.BIRCH_PLANKS, "birch"),
         JUNGLE(Blocks.JUNGLE_PLANKS, "jungle"),
         ACACIA(Blocks.ACACIA_PLANKS, "acacia"),
+        CHERRY(Blocks.CHERRY_PLANKS, "cherry"),
         DARK_OAK(Blocks.DARK_OAK_PLANKS, "dark_oak"),
         MANGROVE(Blocks.MANGROVE_PLANKS, "mangrove"),
         BAMBOO(Blocks.BAMBOO_PLANKS, "bamboo");

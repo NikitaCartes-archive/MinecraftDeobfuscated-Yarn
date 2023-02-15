@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.network;
+package net.minecraft.client.util;
 
 import com.mojang.authlib.minecraft.BanDetails;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
@@ -10,8 +10,9 @@ import java.time.Instant;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
-import net.minecraft.client.report.AbuseReportReason;
+import net.minecraft.client.util.BanReason;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -41,8 +42,8 @@ public class Bans {
         String string2 = banDetails.reasonMessage();
         if (StringUtils.isNumeric(string)) {
             int i = Integer.parseInt(string);
-            Text text = AbuseReportReason.getText(i);
-            text = text != null ? Texts.setStyleIfAbsent(text.copy(), Style.EMPTY.withBold(true)) : (string2 != null ? Text.translatable("gui.banned.description.reason_id_message", i, string2).formatted(Formatting.BOLD) : Text.translatable("gui.banned.description.reason_id", i).formatted(Formatting.BOLD));
+            BanReason banReason = BanReason.byId(i);
+            MutableText text = banReason != null ? Texts.setStyleIfAbsent(banReason.getDescription().copy(), Style.EMPTY.withBold(true)) : (string2 != null ? Text.translatable("gui.banned.description.reason_id_message", i, string2).formatted(Formatting.BOLD) : Text.translatable("gui.banned.description.reason_id", i).formatted(Formatting.BOLD));
             return Text.translatable("gui.banned.description.reason", text);
         }
         return Text.translatable("gui.banned.description.unknownreason");

@@ -11,6 +11,7 @@ import net.minecraft.block.entity.ChestLidAnimator;
 import net.minecraft.block.entity.LidOpenable;
 import net.minecraft.block.entity.ViewerCountManager;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -73,10 +74,7 @@ implements LidOpenable {
     }
 
     public boolean canPlayerUse(PlayerEntity player) {
-        if (this.world.getBlockEntity(this.pos) != this) {
-            return false;
-        }
-        return !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+        return Inventory.canPlayerUse(this, player);
     }
 
     public void onScheduledTick() {

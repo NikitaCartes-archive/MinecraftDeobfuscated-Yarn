@@ -19,6 +19,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.Targeter;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.control.JumpControl;
 import net.minecraft.entity.ai.control.LookControl;
@@ -86,7 +87,8 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class MobEntity
-extends LivingEntity {
+extends LivingEntity
+implements Targeter {
     private static final TrackedData<Byte> MOB_FLAGS = DataTracker.registerData(MobEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final int AI_DISABLED_FLAG = 1;
     private static final int LEFT_HANDED_FLAG = 2;
@@ -242,6 +244,7 @@ extends LivingEntity {
         return this.visibilityCache;
     }
 
+    @Override
     @Nullable
     public LivingEntity getTarget() {
         return this.target;

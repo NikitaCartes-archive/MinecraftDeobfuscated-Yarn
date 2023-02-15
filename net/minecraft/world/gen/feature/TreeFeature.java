@@ -72,7 +72,7 @@ extends Feature<TreeFeatureConfig> {
         return TreeFeature.isAirOrLeaves(world, pos) || TreeFeature.isReplaceablePlant(world, pos) || TreeFeature.isWater(world, pos);
     }
 
-    private boolean generate(StructureWorldAccess world, Random random, BlockPos pos, BiConsumer<BlockPos, BlockState> rootPlacerReplacer, BiConsumer<BlockPos, BlockState> trunkPlacerReplacer, BiConsumer<BlockPos, BlockState> foliagePlacerReplacer, TreeFeatureConfig config) {
+    private boolean generate(StructureWorldAccess world, Random random, BlockPos pos, BiConsumer<BlockPos, BlockState> rootPlacerReplacer, BiConsumer<BlockPos, BlockState> trunkPlacerReplacer, FoliagePlacer.BlockPlacer blockPlacer, TreeFeatureConfig config) {
         int i = config.trunkPlacer.getHeight(random);
         int j = config.foliagePlacer.getRandomHeight(random, i, config);
         int k = i - j;
@@ -92,7 +92,7 @@ extends Feature<TreeFeatureConfig> {
             return false;
         }
         List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, trunkPlacerReplacer, random, o, blockPos, config);
-        list.forEach(node -> treeFeatureConfig.foliagePlacer.generate(world, foliagePlacerReplacer, random, config, o, (FoliagePlacer.TreeNode)node, j, l));
+        list.forEach(node -> treeFeatureConfig.foliagePlacer.generate(world, blockPlacer, random, config, o, (FoliagePlacer.TreeNode)node, j, l));
         return true;
     }
 
@@ -118,13 +118,13 @@ extends Feature<TreeFeatureConfig> {
 
     @Override
     public final boolean generate(FeatureContext<TreeFeatureConfig> context) {
-        StructureWorldAccess structureWorldAccess = context.getWorld();
+        final StructureWorldAccess structureWorldAccess = context.getWorld();
         Random random = context.getRandom();
         BlockPos blockPos = context.getOrigin();
         TreeFeatureConfig treeFeatureConfig = context.getConfig();
         HashSet<BlockPos> set = Sets.newHashSet();
         HashSet<BlockPos> set2 = Sets.newHashSet();
-        HashSet<BlockPos> set3 = Sets.newHashSet();
+        final HashSet<BlockPos> set3 = Sets.newHashSet();
         HashSet set4 = Sets.newHashSet();
         BiConsumer<BlockPos, BlockState> biConsumer = (pos, state) -> {
             set.add(pos.toImmutable());
@@ -134,25 +134,34 @@ extends Feature<TreeFeatureConfig> {
             set2.add(pos.toImmutable());
             structureWorldAccess.setBlockState((BlockPos)pos, (BlockState)state, Block.NOTIFY_ALL | Block.FORCE_STATE);
         };
-        BiConsumer<BlockPos, BlockState> biConsumer3 = (pos, state) -> {
-            set3.add(pos.toImmutable());
-            structureWorldAccess.setBlockState((BlockPos)pos, (BlockState)state, Block.NOTIFY_ALL | Block.FORCE_STATE);
+        FoliagePlacer.BlockPlacer blockPlacer = new FoliagePlacer.BlockPlacer(){
+
+            @Override
+            public void placeBlock(BlockPos pos, BlockState state) {
+                set3.add(pos.toImmutable());
+                structureWorldAccess.setBlockState(pos, state, Block.NOTIFY_ALL | Block.FORCE_STATE);
+            }
+
+            @Override
+            public boolean hasPlacedBlock(BlockPos pos) {
+                return set3.contains(pos);
+            }
         };
-        BiConsumer<BlockPos, BlockState> biConsumer4 = (pos, state) -> {
+        BiConsumer<BlockPos, BlockState> biConsumer3 = (pos, state) -> {
             set4.add(pos.toImmutable());
             structureWorldAccess.setBlockState((BlockPos)pos, (BlockState)state, Block.NOTIFY_ALL | Block.FORCE_STATE);
         };
-        boolean bl = this.generate(structureWorldAccess, random, blockPos, biConsumer, biConsumer2, biConsumer3, treeFeatureConfig);
+        boolean bl = this.generate(structureWorldAccess, random, blockPos, biConsumer, biConsumer2, blockPlacer, treeFeatureConfig);
         if (!bl || set2.isEmpty() && set3.isEmpty()) {
             return false;
         }
         if (!treeFeatureConfig.decorators.isEmpty()) {
-            TreeDecorator.Generator generator = new TreeDecorator.Generator(structureWorldAccess, biConsumer4, random, set2, set3, set);
+            TreeDecorator.Generator generator = new TreeDecorator.Generator(structureWorldAccess, biConsumer3, random, set2, set3, set);
             treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(generator));
         }
-        return BlockBox.encompassPositions(Iterables.concat(set, set2, set3, set4)).map(blockBox -> {
-            VoxelSet voxelSet = TreeFeature.placeLogsAndLeaves(structureWorldAccess, blockBox, set2, set4, set);
-            StructureTemplate.updateCorner(structureWorldAccess, 3, voxelSet, blockBox.getMinX(), blockBox.getMinY(), blockBox.getMinZ());
+        return BlockBox.encompassPositions(Iterables.concat(set, set2, set3, set4)).map(box -> {
+            VoxelSet voxelSet = TreeFeature.placeLogsAndLeaves(structureWorldAccess, box, set2, set4, set);
+            StructureTemplate.updateCorner(structureWorldAccess, 3, voxelSet, box.getMinX(), box.getMinY(), box.getMinZ());
             return true;
         }).orElse(false);
     }

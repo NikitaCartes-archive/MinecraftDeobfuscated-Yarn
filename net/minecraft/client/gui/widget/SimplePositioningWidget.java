@@ -107,7 +107,7 @@ extends WrapperWidget {
     }
 
     public static void setPos(int low, int high, int length, Consumer<Integer> setter, float relative) {
-        int i = MathHelper.lerp(relative, 0, high - length);
+        int i = (int)MathHelper.lerp(relative, 0.0f, (float)(high - length));
         setter.accept(low + i);
     }
 

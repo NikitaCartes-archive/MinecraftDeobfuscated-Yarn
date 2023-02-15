@@ -17,8 +17,8 @@ extends ChestBlockEntity {
     }
 
     @Override
-    protected void onInvOpenOrClose(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
-        super.onInvOpenOrClose(world, pos, state, oldViewerCount, newViewerCount);
+    protected void onViewerCountUpdate(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
+        super.onViewerCountUpdate(world, pos, state, oldViewerCount, newViewerCount);
         if (oldViewerCount != newViewerCount) {
             Block block = state.getBlock();
             world.updateNeighborsAlways(pos, block);

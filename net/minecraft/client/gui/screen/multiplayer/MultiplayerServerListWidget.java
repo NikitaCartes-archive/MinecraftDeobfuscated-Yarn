@@ -3,15 +3,16 @@
  */
 package net.minecraft.client.gui.screen.multiplayer;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 import net.fabricmc.api.EnvType;
@@ -41,7 +42,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
-import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
@@ -164,7 +164,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         private final ServerInfo server;
         private final Identifier iconTextureId;
         @Nullable
-        private String iconUri;
+        private byte[] favicon;
         @Nullable
         private NativeImageBackedTexture icon;
         private long time;
@@ -237,12 +237,12 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
             DrawableHelper.drawTexture(matrices, x + entryWidth - 15, y, k * 10, 176 + l * 8, 10, 8, 256, 256);
-            String string = this.server.getIcon();
-            if (!Objects.equals(string, this.iconUri)) {
-                if (this.isNewIconValid(string)) {
-                    this.iconUri = string;
+            byte[] bs = this.server.getFavicon();
+            if (!Arrays.equals(bs, this.favicon)) {
+                if (this.uploadFavicon(bs)) {
+                    this.favicon = bs;
                 } else {
-                    this.server.setIcon(null);
+                    this.server.setFavicon(null);
                     this.saveFile();
                 }
             }
@@ -311,8 +311,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             return true;
         }
 
-        private boolean isNewIconValid(@Nullable String newIconUri) {
-            if (newIconUri == null) {
+        private boolean uploadFavicon(@Nullable byte[] favicon) {
+            if (favicon == null) {
                 this.client.getTextureManager().destroyTexture(this.iconTextureId);
                 if (this.icon != null && this.icon.getImage() != null) {
                     this.icon.getImage().close();
@@ -320,9 +320,9 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 this.icon = null;
             } else {
                 try {
-                    NativeImage nativeImage = NativeImage.read(newIconUri);
-                    Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
-                    Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
+                    NativeImage nativeImage = NativeImage.read(favicon);
+                    Preconditions.checkState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
+                    Preconditions.checkState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
                     if (this.icon == null) {
                         this.icon = new NativeImageBackedTexture(nativeImage);
                     } else {
@@ -417,7 +417,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 mutableText.append(Text.translatable("multiplayer.status.motd.narration", this.server.label));
                 if (this.server.players != null) {
                     mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
-                    mutableText.append(Text.translatable("multiplayer.status.player_count.narration", this.server.players.getOnlinePlayerCount(), this.server.players.getPlayerLimit()));
+                    mutableText.append(Text.translatable("multiplayer.status.player_count.narration", this.server.players.online(), this.server.players.max()));
                     mutableText.append(ScreenTexts.SENTENCE_SEPARATOR);
                     mutableText.append(Texts.join(this.server.playerListSummary, Text.literal(", ")));
                 }

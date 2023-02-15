@@ -94,7 +94,7 @@ implements SynchronousResourceReloader {
         return this.models.getModel(state);
     }
 
-    public void renderBlockAsEntity(BlockState state, MatrixStack matrices, VertexConsumerProvider vertexConsumer, int light, int overlay) {
+    public void renderBlockAsEntity(BlockState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
         BlockRenderType blockRenderType = state.getRenderType();
         if (blockRenderType == BlockRenderType.INVISIBLE) {
             return;
@@ -106,11 +106,11 @@ implements SynchronousResourceReloader {
                 float f = (float)(i >> 16 & 0xFF) / 255.0f;
                 float g = (float)(i >> 8 & 0xFF) / 255.0f;
                 float h = (float)(i & 0xFF) / 255.0f;
-                this.blockModelRenderer.render(matrices.peek(), vertexConsumer.getBuffer(RenderLayers.getEntityBlockLayer(state, false)), state, bakedModel, f, g, h, light, overlay);
+                this.blockModelRenderer.render(matrices.peek(), vertexConsumers.getBuffer(RenderLayers.getEntityBlockLayer(state, false)), state, bakedModel, f, g, h, light, overlay);
                 break;
             }
             case ENTITYBLOCK_ANIMATED: {
-                this.builtinModelItemRenderer.render(new ItemStack(state.getBlock()), ModelTransformationMode.NONE, matrices, vertexConsumer, light, overlay);
+                this.builtinModelItemRenderer.render(new ItemStack(state.getBlock()), ModelTransformationMode.NONE, matrices, vertexConsumers, light, overlay);
             }
         }
     }

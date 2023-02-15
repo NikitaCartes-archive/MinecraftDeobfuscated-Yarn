@@ -37,7 +37,7 @@ extends Item {
             world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true));
             world.emitGameEvent((Entity)context.getPlayer(), GameEvent.BLOCK_CHANGE, blockPos);
             bl = true;
-        } else if (AbstractFireBlock.canPlaceAt(world, blockPos = blockPos.offset(context.getSide()), context.getPlayerFacing())) {
+        } else if (AbstractFireBlock.canPlaceAt(world, blockPos = blockPos.offset(context.getSide()), context.getHorizontalPlayerFacing())) {
             this.playUseSound(world, blockPos);
             world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
             world.emitGameEvent((Entity)context.getPlayer(), GameEvent.BLOCK_PLACE, blockPos);

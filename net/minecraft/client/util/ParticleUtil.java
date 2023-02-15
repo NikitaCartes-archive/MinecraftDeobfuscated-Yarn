@@ -62,5 +62,12 @@ public class ParticleUtil {
         double l = k == 0 ? velocity.getZ() : 0.0;
         world.addParticle(effect, d, e, f, g, h, l);
     }
+
+    public static void spawnParticle(World world, BlockPos pos, Random random, ParticleEffect effect) {
+        double d = (double)pos.getX() + random.nextDouble();
+        double e = (double)pos.getY() - 0.05;
+        double f = (double)pos.getZ() + random.nextDouble();
+        world.addParticle(effect, d, e, f, 0.0, 0.0, 0.0);
+    }
 }
 

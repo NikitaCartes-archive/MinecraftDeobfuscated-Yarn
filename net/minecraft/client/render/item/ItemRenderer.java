@@ -329,7 +329,7 @@ implements SynchronousResourceReloader {
             String string = countLabel == null ? String.valueOf(stack.getCount()) : countLabel;
             matrixStack.translate(0.0f, 0.0f, this.zOffset + 200.0f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 0xFFFFFF, true, matrixStack.peek().getPositionMatrix(), (VertexConsumerProvider)immediate, false, 0, 0xF000F0);
+            renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 0xFFFFFF, true, matrixStack.peek().getPositionMatrix(), (VertexConsumerProvider)immediate, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
             immediate.draw();
         }
         if (stack.isItemBarVisible()) {

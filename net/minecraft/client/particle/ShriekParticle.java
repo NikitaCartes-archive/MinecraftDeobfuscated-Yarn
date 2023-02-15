@@ -14,6 +14,7 @@ import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ShriekParticleEffect;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -116,6 +117,11 @@ extends SpriteBillboardParticle {
             shriekParticle.setSprite(this.spriteProvider);
             shriekParticle.setAlpha(1.0f);
             return shriekParticle;
+        }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((ShriekParticleEffect)particleEffect, clientWorld, d, e, f, g, h, i);
         }
     }
 }

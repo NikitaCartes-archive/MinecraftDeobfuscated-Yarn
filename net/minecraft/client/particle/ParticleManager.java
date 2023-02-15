@@ -15,6 +15,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -78,6 +79,7 @@ import net.minecraft.client.particle.SonicBoomParticle;
 import net.minecraft.client.particle.SoulParticle;
 import net.minecraft.client.particle.SpellParticle;
 import net.minecraft.client.particle.SpitParticle;
+import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.particle.SquidInkParticle;
 import net.minecraft.client.particle.SuspendParticle;
@@ -169,11 +171,11 @@ implements ResourceReloader {
         this.registerFactory(ParticleTypes.DAMAGE_INDICATOR, DamageParticle.DefaultFactory::new);
         this.registerFactory(ParticleTypes.DRAGON_BREATH, DragonBreathParticle.Factory::new);
         this.registerFactory(ParticleTypes.DOLPHIN, SuspendParticle.DolphinFactory::new);
-        this.registerFactory(ParticleTypes.DRIPPING_LAVA, BlockLeakParticle.DrippingLavaFactory::new);
-        this.registerFactory(ParticleTypes.FALLING_LAVA, BlockLeakParticle.FallingLavaFactory::new);
-        this.registerFactory(ParticleTypes.LANDING_LAVA, BlockLeakParticle.LandingLavaFactory::new);
-        this.registerFactory(ParticleTypes.DRIPPING_WATER, BlockLeakParticle.DrippingWaterFactory::new);
-        this.registerFactory(ParticleTypes.FALLING_WATER, BlockLeakParticle.FallingWaterFactory::new);
+        this.registerBlockLeakFactory(ParticleTypes.DRIPPING_LAVA, BlockLeakParticle::createDrippingLava);
+        this.registerBlockLeakFactory(ParticleTypes.FALLING_LAVA, BlockLeakParticle::createFallingLava);
+        this.registerBlockLeakFactory(ParticleTypes.LANDING_LAVA, BlockLeakParticle::createLandingLava);
+        this.registerBlockLeakFactory(ParticleTypes.DRIPPING_WATER, BlockLeakParticle::createDrippingWater);
+        this.registerBlockLeakFactory(ParticleTypes.FALLING_WATER, BlockLeakParticle::createFallingWater);
         this.registerFactory(ParticleTypes.DUST, RedDustParticle.Factory::new);
         this.registerFactory(ParticleTypes.DUST_COLOR_TRANSITION, DustColorTransitionParticle.Factory::new);
         this.registerFactory(ParticleTypes.EFFECT, SpellParticle.DefaultFactory::new);
@@ -219,25 +221,28 @@ implements ResourceReloader {
         this.registerFactory(ParticleTypes.UNDERWATER, WaterSuspendParticle.UnderwaterFactory::new);
         this.registerFactory(ParticleTypes.SPLASH, WaterSplashParticle.SplashFactory::new);
         this.registerFactory(ParticleTypes.WITCH, SpellParticle.WitchFactory::new);
-        this.registerFactory(ParticleTypes.DRIPPING_HONEY, BlockLeakParticle.DrippingHoneyFactory::new);
-        this.registerFactory(ParticleTypes.FALLING_HONEY, BlockLeakParticle.FallingHoneyFactory::new);
-        this.registerFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle.LandingHoneyFactory::new);
-        this.registerFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle.FallingNectarFactory::new);
-        this.registerFactory(ParticleTypes.FALLING_SPORE_BLOSSOM, BlockLeakParticle.FallingSporeBlossomFactory::new);
+        this.registerBlockLeakFactory(ParticleTypes.DRIPPING_HONEY, BlockLeakParticle::createDrippingHoney);
+        this.registerBlockLeakFactory(ParticleTypes.FALLING_HONEY, BlockLeakParticle::createFallingHoney);
+        this.registerBlockLeakFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle::createLandingHoney);
+        this.registerBlockLeakFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle::createFallingNectar);
+        this.registerBlockLeakFactory(ParticleTypes.FALLING_SPORE_BLOSSOM, BlockLeakParticle::createFallingSporeBlossom);
         this.registerFactory(ParticleTypes.SPORE_BLOSSOM_AIR, WaterSuspendParticle.SporeBlossomAirFactory::new);
         this.registerFactory(ParticleTypes.ASH, AshParticle.Factory::new);
         this.registerFactory(ParticleTypes.CRIMSON_SPORE, WaterSuspendParticle.CrimsonSporeFactory::new);
         this.registerFactory(ParticleTypes.WARPED_SPORE, WaterSuspendParticle.WarpedSporeFactory::new);
-        this.registerFactory(ParticleTypes.DRIPPING_OBSIDIAN_TEAR, BlockLeakParticle.DrippingObsidianTearFactory::new);
-        this.registerFactory(ParticleTypes.FALLING_OBSIDIAN_TEAR, BlockLeakParticle.FallingObsidianTearFactory::new);
-        this.registerFactory(ParticleTypes.LANDING_OBSIDIAN_TEAR, BlockLeakParticle.LandingObsidianTearFactory::new);
+        this.registerBlockLeakFactory(ParticleTypes.DRIPPING_OBSIDIAN_TEAR, BlockLeakParticle::createDrippingObsidianTear);
+        this.registerBlockLeakFactory(ParticleTypes.FALLING_OBSIDIAN_TEAR, BlockLeakParticle::createFallingObsidianTear);
+        this.registerBlockLeakFactory(ParticleTypes.LANDING_OBSIDIAN_TEAR, BlockLeakParticle::createLandingObsidianTear);
         this.registerFactory(ParticleTypes.REVERSE_PORTAL, ReversePortalParticle.Factory::new);
         this.registerFactory(ParticleTypes.WHITE_ASH, WhiteAshParticle.Factory::new);
         this.registerFactory(ParticleTypes.SMALL_FLAME, FlameParticle.SmallFactory::new);
-        this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_WATER, BlockLeakParticle.FallingDripstoneWaterFactory::new);
-        this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_WATER, BlockLeakParticle.DripstoneLavaSplashFactory::new);
-        this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_LAVA, BlockLeakParticle.FallingDripstoneLavaFactory::new);
-        this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_LAVA, BlockLeakParticle.LandingDripstoneLavaFactory::new);
+        this.registerBlockLeakFactory(ParticleTypes.DRIPPING_DRIPSTONE_WATER, BlockLeakParticle::createDrippingDripstoneWater);
+        this.registerBlockLeakFactory(ParticleTypes.FALLING_DRIPSTONE_WATER, BlockLeakParticle::createFallingDripstoneWater);
+        this.registerBlockLeakFactory(ParticleTypes.DRIPPING_CHERRY_LEAVES, BlockLeakParticle::createDrippingCherryLeaves);
+        this.registerBlockLeakFactory(ParticleTypes.FALLING_CHERRY_LEAVES, BlockLeakParticle::createFallingCherryLeaves);
+        this.registerBlockLeakFactory(ParticleTypes.LANDING_CHERRY_LEAVES, BlockLeakParticle::createLandingCherryLeaves);
+        this.registerBlockLeakFactory(ParticleTypes.DRIPPING_DRIPSTONE_LAVA, BlockLeakParticle::createDrippingDripstoneLava);
+        this.registerBlockLeakFactory(ParticleTypes.FALLING_DRIPSTONE_LAVA, BlockLeakParticle::createFallingDripstoneLava);
         this.registerFactory(ParticleTypes.VIBRATION, VibrationParticle.Factory::new);
         this.registerFactory(ParticleTypes.GLOW_SQUID_INK, SquidInkParticle.GlowSquidInkFactory::new);
         this.registerFactory(ParticleTypes.GLOW, GlowParticle.GlowFactory::new);
@@ -250,6 +255,16 @@ implements ResourceReloader {
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {
         this.factories.put(Registries.PARTICLE_TYPE.getRawId(type), (ParticleFactory<?>)factory);
+    }
+
+    private <T extends ParticleEffect> void registerBlockLeakFactory(ParticleType<T> type, ParticleFactory.BlockLeakParticleFactory<T> factory) {
+        this.registerFactory(type, (SpriteProvider spriteBillboardParticle) -> (type, world, x, y, z, velocityX, velocityY, velocityZ) -> {
+            SpriteBillboardParticle spriteBillboardParticle = factory.createParticle(type, world, x, y, z, velocityX, velocityY, velocityZ);
+            if (spriteBillboardParticle != null) {
+                spriteBillboardParticle.setSprite(spriteBillboardParticle);
+            }
+            return spriteBillboardParticle;
+        });
     }
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, SpriteAwareFactory<T> factory) {
@@ -281,31 +296,35 @@ implements ResourceReloader {
         this.particleAtlasTexture.clear();
     }
 
-    /*
-     * Enabled aggressive block sorting
-     * Enabled unnecessary exception pruning
-     * Enabled aggressive exception aggregation
-     */
     private Optional<List<Identifier>> loadTextureList(Identifier id, Resource resource) {
-        try (BufferedReader reader = resource.getReader();){
-            ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
-            List<Identifier> list = particleTextureData.getTextureList();
-            boolean bl = this.spriteAwareFactories.containsKey(id);
-            if (list == null) {
-                if (bl) {
-                    throw new IllegalStateException("Missing texture list for particle " + id);
+        Optional<List<Identifier>> optional;
+        block9: {
+            if (!this.spriteAwareFactories.containsKey(id)) {
+                LOGGER.debug("Redundant texture list for particle: {}", (Object)id);
+                return Optional.empty();
+            }
+            BufferedReader reader = resource.getReader();
+            try {
+                ParticleTextureData particleTextureData = ParticleTextureData.load(JsonHelper.deserialize(reader));
+                optional = Optional.of(particleTextureData.getTextureList());
+                if (reader == null) break block9;
+            } catch (Throwable throwable) {
+                try {
+                    if (reader != null) {
+                        try {
+                            ((Reader)reader).close();
+                        } catch (Throwable throwable2) {
+                            throwable.addSuppressed(throwable2);
+                        }
+                    }
+                    throw throwable;
+                } catch (IOException iOException) {
+                    throw new IllegalStateException("Failed to load description for particle " + id, iOException);
                 }
-                Optional<List<Identifier>> optional2 = Optional.empty();
-                return optional2;
             }
-            if (!bl) {
-                throw new IllegalStateException("Redundant texture list for particle " + id);
-            }
-            Optional<List<Identifier>> optional = Optional.of(list);
-            return optional;
-        } catch (IOException iOException) {
-            throw new IllegalStateException("Failed to load description for particle " + id, iOException);
+            ((Reader)reader).close();
         }
+        return optional;
     }
 
     public void addEmitter(Entity entity, ParticleEffect parameters) {

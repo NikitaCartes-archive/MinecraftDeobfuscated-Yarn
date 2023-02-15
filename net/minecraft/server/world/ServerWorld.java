@@ -1551,16 +1551,12 @@ implements StructureWorldAccess {
 
         @Override
         public void startTicking(Entity entity) {
-            if (entity.getType().isTickable()) {
-                ServerWorld.this.entityList.add(entity);
-            }
+            ServerWorld.this.entityList.add(entity);
         }
 
         @Override
         public void stopTicking(Entity entity) {
-            if (entity.getType().isTickable()) {
-                ServerWorld.this.entityList.remove(entity);
-            }
+            ServerWorld.this.entityList.remove(entity);
         }
 
         @Override

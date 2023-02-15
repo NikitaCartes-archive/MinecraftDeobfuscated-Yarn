@@ -69,7 +69,6 @@ public class StructureTemplate {
     public static final String ENTITIES_BLOCK_POS_KEY = "blockPos";
     public static final String ENTITIES_NBT_KEY = "nbt";
     public static final String SIZE_KEY = "size";
-    static final int field_31698 = 16;
     private final List<PalettedBlockInfoList> blockInfoLists = Lists.newArrayList();
     private final List<StructureEntityInfo> entities = Lists.newArrayList();
     private Vec3i size = Vec3i.ZERO;
@@ -341,6 +340,9 @@ public class StructureTemplate {
             }
             if (structureBlockInfo2 == null) continue;
             list.add(structureBlockInfo2);
+        }
+        for (StructureProcessor structureProcessor : placementData.getProcessors()) {
+            structureProcessor.reprocess(world, pos, pivot, placementData, list);
         }
         return list;
     }

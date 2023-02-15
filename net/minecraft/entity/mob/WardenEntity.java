@@ -315,11 +315,11 @@ implements VibrationListener.Callback {
     }
 
     public float getTendrilPitch(float tickDelta) {
-        return (float)MathHelper.lerp(tickDelta, this.lastTendrilPitch, this.tendrilPitch) / 10.0f;
+        return MathHelper.lerp(tickDelta, (float)this.lastTendrilPitch, (float)this.tendrilPitch) / 10.0f;
     }
 
     public float getHeartPitch(float tickDelta) {
-        return (float)MathHelper.lerp(tickDelta, this.lastHeartbeatCooldown, this.heartbeatCooldown) / 10.0f;
+        return MathHelper.lerp(tickDelta, (float)this.lastHeartbeatCooldown, (float)this.heartbeatCooldown) / 10.0f;
     }
 
     private void addDigParticles(AnimationState animationState) {

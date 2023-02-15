@@ -92,7 +92,7 @@ extends BlockWithEntity {
         if (!world.isClient && playerEntity != null && playerEntity.isCreativeLevelTwoOp() && (nbtCompound = BlockItem.getBlockEntityNbt(itemStack)) != null && nbtCompound.contains("Book")) {
             bl = true;
         }
-        return (BlockState)((BlockState)this.getDefaultState().with(FACING, ctx.getPlayerFacing().getOpposite())).with(HAS_BOOK, bl);
+        return (BlockState)((BlockState)this.getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite())).with(HAS_BOOK, bl);
     }
 
     @Override

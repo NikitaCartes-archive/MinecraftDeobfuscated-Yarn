@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.world.gen.trunk.BendingTrunkPlacer;
+import net.minecraft.world.gen.trunk.CherryTrunkPlacer;
 import net.minecraft.world.gen.trunk.DarkOakTrunkPlacer;
 import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
 import net.minecraft.world.gen.trunk.GiantTrunkPlacer;
@@ -25,6 +26,7 @@ public class TrunkPlacerType<P extends TrunkPlacer> {
     public static final TrunkPlacerType<LargeOakTrunkPlacer> FANCY_TRUNK_PLACER = TrunkPlacerType.register("fancy_trunk_placer", LargeOakTrunkPlacer.CODEC);
     public static final TrunkPlacerType<BendingTrunkPlacer> BENDING_TRUNK_PLACER = TrunkPlacerType.register("bending_trunk_placer", BendingTrunkPlacer.CODEC);
     public static final TrunkPlacerType<UpwardsBranchingTrunkPlacer> UPWARDS_BRANCHING_TRUNK_PLACER = TrunkPlacerType.register("upwards_branching_trunk_placer", UpwardsBranchingTrunkPlacer.CODEC);
+    public static final TrunkPlacerType<CherryTrunkPlacer> CHERRY_TRUNK_PLACER = TrunkPlacerType.register("cherry_trunk_placer", CherryTrunkPlacer.CODEC);
     private final Codec<P> codec;
 
     private static <P extends TrunkPlacer> TrunkPlacerType<P> register(String id, Codec<P> codec) {

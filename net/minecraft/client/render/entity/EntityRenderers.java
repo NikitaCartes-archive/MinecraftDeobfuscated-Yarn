@@ -86,6 +86,7 @@ import net.minecraft.client.render.entity.ShulkerEntityRenderer;
 import net.minecraft.client.render.entity.SilverfishEntityRenderer;
 import net.minecraft.client.render.entity.SkeletonEntityRenderer;
 import net.minecraft.client.render.entity.SlimeEntityRenderer;
+import net.minecraft.client.render.entity.SnifferEntityRenderer;
 import net.minecraft.client.render.entity.SnowGolemEntityRenderer;
 import net.minecraft.client.render.entity.SpectralArrowEntityRenderer;
 import net.minecraft.client.render.entity.SpiderEntityRenderer;
@@ -221,6 +222,7 @@ public class EntityRenderers {
         EntityRenderers.register(EntityType.HORSE, HorseEntityRenderer::new);
         EntityRenderers.register(EntityType.HUSK, HuskEntityRenderer::new);
         EntityRenderers.register(EntityType.ILLUSIONER, IllusionerEntityRenderer::new);
+        EntityRenderers.register(EntityType.INTERACTION, EmptyEntityRenderer::new);
         EntityRenderers.register(EntityType.IRON_GOLEM, IronGolemEntityRenderer::new);
         EntityRenderers.register(EntityType.ITEM, ItemEntityRenderer::new);
         EntityRenderers.register(EntityType.ITEM_DISPLAY, DisplayEntityRenderer.ItemDisplayEntityRenderer::new);
@@ -257,6 +259,7 @@ public class EntityRenderers {
         EntityRenderers.register(EntityType.SKELETON_HORSE, context -> new ZombieHorseEntityRenderer(context, EntityModelLayers.SKELETON_HORSE));
         EntityRenderers.register(EntityType.SLIME, SlimeEntityRenderer::new);
         EntityRenderers.register(EntityType.SMALL_FIREBALL, context -> new FlyingItemEntityRenderer(context, 0.75f, true));
+        EntityRenderers.register(EntityType.SNIFFER, SnifferEntityRenderer::new);
         EntityRenderers.register(EntityType.SNOWBALL, FlyingItemEntityRenderer::new);
         EntityRenderers.register(EntityType.SNOW_GOLEM, SnowGolemEntityRenderer::new);
         EntityRenderers.register(EntityType.SPAWNER_MINECART, context -> new MinecartEntityRenderer(context, EntityModelLayers.SPAWNER_MINECART));

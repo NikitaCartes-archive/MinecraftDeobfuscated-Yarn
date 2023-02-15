@@ -50,6 +50,15 @@ public class BlockColors {
             }
             return BiomeColors.getGrassColor(world, pos);
         }, Blocks.GRASS_BLOCK, Blocks.FERN, Blocks.GRASS, Blocks.POTTED_FERN);
+        blockColors.registerColorProvider((state, world, pos, tintIndex) -> {
+            if (tintIndex != 0) {
+                if (world == null || pos == null) {
+                    return GrassColors.getColor(0.5, 1.0);
+                }
+                return BiomeColors.getGrassColor(world, pos);
+            }
+            return -1;
+        }, Blocks.PINK_PETALS);
         blockColors.registerColorProvider((state, world, pos, tintIndex) -> FoliageColors.getSpruceColor(), Blocks.SPRUCE_LEAVES);
         blockColors.registerColorProvider((state, world, pos, tintIndex) -> FoliageColors.getBirchColor(), Blocks.BIRCH_LEAVES);
         blockColors.registerColorProvider((state, world, pos, tintIndex) -> {

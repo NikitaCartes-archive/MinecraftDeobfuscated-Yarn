@@ -32,7 +32,7 @@ implements TooltipComponent {
 
     @Override
     public void drawText(TextRenderer textRenderer, int x, int y, Matrix4f matrix, VertexConsumerProvider.Immediate vertexConsumers) {
-        textRenderer.draw(this.text, (float)x, (float)y, -1, true, matrix, (VertexConsumerProvider)vertexConsumers, false, 0, 0xF000F0);
+        textRenderer.draw(this.text, (float)x, (float)y, -1, true, matrix, (VertexConsumerProvider)vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
     }
 }
 

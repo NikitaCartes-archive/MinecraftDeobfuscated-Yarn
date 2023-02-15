@@ -549,7 +549,7 @@ implements ScreenHandlerProvider<T> {
         if (this.client.player == null) {
             return;
         }
-        ((ScreenHandler)this.handler).close(this.client.player);
+        ((ScreenHandler)this.handler).onClosed(this.client.player);
     }
 
     @Override

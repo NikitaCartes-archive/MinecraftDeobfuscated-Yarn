@@ -48,6 +48,9 @@ public class ParticleTypes {
     public static final DefaultParticleType FIREWORK = ParticleTypes.register("firework", false);
     public static final DefaultParticleType FISHING = ParticleTypes.register("fishing", false);
     public static final DefaultParticleType FLAME = ParticleTypes.register("flame", false);
+    public static final DefaultParticleType DRIPPING_CHERRY_LEAVES = ParticleTypes.register("dripping_cherry_leaves", false);
+    public static final DefaultParticleType FALLING_CHERRY_LEAVES = ParticleTypes.register("falling_cherry_leaves", false);
+    public static final DefaultParticleType LANDING_CHERRY_LEAVES = ParticleTypes.register("landing_cherry_leaves", false);
     public static final DefaultParticleType SCULK_SOUL = ParticleTypes.register("sculk_soul", false);
     public static final ParticleType<SculkChargeParticleEffect> SCULK_CHARGE = ParticleTypes.register("sculk_charge", true, SculkChargeParticleEffect.FACTORY, particleType -> SculkChargeParticleEffect.CODEC);
     public static final DefaultParticleType SCULK_CHARGE_POP = ParticleTypes.register("sculk_charge_pop", true);

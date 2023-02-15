@@ -50,10 +50,10 @@ extends SimpleOptionsScreen {
     protected void init() {
         ClickableWidget clickableWidget;
         super.init();
-        if (this.difficulty != null && (clickableWidget = this.buttonList.getButtonFor(this.difficulty)) != null) {
+        if (this.difficulty != null && (clickableWidget = this.buttonList.getWidgetFor(this.difficulty)) != null) {
             clickableWidget.active = false;
         }
-        if ((clickableWidget = this.buttonList.getButtonFor(this.gameOptions.getTelemetryOptInExtra())) != null) {
+        if ((clickableWidget = this.buttonList.getWidgetFor(this.gameOptions.getTelemetryOptInExtra())) != null) {
             clickableWidget.active = this.client.isOptionalTelemetryEnabledByApi();
         }
     }

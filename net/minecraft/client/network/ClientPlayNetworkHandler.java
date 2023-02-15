@@ -15,7 +15,6 @@ import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -89,6 +88,7 @@ import net.minecraft.client.sound.AggressiveBeeSoundInstance;
 import net.minecraft.client.sound.GuardianAttackSoundInstance;
 import net.minecraft.client.sound.MovingMinecartSoundInstance;
 import net.minecraft.client.sound.PassiveBeeSoundInstance;
+import net.minecraft.client.sound.SnifferDigSoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.util.ProfileKeys;
@@ -99,7 +99,6 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.SignedArgumentList;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -117,6 +116,7 @@ import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.passive.BeeEntity;
+import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
@@ -952,17 +952,26 @@ ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         Entity entity = packet.getEntity(this.world);
         if (entity != null) {
-            if (packet.getStatus() == EntityStatuses.PLAY_GUARDIAN_ATTACK_SOUND) {
-                this.client.getSoundManager().play(new GuardianAttackSoundInstance((GuardianEntity)entity));
-            } else if (packet.getStatus() == EntityStatuses.USE_TOTEM_OF_UNDYING) {
-                int i = 40;
-                this.client.particleManager.addEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
-                this.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0f, 1.0f, false);
-                if (entity == this.client.player) {
-                    this.client.gameRenderer.showFloatingItem(ClientPlayNetworkHandler.getActiveTotemOfUndying(this.client.player));
+            switch (packet.getStatus()) {
+                case 63: {
+                    this.client.getSoundManager().play(new SnifferDigSoundInstance((SnifferEntity)entity));
+                    break;
                 }
-            } else {
-                entity.handleStatus(packet.getStatus());
+                case 21: {
+                    this.client.getSoundManager().play(new GuardianAttackSoundInstance((GuardianEntity)entity));
+                    break;
+                }
+                case 35: {
+                    int i = 40;
+                    this.client.particleManager.addEmitter(entity, ParticleTypes.TOTEM_OF_UNDYING, 30);
+                    this.world.playSound(entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ITEM_TOTEM_USE, entity.getSoundCategory(), 1.0f, 1.0f, false);
+                    if (entity != this.client.player) break;
+                    this.client.gameRenderer.showFloatingItem(ClientPlayNetworkHandler.getActiveTotemOfUndying(this.client.player));
+                    break;
+                }
+                default: {
+                    entity.handleStatus(packet.getStatus());
+                }
             }
         }
     }
@@ -1039,7 +1048,7 @@ ClientPlayPacketListener {
         clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.hasReducedDebugInfo());
         clientPlayerEntity2.setShowsDeathScreen(clientPlayerEntity.showsDeathScreen());
         clientPlayerEntity2.setLastDeathPos(packet.getLastDeathPos());
-        if (this.client.currentScreen instanceof DeathScreen) {
+        if (this.client.currentScreen instanceof DeathScreen || this.client.currentScreen instanceof DeathScreen.TitleScreenConfirmScreen) {
             this.client.setScreen(null);
         }
         this.client.interactionManager.setGameModes(packet.getGameMode(), packet.getPreviousGameMode());
@@ -1362,7 +1371,9 @@ ClientPlayPacketListener {
                     this.recipeManager.get(identifier).ifPresent(recipe -> {
                         clientRecipeBook.add((Recipe<?>)recipe);
                         clientRecipeBook.display((Recipe<?>)recipe);
-                        RecipeToast.show(this.client.getToastManager(), recipe);
+                        if (recipe.showNotification()) {
+                            RecipeToast.show(this.client.getToastManager(), recipe);
+                        }
                     });
                 }
                 break;
@@ -1514,16 +1525,8 @@ ClientPlayPacketListener {
         if (this.serverInfo == null) {
             return;
         }
-        packet.getDescription().ifPresent(description -> {
-            this.serverInfo.label = description;
-        });
-        packet.getFavicon().ifPresent(favicon -> {
-            try {
-                this.serverInfo.setIcon(ServerInfo.parseFavicon(favicon));
-            } catch (ParseException parseException) {
-                LOGGER.error("Invalid server icon", parseException);
-            }
-        });
+        this.serverInfo.label = packet.getDescription();
+        packet.getFavicon().ifPresent(this.serverInfo::setFavicon);
         this.serverInfo.setSecureChatEnforced(packet.isSecureChatEnforced());
         ServerList.updateServerListEntry(this.serverInfo);
         if (!packet.isSecureChatEnforced()) {

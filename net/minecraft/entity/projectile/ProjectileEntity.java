@@ -200,7 +200,7 @@ implements Ownable {
     }
 
     protected boolean canHit(Entity entity) {
-        if (entity.isSpectator() || !entity.isAlive() || !entity.canHit()) {
+        if (!entity.canBeHitByProjectile()) {
             return false;
         }
         Entity entity2 = this.getOwner();

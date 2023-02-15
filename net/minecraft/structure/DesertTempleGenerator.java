@@ -3,14 +3,18 @@
  */
 package net.minecraft.structure;
 
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.structure.ShiftableStructurePiece;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePieceType;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -25,6 +29,7 @@ extends ShiftableStructurePiece {
     public static final int WIDTH = 21;
     public static final int DEPTH = 21;
     private final boolean[] hasPlacedChest = new boolean[4];
+    private final List<BlockPos> potentialSuspiciousSandPositions = new ArrayList<BlockPos>();
 
     public DesertTempleGenerator(Random random, int x, int z) {
         super(StructurePieceType.DESERT_TEMPLE, x, 64, z, 21, 15, 21, DesertTempleGenerator.getRandomHorizontalDirection(random));
@@ -230,6 +235,130 @@ extends ShiftableStructurePiece {
             int n = direction.getOffsetZ() * 2;
             this.hasPlacedChest[direction.getHorizontal()] = this.addChest(world, chunkBox, random, 10 + m, -11, 10 + n, LootTables.DESERT_PYRAMID_CHEST);
         }
+        if (world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
+            this.generateBasement(world, chunkBox);
+        }
+    }
+
+    private void generateBasement(StructureWorldAccess world, BlockBox chunkBox) {
+        BlockPos blockPos = new BlockPos(16, -4, 13);
+        this.generateBasementStairs(blockPos, world, chunkBox);
+        this.generateSuspiciousSandRoom(blockPos, world, chunkBox);
+    }
+
+    private void generateBasementStairs(BlockPos pos, StructureWorldAccess world, BlockBox chunkBox) {
+        int i = pos.getX();
+        int j = pos.getY();
+        int k = pos.getZ();
+        BlockState blockState = Blocks.SANDSTONE_STAIRS.getDefaultState();
+        this.addBlock(world, blockState.rotate(BlockRotation.COUNTERCLOCKWISE_90), 12, 0, 17, chunkBox);
+        this.addBlock(world, blockState.rotate(BlockRotation.COUNTERCLOCKWISE_90), 13, -1, 17, chunkBox);
+        this.addBlock(world, blockState.rotate(BlockRotation.COUNTERCLOCKWISE_90), 14, -2, 17, chunkBox);
+        this.addBlock(world, blockState.rotate(BlockRotation.COUNTERCLOCKWISE_90), 15, -3, 17, chunkBox);
+        BlockState blockState2 = Blocks.SAND.getDefaultState();
+        BlockState blockState3 = Blocks.SANDSTONE.getDefaultState();
+        boolean bl = world.getRandom().nextBoolean();
+        this.addBlock(world, blockState2, i - 4, j + 4, k + 4, chunkBox);
+        this.addBlock(world, blockState2, i - 3, j + 4, k + 4, chunkBox);
+        this.addBlock(world, blockState2, i - 2, j + 4, k + 4, chunkBox);
+        this.addBlock(world, blockState2, i - 1, j + 4, k + 4, chunkBox);
+        this.addBlock(world, blockState2, i, j + 4, k + 4, chunkBox);
+        this.addBlock(world, blockState2, i - 2, j + 3, k + 4, chunkBox);
+        this.addBlock(world, blockState2, i - 1, j + 3, k + 4, chunkBox);
+        this.addBlock(world, blockState2, i, j + 3, k + 4, chunkBox);
+        this.addBlock(world, blockState2, i - 1, j + 2, k + 4, chunkBox);
+        this.addBlock(world, bl ? blockState2 : blockState3, i, j + 2, k + 4, chunkBox);
+        this.addBlock(world, bl ? blockState2 : blockState3, i, j + 1, k + 4, chunkBox);
+    }
+
+    private void generateSuspiciousSandRoom(BlockPos pos, StructureWorldAccess world, BlockBox chunkBox) {
+        int i = pos.getX();
+        int j = pos.getY();
+        int k = pos.getZ();
+        BlockState blockState = Blocks.CUT_SANDSTONE.getDefaultState();
+        BlockState blockState2 = Blocks.CHISELED_SANDSTONE.getDefaultState();
+        this.fillWithOutline(world, chunkBox, i - 3, j + 1, k - 3, i - 3, j + 1, k + 2, blockState, blockState, true);
+        this.fillWithOutline(world, chunkBox, i + 3, j + 1, k - 3, i + 3, j + 1, k + 2, blockState, blockState, true);
+        this.fillWithOutline(world, chunkBox, i - 3, j + 1, k - 3, i + 3, j + 1, k - 2, blockState, blockState, true);
+        this.fillWithOutline(world, chunkBox, i - 3, j + 1, k + 3, i + 3, j + 1, k + 3, blockState, blockState, true);
+        this.fillWithOutline(world, chunkBox, i - 3, j + 2, k - 3, i - 3, j + 2, k + 2, blockState2, blockState2, true);
+        this.fillWithOutline(world, chunkBox, i + 3, j + 2, k - 3, i + 3, j + 2, k + 2, blockState2, blockState2, true);
+        this.fillWithOutline(world, chunkBox, i - 3, j + 2, k - 3, i + 3, j + 2, k - 2, blockState2, blockState2, true);
+        this.fillWithOutline(world, chunkBox, i - 3, j + 2, k + 3, i + 3, j + 2, k + 3, blockState2, blockState2, true);
+        this.fillWithOutline(world, chunkBox, i - 3, -1, k - 3, i - 3, -1, k + 2, blockState, blockState, true);
+        this.fillWithOutline(world, chunkBox, i + 3, -1, k - 3, i + 3, -1, k + 2, blockState, blockState, true);
+        this.fillWithOutline(world, chunkBox, i - 3, -1, k - 3, i + 3, -1, k - 2, blockState, blockState, true);
+        this.fillWithOutline(world, chunkBox, i - 3, -1, k + 3, i + 3, -1, k + 3, blockState, blockState, true);
+        this.addPotentialSuspiciousSandArea(chunkBox, i - 2, j + 1, k - 2, i + 2, j + 3, k + 2);
+        this.generateBasementRoof(world, chunkBox, i - 2, j + 4, k - 2, i + 2, k + 2);
+        BlockState blockState3 = Blocks.ORANGE_TERRACOTTA.getDefaultState();
+        BlockState blockState4 = Blocks.BLUE_TERRACOTTA.getDefaultState();
+        this.addBlock(world, blockState4, i, j, k, chunkBox);
+        this.addBlock(world, blockState3, i + 1, j, k - 1, chunkBox);
+        this.addBlock(world, blockState3, i + 1, j, k + 1, chunkBox);
+        this.addBlock(world, blockState3, i - 1, j, k - 1, chunkBox);
+        this.addBlock(world, blockState3, i - 1, j, k + 1, chunkBox);
+        this.addBlock(world, blockState3, i + 2, j, k, chunkBox);
+        this.addBlock(world, blockState3, i - 2, j, k, chunkBox);
+        this.addBlock(world, blockState3, i, j, k + 2, chunkBox);
+        this.addBlock(world, blockState3, i, j, k - 2, chunkBox);
+        this.addBlock(world, blockState3, i + 3, j, k, chunkBox);
+        this.addPotentialSuspiciousSandPosition(i + 3, j + 1, k, chunkBox);
+        this.addPotentialSuspiciousSandPosition(i + 3, j + 2, k, chunkBox);
+        this.addBlock(world, blockState, i + 4, j + 1, k, chunkBox);
+        this.addBlock(world, blockState2, i + 4, j + 2, k, chunkBox);
+        this.addBlock(world, blockState3, i - 3, j, k, chunkBox);
+        this.addPotentialSuspiciousSandPosition(i - 3, j + 1, k, chunkBox);
+        this.addPotentialSuspiciousSandPosition(i - 3, j + 2, k, chunkBox);
+        this.addBlock(world, blockState, i - 4, j + 1, k, chunkBox);
+        this.addBlock(world, blockState2, i - 4, j + 2, k, chunkBox);
+        this.addBlock(world, blockState3, i, j, k + 3, chunkBox);
+        this.addPotentialSuspiciousSandPosition(i, j + 1, k + 3, chunkBox);
+        this.addPotentialSuspiciousSandPosition(i, j + 2, k + 3, chunkBox);
+        this.addBlock(world, blockState3, i, j, k - 3, chunkBox);
+        this.addPotentialSuspiciousSandPosition(i, j + 1, k - 3, chunkBox);
+        this.addPotentialSuspiciousSandPosition(i, j + 2, k - 3, chunkBox);
+        this.addBlock(world, blockState, i, j + 1, k - 4, chunkBox);
+        this.addBlock(world, blockState2, i, -2, k - 4, chunkBox);
+    }
+
+    private void addPotentialSuspiciousSandPosition(int x, int y, int z, BlockBox chunkBox) {
+        BlockPos.Mutable blockPos = this.offsetPos(x, y, z);
+        if (chunkBox.contains(blockPos)) {
+            this.potentialSuspiciousSandPositions.add(blockPos);
+        }
+    }
+
+    private void addPotentialSuspiciousSandArea(BlockBox chunkBox, int startX, int startY, int startZ, int endX, int endY, int endZ) {
+        for (int i = startY; i <= endY; ++i) {
+            for (int j = startX; j <= endX; ++j) {
+                for (int k = startZ; k <= endZ; ++k) {
+                    this.addPotentialSuspiciousSandPosition(j, i, k, chunkBox);
+                }
+            }
+        }
+    }
+
+    private void addSandOrSandstone(StructureWorldAccess world, int x, int y, int z, BlockBox chunkBox) {
+        if (world.getRandom().nextBoolean()) {
+            BlockState blockState = Blocks.SANDSTONE.getDefaultState();
+            this.addBlock(world, blockState, x, y, z, chunkBox);
+        } else {
+            BlockState blockState = Blocks.SAND.getDefaultState();
+            this.addBlock(world, blockState, x, y, z, chunkBox);
+        }
+    }
+
+    private void generateBasementRoof(StructureWorldAccess world, BlockBox chunkBox, int startX, int y, int startZ, int endX, int endZ) {
+        for (int i = startX; i <= endX; ++i) {
+            for (int j = startZ; j <= endZ; ++j) {
+                this.addSandOrSandstone(world, i, y, j, chunkBox);
+            }
+        }
+    }
+
+    public List<BlockPos> getPotentialSuspiciousSandPositions() {
+        return this.potentialSuspiciousSandPositions;
     }
 }
 

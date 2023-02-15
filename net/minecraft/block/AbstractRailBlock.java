@@ -160,7 +160,7 @@ implements Waterloggable {
         FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
         boolean bl = fluidState.getFluid() == Fluids.WATER;
         BlockState blockState = super.getDefaultState();
-        Direction direction = ctx.getPlayerFacing();
+        Direction direction = ctx.getHorizontalPlayerFacing();
         boolean bl2 = direction == Direction.EAST || direction == Direction.WEST;
         return (BlockState)((BlockState)blockState.with(this.getShapeProperty(), bl2 ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH)).with(WATERLOGGED, bl);
     }

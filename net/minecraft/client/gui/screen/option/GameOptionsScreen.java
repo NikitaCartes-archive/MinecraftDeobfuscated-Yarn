@@ -6,7 +6,7 @@ package net.minecraft.client.gui.screen.option;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonListWidget;
+import net.minecraft.client.gui.widget.OptionListWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -33,7 +33,7 @@ extends Screen {
         this.client.setScreen(this.parent);
     }
 
-    protected void render(MatrixStack matrices, ButtonListWidget optionButtons, int mouseX, int mouseY, float tickDelta) {
+    protected void render(MatrixStack matrices, OptionListWidget optionButtons, int mouseX, int mouseY, float tickDelta) {
         this.renderBackground(matrices);
         optionButtons.render(matrices, mouseX, mouseY, tickDelta);
         GameOptionsScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);

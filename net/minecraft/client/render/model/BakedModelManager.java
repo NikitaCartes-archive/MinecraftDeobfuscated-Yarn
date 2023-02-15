@@ -52,7 +52,7 @@ public class BakedModelManager
 implements ResourceReloader,
 AutoCloseable {
     private static final Logger LOGGER = LogUtils.getLogger();
-    private static final Map<Identifier, Identifier> LAYERS_TO_LOADERS = Map.of(TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE, new Identifier("banner_patterns"), TexturedRenderLayers.BEDS_ATLAS_TEXTURE, new Identifier("beds"), TexturedRenderLayers.CHEST_ATLAS_TEXTURE, new Identifier("chests"), TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, new Identifier("shield_patterns"), TexturedRenderLayers.SIGNS_ATLAS_TEXTURE, new Identifier("signs"), TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("shulker_boxes"), TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE, new Identifier("armor_trims"), SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("blocks"));
+    private static final Map<Identifier, Identifier> LAYERS_TO_LOADERS = Map.of(TexturedRenderLayers.BANNER_PATTERNS_ATLAS_TEXTURE, new Identifier("banner_patterns"), TexturedRenderLayers.BEDS_ATLAS_TEXTURE, new Identifier("beds"), TexturedRenderLayers.CHEST_ATLAS_TEXTURE, new Identifier("chests"), TexturedRenderLayers.SHIELD_PATTERNS_ATLAS_TEXTURE, new Identifier("shield_patterns"), TexturedRenderLayers.SIGNS_ATLAS_TEXTURE, new Identifier("signs"), TexturedRenderLayers.SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("shulker_boxes"), TexturedRenderLayers.ARMOR_TRIMS_ATLAS_TEXTURE, new Identifier("armor_trims"), TexturedRenderLayers.DECORATED_POT_ATLAS_TEXTURE, new Identifier("decorated_pot"), SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("blocks"));
     private Map<Identifier, BakedModel> models;
     private final SpriteAtlasManager atlasManager;
     private final BlockModels blockModelCache;
@@ -85,9 +85,9 @@ AutoCloseable {
         prepareProfiler.startTick();
         CompletableFuture<Map<Identifier, JsonUnbakedModel>> completableFuture = BakedModelManager.reloadModels(manager, prepareExecutor);
         CompletableFuture<Map<Identifier, List<ModelLoader.SourceTrackedData>>> completableFuture2 = BakedModelManager.reloadBlockStates(manager, prepareExecutor);
-        CompletionStage completableFuture3 = completableFuture.thenCombineAsync(completableFuture2, (map, map2) -> new ModelLoader(this.colorMap, prepareProfiler, (Map<Identifier, JsonUnbakedModel>)map, (Map<Identifier, List<ModelLoader.SourceTrackedData>>)map2), prepareExecutor);
-        Map<Identifier, CompletableFuture<SpriteAtlasManager.AtlasPreparation>> map3 = this.atlasManager.reload(manager, this.mipmapLevels, prepareExecutor);
-        return ((CompletableFuture)((CompletableFuture)((CompletableFuture)CompletableFuture.allOf((CompletableFuture[])Stream.concat(map3.values().stream(), Stream.of(completableFuture3)).toArray(CompletableFuture[]::new)).thenApplyAsync(arg_0 -> this.method_45885(prepareProfiler, map3, (CompletableFuture)completableFuture3, arg_0), prepareExecutor)).thenCompose(bakingResult -> bakingResult.readyForUpload.thenApply(void_ -> bakingResult))).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(bakingResult -> this.upload((BakingResult)bakingResult, applyProfiler), applyExecutor);
+        CompletionStage completableFuture3 = completableFuture.thenCombineAsync(completableFuture2, (jsonUnbakedModels, blockStates) -> new ModelLoader(this.colorMap, prepareProfiler, (Map<Identifier, JsonUnbakedModel>)jsonUnbakedModels, (Map<Identifier, List<ModelLoader.SourceTrackedData>>)blockStates), prepareExecutor);
+        Map<Identifier, CompletableFuture<SpriteAtlasManager.AtlasPreparation>> map = this.atlasManager.reload(manager, this.mipmapLevels, prepareExecutor);
+        return ((CompletableFuture)((CompletableFuture)((CompletableFuture)CompletableFuture.allOf((CompletableFuture[])Stream.concat(map.values().stream(), Stream.of(completableFuture3)).toArray(CompletableFuture[]::new)).thenApplyAsync(arg_0 -> this.method_45885(prepareProfiler, map, (CompletableFuture)completableFuture3, arg_0), prepareExecutor)).thenCompose(result -> result.readyForUpload.thenApply(void_ -> result))).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(result -> this.upload((BakingResult)result, applyProfiler), applyExecutor);
     }
 
     private static CompletableFuture<Map<Identifier, JsonUnbakedModel>> reloadModels(ResourceManager resourceManager, Executor executor) {

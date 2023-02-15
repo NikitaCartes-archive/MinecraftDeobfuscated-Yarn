@@ -10,7 +10,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.WoodType;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -21,7 +23,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.SignType;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -31,7 +32,7 @@ public abstract class AbstractSignEditScreen
 extends Screen {
     protected final SignBlockEntity blockEntity;
     protected final String[] text;
-    protected final SignType signType;
+    protected final WoodType signType;
     private int ticksSinceOpened;
     private int currentRow;
     private SelectionManager selectionManager;
@@ -42,7 +43,7 @@ extends Screen {
 
     public AbstractSignEditScreen(SignBlockEntity blockEntity, boolean filtered, Text title) {
         super(title);
-        this.signType = AbstractSignBlock.getSignType(blockEntity.getCachedState().getBlock());
+        this.signType = AbstractSignBlock.getWoodType(blockEntity.getCachedState().getBlock());
         this.text = (String[])IntStream.range(0, 4).mapToObj(row -> blockEntity.getTextOnRow(row, filtered)).map(Text::getString).toArray(String[]::new);
         this.blockEntity = blockEntity;
     }
@@ -160,12 +161,12 @@ extends Screen {
                 string = this.textRenderer.mirror(string);
             }
             float f = -this.client.textRenderer.getWidth(string) / 2;
-            this.client.textRenderer.draw(string, f, n * this.blockEntity.getTextLineHeight() - l, i, false, matrix4f, vertexConsumers, false, 0, 0xF000F0, false);
+            this.client.textRenderer.draw(string, f, n * this.blockEntity.getTextLineHeight() - l, i, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0, false);
             if (n != this.currentRow || j < 0 || !bl) continue;
             o = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
             p = o - this.client.textRenderer.getWidth(string) / 2;
             if (j < string.length()) continue;
-            this.client.textRenderer.draw("_", p, m, i, false, matrix4f, vertexConsumers, false, 0, 0xF000F0, false);
+            this.client.textRenderer.draw("_", p, m, i, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0, false);
         }
         vertexConsumers.draw();
         for (n = 0; n < this.text.length; ++n) {

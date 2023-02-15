@@ -97,8 +97,8 @@ extends LivingEntityRenderer<T, M> {
 
     private static void renderLeashPiece(VertexConsumer vertexConsumer, Matrix4f positionMatrix, float f, float g, float h, int leashedEntityBlockLight, int holdingEntityBlockLight, int leashedEntitySkyLight, int holdingEntitySkyLight, float i, float j, float k, float l, int pieceIndex, boolean isLeashKnot) {
         float m = (float)pieceIndex / 24.0f;
-        int n = MathHelper.lerp(m, leashedEntityBlockLight, holdingEntityBlockLight);
-        int o = MathHelper.lerp(m, leashedEntitySkyLight, holdingEntitySkyLight);
+        int n = (int)MathHelper.lerp(m, (float)leashedEntityBlockLight, (float)holdingEntityBlockLight);
+        int o = (int)MathHelper.lerp(m, (float)leashedEntitySkyLight, (float)holdingEntitySkyLight);
         int p = LightmapTextureManager.pack(n, o);
         float q = pieceIndex % 2 == (isLeashKnot ? 1 : 0) ? 0.7f : 1.0f;
         float r = 0.5f * q;

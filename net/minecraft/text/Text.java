@@ -199,8 +199,8 @@ StringVisitable {
         return MutableText.of(new TranslatableTextContent(key, fallback, TranslatableTextContent.EMPTY_ARGUMENTS));
     }
 
-    public static MutableText translatableWithFallback(String key, @Nullable String falback, Object ... args) {
-        return MutableText.of(new TranslatableTextContent(key, falback, args));
+    public static MutableText translatableWithFallback(String key, @Nullable String fallback, Object ... args) {
+        return MutableText.of(new TranslatableTextContent(key, fallback, args));
     }
 
     public static MutableText empty() {

@@ -8,10 +8,10 @@ import java.util.Set;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.WoodType;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.SignType;
 
 @Environment(value=EnvType.CLIENT)
 public class EntityModelLayers {
@@ -47,6 +47,8 @@ public class EntityModelLayers {
     public static final EntityModelLayer CREEPER = EntityModelLayers.registerMain("creeper");
     public static final EntityModelLayer CREEPER_ARMOR = EntityModelLayers.register("creeper", "armor");
     public static final EntityModelLayer CREEPER_HEAD = EntityModelLayers.registerMain("creeper_head");
+    public static final EntityModelLayer DECORATED_POT_BASE = EntityModelLayers.registerMain("decorated_pot_base");
+    public static final EntityModelLayer DECORATED_POT_SIDES = EntityModelLayers.registerMain("decorated_pot_sides");
     public static final EntityModelLayer DOLPHIN = EntityModelLayers.registerMain("dolphin");
     public static final EntityModelLayer DONKEY = EntityModelLayers.registerMain("donkey");
     public static final EntityModelLayer DOUBLE_CHEST_LEFT = EntityModelLayers.registerMain("double_chest_left");
@@ -133,6 +135,7 @@ public class EntityModelLayers {
     public static final EntityModelLayer SKELETON_SKULL = EntityModelLayers.registerMain("skeleton_skull");
     public static final EntityModelLayer SLIME = EntityModelLayers.registerMain("slime");
     public static final EntityModelLayer SLIME_OUTER = EntityModelLayers.register("slime", "outer");
+    public static final EntityModelLayer SNIFFER = EntityModelLayers.registerMain("sniffer");
     public static final EntityModelLayer SNOW_GOLEM = EntityModelLayers.registerMain("snow_golem");
     public static final EntityModelLayer SPAWNER_MINECART = EntityModelLayers.registerMain("spawner_minecart");
     public static final EntityModelLayer SPIDER = EntityModelLayers.registerMain("spider");
@@ -219,12 +222,12 @@ public class EntityModelLayers {
         return EntityModelLayers.create("chest_boat/" + type.getName(), MAIN);
     }
 
-    public static EntityModelLayer createSign(SignType type) {
-        return EntityModelLayers.create("sign/" + type.getName(), MAIN);
+    public static EntityModelLayer createSign(WoodType type) {
+        return EntityModelLayers.create("sign/" + type.name(), MAIN);
     }
 
-    public static EntityModelLayer createHangingSign(SignType type) {
-        return EntityModelLayers.create("hanging_sign/" + type.getName(), MAIN);
+    public static EntityModelLayer createHangingSign(WoodType type) {
+        return EntityModelLayers.create("hanging_sign/" + type.name(), MAIN);
     }
 
     public static Stream<EntityModelLayer> getLayers() {

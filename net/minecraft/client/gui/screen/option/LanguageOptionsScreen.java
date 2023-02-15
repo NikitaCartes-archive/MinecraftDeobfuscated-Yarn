@@ -34,7 +34,7 @@ extends GameOptionsScreen {
     protected void init() {
         this.languageSelectionList = new LanguageSelectionListWidget(this.client);
         this.addSelectableChild(this.languageSelectionList);
-        this.addDrawableChild(this.gameOptions.getForceUnicodeFont().createButton(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
+        this.addDrawableChild(this.gameOptions.getForceUnicodeFont().createWidget(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
         this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
             LanguageSelectionListWidget.LanguageEntry languageEntry = (LanguageSelectionListWidget.LanguageEntry)this.languageSelectionList.getSelectedOrNull();
             if (languageEntry != null && !languageEntry.languageCode.equals(this.languageManager.getLanguage())) {

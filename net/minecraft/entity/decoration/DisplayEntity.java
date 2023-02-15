@@ -73,7 +73,7 @@ extends Entity {
     private static final TrackedData<Integer> GLOW_COLOR_OVERRIDE = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final float field_42376 = 0.0f;
     private static final float field_42377 = 1.0f;
-    private static final int field_42378 = 0;
+    private static final int field_42378 = -1;
     public static final String INTERPOLATION_DURATION_NBT_KEY = "interpolation_duration";
     public static final String INTERPOLATION_START_NBT_KEY = "interpolation_start";
     public static final String TRANSFORMATION_NBT_KEY = "transformation";
@@ -96,6 +96,7 @@ extends Entity {
     private final FloatLerper shadowStrengthLerper = new FloatLerper(1.0f);
     private final Quaternionf fixedRotation = new Quaternionf();
     protected final Interpolators interpolators = new Interpolators();
+    private long interpolationStart;
     private Box visibilityBoundingBox;
 
     public DisplayEntity(EntityType<?> entityType, World world) {
@@ -126,6 +127,10 @@ extends Entity {
         if (HEIGHT.equals(data) || WIDTH.equals(data)) {
             this.updateVisibilityBoundingBox();
         }
+        if (INTERPOLATION_START.equals(data)) {
+            long l = this.dataTracker.get(INTERPOLATION_START) - this.world.getTime();
+            this.interpolationStart = (long)this.age + l;
+        }
     }
 
     private static AffineTransformation getTransformation(DataTracker dataTracker) {
@@ -138,6 +143,10 @@ extends Entity {
 
     @Override
     public void tick() {
+        Entity entity = this.getVehicle();
+        if (entity != null && entity.isRemoved()) {
+            this.stopRiding();
+        }
     }
 
     @Override
@@ -155,7 +164,7 @@ extends Entity {
         this.dataTracker.startTracking(SHADOW_STRENGTH, Float.valueOf(1.0f));
         this.dataTracker.startTracking(WIDTH, Float.valueOf(0.0f));
         this.dataTracker.startTracking(HEIGHT, Float.valueOf(0.0f));
-        this.dataTracker.startTracking(GLOW_COLOR_OVERRIDE, 0);
+        this.dataTracker.startTracking(GLOW_COLOR_OVERRIDE, -1);
     }
 
     @Override
@@ -170,7 +179,8 @@ extends Entity {
         if (nbt.contains(INTERPOLATION_START_NBT_KEY, NbtElement.NUMBER_TYPE)) {
             long l = nbt.getLong(INTERPOLATION_START_NBT_KEY);
             if (l < 0L) {
-                this.setInterpolationStart(this.world.getTime());
+                long m = -l - 1L;
+                this.setInterpolationStart(this.world.getTime() + m);
             } else {
                 this.setInterpolationStart(l);
             }
@@ -212,8 +222,8 @@ extends Entity {
 
     @Override
     protected void writeCustomDataToNbt(NbtCompound nbt) {
-        AffineTransformation.ANY_CODEC.encodeStart(NbtOps.INSTANCE, DisplayEntity.getTransformation(this.dataTracker)).result().ifPresent(nbtElement -> nbt.put(TRANSFORMATION_NBT_KEY, (NbtElement)nbtElement));
-        BillboardMode.CODEC.encodeStart(NbtOps.INSTANCE, this.getBillboardMode()).result().ifPresent(nbtElement -> nbt.put(BILLBOARD_NBT_KEY, (NbtElement)nbtElement));
+        AffineTransformation.ANY_CODEC.encodeStart(NbtOps.INSTANCE, DisplayEntity.getTransformation(this.dataTracker)).result().ifPresent(transformations -> nbt.put(TRANSFORMATION_NBT_KEY, (NbtElement)transformations));
+        BillboardMode.CODEC.encodeStart(NbtOps.INSTANCE, this.getBillboardMode()).result().ifPresent(billboard -> nbt.put(BILLBOARD_NBT_KEY, (NbtElement)billboard));
         nbt.putInt(INTERPOLATION_DURATION_NBT_KEY, this.getInterpolationDuration());
         nbt.putFloat(VIEW_RANGE_NBT_KEY, this.getViewRange());
         nbt.putFloat(SHADOW_RADIUS_NBT_KEY, this.getShadowRadius());
@@ -222,9 +232,9 @@ extends Entity {
         nbt.putFloat(HEIGHT_NBT_KEY, this.getDisplayHeight());
         nbt.putLong(INTERPOLATION_START_NBT_KEY, this.getInterpolationStart());
         nbt.putInt(GLOW_COLOR_OVERRIDE_NBT_KEY, this.getGlowColorOverride());
-        Brightness brightness = this.getBrightnessUnpacked();
-        if (brightness != null) {
-            Brightness.CODEC.encodeStart(NbtOps.INSTANCE, brightness).result().ifPresent(nbtElement -> nbt.put(BRIGHTNESS_NBT_KEY, (NbtElement)nbtElement));
+        Brightness brightness2 = this.getBrightnessUnpacked();
+        if (brightness2 != null) {
+            Brightness.CODEC.encodeStart(NbtOps.INSTANCE, brightness2).result().ifPresent(brightness -> nbt.put(BRIGHTNESS_NBT_KEY, (NbtElement)brightness));
         }
     }
 
@@ -341,13 +351,12 @@ extends Entity {
         this.dataTracker.set(GLOW_COLOR_OVERRIDE, glowColorOverride);
     }
 
-    public float getLerpProgress(long worldTime, float delta) {
+    public float getLerpProgress(float delta) {
         int i = this.getInterpolationDuration();
         if (i <= 0) {
             return 1.0f;
         }
-        long l = this.getInterpolationStart();
-        float f = worldTime - l;
+        float f = (long)this.age - this.interpolationStart;
         float g = f + delta;
         return MathHelper.clamp(MathHelper.getLerpProgress(g, 0.0f, i), 0.0f, 1.0f);
     }
@@ -380,14 +389,12 @@ extends Entity {
     @Override
     public void setPitch(float pitch) {
         super.setPitch(pitch);
-        this.prevPitch = pitch;
         this.updateFixedRotation();
     }
 
     @Override
     public void setYaw(float yaw) {
         super.setYaw(yaw);
-        this.prevYaw = yaw;
         this.updateFixedRotation();
     }
 
@@ -403,7 +410,7 @@ extends Entity {
     @Override
     public int getTeamColorValue() {
         int i = this.getGlowColorOverride();
-        return i != 0 ? i : super.getTeamColorValue();
+        return i != -1 ? i : super.getTeamColorValue();
     }
 
     static abstract class AbstractInterpolator<T>

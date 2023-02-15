@@ -176,6 +176,7 @@ public class Explosion {
         Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
         for (int v = 0; v < list.size(); ++v) {
             PlayerEntity playerEntity;
+            double ad;
             double z;
             double y;
             double x;
@@ -189,14 +190,16 @@ public class Explosion {
             double ab = Explosion.getExposure(vec3d, entity);
             double ac = (1.0 - w) * ab;
             entity.damage(this.getDamageSource(), (int)((ac * ac + ac) / 2.0 * 7.0 * (double)q + 1.0));
-            double ad = ac;
             if (entity instanceof LivingEntity) {
                 LivingEntity livingEntity = (LivingEntity)entity;
                 ad = ProtectionEnchantment.transformExplosionKnockback(livingEntity, ac);
+            } else {
+                ad = ac;
             }
-            entity.setVelocity(entity.getVelocity().add(x * ad, y * ad, z * ad));
+            Vec3d vec3d2 = new Vec3d(x *= ad, y *= ad, z *= ad);
+            entity.setVelocity(entity.getVelocity().add(vec3d2));
             if (!(entity instanceof PlayerEntity) || (playerEntity = (PlayerEntity)entity).isSpectator() || playerEntity.isCreative() && playerEntity.getAbilities().flying) continue;
-            this.affectedPlayers.put(playerEntity, new Vec3d(x * ac, y * ac, z * ac));
+            this.affectedPlayers.put(playerEntity, vec3d2);
         }
     }
 

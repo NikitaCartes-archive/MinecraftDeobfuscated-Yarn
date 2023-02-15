@@ -150,7 +150,7 @@ extends ChunkGenerator {
     private OptionalInt sampleHeightmap(HeightLimitView world, NoiseConfig noiseConfig, int x, int z, @Nullable MutableObject<VerticalBlockSample> columnSample, @Nullable Predicate<BlockState> stopPredicate) {
         BlockState[] blockStates;
         GenerationShapeConfig generationShapeConfig = this.settings.value().generationShapeConfig().trimHeight(world);
-        int i = generationShapeConfig.verticalBlockSize();
+        int i = generationShapeConfig.verticalCellBlockCount();
         int j = generationShapeConfig.minimumY();
         int k = MathHelper.floorDiv(j, i);
         int l = MathHelper.floorDiv(generationShapeConfig.height(), i);
@@ -163,7 +163,7 @@ extends ChunkGenerator {
             blockStates = new BlockState[generationShapeConfig.height()];
             columnSample.setValue(new VerticalBlockSample(j, blockStates));
         }
-        int m = generationShapeConfig.horizontalBlockSize();
+        int m = generationShapeConfig.horizontalCellBlockCount();
         int n = Math.floorDiv(x, m);
         int o = Math.floorDiv(z, m);
         int p = Math.floorMod(x, m);
@@ -173,17 +173,17 @@ extends ChunkGenerator {
         double d = (double)p / (double)m;
         double e = (double)q / (double)m;
         ChunkNoiseSampler chunkNoiseSampler = new ChunkNoiseSampler(1, noiseConfig, r, s, generationShapeConfig, DensityFunctionTypes.Beardifier.INSTANCE, this.settings.value(), this.fluidLevelSampler.get(), Blender.getNoBlending());
-        chunkNoiseSampler.sampleStartNoise();
-        chunkNoiseSampler.sampleEndNoise(0);
+        chunkNoiseSampler.sampleStartDensity();
+        chunkNoiseSampler.sampleEndDensity(0);
         for (int t = l - 1; t >= 0; --t) {
-            chunkNoiseSampler.sampleNoiseCorners(t, 0);
+            chunkNoiseSampler.onSampledCellCorners(t, 0);
             for (int u = i - 1; u >= 0; --u) {
                 BlockState blockState2;
                 int v = (k + t) * i + u;
                 double f = (double)u / (double)i;
-                chunkNoiseSampler.sampleNoiseY(v, f);
-                chunkNoiseSampler.sampleNoiseX(x, d);
-                chunkNoiseSampler.sampleNoiseZ(z, e);
+                chunkNoiseSampler.interpolateY(v, f);
+                chunkNoiseSampler.interpolateX(x, d);
+                chunkNoiseSampler.interpolateZ(z, e);
                 BlockState blockState = chunkNoiseSampler.sampleBlockState();
                 BlockState blockState3 = blockState2 = blockState == null ? this.settings.value().defaultBlock() : blockState;
                 if (blockStates != null) {
@@ -248,12 +248,12 @@ extends ChunkGenerator {
     public CompletableFuture<Chunk> populateNoise(Executor executor, Blender blender, NoiseConfig noiseConfig, StructureAccessor structureAccessor, Chunk chunk2) {
         GenerationShapeConfig generationShapeConfig = this.settings.value().generationShapeConfig().trimHeight(chunk2.getHeightLimitView());
         int i = generationShapeConfig.minimumY();
-        int j = MathHelper.floorDiv(i, generationShapeConfig.verticalBlockSize());
-        int k = MathHelper.floorDiv(generationShapeConfig.height(), generationShapeConfig.verticalBlockSize());
+        int j = MathHelper.floorDiv(i, generationShapeConfig.verticalCellBlockCount());
+        int k = MathHelper.floorDiv(generationShapeConfig.height(), generationShapeConfig.verticalCellBlockCount());
         if (k <= 0) {
             return CompletableFuture.completedFuture(chunk2);
         }
-        int l = chunk2.getSectionIndex(k * generationShapeConfig.verticalBlockSize() - 1 + i);
+        int l = chunk2.getSectionIndex(k * generationShapeConfig.verticalCellBlockCount() - 1 + i);
         int m = chunk2.getSectionIndex(i);
         HashSet<ChunkSection> set = Sets.newHashSet();
         for (int n = l; n >= m; --n) {
@@ -276,18 +276,18 @@ extends ChunkGenerator {
         int i = chunkPos.getStartX();
         int j = chunkPos.getStartZ();
         AquiferSampler aquiferSampler = chunkNoiseSampler.getAquiferSampler();
-        chunkNoiseSampler.sampleStartNoise();
+        chunkNoiseSampler.sampleStartDensity();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        int k = chunkNoiseSampler.getHorizontalBlockSize();
-        int l = chunkNoiseSampler.getVerticalBlockSize();
+        int k = chunkNoiseSampler.getHorizontalCellBlockCount();
+        int l = chunkNoiseSampler.getVerticalCellBlockCount();
         int m = 16 / k;
         int n = 16 / k;
         for (int o = 0; o < m; ++o) {
-            chunkNoiseSampler.sampleEndNoise(o);
+            chunkNoiseSampler.sampleEndDensity(o);
             for (int p = 0; p < n; ++p) {
                 ChunkSection chunkSection = chunk2.getSection(chunk2.countVerticalSections() - 1);
                 for (int q = cellHeight - 1; q >= 0; --q) {
-                    chunkNoiseSampler.sampleNoiseCorners(q, p);
+                    chunkNoiseSampler.onSampledCellCorners(q, p);
                     for (int r = l - 1; r >= 0; --r) {
                         int s = (minimumCellY + q) * l + r;
                         int t = s & 0xF;
@@ -296,17 +296,17 @@ extends ChunkGenerator {
                             chunkSection = chunk2.getSection(u);
                         }
                         double d = (double)r / (double)l;
-                        chunkNoiseSampler.sampleNoiseY(s, d);
+                        chunkNoiseSampler.interpolateY(s, d);
                         for (int v = 0; v < k; ++v) {
                             int w = i + o * k + v;
                             int x = w & 0xF;
                             double e = (double)v / (double)k;
-                            chunkNoiseSampler.sampleNoiseX(w, e);
+                            chunkNoiseSampler.interpolateX(w, e);
                             for (int y = 0; y < k; ++y) {
                                 int z = j + p * k + y;
                                 int aa = z & 0xF;
                                 double f = (double)y / (double)k;
-                                chunkNoiseSampler.sampleNoiseZ(z, f);
+                                chunkNoiseSampler.interpolateZ(z, f);
                                 BlockState blockState = chunkNoiseSampler.sampleBlockState();
                                 if (blockState == null) {
                                     blockState = this.settings.value().defaultBlock();

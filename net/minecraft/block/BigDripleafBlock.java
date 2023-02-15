@@ -248,7 +248,7 @@ Waterloggable {
         BlockState blockState = ctx.getWorld().getBlockState(ctx.getBlockPos().down());
         FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
         boolean bl = blockState.isOf(Blocks.BIG_DRIPLEAF) || blockState.isOf(Blocks.BIG_DRIPLEAF_STEM);
-        return (BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, bl ? blockState.get(FACING) : ctx.getPlayerFacing().getOpposite());
+        return (BlockState)((BlockState)this.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, bl ? blockState.get(FACING) : ctx.getHorizontalPlayerFacing().getOpposite());
     }
 
     @Override

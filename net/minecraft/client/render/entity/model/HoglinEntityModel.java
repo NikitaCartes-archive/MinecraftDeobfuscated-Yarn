@@ -131,7 +131,7 @@ extends AnimalModel<T> {
         float l = 1.0f - (float)MathHelper.abs(10 - 2 * k) / 10.0f;
         this.head.pitch = MathHelper.lerp(l, 0.87266463f, -0.34906584f);
         if (((LivingEntity)mobEntity).isBaby()) {
-            this.head.pivotY = MathHelper.lerp(l, 2, 5);
+            this.head.pivotY = MathHelper.lerp(l, 2.0f, 5.0f);
             this.mane.pivotZ = -3.0f;
         } else {
             this.head.pivotY = 2.0f;

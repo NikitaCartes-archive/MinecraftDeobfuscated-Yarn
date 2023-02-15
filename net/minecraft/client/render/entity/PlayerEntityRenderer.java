@@ -131,6 +131,9 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             if (useAction == UseAction.TOOT_HORN) {
                 return BipedEntityModel.ArmPose.TOOT_HORN;
             }
+            if (useAction == UseAction.BRUSH) {
+                return BipedEntityModel.ArmPose.BRUSH;
+            }
         } else if (!player.handSwinging && itemStack.isOf(Items.CROSSBOW) && CrossbowItem.isCharged(itemStack)) {
             return BipedEntityModel.ArmPose.CROSSBOW_HOLD;
         }
@@ -196,7 +199,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
                 matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(k * (-90.0f - abstractClientPlayerEntity.getPitch())));
             }
             Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
-            Vec3d vec3d2 = abstractClientPlayerEntity.getVelocity();
+            Vec3d vec3d2 = abstractClientPlayerEntity.lerpVelocity(h);
             double d = vec3d2.horizontalLengthSquared();
             double e = vec3d.horizontalLengthSquared();
             if (d > 0.0 && e > 0.0) {

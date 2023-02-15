@@ -40,8 +40,9 @@ implements CraftingRecipe {
     private final Identifier id;
     final String group;
     final CraftingRecipeCategory category;
+    final boolean showNotification;
 
-    public ShapedRecipe(Identifier id, String group, CraftingRecipeCategory category, int width, int height, DefaultedList<Ingredient> input, ItemStack output) {
+    public ShapedRecipe(Identifier id, String group, CraftingRecipeCategory category, int width, int height, DefaultedList<Ingredient> input, ItemStack output, boolean showNotification) {
         this.id = id;
         this.group = group;
         this.category = category;
@@ -49,6 +50,11 @@ implements CraftingRecipe {
         this.height = height;
         this.input = input;
         this.output = output;
+        this.showNotification = showNotification;
+    }
+
+    public ShapedRecipe(Identifier id, String group, CraftingRecipeCategory category, int width, int height, DefaultedList<Ingredient> input, ItemStack output) {
+        this(id, group, category, width, height, input, output, true);
     }
 
     @Override
@@ -79,6 +85,11 @@ implements CraftingRecipe {
     @Override
     public DefaultedList<Ingredient> getIngredients() {
         return this.input;
+    }
+
+    @Override
+    public boolean showNotification() {
+        return this.showNotification;
     }
 
     @Override
@@ -299,7 +310,8 @@ implements CraftingRecipe {
             int j = strings.length;
             DefaultedList<Ingredient> defaultedList = ShapedRecipe.createPatternMatrix(strings, map, i, j);
             ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
-            return new ShapedRecipe(identifier, string, craftingRecipeCategory, i, j, defaultedList, itemStack);
+            boolean bl = JsonHelper.getBoolean(jsonObject, "show_notification", true);
+            return new ShapedRecipe(identifier, string, craftingRecipeCategory, i, j, defaultedList, itemStack, bl);
         }
 
         @Override
@@ -313,7 +325,8 @@ implements CraftingRecipe {
                 defaultedList.set(k, Ingredient.fromPacket(packetByteBuf));
             }
             ItemStack itemStack = packetByteBuf.readItemStack();
-            return new ShapedRecipe(identifier, string, craftingRecipeCategory, i, j, defaultedList, itemStack);
+            boolean bl = packetByteBuf.readBoolean();
+            return new ShapedRecipe(identifier, string, craftingRecipeCategory, i, j, defaultedList, itemStack, bl);
         }
 
         @Override
@@ -326,6 +339,7 @@ implements CraftingRecipe {
                 ingredient.write(packetByteBuf);
             }
             packetByteBuf.writeItemStack(shapedRecipe.output);
+            packetByteBuf.writeBoolean(shapedRecipe.showNotification);
         }
 
         @Override

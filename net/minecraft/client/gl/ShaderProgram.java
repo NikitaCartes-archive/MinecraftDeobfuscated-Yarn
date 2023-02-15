@@ -25,8 +25,8 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.Framebuffer;
-import net.minecraft.client.gl.GLImportProcessor;
 import net.minecraft.client.gl.GlBlendState;
+import net.minecraft.client.gl.GlImportProcessor;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlUniform;
 import net.minecraft.client.gl.ShaderProgramSetupView;
@@ -217,7 +217,7 @@ AutoCloseable {
             Resource resource = factory.getResourceOrThrow(new Identifier(string));
             try (InputStream inputStream = resource.getInputStream();){
                 final String string2 = PathUtil.getPosixFullPath(string);
-                shaderStage2 = ShaderStage.createFromResource(type, name, inputStream, resource.getResourcePackName(), new GLImportProcessor(){
+                shaderStage2 = ShaderStage.createFromResource(type, name, inputStream, resource.getResourcePackName(), new GlImportProcessor(){
                     private final Set<String> visitedImports = Sets.newHashSet();
 
                     @Override

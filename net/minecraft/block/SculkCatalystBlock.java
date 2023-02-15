@@ -89,10 +89,10 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack, boolean dropExperience) {
-        super.onStacksDropped(state, world, pos, stack, dropExperience);
+    public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack tool, boolean dropExperience) {
+        super.onStacksDropped(state, world, pos, tool, dropExperience);
         if (dropExperience) {
-            this.dropExperienceWhenMined(world, pos, stack, this.experience);
+            this.dropExperienceWhenMined(world, pos, tool, this.experience);
         }
     }
 }

@@ -71,6 +71,10 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(Criteria.AVOID_VIBRATION.id, EntityPredicate.Extended.EMPTY);
         }
 
+        public static Conditions createTick() {
+            return new Conditions(Criteria.TICK.id, EntityPredicate.Extended.EMPTY);
+        }
+
         public static Conditions createLocation(Block block, Item item) {
             return Conditions.createLocation(EntityPredicate.Builder.create().equipment(EntityEquipmentPredicate.Builder.create().feet(ItemPredicate.Builder.create().items(item).build()).build()).steppingOn(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block).build()).build()).build());
         }

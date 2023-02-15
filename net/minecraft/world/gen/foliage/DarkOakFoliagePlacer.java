@@ -5,8 +5,6 @@ package net.minecraft.world.gen.foliage;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.BiConsumer;
-import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
@@ -29,19 +27,19 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
+    protected void generate(TestableWorld world, FoliagePlacer.BlockPlacer placer, Random random, TreeFeatureConfig config, int trunkHeight, FoliagePlacer.TreeNode treeNode, int foliageHeight, int radius, int offset) {
         BlockPos blockPos = treeNode.getCenter().up(offset);
         boolean bl = treeNode.isGiantTrunk();
         if (bl) {
-            this.generateSquare(world, replacer, random, config, blockPos, radius + 2, -1, bl);
-            this.generateSquare(world, replacer, random, config, blockPos, radius + 3, 0, bl);
-            this.generateSquare(world, replacer, random, config, blockPos, radius + 2, 1, bl);
+            this.generateSquare(world, placer, random, config, blockPos, radius + 2, -1, bl);
+            this.generateSquare(world, placer, random, config, blockPos, radius + 3, 0, bl);
+            this.generateSquare(world, placer, random, config, blockPos, radius + 2, 1, bl);
             if (random.nextBoolean()) {
-                this.generateSquare(world, replacer, random, config, blockPos, radius, 2, bl);
+                this.generateSquare(world, placer, random, config, blockPos, radius, 2, bl);
             }
         } else {
-            this.generateSquare(world, replacer, random, config, blockPos, radius + 2, -1, bl);
-            this.generateSquare(world, replacer, random, config, blockPos, radius + 1, 0, bl);
+            this.generateSquare(world, placer, random, config, blockPos, radius + 2, -1, bl);
+            this.generateSquare(world, placer, random, config, blockPos, radius + 1, 0, bl);
         }
     }
 

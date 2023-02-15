@@ -159,8 +159,8 @@ ModelWithHead {
         this.leftLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g / k;
         this.rightLeg.yaw = 0.005f;
         this.leftLeg.yaw = -0.005f;
-        this.rightLeg.roll = 0.0f;
-        this.leftLeg.roll = 0.0f;
+        this.rightLeg.roll = 0.005f;
+        this.leftLeg.roll = -0.005f;
         if (this.riding) {
             this.rightArm.pitch += -0.62831855f;
             this.leftArm.pitch += -0.62831855f;
@@ -298,6 +298,11 @@ ModelWithHead {
                 CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
                 break;
             }
+            case BRUSH: {
+                this.rightArm.pitch = this.rightArm.pitch * 0.5f - 0.62831855f;
+                this.rightArm.yaw = 0.0f;
+                break;
+            }
             case SPYGLASS: {
                 this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622f - (((Entity)entity).isInSneakingPose() ? 0.2617994f : 0.0f), -2.4f, 3.3f);
                 this.rightArm.yaw = this.head.yaw - 0.2617994f;
@@ -344,6 +349,11 @@ ModelWithHead {
             }
             case CROSSBOW_HOLD: {
                 CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, false);
+                break;
+            }
+            case BRUSH: {
+                this.leftArm.pitch = this.leftArm.pitch * 0.5f - 0.62831855f;
+                this.leftArm.yaw = 0.0f;
                 break;
             }
             case SPYGLASS: {
@@ -458,7 +468,8 @@ ModelWithHead {
         CROSSBOW_CHARGE(true),
         CROSSBOW_HOLD(true),
         SPYGLASS(false),
-        TOOT_HORN(false);
+        TOOT_HORN(false),
+        BRUSH(false);
 
         private final boolean twoHanded;
 

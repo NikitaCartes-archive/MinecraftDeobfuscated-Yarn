@@ -50,7 +50,10 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class SoundManager
 extends SinglePreparationResourceReloader<SoundList> {
-    public static final Sound MISSING_SOUND = new Sound("meta:missing_sound", ConstantFloatProvider.create(1.0f), ConstantFloatProvider.create(1.0f), 1, Sound.RegistrationType.FILE, false, false, 16);
+    public static final Sound MISSING_SOUND = new Sound("minecraft:empty", ConstantFloatProvider.create(1.0f), ConstantFloatProvider.create(1.0f), 1, Sound.RegistrationType.FILE, false, false, 16);
+    public static final Identifier INTENTIONALLY_EMPTY_ID = new Identifier("minecraft", "intentionally_empty");
+    public static final WeightedSoundSet INTENTIONALLY_EMPTY_SOUND_SET = new WeightedSoundSet(INTENTIONALLY_EMPTY_ID, null);
+    public static final Sound INTENTIONALLY_EMPTY_SOUND = new Sound(INTENTIONALLY_EMPTY_ID.toString(), ConstantFloatProvider.create(1.0f), ConstantFloatProvider.create(1.0f), 1, Sound.RegistrationType.FILE, false, false, 16);
     static final Logger LOGGER = LogUtils.getLogger();
     private static final String SOUNDS_JSON = "sounds.json";
     private static final Gson GSON = new GsonBuilder().registerTypeHierarchyAdapter(Text.class, new Text.Serializer()).registerTypeAdapter((Type)((Object)SoundEntry.class), new SoundEntryDeserializer()).create();

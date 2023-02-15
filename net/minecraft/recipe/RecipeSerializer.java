@@ -11,6 +11,7 @@ import net.minecraft.recipe.BlastingRecipe;
 import net.minecraft.recipe.BookCloningRecipe;
 import net.minecraft.recipe.CampfireCookingRecipe;
 import net.minecraft.recipe.CookingRecipeSerializer;
+import net.minecraft.recipe.CraftingDecoratedPotRecipe;
 import net.minecraft.recipe.CuttingRecipe;
 import net.minecraft.recipe.FireworkRocketRecipe;
 import net.minecraft.recipe.FireworkStarFadeRecipe;
@@ -73,6 +74,7 @@ public interface RecipeSerializer<T extends Recipe<?>> {
     public static final RecipeSerializer<LegacySmithingRecipe> SMITHING = RecipeSerializer.register("smithing", new LegacySmithingRecipe.Serializer());
     public static final RecipeSerializer<SmithingTransformRecipe> SMITHING_TRANSFORM = RecipeSerializer.register("smithing_transform", new SmithingTransformRecipe.Serializer());
     public static final RecipeSerializer<SmithingTrimRecipe> SMITHING_TRIM = RecipeSerializer.register("smithing_trim", new SmithingTrimRecipe.Serializer());
+    public static final RecipeSerializer<CraftingDecoratedPotRecipe> CRAFTING_DECORATED_POT = RecipeSerializer.register("crafting_decorated_pot", new SpecialRecipeSerializer<CraftingDecoratedPotRecipe>(CraftingDecoratedPotRecipe::new));
 
     /**
      * Reads a recipe from a JSON object.

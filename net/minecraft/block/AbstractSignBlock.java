@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.Waterloggable;
+import net.minecraft.block.WoodType;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -27,7 +28,6 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.SignType;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -42,9 +42,9 @@ implements Waterloggable {
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     protected static final float field_31243 = 4.0f;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
-    private final SignType type;
+    private final WoodType type;
 
-    protected AbstractSignBlock(AbstractBlock.Settings settings, SignType type) {
+    protected AbstractSignBlock(AbstractBlock.Settings settings, WoodType type) {
         super(settings);
         this.type = type;
     }
@@ -126,13 +126,13 @@ implements Waterloggable {
         return super.getFluidState(state);
     }
 
-    public SignType getSignType() {
+    public WoodType getWoodType() {
         return this.type;
     }
 
-    public static SignType getSignType(Block block) {
-        SignType signType = block instanceof AbstractSignBlock ? ((AbstractSignBlock)block).getSignType() : SignType.OAK;
-        return signType;
+    public static WoodType getWoodType(Block block) {
+        WoodType woodType = block instanceof AbstractSignBlock ? ((AbstractSignBlock)block).getWoodType() : WoodType.OAK;
+        return woodType;
     }
 }
 

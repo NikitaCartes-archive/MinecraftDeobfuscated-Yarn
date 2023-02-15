@@ -372,15 +372,19 @@ extends AnimalEntity {
 
         @Override
         public void tick() {
+            double f;
+            double e;
             this.updateVelocity();
             if (this.state != MoveControl.State.MOVE_TO || this.turtle.getNavigation().isIdle()) {
                 this.turtle.setMovementSpeed(0.0f);
                 return;
             }
             double d = this.targetX - this.turtle.getX();
-            double e = this.targetY - this.turtle.getY();
-            double f = this.targetZ - this.turtle.getZ();
-            double g = Math.sqrt(d * d + e * e + f * f);
+            double g = Math.sqrt(d * d + (e = this.targetY - this.turtle.getY()) * e + (f = this.targetZ - this.turtle.getZ()) * f);
+            if (g < (double)1.0E-5f) {
+                this.entity.setMovementSpeed(0.0f);
+                return;
+            }
             e /= g;
             float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
             this.turtle.setYaw(this.wrapDegrees(this.turtle.getYaw(), h, 90.0f));

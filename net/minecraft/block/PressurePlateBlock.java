@@ -7,32 +7,26 @@ import java.util.List;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractPressurePlateBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSetType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldAccess;
 
 public class PressurePlateBlock
 extends AbstractPressurePlateBlock {
     public static final BooleanProperty POWERED = Properties.POWERED;
     private final ActivationRule type;
-    private final SoundEvent depressSound;
-    private final SoundEvent pressSound;
 
-    protected PressurePlateBlock(ActivationRule type, AbstractBlock.Settings settings, SoundEvent depressSound, SoundEvent pressSound) {
-        super(settings);
+    protected PressurePlateBlock(ActivationRule type, AbstractBlock.Settings settings, BlockSetType blockSetType) {
+        super(settings, blockSetType);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(POWERED, false));
         this.type = type;
-        this.depressSound = depressSound;
-        this.pressSound = pressSound;
     }
 
     @Override
@@ -43,16 +37,6 @@ extends AbstractPressurePlateBlock {
     @Override
     protected BlockState setRedstoneOutput(BlockState state, int rsOut) {
         return (BlockState)state.with(POWERED, rsOut > 0);
-    }
-
-    @Override
-    protected void playPressSound(WorldAccess world, BlockPos pos) {
-        world.playSound(null, pos, this.pressSound, SoundCategory.BLOCKS);
-    }
-
-    @Override
-    protected void playDepressSound(WorldAccess world, BlockPos pos) {
-        world.playSound(null, pos, this.depressSound, SoundCategory.BLOCKS);
     }
 
     @Override

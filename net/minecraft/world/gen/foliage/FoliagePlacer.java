@@ -7,12 +7,12 @@ import com.mojang.datafixers.Products;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import java.util.function.BiConsumer;
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.Registries;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.TestableWorld;
@@ -36,14 +36,14 @@ public abstract class FoliagePlacer {
 
     protected abstract FoliagePlacerType<?> getType();
 
-    public void generate(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, int trunkHeight, TreeNode treeNode, int foliageHeight, int radius) {
-        this.generate(world, replacer, random, config, trunkHeight, treeNode, foliageHeight, radius, this.getRandomOffset(random));
+    public void generate(TestableWorld world, BlockPlacer placer, Random random, TreeFeatureConfig config, int trunkHeight, TreeNode treeNode, int foliageHeight, int radius) {
+        this.generate(world, placer, random, config, trunkHeight, treeNode, foliageHeight, radius, this.getRandomOffset(random));
     }
 
     /**
      * This is the main method used to generate foliage.
      */
-    protected abstract void generate(TestableWorld var1, BiConsumer<BlockPos, BlockState> var2, Random var3, TreeFeatureConfig var4, int var5, TreeNode var6, int var7, int var8, int var9);
+    protected abstract void generate(TestableWorld var1, BlockPlacer var2, Random var3, TreeFeatureConfig var4, int var5, TreeNode var6, int var7, int var8, int var9);
 
     public abstract int getRandomHeight(Random var1, int var2, TreeFeatureConfig var3);
 
@@ -79,26 +79,54 @@ public abstract class FoliagePlacer {
     /**
      * Generates a square of leaves with the given radius. Sub-classes can use the method {@code isInvalidForLeaves} to exclude certain positions, such as corners.
      */
-    protected void generateSquare(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, BlockPos centerPos, int radius, int y, boolean giantTrunk) {
+    protected void generateSquare(TestableWorld world, BlockPlacer placer, Random random, TreeFeatureConfig config, BlockPos centerPos, int radius, int y, boolean giantTrunk) {
         int i = giantTrunk ? 1 : 0;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int j = -radius; j <= radius + i; ++j) {
             for (int k = -radius; k <= radius + i; ++k) {
                 if (this.isPositionInvalid(random, j, y, k, radius, giantTrunk)) continue;
                 mutable.set(centerPos, j, y, k);
-                FoliagePlacer.placeFoliageBlock(world, replacer, random, config, mutable);
+                FoliagePlacer.placeFoliageBlock(world, placer, random, config, mutable);
             }
         }
     }
 
-    protected static void placeFoliageBlock(TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, TreeFeatureConfig config, BlockPos pos) {
-        if (TreeFeature.canReplace(world, pos)) {
-            BlockState blockState = config.foliageProvider.get(random, pos);
-            if (blockState.contains(Properties.WATERLOGGED)) {
-                blockState = (BlockState)blockState.with(Properties.WATERLOGGED, world.testFluidState(pos, fluidState -> fluidState.isEqualAndStill(Fluids.WATER)));
+    protected final void generateSquareWithHangingLeaves(TestableWorld world, BlockPlacer placer, Random random, TreeFeatureConfig config, BlockPos centerPos, int radius, int y, boolean giantTrunk, float hangingLeavesChance, float hangingLeavesExtensionChance) {
+        this.generateSquare(world, placer, random, config, centerPos, radius, y, giantTrunk);
+        int i = giantTrunk ? 1 : 0;
+        BlockPos.Mutable mutable = new BlockPos.Mutable();
+        for (Direction direction : Direction.Type.HORIZONTAL) {
+            Direction direction2 = direction.rotateYClockwise();
+            int j = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? radius + i : radius;
+            mutable.set(centerPos, 0, y - 1, 0).move(direction2, j).move(direction, -radius);
+            for (int k = -radius; k < radius + i; ++k) {
+                boolean bl = placer.hasPlacedBlock(mutable.move(Direction.UP));
+                mutable.move(Direction.DOWN);
+                if (bl && !(random.nextFloat() > hangingLeavesChance) && FoliagePlacer.placeFoliageBlock(world, placer, random, config, mutable) && !(random.nextFloat() > hangingLeavesExtensionChance)) {
+                    FoliagePlacer.placeFoliageBlock(world, placer, random, config, mutable.move(Direction.DOWN));
+                    mutable.move(Direction.UP);
+                }
+                mutable.move(direction);
             }
-            replacer.accept(pos, blockState);
         }
+    }
+
+    protected static boolean placeFoliageBlock(TestableWorld world, BlockPlacer placer, Random random, TreeFeatureConfig config, BlockPos pos) {
+        if (!TreeFeature.canReplace(world, pos)) {
+            return false;
+        }
+        BlockState blockState = config.foliageProvider.get(random, pos);
+        if (blockState.contains(Properties.WATERLOGGED)) {
+            blockState = (BlockState)blockState.with(Properties.WATERLOGGED, world.testFluidState(pos, fluidState -> fluidState.isEqualAndStill(Fluids.WATER)));
+        }
+        placer.placeBlock(pos, blockState);
+        return true;
+    }
+
+    public static interface BlockPlacer {
+        public void placeBlock(BlockPos var1, BlockState var2);
+
+        public boolean hasPlacedBlock(BlockPos var1);
     }
 
     public static final class TreeNode {

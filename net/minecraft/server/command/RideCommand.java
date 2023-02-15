@@ -21,7 +21,7 @@ import net.minecraft.text.Text;
 public class RideCommand {
     private static final DynamicCommandExceptionType NOT_RIDING_EXCEPTION = new DynamicCommandExceptionType(entity -> Text.translatable("commands.ride.not_riding", entity));
     private static final Dynamic2CommandExceptionType ALREADY_RIDING_EXCEPTION = new Dynamic2CommandExceptionType((rider, vehicle) -> Text.translatable("commands.ride.already_riding", rider, vehicle));
-    private static final Dynamic2CommandExceptionType GENERIC_FAILURE_EXCPETION = new Dynamic2CommandExceptionType((rider, vehicle) -> Text.translatable("commands.ride.mount.failure.generic", rider, vehicle));
+    private static final Dynamic2CommandExceptionType GENERIC_FAILURE_EXCEPTION = new Dynamic2CommandExceptionType((rider, vehicle) -> Text.translatable("commands.ride.mount.failure.generic", rider, vehicle));
     private static final SimpleCommandExceptionType CANT_RIDE_PLAYERS_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.ride.mount.failure.cant_ride_players"));
     private static final SimpleCommandExceptionType RIDE_LOOP_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.ride.mount.failure.loop"));
     private static final SimpleCommandExceptionType WRONG_DIMENSION_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.ride.mount.failure.wrong_dimension"));
@@ -38,14 +38,14 @@ public class RideCommand {
         if (vehicle.getType() == EntityType.PLAYER) {
             throw CANT_RIDE_PLAYERS_EXCEPTION.create();
         }
-        if (rider.streamSelfAndPassengers().anyMatch(passager -> passager == vehicle)) {
+        if (rider.streamSelfAndPassengers().anyMatch(passenger -> passenger == vehicle)) {
             throw RIDE_LOOP_EXCEPTION.create();
         }
         if (rider.getWorld() != vehicle.getWorld()) {
             throw WRONG_DIMENSION_EXCEPTION.create();
         }
         if (!rider.startRiding(vehicle, true)) {
-            throw GENERIC_FAILURE_EXCPETION.create(rider.getDisplayName(), vehicle.getDisplayName());
+            throw GENERIC_FAILURE_EXCEPTION.create(rider.getDisplayName(), vehicle.getDisplayName());
         }
         source.sendFeedback(Text.translatable("commands.ride.mount.success", rider.getDisplayName(), vehicle.getDisplayName()), true);
         return 1;

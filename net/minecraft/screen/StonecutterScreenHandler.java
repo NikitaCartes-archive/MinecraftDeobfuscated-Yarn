@@ -212,8 +212,8 @@ extends ScreenHandler {
     }
 
     @Override
-    public void close(PlayerEntity player) {
-        super.close(player);
+    public void onClosed(PlayerEntity player) {
+        super.onClosed(player);
         this.output.removeStack(1);
         this.context.run((world, pos) -> this.dropInventory(player, this.input));
     }

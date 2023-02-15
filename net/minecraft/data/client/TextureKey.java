@@ -47,6 +47,7 @@ public final class TextureKey {
     public static final TextureKey INSIDE = TextureKey.of("inside");
     public static final TextureKey CONTENT = TextureKey.of("content");
     public static final TextureKey INNER_TOP = TextureKey.of("inner_top");
+    public static final TextureKey FLOWERBED = TextureKey.of("flowerbed");
     private final String name;
     @Nullable
     private final TextureKey parent;

@@ -57,7 +57,7 @@ extends Goal {
         if (livingEntity.isSpectator()) {
             return false;
         }
-        if (this.tameable.isSitting()) {
+        if (this.cannotFollow()) {
             return false;
         }
         if (this.tameable.squaredDistanceTo(livingEntity) < (double)(this.minDistance * this.minDistance)) {
@@ -72,10 +72,14 @@ extends Goal {
         if (this.navigation.isIdle()) {
             return false;
         }
-        if (this.tameable.isSitting()) {
+        if (this.cannotFollow()) {
             return false;
         }
         return !(this.tameable.squaredDistanceTo(this.owner) <= (double)(this.maxDistance * this.maxDistance));
+    }
+
+    private boolean cannotFollow() {
+        return this.tameable.isSitting() || this.tameable.hasVehicle() || this.tameable.isLeashed();
     }
 
     @Override
@@ -99,9 +103,6 @@ extends Goal {
             return;
         }
         this.updateCountdownTicks = this.getTickCount(10);
-        if (this.tameable.isLeashed() || this.tameable.hasVehicle()) {
-            return;
-        }
         if (this.tameable.squaredDistanceTo(this.owner) >= 144.0) {
             this.tryTeleport();
         } else {

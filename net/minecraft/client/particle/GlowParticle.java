@@ -12,6 +12,7 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.ParticleEffect;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
@@ -79,6 +80,11 @@ extends SpriteBillboardParticle {
             glowParticle.setMaxAge(clientWorld.random.nextInt(30) + 10);
             return glowParticle;
         }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -100,6 +106,11 @@ extends SpriteBillboardParticle {
             int k = 4;
             glowParticle.setMaxAge(clientWorld.random.nextInt(2) + 2);
             return glowParticle;
+        }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
         }
     }
 
@@ -123,6 +134,11 @@ extends SpriteBillboardParticle {
             glowParticle.setMaxAge(clientWorld.random.nextInt(30) + 10);
             return glowParticle;
         }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -144,6 +160,11 @@ extends SpriteBillboardParticle {
             int k = 40;
             glowParticle.setMaxAge(clientWorld.random.nextInt(30) + 10);
             return glowParticle;
+        }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
         }
     }
 
@@ -171,6 +192,11 @@ extends SpriteBillboardParticle {
             }
             glowParticle.setMaxAge((int)(8.0 / (clientWorld.random.nextDouble() * 0.8 + 0.2)));
             return glowParticle;
+        }
+
+        @Override
+        public /* synthetic */ Particle createParticle(ParticleEffect particleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            return this.createParticle((DefaultParticleType)particleEffect, clientWorld, d, e, f, g, h, i);
         }
     }
 }

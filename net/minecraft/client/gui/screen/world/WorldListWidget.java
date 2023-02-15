@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.gui.screen.world;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -62,7 +63,6 @@ import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -492,8 +492,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     InputStream inputStream = Files.newInputStream(this.iconPath, new OpenOption[0]);
                     try {
                         NativeImage nativeImage = NativeImage.read(inputStream);
-                        Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide", new Object[0]);
-                        Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high", new Object[0]);
+                        Preconditions.checkState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
+                        Preconditions.checkState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
                         NativeImageBackedTexture nativeImageBackedTexture2 = new NativeImageBackedTexture(nativeImage);
                         this.client.getTextureManager().registerTexture(this.iconLocation, nativeImageBackedTexture2);
                         nativeImageBackedTexture = nativeImageBackedTexture2;

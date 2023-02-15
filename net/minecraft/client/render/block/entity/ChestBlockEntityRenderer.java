@@ -121,7 +121,7 @@ implements BlockEntityRenderer<T> {
         g = 1.0f - g;
         g = 1.0f - g * g * g;
         int i = ((Int2IntFunction)propertySource.apply(new LightmapCoordinatesRetriever())).applyAsInt(light);
-        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTexture(entity, chestType, this.christmas);
+        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getChestTextureId(entity, chestType, this.christmas);
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityCutout);
         if (bl2) {
             if (chestType == ChestType.LEFT) {

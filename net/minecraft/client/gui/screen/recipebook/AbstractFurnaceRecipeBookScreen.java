@@ -45,7 +45,7 @@ extends RecipeBookWidget {
         Slot slot = slots.get(1);
         if (slot.getStack().isEmpty()) {
             if (this.fuels == null) {
-                this.fuels = Ingredient.ofStacks(this.getAllowedFuels().stream().map(ItemStack::new));
+                this.fuels = Ingredient.ofStacks(this.getAllowedFuels().stream().filter(item -> item.isEnabled(this.client.world.getEnabledFeatures())).map(ItemStack::new));
             }
             this.ghostSlots.addSlot(this.fuels, slot.x, slot.y);
         }

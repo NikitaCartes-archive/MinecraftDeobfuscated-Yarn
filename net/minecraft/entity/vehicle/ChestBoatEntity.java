@@ -116,6 +116,7 @@ VehicleInventory {
             case BoatEntity.Type.BIRCH -> Items.BIRCH_CHEST_BOAT;
             case BoatEntity.Type.JUNGLE -> Items.JUNGLE_CHEST_BOAT;
             case BoatEntity.Type.ACACIA -> Items.ACACIA_CHEST_BOAT;
+            case BoatEntity.Type.CHERRY -> Items.CHERRY_CHEST_BOAT;
             case BoatEntity.Type.DARK_OAK -> Items.DARK_OAK_CHEST_BOAT;
             case BoatEntity.Type.MANGROVE -> Items.MANGROVE_CHEST_BOAT;
             case BoatEntity.Type.BAMBOO -> Items.BAMBOO_CHEST_RAFT;

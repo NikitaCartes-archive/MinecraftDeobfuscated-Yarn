@@ -74,10 +74,12 @@ implements UnbakedModel {
      */
     private static final char TEXTURE_REFERENCE_INITIAL = '#';
     public static final String PARTICLE_KEY = "particle";
+    private static final boolean field_42912 = true;
     private final List<ModelElement> elements;
     @Nullable
     private final GuiLight guiLight;
-    private final boolean ambientOcclusion;
+    @Nullable
+    private final Boolean ambientOcclusion;
     private final ModelTransformation transformations;
     private final List<ModelOverride> overrides;
     public String id = "";
@@ -96,7 +98,7 @@ implements UnbakedModel {
         return JsonUnbakedModel.deserialize(new StringReader(json));
     }
 
-    public JsonUnbakedModel(@Nullable Identifier parentId, List<ModelElement> elements, Map<String, Either<SpriteIdentifier, String>> textureMap, boolean ambientOcclusion, @Nullable GuiLight guiLight, ModelTransformation transformations, List<ModelOverride> overrides) {
+    public JsonUnbakedModel(@Nullable Identifier parentId, List<ModelElement> elements, Map<String, Either<SpriteIdentifier, String>> textureMap, @Nullable Boolean ambientOcclusion, @Nullable GuiLight guiLight, ModelTransformation transformations, List<ModelOverride> overrides) {
         this.elements = elements;
         this.ambientOcclusion = ambientOcclusion;
         this.guiLight = guiLight;
@@ -114,10 +116,13 @@ implements UnbakedModel {
     }
 
     public boolean useAmbientOcclusion() {
+        if (this.ambientOcclusion != null) {
+            return this.ambientOcclusion;
+        }
         if (this.parent != null) {
             return this.parent.useAmbientOcclusion();
         }
-        return this.ambientOcclusion;
+        return true;
     }
 
     public GuiLight getGuiLight() {
@@ -311,15 +316,13 @@ implements UnbakedModel {
     @Environment(value=EnvType.CLIENT)
     public static class Deserializer
     implements JsonDeserializer<JsonUnbakedModel> {
-        private static final boolean DEFAULT_AMBIENT_OCCLUSION = true;
-
         @Override
         public JsonUnbakedModel deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             List<ModelElement> list = this.elementsFromJson(jsonDeserializationContext, jsonObject);
             String string = this.parentFromJson(jsonObject);
             Map<String, Either<SpriteIdentifier, String>> map = this.texturesFromJson(jsonObject);
-            boolean bl = this.ambientOcclusionFromJson(jsonObject);
+            Boolean boolean_ = this.ambientOcclusionFromJson(jsonObject);
             ModelTransformation modelTransformation = ModelTransformation.NONE;
             if (jsonObject.has("display")) {
                 JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "display");
@@ -331,7 +334,7 @@ implements UnbakedModel {
                 guiLight = GuiLight.byName(JsonHelper.getString(jsonObject, "gui_light"));
             }
             Identifier identifier = string.isEmpty() ? null : new Identifier(string);
-            return new JsonUnbakedModel(identifier, list, map, bl, guiLight, modelTransformation, list2);
+            return new JsonUnbakedModel(identifier, list, map, boolean_, guiLight, modelTransformation, list2);
         }
 
         protected List<ModelOverride> overridesFromJson(JsonDeserializationContext context, JsonObject object) {
@@ -372,8 +375,12 @@ implements UnbakedModel {
             return JsonHelper.getString(json, "parent", "");
         }
 
-        protected boolean ambientOcclusionFromJson(JsonObject json) {
-            return JsonHelper.getBoolean(json, "ambientocclusion", true);
+        @Nullable
+        protected Boolean ambientOcclusionFromJson(JsonObject json) {
+            if (json.has("ambientocclusion")) {
+                return JsonHelper.getBoolean(json, "ambientocclusion");
+            }
+            return null;
         }
 
         protected List<ModelElement> elementsFromJson(JsonDeserializationContext context, JsonObject json) {

@@ -819,7 +819,7 @@ public abstract class ScreenHandler {
     }
 
     /**
-     * Closes this screen handler.
+     * Called when this screen handler is closed.
      * 
      * <p>To close a screen handler, call {@link PlayerEntity#closeHandledScreen}
      * on the server instead of this method.
@@ -827,7 +827,7 @@ public abstract class ScreenHandler {
      * <p>This drops the cursor stack by default. Subclasses that have slots not backed
      * by a persistent inventory should call {@link #dropInventory} to drop the stacks.
      */
-    public void close(PlayerEntity player) {
+    public void onClosed(PlayerEntity player) {
         ItemStack itemStack;
         if (player instanceof ServerPlayerEntity && !(itemStack = this.getCursorStack()).isEmpty()) {
             if (!player.isAlive() || ((ServerPlayerEntity)player).isDisconnected()) {

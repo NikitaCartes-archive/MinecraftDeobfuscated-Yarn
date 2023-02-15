@@ -88,6 +88,7 @@ import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.OperatorEntry;
 import net.minecraft.server.OperatorList;
+import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.Whitelist;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
@@ -201,7 +202,10 @@ public abstract class PlayerManager {
         MutableText mutableText = player.getGameProfile().getName().equalsIgnoreCase(string) ? Text.translatable("multiplayer.player.joined", player.getDisplayName()) : Text.translatable("multiplayer.player.joined.renamed", player.getDisplayName(), string);
         this.broadcast(mutableText.formatted(Formatting.YELLOW), false);
         serverPlayNetworkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
-        player.sendServerMetadata(this.server.getServerMetadata());
+        ServerMetadata serverMetadata = this.server.getServerMetadata();
+        if (serverMetadata != null) {
+            player.sendServerMetadata(serverMetadata);
+        }
         player.networkHandler.sendPacket(PlayerListS2CPacket.entryFromPlayer(this.players));
         this.players.add(player);
         this.playerMap.put(player.getUuid(), player);

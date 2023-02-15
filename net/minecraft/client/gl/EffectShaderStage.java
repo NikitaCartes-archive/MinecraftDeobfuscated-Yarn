@@ -9,7 +9,7 @@ import java.io.InputStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gl.EffectShaderProgram;
-import net.minecraft.client.gl.GLImportProcessor;
+import net.minecraft.client.gl.GlImportProcessor;
 import net.minecraft.client.gl.ShaderProgramSetupView;
 import net.minecraft.client.gl.ShaderStage;
 
@@ -21,7 +21,7 @@ import net.minecraft.client.gl.ShaderStage;
 @Environment(value=EnvType.CLIENT)
 public class EffectShaderStage
 extends ShaderStage {
-    private static final GLImportProcessor LOADER = new GLImportProcessor(){
+    private static final GlImportProcessor LOADER = new GlImportProcessor(){
 
         @Override
         public String loadImport(boolean inline, String name) {

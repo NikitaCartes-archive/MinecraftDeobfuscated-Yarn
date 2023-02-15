@@ -22,12 +22,11 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -55,7 +54,7 @@ import org.slf4j.Logger;
 @Environment(value=EnvType.CLIENT)
 public class MultiplayerServerListPinger {
     static final Splitter ZERO_SPLITTER = Splitter.on('\u0000').limit(6);
-    static final Logger LOGGER = LogUtils.getLogger();
+    private static final Logger LOGGER = LogUtils.getLogger();
     private static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").styled(style -> style.withColor(-65536));
     private final List<ClientConnection> clientConnections = Collections.synchronizedList(Lists.newArrayList());
 
@@ -84,44 +83,39 @@ public class MultiplayerServerListPinger {
                     return;
                 }
                 this.received = true;
-                ServerMetadata serverMetadata = packet.getServerMetadata();
-                entry.label = serverMetadata.getDescription() != null ? serverMetadata.getDescription() : ScreenTexts.EMPTY;
-                if (serverMetadata.getVersion() != null) {
-                    entry.version = Text.literal(serverMetadata.getVersion().getGameVersion());
-                    entry.protocolVersion = serverMetadata.getVersion().getProtocolVersion();
-                } else {
-                    entry.version = Text.translatable("multiplayer.status.old");
-                    entry.protocolVersion = 0;
-                }
-                if (serverMetadata.getPlayers() != null) {
-                    entry.playerCountLabel = MultiplayerServerListPinger.createPlayerCountText(serverMetadata.getPlayers().getOnlinePlayerCount(), serverMetadata.getPlayers().getPlayerLimit());
-                    entry.players = serverMetadata.getPlayers();
-                    ArrayList<Text> list = Lists.newArrayList();
-                    GameProfile[] gameProfiles = serverMetadata.getPlayers().getSample();
-                    if (gameProfiles != null && gameProfiles.length > 0) {
-                        for (GameProfile gameProfile : gameProfiles) {
+                ServerMetadata serverMetadata = packet.metadata();
+                entry.label = serverMetadata.description();
+                serverMetadata.version().ifPresentOrElse(version -> {
+                    serverInfo.version = Text.literal(version.gameVersion());
+                    serverInfo.protocolVersion = version.protocolVersion();
+                }, () -> {
+                    serverInfo.version = Text.translatable("multiplayer.status.old");
+                    serverInfo.protocolVersion = 0;
+                });
+                serverMetadata.players().ifPresentOrElse(players -> {
+                    serverInfo.playerCountLabel = MultiplayerServerListPinger.createPlayerCountText(players.online(), players.max());
+                    serverInfo.players = players;
+                    if (!players.sample().isEmpty()) {
+                        ArrayList<Text> list = new ArrayList<Text>(players.sample().size());
+                        for (GameProfile gameProfile : players.sample()) {
                             list.add(Text.literal(gameProfile.getName()));
                         }
-                        if (gameProfiles.length < serverMetadata.getPlayers().getOnlinePlayerCount()) {
-                            list.add(Text.translatable("multiplayer.status.and_more", serverMetadata.getPlayers().getOnlinePlayerCount() - gameProfiles.length));
+                        if (players.sample().size() < players.online()) {
+                            list.add(Text.translatable("multiplayer.status.and_more", players.online() - players.sample().size()));
                         }
-                        entry.playerListSummary = list;
+                        serverInfo.playerListSummary = list;
+                    } else {
+                        serverInfo.playerListSummary = List.of();
                     }
-                } else {
-                    entry.playerCountLabel = Text.translatable("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY);
-                }
-                String string = serverMetadata.getFavicon();
-                if (string != null) {
-                    try {
-                        string = ServerInfo.parseFavicon(string);
-                    } catch (ParseException parseException) {
-                        LOGGER.error("Invalid server icon", parseException);
+                }, () -> {
+                    serverInfo.playerCountLabel = Text.translatable("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY);
+                });
+                serverMetadata.favicon().ifPresent(favicon -> {
+                    if (!Arrays.equals(favicon.iconBytes(), entry.getFavicon())) {
+                        entry.setFavicon(favicon.iconBytes());
+                        saver.run();
                     }
-                }
-                if (!Objects.equals(string, entry.getIcon())) {
-                    entry.setIcon(string);
-                    saver.run();
-                }
+                });
                 this.startTime = Util.getMeasuringTimeMs();
                 clientConnection.send(new QueryPingC2SPacket(this.startTime));
                 this.sentQuery = true;
@@ -219,7 +213,7 @@ public class MultiplayerServerListPinger {
                             info.version = Text.literal(string2);
                             info.label = Text.literal(string3);
                             info.playerCountLabel = MultiplayerServerListPinger.createPlayerCountText(j, k);
-                            info.players = new ServerMetadata.Players(k, j);
+                            info.players = new ServerMetadata.Players(k, j, List.of());
                         }
                         channelHandlerContext.close();
                     }

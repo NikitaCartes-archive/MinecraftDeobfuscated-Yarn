@@ -10,6 +10,7 @@ import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerMetadata;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import net.minecraft.server.network.ServerQueryNetworkHandler;
 import net.minecraft.text.MutableText;
@@ -41,9 +42,10 @@ implements ServerHandshakePacketListener {
                 break;
             }
             case STATUS: {
-                if (this.server.acceptsStatusQuery()) {
+                ServerMetadata serverMetadata = this.server.getServerMetadata();
+                if (this.server.acceptsStatusQuery() && serverMetadata != null) {
                     this.connection.setState(NetworkState.STATUS);
-                    this.connection.setPacketListener(new ServerQueryNetworkHandler(this.server, this.connection));
+                    this.connection.setPacketListener(new ServerQueryNetworkHandler(serverMetadata, this.connection));
                     break;
                 }
                 this.connection.disconnect(IGNORING_STATUS_REQUEST_MESSAGE);

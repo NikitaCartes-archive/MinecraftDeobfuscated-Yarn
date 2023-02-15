@@ -54,11 +54,12 @@ import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.command.argument.SwizzleArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
+import net.minecraft.entity.Attackable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Ownable;
 import net.minecraft.entity.Tameable;
+import net.minecraft.entity.Targeter;
 import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.loot.condition.LootCondition;
@@ -388,18 +389,18 @@ public class ExecuteCommand {
             return optional;
         })))).then(CommandManager.literal("target").fork(node, ExecuteCommand.createEntityModifier(entity -> {
             Optional<Object> optional;
-            if (entity instanceof MobEntity) {
-                MobEntity mobEntity = (MobEntity)entity;
-                optional = Optional.ofNullable(mobEntity.getTarget());
+            if (entity instanceof Targeter) {
+                Targeter targeter = (Targeter)((Object)entity);
+                optional = Optional.ofNullable(targeter.getTarget());
             } else {
                 optional = Optional.empty();
             }
             return optional;
         })))).then(CommandManager.literal("attacker").fork(node, ExecuteCommand.createEntityModifier(entity -> {
             Optional<Object> optional;
-            if (entity instanceof LivingEntity) {
-                LivingEntity livingEntity = (LivingEntity)entity;
-                optional = Optional.ofNullable(livingEntity.getAttacker());
+            if (entity instanceof Attackable) {
+                Attackable attackable = (Attackable)((Object)entity);
+                optional = Optional.ofNullable(attackable.getLastAttacker());
             } else {
                 optional = Optional.empty();
             }
