@@ -18,10 +18,12 @@ public class SnifferModel<T extends SnifferEntity> extends SinglePartEntityModel
 	private static final float field_42879 = 1.0F;
 	private static final float field_42880 = 2.0F;
 	private final ModelPart root;
+	private final ModelPart head;
 
 	public SnifferModel(ModelPart root) {
 		super(0.5F, 24.0F);
 		this.root = root.getChild(EntityModelPartNames.ROOT);
+		this.head = this.root.getChild(EntityModelPartNames.BONE).getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -103,6 +105,8 @@ public class SnifferModel<T extends SnifferEntity> extends SinglePartEntityModel
 
 	public void setAngles(T snifferEntity, float f, float g, float h, float i, float j) {
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
+		this.head.pitch = j * (float) (Math.PI / 180.0);
+		this.head.yaw = i * (float) (Math.PI / 180.0);
 		float k = Math.min((float)snifferEntity.getVelocity().horizontalLengthSquared() * 9000.0F, 1.0F);
 		float l = k * 2.0F;
 		this.updateAnimation(snifferEntity.walkingAnimationState, SnifferAnimations.WALKING, h, k);

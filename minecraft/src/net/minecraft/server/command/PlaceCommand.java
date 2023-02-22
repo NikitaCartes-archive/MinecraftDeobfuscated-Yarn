@@ -70,7 +70,7 @@ public class PlaceCommand {
 										context -> executePlaceFeature(
 												(ServerCommandSource)context.getSource(),
 												RegistryKeyArgumentType.getConfiguredFeatureEntry(context, "feature"),
-												new BlockPos(((ServerCommandSource)context.getSource()).getPosition())
+												BlockPos.ofFloored(((ServerCommandSource)context.getSource()).getPosition())
 											)
 									))
 								.then(
@@ -99,7 +99,7 @@ public class PlaceCommand {
 																RegistryKeyArgumentType.getStructurePoolEntry(context, "pool"),
 																IdentifierArgumentType.getIdentifier(context, "target"),
 																IntegerArgumentType.getInteger(context, "max_depth"),
-																new BlockPos(((ServerCommandSource)context.getSource()).getPosition())
+																BlockPos.ofFloored(((ServerCommandSource)context.getSource()).getPosition())
 															)
 													))
 												.then(
@@ -124,7 +124,7 @@ public class PlaceCommand {
 							CommandManager.argument("structure", RegistryKeyArgumentType.registryKey(RegistryKeys.STRUCTURE))
 								.executes(
 									context -> executePlaceStructure(
-											context.getSource(), RegistryKeyArgumentType.getStructureEntry(context, "structure"), new BlockPos(context.getSource().getPosition())
+											context.getSource(), RegistryKeyArgumentType.getStructureEntry(context, "structure"), BlockPos.ofFloored(context.getSource().getPosition())
 										)
 								)
 								.then(
@@ -146,7 +146,7 @@ public class PlaceCommand {
 									context -> executePlaceTemplate(
 											context.getSource(),
 											IdentifierArgumentType.getIdentifier(context, "template"),
-											new BlockPos(context.getSource().getPosition()),
+											BlockPos.ofFloored(context.getSource().getPosition()),
 											BlockRotation.NONE,
 											BlockMirror.NONE,
 											1.0F,

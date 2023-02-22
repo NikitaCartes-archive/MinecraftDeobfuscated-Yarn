@@ -20,10 +20,10 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Nullable
 	private final MapState.UpdateData updateData;
 
-	public MapUpdateS2CPacket(int id, byte scale, boolean showIcons, @Nullable Collection<MapIcon> icons, @Nullable MapState.UpdateData updateData) {
+	public MapUpdateS2CPacket(int id, byte scale, boolean locked, @Nullable Collection<MapIcon> icons, @Nullable MapState.UpdateData updateData) {
 		this.id = id;
 		this.scale = scale;
-		this.locked = showIcons;
+		this.locked = locked;
 		this.icons = icons != null ? Lists.<MapIcon>newArrayList(icons) : null;
 		this.updateData = updateData;
 	}

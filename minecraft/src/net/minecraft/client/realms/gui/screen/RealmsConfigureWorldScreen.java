@@ -387,7 +387,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			i = i - k - 20;
 		}
 
-		this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
+		fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
 		this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, 16777215);
 	}
 

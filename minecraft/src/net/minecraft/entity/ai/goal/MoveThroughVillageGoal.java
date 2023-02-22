@@ -82,7 +82,7 @@ public class MoveThroughVillageGoal extends Goal {
 							.getPosition(
 								poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE),
 								this::shouldVisit,
-								new BlockPos(vec3d),
+								BlockPos.ofFloored(vec3d),
 								10,
 								PointOfInterestStorage.OccupationStatus.IS_OCCUPIED
 							);

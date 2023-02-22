@@ -219,7 +219,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	public MoveControl getMoveControl() {
-		return this.hasVehicle() && this.getVehicle() instanceof MobEntity mobEntity ? mobEntity.getMoveControl() : this.moveControl;
+		Entity var2 = this.getVehicle();
+		return var2 instanceof MobEntity mobEntity ? mobEntity.getMoveControl() : this.moveControl;
 	}
 
 	public JumpControl getJumpControl() {
@@ -354,7 +355,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	protected void updateGoalControls() {
-		boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity);
+		boolean bl = !(this.getControllingPassenger() instanceof MobEntity);
 		boolean bl2 = !(this.getVehicle() instanceof BoatEntity);
 		this.goalSelector.setControlEnabled(Goal.Control.MOVE, bl);
 		this.goalSelector.setControlEnabled(Goal.Control.JUMP, bl && bl2);
@@ -1366,11 +1367,6 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	@Override
-	public boolean isLogicalSideForUpdatingMovement() {
-		return this.hasPrimaryPassenger() && super.isLogicalSideForUpdatingMovement();
-	}
-
-	@Override
 	public boolean canMoveVoluntarily() {
 		return super.canMoveVoluntarily() && !this.isAiDisabled();
 	}
@@ -1473,7 +1469,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	protected boolean isAffectedByDaylight() {
 		if (this.world.isDay() && !this.world.isClient) {
 			float f = this.getBrightnessAtEyes();
-			BlockPos blockPos = new BlockPos(this.getX(), this.getEyeY(), this.getZ());
+			BlockPos blockPos = BlockPos.ofFloored(this.getX(), this.getEyeY(), this.getZ());
 			boolean bl = this.isWet() || this.inPowderSnow || this.wasInPowderSnow;
 			if (f > 0.5F && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && !bl && this.world.isSkyVisible(blockPos)) {
 				return true;

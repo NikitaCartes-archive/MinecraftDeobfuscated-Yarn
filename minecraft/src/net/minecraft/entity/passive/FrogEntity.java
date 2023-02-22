@@ -110,7 +110,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 		this.setPathfindingPenalty(PathNodeType.WATER, 4.0F);
 		this.setPathfindingPenalty(PathNodeType.TRAPDOOR, -1.0F);
 		this.moveControl = new AquaticMoveControl(this, 85, 10, 0.02F, 0.1F, true);
-		this.stepHeight = 1.0F;
+		this.setStepHeight(1.0F);
 	}
 
 	@Override
@@ -351,7 +351,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
+		if (this.isLogicalSideForUpdatingMovement() && this.isTouchingWater()) {
 			this.updateVelocity(this.getMovementSpeed(), movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));

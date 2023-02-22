@@ -97,6 +97,10 @@ public class SimplePositioningWidget extends WrapperWidget {
 		setPos(widget, rect.position().x(), rect.position().y(), rect.width(), rect.height());
 	}
 
+	public static void setPos(Widget widget, FocusedRect rect, float relativeX, float relativeY) {
+		setPos(widget, rect.getLeft(), rect.getTop(), rect.width(), rect.height(), relativeX, relativeY);
+	}
+
 	public static void setPos(Widget widget, int left, int top, int right, int bottom, float relativeX, float relativeY) {
 		setPos(left, right, widget.getWidth(), widget::setX, relativeX);
 		setPos(top, bottom, widget.getHeight(), widget::setY, relativeY);

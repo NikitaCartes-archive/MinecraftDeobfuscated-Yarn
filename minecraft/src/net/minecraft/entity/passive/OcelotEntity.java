@@ -138,11 +138,6 @@ public class OcelotEntity extends AnimalEntity {
 			.add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 3.0);
 	}
 
-	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-		return false;
-	}
-
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {

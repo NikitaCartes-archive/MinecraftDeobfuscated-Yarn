@@ -83,6 +83,20 @@ public class ClientChunkManager extends ChunkManager {
 		return this.world;
 	}
 
+	public void onChunkBiomeData(int x, int z, PacketByteBuf buf) {
+		if (!this.chunks.isInRadius(x, z)) {
+			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", x, z);
+		} else {
+			int i = this.chunks.getIndex(x, z);
+			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(i);
+			if (!positionEquals(worldChunk, x, z)) {
+				LOGGER.warn("Ignoring chunk since it's not present: {}, {}", x, z);
+			} else {
+				worldChunk.loadBiomeFromPacket(buf);
+			}
+		}
+	}
+
 	@Nullable
 	public WorldChunk loadChunkFromPacket(int x, int z, PacketByteBuf buf, NbtCompound nbt, Consumer<ChunkData.BlockEntityVisitor> consumer) {
 		if (!this.chunks.isInRadius(x, z)) {

@@ -51,18 +51,6 @@ public class BlockPos extends Vec3i {
 		super(i, j, k);
 	}
 
-	public BlockPos(double d, double e, double f) {
-		super(d, e, f);
-	}
-
-	public BlockPos(Vec3d pos) {
-		this(pos.x, pos.y, pos.z);
-	}
-
-	public BlockPos(Position pos) {
-		this(pos.getX(), pos.getY(), pos.getZ());
-	}
-
 	public BlockPos(Vec3i pos) {
 		this(pos.getX(), pos.getY(), pos.getZ());
 	}
@@ -91,6 +79,14 @@ public class BlockPos extends Vec3i {
 		return new BlockPos(unpackLongX(packedPos), unpackLongY(packedPos), unpackLongZ(packedPos));
 	}
 
+	public static BlockPos ofFloored(double x, double y, double z) {
+		return new BlockPos(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
+	}
+
+	public static BlockPos ofFloored(Position pos) {
+		return ofFloored(pos.getX(), pos.getY(), pos.getZ());
+	}
+
 	public long asLong() {
 		return asLong(this.getX(), this.getY(), this.getZ());
 	}
@@ -104,10 +100,6 @@ public class BlockPos extends Vec3i {
 
 	public static long removeChunkSectionLocalY(long y) {
 		return y & -16L;
-	}
-
-	public BlockPos add(double d, double e, double f) {
-		return d == 0.0 && e == 0.0 && f == 0.0 ? this : new BlockPos((double)this.getX() + d, (double)this.getY() + e, (double)this.getZ() + f);
 	}
 
 	public BlockPos add(int i, int j, int k) {
@@ -513,13 +505,8 @@ public class BlockPos extends Vec3i {
 			super(i, j, k);
 		}
 
-		public Mutable(double d, double e, double f) {
-			this(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
-		}
-
-		@Override
-		public BlockPos add(double d, double e, double f) {
-			return super.add(d, e, f).toImmutable();
+		public Mutable(double x, double y, double z) {
+			this(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
 		}
 
 		@Override

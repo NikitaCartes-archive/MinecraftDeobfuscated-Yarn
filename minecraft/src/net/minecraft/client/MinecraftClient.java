@@ -1080,6 +1080,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.currentScreen = screen;
+		if (this.currentScreen != null) {
+			this.currentScreen.onDisplayed();
+		}
+
 		BufferRenderer.reset();
 		if (screen != null) {
 			this.mouse.unlockCursor();
@@ -1209,9 +1213,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		RenderSystem.applyModelViewMatrix();
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT, IS_SYSTEM_MAC);
 		this.framebuffer.beginWrite(true);
 		BackgroundRenderer.clearFog();
@@ -1221,8 +1222,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (!this.skipGameRender) {
 			this.profiler.swap("gameRenderer");
 			this.gameRenderer.render(this.paused ? this.pausedTickDelta : this.renderTickCounter.tickDelta, l, tick);
-			this.profiler.swap("toasts");
-			this.toastManager.draw(new MatrixStack());
 			this.profiler.pop();
 		}
 
@@ -1234,17 +1233,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		this.profiler.push("blit");
 		this.framebuffer.endWrite();
-		matrixStack.pop();
-		matrixStack.push();
-		RenderSystem.applyModelViewMatrix();
 		this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 		this.renderTime = Util.getMeasuringTimeNano() - m;
 		if (bl) {
 			GlTimer.getInstance().ifPresent(glTimer -> this.currentGlTimerQuery = glTimer.endProfile());
 		}
 
-		matrixStack.pop();
-		RenderSystem.applyModelViewMatrix();
 		this.profiler.swap("updateDisplay");
 		this.window.swapBuffers();
 		int k = this.getFramerateLimit();
@@ -1565,6 +1559,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			.setOrtho(0.0F, (float)this.window.getFramebufferWidth(), (float)this.window.getFramebufferHeight(), 0.0F, 1000.0F, 3000.0F);
 		RenderSystem.setProjectionMatrix(matrix4f);
 		MatrixStack matrixStack = RenderSystem.getModelViewStack();
+		matrixStack.push();
 		matrixStack.loadIdentity();
 		matrixStack.translate(0.0F, 0.0F, -2000.0F);
 		RenderSystem.applyModelViewMatrix();
@@ -1654,6 +1649,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.textRenderer
 				.drawWithShadow(matrices, string3, (float)(j + 160 - this.textRenderer.getWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
 		}
+
+		matrixStack.pop();
+		RenderSystem.applyModelViewMatrix();
 	}
 
 	public void scheduleStop() {

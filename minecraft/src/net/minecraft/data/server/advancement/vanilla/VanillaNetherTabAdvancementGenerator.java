@@ -46,7 +46,7 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGenerator {
@@ -467,7 +467,9 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				)
 			)
 			.build(exporter, "nether/ride_strider_in_overworld_lava");
-		VanillaAdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Builder.create(), MultiNoiseBiomeSource.Preset.NETHER.stream().toList())
+		VanillaAdventureTabAdvancementGenerator.requireListedBiomesVisited(
+				Advancement.Builder.create(), MultiNoiseBiomeSourceParameterList.Preset.NETHER.biomeStream().toList()
+			)
 			.parent(advancement12)
 			.display(
 				Items.NETHERITE_BOOTS,

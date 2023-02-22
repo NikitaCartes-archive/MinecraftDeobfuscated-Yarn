@@ -3,6 +3,7 @@ package net.minecraft.client.gui.widget;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.navigation.FocusedRect;
 
 @Environment(EnvType.CLIENT)
 public interface Widget {
@@ -17,6 +18,10 @@ public interface Widget {
 	int getWidth();
 
 	int getHeight();
+
+	default FocusedRect getNavigationFocus() {
+		return new FocusedRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
+	}
 
 	default void setPosition(int x, int y) {
 		this.setX(x);

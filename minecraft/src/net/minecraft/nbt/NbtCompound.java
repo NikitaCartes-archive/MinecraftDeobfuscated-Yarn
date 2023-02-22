@@ -42,7 +42,7 @@ import net.minecraft.util.crash.CrashReportSection;
 public class NbtCompound implements NbtElement {
 	public static final Codec<NbtCompound> CODEC = Codec.PASSTHROUGH.comapFlatMap(dynamic -> {
 		NbtElement nbtElement = dynamic.convert(NbtOps.INSTANCE).getValue();
-		return nbtElement instanceof NbtCompound ? DataResult.success((NbtCompound)nbtElement) : DataResult.error("Not a compound tag: " + nbtElement);
+		return nbtElement instanceof NbtCompound ? DataResult.success((NbtCompound)nbtElement) : DataResult.error(() -> "Not a compound tag: " + nbtElement);
 	}, nbt -> new Dynamic<>(NbtOps.INSTANCE, nbt));
 	private static final int SIZE = 48;
 	private static final int field_41719 = 32;

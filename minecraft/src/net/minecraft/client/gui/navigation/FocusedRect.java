@@ -98,4 +98,20 @@ public record FocusedRect(FocusedPos position, int width, int height) {
 	public int getCenter(NavigationAxis axis) {
 		return (this.getBoundingCoordinate(axis.getPositiveDirection()) + this.getBoundingCoordinate(axis.getNegativeDirection())) / 2;
 	}
+
+	public int getTop() {
+		return this.position.y();
+	}
+
+	public int getBottom() {
+		return this.position.y() + this.height;
+	}
+
+	public int getLeft() {
+		return this.position.x();
+	}
+
+	public int getRight() {
+		return this.position.x() + this.width;
+	}
 }

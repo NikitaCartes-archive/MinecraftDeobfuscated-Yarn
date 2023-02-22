@@ -19,7 +19,7 @@ public class CrashReportSection {
 	}
 
 	public static String createPositionString(HeightLimitView world, double x, double y, double z) {
-		return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", x, y, z, createPositionString(world, new BlockPos(x, y, z)));
+		return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", x, y, z, createPositionString(world, BlockPos.ofFloored(x, y, z)));
 	}
 
 	public static String createPositionString(HeightLimitView world, BlockPos pos) {

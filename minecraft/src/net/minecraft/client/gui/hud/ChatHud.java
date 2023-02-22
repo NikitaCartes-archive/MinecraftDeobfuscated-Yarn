@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.hud;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,10 +107,8 @@ public class ChatHud extends DrawableHelper {
 									}
 								}
 
-								RenderSystem.enableBlend();
 								matrices.translate(0.0F, 0.0F, 50.0F);
 								this.client.textRenderer.drawWithShadow(matrices, visible.content(), 0.0F, (float)y, 16777215 + (u << 24));
-								RenderSystem.disableBlend();
 								matrices.pop();
 							}
 						}
@@ -125,11 +122,9 @@ public class ChatHud extends DrawableHelper {
 					matrices.push();
 					matrices.translate(0.0F, (float)m, 50.0F);
 					fill(matrices, -2, 0, k + 4, 9, t << 24);
-					RenderSystem.enableBlend();
 					matrices.translate(0.0F, 0.0F, 50.0F);
 					this.client.textRenderer.drawWithShadow(matrices, Text.translatable("chat.queue", ac), 0.0F, 1.0F, 16777215 + (ad << 24));
 					matrices.pop();
-					RenderSystem.disableBlend();
 				}
 
 				if (bl) {

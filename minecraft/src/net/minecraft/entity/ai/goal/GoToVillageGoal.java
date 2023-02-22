@@ -40,7 +40,7 @@ public class GoToVillageGoal extends Goal {
 				return false;
 			} else {
 				Vec3d vec3d = FuzzyTargeting.find(this.mob, 15, 7, blockPosx -> (double)(-serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPosx))));
-				this.targetPosition = vec3d == null ? null : new BlockPos(vec3d);
+				this.targetPosition = vec3d == null ? null : BlockPos.ofFloored(vec3d);
 				return this.targetPosition != null;
 			}
 		}
@@ -61,7 +61,7 @@ public class GoToVillageGoal extends Goal {
 				Vec3d vec3d3 = vec3d2.subtract(vec3d);
 				vec3d = vec3d3.multiply(0.4).add(vec3d);
 				Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
-				BlockPos blockPos = new BlockPos(vec3d4);
+				BlockPos blockPos = BlockPos.ofFloored(vec3d4);
 				blockPos = this.mob.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
 				if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
 					this.findOtherWaypoint();

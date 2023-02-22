@@ -77,9 +77,9 @@ public abstract class BuiltinBiomes {
 		biomeRegisterable.register(BiomeKeys.END_BARRENS, TheEndBiomeCreator.createEndBarrens(registryEntryLookup, registryEntryLookup2));
 	}
 
-	public static void method_49391(Registerable<Biome> registerable) {
-		RegistryEntryLookup<PlacedFeature> registryEntryLookup = registerable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
-		RegistryEntryLookup<ConfiguredCarver<?>> registryEntryLookup2 = registerable.getRegistryLookup(RegistryKeys.CONFIGURED_CARVER);
-		registerable.register(BiomeKeys.CHERRY_GROVE, OverworldBiomeCreator.createMeadow(registryEntryLookup, registryEntryLookup2, true));
+	public static void method_49391(Registerable<Biome> biomeRegistry) {
+		RegistryEntryLookup<PlacedFeature> registryEntryLookup = biomeRegistry.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
+		RegistryEntryLookup<ConfiguredCarver<?>> registryEntryLookup2 = biomeRegistry.getRegistryLookup(RegistryKeys.CONFIGURED_CARVER);
+		biomeRegistry.register(BiomeKeys.CHERRY_GROVE, OverworldBiomeCreator.createMeadow(registryEntryLookup, registryEntryLookup2, true));
 	}
 }

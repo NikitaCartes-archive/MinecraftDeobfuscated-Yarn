@@ -428,7 +428,9 @@ public class SnifferAnimations {
 		.addBoneAnimation(
 			"head",
 			new Transformation(
-				Transformation.Targets.TRANSLATE, new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, -2.0F, 0.0F), Transformation.Interpolations.LINEAR)
+				Transformation.Targets.TRANSLATE,
+				new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, -2.0F, 0.0F), Transformation.Interpolations.LINEAR),
+				new Keyframe(2.0F, AnimationHelper.createTranslationalVector(0.0F, -2.0F, 0.0F), Transformation.Interpolations.LINEAR)
 			)
 		)
 		.addBoneAnimation(

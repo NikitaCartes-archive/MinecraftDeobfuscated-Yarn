@@ -131,9 +131,9 @@ public class FillBiomeCommand {
 					createBiomeSupplier(mutableInt, chunk, blockBox, biome, filter), serverWorld.getChunkManager().getNoiseConfig().getMultiNoiseSampler()
 				);
 				chunk.setNeedsSaving(true);
-				serverWorld.getChunkManager().threadedAnvilChunkStorage.sendChunkPacketToWatchingPlayers(chunk);
 			}
 
+			serverWorld.getChunkManager().threadedAnvilChunkStorage.sendChunkBiomePackets(list);
 			source.sendFeedback(
 				Text.translatable(
 					"commands.fillbiome.success.count",

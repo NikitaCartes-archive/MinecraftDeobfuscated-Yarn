@@ -4,7 +4,6 @@ import com.google.common.base.Strings;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import java.util.Collection;
 import java.util.Comparator;
@@ -24,7 +23,6 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.report.log.ChatLog;
 import net.minecraft.client.report.log.ChatLogEntry;
 import net.minecraft.client.report.log.ReceivedMessage;
-import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsPlayerListWidget extends ElementListWidget<SocialInteractionsPlayerListEntry> {
@@ -41,16 +39,8 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		double d = this.client.getWindow().getScaleFactor();
-		RenderSystem.enableScissor(
-			(int)((double)this.getRowLeft() * d),
-			(int)((double)(this.height - this.bottom) * d),
-			(int)((double)(this.getScrollbarPositionX() + 6) * d),
-			(int)((double)(this.height - (this.height - this.bottom) - this.top - 4) * d)
-		);
-		super.render(matrices, mouseX, mouseY, delta);
-		RenderSystem.disableScissor();
+	protected void enableScissor() {
+		enableScissor(this.left, this.top + 4, this.right, this.bottom);
 	}
 
 	public void update(Collection<UUID> uuids, double scrollAmount, boolean includeOffline) {

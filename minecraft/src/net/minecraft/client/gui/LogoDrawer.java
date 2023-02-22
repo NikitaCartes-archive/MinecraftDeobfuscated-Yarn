@@ -30,17 +30,17 @@ public class LogoDrawer extends DrawableHelper {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.ignoreAlpha ? 1.0F : alpha);
 		int i = screenWidth / 2 - 137;
 		if (this.minceraft) {
-			this.drawWithOutline(i, y, (x, yx) -> {
-				this.drawTexture(matrices, x, yx, 0, 0, 99, 44);
-				this.drawTexture(matrices, x + 99, yx, 129, 0, 27, 44);
-				this.drawTexture(matrices, x + 99 + 26, yx, 126, 0, 3, 44);
-				this.drawTexture(matrices, x + 99 + 26 + 3, yx, 99, 0, 26, 44);
-				this.drawTexture(matrices, x + 155, yx, 0, 45, 155, 44);
+			drawWithOutline(i, y, (x, yx) -> {
+				drawTexture(matrices, x, yx, 0, 0, 99, 44);
+				drawTexture(matrices, x + 99, yx, 129, 0, 27, 44);
+				drawTexture(matrices, x + 99 + 26, yx, 126, 0, 3, 44);
+				drawTexture(matrices, x + 99 + 26 + 3, yx, 99, 0, 26, 44);
+				drawTexture(matrices, x + 155, yx, 0, 45, 155, 44);
 			});
 		} else {
-			this.drawWithOutline(i, y, (x, yx) -> {
-				this.drawTexture(matrices, x, yx, 0, 0, 155, 44);
-				this.drawTexture(matrices, x + 155, yx, 0, 45, 155, 44);
+			drawWithOutline(i, y, (x, yx) -> {
+				drawTexture(matrices, x, yx, 0, 0, 155, 44);
+				drawTexture(matrices, x + 155, yx, 0, 45, 155, 44);
 			});
 		}
 

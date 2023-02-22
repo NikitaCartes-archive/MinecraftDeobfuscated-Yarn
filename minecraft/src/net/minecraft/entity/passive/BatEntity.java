@@ -160,7 +160,7 @@ public class BatEntity extends AmbientEntity {
 			}
 
 			if (this.hangingPosition == null || this.random.nextInt(30) == 0 || this.hangingPosition.isWithinDistance(this.getPos(), 2.0)) {
-				this.hangingPosition = new BlockPos(
+				this.hangingPosition = BlockPos.ofFloored(
 					this.getX() + (double)this.random.nextInt(7) - (double)this.random.nextInt(7),
 					this.getY() + (double)this.random.nextInt(6) - 2.0,
 					this.getZ() + (double)this.random.nextInt(7) - (double)this.random.nextInt(7)
@@ -186,11 +186,6 @@ public class BatEntity extends AmbientEntity {
 	@Override
 	protected Entity.MoveEffect getMoveEffect() {
 		return Entity.MoveEffect.EVENTS;
-	}
-
-	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-		return false;
 	}
 
 	@Override

@@ -25,7 +25,6 @@ import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImage;
@@ -315,7 +314,6 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				list2 = Collections.emptyList();
 			}
 
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
 			DrawableHelper.drawTexture(matrices, x + entryWidth - 15, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256, 256);
 			byte[] bs = this.server.getFavicon();
@@ -345,7 +343,6 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
 				RenderSystem.setShaderTexture(0, MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
-				RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 				int o = mouseX - x;
 				int p = mouseY - y;
 				if (this.canConnect()) {

@@ -75,17 +75,16 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Nullable
 	@Override
-	public Entity getPrimaryPassenger() {
-		Entity entity = this.getFirstPassenger();
-		return entity != null && this.canBeControlledByRider(entity) ? entity : null;
-	}
-
-	private boolean canBeControlledByRider(Entity entity) {
-		if (this.isSaddled() && entity instanceof PlayerEntity playerEntity) {
-			return playerEntity.getMainHandStack().isOf(Items.CARROT_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.CARROT_ON_A_STICK);
-		} else {
-			return false;
+	public LivingEntity getControllingPassenger() {
+		if (this.isSaddled()) {
+			Entity var2 = this.getFirstPassenger();
+			if (var2 instanceof PlayerEntity playerEntity
+				&& (playerEntity.getMainHandStack().isOf(Items.CARROT_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.CARROT_ON_A_STICK))) {
+				return playerEntity;
+			}
 		}
+
+		return null;
 	}
 
 	@Override
@@ -238,18 +237,21 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	public void travel(Vec3d movementInput) {
-		this.travel(this, this.saddledComponent, movementInput);
+	protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
+		super.tickControlled(controllingPassenger, movementInput);
+		this.setRotation(controllingPassenger.getYaw(), controllingPassenger.getPitch() * 0.5F);
+		this.prevYaw = this.bodyYaw = this.headYaw = this.getYaw();
+		this.saddledComponent.tickBoost();
 	}
 
 	@Override
-	public float getSaddledSpeed() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225F;
+	protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+		return new Vec3d(0.0, 0.0, 1.0);
 	}
 
 	@Override
-	public void setMovementInput(Vec3d movementInput) {
-		super.travel(movementInput);
+	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
+		return super.getSaddledSpeed(controllingPassenger) * 0.225F * this.saddledComponent.getMovementSpeedMultiplier();
 	}
 
 	@Override

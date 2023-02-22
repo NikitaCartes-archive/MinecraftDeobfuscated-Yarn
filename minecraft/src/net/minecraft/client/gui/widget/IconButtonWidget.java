@@ -4,77 +4,80 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class IconButtonWidget extends TexturedButtonWidget {
-	private static final int field_42122 = 5;
-	private final int xOffset;
-	private final int yOffset;
+public class IconButtonWidget extends ButtonWidget {
+	protected final Identifier iconTexture;
+	protected final int iconU;
+	protected final int iconV;
+	protected final int iconHoveredVOffset;
+	protected final int iconTextureWidth;
+	protected final int iconTextureHeight;
+	private final int iconXOffset;
+	private final int iconYOffset;
 	private final int iconWidth;
 	private final int iconHeight;
 
 	IconButtonWidget(
 		Text message,
-		int u,
-		int v,
-		int xOffset,
-		int yOffset,
-		int hoveredVOffset,
+		int iconU,
+		int iconV,
+		int iconXOffset,
+		int iconYOffset,
+		int iconHoveredVOffset,
 		int iconWidth,
 		int iconHeight,
-		int textureWidth,
-		int textureHeight,
-		Identifier texture,
-		ButtonWidget.PressAction pressAction
+		int iconTextureWidth,
+		int iconTextureHeight,
+		Identifier iconTexture,
+		ButtonWidget.PressAction onPress
 	) {
-		super(0, 0, 150, 20, u, v, hoveredVOffset, texture, textureWidth, textureHeight, pressAction, message);
-		this.xOffset = xOffset;
-		this.yOffset = yOffset;
+		super(0, 0, 150, 20, message, onPress, DEFAULT_NARRATION_SUPPLIER);
+		this.iconTextureWidth = iconTextureWidth;
+		this.iconTextureHeight = iconTextureHeight;
+		this.iconU = iconU;
+		this.iconV = iconV;
+		this.iconHoveredVOffset = iconHoveredVOffset;
+		this.iconTexture = iconTexture;
+		this.iconXOffset = iconXOffset;
+		this.iconYOffset = iconYOffset;
 		this.iconWidth = iconWidth;
 		this.iconHeight = iconHeight;
 	}
 
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderButton(matrices, mouseX, mouseY);
+		super.renderButton(matrices, mouseX, mouseY, delta);
 		this.drawTexture(
 			matrices,
-			this.texture,
-			this.getXWithOffset(),
-			this.getYWithOffset(),
-			this.u,
-			this.v,
-			this.hoveredVOffset,
+			this.iconTexture,
+			this.getIconX(),
+			this.getIconY(),
+			this.iconU,
+			this.iconV,
+			this.iconHoveredVOffset,
 			this.iconWidth,
 			this.iconHeight,
-			this.textureWidth,
-			this.textureHeight
+			this.iconTextureWidth,
+			this.iconTextureHeight
 		);
 	}
 
 	@Override
-	public void drawMessage(MatrixStack matrices, TextRenderer textRenderer, int centerX, int y, int color) {
-		OrderedText orderedText = this.getMessage().asOrderedText();
-		int i = textRenderer.getWidth(orderedText);
-		int j = centerX - i / 2;
-		int k = j + i;
-		int l = this.getX() + this.width - this.iconWidth - 5;
-		if (k >= l) {
-			j -= k - l;
-		}
-
-		drawTextWithShadow(matrices, textRenderer, orderedText, j, y, color);
+	public void drawMessage(MatrixStack matrices, TextRenderer textRenderer, int color) {
+		int i = this.getX() + 2;
+		int j = this.getX() + this.getWidth() - this.iconWidth - 6;
+		drawScrollableText(matrices, textRenderer, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), color);
 	}
 
-	private int getXWithOffset() {
-		return this.getX() + (this.width / 2 - this.iconWidth / 2) + this.xOffset;
+	private int getIconX() {
+		return this.getX() + (this.width / 2 - this.iconWidth / 2) + this.iconXOffset;
 	}
 
-	private int getYWithOffset() {
-		return this.getY() + this.yOffset;
+	private int getIconY() {
+		return this.getY() + this.iconYOffset;
 	}
 
 	public static IconButtonWidget.Builder builder(Text message, Identifier texture, ButtonWidget.PressAction pressAction) {

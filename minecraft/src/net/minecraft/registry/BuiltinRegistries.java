@@ -14,6 +14,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BuiltinBiomes;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterLists;
 import net.minecraft.world.dimension.DimensionTypeRegistrar;
 import net.minecraft.world.gen.FlatLevelGeneratorPresets;
 import net.minecraft.world.gen.WorldPresets;
@@ -38,6 +39,7 @@ public class BuiltinRegistries {
 		.addRegistry(RegistryKeys.PROCESSOR_LIST, StructureProcessorLists::bootstrap)
 		.addRegistry(RegistryKeys.TEMPLATE_POOL, StructurePools::bootstrap)
 		.addRegistry(RegistryKeys.BIOME, BuiltinBiomes::bootstrap)
+		.addRegistry(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, MultiNoiseBiomeSourceParameterLists::bootstrap)
 		.addRegistry(RegistryKeys.NOISE_PARAMETERS, BuiltinNoiseParameters::bootstrap)
 		.addRegistry(RegistryKeys.DENSITY_FUNCTION, DensityFunctions::bootstrap)
 		.addRegistry(RegistryKeys.CHUNK_GENERATOR_SETTINGS, ChunkGeneratorSettings::bootstrap)

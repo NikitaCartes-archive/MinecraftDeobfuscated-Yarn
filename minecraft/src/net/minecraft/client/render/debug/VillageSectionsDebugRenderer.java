@@ -32,7 +32,7 @@ public class VillageSectionsDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
-		BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
+		BlockPos blockPos = BlockPos.ofFloored(cameraX, cameraY, cameraZ);
 		this.sections.forEach(section -> {
 			if (blockPos.isWithinDistance(section.getCenterPos(), 60.0)) {
 				drawBoxAtCenterOf(matrices, vertexConsumers, section);
@@ -41,10 +41,10 @@ public class VillageSectionsDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private static void drawBoxAtCenterOf(MatrixStack matrices, VertexConsumerProvider vertexConsumers, ChunkSectionPos sectionPos) {
-		float f = 1.0F;
+		int i = 1;
 		BlockPos blockPos = sectionPos.getCenterPos();
-		BlockPos blockPos2 = blockPos.add(-1.0, -1.0, -1.0);
-		BlockPos blockPos3 = blockPos.add(1.0, 1.0, 1.0);
+		BlockPos blockPos2 = blockPos.add(-1, -1, -1);
+		BlockPos blockPos3 = blockPos.add(1, 1, 1);
 		DebugRenderer.drawBox(matrices, vertexConsumers, blockPos2, blockPos3, 0.2F, 1.0F, 0.2F, 0.15F);
 	}
 }

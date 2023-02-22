@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -84,7 +83,6 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		RenderSystem.disableBlend();
 		super.drawForeground(matrices, mouseX, mouseY);
 		int i = this.handler.getLevelCost();
 		if (i > 0) {
@@ -114,7 +112,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		super.drawBackground(matrices, delta, mouseX, mouseY);
-		this.drawTexture(matrices, this.x + 59, this.y + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
+		drawTexture(matrices, this.x + 59, this.y + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
 	}
 
 	@Override
@@ -125,7 +123,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	@Override
 	protected void drawInvalidRecipeArrow(MatrixStack matrices, int x, int y) {
 		if ((this.handler.getSlot(0).hasStack() || this.handler.getSlot(1).hasStack()) && !this.handler.getSlot(this.handler.getResultSlotIndex()).hasStack()) {
-			this.drawTexture(matrices, x + 99, y + 45, this.backgroundWidth, 0, 28, 21);
+			drawTexture(matrices, x + 99, y + 45, this.backgroundWidth, 0, 28, 21);
 		}
 	}
 

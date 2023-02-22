@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen;
 
 import com.google.common.util.concurrent.Runnables;
 import com.mojang.authlib.minecraft.BanDetails;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
@@ -33,7 +32,6 @@ import net.minecraft.client.gui.widget.PressableTextWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
@@ -84,13 +82,13 @@ public class TitleScreen extends Screen {
 		this.logoDrawer = (LogoDrawer)Objects.requireNonNullElseGet(logoDrawer, () -> new LogoDrawer(false));
 	}
 
-	private boolean areRealmsNotificationsEnabled() {
-		return this.client.options.getRealmsNotifications().getValue() && this.realmsNotificationGui != null;
+	private boolean isRealmsNotificationsGuiDisplayed() {
+		return this.realmsNotificationGui != null;
 	}
 
 	@Override
 	public void tick() {
-		if (this.areRealmsNotificationsEnabled()) {
+		if (this.isRealmsNotificationsGuiDisplayed()) {
 			this.realmsNotificationGui.tick();
 		}
 
@@ -184,11 +182,11 @@ public class TitleScreen extends Screen {
 			)
 		);
 		this.client.setConnectedToRealms(false);
-		if (this.client.options.getRealmsNotifications().getValue() && this.realmsNotificationGui == null) {
+		if (this.realmsNotificationGui == null) {
 			this.realmsNotificationGui = new RealmsNotificationsScreen();
 		}
 
-		if (this.areRealmsNotificationsEnabled()) {
+		if (this.isRealmsNotificationsGuiDisplayed()) {
 			this.realmsNotificationGui.init(this.client, this.width, this.height);
 		}
 
@@ -314,10 +312,8 @@ public class TitleScreen extends Screen {
 
 		float f = this.doBackgroundFade ? (float)(Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
 		this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0F, 1.0F));
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
 		RenderSystem.enableBlend();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
 		drawTexture(matrices, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -360,7 +356,7 @@ public class TitleScreen extends Screen {
 			}
 
 			super.render(matrices, mouseX, mouseY, delta);
-			if (this.areRealmsNotificationsEnabled() && g >= 1.0F) {
+			if (this.isRealmsNotificationsGuiDisplayed() && g >= 1.0F) {
 				RenderSystem.enableDepthTest();
 				this.realmsNotificationGui.render(matrices, mouseX, mouseY, delta);
 			}
@@ -372,7 +368,7 @@ public class TitleScreen extends Screen {
 		if (super.mouseClicked(mouseX, mouseY, button)) {
 			return true;
 		} else {
-			return this.areRealmsNotificationsEnabled() && this.realmsNotificationGui.mouseClicked(mouseX, mouseY, button);
+			return this.isRealmsNotificationsGuiDisplayed() && this.realmsNotificationGui.mouseClicked(mouseX, mouseY, button);
 		}
 	}
 
@@ -380,6 +376,14 @@ public class TitleScreen extends Screen {
 	public void removed() {
 		if (this.realmsNotificationGui != null) {
 			this.realmsNotificationGui.removed();
+		}
+	}
+
+	@Override
+	public void onDisplayed() {
+		super.onDisplayed();
+		if (this.realmsNotificationGui != null) {
+			this.realmsNotificationGui.onDisplayed();
 		}
 	}
 

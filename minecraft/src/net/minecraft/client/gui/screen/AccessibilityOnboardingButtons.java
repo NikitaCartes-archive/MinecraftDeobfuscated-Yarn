@@ -10,20 +10,20 @@ import net.minecraft.text.Text;
 public class AccessibilityOnboardingButtons {
 	public static IconButtonWidget createLanguageButton(ButtonWidget.PressAction action) {
 		return IconButtonWidget.builder(Text.translatable("options.language"), ButtonWidget.WIDGETS_TEXTURE, action)
-			.uv(4, 110)
+			.uv(3, 109)
 			.xyOffset(65, 3)
 			.hoveredVOffset(20)
-			.iconSize(13, 13)
+			.iconSize(14, 14)
 			.textureSize(256, 256)
 			.build();
 	}
 
 	public static IconButtonWidget createAccessibilityButton(ButtonWidget.PressAction action) {
 		return IconButtonWidget.builder(Text.translatable("options.accessibility.title"), ButtonWidget.ACCESSIBILITY_TEXTURE, action)
-			.uv(3, 3)
-			.xyOffset(65, 3)
+			.uv(3, 2)
+			.xyOffset(65, 2)
 			.hoveredVOffset(20)
-			.iconSize(15, 15)
+			.iconSize(14, 16)
 			.textureSize(32, 64)
 			.build();
 	}

@@ -483,11 +483,6 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-		return false;
-	}
-
-	@Override
 	public boolean addStatusEffect(StatusEffectInstance effect, @Nullable Entity source) {
 		return false;
 	}

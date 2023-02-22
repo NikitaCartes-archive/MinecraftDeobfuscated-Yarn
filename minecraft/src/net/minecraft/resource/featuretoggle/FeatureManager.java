@@ -71,7 +71,7 @@ public class FeatureManager {
 		return Identifier.CODEC.listOf().comapFlatMap(featureIds -> {
 			Set<Identifier> set = new HashSet();
 			FeatureSet featureSet = this.featureSetOf(featureIds, set::add);
-			return !set.isEmpty() ? DataResult.error("Unknown feature ids: " + set, featureSet) : DataResult.success(featureSet);
+			return !set.isEmpty() ? DataResult.error(() -> "Unknown feature ids: " + set, featureSet) : DataResult.success(featureSet);
 		}, features -> List.copyOf(this.toId(features)));
 	}
 

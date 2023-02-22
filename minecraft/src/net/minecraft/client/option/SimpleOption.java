@@ -502,7 +502,7 @@ public final class SimpleOption<T> {
 					int i = this.maxSupplier.getAsInt() + 1;
 					return value.compareTo(this.minInclusive) >= 0 && value.compareTo(i) <= 0
 						? DataResult.success(value)
-						: DataResult.error("Value " + value + " outside of range [" + this.minInclusive + ":" + i + "]", value);
+						: DataResult.error(() -> "Value " + value + " outside of range [" + this.minInclusive + ":" + i + "]", value);
 				}
 			);
 		}

@@ -58,8 +58,8 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 						? (DataResult)registryOps.registryInfoGetter
 							.getRegistryInfo(registryRef)
 							.map(info -> DataResult.success(info.entryLookup(), info.elementsLifecycle()))
-							.orElseGet(() -> DataResult.error("Unknown registry: " + registryRef))
-						: DataResult.error("Not a registry ops")
+							.orElseGet(() -> DataResult.error(() -> "Unknown registry: " + registryRef))
+						: DataResult.error(() -> "Not a registry ops")
 			)
 			.forGetter(object -> null);
 	}
@@ -72,8 +72,8 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 							.getRegistryInfo(registryKey)
 							.flatMap(info -> info.entryLookup().getOptional(key))
 							.map(DataResult::success)
-							.orElseGet(() -> DataResult.error("Can't find value: " + key))
-						: DataResult.error("Not a registry ops")
+							.orElseGet(() -> DataResult.error(() -> "Can't find value: " + key))
+						: DataResult.error(() -> "Not a registry ops")
 			)
 			.forGetter(object -> null);
 	}

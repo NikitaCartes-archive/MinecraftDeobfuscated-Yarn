@@ -98,7 +98,7 @@ public class MoveControl implements Control {
 			BlockPos blockPos = this.entity.getBlockPos();
 			BlockState blockState = this.entity.world.getBlockState(blockPos);
 			VoxelShape voxelShape = blockState.getCollisionShape(this.entity.world, blockPos);
-			if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())
+			if (o > (double)this.entity.getStepHeight() && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())
 				|| !voxelShape.isEmpty()
 					&& this.entity.getY() < voxelShape.getMax(Direction.Axis.Y) + (double)blockPos.getY()
 					&& !blockState.isIn(BlockTags.DOORS)

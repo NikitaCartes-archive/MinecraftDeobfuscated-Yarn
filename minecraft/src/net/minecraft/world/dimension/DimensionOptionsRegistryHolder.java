@@ -21,6 +21,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterLists;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
@@ -145,7 +146,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 			return false;
 		} else {
 			BiomeSource var3 = dimensionOptions.chunkGenerator().getBiomeSource();
-			if (var3 instanceof MultiNoiseBiomeSource multiNoiseBiomeSource && !multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSource.Preset.OVERWORLD)) {
+			if (var3 instanceof MultiNoiseBiomeSource multiNoiseBiomeSource && !multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSourceParameterLists.OVERWORLD)) {
 				return false;
 			}
 
@@ -158,7 +159,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 			ChunkGenerator var3 = dimensionOptions.chunkGenerator();
 			if (var3 instanceof NoiseChunkGenerator noiseChunkGenerator && noiseChunkGenerator.matchesSettings(ChunkGeneratorSettings.NETHER)) {
 				BiomeSource var4 = noiseChunkGenerator.getBiomeSource();
-				if (var4 instanceof MultiNoiseBiomeSource multiNoiseBiomeSource && multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSource.Preset.NETHER)) {
+				if (var4 instanceof MultiNoiseBiomeSource multiNoiseBiomeSource && multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSourceParameterLists.NETHER)) {
 					return true;
 				}
 			}

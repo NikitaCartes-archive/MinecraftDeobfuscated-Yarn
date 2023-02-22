@@ -244,7 +244,7 @@ public class CreditsScreen extends Screen {
 		h *= h;
 		h = h * 96.0F / 255.0F;
 		RenderSystem.setShaderColor(h, h, h, 1.0F);
-		drawTexture(matrices, 0, 0, this.getZOffset(), 0.0F, f, i, this.height, 64, 64);
+		drawTexture(matrices, 0, 0, 0, 0.0F, f, i, this.height, 64, 64);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
@@ -284,8 +284,9 @@ public class CreditsScreen extends Screen {
 		RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
-		drawTexture(matrices, 0, 0, this.getZOffset(), 0.0F, 0.0F, this.width, this.height, this.width, this.height);
+		drawTexture(matrices, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, this.width, this.height);
 		RenderSystem.disableBlend();
+		RenderSystem.defaultBlendFunc();
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

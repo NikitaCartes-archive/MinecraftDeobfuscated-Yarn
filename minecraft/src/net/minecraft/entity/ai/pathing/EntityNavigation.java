@@ -92,7 +92,7 @@ public abstract class EntityNavigation {
 
 	@Nullable
 	public final Path findPathTo(double x, double y, double z, int distance) {
-		return this.findPathTo(new BlockPos(x, y, z), distance);
+		return this.findPathTo(BlockPos.ofFloored(x, y, z), distance);
 	}
 
 	@Nullable
@@ -221,7 +221,7 @@ public abstract class EntityNavigation {
 	}
 
 	protected double adjustTargetY(Vec3d pos) {
-		BlockPos blockPos = new BlockPos(pos);
+		BlockPos blockPos = BlockPos.ofFloored(pos);
 		return this.world.getBlockState(blockPos.down()).isAir() ? pos.y : LandPathNodeMaker.getFeetY(this.world, blockPos);
 	}
 

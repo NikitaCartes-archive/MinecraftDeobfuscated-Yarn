@@ -11,7 +11,7 @@ public interface PosArgument {
 	Vec2f toAbsoluteRotation(ServerCommandSource source);
 
 	default BlockPos toAbsoluteBlockPos(ServerCommandSource source) {
-		return new BlockPos(this.toAbsolutePos(source));
+		return BlockPos.ofFloored(this.toAbsolutePos(source));
 	}
 
 	boolean isXRelative();

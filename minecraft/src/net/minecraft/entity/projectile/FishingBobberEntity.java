@@ -307,7 +307,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 				double d = this.getX() + (double)(g * (float)this.fishTravelCountdown * 0.1F);
 				double e = (double)((float)MathHelper.floor(this.getY()) + 1.0F);
 				double j = this.getZ() + (double)(h * (float)this.fishTravelCountdown * 0.1F);
-				BlockState blockState = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j));
+				BlockState blockState = serverWorld.getBlockState(BlockPos.ofFloored(d, e - 1.0, j));
 				if (blockState.isOf(Blocks.WATER)) {
 					if (this.random.nextFloat() < 0.15F) {
 						serverWorld.spawnParticles(ParticleTypes.BUBBLE, d, e - 0.1F, j, 1, (double)g, 0.1, (double)h, 0.0);
@@ -347,7 +347,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 				double d = this.getX() + (double)(MathHelper.sin(g) * h) * 0.1;
 				double e = (double)((float)MathHelper.floor(this.getY()) + 1.0F);
 				double j = this.getZ() + (double)(MathHelper.cos(g) * h) * 0.1;
-				BlockState blockState = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j));
+				BlockState blockState = serverWorld.getBlockState(BlockPos.ofFloored(d, e - 1.0, j));
 				if (blockState.isOf(Blocks.WATER)) {
 					serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 2 + this.random.nextInt(2), 0.1F, 0.0, 0.1F, 0.0);
 				}

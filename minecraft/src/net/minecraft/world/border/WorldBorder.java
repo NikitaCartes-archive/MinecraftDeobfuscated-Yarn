@@ -55,7 +55,7 @@ public class WorldBorder {
 	}
 
 	public BlockPos clamp(double x, double y, double z) {
-		return new BlockPos(MathHelper.clamp(x, this.getBoundWest(), this.getBoundEast()), y, MathHelper.clamp(z, this.getBoundNorth(), this.getBoundSouth()));
+		return BlockPos.ofFloored(MathHelper.clamp(x, this.getBoundWest(), this.getBoundEast()), y, MathHelper.clamp(z, this.getBoundNorth(), this.getBoundSouth()));
 	}
 
 	public double getDistanceInsideBorder(Entity entity) {

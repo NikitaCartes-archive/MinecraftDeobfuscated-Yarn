@@ -15,7 +15,7 @@ public class SnifferDigSoundInstance extends MovingSoundInstance {
 	public SnifferDigSoundInstance(SnifferEntity sniffer) {
 		super(SoundEvents.ENTITY_SNIFFER_DIGGING, SoundCategory.NEUTRAL, SoundInstance.createRandom());
 		this.sniffer = sniffer;
-		this.attenuationType = SoundInstance.AttenuationType.NONE;
+		this.attenuationType = SoundInstance.AttenuationType.LINEAR;
 		this.repeat = false;
 		this.repeatDelay = 0;
 	}

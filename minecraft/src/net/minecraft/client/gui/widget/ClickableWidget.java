@@ -21,7 +21,6 @@ import net.minecraft.client.gui.tooltip.FocusedTooltipPositioner;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -41,11 +40,8 @@ import net.minecraft.util.math.MathHelper;
 public abstract class ClickableWidget extends DrawableHelper implements Drawable, Element, Widget, Selectable {
 	public static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	public static final Identifier ACCESSIBILITY_TEXTURE = new Identifier("textures/gui/accessibility.png");
-	protected static final int field_41797 = 46;
-	protected static final int field_42118 = 200;
-	protected static final int field_42119 = 20;
-	protected static final int field_42120 = 4;
-	private static final int field_42485 = 2;
+	private static final double field_43055 = 0.5;
+	private static final double field_43056 = 3.0;
 	protected int width;
 	protected int height;
 	private int x;
@@ -74,21 +70,6 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	@Override
 	public int getHeight() {
 		return this.height;
-	}
-
-	protected Identifier getTexture() {
-		return WIDGETS_TEXTURE;
-	}
-
-	protected int getYImage() {
-		int i = 1;
-		if (!this.active) {
-			i = 0;
-		} else if (this.isHovered()) {
-			i = 2;
-		}
-
-		return 46 + i * 20;
 	}
 
 	@Override
@@ -142,39 +123,30 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		return Text.translatable("gui.narrate.button", message);
 	}
 
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderButton(matrices, mouseX, mouseY);
-	}
+	public abstract void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta);
 
-	protected void renderButton(MatrixStack matrices, int mouseX, int mouseY) {
-		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-		RenderSystem.setShaderTexture(0, this.getTexture());
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.enableDepthTest();
-		this.drawNineSlicedTexture(matrices, this.getX(), this.getY(), this.width, this.height, 4, 200, 20, 0, this.getYImage());
-		this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		int i = this.active ? 16777215 : 10526880;
-		TextRenderer textRenderer = minecraftClient.textRenderer;
-		int j = textRenderer.getWidth(this.message);
-		int k = this.width - 4;
-		if (j > k) {
+	protected static void drawScrollableText(MatrixStack matrices, TextRenderer textRenderer, Text text, int left, int top, int right, int bottom, int color) {
+		int i = textRenderer.getWidth(text);
+		int j = (top + bottom - 9) / 2 + 1;
+		int k = right - left;
+		if (i > k) {
+			int l = i - k;
 			double d = (double)Util.getMeasuringTimeMs() / 1000.0;
-			double e = Math.sin((Math.PI / 2) * Math.cos(d));
-			int l = j - k;
-			enableScissor(this.x + 2, this.y + 2, this.x + this.width - 2, this.y + this.height - 2);
-			this.drawMessage(matrices, textRenderer, this.getX() + this.width / 2 - (int)(e * (double)l), this.getY() + (this.height - 8) / 2, i);
+			double e = Math.max((double)l * 0.5, 3.0);
+			double f = Math.sin((Math.PI / 2) * Math.cos((Math.PI * 2) * d / e)) / 2.0 + 0.5;
+			double g = MathHelper.lerp(f, 0.0, (double)l);
+			enableScissor(left, top, right, bottom);
+			drawTextWithShadow(matrices, textRenderer, text, left - (int)g, j, color);
 			disableScissor();
 		} else {
-			this.drawMessage(matrices, textRenderer, this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, i);
+			drawCenteredTextWithShadow(matrices, textRenderer, text, (left + right) / 2, j, color);
 		}
 	}
 
-	public void drawMessage(MatrixStack matrices, TextRenderer textRenderer, int centerX, int y, int color) {
-		drawCenteredTextWithShadow(matrices, textRenderer, this.getMessage(), centerX, y, color | MathHelper.ceil(this.alpha * 255.0F) << 24);
+	protected void drawScrollableText(MatrixStack matrices, TextRenderer textRenderer, int xMargin, int color) {
+		int i = this.getX() + xMargin;
+		int j = this.getX() + this.getWidth() - xMargin;
+		drawScrollableText(matrices, textRenderer, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), color);
 	}
 
 	public void drawTexture(
@@ -184,15 +156,12 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		int i = v;
 		if (!this.isNarratable()) {
 			i = v + hoveredVOffset * 2;
-		} else if (this.isHovered()) {
+		} else if (this.isSelected()) {
 			i = v + hoveredVOffset;
 		}
 
 		RenderSystem.enableDepthTest();
 		drawTexture(matrices, x, y, (float)u, (float)i, width, height, textureWidth, textureHeight);
-	}
-
-	protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
 	}
 
 	public void onClick(double mouseX, double mouseY) {
@@ -255,10 +224,6 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 			&& mouseY < (double)(this.getY() + this.height);
 	}
 
-	public boolean isHovered() {
-		return this.hovered || this.isFocused();
-	}
-
 	@Nullable
 	@Override
 	public GuiNavigationPath getNavigationPath(GuiNavigation navigation) {
@@ -307,6 +272,14 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	@Override
 	public boolean isFocused() {
 		return this.focused;
+	}
+
+	public boolean isHovered() {
+		return this.hovered;
+	}
+
+	public boolean isSelected() {
+		return this.isHovered() || this.isFocused();
 	}
 
 	@Override
@@ -376,7 +349,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 
 	@Override
 	public FocusedRect getNavigationFocus() {
-		return new FocusedRect(this.getX(), this.getY(), this.getWidth(), this.getHeight());
+		return Widget.super.getNavigationFocus();
 	}
 
 	@Override

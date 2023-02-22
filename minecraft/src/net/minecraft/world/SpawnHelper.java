@@ -79,7 +79,7 @@ public final class SpawnHelper {
 				chunkSource.query(ChunkPos.toLong(blockPos), chunk -> {
 					SpawnSettings.SpawnDensity spawnDensity = getBiomeDirectly(blockPos, chunk).getSpawnSettings().getSpawnDensity(entity.getType());
 					if (spawnDensity != null) {
-						gravityField.addPoint(entity.getBlockPos(), spawnDensity.getMass());
+						gravityField.addPoint(entity.getBlockPos(), spawnDensity.mass());
 					}
 
 					if (entity instanceof MobEntity) {
@@ -380,7 +380,9 @@ public final class SpawnHelper {
 								double d = MathHelper.clamp((double)l, (double)i + (double)f, (double)i + 16.0 - (double)f);
 								double e = MathHelper.clamp((double)m, (double)j + (double)f, (double)j + 16.0 - (double)f);
 								if (!world.isSpaceEmpty(spawnEntry.type.createSimpleBoundingBox(d, (double)blockPos.getY(), e))
-									|| !SpawnRestriction.canSpawn(spawnEntry.type, world, SpawnReason.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), world.getRandom())) {
+									|| !SpawnRestriction.canSpawn(
+										spawnEntry.type, world, SpawnReason.CHUNK_GENERATION, BlockPos.ofFloored(d, (double)blockPos.getY(), e), world.getRandom()
+									)) {
 									continue;
 								}
 
@@ -480,10 +482,10 @@ public final class SpawnHelper {
 				this.cachedDensityMass = 0.0;
 				return true;
 			} else {
-				double d = spawnDensity.getMass();
+				double d = spawnDensity.mass();
 				this.cachedDensityMass = d;
 				double e = this.densityField.calculate(pos, d);
-				return e <= spawnDensity.getGravityLimit();
+				return e <= spawnDensity.gravityLimit();
 			}
 		}
 
@@ -499,7 +501,7 @@ public final class SpawnHelper {
 			} else {
 				SpawnSettings.SpawnDensity spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, chunk).getSpawnSettings().getSpawnDensity(entityType);
 				if (spawnDensity != null) {
-					d = spawnDensity.getMass();
+					d = spawnDensity.mass();
 				} else {
 					d = 0.0;
 				}

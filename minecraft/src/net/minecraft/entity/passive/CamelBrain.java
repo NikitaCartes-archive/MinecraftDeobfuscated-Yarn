@@ -154,7 +154,7 @@ public class CamelBrain {
 				&& camelEntity.getLastPoseTickDelta() >= (long)this.lastPoseTickDelta
 				&& !camelEntity.isLeashed()
 				&& camelEntity.isOnGround()
-				&& !camelEntity.hasPrimaryPassenger();
+				&& !camelEntity.hasControllingPassenger();
 		}
 
 		protected void run(ServerWorld serverWorld, CamelEntity camelEntity, long l) {

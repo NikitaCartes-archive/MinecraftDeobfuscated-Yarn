@@ -24,7 +24,7 @@ public class GameEventDispatchManager {
 
 	public void dispatch(GameEvent event, Vec3d emitterPos, GameEvent.Emitter emitter) {
 		int i = event.getRange();
-		BlockPos blockPos = new BlockPos(emitterPos);
+		BlockPos blockPos = BlockPos.ofFloored(emitterPos);
 		int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
 		int k = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);
 		int l = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);

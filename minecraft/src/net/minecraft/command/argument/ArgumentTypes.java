@@ -83,6 +83,7 @@ public class ArgumentTypes {
 		register(registry, "resource_key", upcast(RegistryKeyArgumentType.class), new RegistryKeyArgumentType.Serializer());
 		register(registry, "template_mirror", BlockMirrorArgumentType.class, ConstantArgumentSerializer.of(BlockMirrorArgumentType::blockMirror));
 		register(registry, "template_rotation", BlockRotationArgumentType.class, ConstantArgumentSerializer.of(BlockRotationArgumentType::blockRotation));
+		register(registry, "heightmap", HeightmapArgumentType.class, ConstantArgumentSerializer.of(HeightmapArgumentType::heightmap));
 		if (SharedConstants.isDevelopment) {
 			register(registry, "test_argument", TestFunctionArgumentType.class, ConstantArgumentSerializer.of(TestFunctionArgumentType::testFunction));
 			register(registry, "test_class", TestClassArgumentType.class, ConstantArgumentSerializer.of(TestClassArgumentType::testClass));

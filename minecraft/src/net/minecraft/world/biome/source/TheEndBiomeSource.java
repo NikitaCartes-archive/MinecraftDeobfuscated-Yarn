@@ -1,9 +1,9 @@
 package net.minecraft.world.biome.source;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
+import java.util.stream.Stream;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryOps;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -47,12 +47,16 @@ public class TheEndBiomeSource extends BiomeSource {
 		RegistryEntry<Biome> smallIslandsBiome,
 		RegistryEntry<Biome> barrensBiome
 	) {
-		super(ImmutableList.of(centerBiome, highlandsBiome, midlandsBiome, smallIslandsBiome, barrensBiome));
 		this.centerBiome = centerBiome;
 		this.highlandsBiome = highlandsBiome;
 		this.midlandsBiome = midlandsBiome;
 		this.smallIslandsBiome = smallIslandsBiome;
 		this.barrensBiome = barrensBiome;
+	}
+
+	@Override
+	protected Stream<RegistryEntry<Biome>> biomeStream() {
+		return Stream.of(this.centerBiome, this.highlandsBiome, this.midlandsBiome, this.smallIslandsBiome, this.barrensBiome);
 	}
 
 	@Override

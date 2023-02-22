@@ -315,7 +315,7 @@ public abstract class Particle {
 	 * @see net.minecraft.client.render.LightmapTextureManager
 	 */
 	protected int getBrightness(float tint) {
-		BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
+		BlockPos blockPos = BlockPos.ofFloored(this.x, this.y, this.z);
 		return this.world.isChunkLoaded(blockPos) ? WorldRenderer.getLightmapCoordinates(this.world, blockPos) : 0;
 	}
 

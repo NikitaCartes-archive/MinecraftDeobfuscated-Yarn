@@ -19,6 +19,8 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 		return new SimpleOption[]{
 			gameOptions.getNarrator(),
 			gameOptions.getShowSubtitles(),
+			gameOptions.getHighContrast(),
+			gameOptions.getAutoJump(),
 			gameOptions.getTextBackgroundOpacity(),
 			gameOptions.getBackgroundForChatOnly(),
 			gameOptions.getChatOpacity(),
@@ -34,9 +36,8 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 			gameOptions.getGlintSpeed(),
 			gameOptions.getGlintStrength(),
 			gameOptions.getHideLightningFlashes(),
-			gameOptions.getAutoJump(),
-			gameOptions.getPanoramaSpeed(),
-			gameOptions.getMonochromeLogo()
+			gameOptions.getMonochromeLogo(),
+			gameOptions.getPanoramaSpeed()
 		};
 	}
 

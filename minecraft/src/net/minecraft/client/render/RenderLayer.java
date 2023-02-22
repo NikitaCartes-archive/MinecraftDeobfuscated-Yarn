@@ -343,7 +343,7 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
 			.program(ARMOR_GLINT_PROGRAM)
-			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.texture(new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
@@ -359,7 +359,7 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
 			.program(ARMOR_ENTITY_GLINT_PROGRAM)
-			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.texture(new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
@@ -375,7 +375,7 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
 			.program(TRANSLUCENT_GLINT_PROGRAM)
-			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.texture(new RenderPhase.Texture(ItemRenderer.ITEM_ENCHANTMENT_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
@@ -391,7 +391,7 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
 			.program(GLINT_PROGRAM)
-			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.texture(new RenderPhase.Texture(ItemRenderer.ITEM_ENCHANTMENT_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
@@ -406,7 +406,7 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
 			.program(DIRECT_GLINT_PROGRAM)
-			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.texture(new RenderPhase.Texture(ItemRenderer.ITEM_ENCHANTMENT_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
@@ -421,7 +421,7 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
 			.program(ENTITY_GLINT_PROGRAM)
-			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.texture(new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
@@ -437,7 +437,7 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		RenderLayer.MultiPhaseParameters.builder()
 			.program(DIRECT_ENTITY_GLINT_PROGRAM)
-			.texture(new RenderPhase.Texture(ItemRenderer.ENCHANTED_ITEM_GLINT, true, false))
+			.texture(new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)

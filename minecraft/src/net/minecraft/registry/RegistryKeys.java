@@ -53,6 +53,7 @@ import net.minecraft.village.VillagerType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
@@ -166,6 +167,9 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<ArmorTrimMaterial>> TRIM_MATERIAL = of("trim_material");
 	public static final RegistryKey<Registry<ArmorTrimPattern>> TRIM_PATTERN = of("trim_pattern");
 	public static final RegistryKey<Registry<WorldPreset>> WORLD_PRESET = of("worldgen/world_preset");
+	public static final RegistryKey<Registry<MultiNoiseBiomeSourceParameterList>> MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST = of(
+		"worldgen/multi_noise_biome_source_parameter_list"
+	);
 	public static final RegistryKey<Registry<World>> WORLD = of("dimension");
 	public static final RegistryKey<Registry<DimensionOptions>> DIMENSION = of("dimension");
 

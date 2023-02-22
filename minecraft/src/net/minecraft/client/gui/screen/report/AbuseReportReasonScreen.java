@@ -87,7 +87,7 @@ public class AbuseReportReasonScreen extends Screen {
 			int m = j - i;
 			int n = l - k;
 			int o = this.textRenderer.getWrappedLinesHeight(reasonEntry.reason.getDescription(), m);
-			this.textRenderer.drawTrimmed(reasonEntry.reason.getDescription(), i, k + (n - o) / 2, m, -1);
+			this.textRenderer.drawTrimmed(matrices, reasonEntry.reason.getDescription(), i, k + (n - o) / 2, m, -1);
 		}
 	}
 
