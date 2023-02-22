@@ -105,7 +105,7 @@ public class Brain<E extends LivingEntity> {
 					}
 
 					private <T, U> DataResult<Brain.MemoryEntry<U>> parse(MemoryModuleType<U> memoryType, DynamicOps<T> ops, T value) {
-						return ((DataResult)memoryType.getCodec().map(DataResult::success).orElseGet(() -> DataResult.error("No codec for memory: " + memoryType)))
+						return ((DataResult)memoryType.getCodec().map(DataResult::success).orElseGet(() -> DataResult.error(() -> "No codec for memory: " + memoryType)))
 							.flatMap(codec -> codec.parse(ops, value))
 							.map(data -> new Brain.MemoryEntry<>(memoryType, Optional.of(data)));
 					}

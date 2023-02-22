@@ -1,8 +1,10 @@
 package net.minecraft.client.realms;
 
+import com.google.gson.JsonArray;
 import com.mojang.logging.LogUtils;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import javax.annotation.Nullable;
@@ -18,6 +20,7 @@ import net.minecraft.client.realms.dto.PlayerActivities;
 import net.minecraft.client.realms.dto.PlayerInfo;
 import net.minecraft.client.realms.dto.RealmsDescriptionDto;
 import net.minecraft.client.realms.dto.RealmsNews;
+import net.minecraft.client.realms.dto.RealmsNotification;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsServerAddress;
 import net.minecraft.client.realms.dto.RealmsServerList;
@@ -51,6 +54,7 @@ public class RealmsClient {
 	private static final String OPS_ENDPOINT = "ops";
 	private static final String PING_STAT_ENDPOINT = "regions/ping/stat";
 	private static final String TRIAL_ENDPOINT = "trial";
+	private static final String NOTIFICATIONS_ENDPOINT = "notifications";
 	private static final String WORLD_INITIALIZE_ENDPOINT = "/$WORLD_ID/initialize";
 	private static final String WORLD_ENDPOINT = "/$WORLD_ID";
 	private static final String LIVEPLAYERLIST_ENDPOINT = "/liveplayerlist";
@@ -80,6 +84,8 @@ public class RealmsClient {
 	private static final String CLIENT_COMPATIBLE_ENDPOINT = "/client/compatible";
 	private static final String TOS_AGREED_ENDPOINT = "/tos/agreed";
 	private static final String NEWS_ENDPOINT = "/v1/news";
+	private static final String SEEN_ENDPOINT = "/seen";
+	private static final String DISMISS_ENDPOINT = "/dismiss";
 	private static final String STAGE_AVAILABLE_ENDPOINT = "/stageAvailable";
 	private static final CheckedGson JSON = new CheckedGson();
 
@@ -133,6 +139,35 @@ public class RealmsClient {
 		String string = this.url("worlds");
 		String string2 = this.execute(Request.get(string));
 		return RealmsServerList.parse(string2);
+	}
+
+	public List<RealmsNotification> listNotifications() throws RealmsServiceException {
+		String string = this.url("notifications");
+		String string2 = this.execute(Request.get(string));
+		List<RealmsNotification> list = RealmsNotification.parse(string2);
+		return list.size() > 1 ? List.of((RealmsNotification)list.get(0)) : list;
+	}
+
+	private static JsonArray toJsonArray(List<UUID> uuids) {
+		JsonArray jsonArray = new JsonArray();
+
+		for (UUID uUID : uuids) {
+			if (uUID != null) {
+				jsonArray.add(uUID.toString());
+			}
+		}
+
+		return jsonArray;
+	}
+
+	public void markNotificationsAsSeen(List<UUID> notifications) throws RealmsServiceException {
+		String string = this.url("notifications/seen");
+		this.execute(Request.post(string, JSON.toJson(toJsonArray(notifications))));
+	}
+
+	public void dismissNotifications(List<UUID> notifications) throws RealmsServiceException {
+		String string = this.url("notifications/dismiss");
+		this.execute(Request.post(string, JSON.toJson(toJsonArray(notifications))));
 	}
 
 	public RealmsServer getOwnWorld(long worldId) throws RealmsServiceException {

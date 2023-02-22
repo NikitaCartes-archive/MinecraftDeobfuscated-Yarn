@@ -174,11 +174,11 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 			.flatXmap(
 				id -> (DataResult)Optional.ofNullable(this.get(id))
 						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error("Unknown registry key in " + this.getKey() + ": " + id)),
+						.orElseGet(() -> DataResult.error(() -> "Unknown registry key in " + this.getKey() + ": " + id)),
 				value -> (DataResult)this.getKey((T)value)
 						.map(RegistryKey::getValue)
 						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error("Unknown registry element in " + this.getKey() + ":" + value))
+						.orElseGet(() -> DataResult.error(() -> "Unknown registry element in " + this.getKey() + ":" + value))
 			);
 		Codec<T> codec2 = Codecs.rawIdChecked(value -> this.getKey((T)value).isPresent() ? this.getRawId((T)value) : -1, this::get, -1);
 		return Codecs.withLifecycle(Codecs.orCompressed(codec, codec2), this::getEntryLifecycle, this::getEntryLifecycle);
@@ -194,11 +194,11 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 			.flatXmap(
 				id -> (DataResult)this.getEntry(RegistryKey.of(this.getKey(), id))
 						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error("Unknown registry key in " + this.getKey() + ": " + id)),
+						.orElseGet(() -> DataResult.error(() -> "Unknown registry key in " + this.getKey() + ": " + id)),
 				entry -> (DataResult)entry.getKey()
 						.map(RegistryKey::getValue)
 						.map(DataResult::success)
-						.orElseGet(() -> DataResult.error("Unknown registry element in " + this.getKey() + ":" + entry))
+						.orElseGet(() -> DataResult.error(() -> "Unknown registry element in " + this.getKey() + ":" + entry))
 			);
 		return Codecs.withLifecycle(codec, entry -> this.getEntryLifecycle((T)entry.value()), entry -> this.getEntryLifecycle((T)entry.value()));
 	}

@@ -59,7 +59,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 		PathNodeType pathNodeType2 = this.getNodeType(this.entity, node.x, node.y, node.z);
 		int j;
 		if (this.entity.getPathfindingPenalty(pathNodeType) >= 0.0F && pathNodeType2 != PathNodeType.STICKY_HONEY) {
-			j = MathHelper.floor(Math.max(1.0F, this.entity.stepHeight));
+			j = MathHelper.floor(Math.max(1.0F, this.entity.getStepHeight()));
 		} else {
 			j = 0;
 		}

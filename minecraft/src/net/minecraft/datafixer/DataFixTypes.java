@@ -3,6 +3,7 @@ package net.minecraft.datafixer;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.DSL.TypeReference;
 import com.mojang.serialization.Dynamic;
+import java.util.Set;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
@@ -21,14 +22,11 @@ public enum DataFixTypes {
 	WORLD_GEN_SETTINGS(TypeReferences.WORLD_GEN_SETTINGS),
 	ENTITY_CHUNK(TypeReferences.ENTITY_CHUNK);
 
+	public static final Set<TypeReference> REQUIRED_TYPES;
 	private final TypeReference typeReference;
 
 	private DataFixTypes(TypeReference typeReference) {
 		this.typeReference = typeReference;
-	}
-
-	public TypeReference getTypeReference() {
-		return this.typeReference;
 	}
 
 	private static int getSaveVersionId() {
@@ -65,5 +63,9 @@ public enum DataFixTypes {
 	 */
 	public NbtCompound update(DataFixer dataFixer, NbtCompound nbt, int oldVersion) {
 		return this.update(dataFixer, nbt, oldVersion, getSaveVersionId());
+	}
+
+	static {
+		REQUIRED_TYPES = Set.of(LEVEL.typeReference);
 	}
 }

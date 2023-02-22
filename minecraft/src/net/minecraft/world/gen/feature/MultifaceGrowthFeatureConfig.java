@@ -46,7 +46,7 @@ public class MultifaceGrowthFeatureConfig implements FeatureConfig {
 	private static DataResult<MultifaceGrowthBlock> validateBlock(Block block) {
 		return block instanceof MultifaceGrowthBlock multifaceGrowthBlock
 			? DataResult.success(multifaceGrowthBlock)
-			: DataResult.error("Growth block should be a multiface block");
+			: DataResult.error(() -> "Growth block should be a multiface block");
 	}
 
 	public MultifaceGrowthFeatureConfig(

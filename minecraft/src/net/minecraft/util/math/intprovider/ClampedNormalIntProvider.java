@@ -19,7 +19,7 @@ public class ClampedNormalIntProvider extends IntProvider {
 		)
 		.comapFlatMap(
 			provider -> provider.max < provider.min
-					? DataResult.error("Max must be larger than min: [" + provider.min + ", " + provider.max + "]")
+					? DataResult.error(() -> "Max must be larger than min: [" + provider.min + ", " + provider.max + "]")
 					: DataResult.success(provider),
 			Function.identity()
 		);

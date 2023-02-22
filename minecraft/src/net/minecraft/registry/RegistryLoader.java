@@ -31,6 +31,7 @@ import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.FlatLevelGeneratorPreset;
@@ -63,7 +64,8 @@ public class RegistryLoader {
 		new RegistryLoader.Entry<>(RegistryKeys.FLAT_LEVEL_GENERATOR_PRESET, FlatLevelGeneratorPreset.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_PATTERN, ArmorTrimPattern.CODEC),
 		new RegistryLoader.Entry<>(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterial.CODEC),
-		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC)
+		new RegistryLoader.Entry<>(RegistryKeys.DAMAGE_TYPE, DamageType.CODEC),
+		new RegistryLoader.Entry<>(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, MultiNoiseBiomeSourceParameterList.CODEC)
 	);
 	public static final List<RegistryLoader.Entry<?>> DIMENSION_REGISTRIES = List.of(new RegistryLoader.Entry<>(RegistryKeys.DIMENSION, DimensionOptions.CODEC));
 

@@ -4,14 +4,19 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.data.DataOutput;
+import net.minecraft.data.server.tag.TagProvider;
 import net.minecraft.data.server.tag.ValueLookupTagProvider;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BlockTags;
 
 public class OneTwentyBlockTagProvider extends ValueLookupTagProvider<Block> {
-	public OneTwentyBlockTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-		super(output, RegistryKeys.BLOCK, registryLookupFuture, block -> block.getRegistryEntry().registryKey());
+	public OneTwentyBlockTagProvider(
+		DataOutput output,
+		CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture,
+		CompletableFuture<TagProvider.TagLookup<Block>> parentTagLookupFuture
+	) {
+		super(output, RegistryKeys.BLOCK, registryLookupFuture, parentTagLookupFuture, block -> block.getRegistryEntry().registryKey());
 	}
 
 	@Override
@@ -65,6 +70,8 @@ public class OneTwentyBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.CHISELED_BOOKSHELF);
 		this.getOrCreateTagBuilder(BlockTags.SNIFFER_DIGGABLE_BLOCK)
 			.add(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT, Blocks.ROOTED_DIRT, Blocks.MOSS_BLOCK, Blocks.MUD, Blocks.MUDDY_MANGROVE_ROOTS);
+		this.getOrCreateTagBuilder(BlockTags.SMALL_FLOWERS).add(Blocks.TORCHFLOWER);
+		this.getOrCreateTagBuilder(BlockTags.CROPS).add(Blocks.TORCHFLOWER_CROP);
 		this.getOrCreateTagBuilder(BlockTags.CHERRY_LOGS).add(Blocks.CHERRY_LOG, Blocks.CHERRY_WOOD, Blocks.STRIPPED_CHERRY_LOG, Blocks.STRIPPED_CHERRY_WOOD);
 		this.getOrCreateTagBuilder(BlockTags.PLANKS).add(Blocks.CHERRY_PLANKS);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_BUTTONS).add(Blocks.CHERRY_BUTTON);

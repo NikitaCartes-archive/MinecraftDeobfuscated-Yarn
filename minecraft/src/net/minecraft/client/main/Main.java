@@ -49,15 +49,8 @@ public class Main {
 
 	@DontObfuscate
 	public static void main(String[] args) {
-		main(args, true);
-	}
-
-	public static void main(String[] args, boolean optimizeDataFixer) {
 		SharedConstants.createGameVersion();
-		if (optimizeDataFixer) {
-			SharedConstants.enableDataFixerOptimization();
-		}
-
+		SharedConstants.enableDataFixerOptimization();
 		OptionParser optionParser = new OptionParser();
 		optionParser.allowsUnrecognizedOptions();
 		optionParser.accepts("demo");
@@ -102,7 +95,7 @@ public class Main {
 		if (string != null) {
 			try {
 				proxy = new Proxy(Type.SOCKS, new InetSocketAddress(string, getOption(optionSet, optionSpec8)));
-			} catch (Exception var78) {
+			} catch (Exception var77) {
 			}
 		}
 
@@ -181,11 +174,11 @@ public class Main {
 			RenderSystem.beginInitialization();
 			minecraftClient = new MinecraftClient(runArgs);
 			RenderSystem.finishInitialization();
-		} catch (GlException var76) {
-			LOGGER.warn("Failed to create window: ", (Throwable)var76);
+		} catch (GlException var75) {
+			LOGGER.warn("Failed to create window: ", (Throwable)var75);
 			return;
-		} catch (Throwable var77) {
-			CrashReport crashReport = CrashReport.create(var77, "Initializing game");
+		} catch (Throwable var76) {
+			CrashReport crashReport = CrashReport.create(var76, "Initializing game");
 			CrashReportSection crashReportSection = crashReport.addElement("Initialization");
 			WinNativeModuleUtil.addDetailTo(crashReportSection);
 			MinecraftClient.addSystemDetailsToCrashReport(null, null, runArgs.game.version, null, crashReport);
@@ -215,8 +208,8 @@ public class Main {
 			try {
 				RenderSystem.initGameThread(false);
 				minecraftClient.run();
-			} catch (Throwable var75) {
-				LOGGER.error("Unhandled game exception", var75);
+			} catch (Throwable var74) {
+				LOGGER.error("Unhandled game exception", var74);
 			}
 		}
 
@@ -227,8 +220,8 @@ public class Main {
 			if (thread2 != null) {
 				thread2.join();
 			}
-		} catch (InterruptedException var73) {
-			LOGGER.error("Exception during client thread shutdown", (Throwable)var73);
+		} catch (InterruptedException var72) {
+			LOGGER.error("Exception during client thread shutdown", (Throwable)var72);
 		} finally {
 			minecraftClient.stop();
 		}

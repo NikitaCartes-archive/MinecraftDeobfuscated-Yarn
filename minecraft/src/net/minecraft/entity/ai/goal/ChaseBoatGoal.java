@@ -29,7 +29,7 @@ public class ChaseBoatGoal extends Goal {
 		boolean bl = false;
 
 		for (BoatEntity boatEntity : list) {
-			Entity entity = boatEntity.getPrimaryPassenger();
+			Entity entity = boatEntity.getControllingPassenger();
 			if (entity instanceof PlayerEntity
 				&& (MathHelper.abs(((PlayerEntity)entity).sidewaysSpeed) > 0.0F || MathHelper.abs(((PlayerEntity)entity).forwardSpeed) > 0.0F)) {
 				bl = true;
@@ -55,8 +55,8 @@ public class ChaseBoatGoal extends Goal {
 	@Override
 	public void start() {
 		for (BoatEntity boatEntity : this.mob.world.getNonSpectatingEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0))) {
-			if (boatEntity.getPrimaryPassenger() != null && boatEntity.getPrimaryPassenger() instanceof PlayerEntity) {
-				this.passenger = (PlayerEntity)boatEntity.getPrimaryPassenger();
+			if (boatEntity.getControllingPassenger() != null && boatEntity.getControllingPassenger() instanceof PlayerEntity) {
+				this.passenger = (PlayerEntity)boatEntity.getControllingPassenger();
 				break;
 			}
 		}

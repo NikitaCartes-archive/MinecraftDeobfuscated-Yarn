@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen.world;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
@@ -28,11 +29,11 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.GridScreenTab;
 import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.pack.ExperimentalWarningScreen;
 import net.minecraft.client.gui.screen.pack.PackScreen;
+import net.minecraft.client.gui.tab.GridScreenTab;
 import net.minecraft.client.gui.tab.TabManager;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -64,9 +65,11 @@ import net.minecraft.server.integrated.IntegratedServerLoader;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -98,6 +101,8 @@ public class CreateWorldScreen extends Screen {
 	private static final Text PREPARING_TEXT = Text.translatable("createWorld.preparing");
 	private static final int field_42170 = 10;
 	private static final int field_42171 = 8;
+	public static final Identifier HEADER_SEPARATOR_TEXTURE = new Identifier("textures/gui/header_separator.png");
+	public static final Identifier FOOTER_SEPARATOR_TEXTURE = new Identifier("textures/gui/footer_separator.png");
 	final WorldCreator worldCreator;
 	private final TabManager tabManager = new TabManager(this::addDrawableChild, child -> this.remove(child));
 	private boolean recreated;
@@ -186,7 +191,7 @@ public class CreateWorldScreen extends Screen {
 		this.tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width)
 			.tabs(new CreateWorldScreen.GameTab(), new CreateWorldScreen.WorldTab(), new CreateWorldScreen.MoreTab())
 			.build();
-		this.tabNavigation.forEachChild(this::addDrawableChild);
+		this.addDrawableChild(this.tabNavigation);
 		this.worldCreator.addListener(creator -> {
 			if (creator.isNamed()) {
 				this.updateSaveFolderName(creator.getWorldName());
@@ -210,10 +215,10 @@ public class CreateWorldScreen extends Screen {
 	public void initTabNavigation() {
 		if (this.tabNavigation != null && this.grid != null) {
 			this.tabNavigation.setWidth(this.width);
-			this.tabNavigation.refreshPositions();
+			this.tabNavigation.init();
 			this.grid.refreshPositions();
 			SimplePositioningWidget.setPos(this.grid, 0, this.height - 36, this.width, 36);
-			int i = this.tabNavigation.getY() + this.tabNavigation.getHeight();
+			int i = this.tabNavigation.getNavigationFocus().getBottom();
 			FocusedRect focusedRect = new FocusedRect(0, i, this.width, this.grid.getY() - i);
 			this.tabManager.setTabArea(focusedRect);
 		}
@@ -320,7 +325,16 @@ public class CreateWorldScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
+		RenderSystem.setShaderTexture(0, FOOTER_SEPARATOR_TEXTURE);
+		drawTexture(matrices, 0, MathHelper.roundUpToMultiple(this.height - 36 - 2, 2), 0.0F, 0.0F, this.width, 2, 32, 2);
 		super.render(matrices, mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void renderBackgroundTexture(MatrixStack matrices) {
+		RenderSystem.setShaderTexture(0, LIGHT_DIRT_BACKGROUND_TEXTURE);
+		int i = 32;
+		drawTexture(matrices, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
 	}
 
 	@Override
@@ -364,7 +378,6 @@ public class CreateWorldScreen extends Screen {
 			this.client
 				.setScreen(
 					new PackScreen(
-						this,
 						pair.getSecond(),
 						resourcePackManager -> this.applyDataPacks(resourcePackManager, true, this::openPackScreen),
 						pair.getFirst(),
@@ -380,16 +393,18 @@ public class CreateWorldScreen extends Screen {
 		DataConfiguration dataConfiguration = new DataConfiguration(
 			new DataPackSettings(list, list2), this.worldCreator.getGeneratorOptionsHolder().dataConfiguration().enabledFeatures()
 		);
-		if (!this.worldCreator.updateDataConfiguration(dataConfiguration)) {
+		if (this.worldCreator.updateDataConfiguration(dataConfiguration)) {
+			this.client.setScreen(this);
+		} else {
 			FeatureSet featureSet = dataPackManager.getRequestedFeatures();
 			if (FeatureFlags.isNotVanilla(featureSet) && fromPackScreen) {
-				this.client.send(() -> this.client.setScreen(new ExperimentalWarningScreen(dataPackManager.getEnabledProfiles(), confirmed -> {
-						if (confirmed) {
-							this.validateDataPacks(dataPackManager, dataConfiguration, configurationSetter);
-						} else {
-							configurationSetter.accept(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
-						}
-					})));
+				this.client.setScreen(new ExperimentalWarningScreen(dataPackManager.getEnabledProfiles(), confirmed -> {
+					if (confirmed) {
+						this.validateDataPacks(dataPackManager, dataConfiguration, configurationSetter);
+					} else {
+						configurationSetter.accept(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
+					}
+				}));
 			} else {
 				this.validateDataPacks(dataPackManager, dataConfiguration, configurationSetter);
 			}
@@ -397,7 +412,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private void validateDataPacks(ResourcePackManager dataPackManager, DataConfiguration dataConfiguration, Consumer<DataConfiguration> configurationSetter) {
-		this.client.send(() -> this.client.setScreen(new MessageScreen(Text.translatable("dataPack.validation.working"))));
+		this.client.setScreenAndRender(new MessageScreen(Text.translatable("dataPack.validation.working")));
 		SaveLoading.ServerConfig serverConfig = createServerConfig(dataPackManager, dataConfiguration);
 		SaveLoading.<CreateWorldScreen.WorldCreationSettings, GeneratorOptionsHolder>load(
 				serverConfig,
@@ -434,26 +449,23 @@ public class CreateWorldScreen extends Screen {
 					if (throwable != null) {
 						LOGGER.warn("Failed to validate datapack", throwable);
 						this.client
-							.send(
-								() -> this.client
-										.setScreen(
-											new ConfirmScreen(
-												confirmed -> {
-													if (confirmed) {
-														configurationSetter.accept(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
-													} else {
-														configurationSetter.accept(DataConfiguration.SAFE_MODE);
-													}
-												},
-												Text.translatable("dataPack.validation.failed"),
-												ScreenTexts.EMPTY,
-												Text.translatable("dataPack.validation.back"),
-												Text.translatable("dataPack.validation.reset")
-											)
-										)
+							.setScreen(
+								new ConfirmScreen(
+									confirmed -> {
+										if (confirmed) {
+											configurationSetter.accept(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
+										} else {
+											configurationSetter.accept(DataConfiguration.SAFE_MODE);
+										}
+									},
+									Text.translatable("dataPack.validation.failed"),
+									ScreenTexts.EMPTY,
+									Text.translatable("dataPack.validation.back"),
+									Text.translatable("dataPack.validation.reset")
+								)
 							);
 					} else {
-						this.client.send(() -> this.client.setScreen(this));
+						this.client.setScreen(this);
 					}
 
 					return null;

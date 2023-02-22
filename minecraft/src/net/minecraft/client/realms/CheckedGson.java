@@ -1,6 +1,7 @@
 package net.minecraft.client.realms;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,6 +16,10 @@ public class CheckedGson {
 
 	public String toJson(RealmsSerializable serializable) {
 		return this.GSON.toJson(serializable);
+	}
+
+	public String toJson(JsonElement json) {
+		return this.GSON.toJson(json);
 	}
 
 	@Nullable

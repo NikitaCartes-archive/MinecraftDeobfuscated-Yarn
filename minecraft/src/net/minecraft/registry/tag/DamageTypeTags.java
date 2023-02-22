@@ -8,6 +8,7 @@ public interface DamageTypeTags {
 	TagKey<DamageType> DAMAGES_HELMET = of("damages_helmet");
 	TagKey<DamageType> BYPASSES_ARMOR = of("bypasses_armor");
 	TagKey<DamageType> BYPASSES_INVULNERABILITY = of("bypasses_invulnerability");
+	TagKey<DamageType> BYPASSES_COOLDOWN = of("bypasses_cooldown");
 	TagKey<DamageType> BYPASSES_EFFECTS = of("bypasses_effects");
 	TagKey<DamageType> BYPASSES_RESISTANCE = of("bypasses_resistance");
 	TagKey<DamageType> BYPASSES_ENCHANTMENTS = of("bypasses_enchantments");
@@ -27,6 +28,7 @@ public interface DamageTypeTags {
 	TagKey<DamageType> BURNS_ARMOR_STANDS = of("burns_armor_stands");
 	TagKey<DamageType> AVOIDS_GUARDIAN_THORNS = of("avoids_guardian_thorns");
 	TagKey<DamageType> ALWAYS_TRIGGERS_SILVERFISH = of("always_triggers_silverfish");
+	TagKey<DamageType> ALWAYS_HURTS_ENDER_DRAGONS = of("always_hurts_ender_dragons");
 
 	private static TagKey<DamageType> of(String id) {
 		return TagKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(id));

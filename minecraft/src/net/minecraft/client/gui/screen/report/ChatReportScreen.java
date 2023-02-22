@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.screen.report;
 
 import com.mojang.authlib.minecraft.report.AbuseReportLimits;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.UUID;
@@ -191,7 +190,6 @@ public class ChatReportScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		int i = this.width / 2;
-		RenderSystem.disableDepthTest();
 		this.renderBackground(matrices);
 		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, i, 10, 16777215);
 		drawCenteredTextWithShadow(matrices, this.textRenderer, OBSERVED_WHAT_TEXT, i, this.getSelectionButtonY() - 9 - 6, 16777215);
@@ -201,7 +199,6 @@ public class ChatReportScreen extends Screen {
 
 		drawTextWithShadow(matrices, this.textRenderer, MORE_COMMENTS_TEXT, this.getWidgetsLeft(), this.getEditBoxTop() - 9 - 6, 16777215);
 		super.render(matrices, mouseX, mouseY, delta);
-		RenderSystem.enableDepthTest();
 	}
 
 	@Override

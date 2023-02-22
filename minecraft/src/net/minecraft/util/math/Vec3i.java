@@ -41,7 +41,7 @@ public class Vec3i implements Comparable<Vec3i> {
 			CODEC,
 			vec -> Math.abs(vec.getX()) < maxAbsValue && Math.abs(vec.getY()) < maxAbsValue && Math.abs(vec.getZ()) < maxAbsValue
 					? DataResult.success(vec)
-					: DataResult.error("Position out of range, expected at most " + maxAbsValue + ": " + vec)
+					: DataResult.error(() -> "Position out of range, expected at most " + maxAbsValue + ": " + vec)
 		);
 	}
 
@@ -49,10 +49,6 @@ public class Vec3i implements Comparable<Vec3i> {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-	}
-
-	public Vec3i(double x, double y, double z) {
-		this(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
 	}
 
 	public boolean equals(Object o) {
@@ -104,16 +100,6 @@ public class Vec3i implements Comparable<Vec3i> {
 	protected Vec3i setZ(int z) {
 		this.z = z;
 		return this;
-	}
-
-	/**
-	 * {@return another Vec3i whose coordinates have the parameter x, y, and z
-	 * added to the coordinates of this vector}
-	 * 
-	 * <p>This method always returns an immutable object.
-	 */
-	public Vec3i add(double x, double y, double z) {
-		return x == 0.0 && y == 0.0 && z == 0.0 ? this : new Vec3i((double)this.getX() + x, (double)this.getY() + y, (double)this.getZ() + z);
 	}
 
 	/**

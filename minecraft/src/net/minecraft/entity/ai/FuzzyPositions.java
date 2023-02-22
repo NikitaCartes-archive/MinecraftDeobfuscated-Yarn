@@ -41,7 +41,7 @@ public class FuzzyPositions {
 		double h = f * Math.cos(e);
 		if (!(Math.abs(g) > (double)horizontalRange) && !(Math.abs(h) > (double)horizontalRange)) {
 			int i = random.nextInt(2 * verticalRange + 1) - verticalRange + startHeight;
-			return new BlockPos(g, (double)i, h);
+			return BlockPos.ofFloored(g, (double)i, h);
 		} else {
 			return null;
 		}
@@ -155,6 +155,6 @@ public class FuzzyPositions {
 			}
 		}
 
-		return new BlockPos((double)i + entity.getX(), (double)fuzz.getY() + entity.getY(), (double)j + entity.getZ());
+		return BlockPos.ofFloored((double)i + entity.getX(), (double)fuzz.getY() + entity.getY(), (double)j + entity.getZ());
 	}
 }

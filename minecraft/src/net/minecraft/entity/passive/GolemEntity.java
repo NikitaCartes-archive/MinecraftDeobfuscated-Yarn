@@ -12,11 +12,6 @@ public abstract class GolemEntity extends PathAwareEntity {
 		super(entityType, world);
 	}
 
-	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-		return false;
-	}
-
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {

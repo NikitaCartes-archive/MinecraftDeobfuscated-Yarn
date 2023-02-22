@@ -87,6 +87,7 @@ import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -216,6 +217,7 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 					.register(BlockUpdateS2CPacket.class, BlockUpdateS2CPacket::new)
 					.register(BossBarS2CPacket.class, BossBarS2CPacket::new)
 					.register(DifficultyS2CPacket.class, DifficultyS2CPacket::new)
+					.register(ChunkBiomeDataS2CPacket.class, ChunkBiomeDataS2CPacket::new)
 					.register(ClearTitleS2CPacket.class, ClearTitleS2CPacket::new)
 					.register(CommandSuggestionsS2CPacket.class, CommandSuggestionsS2CPacket::new)
 					.register(CommandTreeS2CPacket.class, CommandTreeS2CPacket::new)

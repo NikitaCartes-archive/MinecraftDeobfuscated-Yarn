@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -77,7 +78,7 @@ public class SystemToast implements Toast {
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = this.getWidth();
 		if (i == 160 && this.lines.size() <= 1) {
-			manager.drawTexture(matrices, 0, 0, 0, 64, i, this.getHeight());
+			DrawableHelper.drawTexture(matrices, 0, 0, 0, 64, i, this.getHeight());
 		} else {
 			int j = this.getHeight();
 			int k = 28;
@@ -109,13 +110,13 @@ public class SystemToast implements Toast {
 	private void drawPart(MatrixStack matrices, ToastManager manager, int width, int textureV, int y, int height) {
 		int i = textureV == 0 ? 20 : 5;
 		int j = Math.min(60, width - i);
-		manager.drawTexture(matrices, 0, y, 0, 64 + textureV, i, height);
+		DrawableHelper.drawTexture(matrices, 0, y, 0, 64 + textureV, i, height);
 
 		for (int k = i; k < width - j; k += 64) {
-			manager.drawTexture(matrices, k, y, 32, 64 + textureV, Math.min(64, width - k - j), height);
+			DrawableHelper.drawTexture(matrices, k, y, 32, 64 + textureV, Math.min(64, width - k - j), height);
 		}
 
-		manager.drawTexture(matrices, width - j, y, 160 - j, 64 + textureV, j, height);
+		DrawableHelper.drawTexture(matrices, width - j, y, 160 - j, 64 + textureV, j, height);
 	}
 
 	public void setContent(Text title, @Nullable Text description) {

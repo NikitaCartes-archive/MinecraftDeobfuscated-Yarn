@@ -422,7 +422,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	private void pushOutOfBlocks(double x, double z) {
-		BlockPos blockPos = new BlockPos(x, this.getY(), z);
+		BlockPos blockPos = BlockPos.ofFloored(x, this.getY(), z);
 		if (this.wouldCollideAt(blockPos)) {
 			double d = x - (double)blockPos.getX();
 			double e = z - (double)blockPos.getZ();
@@ -929,7 +929,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			float j = (float)(vec3d5.x * vec3d4.x + vec3d5.z * vec3d4.z);
 			if (!(j < -0.15F)) {
 				ShapeContext shapeContext = ShapeContext.of(this);
-				BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().maxY, this.getZ());
+				BlockPos blockPos = BlockPos.ofFloored(this.getX(), this.getBoundingBox().maxY, this.getZ());
 				BlockState blockState = this.world.getBlockState(blockPos);
 				if (blockState.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
 					blockPos = blockPos.up();
@@ -963,7 +963,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 							if (box2.intersects(vec3d10, vec3d11) || box2.intersects(vec3d12, vec3d13)) {
 								r = (float)box2.maxY;
 								Vec3d vec3d14 = box2.getCenter();
-								BlockPos blockPos2 = new BlockPos(vec3d14);
+								BlockPos blockPos2 = BlockPos.ofFloored(vec3d14);
 
 								for (int s = 1; (float)s < n; s++) {
 									BlockPos blockPos3 = blockPos2.up(s);

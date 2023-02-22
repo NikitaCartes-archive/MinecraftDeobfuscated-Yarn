@@ -151,6 +151,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion("melon_stem", PlacedBlockCriterion.Conditions.block(Blocks.MELON_STEM))
 			.criterion("beetroots", PlacedBlockCriterion.Conditions.block(Blocks.BEETROOTS))
 			.criterion("nether_wart", PlacedBlockCriterion.Conditions.block(Blocks.NETHER_WART))
+			.criterion("torchflower", PlacedBlockCriterion.Conditions.block(Blocks.TORCHFLOWER_CROP))
 			.build(exporter, "husbandry/plant_seed");
 		Advancement advancement3 = Advancement.Builder.create()
 			.parent(advancement)

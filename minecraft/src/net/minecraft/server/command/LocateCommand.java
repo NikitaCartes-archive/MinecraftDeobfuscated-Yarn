@@ -98,7 +98,7 @@ public class LocateCommand {
 		Registry<Structure> registry = source.getWorld().getRegistryManager().get(RegistryKeys.STRUCTURE);
 		RegistryEntryList<Structure> registryEntryList = (RegistryEntryList<Structure>)getStructureListForPredicate(predicate, registry)
 			.orElseThrow(() -> STRUCTURE_INVALID_EXCEPTION.create(predicate.asString()));
-		BlockPos blockPos = new BlockPos(source.getPosition());
+		BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
 		ServerWorld serverWorld = source.getWorld();
 		Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
 		Pair<BlockPos, RegistryEntry<Structure>> pair = serverWorld.getChunkManager()
@@ -113,7 +113,7 @@ public class LocateCommand {
 	}
 
 	private static int executeLocateBiome(ServerCommandSource source, RegistryEntryPredicateArgumentType.EntryPredicate<Biome> predicate) throws CommandSyntaxException {
-		BlockPos blockPos = new BlockPos(source.getPosition());
+		BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
 		Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
 		Pair<BlockPos, RegistryEntry<Biome>> pair = source.getWorld().locateBiome(predicate, blockPos, 6400, 32, 64);
 		stopwatch.stop();
@@ -125,7 +125,7 @@ public class LocateCommand {
 	}
 
 	private static int executeLocatePoi(ServerCommandSource source, RegistryEntryPredicateArgumentType.EntryPredicate<PointOfInterestType> predicate) throws CommandSyntaxException {
-		BlockPos blockPos = new BlockPos(source.getPosition());
+		BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
 		ServerWorld serverWorld = source.getWorld();
 		Stopwatch stopwatch = Stopwatch.createStarted(Util.TICKER);
 		Optional<Pair<RegistryEntry<PointOfInterestType>, BlockPos>> optional = serverWorld.getPointOfInterestStorage()

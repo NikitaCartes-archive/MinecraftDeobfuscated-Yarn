@@ -59,7 +59,7 @@ public class NetworkEncryptionUtils {
 		try {
 			return DataResult.success(decodeRsaPublicKeyPem(key));
 		} catch (NetworkEncryptionException var2) {
-			return DataResult.error(var2.getMessage());
+			return DataResult.error(var2::getMessage);
 		}
 	}, NetworkEncryptionUtils::encodeRsaPublicKey);
 	/**
@@ -74,7 +74,7 @@ public class NetworkEncryptionUtils {
 		try {
 			return DataResult.success(decodeRsaPrivateKeyPem(key));
 		} catch (NetworkEncryptionException var2) {
-			return DataResult.error(var2.getMessage());
+			return DataResult.error(var2::getMessage);
 		}
 	}, NetworkEncryptionUtils::encodeRsaPrivateKey);
 

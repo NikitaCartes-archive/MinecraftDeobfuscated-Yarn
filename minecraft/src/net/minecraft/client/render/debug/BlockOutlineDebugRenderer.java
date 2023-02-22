@@ -28,7 +28,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 		BlockView blockView = this.client.player.world;
-		BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
+		BlockPos blockPos = BlockPos.ofFloored(cameraX, cameraY, cameraZ);
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-6, -6, -6), blockPos.add(6, 6, 6))) {
 			BlockState blockState = blockView.getBlockState(blockPos2);

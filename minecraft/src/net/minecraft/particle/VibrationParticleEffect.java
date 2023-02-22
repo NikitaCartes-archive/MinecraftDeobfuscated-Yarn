@@ -31,7 +31,7 @@ public class VibrationParticleEffect implements ParticleEffect {
 			float h = (float)stringReader.readDouble();
 			stringReader.expect(' ');
 			int i = stringReader.readInt();
-			BlockPos blockPos = new BlockPos((double)f, (double)g, (double)h);
+			BlockPos blockPos = BlockPos.ofFloored((double)f, (double)g, (double)h);
 			return new VibrationParticleEffect(new BlockPositionSource(blockPos), i);
 		}
 

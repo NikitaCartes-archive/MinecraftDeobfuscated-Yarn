@@ -22,7 +22,7 @@ public final class TextColor {
 	private static final String RGB_PREFIX = "#";
 	public static final Codec<TextColor> CODEC = Codec.STRING.comapFlatMap(color -> {
 		TextColor textColor = parse(color);
-		return textColor != null ? DataResult.success(textColor) : DataResult.error("String is not a valid color name or hex color code");
+		return textColor != null ? DataResult.success(textColor) : DataResult.error(() -> "String is not a valid color name or hex color code");
 	}, TextColor::getName);
 	private static final Map<Formatting, TextColor> FORMATTING_TO_COLOR = (Map<Formatting, TextColor>)Stream.of(Formatting.values())
 		.filter(Formatting::isColor)

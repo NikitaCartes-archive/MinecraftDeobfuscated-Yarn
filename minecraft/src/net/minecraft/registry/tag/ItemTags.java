@@ -36,6 +36,7 @@ public final class ItemTags {
 	public static final TagKey<Item> WART_BLOCKS = of("wart_blocks");
 	public static final TagKey<Item> BANNERS = of("banners");
 	public static final TagKey<Item> SAND = of("sand");
+	public static final TagKey<Item> SMELTS_TO_GLASS = of("smelts_to_glass");
 	public static final TagKey<Item> STAIRS = of("stairs");
 	public static final TagKey<Item> SLABS = of("slabs");
 	public static final TagKey<Item> WALLS = of("walls");

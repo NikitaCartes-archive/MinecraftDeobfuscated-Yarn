@@ -83,7 +83,7 @@ public class BlendingData {
 
 	private static DataResult<BlendingData> validate(BlendingData data) {
 		return data.surfaceHeights.length != HORIZONTAL_BIOME_COUNT
-			? DataResult.error("heights has to be of length " + HORIZONTAL_BIOME_COUNT)
+			? DataResult.error(() -> "heights has to be of length " + HORIZONTAL_BIOME_COUNT)
 			: DataResult.success(data);
 	}
 

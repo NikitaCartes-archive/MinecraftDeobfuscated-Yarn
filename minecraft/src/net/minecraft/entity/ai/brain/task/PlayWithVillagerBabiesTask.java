@@ -51,7 +51,7 @@ public class PlayWithVillagerBabiesTask {
 								} else {
 									for (int i = 0; i < 10; i++) {
 										Vec3d vec3d = FuzzyTargeting.find(entity, 20, 8);
-										if (vec3d != null && world.isNearOccupiedPointOfInterest(new BlockPos(vec3d))) {
+										if (vec3d != null && world.isNearOccupiedPointOfInterest(BlockPos.ofFloored(vec3d))) {
 											walkTarget.remember(new WalkTarget(vec3d, 0.6F, 0));
 											break;
 										}

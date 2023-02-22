@@ -449,7 +449,7 @@ public class WorldChunk extends Chunk {
 		this.clear();
 
 		for (ChunkSection chunkSection : this.sectionArray) {
-			chunkSection.fromPacket(buf);
+			chunkSection.readDataPacket(buf);
 		}
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
@@ -465,6 +465,12 @@ public class WorldChunk extends Chunk {
 				blockEntity.readNbt(nbtx);
 			}
 		});
+	}
+
+	public void loadBiomeFromPacket(PacketByteBuf buf) {
+		for (ChunkSection chunkSection : this.sectionArray) {
+			chunkSection.readBiomePacket(buf);
+		}
 	}
 
 	public void setLoadedToWorld(boolean loadedToWorld) {

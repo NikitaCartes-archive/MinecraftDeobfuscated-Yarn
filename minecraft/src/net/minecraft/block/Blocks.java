@@ -3810,11 +3810,7 @@ public class Blocks {
 	public static final Block PINK_PETALS = register(
 		"pink_petals",
 		new FlowerbedBlock(
-			AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT, MapColor.PINK)
-				.strength(0.1F)
-				.noCollision()
-				.sounds(BlockSoundGroup.PINK_PETALS)
-				.requires(FeatureFlags.UPDATE_1_20)
+			AbstractBlock.Settings.of(Material.PLANT, MapColor.PINK).noCollision().sounds(BlockSoundGroup.PINK_PETALS).requires(FeatureFlags.UPDATE_1_20)
 		)
 	);
 	public static final Block MOSS_BLOCK = register(

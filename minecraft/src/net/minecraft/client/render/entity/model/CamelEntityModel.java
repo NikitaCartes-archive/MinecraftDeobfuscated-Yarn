@@ -19,6 +19,8 @@ import net.minecraft.util.math.MathHelper;
 public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityModel<T> {
 	private static final float field_40459 = 2.0F;
 	private static final float field_42227 = 2.5F;
+	private static final float field_43083 = 0.45F;
+	private static final float field_43084 = 29.35F;
 	private static final String SADDLE = "saddle";
 	private static final String BRIDLE = "bridle";
 	private static final String REINS = "reins";
@@ -167,11 +169,9 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
 		if (this.child) {
-			float f = 2.0F;
-			float g = 1.1F;
 			matrices.push();
-			matrices.scale(0.45454544F, 0.41322312F, 0.45454544F);
-			matrices.translate(0.0F, 2.0625F, 0.0F);
+			matrices.scale(0.45F, 0.45F, 0.45F);
+			matrices.translate(0.0F, 1.834375F, 0.0F);
 			this.getPart().render(matrices, vertices, light, overlay, red, green, blue, alpha);
 			matrices.pop();
 		} else {

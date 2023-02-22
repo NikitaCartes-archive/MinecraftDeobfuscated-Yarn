@@ -172,7 +172,7 @@ public class BoneMealItem extends Item {
 				double k = (double)pos.getX() + j + random.nextDouble() * d * 2.0;
 				double l = (double)pos.getY() + random.nextDouble() * e;
 				double m = (double)pos.getZ() + j + random.nextDouble() * d * 2.0;
-				if (!world.getBlockState(new BlockPos(k, l, m).down()).isAir()) {
+				if (!world.getBlockState(BlockPos.ofFloored(k, l, m).down()).isAir()) {
 					world.addParticle(ParticleTypes.HAPPY_VILLAGER, k, l, m, f, g, h);
 				}
 			}

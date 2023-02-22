@@ -123,7 +123,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private void draw(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double x, double y, double z) {
-		BlockPos blockPos = new BlockPos(x, y, z);
+		BlockPos blockPos = BlockPos.ofFloored(x, y, z);
 		this.brains.values().forEach(brain -> {
 			if (this.isClose(brain)) {
 				this.drawBrain(matrices, vertexConsumers, brain, x, y, z);
@@ -286,7 +286,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	private static void drawString(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Position pos, int offsetY, String string, int color, float size) {
 		double d = 2.4;
 		double e = 0.25;
-		BlockPos blockPos = new BlockPos(pos);
+		BlockPos blockPos = BlockPos.ofFloored(pos);
 		double f = (double)blockPos.getX() + 0.5;
 		double g = pos.getY() + 2.4 + (double)offsetY * 0.25;
 		double h = (double)blockPos.getZ() + 0.5;
@@ -308,8 +308,8 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 
 	private boolean isClose(VillageDebugRenderer.Brain brain) {
 		PlayerEntity playerEntity = this.client.player;
-		BlockPos blockPos = new BlockPos(playerEntity.getX(), brain.pos.getY(), playerEntity.getZ());
-		BlockPos blockPos2 = new BlockPos(brain.pos);
+		BlockPos blockPos = BlockPos.ofFloored(playerEntity.getX(), brain.pos.getY(), playerEntity.getZ());
+		BlockPos blockPos2 = BlockPos.ofFloored(brain.pos);
 		return blockPos.isWithinDistance(blockPos2, 30.0);
 	}
 

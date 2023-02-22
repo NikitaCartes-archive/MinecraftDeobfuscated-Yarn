@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
@@ -94,16 +93,13 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		this.drawBackground(matrices, delta, mouseX, mouseY);
 		RenderSystem.disableDepthTest();
 		super.render(matrices, mouseX, mouseY, delta);
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.translate((float)i, (float)j, 0.0F);
-		RenderSystem.applyModelViewMatrix();
+		matrices.push();
+		matrices.translate((float)i, (float)j, 0.0F);
 		this.focusedSlot = null;
 
 		for (int k = 0; k < this.handler.slots.size(); k++) {
 			Slot slot = this.handler.slots.get(k);
 			if (slot.isEnabled()) {
-				RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 				this.drawSlot(matrices, slot);
 			}
 
@@ -111,7 +107,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				this.focusedSlot = slot;
 				int l = slot.x;
 				int m = slot.y;
-				drawSlotHighlight(matrices, l, m, this.getZOffset());
+				drawSlotHighlight(matrices, l, m, 0);
 			}
 		}
 
@@ -132,7 +128,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				}
 			}
 
-			this.drawItem(itemStack, mouseX - i - 8, mouseY - j - l, string);
+			this.drawItem(matrices, itemStack, mouseX - i - 8, mouseY - j - l, string);
 		}
 
 		if (!this.touchDropReturningStack.isEmpty()) {
@@ -146,11 +142,10 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			int m = this.touchDropOriginSlot.y - this.touchDropY;
 			int o = this.touchDropX + (int)((float)l * f);
 			int p = this.touchDropY + (int)((float)m * f);
-			this.drawItem(this.touchDropReturningStack, o, p, null);
+			this.drawItem(matrices, this.touchDropReturningStack, o, p, null);
 		}
 
-		matrixStack.pop();
-		RenderSystem.applyModelViewMatrix();
+		matrices.pop();
 		RenderSystem.enableDepthTest();
 	}
 
@@ -168,16 +163,12 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		}
 	}
 
-	private void drawItem(ItemStack stack, int x, int y, String amountText) {
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.translate(0.0F, 0.0F, 32.0F);
-		RenderSystem.applyModelViewMatrix();
-		this.setZOffset(200);
-		this.itemRenderer.zOffset = 200.0F;
-		this.itemRenderer.renderInGuiWithOverrides(stack, x, y);
-		this.itemRenderer.renderGuiItemOverlay(this.textRenderer, stack, x, y - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
-		this.setZOffset(0);
-		this.itemRenderer.zOffset = 0.0F;
+	private void drawItem(MatrixStack matrices, ItemStack stack, int x, int y, String amountText) {
+		matrices.push();
+		matrices.translate(0.0F, 0.0F, 232.0F);
+		this.itemRenderer.renderInGuiWithOverrides(matrices, stack, x, y);
+		this.itemRenderer.renderGuiItemOverlay(matrices, this.textRenderer, stack, x, y - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
+		matrices.pop();
 	}
 
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
@@ -218,14 +209,14 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			}
 		}
 
-		this.setZOffset(100);
-		this.itemRenderer.zOffset = 100.0F;
+		matrices.push();
+		matrices.translate(0.0F, 0.0F, 100.0F);
 		if (itemStack.isEmpty() && slot.isEnabled()) {
 			Pair<Identifier, Identifier> pair = slot.getBackgroundSprite();
 			if (pair != null) {
 				Sprite sprite = (Sprite)this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
 				RenderSystem.setShaderTexture(0, sprite.getAtlasId());
-				drawSprite(matrices, i, j, this.getZOffset(), 16, 16, sprite);
+				drawSprite(matrices, i, j, 0, 16, 16, sprite);
 				bl2 = true;
 			}
 		}
@@ -235,13 +226,11 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				fill(matrices, i, j, i + 16, j + 16, -2130706433);
 			}
 
-			RenderSystem.enableDepthTest();
-			this.itemRenderer.renderInGuiWithOverrides(this.client.player, itemStack, i, j, slot.x + slot.y * this.backgroundWidth);
-			this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, i, j, string);
+			this.itemRenderer.renderInGuiWithOverrides(matrices, this.client.player, itemStack, i, j, slot.x + slot.y * this.backgroundWidth);
+			this.itemRenderer.renderGuiItemOverlay(matrices, this.textRenderer, itemStack, i, j, string);
 		}
 
-		this.itemRenderer.zOffset = 0.0F;
-		this.setZOffset(0);
+		matrices.pop();
 	}
 
 	private void calculateOffset() {

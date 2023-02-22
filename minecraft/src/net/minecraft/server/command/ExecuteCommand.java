@@ -38,6 +38,7 @@ import net.minecraft.command.argument.BlockPredicateArgumentType;
 import net.minecraft.command.argument.DimensionArgumentType;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.HeightmapArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.command.argument.NumberRangeArgumentType;
@@ -82,6 +83,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.WorldChunk;
 
 public class ExecuteCommand {
@@ -155,6 +158,20 @@ public class ExecuteCommand {
 
 							return list;
 						})))
+						.then(
+							CommandManager.literal("over").then(CommandManager.argument("heightmap", HeightmapArgumentType.heightmap()).redirect(literalCommandNode, context -> {
+								Vec3d vec3d = context.getSource().getPosition();
+								ServerWorld serverWorld = context.getSource().getWorld();
+								double d = vec3d.getX();
+								double e = vec3d.getZ();
+								if (!serverWorld.isChunkLoaded(ChunkSectionPos.getSectionCoordFloored(d), ChunkSectionPos.getSectionCoordFloored(e))) {
+									throw BlockPosArgumentType.UNLOADED_EXCEPTION.create();
+								} else {
+									int i = serverWorld.getTopY(HeightmapArgumentType.getHeightmap(context, "heightmap"), MathHelper.floor(d), MathHelper.floor(e));
+									return context.getSource().withPosition(new Vec3d(d, (double)i, e));
+								}
+							}))
+						)
 				)
 				.then(
 					CommandManager.literal("rotated")
@@ -834,7 +851,7 @@ public class ExecuteCommand {
 					.fork(node, createEntityModifier(entity -> entity instanceof Attackable attackable ? Optional.ofNullable(attackable.getLastAttacker()) : Optional.empty()))
 			)
 			.then(CommandManager.literal("vehicle").fork(node, createEntityModifier(entity -> Optional.ofNullable(entity.getVehicle()))))
-			.then(CommandManager.literal("controller").fork(node, createEntityModifier(entity -> Optional.ofNullable(entity.getPrimaryPassenger()))))
+			.then(CommandManager.literal("controller").fork(node, createEntityModifier(entity -> Optional.ofNullable(entity.getControllingPassenger()))))
 			.then(
 				CommandManager.literal("origin")
 					.fork(node, createEntityModifier(entity -> entity instanceof Ownable ownable ? Optional.ofNullable(ownable.getOwner()) : Optional.empty()))

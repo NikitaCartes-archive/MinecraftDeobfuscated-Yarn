@@ -63,8 +63,8 @@ public class BundleTooltipComponent implements TooltipComponent {
 		} else {
 			ItemStack itemStack = this.inventory.get(index);
 			this.draw(matrices, x, y, z, BundleTooltipComponent.Sprite.SLOT);
-			itemRenderer.renderInGuiWithOverrides(itemStack, x + 1, y + 1, index);
-			itemRenderer.renderGuiItemOverlay(textRenderer, itemStack, x + 1, y + 1);
+			itemRenderer.renderInGuiWithOverrides(matrices, itemStack, x + 1, y + 1, index);
+			itemRenderer.renderGuiItemOverlay(matrices, textRenderer, itemStack, x + 1, y + 1);
 			if (index == 0) {
 				HandledScreen.drawSlotHighlight(matrices, x + 1, y + 1, z);
 			}

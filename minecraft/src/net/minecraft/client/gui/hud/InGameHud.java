@@ -21,7 +21,6 @@ import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.Sprite;
@@ -153,7 +152,6 @@ public class InGameHud extends DrawableHelper {
 			this.renderVignetteOverlay(matrices, this.client.getCameraEntity());
 		} else {
 			RenderSystem.enableDepthTest();
-			RenderSystem.defaultBlendFunc();
 		}
 
 		float f = this.client.getLastFrameDuration();
@@ -186,12 +184,9 @@ public class InGameHud extends DrawableHelper {
 		}
 
 		if (!this.client.options.hudHidden) {
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
 			RenderSystem.enableBlend();
 			this.renderCrosshair(matrices);
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
-			RenderSystem.defaultBlendFunc();
 			this.client.getProfiler().push("bossHealth");
 			this.bossBarHud.render(matrices);
 			this.client.getProfiler().pop();
@@ -253,8 +248,6 @@ public class InGameHud extends DrawableHelper {
 				if (l > 8) {
 					matrices.push();
 					matrices.translate((float)(this.scaledWidth / 2), (float)(this.scaledHeight - 68), 0.0F);
-					RenderSystem.enableBlend();
-					RenderSystem.defaultBlendFunc();
 					int k = 16777215;
 					if (this.overlayTinted) {
 						k = MathHelper.hsvToRgb(h / 50.0F, 0.7F, 0.6F) & 16777215;
@@ -264,7 +257,6 @@ public class InGameHud extends DrawableHelper {
 					int n = textRenderer.getWidth(this.overlayMessage);
 					this.drawTextBackground(matrices, textRenderer, -4, n, 16777215 | m);
 					textRenderer.drawWithShadow(matrices, this.overlayMessage, (float)(-n / 2), -4.0F, k | m);
-					RenderSystem.disableBlend();
 					matrices.pop();
 				}
 
@@ -289,7 +281,6 @@ public class InGameHud extends DrawableHelper {
 					matrices.push();
 					matrices.translate((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), 0.0F);
 					RenderSystem.enableBlend();
-					RenderSystem.defaultBlendFunc();
 					matrices.push();
 					matrices.scale(4.0F, 4.0F, 4.0F);
 					int k = lx << 24 & 0xFF000000;
@@ -330,7 +321,6 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			RenderSystem.enableBlend();
-			RenderSystem.defaultBlendFunc();
 			int n = MathHelper.floor(this.client.mouse.getX() * (double)window.getScaledWidth() / (double)window.getWidth());
 			int p = MathHelper.floor(this.client.mouse.getY() * (double)window.getScaledHeight() / (double)window.getHeight());
 			this.client.getProfiler().push("chat");
@@ -365,7 +355,8 @@ public class InGameHud extends DrawableHelper {
 					Camera camera = this.client.gameRenderer.getCamera();
 					MatrixStack matrixStack = RenderSystem.getModelViewStack();
 					matrixStack.push();
-					matrixStack.translate((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.getZOffset());
+					matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+					matrixStack.translate((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), 0.0F);
 					matrixStack.multiply(RotationAxis.NEGATIVE_X.rotationDegrees(camera.getPitch()));
 					matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(camera.getYaw()));
 					matrixStack.scale(-1.0F, -1.0F, -1.0F);
@@ -378,7 +369,7 @@ public class InGameHud extends DrawableHelper {
 						GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 					);
 					int i = 15;
-					this.drawTexture(matrices, (this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
+					drawTexture(matrices, (this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
 					if (this.client.options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
 						float f = this.client.player.getAttackCooldownProgress(0.0F);
 						boolean bl = false;
@@ -390,13 +381,15 @@ public class InGameHud extends DrawableHelper {
 						int j = this.scaledHeight / 2 - 7 + 16;
 						int k = this.scaledWidth / 2 - 8;
 						if (bl) {
-							this.drawTexture(matrices, k, j, 68, 94, 16, 16);
+							drawTexture(matrices, k, j, 68, 94, 16, 16);
 						} else if (f < 1.0F) {
 							int l = (int)(f * 17.0F);
-							this.drawTexture(matrices, k, j, 36, 94, 16, 4);
-							this.drawTexture(matrices, k, j, 52, 94, l, 4);
+							drawTexture(matrices, k, j, 36, 94, 16, 4);
+							drawTexture(matrices, k, j, 52, 94, l, 4);
 						}
 					}
+
+					RenderSystem.defaultBlendFunc();
 				}
 			}
 		}
@@ -450,9 +443,9 @@ public class InGameHud extends DrawableHelper {
 
 					float f = 1.0F;
 					if (statusEffectInstance.isAmbient()) {
-						this.drawTexture(matrices, k, l, 165, 166, 24, 24);
+						drawTexture(matrices, k, l, 165, 166, 24, 24);
 					} else {
-						this.drawTexture(matrices, k, l, 141, 166, 24, 24);
+						drawTexture(matrices, k, l, 141, 166, 24, 24);
 						if (statusEffectInstance.isDurationBelow(200)) {
 							int m = statusEffectInstance.getDuration();
 							int n = 10 - m / 20;
@@ -468,7 +461,7 @@ public class InGameHud extends DrawableHelper {
 					list.add((Runnable)() -> {
 						RenderSystem.setShaderTexture(0, sprite.getAtlasId());
 						RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, g);
-						drawSprite(matrices, n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
+						drawSprite(matrices, n + 3, o + 3, 0, 18, 18, sprite);
 						RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 					});
 				}
@@ -481,58 +474,56 @@ public class InGameHud extends DrawableHelper {
 	private void renderHotbar(float tickDelta, MatrixStack matrices) {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 			ItemStack itemStack = playerEntity.getOffHandStack();
 			Arm arm = playerEntity.getMainArm().getOpposite();
 			int i = this.scaledWidth / 2;
-			int j = this.getZOffset();
-			int k = 182;
-			int l = 91;
-			this.setZOffset(-90);
-			this.drawTexture(matrices, i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
-			this.drawTexture(matrices, i - 91 - 1 + playerEntity.getInventory().selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
+			int j = 182;
+			int k = 91;
+			matrices.push();
+			matrices.translate(0.0F, 0.0F, -90.0F);
+			drawTexture(matrices, i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
+			drawTexture(matrices, i - 91 - 1 + playerEntity.getInventory().selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
 			if (!itemStack.isEmpty()) {
 				if (arm == Arm.LEFT) {
-					this.drawTexture(matrices, i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
+					drawTexture(matrices, i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
 				} else {
-					this.drawTexture(matrices, i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
+					drawTexture(matrices, i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
 				}
 			}
 
-			this.setZOffset(j);
+			matrices.pop();
+			int l = 1;
+
+			for (int m = 0; m < 9; m++) {
+				int n = i - 90 + m * 20 + 2;
+				int o = this.scaledHeight - 16 - 3;
+				this.renderHotbarItem(matrices, n, o, tickDelta, playerEntity, playerEntity.getInventory().main.get(m), l++);
+			}
+
+			if (!itemStack.isEmpty()) {
+				int m = this.scaledHeight - 16 - 3;
+				if (arm == Arm.LEFT) {
+					this.renderHotbarItem(matrices, i - 91 - 26, m, tickDelta, playerEntity, itemStack, l++);
+				} else {
+					this.renderHotbarItem(matrices, i + 91 + 10, m, tickDelta, playerEntity, itemStack, l++);
+				}
+			}
+
 			RenderSystem.enableBlend();
-			RenderSystem.defaultBlendFunc();
-			int m = 1;
-
-			for (int n = 0; n < 9; n++) {
-				int o = i - 90 + n * 20 + 2;
-				int p = this.scaledHeight - 16 - 3;
-				this.renderHotbarItem(o, p, tickDelta, playerEntity, playerEntity.getInventory().main.get(n), m++);
-			}
-
-			if (!itemStack.isEmpty()) {
-				int n = this.scaledHeight - 16 - 3;
-				if (arm == Arm.LEFT) {
-					this.renderHotbarItem(i - 91 - 26, n, tickDelta, playerEntity, itemStack, m++);
-				} else {
-					this.renderHotbarItem(i + 91 + 10, n, tickDelta, playerEntity, itemStack, m++);
-				}
-			}
-
 			if (this.client.options.getAttackIndicator().getValue() == AttackIndicator.HOTBAR) {
 				float f = this.client.player.getAttackCooldownProgress(0.0F);
 				if (f < 1.0F) {
-					int o = this.scaledHeight - 20;
-					int p = i + 91 + 6;
+					int n = this.scaledHeight - 20;
+					int o = i + 91 + 6;
 					if (arm == Arm.RIGHT) {
-						p = i - 91 - 22;
+						o = i - 91 - 22;
 					}
 
 					RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
-					int q = (int)(f * 19.0F);
-					this.drawTexture(matrices, p, o, 0, 94, 18, 18);
-					this.drawTexture(matrices, p, o + 18 - q, 18, 112 - q, 18, q);
+					int p = (int)(f * 19.0F);
+					drawTexture(matrices, o, n, 0, 94, 18, 18);
+					drawTexture(matrices, o, n + 18 - p, 18, 112 - p, 18, p);
 				}
 			}
 
@@ -547,11 +538,11 @@ public class InGameHud extends DrawableHelper {
 		int i = 182;
 		int j = (int)(f * 183.0F);
 		int k = this.scaledHeight - 32 + 3;
-		this.drawTexture(matrices, x, k, 0, 84, 182, 5);
+		drawTexture(matrices, x, k, 0, 84, 182, 5);
 		if (mount.getJumpCooldown() > 0) {
-			this.drawTexture(matrices, x, k, 0, 74, 182, 5);
+			drawTexture(matrices, x, k, 0, 74, 182, 5);
 		} else if (j > 0) {
-			this.drawTexture(matrices, x, k, 0, 89, j, 5);
+			drawTexture(matrices, x, k, 0, 89, j, 5);
 		}
 
 		this.client.getProfiler().pop();
@@ -565,9 +556,9 @@ public class InGameHud extends DrawableHelper {
 			int j = 182;
 			int k = (int)(this.client.player.experienceProgress * 183.0F);
 			int l = this.scaledHeight - 32 + 3;
-			this.drawTexture(matrices, x, l, 0, 64, 182, 5);
+			drawTexture(matrices, x, l, 0, 64, 182, 5);
 			if (k > 0) {
-				this.drawTexture(matrices, x, l, 0, 69, k, 5);
+				drawTexture(matrices, x, l, 0, 69, k, 5);
 			}
 		}
 
@@ -607,11 +598,8 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			if (l > 0) {
-				RenderSystem.enableBlend();
-				RenderSystem.defaultBlendFunc();
 				fill(matrices, j - 2, k - 2, j + i + 2, k + 9 + 2, this.client.options.getTextBackgroundColor(0));
 				this.getTextRenderer().drawWithShadow(matrices, mutableText, (float)j, (float)k, 16777215 + (l << 24));
-				RenderSystem.disableBlend();
 			}
 		}
 
@@ -770,15 +758,15 @@ public class InGameHud extends DrawableHelper {
 				if (u > 0) {
 					int x = m + w * 8;
 					if (w * 2 + 1 < u) {
-						this.drawTexture(matrices, x, s, 34, 9, 9, 9);
+						drawTexture(matrices, x, s, 34, 9, 9, 9);
 					}
 
 					if (w * 2 + 1 == u) {
-						this.drawTexture(matrices, x, s, 25, 9, 9, 9);
+						drawTexture(matrices, x, s, 25, 9, 9, 9);
 					}
 
 					if (w * 2 + 1 > u) {
-						this.drawTexture(matrices, x, s, 16, 9, 9, 9);
+						drawTexture(matrices, x, s, 16, 9, 9, 9);
 					}
 				}
 			}
@@ -804,13 +792,13 @@ public class InGameHud extends DrawableHelper {
 					}
 
 					int ac = n - y * 8 - 9;
-					this.drawTexture(matrices, ac, z, 16 + ab * 9, 27, 9, 9);
+					drawTexture(matrices, ac, z, 16 + ab * 9, 27, 9, 9);
 					if (y * 2 + 1 < k) {
-						this.drawTexture(matrices, ac, z, aa + 36, 27, 9, 9);
+						drawTexture(matrices, ac, z, aa + 36, 27, 9, 9);
 					}
 
 					if (y * 2 + 1 == k) {
-						this.drawTexture(matrices, ac, z, aa + 45, 27, 9, 9);
+						drawTexture(matrices, ac, z, aa + 45, 27, 9, 9);
 					}
 				}
 
@@ -828,9 +816,9 @@ public class InGameHud extends DrawableHelper {
 
 				for (int ad = 0; ad < abx + acx; ad++) {
 					if (ad < abx) {
-						this.drawTexture(matrices, n - ad * 8 - 9, t, 16, 18, 9, 9);
+						drawTexture(matrices, n - ad * 8 - 9, t, 16, 18, 9, 9);
 					} else {
-						this.drawTexture(matrices, n - ad * 8 - 9, t, 25, 18, 9, 9);
+						drawTexture(matrices, n - ad * 8 - 9, t, 25, 18, 9, 9);
 					}
 				}
 			}
@@ -895,7 +883,7 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	private void drawHeart(MatrixStack matrices, InGameHud.HeartType type, int x, int y, int v, boolean blinking, boolean halfHeart) {
-		this.drawTexture(matrices, x, y, type.getU(halfHeart, blinking), v, 9, 9);
+		drawTexture(matrices, x, y, type.getU(halfHeart, blinking), v, 9, 9);
 	}
 
 	private void renderMountHealth(MatrixStack matrices) {
@@ -918,13 +906,13 @@ public class InGameHud extends DrawableHelper {
 						int q = 52;
 						int r = 0;
 						int s = l - p * 8 - 9;
-						this.drawTexture(matrices, s, m, 52 + r * 9, 9, 9, 9);
+						drawTexture(matrices, s, m, 52 + r * 9, 9, 9, 9);
 						if (p * 2 + 1 + n < j) {
-							this.drawTexture(matrices, s, m, 88, 9, 9, 9);
+							drawTexture(matrices, s, m, 88, 9, 9, 9);
 						}
 
 						if (p * 2 + 1 + n == j) {
-							this.drawTexture(matrices, s, m, 97, 9, 9, 9);
+							drawTexture(matrices, s, m, 97, 9, 9, 9);
 						}
 					}
 
@@ -937,7 +925,6 @@ public class InGameHud extends DrawableHelper {
 	private void renderOverlay(MatrixStack matrices, Identifier texture, float opacity) {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
-		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, opacity);
 		RenderSystem.setShaderTexture(0, texture);
 		drawTexture(matrices, 0, 0, -90, 0.0F, 0.0F, this.scaledWidth, this.scaledHeight, this.scaledWidth, this.scaledHeight);
@@ -949,7 +936,6 @@ public class InGameHud extends DrawableHelper {
 	private void renderSpyglassOverlay(MatrixStack matrices, float scale) {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
-		RenderSystem.defaultBlendFunc();
 		float f = (float)Math.min(this.scaledWidth, this.scaledHeight);
 		float h = Math.min((float)this.scaledWidth / f, (float)this.scaledHeight / f) * scale;
 		int i = MathHelper.floor(f * h);
@@ -970,7 +956,7 @@ public class InGameHud extends DrawableHelper {
 
 	private void updateVignetteDarkness(Entity entity) {
 		if (entity != null) {
-			BlockPos blockPos = new BlockPos(entity.getX(), entity.getEyeY(), entity.getZ());
+			BlockPos blockPos = BlockPos.ofFloored(entity.getX(), entity.getEyeY(), entity.getZ());
 			float f = LightmapTextureManager.getBrightness(entity.world.getDimension(), entity.world.getLightLevel(blockPos));
 			float g = MathHelper.clamp(1.0F - f, 0.0F, 1.0F);
 			this.vignetteDarkness = this.vignetteDarkness + (g - this.vignetteDarkness) * 0.01F;
@@ -1021,7 +1007,6 @@ public class InGameHud extends DrawableHelper {
 
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
-		RenderSystem.defaultBlendFunc();
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, nauseaStrength);
 		RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 		Sprite sprite = this.client.getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
@@ -1031,27 +1016,23 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed) {
-		if (!stack.isEmpty()) {
-			MatrixStack matrixStack = RenderSystem.getModelViewStack();
-			float f = (float)stack.getBobbingAnimationTime() - tickDelta;
-			if (f > 0.0F) {
-				float g = 1.0F + f / 5.0F;
+	private void renderHotbarItem(MatrixStack matrixStack, int i, int j, float f, PlayerEntity playerEntity, ItemStack itemStack, int k) {
+		if (!itemStack.isEmpty()) {
+			float g = (float)itemStack.getBobbingAnimationTime() - f;
+			if (g > 0.0F) {
+				float h = 1.0F + g / 5.0F;
 				matrixStack.push();
-				matrixStack.translate((float)(x + 8), (float)(y + 12), 0.0F);
-				matrixStack.scale(1.0F / g, (g + 1.0F) / 2.0F, 1.0F);
-				matrixStack.translate((float)(-(x + 8)), (float)(-(y + 12)), 0.0F);
-				RenderSystem.applyModelViewMatrix();
+				matrixStack.translate((float)(i + 8), (float)(j + 12), 0.0F);
+				matrixStack.scale(1.0F / h, (h + 1.0F) / 2.0F, 1.0F);
+				matrixStack.translate((float)(-(i + 8)), (float)(-(j + 12)), 0.0F);
 			}
 
-			this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, seed);
-			RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-			if (f > 0.0F) {
+			this.itemRenderer.renderInGuiWithOverrides(matrixStack, playerEntity, itemStack, i, j, k);
+			if (g > 0.0F) {
 				matrixStack.pop();
-				RenderSystem.applyModelViewMatrix();
 			}
 
-			this.itemRenderer.renderGuiItemOverlay(this.client.textRenderer, stack, x, y);
+			this.itemRenderer.renderGuiItemOverlay(matrixStack, this.client.textRenderer, itemStack, i, j);
 		}
 	}
 

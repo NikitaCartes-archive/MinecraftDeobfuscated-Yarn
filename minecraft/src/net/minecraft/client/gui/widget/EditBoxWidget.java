@@ -136,7 +136,9 @@ public class EditBoxWidget extends ScrollableWidget {
 		String string = this.editBox.getText();
 		if (string.isEmpty() && !this.isFocused()) {
 			this.textRenderer
-				.drawTrimmed(this.placeholder, this.getX() + this.getPadding(), this.getY() + this.getPadding(), this.width - this.getPaddingDoubled(), -857677600);
+				.drawTrimmed(
+					matrices, this.placeholder, this.getX() + this.getPadding(), this.getY() + this.getPadding(), this.width - this.getPaddingDoubled(), -857677600
+				);
 		} else {
 			int i = this.editBox.getCursor();
 			boolean bl = this.isFocused() && this.tick / 6 % 2 == 0;

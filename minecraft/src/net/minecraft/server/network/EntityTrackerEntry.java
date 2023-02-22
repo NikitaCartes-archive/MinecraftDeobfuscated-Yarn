@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -80,8 +81,19 @@ public class EntityTrackerEntry {
 	public void tick() {
 		List<Entity> list = this.entity.getPassengerList();
 		if (!list.equals(this.lastPassengers)) {
-			this.lastPassengers = list;
 			this.receiver.accept(new EntityPassengersSetS2CPacket(this.entity));
+			this.streamChangedPassengers(list, this.lastPassengers)
+				.forEach(
+					passenger -> {
+						if (passenger instanceof ServerPlayerEntity serverPlayerEntity && !list.contains(serverPlayerEntity)) {
+							serverPlayerEntity.networkHandler
+								.requestTeleport(
+									serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.getYaw(), serverPlayerEntity.getPitch()
+								);
+						}
+					}
+				);
+			this.lastPassengers = list;
 		}
 
 		if (this.entity instanceof ItemFrameEntity itemFrameEntity && this.trackingTick % 10 == 0) {
@@ -197,6 +209,12 @@ public class EntityTrackerEntry {
 			this.sendSyncPacket(new EntityVelocityUpdateS2CPacket(this.entity));
 			this.entity.velocityModified = false;
 		}
+	}
+
+	private Stream<Entity> streamChangedPassengers(List<Entity> passengers, List<Entity> lastPassengers) {
+		return Stream.concat(
+			lastPassengers.stream().filter(passenger -> !passengers.contains(passenger)), passengers.stream().filter(passenger -> !lastPassengers.contains(passenger))
+		);
 	}
 
 	public void stopTracking(ServerPlayerEntity player) {

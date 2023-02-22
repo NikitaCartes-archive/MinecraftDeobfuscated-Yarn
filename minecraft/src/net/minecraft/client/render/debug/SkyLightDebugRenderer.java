@@ -25,7 +25,7 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		World world = this.client.world;
-		BlockPos blockPos = new BlockPos(cameraX, cameraY, cameraZ);
+		BlockPos blockPos = BlockPos.ofFloored(cameraX, cameraY, cameraZ);
 		LongSet longSet = new LongOpenHashSet();
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {

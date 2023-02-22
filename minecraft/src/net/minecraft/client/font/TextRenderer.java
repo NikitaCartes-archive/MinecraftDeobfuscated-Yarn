@@ -22,7 +22,6 @@ import net.minecraft.text.TextColor;
 import net.minecraft.text.TextVisitFactory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
-import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.joml.Matrix4f;
@@ -415,8 +414,8 @@ public class TextRenderer {
 	/**
 	 * @param color the text color in the 0xAARRGGBB format
 	 */
-	public void drawTrimmed(StringVisitable text, int x, int y, int maxWidth, int color) {
-		Matrix4f matrix4f = AffineTransformation.identity().getMatrix();
+	public void drawTrimmed(MatrixStack matrices, StringVisitable text, int x, int y, int maxWidth, int color) {
+		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 
 		for (OrderedText orderedText : this.wrapLines(text, maxWidth)) {
 			this.draw(orderedText, (float)x, (float)y, color, matrix4f, false);

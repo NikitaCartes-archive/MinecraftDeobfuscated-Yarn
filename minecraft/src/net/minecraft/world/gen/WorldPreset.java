@@ -54,6 +54,6 @@ public class WorldPreset {
 	}
 
 	private static DataResult<WorldPreset> validate(WorldPreset preset) {
-		return preset.getOverworld().isEmpty() ? DataResult.error("Missing overworld dimension") : DataResult.success(preset, Lifecycle.stable());
+		return preset.getOverworld().isEmpty() ? DataResult.error(() -> "Missing overworld dimension") : DataResult.success(preset, Lifecycle.stable());
 	}
 }

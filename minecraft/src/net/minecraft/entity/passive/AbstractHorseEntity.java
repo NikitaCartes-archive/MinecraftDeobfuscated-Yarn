@@ -68,6 +68,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
@@ -86,6 +87,8 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	private static final float MAX_JUMP_STRENGTH_BONUS = (float)getChildJumpStrengthBonus(() -> 1.0);
 	private static final float MIN_HEALTH_BONUS = getChildHealthBonus(max -> 0);
 	private static final float MAX_HEALTH_BONUS = getChildHealthBonus(max -> max - 1);
+	private static final float field_42979 = 0.25F;
+	private static final float field_42980 = 0.5F;
 	private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof AbstractHorseEntity && ((AbstractHorseEntity)entity).isBred();
 	private static final TargetPredicate PARENT_HORSE_PREDICATE = TargetPredicate.createNonAttackable()
 		.setBaseMaxDistance(16.0)
@@ -127,7 +130,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	protected AbstractHorseEntity(EntityType<? extends AbstractHorseEntity> entityType, World world) {
 		super(entityType, world);
-		this.stepHeight = 1.0F;
+		this.setStepHeight(1.0F);
 		this.onChestedStatusChanged();
 	}
 
@@ -602,7 +605,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			this.setHorseFlag(EATING_FLAG, false);
 		}
 
-		if ((this.isLogicalSideForUpdatingMovement() || this.canMoveVoluntarily()) && this.angryTicks > 0 && ++this.angryTicks > 20) {
+		if (this.canMoveVoluntarily() && this.angryTicks > 0 && ++this.angryTicks > 20) {
 			this.angryTicks = 0;
 			this.setAngry(false);
 		}
@@ -713,7 +716,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	public void updateAnger() {
-		if (this.shouldAmbientStand() && this.isLogicalSideForUpdatingMovement() || this.canMoveVoluntarily()) {
+		if (this.shouldAmbientStand() && this.canMoveVoluntarily()) {
 			this.angryTicks = 1;
 			this.setAngry(true);
 		}
@@ -741,65 +744,59 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	public void travel(Vec3d movementInput) {
-		if (this.isAlive()) {
-			LivingEntity livingEntity = this.getPrimaryPassenger();
-			if (this.hasPassengers() && livingEntity != null && !this.ignoresMovementInput(livingEntity)) {
-				this.setRotation(livingEntity.getYaw(), livingEntity.getPitch() * 0.5F);
-				this.prevYaw = this.bodyYaw = this.headYaw = this.getYaw();
-				float f = livingEntity.sidewaysSpeed * 0.5F;
-				float g = livingEntity.forwardSpeed;
-				if (g <= 0.0F) {
-					g *= 0.25F;
-					this.soundTicks = 0;
+	protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
+		super.tickControlled(controllingPassenger, movementInput);
+		Vec2f vec2f = this.getControlledRotation(controllingPassenger);
+		this.setRotation(vec2f.y, vec2f.x);
+		this.prevYaw = this.bodyYaw = this.headYaw = this.getYaw();
+		if (this.isLogicalSideForUpdatingMovement()) {
+			if (movementInput.z <= 0.0) {
+				this.soundTicks = 0;
+			}
+
+			if (this.onGround) {
+				this.setInAir(false);
+				if (this.jumpStrength > 0.0F && !this.isInAir()) {
+					this.jump(this.jumpStrength, movementInput);
 				}
 
-				if (this.onGround && this.jumpStrength == 0.0F && this.isAngry() && !this.jumping) {
-					f = 0.0F;
-					g = 0.0F;
-				}
-
-				if (this.jumpStrength > 0.0F && !this.isInAir() && this.onGround) {
-					this.jump(this.jumpStrength, f, g);
-					this.jumpStrength = 0.0F;
-				}
-
-				this.airStrafingSpeed = this.getMovementSpeed() * 0.1F;
-				if (this.isLogicalSideForUpdatingMovement()) {
-					this.setMovementSpeed(this.getHorsebackMovementSpeed(livingEntity));
-					super.travel(new Vec3d((double)f, movementInput.y, (double)g));
-				} else {
-					this.updateLimbs(false);
-					this.tryCheckBlockCollision();
-				}
-
-				if (this.onGround) {
-					this.jumpStrength = 0.0F;
-					this.setInAir(false);
-				}
-			} else {
-				this.airStrafingSpeed = 0.02F;
-				super.travel(movementInput);
+				this.jumpStrength = 0.0F;
 			}
 		}
 	}
 
-	protected float getHorsebackMovementSpeed(LivingEntity passenger) {
+	protected Vec2f getControlledRotation(LivingEntity controllingPassenger) {
+		return new Vec2f(controllingPassenger.getPitch() * 0.5F, controllingPassenger.getYaw());
+	}
+
+	@Override
+	protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+		if (this.onGround && this.jumpStrength == 0.0F && this.isAngry() && !this.jumping) {
+			return Vec3d.ZERO;
+		} else {
+			float f = controllingPassenger.sidewaysSpeed * 0.5F;
+			float g = controllingPassenger.forwardSpeed;
+			if (g <= 0.0F) {
+				g *= 0.25F;
+			}
+
+			return new Vec3d((double)f, 0.0, (double)g);
+		}
+	}
+
+	@Override
+	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
 		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 	}
 
-	protected boolean ignoresMovementInput(LivingEntity passenger) {
-		return false;
-	}
-
-	protected void jump(float strength, float sidewaysSpeed, float forwardSpeed) {
+	protected void jump(float strength, Vec3d movementInput) {
 		double d = this.getJumpStrength() * (double)strength * (double)this.getJumpVelocityMultiplier();
 		double e = d + this.getJumpBoostVelocityModifier();
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x, e, vec3d.z);
 		this.setInAir(true);
 		this.velocityDirty = true;
-		if (forwardSpeed > 0.0F) {
+		if (movementInput.z > 0.0) {
 			float f = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0));
 			float g = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0));
 			this.setVelocity(this.getVelocity().add((double)(-0.4F * f * strength), 0.0, (double)(0.4F * g * strength)));
@@ -1090,7 +1087,8 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Nullable
-	public LivingEntity getPrimaryPassenger() {
+	@Override
+	public LivingEntity getControllingPassenger() {
 		if (this.isSaddled()) {
 			Entity var2 = this.getFirstPassenger();
 			if (var2 instanceof LivingEntity) {

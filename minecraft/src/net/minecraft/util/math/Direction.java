@@ -334,7 +334,7 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	private static DataResult<Direction> validateVertical(Direction direction) {
-		return direction.getAxis().isVertical() ? DataResult.success(direction) : DataResult.error("Expected a vertical direction");
+		return direction.getAxis().isVertical() ? DataResult.success(direction) : DataResult.error(() -> "Expected a vertical direction");
 	}
 
 	public static Direction get(Direction.AxisDirection direction, Direction.Axis axis) {

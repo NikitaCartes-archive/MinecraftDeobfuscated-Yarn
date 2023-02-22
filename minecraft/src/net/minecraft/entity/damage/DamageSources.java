@@ -212,8 +212,8 @@ public class DamageSources {
 		return this.create(DamageTypes.WITHER_SKULL, source, attacker);
 	}
 
-	public DamageSource thorns(Entity source, @Nullable Entity attacker) {
-		return this.create(DamageTypes.THORNS, source, attacker);
+	public DamageSource thrown(Entity source, @Nullable Entity attacker) {
+		return this.create(DamageTypes.THROWN, source, attacker);
 	}
 
 	public DamageSource indirectMagic(Entity source, @Nullable Entity attacker) {

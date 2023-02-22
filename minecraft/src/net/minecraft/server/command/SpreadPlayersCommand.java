@@ -341,7 +341,7 @@ public class SpreadPlayersCommand {
 		}
 
 		public boolean isSafe(BlockView world, int maxY) {
-			BlockPos blockPos = new BlockPos(this.x, (double)(this.getY(world, maxY) - 1), this.z);
+			BlockPos blockPos = BlockPos.ofFloored(this.x, (double)(this.getY(world, maxY) - 1), this.z);
 			BlockState blockState = world.getBlockState(blockPos);
 			Material material = blockState.getMaterial();
 			return blockPos.getY() < maxY && !material.isLiquid() && material != Material.FIRE;

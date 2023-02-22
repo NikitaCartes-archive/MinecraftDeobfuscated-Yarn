@@ -233,6 +233,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		return entityDimensions.scaled(f);
 	}
 
+	@Override
+	public double getMountedHeightOffset() {
+		return (double)this.getStandingEyeHeight();
+	}
+
 	class CircleMovementGoal extends PhantomEntity.MovementGoal {
 		private float angle;
 		private float radius;

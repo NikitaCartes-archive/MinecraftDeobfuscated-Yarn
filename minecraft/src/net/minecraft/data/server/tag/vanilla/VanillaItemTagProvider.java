@@ -11,8 +11,10 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.ItemTags;
 
 public class VanillaItemTagProvider extends ItemTagProvider {
-	public VanillaItemTagProvider(DataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture, TagProvider<Block> tagProvider) {
-		super(dataOutput, completableFuture, tagProvider);
+	public VanillaItemTagProvider(
+		DataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture, CompletableFuture<TagProvider.TagLookup<Block>> completableFuture2
+	) {
+		super(dataOutput, completableFuture, completableFuture2);
 	}
 
 	@Override
@@ -44,6 +46,7 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 		this.copy(BlockTags.LOGS_THAT_BURN, ItemTags.LOGS_THAT_BURN);
 		this.copy(BlockTags.LOGS, ItemTags.LOGS);
 		this.copy(BlockTags.SAND, ItemTags.SAND);
+		this.copy(BlockTags.SMELTS_TO_GLASS, ItemTags.SMELTS_TO_GLASS);
 		this.copy(BlockTags.SLABS, ItemTags.SLABS);
 		this.copy(BlockTags.WALLS, ItemTags.WALLS);
 		this.copy(BlockTags.STAIRS, ItemTags.STAIRS);
@@ -241,6 +244,5 @@ public class VanillaItemTagProvider extends ItemTagProvider {
 			.addTag(ItemTags.SHOVELS)
 			.addTag(ItemTags.HOES)
 			.add(Items.TRIDENT);
-		this.getOrCreateTagBuilder(ItemTags.BREAKS_DECORATED_POTS).addTag(ItemTags.TOOLS);
 	}
 }

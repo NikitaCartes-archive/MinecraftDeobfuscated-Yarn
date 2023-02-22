@@ -70,12 +70,12 @@ public interface BlockView extends HeightLimitView {
 				BlockState blockState = this.getBlockState(pos);
 				Vec3d vec3d = contextx.getStart().subtract(contextx.getEnd());
 				return contextx.getStatePredicate().test(blockState)
-					? new BlockHitResult(contextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(contextx.getEnd()), false)
+					? new BlockHitResult(contextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), BlockPos.ofFloored(contextx.getEnd()), false)
 					: null;
 			},
 			contextx -> {
 				Vec3d vec3d = contextx.getStart().subtract(contextx.getEnd());
-				return BlockHitResult.createMissed(contextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(contextx.getEnd()));
+				return BlockHitResult.createMissed(contextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), BlockPos.ofFloored(contextx.getEnd()));
 			}
 		);
 	}
@@ -95,7 +95,7 @@ public interface BlockView extends HeightLimitView {
 			return d <= e ? blockHitResult : blockHitResult2;
 		}, contextx -> {
 			Vec3d vec3d = contextx.getStart().subtract(contextx.getEnd());
-			return BlockHitResult.createMissed(contextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(contextx.getEnd()));
+			return BlockHitResult.createMissed(contextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), BlockPos.ofFloored(contextx.getEnd()));
 		});
 	}
 

@@ -13,9 +13,8 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 	private final float pitch;
 	private final Set<PositionFlag> flags;
 	private final int teleportId;
-	private final boolean shouldDismount;
 
-	public PlayerPositionLookS2CPacket(double x, double y, double z, float yaw, float pitch, Set<PositionFlag> flags, int teleportId, boolean shouldDismount) {
+	public PlayerPositionLookS2CPacket(double x, double y, double z, float yaw, float pitch, Set<PositionFlag> flags, int teleportId) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -23,7 +22,6 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		this.pitch = pitch;
 		this.flags = flags;
 		this.teleportId = teleportId;
-		this.shouldDismount = shouldDismount;
 	}
 
 	public PlayerPositionLookS2CPacket(PacketByteBuf buf) {
@@ -34,7 +32,6 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		this.pitch = buf.readFloat();
 		this.flags = PositionFlag.getFlags(buf.readUnsignedByte());
 		this.teleportId = buf.readVarInt();
-		this.shouldDismount = buf.readBoolean();
 	}
 
 	@Override
@@ -46,7 +43,6 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		buf.writeFloat(this.pitch);
 		buf.writeByte(PositionFlag.getBitfield(this.flags));
 		buf.writeVarInt(this.teleportId);
-		buf.writeBoolean(this.shouldDismount);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -75,10 +71,6 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 
 	public int getTeleportId() {
 		return this.teleportId;
-	}
-
-	public boolean shouldDismount() {
-		return this.shouldDismount;
 	}
 
 	public Set<PositionFlag> getFlags() {

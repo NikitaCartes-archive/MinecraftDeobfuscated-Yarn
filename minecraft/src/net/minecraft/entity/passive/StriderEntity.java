@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import com.google.common.collect.Sets;
 import java.util.Set;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -33,6 +34,8 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -67,8 +70,11 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddleable {
-	private static final float COLD_SADDLED_SPEED = 0.23F;
-	private static final float COLD_SPEED = 0.66F;
+	private static final UUID SUFFOCATING_MODIFIER_ID = UUID.fromString("9e362924-01de-4ddd-a2b2-d0f7a405a174");
+	private static final EntityAttributeModifier SUFFOCATING_MODIFIER = new EntityAttributeModifier(
+		SUFFOCATING_MODIFIER_ID, "Strider suffocating modifier", -0.34F, EntityAttributeModifier.Operation.MULTIPLY_BASE
+	);
+	private static final float COLD_SADDLED_SPEED = 0.35F;
 	private static final float DEFAULT_SADDLED_SPEED = 0.55F;
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS);
 	private static final Ingredient ATTRACTING_INGREDIENT = Ingredient.ofItems(Items.WARPED_FUNGUS, Items.WARPED_FUNGUS_ON_A_STICK);
@@ -154,8 +160,8 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
 		this.temptGoal = new TemptGoal(this, 1.4, ATTRACTING_INGREDIENT, false);
 		this.goalSelector.add(3, this.temptGoal);
-		this.goalSelector.add(4, new StriderEntity.GoBackToLavaGoal(this, 1.5));
-		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
+		this.goalSelector.add(4, new StriderEntity.GoBackToLavaGoal(this, 1.0));
+		this.goalSelector.add(5, new FollowParentGoal(this, 1.0));
 		this.goalSelector.add(7, new WanderAroundGoal(this, 1.0, 60));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
@@ -164,10 +170,17 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	public void setCold(boolean cold) {
 		this.dataTracker.set(COLD, cold);
+		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		if (entityAttributeInstance != null) {
+			entityAttributeInstance.removeModifier(SUFFOCATING_MODIFIER_ID);
+			if (cold) {
+				entityAttributeInstance.addTemporaryModifier(SUFFOCATING_MODIFIER);
+			}
+		}
 	}
 
 	public boolean isCold() {
-		return this.getVehicle() instanceof StriderEntity ? ((StriderEntity)this.getVehicle()).isCold() : this.dataTracker.get(COLD);
+		return this.dataTracker.get(COLD);
 	}
 
 	@Override
@@ -189,15 +202,13 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Nullable
 	@Override
-	public Entity getPrimaryPassenger() {
-		Entity entity = this.getFirstPassenger();
-		return entity != null && this.canEntityControl(entity) ? entity : null;
-	}
+	public LivingEntity getControllingPassenger() {
+		if (this.getFirstPassenger() instanceof PlayerEntity playerEntity
+			&& (playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK))) {
+			return playerEntity;
+		}
 
-	private boolean canEntityControl(Entity entity) {
-		return !(entity instanceof PlayerEntity playerEntity)
-			? false
-			: playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK);
+		return null;
 	}
 
 	@Override
@@ -244,23 +255,21 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public void travel(Vec3d movementInput) {
-		this.setMovementSpeed(this.getSpeed());
-		this.travel(this, this.saddledComponent, movementInput);
-	}
-
-	public float getSpeed() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.66F : 1.0F);
-	}
-
-	@Override
-	public float getSaddledSpeed() {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (this.isCold() ? 0.23F : 0.55F);
+	protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
+		this.setRotation(controllingPassenger.getYaw(), controllingPassenger.getPitch() * 0.5F);
+		this.prevYaw = this.bodyYaw = this.headYaw = this.getYaw();
+		this.saddledComponent.tickBoost();
+		super.tickControlled(controllingPassenger, movementInput);
 	}
 
 	@Override
-	public void setMovementInput(Vec3d movementInput) {
-		super.travel(movementInput);
+	protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+		return new Vec3d(0.0, 0.0, 1.0);
+	}
+
+	@Override
+	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
+		return super.getSaddledSpeed(controllingPassenger) * (this.isCold() ? 0.35F : 0.55F) * this.saddledComponent.getMovementSpeedMultiplier();
 	}
 
 	@Override
@@ -297,10 +306,22 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		}
 
 		if (!this.isAiDisabled()) {
-			BlockState blockState = this.world.getBlockState(this.getBlockPos());
-			BlockState blockState2 = this.getLandingBlockState();
-			boolean bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS) || this.getFluidHeight(FluidTags.LAVA) > 0.0;
-			this.setCold(!bl);
+			boolean bl;
+			boolean var10000;
+			label36: {
+				BlockState blockState = this.world.getBlockState(this.getBlockPos());
+				BlockState blockState2 = this.getLandingBlockState();
+				bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS) || this.getFluidHeight(FluidTags.LAVA) > 0.0;
+				if (this.getVehicle() instanceof StriderEntity striderEntity && striderEntity.isCold()) {
+					var10000 = true;
+					break label36;
+				}
+
+				var10000 = false;
+			}
+
+			boolean bl2 = var10000;
+			this.setCold(!bl || bl2);
 		}
 
 		super.tick();

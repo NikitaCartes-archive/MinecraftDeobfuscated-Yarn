@@ -183,7 +183,7 @@ public class Camera {
 					projection.center, projection.getBottomRight(), projection.getTopRight(), projection.getBottomLeft(), projection.getTopLeft()
 				)) {
 					Vec3d vec3d2 = this.pos.add(vec3d);
-					BlockPos blockPos = new BlockPos(vec3d2);
+					BlockPos blockPos = BlockPos.ofFloored(vec3d2);
 					FluidState fluidState2 = this.area.getFluidState(blockPos);
 					if (fluidState2.isIn(FluidTags.LAVA)) {
 						if (vec3d2.y <= (double)(fluidState2.getHeight(this.area, blockPos) + (float)blockPos.getY())) {

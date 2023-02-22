@@ -248,11 +248,6 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 	}
 
 	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-		return false;
-	}
-
-	@Override
 	protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
 		if (this.isBreedingItem(stack)) {
 			this.playSound(SoundEvents.ENTITY_CAT_EAT, 1.0F, 1.0F);

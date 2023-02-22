@@ -225,13 +225,13 @@ public class CustomizeFlatLevelScreen extends Screen {
 			private void renderIcon(MatrixStack matrices, int x, int y, ItemStack iconItem) {
 				this.renderIconBackgroundTexture(matrices, x + 1, y + 1);
 				if (!iconItem.isEmpty()) {
-					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(iconItem, x + 2, y + 2);
+					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(matrices, iconItem, x + 2, y + 2);
 				}
 			}
 
 			private void renderIconBackgroundTexture(MatrixStack matrices, int x, int y) {
 				RenderSystem.setShaderTexture(0, DrawableHelper.STATS_ICON_TEXTURE);
-				DrawableHelper.drawTexture(matrices, x, y, CustomizeFlatLevelScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
+				DrawableHelper.drawTexture(matrices, x, y, 0, 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}
 	}

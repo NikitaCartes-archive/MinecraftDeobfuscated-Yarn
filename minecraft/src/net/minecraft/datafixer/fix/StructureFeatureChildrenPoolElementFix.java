@@ -86,7 +86,7 @@ public class StructureFeatureChildrenPoolElementFix extends DataFix {
 					if (j >= 0 && j < list.size()) {
 						optionalDynamic = new OptionalDynamic<>(root.getOps(), DataResult.success((Dynamic<T>)list.get(j)));
 					} else {
-						optionalDynamic = new OptionalDynamic<>(root.getOps(), DataResult.error("Missing id:" + j));
+						optionalDynamic = new OptionalDynamic<>(root.getOps(), DataResult.error(() -> "Missing id:" + j));
 					}
 				} else {
 					optionalDynamic = optionalDynamic.get(string);

@@ -488,7 +488,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			if (amount < 0.01F) {
 				return false;
 			} else {
-				if (source.getAttacker() instanceof PlayerEntity || source.isIn(DamageTypeTags.IS_EXPLOSION)) {
+				if (source.getAttacker() instanceof PlayerEntity || source.isIn(DamageTypeTags.ALWAYS_HURTS_ENDER_DRAGONS)) {
 					float f = this.getHealth();
 					this.parentDamage(source, amount);
 					if (this.isDead() && !this.phaseManager.getCurrent().isSittingOrHovering()) {
@@ -845,7 +845,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		return vec3d;
 	}
 
-	public void crystalDestroyed(EndCrystalEntity endCrystalEntity, BlockPos pos, DamageSource source) {
+	public void crystalDestroyed(EndCrystalEntity endCrystal, BlockPos pos, DamageSource source) {
 		PlayerEntity playerEntity;
 		if (source.getAttacker() instanceof PlayerEntity) {
 			playerEntity = (PlayerEntity)source.getAttacker();
@@ -853,11 +853,11 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			playerEntity = this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 		}
 
-		if (endCrystalEntity == this.connectedCrystal) {
-			this.damagePart(this.head, this.getDamageSources().explosion(endCrystalEntity, playerEntity), 10.0F);
+		if (endCrystal == this.connectedCrystal) {
+			this.damagePart(this.head, this.getDamageSources().explosion(endCrystal, playerEntity), 10.0F);
 		}
 
-		this.phaseManager.getCurrent().crystalDestroyed(endCrystalEntity, pos, source, playerEntity);
+		this.phaseManager.getCurrent().crystalDestroyed(endCrystal, pos, source, playerEntity);
 	}
 
 	@Override
@@ -906,5 +906,10 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	@Override
 	public boolean canTarget(LivingEntity target) {
 		return target.canTakeDamage();
+	}
+
+	@Override
+	public double getMountedHeightOffset() {
+		return (double)this.body.getHeight();
 	}
 }

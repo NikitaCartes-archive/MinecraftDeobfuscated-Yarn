@@ -759,10 +759,10 @@ public class ItemGroups {
 			entries.add(Items.PUMPKIN_SEEDS);
 			entries.add(Items.MELON_SEEDS);
 			entries.add(Items.BEETROOT_SEEDS);
+			entries.add(Items.TORCHFLOWER_SEEDS);
 			entries.add(Items.GLOW_BERRIES);
 			entries.add(Items.SWEET_BERRIES);
 			entries.add(Items.NETHER_WART);
-			entries.add(Items.TORCHFLOWER_SEEDS);
 			entries.add(Items.LILY_PAD);
 			entries.add(Items.SEAGRASS);
 			entries.add(Items.SEA_PICKLE);

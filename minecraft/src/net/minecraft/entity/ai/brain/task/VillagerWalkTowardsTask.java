@@ -26,7 +26,7 @@ public class VillagerWalkTowardsTask {
 									int l = 0;
 									int m = 1000;
 
-									while (vec3d == null || new BlockPos(vec3d).getManhattanDistance(entity.getBlockPos()) > maxDistance) {
+									while (vec3d == null || BlockPos.ofFloored(vec3d).getManhattanDistance(entity.getBlockPos()) > maxDistance) {
 										vec3d = NoPenaltyTargeting.findTo(entity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()), (float) (Math.PI / 2));
 										if (++l == 1000) {
 											entity.releaseTicketFor(destination);

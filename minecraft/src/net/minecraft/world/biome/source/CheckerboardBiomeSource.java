@@ -2,6 +2,7 @@ package net.minecraft.world.biome.source;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.stream.Stream;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
 import net.minecraft.world.biome.Biome;
@@ -20,10 +21,14 @@ public class CheckerboardBiomeSource extends BiomeSource {
 	private final int scale;
 
 	public CheckerboardBiomeSource(RegistryEntryList<Biome> biomes, int size) {
-		super(biomes.stream());
 		this.biomeArray = biomes;
 		this.gridSize = size + 2;
 		this.scale = size;
+	}
+
+	@Override
+	protected Stream<RegistryEntry<Biome>> biomeStream() {
+		return this.biomeArray.stream();
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,6 +83,17 @@ public class MultiNoiseUtil {
 	public static class Entries<T> {
 		private final List<Pair<MultiNoiseUtil.NoiseHypercube, T>> entries;
 		private final MultiNoiseUtil.SearchTree<T> tree;
+
+		public static <T> Codec<MultiNoiseUtil.Entries<T>> createCodec(MapCodec<T> entryCodec) {
+			return Codecs.nonEmptyList(
+					RecordCodecBuilder.<T>create(
+							instance -> instance.group(MultiNoiseUtil.NoiseHypercube.CODEC.fieldOf("parameters").forGetter(Pair::getFirst), entryCodec.forGetter(Pair::getSecond))
+									.apply(instance, Pair::of)
+						)
+						.listOf()
+				)
+				.xmap(MultiNoiseUtil.Entries::new, MultiNoiseUtil.Entries::getEntries);
+		}
 
 		public Entries(List<Pair<MultiNoiseUtil.NoiseHypercube, T>> entries) {
 			this.entries = entries;
@@ -309,7 +321,7 @@ public class MultiNoiseUtil {
 			"min",
 			"max",
 			(min, max) -> min.compareTo(max) > 0
-					? DataResult.error("Cannon construct interval, min > max (" + min + " > " + max + ")")
+					? DataResult.error(() -> "Cannon construct interval, min > max (" + min + " > " + max + ")")
 					: DataResult.success(new MultiNoiseUtil.ParameterRange(MultiNoiseUtil.toLong(min), MultiNoiseUtil.toLong(max))),
 			parameterRange -> MultiNoiseUtil.toFloat(parameterRange.min()),
 			parameterRange -> MultiNoiseUtil.toFloat(parameterRange.max())

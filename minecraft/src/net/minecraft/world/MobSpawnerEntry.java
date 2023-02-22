@@ -63,7 +63,7 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.Custo
 		);
 
 		private static DataResult<Range<Integer>> validate(Range<Integer> provider) {
-			return !DEFAULT.contains(provider) ? DataResult.error("Light values must be withing range " + DEFAULT) : DataResult.success(provider);
+			return !DEFAULT.contains(provider) ? DataResult.error(() -> "Light values must be withing range " + DEFAULT) : DataResult.success(provider);
 		}
 	}
 }

@@ -76,7 +76,7 @@ public class SuspiciousSandBlock extends BlockWithEntity implements LandingBlock
 	@Override
 	public void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
 		Vec3d vec3d = fallingBlockEntity.getBoundingBox().getCenter();
-		world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, new BlockPos(vec3d), Block.getRawIdFromState(fallingBlockEntity.getBlockState()));
+		world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, BlockPos.ofFloored(vec3d), Block.getRawIdFromState(fallingBlockEntity.getBlockState()));
 		world.emitGameEvent(fallingBlockEntity, GameEvent.BLOCK_DESTROY, vec3d);
 	}
 

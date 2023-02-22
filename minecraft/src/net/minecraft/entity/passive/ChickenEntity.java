@@ -35,7 +35,9 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class ChickenEntity extends AnimalEntity {
-	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS);
+	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(
+		Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS
+	);
 	public float flapProgress;
 	public float maxWingDeviation;
 	public float prevMaxWingDeviation;
@@ -105,11 +107,6 @@ public class ChickenEntity extends AnimalEntity {
 	@Override
 	protected void addFlapEffects() {
 		this.field_28639 = this.speed + this.maxWingDeviation / 2.0F;
-	}
-
-	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-		return false;
 	}
 
 	@Override

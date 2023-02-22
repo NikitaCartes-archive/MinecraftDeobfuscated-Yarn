@@ -27,7 +27,9 @@ public final class BelowZeroRetrogen {
 		.xmap(serializedBedrockBitSet -> BitSet.valueOf(serializedBedrockBitSet.toArray()), bedrockBitSet -> LongStream.of(bedrockBitSet.toLongArray()));
 	private static final Codec<ChunkStatus> STATUS_CODEC = Registries.CHUNK_STATUS
 		.getCodec()
-		.comapFlatMap(status -> status == ChunkStatus.EMPTY ? DataResult.error("target_status cannot be empty") : DataResult.success(status), Function.identity());
+		.comapFlatMap(
+			status -> status == ChunkStatus.EMPTY ? DataResult.error(() -> "target_status cannot be empty") : DataResult.success(status), Function.identity()
+		);
 	public static final Codec<BelowZeroRetrogen> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					STATUS_CODEC.fieldOf("target_status").forGetter(BelowZeroRetrogen::getTargetStatus),

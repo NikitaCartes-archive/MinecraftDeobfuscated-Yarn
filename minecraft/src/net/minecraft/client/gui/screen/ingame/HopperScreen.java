@@ -3,7 +3,6 @@ package net.minecraft.client.gui.screen.ingame;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.HopperScreenHandler;
@@ -30,10 +29,9 @@ public class HopperScreen extends HandledScreen<HopperScreenHandler> {
 
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 	}
 }

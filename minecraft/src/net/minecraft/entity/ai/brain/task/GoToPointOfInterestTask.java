@@ -23,7 +23,7 @@ public class GoToPointOfInterestTask {
 							for (int k = 0; k < 5; k++) {
 								Vec3d vec3d2 = FuzzyTargeting.find(entity, 15, 7, pos -> (double)(-pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(pos))));
 								if (vec3d2 != null) {
-									int l = pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(new BlockPos(vec3d2)));
+									int l = pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(BlockPos.ofFloored(vec3d2)));
 									if (l < j) {
 										vec3d = vec3d2;
 										break;

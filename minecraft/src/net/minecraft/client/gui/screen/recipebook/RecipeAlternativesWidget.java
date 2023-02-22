@@ -139,7 +139,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 			int j = Math.min(this.alternativeButtons.size(), i);
 			int k = MathHelper.ceil((float)this.alternativeButtons.size() / (float)i);
 			int l = 4;
-			this.drawNineSlicedTexture(matrices, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8, 4, 32, 32, 82, 208);
+			drawNineSlicedTexture(matrices, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8, 4, 32, 32, 82, 208);
 			RenderSystem.disableBlend();
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget alternativeButtonWidget : this.alternativeButtons) {
@@ -208,29 +208,26 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 			}
 
 			int j = RecipeAlternativesWidget.this.furnace ? 130 : 78;
-			if (this.isHovered()) {
+			if (this.isSelected()) {
 				j += 26;
 			}
 
-			this.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
-			MatrixStack matrixStack = RenderSystem.getModelViewStack();
-			matrixStack.push();
-			matrixStack.translate((double)(this.getX() + 2), (double)(this.getY() + 2), 150.0);
+			drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
+			matrices.push();
+			matrices.translate((double)(this.getX() + 2), (double)(this.getY() + 2), 150.0);
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot inputSlot : this.slots) {
-				matrixStack.push();
-				matrixStack.translate((double)inputSlot.y, (double)inputSlot.x, 0.0);
-				matrixStack.scale(0.375F, 0.375F, 1.0F);
-				matrixStack.translate(-8.0, -8.0, 0.0);
-				RenderSystem.applyModelViewMatrix();
+				matrices.push();
+				matrices.translate((double)inputSlot.y, (double)inputSlot.x, 0.0);
+				matrices.scale(0.375F, 0.375F, 1.0F);
+				matrices.translate(-8.0, -8.0, 0.0);
 				RecipeAlternativesWidget.this.client
 					.getItemRenderer()
-					.renderInGuiWithOverrides(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], 0, 0);
-				matrixStack.pop();
+					.renderInGuiWithOverrides(matrices, inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], 0, 0);
+				matrices.pop();
 			}
 
-			matrixStack.pop();
-			RenderSystem.applyModelViewMatrix();
+			matrices.pop();
 		}
 
 		@Environment(EnvType.CLIENT)

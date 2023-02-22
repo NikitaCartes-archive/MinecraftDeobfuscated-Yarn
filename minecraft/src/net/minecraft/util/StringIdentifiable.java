@@ -35,15 +35,26 @@ public interface StringIdentifiable {
 	 * and a given decode function.
 	 */
 	static <E extends Enum<E> & StringIdentifiable> StringIdentifiable.Codec<E> createCodec(Supplier<E[]> enumValues) {
+		return createCodec(enumValues, id -> id);
+	}
+
+	/**
+	 * Creates a codec that serializes an enum implementing this interface either
+	 * using its ordinals (when compressed) or using its {@link #asString()} method
+	 * and a given decode function.
+	 */
+	static <E extends Enum<E> & StringIdentifiable> StringIdentifiable.Codec<E> createCodec(
+		Supplier<E[]> enumValues, Function<String, String> valueNameTransformer
+	) {
 		E[] enums = (E[])enumValues.get();
 		if (enums.length > 16) {
 			Map<String, E> map = (Map<String, E>)Arrays.stream(enums)
-				.collect(Collectors.toMap(identifiable -> ((StringIdentifiable)identifiable).asString(), enum_ -> enum_));
+				.collect(Collectors.toMap(enum_ -> (String)valueNameTransformer.apply(((StringIdentifiable)enum_).asString()), enum_ -> enum_));
 			return new StringIdentifiable.Codec<>(enums, id -> id == null ? null : (Enum)map.get(id));
 		} else {
 			return new StringIdentifiable.Codec<>(enums, id -> {
 				for (E enum_ : enums) {
-					if (enum_.asString().equals(id)) {
+					if (((String)valueNameTransformer.apply(enum_.asString())).equals(id)) {
 						return enum_;
 					}
 				}

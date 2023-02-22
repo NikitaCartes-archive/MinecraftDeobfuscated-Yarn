@@ -43,7 +43,7 @@ public class BackgroundRenderer {
 		Entity entity = camera.getFocusedEntity();
 		if (cameraSubmersionType == CameraSubmersionType.WATER) {
 			long l = Util.getMeasuringTimeMs();
-			int i = world.getBiome(new BlockPos(camera.getPos())).value().getWaterFogColor();
+			int i = world.getBiome(BlockPos.ofFloored(camera.getPos())).value().getWaterFogColor();
 			if (lastWaterFogColorUpdateTime < 0L) {
 				waterFogColor = i;
 				nextWaterFogColor = i;

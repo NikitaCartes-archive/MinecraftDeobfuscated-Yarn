@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -59,10 +58,7 @@ public class CheckboxWidget extends PressableWidget {
 		TextRenderer textRenderer = minecraftClient.textRenderer;
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
-		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 		drawTexture(matrices, this.getX(), this.getY(), this.isFocused() ? 20.0F : 0.0F, this.checked ? 20.0F : 0.0F, 20, this.height, 64, 64);
-		this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.showMessage) {
 			drawTextWithShadow(

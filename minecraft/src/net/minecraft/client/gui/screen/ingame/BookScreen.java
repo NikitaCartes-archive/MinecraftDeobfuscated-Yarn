@@ -14,7 +14,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PageTurnWidget;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -164,11 +163,10 @@ public class BookScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, BOOK_TEXTURE);
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
+		drawTexture(matrices, i, 2, 0, 0, 192, 192);
 		if (this.cachedPageIndex != this.pageIndex) {
 			StringVisitable stringVisitable = this.contents.getPage(this.pageIndex);
 			this.cachedPage = this.textRenderer.wrapLines(stringVisitable, 114);

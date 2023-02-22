@@ -35,7 +35,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 		Camera camera = this.client.gameRenderer.getCamera();
 		WorldAccess worldAccess = this.client.world;
 		DimensionType dimensionType = worldAccess.getDimension();
-		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
+		BlockPos blockPos = BlockPos.ofFloored(camera.getPos().x, 0.0, camera.getPos().z);
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 		if (this.structureBoundingBoxes.containsKey(dimensionType)) {
 			for (BlockBox blockBox : ((Map)this.structureBoundingBoxes.get(dimensionType)).values()) {

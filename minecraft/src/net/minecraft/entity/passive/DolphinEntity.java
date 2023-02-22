@@ -407,7 +407,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		@Override
 		public boolean shouldContinue() {
 			BlockPos blockPos = this.dolphin.getTreasurePos();
-			return !new BlockPos((double)blockPos.getX(), this.dolphin.getY(), (double)blockPos.getZ()).isWithinDistance(this.dolphin.getPos(), 4.0)
+			return !BlockPos.ofFloored((double)blockPos.getX(), this.dolphin.getY(), (double)blockPos.getZ()).isWithinDistance(this.dolphin.getPos(), 4.0)
 				&& !this.noPathToStructure
 				&& this.dolphin.getAir() >= 100;
 		}
@@ -431,7 +431,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		@Override
 		public void stop() {
 			BlockPos blockPos = this.dolphin.getTreasurePos();
-			if (new BlockPos((double)blockPos.getX(), this.dolphin.getY(), (double)blockPos.getZ()).isWithinDistance(this.dolphin.getPos(), 4.0)
+			if (BlockPos.ofFloored((double)blockPos.getX(), this.dolphin.getY(), (double)blockPos.getZ()).isWithinDistance(this.dolphin.getPos(), 4.0)
 				|| this.noPathToStructure) {
 				this.dolphin.setHasFish(false);
 			}
@@ -448,7 +448,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 				}
 
 				if (vec3d2 != null) {
-					BlockPos blockPos = new BlockPos(vec3d2);
+					BlockPos blockPos = BlockPos.ofFloored(vec3d2);
 					if (!world.getFluidState(blockPos).isIn(FluidTags.WATER) || !world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.WATER)) {
 						vec3d2 = NoPenaltyTargeting.findTo(this.dolphin, 8, 5, vec3d, (float) (Math.PI / 2));
 					}

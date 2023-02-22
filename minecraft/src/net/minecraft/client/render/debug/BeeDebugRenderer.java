@@ -254,7 +254,7 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 	private static void drawString(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Position pos, int line, String string, int color, float size) {
 		double d = 2.4;
 		double e = 0.25;
-		BlockPos blockPos = new BlockPos(pos);
+		BlockPos blockPos = BlockPos.ofFloored(pos);
 		double f = (double)blockPos.getX() + 0.5;
 		double g = pos.getY() + 2.4 + (double)line * 0.25;
 		double h = (double)blockPos.getZ() + 0.5;
@@ -282,8 +282,8 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 
 	private boolean isInRange(BeeDebugRenderer.Bee bee) {
 		PlayerEntity playerEntity = this.client.player;
-		BlockPos blockPos = new BlockPos(playerEntity.getX(), bee.position.getY(), playerEntity.getZ());
-		BlockPos blockPos2 = new BlockPos(bee.position);
+		BlockPos blockPos = BlockPos.ofFloored(playerEntity.getX(), bee.position.getY(), playerEntity.getZ());
+		BlockPos blockPos2 = BlockPos.ofFloored(bee.position);
 		return blockPos.isWithinDistance(blockPos2, 30.0);
 	}
 

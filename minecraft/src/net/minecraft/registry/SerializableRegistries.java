@@ -45,7 +45,7 @@ public class SerializableRegistries {
 		return (DataResult<? extends Codec<E>>)Optional.ofNullable((SerializableRegistries.Info)REGISTRIES.get(registryRef))
 			.map(info -> info.networkCodec())
 			.map(DataResult::success)
-			.orElseGet(() -> DataResult.error("Unknown or not serializable registry: " + registryRef));
+			.orElseGet(() -> DataResult.error(() -> "Unknown or not serializable registry: " + registryRef));
 	}
 
 	private static <E> Codec<DynamicRegistryManager> createCodec() {

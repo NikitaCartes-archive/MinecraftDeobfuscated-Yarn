@@ -3,6 +3,7 @@ package net.minecraft.client.option;
 import com.google.common.base.Charsets;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.io.Files;
@@ -256,6 +257,20 @@ public class GameOptions {
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
 		1.0,
 		value -> {
+		}
+	);
+	private static final Text HIGH_CONTRAST_TOOLTIP = Text.translatable("options.accessibility.high_contrast.tooltip");
+	private final SimpleOption<Boolean> highContrast = SimpleOption.ofBoolean(
+		"options.accessibility.high_contrast", SimpleOption.constantTooltip(HIGH_CONTRAST_TOOLTIP), false, value -> {
+			ResourcePackManager resourcePackManager = MinecraftClient.getInstance().getResourcePackManager();
+			boolean blx = resourcePackManager.getEnabledNames().contains("high_contrast");
+			if (!blx && value) {
+				resourcePackManager.enable("high_contrast");
+				this.refreshResourcePacks(resourcePackManager);
+			} else if (blx && !value) {
+				resourcePackManager.disable("high_contrast");
+				this.refreshResourcePacks(resourcePackManager);
+			}
 		}
 	);
 	@Nullable
@@ -736,7 +751,7 @@ public class GameOptions {
 		SimpleOption.constantTooltip(GLINT_STRENGTH_TOOLTIP),
 		(optionText, value) -> value == 0.0 ? getGenericValueText(optionText, ScreenTexts.OFF) : getPercentValueText(optionText, value),
 		SimpleOption.DoubleSliderCallbacks.INSTANCE,
-		1.0,
+		0.75,
 		RenderSystem::setShaderGlintAlpha
 	);
 	private static final Text DAMAGE_TILT_STRENGTH_TOOLTIP = Text.translatable("options.damageTiltStrength.tooltip");
@@ -861,6 +876,27 @@ public class GameOptions {
 		return this.chunkBuilderMode;
 	}
 
+	public void refreshResourcePacks(ResourcePackManager resourcePackManager) {
+		List<String> list = ImmutableList.copyOf(this.resourcePacks);
+		this.resourcePacks.clear();
+		this.incompatibleResourcePacks.clear();
+
+		for (ResourcePackProfile resourcePackProfile : resourcePackManager.getEnabledProfiles()) {
+			if (!resourcePackProfile.isPinned()) {
+				this.resourcePacks.add(resourcePackProfile.getName());
+				if (!resourcePackProfile.getCompatibility().isCompatible()) {
+					this.incompatibleResourcePacks.add(resourcePackProfile.getName());
+				}
+			}
+		}
+
+		this.write();
+		List<String> list2 = ImmutableList.copyOf(this.resourcePacks);
+		if (!list2.equals(list)) {
+			this.client.reloadResources();
+		}
+	}
+
 	public SimpleOption<ChatVisibility> getChatVisibility() {
 		return this.chatVisibility;
 	}
@@ -879,6 +915,10 @@ public class GameOptions {
 
 	public SimpleOption<Double> getPanoramaSpeed() {
 		return this.panoramaSpeed;
+	}
+
+	public SimpleOption<Boolean> getHighContrast() {
+		return this.highContrast;
 	}
 
 	public SimpleOption<Arm> getMainArm() {
@@ -1182,6 +1222,7 @@ public class GameOptions {
 		visitor.accept("glintSpeed", this.glintSpeed);
 		visitor.accept("glintStrength", this.glintStrength);
 		visitor.accept("damageTiltStrength", this.damageTiltStrength);
+		visitor.accept("highContrast", this.highContrast);
 		visitor.accept("gamma", this.gamma);
 		visitor.accept("renderDistance", this.viewDistance);
 		visitor.accept("simulationDistance", this.simulationDistance);

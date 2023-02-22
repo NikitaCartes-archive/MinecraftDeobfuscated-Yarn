@@ -223,7 +223,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			int i = mouseX + 12;
 			int j = mouseY - 12;
 			int k = this.textRenderer.getWidth(tooltip);
-			this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
+			fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
 			this.textRenderer.drawWithShadow(matrices, tooltip, (float)i, (float)j, 16777215);
 		}
 	}
@@ -285,7 +285,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 				int l = k / this.itemHeight;
 				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getEntryCount()) {
 					this.setSelected(l);
-					this.itemClicked(k, l, mouseX, mouseY, this.width);
+					this.itemClicked(k, l, mouseX, mouseY, this.width, button);
 				}
 
 				return true;
@@ -295,7 +295,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth) {
+		public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth, int i) {
 			if (selectionIndex >= 0
 				&& selectionIndex <= RealmsPlayerScreen.this.serverData.players.size()
 				&& RealmsPlayerScreen.this.operation != RealmsPlayerScreen.PlayerOperation.NONE) {

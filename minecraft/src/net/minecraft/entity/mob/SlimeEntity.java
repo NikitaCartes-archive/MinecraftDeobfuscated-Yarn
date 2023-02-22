@@ -391,7 +391,9 @@ public class SlimeEntity extends MobEntity implements Monster {
 				this.slime.lookAtEntity(livingEntity, 10.0F, 10.0F);
 			}
 
-			((SlimeEntity.SlimeMoveControl)this.slime.getMoveControl()).look(this.slime.getYaw(), this.slime.canAttack());
+			if (this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl slimeMoveControl) {
+				slimeMoveControl.look(this.slime.getYaw(), this.slime.canAttack());
+			}
 		}
 	}
 
@@ -410,7 +412,9 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		@Override
 		public void tick() {
-			((SlimeEntity.SlimeMoveControl)this.slime.getMoveControl()).move(1.0);
+			if (this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl slimeMoveControl) {
+				slimeMoveControl.move(1.0);
+			}
 		}
 	}
 
@@ -438,7 +442,9 @@ public class SlimeEntity extends MobEntity implements Monster {
 				this.targetYaw = (float)this.slime.getRandom().nextInt(360);
 			}
 
-			((SlimeEntity.SlimeMoveControl)this.slime.getMoveControl()).look(this.targetYaw, false);
+			if (this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl slimeMoveControl) {
+				slimeMoveControl.look(this.targetYaw, false);
+			}
 		}
 	}
 
@@ -522,7 +528,9 @@ public class SlimeEntity extends MobEntity implements Monster {
 				this.slime.getJumpControl().setActive();
 			}
 
-			((SlimeEntity.SlimeMoveControl)this.slime.getMoveControl()).move(1.2);
+			if (this.slime.getMoveControl() instanceof SlimeEntity.SlimeMoveControl slimeMoveControl) {
+				slimeMoveControl.move(1.2);
+			}
 		}
 	}
 }

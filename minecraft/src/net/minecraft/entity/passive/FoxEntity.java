@@ -694,7 +694,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 			double h = f == 0.0 ? e * (double)((float)j / 6.0F) : g / f;
 
 			for (int k = 1; k < 4; k++) {
-				if (!fox.world.getBlockState(new BlockPos(fox.getX() + h, fox.getY() + (double)k, fox.getZ() + g)).isReplaceable()) {
+				if (!fox.world.getBlockState(BlockPos.ofFloored(fox.getX() + h, fox.getY() + (double)k, fox.getZ() + g)).isReplaceable()) {
 					return false;
 				}
 			}
@@ -777,7 +777,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 			.setPredicate(FoxEntity.this.new WorriableEntityFilter());
 
 		protected boolean isAtFavoredLocation() {
-			BlockPos blockPos = new BlockPos(FoxEntity.this.getX(), FoxEntity.this.getBoundingBox().maxY, FoxEntity.this.getZ());
+			BlockPos blockPos = BlockPos.ofFloored(FoxEntity.this.getX(), FoxEntity.this.getBoundingBox().maxY, FoxEntity.this.getZ());
 			return !FoxEntity.this.world.isSkyVisible(blockPos) && FoxEntity.this.getPathfindingFavor(blockPos) >= 0.0F;
 		}
 

@@ -8,7 +8,7 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
 
 public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 	public VanillaBiomeTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
@@ -54,9 +54,9 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 			.add(BiomeKeys.GROVE);
 		this.getOrCreateTagBuilder(BiomeTags.IS_SAVANNA).add(BiomeKeys.SAVANNA).add(BiomeKeys.SAVANNA_PLATEAU).add(BiomeKeys.WINDSWEPT_SAVANNA);
 		TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder = this.getOrCreateTagBuilder(BiomeTags.IS_NETHER);
-		MultiNoiseBiomeSource.Preset.NETHER.stream().forEach(providedTagBuilder::add);
+		MultiNoiseBiomeSourceParameterList.Preset.NETHER.biomeStream().forEach(providedTagBuilder::add);
 		TagProvider.ProvidedTagBuilder<Biome> providedTagBuilder2 = this.getOrCreateTagBuilder(BiomeTags.IS_OVERWORLD);
-		MultiNoiseBiomeSource.Preset.OVERWORLD.stream().forEach(providedTagBuilder2::add);
+		MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD.biomeStream().forEach(providedTagBuilder2::add);
 		this.getOrCreateTagBuilder(BiomeTags.IS_END)
 			.add(BiomeKeys.THE_END)
 			.add(BiomeKeys.END_HIGHLANDS)

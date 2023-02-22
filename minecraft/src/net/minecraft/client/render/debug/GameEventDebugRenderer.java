@@ -89,7 +89,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
 				listener2.getPos(world).ifPresent(pos -> {
 					DebugRenderer.drawString(matrices, vertexConsumers, "Listener Origin", pos.getX(), pos.getY() + 1.8F, pos.getZ(), -1, 0.025F);
-					DebugRenderer.drawString(matrices, vertexConsumers, new BlockPos(pos).toString(), pos.getX(), pos.getY() + 1.5, pos.getZ(), -6959665, 0.025F);
+					DebugRenderer.drawString(matrices, vertexConsumers, BlockPos.ofFloored(pos).toString(), pos.getX(), pos.getY() + 1.5, pos.getZ(), -6959665, 0.025F);
 				});
 			}
 

@@ -55,7 +55,7 @@ public class ResetChunksCommand {
 		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
 		serverChunkManager.threadedAnvilChunkStorage.verifyChunkGenerator();
 		Vec3d vec3d = source.getPosition();
-		ChunkPos chunkPos = new ChunkPos(new BlockPos(vec3d));
+		ChunkPos chunkPos = new ChunkPos(BlockPos.ofFloored(vec3d));
 		int i = chunkPos.z - radius;
 		int j = chunkPos.z + radius;
 		int k = chunkPos.x - radius;

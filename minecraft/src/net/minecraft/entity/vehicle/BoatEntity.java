@@ -203,7 +203,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		if (this.random.nextInt(20) == 0) {
 			this.world
 				.playSound(this.getX(), this.getY(), this.getZ(), this.getSplashSound(), this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat(), false);
-			this.emitGameEvent(GameEvent.SPLASH, this.getPrimaryPassenger());
+			this.emitGameEvent(GameEvent.SPLASH, this.getControllingPassenger());
 		}
 	}
 
@@ -325,7 +325,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		this.checkBlockCollision();
 		List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2F, -0.01F, 0.2F), EntityPredicates.canBePushedBy(this));
 		if (!list.isEmpty()) {
-			boolean bl = !this.world.isClient && !(this.getPrimaryPassenger() instanceof PlayerEntity);
+			boolean bl = !this.world.isClient && !(this.getControllingPassenger() instanceof PlayerEntity);
 
 			for (int j = 0; j < list.size(); j++) {
 				Entity entity = (Entity)list.get(j);
@@ -604,7 +604,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 				this.velocityDecay = 0.9F;
 			} else if (this.location == BoatEntity.Location.ON_LAND) {
 				this.velocityDecay = this.nearbySlipperiness;
-				if (this.getPrimaryPassenger() instanceof PlayerEntity) {
+				if (this.getControllingPassenger() instanceof PlayerEntity) {
 					this.nearbySlipperiness /= 2.0F;
 				}
 			}
@@ -697,7 +697,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		Vec3d vec3d = getPassengerDismountOffset((double)(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO), (double)passenger.getWidth(), passenger.getYaw());
 		double d = this.getX() + vec3d.x;
 		double e = this.getZ() + vec3d.z;
-		BlockPos blockPos = new BlockPos(d, this.getBoundingBox().maxY, e);
+		BlockPos blockPos = BlockPos.ofFloored(d, this.getBoundingBox().maxY, e);
 		BlockPos blockPos2 = blockPos.down();
 		if (!this.world.isWater(blockPos2)) {
 			List<Vec3d> list = Lists.<Vec3d>newArrayList();
@@ -799,7 +799,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	}
 
 	public boolean isPaddleMoving(int paddle) {
-		return this.dataTracker.get(paddle == 0 ? LEFT_PADDLE_MOVING : RIGHT_PADDLE_MOVING) && this.getPrimaryPassenger() != null;
+		return this.dataTracker.get(paddle == 0 ? LEFT_PADDLE_MOVING : RIGHT_PADDLE_MOVING) && this.getControllingPassenger() != null;
 	}
 
 	public void setDamageWobbleStrength(float wobbleStrength) {
@@ -857,8 +857,8 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 
 	@Nullable
 	@Override
-	public Entity getPrimaryPassenger() {
-		return this.getFirstPassenger();
+	public LivingEntity getControllingPassenger() {
+		return this.getFirstPassenger() instanceof LivingEntity livingEntity ? livingEntity : null;
 	}
 
 	public void setInputs(boolean pressingLeft, boolean pressingRight, boolean pressingForward, boolean pressingBack) {

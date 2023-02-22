@@ -238,7 +238,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 		} else {
 			Optional<LongStream> optional = serialized.storage();
 			if (optional.isEmpty()) {
-				return DataResult.error("Missing values for non-zero storage");
+				return DataResult.error(() -> "Missing values for non-zero storage");
 			}
 
 			long[] ls = ((LongStream)optional.get()).toArray();
@@ -255,7 +255,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 					paletteStorage = new PackedIntegerArray(dataProvider.bits(), i, ls);
 				}
 			} catch (PackedIntegerArray.InvalidLengthException var13) {
-				return DataResult.error("Failed to read PalettedContainer: " + var13.getMessage());
+				return DataResult.error(() -> "Failed to read PalettedContainer: " + var13.getMessage());
 			}
 		}
 

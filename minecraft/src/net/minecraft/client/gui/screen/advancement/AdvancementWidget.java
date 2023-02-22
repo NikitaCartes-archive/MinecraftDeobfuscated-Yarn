@@ -12,7 +12,6 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -119,18 +118,18 @@ public class AdvancementWidget extends DrawableHelper {
 			int m = y + this.y + 13;
 			int n = border ? -16777216 : -1;
 			if (border) {
-				this.drawHorizontalLine(matrices, j, i, k - 1, n);
-				this.drawHorizontalLine(matrices, j + 1, i, k, n);
-				this.drawHorizontalLine(matrices, j, i, k + 1, n);
-				this.drawHorizontalLine(matrices, l, j - 1, m - 1, n);
-				this.drawHorizontalLine(matrices, l, j - 1, m, n);
-				this.drawHorizontalLine(matrices, l, j - 1, m + 1, n);
-				this.drawVerticalLine(matrices, j - 1, m, k, n);
-				this.drawVerticalLine(matrices, j + 1, m, k, n);
+				drawHorizontalLine(matrices, j, i, k - 1, n);
+				drawHorizontalLine(matrices, j + 1, i, k, n);
+				drawHorizontalLine(matrices, j, i, k + 1, n);
+				drawHorizontalLine(matrices, l, j - 1, m - 1, n);
+				drawHorizontalLine(matrices, l, j - 1, m, n);
+				drawHorizontalLine(matrices, l, j - 1, m + 1, n);
+				drawVerticalLine(matrices, j - 1, m, k, n);
+				drawVerticalLine(matrices, j + 1, m, k, n);
 			} else {
-				this.drawHorizontalLine(matrices, j, i, k, n);
-				this.drawHorizontalLine(matrices, l, j, m, n);
-				this.drawVerticalLine(matrices, j, m, k, n);
+				drawHorizontalLine(matrices, j, i, k, n);
+				drawHorizontalLine(matrices, l, j, m, n);
+				drawVerticalLine(matrices, j, m, k, n);
 			}
 		}
 
@@ -149,10 +148,9 @@ public class AdvancementWidget extends DrawableHelper {
 				advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
 			}
 
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
-			this.drawTexture(matrices, x + this.x + 3, y + this.y, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
-			this.client.getItemRenderer().renderInGui(this.display.getIcon(), x + this.x + 8, y + this.y + 5);
+			drawTexture(matrices, x + this.x + 3, y + this.y, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
+			this.client.getItemRenderer().renderInGui(matrices, this.display.getIcon(), x + this.x + 8, y + this.y + 5);
 		}
 
 		for (AdvancementWidget advancementWidget : this.children) {
@@ -204,7 +202,6 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 
 		int k = this.width - j;
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 		RenderSystem.enableBlend();
 		int l = originY + this.y;
@@ -218,15 +215,15 @@ public class AdvancementWidget extends DrawableHelper {
 		int n = 32 + this.description.size() * 9;
 		if (!this.description.isEmpty()) {
 			if (bl2) {
-				this.drawNineSlicedTexture(matrices, m, l + 26 - n, this.width, n, 10, 200, 26, 0, 52);
+				drawNineSlicedTexture(matrices, m, l + 26 - n, this.width, n, 10, 200, 26, 0, 52);
 			} else {
-				this.drawNineSlicedTexture(matrices, m, l, this.width, n, 10, 200, 26, 0, 52);
+				drawNineSlicedTexture(matrices, m, l, this.width, n, 10, 200, 26, 0, 52);
 			}
 		}
 
-		this.drawTexture(matrices, m, l, 0, advancementObtainedStatus.getSpriteIndex() * 26, j, 26);
-		this.drawTexture(matrices, m + j, l, 200 - k, advancementObtainedStatus2.getSpriteIndex() * 26, k, 26);
-		this.drawTexture(
+		drawTexture(matrices, m, l, 0, advancementObtainedStatus.getSpriteIndex() * 26, j, 26);
+		drawTexture(matrices, m + j, l, 200 - k, advancementObtainedStatus2.getSpriteIndex() * 26, k, 26);
+		drawTexture(
 			matrices, originX + this.x + 3, originY + this.y, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26
 		);
 		if (bl) {
@@ -251,7 +248,7 @@ public class AdvancementWidget extends DrawableHelper {
 			}
 		}
 
-		this.client.getItemRenderer().renderInGui(this.display.getIcon(), originX + this.x + 8, originY + this.y + 5);
+		this.client.getItemRenderer().renderInGui(matrices, this.display.getIcon(), originX + this.x + 8, originY + this.y + 5);
 	}
 
 	public boolean shouldRender(int originX, int originY, int mouseX, int mouseY) {

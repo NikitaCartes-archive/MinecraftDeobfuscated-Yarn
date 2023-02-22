@@ -32,6 +32,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -44,6 +45,7 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class WanderingTraderEntity extends MerchantEntity {
 	private static final int field_30629 = 5;
@@ -134,6 +136,13 @@ public class WanderingTraderEntity extends MerchantEntity {
 		TradeOffers.Factory[] factorys = TradeOffers.WANDERING_TRADER_TRADES.get(1);
 		TradeOffers.Factory[] factorys2 = TradeOffers.WANDERING_TRADER_TRADES.get(2);
 		if (factorys != null && factorys2 != null) {
+			if (this.world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
+				TradeOffers.Factory[] factorys3 = TradeOffers.ONE_TWENTY_WANDERING_TRADER_TRADES.get(1);
+				if (factorys3 != null) {
+					factorys = ArrayUtils.addAll((TradeOffers.Factory[])factorys, (TradeOffers.Factory[])factorys3);
+				}
+			}
+
 			TradeOfferList tradeOfferList = this.getOffers();
 			this.fillRecipesFromPool(tradeOfferList, factorys, 5);
 			int i = this.random.nextInt(factorys2.length);

@@ -58,7 +58,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	@Nullable
-	public static MapState getOrCreateMapState(ItemStack map, World world) {
+	public static MapState getMapState(ItemStack map, World world) {
 		Integer integer = getMapId(map);
 		return getMapState(integer, world);
 	}
@@ -216,7 +216,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	public static void fillExplorationMap(ServerWorld world, ItemStack map) {
-		MapState mapState = getOrCreateMapState(map, world);
+		MapState mapState = getMapState(map, world);
 		if (mapState != null) {
 			if (world.getRegistryKey() == mapState.dimension) {
 				int i = 1 << mapState.scale;
@@ -293,7 +293,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	@Override
 	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
 		if (!world.isClient) {
-			MapState mapState = getOrCreateMapState(stack, world);
+			MapState mapState = getMapState(stack, world);
 			if (mapState != null) {
 				if (entity instanceof PlayerEntity playerEntity) {
 					mapState.update(playerEntity, stack);
@@ -327,7 +327,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	private static void scale(ItemStack map, World world, int amount) {
-		MapState mapState = getOrCreateMapState(map, world);
+		MapState mapState = getMapState(map, world);
 		if (mapState != null) {
 			int i = world.getNextMapId();
 			world.putMapState(getMapName(i), mapState.zoomOut(amount));
@@ -336,7 +336,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	public static void copyMap(World world, ItemStack stack) {
-		MapState mapState = getOrCreateMapState(stack, world);
+		MapState mapState = getMapState(stack, world);
 		if (mapState != null) {
 			int i = world.getNextMapId();
 			String string = getMapName(i);
@@ -395,7 +395,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 		BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
 		if (blockState.isIn(BlockTags.BANNERS)) {
 			if (!context.getWorld().isClient) {
-				MapState mapState = getOrCreateMapState(context.getStack(), context.getWorld());
+				MapState mapState = getMapState(context.getStack(), context.getWorld());
 				if (mapState != null && !mapState.addBanner(context.getWorld(), context.getBlockPos())) {
 					return ActionResult.FAIL;
 				}

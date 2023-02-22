@@ -52,7 +52,7 @@ public class OneTwentyBlockLootTableGenerator extends BlockLootTableGenerator {
 		this.addDrop(Blocks.TORCHFLOWER);
 		this.addPottedPlantDrops(Blocks.POTTED_TORCHFLOWER);
 		BlockStatePropertyLootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.TORCHFLOWER_CROP)
-			.properties(StatePredicate.Builder.create().exactMatch(TorchflowerBlock.field_42776, 2));
+			.properties(StatePredicate.Builder.create().exactMatch(TorchflowerBlock.AGE, 2));
 		this.addDrop(
 			Blocks.TORCHFLOWER_CROP,
 			this.applyExplosionDecay(

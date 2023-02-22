@@ -370,25 +370,7 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 					)
 				)
 		);
-		schema.registerType(
-			false,
-			TypeReferences.STRUCTURE_FEATURE,
-			() -> DSL.optionalFields(
-					"Children",
-					DSL.list(
-						DSL.optionalFields(
-							"CA",
-							TypeReferences.BLOCK_STATE.in(schema),
-							"CB",
-							TypeReferences.BLOCK_STATE.in(schema),
-							"CC",
-							TypeReferences.BLOCK_STATE.in(schema),
-							"CD",
-							TypeReferences.BLOCK_STATE.in(schema)
-						)
-					)
-				)
-		);
+		schema.registerType(false, TypeReferences.STRUCTURE_FEATURE, DSL::remainder);
 		Map<String, Supplier<TypeTemplate>> map = Schema1451v6.method_37389(schema);
 		schema.registerType(
 			false,
@@ -420,7 +402,7 @@ public class Schema1460 extends IdentifierNormalizingSchema {
 		schema.registerType(false, TypeReferences.BIOME, () -> DSL.constType(getIdentifierType()));
 		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(getIdentifierType()));
 		schema.registerType(false, TypeReferences.POI_CHUNK, DSL::remainder);
-		schema.registerType(true, TypeReferences.WORLD_GEN_SETTINGS, DSL::remainder);
+		schema.registerType(false, TypeReferences.WORLD_GEN_SETTINGS, DSL::remainder);
 		schema.registerType(false, TypeReferences.ENTITY_CHUNK, () -> DSL.optionalFields("Entities", DSL.list(TypeReferences.ENTITY_TREE.in(schema))));
 	}
 }

@@ -64,7 +64,7 @@ public class StrollTask {
 				vec3d2 = entity.getPos().add(entity.getPos().relativize(vec3d).normalize().multiply((double)is[0], (double)is[1], (double)is[0]));
 			}
 
-			if (vec3d2 == null || entity.world.getFluidState(new BlockPos(vec3d2)).isEmpty()) {
+			if (vec3d2 == null || entity.world.getFluidState(BlockPos.ofFloored(vec3d2)).isEmpty()) {
 				return vec3d;
 			}
 

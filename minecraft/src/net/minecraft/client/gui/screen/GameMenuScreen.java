@@ -130,7 +130,7 @@ public class GameMenuScreen extends Screen {
 		super.render(matrices, mouseX, mouseY, delta);
 		if (this.showMenu && this.client != null && this.client.getAbuseReportContext().hasDraft() && this.exitButton != null) {
 			RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
-			this.drawTexture(matrices, this.exitButton.getX() + this.exitButton.getWidth() - 17, this.exitButton.getY() + 3, 182, 24, 15, 15);
+			drawTexture(matrices, this.exitButton.getX() + this.exitButton.getWidth() - 17, this.exitButton.getY() + 3, 182, 24, 15, 15);
 		}
 	}
 

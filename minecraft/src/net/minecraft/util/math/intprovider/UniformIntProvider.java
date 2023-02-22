@@ -16,7 +16,7 @@ public class UniformIntProvider extends IntProvider {
 		)
 		.comapFlatMap(
 			provider -> provider.max < provider.min
-					? DataResult.error("Max must be at least min, min_inclusive: " + provider.min + ", max_inclusive: " + provider.max)
+					? DataResult.error(() -> "Max must be at least min, min_inclusive: " + provider.min + ", max_inclusive: " + provider.max)
 					: DataResult.success(provider),
 			Function.identity()
 		);

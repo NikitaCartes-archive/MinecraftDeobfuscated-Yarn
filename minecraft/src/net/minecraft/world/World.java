@@ -702,7 +702,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public BlockPos getSpawnPos() {
 		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
 		if (!this.getWorldBorder().contains(blockPos)) {
-			blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
+			blockPos = this.getTopPosition(
+				Heightmap.Type.MOTION_BLOCKING, BlockPos.ofFloored(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ())
+			);
 		}
 
 		return blockPos;

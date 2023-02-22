@@ -79,9 +79,9 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 
 		for (StatusEffectInstance statusEffectInstance : statusEffects) {
 			if (wide) {
-				this.drawTexture(matrices, x, i, 0, 166, 120, 32);
+				drawTexture(matrices, x, i, 0, 166, 120, 32);
 			} else {
-				this.drawTexture(matrices, x, i, 0, 198, 32, 32);
+				drawTexture(matrices, x, i, 0, 198, 32, 32);
 			}
 
 			i += height;
@@ -96,7 +96,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 			StatusEffect statusEffect = statusEffectInstance.getEffectType();
 			Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
 			RenderSystem.setShaderTexture(0, sprite.getAtlasId());
-			drawSprite(matrices, x + (wide ? 6 : 7), i + 7, this.getZOffset(), 18, 18, sprite);
+			drawSprite(matrices, x + (wide ? 6 : 7), i + 7, 0, 18, 18, sprite);
 			i += height;
 		}
 	}

@@ -10,6 +10,8 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackManager;
 import net.minecraft.resource.ResourcePackProfile;
@@ -50,9 +52,13 @@ public class ResourcePackOrganizer {
 		return this.enabledPacks.stream().map(pack -> new ResourcePackOrganizer.EnabledPack(pack));
 	}
 
-	public void apply() {
+	void refreshEnabledProfiles() {
 		this.resourcePackManager
 			.setEnabledProfiles((Collection<String>)Lists.reverse(this.enabledPacks).stream().map(ResourcePackProfile::getName).collect(ImmutableList.toImmutableList()));
+	}
+
+	public void apply() {
+		this.refreshEnabledProfiles();
 		this.applier.accept(this.resourcePackManager);
 	}
 
@@ -120,6 +126,15 @@ public class ResourcePackOrganizer {
 			this.getCurrentList().remove(this.profile);
 			this.profile.getInitialPosition().insert(this.getOppositeList(), this.profile, Function.identity(), true);
 			ResourcePackOrganizer.this.updateCallback.run();
+			ResourcePackOrganizer.this.refreshEnabledProfiles();
+			this.toggleHighContrastOption();
+		}
+
+		private void toggleHighContrastOption() {
+			if (this.profile.getName().equals("high_contrast")) {
+				SimpleOption<Boolean> simpleOption = MinecraftClient.getInstance().options.getHighContrast();
+				simpleOption.setValue(!simpleOption.getValue());
+			}
 		}
 
 		protected void move(int offset) {

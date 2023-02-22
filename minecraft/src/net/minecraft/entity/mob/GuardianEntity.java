@@ -331,18 +331,19 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (!this.areSpikesRetracted() && !source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && source.getSource() instanceof LivingEntity) {
-			LivingEntity livingEntity = (LivingEntity)source.getSource();
-			if (!source.isIn(DamageTypeTags.IS_EXPLOSION)) {
+		if (this.world.isClient) {
+			return false;
+		} else {
+			if (!source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && source.getAttacker() instanceof LivingEntity livingEntity) {
 				livingEntity.damage(this.getDamageSources().thorns(this), 2.0F);
 			}
-		}
 
-		if (this.wanderGoal != null) {
-			this.wanderGoal.ignoreChanceOnce();
-		}
+			if (this.wanderGoal != null) {
+				this.wanderGoal.ignoreChanceOnce();
+			}
 
-		return super.damage(source, amount);
+			return super.damage(source, amount);
+		}
 	}
 
 	@Override
@@ -352,7 +353,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() && this.isTouchingWater()) {
+		if (this.isLogicalSideForUpdatingMovement() && this.isTouchingWater()) {
 			this.updateVelocity(0.1F, movementInput);
 			this.move(MovementType.SELF, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));

@@ -1530,14 +1530,6 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("# ")
 			.criterion("has_iron_ingot", conditionsFromItem(Items.IRON_INGOT))
 			.offerTo(exporter);
-		ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.BRUSH)
-			.input('#', Items.STRING)
-			.input('I', Items.STICK)
-			.pattern("###")
-			.pattern(" I ")
-			.pattern(" I ")
-			.criterion("has_string", conditionsFromItem(Items.STRING))
-			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.SHIELD)
 			.input('W', ItemTags.PLANKS)
 			.input('o', Items.IRON_INGOT)
@@ -2022,8 +2014,8 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, Items.RAW_IRON, RecipeCategory.BUILDING_BLOCKS, Items.RAW_IRON_BLOCK);
 		offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, Items.RAW_COPPER, RecipeCategory.BUILDING_BLOCKS, Items.RAW_COPPER_BLOCK);
 		offerReversibleCompactingRecipes(exporter, RecipeCategory.MISC, Items.RAW_GOLD, RecipeCategory.BUILDING_BLOCKS, Items.RAW_GOLD_BLOCK);
-		CookingRecipeJsonBuilder.createSmelting(Ingredient.fromTag(ItemTags.SAND), RecipeCategory.BUILDING_BLOCKS, Blocks.GLASS.asItem(), 0.1F, 200)
-			.criterion("has_sand", conditionsFromTag(ItemTags.SAND))
+		CookingRecipeJsonBuilder.createSmelting(Ingredient.fromTag(ItemTags.SMELTS_TO_GLASS), RecipeCategory.BUILDING_BLOCKS, Blocks.GLASS.asItem(), 0.1F, 200)
+			.criterion("has_smelts_to_glass", conditionsFromTag(ItemTags.SMELTS_TO_GLASS))
 			.offerTo(exporter);
 		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Blocks.SEA_PICKLE), RecipeCategory.MISC, Items.LIME_DYE, 0.1F, 200)
 			.criterion("has_sea_pickle", conditionsFromItem(Blocks.SEA_PICKLE))

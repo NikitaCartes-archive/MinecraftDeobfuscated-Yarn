@@ -3,6 +3,7 @@ package net.minecraft.entity;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 public class SaddledComponent {
@@ -11,9 +12,8 @@ public class SaddledComponent {
 	private final DataTracker dataTracker;
 	private final TrackedData<Integer> boostTime;
 	private final TrackedData<Boolean> saddled;
-	public boolean boosted;
-	public int boostedTime;
-	public int currentBoostTime;
+	private boolean boosted;
+	private int boostedTime;
 
 	public SaddledComponent(DataTracker dataTracker, TrackedData<Integer> boostTime, TrackedData<Boolean> saddled) {
 		this.dataTracker = dataTracker;
@@ -24,7 +24,6 @@ public class SaddledComponent {
 	public void boost() {
 		this.boosted = true;
 		this.boostedTime = 0;
-		this.currentBoostTime = this.dataTracker.get(this.boostTime);
 	}
 
 	public boolean boost(Random random) {
@@ -33,10 +32,23 @@ public class SaddledComponent {
 		} else {
 			this.boosted = true;
 			this.boostedTime = 0;
-			this.currentBoostTime = random.nextInt(841) + 140;
-			this.dataTracker.set(this.boostTime, this.currentBoostTime);
+			this.dataTracker.set(this.boostTime, random.nextInt(841) + 140);
 			return true;
 		}
+	}
+
+	public void tickBoost() {
+		if (this.boosted && this.boostedTime++ > this.getBoostTime()) {
+			this.boosted = false;
+		}
+	}
+
+	public float getMovementSpeedMultiplier() {
+		return this.boosted ? 1.0F + 1.15F * MathHelper.sin((float)this.boostedTime / (float)this.getBoostTime() * (float) Math.PI) : 1.0F;
+	}
+
+	private int getBoostTime() {
+		return this.dataTracker.get(this.boostTime);
 	}
 
 	public void writeNbt(NbtCompound nbt) {

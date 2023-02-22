@@ -75,7 +75,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 				sound -> {
 					World world = this.player.world;
 					int i = sound.getSpawnRange() * 2 + 1;
-					BlockPos blockPos = new BlockPos(
+					BlockPos blockPos = BlockPos.ofFloored(
 						this.player.getX() + (double)this.random.nextInt(i) - (double)sound.getSpawnRange(),
 						this.player.getEyeY() + (double)this.random.nextInt(i) - (double)sound.getSpawnRange(),
 						this.player.getZ() + (double)this.random.nextInt(i) - (double)sound.getSpawnRange()

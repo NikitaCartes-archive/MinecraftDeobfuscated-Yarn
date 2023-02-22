@@ -162,7 +162,7 @@ public class LightningEntity extends Entity {
 
 	private BlockPos getAffectedBlockPos() {
 		Vec3d vec3d = this.getPos();
-		return new BlockPos(vec3d.x, vec3d.y - 1.0E-6, vec3d.z);
+		return BlockPos.ofFloored(vec3d.x, vec3d.y - 1.0E-6, vec3d.z);
 	}
 
 	private void spawnFire(int spreadAttempts) {

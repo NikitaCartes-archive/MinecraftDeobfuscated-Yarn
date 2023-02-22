@@ -28,7 +28,7 @@ import net.minecraft.util.Formatting;
 
 @Environment(EnvType.CLIENT)
 public class ExperimentsScreen extends Screen {
-	private static final int field_42503 = 310;
+	private static final int INFO_WIDTH = 310;
 	private final ThreePartsLayoutWidget experimentToggleList = new ThreePartsLayoutWidget(this);
 	private final Screen parent;
 	private final ResourcePackManager resourcePackManager;
@@ -67,7 +67,7 @@ public class ExperimentsScreen extends Screen {
 		builder.build(adder::add);
 		GridWidget.Adder adder2 = this.experimentToggleList.addBody(new GridWidget().setColumnSpacing(10)).createAdder(2);
 		adder2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.applyAndClose()).build());
-		adder2.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.navigateBack()).build());
+		adder2.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
 		this.experimentToggleList.forEachChild(widget -> {
 			ClickableWidget var10000 = this.addDrawableChild(widget);
 		});
@@ -81,7 +81,7 @@ public class ExperimentsScreen extends Screen {
 
 	@Override
 	public void close() {
-		this.navigateBack();
+		this.client.setScreen(this.parent);
 	}
 
 	private void applyAndClose() {
@@ -96,11 +96,6 @@ public class ExperimentsScreen extends Screen {
 		list.addAll(Lists.reverse(list2));
 		this.resourcePackManager.setEnabledProfiles(list.stream().map(ResourcePackProfile::getName).toList());
 		this.applier.accept(this.resourcePackManager);
-		this.navigateBack();
-	}
-
-	private void navigateBack() {
-		this.client.setScreen(this.parent);
 	}
 
 	@Override

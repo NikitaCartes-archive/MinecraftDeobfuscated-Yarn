@@ -9,7 +9,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.text.OrderedText;
@@ -135,7 +134,6 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 				DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, -8978432);
 			}
 
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, this.pack.getIconId());
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			OrderedText orderedText = this.displayName;
@@ -144,7 +142,6 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 				&& (this.client.options.getTouchscreen().getValue() || hovered || this.widget.getSelectedOrNull() == this && this.widget.isFocused())) {
 				RenderSystem.setShaderTexture(0, PackListWidget.RESOURCE_PACKS_TEXTURE);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
-				RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 				int i = mouseX - x;
 				int j = mouseY - y;
 				if (!this.pack.getCompatibility().isCompatible()) {

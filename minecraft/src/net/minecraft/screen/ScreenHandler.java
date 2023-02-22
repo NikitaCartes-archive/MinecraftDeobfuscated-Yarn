@@ -150,7 +150,7 @@ import org.slf4j.Logger;
  * same time. To close the screen handler and the screen, call {@link
  * PlayerEntity#closeHandledScreen} on the server.
  * 
- * <p>Screen handlers should override {@link #close}. In there, it should {@linkplain
+ * <p>Screen handlers should override {@link #onClosed}. In there, it should {@linkplain
  * #dropInventory drop contents} of all slots not backed by an inventory and call
  * {@link Inventory#onClose} on the backing inventory. See the documentation of
  * the method for more details.

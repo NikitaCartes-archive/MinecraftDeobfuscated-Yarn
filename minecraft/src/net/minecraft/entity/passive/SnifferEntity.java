@@ -43,6 +43,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -87,6 +88,14 @@ public class SnifferEntity extends AnimalEntity {
 		return bl && this.getVelocity().horizontalLengthSquared() > 1.0E-6;
 	}
 
+	private boolean isMovingInWater() {
+		return this.isMoving() && this.isTouchingWater() && !this.isSubmergedInWater() && this.getVelocity().horizontalLengthSquared() > 9.999999999999999E-6;
+	}
+
+	private boolean isMovingOutsideWater() {
+		return this.isMoving() && !this.isSubmergedInWater() && !this.isTouchingWater();
+	}
+
 	public boolean isPanicking() {
 		return this.brain.getOptionalRegisteredMemory(MemoryModuleType.IS_PANICKING).isPresent();
 	}
@@ -97,7 +106,7 @@ public class SnifferEntity extends AnimalEntity {
 
 	private BlockPos getDigPos() {
 		Vec3d vec3d = this.getPos().add(this.getRotationVecClient().multiply(2.25));
-		return new BlockPos(vec3d.getX(), this.getY(), vec3d.getZ());
+		return BlockPos.ofFloored(vec3d.getX(), this.getY(), vec3d.getZ());
 	}
 
 	private SnifferEntity.State getState() {
@@ -196,7 +205,7 @@ public class SnifferEntity extends AnimalEntity {
 		return IntStream.range(0, 5)
 			.mapToObj(i -> FuzzyTargeting.find(this, 10 + 2 * i, 3))
 			.filter(Objects::nonNull)
-			.map(BlockPos::new)
+			.map(BlockPos::ofFloored)
 			.map(BlockPos::down)
 			.filter(this::isDiggable)
 			.findFirst();
@@ -260,9 +269,22 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	@Override
+	protected void jump() {
+		super.jump();
+		double d = this.moveControl.getSpeed();
+		if (d > 0.0) {
+			double e = this.getVelocity().horizontalLengthSquared();
+			if (e < 0.01) {
+				this.updateVelocity(0.1F, new Vec3d(0.0, 0.0, 1.0));
+			}
+		}
+	}
+
+	@Override
 	public void tick() {
-		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(this.isTouchingWater() ? 0.2F : 0.1F);
-		if (!this.isMoving() && !this.isTouchingWater()) {
+		boolean bl = this.isTouchingWater() && !this.isSubmergedInWater();
+		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(bl ? 0.2F : 0.1F);
+		if (!this.isMovingOutsideWater() && !this.isMovingInWater()) {
 			this.panickingAnimationState.stop();
 			this.walkingAnimationState.stop();
 		} else if (this.isPanicking()) {
@@ -327,6 +349,11 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	@Override
+	public int getMaxHeadRotation() {
+		return 50;
+	}
+
+	@Override
 	public void setBaby(boolean baby) {
 		this.setBreedingAge(baby ? -48000 : 0);
 	}
@@ -344,6 +371,11 @@ public class SnifferEntity extends AnimalEntity {
 			Set<SnifferEntity.State> set = Set.of(SnifferEntity.State.IDLING, SnifferEntity.State.SCENTING, SnifferEntity.State.FEELING_HAPPY);
 			return set.contains(this.getState()) && set.contains(snifferEntity.getState()) && super.canBreedWith(other);
 		}
+	}
+
+	@Override
+	public Box getVisibilityBoundingBox() {
+		return super.getVisibilityBoundingBox().expand(0.6F);
 	}
 
 	@Override

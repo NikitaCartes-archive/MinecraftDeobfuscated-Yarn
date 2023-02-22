@@ -35,8 +35,8 @@ public class TutorialToast implements Toast {
 	@Override
 	public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
 		RenderSystem.setShaderTexture(0, TEXTURE);
-		manager.drawTexture(matrices, 0, 0, 0, 96, this.getWidth(), this.getHeight());
-		this.type.drawIcon(matrices, manager, 6, 6);
+		DrawableHelper.drawTexture(matrices, 0, 0, 0, 96, this.getWidth(), this.getHeight());
+		this.type.drawIcon(matrices, 6, 6);
 		if (this.description == null) {
 			manager.getClient().textRenderer.draw(matrices, this.title, 30.0F, 12.0F, -11534256);
 		} else {
@@ -88,10 +88,9 @@ public class TutorialToast implements Toast {
 			this.textureSlotY = textureSlotY;
 		}
 
-		public void drawIcon(MatrixStack matrices, DrawableHelper helper, int x, int y) {
+		public void drawIcon(MatrixStack matrices, int x, int y) {
 			RenderSystem.enableBlend();
-			helper.drawTexture(matrices, x, y, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
-			RenderSystem.enableBlend();
+			DrawableHelper.drawTexture(matrices, x, y, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
 		}
 	}
 }

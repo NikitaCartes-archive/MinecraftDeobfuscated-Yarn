@@ -15,7 +15,7 @@ public class WeightedBlockStateProvider extends BlockStateProvider {
 	private final DataPool<BlockState> states;
 
 	private static DataResult<WeightedBlockStateProvider> wrap(DataPool<BlockState> states) {
-		return states.isEmpty() ? DataResult.error("WeightedStateProvider with no states") : DataResult.success(new WeightedBlockStateProvider(states));
+		return states.isEmpty() ? DataResult.error(() -> "WeightedStateProvider with no states") : DataResult.success(new WeightedBlockStateProvider(states));
 	}
 
 	public WeightedBlockStateProvider(DataPool<BlockState> states) {

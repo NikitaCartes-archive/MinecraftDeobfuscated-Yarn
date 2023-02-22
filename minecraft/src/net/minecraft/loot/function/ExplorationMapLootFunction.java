@@ -70,7 +70,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			Vec3d vec3d = context.get(LootContextParameters.ORIGIN);
 			if (vec3d != null) {
 				ServerWorld serverWorld = context.getWorld();
-				BlockPos blockPos = serverWorld.locateStructure(this.destination, new BlockPos(vec3d), this.searchRadius, this.skipExistingChunks);
+				BlockPos blockPos = serverWorld.locateStructure(this.destination, BlockPos.ofFloored(vec3d), this.searchRadius, this.skipExistingChunks);
 				if (blockPos != null) {
 					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), this.zoom, true, true);
 					FilledMapItem.fillExplorationMap(serverWorld, itemStack);

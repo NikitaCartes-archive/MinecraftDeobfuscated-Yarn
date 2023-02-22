@@ -67,12 +67,12 @@ public class RecipeBookGhostSlots {
 
 			ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
 			ItemRenderer itemRenderer = client.getItemRenderer();
-			itemRenderer.renderInGui(itemStack, j, k);
+			itemRenderer.renderInGui(matrices, itemStack, j, k);
 			RenderSystem.depthFunc(516);
 			DrawableHelper.fill(matrices, j, k, j + 16, k + 16, 822083583);
 			RenderSystem.depthFunc(515);
 			if (i == 0) {
-				itemRenderer.renderGuiItemOverlay(client.textRenderer, itemStack, j, k);
+				itemRenderer.renderGuiItemOverlay(matrices, client.textRenderer, itemStack, j, k);
 			}
 		}
 	}

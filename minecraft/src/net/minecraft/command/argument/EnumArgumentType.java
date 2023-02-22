@@ -39,7 +39,10 @@ public class EnumArgumentType<T extends Enum<T> & StringIdentifiable> implements
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 		return CommandSource.suggestMatching(
-			(Iterable<String>)Arrays.stream((Enum[])this.valuesSupplier.get()).map(enum_ -> ((StringIdentifiable)enum_).asString()).collect(Collectors.toList()),
+			(Iterable<String>)Arrays.stream((Enum[])this.valuesSupplier.get())
+				.map(enum_ -> ((StringIdentifiable)enum_).asString())
+				.map(this::transformValueName)
+				.collect(Collectors.toList()),
 			builder
 		);
 	}
@@ -48,7 +51,12 @@ public class EnumArgumentType<T extends Enum<T> & StringIdentifiable> implements
 	public Collection<String> getExamples() {
 		return (Collection<String>)Arrays.stream((Enum[])this.valuesSupplier.get())
 			.map(enum_ -> ((StringIdentifiable)enum_).asString())
+			.map(this::transformValueName)
 			.limit(2L)
 			.collect(Collectors.toList());
+	}
+
+	protected String transformValueName(String name) {
+		return name;
 	}
 }

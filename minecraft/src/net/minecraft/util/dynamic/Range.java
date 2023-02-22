@@ -24,10 +24,10 @@ public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
 			createCodec(codec),
 			range -> {
 				if (range.minInclusive().compareTo(minInclusive) < 0) {
-					return DataResult.error("Range limit too low, expected at least " + minInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]");
+					return DataResult.error(() -> "Range limit too low, expected at least " + minInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]");
 				} else {
 					return range.maxInclusive().compareTo(maxInclusive) > 0
-						? DataResult.error("Range limit too high, expected at most " + maxInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]")
+						? DataResult.error(() -> "Range limit too high, expected at most " + maxInclusive + " [" + range.minInclusive() + "-" + range.maxInclusive() + "]")
 						: DataResult.success(range);
 				}
 			}
@@ -37,7 +37,7 @@ public record Range<T extends Comparable<T>>(T minInclusive, T maxInclusive) {
 	public static <T extends Comparable<T>> DataResult<Range<T>> validate(T minInclusive, T maxInclusive) {
 		return minInclusive.compareTo(maxInclusive) <= 0
 			? DataResult.success(new Range<>(minInclusive, maxInclusive))
-			: DataResult.error("min_inclusive must be less than or equal to max_inclusive");
+			: DataResult.error(() -> "min_inclusive must be less than or equal to max_inclusive");
 	}
 
 	public boolean contains(T value) {

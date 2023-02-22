@@ -32,7 +32,7 @@ public class WaterBubbleParticle extends SpriteBillboardParticle {
 			this.velocityX *= 0.85F;
 			this.velocityY *= 0.85F;
 			this.velocityZ *= 0.85F;
-			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).isIn(FluidTags.WATER)) {
+			if (!this.world.getFluidState(BlockPos.ofFloored(this.x, this.y, this.z)).isIn(FluidTags.WATER)) {
 				this.markDead();
 			}
 		}

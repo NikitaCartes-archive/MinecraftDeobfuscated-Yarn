@@ -11,7 +11,6 @@ import java.util.function.IntSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.metadata.TextureResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
@@ -109,9 +108,7 @@ public class SplashOverlay extends Overlay {
 		int r = (int)(e * 0.5);
 		RenderSystem.setShaderTexture(0, LOGO);
 		RenderSystem.enableBlend();
-		RenderSystem.blendEquation(32774);
 		RenderSystem.blendFunc(770, 1);
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, h);
 		drawTexture(matrices, k - r, p - q, r, (int)d, -0.0625F, 0.0F, 120, 60, 120, 120);
 		drawTexture(matrices, k, p - q, r, (int)d, 0.0625F, 60.0F, 120, 60, 120, 120);

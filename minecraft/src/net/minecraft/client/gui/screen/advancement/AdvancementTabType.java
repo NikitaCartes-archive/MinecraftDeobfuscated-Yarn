@@ -32,7 +32,7 @@ enum AdvancementTabType {
 		return this.tabCount;
 	}
 
-	public void drawBackground(MatrixStack matrices, DrawableHelper tab, int x, int y, boolean selected, int index) {
+	public void drawBackground(MatrixStack matrices, int x, int y, boolean selected, int index) {
 		int i = this.u;
 		if (index > 0) {
 			i += this.width;
@@ -43,10 +43,10 @@ enum AdvancementTabType {
 		}
 
 		int j = selected ? this.v + this.height : this.v;
-		tab.drawTexture(matrices, x + this.getTabX(index), y + this.getTabY(index), i, j, this.width, this.height);
+		DrawableHelper.drawTexture(matrices, x + this.getTabX(index), y + this.getTabY(index), i, j, this.width, this.height);
 	}
 
-	public void drawIcon(int x, int y, int index, ItemRenderer itemRenderer, ItemStack icon) {
+	public void drawIcon(MatrixStack matrices, int x, int y, int index, ItemRenderer itemRenderer, ItemStack icon) {
 		int i = x + this.getTabX(index);
 		int j = y + this.getTabY(index);
 		switch (this) {
@@ -67,7 +67,7 @@ enum AdvancementTabType {
 				j += 5;
 		}
 
-		itemRenderer.renderInGui(icon, i, j);
+		itemRenderer.renderInGui(matrices, icon, i, j);
 	}
 
 	public int getTabX(int index) {

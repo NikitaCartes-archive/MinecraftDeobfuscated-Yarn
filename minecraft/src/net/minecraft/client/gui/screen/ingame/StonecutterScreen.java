@@ -5,7 +5,6 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
@@ -48,18 +47,17 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		this.renderBackground(matrices);
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = this.x;
 		int j = this.y;
-		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		int k = (int)(41.0F * this.scrollAmount);
-		this.drawTexture(matrices, i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
+		drawTexture(matrices, i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
 		int l = this.x + 52;
 		int m = this.y + 14;
 		int n = this.scrollOffset + 12;
 		this.renderRecipeBackground(matrices, mouseX, mouseY, l, m, n);
-		this.renderRecipeIcons(l, m, n);
+		this.renderRecipeIcons(matrices, l, m, n);
 	}
 
 	@Override
@@ -95,11 +93,11 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 				n += 36;
 			}
 
-			this.drawTexture(matrices, k, m - 1, 0, n, 16, 18);
+			drawTexture(matrices, k, m - 1, 0, n, 16, 18);
 		}
 	}
 
-	private void renderRecipeIcons(int x, int y, int scrollOffset) {
+	private void renderRecipeIcons(MatrixStack matrices, int x, int y, int scrollOffset) {
 		List<StonecuttingRecipe> list = this.handler.getAvailableRecipes();
 
 		for (int i = this.scrollOffset; i < scrollOffset && i < this.handler.getAvailableRecipeCount(); i++) {
@@ -107,7 +105,7 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 			int k = x + j % 4 * 16;
 			int l = j / 4;
 			int m = y + l * 18 + 2;
-			this.client.getItemRenderer().renderInGuiWithOverrides(((StonecuttingRecipe)list.get(i)).getOutput(this.client.world.getRegistryManager()), k, m);
+			this.client.getItemRenderer().renderInGuiWithOverrides(matrices, ((StonecuttingRecipe)list.get(i)).getOutput(this.client.world.getRegistryManager()), k, m);
 		}
 	}
 

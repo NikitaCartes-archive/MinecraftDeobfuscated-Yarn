@@ -48,7 +48,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 			i = MathHelper.floor(this.entity.getY() + 0.5);
 		}
 
-		BlockPos blockPos = new BlockPos(this.entity.getX(), (double)i, this.entity.getZ());
+		BlockPos blockPos = BlockPos.ofFloored(this.entity.getX(), (double)i, this.entity.getZ());
 		if (!this.canPathThrough(blockPos)) {
 			for (BlockPos blockPos2 : this.getPotentialEscapePositions(this.entity)) {
 				if (this.canPathThrough(blockPos2)) {
@@ -352,10 +352,10 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 		boolean bl = box.getAverageSideLength() < 1.0;
 		if (!bl) {
 			return List.of(
-				new BlockPos(box.minX, (double)entity.getBlockY(), box.minZ),
-				new BlockPos(box.minX, (double)entity.getBlockY(), box.maxZ),
-				new BlockPos(box.maxX, (double)entity.getBlockY(), box.minZ),
-				new BlockPos(box.maxX, (double)entity.getBlockY(), box.maxZ)
+				BlockPos.ofFloored(box.minX, (double)entity.getBlockY(), box.minZ),
+				BlockPos.ofFloored(box.minX, (double)entity.getBlockY(), box.maxZ),
+				BlockPos.ofFloored(box.maxX, (double)entity.getBlockY(), box.minZ),
+				BlockPos.ofFloored(box.maxX, (double)entity.getBlockY(), box.maxZ)
 			);
 		} else {
 			double d = Math.max(0.0, (1.5 - box.getZLength()) / 2.0);

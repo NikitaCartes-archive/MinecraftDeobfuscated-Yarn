@@ -30,7 +30,10 @@ public class DefaultClientResourcePackProvider extends VanillaResourcePackProvid
 	);
 	private static final ResourceMetadataMap METADATA_MAP = ResourceMetadataMap.of(PackResourceMetadata.SERIALIZER, METADATA);
 	private static final Text VANILLA_NAME_TEXT = Text.translatable("resourcePack.vanilla.name");
-	private static final Map<String, Text> PROFILE_NAME_TEXTS = Map.of("programmer_art", Text.translatable("resourcePack.programmer_art.name"));
+	public static final String HIGH_CONTRAST_NAME = "high_contrast";
+	private static final Map<String, Text> PROFILE_NAME_TEXTS = Map.of(
+		"programmer_art", Text.translatable("resourcePack.programmer_art.name"), "high_contrast", Text.translatable("resourcePack.high_contrast.name")
+	);
 	private static final Identifier ID = new Identifier("minecraft", "resourcepacks");
 	@Nullable
 	private final Path resourcePacksPath;

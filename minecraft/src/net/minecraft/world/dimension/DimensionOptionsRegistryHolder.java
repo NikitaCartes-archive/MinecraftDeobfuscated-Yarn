@@ -19,6 +19,7 @@ import net.minecraft.registry.SimpleRegistry;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterLists;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
@@ -143,7 +144,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 			return false;
 		} else {
 			if (dimensionOptions.chunkGenerator().getBiomeSource() instanceof MultiNoiseBiomeSource multiNoiseBiomeSource
-				&& !multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSource.Preset.OVERWORLD)) {
+				&& !multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSourceParameterLists.OVERWORLD)) {
 				return false;
 			}
 
@@ -156,7 +157,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 			&& dimensionOptions.chunkGenerator() instanceof NoiseChunkGenerator noiseChunkGenerator
 			&& noiseChunkGenerator.matchesSettings(ChunkGeneratorSettings.NETHER)
 			&& noiseChunkGenerator.getBiomeSource() instanceof MultiNoiseBiomeSource multiNoiseBiomeSource
-			&& multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSource.Preset.NETHER);
+			&& multiNoiseBiomeSource.matchesInstance(MultiNoiseBiomeSourceParameterLists.NETHER);
 	}
 
 	private static boolean isTheEndVanilla(DimensionOptions dimensionOptions) {

@@ -10,7 +10,6 @@ import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -74,32 +73,24 @@ public class AdvancementTab extends DrawableHelper {
 	}
 
 	public void drawBackground(MatrixStack matrices, int x, int y, boolean selected) {
-		this.type.drawBackground(matrices, this, x, y, selected, this.index);
+		this.type.drawBackground(matrices, x, y, selected, this.index);
 	}
 
-	public void drawIcon(int x, int y, ItemRenderer itemRenderer) {
-		this.type.drawIcon(x, y, this.index, itemRenderer, this.icon);
+	public void drawIcon(MatrixStack matrices, int x, int y, ItemRenderer itemRenderer) {
+		this.type.drawIcon(matrices, x, y, this.index, itemRenderer, this.icon);
 	}
 
-	public void render(MatrixStack matrices) {
+	public void render(MatrixStack matrices, int x, int y) {
 		if (!this.initialized) {
 			this.originX = (double)(117 - (this.maxPanX + this.minPanX) / 2);
 			this.originY = (double)(56 - (this.maxPanY + this.minPanY) / 2);
 			this.initialized = true;
 		}
 
+		enableScissor(x, y, x + 234, y + 113);
 		matrices.push();
-		matrices.translate(0.0F, 0.0F, 950.0F);
-		RenderSystem.enableDepthTest();
-		RenderSystem.colorMask(false, false, false, false);
-		fill(matrices, 4680, 2260, -4680, -2260, -16777216);
-		RenderSystem.colorMask(true, true, true, true);
-		matrices.translate(0.0F, 0.0F, -950.0F);
-		RenderSystem.depthFunc(518);
-		fill(matrices, 234, 113, 0, 0, -16777216);
-		RenderSystem.depthFunc(515);
+		matrices.translate((float)x, (float)y, 0.0F);
 		Identifier identifier = this.display.getBackground();
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		if (identifier != null) {
 			RenderSystem.setShaderTexture(0, identifier);
 		} else {
@@ -120,13 +111,8 @@ public class AdvancementTab extends DrawableHelper {
 		this.rootWidget.renderLines(matrices, i, j, true);
 		this.rootWidget.renderLines(matrices, i, j, false);
 		this.rootWidget.renderWidgets(matrices, i, j);
-		RenderSystem.depthFunc(518);
-		matrices.translate(0.0F, 0.0F, -950.0F);
-		RenderSystem.colorMask(false, false, false, false);
-		fill(matrices, 4680, 2260, -4680, -2260, -16777216);
-		RenderSystem.colorMask(true, true, true, true);
-		RenderSystem.depthFunc(515);
 		matrices.pop();
+		disableScissor();
 	}
 
 	public void drawWidgetTooltip(MatrixStack matrices, int mouseX, int mouseY, int x, int y) {

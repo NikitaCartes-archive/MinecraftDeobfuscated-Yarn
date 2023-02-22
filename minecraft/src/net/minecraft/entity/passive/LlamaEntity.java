@@ -173,7 +173,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	@Nullable
 	@Override
-	public LivingEntity getPrimaryPassenger() {
+	public LivingEntity getControllingPassenger() {
 		return null;
 	}
 

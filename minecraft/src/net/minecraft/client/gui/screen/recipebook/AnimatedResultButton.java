@@ -10,7 +10,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
@@ -65,7 +64,6 @@ public class AnimatedResultButton extends ClickableWidget {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 		int i = 29;
 		if (!this.resultCollection.hasCraftableRecipes()) {
@@ -78,31 +76,28 @@ public class AnimatedResultButton extends ClickableWidget {
 		}
 
 		boolean bl = this.bounce > 0.0F;
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		if (bl) {
 			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
-			matrixStack.push();
-			matrixStack.translate((float)(this.getX() + 8), (float)(this.getY() + 12), 0.0F);
-			matrixStack.scale(f, f, 1.0F);
-			matrixStack.translate((float)(-(this.getX() + 8)), (float)(-(this.getY() + 12)), 0.0F);
-			RenderSystem.applyModelViewMatrix();
+			matrices.push();
+			matrices.translate((float)(this.getX() + 8), (float)(this.getY() + 12), 0.0F);
+			matrices.scale(f, f, 1.0F);
+			matrices.translate((float)(-(this.getX() + 8)), (float)(-(this.getY() + 12)), 0.0F);
 			this.bounce -= delta;
 		}
 
-		this.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
+		drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
 		List<Recipe<?>> list = this.getResults();
 		this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
 		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput(this.resultCollection.getRegistryManager());
 		int k = 4;
 		if (this.resultCollection.hasSingleOutput() && this.getResults().size() > 1) {
-			minecraftClient.getItemRenderer().renderInGuiWithOverrides(itemStack, this.getX() + k + 1, this.getY() + k + 1, 0, 10);
+			minecraftClient.getItemRenderer().renderInGuiWithOverrides(matrices, itemStack, this.getX() + k + 1, this.getY() + k + 1, 0, 10);
 			k--;
 		}
 
-		minecraftClient.getItemRenderer().renderInGui(itemStack, this.getX() + k, this.getY() + k);
+		minecraftClient.getItemRenderer().renderInGui(matrices, itemStack, this.getX() + k, this.getY() + k);
 		if (bl) {
-			matrixStack.pop();
-			RenderSystem.applyModelViewMatrix();
+			matrices.pop();
 		}
 	}
 

@@ -181,7 +181,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		}
 
 		private void conjureFangs(double x, double z, double maxY, double y, float yaw, int warmup) {
-			BlockPos blockPos = new BlockPos(x, y, z);
+			BlockPos blockPos = BlockPos.ofFloored(x, y, z);
 			boolean bl = false;
 			double d = 0.0;
 

@@ -11,7 +11,7 @@ public class SetWorldSpawnCommand {
 		dispatcher.register(
 			CommandManager.literal("setworldspawn")
 				.requires(source -> source.hasPermissionLevel(2))
-				.executes(context -> execute(context.getSource(), new BlockPos(context.getSource().getPosition()), 0.0F))
+				.executes(context -> execute(context.getSource(), BlockPos.ofFloored(context.getSource().getPosition()), 0.0F))
 				.then(
 					CommandManager.argument("pos", BlockPosArgumentType.blockPos())
 						.executes(context -> execute(context.getSource(), BlockPosArgumentType.getValidBlockPos(context, "pos"), 0.0F))

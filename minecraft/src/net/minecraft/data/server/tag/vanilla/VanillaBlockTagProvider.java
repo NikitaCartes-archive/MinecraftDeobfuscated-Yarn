@@ -436,6 +436,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.WALL_CORALS)
 			.add(Blocks.TUBE_CORAL_WALL_FAN, Blocks.BRAIN_CORAL_WALL_FAN, Blocks.BUBBLE_CORAL_WALL_FAN, Blocks.FIRE_CORAL_WALL_FAN, Blocks.HORN_CORAL_WALL_FAN);
 		this.getOrCreateTagBuilder(BlockTags.SAND).add(Blocks.SAND, Blocks.RED_SAND);
+		this.getOrCreateTagBuilder(BlockTags.SMELTS_TO_GLASS).add(Blocks.SAND, Blocks.RED_SAND);
 		this.getOrCreateTagBuilder(BlockTags.RAILS).add(Blocks.RAIL, Blocks.POWERED_RAIL, Blocks.DETECTOR_RAIL, Blocks.ACTIVATOR_RAIL);
 		this.getOrCreateTagBuilder(BlockTags.CORAL_BLOCKS)
 			.add(Blocks.TUBE_CORAL_BLOCK, Blocks.BRAIN_CORAL_BLOCK, Blocks.BUBBLE_CORAL_BLOCK, Blocks.FIRE_CORAL_BLOCK, Blocks.HORN_CORAL_BLOCK);

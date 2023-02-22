@@ -104,7 +104,7 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 			.getNetworkHandler()
 			.sendPacket(
 				new UpdateCommandBlockC2SPacket(
-					new BlockPos(commandExecutor.getPos()),
+					BlockPos.ofFloored(commandExecutor.getPos()),
 					this.consoleCommandTextField.getText(),
 					this.mode,
 					commandExecutor.isTrackingOutput(),

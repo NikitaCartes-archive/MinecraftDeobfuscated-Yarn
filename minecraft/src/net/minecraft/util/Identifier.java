@@ -186,7 +186,7 @@ public class Identifier implements Comparable<Identifier> {
 		try {
 			return DataResult.success(new Identifier(id));
 		} catch (InvalidIdentifierException var2) {
-			return DataResult.error("Not a valid resource location: " + id + " " + var2.getMessage());
+			return DataResult.error(() -> "Not a valid resource location: " + id + " " + var2.getMessage());
 		}
 	}
 

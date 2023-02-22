@@ -37,7 +37,7 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		Camera camera = this.client.gameRenderer.getCamera();
-		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
+		BlockPos blockPos = BlockPos.ofFloored(camera.getPos().x, 0.0, camera.getPos().z);
 		this.goalSelectors.forEach((index, selectors) -> {
 			for (int i = 0; i < selectors.size(); i++) {
 				GoalSelectorDebugRenderer.GoalSelector goalSelector = (GoalSelectorDebugRenderer.GoalSelector)selectors.get(i);

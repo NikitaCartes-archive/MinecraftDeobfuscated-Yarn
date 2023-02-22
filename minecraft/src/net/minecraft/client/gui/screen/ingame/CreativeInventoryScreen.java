@@ -20,7 +20,6 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.HotbarStorageEntry;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchProvider;
 import net.minecraft.client.util.InputUtil;
@@ -419,7 +418,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
 		if (selectedTab.shouldRenderName()) {
-			RenderSystem.disableBlend();
 			this.textRenderer.draw(matrices, selectedTab.getDisplayName(), 8.0F, 6.0F, 4210752);
 		}
 	}
@@ -667,29 +665,26 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		for (ItemGroup itemGroup : ItemGroups.getGroupsToDisplay()) {
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, TEXTURE);
 			if (itemGroup != selectedTab) {
 				this.renderTabIcon(matrices, itemGroup);
 			}
 		}
 
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, new Identifier("textures/gui/container/creative_inventory/tab_" + selectedTab.getTexture()));
-		this.drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		this.searchBox.render(matrices, mouseX, mouseY, delta);
 		int i = this.x + 175;
 		int j = this.y + 18;
 		int k = j + 112;
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		if (selectedTab.hasScrollbar()) {
-			this.drawTexture(matrices, i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
+			drawTexture(matrices, i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
 		}
 
 		this.renderTabIcon(matrices, selectedTab);
 		if (selectedTab.getType() == ItemGroup.Type.INVENTORY) {
-			InventoryScreen.drawEntity(this.x + 88, this.y + 45, 20, (float)(this.x + 88 - mouseX), (float)(this.y + 45 - 30 - mouseY), this.client.player);
+			InventoryScreen.drawEntity(matrices, this.x + 88, this.y + 45, 20, (float)(this.x + 88 - mouseX), (float)(this.y + 45 - 30 - mouseY), this.client.player);
 		}
 	}
 
@@ -752,14 +747,15 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			m += this.backgroundHeight - 4;
 		}
 
-		this.drawTexture(matrices, l, m, j, k, 26, 32);
-		this.itemRenderer.zOffset = 100.0F;
+		drawTexture(matrices, l, m, j, k, 26, 32);
+		matrices.push();
+		matrices.translate(0.0F, 0.0F, 100.0F);
 		l += 5;
 		m += 8 + (bl2 ? 1 : -1);
 		ItemStack itemStack = group.getIcon();
-		this.itemRenderer.renderInGuiWithOverrides(itemStack, l, m);
-		this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, l, m);
-		this.itemRenderer.zOffset = 0.0F;
+		this.itemRenderer.renderInGuiWithOverrides(matrices, itemStack, l, m);
+		this.itemRenderer.renderGuiItemOverlay(matrices, this.textRenderer, itemStack, l, m);
+		matrices.pop();
 	}
 
 	public boolean isInventoryTabSelected() {

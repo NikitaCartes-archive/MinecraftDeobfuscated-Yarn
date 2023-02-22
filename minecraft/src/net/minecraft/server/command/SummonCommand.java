@@ -69,7 +69,7 @@ public class SummonCommand {
 	}
 
 	public static Entity summon(ServerCommandSource source, RegistryEntry.Reference<EntityType<?>> entityType, Vec3d pos, NbtCompound nbt, boolean initialize) throws CommandSyntaxException {
-		BlockPos blockPos = new BlockPos(pos);
+		BlockPos blockPos = BlockPos.ofFloored(pos);
 		if (!World.isValid(blockPos)) {
 			throw INVALID_POSITION_EXCEPTION.create();
 		} else {

@@ -46,7 +46,7 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 				this.velocityZ *= 0.7F;
 			}
 
-			BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
+			BlockPos blockPos = BlockPos.ofFloored(this.x, this.y, this.z);
 			double d = Math.max(
 				this.world
 					.getBlockState(blockPos)

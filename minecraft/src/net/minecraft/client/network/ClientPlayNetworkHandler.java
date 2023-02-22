@@ -159,6 +159,7 @@ import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
@@ -612,10 +613,6 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	public void onPlayerPositionLook(PlayerPositionLookS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
-		if (packet.shouldDismount()) {
-			playerEntity.dismountVehicle();
-		}
-
 		Vec3d vec3d = playerEntity.getVelocity();
 		boolean bl = packet.getFlags().contains(PositionFlag.X);
 		boolean bl2 = packet.getFlags().contains(PositionFlag.Y);
@@ -699,6 +696,29 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.loadChunk(packet.getX(), packet.getZ(), packet.getChunkData());
 		this.updateChunk(packet.getX(), packet.getZ(), packet.getLightData());
+	}
+
+	@Override
+	public void onChunkBiomeData(ChunkBiomeDataS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+
+		for (ChunkBiomeDataS2CPacket.Serialized serialized : packet.chunkBiomeData()) {
+			this.world.getChunkManager().onChunkBiomeData(serialized.pos().x, serialized.pos().z, serialized.toReadingBuf());
+		}
+
+		for (ChunkBiomeDataS2CPacket.Serialized serialized : packet.chunkBiomeData()) {
+			this.world.resetChunkColor(new ChunkPos(serialized.pos().x, serialized.pos().z));
+		}
+
+		for (ChunkBiomeDataS2CPacket.Serialized serialized : packet.chunkBiomeData()) {
+			for (int i = -1; i <= 1; i++) {
+				for (int j = -1; j <= 1; j++) {
+					for (int k = this.world.getBottomSectionCoord(); k < this.world.getTopSectionCoord(); k++) {
+						this.client.worldRenderer.scheduleBlockRender(serialized.pos().x + i, k, serialized.pos().z + j);
+					}
+				}
+			}
+		}
 	}
 
 	private void loadChunk(int x, int z, ChunkData chunkData) {

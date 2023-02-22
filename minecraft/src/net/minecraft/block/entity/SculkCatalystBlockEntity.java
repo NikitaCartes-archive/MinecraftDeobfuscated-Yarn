@@ -47,7 +47,7 @@ public class SculkCatalystBlockEntity extends BlockEntity implements GameEventLi
 			if (!livingEntity.isExperienceDroppingDisabled()) {
 				int i = livingEntity.getXpToDrop();
 				if (livingEntity.shouldDropXp() && i > 0) {
-					this.spreadManager.spread(new BlockPos(emitterPos.offset(Direction.UP, 0.5)), i);
+					this.spreadManager.spread(BlockPos.ofFloored(emitterPos.offset(Direction.UP, 0.5)), i);
 					this.triggerCriteria(livingEntity);
 				}
 

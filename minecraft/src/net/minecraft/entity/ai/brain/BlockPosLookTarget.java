@@ -14,7 +14,7 @@ public class BlockPosLookTarget implements LookTarget {
 	}
 
 	public BlockPosLookTarget(Vec3d pos) {
-		this.blockPos = new BlockPos(pos);
+		this.blockPos = BlockPos.ofFloored(pos);
 		this.pos = pos;
 	}
 

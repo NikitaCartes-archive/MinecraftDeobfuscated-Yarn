@@ -32,6 +32,7 @@ public class VibrationListener implements GameEventListener {
 	@VisibleForTesting
 	public static final Object2IntMap<GameEvent> FREQUENCIES = Object2IntMaps.unmodifiable(Util.make(new Object2IntOpenHashMap<>(), frequencies -> {
 		frequencies.put(GameEvent.STEP, 1);
+		frequencies.put(GameEvent.ITEM_INTERACT_FINISH, 2);
 		frequencies.put(GameEvent.FLAP, 2);
 		frequencies.put(GameEvent.SWIM, 3);
 		frequencies.put(GameEvent.ELYTRA_GLIDE, 4);
@@ -66,7 +67,6 @@ public class VibrationListener implements GameEventListener {
 		frequencies.put(GameEvent.ENTITY_DIE, 13);
 		frequencies.put(GameEvent.BLOCK_DESTROY, 13);
 		frequencies.put(GameEvent.FLUID_PICKUP, 13);
-		frequencies.put(GameEvent.ITEM_INTERACT_FINISH, 14);
 		frequencies.put(GameEvent.CONTAINER_CLOSE, 14);
 		frequencies.put(GameEvent.PISTON_CONTRACT, 14);
 		frequencies.put(GameEvent.PISTON_EXTEND, 15);
@@ -141,7 +141,7 @@ public class VibrationListener implements GameEventListener {
 						.accept(
 							serverWorld,
 							this,
-							new BlockPos(this.vibration.pos()),
+							BlockPos.ofFloored(this.vibration.pos()),
 							this.vibration.gameEvent(),
 							(Entity)this.vibration.getEntity(serverWorld).orElse(null),
 							(Entity)this.vibration.getOwner(serverWorld).orElse(null),
@@ -175,7 +175,7 @@ public class VibrationListener implements GameEventListener {
 				return false;
 			} else {
 				Vec3d vec3d = (Vec3d)optional.get();
-				if (!this.callback.accepts(world, this, new BlockPos(emitterPos), event, emitter)) {
+				if (!this.callback.accepts(world, this, BlockPos.ofFloored(emitterPos), event, emitter)) {
 					return false;
 				} else if (isOccluded(world, emitterPos, vec3d)) {
 					return false;

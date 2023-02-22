@@ -794,7 +794,7 @@ public class GameRenderer implements AutoCloseable {
 					Vec3d vec3d4 = entityHitResult.getPos();
 					double g = vec3d.squaredDistanceTo(vec3d4);
 					if (bl && g > 9.0) {
-						this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
+						this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), BlockPos.ofFloored(vec3d4));
 					} else if (g < e || this.client.crosshairTarget == null) {
 						this.client.crosshairTarget = entityHitResult;
 						if (entity2 instanceof LivingEntity || entity2 instanceof ItemFrameEntity) {
@@ -1014,6 +1014,7 @@ public class GameRenderer implements AutoCloseable {
 				);
 			RenderSystem.setProjectionMatrix(matrix4f);
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
+			matrixStack.push();
 			matrixStack.loadIdentity();
 			matrixStack.translate(0.0F, 0.0F, -2000.0F);
 			RenderSystem.applyModelViewMatrix();
@@ -1084,6 +1085,12 @@ public class GameRenderer implements AutoCloseable {
 					throw new CrashException(crashReport);
 				}
 			}
+
+			this.client.getProfiler().push("toasts");
+			this.client.getToastManager().draw(matrixStack2);
+			this.client.getProfiler().pop();
+			matrixStack.pop();
+			RenderSystem.applyModelViewMatrix();
 		}
 	}
 

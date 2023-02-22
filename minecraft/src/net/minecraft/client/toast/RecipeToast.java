@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
@@ -34,9 +34,8 @@ public class RecipeToast implements Toast {
 		if (this.recipes.isEmpty()) {
 			return Toast.Visibility.HIDE;
 		} else {
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, TEXTURE);
-			manager.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());
+			DrawableHelper.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());
 			manager.getClient().textRenderer.draw(matrices, TITLE, 30.0F, 7.0F, -11534256);
 			manager.getClient().textRenderer.draw(matrices, DESCRIPTION, 30.0F, 18.0F, -16777216);
 			Recipe<?> recipe = (Recipe<?>)this.recipes
@@ -46,14 +45,11 @@ public class RecipeToast implements Toast {
 					)
 				);
 			ItemStack itemStack = recipe.createIcon();
-			MatrixStack matrixStack = RenderSystem.getModelViewStack();
-			matrixStack.push();
-			matrixStack.scale(0.6F, 0.6F, 1.0F);
-			RenderSystem.applyModelViewMatrix();
-			manager.getClient().getItemRenderer().renderInGui(itemStack, 3, 3);
-			matrixStack.pop();
-			RenderSystem.applyModelViewMatrix();
-			manager.getClient().getItemRenderer().renderInGui(recipe.getOutput(manager.getClient().world.getRegistryManager()), 8, 8);
+			matrices.push();
+			matrices.scale(0.6F, 0.6F, 1.0F);
+			manager.getClient().getItemRenderer().renderInGui(matrices, itemStack, 3, 3);
+			matrices.pop();
+			manager.getClient().getItemRenderer().renderInGui(matrices, recipe.getOutput(manager.getClient().world.getRegistryManager()), 8, 8);
 			return (double)(startTime - this.startTime) >= 5000.0 * manager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		}
 	}

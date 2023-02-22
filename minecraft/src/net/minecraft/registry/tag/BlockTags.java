@@ -38,6 +38,7 @@ public final class BlockTags {
 	public static final TagKey<Block> WART_BLOCKS = of("wart_blocks");
 	public static final TagKey<Block> BANNERS = of("banners");
 	public static final TagKey<Block> SAND = of("sand");
+	public static final TagKey<Block> SMELTS_TO_GLASS = of("smelts_to_glass");
 	public static final TagKey<Block> STAIRS = of("stairs");
 	public static final TagKey<Block> SLABS = of("slabs");
 	public static final TagKey<Block> WALLS = of("walls");

@@ -97,8 +97,8 @@ public class MapState extends PersistentState {
 	 * <p>
 	 * The client is not aware of the coordinates of the map state so its center coordinates will always be {@code (0, 0)}.
 	 */
-	public static MapState of(byte scale, boolean showIcons, RegistryKey<World> dimension) {
-		return new MapState(0, 0, scale, false, false, showIcons, dimension);
+	public static MapState of(byte scale, boolean locked, RegistryKey<World> dimension) {
+		return new MapState(0, 0, scale, false, false, locked, dimension);
 	}
 
 	public static MapState fromNbt(NbtCompound nbt) {

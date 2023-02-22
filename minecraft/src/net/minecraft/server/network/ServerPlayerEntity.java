@@ -265,7 +265,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.server = server;
 		this.statHandler = server.getPlayerManager().createStatHandler(this);
 		this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
-		this.stepHeight = 1.0F;
+		this.setStepHeight(1.0F);
 		this.moveToSpawn(world);
 	}
 
@@ -781,7 +781,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				if (registryKey == World.OVERWORLD && destination.getRegistryKey() == World.NETHER) {
 					this.enteredNetherPos = this.getPos();
 				} else if (destination.getRegistryKey() == World.END) {
-					this.createEndSpawnPlatform(destination, new BlockPos(teleportTarget.position));
+					this.createEndSpawnPlatform(destination, BlockPos.ofFloored(teleportTarget.position));
 				}
 
 				serverWorld.getProfiler().pop();
@@ -946,36 +946,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public boolean startRiding(Entity entity, boolean force) {
-		Entity entity2 = this.getVehicle();
-		if (!super.startRiding(entity, force)) {
-			return false;
-		} else {
-			Entity entity3 = this.getVehicle();
-			if (entity3 != entity2 && this.networkHandler != null) {
-				this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-			}
-
-			return true;
-		}
-	}
-
-	@Override
-	public void stopRiding() {
-		Entity entity = this.getVehicle();
-		super.stopRiding();
-		Entity entity2 = this.getVehicle();
-		if (entity2 != entity && this.networkHandler != null) {
-			this.networkHandler.requestTeleportAndDismount(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-		}
-	}
-
-	@Override
 	public void requestTeleportAndDismount(double destX, double destY, double destZ) {
 		this.dismountVehicle();
-		if (this.networkHandler != null) {
-			this.networkHandler.requestTeleportAndDismount(destX, destY, destZ, this.getYaw(), this.getPitch());
-		}
+		this.setPosition(destX, destY, destZ);
 	}
 
 	@Override
@@ -1258,7 +1231,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch) {
-		ChunkPos chunkPos = new ChunkPos(new BlockPos(destX, destY, destZ));
+		ChunkPos chunkPos = new ChunkPos(BlockPos.ofFloored(destX, destY, destZ));
 		world.getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 1, this.getId());
 		this.stopRiding();
 		if (this.isSleeping()) {

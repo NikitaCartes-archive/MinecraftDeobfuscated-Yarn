@@ -49,7 +49,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
 
 public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGenerator {
 	private static final int OVERWORLD_HEIGHT = 384;
@@ -141,7 +141,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion("slept_in_bed", TickCriterion.Conditions.createSleptInBed())
 			.build(exporter, "adventure/sleep_in_bed");
-		buildAdventuringTime(exporter, advancement2, MultiNoiseBiomeSource.Preset.OVERWORLD);
+		buildAdventuringTime(exporter, advancement2, MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD);
 		Advancement advancement3 = Advancement.Builder.create()
 			.parent(advancement)
 			.display(
@@ -588,8 +588,8 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.build(exporter, "adventure/avoid_vibration");
 	}
 
-	public static void buildAdventuringTime(Consumer<Advancement> exporter, Advancement parent, MultiNoiseBiomeSource.Preset preset) {
-		requireListedBiomesVisited(Advancement.Builder.create(), preset.stream().toList())
+	public static void buildAdventuringTime(Consumer<Advancement> exporter, Advancement parent, MultiNoiseBiomeSourceParameterList.Preset preset) {
+		requireListedBiomesVisited(Advancement.Builder.create(), preset.biomeStream().toList())
 			.parent(parent)
 			.display(
 				Items.DIAMOND_BOOTS,

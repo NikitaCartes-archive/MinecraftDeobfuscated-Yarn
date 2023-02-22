@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.control.BodyControl;
+import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -42,6 +43,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -71,7 +73,8 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	public CamelEntity(EntityType<? extends CamelEntity> entityType, World world) {
 		super(entityType, world);
-		this.stepHeight = 1.5F;
+		this.setStepHeight(1.5F);
+		this.moveControl = new CamelEntity.CamelMoveControl();
 		MobNavigation mobNavigation = (MobNavigation)this.getNavigation();
 		mobNavigation.setCanSwim(true);
 		mobNavigation.setCanWalkOverFences(true);
@@ -168,7 +171,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 		if (this.dashCooldown > 0) {
 			this.dashCooldown--;
 			if (this.dashCooldown == 0) {
-				this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_CAMEL_DASH_READY, SoundCategory.PLAYERS, 1.0F, 1.0F);
+				this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_CAMEL_DASH_READY, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 			}
 		}
 
@@ -221,13 +224,19 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	@Override
 	public void travel(Vec3d movementInput) {
-		if (this.isAlive()) {
-			if (this.isStationary() && this.isOnGround()) {
-				this.setVelocity(this.getVelocity().multiply(0.0, 1.0, 0.0));
-				movementInput = movementInput.multiply(0.0, 1.0, 0.0);
-			}
+		if (this.isStationary() && this.isOnGround()) {
+			this.setVelocity(this.getVelocity().multiply(0.0, 1.0, 0.0));
+			movementInput = movementInput.multiply(0.0, 1.0, 0.0);
+		}
 
-			super.travel(movementInput);
+		super.travel(movementInput);
+	}
+
+	@Override
+	protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
+		super.tickControlled(controllingPassenger, movementInput);
+		if (controllingPassenger.forwardSpeed > 0.0F && this.isSitting() && !this.isChangingPose()) {
+			this.startStanding();
 		}
 	}
 
@@ -236,24 +245,24 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	}
 
 	@Override
-	protected float getHorsebackMovementSpeed(LivingEntity passenger) {
-		float f = passenger.isSprinting() && this.getJumpCooldown() == 0 ? 0.1F : 0.0F;
+	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
+		float f = controllingPassenger.isSprinting() && this.getJumpCooldown() == 0 ? 0.1F : 0.0F;
 		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + f;
 	}
 
 	@Override
-	protected boolean ignoresMovementInput(LivingEntity passenger) {
-		boolean bl = this.isChangingPose();
-		if (this.isSitting() && !bl && passenger.forwardSpeed > 0.0F) {
-			this.startStanding();
-		}
+	protected Vec2f getControlledRotation(LivingEntity controllingPassenger) {
+		return this.isStationary() ? new Vec2f(this.getPitch(), this.getYaw()) : super.getControlledRotation(controllingPassenger);
+	}
 
-		return this.isStationary() || super.ignoresMovementInput(passenger);
+	@Override
+	protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+		return this.isStationary() ? Vec3d.ZERO : super.getControlledMovementInput(controllingPassenger, movementInput);
 	}
 
 	@Override
 	public boolean canJump(PlayerEntity player) {
-		return !this.isStationary() && this.getPrimaryPassenger() == player && super.canJump(player);
+		return !this.isStationary() && this.getControllingPassenger() == player && super.canJump(player);
 	}
 
 	@Override
@@ -269,7 +278,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	}
 
 	@Override
-	protected void jump(float strength, float sidewaysSpeed, float forwardSpeed) {
+	protected void jump(float strength, Vec3d movementInput) {
 		double d = this.getAttributeValue(EntityAttributes.HORSE_JUMP_STRENGTH) * (double)this.getJumpVelocityMultiplier() + this.getJumpBoostVelocityModifier();
 		this.addVelocity(
 			this.getRotationVector()
@@ -515,7 +524,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	@Override
 	public void onPassengerLookAround(Entity passenger) {
-		if (this.getPrimaryPassenger() != passenger) {
+		if (this.getControllingPassenger() != passenger) {
 			this.clampPassengerYaw(passenger);
 		}
 	}
@@ -551,7 +560,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	@Nullable
 	@Override
-	public LivingEntity getPrimaryPassenger() {
+	public LivingEntity getControllingPassenger() {
 		if (!this.getPassengerList().isEmpty() && this.isSaddled()) {
 			Entity entity = (Entity)this.getPassengerList().get(0);
 			if (entity instanceof LivingEntity) {
@@ -660,6 +669,21 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 			if (!CamelEntity.this.isStationary()) {
 				super.tick();
 			}
+		}
+	}
+
+	class CamelMoveControl extends MoveControl {
+		public CamelMoveControl() {
+			super(CamelEntity.this);
+		}
+
+		@Override
+		public void tick() {
+			if (this.state == MoveControl.State.MOVE_TO && !CamelEntity.this.isLeashed() && CamelEntity.this.isSitting() && !CamelEntity.this.isChangingPose()) {
+				CamelEntity.this.startStanding();
+			}
+
+			super.tick();
 		}
 	}
 }

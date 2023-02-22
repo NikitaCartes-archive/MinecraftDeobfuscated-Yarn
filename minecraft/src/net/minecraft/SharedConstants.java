@@ -1,32 +1,34 @@
 package net.minecraft;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.DSL.TypeReference;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
 import java.time.Duration;
+import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.command.TranslatableBuiltInExceptions;
-import net.minecraft.datafixer.DataFixerPhase;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3329;
+	public static final int WORLD_VERSION = 3330;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "23w07a";
+	public static final String VERSION_NAME = "1.19.4-pre1";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 762;
 	@Deprecated
-	public static final int field_29736 = 119;
+	public static final int field_29736 = 120;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3318;
 	private static final int field_29708 = 30;
 	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
 	@Deprecated
-	public static final int RESOURCE_PACK_VERSION = 12;
+	public static final int RESOURCE_PACK_VERSION = 13;
 	@Deprecated
 	public static final int DATA_PACK_VERSION = 12;
 	@Deprecated
@@ -116,7 +118,7 @@ public class SharedConstants {
 	 */
 	public static boolean useChoiceTypeRegistrations = true;
 	public static boolean isDevelopment;
-	public static DataFixerPhase dataFixerPhase = DataFixerPhase.UNINITIALIZED_UNOPTIMIZED;
+	public static Set<TypeReference> requiredDataFixTypes = Set.of();
 	public static final int CHUNK_WIDTH = 16;
 	public static final int DEFAULT_WORLD_HEIGHT = 256;
 	public static final int COMMAND_MAX_LENGTH = 32500;
@@ -206,7 +208,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741943;
+		return 1073741944;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {
@@ -216,11 +218,7 @@ public class SharedConstants {
 	}
 
 	public static void enableDataFixerOptimization() {
-		dataFixerPhase = switch (dataFixerPhase) {
-			case INITIALIZED_UNOPTIMIZED -> throw new IllegalStateException("Tried to enable datafixer optimization after unoptimized initialization");
-			case INITIALIZED_OPTIMIZED -> DataFixerPhase.INITIALIZED_OPTIMIZED;
-			default -> DataFixerPhase.UNINITIALIZED_OPTIMIZED;
-		};
+		requiredDataFixTypes = DataFixTypes.REQUIRED_TYPES;
 	}
 
 	static {

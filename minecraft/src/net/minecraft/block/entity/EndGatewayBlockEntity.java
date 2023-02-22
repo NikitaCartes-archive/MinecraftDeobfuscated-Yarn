@@ -210,7 +210,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		WorldChunk worldChunk = getChunk(world, vec3d);
 		BlockPos blockPos = findPortalPosition(worldChunk);
 		if (blockPos == null) {
-			BlockPos blockPos2 = new BlockPos(vec3d.x + 0.5, 75.0, vec3d.z + 0.5);
+			BlockPos blockPos2 = BlockPos.ofFloored(vec3d.x + 0.5, 75.0, vec3d.z + 0.5);
 			LOGGER.debug("Failed to find a suitable block to teleport to, spawning an island on {}", blockPos2);
 			world.getRegistryManager()
 				.getOptional(RegistryKeys.CONFIGURED_FEATURE)

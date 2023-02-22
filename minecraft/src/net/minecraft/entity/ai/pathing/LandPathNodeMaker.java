@@ -130,7 +130,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		PathNodeType pathNodeType = this.getNodeType(this.entity, node.x, node.y + 1, node.z);
 		PathNodeType pathNodeType2 = this.getNodeType(this.entity, node.x, node.y, node.z);
 		if (this.entity.getPathfindingPenalty(pathNodeType) >= 0.0F && pathNodeType2 != PathNodeType.STICKY_HONEY) {
-			j = MathHelper.floor(Math.max(1.0F, this.entity.stepHeight));
+			j = MathHelper.floor(Math.max(1.0F, this.entity.getStepHeight()));
 		}
 
 		double d = this.getFeetY(new BlockPos(node.x, node.y, node.z));
@@ -336,7 +336,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	}
 
 	private double getStepHeight() {
-		return Math.max(1.125, (double)this.entity.stepHeight);
+		return Math.max(1.125, (double)this.entity.getStepHeight());
 	}
 
 	private PathNode getNodeWith(int x, int y, int z, PathNodeType type, float penalty) {

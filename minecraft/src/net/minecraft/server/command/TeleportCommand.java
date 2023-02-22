@@ -252,7 +252,7 @@ public class TeleportCommand {
 		float pitch,
 		@Nullable TeleportCommand.LookTarget facingLocation
 	) throws CommandSyntaxException {
-		BlockPos blockPos = new BlockPos(x, y, z);
+		BlockPos blockPos = BlockPos.ofFloored(x, y, z);
 		if (!World.isValid(blockPos)) {
 			throw INVALID_POSITION_EXCEPTION.create();
 		} else {

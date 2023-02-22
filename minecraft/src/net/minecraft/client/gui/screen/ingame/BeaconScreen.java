@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableWidget;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffect;
@@ -120,18 +119,18 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		this.itemRenderer.zOffset = 100.0F;
-		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
-		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.EMERALD), i + 41, j + 109);
-		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.DIAMOND), i + 41 + 22, j + 109);
-		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.GOLD_INGOT), i + 42 + 44, j + 109);
-		this.itemRenderer.renderInGuiWithOverrides(new ItemStack(Items.IRON_INGOT), i + 42 + 66, j + 109);
-		this.itemRenderer.zOffset = 0.0F;
+		drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		matrices.push();
+		matrices.translate(0.0F, 0.0F, 100.0F);
+		this.itemRenderer.renderInGuiWithOverrides(matrices, new ItemStack(Items.NETHERITE_INGOT), i + 20, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(matrices, new ItemStack(Items.EMERALD), i + 41, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(matrices, new ItemStack(Items.DIAMOND), i + 41 + 22, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(matrices, new ItemStack(Items.GOLD_INGOT), i + 42 + 44, j + 109);
+		this.itemRenderer.renderInGuiWithOverrides(matrices, new ItemStack(Items.IRON_INGOT), i + 42 + 66, j + 109);
+		matrices.pop();
 	}
 
 	@Override
@@ -155,7 +154,6 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-			RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 			RenderSystem.setShaderTexture(0, BeaconScreen.TEXTURE);
 			int i = 219;
 			int j = 0;
@@ -163,11 +161,11 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 				j += this.width * 2;
 			} else if (this.disabled) {
 				j += this.width * 1;
-			} else if (this.isHovered()) {
+			} else if (this.isSelected()) {
 				j += this.width * 3;
 			}
 
-			this.drawTexture(matrices, this.getX(), this.getY(), j, 219, this.width, this.height);
+			drawTexture(matrices, this.getX(), this.getY(), j, 219, this.width, this.height);
 			this.renderExtra(matrices);
 		}
 
@@ -268,7 +266,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		@Override
 		protected void renderExtra(MatrixStack matrices) {
 			RenderSystem.setShaderTexture(0, this.sprite.getAtlasId());
-			drawSprite(matrices, this.getX() + 2, this.getY() + 2, this.getZOffset(), 18, 18, this.sprite);
+			drawSprite(matrices, this.getX() + 2, this.getY() + 2, 0, 18, 18, this.sprite);
 		}
 
 		@Override
@@ -296,7 +294,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		protected void renderExtra(MatrixStack matrices) {
-			this.drawTexture(matrices, this.getX() + 2, this.getY() + 2, this.u, this.v, 18, 18);
+			drawTexture(matrices, this.getX() + 2, this.getY() + 2, this.u, this.v, 18, 18);
 		}
 	}
 

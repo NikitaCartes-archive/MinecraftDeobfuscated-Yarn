@@ -34,27 +34,6 @@ public class Schema1466 extends IdentifierNormalizingSchema {
 					)
 				)
 		);
-		schema.registerType(
-			false,
-			TypeReferences.STRUCTURE_FEATURE,
-			() -> DSL.optionalFields(
-					"Children",
-					DSL.list(
-						DSL.optionalFields(
-							"CA",
-							TypeReferences.BLOCK_STATE.in(schema),
-							"CB",
-							TypeReferences.BLOCK_STATE.in(schema),
-							"CC",
-							TypeReferences.BLOCK_STATE.in(schema),
-							"CD",
-							TypeReferences.BLOCK_STATE.in(schema)
-						)
-					),
-					"biome",
-					TypeReferences.BIOME.in(schema)
-				)
-		);
 	}
 
 	@Override

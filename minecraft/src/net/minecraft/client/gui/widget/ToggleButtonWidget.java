@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.util.Identifier;
@@ -46,7 +45,6 @@ public class ToggleButtonWidget extends ClickableWidget {
 
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		RenderSystem.setShader(GameRenderer::getPositionTexProgram);
 		RenderSystem.setShaderTexture(0, this.texture);
 		RenderSystem.disableDepthTest();
 		int i = this.u;
@@ -55,11 +53,11 @@ public class ToggleButtonWidget extends ClickableWidget {
 			i += this.pressedUOffset;
 		}
 
-		if (this.isHovered()) {
+		if (this.isSelected()) {
 			j += this.hoverVOffset;
 		}
 
-		this.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
+		drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
 		RenderSystem.enableDepthTest();
 	}
 }

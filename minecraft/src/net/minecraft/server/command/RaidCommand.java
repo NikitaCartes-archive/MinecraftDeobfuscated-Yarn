@@ -93,7 +93,7 @@ public class RaidCommand {
 			raiderEntity.setPatrolLeader(true);
 			raiderEntity.equipStack(EquipmentSlot.HEAD, Raid.getOminousBanner());
 			raiderEntity.setPosition(source.getPosition().x, source.getPosition().y, source.getPosition().z);
-			raiderEntity.initialize(source.getWorld(), source.getWorld().getLocalDifficulty(new BlockPos(source.getPosition())), SpawnReason.COMMAND, null, null);
+			raiderEntity.initialize(source.getWorld(), source.getWorld().getLocalDifficulty(BlockPos.ofFloored(source.getPosition())), SpawnReason.COMMAND, null, null);
 			source.getWorld().spawnEntityAndPassengers(raiderEntity);
 			return 1;
 		}

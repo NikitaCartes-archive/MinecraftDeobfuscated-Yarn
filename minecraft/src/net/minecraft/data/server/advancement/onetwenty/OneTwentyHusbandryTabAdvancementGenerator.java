@@ -12,7 +12,9 @@ public class OneTwentyHusbandryTabAdvancementGenerator implements AdvancementTab
 	@Override
 	public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
 		Advancement advancement = AdvancementTabGenerator.createEmptyAdvancement("husbandry/breed_an_animal");
-		Stream<EntityType<?>> stream = Stream.concat(VanillaHusbandryTabAdvancementGenerator.BREEDABLE_ANIMALS.stream(), Stream.of(EntityType.CAMEL));
+		Stream<EntityType<?>> stream = Stream.concat(
+			VanillaHusbandryTabAdvancementGenerator.BREEDABLE_ANIMALS.stream(), Stream.of(EntityType.CAMEL, EntityType.SNIFFER)
+		);
 		VanillaHusbandryTabAdvancementGenerator.createBreedAllAnimalsAdvancement(
 			advancement, exporter, stream, VanillaHusbandryTabAdvancementGenerator.EGG_LAYING_ANIMALS.stream()
 		);

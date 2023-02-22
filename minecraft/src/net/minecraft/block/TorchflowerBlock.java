@@ -14,12 +14,12 @@ import net.minecraft.world.World;
 
 public class TorchflowerBlock extends CropBlock {
 	public static final int field_42775 = 2;
-	public static final IntProperty field_42776 = Properties.AGE_2;
-	private static final float field_42777 = 4.0F;
+	public static final IntProperty AGE = Properties.AGE_2;
+	private static final float field_42777 = 3.0F;
 	private static final VoxelShape[] SHAPES = new VoxelShape[]{
-		Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 10.0, 12.0),
-		Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 10.0, 12.0),
-		Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 10.0, 12.0)
+		Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0),
+		Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0),
+		Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0)
 	};
 
 	public TorchflowerBlock(AbstractBlock.Settings settings) {
@@ -28,7 +28,7 @@ public class TorchflowerBlock extends CropBlock {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(field_42776);
+		builder.add(AGE);
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class TorchflowerBlock extends CropBlock {
 
 	@Override
 	public IntProperty getAgeProperty() {
-		return field_42776;
+		return AGE;
 	}
 
 	@Override
@@ -49,6 +49,11 @@ public class TorchflowerBlock extends CropBlock {
 	@Override
 	protected ItemConvertible getSeedsItem() {
 		return Items.TORCHFLOWER_SEEDS;
+	}
+
+	@Override
+	public BlockState withAge(int age) {
+		return age == 2 ? Blocks.TORCHFLOWER.getDefaultState() : super.withAge(age);
 	}
 
 	@Override

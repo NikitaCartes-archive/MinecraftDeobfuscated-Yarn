@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.hud;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Iterator;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -38,8 +37,6 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 		}
 
 		if (this.enabled && !this.entries.isEmpty()) {
-			RenderSystem.enableBlend();
-			RenderSystem.defaultBlendFunc();
 			Vec3d vec3d = new Vec3d(this.client.player.getX(), this.client.player.getEyeY(), this.client.player.getZ());
 			Vec3d vec3d2 = new Vec3d(0.0, 0.0, -1.0)
 				.rotateX(-this.client.player.getPitch() * (float) (Math.PI / 180.0))
@@ -89,7 +86,6 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				);
 				matrices.scale(1.0F, 1.0F, 1.0F);
 				fill(matrices, -l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8F));
-				RenderSystem.enableBlend();
 				int r = q + -16777216;
 				if (!bl) {
 					if (e > 0.0) {
@@ -103,8 +99,6 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				matrices.pop();
 				i++;
 			}
-
-			RenderSystem.disableBlend();
 		}
 	}
 

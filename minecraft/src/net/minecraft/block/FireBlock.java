@@ -421,6 +421,7 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.CORNFLOWER, 60, 100);
 		fireBlock.registerFlammableBlock(Blocks.LILY_OF_THE_VALLEY, 60, 100);
 		fireBlock.registerFlammableBlock(Blocks.WITHER_ROSE, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.PINK_PETALS, 60, 100);
 		fireBlock.registerFlammableBlock(Blocks.WHITE_WOOL, 30, 60);
 		fireBlock.registerFlammableBlock(Blocks.ORANGE_WOOL, 30, 60);
 		fireBlock.registerFlammableBlock(Blocks.MAGENTA_WOOL, 30, 60);

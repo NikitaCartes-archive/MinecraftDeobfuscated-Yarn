@@ -318,7 +318,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public double lastRenderX;
 	public double lastRenderY;
 	public double lastRenderZ;
-	public float stepHeight;
+	private float stepHeight;
 	public boolean noClip;
 	protected final Random random = Random.create();
 	public int age;
@@ -937,7 +937,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 						this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
 						if (this.isTouchingWater()) {
 							if (moveEffect.playsSounds()) {
-								Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
+								Entity entity = (Entity)(this.hasPassengers() && this.getControllingPassenger() != null ? this.getControllingPassenger() : this);
 								float h = entity == this ? 0.35F : 0.4F;
 								Vec3d vec3d3 = entity.getVelocity();
 								float i = Math.min(1.0F, (float)Math.sqrt(vec3d3.x * vec3d3.x * 0.2F + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * 0.2F) * h);
@@ -1093,7 +1093,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	protected BlockPos getVelocityAffectingPos() {
-		return new BlockPos(this.pos.x, this.getBoundingBox().minY - 0.5000001, this.pos.z);
+		return BlockPos.ofFloored(this.pos.x, this.getBoundingBox().minY - 0.5000001, this.pos.z);
 	}
 
 	protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type) {
@@ -1141,10 +1141,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		boolean bl2 = movement.y != vec3d.y;
 		boolean bl3 = movement.z != vec3d.z;
 		boolean bl4 = this.onGround || bl2 && movement.y < 0.0;
-		if (this.stepHeight > 0.0F && bl4 && (bl || bl3)) {
-			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.stepHeight, movement.z), box, this.world, list);
-			Vec3d vec3d3 = adjustMovementForCollisions(this, new Vec3d(0.0, (double)this.stepHeight, 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, list);
-			if (vec3d3.y < (double)this.stepHeight) {
+		if (this.getStepHeight() > 0.0F && bl4 && (bl || bl3)) {
+			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.getStepHeight(), movement.z), box, this.world, list);
+			Vec3d vec3d3 = adjustMovementForCollisions(
+				this, new Vec3d(0.0, (double)this.getStepHeight(), 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, list
+			);
+			if (vec3d3.y < (double)this.getStepHeight()) {
 				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, list).add(vec3d3);
 				if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
 					vec3d2 = vec3d4;
@@ -1235,8 +1237,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	protected void checkBlockCollision() {
 		Box box = this.getBoundingBox();
-		BlockPos blockPos = new BlockPos(box.minX + 1.0E-7, box.minY + 1.0E-7, box.minZ + 1.0E-7);
-		BlockPos blockPos2 = new BlockPos(box.maxX - 1.0E-7, box.maxY - 1.0E-7, box.maxZ - 1.0E-7);
+		BlockPos blockPos = BlockPos.ofFloored(box.minX + 1.0E-7, box.minY + 1.0E-7, box.minZ + 1.0E-7);
+		BlockPos blockPos2 = BlockPos.ofFloored(box.maxX - 1.0E-7, box.maxY - 1.0E-7, box.maxZ - 1.0E-7);
 		if (this.world.isRegionLoaded(blockPos, blockPos2)) {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
@@ -1461,13 +1463,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * entities except horses and llamas
 	 */
 	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-		if (this.hasPassengers()) {
-			for (Entity entity : this.getPassengerList()) {
-				entity.handleFallDamage(fallDistance, damageMultiplier, damageSource);
+		if (this.type.isIn(EntityTypeTags.FALL_DAMAGE_IMMUNE)) {
+			return false;
+		} else {
+			if (this.hasPassengers()) {
+				for (Entity entity : this.getPassengerList()) {
+					entity.handleFallDamage(fallDistance, damageMultiplier, damageSource);
+				}
 			}
-		}
 
-		return false;
+			return false;
+		}
 	}
 
 	/**
@@ -1482,7 +1488,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	private boolean isBeingRainedOn() {
 		BlockPos blockPos = this.getBlockPos();
-		return this.world.hasRain(blockPos) || this.world.hasRain(new BlockPos((double)blockPos.getX(), this.getBoundingBox().maxY, (double)blockPos.getZ()));
+		return this.world.hasRain(blockPos) || this.world.hasRain(BlockPos.ofFloored((double)blockPos.getX(), this.getBoundingBox().maxY, (double)blockPos.getZ()));
 	}
 
 	/**
@@ -1583,7 +1589,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			return;
 		}
 
-		BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
+		BlockPos blockPos = BlockPos.ofFloored(this.getX(), d, this.getZ());
 		FluidState fluidState = this.world.getFluidState(blockPos);
 		double e = (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos));
 		if (e > d) {
@@ -1592,7 +1598,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	protected void onSwimmingStart() {
-		Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
+		Entity entity = (Entity)(this.hasPassengers() && this.getControllingPassenger() != null ? this.getControllingPassenger() : this);
 		float f = entity == this ? 0.2F : 0.9F;
 		Vec3d vec3d = entity.getVelocity();
 		float g = Math.min(1.0F, (float)Math.sqrt(vec3d.x * vec3d.x * 0.2F + vec3d.y * vec3d.y + vec3d.z * vec3d.z * 0.2F) * f);
@@ -1716,7 +1722,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	@Deprecated
 	public float getBrightnessAtEyes() {
-		return this.world.isPosLoaded(this.getBlockX(), this.getBlockZ()) ? this.world.getBrightness(new BlockPos(this.getX(), this.getEyeY(), this.getZ())) : 0.0F;
+		return this.world.isPosLoaded(this.getBlockX(), this.getBlockZ())
+			? this.world.getBrightness(BlockPos.ofFloored(this.getX(), this.getEyeY(), this.getZ()))
+			: 0.0F;
 	}
 
 	public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
@@ -3404,7 +3412,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @param z the entity's Z position
 	 */
 	protected void pushOutOfBlocks(double x, double y, double z) {
-		BlockPos blockPos = new BlockPos(x, y, z);
+		BlockPos blockPos = BlockPos.ofFloored(x, y, z);
 		Vec3d vec3d = new Vec3d(x - (double)blockPos.getX(), y - (double)blockPos.getY(), z - (double)blockPos.getZ());
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		Direction direction = Direction.UP;
@@ -3587,7 +3595,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public boolean isInvulnerableTo(DamageSource damageSource) {
 		return this.isRemoved()
 			|| this.invulnerable && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !damageSource.isSourceCreativePlayer()
-			|| damageSource.isIn(DamageTypeTags.IS_FIRE) && this.isFireImmune();
+			|| damageSource.isIn(DamageTypeTags.IS_FIRE) && this.isFireImmune()
+			|| damageSource.isIn(DamageTypeTags.IS_FALL) && this.getType().isIn(EntityTypeTags.FALL_DAMAGE_IMMUNE);
 	}
 
 	/**
@@ -3983,7 +3992,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	public final void teleport(double destX, double destY, double destZ) {
 		if (this.world instanceof ServerWorld) {
-			ChunkPos chunkPos = new ChunkPos(new BlockPos(destX, destY, destZ));
+			ChunkPos chunkPos = new ChunkPos(BlockPos.ofFloored(destX, destY, destZ));
 			((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getId());
 			this.world.getChunk(chunkPos.x, chunkPos.z);
 			this.requestTeleport(destX, destY, destZ);
@@ -4362,24 +4371,24 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * <p>Rideable entities should override this to return the entity. This is
 	 * usually {@code #getFirstPassenger}.
 	 * 
-	 * @see #hasPrimaryPassenger
+	 * @see #hasControllingPassenger
 	 * @see #getPassengerList
 	 * @see #getFirstPassenger
 	 */
 	@Nullable
-	public Entity getPrimaryPassenger() {
+	public LivingEntity getControllingPassenger() {
 		return null;
 	}
 
 	/**
 	 * {@return whether there is a passenger in control of this entity}
 	 * 
-	 * @see #getPrimaryPassenger
+	 * @see #getControllingPassenger
 	 * @see #getPassengerList
 	 * @see #getFirstPassenger
 	 */
-	public final boolean hasPrimaryPassenger() {
-		return this.getPrimaryPassenger() != null;
+	public final boolean hasControllingPassenger() {
+		return this.getControllingPassenger() != null;
 	}
 
 	/**
@@ -4562,8 +4571,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #getPrimaryPassenger
 	 */
 	public boolean isLogicalSideForUpdatingMovement() {
-		Entity entity = this.getPrimaryPassenger();
-		return entity instanceof PlayerEntity ? ((PlayerEntity)entity).isMainPlayer() : !this.world.isClient;
+		return this.getControllingPassenger() instanceof PlayerEntity playerEntity ? playerEntity.isMainPlayer() : this.canMoveVoluntarily();
+	}
+
+	public boolean canMoveVoluntarily() {
+		return !this.world.isClient;
 	}
 
 	/**
@@ -5113,6 +5125,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public boolean canSprintAsVehicle() {
 		return false;
+	}
+
+	public float getStepHeight() {
+		return this.hasControllingPassenger() ? Math.max(this.stepHeight, 1.0F) : this.stepHeight;
+	}
+
+	public void setStepHeight(float stepHeight) {
+		this.stepHeight = stepHeight;
 	}
 
 	/**

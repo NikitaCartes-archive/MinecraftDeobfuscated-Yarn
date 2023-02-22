@@ -347,7 +347,9 @@ public class TestContext {
 	public void expectEntityInside(EntityType<?> type, Vec3d pos1, Vec3d pos2) {
 		List<? extends Entity> list = this.getWorld().getEntitiesByType(type, new Box(pos1, pos2), Entity::isAlive);
 		if (list.isEmpty()) {
-			throw new PositionedException("Expected " + type.getUntranslatedName() + " between ", new BlockPos(pos1), new BlockPos(pos2), this.test.getTick());
+			throw new PositionedException(
+				"Expected " + type.getUntranslatedName() + " between ", BlockPos.ofFloored(pos1), BlockPos.ofFloored(pos2), this.test.getTick()
+			);
 		}
 	}
 

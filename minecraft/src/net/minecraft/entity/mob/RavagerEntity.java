@@ -55,7 +55,7 @@ public class RavagerEntity extends RaiderEntity {
 
 	public RavagerEntity(EntityType<? extends RavagerEntity> entityType, World world) {
 		super(entityType, world);
-		this.stepHeight = 1.0F;
+		this.setStepHeight(1.0F);
 		this.experiencePoints = 20;
 		this.setPathfindingPenalty(PathNodeType.LEAVES, 0.0F);
 	}
@@ -76,7 +76,7 @@ public class RavagerEntity extends RaiderEntity {
 
 	@Override
 	protected void updateGoalControls() {
-		boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity) || this.getPrimaryPassenger().getType().isIn(EntityTypeTags.RAIDERS);
+		boolean bl = !(this.getControllingPassenger() instanceof MobEntity) || this.getControllingPassenger().getType().isIn(EntityTypeTags.RAIDERS);
 		boolean bl2 = !(this.getVehicle() instanceof BoatEntity);
 		this.goalSelector.setControlEnabled(Goal.Control.MOVE, bl);
 		this.goalSelector.setControlEnabled(Goal.Control.JUMP, bl && bl2);
@@ -127,13 +127,8 @@ public class RavagerEntity extends RaiderEntity {
 
 	@Nullable
 	@Override
-	public Entity getPrimaryPassenger() {
-		Entity entity = this.getFirstPassenger();
-		return entity != null && this.canBecomePrimaryPassenger(entity) ? entity : null;
-	}
-
-	private boolean canBecomePrimaryPassenger(Entity entity) {
-		return !this.isAiDisabled() && entity instanceof LivingEntity;
+	public LivingEntity getControllingPassenger() {
+		return !this.isAiDisabled() && this.getFirstPassenger() instanceof LivingEntity livingEntity ? livingEntity : null;
 	}
 
 	@Override
@@ -324,6 +319,11 @@ public class RavagerEntity extends RaiderEntity {
 	@Override
 	public boolean canLead() {
 		return false;
+	}
+
+	@Override
+	protected float getOffGroundSpeed() {
+		return 0.02F;
 	}
 
 	class AttackGoal extends MeleeAttackGoal {

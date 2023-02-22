@@ -184,7 +184,6 @@ public class PlayerListHud extends DrawableHelper {
 			int x = q + v * 9;
 			fill(matrices, w, x, w + o, x + 8, t);
 			RenderSystem.enableBlend();
-			RenderSystem.defaultBlendFunc();
 			if (u < list.size()) {
 				PlayerListEntry playerListEntry2 = (PlayerListEntry)list.get(u);
 				GameProfile gameProfile = playerListEntry2.getProfile();
@@ -244,9 +243,10 @@ public class PlayerListHud extends DrawableHelper {
 			j = 4;
 		}
 
-		this.setZOffset(this.getZOffset() + 100);
-		this.drawTexture(matrices, x + width - 11, y, 0, 176 + j * 8, 10, 8);
-		this.setZOffset(this.getZOffset() - 100);
+		matrices.push();
+		matrices.translate(0.0F, 0.0F, 100.0F);
+		drawTexture(matrices, x + width - 11, y, 0, 176 + j * 8, 10, 8);
+		matrices.pop();
 	}
 
 	private void renderScoreboardObjective(ScoreboardObjective objective, int y, String player, int left, int right, UUID uuid, MatrixStack matrices) {
@@ -279,27 +279,27 @@ public class PlayerListHud extends DrawableHelper {
 				this.client.textRenderer.drawWithShadow(matrices, string, (float)((right + left - this.client.textRenderer.getWidth(string)) / 2), (float)y, l);
 			} else {
 				for (int m = i; m < j; m++) {
-					this.drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+					drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
 				}
 
 				for (int m = 0; m < i; m++) {
-					this.drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+					drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
 					if (bl) {
 						if (m * 2 + 1 < heart.getPrevScore()) {
-							this.drawTexture(matrices, left + m * k, y, 70, 0, 9, 9);
+							drawTexture(matrices, left + m * k, y, 70, 0, 9, 9);
 						}
 
 						if (m * 2 + 1 == heart.getPrevScore()) {
-							this.drawTexture(matrices, left + m * k, y, 79, 0, 9, 9);
+							drawTexture(matrices, left + m * k, y, 79, 0, 9, 9);
 						}
 					}
 
 					if (m * 2 + 1 < score) {
-						this.drawTexture(matrices, left + m * k, y, m >= 10 ? 160 : 52, 0, 9, 9);
+						drawTexture(matrices, left + m * k, y, m >= 10 ? 160 : 52, 0, 9, 9);
 					}
 
 					if (m * 2 + 1 == score) {
-						this.drawTexture(matrices, left + m * k, y, m >= 10 ? 169 : 61, 0, 9, 9);
+						drawTexture(matrices, left + m * k, y, m >= 10 ? 169 : 61, 0, 9, 9);
 					}
 				}
 			}

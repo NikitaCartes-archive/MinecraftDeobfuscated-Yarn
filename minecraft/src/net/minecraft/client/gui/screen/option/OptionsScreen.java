@@ -1,7 +1,5 @@
 package net.minecraft.client.gui.screen.option;
 
-import com.google.common.collect.ImmutableList;
-import java.util.List;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -22,7 +20,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.world.Difficulty;
@@ -68,7 +65,7 @@ public class OptionsScreen extends Screen {
 			this.createButton(
 				RESOURCE_PACK_TEXT,
 				() -> new PackScreen(
-						this, this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), Text.translatable("resourcePack.title")
+						this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), Text.translatable("resourcePack.title")
 					)
 			)
 		);
@@ -78,6 +75,11 @@ public class OptionsScreen extends Screen {
 		gridWidget.refreshPositions();
 		SimplePositioningWidget.setPos(gridWidget, 0, this.height / 6 - 12, this.width, this.height, 0.5F, 0.0F);
 		gridWidget.forEachChild(this::addDrawableChild);
+	}
+
+	private void refreshResourcePacks(ResourcePackManager resourcePackManager) {
+		this.settings.refreshResourcePacks(resourcePackManager);
+		this.client.setScreen(this);
 	}
 
 	private Widget createTopRightButton() {
@@ -124,27 +126,6 @@ public class OptionsScreen extends Screen {
 			.build(
 				x, y, 150, 20, Text.translatable(translationKey), (button, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(difficulty))
 			);
-	}
-
-	private void refreshResourcePacks(ResourcePackManager resourcePackManager) {
-		List<String> list = ImmutableList.copyOf(this.settings.resourcePacks);
-		this.settings.resourcePacks.clear();
-		this.settings.incompatibleResourcePacks.clear();
-
-		for (ResourcePackProfile resourcePackProfile : resourcePackManager.getEnabledProfiles()) {
-			if (!resourcePackProfile.isPinned()) {
-				this.settings.resourcePacks.add(resourcePackProfile.getName());
-				if (!resourcePackProfile.getCompatibility().isCompatible()) {
-					this.settings.incompatibleResourcePacks.add(resourcePackProfile.getName());
-				}
-			}
-		}
-
-		this.settings.write();
-		List<String> list2 = ImmutableList.copyOf(this.settings.resourcePacks);
-		if (!list2.equals(list)) {
-			this.client.reloadResources();
-		}
 	}
 
 	private void lockDifficulty(boolean difficultyLocked) {

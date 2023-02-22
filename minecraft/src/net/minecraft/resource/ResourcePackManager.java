@@ -4,6 +4,7 @@ import com.google.common.base.Functions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.Collection;
 import java.util.List;
@@ -47,6 +48,18 @@ public class ResourcePackManager {
 
 	public void setEnabledProfiles(Collection<String> enabled) {
 		this.enabled = this.buildEnabledProfiles(enabled);
+	}
+
+	public void enable(String profile) {
+		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(this.enabled);
+		list.add((ResourcePackProfile)this.profiles.get(profile));
+		this.enabled = list;
+	}
+
+	public void disable(String profile) {
+		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(this.enabled);
+		list.remove(this.profiles.get(profile));
+		this.enabled = list;
 	}
 
 	private List<ResourcePackProfile> buildEnabledProfiles(Collection<String> enabledNames) {

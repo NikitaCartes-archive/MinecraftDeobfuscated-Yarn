@@ -188,7 +188,7 @@ public class StructureTemplate {
 			if (entity instanceof PaintingEntity) {
 				blockPos = ((PaintingEntity)entity).getDecorationBlockPos().subtract(firstCorner);
 			} else {
-				blockPos = new BlockPos(vec3d);
+				blockPos = BlockPos.ofFloored(vec3d);
 			}
 
 			this.entities.add(new StructureTemplate.StructureEntityInfo(vec3d, blockPos, nbtCompound.copy()));
@@ -440,7 +440,7 @@ public class StructureTemplate {
 					f += entity.applyMirror(mirror) - entity.getYaw();
 					entity.refreshPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, f, entity.getPitch());
 					if (initializeMobs && entity instanceof MobEntity) {
-						((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
+						((MobEntity)entity).initialize(world, world.getLocalDifficulty(BlockPos.ofFloored(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
 					}
 
 					world.spawnEntityAndPassengers(entity);

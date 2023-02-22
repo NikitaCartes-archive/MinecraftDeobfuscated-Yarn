@@ -187,11 +187,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public float prevBodyYaw;
 	public float headYaw;
 	public float prevHeadYaw;
-	/**
-	 * Affects horizontal aerial velocity of entities (eg. when a player jumps,
-	 * is falling, or is flying, while holding the horizontal movement keys)
-	 */
-	public float airStrafingSpeed = 0.02F;
 	@Nullable
 	protected PlayerEntity attackingPlayer;
 	protected int playerHitTimer;
@@ -249,7 +244,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.randomLargeSeed = (float)Math.random() * 12398.0F;
 		this.setYaw((float)(Math.random() * (float) (Math.PI * 2)));
 		this.headYaw = this.getYaw();
-		this.stepHeight = 0.6F;
+		this.setStepHeight(0.6F);
 		NbtOps nbtOps = NbtOps.INSTANCE;
 		this.brain = this.deserializeBrain(new Dynamic<>(nbtOps, nbtOps.createMap(ImmutableMap.of(nbtOps.createString("memories"), nbtOps.emptyMap()))));
 	}
@@ -360,7 +355,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				}
 			}
 
-			if (this.isSubmergedIn(FluidTags.WATER) && !this.world.getBlockState(new BlockPos(this.getX(), this.getEyeY(), this.getZ())).isOf(Blocks.BUBBLE_COLUMN)) {
+			if (this.isSubmergedIn(FluidTags.WATER)
+				&& !this.world.getBlockState(BlockPos.ofFloored(this.getX(), this.getEyeY(), this.getZ())).isOf(Blocks.BUBBLE_COLUMN)) {
 				boolean bl2 = !this.canBreatheInWater() && !StatusEffectUtil.hasWaterBreathing(this) && (!bl || !((PlayerEntity)this).getAbilities().invulnerable);
 				if (bl2) {
 					this.setAir(this.getNextAirUnderwater(this.getAir()));
@@ -1154,7 +1150,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 			this.limbAnimator.setSpeed(1.5F);
 			boolean bl2 = true;
-			if ((float)this.timeUntilRegen > 10.0F) {
+			if ((float)this.timeUntilRegen > 10.0F && !source.isIn(DamageTypeTags.BYPASSES_COOLDOWN)) {
 				if (amount <= this.lastDamageTaken) {
 					return false;
 				}
@@ -1594,9 +1590,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected int computeFallDamage(float fallDistance, float damageMultiplier) {
-		StatusEffectInstance statusEffectInstance = this.getStatusEffect(StatusEffects.JUMP_BOOST);
-		float f = statusEffectInstance == null ? 0.0F : (float)(statusEffectInstance.getAmplifier() + 1);
-		return MathHelper.ceil((fallDistance - 3.0F - f) * damageMultiplier);
+		if (this.getType().isIn(EntityTypeTags.FALL_DAMAGE_IMMUNE)) {
+			return 0;
+		} else {
+			StatusEffectInstance statusEffectInstance = this.getStatusEffect(StatusEffects.JUMP_BOOST);
+			float f = statusEffectInstance == null ? 0.0F : (float)(statusEffectInstance.getAmplifier() + 1);
+			return MathHelper.ceil((fallDistance - 3.0F - f) * damageMultiplier);
+		}
 	}
 
 	protected void playBlockFallSound() {
@@ -2098,7 +2098,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * @param movementInput represents the sidewaysSpeed, upwardSpeed, and forwardSpeed of the entity in that order
 	 */
 	public void travel(Vec3d movementInput) {
-		if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
+		if (this.isLogicalSideForUpdatingMovement()) {
 			double d = 0.08;
 			boolean bl = this.getVelocity().y <= 0.0;
 			if (bl && this.hasStatusEffect(StatusEffects.SLOW_FALLING)) {
@@ -2232,6 +2232,30 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.updateLimbs(this instanceof Flutterer);
 	}
 
+	private void travelControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
+		Vec3d vec3d = this.getControlledMovementInput(controllingPassenger, movementInput);
+		this.tickControlled(controllingPassenger, vec3d);
+		if (this.isLogicalSideForUpdatingMovement()) {
+			this.setMovementSpeed(this.getSaddledSpeed(controllingPassenger));
+			this.travel(vec3d);
+		} else {
+			this.updateLimbs(false);
+			this.setVelocity(Vec3d.ZERO);
+			this.tryCheckBlockCollision();
+		}
+	}
+
+	protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
+	}
+
+	protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+		return movementInput;
+	}
+
+	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+	}
+
 	public void updateLimbs(boolean flutter) {
 		float f = (float)MathHelper.magnitude(this.getX() - this.prevX, flutter ? this.getY() - this.prevY : 0.0, this.getZ() - this.prevZ);
 		this.updateLimbs(f);
@@ -2288,7 +2312,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	private float getMovementSpeed(float slipperiness) {
-		return this.onGround ? this.getMovementSpeed() * (0.21600002F / (slipperiness * slipperiness * slipperiness)) : this.airStrafingSpeed;
+		return this.onGround ? this.getMovementSpeed() * (0.21600002F / (slipperiness * slipperiness * slipperiness)) : this.getOffGroundSpeed();
+	}
+
+	protected float getOffGroundSpeed() {
+		return this.hasControllingPassenger() ? this.getMovementSpeed() * 0.1F : 0.02F;
 	}
 
 	public float getMovementSpeed() {
@@ -2646,7 +2674,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.forwardSpeed *= 0.98F;
 		this.tickFallFlying();
 		Box box = this.getBoundingBox();
-		this.travel(new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed));
+		if (this.isAlive()) {
+			LivingEntity livingEntity = this.getControllingPassenger();
+			Vec3d vec3d2 = new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed);
+			if (livingEntity != null) {
+				this.travelControlled(livingEntity, vec3d2);
+			} else {
+				this.travel(vec3d2);
+			}
+		}
+
 		this.world.getProfiler().pop();
 		this.world.getProfiler().push("freezing");
 		boolean bl2 = this.getType().isIn(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES);
@@ -2857,10 +2894,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 
 		return this.lastHandSwingProgress + f * tickDelta;
-	}
-
-	public boolean canMoveVoluntarily() {
-		return !this.world.isClient;
 	}
 
 	@Override
@@ -3138,7 +3171,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		double f = this.getZ();
 		double g = y;
 		boolean bl = false;
-		BlockPos blockPos = new BlockPos(x, y, z);
+		BlockPos blockPos = BlockPos.ofFloored(x, y, z);
 		World world = this.world;
 		if (world.isChunkLoaded(blockPos)) {
 			boolean bl2 = false;

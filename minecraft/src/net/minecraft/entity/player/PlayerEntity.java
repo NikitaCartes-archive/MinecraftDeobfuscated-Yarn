@@ -521,11 +521,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.inventory.updateItems();
 		this.prevStrideDistance = this.strideDistance;
 		super.tickMovement();
-		this.airStrafingSpeed = 0.02F;
-		if (this.isSprinting()) {
-			this.airStrafingSpeed += 0.006F;
-		}
-
 		this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 		float f;
 		if (this.onGround && !this.isDead() && !this.isSwimming()) {
@@ -1082,7 +1077,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			double e = movement.z;
 			double f = 0.05;
 
-			while (d != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), 0.0))) {
+			while (d != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(d, (double)(-this.getStepHeight()), 0.0))) {
 				if (d < 0.05 && d >= -0.05) {
 					d = 0.0;
 				} else if (d > 0.0) {
@@ -1092,7 +1087,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				}
 			}
 
-			while (e != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(0.0, (double)(-this.stepHeight), e))) {
+			while (e != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(0.0, (double)(-this.getStepHeight()), e))) {
 				if (e < 0.05 && e >= -0.05) {
 					e = 0.0;
 				} else if (e > 0.0) {
@@ -1102,7 +1097,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				}
 			}
 
-			while (d != 0.0 && e != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(d, (double)(-this.stepHeight), e))) {
+			while (d != 0.0 && e != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(d, (double)(-this.getStepHeight()), e))) {
 				if (d < 0.05 && d >= -0.05) {
 					d = 0.0;
 				} else if (d > 0.0) {
@@ -1128,8 +1123,8 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	private boolean method_30263() {
 		return this.onGround
-			|| this.fallDistance < this.stepHeight
-				&& !this.world.isSpaceEmpty(this, this.getBoundingBox().offset(0.0, (double)(this.fallDistance - this.stepHeight), 0.0));
+			|| this.fallDistance < this.getStepHeight()
+				&& !this.world.isSpaceEmpty(this, this.getBoundingBox().offset(0.0, (double)(this.fallDistance - this.getStepHeight()), 0.0));
 	}
 
 	public void attack(Entity target) {
@@ -1530,7 +1525,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (this.isSwimming() && !this.hasVehicle()) {
 			double g = this.getRotationVector().y;
 			double h = g < -0.2 ? 0.085 : 0.06;
-			if (g <= 0.0 || this.jumping || !this.world.getBlockState(new BlockPos(this.getX(), this.getY() + 1.0 - 0.1, this.getZ())).getFluidState().isEmpty()) {
+			if (g <= 0.0 || this.jumping || !this.world.getBlockState(BlockPos.ofFloored(this.getX(), this.getY() + 1.0 - 0.1, this.getZ())).getFluidState().isEmpty()) {
 				Vec3d vec3d = this.getVelocity();
 				this.setVelocity(vec3d.add(0.0, (g - vec3d.y) * h, 0.0));
 			}
@@ -1538,12 +1533,9 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		if (this.abilities.flying && !this.hasVehicle()) {
 			double g = this.getVelocity().y;
-			float i = this.airStrafingSpeed;
-			this.airStrafingSpeed = this.abilities.getFlySpeed() * (float)(this.isSprinting() ? 2 : 1);
 			super.travel(movementInput);
 			Vec3d vec3d2 = this.getVelocity();
 			this.setVelocity(vec3d2.x, g * 0.6, vec3d2.z);
-			this.airStrafingSpeed = i;
 			this.onLanding();
 			this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
 		} else {
@@ -2196,6 +2188,15 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public boolean canSprintAsVehicle() {
 		return true;
+	}
+
+	@Override
+	protected float getOffGroundSpeed() {
+		if (this.abilities.flying && !this.hasVehicle()) {
+			return this.isSprinting() ? this.abilities.getFlySpeed() * 2.0F : this.abilities.getFlySpeed();
+		} else {
+			return this.isSprinting() ? 0.025999999F : 0.02F;
+		}
 	}
 
 	/**

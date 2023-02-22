@@ -20,7 +20,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	public OtherClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile) {
 		super(clientWorld, gameProfile);
-		this.stepHeight = 1.0F;
+		this.setStepHeight(1.0F);
 		this.noClip = true;
 	}
 

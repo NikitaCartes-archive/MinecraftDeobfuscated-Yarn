@@ -1,7 +1,6 @@
 package net.minecraft.client.toast;
 
 import com.google.common.collect.Queues;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Deque;
@@ -147,13 +146,10 @@ public class ToastManager extends DrawableHelper {
 				this.showTime = l;
 			}
 
-			MatrixStack matrixStack = RenderSystem.getModelViewStack();
-			matrixStack.push();
-			matrixStack.translate((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l), (float)(this.topIndex * 32), 800.0F);
-			RenderSystem.applyModelViewMatrix();
+			matrices.push();
+			matrices.translate((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l), (float)(this.topIndex * 32), 800.0F);
 			Toast.Visibility visibility = this.instance.draw(matrices, ToastManager.this, l - this.showTime);
-			matrixStack.pop();
-			RenderSystem.applyModelViewMatrix();
+			matrices.pop();
 			if (visibility != this.visibility) {
 				this.startTime = l - (long)((int)((1.0F - this.getDisappearProgress(l)) * 600.0F));
 				this.visibility = visibility;

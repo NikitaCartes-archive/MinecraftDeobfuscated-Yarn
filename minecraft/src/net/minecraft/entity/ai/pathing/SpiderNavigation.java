@@ -47,7 +47,7 @@ public class SpiderNavigation extends MobNavigation {
 				if (!this.targetPos.isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth())
 					&& (
 						!(this.entity.getY() > (double)this.targetPos.getY())
-							|| !new BlockPos((double)this.targetPos.getX(), this.entity.getY(), (double)this.targetPos.getZ())
+							|| !BlockPos.ofFloored((double)this.targetPos.getX(), this.entity.getY(), (double)this.targetPos.getZ())
 								.isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth())
 					)) {
 					this.entity.getMoveControl().moveTo((double)this.targetPos.getX(), (double)this.targetPos.getY(), (double)this.targetPos.getZ(), this.speed);

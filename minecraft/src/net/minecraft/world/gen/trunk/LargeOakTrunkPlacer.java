@@ -58,7 +58,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 					double h = (double)(random.nextFloat() * 2.0F) * Math.PI;
 					double p = g * Math.sin(h) + 0.5;
 					double q = g * Math.cos(h) + 0.5;
-					BlockPos blockPos = startPos.add(p, (double)(n - 1), q);
+					BlockPos blockPos = startPos.add(MathHelper.floor(p), n - 1, MathHelper.floor(q));
 					BlockPos blockPos2 = blockPos.up(5);
 					if (this.makeOrCheckBranch(world, replacer, random, blockPos, blockPos2, false, config)) {
 						int r = startPos.getX() - blockPos.getX();
@@ -106,7 +106,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 			float h = (float)blockPos.getZ() / (float)i;
 
 			for (int j = 0; j <= i; j++) {
-				BlockPos blockPos2 = startPos.add((double)(0.5F + (float)j * f), (double)(0.5F + (float)j * g), (double)(0.5F + (float)j * h));
+				BlockPos blockPos2 = startPos.add(MathHelper.floor(0.5F + (float)j * f), MathHelper.floor(0.5F + (float)j * g), MathHelper.floor(0.5F + (float)j * h));
 				if (make) {
 					this.getAndSetState(
 						testableWorld, biConsumer, random, blockPos2, config, state -> state.withIfExists(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2))

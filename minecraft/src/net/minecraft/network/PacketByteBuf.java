@@ -329,7 +329,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @return the read object
 	 * @throws io.netty.handler.codec.EncoderException if the {@code codec} fails
 	 * to decode the JSON element
-	 * @see #encode(Codec, Object)
+	 * @see #encodeAsJson(Codec, Object)
 	 */
 	public <T> T decodeAsJson(Codec<T> codec) {
 		JsonElement jsonElement = JsonHelper.deserialize(GSON, this.readString(), JsonElement.class);

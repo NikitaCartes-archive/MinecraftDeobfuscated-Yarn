@@ -272,14 +272,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		}
 
 		this.topmostRiddenEntity = this.player.getRootVehicle();
-		if (this.topmostRiddenEntity != this.player && this.topmostRiddenEntity.getPrimaryPassenger() == this.player) {
+		if (this.topmostRiddenEntity != this.player && this.topmostRiddenEntity.getControllingPassenger() == this.player) {
 			this.lastTickRiddenX = this.topmostRiddenEntity.getX();
 			this.lastTickRiddenY = this.topmostRiddenEntity.getY();
 			this.lastTickRiddenZ = this.topmostRiddenEntity.getZ();
 			this.updatedRiddenX = this.topmostRiddenEntity.getX();
 			this.updatedRiddenY = this.topmostRiddenEntity.getY();
 			this.updatedRiddenZ = this.topmostRiddenEntity.getZ();
-			if (this.vehicleFloating && this.player.getRootVehicle().getPrimaryPassenger() == this.player) {
+			if (this.vehicleFloating && this.player.getRootVehicle().getControllingPassenger() == this.player) {
 				if (++this.vehicleFloatingTicks > 80) {
 					LOGGER.warn("{} was kicked for floating a vehicle too long!", this.player.getName().getString());
 					this.disconnect(Text.translatable("multiplayer.disconnect.flying"));
@@ -400,7 +400,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			this.disconnect(Text.translatable("multiplayer.disconnect.invalid_vehicle_movement"));
 		} else {
 			Entity entity = this.player.getRootVehicle();
-			if (entity != this.player && entity.getPrimaryPassenger() == this.player && entity == this.topmostRiddenEntity) {
+			if (entity != this.player && entity.getControllingPassenger() == this.player && entity == this.topmostRiddenEntity) {
 				ServerWorld serverWorld = this.player.getWorld();
 				double d = entity.getX();
 				double e = entity.getY();
@@ -970,24 +970,16 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		return false;
 	}
 
-	public void requestTeleportAndDismount(double x, double y, double z, float yaw, float pitch) {
-		this.requestTeleport(x, y, z, yaw, pitch, Collections.emptySet(), true);
-	}
-
 	public void requestTeleport(double x, double y, double z, float yaw, float pitch) {
-		this.requestTeleport(x, y, z, yaw, pitch, Collections.emptySet(), false);
+		this.requestTeleport(x, y, z, yaw, pitch, Collections.emptySet());
 	}
 
-	public void requestTeleport(double x, double y, double z, float yaw, float pitch, Set<PositionFlag> flags) {
-		this.requestTeleport(x, y, z, yaw, pitch, flags, false);
-	}
-
-	public void requestTeleport(double x, double y, double z, float yaw, float pitch, Set<PositionFlag> flags, boolean shouldDismount) {
-		double d = flags.contains(PositionFlag.X) ? this.player.getX() : 0.0;
-		double e = flags.contains(PositionFlag.Y) ? this.player.getY() : 0.0;
-		double f = flags.contains(PositionFlag.Z) ? this.player.getZ() : 0.0;
-		float g = flags.contains(PositionFlag.Y_ROT) ? this.player.getYaw() : 0.0F;
-		float h = flags.contains(PositionFlag.X_ROT) ? this.player.getPitch() : 0.0F;
+	public void requestTeleport(double x, double y, double z, float yaw, float pitch, Set<PositionFlag> set) {
+		double d = set.contains(PositionFlag.X) ? this.player.getX() : 0.0;
+		double e = set.contains(PositionFlag.Y) ? this.player.getY() : 0.0;
+		double f = set.contains(PositionFlag.Z) ? this.player.getZ() : 0.0;
+		float g = set.contains(PositionFlag.Y_ROT) ? this.player.getYaw() : 0.0F;
+		float h = set.contains(PositionFlag.X_ROT) ? this.player.getPitch() : 0.0F;
 		this.requestedTeleportPos = new Vec3d(x, y, z);
 		if (++this.requestedTeleportId == Integer.MAX_VALUE) {
 			this.requestedTeleportId = 0;
@@ -995,9 +987,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 		this.teleportRequestTick = this.ticks;
 		this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
-		this.player
-			.networkHandler
-			.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, flags, this.requestedTeleportId, shouldDismount));
+		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, set, this.requestedTeleportId));
 	}
 
 	@Override

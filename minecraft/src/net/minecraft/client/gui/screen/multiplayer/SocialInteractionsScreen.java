@@ -191,8 +191,8 @@ public class SocialInteractionsScreen extends Screen {
 		int i = this.getSearchBoxX() + 3;
 		super.renderBackground(matrices);
 		RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
-		this.drawNineSlicedTexture(matrices, i, 64, 236, this.getScreenHeight() + 16, 8, 236, 34, 1, 1);
-		this.drawTexture(matrices, i + 10, 76, 243, 1, 12, 12);
+		drawNineSlicedTexture(matrices, i, 64, 236, this.getScreenHeight() + 16, 8, 236, 34, 1, 1);
+		drawTexture(matrices, i + 10, 76, 243, 1, 12, 12);
 	}
 
 	@Override

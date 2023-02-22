@@ -42,14 +42,14 @@ public record ServerMetadata(
 		private static final String DATA_URI_PREFIX = "data:image/png;base64,";
 		public static final Codec<ServerMetadata.Favicon> CODEC = Codec.STRING.comapFlatMap(uri -> {
 			if (!uri.startsWith("data:image/png;base64,")) {
-				return DataResult.error("Unknown format");
+				return DataResult.error(() -> "Unknown format");
 			} else {
 				try {
 					String string = uri.substring("data:image/png;base64,".length()).replaceAll("\n", "");
 					byte[] bs = Base64.getDecoder().decode(string.getBytes(StandardCharsets.UTF_8));
 					return DataResult.success(new ServerMetadata.Favicon(bs));
 				} catch (IllegalArgumentException var3) {
-					return DataResult.error("Malformed base64 server icon");
+					return DataResult.error(() -> "Malformed base64 server icon");
 				}
 			}
 		}, iconBytes -> "data:image/png;base64," + new String(Base64.getEncoder().encode(iconBytes.iconBytes), StandardCharsets.UTF_8));

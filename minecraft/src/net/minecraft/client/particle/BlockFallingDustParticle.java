@@ -79,7 +79,7 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 			if (!blockState.isAir() && blockState.getRenderType() == BlockRenderType.INVISIBLE) {
 				return null;
 			} else {
-				BlockPos blockPos = new BlockPos(d, e, f);
+				BlockPos blockPos = BlockPos.ofFloored(d, e, f);
 				int j = MinecraftClient.getInstance().getBlockColors().getParticleColor(blockState, clientWorld, blockPos);
 				if (blockState.getBlock() instanceof FallingBlock) {
 					j = ((FallingBlock)blockState.getBlock()).getColor(blockState, clientWorld, blockPos);

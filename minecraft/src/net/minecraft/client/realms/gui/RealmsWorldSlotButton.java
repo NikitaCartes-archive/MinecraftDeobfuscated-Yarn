@@ -162,7 +162,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		RealmsWorldSlotButton.Action action,
 		@Nullable Text actionPrompt
 	) {
-		boolean bl = this.isHovered();
+		boolean bl = this.isSelected();
 		if (this.isMouseOver((double)mouseX, (double)mouseY) && actionPrompt != null) {
 			this.tooltipSetter.accept(actionPrompt);
 		}
@@ -209,7 +209,6 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	private void drawCheckmark(MatrixStack matrices, int x, int y) {
 		RenderSystem.setShaderTexture(0, CHECKMARK);
 		RenderSystem.enableBlend();
-		RenderSystem.defaultBlendFunc();
 		drawTexture(matrices, x + 67, y + 4, 0.0F, 0.0F, 9, 8, 9, 8);
 		RenderSystem.disableBlend();
 	}
