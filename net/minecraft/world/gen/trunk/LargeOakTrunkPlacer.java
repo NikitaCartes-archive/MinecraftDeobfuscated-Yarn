@@ -56,12 +56,12 @@ extends TrunkPlacer {
             if (f < 0.0f) continue;
             for (int o = 0; o < l; ++o) {
                 BlockPos blockPos2;
-                double q;
-                double h;
                 double e = 1.0;
                 double g = 1.0 * (double)f * ((double)random.nextFloat() + 0.328);
-                double p = g * Math.sin(h = (double)(random.nextFloat() * 2.0f) * Math.PI) + 0.5;
-                BlockPos blockPos = startPos.add(p, (double)(n - 1), q = g * Math.cos(h) + 0.5);
+                double h = (double)(random.nextFloat() * 2.0f) * Math.PI;
+                double p = g * Math.sin(h) + 0.5;
+                double q = g * Math.cos(h) + 0.5;
+                BlockPos blockPos = startPos.add(MathHelper.floor(p), n - 1, MathHelper.floor(q));
                 if (!this.makeOrCheckBranch(world, replacer, random, blockPos, blockPos2 = blockPos.up(5), false, config)) continue;
                 int r = startPos.getX() - blockPos.getX();
                 int s = startPos.getZ() - blockPos.getZ();
@@ -92,7 +92,7 @@ extends TrunkPlacer {
         float g = (float)blockPos.getY() / (float)i;
         float h = (float)blockPos.getZ() / (float)i;
         for (int j = 0; j <= i; ++j) {
-            BlockPos blockPos2 = startPos.add(0.5f + (float)j * f, 0.5f + (float)j * g, 0.5f + (float)j * h);
+            BlockPos blockPos2 = startPos.add(MathHelper.floor(0.5f + (float)j * f), MathHelper.floor(0.5f + (float)j * g), MathHelper.floor(0.5f + (float)j * h));
             if (make) {
                 this.getAndSetState(testableWorld, biConsumer, random, blockPos2, config, state -> (BlockState)state.withIfExists(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2)));
                 continue;

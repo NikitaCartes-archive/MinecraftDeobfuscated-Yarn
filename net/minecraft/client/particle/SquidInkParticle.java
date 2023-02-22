@@ -40,7 +40,7 @@ extends AnimatedParticle {
             if (this.age > this.maxAge / 2) {
                 this.setAlpha(1.0f - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
             }
-            if (this.world.getBlockState(new BlockPos(this.x, this.y, this.z)).isAir()) {
+            if (this.world.getBlockState(BlockPos.ofFloored(this.x, this.y, this.z)).isAir()) {
                 this.velocityY -= (double)0.0074f;
             }
         }

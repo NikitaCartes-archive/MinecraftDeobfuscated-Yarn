@@ -48,11 +48,11 @@ extends Enchantment {
             return;
         }
         BlockState blockState = Blocks.FROSTED_ICE.getDefaultState();
-        float f = Math.min(16, 2 + level);
+        int i = Math.min(16, 2 + level);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-f, -1.0, -f), blockPos.add(f, -1.0, f))) {
+        for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-i, -1, -i), blockPos.add(i, -1, i))) {
             BlockState blockState3;
-            if (!blockPos2.isWithinDistance(entity.getPos(), (double)f)) continue;
+            if (!blockPos2.isWithinDistance(entity.getPos(), (double)i)) continue;
             mutable.set(blockPos2.getX(), blockPos2.getY() + 1, blockPos2.getZ());
             BlockState blockState2 = world.getBlockState(mutable);
             if (!blockState2.isAir() || (blockState3 = world.getBlockState(blockPos2)).getMaterial() != Material.WATER || blockState3.get(FluidBlock.LEVEL) != 0 || !blockState.canPlaceAt(world, blockPos2) || !world.canPlace(blockState, blockPos2, ShapeContext.absent())) continue;

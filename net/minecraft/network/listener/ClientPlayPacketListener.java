@@ -13,6 +13,7 @@ import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.network.packet.s2c.play.BundleS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatSuggestionsS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkBiomeDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
@@ -186,6 +187,8 @@ extends PacketListener {
     public void onKeepAlive(KeepAliveS2CPacket var1);
 
     public void onChunkData(ChunkDataS2CPacket var1);
+
+    public void onChunkBiomeData(ChunkBiomeDataS2CPacket var1);
 
     public void onUnloadChunk(UnloadChunkS2CPacket var1);
 

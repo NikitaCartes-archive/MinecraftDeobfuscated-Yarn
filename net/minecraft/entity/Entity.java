@@ -334,7 +334,7 @@ CommandOutput {
     public double lastRenderX;
     public double lastRenderY;
     public double lastRenderZ;
-    public float stepHeight;
+    private float stepHeight;
     public boolean noClip;
     protected final Random random = Random.create();
     public int age;
@@ -934,7 +934,7 @@ CommandOutput {
                 this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
                 if (this.isTouchingWater()) {
                     if (moveEffect.playsSounds()) {
-                        Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
+                        Entity entity = this.hasPassengers() && this.getControllingPassenger() != null ? this.getControllingPassenger() : this;
                         float h = entity == this ? 0.35f : 0.4f;
                         Vec3d vec3d3 = entity.getVelocity();
                         float i = Math.min(1.0f, (float)Math.sqrt(vec3d3.x * vec3d3.x * (double)0.2f + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * (double)0.2f) * h);
@@ -1077,7 +1077,7 @@ CommandOutput {
     }
 
     protected BlockPos getVelocityAffectingPos() {
-        return new BlockPos(this.pos.x, this.getBoundingBox().minY - 0.5000001, this.pos.z);
+        return BlockPos.ofFloored(this.pos.x, this.getBoundingBox().minY - 0.5000001, this.pos.z);
     }
 
     protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type) {
@@ -1125,11 +1125,11 @@ CommandOutput {
         boolean bl2 = movement.y != vec3d.y;
         boolean bl3 = movement.z != vec3d.z;
         boolean bl5 = bl4 = this.onGround || bl2 && movement.y < 0.0;
-        if (this.stepHeight > 0.0f && bl4 && (bl || bl3)) {
+        if (this.getStepHeight() > 0.0f && bl4 && (bl || bl3)) {
             Vec3d vec3d4;
-            Vec3d vec3d2 = Entity.adjustMovementForCollisions(this, new Vec3d(movement.x, this.stepHeight, movement.z), box, this.world, list);
-            Vec3d vec3d3 = Entity.adjustMovementForCollisions(this, new Vec3d(0.0, this.stepHeight, 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, list);
-            if (vec3d3.y < (double)this.stepHeight && (vec3d4 = Entity.adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, list).add(vec3d3)).horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
+            Vec3d vec3d2 = Entity.adjustMovementForCollisions(this, new Vec3d(movement.x, this.getStepHeight(), movement.z), box, this.world, list);
+            Vec3d vec3d3 = Entity.adjustMovementForCollisions(this, new Vec3d(0.0, this.getStepHeight(), 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, list);
+            if (vec3d3.y < (double)this.getStepHeight() && (vec3d4 = Entity.adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, list).add(vec3d3)).horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
                 vec3d2 = vec3d4;
             }
             if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
@@ -1203,10 +1203,10 @@ CommandOutput {
      * This should be called manually if {@link #tick} is overridden.
      */
     protected void checkBlockCollision() {
+        BlockPos blockPos2;
         Box box = this.getBoundingBox();
-        BlockPos blockPos = new BlockPos(box.minX + 1.0E-7, box.minY + 1.0E-7, box.minZ + 1.0E-7);
-        BlockPos blockPos2 = new BlockPos(box.maxX - 1.0E-7, box.maxY - 1.0E-7, box.maxZ - 1.0E-7);
-        if (this.world.isRegionLoaded(blockPos, blockPos2)) {
+        BlockPos blockPos = BlockPos.ofFloored(box.minX + 1.0E-7, box.minY + 1.0E-7, box.minZ + 1.0E-7);
+        if (this.world.isRegionLoaded(blockPos, blockPos2 = BlockPos.ofFloored(box.maxX - 1.0E-7, box.maxY - 1.0E-7, box.maxZ - 1.0E-7))) {
             BlockPos.Mutable mutable = new BlockPos.Mutable();
             for (int i = blockPos.getX(); i <= blockPos2.getX(); ++i) {
                 for (int j = blockPos.getY(); j <= blockPos2.getY(); ++j) {
@@ -1429,6 +1429,9 @@ CommandOutput {
      * entities except horses and llamas
      */
     public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+        if (this.type.isIn(EntityTypeTags.FALL_DAMAGE_IMMUNE)) {
+            return false;
+        }
         if (this.hasPassengers()) {
             for (Entity entity : this.getPassengerList()) {
                 entity.handleFallDamage(fallDistance, damageMultiplier, damageSource);
@@ -1449,7 +1452,7 @@ CommandOutput {
      */
     private boolean isBeingRainedOn() {
         BlockPos blockPos = this.getBlockPos();
-        return this.world.hasRain(blockPos) || this.world.hasRain(new BlockPos((double)blockPos.getX(), this.getBoundingBox().maxY, (double)blockPos.getZ()));
+        return this.world.hasRain(blockPos) || this.world.hasRain(BlockPos.ofFloored(blockPos.getX(), this.getBoundingBox().maxY, blockPos.getZ()));
     }
 
     /**
@@ -1546,7 +1549,7 @@ CommandOutput {
         if (entity instanceof BoatEntity && !(boatEntity = (BoatEntity)entity).isSubmergedInWater() && boatEntity.getBoundingBox().maxY >= d && boatEntity.getBoundingBox().minY <= d) {
             return;
         }
-        BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
+        BlockPos blockPos = BlockPos.ofFloored(this.getX(), d, this.getZ());
         FluidState fluidState = this.world.getFluidState(blockPos);
         double e = (float)blockPos.getY() + fluidState.getHeight(this.world, blockPos);
         if (e > d) {
@@ -1557,7 +1560,7 @@ CommandOutput {
     protected void onSwimmingStart() {
         double e;
         double d;
-        Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
+        Entity entity = this.hasPassengers() && this.getControllingPassenger() != null ? this.getControllingPassenger() : this;
         float f = entity == this ? 0.2f : 0.9f;
         Vec3d vec3d = entity.getVelocity();
         float g = Math.min(1.0f, (float)Math.sqrt(vec3d.x * vec3d.x * (double)0.2f + vec3d.y * vec3d.y + vec3d.z * vec3d.z * (double)0.2f) * f);
@@ -1671,7 +1674,7 @@ CommandOutput {
     @Deprecated
     public float getBrightnessAtEyes() {
         if (this.world.isPosLoaded(this.getBlockX(), this.getBlockZ())) {
-            return this.world.getBrightness(new BlockPos(this.getX(), this.getEyeY(), this.getZ()));
+            return this.world.getBrightness(BlockPos.ofFloored(this.getX(), this.getEyeY(), this.getZ()));
         }
         return 0.0f;
     }
@@ -3304,7 +3307,7 @@ CommandOutput {
      * @param z the entity's Z position
      */
     protected void pushOutOfBlocks(double x, double y, double z) {
-        BlockPos blockPos = new BlockPos(x, y, z);
+        BlockPos blockPos = BlockPos.ofFloored(x, y, z);
         Vec3d vec3d = new Vec3d(x - (double)blockPos.getX(), y - (double)blockPos.getY(), z - (double)blockPos.getZ());
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         Direction direction = Direction.UP;
@@ -3464,7 +3467,7 @@ CommandOutput {
      * @see #isInvulnerable
      */
     public boolean isInvulnerableTo(DamageSource damageSource) {
-        return this.isRemoved() || this.invulnerable && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !damageSource.isSourceCreativePlayer() || damageSource.isIn(DamageTypeTags.IS_FIRE) && this.isFireImmune();
+        return this.isRemoved() || this.invulnerable && !damageSource.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !damageSource.isSourceCreativePlayer() || damageSource.isIn(DamageTypeTags.IS_FIRE) && this.isFireImmune() || damageSource.isIn(DamageTypeTags.IS_FALL) && this.getType().isIn(EntityTypeTags.FALL_DAMAGE_IMMUNE);
     }
 
     /**
@@ -3840,7 +3843,7 @@ CommandOutput {
         if (!(this.world instanceof ServerWorld)) {
             return;
         }
-        ChunkPos chunkPos = new ChunkPos(new BlockPos(destX, destY, destZ));
+        ChunkPos chunkPos = new ChunkPos(BlockPos.ofFloored(destX, destY, destZ));
         ((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getId());
         this.world.getChunk(chunkPos.x, chunkPos.z);
         this.requestTeleport(destX, destY, destZ);
@@ -4214,24 +4217,24 @@ CommandOutput {
      * <p>Rideable entities should override this to return the entity. This is
      * usually {@code #getFirstPassenger}.
      * 
-     * @see #hasPrimaryPassenger
+     * @see #hasControllingPassenger
      * @see #getPassengerList
      * @see #getFirstPassenger
      */
     @Nullable
-    public Entity getPrimaryPassenger() {
+    public LivingEntity getControllingPassenger() {
         return null;
     }
 
     /**
      * {@return whether there is a passenger in control of this entity}
      * 
-     * @see #getPrimaryPassenger
+     * @see #getControllingPassenger
      * @see #getPassengerList
      * @see #getFirstPassenger
      */
-    public final boolean hasPrimaryPassenger() {
-        return this.getPrimaryPassenger() != null;
+    public final boolean hasControllingPassenger() {
+        return this.getControllingPassenger() != null;
     }
 
     /**
@@ -4410,10 +4413,15 @@ CommandOutput {
      * @see #getPrimaryPassenger
      */
     public boolean isLogicalSideForUpdatingMovement() {
-        Entity entity = this.getPrimaryPassenger();
-        if (entity instanceof PlayerEntity) {
-            return ((PlayerEntity)entity).isMainPlayer();
+        LivingEntity livingEntity = this.getControllingPassenger();
+        if (livingEntity instanceof PlayerEntity) {
+            PlayerEntity playerEntity = (PlayerEntity)livingEntity;
+            return playerEntity.isMainPlayer();
         }
+        return this.canMoveVoluntarily();
+    }
+
+    public boolean canMoveVoluntarily() {
         return !this.world.isClient;
     }
 
@@ -4940,6 +4948,14 @@ CommandOutput {
 
     public boolean canSprintAsVehicle() {
         return false;
+    }
+
+    public float getStepHeight() {
+        return this.hasControllingPassenger() ? Math.max(this.stepHeight, 1.0f) : this.stepHeight;
+    }
+
+    public void setStepHeight(float stepHeight) {
+        this.stepHeight = stepHeight;
     }
 
     /**

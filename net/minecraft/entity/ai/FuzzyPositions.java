@@ -44,7 +44,7 @@ public class FuzzyPositions {
             return null;
         }
         int i = random.nextInt(2 * verticalRange + 1) - verticalRange + startHeight;
-        return new BlockPos(g, (double)i, h);
+        return BlockPos.ofFloored(g, i, h);
     }
 
     /**
@@ -129,7 +129,7 @@ public class FuzzyPositions {
             i = entity.getX() > (double)blockPos.getX() ? (i -= random.nextInt(horizontalRange / 2)) : (i += random.nextInt(horizontalRange / 2));
             j = entity.getZ() > (double)blockPos.getZ() ? (j -= random.nextInt(horizontalRange / 2)) : (j += random.nextInt(horizontalRange / 2));
         }
-        return new BlockPos((double)i + entity.getX(), (double)fuzz.getY() + entity.getY(), (double)j + entity.getZ());
+        return BlockPos.ofFloored((double)i + entity.getX(), (double)fuzz.getY() + entity.getY(), (double)j + entity.getZ());
     }
 }
 

@@ -21,6 +21,7 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.control.BodyControl;
+import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -48,6 +49,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -82,7 +84,8 @@ Saddleable {
 
     public CamelEntity(EntityType<? extends CamelEntity> entityType, World world) {
         super((EntityType<? extends AbstractHorseEntity>)entityType, world);
-        this.stepHeight = 1.5f;
+        this.setStepHeight(1.5f);
+        this.moveControl = new CamelMoveControl();
         MobNavigation mobNavigation = (MobNavigation)this.getNavigation();
         mobNavigation.setCanSwim(true);
         mobNavigation.setCanWalkOverFences(true);
@@ -171,7 +174,7 @@ Saddleable {
         if (this.dashCooldown > 0) {
             --this.dashCooldown;
             if (this.dashCooldown == 0) {
-                this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_CAMEL_DASH_READY, SoundCategory.PLAYERS, 1.0f, 1.0f);
+                this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_CAMEL_DASH_READY, SoundCategory.NEUTRAL, 1.0f, 1.0f);
             }
         }
         if (this.world.isClient()) {
@@ -215,9 +218,6 @@ Saddleable {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (!this.isAlive()) {
-            return;
-        }
         if (this.isStationary() && this.isOnGround()) {
             this.setVelocity(this.getVelocity().multiply(0.0, 1.0, 0.0));
             movementInput = movementInput.multiply(0.0, 1.0, 0.0);
@@ -225,28 +225,43 @@ Saddleable {
         super.travel(movementInput);
     }
 
+    @Override
+    protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
+        super.tickControlled(controllingPassenger, movementInput);
+        if (controllingPassenger.forwardSpeed > 0.0f && this.isSitting() && !this.isChangingPose()) {
+            this.startStanding();
+        }
+    }
+
     public boolean isStationary() {
         return this.isSitting() || this.isChangingPose();
     }
 
     @Override
-    protected float getHorsebackMovementSpeed(LivingEntity passenger) {
-        float f = passenger.isSprinting() && this.getJumpCooldown() == 0 ? 0.1f : 0.0f;
+    protected float getSaddledSpeed(LivingEntity controllingPassenger) {
+        float f = controllingPassenger.isSprinting() && this.getJumpCooldown() == 0 ? 0.1f : 0.0f;
         return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + f;
     }
 
     @Override
-    protected boolean ignoresMovementInput(LivingEntity passenger) {
-        boolean bl = this.isChangingPose();
-        if (this.isSitting() && !bl && passenger.forwardSpeed > 0.0f) {
-            this.startStanding();
+    protected Vec2f getControlledRotation(LivingEntity controllingPassenger) {
+        if (this.isStationary()) {
+            return new Vec2f(this.getPitch(), this.getYaw());
         }
-        return this.isStationary() || super.ignoresMovementInput(passenger);
+        return super.getControlledRotation(controllingPassenger);
+    }
+
+    @Override
+    protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+        if (this.isStationary()) {
+            return Vec3d.ZERO;
+        }
+        return super.getControlledMovementInput(controllingPassenger, movementInput);
     }
 
     @Override
     public boolean canJump(PlayerEntity player) {
-        return !this.isStationary() && this.getPrimaryPassenger() == player && super.canJump(player);
+        return !this.isStationary() && this.getControllingPassenger() == player && super.canJump(player);
     }
 
     @Override
@@ -263,7 +278,7 @@ Saddleable {
     }
 
     @Override
-    protected void jump(float strength, float sidewaysSpeed, float forwardSpeed) {
+    protected void jump(float strength, Vec3d movementInput) {
         double d = this.getAttributeValue(EntityAttributes.HORSE_JUMP_STRENGTH) * (double)this.getJumpVelocityMultiplier() + this.getJumpBoostVelocityModifier();
         this.addVelocity(this.getRotationVector().multiply(1.0, 0.0, 1.0).normalize().multiply((double)(22.2222f * strength) * this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (double)this.getVelocityMultiplier()).add(0.0, (double)(1.4285f * strength) * d, 0.0));
         this.dashCooldown = 55;
@@ -488,7 +503,7 @@ Saddleable {
 
     @Override
     public void onPassengerLookAround(Entity passenger) {
-        if (this.getPrimaryPassenger() != passenger) {
+        if (this.getControllingPassenger() != passenger) {
             this.clampPassengerYaw(passenger);
         }
     }
@@ -524,7 +539,7 @@ Saddleable {
 
     @Override
     @Nullable
-    public LivingEntity getPrimaryPassenger() {
+    public LivingEntity getControllingPassenger() {
         Entity entity;
         if (!this.getPassengerList().isEmpty() && this.isSaddled() && (entity = this.getPassengerList().get(0)) instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
@@ -628,10 +643,19 @@ Saddleable {
         return this.createChild(world, entity);
     }
 
-    @Override
-    @Nullable
-    public /* synthetic */ Entity getPrimaryPassenger() {
-        return this.getPrimaryPassenger();
+    class CamelMoveControl
+    extends MoveControl {
+        public CamelMoveControl() {
+            super(CamelEntity.this);
+        }
+
+        @Override
+        public void tick() {
+            if (this.state == MoveControl.State.MOVE_TO && !CamelEntity.this.isLeashed() && CamelEntity.this.isSitting() && !CamelEntity.this.isChangingPose()) {
+                CamelEntity.this.startStanding();
+            }
+            super.tick();
+        }
     }
 
     class CamelBodyControl

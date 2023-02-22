@@ -88,7 +88,7 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.fillGradient(matrices, 0, 0, this.width, this.height, 0x60500000, -1602211792);
+        DeathScreen.fillGradient(matrices, 0, 0, this.width, this.height, 0x60500000, -1602211792);
         matrices.push();
         matrices.scale(2.0f, 2.0f, 2.0f);
         DeathScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 0xFFFFFF);
@@ -104,7 +104,7 @@ extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
         if (this.titleScreenButton != null && this.client.getAbuseReportContext().hasDraft()) {
             RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
-            this.drawTexture(matrices, this.titleScreenButton.getX() + this.titleScreenButton.getWidth() - 17, this.titleScreenButton.getY() + 3, 182, 24, 15, 15);
+            DeathScreen.drawTexture(matrices, this.titleScreenButton.getX() + this.titleScreenButton.getWidth() - 17, this.titleScreenButton.getY() + 3, 182, 24, 15, 15);
         }
     }
 

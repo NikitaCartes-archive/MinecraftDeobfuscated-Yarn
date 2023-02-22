@@ -149,7 +149,7 @@ extends Item {
             double h = random.nextGaussian() * 0.02;
             double j = 0.5 - d;
             double k = (double)pos.getX() + j + random.nextDouble() * d * 2.0;
-            if (world.getBlockState(new BlockPos(k, l = (double)pos.getY() + random.nextDouble() * e, m = (double)pos.getZ() + j + random.nextDouble() * d * 2.0).down()).isAir()) continue;
+            if (world.getBlockState(BlockPos.ofFloored(k, l = (double)pos.getY() + random.nextDouble() * e, m = (double)pos.getZ() + j + random.nextDouble() * d * 2.0).down()).isAir()) continue;
             world.addParticle(ParticleTypes.HAPPY_VILLAGER, k, l, m, f, g, h);
         }
     }

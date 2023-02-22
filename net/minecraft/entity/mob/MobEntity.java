@@ -221,8 +221,9 @@ implements Targeter {
     }
 
     public MoveControl getMoveControl() {
-        if (this.hasVehicle() && this.getVehicle() instanceof MobEntity) {
-            MobEntity mobEntity = (MobEntity)this.getVehicle();
+        Entity entity = this.getVehicle();
+        if (entity instanceof MobEntity) {
+            MobEntity mobEntity = (MobEntity)entity;
             return mobEntity.getMoveControl();
         }
         return this.moveControl;
@@ -358,7 +359,7 @@ implements Targeter {
     }
 
     protected void updateGoalControls() {
-        boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity);
+        boolean bl = !(this.getControllingPassenger() instanceof MobEntity);
         boolean bl2 = !(this.getVehicle() instanceof BoatEntity);
         this.goalSelector.setControlEnabled(Goal.Control.MOVE, bl);
         this.goalSelector.setControlEnabled(Goal.Control.JUMP, bl && bl2);
@@ -1310,11 +1311,6 @@ implements Targeter {
     }
 
     @Override
-    public boolean isLogicalSideForUpdatingMovement() {
-        return this.hasPrimaryPassenger() && super.isLogicalSideForUpdatingMovement();
-    }
-
-    @Override
     public boolean canMoveVoluntarily() {
         return super.canMoveVoluntarily() && !this.isAiDisabled();
     }
@@ -1409,7 +1405,7 @@ implements Targeter {
         if (this.world.isDay() && !this.world.isClient) {
             boolean bl;
             float f = this.getBrightnessAtEyes();
-            BlockPos blockPos = new BlockPos(this.getX(), this.getEyeY(), this.getZ());
+            BlockPos blockPos = BlockPos.ofFloored(this.getX(), this.getEyeY(), this.getZ());
             boolean bl2 = bl = this.isWet() || this.inPowderSnow || this.wasInPowderSnow;
             if (f > 0.5f && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f && !bl && this.world.isSkyVisible(blockPos)) {
                 return true;

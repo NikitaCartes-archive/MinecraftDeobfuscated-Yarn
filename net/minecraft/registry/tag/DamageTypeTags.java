@@ -12,6 +12,7 @@ public interface DamageTypeTags {
     public static final TagKey<DamageType> DAMAGES_HELMET = DamageTypeTags.of("damages_helmet");
     public static final TagKey<DamageType> BYPASSES_ARMOR = DamageTypeTags.of("bypasses_armor");
     public static final TagKey<DamageType> BYPASSES_INVULNERABILITY = DamageTypeTags.of("bypasses_invulnerability");
+    public static final TagKey<DamageType> BYPASSES_COOLDOWN = DamageTypeTags.of("bypasses_cooldown");
     public static final TagKey<DamageType> BYPASSES_EFFECTS = DamageTypeTags.of("bypasses_effects");
     public static final TagKey<DamageType> BYPASSES_RESISTANCE = DamageTypeTags.of("bypasses_resistance");
     public static final TagKey<DamageType> BYPASSES_ENCHANTMENTS = DamageTypeTags.of("bypasses_enchantments");
@@ -31,6 +32,7 @@ public interface DamageTypeTags {
     public static final TagKey<DamageType> BURNS_ARMOR_STANDS = DamageTypeTags.of("burns_armor_stands");
     public static final TagKey<DamageType> AVOIDS_GUARDIAN_THORNS = DamageTypeTags.of("avoids_guardian_thorns");
     public static final TagKey<DamageType> ALWAYS_TRIGGERS_SILVERFISH = DamageTypeTags.of("always_triggers_silverfish");
+    public static final TagKey<DamageType> ALWAYS_HURTS_ENDER_DRAGONS = DamageTypeTags.of("always_hurts_ender_dragons");
 
     private static TagKey<DamageType> of(String id) {
         return TagKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier(id));

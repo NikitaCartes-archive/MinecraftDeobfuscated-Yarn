@@ -20,10 +20,10 @@ implements FloatSupplier {
     public static Codec<FloatProvider> createValidatedCodec(float min, float max) {
         return Codecs.validate(VALUE_CODEC, provider -> {
             if (provider.getMin() < min) {
-                return DataResult.error("Value provider too low: " + min + " [" + provider.getMin() + "-" + provider.getMax() + "]");
+                return DataResult.error(() -> "Value provider too low: " + min + " [" + provider.getMin() + "-" + provider.getMax() + "]");
             }
             if (provider.getMax() > max) {
-                return DataResult.error("Value provider too high: " + max + " [" + provider.getMin() + "-" + provider.getMax() + "]");
+                return DataResult.error(() -> "Value provider too high: " + max + " [" + provider.getMin() + "-" + provider.getMax() + "]");
             }
             return DataResult.success(provider);
         });

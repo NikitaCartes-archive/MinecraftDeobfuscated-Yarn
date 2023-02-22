@@ -62,7 +62,7 @@ public class StrollTask {
         Vec3d vec3d2 = null;
         for (int[] is : RADII) {
             vec3d2 = vec3d == null ? LookTargetUtil.find(entity, is[0], is[1]) : entity.getPos().add(entity.getPos().relativize(vec3d).normalize().multiply(is[0], is[1], is[0]));
-            if (vec3d2 == null || entity.world.getFluidState(new BlockPos(vec3d2)).isEmpty()) {
+            if (vec3d2 == null || entity.world.getFluidState(BlockPos.ofFloored(vec3d2)).isEmpty()) {
                 return vec3d;
             }
             vec3d = vec3d2;

@@ -991,6 +991,9 @@ implements WindowEventHandler {
             }
         }
         this.currentScreen = screen;
+        if (this.currentScreen != null) {
+            this.currentScreen.onDisplayed();
+        }
         BufferRenderer.reset();
         if (screen != null) {
             this.mouse.unlockCursor();
@@ -1109,9 +1112,6 @@ implements WindowEventHandler {
             bl = false;
             this.gpuUtilizationPercentage = 0.0;
         }
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.push();
-        RenderSystem.applyModelViewMatrix();
         RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT, IS_SYSTEM_MAC);
         this.framebuffer.beginWrite(true);
         BackgroundRenderer.clearFog();
@@ -1121,8 +1121,6 @@ implements WindowEventHandler {
         if (!this.skipGameRender) {
             this.profiler.swap("gameRenderer");
             this.gameRenderer.render(this.paused ? this.pausedTickDelta : this.renderTickCounter.tickDelta, l, tick);
-            this.profiler.swap("toasts");
-            this.toastManager.draw(new MatrixStack());
             this.profiler.pop();
         }
         if (this.tickProfilerResult != null) {
@@ -1132,9 +1130,6 @@ implements WindowEventHandler {
         }
         this.profiler.push("blit");
         this.framebuffer.endWrite();
-        matrixStack.pop();
-        matrixStack.push();
-        RenderSystem.applyModelViewMatrix();
         this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
         this.renderTime = Util.getMeasuringTimeNano() - m;
         if (bl) {
@@ -1142,8 +1137,6 @@ implements WindowEventHandler {
                 this.currentGlTimerQuery = glTimer.endProfile();
             });
         }
-        matrixStack.pop();
-        RenderSystem.applyModelViewMatrix();
         this.profiler.swap("updateDisplay");
         this.window.swapBuffers();
         int k = this.getFramerateLimit();
@@ -1388,6 +1381,7 @@ implements WindowEventHandler {
         Matrix4f matrix4f = new Matrix4f().setOrtho(0.0f, this.window.getFramebufferWidth(), this.window.getFramebufferHeight(), 0.0f, 1000.0f, 3000.0f);
         RenderSystem.setProjectionMatrix(matrix4f);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.push();
         matrixStack.loadIdentity();
         matrixStack.translate(0.0f, 0.0f, -2000.0f);
         RenderSystem.applyModelViewMatrix();
@@ -1464,6 +1458,8 @@ implements WindowEventHandler {
             string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
             this.textRenderer.drawWithShadow(matrices, (String)string3, (float)(j + 160 - this.textRenderer.getWidth((String)string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
         }
+        matrixStack.pop();
+        RenderSystem.applyModelViewMatrix();
     }
 
     public void scheduleStop() {

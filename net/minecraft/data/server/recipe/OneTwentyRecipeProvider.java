@@ -83,6 +83,8 @@ extends RecipeProvider {
         OneTwentyRecipeProvider.offerBoatRecipe(exporter, Items.CHERRY_BOAT, Blocks.CHERRY_PLANKS);
         OneTwentyRecipeProvider.offerChestBoatRecipe(exporter, Items.CHERRY_CHEST_BOAT, Items.CHERRY_BOAT);
         OneTwentyRecipeProvider.offerShapelessRecipe(exporter, Items.PINK_DYE, Items.PINK_PETALS, "pink_dye", 1);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, Items.BRUSH).input(Character.valueOf('X'), Items.FEATHER).input(Character.valueOf('#'), Items.COPPER_INGOT).input(Character.valueOf('I'), Items.STICK).pattern("X").pattern("#").pattern("I").criterion("has_copper_ingot", OneTwentyRecipeProvider.conditionsFromItem(Items.COPPER_INGOT)).offerTo(exporter);
+        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Items.DECORATED_POT).input(Character.valueOf('#'), Items.BRICK).pattern(" # ").pattern("# #").pattern(" # ").criterion("has_brick", OneTwentyRecipeProvider.conditionsFromTag(ItemTags.DECORATED_POT_SHARDS)).offerTo(exporter, "decorated_pot_simple");
         ComplexRecipeJsonBuilder.create(RecipeSerializer.CRAFTING_DECORATED_POT).offerTo(exporter, "decorated_pot");
     }
 }

@@ -22,6 +22,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
@@ -38,12 +39,9 @@ public abstract class DrawableHelper {
      * The texture of various icons and widgets used for rendering ingame indicators.
      */
     public static final Identifier GUI_ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
-    /**
-     * The z offset used by {@link DrawableHelper}.
-     */
-    private int zOffset;
+    public static final Identifier LIGHT_DIRT_BACKGROUND_TEXTURE = new Identifier("textures/gui/light_dirt_background.png");
 
-    protected void drawHorizontalLine(MatrixStack matrices, int x1, int x2, int y, int color) {
+    protected static void drawHorizontalLine(MatrixStack matrices, int x1, int x2, int y, int color) {
         if (x2 < x1) {
             int i = x1;
             x1 = x2;
@@ -52,7 +50,7 @@ public abstract class DrawableHelper {
         DrawableHelper.fill(matrices, x1, y, x2 + 1, y + 1, color);
     }
 
-    protected void drawVerticalLine(MatrixStack matrices, int x, int y1, int y2, int color) {
+    protected static void drawVerticalLine(MatrixStack matrices, int x, int y1, int y2, int color) {
         if (y2 < y1) {
             int i = y1;
             y1 = y2;
@@ -81,11 +79,8 @@ public abstract class DrawableHelper {
     }
 
     public static void fill(MatrixStack matrices, int x1, int y1, int x2, int y2, int z, int color) {
-        DrawableHelper.fill(matrices.peek().getPositionMatrix(), x1, y1, x2, y2, z, color);
-    }
-
-    private static void fill(Matrix4f matrix, int x1, int y1, int x2, int y2, int z, int color) {
         int i;
+        Matrix4f matrix4f = matrices.peek().getPositionMatrix();
         if (x1 < x2) {
             i = x1;
             x1 = x2;
@@ -96,30 +91,28 @@ public abstract class DrawableHelper {
             y1 = y2;
             y2 = i;
         }
-        float f = (float)(color >> 24 & 0xFF) / 255.0f;
-        float g = (float)(color >> 16 & 0xFF) / 255.0f;
-        float h = (float)(color >> 8 & 0xFF) / 255.0f;
-        float j = (float)(color & 0xFF) / 255.0f;
+        float f = (float)ColorHelper.Argb.getAlpha(color) / 255.0f;
+        float g = (float)ColorHelper.Argb.getRed(color) / 255.0f;
+        float h = (float)ColorHelper.Argb.getGreen(color) / 255.0f;
+        float j = (float)ColorHelper.Argb.getBlue(color) / 255.0f;
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-        bufferBuilder.vertex(matrix, x1, y2, z).color(g, h, j, f).next();
-        bufferBuilder.vertex(matrix, x2, y2, z).color(g, h, j, f).next();
-        bufferBuilder.vertex(matrix, x2, y1, z).color(g, h, j, f).next();
-        bufferBuilder.vertex(matrix, x1, y1, z).color(g, h, j, f).next();
+        bufferBuilder.vertex(matrix4f, x1, y1, z).color(g, h, j, f).next();
+        bufferBuilder.vertex(matrix4f, x1, y2, z).color(g, h, j, f).next();
+        bufferBuilder.vertex(matrix4f, x2, y2, z).color(g, h, j, f).next();
+        bufferBuilder.vertex(matrix4f, x2, y1, z).color(g, h, j, f).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         RenderSystem.disableBlend();
     }
 
-    protected void fillGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd) {
-        DrawableHelper.fillGradient(matrices, startX, startY, endX, endY, colorStart, colorEnd, this.zOffset);
+    protected static void fillGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd) {
+        DrawableHelper.fillGradient(matrices, startX, startY, endX, endY, colorStart, colorEnd, 0);
     }
 
     protected static void fillGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd, int z) {
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -130,18 +123,18 @@ public abstract class DrawableHelper {
     }
 
     protected static void fillGradient(Matrix4f matrix, BufferBuilder builder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd) {
-        float f = (float)(colorStart >> 24 & 0xFF) / 255.0f;
-        float g = (float)(colorStart >> 16 & 0xFF) / 255.0f;
-        float h = (float)(colorStart >> 8 & 0xFF) / 255.0f;
-        float i = (float)(colorStart & 0xFF) / 255.0f;
-        float j = (float)(colorEnd >> 24 & 0xFF) / 255.0f;
-        float k = (float)(colorEnd >> 16 & 0xFF) / 255.0f;
-        float l = (float)(colorEnd >> 8 & 0xFF) / 255.0f;
-        float m = (float)(colorEnd & 0xFF) / 255.0f;
-        builder.vertex(matrix, endX, startY, z).color(g, h, i, f).next();
+        float f = (float)ColorHelper.Argb.getAlpha(colorStart) / 255.0f;
+        float g = (float)ColorHelper.Argb.getRed(colorStart) / 255.0f;
+        float h = (float)ColorHelper.Argb.getGreen(colorStart) / 255.0f;
+        float i = (float)ColorHelper.Argb.getBlue(colorStart) / 255.0f;
+        float j = (float)ColorHelper.Argb.getAlpha(colorEnd) / 255.0f;
+        float k = (float)ColorHelper.Argb.getRed(colorEnd) / 255.0f;
+        float l = (float)ColorHelper.Argb.getGreen(colorEnd) / 255.0f;
+        float m = (float)ColorHelper.Argb.getBlue(colorEnd) / 255.0f;
         builder.vertex(matrix, startX, startY, z).color(g, h, i, f).next();
         builder.vertex(matrix, startX, endY, z).color(k, l, m, j).next();
         builder.vertex(matrix, endX, endY, z).color(k, l, m, j).next();
+        builder.vertex(matrix, endX, startY, z).color(g, h, i, f).next();
     }
 
     public static void drawCenteredTextWithShadow(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {
@@ -172,13 +165,13 @@ public abstract class DrawableHelper {
     /**
      * @param renderAction the action to render both the content and the outline, taking x and y positions as input
      */
-    public void drawWithOutline(int x, int y, BiConsumer<Integer, Integer> renderAction) {
+    public static void drawWithOutline(int x, int y, BiConsumer<Integer, Integer> renderAction) {
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         renderAction.accept(x + 1, y);
         renderAction.accept(x - 1, y);
         renderAction.accept(x, y + 1);
         renderAction.accept(x, y - 1);
-        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
+        RenderSystem.defaultBlendFunc();
         renderAction.accept(x, y);
     }
 
@@ -190,24 +183,23 @@ public abstract class DrawableHelper {
         DrawableHelper.drawTexturedQuad(matrices.peek().getPositionMatrix(), x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV(), red, green, blue, alpha);
     }
 
+    public static void drawBorder(MatrixStack matrices, int x, int y, int width, int height, int color) {
+        DrawableHelper.fill(matrices, x, y, x + width, y + 1, color);
+        DrawableHelper.fill(matrices, x, y + height - 1, x + width, y + height, color);
+        DrawableHelper.fill(matrices, x, y + 1, x + 1, y + height - 1, color);
+        DrawableHelper.fill(matrices, x + width - 1, y + 1, x + width, y + height - 1, color);
+    }
+
     /**
      * Draws a textured rectangle from a region in a 256x256 texture.
      * 
-     * <p>The Z coordinate of the rectangle is {@link #zOffset}.
+     * <p>The Z coordinate of the rectangle is {@code 0}.
      * 
      * <p>The width and height of the region are the same as
      * the dimensions of the rectangle.
-     * 
-     * @param height the height
-     * @param v the top-most coordinate of the texture region
-     * @param width the width
-     * @param y the Y coordinate of the rectangle
-     * @param u the left-most coordinate of the texture region
-     * @param matrices the matrix stack used for rendering
-     * @param x the X coordinate of the rectangle
      */
-    public void drawTexture(MatrixStack matrices, int x, int y, int u, int v, int width, int height) {
-        DrawableHelper.drawTexture(matrices, x, y, this.zOffset, u, v, width, height, 256, 256);
+    public static void drawTexture(MatrixStack matrices, int x, int y, int u, int v, int width, int height) {
+        DrawableHelper.drawTexture(matrices, x, y, 0, u, v, width, height, 256, 256);
     }
 
     /**
@@ -278,75 +270,66 @@ public abstract class DrawableHelper {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+        bufferBuilder.vertex(matrix, x0, y0, z).texture(u0, v0).next();
         bufferBuilder.vertex(matrix, x0, y1, z).texture(u0, v1).next();
         bufferBuilder.vertex(matrix, x1, y1, z).texture(u1, v1).next();
         bufferBuilder.vertex(matrix, x1, y0, z).texture(u1, v0).next();
-        bufferBuilder.vertex(matrix, x0, y0, z).texture(u0, v0).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
     }
 
     private static void drawTexturedQuad(Matrix4f matrix, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1, float red, float green, float blue, float alpha) {
         RenderSystem.setShader(GameRenderer::getPositionColorTexProgram);
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
+        bufferBuilder.vertex(matrix, x0, y0, z).color(red, green, blue, alpha).texture(u0, v0).next();
         bufferBuilder.vertex(matrix, x0, y1, z).color(red, green, blue, alpha).texture(u0, v1).next();
         bufferBuilder.vertex(matrix, x1, y1, z).color(red, green, blue, alpha).texture(u1, v1).next();
         bufferBuilder.vertex(matrix, x1, y0, z).color(red, green, blue, alpha).texture(u1, v0).next();
-        bufferBuilder.vertex(matrix, x0, y0, z).color(red, green, blue, alpha).texture(u0, v0).next();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
         RenderSystem.disableBlend();
     }
 
-    public int getZOffset() {
-        return this.zOffset;
+    public static void drawNineSlicedTexture(MatrixStack matrices, int x, int y, int width, int height, int outerSliceSize, int centerSliceWidth, int centerSliceHeight, int u, int v) {
+        DrawableHelper.drawNineSlicedTexture(matrices, x, y, width, height, outerSliceSize, outerSliceSize, outerSliceSize, outerSliceSize, centerSliceWidth, centerSliceHeight, u, v);
     }
 
-    public void setZOffset(int zOffset) {
-        this.zOffset = zOffset;
-    }
-
-    public void drawNineSlicedTexture(MatrixStack matrices, int x, int y, int width, int height, int outerSliceSize, int centerSliceWidth, int centerSliceHeight, int u, int v) {
-        this.drawNineSlicedTexture(matrices, x, y, width, height, outerSliceSize, outerSliceSize, outerSliceSize, outerSliceSize, centerSliceWidth, centerSliceHeight, u, v);
-    }
-
-    public void drawNineSlicedTexture(MatrixStack matrices, int x, int y, int width, int height, int leftSliceWidth, int topSliceHeight, int rightSliceWidth, int bottomSliceHeight, int centerSliceWidth, int centerSliceHeight, int u, int v) {
+    public static void drawNineSlicedTexture(MatrixStack matrices, int x, int y, int width, int height, int leftSliceWidth, int topSliceHeight, int rightSliceWidth, int bottomSliceHeight, int centerSliceWidth, int centerSliceHeight, int u, int v) {
         if (width == centerSliceWidth && height == centerSliceHeight) {
-            this.drawTexture(matrices, x, y, u, v, width, height);
+            DrawableHelper.drawTexture(matrices, x, y, u, v, width, height);
             return;
         }
         if (height == centerSliceHeight) {
-            this.drawTexture(matrices, x, y, u, v, leftSliceWidth, height);
-            this.drawRepeatingTexture(matrices, x + leftSliceWidth, y, width - rightSliceWidth - leftSliceWidth, height, u + leftSliceWidth, v, centerSliceWidth - rightSliceWidth - leftSliceWidth, centerSliceHeight);
-            this.drawTexture(matrices, x + width - rightSliceWidth, y, u + centerSliceWidth - rightSliceWidth, v, rightSliceWidth, height);
+            DrawableHelper.drawTexture(matrices, x, y, u, v, leftSliceWidth, height);
+            DrawableHelper.drawRepeatingTexture(matrices, x + leftSliceWidth, y, width - rightSliceWidth - leftSliceWidth, height, u + leftSliceWidth, v, centerSliceWidth - rightSliceWidth - leftSliceWidth, centerSliceHeight);
+            DrawableHelper.drawTexture(matrices, x + width - rightSliceWidth, y, u + centerSliceWidth - rightSliceWidth, v, rightSliceWidth, height);
             return;
         }
         if (width == centerSliceWidth) {
-            this.drawTexture(matrices, x, y, u, v, width, topSliceHeight);
-            this.drawRepeatingTexture(matrices, x, y + topSliceHeight, width, height - bottomSliceHeight - topSliceHeight, u, v + topSliceHeight, centerSliceWidth, centerSliceHeight - bottomSliceHeight - topSliceHeight);
-            this.drawTexture(matrices, x, y + height - bottomSliceHeight, u, v + centerSliceHeight - bottomSliceHeight, width, bottomSliceHeight);
+            DrawableHelper.drawTexture(matrices, x, y, u, v, width, topSliceHeight);
+            DrawableHelper.drawRepeatingTexture(matrices, x, y + topSliceHeight, width, height - bottomSliceHeight - topSliceHeight, u, v + topSliceHeight, centerSliceWidth, centerSliceHeight - bottomSliceHeight - topSliceHeight);
+            DrawableHelper.drawTexture(matrices, x, y + height - bottomSliceHeight, u, v + centerSliceHeight - bottomSliceHeight, width, bottomSliceHeight);
             return;
         }
-        this.drawTexture(matrices, x, y, u, v, leftSliceWidth, topSliceHeight);
-        this.drawRepeatingTexture(matrices, x + leftSliceWidth, y, width - rightSliceWidth - leftSliceWidth, topSliceHeight, u + leftSliceWidth, v, centerSliceWidth - rightSliceWidth - leftSliceWidth, centerSliceHeight);
-        this.drawTexture(matrices, x + width - rightSliceWidth, y, u + centerSliceWidth - rightSliceWidth, v, rightSliceWidth, topSliceHeight);
-        this.drawTexture(matrices, x, y + height - bottomSliceHeight, u, v + centerSliceHeight - bottomSliceHeight, leftSliceWidth, bottomSliceHeight);
-        this.drawRepeatingTexture(matrices, x + leftSliceWidth, y + height - bottomSliceHeight, width - rightSliceWidth - leftSliceWidth, bottomSliceHeight, u + leftSliceWidth, v + centerSliceHeight - bottomSliceHeight, centerSliceWidth - rightSliceWidth - leftSliceWidth, centerSliceHeight);
-        this.drawTexture(matrices, x + width - rightSliceWidth, y + height - bottomSliceHeight, u + centerSliceWidth - rightSliceWidth, v + centerSliceHeight - bottomSliceHeight, rightSliceWidth, bottomSliceHeight);
-        this.drawRepeatingTexture(matrices, x, y + topSliceHeight, leftSliceWidth, height - bottomSliceHeight - topSliceHeight, u, v + topSliceHeight, centerSliceWidth, centerSliceHeight - bottomSliceHeight - topSliceHeight);
-        this.drawRepeatingTexture(matrices, x + leftSliceWidth, y + topSliceHeight, width - rightSliceWidth - leftSliceWidth, height - bottomSliceHeight - topSliceHeight, u + leftSliceWidth, v + topSliceHeight, centerSliceWidth - rightSliceWidth - leftSliceWidth, centerSliceHeight - bottomSliceHeight - topSliceHeight);
-        this.drawRepeatingTexture(matrices, x + width - rightSliceWidth, y + topSliceHeight, leftSliceWidth, height - bottomSliceHeight - topSliceHeight, u + centerSliceWidth - rightSliceWidth, v + topSliceHeight, centerSliceWidth, centerSliceHeight - bottomSliceHeight - topSliceHeight);
+        DrawableHelper.drawTexture(matrices, x, y, u, v, leftSliceWidth, topSliceHeight);
+        DrawableHelper.drawRepeatingTexture(matrices, x + leftSliceWidth, y, width - rightSliceWidth - leftSliceWidth, topSliceHeight, u + leftSliceWidth, v, centerSliceWidth - rightSliceWidth - leftSliceWidth, centerSliceHeight);
+        DrawableHelper.drawTexture(matrices, x + width - rightSliceWidth, y, u + centerSliceWidth - rightSliceWidth, v, rightSliceWidth, topSliceHeight);
+        DrawableHelper.drawTexture(matrices, x, y + height - bottomSliceHeight, u, v + centerSliceHeight - bottomSliceHeight, leftSliceWidth, bottomSliceHeight);
+        DrawableHelper.drawRepeatingTexture(matrices, x + leftSliceWidth, y + height - bottomSliceHeight, width - rightSliceWidth - leftSliceWidth, bottomSliceHeight, u + leftSliceWidth, v + centerSliceHeight - bottomSliceHeight, centerSliceWidth - rightSliceWidth - leftSliceWidth, centerSliceHeight);
+        DrawableHelper.drawTexture(matrices, x + width - rightSliceWidth, y + height - bottomSliceHeight, u + centerSliceWidth - rightSliceWidth, v + centerSliceHeight - bottomSliceHeight, rightSliceWidth, bottomSliceHeight);
+        DrawableHelper.drawRepeatingTexture(matrices, x, y + topSliceHeight, leftSliceWidth, height - bottomSliceHeight - topSliceHeight, u, v + topSliceHeight, centerSliceWidth, centerSliceHeight - bottomSliceHeight - topSliceHeight);
+        DrawableHelper.drawRepeatingTexture(matrices, x + leftSliceWidth, y + topSliceHeight, width - rightSliceWidth - leftSliceWidth, height - bottomSliceHeight - topSliceHeight, u + leftSliceWidth, v + topSliceHeight, centerSliceWidth - rightSliceWidth - leftSliceWidth, centerSliceHeight - bottomSliceHeight - topSliceHeight);
+        DrawableHelper.drawRepeatingTexture(matrices, x + width - rightSliceWidth, y + topSliceHeight, leftSliceWidth, height - bottomSliceHeight - topSliceHeight, u + centerSliceWidth - rightSliceWidth, v + topSliceHeight, centerSliceWidth, centerSliceHeight - bottomSliceHeight - topSliceHeight);
     }
 
-    public void drawRepeatingTexture(MatrixStack matrices, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
+    public static void drawRepeatingTexture(MatrixStack matrices, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
         for (int i = 0; i < width; i += textureWidth) {
             int j = x + i;
             int k = Math.min(textureWidth, width - i);
             for (int l = 0; l < height; l += textureHeight) {
                 int m = y + l;
                 int n = Math.min(textureHeight, height - l);
-                this.drawTexture(matrices, j, m, u, v, k, n);
+                DrawableHelper.drawTexture(matrices, j, m, u, v, k, n);
             }
         }
     }

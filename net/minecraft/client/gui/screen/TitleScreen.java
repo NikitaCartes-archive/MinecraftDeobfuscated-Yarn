@@ -5,7 +5,6 @@ package net.minecraft.client.gui.screen;
 
 import com.google.common.util.concurrent.Runnables;
 import com.mojang.authlib.minecraft.BanDetails;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
@@ -39,7 +38,6 @@ import net.minecraft.client.gui.widget.PressableTextWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
@@ -93,13 +91,13 @@ extends Screen {
         this.logoDrawer = Objects.requireNonNullElseGet(logoDrawer, () -> new LogoDrawer(false));
     }
 
-    private boolean areRealmsNotificationsEnabled() {
-        return this.client.options.getRealmsNotifications().getValue() != false && this.realmsNotificationGui != null;
+    private boolean isRealmsNotificationsGuiDisplayed() {
+        return this.realmsNotificationGui != null;
     }
 
     @Override
     public void tick() {
-        if (this.areRealmsNotificationsEnabled()) {
+        if (this.isRealmsNotificationsGuiDisplayed()) {
             this.realmsNotificationGui.tick();
         }
         this.client.getRealms32BitWarningChecker().showWarningIfNeeded(this);
@@ -139,10 +137,10 @@ extends Screen {
         this.addDrawableChild(new TexturedButtonWidget(this.width / 2 + 104, l + 72 + 12, 20, 20, 0, 0, 20, ButtonWidget.ACCESSIBILITY_TEXTURE, 32, 64, button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), Text.translatable("narrator.button.accessibility")));
         this.addDrawableChild(new PressableTextWidget(j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new CreditsScreen(false, this.logoDrawer, Runnables.doNothing())), this.textRenderer));
         this.client.setConnectedToRealms(false);
-        if (this.client.options.getRealmsNotifications().getValue().booleanValue() && this.realmsNotificationGui == null) {
+        if (this.realmsNotificationGui == null) {
             this.realmsNotificationGui = new RealmsNotificationsScreen();
         }
-        if (this.areRealmsNotificationsEnabled()) {
+        if (this.isRealmsNotificationsGuiDisplayed()) {
             this.realmsNotificationGui.init(this.client, this.width, this.height);
         }
         if (!this.client.is64Bit()) {
@@ -237,10 +235,8 @@ extends Screen {
         }
         float f = this.doBackgroundFade ? (float)(Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0f : 1.0f;
         this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0f, 1.0f));
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
         RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0f, 1.0f)) : 1.0f);
         TitleScreen.drawTexture(matrices, 0, 0, this.width, this.height, 0.0f, 0.0f, 16, 128, 16, 128);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -274,7 +270,7 @@ extends Screen {
             ((ClickableWidget)element).setAlpha(g);
         }
         super.render(matrices, mouseX, mouseY, delta);
-        if (this.areRealmsNotificationsEnabled() && g >= 1.0f) {
+        if (this.isRealmsNotificationsGuiDisplayed() && g >= 1.0f) {
             RenderSystem.enableDepthTest();
             this.realmsNotificationGui.render(matrices, mouseX, mouseY, delta);
         }
@@ -285,13 +281,21 @@ extends Screen {
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
-        return this.areRealmsNotificationsEnabled() && this.realmsNotificationGui.mouseClicked(mouseX, mouseY, button);
+        return this.isRealmsNotificationsGuiDisplayed() && this.realmsNotificationGui.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public void removed() {
         if (this.realmsNotificationGui != null) {
             this.realmsNotificationGui.removed();
+        }
+    }
+
+    @Override
+    public void onDisplayed() {
+        super.onDisplayed();
+        if (this.realmsNotificationGui != null) {
+            this.realmsNotificationGui.onDisplayed();
         }
     }
 

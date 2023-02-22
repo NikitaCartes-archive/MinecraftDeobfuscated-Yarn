@@ -15,7 +15,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.advancement.AdvancementTabType;
 import net.minecraft.client.gui.screen.advancement.AdvancementWidget;
 import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -81,31 +80,23 @@ extends DrawableHelper {
     }
 
     public void drawBackground(MatrixStack matrices, int x, int y, boolean selected) {
-        this.type.drawBackground(matrices, this, x, y, selected, this.index);
+        this.type.drawBackground(matrices, x, y, selected, this.index);
     }
 
-    public void drawIcon(int x, int y, ItemRenderer itemRenderer) {
-        this.type.drawIcon(x, y, this.index, itemRenderer, this.icon);
+    public void drawIcon(MatrixStack matrices, int x, int y, ItemRenderer itemRenderer) {
+        this.type.drawIcon(matrices, x, y, this.index, itemRenderer, this.icon);
     }
 
-    public void render(MatrixStack matrices) {
+    public void render(MatrixStack matrices, int x, int y) {
         if (!this.initialized) {
             this.originX = 117 - (this.maxPanX + this.minPanX) / 2;
             this.originY = 56 - (this.maxPanY + this.minPanY) / 2;
             this.initialized = true;
         }
+        AdvancementTab.enableScissor(x, y, x + 234, y + 113);
         matrices.push();
-        matrices.translate(0.0f, 0.0f, 950.0f);
-        RenderSystem.enableDepthTest();
-        RenderSystem.colorMask(false, false, false, false);
-        AdvancementTab.fill(matrices, 4680, 2260, -4680, -2260, -16777216);
-        RenderSystem.colorMask(true, true, true, true);
-        matrices.translate(0.0f, 0.0f, -950.0f);
-        RenderSystem.depthFunc(518);
-        AdvancementTab.fill(matrices, 234, 113, 0, 0, -16777216);
-        RenderSystem.depthFunc(515);
+        matrices.translate(x, y, 0.0f);
         Identifier identifier = this.display.getBackground();
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         if (identifier != null) {
             RenderSystem.setShaderTexture(0, identifier);
         } else {
@@ -123,13 +114,8 @@ extends DrawableHelper {
         this.rootWidget.renderLines(matrices, i, j, true);
         this.rootWidget.renderLines(matrices, i, j, false);
         this.rootWidget.renderWidgets(matrices, i, j);
-        RenderSystem.depthFunc(518);
-        matrices.translate(0.0f, 0.0f, -950.0f);
-        RenderSystem.colorMask(false, false, false, false);
-        AdvancementTab.fill(matrices, 4680, 2260, -4680, -2260, -16777216);
-        RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.depthFunc(515);
         matrices.pop();
+        AdvancementTab.disableScissor();
     }
 
     public void drawWidgetTooltip(MatrixStack matrices, int mouseX, int mouseY, int x, int y) {

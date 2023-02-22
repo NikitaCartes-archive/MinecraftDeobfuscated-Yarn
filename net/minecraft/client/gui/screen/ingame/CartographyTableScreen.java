@@ -7,7 +7,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -20,6 +19,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.screen.CartographyTableScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -43,11 +43,10 @@ extends HandledScreen<CartographyTableScreenHandler> {
         MapState mapState;
         Integer integer;
         this.renderBackground(matrices);
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = this.x;
         int j = this.y;
-        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        CartographyTableScreen.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         ItemStack itemStack = ((CartographyTableScreenHandler)this.handler).getSlot(1).getStack();
         boolean bl = itemStack.isOf(Items.MAP);
         boolean bl2 = itemStack.isOf(Items.PAPER);
@@ -56,17 +55,17 @@ extends HandledScreen<CartographyTableScreenHandler> {
         boolean bl4 = false;
         if (itemStack2.isOf(Items.FILLED_MAP)) {
             integer = FilledMapItem.getMapId(itemStack2);
-            mapState = FilledMapItem.getMapState(integer, this.client.world);
+            mapState = FilledMapItem.getMapState(integer, (World)this.client.world);
             if (mapState != null) {
                 if (mapState.locked) {
                     bl4 = true;
                     if (bl2 || bl3) {
-                        this.drawTexture(matrices, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
+                        CartographyTableScreen.drawTexture(matrices, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
                     }
                 }
                 if (bl2 && mapState.scale >= 4) {
                     bl4 = true;
-                    this.drawTexture(matrices, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
+                    CartographyTableScreen.drawTexture(matrices, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
                 }
             }
         } else {
@@ -80,27 +79,27 @@ extends HandledScreen<CartographyTableScreenHandler> {
         int i = this.x;
         int j = this.y;
         if (expandMode && !cannotExpand) {
-            this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
+            CartographyTableScreen.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
             this.drawMap(matrices, mapId, mapState, i + 85, j + 31, 0.226f);
         } else if (cloneMode) {
-            this.drawTexture(matrices, i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
+            CartographyTableScreen.drawTexture(matrices, i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
             this.drawMap(matrices, mapId, mapState, i + 86, j + 16, 0.34f);
             RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
             matrices.translate(0.0f, 0.0f, 1.0f);
-            this.drawTexture(matrices, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
+            CartographyTableScreen.drawTexture(matrices, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
             this.drawMap(matrices, mapId, mapState, i + 70, j + 32, 0.34f);
             matrices.pop();
         } else if (lockMode) {
-            this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
+            CartographyTableScreen.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
             this.drawMap(matrices, mapId, mapState, i + 71, j + 17, 0.45f);
             RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
             matrices.translate(0.0f, 0.0f, 1.0f);
-            this.drawTexture(matrices, i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
+            CartographyTableScreen.drawTexture(matrices, i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
             matrices.pop();
         } else {
-            this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
+            CartographyTableScreen.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
             this.drawMap(matrices, mapId, mapState, i + 71, j + 17, 0.45f);
         }
     }

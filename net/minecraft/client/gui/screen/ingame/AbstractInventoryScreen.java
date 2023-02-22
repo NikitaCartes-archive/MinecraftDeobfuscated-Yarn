@@ -80,9 +80,9 @@ extends HandledScreen<T> {
         int i = this.y;
         for (StatusEffectInstance statusEffectInstance : statusEffects) {
             if (wide) {
-                this.drawTexture(matrices, x, i, 0, 166, 120, 32);
+                AbstractInventoryScreen.drawTexture(matrices, x, i, 0, 166, 120, 32);
             } else {
-                this.drawTexture(matrices, x, i, 0, 198, 32, 32);
+                AbstractInventoryScreen.drawTexture(matrices, x, i, 0, 198, 32, 32);
             }
             i += height;
         }
@@ -95,7 +95,7 @@ extends HandledScreen<T> {
             StatusEffect statusEffect = statusEffectInstance.getEffectType();
             Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
             RenderSystem.setShaderTexture(0, sprite.getAtlasId());
-            AbstractInventoryScreen.drawSprite(matrices, x + (wide ? 6 : 7), i + 7, this.getZOffset(), 18, 18, sprite);
+            AbstractInventoryScreen.drawSprite(matrices, x + (wide ? 6 : 7), i + 7, 0, 18, 18, sprite);
             i += height;
         }
     }

@@ -34,7 +34,7 @@ extends SpriteBillboardParticle {
     @Override
     public void tick() {
         super.tick();
-        if (!this.dead && !this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).isIn(FluidTags.WATER)) {
+        if (!this.dead && !this.world.getFluidState(BlockPos.ofFloored(this.x, this.y, this.z)).isIn(FluidTags.WATER)) {
             this.markDead();
         }
     }

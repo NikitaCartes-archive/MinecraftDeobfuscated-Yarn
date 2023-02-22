@@ -359,7 +359,7 @@ public final class SimpleOption<T> {
                 if (value.compareTo(this.minInclusive) >= 0 && value.compareTo(i) <= 0) {
                     return DataResult.success(value);
                 }
-                return DataResult.error("Value " + value + " outside of range [" + this.minInclusive + ":" + i + "]", value);
+                return DataResult.error(() -> "Value " + value + " outside of range [" + this.minInclusive + ":" + i + "]", value);
             });
         }
 

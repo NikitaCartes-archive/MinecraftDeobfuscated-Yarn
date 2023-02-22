@@ -84,17 +84,13 @@ Saddleable {
 
     @Override
     @Nullable
-    public Entity getPrimaryPassenger() {
-        Entity entity = this.getFirstPassenger();
-        return entity != null && this.canBeControlledByRider(entity) ? entity : null;
-    }
-
-    private boolean canBeControlledByRider(Entity entity) {
-        if (this.isSaddled() && entity instanceof PlayerEntity) {
-            PlayerEntity playerEntity = (PlayerEntity)entity;
-            return playerEntity.getMainHandStack().isOf(Items.CARROT_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.CARROT_ON_A_STICK);
+    public LivingEntity getControllingPassenger() {
+        PlayerEntity playerEntity;
+        Entity entity;
+        if (this.isSaddled() && (entity = this.getFirstPassenger()) instanceof PlayerEntity && ((playerEntity = (PlayerEntity)entity).getMainHandStack().isOf(Items.CARROT_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.CARROT_ON_A_STICK))) {
+            return playerEntity;
         }
-        return false;
+        return null;
     }
 
     @Override
@@ -238,18 +234,22 @@ Saddleable {
     }
 
     @Override
-    public void travel(Vec3d movementInput) {
-        this.travel(this, this.saddledComponent, movementInput);
+    protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
+        super.tickControlled(controllingPassenger, movementInput);
+        this.setRotation(controllingPassenger.getYaw(), controllingPassenger.getPitch() * 0.5f);
+        this.bodyYaw = this.headYaw = this.getYaw();
+        this.prevYaw = this.headYaw;
+        this.saddledComponent.tickBoost();
     }
 
     @Override
-    public float getSaddledSpeed() {
-        return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225f;
+    protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+        return new Vec3d(0.0, 0.0, 1.0);
     }
 
     @Override
-    public void setMovementInput(Vec3d movementInput) {
-        super.travel(movementInput);
+    protected float getSaddledSpeed(LivingEntity controllingPassenger) {
+        return super.getSaddledSpeed(controllingPassenger) * 0.225f * this.saddledComponent.getMovementSpeedMultiplier();
     }
 
     @Override

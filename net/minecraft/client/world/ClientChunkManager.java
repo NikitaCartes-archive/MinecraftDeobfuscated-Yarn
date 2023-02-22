@@ -90,6 +90,20 @@ extends ChunkManager {
         return this.world;
     }
 
+    public void onChunkBiomeData(int x, int z, PacketByteBuf buf) {
+        if (!this.chunks.isInRadius(x, z)) {
+            LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", (Object)x, (Object)z);
+            return;
+        }
+        int i = this.chunks.getIndex(x, z);
+        WorldChunk worldChunk = this.chunks.chunks.get(i);
+        if (!ClientChunkManager.positionEquals(worldChunk, x, z)) {
+            LOGGER.warn("Ignoring chunk since it's not present: {}, {}", (Object)x, (Object)z);
+        } else {
+            worldChunk.loadBiomeFromPacket(buf);
+        }
+    }
+
     @Nullable
     public WorldChunk loadChunkFromPacket(int x, int z, PacketByteBuf buf, NbtCompound nbt, Consumer<ChunkData.BlockEntityVisitor> consumer) {
         if (!this.chunks.isInRadius(x, z)) {

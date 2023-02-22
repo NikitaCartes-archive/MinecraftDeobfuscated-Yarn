@@ -22,7 +22,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PageTurnWidget;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -395,11 +394,10 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.setFocused(null);
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, BookScreen.BOOK_TEXTURE);
         int i = (this.width - 192) / 2;
         int j = 2;
-        this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
+        BookEditScreen.drawTexture(matrices, i, 2, 0, 0, 192, 192);
         if (this.signing) {
             boolean bl = this.tickCounter / 6 % 2 == 0;
             OrderedText orderedText = OrderedText.concat(OrderedText.styledForwardsVisitedString(this.title, Style.EMPTY), bl ? BLACK_CURSOR_TEXT : GRAY_CURSOR_TEXT);
@@ -409,7 +407,7 @@ extends Screen {
             this.textRenderer.draw(matrices, orderedText, (float)(i + 36 + (114 - l) / 2), 50.0f, 0);
             int m = this.textRenderer.getWidth(this.signedByText);
             this.textRenderer.draw(matrices, this.signedByText, (float)(i + 36 + (114 - m) / 2), 60.0f, 0);
-            this.textRenderer.drawTrimmed(FINALIZE_WARNING_TEXT, i + 36, 82, 114, 0);
+            this.textRenderer.drawTrimmed(matrices, FINALIZE_WARNING_TEXT, i + 36, 82, 114, 0);
         } else {
             int n = this.textRenderer.getWidth(this.pageIndicatorText);
             this.textRenderer.draw(matrices, this.pageIndicatorText, (float)(i - n + 192 - 44), 18.0f, 0);

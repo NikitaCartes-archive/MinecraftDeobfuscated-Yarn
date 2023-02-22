@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.gui.screen.option;
 
-import com.google.common.collect.ImmutableList;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -33,7 +32,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateDifficultyLockC2SPacket;
 import net.minecraft.resource.ResourcePackManager;
-import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.world.Difficulty;
@@ -76,13 +74,18 @@ extends Screen {
         adder.add(this.createButton(CONTROL_TEXT, () -> new ControlsOptionsScreen(this, this.settings)));
         adder.add(this.createButton(LANGUAGE_TEXT, () -> new LanguageOptionsScreen((Screen)this, this.settings, this.client.getLanguageManager())));
         adder.add(this.createButton(CHAT_TEXT, () -> new ChatOptionsScreen(this, this.settings)));
-        adder.add(this.createButton(RESOURCE_PACK_TEXT, () -> new PackScreen(this, this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), Text.translatable("resourcePack.title"))));
+        adder.add(this.createButton(RESOURCE_PACK_TEXT, () -> new PackScreen(this.client.getResourcePackManager(), this::refreshResourcePacks, this.client.getResourcePackDir(), Text.translatable("resourcePack.title"))));
         adder.add(this.createButton(ACCESSIBILITY_TEXT, () -> new AccessibilityOptionsScreen(this, this.settings)));
         adder.add(this.createButton(TELEMETRY_TEXT, () -> new TelemetryInfoScreen(this, this.settings)));
         adder.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).width(200).build(), 2, adder.copyPositioner().marginTop(6));
         gridWidget.refreshPositions();
         SimplePositioningWidget.setPos(gridWidget, 0, this.height / 6 - 12, this.width, this.height, 0.5f, 0.0f);
         gridWidget.forEachChild(this::addDrawableChild);
+    }
+
+    private void refreshResourcePacks(ResourcePackManager resourcePackManager) {
+        this.settings.refreshResourcePacks(resourcePackManager);
+        this.client.setScreen(this);
     }
 
     private Widget createTopRightButton() {
@@ -107,23 +110,6 @@ extends Screen {
 
     public static CyclingButtonWidget<Difficulty> createDifficultyButtonWidget(int x, int y, String translationKey, MinecraftClient client) {
         return CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(client.world.getDifficulty()).build(x, y, 150, 20, Text.translatable(translationKey), (button, difficulty) -> client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)difficulty)));
-    }
-
-    private void refreshResourcePacks(ResourcePackManager resourcePackManager) {
-        ImmutableList<String> list = ImmutableList.copyOf(this.settings.resourcePacks);
-        this.settings.resourcePacks.clear();
-        this.settings.incompatibleResourcePacks.clear();
-        for (ResourcePackProfile resourcePackProfile : resourcePackManager.getEnabledProfiles()) {
-            if (resourcePackProfile.isPinned()) continue;
-            this.settings.resourcePacks.add(resourcePackProfile.getName());
-            if (resourcePackProfile.getCompatibility().isCompatible()) continue;
-            this.settings.incompatibleResourcePacks.add(resourcePackProfile.getName());
-        }
-        this.settings.write();
-        ImmutableList<String> list2 = ImmutableList.copyOf(this.settings.resourcePacks);
-        if (!list2.equals(list)) {
-            this.client.reloadResources();
-        }
     }
 
     private void lockDifficulty(boolean difficultyLocked) {

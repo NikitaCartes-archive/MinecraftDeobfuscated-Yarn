@@ -37,7 +37,7 @@ extends ShapedRecipe {
         if (itemStack.isEmpty()) {
             return false;
         }
-        MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, world);
+        MapState mapState = FilledMapItem.getMapState(itemStack, world);
         if (mapState == null) {
             return false;
         }

@@ -128,7 +128,7 @@ Bucketable {
         this.setPathfindingPenalty(PathNodeType.WATER, 0.0f);
         this.moveControl = new AxolotlMoveControl(this);
         this.lookControl = new AxolotlLookControl(this, 20);
-        this.stepHeight = 1.0f;
+        this.setStepHeight(1.0f);
     }
 
     @Override
@@ -418,9 +418,10 @@ Bucketable {
 
     public void buffPlayer(PlayerEntity player) {
         StatusEffectInstance statusEffectInstance = player.getStatusEffect(StatusEffects.REGENERATION);
-        if (statusEffectInstance != null && statusEffectInstance.isDurationBelow(2399)) {
-            int i = Math.min(2400, 100 + statusEffectInstance.getDuration());
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, i, 0), this);
+        if (statusEffectInstance == null || statusEffectInstance.isDurationBelow(2399)) {
+            int i = statusEffectInstance != null ? statusEffectInstance.getDuration() : 0;
+            int j = Math.min(2400, 100 + i);
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, j, 0), this);
         }
         player.removeStatusEffect(StatusEffects.MINING_FATIGUE);
     }
@@ -478,7 +479,7 @@ Bucketable {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.canMoveVoluntarily() && this.isTouchingWater()) {
+        if (this.isLogicalSideForUpdatingMovement() && this.isTouchingWater()) {
             this.updateVelocity(this.getMovementSpeed(), movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));

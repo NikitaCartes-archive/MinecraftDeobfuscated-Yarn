@@ -23,13 +23,13 @@ public record GenerationShapeConfig(int minimumY, int height, int horizontalSize
 
     private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
         if (config.minimumY() + config.height() > DimensionType.MAX_COLUMN_HEIGHT + 1) {
-            return DataResult.error("min_y + height cannot be higher than: " + (DimensionType.MAX_COLUMN_HEIGHT + 1));
+            return DataResult.error(() -> "min_y + height cannot be higher than: " + (DimensionType.MAX_COLUMN_HEIGHT + 1));
         }
         if (config.height() % 16 != 0) {
-            return DataResult.error("height has to be a multiple of 16");
+            return DataResult.error(() -> "height has to be a multiple of 16");
         }
         if (config.minimumY() % 16 != 0) {
-            return DataResult.error("min_y has to be a multiple of 16");
+            return DataResult.error(() -> "min_y has to be a multiple of 16");
         }
         return DataResult.success(config);
     }

@@ -95,7 +95,7 @@ implements Angerable {
 
     public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
         super((EntityType<? extends HostileEntity>)entityType, world);
-        this.stepHeight = 1.0f;
+        this.setStepHeight(1.0f);
         this.setPathfindingPenalty(PathNodeType.WATER, -1.0f);
     }
 

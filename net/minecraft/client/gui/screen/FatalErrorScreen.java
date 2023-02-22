@@ -29,7 +29,7 @@ extends Screen {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.fillGradient(matrices, 0, 0, this.width, this.height, -12574688, -11530224);
+        FatalErrorScreen.fillGradient(matrices, 0, 0, this.width, this.height, -12574688, -11530224);
         FatalErrorScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 90, 0xFFFFFF);
         FatalErrorScreen.drawCenteredTextWithShadow(matrices, this.textRenderer, this.message, this.width / 2, 110, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);

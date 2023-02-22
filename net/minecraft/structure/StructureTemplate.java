@@ -169,7 +169,7 @@ public class StructureTemplate {
             Vec3d vec3d = new Vec3d(entity2.getX() - (double)firstCorner.getX(), entity2.getY() - (double)firstCorner.getY(), entity2.getZ() - (double)firstCorner.getZ());
             NbtCompound nbtCompound = new NbtCompound();
             entity2.saveNbt(nbtCompound);
-            BlockPos blockPos = entity2 instanceof PaintingEntity ? ((PaintingEntity)entity2).getDecorationBlockPos().subtract(firstCorner) : new BlockPos(vec3d);
+            BlockPos blockPos = entity2 instanceof PaintingEntity ? ((PaintingEntity)entity2).getDecorationBlockPos().subtract(firstCorner) : BlockPos.ofFloored(vec3d);
             this.entities.add(new StructureEntityInfo(vec3d, blockPos, nbtCompound.copy()));
         }
     }
@@ -364,7 +364,7 @@ public class StructureTemplate {
                 float f = entity.applyRotation(rotation);
                 entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.applyMirror(mirror) - entity.getYaw(), entity.getPitch());
                 if (initializeMobs && entity instanceof MobEntity) {
-                    ((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
+                    ((MobEntity)entity).initialize(world, world.getLocalDifficulty(BlockPos.ofFloored(vec3d2)), SpawnReason.STRUCTURE, null, nbtCompound);
                 }
                 world.spawnEntityAndPassengers((Entity)entity);
             });

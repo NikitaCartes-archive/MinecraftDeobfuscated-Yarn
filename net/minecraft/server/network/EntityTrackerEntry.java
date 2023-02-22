@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -43,6 +44,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -85,8 +87,14 @@ public class EntityTrackerEntry {
         Entity entity;
         List<Entity> list = this.entity.getPassengerList();
         if (!list.equals(this.lastPassengers)) {
-            this.lastPassengers = list;
             this.receiver.accept(new EntityPassengersSetS2CPacket(this.entity));
+            this.streamChangedPassengers(list, this.lastPassengers).forEach(passenger -> {
+                ServerPlayerEntity serverPlayerEntity;
+                if (passenger instanceof ServerPlayerEntity && !list.contains(serverPlayerEntity = (ServerPlayerEntity)passenger)) {
+                    serverPlayerEntity.networkHandler.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.getYaw(), serverPlayerEntity.getPitch());
+                }
+            });
+            this.lastPassengers = list;
         }
         if ((entity = this.entity) instanceof ItemFrameEntity) {
             ItemFrameEntity itemFrameEntity = (ItemFrameEntity)entity;
@@ -94,7 +102,7 @@ public class EntityTrackerEntry {
                 Integer integer;
                 MapState mapState;
                 ItemStack itemStack = itemFrameEntity.getHeldItemStack();
-                if (itemStack.getItem() instanceof FilledMapItem && (mapState = FilledMapItem.getMapState(integer = FilledMapItem.getMapId(itemStack), this.world)) != null) {
+                if (itemStack.getItem() instanceof FilledMapItem && (mapState = FilledMapItem.getMapState(integer = FilledMapItem.getMapId(itemStack), (World)this.world)) != null) {
                     for (ServerPlayerEntity serverPlayerEntity : this.world.getPlayers()) {
                         mapState.update(serverPlayerEntity, itemStack);
                         Packet<?> packet = mapState.getPlayerMarkerPacket(integer, serverPlayerEntity);
@@ -186,6 +194,10 @@ public class EntityTrackerEntry {
             this.sendSyncPacket(new EntityVelocityUpdateS2CPacket(this.entity));
             this.entity.velocityModified = false;
         }
+    }
+
+    private Stream<Entity> streamChangedPassengers(List<Entity> passengers, List<Entity> lastPassengers) {
+        return Stream.concat(lastPassengers.stream().filter(passenger -> !passengers.contains(passenger)), passengers.stream().filter(passenger -> !lastPassengers.contains(passenger)));
     }
 
     public void stopTracking(ServerPlayerEntity player) {

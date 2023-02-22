@@ -8,7 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.util.math.MatrixStack;
@@ -39,21 +39,17 @@ implements Toast {
         if (this.recipes.isEmpty()) {
             return Toast.Visibility.HIDE;
         }
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        manager.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());
+        DrawableHelper.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());
         manager.getClient().textRenderer.draw(matrices, TITLE, 30.0f, 7.0f, -11534256);
         manager.getClient().textRenderer.draw(matrices, DESCRIPTION, 30.0f, 18.0f, -16777216);
         Recipe<?> recipe = this.recipes.get((int)((double)startTime / Math.max(1.0, 5000.0 * manager.getNotificationDisplayTimeMultiplier() / (double)this.recipes.size()) % (double)this.recipes.size()));
         ItemStack itemStack = recipe.createIcon();
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.push();
-        matrixStack.scale(0.6f, 0.6f, 1.0f);
-        RenderSystem.applyModelViewMatrix();
-        manager.getClient().getItemRenderer().renderInGui(itemStack, 3, 3);
-        matrixStack.pop();
-        RenderSystem.applyModelViewMatrix();
-        manager.getClient().getItemRenderer().renderInGui(recipe.getOutput(manager.getClient().world.getRegistryManager()), 8, 8);
+        matrices.push();
+        matrices.scale(0.6f, 0.6f, 1.0f);
+        manager.getClient().getItemRenderer().renderInGui(matrices, itemStack, 3, 3);
+        matrices.pop();
+        manager.getClient().getItemRenderer().renderInGui(matrices, recipe.getOutput(manager.getClient().world.getRegistryManager()), 8, 8);
         return (double)(startTime - this.startTime) >= 5000.0 * manager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
     }
 

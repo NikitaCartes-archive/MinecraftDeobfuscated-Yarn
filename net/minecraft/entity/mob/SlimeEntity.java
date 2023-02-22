@@ -414,10 +414,14 @@ implements Monster {
 
         @Override
         public void tick() {
+            MoveControl moveControl;
             if (this.slime.getRandom().nextFloat() < 0.8f) {
                 this.slime.getJumpControl().setActive();
             }
-            ((SlimeMoveControl)this.slime.getMoveControl()).move(1.2);
+            if ((moveControl = this.slime.getMoveControl()) instanceof SlimeMoveControl) {
+                SlimeMoveControl slimeMoveControl = (SlimeMoveControl)moveControl;
+                slimeMoveControl.move(1.2);
+            }
         }
     }
 
@@ -468,11 +472,15 @@ implements Monster {
 
         @Override
         public void tick() {
+            MoveControl moveControl;
             LivingEntity livingEntity = this.slime.getTarget();
             if (livingEntity != null) {
                 this.slime.lookAtEntity(livingEntity, 10.0f, 10.0f);
             }
-            ((SlimeMoveControl)this.slime.getMoveControl()).look(this.slime.getYaw(), this.slime.canAttack());
+            if ((moveControl = this.slime.getMoveControl()) instanceof SlimeMoveControl) {
+                SlimeMoveControl slimeMoveControl = (SlimeMoveControl)moveControl;
+                slimeMoveControl.look(this.slime.getYaw(), this.slime.canAttack());
+            }
         }
     }
 
@@ -494,11 +502,15 @@ implements Monster {
 
         @Override
         public void tick() {
+            MoveControl moveControl;
             if (--this.timer <= 0) {
                 this.timer = this.getTickCount(40 + this.slime.getRandom().nextInt(60));
                 this.targetYaw = this.slime.getRandom().nextInt(360);
             }
-            ((SlimeMoveControl)this.slime.getMoveControl()).look(this.targetYaw, false);
+            if ((moveControl = this.slime.getMoveControl()) instanceof SlimeMoveControl) {
+                SlimeMoveControl slimeMoveControl = (SlimeMoveControl)moveControl;
+                slimeMoveControl.look(this.targetYaw, false);
+            }
         }
     }
 
@@ -518,7 +530,11 @@ implements Monster {
 
         @Override
         public void tick() {
-            ((SlimeMoveControl)this.slime.getMoveControl()).move(1.0);
+            MoveControl moveControl = this.slime.getMoveControl();
+            if (moveControl instanceof SlimeMoveControl) {
+                SlimeMoveControl slimeMoveControl = (SlimeMoveControl)moveControl;
+                slimeMoveControl.move(1.0);
+            }
         }
     }
 }

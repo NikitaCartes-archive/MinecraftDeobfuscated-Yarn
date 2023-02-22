@@ -16,7 +16,7 @@ import net.minecraft.registry.tag.TagKey;
 public class VanillaFluidTagProvider
 extends ValueLookupTagProvider<Fluid> {
     public VanillaFluidTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
-        super(output, RegistryKeys.FLUID, registryLookupFuture, fluid -> fluid.getRegistryEntry().registryKey());
+        super(output, RegistryKeys.FLUID, registryLookupFuture, (T fluid) -> fluid.getRegistryEntry().registryKey());
     }
 
     @Override

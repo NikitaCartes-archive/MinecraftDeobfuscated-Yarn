@@ -132,7 +132,7 @@ implements DynamicOps<NbtElement> {
             AbstractNbtNumber abstractNbtNumber = (AbstractNbtNumber)nbtElement;
             return DataResult.success(abstractNbtNumber.numberValue());
         }
-        return DataResult.error("Not a number");
+        return DataResult.error(() -> "Not a number");
     }
 
     @Override
@@ -181,7 +181,7 @@ implements DynamicOps<NbtElement> {
             NbtString nbtString = (NbtString)nbtElement;
             return DataResult.success(nbtString.asString());
         }
-        return DataResult.error("Not a string");
+        return DataResult.error(() -> "Not a string");
     }
 
     @Override
@@ -191,21 +191,21 @@ implements DynamicOps<NbtElement> {
 
     @Override
     public DataResult<NbtElement> mergeToList(NbtElement nbtElement, NbtElement nbtElement2) {
-        return NbtOps.createMerger(nbtElement).map(merger -> DataResult.success(merger.merge(nbtElement2).getResult())).orElseGet(() -> DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement));
+        return NbtOps.createMerger(nbtElement).map(merger -> DataResult.success(merger.merge(nbtElement2).getResult())).orElseGet(() -> DataResult.error(() -> "mergeToList called with not a list: " + nbtElement, nbtElement));
     }
 
     @Override
     public DataResult<NbtElement> mergeToList(NbtElement nbtElement, List<NbtElement> list) {
-        return NbtOps.createMerger(nbtElement).map(merger -> DataResult.success(merger.merge(list).getResult())).orElseGet(() -> DataResult.error("mergeToList called with not a list: " + nbtElement, nbtElement));
+        return NbtOps.createMerger(nbtElement).map(merger -> DataResult.success(merger.merge(list).getResult())).orElseGet(() -> DataResult.error(() -> "mergeToList called with not a list: " + nbtElement, nbtElement));
     }
 
     @Override
     public DataResult<NbtElement> mergeToMap(NbtElement nbtElement, NbtElement nbtElement2, NbtElement nbtElement3) {
         if (!(nbtElement instanceof NbtCompound) && !(nbtElement instanceof NbtEnd)) {
-            return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);
+            return DataResult.error(() -> "mergeToMap called with not a map: " + nbtElement, nbtElement);
         }
         if (!(nbtElement2 instanceof NbtString)) {
-            return DataResult.error("key is not a string: " + nbtElement2, nbtElement);
+            return DataResult.error(() -> "key is not a string: " + nbtElement2, nbtElement);
         }
         NbtCompound nbtCompound = new NbtCompound();
         if (nbtElement instanceof NbtCompound) {
@@ -219,7 +219,7 @@ implements DynamicOps<NbtElement> {
     @Override
     public DataResult<NbtElement> mergeToMap(NbtElement nbtElement, MapLike<NbtElement> mapLike) {
         if (!(nbtElement instanceof NbtCompound) && !(nbtElement instanceof NbtEnd)) {
-            return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);
+            return DataResult.error(() -> "mergeToMap called with not a map: " + nbtElement, nbtElement);
         }
         NbtCompound nbtCompound = new NbtCompound();
         if (nbtElement instanceof NbtCompound) {
@@ -236,7 +236,7 @@ implements DynamicOps<NbtElement> {
             nbtCompound.put(nbtElement.asString(), (NbtElement)pair.getSecond());
         });
         if (!list.isEmpty()) {
-            return DataResult.error("some keys are not strings: " + list, nbtCompound);
+            return DataResult.error(() -> "some keys are not strings: " + list, nbtCompound);
         }
         return DataResult.success(nbtCompound);
     }
@@ -247,7 +247,7 @@ implements DynamicOps<NbtElement> {
             NbtCompound nbtCompound = (NbtCompound)nbtElement;
             return DataResult.success(nbtCompound.getKeys().stream().map(key -> Pair.of(this.createString((String)key), nbtCompound.get((String)key))));
         }
-        return DataResult.error("Not a map: " + nbtElement);
+        return DataResult.error(() -> "Not a map: " + nbtElement);
     }
 
     @Override
@@ -256,7 +256,7 @@ implements DynamicOps<NbtElement> {
             NbtCompound nbtCompound = (NbtCompound)nbtElement;
             return DataResult.success(entryConsumer -> nbtCompound.getKeys().forEach(key -> entryConsumer.accept(this.createString((String)key), nbtCompound.get((String)key))));
         }
-        return DataResult.error("Not a map: " + nbtElement);
+        return DataResult.error(() -> "Not a map: " + nbtElement);
     }
 
     @Override
@@ -299,7 +299,7 @@ implements DynamicOps<NbtElement> {
                 }
             });
         }
-        return DataResult.error("Not a map: " + nbtElement);
+        return DataResult.error(() -> "Not a map: " + nbtElement);
     }
 
     @Override
@@ -330,7 +330,7 @@ implements DynamicOps<NbtElement> {
             AbstractNbtList abstractNbtList = (AbstractNbtList)nbtElement;
             return DataResult.success(abstractNbtList.stream().map(nbt -> nbt));
         }
-        return DataResult.error("Not a list");
+        return DataResult.error(() -> "Not a list");
     }
 
     @Override
@@ -346,7 +346,7 @@ implements DynamicOps<NbtElement> {
             AbstractNbtList abstractNbtList = (AbstractNbtList)nbtElement;
             return DataResult.success(abstractNbtList::forEach);
         }
-        return DataResult.error("Not a list: " + nbtElement);
+        return DataResult.error(() -> "Not a list: " + nbtElement);
     }
 
     @Override
@@ -686,7 +686,7 @@ implements DynamicOps<NbtElement> {
                 }
                 return DataResult.success(nbtCompound3);
             }
-            return DataResult.error("mergeToMap called with not a map: " + nbtElement, nbtElement);
+            return DataResult.error(() -> "mergeToMap called with not a map: " + nbtElement, nbtElement);
         }
 
         @Override

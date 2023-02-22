@@ -160,9 +160,15 @@ public class ChunkSection {
         return this.biomeContainer;
     }
 
-    public void fromPacket(PacketByteBuf buf) {
+    public void readDataPacket(PacketByteBuf buf) {
         this.nonEmptyBlockCount = buf.readShort();
         this.blockStateContainer.readPacket(buf);
+        PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.slice();
+        palettedContainer.readPacket(buf);
+        this.biomeContainer = palettedContainer;
+    }
+
+    public void readBiomePacket(PacketByteBuf buf) {
         PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.slice();
         palettedContainer.readPacket(buf);
         this.biomeContainer = palettedContainer;

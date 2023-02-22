@@ -300,7 +300,6 @@ AutoCloseable {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         int l = 5;
         if (MinecraftClient.isFancyGraphicsOrBetter()) {
@@ -404,7 +403,7 @@ AutoCloseable {
         }
         Random random = Random.create((long)this.ticks * 312987231L);
         ClientWorld worldView = this.client.world;
-        BlockPos blockPos = new BlockPos(camera.getPos());
+        BlockPos blockPos = BlockPos.ofFloored(camera.getPos());
         Vec3i blockPos2 = null;
         int i = (int)(100.0f * f * f) / (this.client.options.getParticles().getValue() == ParticlesMode.DECREASED ? 2 : 1);
         for (int j = 0; j < i; ++j) {
@@ -532,6 +531,7 @@ AutoCloseable {
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
             this.entityOutlinesFramebuffer.draw(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight(), false);
             RenderSystem.disableBlend();
+            RenderSystem.defaultBlendFunc();
         }
     }
 
@@ -911,7 +911,7 @@ AutoCloseable {
                     while (cameraPos.subtract(vec3d).lengthSquared() > 3600.0) {
                         vec3d = vec3d.add(vec3d2);
                         if (vec3d.y > (double)this.world.getTopY() || vec3d.y < (double)this.world.getBottomY()) break;
-                        ChunkBuilder.BuiltChunk builtChunk3 = this.chunks.getRenderedChunk(new BlockPos(vec3d.x, vec3d.y, vec3d.z));
+                        ChunkBuilder.BuiltChunk builtChunk3 = this.chunks.getRenderedChunk(BlockPos.ofFloored(vec3d.x, vec3d.y, vec3d.z));
                         if (builtChunk3 != null && chunkInfoList.getInfo(builtChunk3) != null) continue;
                         bl3 = false;
                         break;
@@ -1277,25 +1277,29 @@ AutoCloseable {
             double e = cameraY - this.lastTranslucentSortY;
             double f = cameraZ - this.lastTranslucentSortZ;
             if (d * d + e * e + f * f > 1.0) {
+                int i = ChunkSectionPos.getSectionCoord(cameraX);
+                int j = ChunkSectionPos.getSectionCoord(cameraY);
+                int k = ChunkSectionPos.getSectionCoord(cameraZ);
+                boolean bl = i != ChunkSectionPos.getSectionCoord(this.lastTranslucentSortX) || k != ChunkSectionPos.getSectionCoord(this.lastTranslucentSortZ) || j != ChunkSectionPos.getSectionCoord(this.lastTranslucentSortY);
                 this.lastTranslucentSortX = cameraX;
                 this.lastTranslucentSortY = cameraY;
                 this.lastTranslucentSortZ = cameraZ;
-                int i = 0;
+                int l = 0;
                 for (ChunkInfo chunkInfo : this.chunkInfos) {
-                    if (i >= 15 || !chunkInfo.chunk.scheduleSort(renderLayer, this.chunkBuilder)) continue;
-                    ++i;
+                    if (l >= 15 || !bl && !chunkInfo.method_49633(i, j, k) || !chunkInfo.chunk.scheduleSort(renderLayer, this.chunkBuilder)) continue;
+                    ++l;
                 }
             }
             this.client.getProfiler().pop();
         }
         this.client.getProfiler().push("filterempty");
         this.client.getProfiler().swap(() -> "render_" + renderLayer);
-        boolean bl = renderLayer != RenderLayer.getTranslucent();
-        ListIterator objectListIterator = this.chunkInfos.listIterator(bl ? 0 : this.chunkInfos.size());
+        boolean bl2 = renderLayer != RenderLayer.getTranslucent();
+        ListIterator objectListIterator = this.chunkInfos.listIterator(bl2 ? 0 : this.chunkInfos.size());
         ShaderProgram shaderProgram = RenderSystem.getShader();
-        for (int j = 0; j < 12; ++j) {
-            int k = RenderSystem.getShaderTexture(j);
-            shaderProgram.addSampler("Sampler" + j, k);
+        for (int m = 0; m < 12; ++m) {
+            int n = RenderSystem.getShaderTexture(m);
+            shaderProgram.addSampler("Sampler" + m, n);
         }
         if (shaderProgram.modelViewMat != null) {
             shaderProgram.modelViewMat.set(matrices.peek().getPositionMatrix());
@@ -1330,8 +1334,8 @@ AutoCloseable {
         RenderSystem.setupShaderLights(shaderProgram);
         shaderProgram.bind();
         GlUniform glUniform = shaderProgram.chunkOffset;
-        while (bl ? objectListIterator.hasNext() : objectListIterator.hasPrevious()) {
-            ChunkInfo chunkInfo2 = bl ? (ChunkInfo)objectListIterator.next() : (ChunkInfo)objectListIterator.previous();
+        while (bl2 ? objectListIterator.hasNext() : objectListIterator.hasPrevious()) {
+            ChunkInfo chunkInfo2 = bl2 ? (ChunkInfo)objectListIterator.next() : (ChunkInfo)objectListIterator.previous();
             ChunkBuilder.BuiltChunk builtChunk = chunkInfo2.chunk;
             if (builtChunk.getData().isEmpty(renderLayer)) continue;
             VertexBuffer vertexBuffer = builtChunk.getBuffer(renderLayer);
@@ -1509,7 +1513,6 @@ AutoCloseable {
 
     private void renderEndSky(MatrixStack matrices) {
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         RenderSystem.depthMask(false);
         RenderSystem.setShader(GameRenderer::getPositionTexColorProgram);
         RenderSystem.setShaderTexture(0, END_SKY);
@@ -1557,7 +1560,7 @@ AutoCloseable {
             return;
         }
         CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
-        if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA || this.method_43788(camera)) {
+        if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW || cameraSubmersionType == CameraSubmersionType.LAVA || this.hasBlindnessOrDarkness(camera)) {
             return;
         }
         if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.END) {
@@ -1580,7 +1583,6 @@ AutoCloseable {
         this.lightSkyBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, shaderProgram);
         VertexBuffer.unbind();
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         float[] fs = this.world.getDimensionEffects().getFogColorOverride(this.world.getSkyAngle(tickDelta), tickDelta);
         if (fs != null) {
             RenderSystem.setShader(GameRenderer::getPositionColorProgram);
@@ -1648,6 +1650,7 @@ AutoCloseable {
         }
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
         matrices.pop();
         RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, 1.0f);
         double d = this.client.player.getCameraPosVec((float)tickDelta).y - this.world.getLevelProperties().getSkyDarknessHeight(this.world);
@@ -1663,7 +1666,7 @@ AutoCloseable {
         RenderSystem.depthMask(true);
     }
 
-    private boolean method_43788(Camera camera) {
+    private boolean hasBlindnessOrDarkness(Camera camera) {
         Entity entity = camera.getFocusedEntity();
         if (entity instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
@@ -1741,6 +1744,7 @@ AutoCloseable {
         matrices.pop();
         RenderSystem.enableCull();
         RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
     }
 
     private BufferBuilder.BuiltBuffer renderClouds(BufferBuilder builder, double x, double y, double z, Vec3d color) {
@@ -1972,6 +1976,7 @@ AutoCloseable {
         RenderSystem.polygonOffset(0.0f, 0.0f);
         RenderSystem.disablePolygonOffset();
         RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
         matrixStack.pop();
         RenderSystem.applyModelViewMatrix();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -2810,6 +2815,11 @@ AutoCloseable {
 
         public boolean hasAnyDirection() {
             return this.direction != 0;
+        }
+
+        public boolean method_49633(int i, int j, int k) {
+            BlockPos blockPos = this.chunk.getOrigin();
+            return i == blockPos.getX() / 16 || k == blockPos.getZ() / 16 || j == blockPos.getY() / 16;
         }
 
         public int hashCode() {

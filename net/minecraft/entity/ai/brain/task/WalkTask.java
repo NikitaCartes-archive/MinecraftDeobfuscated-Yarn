@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
+import java.util.function.Predicate;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.FuzzyTargeting;
@@ -27,11 +28,23 @@ extends MultiTickTask<PathAwareEntity> {
     private static final int MAX_RUN_TIME = 120;
     private static final int HORIZONTAL_RANGE = 5;
     private static final int VERTICAL_RANGE = 4;
+    private static final Predicate<PathAwareEntity> PANIC_PREDICATE = entity -> entity.getAttacker() != null || entity.shouldEscapePowderSnow() || entity.isOnFire();
     private final float speed;
+    private final Predicate<PathAwareEntity> predicate;
 
     public WalkTask(float speed) {
+        this(speed, PANIC_PREDICATE);
+    }
+
+    public WalkTask(float speed, Predicate<PathAwareEntity> predicate) {
         super(ImmutableMap.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.VALUE_PRESENT), 100, 120);
         this.speed = speed;
+        this.predicate = predicate;
+    }
+
+    @Override
+    protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
+        return this.predicate.test(pathAwareEntity);
     }
 
     @Override

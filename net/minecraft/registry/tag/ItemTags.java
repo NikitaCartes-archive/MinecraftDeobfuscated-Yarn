@@ -40,6 +40,7 @@ public final class ItemTags {
     public static final TagKey<Item> WART_BLOCKS = ItemTags.of("wart_blocks");
     public static final TagKey<Item> BANNERS = ItemTags.of("banners");
     public static final TagKey<Item> SAND = ItemTags.of("sand");
+    public static final TagKey<Item> SMELTS_TO_GLASS = ItemTags.of("smelts_to_glass");
     public static final TagKey<Item> STAIRS = ItemTags.of("stairs");
     public static final TagKey<Item> SLABS = ItemTags.of("slabs");
     public static final TagKey<Item> WALLS = ItemTags.of("walls");

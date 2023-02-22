@@ -12,7 +12,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.ScreenHandlerProvider;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
@@ -102,22 +101,19 @@ implements ScreenHandlerProvider<T> {
         this.drawBackground(matrices, delta, mouseX, mouseY);
         RenderSystem.disableDepthTest();
         super.render(matrices, mouseX, mouseY, delta);
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.push();
-        matrixStack.translate(i, j, 0.0f);
-        RenderSystem.applyModelViewMatrix();
+        matrices.push();
+        matrices.translate(i, j, 0.0f);
         this.focusedSlot = null;
         for (int k = 0; k < ((ScreenHandler)this.handler).slots.size(); ++k) {
             Slot slot = ((ScreenHandler)this.handler).slots.get(k);
             if (slot.isEnabled()) {
-                RenderSystem.setShader(GameRenderer::getPositionTexProgram);
                 this.drawSlot(matrices, slot);
             }
             if (!this.isPointOverSlot(slot, mouseX, mouseY) || !slot.isEnabled()) continue;
             this.focusedSlot = slot;
             l = slot.x;
             int m = slot.y;
-            HandledScreen.drawSlotHighlight(matrices, l, m, this.getZOffset());
+            HandledScreen.drawSlotHighlight(matrices, l, m, 0);
         }
         this.drawForeground(matrices, mouseX, mouseY);
         ItemStack itemStack2 = itemStack = this.touchDragStack.isEmpty() ? ((ScreenHandler)this.handler).getCursorStack() : this.touchDragStack;
@@ -135,7 +131,7 @@ implements ScreenHandlerProvider<T> {
                     string = Formatting.YELLOW + "0";
                 }
             }
-            this.drawItem(itemStack, mouseX - i - 8, mouseY - j - l, string);
+            this.drawItem(matrices, itemStack, mouseX - i - 8, mouseY - j - l, string);
         }
         if (!this.touchDropReturningStack.isEmpty()) {
             float f = (float)(Util.getMeasuringTimeMs() - this.touchDropTime) / 100.0f;
@@ -147,10 +143,9 @@ implements ScreenHandlerProvider<T> {
             int m = this.touchDropOriginSlot.y - this.touchDropY;
             int o = this.touchDropX + (int)((float)l * f);
             int p = this.touchDropY + (int)((float)m * f);
-            this.drawItem(this.touchDropReturningStack, o, p, null);
+            this.drawItem(matrices, this.touchDropReturningStack, o, p, null);
         }
-        matrixStack.pop();
-        RenderSystem.applyModelViewMatrix();
+        matrices.pop();
         RenderSystem.enableDepthTest();
     }
 
@@ -168,16 +163,12 @@ implements ScreenHandlerProvider<T> {
         }
     }
 
-    private void drawItem(ItemStack stack, int x, int y, String amountText) {
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.translate(0.0f, 0.0f, 32.0f);
-        RenderSystem.applyModelViewMatrix();
-        this.setZOffset(200);
-        this.itemRenderer.zOffset = 200.0f;
-        this.itemRenderer.renderInGuiWithOverrides(stack, x, y);
-        this.itemRenderer.renderGuiItemOverlay(this.textRenderer, stack, x, y - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
-        this.setZOffset(0);
-        this.itemRenderer.zOffset = 0.0f;
+    private void drawItem(MatrixStack matrices, ItemStack stack, int x, int y, String amountText) {
+        matrices.push();
+        matrices.translate(0.0f, 0.0f, 232.0f);
+        this.itemRenderer.renderInGuiWithOverrides(matrices, stack, x, y);
+        this.itemRenderer.renderGuiItemOverlay(matrices, this.textRenderer, stack, x, y - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
+        matrices.pop();
     }
 
     protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
@@ -217,24 +208,22 @@ implements ScreenHandlerProvider<T> {
                 this.calculateOffset();
             }
         }
-        this.setZOffset(100);
-        this.itemRenderer.zOffset = 100.0f;
+        matrices.push();
+        matrices.translate(0.0f, 0.0f, 100.0f);
         if (itemStack.isEmpty() && slot.isEnabled() && (pair = slot.getBackgroundSprite()) != null) {
             Sprite sprite = this.client.getSpriteAtlas(pair.getFirst()).apply(pair.getSecond());
             RenderSystem.setShaderTexture(0, sprite.getAtlasId());
-            HandledScreen.drawSprite(matrices, i, j, this.getZOffset(), 16, 16, sprite);
+            HandledScreen.drawSprite(matrices, i, j, 0, 16, 16, sprite);
             bl2 = true;
         }
         if (!bl2) {
             if (bl) {
                 HandledScreen.fill(matrices, i, j, i + 16, j + 16, -2130706433);
             }
-            RenderSystem.enableDepthTest();
-            this.itemRenderer.renderInGuiWithOverrides(this.client.player, itemStack, i, j, slot.x + slot.y * this.backgroundWidth);
-            this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, i, j, string);
+            this.itemRenderer.renderInGuiWithOverrides(matrices, this.client.player, itemStack, i, j, slot.x + slot.y * this.backgroundWidth);
+            this.itemRenderer.renderGuiItemOverlay(matrices, this.textRenderer, itemStack, i, j, string);
         }
-        this.itemRenderer.zOffset = 0.0f;
-        this.setZOffset(0);
+        matrices.pop();
     }
 
     private void calculateOffset() {

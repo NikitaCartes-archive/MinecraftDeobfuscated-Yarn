@@ -217,7 +217,7 @@ extends Screen {
         h *= h;
         h = h * 96.0f / 255.0f;
         RenderSystem.setShaderColor(h, h, h, 1.0f);
-        CreditsScreen.drawTexture(matrices, 0, 0, this.getZOffset(), 0.0f, f, i, this.height, 64, 64);
+        CreditsScreen.drawTexture(matrices, 0, 0, 0, 0.0f, f, i, this.height, 64, 64);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
@@ -251,8 +251,9 @@ extends Screen {
         RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
-        CreditsScreen.drawTexture(matrices, 0, 0, this.getZOffset(), 0.0f, 0.0f, this.width, this.height, this.width, this.height);
+        CreditsScreen.drawTexture(matrices, 0, 0, 0, 0.0f, 0.0f, this.width, this.height, this.width, this.height);
         RenderSystem.disableBlend();
+        RenderSystem.defaultBlendFunc();
         super.render(matrices, mouseX, mouseY, delta);
     }
 

@@ -106,7 +106,7 @@ public abstract class MobSpawnerLogic {
             double e = j >= 2 ? nbtList.getDouble(1) : (double)(pos.getY() + random.nextInt(3) - 1);
             double d2 = f = j >= 3 ? nbtList.getDouble(2) : (double)pos.getZ() + (random.nextDouble() - random.nextDouble()) * (double)this.spawnRange + 0.5;
             if (!world.isSpaceEmpty(optional.get().createSimpleBoundingBox(d, e, f))) continue;
-            BlockPos blockPos = new BlockPos(d, e, f);
+            BlockPos blockPos = BlockPos.ofFloored(d, e, f);
             if (!mobSpawnerEntry.getCustomSpawnRules().isPresent() ? !SpawnRestriction.canSpawn(optional.get(), world, SpawnReason.SPAWNER, blockPos, world.getRandom()) : !optional.get().getSpawnGroup().isPeaceful() && world.getDifficulty() == Difficulty.PEACEFUL || !(customSpawnRules = mobSpawnerEntry.getCustomSpawnRules().get()).blockLightLimit().contains(world.getLightLevel(LightType.BLOCK, blockPos)) || !customSpawnRules.skyLightLimit().contains(world.getLightLevel(LightType.SKY, blockPos))) continue;
             Entity entity2 = EntityType.loadEntityWithPassengers(nbtCompound, world, entity -> {
                 entity.refreshPositionAndAngles(d, e, f, entity.getYaw(), entity.getPitch());

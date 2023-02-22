@@ -46,14 +46,14 @@ public record ServerMetadata(Text description, Optional<Players> players, Option
         private static final String DATA_URI_PREFIX = "data:image/png;base64,";
         public static final Codec<Favicon> CODEC = Codec.STRING.comapFlatMap(uri -> {
             if (!uri.startsWith(DATA_URI_PREFIX)) {
-                return DataResult.error("Unknown format");
+                return DataResult.error(() -> "Unknown format");
             }
             try {
                 String string = uri.substring(DATA_URI_PREFIX.length()).replaceAll("\n", "");
                 byte[] bs = Base64.getDecoder().decode(string.getBytes(StandardCharsets.UTF_8));
                 return DataResult.success(new Favicon(bs));
             } catch (IllegalArgumentException illegalArgumentException) {
-                return DataResult.error("Malformed base64 server icon");
+                return DataResult.error(() -> "Malformed base64 server icon");
             }
         }, iconBytes -> DATA_URI_PREFIX + new String(Base64.getEncoder().encode(iconBytes.iconBytes), StandardCharsets.UTF_8));
     }

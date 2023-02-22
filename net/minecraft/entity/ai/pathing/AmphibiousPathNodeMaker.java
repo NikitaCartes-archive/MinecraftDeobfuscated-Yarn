@@ -60,7 +60,7 @@ extends LandPathNodeMaker {
         int i = super.getSuccessors(successors, node);
         PathNodeType pathNodeType = this.getNodeType(this.entity, node.x, node.y + 1, node.z);
         PathNodeType pathNodeType2 = this.getNodeType(this.entity, node.x, node.y, node.z);
-        int j = this.entity.getPathfindingPenalty(pathNodeType) >= 0.0f && pathNodeType2 != PathNodeType.STICKY_HONEY ? MathHelper.floor(Math.max(1.0f, this.entity.stepHeight)) : 0;
+        int j = this.entity.getPathfindingPenalty(pathNodeType) >= 0.0f && pathNodeType2 != PathNodeType.STICKY_HONEY ? MathHelper.floor(Math.max(1.0f, this.entity.getStepHeight())) : 0;
         double d = this.getFeetY(new BlockPos(node.x, node.y, node.z));
         PathNode pathNode = this.getPathNode(node.x, node.y + 1, node.z, Math.max(0, j - 1), d, Direction.UP, pathNodeType2);
         PathNode pathNode2 = this.getPathNode(node.x, node.y - 1, node.z, j, d, Direction.DOWN, pathNodeType2);

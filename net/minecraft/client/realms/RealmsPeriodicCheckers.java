@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.RealmsNewsUpdater;
 import net.minecraft.client.realms.dto.RealmsNews;
+import net.minecraft.client.realms.dto.RealmsNotification;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsServerPlayerLists;
 import net.minecraft.client.realms.util.PeriodicRunnerFactory;
@@ -21,6 +22,7 @@ import net.minecraft.util.Util;
 @Environment(value=EnvType.CLIENT)
 public class RealmsPeriodicCheckers {
     public final PeriodicRunnerFactory runnerFactory = new PeriodicRunnerFactory(Util.getIoWorkerExecutor(), TimeUnit.MILLISECONDS, Util.nanoTimeSupplier);
+    public final PeriodicRunnerFactory.PeriodicRunner<List<RealmsNotification>> notifications;
     public final PeriodicRunnerFactory.PeriodicRunner<List<RealmsServer>> serverList;
     public final PeriodicRunnerFactory.PeriodicRunner<RealmsServerPlayerLists> liveStats;
     public final PeriodicRunnerFactory.PeriodicRunner<Integer> pendingInvitesCount;
@@ -34,6 +36,7 @@ public class RealmsPeriodicCheckers {
         this.pendingInvitesCount = this.runnerFactory.create("pending invite count", client::pendingInvitesCount, Duration.ofSeconds(10L), Backoff.exponential(360));
         this.trialAvailability = this.runnerFactory.create("trial availablity", client::trialAvailable, Duration.ofSeconds(60L), Backoff.exponential(60));
         this.news = this.runnerFactory.create("unread news", client::getNews, Duration.ofMinutes(5L), Backoff.ONE_CYCLE);
+        this.notifications = this.runnerFactory.create("notifications", client::listNotifications, Duration.ofMinutes(5L), Backoff.ONE_CYCLE);
     }
 }
 

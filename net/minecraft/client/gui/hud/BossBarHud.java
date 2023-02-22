@@ -62,11 +62,10 @@ extends DrawableHelper {
     }
 
     private void renderBossBar(MatrixStack matrices, int x, int y, BossBar bossBar, int width, int height) {
-        this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + height, width, 5);
+        BossBarHud.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + height, width, 5);
         if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
             RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getStyle().ordinal() - 1) * 5 * 2 + height, width, 5);
+            BossBarHud.drawTexture(matrices, x, y, 0, 80 + (bossBar.getStyle().ordinal() - 1) * 5 * 2 + height, width, 5);
             RenderSystem.disableBlend();
         }
     }

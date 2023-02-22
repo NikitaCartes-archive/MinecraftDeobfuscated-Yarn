@@ -58,7 +58,7 @@ extends ThrownItemEntity {
         super.onEntityHit(entityHitResult);
         Entity entity = entityHitResult.getEntity();
         int i = entity instanceof BlazeEntity ? 3 : 0;
-        entity.damage(this.getDamageSources().thorns(this, this.getOwner()), i);
+        entity.damage(this.getDamageSources().thrown(this, this.getOwner()), i);
     }
 
     @Override

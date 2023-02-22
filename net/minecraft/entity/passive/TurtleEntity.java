@@ -83,7 +83,7 @@ extends AnimalEntity {
         this.setPathfindingPenalty(PathNodeType.DOOR_WOOD_CLOSED, -1.0f);
         this.setPathfindingPenalty(PathNodeType.DOOR_OPEN, -1.0f);
         this.moveControl = new TurtleMoveControl(this);
-        this.stepHeight = 1.0f;
+        this.setStepHeight(1.0f);
     }
 
     public void setHomePos(BlockPos pos) {
@@ -325,7 +325,7 @@ extends AnimalEntity {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.canMoveVoluntarily() && this.isTouchingWater()) {
+        if (this.isLogicalSideForUpdatingMovement() && this.isTouchingWater()) {
             this.updateVelocity(0.1f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));
@@ -603,7 +603,7 @@ extends AnimalEntity {
                 if (vec3d2 == null) {
                     vec3d2 = NoPenaltyTargeting.findTo(this.turtle, 8, 7, vec3d, 1.5707963705062866);
                 }
-                if (vec3d2 != null && !bl && !this.turtle.world.getBlockState(new BlockPos(vec3d2)).isOf(Blocks.WATER)) {
+                if (vec3d2 != null && !bl && !this.turtle.world.getBlockState(BlockPos.ofFloored(vec3d2)).isOf(Blocks.WATER)) {
                     vec3d2 = NoPenaltyTargeting.findTo(this.turtle, 16, 5, vec3d, 1.5707963705062866);
                 }
                 if (vec3d2 == null) {
@@ -642,7 +642,7 @@ extends AnimalEntity {
             if ((double)l + this.turtle.getY() > (double)(this.turtle.world.getSeaLevel() - 1)) {
                 l = 0;
             }
-            BlockPos blockPos = new BlockPos((double)k + this.turtle.getX(), (double)l + this.turtle.getY(), (double)m + this.turtle.getZ());
+            BlockPos blockPos = BlockPos.ofFloored((double)k + this.turtle.getX(), (double)l + this.turtle.getY(), (double)m + this.turtle.getZ());
             this.turtle.setTravelPos(blockPos);
             this.turtle.setActivelyTraveling(true);
             this.noPath = false;

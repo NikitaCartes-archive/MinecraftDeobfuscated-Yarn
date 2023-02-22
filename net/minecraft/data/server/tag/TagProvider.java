@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.data.DataOutput;
@@ -33,14 +35,24 @@ public abstract class TagProvider<T>
 implements DataProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
     protected final DataOutput.PathResolver pathResolver;
-    protected final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+    private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+    private final CompletableFuture<TagLookup<T>> parentTagLookupFuture;
     protected final RegistryKey<? extends Registry<T>> registryRef;
     private final Map<Identifier, TagBuilder> tagBuilders = Maps.newLinkedHashMap();
 
     protected TagProvider(DataOutput output, RegistryKey<? extends Registry<T>> registryRef, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {
+        this(output, registryRef, registryLookupFuture, CompletableFuture.completedFuture(TagLookup.empty()));
+    }
+
+    protected TagProvider(DataOutput output, RegistryKey<? extends Registry<T>> registryRef, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, CompletableFuture<TagLookup<T>> parentTagLookupFuture) {
         this.pathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, TagManagerLoader.getPath(registryRef));
-        this.registryLookupFuture = registryLookupFuture;
         this.registryRef = registryRef;
+        this.parentTagLookupFuture = parentTagLookupFuture;
+        this.registryLookupFuture = registryLookupFuture.thenApply(lookup -> {
+            this.tagBuilders.clear();
+            this.configure((RegistryWrapper.WrapperLookup)lookup);
+            return lookup;
+        });
     }
 
     @Override
@@ -52,16 +64,17 @@ implements DataProvider {
 
     @Override
     public CompletableFuture<?> run(DataWriter writer) {
-        return this.registryLookupFuture.thenCompose(lookup -> {
-            this.tagBuilders.clear();
-            this.configure((RegistryWrapper.WrapperLookup)lookup);
-            RegistryWrapper.Impl impl = lookup.getWrapperOrThrow(this.registryRef);
+        record RegistryInfo<T>(RegistryWrapper.WrapperLookup contents, TagLookup<T> parent) {
+        }
+        return ((CompletableFuture)this.getRegistryLookupFuture().thenCombineAsync(this.parentTagLookupFuture, (lookup, parent) -> new RegistryInfo((RegistryWrapper.WrapperLookup)lookup, parent))).thenCompose(info -> {
+            RegistryWrapper.Impl impl = info.contents.getWrapperOrThrow(this.registryRef);
             Predicate<Identifier> predicate = id -> impl.getOptional(RegistryKey.of(this.registryRef, id)).isPresent();
+            Predicate<Identifier> predicate2 = id -> this.tagBuilders.containsKey(id) || registryInfo.parent.contains(TagKey.of(this.registryRef, id));
             return CompletableFuture.allOf((CompletableFuture[])this.tagBuilders.entrySet().stream().map(entry -> {
                 Identifier identifier = (Identifier)entry.getKey();
                 TagBuilder tagBuilder = (TagBuilder)entry.getValue();
                 List<TagEntry> list = tagBuilder.build();
-                List<TagEntry> list2 = list.stream().filter(tagEntry -> !tagEntry.canAdd(predicate, this.tagBuilders::containsKey)).toList();
+                List<TagEntry> list2 = list.stream().filter(tagEntry -> !tagEntry.canAdd(predicate, predicate2)).toList();
                 if (!list2.isEmpty()) {
                     throw new IllegalArgumentException(String.format(Locale.ROOT, "Couldn't define tag %s as it is missing following references: %s", identifier, list2.stream().map(Objects::toString).collect(Collectors.joining(","))));
                 }
@@ -79,6 +92,26 @@ implements DataProvider {
 
     protected TagBuilder getTagBuilder(TagKey<T> tag) {
         return this.tagBuilders.computeIfAbsent(tag.id(), id -> TagBuilder.create());
+    }
+
+    public CompletableFuture<TagLookup<T>> getTagLookupFuture() {
+        return this.getRegistryLookupFuture().thenApply(registryLookup -> tag -> Optional.ofNullable(this.tagBuilders.get(tag.id())));
+    }
+
+    protected CompletableFuture<RegistryWrapper.WrapperLookup> getRegistryLookupFuture() {
+        return this.registryLookupFuture;
+    }
+
+    @FunctionalInterface
+    public static interface TagLookup<T>
+    extends Function<TagKey<T>, Optional<TagBuilder>> {
+        public static <T> TagLookup<T> empty() {
+            return tag -> Optional.empty();
+        }
+
+        default public boolean contains(TagKey<T> tag) {
+            return ((Optional)this.apply(tag)).isPresent();
+        }
     }
 
     protected static class ProvidedTagBuilder<T> {

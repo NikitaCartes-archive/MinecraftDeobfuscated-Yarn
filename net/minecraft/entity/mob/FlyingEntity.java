@@ -6,7 +6,6 @@ package net.minecraft.entity.mob;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -19,17 +18,12 @@ extends MobEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-        return false;
-    }
-
-    @Override
     protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
     }
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
+        if (this.isLogicalSideForUpdatingMovement()) {
             if (this.isTouchingWater()) {
                 this.updateVelocity(0.02f, movementInput);
                 this.move(MovementType.SELF, this.getVelocity());
@@ -41,12 +35,12 @@ extends MobEntity {
             } else {
                 float f = 0.91f;
                 if (this.onGround) {
-                    f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f;
+                    f = this.world.getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f;
                 }
                 float g = 0.16277137f / (f * f * f);
                 f = 0.91f;
                 if (this.onGround) {
-                    f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f;
+                    f = this.world.getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91f;
                 }
                 this.updateVelocity(this.onGround ? 0.1f * g : 0.02f, movementInput);
                 this.move(MovementType.SELF, this.getVelocity());

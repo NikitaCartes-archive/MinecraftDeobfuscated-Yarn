@@ -140,7 +140,7 @@ extends ScrollableWidget {
     protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         String string = this.editBox.getText();
         if (string.isEmpty() && !this.isFocused()) {
-            this.textRenderer.drawTrimmed(this.placeholder, this.getX() + this.getPadding(), this.getY() + this.getPadding(), this.width - this.getPaddingDoubled(), -857677600);
+            this.textRenderer.drawTrimmed(matrices, this.placeholder, this.getX() + this.getPadding(), this.getY() + this.getPadding(), this.width - this.getPaddingDoubled(), -857677600);
             return;
         }
         int i = this.editBox.getCursor();

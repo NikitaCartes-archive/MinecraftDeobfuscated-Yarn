@@ -71,7 +71,7 @@ extends SpriteBillboardParticle {
         if (this.fluid == Fluids.EMPTY) {
             return;
         }
-        BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
+        BlockPos blockPos = BlockPos.ofFloored(this.x, this.y, this.z);
         FluidState fluidState = this.world.getFluidState(blockPos);
         if (fluidState.getFluid() == this.fluid && this.y < (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos))) {
             this.markDead();

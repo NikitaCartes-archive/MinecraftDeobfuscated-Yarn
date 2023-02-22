@@ -406,7 +406,7 @@ extends Chunk {
     public void loadFromPacket(PacketByteBuf buf, NbtCompound nbt2, Consumer<ChunkData.BlockEntityVisitor> consumer) {
         this.clear();
         for (ChunkSection chunkSection : this.sectionArray) {
-            chunkSection.fromPacket(buf);
+            chunkSection.readDataPacket(buf);
         }
         for (Heightmap.Type type : Heightmap.Type.values()) {
             String string = type.getName();
@@ -419,6 +419,12 @@ extends Chunk {
                 blockEntity.readNbt(nbt);
             }
         });
+    }
+
+    public void loadBiomeFromPacket(PacketByteBuf buf) {
+        for (ChunkSection chunkSection : this.sectionArray) {
+            chunkSection.readBiomePacket(buf);
+        }
     }
 
     public void setLoadedToWorld(boolean loadedToWorld) {

@@ -85,7 +85,7 @@ public class LocationPredicate {
         if (this.dimension != null && this.dimension != world.getRegistryKey()) {
             return false;
         }
-        BlockPos blockPos = new BlockPos(x, y, z);
+        BlockPos blockPos = BlockPos.ofFloored(x, y, z);
         boolean bl = world.canSetBlock(blockPos);
         if (!(this.biome == null || bl && world.getBiome(blockPos).matchesKey(this.biome))) {
             return false;

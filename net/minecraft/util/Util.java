@@ -92,7 +92,6 @@ public class Util {
     private static final int MAX_PARALLELISM = 255;
     private static final String MAX_BG_THREADS_PROPERTY = "max.bg.threads";
     private static final AtomicInteger NEXT_WORKER_ID = new AtomicInteger(1);
-    private static final ExecutorService BOOTSTRAP_EXECUTOR = Util.createWorker("Bootstrap");
     private static final ExecutorService MAIN_WORKER_EXECUTOR = Util.createWorker("Main");
     private static final ExecutorService IO_WORKER_EXECUTOR = Util.createIoWorker();
     /**
@@ -221,15 +220,6 @@ public class Util {
             }
         }
         return 255;
-    }
-
-    /**
-     * {@return the executor for asynchronous bootstrapping}
-     * 
-     * <p>This is used by DataFixerUpper to build schemas.
-     */
-    public static ExecutorService getBootstrapExecutor() {
-        return BOOTSTRAP_EXECUTOR;
     }
 
     /**
@@ -543,10 +533,11 @@ public class Util {
     public static <V> CompletableFuture<List<V>> combineCancellable(List<? extends CompletableFuture<? extends V>> futures) {
         CompletableFuture completableFuture = new CompletableFuture();
         return Util.combine(futures, throwable -> {
-            for (CompletableFuture completableFuture2 : futures) {
-                completableFuture2.cancel(true);
+            if (completableFuture.completeExceptionally((Throwable)throwable)) {
+                for (CompletableFuture completableFuture2 : futures) {
+                    completableFuture2.cancel(true);
+                }
             }
-            completableFuture.completeExceptionally((Throwable)throwable);
         }).applyToEither((CompletionStage)completableFuture, Function.identity());
     }
 
@@ -842,22 +833,22 @@ public class Util {
     public static DataResult<int[]> toArray(IntStream stream, int length) {
         int[] is = stream.limit(length + 1).toArray();
         if (is.length != length) {
-            String string = "Input is not a list of " + length + " ints";
+            Supplier<String> supplier = () -> "Input is not a list of " + length + " ints";
             if (is.length >= length) {
-                return DataResult.error(string, Arrays.copyOf(is, length));
+                return DataResult.error(supplier, Arrays.copyOf(is, length));
             }
-            return DataResult.error(string);
+            return DataResult.error(supplier);
         }
         return DataResult.success(is);
     }
 
     public static <T> DataResult<List<T>> toArray(List<T> list, int length) {
         if (list.size() != length) {
-            String string = "Input is not a list of " + length + " elements";
+            Supplier<String> supplier = () -> "Input is not a list of " + length + " elements";
             if (list.size() >= length) {
-                return DataResult.error(string, list.subList(0, length));
+                return DataResult.error(supplier, list.subList(0, length));
             }
-            return DataResult.error(string);
+            return DataResult.error(supplier);
         }
         return DataResult.success(list);
     }

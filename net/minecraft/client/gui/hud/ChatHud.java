@@ -4,7 +4,6 @@
 package net.minecraft.client.gui.hud;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,10 +118,8 @@ extends DrawableHelper {
                     this.drawIndicatorIcon(matrices, aa, ab, messageIndicator.icon());
                 }
             }
-            RenderSystem.enableBlend();
             matrices.translate(0.0f, 0.0f, 50.0f);
             this.client.textRenderer.drawWithShadow(matrices, visible.content(), 0.0f, (float)y, 0xFFFFFF + (u << 24));
-            RenderSystem.disableBlend();
             matrices.pop();
         }
         long ac = this.client.getMessageHandler().getUnprocessedMessageCount();
@@ -132,11 +129,9 @@ extends DrawableHelper {
             matrices.push();
             matrices.translate(0.0f, m, 50.0f);
             ChatHud.fill(matrices, -2, 0, k + 4, 9, t << 24);
-            RenderSystem.enableBlend();
             matrices.translate(0.0f, 0.0f, 50.0f);
             this.client.textRenderer.drawWithShadow(matrices, Text.translatable("chat.queue", ac), 0.0f, 1.0f, 0xFFFFFF + (ad << 24));
             matrices.pop();
-            RenderSystem.disableBlend();
         }
         if (bl) {
             int ad = this.getLineHeight();

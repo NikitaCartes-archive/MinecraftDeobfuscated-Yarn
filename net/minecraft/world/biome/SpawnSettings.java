@@ -9,6 +9,7 @@ import com.google.common.collect.Maps;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.List;
@@ -23,6 +24,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.collection.Pool;
 import net.minecraft.util.collection.Weight;
 import net.minecraft.util.collection.Weighted;
+import net.minecraft.util.dynamic.Codecs;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -55,28 +57,18 @@ public class SpawnSettings {
         return this.creatureSpawnProbability;
     }
 
-    public static class SpawnDensity {
+    public record SpawnDensity(double gravityLimit, double mass) {
         public static final Codec<SpawnDensity> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.DOUBLE.fieldOf("energy_budget")).forGetter(spawnDensity -> spawnDensity.gravityLimit), ((MapCodec)Codec.DOUBLE.fieldOf("charge")).forGetter(spawnDensity -> spawnDensity.mass)).apply((Applicative<SpawnDensity, ?>)instance, SpawnDensity::new));
-        private final double gravityLimit;
-        private final double mass;
-
-        SpawnDensity(double gravityLimit, double mass) {
-            this.gravityLimit = gravityLimit;
-            this.mass = mass;
-        }
-
-        public double getGravityLimit() {
-            return this.gravityLimit;
-        }
-
-        public double getMass() {
-            return this.mass;
-        }
     }
 
     public static class SpawnEntry
     extends Weighted.Absent {
-        public static final Codec<SpawnEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registries.ENTITY_TYPE.getCodec().fieldOf("type")).forGetter(spawnEntry -> spawnEntry.type), ((MapCodec)Weight.CODEC.fieldOf("weight")).forGetter(Weighted.Absent::getWeight), ((MapCodec)Codec.INT.fieldOf("minCount")).forGetter(spawnEntry -> spawnEntry.minGroupSize), ((MapCodec)Codec.INT.fieldOf("maxCount")).forGetter(spawnEntry -> spawnEntry.maxGroupSize)).apply((Applicative<SpawnEntry, ?>)instance, SpawnEntry::new));
+        public static final Codec<SpawnEntry> CODEC = Codecs.validate(RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Registries.ENTITY_TYPE.getCodec().fieldOf("type")).forGetter(spawnEntry -> spawnEntry.type), ((MapCodec)Weight.CODEC.fieldOf("weight")).forGetter(Weighted.Absent::getWeight), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("minCount")).forGetter(spawnEntry -> spawnEntry.minGroupSize), ((MapCodec)Codecs.POSITIVE_INT.fieldOf("maxCount")).forGetter(spawnEntry -> spawnEntry.maxGroupSize)).apply((Applicative<SpawnEntry, ?>)instance, SpawnEntry::new)), spawnEntry -> {
+            if (spawnEntry.minGroupSize > spawnEntry.maxGroupSize) {
+                return DataResult.error(() -> "minCount needs to be smaller or equal to maxCount");
+            }
+            return DataResult.success(spawnEntry);
+        });
         public final EntityType<?> type;
         public final int minGroupSize;
         public final int maxGroupSize;

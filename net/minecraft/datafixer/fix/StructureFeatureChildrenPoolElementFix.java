@@ -79,7 +79,7 @@ extends DataFix {
                     optionalDynamic = new OptionalDynamic(root.getOps(), DataResult.success((Dynamic)list.get(j)));
                     continue;
                 }
-                optionalDynamic = new OptionalDynamic(root.getOps(), DataResult.error("Missing id:" + j));
+                optionalDynamic = new OptionalDynamic(root.getOps(), DataResult.error(() -> "Missing id:" + j));
                 continue;
             }
             optionalDynamic = optionalDynamic.get(string);

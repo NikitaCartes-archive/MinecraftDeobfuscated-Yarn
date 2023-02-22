@@ -26,8 +26,9 @@ public class ChatLog {
 
     public static Codec<ChatLog> createCodec(int maxSize) {
         return Codec.list(ChatLogEntry.CODEC).comapFlatMap(entries -> {
-            if (entries.size() > maxSize) {
-                return DataResult.error("Expected: a buffer of size less than or equal to " + maxSize + " but: " + entries.size() + " is greater than " + maxSize);
+            int j = entries.size();
+            if (j > maxSize) {
+                return DataResult.error(() -> "Expected: a buffer of size less than or equal to " + maxSize + " but: " + j + " is greater than " + maxSize);
             }
             return DataResult.success(new ChatLog(maxSize, (List<ChatLogEntry>)entries));
         }, ChatLog::toList);

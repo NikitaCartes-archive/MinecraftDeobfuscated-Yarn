@@ -105,7 +105,7 @@ extends MultiTickTask<GoatEntity> {
 
     private boolean shouldSnapHorn(ServerWorld world, GoatEntity goat) {
         Vec3d vec3d = goat.getVelocity().multiply(1.0, 0.0, 1.0).normalize();
-        BlockPos blockPos = new BlockPos(goat.getPos().add(vec3d));
+        BlockPos blockPos = BlockPos.ofFloored(goat.getPos().add(vec3d));
         return world.getBlockState(blockPos).isIn(BlockTags.SNAPS_GOAT_HORN) || world.getBlockState(blockPos.up()).isIn(BlockTags.SNAPS_GOAT_HORN);
     }
 

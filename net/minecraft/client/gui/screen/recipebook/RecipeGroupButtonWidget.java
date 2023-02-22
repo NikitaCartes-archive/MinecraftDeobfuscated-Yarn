@@ -13,7 +13,6 @@ import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -58,7 +57,6 @@ extends ToggleButtonWidget {
             matrices.translate(-(this.getX() + 8), -(this.getY() + 12), 0.0f);
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, this.texture);
         RenderSystem.disableDepthTest();
         int i = this.u;
@@ -66,31 +64,31 @@ extends ToggleButtonWidget {
         if (this.toggled) {
             i += this.pressedUOffset;
         }
-        if (this.isHovered()) {
+        if (this.isSelected()) {
             j += this.hoverVOffset;
         }
         int k = this.getX();
         if (this.toggled) {
             k -= 2;
         }
-        this.drawTexture(matrices, k, this.getY(), i, j, this.width, this.height);
+        RecipeGroupButtonWidget.drawTexture(matrices, k, this.getY(), i, j, this.width, this.height);
         RenderSystem.enableDepthTest();
-        this.renderIcons(minecraftClient.getItemRenderer());
+        this.renderIcons(matrices, minecraftClient.getItemRenderer());
         if (this.bounce > 0.0f) {
             matrices.pop();
             this.bounce -= delta;
         }
     }
 
-    private void renderIcons(ItemRenderer itemRenderer) {
+    private void renderIcons(MatrixStack matrices, ItemRenderer itemRenderer) {
         int i;
         List<ItemStack> list = this.category.getIcons();
         int n = i = this.toggled ? -2 : 0;
         if (list.size() == 1) {
-            itemRenderer.renderInGui(list.get(0), this.getX() + 9 + i, this.getY() + 5);
+            itemRenderer.renderInGui(matrices, list.get(0), this.getX() + 9 + i, this.getY() + 5);
         } else if (list.size() == 2) {
-            itemRenderer.renderInGui(list.get(0), this.getX() + 3 + i, this.getY() + 5);
-            itemRenderer.renderInGui(list.get(1), this.getX() + 14 + i, this.getY() + 5);
+            itemRenderer.renderInGui(matrices, list.get(0), this.getX() + 3 + i, this.getY() + 5);
+            itemRenderer.renderInGui(matrices, list.get(1), this.getX() + 14 + i, this.getY() + 5);
         }
     }
 

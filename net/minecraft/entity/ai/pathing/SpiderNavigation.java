@@ -47,7 +47,7 @@ extends MobNavigation {
     public void tick() {
         if (this.isIdle()) {
             if (this.targetPos != null) {
-                if (this.targetPos.isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth()) || this.entity.getY() > (double)this.targetPos.getY() && new BlockPos((double)this.targetPos.getX(), this.entity.getY(), (double)this.targetPos.getZ()).isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth())) {
+                if (this.targetPos.isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth()) || this.entity.getY() > (double)this.targetPos.getY() && BlockPos.ofFloored(this.targetPos.getX(), this.entity.getY(), this.targetPos.getZ()).isWithinDistance(this.entity.getPos(), (double)this.entity.getWidth())) {
                     this.targetPos = null;
                 } else {
                     this.entity.getMoveControl().moveTo(this.targetPos.getX(), this.targetPos.getY(), this.targetPos.getZ(), this.speed);

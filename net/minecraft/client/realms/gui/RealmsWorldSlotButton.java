@@ -118,7 +118,7 @@ extends ButtonWidget {
 
     private void drawSlotFrame(MatrixStack matrices, int x, int y, int mouseX, int mouseY, boolean active, String slotName, int slotIndex, long imageId, @Nullable String image, boolean empty, boolean minigame, Action action, @Nullable Text actionPrompt) {
         boolean bl2;
-        boolean bl = this.isHovered();
+        boolean bl = this.isSelected();
         if (this.isMouseOver(mouseX, mouseY) && actionPrompt != null) {
             this.tooltipSetter.accept(actionPrompt);
         }
@@ -160,7 +160,6 @@ extends ButtonWidget {
     private void drawCheckmark(MatrixStack matrices, int x, int y) {
         RenderSystem.setShaderTexture(0, CHECKMARK);
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         RealmsWorldSlotButton.drawTexture(matrices, x + 67, y + 4, 0.0f, 0.0f, 9, 8, 9, 8);
         RenderSystem.disableBlend();
     }

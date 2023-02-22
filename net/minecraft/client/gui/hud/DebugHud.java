@@ -420,21 +420,21 @@ extends DrawableHelper {
         if (showFps) {
             DebugHud.fill(matrices, x + 1, r - 30 + 1, x + 14, r - 30 + 10, -1873784752);
             this.textRenderer.draw(matrices, "60 FPS", (float)(x + 2), (float)(r - 30 + 2), 0xE0E0E0);
-            this.drawHorizontalLine(matrices, x, x + n - 1, r - 30, -1);
+            DebugHud.drawHorizontalLine(matrices, x, x + n - 1, r - 30, -1);
             DebugHud.fill(matrices, x + 1, r - 60 + 1, x + 14, r - 60 + 10, -1873784752);
             this.textRenderer.draw(matrices, "30 FPS", (float)(x + 2), (float)(r - 60 + 2), 0xE0E0E0);
-            this.drawHorizontalLine(matrices, x, x + n - 1, r - 60, -1);
+            DebugHud.drawHorizontalLine(matrices, x, x + n - 1, r - 60, -1);
         } else {
             DebugHud.fill(matrices, x + 1, r - 60 + 1, x + 14, r - 60 + 10, -1873784752);
             this.textRenderer.draw(matrices, "20 TPS", (float)(x + 2), (float)(r - 60 + 2), 0xE0E0E0);
-            this.drawHorizontalLine(matrices, x, x + n - 1, r - 60, -1);
+            DebugHud.drawHorizontalLine(matrices, x, x + n - 1, r - 60, -1);
         }
-        this.drawHorizontalLine(matrices, x, x + n - 1, r - 1, -1);
-        this.drawVerticalLine(matrices, x, r - 60, r, -1);
-        this.drawVerticalLine(matrices, x + n - 1, r - 60, r, -1);
+        DebugHud.drawHorizontalLine(matrices, x, x + n - 1, r - 1, -1);
+        DebugHud.drawVerticalLine(matrices, x, r - 60, r, -1);
+        DebugHud.drawVerticalLine(matrices, x + n - 1, r - 60, r, -1);
         t = this.client.options.getMaxFps().getValue();
         if (showFps && t > 0 && t <= 250) {
-            this.drawHorizontalLine(matrices, x, x + n - 1, r - 1 - (int)(1800.0 / (double)t), -16711681);
+            DebugHud.drawHorizontalLine(matrices, x, x + n - 1, r - 1 - (int)(1800.0 / (double)t), -16711681);
         }
         String string = p + " ms min";
         String string2 = o / (long)n + " ms avg";

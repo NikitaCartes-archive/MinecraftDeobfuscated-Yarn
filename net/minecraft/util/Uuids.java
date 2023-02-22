@@ -23,14 +23,14 @@ public final class Uuids {
         try {
             return DataResult.success(UUID.fromString(string), Lifecycle.stable());
         } catch (IllegalArgumentException illegalArgumentException) {
-            return DataResult.error("Invalid UUID " + string + ": " + illegalArgumentException.getMessage());
+            return DataResult.error(() -> "Invalid UUID " + string + ": " + illegalArgumentException.getMessage());
         }
     }, UUID::toString);
     public static Codec<UUID> CODEC = Codec.either(INT_STREAM_CODEC, Codec.STRING.comapFlatMap(string -> {
         try {
             return DataResult.success(UUIDTypeAdapter.fromString(string), Lifecycle.stable());
         } catch (IllegalArgumentException illegalArgumentException) {
-            return DataResult.error("Invalid UUID " + string + ": " + illegalArgumentException.getMessage());
+            return DataResult.error(() -> "Invalid UUID " + string + ": " + illegalArgumentException.getMessage());
         }
     }, UUIDTypeAdapter::fromUUID)).xmap(either -> either.map(uuid -> uuid, uuid -> uuid), Either::right);
     public static final int BYTE_ARRAY_SIZE = 16;

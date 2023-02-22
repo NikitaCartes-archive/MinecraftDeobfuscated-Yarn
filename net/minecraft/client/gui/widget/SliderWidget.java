@@ -23,6 +23,10 @@ import org.lwjgl.glfw.GLFW;
 public abstract class SliderWidget
 extends ClickableWidget {
     private static final Identifier TEXTURE = new Identifier("textures/gui/slider.png");
+    protected static final int field_43051 = 200;
+    protected static final int field_43052 = 20;
+    protected static final int field_43053 = 4;
+    protected static final int field_43054 = 2;
     private static final int field_41788 = 20;
     private static final int field_41789 = 4;
     private static final int field_41790 = 8;
@@ -38,13 +42,7 @@ extends ClickableWidget {
         this.value = value;
     }
 
-    @Override
-    protected Identifier getTexture() {
-        return TEXTURE;
-    }
-
-    @Override
-    protected int getYImage() {
+    private int getYImage() {
         int i = this.isFocused() && !this.sliderFocused ? 1 : 0;
         return i * 20;
     }
@@ -72,10 +70,18 @@ extends ClickableWidget {
     }
 
     @Override
-    protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, this.getTexture());
-        int i = this.getTextureV();
-        this.drawNineSlicedTexture(matrices, this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 8, 20, 4, 200, 20, 0, i);
+    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+        MinecraftClient minecraftClient = MinecraftClient.getInstance();
+        RenderSystem.setShaderTexture(0, TEXTURE);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, this.alpha);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
+        SliderWidget.drawNineSlicedTexture(matrices, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 4, 200, 20, 0, this.getYImage());
+        SliderWidget.drawNineSlicedTexture(matrices, this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 8, 20, 4, 200, 20, 0, this.getTextureV());
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        int i = this.active ? 0xFFFFFF : 0xA0A0A0;
+        this.drawScrollableText(matrices, minecraftClient.textRenderer, 2, i | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }
 
     @Override

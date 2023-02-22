@@ -94,11 +94,6 @@ extends SlimeEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-        return false;
-    }
-
-    @Override
     protected boolean canAttack() {
         return this.canMoveVoluntarily();
     }

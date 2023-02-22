@@ -163,7 +163,7 @@ public class LookTargetUtil {
     public static Vec3d find(PathAwareEntity entity, int horizontalRange, int verticalRange) {
         Vec3d vec3d = NoPenaltyTargeting.find(entity, horizontalRange, verticalRange);
         int i = 0;
-        while (vec3d != null && !entity.world.getBlockState(new BlockPos(vec3d)).canPathfindThrough(entity.world, new BlockPos(vec3d), NavigationType.WATER) && i++ < 10) {
+        while (vec3d != null && !entity.world.getBlockState(BlockPos.ofFloored(vec3d)).canPathfindThrough(entity.world, BlockPos.ofFloored(vec3d), NavigationType.WATER) && i++ < 10) {
             vec3d = NoPenaltyTargeting.find(entity, horizontalRange, verticalRange);
         }
         return vec3d;

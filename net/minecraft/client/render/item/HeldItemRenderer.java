@@ -31,6 +31,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.world.World;
 import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
@@ -205,7 +206,7 @@ public class HeldItemRenderer {
         matrices.translate(-0.5f, -0.5f, 0.0f);
         matrices.scale(0.0078125f, 0.0078125f, 0.0078125f);
         Integer integer = FilledMapItem.getMapId(stack);
-        MapState mapState = FilledMapItem.getMapState(integer, this.client.world);
+        MapState mapState = FilledMapItem.getMapState(integer, (World)this.client.world);
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(mapState == null ? MAP_BACKGROUND : MAP_BACKGROUND_CHECKERBOARD);
         Matrix4f matrix4f = matrices.peek().getPositionMatrix();
         vertexConsumer.vertex(matrix4f, -7.0f, 135.0f, 0.0f).color(255, 255, 255, 255).texture(0.0f, 1.0f).light(swingProgress).next();

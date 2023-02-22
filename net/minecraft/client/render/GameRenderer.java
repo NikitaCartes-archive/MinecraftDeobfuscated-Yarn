@@ -714,7 +714,7 @@ implements AutoCloseable {
             Vec3d vec3d4 = entityHitResult.getPos();
             double g = vec3d.squaredDistanceTo(vec3d4);
             if (bl && g > 9.0) {
-                this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), new BlockPos(vec3d4));
+                this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), BlockPos.ofFloored(vec3d4));
             } else if (g < e || this.client.crosshairTarget == null) {
                 this.client.crosshairTarget = entityHitResult;
                 if (entity22 instanceof LivingEntity || entity22 instanceof ItemFrameEntity) {
@@ -891,6 +891,7 @@ implements AutoCloseable {
         Matrix4f matrix4f = new Matrix4f().setOrtho(0.0f, (float)((double)window.getFramebufferWidth() / window.getScaleFactor()), (float)((double)window.getFramebufferHeight() / window.getScaleFactor()), 0.0f, 1000.0f, 3000.0f);
         RenderSystem.setProjectionMatrix(matrix4f);
         MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.push();
         matrixStack.loadIdentity();
         matrixStack.translate(0.0f, 0.0f, -2000.0f);
         RenderSystem.applyModelViewMatrix();
@@ -944,6 +945,11 @@ implements AutoCloseable {
                 throw new CrashException(crashReport);
             }
         }
+        this.client.getProfiler().push("toasts");
+        this.client.getToastManager().draw(matrixStack2);
+        this.client.getProfiler().pop();
+        matrixStack.pop();
+        RenderSystem.applyModelViewMatrix();
     }
 
     private void updateWorldIcon() {

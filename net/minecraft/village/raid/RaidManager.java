@@ -102,7 +102,7 @@ extends PersistentState {
         }
         if (i > 0) {
             vec3d = vec3d.multiply(1.0 / (double)i);
-            blockPos3 = new BlockPos(vec3d);
+            blockPos3 = BlockPos.ofFloored(vec3d);
         } else {
             blockPos3 = blockPos;
         }

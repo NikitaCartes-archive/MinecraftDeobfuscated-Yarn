@@ -84,7 +84,7 @@ public class MultiNoiseUtil {
     public record ParameterRange(long min, long max) {
         public static final Codec<ParameterRange> CODEC = Codecs.createCodecForPairObject(Codec.floatRange(-2.0f, 2.0f), "min", "max", (min, max) -> {
             if (min.compareTo((Float)max) > 0) {
-                return DataResult.error("Cannon construct interval, min > max (" + min + " > " + max + ")");
+                return DataResult.error(() -> "Cannon construct interval, min > max (" + min + " > " + max + ")");
             }
             return DataResult.success(new ParameterRange(MultiNoiseUtil.toLong(min.floatValue()), MultiNoiseUtil.toLong(max.floatValue())));
         }, parameterRange -> Float.valueOf(MultiNoiseUtil.toFloat(parameterRange.min())), parameterRange -> Float.valueOf(MultiNoiseUtil.toFloat(parameterRange.max())));
@@ -198,6 +198,10 @@ public class MultiNoiseUtil {
     public static class Entries<T> {
         private final List<Pair<NoiseHypercube, T>> entries;
         private final SearchTree<T> tree;
+
+        public static <T> Codec<Entries<T>> createCodec(MapCodec<T> entryCodec) {
+            return Codecs.nonEmptyList(RecordCodecBuilder.create(instance -> instance.group(((MapCodec)NoiseHypercube.CODEC.fieldOf("parameters")).forGetter(Pair::getFirst), entryCodec.forGetter(Pair::getSecond)).apply((Applicative<Pair, ?>)instance, Pair::of)).listOf()).xmap(Entries::new, Entries::getEntries);
+        }
 
         public Entries(List<Pair<NoiseHypercube, T>> entries) {
             this.entries = entries;

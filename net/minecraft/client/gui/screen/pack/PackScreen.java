@@ -61,7 +61,6 @@ extends Screen {
     private static final int field_32396 = 20;
     private static final Identifier UNKNOWN_PACK = new Identifier("textures/misc/unknown_pack.png");
     private final ResourcePackOrganizer organizer;
-    private final Screen parent;
     @Nullable
     private DirectoryWatcher directoryWatcher;
     private long refreshTimeout;
@@ -71,10 +70,9 @@ extends Screen {
     private ButtonWidget doneButton;
     private final Map<String, Identifier> iconTextures = Maps.newHashMap();
 
-    public PackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> applier, Path file, Text title) {
+    public PackScreen(ResourcePackManager resourcePackManager, Consumer<ResourcePackManager> applier, Path file, Text title) {
         super(title);
-        this.parent = parent;
-        this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::getPackIconTexture, packManager, applier);
+        this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::getPackIconTexture, resourcePackManager, applier);
         this.file = file;
         this.directoryWatcher = DirectoryWatcher.create(file);
     }
@@ -82,7 +80,6 @@ extends Screen {
     @Override
     public void close() {
         this.organizer.apply();
-        this.client.setScreen(this.parent);
         this.closeDirectoryWatcher();
     }
 

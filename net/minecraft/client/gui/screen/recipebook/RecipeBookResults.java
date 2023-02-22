@@ -103,7 +103,7 @@ public class RecipeBookResults {
         this.hoveredResultButton = null;
         for (AnimatedResultButton animatedResultButton : this.resultButtons) {
             animatedResultButton.render(matrices, mouseX, mouseY, delta);
-            if (!animatedResultButton.visible || !animatedResultButton.isHovered()) continue;
+            if (!animatedResultButton.visible || !animatedResultButton.isSelected()) continue;
             this.hoveredResultButton = animatedResultButton;
         }
         this.prevPageButton.render(matrices, mouseX, mouseY, delta);

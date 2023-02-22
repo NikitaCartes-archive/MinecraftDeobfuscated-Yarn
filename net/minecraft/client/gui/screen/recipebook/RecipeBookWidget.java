@@ -30,7 +30,6 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.SearchManager;
@@ -245,11 +244,10 @@ RecipeDisplayListener {
         }
         matrices.push();
         matrices.translate(0.0f, 0.0f, 100.0f);
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.parentWidth - 147) / 2 - this.leftOffset;
         int j = (this.parentHeight - 166) / 2;
-        this.drawTexture(matrices, i, j, 1, 1, 147, 166);
+        RecipeBookWidget.drawTexture(matrices, i, j, 1, 1, 147, 166);
         this.searchField.render(matrices, mouseX, mouseY, delta);
         for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
             recipeGroupButtonWidget.render(matrices, mouseX, mouseY, delta);
@@ -348,7 +346,7 @@ RecipeDisplayListener {
         }
         boolean bl = mouseX < (double)x || mouseY < (double)y || mouseX >= (double)(x + backgroundWidth) || mouseY >= (double)(y + backgroundHeight);
         boolean bl2 = (double)(x - 147) < mouseX && mouseX < (double)x && (double)y < mouseY && mouseY < (double)(y + backgroundHeight);
-        return bl && !bl2 && !this.currentTab.isHovered();
+        return bl && !bl2 && !this.currentTab.isSelected();
     }
 
     @Override

@@ -20,6 +20,7 @@ public final class EntityTypeTags {
     public static final TagKey<EntityType<?>> FREEZE_IMMUNE_ENTITY_TYPES = EntityTypeTags.of("freeze_immune_entity_types");
     public static final TagKey<EntityType<?>> FREEZE_HURTS_EXTRA_TYPES = EntityTypeTags.of("freeze_hurts_extra_types");
     public static final TagKey<EntityType<?>> FROG_FOOD = EntityTypeTags.of("frog_food");
+    public static final TagKey<EntityType<?>> FALL_DAMAGE_IMMUNE = EntityTypeTags.of("fall_damage_immune");
 
     private EntityTypeTags() {
     }

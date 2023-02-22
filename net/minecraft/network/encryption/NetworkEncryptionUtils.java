@@ -61,7 +61,7 @@ public class NetworkEncryptionUtils {
         try {
             return DataResult.success(NetworkEncryptionUtils.decodeRsaPublicKeyPem(key));
         } catch (NetworkEncryptionException networkEncryptionException) {
-            return DataResult.error(networkEncryptionException.getMessage());
+            return DataResult.error(networkEncryptionException::getMessage);
         }
     }, NetworkEncryptionUtils::encodeRsaPublicKey);
     /**
@@ -76,7 +76,7 @@ public class NetworkEncryptionUtils {
         try {
             return DataResult.success(NetworkEncryptionUtils.decodeRsaPrivateKeyPem(key));
         } catch (NetworkEncryptionException networkEncryptionException) {
-            return DataResult.error(networkEncryptionException.getMessage());
+            return DataResult.error(networkEncryptionException::getMessage);
         }
     }, NetworkEncryptionUtils::encodeRsaPrivateKey);
 

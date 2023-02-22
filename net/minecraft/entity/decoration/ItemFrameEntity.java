@@ -410,7 +410,7 @@ extends AbstractDecorationEntity {
         if (!bl) {
             if (bl2 && !this.isRemoved()) {
                 MapState mapState;
-                if (itemStack.isOf(Items.FILLED_MAP) && (mapState = FilledMapItem.getOrCreateMapState(itemStack, this.world)) != null && mapState.iconCountNotLessThan(256)) {
+                if (itemStack.isOf(Items.FILLED_MAP) && (mapState = FilledMapItem.getMapState(itemStack, this.world)) != null && mapState.iconCountNotLessThan(256)) {
                     return ActionResult.FAIL;
                 }
                 this.setHeldItemStack(itemStack);

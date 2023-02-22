@@ -19,6 +19,8 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterLists;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
@@ -43,10 +45,6 @@ public class WorldPresets {
 
     public static void bootstrap(Registerable<WorldPreset> presetRegisterable) {
         new Registrar(presetRegisterable).bootstrap();
-    }
-
-    public static void bootstrapOneTwenty(Registerable<WorldPreset> presetRegisterable) {
-        new Registrar(presetRegisterable).bootstrapOneTwenty();
     }
 
     private static RegistryKey<WorldPreset> of(String id) {
@@ -80,6 +78,7 @@ public class WorldPresets {
         private final RegistryEntryLookup<Biome> biomeLookup;
         private final RegistryEntryLookup<PlacedFeature> featureLookup;
         private final RegistryEntryLookup<StructureSet> structureSetLookup;
+        private final RegistryEntryLookup<MultiNoiseBiomeSourceParameterList> multiNoisePresetLookup;
         private final RegistryEntry<DimensionType> overworldDimensionType;
         private final DimensionOptions netherDimensionOptions;
         private final DimensionOptions endDimensionOptions;
@@ -91,10 +90,12 @@ public class WorldPresets {
             this.biomeLookup = presetRegisterable.getRegistryLookup(RegistryKeys.BIOME);
             this.featureLookup = presetRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
             this.structureSetLookup = presetRegisterable.getRegistryLookup(RegistryKeys.STRUCTURE_SET);
+            this.multiNoisePresetLookup = presetRegisterable.getRegistryLookup(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST);
             this.overworldDimensionType = registryEntryLookup.getOrThrow(DimensionTypes.OVERWORLD);
             RegistryEntry.Reference<DimensionType> registryEntry = registryEntryLookup.getOrThrow(DimensionTypes.THE_NETHER);
             RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry2 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.NETHER);
-            this.netherDimensionOptions = new DimensionOptions(registryEntry, new NoiseChunkGenerator((BiomeSource)MultiNoiseBiomeSource.Preset.NETHER.getBiomeSource(this.biomeLookup), registryEntry2));
+            RegistryEntry.Reference<MultiNoiseBiomeSourceParameterList> reference = this.multiNoisePresetLookup.getOrThrow(MultiNoiseBiomeSourceParameterLists.NETHER);
+            this.netherDimensionOptions = new DimensionOptions(registryEntry, new NoiseChunkGenerator((BiomeSource)MultiNoiseBiomeSource.create(reference), registryEntry2));
             RegistryEntry.Reference<DimensionType> registryEntry3 = registryEntryLookup.getOrThrow(DimensionTypes.THE_END);
             RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry4 = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.END);
             this.endDimensionOptions = new DimensionOptions(registryEntry3, new NoiseChunkGenerator((BiomeSource)TheEndBiomeSource.createVanilla(this.biomeLookup), registryEntry4));
@@ -126,16 +127,13 @@ public class WorldPresets {
         }
 
         public void bootstrap() {
-            this.bootstrap(MultiNoiseBiomeSource.Preset.OVERWORLD.getBiomeSource(this.biomeLookup));
+            RegistryEntry.Reference<MultiNoiseBiomeSourceParameterList> reference = this.multiNoisePresetLookup.getOrThrow(MultiNoiseBiomeSourceParameterLists.OVERWORLD);
+            this.bootstrap(MultiNoiseBiomeSource.create(reference));
             RegistryEntry.Reference<ChunkGeneratorSettings> registryEntry = this.chunkGeneratorSettingsLookup.getOrThrow(ChunkGeneratorSettings.OVERWORLD);
-            RegistryEntry.Reference<Biome> reference = this.biomeLookup.getOrThrow(BiomeKeys.PLAINS);
-            this.register(SINGLE_BIOME_SURFACE, this.createOverworldOptions(new FixedBiomeSource(reference), registryEntry));
+            RegistryEntry.Reference<Biome> reference2 = this.biomeLookup.getOrThrow(BiomeKeys.PLAINS);
+            this.register(SINGLE_BIOME_SURFACE, this.createOverworldOptions(new FixedBiomeSource(reference2), registryEntry));
             this.register(FLAT, this.createOverworldOptions(new FlatChunkGenerator(FlatChunkGeneratorConfig.getDefaultConfig(this.biomeLookup, this.structureSetLookup, this.featureLookup))));
-            this.register(DEBUG_ALL_BLOCK_STATES, this.createOverworldOptions(new DebugChunkGenerator(reference)));
-        }
-
-        public void bootstrapOneTwenty() {
-            this.bootstrap(MultiNoiseBiomeSource.Preset.OVERWORLD_UPDATE_1_20.getBiomeSource(this.biomeLookup));
+            this.register(DEBUG_ALL_BLOCK_STATES, this.createOverworldOptions(new DebugChunkGenerator(reference2)));
         }
     }
 }

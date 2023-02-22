@@ -473,10 +473,6 @@ extends LivingEntity {
         this.inventory.updateItems();
         this.prevStrideDistance = this.strideDistance;
         super.tickMovement();
-        this.airStrafingSpeed = 0.02f;
-        if (this.isSprinting()) {
-            this.airStrafingSpeed += 0.006f;
-        }
         this.setMovementSpeed((float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
         float f = !this.onGround || this.isDead() || this.isSwimming() ? 0.0f : Math.min(0.1f, (float)this.getVelocity().horizontalLength());
         this.strideDistance += (f - this.strideDistance) * 0.4f;
@@ -974,7 +970,7 @@ extends LivingEntity {
             double d = movement.x;
             double e = movement.z;
             double f = 0.05;
-            while (d != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(d, -this.stepHeight, 0.0))) {
+            while (d != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(d, -this.getStepHeight(), 0.0))) {
                 if (d < 0.05 && d >= -0.05) {
                     d = 0.0;
                     continue;
@@ -985,7 +981,7 @@ extends LivingEntity {
                 }
                 d += 0.05;
             }
-            while (e != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(0.0, -this.stepHeight, e))) {
+            while (e != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(0.0, -this.getStepHeight(), e))) {
                 if (e < 0.05 && e >= -0.05) {
                     e = 0.0;
                     continue;
@@ -996,7 +992,7 @@ extends LivingEntity {
                 }
                 e += 0.05;
             }
-            while (d != 0.0 && e != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(d, -this.stepHeight, e))) {
+            while (d != 0.0 && e != 0.0 && this.world.isSpaceEmpty(this, this.getBoundingBox().offset(d, -this.getStepHeight(), e))) {
                 d = d < 0.05 && d >= -0.05 ? 0.0 : (d > 0.0 ? (d -= 0.05) : (d += 0.05));
                 if (e < 0.05 && e >= -0.05) {
                     e = 0.0;
@@ -1014,7 +1010,7 @@ extends LivingEntity {
     }
 
     private boolean method_30263() {
-        return this.onGround || this.fallDistance < this.stepHeight && !this.world.isSpaceEmpty(this, this.getBoundingBox().offset(0.0, this.fallDistance - this.stepHeight, 0.0));
+        return this.onGround || this.fallDistance < this.getStepHeight() && !this.world.isSpaceEmpty(this, this.getBoundingBox().offset(0.0, this.fallDistance - this.getStepHeight(), 0.0));
     }
 
     public void attack(Entity target) {
@@ -1369,19 +1365,16 @@ extends LivingEntity {
             double h;
             g = this.getRotationVector().y;
             double d2 = h = g < -0.2 ? 0.085 : 0.06;
-            if (g <= 0.0 || this.jumping || !this.world.getBlockState(new BlockPos(this.getX(), this.getY() + 1.0 - 0.1, this.getZ())).getFluidState().isEmpty()) {
+            if (g <= 0.0 || this.jumping || !this.world.getBlockState(BlockPos.ofFloored(this.getX(), this.getY() + 1.0 - 0.1, this.getZ())).getFluidState().isEmpty()) {
                 Vec3d vec3d = this.getVelocity();
                 this.setVelocity(vec3d.add(0.0, (g - vec3d.y) * h, 0.0));
             }
         }
         if (this.abilities.flying && !this.hasVehicle()) {
             g = this.getVelocity().y;
-            float i = this.airStrafingSpeed;
-            this.airStrafingSpeed = this.abilities.getFlySpeed() * (float)(this.isSprinting() ? 2 : 1);
             super.travel(movementInput);
             Vec3d vec3d2 = this.getVelocity();
             this.setVelocity(vec3d2.x, g * 0.6, vec3d2.z);
-            this.airStrafingSpeed = i;
             this.onLanding();
             this.setFlag(Entity.FALL_FLYING_FLAG_INDEX, false);
         } else {
@@ -2019,6 +2012,14 @@ extends LivingEntity {
     @Override
     public boolean canSprintAsVehicle() {
         return true;
+    }
+
+    @Override
+    protected float getOffGroundSpeed() {
+        if (this.abilities.flying && !this.hasVehicle()) {
+            return this.isSprinting() ? this.abilities.getFlySpeed() * 2.0f : this.abilities.getFlySpeed();
+        }
+        return this.isSprinting() ? 0.025999999f : 0.02f;
     }
 
     public static enum SleepFailureReason {

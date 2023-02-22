@@ -81,7 +81,7 @@ public final class SpawnHelper {
             chunkSource.query(ChunkPos.toLong(blockPos), chunk -> {
                 SpawnSettings.SpawnDensity spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, chunk).getSpawnSettings().getSpawnDensity(entity.getType());
                 if (spawnDensity != null) {
-                    gravityField.addPoint(entity.getBlockPos(), spawnDensity.getMass());
+                    gravityField.addPoint(entity.getBlockPos(), spawnDensity.mass());
                 }
                 if (entity instanceof MobEntity) {
                     densityCapper.increaseDensity(chunk.getPos(), spawnGroup);
@@ -330,7 +330,7 @@ public final class SpawnHelper {
                         float f = spawnEntry.type.getWidth();
                         double d = MathHelper.clamp((double)l, (double)i + (double)f, (double)i + 16.0 - (double)f);
                         double e = MathHelper.clamp((double)m, (double)j + (double)f, (double)j + 16.0 - (double)f);
-                        if (!world.isSpaceEmpty(spawnEntry.type.createSimpleBoundingBox(d, blockPos.getY(), e)) || !SpawnRestriction.canSpawn(spawnEntry.type, world, SpawnReason.CHUNK_GENERATION, new BlockPos(d, (double)blockPos.getY(), e), world.getRandom())) continue;
+                        if (!world.isSpaceEmpty(spawnEntry.type.createSimpleBoundingBox(d, blockPos.getY(), e)) || !SpawnRestriction.canSpawn(spawnEntry.type, world, SpawnReason.CHUNK_GENERATION, BlockPos.ofFloored(d, blockPos.getY(), e), world.getRandom())) continue;
                         try {
                             entity = spawnEntry.type.create(world.toServerWorld());
                         } catch (Exception exception) {
@@ -408,16 +408,16 @@ public final class SpawnHelper {
                 this.cachedDensityMass = 0.0;
                 return true;
             }
-            this.cachedDensityMass = d = spawnDensity.getMass();
+            this.cachedDensityMass = d = spawnDensity.mass();
             double e = this.densityField.calculate(pos, d);
-            return e <= spawnDensity.getGravityLimit();
+            return e <= spawnDensity.gravityLimit();
         }
 
         private void run(MobEntity entity, Chunk chunk) {
             SpawnSettings.SpawnDensity spawnDensity;
             EntityType<?> entityType = entity.getType();
             BlockPos blockPos = entity.getBlockPos();
-            double d = blockPos.equals(this.cachedPos) && entityType == this.cachedEntityType ? this.cachedDensityMass : ((spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, chunk).getSpawnSettings().getSpawnDensity(entityType)) != null ? spawnDensity.getMass() : 0.0);
+            double d = blockPos.equals(this.cachedPos) && entityType == this.cachedEntityType ? this.cachedDensityMass : ((spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, chunk).getSpawnSettings().getSpawnDensity(entityType)) != null ? spawnDensity.mass() : 0.0);
             this.densityField.addPoint(blockPos, d);
             SpawnGroup spawnGroup = entityType.getSpawnGroup();
             this.groupToCount.addTo(spawnGroup, 1);

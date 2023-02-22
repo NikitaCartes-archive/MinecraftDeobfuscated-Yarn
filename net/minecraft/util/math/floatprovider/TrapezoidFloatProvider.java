@@ -17,10 +17,10 @@ public class TrapezoidFloatProvider
 extends FloatProvider {
     public static final Codec<TrapezoidFloatProvider> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.FLOAT.fieldOf("min")).forGetter(provider -> Float.valueOf(provider.min)), ((MapCodec)Codec.FLOAT.fieldOf("max")).forGetter(provider -> Float.valueOf(provider.max)), ((MapCodec)Codec.FLOAT.fieldOf("plateau")).forGetter(provider -> Float.valueOf(provider.plateau))).apply((Applicative<TrapezoidFloatProvider, ?>)instance, TrapezoidFloatProvider::new)).comapFlatMap(provider -> {
         if (provider.max < provider.min) {
-            return DataResult.error("Max must be larger than min: [" + provider.min + ", " + provider.max + "]");
+            return DataResult.error(() -> "Max must be larger than min: [" + trapezoidFloatProvider.min + ", " + trapezoidFloatProvider.max + "]");
         }
         if (provider.plateau > provider.max - provider.min) {
-            return DataResult.error("Plateau can at most be the full span: [" + provider.min + ", " + provider.max + "]");
+            return DataResult.error(() -> "Plateau can at most be the full span: [" + trapezoidFloatProvider.min + ", " + trapezoidFloatProvider.max + "]");
         }
         return DataResult.success(provider);
     }, Function.identity());

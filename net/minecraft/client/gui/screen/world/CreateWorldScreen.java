@@ -5,6 +5,7 @@ package net.minecraft.client.gui.screen.world;
 
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonElement;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.DataResult;
@@ -32,7 +33,6 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.GridScreenTab;
 import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.pack.ExperimentalWarningScreen;
@@ -42,6 +42,7 @@ import net.minecraft.client.gui.screen.world.ExperimentsScreen;
 import net.minecraft.client.gui.screen.world.LevelScreenProvider;
 import net.minecraft.client.gui.screen.world.WorldCreator;
 import net.minecraft.client.gui.screen.world.WorldScreenOptionGrid;
+import net.minecraft.client.gui.tab.GridScreenTab;
 import net.minecraft.client.gui.tab.TabManager;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -73,9 +74,11 @@ import net.minecraft.server.integrated.IntegratedServerLoader;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -108,6 +111,8 @@ extends Screen {
     private static final Text PREPARING_TEXT = Text.translatable("createWorld.preparing");
     private static final int field_42170 = 10;
     private static final int field_42171 = 8;
+    public static final Identifier HEADER_SEPARATOR_TEXTURE = new Identifier("textures/gui/header_separator.png");
+    public static final Identifier FOOTER_SEPARATOR_TEXTURE = new Identifier("textures/gui/footer_separator.png");
     final WorldCreator worldCreator;
     private final TabManager tabManager = new TabManager(this::addDrawableChild, child -> this.remove((Element)child));
     private boolean recreated;
@@ -173,7 +178,7 @@ extends Screen {
     protected void init() {
         this.updateSaveFolderName(this.worldCreator.getWorldName());
         this.tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width).tabs(new GameTab(), new WorldTab(), new MoreTab()).build();
-        this.tabNavigation.forEachChild(this::addDrawableChild);
+        this.addDrawableChild(this.tabNavigation);
         this.worldCreator.addListener(creator -> {
             if (!creator.isNamed()) {
                 return;
@@ -202,10 +207,10 @@ extends Screen {
             return;
         }
         this.tabNavigation.setWidth(this.width);
-        this.tabNavigation.refreshPositions();
+        this.tabNavigation.init();
         this.grid.refreshPositions();
         SimplePositioningWidget.setPos(this.grid, 0, this.height - 36, this.width, 36);
-        int i = this.tabNavigation.getY() + this.tabNavigation.getHeight();
+        int i = this.tabNavigation.getNavigationFocus().getBottom();
         FocusedRect focusedRect = new FocusedRect(0, i, this.width, this.grid.getY() - i);
         this.tabManager.setTabArea(focusedRect);
     }
@@ -294,7 +299,16 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
+        RenderSystem.setShaderTexture(0, FOOTER_SEPARATOR_TEXTURE);
+        CreateWorldScreen.drawTexture(matrices, 0, MathHelper.roundUpToMultiple(this.height - 36 - 2, 2), 0.0f, 0.0f, this.width, 2, 32, 2);
         super.render(matrices, mouseX, mouseY, delta);
+    }
+
+    @Override
+    public void renderBackgroundTexture(MatrixStack matrices) {
+        RenderSystem.setShaderTexture(0, LIGHT_DIRT_BACKGROUND_TEXTURE);
+        int i = 32;
+        CreateWorldScreen.drawTexture(matrices, 0, 0, 0, 0.0f, 0.0f, this.width, this.height, 32, 32);
     }
 
     @Override
@@ -331,7 +345,7 @@ extends Screen {
     void openPackScreen(DataConfiguration dataConfiguration) {
         Pair<Path, ResourcePackManager> pair = this.getScannedPack(dataConfiguration);
         if (pair != null) {
-            this.client.setScreen(new PackScreen(this, pair.getSecond(), resourcePackManager -> this.applyDataPacks((ResourcePackManager)resourcePackManager, true, this::openPackScreen), pair.getFirst(), Text.translatable("dataPack.title")));
+            this.client.setScreen(new PackScreen(pair.getSecond(), resourcePackManager -> this.applyDataPacks((ResourcePackManager)resourcePackManager, true, this::openPackScreen), pair.getFirst(), Text.translatable("dataPack.title")));
         }
     }
 
@@ -340,24 +354,25 @@ extends Screen {
         ImmutableList<String> list = ImmutableList.copyOf(dataPackManager.getEnabledNames());
         DataConfiguration dataConfiguration = new DataConfiguration(new DataPackSettings(list, list2 = (List)dataPackManager.getNames().stream().filter(name -> !list.contains(name)).collect(ImmutableList.toImmutableList())), this.worldCreator.getGeneratorOptionsHolder().dataConfiguration().enabledFeatures());
         if (this.worldCreator.updateDataConfiguration(dataConfiguration)) {
+            this.client.setScreen(this);
             return;
         }
         FeatureSet featureSet = dataPackManager.getRequestedFeatures();
         if (FeatureFlags.isNotVanilla(featureSet) && fromPackScreen) {
-            this.client.send(() -> this.client.setScreen(new ExperimentalWarningScreen(dataPackManager.getEnabledProfiles(), confirmed -> {
+            this.client.setScreen(new ExperimentalWarningScreen(dataPackManager.getEnabledProfiles(), confirmed -> {
                 if (confirmed) {
                     this.validateDataPacks(dataPackManager, dataConfiguration, configurationSetter);
                 } else {
                     configurationSetter.accept(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
                 }
-            })));
+            }));
         } else {
             this.validateDataPacks(dataPackManager, dataConfiguration, configurationSetter);
         }
     }
 
     private void validateDataPacks(ResourcePackManager dataPackManager, DataConfiguration dataConfiguration, Consumer<DataConfiguration> configurationSetter) {
-        this.client.send(() -> this.client.setScreen(new MessageScreen(Text.translatable("dataPack.validation.working"))));
+        this.client.setScreenAndRender(new MessageScreen(Text.translatable("dataPack.validation.working")));
         SaveLoading.ServerConfig serverConfig = CreateWorldScreen.createServerConfig(dataPackManager, dataConfiguration);
         ((CompletableFuture)SaveLoading.load(serverConfig, context -> {
             if (context.worldGenRegistryManager().get(RegistryKeys.WORLD_PRESET).size() == 0) {
@@ -378,15 +393,15 @@ extends Screen {
         }, Util.getMainWorkerExecutor(), this.client).thenAcceptAsync(this.worldCreator::setGeneratorOptionsHolder, (Executor)this.client)).handle((void_, throwable) -> {
             if (throwable != null) {
                 LOGGER.warn("Failed to validate datapack", (Throwable)throwable);
-                this.client.send(() -> this.client.setScreen(new ConfirmScreen(confirmed -> {
+                this.client.setScreen(new ConfirmScreen(confirmed -> {
                     if (confirmed) {
                         configurationSetter.accept(this.worldCreator.getGeneratorOptionsHolder().dataConfiguration());
                     } else {
                         configurationSetter.accept(DataConfiguration.SAFE_MODE);
                     }
-                }, Text.translatable("dataPack.validation.failed"), ScreenTexts.EMPTY, Text.translatable("dataPack.validation.back"), Text.translatable("dataPack.validation.reset"))));
+                }, Text.translatable("dataPack.validation.failed"), ScreenTexts.EMPTY, Text.translatable("dataPack.validation.back"), Text.translatable("dataPack.validation.reset")));
             } else {
-                this.client.send(() -> this.client.setScreen(this));
+                this.client.setScreen(this);
             }
             return null;
         });

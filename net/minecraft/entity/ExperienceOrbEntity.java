@@ -93,7 +93,7 @@ extends Entity {
         this.move(MovementType.SELF, this.getVelocity());
         float f = 0.98f;
         if (this.onGround) {
-            f = this.world.getBlockState(new BlockPos(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98f;
+            f = this.world.getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98f;
         }
         this.setVelocity(this.getVelocity().multiply(f, 0.98, f));
         if (this.onGround) {

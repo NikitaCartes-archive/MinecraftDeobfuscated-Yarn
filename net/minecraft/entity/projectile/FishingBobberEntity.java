@@ -292,7 +292,7 @@ extends ProjectileEntity {
                 float g = MathHelper.sin(f);
                 float h = MathHelper.cos(f);
                 double d = this.getX() + (double)(g * (float)this.fishTravelCountdown * 0.1f);
-                BlockState blockState = serverWorld.getBlockState(new BlockPos(d, (e = (double)((float)MathHelper.floor(this.getY()) + 1.0f)) - 1.0, j = this.getZ() + (double)(h * (float)this.fishTravelCountdown * 0.1f)));
+                BlockState blockState = serverWorld.getBlockState(BlockPos.ofFloored(d, (e = (double)((float)MathHelper.floor(this.getY()) + 1.0f)) - 1.0, j = this.getZ() + (double)(h * (float)this.fishTravelCountdown * 0.1f)));
                 if (blockState.isOf(Blocks.WATER)) {
                     if (this.random.nextFloat() < 0.15f) {
                         serverWorld.spawnParticles(ParticleTypes.BUBBLE, d, e - (double)0.1f, j, 1, g, 0.1, h, 0.0);
@@ -326,7 +326,7 @@ extends ProjectileEntity {
                 float g = MathHelper.nextFloat(this.random, 0.0f, 360.0f) * ((float)Math.PI / 180);
                 float h = MathHelper.nextFloat(this.random, 25.0f, 60.0f);
                 double d = this.getX() + (double)(MathHelper.sin(g) * h) * 0.1;
-                BlockState blockState = serverWorld.getBlockState(new BlockPos(d, (e = (double)((float)MathHelper.floor(this.getY()) + 1.0f)) - 1.0, j = this.getZ() + (double)(MathHelper.cos(g) * h) * 0.1));
+                BlockState blockState = serverWorld.getBlockState(BlockPos.ofFloored(d, (e = (double)((float)MathHelper.floor(this.getY()) + 1.0f)) - 1.0, j = this.getZ() + (double)(MathHelper.cos(g) * h) * 0.1));
                 if (blockState.isOf(Blocks.WATER)) {
                     serverWorld.spawnParticles(ParticleTypes.SPLASH, d, e, j, 2 + this.random.nextInt(2), 0.1f, 0.0, 0.1f, 0.0);
                 }

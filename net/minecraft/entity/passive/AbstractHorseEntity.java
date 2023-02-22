@@ -72,6 +72,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.EntityView;
@@ -98,6 +99,8 @@ Saddleable {
     private static final float MAX_JUMP_STRENGTH_BONUS = (float)AbstractHorseEntity.getChildJumpStrengthBonus(() -> 1.0);
     private static final float MIN_HEALTH_BONUS = AbstractHorseEntity.getChildHealthBonus(max -> 0);
     private static final float MAX_HEALTH_BONUS = AbstractHorseEntity.getChildHealthBonus(max -> max - 1);
+    private static final float field_42979 = 0.25f;
+    private static final float field_42980 = 0.5f;
     private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof AbstractHorseEntity && ((AbstractHorseEntity)entity).isBred();
     private static final TargetPredicate PARENT_HORSE_PREDICATE = TargetPredicate.createNonAttackable().setBaseMaxDistance(16.0).ignoreVisibility().setPredicate(IS_BRED_HORSE);
     private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
@@ -134,7 +137,7 @@ Saddleable {
 
     protected AbstractHorseEntity(EntityType<? extends AbstractHorseEntity> entityType, World world) {
         super((EntityType<? extends AnimalEntity>)entityType, world);
-        this.stepHeight = 1.0f;
+        this.setStepHeight(1.0f);
         this.onChestedStatusChanged();
     }
 
@@ -576,7 +579,7 @@ Saddleable {
             this.eatingTicks = 0;
             this.setHorseFlag(EATING_FLAG, false);
         }
-        if ((this.isLogicalSideForUpdatingMovement() || this.canMoveVoluntarily()) && this.angryTicks > 0 && ++this.angryTicks > 20) {
+        if (this.canMoveVoluntarily() && this.angryTicks > 0 && ++this.angryTicks > 20) {
             this.angryTicks = 0;
             this.setAngry(false);
         }
@@ -677,7 +680,7 @@ Saddleable {
     }
 
     public void updateAnger() {
-        if (this.shouldAmbientStand() && this.isLogicalSideForUpdatingMovement() || this.canMoveVoluntarily()) {
+        if (this.shouldAmbientStand() && this.canMoveVoluntarily()) {
             this.angryTicks = 1;
             this.setAngry(true);
         }
@@ -704,63 +707,56 @@ Saddleable {
     }
 
     @Override
-    public void travel(Vec3d movementInput) {
-        if (!this.isAlive()) {
-            return;
-        }
-        LivingEntity livingEntity = this.getPrimaryPassenger();
-        if (!this.hasPassengers() || livingEntity == null || this.ignoresMovementInput(livingEntity)) {
-            this.airStrafingSpeed = 0.02f;
-            super.travel(movementInput);
-            return;
-        }
-        this.setRotation(livingEntity.getYaw(), livingEntity.getPitch() * 0.5f);
+    protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
+        super.tickControlled(controllingPassenger, movementInput);
+        Vec2f vec2f = this.getControlledRotation(controllingPassenger);
+        this.setRotation(vec2f.y, vec2f.x);
         this.bodyYaw = this.headYaw = this.getYaw();
         this.prevYaw = this.headYaw;
-        float f = livingEntity.sidewaysSpeed * 0.5f;
-        float g = livingEntity.forwardSpeed;
-        if (g <= 0.0f) {
-            g *= 0.25f;
-            this.soundTicks = 0;
-        }
-        if (this.onGround && this.jumpStrength == 0.0f && this.isAngry() && !this.jumping) {
-            f = 0.0f;
-            g = 0.0f;
-        }
-        if (this.jumpStrength > 0.0f && !this.isInAir() && this.onGround) {
-            this.jump(this.jumpStrength, f, g);
-            this.jumpStrength = 0.0f;
-        }
-        this.airStrafingSpeed = this.getMovementSpeed() * 0.1f;
         if (this.isLogicalSideForUpdatingMovement()) {
-            this.setMovementSpeed(this.getHorsebackMovementSpeed(livingEntity));
-            super.travel(new Vec3d(f, movementInput.y, g));
-        } else {
-            this.updateLimbs(false);
-            this.tryCheckBlockCollision();
-        }
-        if (this.onGround) {
-            this.jumpStrength = 0.0f;
-            this.setInAir(false);
+            if (movementInput.z <= 0.0) {
+                this.soundTicks = 0;
+            }
+            if (this.onGround) {
+                this.setInAir(false);
+                if (this.jumpStrength > 0.0f && !this.isInAir()) {
+                    this.jump(this.jumpStrength, movementInput);
+                }
+                this.jumpStrength = 0.0f;
+            }
         }
     }
 
-    protected float getHorsebackMovementSpeed(LivingEntity passenger) {
+    protected Vec2f getControlledRotation(LivingEntity controllingPassenger) {
+        return new Vec2f(controllingPassenger.getPitch() * 0.5f, controllingPassenger.getYaw());
+    }
+
+    @Override
+    protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+        if (this.onGround && this.jumpStrength == 0.0f && this.isAngry() && !this.jumping) {
+            return Vec3d.ZERO;
+        }
+        float f = controllingPassenger.sidewaysSpeed * 0.5f;
+        float g = controllingPassenger.forwardSpeed;
+        if (g <= 0.0f) {
+            g *= 0.25f;
+        }
+        return new Vec3d(f, 0.0, g);
+    }
+
+    @Override
+    protected float getSaddledSpeed(LivingEntity controllingPassenger) {
         return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
     }
 
-    protected boolean ignoresMovementInput(LivingEntity passenger) {
-        return false;
-    }
-
-    protected void jump(float strength, float sidewaysSpeed, float forwardSpeed) {
+    protected void jump(float strength, Vec3d movementInput) {
         double d = this.getJumpStrength() * (double)strength * (double)this.getJumpVelocityMultiplier();
         double e = d + this.getJumpBoostVelocityModifier();
         Vec3d vec3d = this.getVelocity();
         this.setVelocity(vec3d.x, e, vec3d.z);
         this.setInAir(true);
         this.velocityDirty = true;
-        if (forwardSpeed > 0.0f) {
+        if (movementInput.z > 0.0) {
             float f = MathHelper.sin(this.getYaw() * ((float)Math.PI / 180));
             float g = MathHelper.cos(this.getYaw() * ((float)Math.PI / 180));
             this.setVelocity(this.getVelocity().add(-0.4f * f * strength, 0.0, 0.4f * g * strength));
@@ -1038,7 +1034,7 @@ Saddleable {
 
     @Override
     @Nullable
-    public LivingEntity getPrimaryPassenger() {
+    public LivingEntity getControllingPassenger() {
         Entity entity;
         if (this.isSaddled() && (entity = this.getFirstPassenger()) instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
@@ -1105,12 +1101,6 @@ Saddleable {
 
     public int getMinAmbientStandDelay() {
         return this.getMinAmbientSoundDelay();
-    }
-
-    @Override
-    @Nullable
-    public /* synthetic */ Entity getPrimaryPassenger() {
-        return this.getPrimaryPassenger();
     }
 
     @Override

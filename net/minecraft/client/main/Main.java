@@ -51,21 +51,15 @@ import org.slf4j.Logger;
 public class Main {
     static final Logger LOGGER = LogUtils.getLogger();
 
-    @DontObfuscate
-    public static void main(String[] args) {
-        Main.main(args, true);
-    }
-
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public static void main(String[] args, boolean optimizeDataFixer) {
+    @DontObfuscate
+    public static void main(String[] args) {
         Thread thread2;
         MinecraftClient minecraftClient;
         SharedConstants.createGameVersion();
-        if (optimizeDataFixer) {
-            SharedConstants.enableDataFixerOptimization();
-        }
+        SharedConstants.enableDataFixerOptimization();
         OptionParser optionParser = new OptionParser();
         optionParser.allowsUnrecognizedOptions();
         optionParser.accepts("demo");

@@ -189,7 +189,7 @@ extends HostileEntity {
                     Vec3d vec3d3 = vec3d2.subtract(vec3d);
                     vec3d = vec3d3.rotateY(90.0f).multiply(0.4).add(vec3d);
                     Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
-                    BlockPos blockPos = new BlockPos(vec3d4);
+                    BlockPos blockPos = BlockPos.ofFloored(vec3d4);
                     if (!entityNavigation.startMovingTo((blockPos = ((PatrolEntity)this.entity).world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos)).getX(), blockPos.getY(), blockPos.getZ(), bl ? this.followSpeed : this.leaderSpeed)) {
                         this.wander();
                         this.nextPatrolSearchTime = ((PatrolEntity)this.entity).world.getTime() + 200L;

@@ -300,12 +300,12 @@ extends Screen {
 
             private void renderIcon(MatrixStack matrices, int x, int y, Item iconItem) {
                 this.drawIconBackground(matrices, x + 1, y + 1);
-                PresetsScreen.this.itemRenderer.renderGuiItemIcon(new ItemStack(iconItem), x + 2, y + 2);
+                PresetsScreen.this.itemRenderer.renderGuiItemIcon(matrices, new ItemStack(iconItem), x + 2, y + 2);
             }
 
             private void drawIconBackground(MatrixStack matrices, int x, int y) {
                 RenderSystem.setShaderTexture(0, DrawableHelper.STATS_ICON_TEXTURE);
-                DrawableHelper.drawTexture(matrices, x, y, PresetsScreen.this.getZOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
+                DrawableHelper.drawTexture(matrices, x, y, 0, 0.0f, 0.0f, 18, 18, 128, 128);
             }
 
             @Override

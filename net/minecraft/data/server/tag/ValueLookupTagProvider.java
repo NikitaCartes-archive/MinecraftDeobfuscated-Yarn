@@ -23,6 +23,11 @@ extends TagProvider<T> {
         this.valueToKey = valueToKey;
     }
 
+    public ValueLookupTagProvider(DataOutput output, RegistryKey<? extends Registry<T>> registryRef, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, CompletableFuture<TagProvider.TagLookup<T>> parentTagLookupFuture, Function<T, RegistryKey<T>> valueToKey) {
+        super(output, registryRef, registryLookupFuture, parentTagLookupFuture);
+        this.valueToKey = valueToKey;
+    }
+
     @Override
     protected ObjectBuilder<T> getOrCreateTagBuilder(TagKey<T> tagKey) {
         TagBuilder tagBuilder = this.getTagBuilder(tagKey);

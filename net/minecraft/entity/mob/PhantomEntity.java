@@ -225,6 +225,11 @@ implements Monster {
         return entityDimensions.scaled(f);
     }
 
+    @Override
+    public double getMountedHeightOffset() {
+        return this.getStandingEyeHeight();
+    }
+
     static enum PhantomMovementType {
         CIRCLE,
         SWOOP;

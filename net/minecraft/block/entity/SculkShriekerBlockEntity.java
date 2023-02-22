@@ -18,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LargeEntitySpawnHelper;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -110,13 +111,13 @@ implements VibrationListener.Callback {
         ServerPlayerEntity serverPlayerEntity2;
         ProjectileEntity projectileEntity;
         Entity entity2;
-        Entity entity3;
+        LivingEntity livingEntity;
         if (entity instanceof ServerPlayerEntity) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
             return serverPlayerEntity;
         }
-        if (entity != null && (entity3 = entity.getPrimaryPassenger()) instanceof ServerPlayerEntity) {
-            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity3;
+        if (entity != null && (livingEntity = entity.getControllingPassenger()) instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
             return serverPlayerEntity;
         }
         if (entity instanceof ProjectileEntity && (entity2 = (projectileEntity = (ProjectileEntity)entity).getOwner()) instanceof ServerPlayerEntity) {

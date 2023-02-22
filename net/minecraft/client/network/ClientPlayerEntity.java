@@ -416,7 +416,7 @@ extends AbstractClientPlayerEntity {
 
     private void pushOutOfBlocks(double x, double z) {
         Direction[] directions;
-        BlockPos blockPos = new BlockPos(x, this.getY(), z);
+        BlockPos blockPos = BlockPos.ofFloored(x, this.getY(), z);
         if (!this.wouldCollideAt(blockPos)) {
             return;
         }
@@ -889,7 +889,7 @@ extends AbstractClientPlayerEntity {
             return;
         }
         ShapeContext shapeContext = ShapeContext.of(this);
-        BlockPos blockPos = new BlockPos(this.getX(), this.getBoundingBox().maxY, this.getZ());
+        BlockPos blockPos = BlockPos.ofFloored(this.getX(), this.getBoundingBox().maxY, this.getZ());
         BlockState blockState = this.world.getBlockState(blockPos);
         if (!blockState.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
             return;
@@ -925,7 +925,7 @@ extends AbstractClientPlayerEntity {
             if (!box2.intersects(vec3d10, vec3d11) && !box2.intersects(vec3d12, vec3d13)) continue;
             r = (float)box2.maxY;
             Vec3d vec3d14 = box2.getCenter();
-            BlockPos blockPos2 = new BlockPos(vec3d14);
+            BlockPos blockPos2 = BlockPos.ofFloored(vec3d14);
             int s = 1;
             while ((float)s < n) {
                 BlockState blockState4;

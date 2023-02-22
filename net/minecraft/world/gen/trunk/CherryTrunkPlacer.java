@@ -30,7 +30,7 @@ public class CherryTrunkPlacer
 extends TrunkPlacer {
     private static final Codec<UniformIntProvider> BRANCH_START_OFFSET_FROM_TOP_CODEC = Codecs.validate(UniformIntProvider.CODEC, branchStartOffsetFromTop -> {
         if (branchStartOffsetFromTop.getMax() - branchStartOffsetFromTop.getMin() < 1) {
-            return DataResult.error("Need at least 2 blocks variation for the branch starts to fit both branches");
+            return DataResult.error(() -> "Need at least 2 blocks variation for the branch starts to fit both branches");
         }
         return DataResult.success(branchStartOffsetFromTop);
     });

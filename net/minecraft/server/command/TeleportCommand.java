@@ -103,7 +103,7 @@ public class TeleportCommand {
     private static void teleport(ServerCommandSource source, Entity target, ServerWorld world, double x, double y, double z, Set<PositionFlag> movementFlags, float yaw, float pitch, @Nullable LookTarget facingLocation) throws CommandSyntaxException {
         LivingEntity livingEntity;
         float g;
-        BlockPos blockPos = new BlockPos(x, y, z);
+        BlockPos blockPos = BlockPos.ofFloored(x, y, z);
         if (!World.isValid(blockPos)) {
             throw INVALID_POSITION_EXCEPTION.create();
         }

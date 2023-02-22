@@ -192,7 +192,7 @@ implements Comparable<Identifier> {
         try {
             return DataResult.success(new Identifier(id));
         } catch (InvalidIdentifierException invalidIdentifierException) {
-            return DataResult.error("Not a valid resource location: " + id + " " + invalidIdentifierException.getMessage());
+            return DataResult.error(() -> "Not a valid resource location: " + id + " " + invalidIdentifierException.getMessage());
         }
     }
 

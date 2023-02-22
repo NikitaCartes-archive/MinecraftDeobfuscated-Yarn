@@ -52,7 +52,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
+import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
 
 public class VanillaAdventureTabAdvancementGenerator
 implements AdvancementTabGenerator {
@@ -74,7 +74,7 @@ implements AdvancementTabGenerator {
     public void accept(RegistryWrapper.WrapperLookup lookup, Consumer<Advancement> exporter) {
         Advancement advancement = Advancement.Builder.create().display(Items.MAP, (Text)Text.translatable("advancements.adventure.root.title"), (Text)Text.translatable("advancements.adventure.root.description"), new Identifier("textures/gui/advancements/backgrounds/adventure.png"), AdvancementFrame.TASK, false, false, false).criteriaMerger(CriterionMerger.OR).criterion("killed_something", OnKilledCriterion.Conditions.createPlayerKilledEntity()).criterion("killed_by_something", OnKilledCriterion.Conditions.createEntityKilledPlayer()).build(exporter, "adventure/root");
         Advancement advancement2 = Advancement.Builder.create().parent(advancement).display(Blocks.RED_BED, (Text)Text.translatable("advancements.adventure.sleep_in_bed.title"), (Text)Text.translatable("advancements.adventure.sleep_in_bed.description"), null, AdvancementFrame.TASK, true, true, false).criterion("slept_in_bed", TickCriterion.Conditions.createSleptInBed()).build(exporter, "adventure/sleep_in_bed");
-        VanillaAdventureTabAdvancementGenerator.buildAdventuringTime(exporter, advancement2, MultiNoiseBiomeSource.Preset.OVERWORLD);
+        VanillaAdventureTabAdvancementGenerator.buildAdventuringTime(exporter, advancement2, MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD);
         Advancement advancement3 = Advancement.Builder.create().parent(advancement).display(Items.EMERALD, (Text)Text.translatable("advancements.adventure.trade.title"), (Text)Text.translatable("advancements.adventure.trade.description"), null, AdvancementFrame.TASK, true, true, false).criterion("traded", VillagerTradeCriterion.Conditions.any()).build(exporter, "adventure/trade");
         Advancement.Builder.create().parent(advancement3).display(Items.EMERALD, (Text)Text.translatable("advancements.adventure.trade_at_world_height.title"), (Text)Text.translatable("advancements.adventure.trade_at_world_height.description"), null, AdvancementFrame.TASK, true, true, false).criterion("trade_at_world_height", VillagerTradeCriterion.Conditions.create(EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))))).build(exporter, "adventure/trade_at_world_height");
         Advancement advancement4 = this.requireListedMobsKilled(Advancement.Builder.create()).parent(advancement).display(Items.IRON_SWORD, (Text)Text.translatable("advancements.adventure.kill_a_mob.title"), (Text)Text.translatable("advancements.adventure.kill_a_mob.description"), null, AdvancementFrame.TASK, true, true, false).criteriaMerger(CriterionMerger.OR).build(exporter, "adventure/kill_a_mob");
@@ -104,8 +104,8 @@ implements AdvancementTabGenerator {
         Advancement.Builder.create().parent(advancement).display(Blocks.SCULK_SENSOR, (Text)Text.translatable("advancements.adventure.avoid_vibration.title"), (Text)Text.translatable("advancements.adventure.avoid_vibration.description"), null, AdvancementFrame.TASK, true, true, false).criterion("avoid_vibration", TickCriterion.Conditions.createAvoidVibration()).build(exporter, "adventure/avoid_vibration");
     }
 
-    protected static void buildAdventuringTime(Consumer<Advancement> exporter, Advancement parent, MultiNoiseBiomeSource.Preset preset) {
-        VanillaAdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Builder.create(), preset.stream().toList()).parent(parent).display(Items.DIAMOND_BOOTS, (Text)Text.translatable("advancements.adventure.adventuring_time.title"), (Text)Text.translatable("advancements.adventure.adventuring_time.description"), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(500)).build(exporter, "adventure/adventuring_time");
+    protected static void buildAdventuringTime(Consumer<Advancement> exporter, Advancement parent, MultiNoiseBiomeSourceParameterList.Preset preset) {
+        VanillaAdventureTabAdvancementGenerator.requireListedBiomesVisited(Advancement.Builder.create(), preset.biomeStream().toList()).parent(parent).display(Items.DIAMOND_BOOTS, (Text)Text.translatable("advancements.adventure.adventuring_time.title"), (Text)Text.translatable("advancements.adventure.adventuring_time.description"), null, AdvancementFrame.CHALLENGE, true, true, false).rewards(AdvancementRewards.Builder.experience(500)).build(exporter, "adventure/adventuring_time");
     }
 
     private Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {

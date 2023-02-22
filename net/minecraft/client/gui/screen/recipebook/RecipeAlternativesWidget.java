@@ -137,7 +137,7 @@ Element {
         int j = Math.min(this.alternativeButtons.size(), i);
         int k = MathHelper.ceil((float)this.alternativeButtons.size() / (float)i);
         int l = 4;
-        this.drawNineSlicedTexture(matrices, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8, 4, 32, 32, 82, 208);
+        RecipeAlternativesWidget.drawNineSlicedTexture(matrices, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8, 4, 32, 32, 82, 208);
         RenderSystem.disableBlend();
         for (AlternativeButtonWidget alternativeButtonWidget : this.alternativeButtons) {
             alternativeButtonWidget.render(matrices, mouseX, mouseY, delta);
@@ -220,24 +220,21 @@ Element {
                 i += 26;
             }
             int n = j = RecipeAlternativesWidget.this.furnace ? 130 : 78;
-            if (this.isHovered()) {
+            if (this.isSelected()) {
                 j += 26;
             }
-            this.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
-            MatrixStack matrixStack = RenderSystem.getModelViewStack();
-            matrixStack.push();
-            matrixStack.translate((double)(this.getX() + 2), (double)(this.getY() + 2), 150.0);
+            AlternativeButtonWidget.drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
+            matrices.push();
+            matrices.translate((double)(this.getX() + 2), (double)(this.getY() + 2), 150.0);
             for (InputSlot inputSlot : this.slots) {
-                matrixStack.push();
-                matrixStack.translate((double)inputSlot.y, (double)inputSlot.x, 0.0);
-                matrixStack.scale(0.375f, 0.375f, 1.0f);
-                matrixStack.translate(-8.0, -8.0, 0.0);
-                RenderSystem.applyModelViewMatrix();
-                RecipeAlternativesWidget.this.client.getItemRenderer().renderInGuiWithOverrides(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0f) % inputSlot.stacks.length], 0, 0);
-                matrixStack.pop();
+                matrices.push();
+                matrices.translate((double)inputSlot.y, (double)inputSlot.x, 0.0);
+                matrices.scale(0.375f, 0.375f, 1.0f);
+                matrices.translate(-8.0, -8.0, 0.0);
+                RecipeAlternativesWidget.this.client.getItemRenderer().renderInGuiWithOverrides(matrices, inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0f) % inputSlot.stacks.length], 0, 0);
+                matrices.pop();
             }
-            matrixStack.pop();
-            RenderSystem.applyModelViewMatrix();
+            matrices.pop();
         }
 
         @Environment(value=EnvType.CLIENT)

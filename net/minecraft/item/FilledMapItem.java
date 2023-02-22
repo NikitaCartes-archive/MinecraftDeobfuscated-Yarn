@@ -66,7 +66,7 @@ extends NetworkSyncedItem {
     }
 
     @Nullable
-    public static MapState getOrCreateMapState(ItemStack map, World world) {
+    public static MapState getMapState(ItemStack map, World world) {
         Integer integer = FilledMapItem.getMapId(map);
         return FilledMapItem.getMapState(integer, world);
     }
@@ -193,7 +193,7 @@ extends NetworkSyncedItem {
     public static void fillExplorationMap(ServerWorld world, ItemStack map) {
         int o;
         int n;
-        MapState mapState = FilledMapItem.getOrCreateMapState(map, world);
+        MapState mapState = FilledMapItem.getMapState(map, (World)world);
         if (mapState == null) {
             return;
         }
@@ -266,7 +266,7 @@ extends NetworkSyncedItem {
         if (world.isClient) {
             return;
         }
-        MapState mapState = FilledMapItem.getOrCreateMapState(stack, world);
+        MapState mapState = FilledMapItem.getMapState(stack, world);
         if (mapState == null) {
             return;
         }
@@ -303,7 +303,7 @@ extends NetworkSyncedItem {
     }
 
     private static void scale(ItemStack map, World world, int amount) {
-        MapState mapState = FilledMapItem.getOrCreateMapState(map, world);
+        MapState mapState = FilledMapItem.getMapState(map, world);
         if (mapState != null) {
             int i = world.getNextMapId();
             world.putMapState(FilledMapItem.getMapName(i), mapState.zoomOut(amount));
@@ -312,7 +312,7 @@ extends NetworkSyncedItem {
     }
 
     public static void copyMap(World world, ItemStack stack) {
-        MapState mapState = FilledMapItem.getOrCreateMapState(stack, world);
+        MapState mapState = FilledMapItem.getMapState(stack, world);
         if (mapState != null) {
             int i = world.getNextMapId();
             String string = FilledMapItem.getMapName(i);
@@ -367,7 +367,7 @@ extends NetworkSyncedItem {
         BlockState blockState = context.getWorld().getBlockState(context.getBlockPos());
         if (blockState.isIn(BlockTags.BANNERS)) {
             MapState mapState;
-            if (!context.getWorld().isClient && (mapState = FilledMapItem.getOrCreateMapState(context.getStack(), context.getWorld())) != null && !mapState.addBanner(context.getWorld(), context.getBlockPos())) {
+            if (!context.getWorld().isClient && (mapState = FilledMapItem.getMapState(context.getStack(), context.getWorld())) != null && !mapState.addBanner(context.getWorld(), context.getBlockPos())) {
                 return ActionResult.FAIL;
             }
             return ActionResult.success(context.getWorld().isClient);

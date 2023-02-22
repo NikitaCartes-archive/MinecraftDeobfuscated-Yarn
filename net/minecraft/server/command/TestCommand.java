@@ -83,7 +83,7 @@ public class TestCommand {
             throw new IllegalArgumentException("The structure must be less than 48 blocks big in each axis");
         }
         ServerWorld serverWorld = source.getWorld();
-        BlockPos blockPos = new BlockPos(source.getPosition());
+        BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
         StructureTestUtil.createTestArea(testName.toLowerCase(), blockPos2, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
         for (int i = 0; i < x; ++i) {
@@ -122,7 +122,7 @@ public class TestCommand {
 
     private static int executeRunThis(ServerCommandSource source) {
         ServerWorld serverWorld;
-        BlockPos blockPos = new BlockPos(source.getPosition());
+        BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
         BlockPos blockPos2 = StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverWorld = source.getWorld());
         if (blockPos2 == null) {
             TestCommand.sendMessage(serverWorld, "Couldn't find any structure block within 15 radius", Formatting.RED);
@@ -135,7 +135,7 @@ public class TestCommand {
 
     private static int executeRunThese(ServerCommandSource source) {
         ServerWorld serverWorld;
-        BlockPos blockPos = new BlockPos(source.getPosition());
+        BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
         Collection<BlockPos> collection = StructureTestUtil.findStructureBlocks(blockPos, 200, serverWorld = source.getWorld());
         if (collection.isEmpty()) {
             TestCommand.sendMessage(serverWorld, "Couldn't find any structure blocks within 200 block radius", Formatting.RED);
@@ -159,7 +159,7 @@ public class TestCommand {
         }
         TestCommand.beforeBatch(testFunction, world);
         Box box = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
-        BlockPos blockPos = new BlockPos(box.minX, box.minY, box.minZ);
+        BlockPos blockPos = BlockPos.ofFloored(box.minX, box.minY, box.minZ);
         TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
     }
 
@@ -180,14 +180,14 @@ public class TestCommand {
     private static int executeClearAll(ServerCommandSource source, int radius) {
         ServerWorld serverWorld = source.getWorld();
         TestUtil.clearDebugMarkers(serverWorld);
-        BlockPos blockPos = new BlockPos(source.getPosition().x, (double)source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, new BlockPos(source.getPosition())).getY(), source.getPosition().z);
+        BlockPos blockPos = BlockPos.ofFloored(source.getPosition().x, source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, BlockPos.ofFloored(source.getPosition())).getY(), source.getPosition().z);
         TestUtil.clearTests(serverWorld, blockPos, TestManager.INSTANCE, MathHelper.clamp(radius, 0, 1024));
         return 1;
     }
 
     private static int executeRun(ServerCommandSource source, TestFunction testFunction, int rotationSteps) {
         ServerWorld serverWorld = source.getWorld();
-        BlockPos blockPos = new BlockPos(source.getPosition());
+        BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
         int i = source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), i, blockPos.getZ() + 3);
         TestUtil.clearDebugMarkers(serverWorld);
@@ -236,7 +236,7 @@ public class TestCommand {
     }
 
     private static void run(ServerCommandSource source, Collection<TestFunction> testFunctions, int rotationSteps, int i) {
-        BlockPos blockPos = new BlockPos(source.getPosition());
+        BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
         BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
         ServerWorld serverWorld = source.getWorld();
         BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
@@ -252,7 +252,7 @@ public class TestCommand {
 
     private static int executeExport(ServerCommandSource source) {
         ServerWorld serverWorld;
-        BlockPos blockPos = new BlockPos(source.getPosition());
+        BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
         BlockPos blockPos2 = StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverWorld = source.getWorld());
         if (blockPos2 == null) {
             TestCommand.sendMessage(serverWorld, "Couldn't find any structure block within 15 radius", Formatting.RED);

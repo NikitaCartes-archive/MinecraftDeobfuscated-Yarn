@@ -203,7 +203,7 @@ implements VariantHolder<Type> {
         this.world.addParticle(ParticleTypes.SPLASH, this.getX() + (double)this.random.nextFloat(), this.getY() + 0.7, this.getZ() + (double)this.random.nextFloat(), 0.0, 0.0, 0.0);
         if (this.random.nextInt(20) == 0) {
             this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getSplashSound(), this.getSoundCategory(), 1.0f, 0.8f + 0.4f * this.random.nextFloat(), false);
-            this.emitGameEvent(GameEvent.SPLASH, this.getPrimaryPassenger());
+            this.emitGameEvent(GameEvent.SPLASH, this.getControllingPassenger());
         }
     }
 
@@ -307,7 +307,7 @@ implements VariantHolder<Type> {
         this.checkBlockCollision();
         List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2f, -0.01f, 0.2f), EntityPredicates.canBePushedBy(this));
         if (!list.isEmpty()) {
-            boolean bl = !this.world.isClient && !(this.getPrimaryPassenger() instanceof PlayerEntity);
+            boolean bl = !this.world.isClient && !(this.getControllingPassenger() instanceof PlayerEntity);
             for (int j = 0; j < list.size(); ++j) {
                 Entity entity = list.get(j);
                 if (entity.hasPassenger(this)) continue;
@@ -550,7 +550,7 @@ implements VariantHolder<Type> {
                 this.velocityDecay = 0.9f;
             } else if (this.location == Location.ON_LAND) {
                 this.velocityDecay = this.nearbySlipperiness;
-                if (this.getPrimaryPassenger() instanceof PlayerEntity) {
+                if (this.getControllingPassenger() instanceof PlayerEntity) {
                     this.nearbySlipperiness /= 2.0f;
                 }
             }
@@ -628,7 +628,7 @@ implements VariantHolder<Type> {
         double e;
         Vec3d vec3d = BoatEntity.getPassengerDismountOffset(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO, passenger.getWidth(), passenger.getYaw());
         double d = this.getX() + vec3d.x;
-        BlockPos blockPos = new BlockPos(d, this.getBoundingBox().maxY, e = this.getZ() + vec3d.z);
+        BlockPos blockPos = BlockPos.ofFloored(d, this.getBoundingBox().maxY, e = this.getZ() + vec3d.z);
         BlockPos blockPos2 = blockPos.down();
         if (!this.world.isWater(blockPos2)) {
             double g;
@@ -724,7 +724,7 @@ implements VariantHolder<Type> {
     }
 
     public boolean isPaddleMoving(int paddle) {
-        return this.dataTracker.get(paddle == 0 ? LEFT_PADDLE_MOVING : RIGHT_PADDLE_MOVING) != false && this.getPrimaryPassenger() != null;
+        return this.dataTracker.get(paddle == 0 ? LEFT_PADDLE_MOVING : RIGHT_PADDLE_MOVING) != false && this.getControllingPassenger() != null;
     }
 
     public void setDamageWobbleStrength(float wobbleStrength) {
@@ -784,8 +784,10 @@ implements VariantHolder<Type> {
 
     @Override
     @Nullable
-    public Entity getPrimaryPassenger() {
-        return this.getFirstPassenger();
+    public LivingEntity getControllingPassenger() {
+        LivingEntity livingEntity;
+        Entity entity = this.getFirstPassenger();
+        return entity instanceof LivingEntity ? (livingEntity = (LivingEntity)entity) : null;
     }
 
     public void setInputs(boolean pressingLeft, boolean pressingRight, boolean pressingForward, boolean pressingBack) {

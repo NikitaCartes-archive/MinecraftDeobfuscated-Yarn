@@ -11,7 +11,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.EnchantingPhrases;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
@@ -83,11 +82,10 @@ extends HandledScreen<EnchantmentScreenHandler> {
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         DiffuseLighting.disableGuiDepthLighting();
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
         int j = (this.height - this.backgroundHeight) / 2;
-        this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+        EnchantmentScreen.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
         int k = (int)this.client.getWindow().getScaleFactor();
         RenderSystem.viewport((this.width - 320) / 2 * k, (this.height - 240) / 2 * k, 320 * k, 240 * k);
         Matrix4f matrix4f = new Matrix4f().translation(-0.34f, 0.23f, 0.0f).perspective(1.5707964f, 1.3333334f, 9.0f, 80.0f);
@@ -135,12 +133,10 @@ extends HandledScreen<EnchantmentScreenHandler> {
         for (int o = 0; o < 3; ++o) {
             int p = i + 60;
             int q = p + 20;
-            this.setZOffset(0);
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, TEXTURE);
             int r = ((EnchantmentScreenHandler)this.handler).enchantmentPower[o];
             if (r == 0) {
-                this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
+                EnchantmentScreen.drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
                 continue;
             }
             String string = "" + r;
@@ -148,21 +144,21 @@ extends HandledScreen<EnchantmentScreenHandler> {
             StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, s);
             int t = 6839882;
             if (!(n >= o + 1 && this.client.player.experienceLevel >= r || this.client.player.getAbilities().creativeMode)) {
-                this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
-                this.drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 239, 16, 16);
-                this.textRenderer.drawTrimmed(stringVisitable, q, j + 16 + 19 * o, s, (t & 0xFEFEFE) >> 1);
+                EnchantmentScreen.drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
+                EnchantmentScreen.drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 239, 16, 16);
+                this.textRenderer.drawTrimmed(matrices, stringVisitable, q, j + 16 + 19 * o, s, (t & 0xFEFEFE) >> 1);
                 t = 4226832;
             } else {
                 int u = mouseX - (i + 60);
                 int v = mouseY - (j + 14 + 19 * o);
                 if (u >= 0 && v >= 0 && u < 108 && v < 19) {
-                    this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 204, 108, 19);
+                    EnchantmentScreen.drawTexture(matrices, p, j + 14 + 19 * o, 0, 204, 108, 19);
                     t = 0xFFFF80;
                 } else {
-                    this.drawTexture(matrices, p, j + 14 + 19 * o, 0, 166, 108, 19);
+                    EnchantmentScreen.drawTexture(matrices, p, j + 14 + 19 * o, 0, 166, 108, 19);
                 }
-                this.drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 223, 16, 16);
-                this.textRenderer.drawTrimmed(stringVisitable, q, j + 16 + 19 * o, s, t);
+                EnchantmentScreen.drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 223, 16, 16);
+                this.textRenderer.drawTrimmed(matrices, stringVisitable, q, j + 16 + 19 * o, s, t);
                 t = 8453920;
             }
             this.textRenderer.drawWithShadow(matrices, string, (float)(q + 86 - this.textRenderer.getWidth(string)), (float)(j + 16 + 19 * o + 7), t);

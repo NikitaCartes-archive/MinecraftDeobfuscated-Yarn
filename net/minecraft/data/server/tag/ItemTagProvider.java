@@ -3,8 +3,10 @@
  */
 package net.minecraft.data.server.tag;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.server.tag.TagProvider;
@@ -17,16 +19,33 @@ import net.minecraft.registry.tag.TagKey;
 
 public abstract class ItemTagProvider
 extends ValueLookupTagProvider<Item> {
-    private final Function<TagKey<Block>, TagBuilder> blockTags = blockTagProvider::getTagBuilder;
+    private final CompletableFuture<TagProvider.TagLookup<Block>> blockTags;
+    private final Map<TagKey<Block>, TagKey<Item>> blockTagsToCopy = new HashMap<TagKey<Block>, TagKey<Item>>();
 
-    public ItemTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, TagProvider<Block> blockTagProvider) {
-        super(output, RegistryKeys.ITEM, registryLookupFuture, item -> item.getRegistryEntry().registryKey());
+    public ItemTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, CompletableFuture<TagProvider.TagLookup<Block>> blockTagLookupFuture) {
+        super(output, RegistryKeys.ITEM, registryLookupFuture, (T item) -> item.getRegistryEntry().registryKey());
+        this.blockTags = blockTagLookupFuture;
+    }
+
+    public ItemTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture, CompletableFuture<TagProvider.TagLookup<Item>> parentTagLookupFuture, CompletableFuture<TagProvider.TagLookup<Block>> blockTagLookupFuture) {
+        super(output, RegistryKeys.ITEM, registryLookupFuture, parentTagLookupFuture, item -> item.getRegistryEntry().registryKey());
+        this.blockTags = blockTagLookupFuture;
     }
 
     protected void copy(TagKey<Block> blockTag, TagKey<Item> itemTag) {
-        TagBuilder tagBuilder = this.getTagBuilder(itemTag);
-        TagBuilder tagBuilder2 = this.blockTags.apply(blockTag);
-        tagBuilder2.build().forEach(tagBuilder::add);
+        this.blockTagsToCopy.put(blockTag, itemTag);
+    }
+
+    @Override
+    protected CompletableFuture<RegistryWrapper.WrapperLookup> getRegistryLookupFuture() {
+        return super.getRegistryLookupFuture().thenCombineAsync(this.blockTags, (lookup, blockTags) -> {
+            this.blockTagsToCopy.forEach((blockTag, itemTag) -> {
+                TagBuilder tagBuilder = this.getTagBuilder(itemTag);
+                Optional optional = (Optional)blockTags.apply(blockTag);
+                ((TagBuilder)optional.orElseThrow(() -> new IllegalStateException("Missing block tag " + itemTag.id()))).build().forEach(tagBuilder::add);
+            });
+            return lookup;
+        });
     }
 }
 

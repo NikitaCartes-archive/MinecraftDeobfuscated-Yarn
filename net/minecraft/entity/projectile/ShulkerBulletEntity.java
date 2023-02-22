@@ -121,7 +121,7 @@ extends ProjectileEntity {
             blockPos = this.getBlockPos().down();
         } else {
             d = (double)this.target.getHeight() * 0.5;
-            blockPos = new BlockPos(this.target.getX(), this.target.getY() + d, this.target.getZ());
+            blockPos = BlockPos.ofFloored(this.target.getX(), this.target.getY() + d, this.target.getZ());
         }
         double e = (double)blockPos.getX() + 0.5;
         double f = (double)blockPos.getY() + d;

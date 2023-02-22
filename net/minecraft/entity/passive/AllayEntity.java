@@ -149,7 +149,7 @@ implements InventoryOwner {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.canMoveVoluntarily() || this.isLogicalSideForUpdatingMovement()) {
+        if (this.isLogicalSideForUpdatingMovement()) {
             if (this.isTouchingWater()) {
                 this.updateVelocity(0.02f, movementInput);
                 this.move(MovementType.SELF, this.getVelocity());
@@ -170,11 +170,6 @@ implements InventoryOwner {
     @Override
     protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         return dimensions.height * 0.6f;
-    }
-
-    @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-        return false;
     }
 
     @Override
@@ -593,11 +588,11 @@ implements InventoryOwner {
         @Override
         public boolean listen(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos) {
             if (event == GameEvent.JUKEBOX_PLAY) {
-                AllayEntity.this.updateJukeboxPos(new BlockPos(emitterPos), true);
+                AllayEntity.this.updateJukeboxPos(BlockPos.ofFloored(emitterPos), true);
                 return true;
             }
             if (event == GameEvent.JUKEBOX_STOP_PLAY) {
-                AllayEntity.this.updateJukeboxPos(new BlockPos(emitterPos), false);
+                AllayEntity.this.updateJukeboxPos(BlockPos.ofFloored(emitterPos), false);
                 return true;
             }
             return false;

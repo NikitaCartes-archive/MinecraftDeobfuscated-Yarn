@@ -26,7 +26,7 @@ extends SpriteBillboardParticle {
     private final float sampleV;
 
     public BlockDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState state) {
-        this(world, x, y, z, velocityX, velocityY, velocityZ, state, new BlockPos(x, y, z));
+        this(world, x, y, z, velocityX, velocityY, velocityZ, state, BlockPos.ofFloored(x, y, z));
     }
 
     public BlockDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState state, BlockPos blockPos) {

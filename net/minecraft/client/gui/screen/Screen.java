@@ -315,8 +315,6 @@ implements Drawable {
         int o = vector2ic.y();
         matrices.push();
         int p = 400;
-        float f = this.itemRenderer.zOffset;
-        this.itemRenderer.zOffset = 400.0f;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         RenderSystem.setShader(GameRenderer::getPositionColorProgram);
@@ -327,7 +325,6 @@ implements Drawable {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-        RenderSystem.disableBlend();
         VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
         matrices.translate(0.0f, 0.0f, 400.0f);
         int q = o;
@@ -344,7 +341,6 @@ implements Drawable {
             tooltipComponent2.drawItems(this.textRenderer, n, q, matrices, this.itemRenderer, 400);
             q += tooltipComponent2.getHeight() + (r == 0 ? 2 : 0);
         }
-        this.itemRenderer.zOffset = f;
     }
 
     protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Style style, int x, int y) {
@@ -475,6 +471,13 @@ implements Drawable {
     }
 
     /**
+     * Called when the screen is displayed using {@link MinecraftClient#setScreen}
+     * before {@link #init()} or {@link #initTabNavigation()} is called.
+     */
+    public void onDisplayed() {
+    }
+
+    /**
      * Renders the background of this screen.
      * 
      * <p>If the client is in a world, renders the translucent background gradient.
@@ -482,7 +485,7 @@ implements Drawable {
      */
     public void renderBackground(MatrixStack matrices) {
         if (this.client.world != null) {
-            this.fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
+            Screen.fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
         } else {
             this.renderBackgroundTexture(matrices);
         }

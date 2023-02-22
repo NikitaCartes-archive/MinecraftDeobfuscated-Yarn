@@ -104,7 +104,7 @@ extends ForgingScreen<SmithingScreenHandler> {
         this.templateSlotIcon.render(this.handler, matrices, delta, this.x, this.y);
         this.baseSlotIcon.render(this.handler, matrices, delta, this.x, this.y);
         this.additionsSlotIcon.render(this.handler, matrices, delta, this.x, this.y);
-        InventoryScreen.drawEntity(this.x + 141, this.y + 75, 25, ARMOR_STAND_ROTATION, null, (LivingEntity)this.armorStand);
+        InventoryScreen.drawEntity(matrices, this.x + 141, this.y + 75, 25, ARMOR_STAND_ROTATION, null, (LivingEntity)this.armorStand);
     }
 
     @Override
@@ -136,7 +136,7 @@ extends ForgingScreen<SmithingScreenHandler> {
     @Override
     protected void drawInvalidRecipeArrow(MatrixStack matrices, int x, int y) {
         if (this.hasInvalidRecipe()) {
-            this.drawTexture(matrices, x + 65, y + 46, this.backgroundWidth, 0, 28, 21);
+            SmithingScreen.drawTexture(matrices, x + 65, y + 46, this.backgroundWidth, 0, 28, 21);
         }
     }
 

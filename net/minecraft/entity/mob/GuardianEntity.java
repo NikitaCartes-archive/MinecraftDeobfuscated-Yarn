@@ -297,11 +297,13 @@ extends HostileEntity {
 
     @Override
     public boolean damage(DamageSource source, float amount) {
-        if (!this.areSpikesRetracted() && !source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && source.getSource() instanceof LivingEntity) {
-            LivingEntity livingEntity = (LivingEntity)source.getSource();
-            if (!source.isIn(DamageTypeTags.IS_EXPLOSION)) {
-                livingEntity.damage(this.getDamageSources().thorns(this), 2.0f);
-            }
+        Entity entity;
+        if (this.world.isClient) {
+            return false;
+        }
+        if (!source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && (entity = source.getAttacker()) instanceof LivingEntity) {
+            LivingEntity livingEntity = (LivingEntity)entity;
+            livingEntity.damage(this.getDamageSources().thorns(this), 2.0f);
         }
         if (this.wanderGoal != null) {
             this.wanderGoal.ignoreChanceOnce();
@@ -316,7 +318,7 @@ extends HostileEntity {
 
     @Override
     public void travel(Vec3d movementInput) {
-        if (this.canMoveVoluntarily() && this.isTouchingWater()) {
+        if (this.isLogicalSideForUpdatingMovement() && this.isTouchingWater()) {
             this.updateVelocity(0.1f, movementInput);
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(0.9));

@@ -28,7 +28,7 @@ public class TelemetryEventType {
         if (telemetryEventType != null) {
             return DataResult.success(telemetryEventType);
         }
-        return DataResult.error("No TelemetryEventType with key: '" + id + "'");
+        return DataResult.error(() -> "No TelemetryEventType with key: '" + id + "'");
     }, TelemetryEventType::getId);
     private static final List<TelemetryEventProperty<?>> BASIC_PROPERTIES = List.of(TelemetryEventProperty.USER_ID, TelemetryEventProperty.CLIENT_ID, TelemetryEventProperty.MINECRAFT_SESSION_ID, TelemetryEventProperty.GAME_VERSION, TelemetryEventProperty.OPERATING_SYSTEM, TelemetryEventProperty.PLATFORM, TelemetryEventProperty.CLIENT_MODDED, TelemetryEventProperty.EVENT_TIMESTAMP_UTC, TelemetryEventProperty.OPT_IN);
     private static final List<TelemetryEventProperty<?>> REQUIRED_PROPERTIES = Stream.concat(BASIC_PROPERTIES.stream(), Stream.of(TelemetryEventProperty.WORLD_SESSION_ID, TelemetryEventProperty.SERVER_MODDED, TelemetryEventProperty.SERVER_TYPE)).toList();

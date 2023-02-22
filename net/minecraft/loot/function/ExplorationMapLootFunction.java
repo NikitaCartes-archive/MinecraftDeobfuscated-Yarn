@@ -76,7 +76,7 @@ extends ConditionalLootFunction {
             return stack;
         }
         Vec3d vec3d = context.get(LootContextParameters.ORIGIN);
-        if (vec3d != null && (blockPos = (serverWorld = context.getWorld()).locateStructure(this.destination, new BlockPos(vec3d), this.searchRadius, this.skipExistingChunks)) != null) {
+        if (vec3d != null && (blockPos = (serverWorld = context.getWorld()).locateStructure(this.destination, BlockPos.ofFloored(vec3d), this.searchRadius, this.skipExistingChunks)) != null) {
             ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), this.zoom, true, true);
             FilledMapItem.fillExplorationMap(serverWorld, itemStack);
             MapState.addDecorationsNbt(itemStack, blockPos, "+", this.decoration);

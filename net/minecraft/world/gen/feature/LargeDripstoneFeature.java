@@ -193,7 +193,7 @@ extends Feature<LargeDripstoneFeatureConfig> {
             }
             int i = this.y - pos.getY();
             Vec3d vec3d = this.wind.multiply(i);
-            return pos.add(vec3d.x, 0.0, vec3d.z);
+            return pos.add(MathHelper.floor(vec3d.x), 0, MathHelper.floor(vec3d.z));
         }
     }
 }

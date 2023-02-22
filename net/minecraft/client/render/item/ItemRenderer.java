@@ -4,7 +4,6 @@
 package net.minecraft.client.render.item;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +33,6 @@ import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
-import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
@@ -58,11 +56,13 @@ import net.minecraft.util.math.MatrixUtil;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 
 @Environment(value=EnvType.CLIENT)
 public class ItemRenderer
 implements SynchronousResourceReloader {
-    public static final Identifier ENCHANTED_ITEM_GLINT = new Identifier("textures/misc/enchanted_item_glint.png");
+    public static final Identifier ENTITY_ENCHANTMENT_GLINT = new Identifier("textures/misc/enchanted_glint_entity.png");
+    public static final Identifier ITEM_ENCHANTMENT_GLINT = new Identifier("textures/misc/enchanted_glint_item.png");
     private static final Set<Item> WITHOUT_MODELS = Sets.newHashSet(Items.AIR);
     private static final int field_32937 = 8;
     private static final int field_32938 = 8;
@@ -74,7 +74,6 @@ implements SynchronousResourceReloader {
     public static final ModelIdentifier TRIDENT_IN_HAND = ModelIdentifier.ofVanilla("trident_in_hand", "inventory");
     private static final ModelIdentifier SPYGLASS = ModelIdentifier.ofVanilla("spyglass", "inventory");
     public static final ModelIdentifier SPYGLASS_IN_HAND = ModelIdentifier.ofVanilla("spyglass_in_hand", "inventory");
-    public float zOffset;
     private final MinecraftClient client;
     private final ItemModels models;
     private final TextureManager textureManager;
@@ -215,60 +214,52 @@ implements SynchronousResourceReloader {
         this.renderItem(item, renderMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel);
     }
 
-    public void renderGuiItemIcon(ItemStack stack, int x, int y) {
-        this.renderGuiItemModel(stack, x, y, this.getModel(stack, null, null, 0));
+    public void renderGuiItemIcon(MatrixStack matrices, ItemStack stack, int x, int y) {
+        this.renderGuiItemModel(matrices, stack, x, y, this.getModel(stack, null, null, 0));
     }
 
-    protected void renderGuiItemModel(ItemStack stack, int x, int y, BakedModel model) {
+    protected void renderGuiItemModel(MatrixStack matrices, ItemStack stack, int x, int y, BakedModel model) {
         boolean bl;
-        this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
-        RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-        RenderSystem.enableBlend();
-        RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        MatrixStack matrixStack = RenderSystem.getModelViewStack();
-        matrixStack.push();
-        matrixStack.translate(x, y, 100.0f + this.zOffset);
-        matrixStack.translate(8.0f, 8.0f, 0.0f);
-        matrixStack.scale(1.0f, -1.0f, 1.0f);
-        matrixStack.scale(16.0f, 16.0f, 16.0f);
-        RenderSystem.applyModelViewMatrix();
-        MatrixStack matrixStack2 = new MatrixStack();
+        matrices.push();
+        matrices.translate(x, y, 100.0f);
+        matrices.translate(8.0f, 8.0f, 0.0f);
+        matrices.multiplyPositionMatrix(new Matrix4f().scaling(1.0f, -1.0f, 1.0f));
+        matrices.scale(16.0f, 16.0f, 16.0f);
         VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
         boolean bl2 = bl = !model.isSideLit();
         if (bl) {
             DiffuseLighting.disableGuiDepthLighting();
         }
-        this.renderItem(stack, ModelTransformationMode.GUI, false, matrixStack2, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, model);
+        this.renderItem(stack, ModelTransformationMode.GUI, false, matrices, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, model);
         immediate.draw();
         RenderSystem.enableDepthTest();
         if (bl) {
             DiffuseLighting.enableGuiDepthLighting();
         }
-        matrixStack.pop();
-        RenderSystem.applyModelViewMatrix();
+        matrices.pop();
     }
 
     /**
      * Renders an item in a GUI with the player as the attached entity
      * for calculating model overrides.
      */
-    public void renderInGuiWithOverrides(ItemStack stack, int x, int y) {
-        this.innerRenderInGui(this.client.player, this.client.world, stack, x, y, 0);
+    public void renderInGuiWithOverrides(MatrixStack matrices, ItemStack stack, int x, int y) {
+        this.innerRenderInGui(matrices, this.client.player, this.client.world, stack, x, y, 0);
     }
 
-    public void renderInGuiWithOverrides(ItemStack stack, int x, int y, int seed) {
-        this.innerRenderInGui(this.client.player, this.client.world, stack, x, y, seed);
+    public void renderInGuiWithOverrides(MatrixStack matrices, ItemStack stack, int x, int y, int seed) {
+        this.innerRenderInGui(matrices, this.client.player, this.client.world, stack, x, y, seed);
     }
 
-    public void renderInGuiWithOverrides(ItemStack stack, int x, int y, int seed, int depth) {
-        this.innerRenderInGui(this.client.player, this.client.world, stack, x, y, seed, depth);
+    public void renderInGuiWithOverrides(MatrixStack matrices, ItemStack stack, int x, int y, int seed, int depth) {
+        this.innerRenderInGui(matrices, this.client.player, this.client.world, stack, x, y, seed, depth);
     }
 
     /**
      * Renders an item in a GUI without an attached entity.
      */
-    public void renderInGui(ItemStack stack, int x, int y) {
-        this.innerRenderInGui(null, this.client.world, stack, x, y, 0);
+    public void renderInGui(MatrixStack matrices, ItemStack stack, int x, int y) {
+        this.innerRenderInGui(matrices, null, this.client.world, stack, x, y, 0);
     }
 
     /**
@@ -276,22 +267,23 @@ implements SynchronousResourceReloader {
      * 
      * <p>The entity is used to calculate model overrides for the item.
      */
-    public void renderInGuiWithOverrides(LivingEntity entity, ItemStack stack, int x, int y, int seed) {
-        this.innerRenderInGui(entity, entity.world, stack, x, y, seed);
+    public void renderInGuiWithOverrides(MatrixStack matrices, LivingEntity entity, ItemStack stack, int x, int y, int seed) {
+        this.innerRenderInGui(matrices, entity, entity.world, stack, x, y, seed);
     }
 
-    private void innerRenderInGui(@Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y, int seed) {
-        this.innerRenderInGui(entity, world, stack, x, y, seed, 0);
+    private void innerRenderInGui(MatrixStack matrices, @Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y, int seed) {
+        this.innerRenderInGui(matrices, entity, world, stack, x, y, seed, 0);
     }
 
-    private void innerRenderInGui(@Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y, int seed, int depth) {
+    private void innerRenderInGui(MatrixStack matrices, @Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y, int seed, int depth) {
         if (stack.isEmpty()) {
             return;
         }
         BakedModel bakedModel = this.getModel(stack, world, entity, seed);
-        this.zOffset = bakedModel.hasDepth() ? this.zOffset + 50.0f + (float)depth : this.zOffset + 50.0f;
+        matrices.push();
+        matrices.translate(0.0f, 0.0f, 50 + (bakedModel.hasDepth() ? depth : 0));
         try {
-            this.renderGuiItemModel(stack, x, y, bakedModel);
+            this.renderGuiItemModel(matrices, stack, x, y, bakedModel);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Rendering item");
             CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
@@ -301,22 +293,20 @@ implements SynchronousResourceReloader {
             crashReportSection.add("Item Foil", () -> String.valueOf(stack.hasGlint()));
             throw new CrashException(crashReport);
         }
-        this.zOffset = bakedModel.hasDepth() ? this.zOffset - 50.0f - (float)depth : this.zOffset - 50.0f;
+        matrices.pop();
     }
 
     /**
      * Renders the overlay for items in GUIs, including the damage bar and the item count.
      */
-    public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y) {
-        this.renderGuiItemOverlay(renderer, stack, x, y, null);
+    public void renderGuiItemOverlay(MatrixStack matrices, TextRenderer textRenderer, ItemStack stack, int x, int y) {
+        this.renderGuiItemOverlay(matrices, textRenderer, stack, x, y, null);
     }
 
     /**
      * Renders the overlay for items in GUIs, including the damage bar and the item count.
-     * 
-     * @param countLabel a label for the stack; if null, the stack count is drawn instead
      */
-    public void renderGuiItemOverlay(TextRenderer renderer, ItemStack stack, int x, int y, @Nullable String countLabel) {
+    public void renderGuiItemOverlay(MatrixStack matrices, TextRenderer textRenderer, ItemStack stack, int x, int y, @Nullable String countLabel) {
         ClientPlayerEntity clientPlayerEntity;
         float f;
         int l;
@@ -324,12 +314,12 @@ implements SynchronousResourceReloader {
         if (stack.isEmpty()) {
             return;
         }
-        MatrixStack matrixStack = new MatrixStack();
+        matrices.push();
         if (stack.getCount() != 1 || countLabel != null) {
             String string = countLabel == null ? String.valueOf(stack.getCount()) : countLabel;
-            matrixStack.translate(0.0f, 0.0f, this.zOffset + 200.0f);
+            matrices.translate(0.0f, 0.0f, 200.0f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            renderer.draw(string, (float)(x + 19 - 2 - renderer.getWidth(string)), (float)(y + 6 + 3), 0xFFFFFF, true, matrixStack.peek().getPositionMatrix(), (VertexConsumerProvider)immediate, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
+            textRenderer.draw(string, (float)(x + 19 - 2 - textRenderer.getWidth(string)), (float)(y + 6 + 3), 0xFFFFFF, true, matrices.peek().getPositionMatrix(), (VertexConsumerProvider)immediate, TextRenderer.TextLayerType.NORMAL, 0, 0xF000F0);
             immediate.draw();
         }
         if (stack.isItemBarVisible()) {
@@ -338,8 +328,8 @@ implements SynchronousResourceReloader {
             int j = stack.getItemBarColor();
             k = x + 2;
             l = y + 13;
-            DrawableHelper.fill(matrixStack, k, l, k + 13, l + 2, -16777216);
-            DrawableHelper.fill(matrixStack, k, l, k + i, l + 1, j | 0xFF000000);
+            DrawableHelper.fill(matrices, k, l, k + 13, l + 2, -16777216);
+            DrawableHelper.fill(matrices, k, l, k + i, l + 1, j | 0xFF000000);
             RenderSystem.enableDepthTest();
         }
         float f2 = f = (clientPlayerEntity = this.client.player) == null ? 0.0f : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), this.client.getTickDelta());
@@ -347,9 +337,10 @@ implements SynchronousResourceReloader {
             RenderSystem.disableDepthTest();
             k = y + MathHelper.floor(16.0f * (1.0f - f));
             l = k + MathHelper.ceil(16.0f * f);
-            DrawableHelper.fill(matrixStack, x, k, x + 16, l, Integer.MAX_VALUE);
+            DrawableHelper.fill(matrices, x, k, x + 16, l, Integer.MAX_VALUE);
             RenderSystem.enableDepthTest();
         }
+        matrices.pop();
     }
 
     @Override

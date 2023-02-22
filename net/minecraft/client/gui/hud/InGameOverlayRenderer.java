@@ -91,10 +91,9 @@ public class InGameOverlayRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderTexture(0, UNDERWATER_TEXTURE);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        BlockPos blockPos = new BlockPos(client.player.getX(), client.player.getEyeY(), client.player.getZ());
+        BlockPos blockPos = BlockPos.ofFloored(client.player.getX(), client.player.getEyeY(), client.player.getZ());
         float f = LightmapTextureManager.getBrightness(client.player.world.getDimension(), client.player.world.getLightLevel(blockPos));
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(f, f, f, 0.1f);
         float g = 4.0f;
         float h = -1.0f;
@@ -121,7 +120,6 @@ public class InGameOverlayRenderer {
         RenderSystem.depthFunc(519);
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
         Sprite sprite = ModelLoader.FIRE_1.getSprite();
         RenderSystem.setShaderTexture(0, sprite.getAtlasId());
         float f = sprite.getMinU();

@@ -381,7 +381,7 @@ implements ItemConvertible {
 
     public static void dropStacks(BlockState state, LootContext.Builder lootContext) {
         ServerWorld serverWorld = lootContext.getWorld();
-        BlockPos blockPos = new BlockPos(lootContext.get(LootContextParameters.ORIGIN));
+        BlockPos blockPos = BlockPos.ofFloored(lootContext.get(LootContextParameters.ORIGIN));
         state.getDroppedStacks(lootContext).forEach(stack -> Block.dropStack((World)serverWorld, blockPos, stack));
         state.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY, true);
     }

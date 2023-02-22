@@ -48,7 +48,7 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<CustomSpawnRules> cus
 
         private static DataResult<Range<Integer>> validate(Range<Integer> provider) {
             if (!DEFAULT.contains(provider)) {
-                return DataResult.error("Light values must be withing range " + DEFAULT);
+                return DataResult.error(() -> "Light values must be withing range " + DEFAULT);
             }
             return DataResult.success(provider);
         }

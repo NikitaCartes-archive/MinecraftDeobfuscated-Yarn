@@ -53,7 +53,7 @@ public class FlatChunkGeneratorConfig {
     private static DataResult<FlatChunkGeneratorConfig> checkHeight(FlatChunkGeneratorConfig config) {
         int i = config.layers.stream().mapToInt(FlatChunkGeneratorLayer::getThickness).sum();
         if (i > DimensionType.MAX_HEIGHT) {
-            return DataResult.error("Sum of layer heights is > " + DimensionType.MAX_HEIGHT, config);
+            return DataResult.error(() -> "Sum of layer heights is > " + DimensionType.MAX_HEIGHT, config);
         }
         return DataResult.success(config);
     }

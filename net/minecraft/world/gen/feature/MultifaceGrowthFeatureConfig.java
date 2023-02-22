@@ -40,7 +40,7 @@ implements FeatureConfig {
             MultifaceGrowthBlock multifaceGrowthBlock = (MultifaceGrowthBlock)block;
             dataResult = DataResult.success(multifaceGrowthBlock);
         } else {
-            dataResult = DataResult.error("Growth block should be a multiface block");
+            dataResult = DataResult.error(() -> "Growth block should be a multiface block");
         }
         return dataResult;
     }

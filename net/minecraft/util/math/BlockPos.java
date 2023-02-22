@@ -58,18 +58,6 @@ extends Vec3i {
         super(i, j, k);
     }
 
-    public BlockPos(double d, double e, double f) {
-        super(d, e, f);
-    }
-
-    public BlockPos(Vec3d pos) {
-        this(pos.x, pos.y, pos.z);
-    }
-
-    public BlockPos(Position pos) {
-        this(pos.getX(), pos.getY(), pos.getZ());
-    }
-
     public BlockPos(Vec3i pos) {
         this(pos.getX(), pos.getY(), pos.getZ());
     }
@@ -98,6 +86,14 @@ extends Vec3i {
         return new BlockPos(BlockPos.unpackLongX(packedPos), BlockPos.unpackLongY(packedPos), BlockPos.unpackLongZ(packedPos));
     }
 
+    public static BlockPos ofFloored(double x, double y, double z) {
+        return new BlockPos(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
+    }
+
+    public static BlockPos ofFloored(Position pos) {
+        return BlockPos.ofFloored(pos.getX(), pos.getY(), pos.getZ());
+    }
+
     public long asLong() {
         return BlockPos.asLong(this.getX(), this.getY(), this.getZ());
     }
@@ -111,14 +107,6 @@ extends Vec3i {
 
     public static long removeChunkSectionLocalY(long y) {
         return y & 0xFFFFFFFFFFFFFFF0L;
-    }
-
-    @Override
-    public BlockPos add(double d, double e, double f) {
-        if (d == 0.0 && e == 0.0 && f == 0.0) {
-            return this;
-        }
-        return new BlockPos((double)this.getX() + d, (double)this.getY() + e, (double)this.getZ() + f);
     }
 
     @Override
@@ -638,11 +626,6 @@ extends Vec3i {
         return this.add(x, y, z);
     }
 
-    @Override
-    public /* synthetic */ Vec3i add(double x, double y, double z) {
-        return this.add(x, y, z);
-    }
-
     static {
         SIZE_BITS_Z = SIZE_BITS_X = 1 + MathHelper.floorLog2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
         SIZE_BITS_Y = 64 - SIZE_BITS_X - SIZE_BITS_Z;
@@ -663,13 +646,8 @@ extends Vec3i {
             super(i, j, k);
         }
 
-        public Mutable(double d, double e, double f) {
-            this(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
-        }
-
-        @Override
-        public BlockPos add(double d, double e, double f) {
-            return super.add(d, e, f).toImmutable();
+        public Mutable(double x, double y, double z) {
+            this(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
         }
 
         @Override
@@ -883,11 +861,6 @@ extends Vec3i {
 
         @Override
         public /* synthetic */ Vec3i add(int x, int y, int z) {
-            return this.add(x, y, z);
-        }
-
-        @Override
-        public /* synthetic */ Vec3i add(double x, double y, double z) {
             return this.add(x, y, z);
         }
 

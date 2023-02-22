@@ -170,7 +170,6 @@ extends DrawableHelper {
             int x = q + v * 9;
             PlayerListHud.fill(matrices, w, x, w + o, x + 8, n2);
             RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
             if (u >= list.size()) continue;
             PlayerListEntry playerListEntry2 = list.get(u);
             GameProfile gameProfile = playerListEntry2.getProfile();
@@ -202,9 +201,10 @@ extends DrawableHelper {
         RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
         boolean i = false;
         int j = entry.getLatency() < 0 ? 5 : (entry.getLatency() < 150 ? 0 : (entry.getLatency() < 300 ? 1 : (entry.getLatency() < 600 ? 2 : (entry.getLatency() < 1000 ? 3 : 4))));
-        this.setZOffset(this.getZOffset() + 100);
-        this.drawTexture(matrices, x + width - 11, y, 0, 176 + j * 8, 10, 8);
-        this.setZOffset(this.getZOffset() - 100);
+        matrices.push();
+        matrices.translate(0.0f, 0.0f, 100.0f);
+        PlayerListHud.drawTexture(matrices, x + width - 11, y, 0, 176 + j * 8, 10, 8);
+        matrices.pop();
     }
 
     private void renderScoreboardObjective(ScoreboardObjective objective, int y, String player, int left, int right, UUID uuid, MatrixStack matrices) {
@@ -240,23 +240,23 @@ extends DrawableHelper {
             return;
         }
         for (m = i; m < j; ++m) {
-            this.drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+            PlayerListHud.drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
         }
         for (m = 0; m < i; ++m) {
-            this.drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+            PlayerListHud.drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
             if (bl) {
                 if (m * 2 + 1 < heart.getPrevScore()) {
-                    this.drawTexture(matrices, left + m * k, y, 70, 0, 9, 9);
+                    PlayerListHud.drawTexture(matrices, left + m * k, y, 70, 0, 9, 9);
                 }
                 if (m * 2 + 1 == heart.getPrevScore()) {
-                    this.drawTexture(matrices, left + m * k, y, 79, 0, 9, 9);
+                    PlayerListHud.drawTexture(matrices, left + m * k, y, 79, 0, 9, 9);
                 }
             }
             if (m * 2 + 1 < score) {
-                this.drawTexture(matrices, left + m * k, y, m >= 10 ? 160 : 52, 0, 9, 9);
+                PlayerListHud.drawTexture(matrices, left + m * k, y, m >= 10 ? 160 : 52, 0, 9, 9);
             }
             if (m * 2 + 1 != score) continue;
-            this.drawTexture(matrices, left + m * k, y, m >= 10 ? 169 : 61, 0, 9, 9);
+            PlayerListHud.drawTexture(matrices, left + m * k, y, m >= 10 ? 169 : 61, 0, 9, 9);
         }
     }
 

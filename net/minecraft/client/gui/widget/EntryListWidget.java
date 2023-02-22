@@ -4,7 +4,6 @@
 package net.minecraft.client.gui.widget;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.AbstractList;
 import java.util.Collection;
@@ -220,27 +219,23 @@ Selectable {
         }
         k = this.getRowLeft();
         int l = this.top + 4 - (int)this.getScrollAmount();
+        this.enableScissor();
         if (this.renderHeader) {
             this.renderHeader(matrices, k, l);
         }
         this.renderList(matrices, mouseX, mouseY, delta);
+        EntryListWidget.disableScissor();
         if (this.renderHorizontalShadows) {
             RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
-            RenderSystem.enableDepthTest();
-            RenderSystem.depthFunc(519);
             m = 32;
             n = -100;
             RenderSystem.setShaderColor(0.25f, 0.25f, 0.25f, 1.0f);
             EntryListWidget.drawTexture(matrices, this.left, 0, -100, 0.0f, 0.0f, this.width, this.top, 32, 32);
             EntryListWidget.drawTexture(matrices, this.left, this.bottom, -100, 0.0f, this.bottom, this.width, this.height - this.bottom, 32, 32);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderSystem.depthFunc(515);
-            RenderSystem.disableDepthTest();
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
             o = 4;
-            this.fillGradient(matrices, this.left, this.top, this.right, this.top + 4, -16777216, 0);
-            this.fillGradient(matrices, this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216);
+            EntryListWidget.fillGradient(matrices, this.left, this.top, this.right, this.top + 4, -16777216, 0);
+            EntryListWidget.fillGradient(matrices, this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216);
         }
         if ((m = this.getMaxScroll()) > 0) {
             n = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
@@ -255,6 +250,10 @@ Selectable {
         }
         this.renderDecorations(matrices, mouseX, mouseY);
         RenderSystem.disableBlend();
+    }
+
+    protected void enableScissor() {
+        EntryListWidget.enableScissor(this.left, this.top, this.right, this.bottom);
     }
 
     protected void centerScrollOn(E entry) {
@@ -436,6 +435,7 @@ Selectable {
 
     protected void renderEntry(MatrixStack matrices, int mouseX, int mouseY, float delta, int index, int x, int y, int entryWidth, int entryHeight) {
         E entry = this.getEntry(index);
+        ((Entry)entry).drawBorder(matrices, index, y, x, entryWidth, entryHeight, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
         if (this.renderSelection && this.isSelectedEntry(index)) {
             int i = this.isFocused() ? -1 : -8355712;
             this.drawSelectionHighlight(matrices, y, entryWidth, entryHeight, i, -16777216);
@@ -598,6 +598,9 @@ Selectable {
         }
 
         public abstract void render(MatrixStack var1, int var2, int var3, int var4, int var5, int var6, int var7, int var8, boolean var9, float var10);
+
+        public void drawBorder(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        }
 
         @Override
         public boolean isMouseOver(double mouseX, double mouseY) {

@@ -82,10 +82,10 @@ extends EntityNavigation {
             return MathHelper.floor(this.entity.getY() + 0.5);
         }
         int i = this.entity.getBlockY();
-        BlockState blockState = this.world.getBlockState(new BlockPos(this.entity.getX(), (double)i, this.entity.getZ()));
+        BlockState blockState = this.world.getBlockState(BlockPos.ofFloored(this.entity.getX(), i, this.entity.getZ()));
         int j = 0;
         while (blockState.isOf(Blocks.WATER)) {
-            blockState = this.world.getBlockState(new BlockPos(this.entity.getX(), (double)(++i), this.entity.getZ()));
+            blockState = this.world.getBlockState(BlockPos.ofFloored(this.entity.getX(), ++i, this.entity.getZ()));
             if (++j <= 16) continue;
             return this.entity.getBlockY();
         }
@@ -96,7 +96,7 @@ extends EntityNavigation {
     protected void adjustPath() {
         super.adjustPath();
         if (this.avoidSunlight) {
-            if (this.world.isSkyVisible(new BlockPos(this.entity.getX(), this.entity.getY() + 0.5, this.entity.getZ()))) {
+            if (this.world.isSkyVisible(BlockPos.ofFloored(this.entity.getX(), this.entity.getY() + 0.5, this.entity.getZ()))) {
                 return;
             }
             for (int i = 0; i < this.currentPath.getLength(); ++i) {

@@ -49,6 +49,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -94,6 +95,14 @@ extends AnimalEntity {
         return bl && this.getVelocity().horizontalLengthSquared() > 1.0E-6;
     }
 
+    private boolean isMovingInWater() {
+        return this.isMoving() && this.isTouchingWater() && !this.isSubmergedInWater() && this.getVelocity().horizontalLengthSquared() > 9.999999999999999E-6;
+    }
+
+    private boolean isMovingOutsideWater() {
+        return this.isMoving() && !this.isSubmergedInWater() && !this.isTouchingWater();
+    }
+
     public boolean isPanicking() {
         return this.brain.getOptionalRegisteredMemory(MemoryModuleType.IS_PANICKING).isPresent();
     }
@@ -104,7 +113,7 @@ extends AnimalEntity {
 
     private BlockPos getDigPos() {
         Vec3d vec3d = this.getPos().add(this.getRotationVecClient().multiply(2.25));
-        return new BlockPos(vec3d.getX(), this.getY(), vec3d.getZ());
+        return BlockPos.ofFloored(vec3d.getX(), this.getY(), vec3d.getZ());
     }
 
     private State getState() {
@@ -210,7 +219,7 @@ extends AnimalEntity {
     }
 
     Optional<BlockPos> findSniffingTargetPos() {
-        return IntStream.range(0, 5).mapToObj(i -> FuzzyTargeting.find(this, 10 + 2 * i, 3)).filter(Objects::nonNull).map(BlockPos::new).map(BlockPos::down).filter(this::isDiggable).findFirst();
+        return IntStream.range(0, 5).mapToObj(i -> FuzzyTargeting.find(this, 10 + 2 * i, 3)).filter(Objects::nonNull).map(BlockPos::ofFloored).map(BlockPos::down).filter(this::isDiggable).findFirst();
     }
 
     @Override
@@ -276,9 +285,20 @@ extends AnimalEntity {
     }
 
     @Override
+    protected void jump() {
+        double e;
+        super.jump();
+        double d = this.moveControl.getSpeed();
+        if (d > 0.0 && (e = this.getVelocity().horizontalLengthSquared()) < 0.01) {
+            this.updateVelocity(0.1f, new Vec3d(0.0, 0.0, 1.0));
+        }
+    }
+
+    @Override
     public void tick() {
-        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(this.isTouchingWater() ? (double)0.2f : (double)0.1f);
-        if (this.isMoving() || this.isTouchingWater()) {
+        boolean bl = this.isTouchingWater() && !this.isSubmergedInWater();
+        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(bl ? (double)0.2f : (double)0.1f);
+        if (this.isMovingOutsideWater() || this.isMovingInWater()) {
             if (this.isPanicking()) {
                 this.walkingAnimationState.stop();
                 this.panickingAnimationState.startIfNotRunning(this.age);
@@ -344,6 +364,11 @@ extends AnimalEntity {
     }
 
     @Override
+    public int getMaxHeadRotation() {
+        return 50;
+    }
+
+    @Override
     public void setBaby(boolean baby) {
         this.setBreedingAge(baby ? -48000 : 0);
     }
@@ -361,6 +386,11 @@ extends AnimalEntity {
             return set.contains((Object)this.getState()) && set.contains((Object)snifferEntity.getState()) && super.canBreedWith(other);
         }
         return false;
+    }
+
+    @Override
+    public Box getVisibilityBoundingBox() {
+        return super.getVisibilityBoundingBox().expand(0.6f);
     }
 
     @Override

@@ -29,7 +29,7 @@ extends ButtonWidget {
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        Text text = this.isHovered() ? this.hoverText : this.text;
+        Text text = this.isSelected() ? this.hoverText : this.text;
         PressableTextWidget.drawTextWithShadow(matrices, this.textRenderer, text, this.getX(), this.getY(), 0xFFFFFF | MathHelper.ceil(this.alpha * 255.0f) << 24);
     }
 }

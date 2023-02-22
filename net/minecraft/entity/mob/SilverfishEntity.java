@@ -218,7 +218,7 @@ extends HostileEntity {
             Random random = this.mob.getRandom();
             if (this.mob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && random.nextInt(WanderAndInfestGoal.toGoalTicks(10)) == 0) {
                 this.direction = Direction.random(random);
-                BlockPos blockPos = new BlockPos(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
+                BlockPos blockPos = BlockPos.ofFloored(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
                 BlockState blockState = this.mob.world.getBlockState(blockPos);
                 if (InfestedBlock.isInfestable(blockState)) {
                     this.canInfest = true;
@@ -244,7 +244,7 @@ extends HostileEntity {
                 return;
             }
             World worldAccess = this.mob.world;
-            BlockPos blockPos = new BlockPos(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
+            BlockPos blockPos = BlockPos.ofFloored(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
             BlockState blockState = worldAccess.getBlockState(blockPos);
             if (InfestedBlock.isInfestable(blockState)) {
                 worldAccess.setBlockState(blockPos, InfestedBlock.fromRegularState(blockState), Block.NOTIFY_ALL);

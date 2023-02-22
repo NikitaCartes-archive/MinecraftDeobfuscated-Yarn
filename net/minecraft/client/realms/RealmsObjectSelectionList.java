@@ -30,7 +30,7 @@ extends AlwaysSelectedEntryListWidget<E> {
         this.setSelectedItem(index);
     }
 
-    public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth) {
+    public void itemClicked(int cursorY, int selectionIndex, double mouseX, double mouseY, int listWidth, int i) {
     }
 
     @Override

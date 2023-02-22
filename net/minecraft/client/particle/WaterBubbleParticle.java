@@ -43,7 +43,7 @@ extends SpriteBillboardParticle {
         this.velocityX *= (double)0.85f;
         this.velocityY *= (double)0.85f;
         this.velocityZ *= (double)0.85f;
-        if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).isIn(FluidTags.WATER)) {
+        if (!this.world.getFluidState(BlockPos.ofFloored(this.x, this.y, this.z)).isIn(FluidTags.WATER)) {
             this.markDead();
         }
     }

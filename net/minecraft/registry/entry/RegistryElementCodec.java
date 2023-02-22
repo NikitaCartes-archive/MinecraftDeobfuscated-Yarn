@@ -53,7 +53,7 @@ implements Codec<RegistryEntry<E>> {
         Optional optional;
         if (dynamicOps instanceof RegistryOps && (optional = (registryOps = (RegistryOps)dynamicOps).getOwner(this.registryRef)).isPresent()) {
             if (!registryEntry.ownerEquals(optional.get())) {
-                return DataResult.error("Element " + registryEntry + " is not valid in current registry set");
+                return DataResult.error(() -> "Element " + registryEntry + " is not valid in current registry set");
             }
             return registryEntry.getKeyOrValue().map(key -> Identifier.CODEC.encode(key.getValue(), dynamicOps, object), value -> this.elementCodec.encode(value, dynamicOps, object));
         }
@@ -66,19 +66,19 @@ implements Codec<RegistryEntry<E>> {
             RegistryOps registryOps = (RegistryOps)ops;
             Optional optional = registryOps.getEntryLookup(this.registryRef);
             if (optional.isEmpty()) {
-                return DataResult.error("Registry does not exist: " + this.registryRef);
+                return DataResult.error(() -> "Registry does not exist: " + this.registryRef);
             }
             RegistryEntryLookup registryEntryLookup = optional.get();
             DataResult dataResult = Identifier.CODEC.decode(ops, input);
             if (dataResult.result().isEmpty()) {
                 if (!this.allowInlineDefinitions) {
-                    return DataResult.error("Inline definitions not allowed here");
+                    return DataResult.error(() -> "Inline definitions not allowed here");
                 }
                 return this.elementCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(RegistryEntry::of));
             }
             Pair pair2 = dataResult.result().get();
             RegistryKey registryKey = RegistryKey.of(this.registryRef, (Identifier)pair2.getFirst());
-            return registryEntryLookup.getOptional(registryKey).map(DataResult::success).orElseGet(() -> DataResult.error("Failed to get element " + registryKey)).map((? super R reference) -> Pair.of(reference, pair2.getSecond())).setLifecycle(Lifecycle.stable());
+            return registryEntryLookup.getOptional(registryKey).map(DataResult::success).orElseGet(() -> DataResult.error(() -> "Failed to get element " + registryKey)).map((? super R reference) -> Pair.of(reference, pair2.getSecond())).setLifecycle(Lifecycle.stable());
         }
         return this.elementCodec.decode(ops, input).map((? super R pair) -> pair.mapFirst(RegistryEntry::of));
     }

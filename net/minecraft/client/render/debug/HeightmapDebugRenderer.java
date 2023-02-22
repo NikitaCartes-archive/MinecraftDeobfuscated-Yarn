@@ -36,7 +36,7 @@ implements DebugRenderer.Renderer {
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         ClientWorld worldAccess = this.client.world;
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getDebugFilledBox());
-        BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
+        BlockPos blockPos = BlockPos.ofFloored(cameraX, 0.0, cameraZ);
         for (int i = -2; i <= 2; ++i) {
             for (int j = -2; j <= 2; ++j) {
                 Chunk chunk = worldAccess.getChunk(blockPos.add(i * 16, 0, j * 16));

@@ -5,7 +5,6 @@ package net.minecraft.client.gui.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
@@ -36,7 +35,7 @@ extends MultilineTextWidget {
     }
 
     @Override
-    protected void renderBackground(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
+    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         int i = this.getX() - 3;
         int j = this.getY() - 3;
         int k = this.getX() + this.getWidth() + 3;
@@ -47,12 +46,6 @@ extends MultilineTextWidget {
         NarratedMultilineTextWidget.fill(matrices, i, j, k, j - 1, m);
         NarratedMultilineTextWidget.fill(matrices, i, l, k, l + 1, m);
         NarratedMultilineTextWidget.fill(matrices, i, j, k, l, 0x55000000);
-        super.renderBackground(matrices, client, mouseX, mouseY);
-    }
-
-    @Override
-    public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices, MinecraftClient.getInstance(), mouseX, mouseY);
         super.renderButton(matrices, mouseX, mouseY, delta);
     }
 

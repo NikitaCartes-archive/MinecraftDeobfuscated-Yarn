@@ -199,7 +199,7 @@ extends RealmsScreen {
 
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RealmsResetWorldScreen.this.drawFrame(matrices, this.getX(), this.getY(), this.getMessage(), this.image, this.isHovered(), this.isMouseOver(mouseX, mouseY));
+            RealmsResetWorldScreen.this.drawFrame(matrices, this.getX(), this.getY(), this.getMessage(), this.image, this.isSelected(), this.isMouseOver(mouseX, mouseY));
         }
     }
 }

@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.gui.screen;
+package net.minecraft.client.gui.tab;
 
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
@@ -36,7 +36,7 @@ implements Tab {
     @Override
     public void refreshGrid(FocusedRect tabArea) {
         this.grid.refreshPositions();
-        SimplePositioningWidget.setPos(this.grid, tabArea);
+        SimplePositioningWidget.setPos(this.grid, tabArea, 0.5f, 0.16666667f);
     }
 }
 

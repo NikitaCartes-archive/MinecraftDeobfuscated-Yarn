@@ -15,7 +15,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
-import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.InputUtil;
@@ -77,7 +76,6 @@ extends Screen {
         if (this.checkForClose()) {
             return;
         }
-        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         matrices.push();
         RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, TEXTURE);
@@ -97,7 +95,7 @@ extends Screen {
         for (ButtonWidget buttonWidget : this.gameModeButtons) {
             buttonWidget.render(matrices, mouseX, mouseY, delta);
             this.gameMode.ifPresent(gameMode -> buttonWidget.setSelected(gameMode == buttonWidget.gameMode));
-            if (bl || !buttonWidget.isHovered()) continue;
+            if (bl || !buttonWidget.isSelected()) continue;
             this.gameMode = Optional.of(buttonWidget.gameMode);
         }
     }
@@ -161,8 +159,8 @@ extends Screen {
             this.icon = icon;
         }
 
-        void renderIcon(ItemRenderer itemRenderer, int x, int y) {
-            itemRenderer.renderInGuiWithOverrides(this.icon, x, y);
+        void renderIcon(MatrixStack matrices, ItemRenderer itemRenderer, int x, int y) {
+            itemRenderer.renderInGuiWithOverrides(matrices, this.icon, x, y);
         }
 
         Text getText() {
@@ -226,7 +224,7 @@ extends Screen {
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
             MinecraftClient minecraftClient = MinecraftClient.getInstance();
             this.drawBackground(matrices, minecraftClient.getTextureManager());
-            this.gameMode.renderIcon(GameModeSelectionScreen.this.itemRenderer, this.getX() + 5, this.getY() + 5);
+            this.gameMode.renderIcon(matrices, GameModeSelectionScreen.this.itemRenderer, this.getX() + 5, this.getY() + 5);
             if (this.selected) {
                 this.drawSelectionBox(matrices, minecraftClient.getTextureManager());
             }
@@ -238,8 +236,8 @@ extends Screen {
         }
 
         @Override
-        public boolean isHovered() {
-            return super.isHovered() || this.selected;
+        public boolean isSelected() {
+            return super.isSelected() || this.selected;
         }
 
         public void setSelected(boolean selected) {
@@ -247,7 +245,6 @@ extends Screen {
         }
 
         private void drawBackground(MatrixStack matrices, TextureManager textureManager) {
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
             matrices.translate(this.getX(), this.getY(), 0.0f);
@@ -256,7 +253,6 @@ extends Screen {
         }
 
         private void drawSelectionBox(MatrixStack matrices, TextureManager textureManager) {
-            RenderSystem.setShader(GameRenderer::getPositionTexProgram);
             RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
             matrices.translate(this.getX(), this.getY(), 0.0f);

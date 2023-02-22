@@ -56,7 +56,7 @@ extends LandPathNodeMaker {
         } else {
             i = MathHelper.floor(this.entity.getY() + 0.5);
         }
-        if (!this.canPathThrough(blockPos = new BlockPos(this.entity.getX(), (double)i, this.entity.getZ()))) {
+        if (!this.canPathThrough(blockPos = BlockPos.ofFloored(this.entity.getX(), i, this.entity.getZ()))) {
             for (BlockPos blockPos2 : this.getPotentialEscapePositions(this.entity)) {
                 if (!this.canPathThrough(blockPos2)) continue;
                 return super.getStart(blockPos2);
@@ -275,7 +275,7 @@ extends LandPathNodeMaker {
         Box box = entity.getBoundingBox();
         boolean bl2 = bl = box.getAverageSideLength() < 1.0;
         if (!bl) {
-            return List.of(new BlockPos(box.minX, (double)entity.getBlockY(), box.minZ), new BlockPos(box.minX, (double)entity.getBlockY(), box.maxZ), new BlockPos(box.maxX, (double)entity.getBlockY(), box.minZ), new BlockPos(box.maxX, (double)entity.getBlockY(), box.maxZ));
+            return List.of(BlockPos.ofFloored(box.minX, entity.getBlockY(), box.minZ), BlockPos.ofFloored(box.minX, entity.getBlockY(), box.maxZ), BlockPos.ofFloored(box.maxX, entity.getBlockY(), box.minZ), BlockPos.ofFloored(box.maxX, entity.getBlockY(), box.maxZ));
         }
         double d = Math.max(0.0, (1.5 - box.getZLength()) / 2.0);
         double e = Math.max(0.0, (1.5 - box.getXLength()) / 2.0);

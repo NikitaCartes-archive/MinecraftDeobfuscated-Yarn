@@ -92,7 +92,7 @@ extends LivingEntity {
 
     public ArmorStandEntity(EntityType<? extends ArmorStandEntity> entityType, World world) {
         super((EntityType<? extends LivingEntity>)entityType, world);
-        this.stepHeight = 0.0f;
+        this.setStepHeight(0.0f);
     }
 
     public ArmorStandEntity(World world, double x, double y, double z) {
@@ -789,7 +789,7 @@ extends LivingEntity {
             Box box = this.getDimensions(false).getBoxAt(this.getPos());
             BlockPos blockPos = this.getBlockPos();
             int i = Integer.MIN_VALUE;
-            for (BlockPos blockPos2 : BlockPos.iterate(new BlockPos(box.minX, box.minY, box.minZ), new BlockPos(box.maxX, box.maxY, box.maxZ))) {
+            for (BlockPos blockPos2 : BlockPos.iterate(BlockPos.ofFloored(box.minX, box.minY, box.minZ), BlockPos.ofFloored(box.maxX, box.maxY, box.maxZ))) {
                 int j = Math.max(this.world.getLightLevel(LightType.BLOCK, blockPos2), this.world.getLightLevel(LightType.SKY, blockPos2));
                 if (j == 15) {
                     return Vec3d.ofCenter(blockPos2);

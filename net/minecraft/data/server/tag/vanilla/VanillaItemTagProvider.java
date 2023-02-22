@@ -17,8 +17,8 @@ import net.minecraft.registry.tag.TagKey;
 
 public class VanillaItemTagProvider
 extends ItemTagProvider {
-    public VanillaItemTagProvider(DataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture, TagProvider<Block> tagProvider) {
-        super(dataOutput, completableFuture, tagProvider);
+    public VanillaItemTagProvider(DataOutput dataOutput, CompletableFuture<RegistryWrapper.WrapperLookup> completableFuture, CompletableFuture<TagProvider.TagLookup<Block>> completableFuture2) {
+        super(dataOutput, completableFuture, completableFuture2);
     }
 
     @Override
@@ -50,6 +50,7 @@ extends ItemTagProvider {
         this.copy(BlockTags.LOGS_THAT_BURN, ItemTags.LOGS_THAT_BURN);
         this.copy(BlockTags.LOGS, ItemTags.LOGS);
         this.copy(BlockTags.SAND, ItemTags.SAND);
+        this.copy(BlockTags.SMELTS_TO_GLASS, ItemTags.SMELTS_TO_GLASS);
         this.copy(BlockTags.SLABS, ItemTags.SLABS);
         this.copy(BlockTags.WALLS, ItemTags.WALLS);
         this.copy(BlockTags.STAIRS, ItemTags.STAIRS);
@@ -107,7 +108,6 @@ extends ItemTagProvider {
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.SHOVELS)).add(Items.DIAMOND_SHOVEL).add(Items.STONE_SHOVEL).add(Items.GOLDEN_SHOVEL).add(Items.NETHERITE_SHOVEL).add(Items.WOODEN_SHOVEL).add(Items.IRON_SHOVEL);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.HOES)).add(Items.DIAMOND_HOE).add(Items.STONE_HOE).add(Items.GOLDEN_HOE).add(Items.NETHERITE_HOE).add(Items.WOODEN_HOE).add(Items.IRON_HOE);
         ((ValueLookupTagProvider.ObjectBuilder)((ValueLookupTagProvider.ObjectBuilder)((ValueLookupTagProvider.ObjectBuilder)((ValueLookupTagProvider.ObjectBuilder)((ValueLookupTagProvider.ObjectBuilder)((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.TOOLS)).addTag((TagKey)ItemTags.SWORDS)).addTag((TagKey)ItemTags.AXES)).addTag((TagKey)ItemTags.PICKAXES)).addTag((TagKey)ItemTags.SHOVELS)).addTag((TagKey)ItemTags.HOES)).add(Items.TRIDENT);
-        ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)ItemTags.BREAKS_DECORATED_POTS)).addTag((TagKey)ItemTags.TOOLS);
     }
 }
 

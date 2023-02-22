@@ -17,11 +17,6 @@ extends PathAwareEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
-        return false;
-    }
-
-    @Override
     @Nullable
     protected SoundEvent getAmbientSound() {
         return null;

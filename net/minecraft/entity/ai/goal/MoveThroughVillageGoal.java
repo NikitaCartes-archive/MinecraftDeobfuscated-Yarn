@@ -73,7 +73,7 @@ extends Goal {
         if (vec3d == null) {
             return false;
         }
-        Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE), this::shouldVisit, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
+        Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage().getPosition(poiType -> poiType.isIn(PointOfInterestTypeTags.VILLAGE), this::shouldVisit, BlockPos.ofFloored(vec3d), 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
         if (optional.isEmpty()) {
             return false;
         }

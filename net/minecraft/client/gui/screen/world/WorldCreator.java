@@ -232,12 +232,12 @@ public class WorldCreator {
         this.extendedWorldTypes.addAll((Collection<WorldType>)WorldCreator.getWorldPresetList(registry, WorldPresetTags.EXTENDED).orElse(this.normalWorldTypes));
         RegistryEntry<WorldPreset> registryEntry = this.worldType.preset();
         if (registryEntry != null) {
-            this.setWorldType(WorldCreator.getWorldPreset(this.getGeneratorOptionsHolder(), registryEntry.getKey()).map(WorldType::new).orElse(this.normalWorldTypes.get(0)));
+            this.worldType = WorldCreator.getWorldPreset(this.getGeneratorOptionsHolder(), registryEntry.getKey()).map(WorldType::new).orElse(this.normalWorldTypes.get(0));
         }
     }
 
     private static Optional<RegistryEntry<WorldPreset>> getWorldPreset(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> key) {
-        return key.flatMap(registryKey -> generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET).getEntry((RegistryKey<WorldPreset>)registryKey));
+        return key.flatMap(key2 -> generatorOptionsHolder.getCombinedRegistryManager().get(RegistryKeys.WORLD_PRESET).getEntry((RegistryKey<WorldPreset>)key2));
     }
 
     private static Optional<List<WorldType>> getWorldPresetList(Registry<WorldPreset> registry, TagKey<WorldPreset> tag) {

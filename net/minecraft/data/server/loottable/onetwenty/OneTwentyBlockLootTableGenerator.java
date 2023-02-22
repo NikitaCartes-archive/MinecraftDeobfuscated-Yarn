@@ -57,7 +57,7 @@ extends BlockLootTableGenerator {
         this.addDrop(Blocks.PIGLIN_HEAD);
         this.addDrop(Blocks.TORCHFLOWER);
         this.addPottedPlantDrops(Blocks.POTTED_TORCHFLOWER);
-        BlockStatePropertyLootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.TORCHFLOWER_CROP).properties(StatePredicate.Builder.create().exactMatch(TorchflowerBlock.field_42776, 2));
+        BlockStatePropertyLootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.TORCHFLOWER_CROP).properties(StatePredicate.Builder.create().exactMatch(TorchflowerBlock.AGE, 2));
         this.addDrop(Blocks.TORCHFLOWER_CROP, this.applyExplosionDecay(Blocks.TORCHFLOWER_CROP, LootTable.builder().pool(LootPool.builder().with(((LeafEntry.Builder)ItemEntry.builder(Items.TORCHFLOWER).conditionally(builder)).alternatively(ItemEntry.builder(Items.TORCHFLOWER_SEEDS))))));
         this.addDrop(Blocks.CHERRY_PLANKS);
         this.addDrop(Blocks.CHERRY_SAPLING);

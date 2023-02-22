@@ -113,7 +113,7 @@ public class CamelBrain {
 
         @Override
         protected boolean shouldRun(ServerWorld serverWorld, CamelEntity camelEntity) {
-            return !camelEntity.isTouchingWater() && camelEntity.getLastPoseTickDelta() >= (long)this.lastPoseTickDelta && !camelEntity.isLeashed() && camelEntity.isOnGround() && !camelEntity.hasPrimaryPassenger();
+            return !camelEntity.isTouchingWater() && camelEntity.getLastPoseTickDelta() >= (long)this.lastPoseTickDelta && !camelEntity.isLeashed() && camelEntity.isOnGround() && !camelEntity.hasControllingPassenger();
         }
 
         @Override
