@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.navigation.FocusedPos;
 import net.minecraft.client.gui.navigation.NavigationAxis;
 import net.minecraft.client.gui.navigation.NavigationDirection;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A rectangle on the screen that is focused.
@@ -108,6 +109,18 @@ public record FocusedRect(FocusedPos position, int width, int height) {
      */
     public int getCenter(NavigationAxis axis) {
         return (this.getBoundingCoordinate(axis.getPositiveDirection()) + this.getBoundingCoordinate(axis.getNegativeDirection())) / 2;
+    }
+
+    @Nullable
+    public FocusedRect method_49701(FocusedRect focusedRect) {
+        int i = Math.max(this.getLeft(), focusedRect.getLeft());
+        int j = Math.max(this.getTop(), focusedRect.getTop());
+        int k = Math.min(this.getRight(), focusedRect.getRight());
+        int l = Math.min(this.getBottom(), focusedRect.getBottom());
+        if (i >= k || j >= l) {
+            return null;
+        }
+        return new FocusedRect(i, j, k - i, l - j);
     }
 
     public int getTop() {

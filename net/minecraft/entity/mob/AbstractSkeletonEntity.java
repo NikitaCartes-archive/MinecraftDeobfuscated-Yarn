@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
@@ -130,8 +131,9 @@ implements RangedAttackMob {
     @Override
     public void tickRiding() {
         super.tickRiding();
-        if (this.getVehicle() instanceof PathAwareEntity) {
-            PathAwareEntity pathAwareEntity = (PathAwareEntity)this.getVehicle();
+        Entity entity = this.method_49694();
+        if (entity instanceof PathAwareEntity) {
+            PathAwareEntity pathAwareEntity = (PathAwareEntity)entity;
             this.bodyYaw = pathAwareEntity.bodyYaw;
         }
     }

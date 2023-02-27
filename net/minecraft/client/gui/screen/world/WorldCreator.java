@@ -3,6 +3,8 @@
  */
 package net.minecraft.client.gui.screen.world;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +14,6 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.world.LevelScreenProvider;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -22,6 +23,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.registry.tag.WorldPresetTags;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.text.Text;
+import net.minecraft.util.PathUtil;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -32,9 +34,9 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class WorldCreator {
+    private static final Text field_43104 = Text.translatable("selectWorld.newWorld");
     private final List<Consumer<WorldCreator>> listeners = new ArrayList<Consumer<WorldCreator>>();
-    private String worldName = I18n.translate("selectWorld.newWorld", new Object[0]);
-    private boolean named = true;
+    private String worldName = field_43104.getString();
     private Mode gameMode = Mode.SURVIVAL;
     private Difficulty difficulty = Difficulty.NORMAL;
     @Nullable
@@ -42,19 +44,23 @@ public class WorldCreator {
     private String seed;
     private boolean generateStructures;
     private boolean bonusChestEnabled;
+    private final Path field_43105;
+    private String field_43106;
     private GeneratorOptionsHolder generatorOptionsHolder;
     private WorldType worldType;
     private final List<WorldType> normalWorldTypes = new ArrayList<WorldType>();
     private final List<WorldType> extendedWorldTypes = new ArrayList<WorldType>();
     private GameRules gameRules = new GameRules();
 
-    public WorldCreator(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> worldType, OptionalLong seed) {
+    public WorldCreator(Path path, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> optional, OptionalLong optionalLong) {
+        this.field_43105 = path;
         this.generatorOptionsHolder = generatorOptionsHolder;
-        this.worldType = new WorldType(WorldCreator.getWorldPreset(generatorOptionsHolder, worldType).orElse(null));
+        this.worldType = new WorldType(WorldCreator.getWorldPreset(generatorOptionsHolder, optional).orElse(null));
         this.updateWorldTypeLists();
-        this.seed = seed.isPresent() ? Long.toString(seed.getAsLong()) : "";
+        this.seed = optionalLong.isPresent() ? Long.toString(optionalLong.getAsLong()) : "";
         this.generateStructures = generatorOptionsHolder.generatorOptions().shouldGenerateStructures();
         this.bonusChestEnabled = generatorOptionsHolder.generatorOptions().hasBonusChest();
+        this.field_43106 = this.method_49704(this.worldName);
     }
 
     public void addListener(Consumer<WorldCreator> listener) {
@@ -73,21 +79,33 @@ public class WorldCreator {
         for (Consumer<WorldCreator> consumer : this.listeners) {
             consumer.accept(this);
         }
-        this.named = false;
     }
 
     public void setWorldName(String worldName) {
         this.worldName = worldName;
-        this.named = true;
+        this.field_43106 = this.method_49704(worldName);
         this.update();
+    }
+
+    private String method_49704(String string) {
+        String string2 = string.trim();
+        try {
+            return PathUtil.getNextUniqueName(this.field_43105, !string2.isEmpty() ? string2 : field_43104.getString(), "");
+        } catch (Exception exception) {
+            try {
+                return PathUtil.getNextUniqueName(this.field_43105, "World", "");
+            } catch (IOException iOException) {
+                throw new RuntimeException("Could not create save folder", iOException);
+            }
+        }
     }
 
     public String getWorldName() {
         return this.worldName;
     }
 
-    public boolean isNamed() {
-        return this.named;
+    public String method_49703() {
+        return this.field_43106;
     }
 
     public void setGameMode(Mode gameMode) {

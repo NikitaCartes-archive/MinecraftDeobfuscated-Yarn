@@ -17,6 +17,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.DatapackFailureScreen;
+import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
@@ -172,7 +173,11 @@ public class IntegratedServerLoader {
             saveLoader = this.createSaveLoader(session, safeMode, resourcePackManager);
         } catch (Exception exception) {
             LOGGER.warn("Failed to load level data or datapacks, can't proceed with server load", exception);
-            this.client.setScreen(new DatapackFailureScreen(() -> this.start(parent, levelName, true, canShowBackupPrompt)));
+            if (!safeMode) {
+                this.client.setScreen(new DatapackFailureScreen(() -> this.start(parent, levelName, true, canShowBackupPrompt)));
+            } else {
+                this.client.setScreen(new NoticeScreen(() -> this.client.setScreen(null), Text.translatable("datapackFailure.safeMode.failed.title"), Text.translatable("datapackFailure.safeMode.failed.description"), ScreenTexts.field_43109, true));
+            }
             IntegratedServerLoader.close(session, levelName);
             return;
         }

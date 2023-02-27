@@ -11,6 +11,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * A widget that can be focused and vertically scrolled.
@@ -78,6 +79,21 @@ Element {
         }
         this.setScrollY(this.scrollY - amount * this.getDeltaYPerScroll());
         return true;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        boolean bl2;
+        boolean bl = keyCode == GLFW.GLFW_KEY_UP;
+        boolean bl3 = bl2 = keyCode == GLFW.GLFW_KEY_DOWN;
+        if (bl || bl2) {
+            double d = this.scrollY;
+            this.setScrollY(this.scrollY + (double)(bl ? -1 : 1) * this.getDeltaYPerScroll());
+            if (d != this.scrollY) {
+                return true;
+            }
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override

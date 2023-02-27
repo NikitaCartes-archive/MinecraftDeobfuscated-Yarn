@@ -408,26 +408,26 @@ implements ItemConvertible {
     }
 
     public static void dropStack(World world, BlockPos pos, ItemStack stack) {
-        float f = EntityType.ITEM.getHeight() / 2.0f;
-        double d = (double)((float)pos.getX() + 0.5f) + MathHelper.nextDouble(world.random, -0.25, 0.25);
-        double e = (double)((float)pos.getY() + 0.5f) + MathHelper.nextDouble(world.random, -0.25, 0.25) - (double)f;
-        double g = (double)((float)pos.getZ() + 0.5f) + MathHelper.nextDouble(world.random, -0.25, 0.25);
-        Block.dropStack(world, () -> new ItemEntity(world, d, e, g, stack), stack);
+        double d = (double)EntityType.ITEM.getHeight() / 2.0;
+        double e = (double)pos.getX() + 0.5 + MathHelper.nextDouble(world.random, -0.25, 0.25);
+        double f = (double)pos.getY() + 0.5 + MathHelper.nextDouble(world.random, -0.25, 0.25) - d;
+        double g = (double)pos.getZ() + 0.5 + MathHelper.nextDouble(world.random, -0.25, 0.25);
+        Block.dropStack(world, () -> new ItemEntity(world, e, f, g, stack), stack);
     }
 
     public static void dropStack(World world, BlockPos pos, Direction direction, ItemStack stack) {
         int i = direction.getOffsetX();
         int j = direction.getOffsetY();
         int k = direction.getOffsetZ();
-        float f = EntityType.ITEM.getWidth() / 2.0f;
-        float g = EntityType.ITEM.getHeight() / 2.0f;
-        double d = (double)((float)pos.getX() + 0.5f) + (i == 0 ? MathHelper.nextDouble(world.random, -0.25, 0.25) : (double)((float)i * (0.5f + f)));
-        double e = (double)((float)pos.getY() + 0.5f) + (j == 0 ? MathHelper.nextDouble(world.random, -0.25, 0.25) : (double)((float)j * (0.5f + g))) - (double)g;
-        double h = (double)((float)pos.getZ() + 0.5f) + (k == 0 ? MathHelper.nextDouble(world.random, -0.25, 0.25) : (double)((float)k * (0.5f + f)));
+        double d = (double)EntityType.ITEM.getWidth() / 2.0;
+        double e = (double)EntityType.ITEM.getHeight() / 2.0;
+        double f = (double)pos.getX() + 0.5 + (i == 0 ? MathHelper.nextDouble(world.random, -0.25, 0.25) : (double)i * (0.5 + d));
+        double g = (double)pos.getY() + 0.5 + (j == 0 ? MathHelper.nextDouble(world.random, -0.25, 0.25) : (double)j * (0.5 + e)) - e;
+        double h = (double)pos.getZ() + 0.5 + (k == 0 ? MathHelper.nextDouble(world.random, -0.25, 0.25) : (double)k * (0.5 + d));
         double l = i == 0 ? MathHelper.nextDouble(world.random, -0.1, 0.1) : (double)i * 0.1;
         double m = j == 0 ? MathHelper.nextDouble(world.random, 0.0, 0.1) : (double)j * 0.1 + 0.1;
         double n = k == 0 ? MathHelper.nextDouble(world.random, -0.1, 0.1) : (double)k * 0.1;
-        Block.dropStack(world, () -> new ItemEntity(world, d, e, h, stack, l, m, n), stack);
+        Block.dropStack(world, () -> new ItemEntity(world, f, g, h, stack, l, m, n), stack);
     }
 
     private static void dropStack(World world, Supplier<ItemEntity> itemEntitySupplier, ItemStack stack) {

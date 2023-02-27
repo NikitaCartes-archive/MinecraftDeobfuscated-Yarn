@@ -2771,20 +2771,8 @@ CommandOutput {
         return !this.passengerList.isEmpty();
     }
 
-    /**
-     * {@return whether the passenger dismounts this entity when the entity is submerged
-     * in water}
-     * 
-     * <p>This is not used to check whether the entity can start riding this entity in the
-     * first place; override {@link #canAddPassenger} instead.
-     * 
-     * @apiNote This returns {@code true} for non-living entities and {@link
-     * net.minecraft.entity.mob.SkeletonHorseEntity}.
-     * 
-     * @see #canAddPassenger
-     */
-    public boolean canBeRiddenInWater() {
-        return true;
+    public boolean method_49693() {
+        return this.getType().isIn(EntityTypeTags.DISMOUNTS_UNDERWATER);
     }
 
     /**
@@ -4459,6 +4447,11 @@ CommandOutput {
         return this.vehicle;
     }
 
+    @Nullable
+    public Entity method_49694() {
+        return this.vehicle != null && this.vehicle.getControllingPassenger() == this ? this.vehicle : null;
+    }
+
     /**
      * {@return the behavior of the piston for this entity}
      * 
@@ -4951,7 +4944,7 @@ CommandOutput {
     }
 
     public float getStepHeight() {
-        return this.hasControllingPassenger() ? Math.max(this.stepHeight, 1.0f) : this.stepHeight;
+        return this.stepHeight;
     }
 
     public void setStepHeight(float stepHeight) {

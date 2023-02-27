@@ -56,16 +56,26 @@ public class ResourcePackManager {
         this.enabled = this.buildEnabledProfiles(enabled);
     }
 
-    public void enable(String profile) {
-        ArrayList<ResourcePackProfile> list = Lists.newArrayList(this.enabled);
-        list.add(this.profiles.get(profile));
-        this.enabled = list;
+    public boolean enable(String string) {
+        ResourcePackProfile resourcePackProfile = this.profiles.get(string);
+        if (resourcePackProfile != null && !this.enabled.contains(resourcePackProfile)) {
+            ArrayList<ResourcePackProfile> list = Lists.newArrayList(this.enabled);
+            list.add(resourcePackProfile);
+            this.enabled = list;
+            return true;
+        }
+        return false;
     }
 
-    public void disable(String profile) {
-        ArrayList<ResourcePackProfile> list = Lists.newArrayList(this.enabled);
-        list.remove(this.profiles.get(profile));
-        this.enabled = list;
+    public boolean disable(String string) {
+        ResourcePackProfile resourcePackProfile = this.profiles.get(string);
+        if (resourcePackProfile != null && this.enabled.contains(resourcePackProfile)) {
+            ArrayList<ResourcePackProfile> list = Lists.newArrayList(this.enabled);
+            list.remove(resourcePackProfile);
+            this.enabled = list;
+            return true;
+        }
+        return false;
     }
 
     private List<ResourcePackProfile> buildEnabledProfiles(Collection<String> enabledNames) {

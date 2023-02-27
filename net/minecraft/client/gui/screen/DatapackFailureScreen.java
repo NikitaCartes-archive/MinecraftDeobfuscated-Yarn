@@ -9,6 +9,7 @@ import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 
@@ -28,7 +29,7 @@ extends Screen {
         super.init();
         this.wrappedText = MultilineText.create(this.textRenderer, (StringVisitable)this.getTitle(), this.width - 50);
         this.addDrawableChild(ButtonWidget.builder(Text.translatable("datapackFailure.safeMode"), button -> this.runServerInSafeMode.run()).dimensions(this.width / 2 - 155, this.height / 6 + 96, 150, 20).build());
-        this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.toTitle"), button -> this.client.setScreen(null)).dimensions(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.field_43109, button -> this.client.setScreen(null)).dimensions(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20).build());
     }
 
     @Override

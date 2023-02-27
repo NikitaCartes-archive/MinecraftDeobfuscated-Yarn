@@ -329,8 +329,17 @@ VillagerDataContainer {
         for (TradeOffer tradeOffer : this.getOffers()) {
             tradeOffer.resetUses();
         }
+        this.method_49695();
         this.lastRestockTime = this.world.getTime();
         ++this.restocksToday;
+    }
+
+    private void method_49695() {
+        TradeOfferList tradeOfferList = this.getOffers();
+        PlayerEntity playerEntity = this.getCustomer();
+        if (playerEntity != null && !tradeOfferList.isEmpty()) {
+            playerEntity.sendTradeOffers(playerEntity.currentScreenHandler.syncId, tradeOfferList, this.getVillagerData().getLevel(), this.getExperience(), this.isLeveledMerchant(), this.canRefreshTrades());
+        }
     }
 
     /**
@@ -378,6 +387,7 @@ VillagerDataContainer {
         for (int j = 0; j < i; ++j) {
             this.updateDemandBonus();
         }
+        this.method_49695();
     }
 
     /**

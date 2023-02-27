@@ -4,13 +4,12 @@
 package net.minecraft.entity;
 
 import net.minecraft.entity.Mount;
-import net.minecraft.entity.player.PlayerEntity;
 
 public interface JumpingMount
 extends Mount {
     public void setJumpStrength(int var1);
 
-    public boolean canJump(PlayerEntity var1);
+    public boolean canJump();
 
     public void startJumping(int var1);
 

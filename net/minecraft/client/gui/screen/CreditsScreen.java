@@ -230,7 +230,7 @@ extends Screen {
         float f = -this.time;
         matrices.push();
         matrices.translate(0.0f, f, 0.0f);
-        this.logoDrawer.draw(matrices, this.width, delta, j);
+        this.logoDrawer.draw(matrices, this.width, 1.0f, j);
         int k = j + 100;
         for (int l = 0; l < this.credits.size(); ++l) {
             float g;

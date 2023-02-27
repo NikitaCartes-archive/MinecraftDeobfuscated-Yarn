@@ -35,7 +35,8 @@ public abstract class TagProvider<T>
 implements DataProvider {
     private static final Logger LOGGER = LogUtils.getLogger();
     protected final DataOutput.PathResolver pathResolver;
-    private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+    private final CompletableFuture<RegistryWrapper.WrapperLookup> field_43107;
+    private final CompletableFuture<Void> field_43108 = new CompletableFuture();
     private final CompletableFuture<TagLookup<T>> parentTagLookupFuture;
     protected final RegistryKey<? extends Registry<T>> registryRef;
     private final Map<Identifier, TagBuilder> tagBuilders = Maps.newLinkedHashMap();
@@ -48,11 +49,7 @@ implements DataProvider {
         this.pathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, TagManagerLoader.getPath(registryRef));
         this.registryRef = registryRef;
         this.parentTagLookupFuture = parentTagLookupFuture;
-        this.registryLookupFuture = registryLookupFuture.thenApply(lookup -> {
-            this.tagBuilders.clear();
-            this.configure((RegistryWrapper.WrapperLookup)lookup);
-            return lookup;
-        });
+        this.field_43107 = registryLookupFuture;
     }
 
     @Override
@@ -66,7 +63,10 @@ implements DataProvider {
     public CompletableFuture<?> run(DataWriter writer) {
         record RegistryInfo<T>(RegistryWrapper.WrapperLookup contents, TagLookup<T> parent) {
         }
-        return ((CompletableFuture)this.getRegistryLookupFuture().thenCombineAsync(this.parentTagLookupFuture, (lookup, parent) -> new RegistryInfo((RegistryWrapper.WrapperLookup)lookup, parent))).thenCompose(info -> {
+        return ((CompletableFuture)((CompletableFuture)this.getRegistryLookupFuture().thenApply(wrapperLookup -> {
+            this.field_43108.complete(null);
+            return wrapperLookup;
+        })).thenCombineAsync(this.parentTagLookupFuture, (lookup, parent) -> new RegistryInfo((RegistryWrapper.WrapperLookup)lookup, parent))).thenCompose(info -> {
             RegistryWrapper.Impl impl = info.contents.getWrapperOrThrow(this.registryRef);
             Predicate<Identifier> predicate = id -> impl.getOptional(RegistryKey.of(this.registryRef, id)).isPresent();
             Predicate<Identifier> predicate2 = id -> this.tagBuilders.containsKey(id) || registryInfo.parent.contains(TagKey.of(this.registryRef, id));
@@ -95,11 +95,15 @@ implements DataProvider {
     }
 
     public CompletableFuture<TagLookup<T>> getTagLookupFuture() {
-        return this.getRegistryLookupFuture().thenApply(registryLookup -> tag -> Optional.ofNullable(this.tagBuilders.get(tag.id())));
+        return this.field_43108.thenApply(void_ -> tag -> Optional.ofNullable(this.tagBuilders.get(tag.id())));
     }
 
     protected CompletableFuture<RegistryWrapper.WrapperLookup> getRegistryLookupFuture() {
-        return this.registryLookupFuture;
+        return this.field_43107.thenApply(wrapperLookup -> {
+            this.tagBuilders.clear();
+            this.configure((RegistryWrapper.WrapperLookup)wrapperLookup);
+            return wrapperLookup;
+        });
     }
 
     @FunctionalInterface

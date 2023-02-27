@@ -316,11 +316,6 @@ extends RaiderEntity {
         return false;
     }
 
-    @Override
-    protected float getOffGroundSpeed() {
-        return 0.02f;
-    }
-
     class AttackGoal
     extends MeleeAttackGoal {
         public AttackGoal() {

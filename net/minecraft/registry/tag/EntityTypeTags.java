@@ -21,6 +21,7 @@ public final class EntityTypeTags {
     public static final TagKey<EntityType<?>> FREEZE_HURTS_EXTRA_TYPES = EntityTypeTags.of("freeze_hurts_extra_types");
     public static final TagKey<EntityType<?>> FROG_FOOD = EntityTypeTags.of("frog_food");
     public static final TagKey<EntityType<?>> FALL_DAMAGE_IMMUNE = EntityTypeTags.of("fall_damage_immune");
+    public static final TagKey<EntityType<?>> DISMOUNTS_UNDERWATER = EntityTypeTags.of("dismounts_underwater");
 
     private EntityTypeTags() {
     }

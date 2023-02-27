@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.DecoratedPotPatterns;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
+import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
@@ -66,10 +67,12 @@ implements BlockEntityRenderer<DecoratedPotBlockEntity> {
     public static TexturedModelData getTopBottomNeckTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild(EntityModelPartNames.NECK, ModelPartBuilder.create().uv(0, 0).cuboid(5.0f, 16.0f, 5.0f, 6.0f, 4.0f, 6.0f), ModelTransform.of(0.0f, 36.0f, 16.0f, (float)Math.PI, 0.0f, 0.0f));
-        ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 10).cuboid(0.0f, 0.0f, 0.0f, 14.0f, 14.0f, 0.0f);
-        modelPartData.addChild(TOP, modelPartBuilder, ModelTransform.of(1.0f, 16.0f, 1.0f, 1.5707964f, 0.0f, 0.0f));
-        modelPartData.addChild(BOTTOM, modelPartBuilder, ModelTransform.of(15.0f, 0.0f, 1.0f, 1.5707964f, 0.0f, (float)Math.PI));
+        Dilation dilation = new Dilation(0.2f);
+        Dilation dilation2 = new Dilation(-0.1f);
+        modelPartData.addChild(EntityModelPartNames.NECK, ModelPartBuilder.create().uv(0, 0).cuboid(4.0f, 17.0f, 4.0f, 8.0f, 3.0f, 8.0f, dilation2).uv(0, 5).cuboid(5.0f, 20.0f, 5.0f, 6.0f, 1.0f, 6.0f, dilation), ModelTransform.of(0.0f, 37.0f, 16.0f, (float)Math.PI, 0.0f, 0.0f));
+        ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(-14, 13).cuboid(0.0f, 0.0f, 0.0f, 14.0f, 0.0f, 14.0f);
+        modelPartData.addChild(TOP, modelPartBuilder, ModelTransform.of(1.0f, 16.0f, 1.0f, 0.0f, 0.0f, 0.0f));
+        modelPartData.addChild(BOTTOM, modelPartBuilder, ModelTransform.of(1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f));
         return TexturedModelData.of(modelData, 32, 32);
     }
 

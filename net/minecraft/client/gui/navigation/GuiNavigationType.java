@@ -13,7 +13,7 @@ import net.fabricmc.api.Environment;
 public enum GuiNavigationType {
     NONE,
     MOUSE,
-    KEYBOARD_OTHER,
+    KEYBOARD_ARROW,
     KEYBOARD_TAB;
 
 
@@ -22,7 +22,7 @@ public enum GuiNavigationType {
     }
 
     public boolean isKeyboard() {
-        return this == KEYBOARD_OTHER || this == KEYBOARD_TAB;
+        return this == KEYBOARD_ARROW || this == KEYBOARD_TAB;
     }
 }
 

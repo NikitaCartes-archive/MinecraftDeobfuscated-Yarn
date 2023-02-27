@@ -134,11 +134,6 @@ extends AbstractHorseEntity {
     }
 
     @Override
-    public boolean canBeRiddenInWater() {
-        return true;
-    }
-
-    @Override
     protected float getBaseMovementSpeedMultiplier() {
         return 0.96f;
     }

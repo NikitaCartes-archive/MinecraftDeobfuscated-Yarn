@@ -119,8 +119,6 @@ extends Screen {
     @Nullable
     private final Screen parent;
     @Nullable
-    private String saveDirectoryName;
-    @Nullable
     private Path dataPackTempDir;
     @Nullable
     private ResourcePackManager packManager;
@@ -138,11 +136,11 @@ extends Screen {
             return new GeneratorOptionsHolder(generatorOptions.worldGenSettings(), combinedDynamicRegistries, dataPackContents, generatorOptions.dataConfiguration());
         }, Util.getMainWorkerExecutor(), client);
         client.runTasks(completableFuture::isDone);
-        client.setScreen(new CreateWorldScreen(parent, completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty()));
+        client.setScreen(new CreateWorldScreen(client, parent, completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty()));
     }
 
-    public static CreateWorldScreen create(@Nullable Screen parent, LevelInfo levelInfo, GeneratorOptionsHolder generatorOptionsHolder, @Nullable Path dataPackTempDir) {
-        CreateWorldScreen createWorldScreen = new CreateWorldScreen(parent, generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()), OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed()));
+    public static CreateWorldScreen create(MinecraftClient minecraftClient, @Nullable Screen screen, LevelInfo levelInfo, GeneratorOptionsHolder generatorOptionsHolder, @Nullable Path path) {
+        CreateWorldScreen createWorldScreen = new CreateWorldScreen(minecraftClient, screen, generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()), OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed()));
         createWorldScreen.recreated = true;
         createWorldScreen.worldCreator.setWorldName(levelInfo.getLevelName());
         createWorldScreen.worldCreator.setCheatsEnabled(levelInfo.areCommandsAllowed());
@@ -155,14 +153,14 @@ extends Screen {
         } else if (levelInfo.getGameMode().isCreative()) {
             createWorldScreen.worldCreator.setGameMode(WorldCreator.Mode.CREATIVE);
         }
-        createWorldScreen.dataPackTempDir = dataPackTempDir;
+        createWorldScreen.dataPackTempDir = path;
         return createWorldScreen;
     }
 
-    private CreateWorldScreen(@Nullable Screen parent, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> defaultWorldType, OptionalLong seed) {
+    private CreateWorldScreen(MinecraftClient minecraftClient, @Nullable Screen screen, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> optional, OptionalLong optionalLong) {
         super(Text.translatable("selectWorld.create"));
-        this.parent = parent;
-        this.worldCreator = new WorldCreator(generatorOptionsHolder, defaultWorldType, seed);
+        this.parent = screen;
+        this.worldCreator = new WorldCreator(minecraftClient.getLevelStorage().getSavesDirectory(), generatorOptionsHolder, optional, optionalLong);
     }
 
     public WorldCreator getWorldCreator() {
@@ -176,21 +174,11 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.updateSaveFolderName(this.worldCreator.getWorldName());
         this.tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width).tabs(new GameTab(), new WorldTab(), new MoreTab()).build();
         this.addDrawableChild(this.tabNavigation);
-        this.worldCreator.addListener(creator -> {
-            if (!creator.isNamed()) {
-                return;
-            }
-            this.updateSaveFolderName(creator.getWorldName());
-        });
         this.grid = new GridWidget().setColumnSpacing(10);
         GridWidget.Adder adder = this.grid.createAdder(2);
-        ButtonWidget buttonWidget = adder.add(ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> this.createLevel()).build());
-        this.worldCreator.addListener(creator -> {
-            buttonWidget.active = !this.worldCreator.getWorldName().isEmpty();
-        });
+        adder.add(ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> this.createLevel()).build());
         adder.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCloseScreen()).build());
         this.grid.forEachChild(child -> {
             child.setNavigationOrder(1);
@@ -213,23 +201,6 @@ extends Screen {
         int i = this.tabNavigation.getNavigationFocus().getBottom();
         FocusedRect focusedRect = new FocusedRect(0, i, this.width, this.grid.getY() - i);
         this.tabManager.setTabArea(focusedRect);
-    }
-
-    private void updateSaveFolderName(String saveDirectoryName) {
-        this.saveDirectoryName = saveDirectoryName.trim();
-        if (this.saveDirectoryName.isEmpty()) {
-            this.saveDirectoryName = "World";
-        }
-        try {
-            this.saveDirectoryName = PathUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), this.saveDirectoryName, "");
-        } catch (Exception exception) {
-            this.saveDirectoryName = "World";
-            try {
-                this.saveDirectoryName = PathUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), this.saveDirectoryName, "");
-            } catch (Exception exception2) {
-                throw new RuntimeException("Could not create save folder", exception2);
-            }
-        }
     }
 
     private static void showMessage(MinecraftClient client, Text text) {
@@ -328,7 +299,7 @@ extends Screen {
                 this.dataPackTempDir = Files.createTempDirectory(TEMP_DIR_PREFIX, new FileAttribute[0]);
             } catch (IOException iOException) {
                 LOGGER.warn("Failed to create temporary dir", iOException);
-                SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
+                SystemToast.addPackCopyFailure(this.client, this.worldCreator.method_49703());
                 this.onCloseScreen();
             }
         }
@@ -440,10 +411,12 @@ extends Screen {
 
     private Optional<LevelStorage.Session> createSession() {
         Optional<LevelStorage.Session> optional;
+        String string;
         block12: {
             LevelStorage.Session session;
             block11: {
-                session = this.client.getLevelStorage().createSession(this.saveDirectoryName);
+                string = this.worldCreator.method_49703();
+                session = this.client.getLevelStorage().createSession(string);
                 if (this.dataPackTempDir != null) break block11;
                 return Optional.of(session);
             }
@@ -466,17 +439,17 @@ extends Screen {
                         }
                         throw throwable;
                     } catch (IOException | UncheckedIOException exception) {
-                        LOGGER.warn("Failed to copy datapacks to world {}", (Object)this.saveDirectoryName, (Object)exception);
+                        LOGGER.warn("Failed to copy datapacks to world {}", (Object)string, (Object)exception);
                         session.close();
                     }
                 } catch (IOException | UncheckedIOException exception2) {
-                    LOGGER.warn("Failed to create access for {}", (Object)this.saveDirectoryName, (Object)exception2);
+                    LOGGER.warn("Failed to create access for {}", (Object)string, (Object)exception2);
                 }
             }
             stream.close();
         }
         return optional;
-        SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
+        SystemToast.addPackCopyFailure(this.client, string);
         this.onCloseScreen();
         return Optional.empty();
     }
@@ -536,6 +509,7 @@ extends Screen {
             this.worldNameField = adder2.add(new TextFieldWidget(CreateWorldScreen.this.textRenderer, 0, 0, 208, 20, Text.translatable("selectWorld.enterName")), adder2.copyPositioner().margin(1));
             this.worldNameField.setText(CreateWorldScreen.this.worldCreator.getWorldName());
             this.worldNameField.setChangedListener(CreateWorldScreen.this.worldCreator::setWorldName);
+            CreateWorldScreen.this.worldCreator.addListener(worldCreator -> this.worldNameField.setTooltip(Tooltip.of(Text.translatable("selectWorld.targetFolder", Text.literal(worldCreator.method_49703()).formatted(Formatting.ITALIC)))));
             CreateWorldScreen.this.setInitialFocus(this.worldNameField);
             adder.add(adder2.getGridWidget(), adder.copyPositioner().alignHorizontalCenter());
             CyclingButtonWidget<WorldCreator.Mode> cyclingButtonWidget = adder.add(CyclingButtonWidget.builder(value -> value.name).values((WorldCreator.Mode[])new WorldCreator.Mode[]{WorldCreator.Mode.SURVIVAL, WorldCreator.Mode.HARDCORE, WorldCreator.Mode.CREATIVE}).build(0, 0, 210, 20, GAME_MODE_TEXT, (button, value) -> CreateWorldScreen.this.worldCreator.setGameMode((WorldCreator.Mode)((Object)value))), positioner);

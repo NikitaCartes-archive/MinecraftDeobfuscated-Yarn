@@ -201,7 +201,6 @@ Selectable {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        int o;
         int n;
         int m;
         int k;
@@ -228,19 +227,18 @@ Selectable {
         if (this.renderHorizontalShadows) {
             RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
             m = 32;
-            n = -100;
             RenderSystem.setShaderColor(0.25f, 0.25f, 0.25f, 1.0f);
-            EntryListWidget.drawTexture(matrices, this.left, 0, -100, 0.0f, 0.0f, this.width, this.top, 32, 32);
-            EntryListWidget.drawTexture(matrices, this.left, this.bottom, -100, 0.0f, this.bottom, this.width, this.height - this.bottom, 32, 32);
+            EntryListWidget.drawTexture(matrices, this.left, 0, 0.0f, 0.0f, this.width, this.top, 32, 32);
+            EntryListWidget.drawTexture(matrices, this.left, this.bottom, 0.0f, this.bottom, this.width, this.height - this.bottom, 32, 32);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            o = 4;
+            n = 4;
             EntryListWidget.fillGradient(matrices, this.left, this.top, this.right, this.top + 4, -16777216, 0);
             EntryListWidget.fillGradient(matrices, this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216);
         }
         if ((m = this.getMaxScroll()) > 0) {
             n = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
             n = MathHelper.clamp(n, 32, this.bottom - this.top - 8);
-            o = (int)this.getScrollAmount() * (this.bottom - this.top - n) / m + this.top;
+            int o = (int)this.getScrollAmount() * (this.bottom - this.top - n) / m + this.top;
             if (o < this.top) {
                 o = this.top;
             }

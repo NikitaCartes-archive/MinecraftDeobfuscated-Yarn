@@ -50,7 +50,9 @@ public class Mouse {
         if (window != this.client.getWindow().getHandle()) {
             return;
         }
-        this.client.setNavigationType(GuiNavigationType.MOUSE);
+        if (this.client.currentScreen != null) {
+            this.client.setNavigationType(GuiNavigationType.MOUSE);
+        }
         boolean bl2 = bl = action == 1;
         if (MinecraftClient.IS_SYSTEM_MAC && button == 0) {
             if (bl) {

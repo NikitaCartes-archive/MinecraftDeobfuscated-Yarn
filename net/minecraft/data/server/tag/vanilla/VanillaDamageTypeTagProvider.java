@@ -21,7 +21,7 @@ extends TagProvider<DamageType> {
     @Override
     protected void configure(RegistryWrapper.WrapperLookup lookup) {
         this.getOrCreateTagBuilder(DamageTypeTags.DAMAGES_HELMET).add(DamageTypes.FALLING_ANVIL, DamageTypes.FALLING_BLOCK, DamageTypes.FALLING_STALACTITE);
-        this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ARMOR).add(DamageTypes.ON_FIRE, DamageTypes.IN_WALL, DamageTypes.CRAMMING, DamageTypes.DROWN, DamageTypes.FLY_INTO_WALL, DamageTypes.GENERIC, DamageTypes.WITHER, DamageTypes.DRAGON_BREATH, DamageTypes.FREEZE, DamageTypes.STARVE, DamageTypes.FALL, DamageTypes.FREEZE, DamageTypes.STALAGMITE, DamageTypes.MAGIC, DamageTypes.INDIRECT_MAGIC, DamageTypes.OUT_OF_WORLD, DamageTypes.SONIC_BOOM);
+        this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ARMOR).add(DamageTypes.ON_FIRE, DamageTypes.IN_WALL, DamageTypes.CRAMMING, DamageTypes.DROWN, DamageTypes.FLY_INTO_WALL, DamageTypes.GENERIC, DamageTypes.WITHER, DamageTypes.DRAGON_BREATH, DamageTypes.STARVE, DamageTypes.FALL, DamageTypes.FREEZE, DamageTypes.STALAGMITE, DamageTypes.MAGIC, DamageTypes.INDIRECT_MAGIC, DamageTypes.OUT_OF_WORLD, DamageTypes.SONIC_BOOM);
         this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_INVULNERABILITY).add(DamageTypes.OUT_OF_WORLD);
         this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_EFFECTS).add(DamageTypes.STARVE);
         this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_RESISTANCE).add(DamageTypes.OUT_OF_WORLD);

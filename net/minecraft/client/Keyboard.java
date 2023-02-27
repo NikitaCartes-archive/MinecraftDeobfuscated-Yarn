@@ -303,6 +303,7 @@ public class Keyboard {
 
     public void onKey(long window, int key, int scancode, int action, int modifiers) {
         boolean bl2;
+        Screen screen;
         if (window != this.client.getWindow().getHandle()) {
             return;
         }
@@ -316,8 +317,20 @@ public class Keyboard {
             this.debugCrashLastLogTime = Util.getMeasuringTimeMs();
             this.debugCrashElapsedTime = 0L;
         }
-        this.client.setNavigationType(key == GLFW.GLFW_KEY_TAB ? GuiNavigationType.KEYBOARD_TAB : GuiNavigationType.KEYBOARD_OTHER);
-        Screen screen = this.client.currentScreen;
+        if ((screen = this.client.currentScreen) != null) {
+            switch (key) {
+                case 262: 
+                case 263: 
+                case 264: 
+                case 265: {
+                    this.client.setNavigationType(GuiNavigationType.KEYBOARD_ARROW);
+                    break;
+                }
+                case 258: {
+                    this.client.setNavigationType(GuiNavigationType.KEYBOARD_TAB);
+                }
+            }
+        }
         if (!(action != 1 || this.client.currentScreen instanceof KeybindsScreen && ((KeybindsScreen)screen).lastKeyCodeUpdateTime > Util.getMeasuringTimeMs() - 20L)) {
             if (this.client.options.fullscreenKey.matchesKey(key, scancode)) {
                 this.client.getWindow().toggleFullscreen();

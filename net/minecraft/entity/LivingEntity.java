@@ -375,7 +375,7 @@ implements Attackable {
                         this.damage(this.getDamageSources().drown(), 2.0f);
                     }
                 }
-                if (!this.world.isClient && this.hasVehicle() && this.getVehicle() != null && !this.getVehicle().canBeRiddenInWater()) {
+                if (!this.world.isClient && this.hasVehicle() && this.getVehicle() != null && this.getVehicle().method_49693()) {
                     this.stopRiding();
                 }
             } else if (this.getAir() < this.getMaxAir()) {
@@ -517,11 +517,6 @@ implements Attackable {
 
     protected boolean shouldSwimInFluids() {
         return true;
-    }
-
-    @Override
-    public boolean canBeRiddenInWater() {
-        return false;
     }
 
     protected void updatePostDeath() {
@@ -1074,6 +1069,9 @@ implements Attackable {
                 this.takeShieldHit(livingEntity);
             }
             bl = true;
+        }
+        if (source.isIn(DamageTypeTags.IS_FREEZING) && this.getType().isIn(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
+            amount *= 5.0f;
         }
         this.limbAnimator.setSpeed(1.5f);
         boolean bl2 = true;
@@ -2169,7 +2167,7 @@ implements Attackable {
     }
 
     protected float getOffGroundSpeed() {
-        return this.hasControllingPassenger() ? this.getMovementSpeed() * 0.1f : 0.02f;
+        return this.getControllingPassenger() instanceof PlayerEntity ? this.getMovementSpeed() * 0.1f : 0.02f;
     }
 
     public float getMovementSpeed() {
@@ -2403,7 +2401,6 @@ implements Attackable {
     }
 
     public void tickMovement() {
-        int m;
         if (this.jumpingCooldown > 0) {
             --this.jumpingCooldown;
         }
@@ -2486,9 +2483,8 @@ implements Attackable {
         }
         this.world.getProfiler().pop();
         this.world.getProfiler().push("freezing");
-        boolean bl2 = this.getType().isIn(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES);
         if (!this.world.isClient && !this.isDead()) {
-            m = this.getFrozenTicks();
+            int m = this.getFrozenTicks();
             if (this.inPowderSnow && this.canFreeze()) {
                 this.setFrozenTicks(Math.min(this.getMinFreezeDamageTicks(), m + 1));
             } else {
@@ -2498,8 +2494,7 @@ implements Attackable {
         this.removePowderSnowSlow();
         this.addPowderSnowSlowIfNeeded();
         if (!this.world.isClient && this.age % 40 == 0 && this.isFrozen() && this.canFreeze()) {
-            m = bl2 ? 5 : 1;
-            this.damage(this.getDamageSources().freeze(), m);
+            this.damage(this.getDamageSources().freeze(), 1.0f);
         }
         this.world.getProfiler().pop();
         this.world.getProfiler().push("push");
@@ -3260,6 +3255,12 @@ implements Attackable {
 
     public boolean disablesShield() {
         return this.getMainHandStack().getItem() instanceof AxeItem;
+    }
+
+    @Override
+    public float getStepHeight() {
+        float f = super.getStepHeight();
+        return this.getControllingPassenger() instanceof PlayerEntity ? Math.max(f, 1.0f) : f;
     }
 
     public record FallSounds(SoundEvent small, SoundEvent big) {
