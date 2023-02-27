@@ -56,5 +56,20 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 				EntityType.PARROT,
 				EntityType.WITHER
 			);
+		this.getOrCreateTagBuilder(EntityTypeTags.DISMOUNTS_UNDERWATER)
+			.add(
+				EntityType.CAMEL,
+				EntityType.CHICKEN,
+				EntityType.DONKEY,
+				EntityType.HORSE,
+				EntityType.LLAMA,
+				EntityType.MULE,
+				EntityType.PIG,
+				EntityType.RAVAGER,
+				EntityType.SPIDER,
+				EntityType.STRIDER,
+				EntityType.TRADER_LLAMA,
+				EntityType.ZOMBIE_HORSE
+			);
 	}
 }

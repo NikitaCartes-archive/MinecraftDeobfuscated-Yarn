@@ -1143,9 +1143,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	@Override
 	public void onBoatPaddleState(BoatPaddleStateC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-		Entity entity = this.player.getVehicle();
-		if (entity instanceof BoatEntity) {
-			((BoatEntity)entity).setPaddleMovings(packet.isLeftPaddling(), packet.isRightPaddling());
+		Entity entity = this.player.getControllingVehicle();
+		if (entity instanceof BoatEntity boatEntity) {
+			boatEntity.setPaddleMovings(packet.isLeftPaddling(), packet.isRightPaddling());
 		}
 	}
 
@@ -1435,15 +1435,17 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				}
 				break;
 			case START_RIDING_JUMP:
-				if (this.player.getVehicle() instanceof JumpingMount jumpingMount) {
+				Entity var7 = this.player.getControllingVehicle();
+				if (var7 instanceof JumpingMount jumpingMount) {
 					int i = packet.getMountJumpHeight();
-					if (jumpingMount.canJump(this.player) && i > 0) {
+					if (jumpingMount.canJump() && i > 0) {
 						jumpingMount.startJumping(i);
 					}
 				}
 				break;
 			case STOP_RIDING_JUMP:
-				if (this.player.getVehicle() instanceof JumpingMount jumpingMount) {
+				Entity var6 = this.player.getControllingVehicle();
+				if (var6 instanceof JumpingMount jumpingMount) {
 					jumpingMount.stopJumping();
 				}
 				break;

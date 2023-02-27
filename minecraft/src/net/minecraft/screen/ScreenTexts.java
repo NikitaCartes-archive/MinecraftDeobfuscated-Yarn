@@ -17,6 +17,7 @@ public class ScreenTexts {
 	public static final Text PROCEED = Text.translatable("gui.proceed");
 	public static final Text CONTINUE = Text.translatable("gui.continue");
 	public static final Text BACK = Text.translatable("gui.back");
+	public static final Text TO_TITLE = Text.translatable("gui.toTitle");
 	public static final Text ACKNOWLEDGE = Text.translatable("gui.acknowledge");
 	public static final Text CONNECT_FAILED = Text.translatable("connect.failed");
 	public static final Text LINE_BREAK = Text.literal("\n");

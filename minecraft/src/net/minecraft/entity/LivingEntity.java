@@ -375,7 +375,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					}
 				}
 
-				if (!this.world.isClient && this.hasVehicle() && this.getVehicle() != null && !this.getVehicle().canBeRiddenInWater()) {
+				if (!this.world.isClient && this.hasVehicle() && this.getVehicle() != null && this.getVehicle().shouldDismountUnderwater()) {
 					this.stopRiding();
 				}
 			} else if (this.getAir() < this.getMaxAir()) {
@@ -552,11 +552,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	protected boolean shouldSwimInFluids() {
 		return true;
-	}
-
-	@Override
-	public boolean canBeRiddenInWater() {
-		return false;
 	}
 
 	protected void updatePostDeath() {
@@ -1149,6 +1144,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				}
 
 				bl = true;
+			}
+
+			if (source.isIn(DamageTypeTags.IS_FREEZING) && this.getType().isIn(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES)) {
+				amount *= 5.0F;
 			}
 
 			this.limbAnimator.setSpeed(1.5F);
@@ -2324,7 +2323,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected float getOffGroundSpeed() {
-		return this.hasControllingPassenger() ? this.getMovementSpeed() * 0.1F : 0.02F;
+		return this.getControllingPassenger() instanceof PlayerEntity ? this.getMovementSpeed() * 0.1F : 0.02F;
 	}
 
 	public float getMovementSpeed() {
@@ -2694,7 +2693,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 		this.world.getProfiler().pop();
 		this.world.getProfiler().push("freezing");
-		boolean bl2 = this.getType().isIn(EntityTypeTags.FREEZE_HURTS_EXTRA_TYPES);
 		if (!this.world.isClient && !this.isDead()) {
 			int m = this.getFrozenTicks();
 			if (this.inPowderSnow && this.canFreeze()) {
@@ -2707,8 +2705,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.removePowderSnowSlow();
 		this.addPowderSnowSlowIfNeeded();
 		if (!this.world.isClient && this.age % 40 == 0 && this.isFrozen() && this.canFreeze()) {
-			int m = bl2 ? 5 : 1;
-			this.damage(this.getDamageSources().freeze(), (float)m);
+			this.damage(this.getDamageSources().freeze(), 1.0F);
 		}
 
 		this.world.getProfiler().pop();
@@ -3509,6 +3506,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	public boolean disablesShield() {
 		return this.getMainHandStack().getItem() instanceof AxeItem;
+	}
+
+	@Override
+	public float getStepHeight() {
+		float f = super.getStepHeight();
+		return this.getControllingPassenger() instanceof PlayerEntity ? Math.max(f, 1.0F) : f;
 	}
 
 	public static record FallSounds(SoundEvent small, SoundEvent big) {

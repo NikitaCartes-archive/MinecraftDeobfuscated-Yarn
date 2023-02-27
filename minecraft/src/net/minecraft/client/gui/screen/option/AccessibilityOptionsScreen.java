@@ -4,7 +4,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
 import net.minecraft.screen.ScreenTexts;
@@ -43,6 +45,16 @@ public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
 
 	public AccessibilityOptionsScreen(Screen parent, GameOptions gameOptions) {
 		super(parent, gameOptions, Text.translatable("options.accessibility.title"), getOptions(gameOptions));
+	}
+
+	@Override
+	protected void init() {
+		super.init();
+		ClickableWidget clickableWidget = this.buttonList.getWidgetFor(this.gameOptions.getHighContrast());
+		if (clickableWidget != null && !this.client.getResourcePackManager().getNames().contains("high_contrast")) {
+			clickableWidget.active = false;
+			clickableWidget.setTooltip(Tooltip.of(Text.translatable("options.accessibility.high_contrast.error.tooltip")));
+		}
 	}
 
 	@Override

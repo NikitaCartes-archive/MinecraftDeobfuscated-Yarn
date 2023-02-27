@@ -233,9 +233,9 @@ public abstract class PlayerManager {
 		this.players.add(player);
 		this.playerMap.put(player.getUuid(), player);
 		this.sendToAll(PlayerListS2CPacket.entryFromPlayer(List.of(player)));
+		this.sendWorldInfo(player, serverWorld2);
 		serverWorld2.onPlayerConnected(player);
 		this.server.getBossBarManager().onPlayerConnect(player);
-		this.sendWorldInfo(player, serverWorld2);
 		this.server
 			.getResourcePackProperties()
 			.ifPresent(properties -> player.sendResourcePackUrl(properties.url(), properties.hash(), properties.isRequired(), properties.prompt()));

@@ -44,10 +44,10 @@ public abstract class SinglePartEntityModel<E extends Entity> extends EntityMode
 		this.updateAnimation(animationState, animation, animationProgress, 1.0F);
 	}
 
-	protected void method_48741(Animation animation, float f, float g, float h, float i) {
-		long l = (long)(f * 50.0F * h);
-		float j = Math.min(g * i, 1.0F);
-		AnimationHelper.animate(this, animation, l, j, ZERO);
+	protected void animateMovement(Animation animation, float limbAngle, float limbDistance, float f, float g) {
+		long l = (long)(limbAngle * 50.0F * f);
+		float h = Math.min(limbDistance * g, 1.0F);
+		AnimationHelper.animate(this, animation, l, h, ZERO);
 	}
 
 	protected void updateAnimation(AnimationState animationState, Animation animation, float animationProgress, float speedMultiplier) {

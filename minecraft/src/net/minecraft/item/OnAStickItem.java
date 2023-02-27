@@ -25,7 +25,7 @@ public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
 		if (world.isClient) {
 			return TypedActionResult.pass(itemStack);
 		} else {
-			Entity entity = user.getVehicle();
+			Entity entity = user.getControllingVehicle();
 			if (user.hasVehicle() && entity instanceof ItemSteerable itemSteerable && entity.getType() == this.target && itemSteerable.consumeOnAStickItem()) {
 				itemStack.damage(this.damagePerUse, user, p -> p.sendToolBreakStatus(hand));
 				if (itemStack.isEmpty()) {

@@ -20,7 +20,8 @@ public abstract class SliderWidget extends ClickableWidget {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/slider.png");
 	protected static final int field_43051 = 200;
 	protected static final int field_43052 = 20;
-	protected static final int field_43053 = 4;
+	protected static final int field_43102 = 20;
+	protected static final int field_43103 = 4;
 	protected static final int field_43054 = 2;
 	private static final int field_41788 = 20;
 	private static final int field_41789 = 4;
@@ -72,8 +73,8 @@ public abstract class SliderWidget extends ClickableWidget {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.enableDepthTest();
-		drawNineSlicedTexture(matrices, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 4, 200, 20, 0, this.getYImage());
-		drawNineSlicedTexture(matrices, this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 8, 20, 4, 200, 20, 0, this.getTextureV());
+		drawNineSlicedTexture(matrices, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getYImage());
+		drawNineSlicedTexture(matrices, this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 8, 20, 20, 4, 200, 20, 0, this.getTextureV());
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		int i = this.active ? 16777215 : 10526880;
 		this.drawScrollableText(matrices, minecraftClient.textRenderer, 2, i | MathHelper.ceil(this.alpha * 255.0F) << 24);

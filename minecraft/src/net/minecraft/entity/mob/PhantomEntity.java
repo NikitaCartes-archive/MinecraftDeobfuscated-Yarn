@@ -41,7 +41,7 @@ import net.minecraft.world.WorldEvents;
 
 public class PhantomEntity extends FlyingEntity implements Monster {
 	public static final float field_30475 = 7.448451F;
-	public static final int field_28641 = MathHelper.ceil(24.166098F);
+	public static final int WING_FLAP_TICKS = MathHelper.ceil(24.166098F);
 	private static final TrackedData<Integer> SIZE = DataTracker.registerData(PhantomEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	Vec3d targetPosition = Vec3d.ZERO;
 	BlockPos circlingCenter = BlockPos.ORIGIN;
@@ -56,7 +56,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	@Override
 	public boolean isFlappingWings() {
-		return (this.method_33588() + this.age) % field_28641 == 0;
+		return (this.getWingFlapTickOffset() + this.age) % WING_FLAP_TICKS == 0;
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		super.onTrackedDataSet(data);
 	}
 
-	public int method_33588() {
+	public int getWingFlapTickOffset() {
 		return this.getId() * 3;
 	}
 
@@ -118,8 +118,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	public void tick() {
 		super.tick();
 		if (this.world.isClient) {
-			float f = MathHelper.cos((float)(this.method_33588() + this.age) * 7.448451F * (float) (Math.PI / 180.0) + (float) Math.PI);
-			float g = MathHelper.cos((float)(this.method_33588() + this.age + 1) * 7.448451F * (float) (Math.PI / 180.0) + (float) Math.PI);
+			float f = MathHelper.cos((float)(this.getWingFlapTickOffset() + this.age) * 7.448451F * (float) (Math.PI / 180.0) + (float) Math.PI);
+			float g = MathHelper.cos((float)(this.getWingFlapTickOffset() + this.age + 1) * 7.448451F * (float) (Math.PI / 180.0) + (float) Math.PI);
 			if (f > 0.0F && g <= 0.0F) {
 				this.world
 					.playSound(

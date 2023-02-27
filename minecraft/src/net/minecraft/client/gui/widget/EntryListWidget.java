@@ -229,12 +229,11 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		if (this.renderHorizontalShadows) {
 			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 			int m = 32;
-			int n = -100;
 			RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
-			drawTexture(matrices, this.left, 0, -100, 0.0F, 0.0F, this.width, this.top, 32, 32);
-			drawTexture(matrices, this.left, this.bottom, -100, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
+			drawTexture(matrices, this.left, 0, 0.0F, 0.0F, this.width, this.top, 32, 32);
+			drawTexture(matrices, this.left, this.bottom, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
 			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			int o = 4;
+			int n = 4;
 			fillGradient(matrices, this.left, this.top, this.right, this.top + 4, -16777216, 0);
 			fillGradient(matrices, this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216);
 		}

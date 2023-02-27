@@ -545,8 +545,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Nullable
 	public JumpingMount getJumpingMount() {
-		Entity var2 = this.getVehicle();
-		if (var2 instanceof JumpingMount jumpingMount && jumpingMount.canJump(this)) {
+		Entity var2 = this.getControllingVehicle();
+		if (var2 instanceof JumpingMount jumpingMount && jumpingMount.canJump()) {
 			return jumpingMount;
 		}
 
@@ -870,7 +870,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void tickRiding() {
 		super.tickRiding();
 		this.riding = false;
-		if (this.getVehicle() instanceof BoatEntity boatEntity) {
+		Entity var2 = this.getControllingVehicle();
+		if (var2 instanceof BoatEntity boatEntity) {
 			boatEntity.setInputs(this.input.pressingLeft, this.input.pressingRight, this.input.pressingForward, this.input.pressingBack);
 			this.riding |= this.input.pressingLeft || this.input.pressingRight || this.input.pressingForward || this.input.pressingBack;
 		}

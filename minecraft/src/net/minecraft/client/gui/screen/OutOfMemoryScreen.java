@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -18,7 +19,7 @@ public class OutOfMemoryScreen extends Screen {
 	@Override
 	protected void init() {
 		this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("gui.toTitle"), button -> this.client.setScreen(new TitleScreen()))
+			ButtonWidget.builder(ScreenTexts.TO_TITLE, button -> this.client.setScreen(new TitleScreen()))
 				.dimensions(this.width / 2 - 155, this.height / 4 + 120 + 12, 150, 20)
 				.build()
 		);

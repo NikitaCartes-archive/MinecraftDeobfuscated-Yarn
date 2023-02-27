@@ -266,10 +266,10 @@ public class GameOptions {
 			ResourcePackManager resourcePackManager = MinecraftClient.getInstance().getResourcePackManager();
 			boolean blxx = resourcePackManager.getEnabledNames().contains("high_contrast");
 			if (!blxx && value) {
-				resourcePackManager.enable("high_contrast");
-				this.refreshResourcePacks(resourcePackManager);
-			} else if (blxx && !value) {
-				resourcePackManager.disable("high_contrast");
+				if (resourcePackManager.enable("high_contrast")) {
+					this.refreshResourcePacks(resourcePackManager);
+				}
+			} else if (blxx && !value && resourcePackManager.disable("high_contrast")) {
 				this.refreshResourcePacks(resourcePackManager);
 			}
 		}

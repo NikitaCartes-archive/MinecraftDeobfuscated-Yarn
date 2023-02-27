@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.navigation;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -97,6 +98,19 @@ public record FocusedRect(FocusedPos position, int width, int height) {
 	 */
 	public int getCenter(NavigationAxis axis) {
 		return (this.getBoundingCoordinate(axis.getPositiveDirection()) + this.getBoundingCoordinate(axis.getNegativeDirection())) / 2;
+	}
+
+	/**
+	 * {@return the rect that intersects with {@code other}, or {@code null} if they do not
+	 * intersect}
+	 */
+	@Nullable
+	public FocusedRect intersection(FocusedRect other) {
+		int i = Math.max(this.getLeft(), other.getLeft());
+		int j = Math.max(this.getTop(), other.getTop());
+		int k = Math.min(this.getRight(), other.getRight());
+		int l = Math.min(this.getBottom(), other.getBottom());
+		return i < k && j < l ? new FocusedRect(i, j, k - i, l - j) : null;
 	}
 
 	public int getTop() {
