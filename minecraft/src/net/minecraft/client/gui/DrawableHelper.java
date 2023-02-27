@@ -2,11 +2,17 @@ package net.minecraft.client.gui;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Objects;
 import java.util.function.BiConsumer;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
@@ -20,6 +26,8 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
+import net.minecraft.util.math.Divider;
+import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
@@ -37,6 +45,7 @@ public abstract class DrawableHelper {
 	 */
 	public static final Identifier GUI_ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
 	public static final Identifier LIGHT_DIRT_BACKGROUND_TEXTURE = new Identifier("textures/gui/light_dirt_background.png");
+	private static final DrawableHelper.ScissorStack SCISSOR_STACK = new DrawableHelper.ScissorStack();
 
 	protected static void drawHorizontalLine(MatrixStack matrices, int x1, int x2, int y, int color) {
 		if (x2 < x1) {
@@ -59,18 +68,26 @@ public abstract class DrawableHelper {
 	}
 
 	public static void enableScissor(int x1, int y1, int x2, int y2) {
-		Window window = MinecraftClient.getInstance().getWindow();
-		int i = window.getFramebufferHeight();
-		double d = window.getScaleFactor();
-		double e = (double)x1 * d;
-		double f = (double)i - (double)y2 * d;
-		double g = (double)(x2 - x1) * d;
-		double h = (double)(y2 - y1) * d;
-		RenderSystem.enableScissor((int)e, (int)f, Math.max(0, (int)g), Math.max(0, (int)h));
+		setScissor(SCISSOR_STACK.push(new FocusedRect(x1, y1, x2 - x1, y2 - y1)));
 	}
 
 	public static void disableScissor() {
-		RenderSystem.disableScissor();
+		setScissor(SCISSOR_STACK.pop());
+	}
+
+	private static void setScissor(@Nullable FocusedRect rect) {
+		if (rect != null) {
+			Window window = MinecraftClient.getInstance().getWindow();
+			int i = window.getFramebufferHeight();
+			double d = window.getScaleFactor();
+			double e = (double)rect.getLeft() * d;
+			double f = (double)i - (double)rect.getBottom() * d;
+			double g = (double)rect.width() * d;
+			double h = (double)rect.height() * d;
+			RenderSystem.enableScissor((int)e, (int)f, Math.max(0, (int)g), Math.max(0, (int)h));
+		} else {
+			RenderSystem.disableScissor();
+		}
 	}
 
 	public static void fill(MatrixStack matrices, int x1, int y1, int x2, int y2, int color) {
@@ -336,6 +353,14 @@ public abstract class DrawableHelper {
 	}
 
 	public static void drawNineSlicedTexture(
+		MatrixStack matrices, int x, int y, int width, int height, int sideSliceWidth, int sideSliceHeight, int centerSliceWidth, int centerSliceHeight, int u, int v
+	) {
+		drawNineSlicedTexture(
+			matrices, x, y, width, height, sideSliceWidth, sideSliceHeight, sideSliceWidth, sideSliceHeight, centerSliceWidth, centerSliceHeight, u, v
+		);
+	}
+
+	public static void drawNineSlicedTexture(
 		MatrixStack matrices,
 		int x,
 		int y,
@@ -350,6 +375,10 @@ public abstract class DrawableHelper {
 		int u,
 		int v
 	) {
+		leftSliceWidth = Math.min(leftSliceWidth, width / 2);
+		rightSliceWidth = Math.min(rightSliceWidth, width / 2);
+		topSliceHeight = Math.min(topSliceHeight, height / 2);
+		bottomSliceHeight = Math.min(bottomSliceHeight, height / 2);
 		if (width == centerSliceWidth && height == centerSliceHeight) {
 			drawTexture(matrices, x, y, u, v, width, height);
 		} else if (height == centerSliceHeight) {
@@ -391,7 +420,7 @@ public abstract class DrawableHelper {
 				u + leftSliceWidth,
 				v,
 				centerSliceWidth - rightSliceWidth - leftSliceWidth,
-				centerSliceHeight
+				topSliceHeight
 			);
 			drawTexture(matrices, x + width - rightSliceWidth, y, u + centerSliceWidth - rightSliceWidth, v, rightSliceWidth, topSliceHeight);
 			drawTexture(matrices, x, y + height - bottomSliceHeight, u, v + centerSliceHeight - bottomSliceHeight, leftSliceWidth, bottomSliceHeight);
@@ -404,7 +433,7 @@ public abstract class DrawableHelper {
 				u + leftSliceWidth,
 				v + centerSliceHeight - bottomSliceHeight,
 				centerSliceWidth - rightSliceWidth - leftSliceWidth,
-				centerSliceHeight
+				bottomSliceHeight
 			);
 			drawTexture(
 				matrices,
@@ -423,7 +452,7 @@ public abstract class DrawableHelper {
 				height - bottomSliceHeight - topSliceHeight,
 				u,
 				v + topSliceHeight,
-				centerSliceWidth,
+				leftSliceWidth,
 				centerSliceHeight - bottomSliceHeight - topSliceHeight
 			);
 			drawRepeatingTexture(
@@ -445,28 +474,62 @@ public abstract class DrawableHelper {
 				height - bottomSliceHeight - topSliceHeight,
 				u + centerSliceWidth - rightSliceWidth,
 				v + topSliceHeight,
-				centerSliceWidth,
+				rightSliceWidth,
 				centerSliceHeight - bottomSliceHeight - topSliceHeight
 			);
 		}
 	}
 
 	public static void drawRepeatingTexture(MatrixStack matrices, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
-		int i = 0;
+		int i = x;
+		IntIterator intIterator = createDivider(width, textureWidth);
 
-		while (i < width) {
-			int j = x + i;
-			int k = Math.min(textureWidth, width - i);
-			int l = 0;
+		while (intIterator.hasNext()) {
+			int j = intIterator.nextInt();
+			int k = (textureWidth - j) / 2;
+			int l = y;
+			IntIterator intIterator2 = createDivider(height, textureHeight);
 
-			while (l < height) {
-				int m = y + l;
-				int n = Math.min(textureHeight, height - l);
-				drawTexture(matrices, j, m, u, v, k, n);
-				l += textureHeight;
+			while (intIterator2.hasNext()) {
+				int m = intIterator2.nextInt();
+				int n = (textureHeight - m) / 2;
+				drawTexture(matrices, i, l, u + k, v + n, j, m);
+				l += m;
 			}
 
-			i += textureWidth;
+			i += j;
+		}
+	}
+
+	private static IntIterator createDivider(int sideLength, int textureSideLength) {
+		int i = MathHelper.ceilDiv(sideLength, textureSideLength);
+		return new Divider(sideLength, i);
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class ScissorStack {
+		private final Deque<FocusedRect> stack = new ArrayDeque();
+
+		public FocusedRect push(FocusedRect rect) {
+			FocusedRect focusedRect = (FocusedRect)this.stack.peekLast();
+			if (focusedRect != null) {
+				FocusedRect focusedRect2 = (FocusedRect)Objects.requireNonNullElse(rect.intersection(focusedRect), FocusedRect.empty());
+				this.stack.addLast(focusedRect2);
+				return focusedRect2;
+			} else {
+				this.stack.addLast(rect);
+				return rect;
+			}
+		}
+
+		@Nullable
+		public FocusedRect pop() {
+			if (this.stack.isEmpty()) {
+				throw new IllegalStateException("Scissor stack underflow");
+			} else {
+				this.stack.removeLast();
+				return (FocusedRect)this.stack.peekLast();
+			}
 		}
 	}
 }

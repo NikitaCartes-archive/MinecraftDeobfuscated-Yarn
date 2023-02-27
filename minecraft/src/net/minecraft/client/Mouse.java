@@ -43,7 +43,10 @@ public class Mouse {
 
 	private void onMouseButton(long window, int button, int action, int mods) {
 		if (window == this.client.getWindow().getHandle()) {
-			this.client.setNavigationType(GuiNavigationType.MOUSE);
+			if (this.client.currentScreen != null) {
+				this.client.setNavigationType(GuiNavigationType.MOUSE);
+			}
+
 			boolean bl = action == 1;
 			if (MinecraftClient.IS_SYSTEM_MAC && button == 0) {
 				if (bl) {

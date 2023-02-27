@@ -32,6 +32,7 @@ public abstract class TagProvider<T> implements DataProvider {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	protected final DataOutput.PathResolver pathResolver;
 	private final CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture;
+	private final CompletableFuture<Void> registryLoadFuture = new CompletableFuture();
 	private final CompletableFuture<TagProvider.TagLookup<T>> parentTagLookupFuture;
 	protected final RegistryKey<? extends Registry<T>> registryRef;
 	private final Map<Identifier, TagBuilder> tagBuilders = Maps.<Identifier, TagBuilder>newLinkedHashMap();
@@ -49,11 +50,7 @@ public abstract class TagProvider<T> implements DataProvider {
 		this.pathResolver = output.getResolver(DataOutput.OutputType.DATA_PACK, TagManagerLoader.getPath(registryRef));
 		this.registryRef = registryRef;
 		this.parentTagLookupFuture = parentTagLookupFuture;
-		this.registryLookupFuture = registryLookupFuture.thenApply(lookup -> {
-			this.tagBuilders.clear();
-			this.configure(lookup);
-			return lookup;
-		});
+		this.registryLookupFuture = registryLookupFuture;
 	}
 
 	@Override
@@ -69,6 +66,10 @@ public abstract class TagProvider<T> implements DataProvider {
 		}
 
 		return this.getRegistryLookupFuture()
+			.thenApply(registryLookupFuture -> {
+				this.registryLoadFuture.complete(null);
+				return registryLookupFuture;
+			})
 			.thenCombineAsync(this.parentTagLookupFuture, (lookup, parent) -> new RegistryInfo(lookup, parent))
 			.thenCompose(
 				info -> {
@@ -117,11 +118,15 @@ public abstract class TagProvider<T> implements DataProvider {
 	}
 
 	public CompletableFuture<TagProvider.TagLookup<T>> getTagLookupFuture() {
-		return this.getRegistryLookupFuture().thenApply(registryLookup -> tag -> Optional.ofNullable((TagBuilder)this.tagBuilders.get(tag.id())));
+		return this.registryLoadFuture.thenApply(void_ -> tag -> Optional.ofNullable((TagBuilder)this.tagBuilders.get(tag.id())));
 	}
 
 	protected CompletableFuture<RegistryWrapper.WrapperLookup> getRegistryLookupFuture() {
-		return this.registryLookupFuture;
+		return this.registryLookupFuture.thenApply(lookup -> {
+			this.tagBuilders.clear();
+			this.configure(lookup);
+			return lookup;
+		});
 	}
 
 	protected static class ProvidedTagBuilder<T> {

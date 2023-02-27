@@ -132,7 +132,7 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.setHeadAngles(camelEntity, i, j, h);
 		this.updateVisibleParts(camelEntity);
-		this.method_48741(CamelAnimations.WALKING, f, g, 2.0F, 2.5F);
+		this.animateMovement(CamelAnimations.WALKING, f, g, 2.0F, 2.5F);
 		this.updateAnimation(camelEntity.sittingTransitionAnimationState, CamelAnimations.SITTING_TRANSITION, h, 1.0F);
 		this.updateAnimation(camelEntity.sittingAnimationState, CamelAnimations.SITTING, h, 1.0F);
 		this.updateAnimation(camelEntity.standingTransitionAnimationState, CamelAnimations.STANDING_TRANSITION, h, 1.0F);

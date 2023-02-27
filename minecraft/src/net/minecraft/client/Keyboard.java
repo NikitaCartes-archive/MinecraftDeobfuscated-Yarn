@@ -321,8 +321,24 @@ public class Keyboard {
 				this.debugCrashElapsedTime = 0L;
 			}
 
-			this.client.setNavigationType(key == GLFW.GLFW_KEY_TAB ? GuiNavigationType.KEYBOARD_TAB : GuiNavigationType.KEYBOARD_OTHER);
 			Screen screen = this.client.currentScreen;
+			if (screen != null) {
+				switch (key) {
+					case 258:
+						this.client.setNavigationType(GuiNavigationType.KEYBOARD_TAB);
+					case 259:
+					case 260:
+					case 261:
+					default:
+						break;
+					case 262:
+					case 263:
+					case 264:
+					case 265:
+						this.client.setNavigationType(GuiNavigationType.KEYBOARD_ARROW);
+				}
+			}
+
 			if (action == 1
 				&& (!(this.client.currentScreen instanceof KeybindsScreen) || ((KeybindsScreen)screen).lastKeyCodeUpdateTime <= Util.getMeasuringTimeMs() - 20L)) {
 				if (this.client.options.fullscreenKey.matchesKey(key, scancode)) {

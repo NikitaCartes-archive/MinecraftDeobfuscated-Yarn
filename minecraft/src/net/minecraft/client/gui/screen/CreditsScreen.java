@@ -255,7 +255,7 @@ public class CreditsScreen extends Screen {
 		float f = -this.time;
 		matrices.push();
 		matrices.translate(0.0F, f, 0.0F);
-		this.logoDrawer.draw(matrices, this.width, delta, j);
+		this.logoDrawer.draw(matrices, this.width, 1.0F, j);
 		int k = j + 100;
 
 		for (int l = 0; l < this.credits.size(); l++) {

@@ -195,14 +195,17 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	public float getPathfindingPenalty(PathNodeType nodeType) {
-		MobEntity mobEntity;
-		if (this.getVehicle() instanceof MobEntity && ((MobEntity)this.getVehicle()).movesIndependently()) {
-			mobEntity = (MobEntity)this.getVehicle();
-		} else {
-			mobEntity = this;
+		MobEntity mobEntity2;
+		label17: {
+			if (this.getControllingVehicle() instanceof MobEntity mobEntity && mobEntity.movesIndependently()) {
+				mobEntity2 = mobEntity;
+				break label17;
+			}
+
+			mobEntity2 = this;
 		}
 
-		Float float_ = (Float)mobEntity.pathfindingPenalties.get(nodeType);
+		Float float_ = (Float)mobEntity2.pathfindingPenalties.get(nodeType);
 		return float_ == null ? nodeType.getDefaultPenalty() : float_;
 	}
 
@@ -219,7 +222,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	public MoveControl getMoveControl() {
-		return this.getVehicle() instanceof MobEntity mobEntity ? mobEntity.getMoveControl() : this.moveControl;
+		return this.getControllingVehicle() instanceof MobEntity mobEntity ? mobEntity.getMoveControl() : this.moveControl;
 	}
 
 	public JumpControl getJumpControl() {
@@ -227,12 +230,13 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	public EntityNavigation getNavigation() {
-		if (this.hasVehicle() && this.getVehicle() instanceof MobEntity) {
-			MobEntity mobEntity = (MobEntity)this.getVehicle();
-			return mobEntity.getNavigation();
-		} else {
-			return this.navigation;
-		}
+		return this.getControllingVehicle() instanceof MobEntity mobEntity ? mobEntity.getNavigation() : this.navigation;
+	}
+
+	@Nullable
+	@Override
+	public LivingEntity getControllingPassenger() {
+		return !this.isAiDisabled() && this.getFirstPassenger() instanceof MobEntity mobEntity ? mobEntity : null;
 	}
 
 	public MobVisibilityCache getVisibilityCache() {

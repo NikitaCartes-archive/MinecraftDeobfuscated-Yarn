@@ -84,7 +84,7 @@ public class PhantomEntityModel<T extends PhantomEntity> extends SinglePartEntit
 	}
 
 	public void setAngles(T phantomEntity, float f, float g, float h, float i, float j) {
-		float k = ((float)phantomEntity.method_33588() + h) * 7.448451F * (float) (Math.PI / 180.0);
+		float k = ((float)phantomEntity.getWingFlapTickOffset() + h) * 7.448451F * (float) (Math.PI / 180.0);
 		float l = 16.0F;
 		this.leftWingBase.roll = MathHelper.cos(k) * 16.0F * (float) (Math.PI / 180.0);
 		this.leftWingTip.roll = MathHelper.cos(k) * 16.0F * (float) (Math.PI / 180.0);

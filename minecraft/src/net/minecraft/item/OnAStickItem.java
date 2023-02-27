@@ -25,19 +25,16 @@ public class OnAStickItem<T extends Entity & ItemSteerable> extends Item {
 		if (world.isClient) {
 			return TypedActionResult.pass(itemStack);
 		} else {
-			Entity entity = user.getVehicle();
-			if (user.hasVehicle() && entity instanceof ItemSteerable && entity.getType() == this.target) {
-				ItemSteerable itemSteerable = (ItemSteerable)entity;
-				if (itemSteerable.consumeOnAStickItem()) {
-					itemStack.damage(this.damagePerUse, user, p -> p.sendToolBreakStatus(hand));
-					if (itemStack.isEmpty()) {
-						ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
-						itemStack2.setNbt(itemStack.getNbt());
-						return TypedActionResult.success(itemStack2);
-					}
-
-					return TypedActionResult.success(itemStack);
+			Entity entity = user.getControllingVehicle();
+			if (user.hasVehicle() && entity instanceof ItemSteerable itemSteerable && entity.getType() == this.target && itemSteerable.consumeOnAStickItem()) {
+				itemStack.damage(this.damagePerUse, user, p -> p.sendToolBreakStatus(hand));
+				if (itemStack.isEmpty()) {
+					ItemStack itemStack2 = new ItemStack(Items.FISHING_ROD);
+					itemStack2.setNbt(itemStack.getNbt());
+					return TypedActionResult.success(itemStack2);
 				}
+
+				return TypedActionResult.success(itemStack);
 			}
 
 			user.incrementStat(Stats.USED.getOrCreateStat(this));

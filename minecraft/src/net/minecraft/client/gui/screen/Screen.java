@@ -329,14 +329,15 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			}
 
 			immediate.draw();
-			matrices.pop();
 			q = o;
 
 			for (int r = 0; r < components.size(); r++) {
 				TooltipComponent tooltipComponent2 = (TooltipComponent)components.get(r);
-				tooltipComponent2.drawItems(this.textRenderer, n, q, matrices, this.itemRenderer, 400);
+				tooltipComponent2.drawItems(this.textRenderer, n, q, matrices, this.itemRenderer);
 				q += tooltipComponent2.getHeight() + (r == 0 ? 2 : 0);
 			}
+
+			matrices.pop();
 		}
 	}
 

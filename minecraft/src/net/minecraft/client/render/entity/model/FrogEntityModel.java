@@ -103,9 +103,9 @@ public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel
 		this.updateAnimation(frogEntity.croakingAnimationState, FrogAnimations.CROAKING, h);
 		this.updateAnimation(frogEntity.usingTongueAnimationState, FrogAnimations.USING_TONGUE, h);
 		if (frogEntity.isInsideWaterOrBubbleColumn()) {
-			this.method_48741(FrogAnimations.SWIMMING, f, g, 1.0F, 2.5F);
+			this.animateMovement(FrogAnimations.SWIMMING, f, g, 1.0F, 2.5F);
 		} else {
-			this.method_48741(FrogAnimations.WALKING, f, g, 1.5F, 2.5F);
+			this.animateMovement(FrogAnimations.WALKING, f, g, 1.5F, 2.5F);
 		}
 
 		this.updateAnimation(frogEntity.idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, h);

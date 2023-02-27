@@ -1,5 +1,7 @@
 package net.minecraft.client.gui.screen.world;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -9,7 +11,6 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -19,6 +20,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.registry.tag.WorldPresetTags;
 import net.minecraft.resource.DataConfiguration;
 import net.minecraft.text.Text;
+import net.minecraft.util.PathUtil;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -28,9 +30,9 @@ import net.minecraft.world.gen.WorldPresets;
 
 @Environment(EnvType.CLIENT)
 public class WorldCreator {
+	private static final Text NEW_WORLD_NAME = Text.translatable("selectWorld.newWorld");
 	private final List<Consumer<WorldCreator>> listeners = new ArrayList();
-	private String worldName = I18n.translate("selectWorld.newWorld");
-	private boolean named = true;
+	private String worldName = NEW_WORLD_NAME.getString();
 	private WorldCreator.Mode gameMode = WorldCreator.Mode.SURVIVAL;
 	private Difficulty difficulty = Difficulty.NORMAL;
 	@Nullable
@@ -38,19 +40,23 @@ public class WorldCreator {
 	private String seed;
 	private boolean generateStructures;
 	private boolean bonusChestEnabled;
+	private final Path savesDirectory;
+	private String worldDirectoryName;
 	private GeneratorOptionsHolder generatorOptionsHolder;
 	private WorldCreator.WorldType worldType;
 	private final List<WorldCreator.WorldType> normalWorldTypes = new ArrayList();
 	private final List<WorldCreator.WorldType> extendedWorldTypes = new ArrayList();
 	private GameRules gameRules = new GameRules();
 
-	public WorldCreator(GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> worldType, OptionalLong seed) {
+	public WorldCreator(Path savesDirectory, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> defaultWorldType, OptionalLong seed) {
+		this.savesDirectory = savesDirectory;
 		this.generatorOptionsHolder = generatorOptionsHolder;
-		this.worldType = new WorldCreator.WorldType((RegistryEntry<WorldPreset>)getWorldPreset(generatorOptionsHolder, worldType).orElse(null));
+		this.worldType = new WorldCreator.WorldType((RegistryEntry<WorldPreset>)getWorldPreset(generatorOptionsHolder, defaultWorldType).orElse(null));
 		this.updateWorldTypeLists();
 		this.seed = seed.isPresent() ? Long.toString(seed.getAsLong()) : "";
 		this.generateStructures = generatorOptionsHolder.generatorOptions().shouldGenerateStructures();
 		this.bonusChestEnabled = generatorOptionsHolder.generatorOptions().hasBonusChest();
+		this.worldDirectoryName = this.toDirectoryName(this.worldName);
 	}
 
 	public void addListener(Consumer<WorldCreator> listener) {
@@ -71,22 +77,34 @@ public class WorldCreator {
 		for (Consumer<WorldCreator> consumer : this.listeners) {
 			consumer.accept(this);
 		}
-
-		this.named = false;
 	}
 
 	public void setWorldName(String worldName) {
 		this.worldName = worldName;
-		this.named = true;
+		this.worldDirectoryName = this.toDirectoryName(worldName);
 		this.update();
+	}
+
+	private String toDirectoryName(String worldName) {
+		String string = worldName.trim();
+
+		try {
+			return PathUtil.getNextUniqueName(this.savesDirectory, !string.isEmpty() ? string : NEW_WORLD_NAME.getString(), "");
+		} catch (Exception var5) {
+			try {
+				return PathUtil.getNextUniqueName(this.savesDirectory, "World", "");
+			} catch (IOException var4) {
+				throw new RuntimeException("Could not create save folder", var4);
+			}
+		}
 	}
 
 	public String getWorldName() {
 		return this.worldName;
 	}
 
-	public boolean isNamed() {
-		return this.named;
+	public String getWorldDirectoryName() {
+		return this.worldDirectoryName;
 	}
 
 	public void setGameMode(WorldCreator.Mode gameMode) {

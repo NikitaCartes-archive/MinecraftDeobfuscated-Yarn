@@ -495,12 +495,12 @@ public class MineshaftGenerator {
 		}
 
 		private void addCobwebsUnderground(StructureWorldAccess world, BlockBox box, Random random, float threshold, int x, int y, int z) {
-			if (this.isUnderSeaLevel(world, x, y, z, box) && random.nextFloat() < threshold && this.method_36422(world, box, x, y, z, 2)) {
+			if (this.isUnderSeaLevel(world, x, y, z, box) && random.nextFloat() < threshold && this.hasSolidNeighborBlocks(world, box, x, y, z, 2)) {
 				this.addBlock(world, Blocks.COBWEB.getDefaultState(), x, y, z, box);
 			}
 		}
 
-		private boolean method_36422(StructureWorldAccess world, BlockBox box, int x, int y, int z, int count) {
+		private boolean hasSolidNeighborBlocks(StructureWorldAccess world, BlockBox box, int x, int y, int z, int count) {
 			BlockPos.Mutable mutable = this.offsetPos(x, y, z);
 			int i = 0;
 

@@ -43,17 +43,17 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	private static final int field_30473 = 4;
 	private static final int field_30471 = 3;
 	private static final int field_30472 = 3;
-	private int field_7296;
-	private final Vec3d[][] field_7297;
+	private int mirrorSpellTimer;
+	private final Vec3d[][] mirrorCopyOffsets;
 
 	public IllusionerEntity(EntityType<? extends IllusionerEntity> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 5;
-		this.field_7297 = new Vec3d[2][4];
+		this.mirrorCopyOffsets = new Vec3d[2][4];
 
 		for (int i = 0; i < 4; i++) {
-			this.field_7297[0][i] = Vec3d.ZERO;
-			this.field_7297[1][i] = Vec3d.ZERO;
+			this.mirrorCopyOffsets[0][i] = Vec3d.ZERO;
+			this.mirrorCopyOffsets[1][i] = Vec3d.ZERO;
 		}
 	}
 
@@ -103,19 +103,19 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	public void tickMovement() {
 		super.tickMovement();
 		if (this.world.isClient && this.isInvisible()) {
-			this.field_7296--;
-			if (this.field_7296 < 0) {
-				this.field_7296 = 0;
+			this.mirrorSpellTimer--;
+			if (this.mirrorSpellTimer < 0) {
+				this.mirrorSpellTimer = 0;
 			}
 
 			if (this.hurtTime == 1 || this.age % 1200 == 0) {
-				this.field_7296 = 3;
+				this.mirrorSpellTimer = 3;
 				float f = -6.0F;
 				int i = 13;
 
 				for (int j = 0; j < 4; j++) {
-					this.field_7297[0][j] = this.field_7297[1][j];
-					this.field_7297[1][j] = new Vec3d(
+					this.mirrorCopyOffsets[0][j] = this.mirrorCopyOffsets[1][j];
+					this.mirrorCopyOffsets[1][j] = new Vec3d(
 						(double)(-6.0F + (float)this.random.nextInt(13)) * 0.5,
 						(double)Math.max(0, this.random.nextInt(6) - 4),
 						(double)(-6.0F + (float)this.random.nextInt(13)) * 0.5
@@ -128,11 +128,11 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 				this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, this.getSoundCategory(), 1.0F, 1.0F, false);
 			} else if (this.hurtTime == this.maxHurtTime - 1) {
-				this.field_7296 = 3;
+				this.mirrorSpellTimer = 3;
 
 				for (int k = 0; k < 4; k++) {
-					this.field_7297[0][k] = this.field_7297[1][k];
-					this.field_7297[1][k] = new Vec3d(0.0, 0.0, 0.0);
+					this.mirrorCopyOffsets[0][k] = this.mirrorCopyOffsets[1][k];
+					this.mirrorCopyOffsets[1][k] = new Vec3d(0.0, 0.0, 0.0);
 				}
 			}
 		}
@@ -143,16 +143,16 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		return SoundEvents.ENTITY_ILLUSIONER_AMBIENT;
 	}
 
-	public Vec3d[] method_7065(float f) {
-		if (this.field_7296 <= 0) {
-			return this.field_7297[1];
+	public Vec3d[] getMirrorCopyOffsets(float tickDelta) {
+		if (this.mirrorSpellTimer <= 0) {
+			return this.mirrorCopyOffsets[1];
 		} else {
-			double d = (double)(((float)this.field_7296 - f) / 3.0F);
+			double d = (double)(((float)this.mirrorSpellTimer - tickDelta) / 3.0F);
 			d = Math.pow(d, 0.25);
 			Vec3d[] vec3ds = new Vec3d[4];
 
 			for (int i = 0; i < 4; i++) {
-				vec3ds[i] = this.field_7297[1][i].multiply(1.0 - d).add(this.field_7297[0][i].multiply(d));
+				vec3ds[i] = this.mirrorCopyOffsets[1][i].multiply(1.0 - d).add(this.mirrorCopyOffsets[0][i].multiply(d));
 			}
 
 			return vec3ds;

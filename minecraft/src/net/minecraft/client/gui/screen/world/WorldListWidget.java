@@ -530,7 +530,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					this.client
 						.setScreen(
 							new ConfirmScreen(
-								confirmed -> this.client.setScreen((Screen)(confirmed ? CreateWorldScreen.create(this.screen, levelInfo, generatorOptionsHolder, path) : this.screen)),
+								confirmed -> this.client
+										.setScreen((Screen)(confirmed ? CreateWorldScreen.create(this.client, this.screen, levelInfo, generatorOptionsHolder, path) : this.screen)),
 								Text.translatable("selectWorld.recreate.customized.title"),
 								Text.translatable("selectWorld.recreate.customized.text"),
 								ScreenTexts.PROCEED,
@@ -538,7 +539,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 							)
 						);
 				} else {
-					this.client.setScreen(CreateWorldScreen.create(this.screen, levelInfo, generatorOptionsHolder, path));
+					this.client.setScreen(CreateWorldScreen.create(this.client, this.screen, levelInfo, generatorOptionsHolder, path));
 				}
 			} catch (Exception var8) {
 				WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var8);

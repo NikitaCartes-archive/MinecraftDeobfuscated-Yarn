@@ -66,7 +66,7 @@ public class BrushItem extends Item {
 						&& world.getBlockEntity(blockPos) instanceof SuspiciousSandBlockEntity suspiciousSandBlockEntity) {
 						boolean bl = suspiciousSandBlockEntity.brush(world.getTime(), playerEntity, blockHitResult.getSide());
 						if (bl) {
-							stack.damage(1, user, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+							stack.damage(1, user, userx -> userx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 						}
 					}
 				}
@@ -76,41 +76,41 @@ public class BrushItem extends Item {
 		}
 	}
 
-	public void addDustParticles(World world, BlockHitResult hitResult, BlockState state, Vec3d vec3d) {
+	public void addDustParticles(World world, BlockHitResult hitResult, BlockState state, Vec3d userRotation) {
 		double d = 3.0;
 		int i = world.getRandom().nextBetweenExclusive(7, 12);
 		BlockStateParticleEffect blockStateParticleEffect = new BlockStateParticleEffect(ParticleTypes.BLOCK, state);
 		Direction direction = hitResult.getSide();
-		BrushItem.class_8163 lv = BrushItem.class_8163.method_49185(vec3d, direction);
-		Vec3d vec3d2 = hitResult.getPos();
+		BrushItem.DustParticlesOffset dustParticlesOffset = BrushItem.DustParticlesOffset.fromSide(userRotation, direction);
+		Vec3d vec3d = hitResult.getPos();
 
 		for (int j = 0; j < i; j++) {
 			world.addParticle(
 				blockStateParticleEffect,
-				vec3d2.x - (double)(direction == Direction.WEST ? 1.0E-6F : 0.0F),
-				vec3d2.y,
-				vec3d2.z - (double)(direction == Direction.NORTH ? 1.0E-6F : 0.0F),
-				lv.xd() * 3.0 * world.getRandom().nextDouble(),
+				vec3d.x - (double)(direction == Direction.WEST ? 1.0E-6F : 0.0F),
+				vec3d.y,
+				vec3d.z - (double)(direction == Direction.NORTH ? 1.0E-6F : 0.0F),
+				dustParticlesOffset.xd() * 3.0 * world.getRandom().nextDouble(),
 				0.0,
-				lv.zd() * 3.0 * world.getRandom().nextDouble()
+				dustParticlesOffset.zd() * 3.0 * world.getRandom().nextDouble()
 			);
 		}
 	}
 
-	static record class_8163(double xd, double yd, double zd) {
+	static record DustParticlesOffset(double xd, double yd, double zd) {
 		private static final double field_42685 = 1.0;
 		private static final double field_42686 = 0.1;
 
-		public static BrushItem.class_8163 method_49185(Vec3d vec3d, Direction direction) {
+		public static BrushItem.DustParticlesOffset fromSide(Vec3d userRotation, Direction side) {
 			double d = 0.0;
 
-			return switch (direction) {
-				case DOWN -> new BrushItem.class_8163(-vec3d.getX(), 0.0, vec3d.getZ());
-				case UP -> new BrushItem.class_8163(vec3d.getZ(), 0.0, -vec3d.getX());
-				case NORTH -> new BrushItem.class_8163(1.0, 0.0, -0.1);
-				case SOUTH -> new BrushItem.class_8163(-1.0, 0.0, 0.1);
-				case WEST -> new BrushItem.class_8163(-0.1, 0.0, -1.0);
-				case EAST -> new BrushItem.class_8163(0.1, 0.0, 1.0);
+			return switch (side) {
+				case DOWN -> new BrushItem.DustParticlesOffset(-userRotation.getX(), 0.0, userRotation.getZ());
+				case UP -> new BrushItem.DustParticlesOffset(userRotation.getZ(), 0.0, -userRotation.getX());
+				case NORTH -> new BrushItem.DustParticlesOffset(1.0, 0.0, -0.1);
+				case SOUTH -> new BrushItem.DustParticlesOffset(-1.0, 0.0, 0.1);
+				case WEST -> new BrushItem.DustParticlesOffset(-0.1, 0.0, -1.0);
+				case EAST -> new BrushItem.DustParticlesOffset(0.1, 0.0, 1.0);
 			};
 		}
 	}

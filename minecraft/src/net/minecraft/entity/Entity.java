@@ -2870,19 +2870,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * {@return whether the passenger dismounts this entity when the entity is submerged
-	 * in water}
-	 * 
-	 * <p>This is not used to check whether the entity can start riding this entity in the
-	 * first place; override {@link #canAddPassenger} instead.
-	 * 
-	 * @apiNote This returns {@code true} for non-living entities and {@link
-	 * net.minecraft.entity.mob.SkeletonHorseEntity}.
-	 * 
-	 * @see #canAddPassenger
+	 * {@return whether this vehicle should dismount the passenger if submerged underwater}
 	 */
-	public boolean canBeRiddenInWater() {
-		return true;
+	public boolean shouldDismountUnderwater() {
+		return this.getType().isIn(EntityTypeTags.DISMOUNTS_UNDERWATER);
 	}
 
 	/**
@@ -4394,7 +4385,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	/**
 	 * {@return the list of passengers of this entity}
 	 * 
-	 * @see #getPrimaryPassenger
+	 * @see #getControllingPassenger
 	 * @see #getFirstPassenger
 	 * @see #streamIntoPassengers
 	 * @see #streamSelfAndPassengers
@@ -4409,11 +4400,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * {@return the first passenger of the {@linkplain #getPassengerList passenger list},
 	 * or {@code null} if there is no passengers}
 	 * 
-	 * <p>Such passenger is usually also the {@linkplain #getPrimaryPassenger the
-	 * primary passenger}.
+	 * <p>Such passenger is usually also the {@linkplain #getControllingPassenger the
+	 * controlling passenger}.
 	 * 
-	 * @see #getPrimaryPassenger
-	 * @see #hasPrimaryPassenger
+	 * @see #getControllingPassenger
+	 * @see #hasControllingPassenger
 	 * @see #getPassengerList
 	 */
 	@Nullable
@@ -4568,7 +4559,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * on the server; for player-ridden entities, this checks whether the entity
 	 * is on the client.
 	 * 
-	 * @see #getPrimaryPassenger
+	 * @see #getControllingPassenger
 	 */
 	public boolean isLogicalSideForUpdatingMovement() {
 		return this.getControllingPassenger() instanceof PlayerEntity playerEntity ? playerEntity.isMainPlayer() : this.canMoveVoluntarily();
@@ -4606,10 +4597,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * {@return the entity this entity rides, or {@code null} if there is none}
 	 * 
 	 * @see #getRootVehicle
+	 * @see #getControllingVehicle
 	 */
 	@Nullable
 	public Entity getVehicle() {
 		return this.vehicle;
+	}
+
+	/**
+	 * {@return the entity this entity rides and controls, or {@code null} if there is none}
+	 * 
+	 * @see #getRootVehicle
+	 * @see #getVehicle
+	 */
+	@Nullable
+	public Entity getControllingVehicle() {
+		return this.vehicle != null && this.vehicle.getControllingPassenger() == this ? this.vehicle : null;
 	}
 
 	/**
@@ -5128,7 +5131,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public float getStepHeight() {
-		return this.hasControllingPassenger() ? Math.max(this.stepHeight, 1.0F) : this.stepHeight;
+		return this.stepHeight;
 	}
 
 	public void setStepHeight(float stepHeight) {

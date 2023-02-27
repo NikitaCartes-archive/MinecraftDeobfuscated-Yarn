@@ -109,8 +109,6 @@ public class CreateWorldScreen extends Screen {
 	@Nullable
 	private final Screen parent;
 	@Nullable
-	private String saveDirectoryName;
-	@Nullable
 	private Path dataPackTempDir;
 	@Nullable
 	private ResourcePackManager packManager;
@@ -139,13 +137,16 @@ public class CreateWorldScreen extends Screen {
 			client
 		);
 		client.runTasks(completableFuture::isDone);
-		client.setScreen(new CreateWorldScreen(parent, (GeneratorOptionsHolder)completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty()));
+		client.setScreen(
+			new CreateWorldScreen(client, parent, (GeneratorOptionsHolder)completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty())
+		);
 	}
 
 	public static CreateWorldScreen create(
-		@Nullable Screen parent, LevelInfo levelInfo, GeneratorOptionsHolder generatorOptionsHolder, @Nullable Path dataPackTempDir
+		MinecraftClient client, @Nullable Screen parent, LevelInfo levelInfo, GeneratorOptionsHolder generatorOptionsHolder, @Nullable Path dataPackTempDir
 	) {
 		CreateWorldScreen createWorldScreen = new CreateWorldScreen(
+			client,
 			parent,
 			generatorOptionsHolder,
 			WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()),
@@ -169,11 +170,15 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private CreateWorldScreen(
-		@Nullable Screen parent, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> defaultWorldType, OptionalLong seed
+		MinecraftClient client,
+		@Nullable Screen parent,
+		GeneratorOptionsHolder generatorOptionsHolder,
+		Optional<RegistryKey<WorldPreset>> defaultWorldType,
+		OptionalLong seed
 	) {
 		super(Text.translatable("selectWorld.create"));
 		this.parent = parent;
-		this.worldCreator = new WorldCreator(generatorOptionsHolder, defaultWorldType, seed);
+		this.worldCreator = new WorldCreator(client.getLevelStorage().getSavesDirectory(), generatorOptionsHolder, defaultWorldType, seed);
 	}
 
 	public WorldCreator getWorldCreator() {
@@ -187,20 +192,13 @@ public class CreateWorldScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.updateSaveFolderName(this.worldCreator.getWorldName());
 		this.tabNavigation = TabNavigationWidget.builder(this.tabManager, this.width)
 			.tabs(new CreateWorldScreen.GameTab(), new CreateWorldScreen.WorldTab(), new CreateWorldScreen.MoreTab())
 			.build();
 		this.addDrawableChild(this.tabNavigation);
-		this.worldCreator.addListener(creator -> {
-			if (creator.isNamed()) {
-				this.updateSaveFolderName(creator.getWorldName());
-			}
-		});
 		this.grid = new GridWidget().setColumnSpacing(10);
 		GridWidget.Adder adder = this.grid.createAdder(2);
-		ButtonWidget buttonWidget = adder.add(ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> this.createLevel()).build());
-		this.worldCreator.addListener(creator -> buttonWidget.active = !this.worldCreator.getWorldName().isEmpty());
+		adder.add(ButtonWidget.builder(Text.translatable("selectWorld.create"), button -> this.createLevel()).build());
 		adder.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.onCloseScreen()).build());
 		this.grid.forEachChild(child -> {
 			child.setNavigationOrder(1);
@@ -221,25 +219,6 @@ public class CreateWorldScreen extends Screen {
 			int i = this.tabNavigation.getNavigationFocus().getBottom();
 			FocusedRect focusedRect = new FocusedRect(0, i, this.width, this.grid.getY() - i);
 			this.tabManager.setTabArea(focusedRect);
-		}
-	}
-
-	private void updateSaveFolderName(String saveDirectoryName) {
-		this.saveDirectoryName = saveDirectoryName.trim();
-		if (this.saveDirectoryName.isEmpty()) {
-			this.saveDirectoryName = "World";
-		}
-
-		try {
-			this.saveDirectoryName = PathUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), this.saveDirectoryName, "");
-		} catch (Exception var5) {
-			this.saveDirectoryName = "World";
-
-			try {
-				this.saveDirectoryName = PathUtil.getNextUniqueName(this.client.getLevelStorage().getSavesDirectory(), this.saveDirectoryName, "");
-			} catch (Exception var4) {
-				throw new RuntimeException("Could not create save folder", var4);
-			}
 		}
 	}
 
@@ -354,7 +333,7 @@ public class CreateWorldScreen extends Screen {
 				this.dataPackTempDir = Files.createTempDirectory("mcworld-");
 			} catch (IOException var2) {
 				LOGGER.warn("Failed to create temporary dir", (Throwable)var2);
-				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
+				SystemToast.addPackCopyFailure(this.client, this.worldCreator.getWorldDirectoryName());
 				this.onCloseScreen();
 			}
 		}
@@ -524,8 +503,10 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private Optional<LevelStorage.Session> createSession() {
+		String string = this.worldCreator.getWorldDirectoryName();
+
 		try {
-			LevelStorage.Session session = this.client.getLevelStorage().createSession(this.saveDirectoryName);
+			LevelStorage.Session session = this.client.getLevelStorage().createSession(string);
 			if (this.dataPackTempDir == null) {
 				return Optional.of(session);
 			}
@@ -533,38 +514,38 @@ public class CreateWorldScreen extends Screen {
 			try {
 				Stream<Path> stream = Files.walk(this.dataPackTempDir);
 
-				Optional var4;
+				Optional var5;
 				try {
 					Path path = session.getDirectory(WorldSavePath.DATAPACKS);
 					PathUtil.createDirectories(path);
 					stream.filter(pathx -> !pathx.equals(this.dataPackTempDir)).forEach(pathx -> copyDataPack(this.dataPackTempDir, path, pathx));
-					var4 = Optional.of(session);
-				} catch (Throwable var6) {
+					var5 = Optional.of(session);
+				} catch (Throwable var7) {
 					if (stream != null) {
 						try {
 							stream.close();
-						} catch (Throwable var5) {
-							var6.addSuppressed(var5);
+						} catch (Throwable var6) {
+							var7.addSuppressed(var6);
 						}
 					}
 
-					throw var6;
+					throw var7;
 				}
 
 				if (stream != null) {
 					stream.close();
 				}
 
-				return var4;
-			} catch (UncheckedIOException | IOException var7) {
-				LOGGER.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var7);
+				return var5;
+			} catch (UncheckedIOException | IOException var8) {
+				LOGGER.warn("Failed to copy datapacks to world {}", string, var8);
 				session.close();
 			}
-		} catch (UncheckedIOException | IOException var8) {
-			LOGGER.warn("Failed to create access for {}", this.saveDirectoryName, var8);
+		} catch (UncheckedIOException | IOException var9) {
+			LOGGER.warn("Failed to create access for {}", string, var9);
 		}
 
-		SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
+		SystemToast.addPackCopyFailure(this.client, string);
 		this.onCloseScreen();
 		return Optional.empty();
 	}
@@ -649,6 +630,11 @@ public class CreateWorldScreen extends Screen {
 			);
 			this.worldNameField.setText(CreateWorldScreen.this.worldCreator.getWorldName());
 			this.worldNameField.setChangedListener(CreateWorldScreen.this.worldCreator::setWorldName);
+			CreateWorldScreen.this.worldCreator
+				.addListener(
+					creator -> this.worldNameField
+							.setTooltip(Tooltip.of(Text.translatable("selectWorld.targetFolder", Text.literal(creator.getWorldDirectoryName()).formatted(Formatting.ITALIC))))
+				);
 			CreateWorldScreen.this.setInitialFocus(this.worldNameField);
 			adder.add(adder2.getGridWidget(), adder.copyPositioner().alignHorizontalCenter());
 			CyclingButtonWidget<WorldCreator.Mode> cyclingButtonWidget = adder.add(

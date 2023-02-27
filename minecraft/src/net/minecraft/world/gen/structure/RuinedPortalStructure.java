@@ -49,8 +49,7 @@ public class RuinedPortalStructure extends Structure {
 	private final List<RuinedPortalStructure.Setup> setups;
 	public static final Codec<RuinedPortalStructure> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					configCodecBuilder(instance),
-					Codecs.nonEmptyList(RuinedPortalStructure.Setup.field_37814.listOf()).fieldOf("setups").forGetter(structure -> structure.setups)
+					configCodecBuilder(instance), Codecs.nonEmptyList(RuinedPortalStructure.Setup.CODEC.listOf()).fieldOf("setups").forGetter(structure -> structure.setups)
 				)
 				.apply(instance, RuinedPortalStructure::new)
 	);
@@ -93,7 +92,7 @@ public class RuinedPortalStructure extends Structure {
 			throw new IllegalStateException();
 		} else {
 			RuinedPortalStructure.Setup setup4 = setup;
-			properties.airPocket = method_41682(chunkRandom, setup4.airPocketProbability());
+			properties.airPocket = shouldPlaceAirPocket(chunkRandom, setup4.airPocketProbability());
 			properties.mossiness = setup4.mossiness();
 			properties.overgrown = setup4.overgrown();
 			properties.vines = setup4.vines();
@@ -126,7 +125,7 @@ public class RuinedPortalStructure extends Structure {
 			return Optional.of(
 				new Structure.StructurePosition(
 					blockPos4,
-					structurePiecesCollector -> {
+					collector -> {
 						if (setup4.canBeCold()) {
 							properties.cold = isColdAt(
 								blockPos4,
@@ -141,7 +140,7 @@ public class RuinedPortalStructure extends Structure {
 							);
 						}
 
-						structurePiecesCollector.addPiece(
+						collector.addPiece(
 							new RuinedPortalStructurePiece(
 								context.structureTemplateManager(), blockPos4, setup4.placement(), properties, identifier, structureTemplate, blockRotation, blockMirror, blockPos
 							)
@@ -152,11 +151,11 @@ public class RuinedPortalStructure extends Structure {
 		}
 	}
 
-	private static boolean method_41682(ChunkRandom chunkRandom, float f) {
-		if (f == 0.0F) {
+	private static boolean shouldPlaceAirPocket(ChunkRandom random, float probability) {
+		if (probability == 0.0F) {
 			return false;
 		} else {
-			return f == 1.0F ? true : chunkRandom.nextFloat() < f;
+			return probability == 1.0F ? true : random.nextFloat() < probability;
 		}
 	}
 
@@ -204,7 +203,7 @@ public class RuinedPortalStructure extends Structure {
 			new BlockPos(box.getMaxX(), 0, box.getMaxZ())
 		);
 		List<VerticalBlockSample> list2 = (List<VerticalBlockSample>)list.stream()
-			.map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world, noiseConfig))
+			.map(pos -> chunkGenerator.getColumnSample(pos.getX(), pos.getZ(), world, noiseConfig))
 			.collect(Collectors.toList());
 		Heightmap.Type type = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR
 			? Heightmap.Type.OCEAN_FLOOR_WG
@@ -246,7 +245,7 @@ public class RuinedPortalStructure extends Structure {
 		boolean replaceWithBlackstone,
 		float weight
 	) {
-		public static final Codec<RuinedPortalStructure.Setup> field_37814 = RecordCodecBuilder.create(
+		public static final Codec<RuinedPortalStructure.Setup> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						RuinedPortalStructurePiece.VerticalPlacement.CODEC.fieldOf("placement").forGetter(RuinedPortalStructure.Setup::placement),
 						Codec.floatRange(0.0F, 1.0F).fieldOf("air_pocket_probability").forGetter(RuinedPortalStructure.Setup::airPocketProbability),
