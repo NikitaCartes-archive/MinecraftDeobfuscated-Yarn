@@ -6,6 +6,8 @@ import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -200,5 +202,32 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 				MinecraftClient.getInstance().send(() -> completableFuture.complete(null));
 			}, runnable -> RenderSystem.recordRenderCall(runnable::run));
 		return completableFuture;
+	}
+
+	public void dumpDynamicTextures(Path path) {
+		if (!RenderSystem.isOnRenderThread()) {
+			RenderSystem.recordRenderCall(() -> this.dumpDynamicTexturesInternal(path));
+		} else {
+			this.dumpDynamicTexturesInternal(path);
+		}
+	}
+
+	private void dumpDynamicTexturesInternal(Path path) {
+		try {
+			Files.createDirectories(path);
+		} catch (IOException var3) {
+			LOGGER.error("Failed to create directory {}", path, var3);
+			return;
+		}
+
+		this.textures.forEach((id, texture) -> {
+			if (texture instanceof DynamicTexture dynamicTexture) {
+				try {
+					dynamicTexture.save(id, path);
+				} catch (IOException var5) {
+					LOGGER.error("Failed to dump texture {}", id, var5);
+				}
+			}
+		});
 	}
 }

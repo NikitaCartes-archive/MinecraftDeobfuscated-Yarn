@@ -54,9 +54,6 @@ public class TextureStitcher<T extends TextureStitcher.Stitchable> {
 				);
 			}
 		}
-
-		this.width = MathHelper.smallestEncompassingPowerOfTwo(this.width);
-		this.height = MathHelper.smallestEncompassingPowerOfTwo(this.height);
 	}
 
 	public void getStitchedSprites(TextureStitcher.SpriteConsumer<T> consumer) {
@@ -101,14 +98,14 @@ public class TextureStitcher<T extends TextureStitcher.Stitchable> {
 			TextureStitcher.Slot<T> slot;
 			if (bl5) {
 				if (this.height == 0) {
-					this.height = holder.height;
+					this.height = l;
 				}
 
-				slot = new TextureStitcher.Slot<>(this.width, 0, holder.width, this.height);
-				this.width = this.width + holder.width;
+				slot = new TextureStitcher.Slot<>(this.width, 0, k - this.width, this.height);
+				this.width = k;
 			} else {
-				slot = new TextureStitcher.Slot<>(0, this.height, this.width, holder.height);
-				this.height = this.height + holder.height;
+				slot = new TextureStitcher.Slot<>(0, this.height, this.width, l - this.height);
+				this.height = l;
 			}
 
 			slot.fit(holder);
@@ -227,7 +224,7 @@ public class TextureStitcher<T extends TextureStitcher.Stitchable> {
 
 	@Environment(EnvType.CLIENT)
 	public interface SpriteConsumer<T extends TextureStitcher.Stitchable> {
-		void load(T info, int width, int height);
+		void load(T info, int x, int y);
 	}
 
 	@Environment(EnvType.CLIENT)

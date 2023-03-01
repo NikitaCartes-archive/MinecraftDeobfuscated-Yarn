@@ -1,6 +1,8 @@
 package net.minecraft.client;
 
 import com.google.common.base.MoreObjects;
+import com.mojang.blaze3d.platform.TextureUtil;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Locale;
 import javax.annotation.Nullable;
@@ -29,6 +31,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -213,9 +216,18 @@ public class Keyboard {
 					chatHud.addMessage(Text.translatable("debug.creative_spectator.help"));
 					chatHud.addMessage(Text.translatable("debug.pause_focus.help"));
 					chatHud.addMessage(Text.translatable("debug.help.help"));
+					chatHud.addMessage(Text.translatable("debug.dump_dynamic_textures.help"));
 					chatHud.addMessage(Text.translatable("debug.reload_resourcepacks.help"));
 					chatHud.addMessage(Text.translatable("debug.pause.help"));
 					chatHud.addMessage(Text.translatable("debug.gamemodes.help"));
+					return true;
+				case 83:
+					Path path = TextureUtil.getDebugTexturePath(this.client.runDirectory.toPath()).toAbsolutePath();
+					this.client.getTextureManager().dumpDynamicTextures(path);
+					Text text = Text.literal(path.toString())
+						.formatted(Formatting.UNDERLINE)
+						.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().toString())));
+					this.debugLog("debug.dump_dynamic_textures", text);
 					return true;
 				case 84:
 					this.debugLog("debug.reload_resourcepacks.message");

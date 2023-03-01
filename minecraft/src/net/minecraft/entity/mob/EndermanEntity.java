@@ -50,6 +50,7 @@ import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -370,28 +371,26 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
-		} else if (source.isIndirect()) {
-			boolean bl;
-			if (source.getSource() instanceof PotionEntity potionEntity) {
-				bl = this.damageFromPotion(source, potionEntity, amount);
-			} else {
-				bl = false;
-			}
-
-			for (int i = 0; i < 64; i++) {
-				if (this.teleportRandomly()) {
-					return true;
-				}
-			}
-
-			return bl;
 		} else {
-			boolean bl = super.damage(source, amount);
-			if (!this.world.isClient() && !(source.getAttacker() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
-				this.teleportRandomly();
-			}
+			boolean bl = source.getSource() instanceof PotionEntity;
+			if (!source.isIn(DamageTypeTags.IS_PROJECTILE) && !bl) {
+				boolean bl2 = super.damage(source, amount);
+				if (!this.world.isClient() && !(source.getAttacker() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
+					this.teleportRandomly();
+				}
 
-			return bl;
+				return bl2;
+			} else {
+				boolean bl2 = bl && this.damageFromPotion(source, (PotionEntity)source.getSource(), amount);
+
+				for (int i = 0; i < 64; i++) {
+					if (this.teleportRandomly()) {
+						return true;
+					}
+				}
+
+				return bl2;
+			}
 		}
 	}
 

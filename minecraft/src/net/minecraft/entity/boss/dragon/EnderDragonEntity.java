@@ -560,8 +560,6 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		}
 
 		this.move(MovementType.SELF, new Vec3d(0.0, 0.1F, 0.0));
-		this.setYaw(this.getYaw() + 20.0F);
-		this.bodyYaw = this.getYaw();
 		if (this.ticksSinceDeath == 200 && this.world instanceof ServerWorld) {
 			if (bl) {
 				ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.2F));

@@ -12,7 +12,7 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 
 @Deprecated
-public class FollowMobWithIntervalTask {
+public class LookAtMobWithIntervalTask {
 	public static Task<LivingEntity> follow(float maxDistance, UniformIntProvider interval) {
 		return follow(maxDistance, interval, entity -> true);
 	}
@@ -23,7 +23,7 @@ public class FollowMobWithIntervalTask {
 
 	private static Task<LivingEntity> follow(float maxDistance, UniformIntProvider interval, Predicate<LivingEntity> predicate) {
 		float f = maxDistance * maxDistance;
-		FollowMobWithIntervalTask.Interval interval2 = new FollowMobWithIntervalTask.Interval(interval);
+		LookAtMobWithIntervalTask.Interval interval2 = new LookAtMobWithIntervalTask.Interval(interval);
 		return TaskTriggerer.task(
 			context -> context.group(context.queryMemoryAbsent(MemoryModuleType.LOOK_TARGET), context.queryMemoryValue(MemoryModuleType.VISIBLE_MOBS))
 					.apply(

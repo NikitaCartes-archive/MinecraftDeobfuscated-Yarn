@@ -269,7 +269,11 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
-		return super.getSaddledSpeed(controllingPassenger) * (this.isCold() ? 0.35F : 0.55F) * this.saddledComponent.getMovementSpeedMultiplier();
+		return (float)(
+			this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)
+				* (double)(this.isCold() ? 0.35F : 0.55F)
+				* (double)this.saddledComponent.getMovementSpeedMultiplier()
+		);
 	}
 
 	@Override

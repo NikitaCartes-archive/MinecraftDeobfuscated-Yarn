@@ -15,11 +15,11 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
 import net.minecraft.entity.ai.brain.task.CompositeTask;
-import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.PlayDeadTask;
@@ -146,7 +146,7 @@ public class AxolotlBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, FollowMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
+				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(1, new BreedTask(EntityType.AXOLOTL, 0.2F)),
 				Pair.of(
 					2,

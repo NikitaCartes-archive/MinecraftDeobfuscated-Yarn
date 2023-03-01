@@ -14,7 +14,7 @@ public class StatusEffects {
 	public static final StatusEffect SPEED = register(
 		1,
 		"speed",
-		new StatusEffect(StatusEffectCategory.BENEFICIAL, 8171462)
+		new StatusEffect(StatusEffectCategory.BENEFICIAL, 3402751)
 			.addAttributeModifier(
 				EntityAttributes.GENERIC_MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", 0.2F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL
 			)
@@ -22,7 +22,7 @@ public class StatusEffects {
 	public static final StatusEffect SLOWNESS = register(
 		2,
 		"slowness",
-		new StatusEffect(StatusEffectCategory.HARMFUL, 5926017)
+		new StatusEffect(StatusEffectCategory.HARMFUL, 9154528)
 			.addAttributeModifier(
 				EntityAttributes.GENERIC_MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL
 			)
@@ -42,20 +42,20 @@ public class StatusEffects {
 	public static final StatusEffect STRENGTH = register(
 		5,
 		"strength",
-		new DamageModifierStatusEffect(StatusEffectCategory.BENEFICIAL, 9643043, 3.0)
+		new DamageModifierStatusEffect(StatusEffectCategory.BENEFICIAL, 16762624, 3.0)
 			.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 0.0, EntityAttributeModifier.Operation.ADDITION)
 	);
 	public static final StatusEffect INSTANT_HEALTH = register(6, "instant_health", new InstantStatusEffect(StatusEffectCategory.BENEFICIAL, 16262179));
-	public static final StatusEffect INSTANT_DAMAGE = register(7, "instant_damage", new InstantStatusEffect(StatusEffectCategory.HARMFUL, 4393481));
-	public static final StatusEffect JUMP_BOOST = register(8, "jump_boost", new StatusEffect(StatusEffectCategory.BENEFICIAL, 2293580));
+	public static final StatusEffect INSTANT_DAMAGE = register(7, "instant_damage", new InstantStatusEffect(StatusEffectCategory.HARMFUL, 11101546));
+	public static final StatusEffect JUMP_BOOST = register(8, "jump_boost", new StatusEffect(StatusEffectCategory.BENEFICIAL, 16646020));
 	public static final StatusEffect NAUSEA = register(9, "nausea", new StatusEffect(StatusEffectCategory.HARMFUL, 5578058));
 	public static final StatusEffect REGENERATION = register(10, "regeneration", new StatusEffect(StatusEffectCategory.BENEFICIAL, 13458603));
-	public static final StatusEffect RESISTANCE = register(11, "resistance", new StatusEffect(StatusEffectCategory.BENEFICIAL, 10044730));
-	public static final StatusEffect FIRE_RESISTANCE = register(12, "fire_resistance", new StatusEffect(StatusEffectCategory.BENEFICIAL, 14981690));
-	public static final StatusEffect WATER_BREATHING = register(13, "water_breathing", new StatusEffect(StatusEffectCategory.BENEFICIAL, 3035801));
-	public static final StatusEffect INVISIBILITY = register(14, "invisibility", new StatusEffect(StatusEffectCategory.BENEFICIAL, 8356754));
+	public static final StatusEffect RESISTANCE = register(11, "resistance", new StatusEffect(StatusEffectCategory.BENEFICIAL, 9520880));
+	public static final StatusEffect FIRE_RESISTANCE = register(12, "fire_resistance", new StatusEffect(StatusEffectCategory.BENEFICIAL, 16750848));
+	public static final StatusEffect WATER_BREATHING = register(13, "water_breathing", new StatusEffect(StatusEffectCategory.BENEFICIAL, 10017472));
+	public static final StatusEffect INVISIBILITY = register(14, "invisibility", new StatusEffect(StatusEffectCategory.BENEFICIAL, 16185078));
 	public static final StatusEffect BLINDNESS = register(15, "blindness", new StatusEffect(StatusEffectCategory.HARMFUL, 2039587));
-	public static final StatusEffect NIGHT_VISION = register(16, "night_vision", new StatusEffect(StatusEffectCategory.BENEFICIAL, 2039713));
+	public static final StatusEffect NIGHT_VISION = register(16, "night_vision", new StatusEffect(StatusEffectCategory.BENEFICIAL, 12779366));
 	public static final StatusEffect HUNGER = register(17, "hunger", new StatusEffect(StatusEffectCategory.HARMFUL, 5797459));
 	public static final StatusEffect WEAKNESS = register(
 		18,
@@ -63,7 +63,7 @@ public class StatusEffects {
 		new DamageModifierStatusEffect(StatusEffectCategory.HARMFUL, 4738376, -4.0)
 			.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, "22653B89-116E-49DC-9B6B-9971489B5BE5", 0.0, EntityAttributeModifier.Operation.ADDITION)
 	);
-	public static final StatusEffect POISON = register(19, "poison", new StatusEffect(StatusEffectCategory.HARMFUL, 5149489));
+	public static final StatusEffect POISON = register(19, "poison", new StatusEffect(StatusEffectCategory.HARMFUL, 8889187));
 	public static final StatusEffect WITHER = register(20, "wither", new StatusEffect(StatusEffectCategory.HARMFUL, 3484199));
 	public static final StatusEffect HEALTH_BOOST = register(
 		21,
@@ -78,7 +78,7 @@ public class StatusEffects {
 	public static final StatusEffect LUCK = register(
 		26,
 		"luck",
-		new StatusEffect(StatusEffectCategory.BENEFICIAL, 3381504)
+		new StatusEffect(StatusEffectCategory.BENEFICIAL, 5882118)
 			.addAttributeModifier(EntityAttributes.GENERIC_LUCK, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0, EntityAttributeModifier.Operation.ADDITION)
 	);
 	public static final StatusEffect UNLUCK = register(

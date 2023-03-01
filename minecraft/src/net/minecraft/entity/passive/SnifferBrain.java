@@ -17,15 +17,15 @@ import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
+import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobTask;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
-import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -70,7 +70,7 @@ public class SnifferBrain {
 	}
 
 	private static void addCoreActivities(Brain<SnifferEntity> brain) {
-		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new WalkTask(2.0F) {
+		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8F), new FleeTask(2.0F) {
 			@Override
 			protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 				pathAwareEntity.getBrain().forget(MemoryModuleType.SNIFFER_DIGGING);
@@ -119,7 +119,7 @@ public class SnifferBrain {
 							Pair.of(new SnifferBrain.ScentingTask(40, 80), 1),
 							Pair.of(new SnifferBrain.SniffingTask(40, 80), 1),
 							Pair.of(new BreedTask(EntityType.SNIFFER, 1.0F), 1),
-							Pair.of(FollowMobTask.create(EntityType.PLAYER, 6.0F), 1),
+							Pair.of(LookAtMobTask.create(EntityType.PLAYER, 6.0F), 1),
 							Pair.of(StrollTask.create(1.0F), 1),
 							Pair.of(new WaitTask(5, 20), 2)
 						)

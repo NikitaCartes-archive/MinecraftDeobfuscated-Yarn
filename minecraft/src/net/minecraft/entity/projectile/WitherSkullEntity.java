@@ -65,7 +65,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 				bl = entity.damage(this.getDamageSources().magic(), 5.0F);
 			}
 
-			if (bl && entity instanceof LivingEntity) {
+			if (bl && entity instanceof LivingEntity livingEntityx) {
 				int i = 0;
 				if (this.world.getDifficulty() == Difficulty.NORMAL) {
 					i = 10;
@@ -74,7 +74,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 				}
 
 				if (i > 0) {
-					((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1), this.getEffectCause());
+					livingEntityx.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1), this.getEffectCause());
 				}
 			}
 		}

@@ -17,10 +17,10 @@ import net.minecraft.entity.ai.brain.LivingTargetCache;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
@@ -107,7 +107,7 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 			10,
 			ImmutableList.of(
 				UpdateAttackTargetTask.create(ZoglinEntity::getHoglinTarget),
-				FollowMobWithIntervalTask.follow(8.0F, UniformIntProvider.create(30, 60)),
+				LookAtMobWithIntervalTask.follow(8.0F, UniformIntProvider.create(30, 60)),
 				new RandomTask<>(
 					ImmutableList.of(Pair.of(StrollTask.create(0.4F), 2), Pair.of(GoTowardsLookTargetTask.create(0.4F, 3), 2), Pair.of(new WaitTask(30, 60), 1))
 				)

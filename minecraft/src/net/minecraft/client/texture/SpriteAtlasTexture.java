@@ -23,7 +23,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class SpriteAtlasTexture extends AbstractTexture implements TextureTickListener {
+public class SpriteAtlasTexture extends AbstractTexture implements DynamicTexture, TextureTickListener {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	@Deprecated
 	public static final Identifier BLOCK_ATLAS_TEXTURE = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
@@ -34,6 +34,9 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 	private Map<Identifier, Sprite> sprites = Map.of();
 	private final Identifier id;
 	private final int maxTextureSize;
+	private int width;
+	private int height;
+	private int mipLevel;
 
 	public SpriteAtlasTexture(Identifier id) {
 		this.id = id;
@@ -47,6 +50,9 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 	public void upload(SpriteLoader.StitchResult stitchResult) {
 		LOGGER.info("Created: {}x{}x{} {}-atlas", stitchResult.width(), stitchResult.height(), stitchResult.mipLevel(), this.id);
 		TextureUtil.prepareImage(this.getGlId(), stitchResult.mipLevel(), stitchResult.width(), stitchResult.height());
+		this.width = stitchResult.width();
+		this.height = stitchResult.height();
+		this.mipLevel = stitchResult.mipLevel();
 		this.clear();
 		this.sprites = Map.copyOf(stitchResult.regions());
 		List<SpriteContents> list = new ArrayList();
@@ -75,27 +81,21 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		this.animatedSprites = List.copyOf(list2);
 	}
 
-	private void dumpAtlasTextureAndInfo(int scales, int width, int height) {
-		String string = this.id.toUnderscoreSeparatedString();
-		Path path = TextureUtil.getDebugTexturePath();
-
-		try {
-			Files.createDirectories(path);
-			TextureUtil.writeAsPNG(path, string, this.getGlId(), scales, width, height);
-			dumpAtlasInfos(path, string, this.sprites);
-		} catch (IOException var7) {
-			LOGGER.warn("Failed to dump atlas contents to {}", path);
-		}
+	@Override
+	public void save(Identifier id, Path path) throws IOException {
+		String string = id.toUnderscoreSeparatedString();
+		TextureUtil.writeAsPNG(path, string, this.getGlId(), this.mipLevel, this.width, this.height);
+		dumpAtlasInfos(path, string, this.sprites);
 	}
 
-	private static void dumpAtlasInfos(Path path, String string, Map<Identifier, Sprite> map) {
-		Path path2 = path.resolve(string + ".txt");
+	private static void dumpAtlasInfos(Path path, String id, Map<Identifier, Sprite> sprites) {
+		Path path2 = path.resolve(id + ".txt");
 
 		try {
 			Writer writer = Files.newBufferedWriter(path2);
 
 			try {
-				for (Entry<Identifier, Sprite> entry : map.entrySet().stream().sorted(Entry.comparingByKey()).toList()) {
+				for (Entry<Identifier, Sprite> entry : sprites.entrySet().stream().sorted(Entry.comparingByKey()).toList()) {
 					Sprite sprite = (Sprite)entry.getValue();
 					writer.write(
 						String.format(
@@ -165,6 +165,14 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 
 	public int getMaxTextureSize() {
 		return this.maxTextureSize;
+	}
+
+	int getWidth() {
+		return this.width;
+	}
+
+	int getHeight() {
+		return this.height;
 	}
 
 	public void applyTextureFilter(SpriteLoader.StitchResult data) {

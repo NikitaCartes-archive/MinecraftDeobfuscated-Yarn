@@ -10,11 +10,12 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
-import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
+import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LeapingChargeTask;
 import net.minecraft.entity.ai.brain.task.LongJumpTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.PrepareRamTask;
 import net.minecraft.entity.ai.brain.task.RamImpactTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
@@ -23,7 +24,6 @@ import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.TemptTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
-import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.item.Items;
@@ -77,7 +77,7 @@ public class GoatBrain {
 			0,
 			ImmutableList.of(
 				new StayAboveWaterTask(0.8F),
-				new WalkTask(2.0F),
+				new FleeTask(2.0F),
 				new LookAroundTask(45, 90),
 				new WanderAroundTask(),
 				new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS),
@@ -91,7 +91,7 @@ public class GoatBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, FollowMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
+				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(0, new BreedTask(EntityType.GOAT, 1.0F)),
 				Pair.of(1, new TemptTask(goat -> 1.25F)),
 				Pair.of(2, WalkTowardClosestAdultTask.create(WALKING_SPEED, 1.25F)),

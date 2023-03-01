@@ -13,20 +13,20 @@ public class Sprite {
 	private final SpriteContents contents;
 	final int x;
 	final int y;
-	private final float uMin;
-	private final float uMax;
-	private final float vMin;
-	private final float vMax;
+	private final float minU;
+	private final float maxU;
+	private final float minV;
+	private final float maxV;
 
-	protected Sprite(Identifier atlasId, SpriteContents contents, int maxLevel, int atlasWidth, int atlasHeight, int x) {
+	protected Sprite(Identifier atlasId, SpriteContents contents, int atlasWidth, int atlasHeight, int x, int y) {
 		this.atlasId = atlasId;
 		this.contents = contents;
-		this.x = atlasHeight;
-		this.y = x;
-		this.uMin = (float)atlasHeight / (float)maxLevel;
-		this.uMax = (float)(atlasHeight + contents.getWidth()) / (float)maxLevel;
-		this.vMin = (float)x / (float)atlasWidth;
-		this.vMax = (float)(x + contents.getHeight()) / (float)atlasWidth;
+		this.x = x;
+		this.y = y;
+		this.minU = (float)x / (float)atlasWidth;
+		this.maxU = (float)(x + contents.getWidth()) / (float)atlasWidth;
+		this.minV = (float)y / (float)atlasHeight;
+		this.maxV = (float)(y + contents.getHeight()) / (float)atlasHeight;
 	}
 
 	public int getX() {
@@ -38,11 +38,11 @@ public class Sprite {
 	}
 
 	public float getMinU() {
-		return this.uMin;
+		return this.minU;
 	}
 
 	public float getMaxU() {
-		return this.uMax;
+		return this.maxU;
 	}
 
 	public SpriteContents getContents() {
@@ -66,31 +66,31 @@ public class Sprite {
 	}
 
 	public float getFrameU(double frame) {
-		float f = this.uMax - this.uMin;
-		return this.uMin + f * (float)frame / 16.0F;
+		float f = this.maxU - this.minU;
+		return this.minU + f * (float)frame / 16.0F;
 	}
 
 	public float method_35804(float f) {
-		float g = this.uMax - this.uMin;
-		return (f - this.uMin) / g * 16.0F;
+		float g = this.maxU - this.minU;
+		return (f - this.minU) / g * 16.0F;
 	}
 
 	public float getMinV() {
-		return this.vMin;
+		return this.minV;
 	}
 
 	public float getMaxV() {
-		return this.vMax;
+		return this.maxV;
 	}
 
 	public float getFrameV(double frame) {
-		float f = this.vMax - this.vMin;
-		return this.vMin + f * (float)frame / 16.0F;
+		float f = this.maxV - this.minV;
+		return this.minV + f * (float)frame / 16.0F;
 	}
 
 	public float method_35805(float f) {
-		float g = this.vMax - this.vMin;
-		return (f - this.vMin) / g * 16.0F;
+		float g = this.maxV - this.minV;
+		return (f - this.minV) / g * 16.0F;
 	}
 
 	public Identifier getAtlasId() {
@@ -98,7 +98,7 @@ public class Sprite {
 	}
 
 	public String toString() {
-		return "TextureAtlasSprite{contents='" + this.contents + "', u0=" + this.uMin + ", u1=" + this.uMax + ", v0=" + this.vMin + ", v1=" + this.vMax + "}";
+		return "TextureAtlasSprite{contents='" + this.contents + "', u0=" + this.minU + ", u1=" + this.maxU + ", v0=" + this.minV + ", v1=" + this.maxV + "}";
 	}
 
 	public void upload() {
@@ -106,8 +106,8 @@ public class Sprite {
 	}
 
 	private float getFrameDeltaFactor() {
-		float f = (float)this.contents.getWidth() / (this.uMax - this.uMin);
-		float g = (float)this.contents.getHeight() / (this.vMax - this.vMin);
+		float f = (float)this.contents.getWidth() / (this.maxU - this.minU);
+		float g = (float)this.contents.getHeight() / (this.maxV - this.minV);
 		return Math.max(g, f);
 	}
 

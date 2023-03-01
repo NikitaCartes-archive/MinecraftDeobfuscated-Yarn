@@ -16,7 +16,7 @@ import net.minecraft.entity.ai.brain.task.BiasedLongJumpTask;
 import net.minecraft.entity.ai.brain.task.BreedTask;
 import net.minecraft.entity.ai.brain.task.CompositeTask;
 import net.minecraft.entity.ai.brain.task.CroakTask;
-import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
+import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.FrogEatEntityTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
@@ -24,6 +24,7 @@ import net.minecraft.entity.ai.brain.task.LayFrogSpawnTask;
 import net.minecraft.entity.ai.brain.task.LeapingChargeTask;
 import net.minecraft.entity.ai.brain.task.LongJumpTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
@@ -31,7 +32,6 @@ import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.TemptTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.UpdateAttackTargetTask;
-import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsLandTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsWaterTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
@@ -80,7 +80,7 @@ public class FrogBrain {
 			Activity.CORE,
 			0,
 			ImmutableList.of(
-				new WalkTask(2.0F),
+				new FleeTask(2.0F),
 				new LookAroundTask(45, 90),
 				new WanderAroundTask(),
 				new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS),
@@ -93,7 +93,7 @@ public class FrogBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, FollowMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
+				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(0, new BreedTask(EntityType.FROG, 1.0F)),
 				Pair.of(1, new TemptTask(frog -> 1.25F)),
 				Pair.of(
@@ -123,7 +123,7 @@ public class FrogBrain {
 		brain.setTaskList(
 			Activity.SWIM,
 			ImmutableList.of(
-				Pair.of(0, FollowMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
+				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(1, new TemptTask(frog -> 1.25F)),
 				Pair.of(
 					2, UpdateAttackTargetTask.create(FrogBrain::isNotBreeding, frog -> frog.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))
@@ -155,7 +155,7 @@ public class FrogBrain {
 		brain.setTaskList(
 			Activity.LAY_SPAWN,
 			ImmutableList.of(
-				Pair.of(0, FollowMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
+				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(
 					1, UpdateAttackTargetTask.create(FrogBrain::isNotBreeding, frog -> frog.getBrain().getOptionalRegisteredMemory(MemoryModuleType.NEAREST_ATTACKABLE))
 				),

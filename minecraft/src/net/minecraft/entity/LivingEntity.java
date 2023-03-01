@@ -698,6 +698,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	@Override
+	public void remove(Entity.RemovalReason reason) {
+		super.remove(reason);
+		this.brain.forgetAll();
+	}
+
+	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		nbt.putFloat("Health", this.getHealth());
 		nbt.putShort("HurtTime", (short)this.hurtTime);
@@ -2252,7 +2258,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
-		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+		return this.getMovementSpeed();
 	}
 
 	public void updateLimbs(boolean flutter) {
@@ -2673,14 +2679,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.forwardSpeed *= 0.98F;
 		this.tickFallFlying();
 		Box box = this.getBoundingBox();
-		if (this.isAlive()) {
-			LivingEntity livingEntity = this.getControllingPassenger();
-			Vec3d vec3d2 = new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed);
-			if (livingEntity != null) {
-				this.travelControlled(livingEntity, vec3d2);
-			} else {
-				this.travel(vec3d2);
-			}
+		LivingEntity livingEntity = this.getControllingPassenger();
+		Vec3d vec3d2 = new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed);
+		if (livingEntity != null && this.isAlive()) {
+			this.travelControlled(livingEntity, vec3d2);
+		} else {
+			this.travel(vec3d2);
 		}
 
 		this.world.getProfiler().pop();

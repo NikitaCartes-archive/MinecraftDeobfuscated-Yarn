@@ -52,16 +52,19 @@ public class PlacedFeatures {
 	public static void register(
 		Registerable<PlacedFeature> featureRegisterable,
 		RegistryKey<PlacedFeature> key,
-		RegistryEntry<ConfiguredFeature<?, ?>> entry,
+		RegistryEntry<ConfiguredFeature<?, ?>> feature,
 		List<PlacementModifier> modifiers
 	) {
-		featureRegisterable.register(key, new PlacedFeature(entry, List.copyOf(modifiers)));
+		featureRegisterable.register(key, new PlacedFeature(feature, List.copyOf(modifiers)));
 	}
 
 	public static void register(
-		Registerable<PlacedFeature> featureRegisterable, RegistryKey<PlacedFeature> key, RegistryEntry<ConfiguredFeature<?, ?>> entry, PlacementModifier... modifiers
+		Registerable<PlacedFeature> featureRegisterable,
+		RegistryKey<PlacedFeature> key,
+		RegistryEntry<ConfiguredFeature<?, ?>> feature,
+		PlacementModifier... modifiers
 	) {
-		register(featureRegisterable, key, entry, List.of(modifiers));
+		register(featureRegisterable, key, feature, List.of(modifiers));
 	}
 
 	public static PlacementModifier createCountExtraModifier(int count, float extraChance, int extraCount) {
@@ -85,8 +88,8 @@ public class PlacedFeatures {
 		return BlockFilterPlacementModifier.of(BlockPredicate.wouldSurvive(block.getDefaultState(), BlockPos.ORIGIN));
 	}
 
-	public static RegistryEntry<PlacedFeature> createEntry(RegistryEntry<ConfiguredFeature<?, ?>> registryEntry, PlacementModifier... modifiers) {
-		return RegistryEntry.of(new PlacedFeature(registryEntry, List.of(modifiers)));
+	public static RegistryEntry<PlacedFeature> createEntry(RegistryEntry<ConfiguredFeature<?, ?>> feature, PlacementModifier... modifiers) {
+		return RegistryEntry.of(new PlacedFeature(feature, List.of(modifiers)));
 	}
 
 	public static <FC extends FeatureConfig, F extends Feature<FC>> RegistryEntry<PlacedFeature> createEntry(

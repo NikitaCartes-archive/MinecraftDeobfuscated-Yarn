@@ -14,16 +14,16 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.LookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
-import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
+import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.GiveInventoryToLookTargetTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
-import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WalkToNearestVisibleWantedItemTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
@@ -63,7 +63,7 @@ public class AllayBrain {
 			0,
 			ImmutableList.of(
 				new StayAboveWaterTask(0.8F),
-				new WalkTask(2.5F),
+				new FleeTask(2.5F),
 				new LookAroundTask(45, 90),
 				new WanderAroundTask(),
 				new TemptationCooldownTask(MemoryModuleType.LIKED_NOTEBLOCK_COOLDOWN_TICKS),
@@ -79,7 +79,7 @@ public class AllayBrain {
 				Pair.of(0, WalkToNearestVisibleWantedItemTask.create(allay -> true, 1.75F, true, 32)),
 				Pair.of(1, new GiveInventoryToLookTargetTask<>(AllayBrain::getLookTarget, 2.25F, 20)),
 				Pair.of(2, WalkTowardsLookTargetTask.create(AllayBrain::getLookTarget, Predicate.not(AllayBrain::hasNearestVisibleWantedItem), 4, 16, 2.25F)),
-				Pair.of(3, FollowMobWithIntervalTask.follow(6.0F, UniformIntProvider.create(30, 60))),
+				Pair.of(3, LookAtMobWithIntervalTask.follow(6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(
 					4,
 					new RandomTask<>(

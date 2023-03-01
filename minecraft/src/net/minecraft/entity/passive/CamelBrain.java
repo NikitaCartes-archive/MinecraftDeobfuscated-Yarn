@@ -13,9 +13,10 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
-import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
+import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.RandomLookAroundTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
@@ -25,7 +26,6 @@ import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 import net.minecraft.entity.ai.brain.task.TemptTask;
 import net.minecraft.entity.ai.brain.task.TemptationCooldownTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
-import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -96,7 +96,7 @@ public class CamelBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
-				Pair.of(0, FollowMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
+				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(1, new BreedTask(EntityType.CAMEL, 1.0F)),
 				Pair.of(2, new TemptTask(entity -> 2.5F)),
 				Pair.of(3, TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), WalkTowardClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, 2.5F))),
@@ -125,7 +125,7 @@ public class CamelBrain {
 		return CamelEntity.BREEDING_INGREDIENT;
 	}
 
-	public static class CamelWalkTask extends WalkTask {
+	public static class CamelWalkTask extends FleeTask {
 		public CamelWalkTask(float f) {
 			super(f);
 		}

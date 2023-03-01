@@ -163,6 +163,10 @@ public class Brain<E extends LivingEntity> {
 		return this.isMemoryInState(type, MemoryModuleState.VALUE_PRESENT);
 	}
 
+	public void forgetAll() {
+		this.memories.keySet().forEach(type -> this.memories.put(type, Optional.empty()));
+	}
+
 	public <U> void forget(MemoryModuleType<U> type) {
 		this.remember(type, Optional.empty());
 	}

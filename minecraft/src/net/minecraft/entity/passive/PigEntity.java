@@ -246,7 +246,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
-		return super.getSaddledSpeed(controllingPassenger) * 0.225F * this.saddledComponent.getMovementSpeedMultiplier();
+		return (float)(this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225 * (double)this.saddledComponent.getMovementSpeedMultiplier());
 	}
 
 	@Override

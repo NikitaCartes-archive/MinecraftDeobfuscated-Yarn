@@ -26,8 +26,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -204,7 +204,7 @@ public class CreateWorldScreen extends Screen {
 			child.setNavigationOrder(1);
 			this.addDrawableChild(child);
 		});
-		this.tabNavigation.selectTab(0);
+		this.tabNavigation.selectTab(0, false);
 		this.worldCreator.update();
 		this.initTabNavigation();
 	}
@@ -217,8 +217,8 @@ public class CreateWorldScreen extends Screen {
 			this.grid.refreshPositions();
 			SimplePositioningWidget.setPos(this.grid, 0, this.height - 36, this.width, 36);
 			int i = this.tabNavigation.getNavigationFocus().getBottom();
-			FocusedRect focusedRect = new FocusedRect(0, i, this.width, this.grid.getY() - i);
-			this.tabManager.setTabArea(focusedRect);
+			ScreenRect screenRect = new ScreenRect(0, i, this.width, this.grid.getY() - i);
+			this.tabManager.setTabArea(screenRect);
 		}
 	}
 

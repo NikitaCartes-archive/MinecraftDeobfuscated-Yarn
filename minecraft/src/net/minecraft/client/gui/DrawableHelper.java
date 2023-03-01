@@ -12,7 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
@@ -68,14 +67,14 @@ public abstract class DrawableHelper {
 	}
 
 	public static void enableScissor(int x1, int y1, int x2, int y2) {
-		setScissor(SCISSOR_STACK.push(new FocusedRect(x1, y1, x2 - x1, y2 - y1)));
+		setScissor(SCISSOR_STACK.push(new ScreenRect(x1, y1, x2 - x1, y2 - y1)));
 	}
 
 	public static void disableScissor() {
 		setScissor(SCISSOR_STACK.pop());
 	}
 
-	private static void setScissor(@Nullable FocusedRect rect) {
+	private static void setScissor(@Nullable ScreenRect rect) {
 		if (rect != null) {
 			Window window = MinecraftClient.getInstance().getWindow();
 			int i = window.getFramebufferHeight();
@@ -508,14 +507,14 @@ public abstract class DrawableHelper {
 
 	@Environment(EnvType.CLIENT)
 	static class ScissorStack {
-		private final Deque<FocusedRect> stack = new ArrayDeque();
+		private final Deque<ScreenRect> stack = new ArrayDeque();
 
-		public FocusedRect push(FocusedRect rect) {
-			FocusedRect focusedRect = (FocusedRect)this.stack.peekLast();
-			if (focusedRect != null) {
-				FocusedRect focusedRect2 = (FocusedRect)Objects.requireNonNullElse(rect.intersection(focusedRect), FocusedRect.empty());
-				this.stack.addLast(focusedRect2);
-				return focusedRect2;
+		public ScreenRect push(ScreenRect rect) {
+			ScreenRect screenRect = (ScreenRect)this.stack.peekLast();
+			if (screenRect != null) {
+				ScreenRect screenRect2 = (ScreenRect)Objects.requireNonNullElse(rect.intersection(screenRect), ScreenRect.empty());
+				this.stack.addLast(screenRect2);
+				return screenRect2;
 			} else {
 				this.stack.addLast(rect);
 				return rect;
@@ -523,12 +522,12 @@ public abstract class DrawableHelper {
 		}
 
 		@Nullable
-		public FocusedRect pop() {
+		public ScreenRect pop() {
 			if (this.stack.isEmpty()) {
 				throw new IllegalStateException("Scissor stack underflow");
 			} else {
 				this.stack.removeLast();
-				return (FocusedRect)this.stack.peekLast();
+				return (ScreenRect)this.stack.peekLast();
 			}
 		}
 	}

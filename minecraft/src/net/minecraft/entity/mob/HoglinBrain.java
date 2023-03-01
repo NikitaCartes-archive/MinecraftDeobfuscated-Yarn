@@ -12,12 +12,12 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.task.BreedTask;
-import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetTask;
 import net.minecraft.entity.ai.brain.task.GoToRememberedPositionTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.PacifyTask;
@@ -78,7 +78,7 @@ public class HoglinBrain {
 				GoToRememberedPositionTask.createPosBased(MemoryModuleType.NEAREST_REPELLENT, 1.0F, 8, true),
 				UpdateAttackTargetTask.create(HoglinBrain::getNearestVisibleTargetablePlayer),
 				TaskTriggerer.runIf(HoglinEntity::isAdult, GoToRememberedPositionTask.createEntityBased(MemoryModuleType.NEAREST_VISIBLE_ADULT_PIGLIN, 0.4F, 8, false)),
-				FollowMobWithIntervalTask.follow(8.0F, UniformIntProvider.create(30, 60)),
+				LookAtMobWithIntervalTask.follow(8.0F, UniformIntProvider.create(30, 60)),
 				WalkTowardClosestAdultTask.create(WALK_TOWARD_CLOSEST_ADULT_RANGE, 0.6F),
 				makeRandomWalkTask()
 			)
@@ -109,7 +109,7 @@ public class HoglinBrain {
 			ImmutableList.of(
 				GoToRememberedPositionTask.createEntityBased(MemoryModuleType.AVOID_TARGET, 1.3F, 15, false),
 				makeRandomWalkTask(),
-				FollowMobWithIntervalTask.follow(8.0F, UniformIntProvider.create(30, 60)),
+				LookAtMobWithIntervalTask.follow(8.0F, UniformIntProvider.create(30, 60)),
 				ForgetTask.<PathAwareEntity>create(HoglinBrain::isLoneAdult, MemoryModuleType.AVOID_TARGET)
 			),
 			MemoryModuleType.AVOID_TARGET

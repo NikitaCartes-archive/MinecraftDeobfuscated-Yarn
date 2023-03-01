@@ -1,24 +1,26 @@
-package net.minecraft.client.gui.navigation;
+package net.minecraft.client.gui;
 
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.navigation.NavigationAxis;
+import net.minecraft.client.gui.navigation.NavigationDirection;
 
 /**
- * A rectangle on the screen that is focused.
+ * A rectangle on the screen.
  */
 @Environment(EnvType.CLIENT)
-public record FocusedRect(FocusedPos position, int width, int height) {
-	private static final FocusedRect EMPTY = new FocusedRect(0, 0, 0, 0);
+public record ScreenRect(ScreenPos position, int width, int height) {
+	private static final ScreenRect EMPTY = new ScreenRect(0, 0, 0, 0);
 
-	public FocusedRect(int sameAxis, int otherAxis, int width, int height) {
-		this(new FocusedPos(sameAxis, otherAxis), width, height);
+	public ScreenRect(int sameAxis, int otherAxis, int width, int height) {
+		this(new ScreenPos(sameAxis, otherAxis), width, height);
 	}
 
 	/**
 	 * {@return an empty rect}
 	 */
-	public static FocusedRect empty() {
+	public static ScreenRect empty() {
 		return EMPTY;
 	}
 
@@ -30,18 +32,18 @@ public record FocusedRect(FocusedPos position, int width, int height) {
 	 * @param sameAxisLength the length of the edge whose axis is the same as {@code axis}
 	 * @param otherAxisLength the length of the edge whose axis is different from {@code axis}
 	 */
-	public static FocusedRect of(NavigationAxis axis, int sameAxisCoord, int otherAxisCoord, int sameAxisLength, int otherAxisLength) {
+	public static ScreenRect of(NavigationAxis axis, int sameAxisCoord, int otherAxisCoord, int sameAxisLength, int otherAxisLength) {
 		return switch (axis) {
-			case HORIZONTAL -> new FocusedRect(sameAxisCoord, otherAxisCoord, sameAxisLength, otherAxisLength);
-			case VERTICAL -> new FocusedRect(otherAxisCoord, sameAxisCoord, otherAxisLength, sameAxisLength);
+			case HORIZONTAL -> new ScreenRect(sameAxisCoord, otherAxisCoord, sameAxisLength, otherAxisLength);
+			case VERTICAL -> new ScreenRect(otherAxisCoord, sameAxisCoord, otherAxisLength, sameAxisLength);
 		};
 	}
 
 	/**
 	 * {@return a new rect of the same dimensions with the position incremented}
 	 */
-	public FocusedRect add(NavigationDirection direction) {
-		return new FocusedRect(this.position.add(direction), this.width, this.height);
+	public ScreenRect add(NavigationDirection direction) {
+		return new ScreenRect(this.position.add(direction), this.width, this.height);
 	}
 
 	/**
@@ -67,7 +69,7 @@ public record FocusedRect(FocusedPos position, int width, int height) {
 	 * 
 	 * <p>Borders are one pixel thick.
 	 */
-	public FocusedRect getBorder(NavigationDirection direction) {
+	public ScreenRect getBorder(NavigationDirection direction) {
 		int i = this.getBoundingCoordinate(direction);
 		NavigationAxis navigationAxis = direction.getAxis().getOther();
 		int j = this.getBoundingCoordinate(navigationAxis.getNegativeDirection());
@@ -78,14 +80,14 @@ public record FocusedRect(FocusedPos position, int width, int height) {
 	/**
 	 * {@return whether this rect overlaps with {@code rect} in both axes}
 	 */
-	public boolean overlaps(FocusedRect other) {
+	public boolean overlaps(ScreenRect other) {
 		return this.overlaps(other, NavigationAxis.HORIZONTAL) && this.overlaps(other, NavigationAxis.VERTICAL);
 	}
 
 	/**
 	 * {@return whether this rect overlaps with {@code rect} in {@code axis}}
 	 */
-	public boolean overlaps(FocusedRect other, NavigationAxis axis) {
+	public boolean overlaps(ScreenRect other, NavigationAxis axis) {
 		int i = this.getBoundingCoordinate(axis.getNegativeDirection());
 		int j = other.getBoundingCoordinate(axis.getNegativeDirection());
 		int k = this.getBoundingCoordinate(axis.getPositiveDirection());
@@ -105,12 +107,12 @@ public record FocusedRect(FocusedPos position, int width, int height) {
 	 * intersect}
 	 */
 	@Nullable
-	public FocusedRect intersection(FocusedRect other) {
+	public ScreenRect intersection(ScreenRect other) {
 		int i = Math.max(this.getLeft(), other.getLeft());
 		int j = Math.max(this.getTop(), other.getTop());
 		int k = Math.min(this.getRight(), other.getRight());
 		int l = Math.min(this.getBottom(), other.getBottom());
-		return i < k && j < l ? new FocusedRect(i, j, k - i, l - j) : null;
+		return i < k && j < l ? new ScreenRect(i, j, k - i, l - j) : null;
 	}
 
 	public int getTop() {

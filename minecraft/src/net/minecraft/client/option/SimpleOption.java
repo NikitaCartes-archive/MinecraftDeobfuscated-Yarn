@@ -482,7 +482,7 @@ public final class SimpleOption<T> {
 	 * @see <a href="SimpleOption.html#callbacks">Callbacks</a>
 	 */
 	@Environment(EnvType.CLIENT)
-	public static record MaxSuppliableIntCallbacks(int minInclusive, IntSupplier maxSupplier)
+	public static record MaxSuppliableIntCallbacks(int minInclusive, IntSupplier maxSupplier, int encodableMaxInclusive)
 		implements SimpleOption.IntSliderCallbacks,
 		SimpleOption.TypeChangeableCallbacks<Integer> {
 		public Optional<Integer> validate(Integer integer) {
@@ -499,7 +499,7 @@ public final class SimpleOption<T> {
 			return Codecs.validate(
 				Codec.INT,
 				value -> {
-					int i = this.maxSupplier.getAsInt() + 1;
+					int i = this.encodableMaxInclusive + 1;
 					return value.compareTo(this.minInclusive) >= 0 && value.compareTo(i) <= 0
 						? DataResult.success(value)
 						: DataResult.error(() -> "Value " + value + " outside of range [" + this.minInclusive + ":" + i + "]", value);

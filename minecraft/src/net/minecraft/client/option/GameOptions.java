@@ -775,6 +775,7 @@ public class GameOptions {
 		}
 	}, SimpleOption.DoubleSliderCallbacks.INSTANCE, 0.5, value -> {
 	});
+	private static final int MAX_SERIALIZABLE_GUI_SCALE = 2147483646;
 	private final SimpleOption<Integer> guiScale = new SimpleOption<>(
 		"options.guiScale",
 		SimpleOption.emptyTooltip(),
@@ -782,7 +783,7 @@ public class GameOptions {
 		new SimpleOption.MaxSuppliableIntCallbacks(0, () -> {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
 			return !minecraftClient.isRunning() ? 2147483646 : minecraftClient.getWindow().calculateScaleFactor(0, minecraftClient.forcesUnicodeFont());
-		}),
+		}, 2147483646),
 		0,
 		value -> {
 		}

@@ -5,8 +5,11 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.navigation.FocusedRect;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.sound.SoundEvents;
 
 @Environment(EnvType.CLIENT)
 public class TabManager {
@@ -15,14 +18,14 @@ public class TabManager {
 	@Nullable
 	private Tab currentTab;
 	@Nullable
-	private FocusedRect tabArea;
+	private ScreenRect tabArea;
 
 	public TabManager(Consumer<ClickableWidget> tabLoadConsumer, Consumer<ClickableWidget> tabUnloadConsumer) {
 		this.tabLoadConsumer = tabLoadConsumer;
 		this.tabUnloadConsumer = tabUnloadConsumer;
 	}
 
-	public void setTabArea(FocusedRect tabArea) {
+	public void setTabArea(ScreenRect tabArea) {
 		this.tabArea = tabArea;
 		Tab tab = this.getCurrentTab();
 		if (tab != null) {
@@ -30,7 +33,7 @@ public class TabManager {
 		}
 	}
 
-	public void setCurrentTab(Tab tab) {
+	public void setCurrentTab(Tab tab, boolean clickSound) {
 		if (!Objects.equals(this.currentTab, tab)) {
 			if (this.currentTab != null) {
 				this.currentTab.forEachChild(this.tabUnloadConsumer);
@@ -40,6 +43,10 @@ public class TabManager {
 			tab.forEachChild(this.tabLoadConsumer);
 			if (this.tabArea != null) {
 				tab.refreshGrid(this.tabArea);
+			}
+
+			if (clickSound) {
+				MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 			}
 		}
 	}
