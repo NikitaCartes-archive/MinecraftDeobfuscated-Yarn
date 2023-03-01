@@ -34,7 +34,7 @@ public abstract class SpriteAtlasHolder implements ResourceReloader, AutoCloseab
 		Executor applyExecutor
 	) {
 		return SpriteLoader.fromAtlas(this.atlas)
-			.method_47661(manager, this.field_41425, 0, prepareExecutor)
+			.load(manager, this.field_41425, 0, prepareExecutor)
 			.thenCompose(SpriteLoader.StitchResult::whenComplete)
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(stitchResult -> this.afterReload(stitchResult, applyProfiler), applyExecutor);

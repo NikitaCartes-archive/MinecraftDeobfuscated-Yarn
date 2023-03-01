@@ -82,7 +82,7 @@ public class OneTwentyBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.SAPLINGS).add(Blocks.CHERRY_SAPLING);
 		this.getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN).addTag(BlockTags.CHERRY_LOGS);
 		this.getOrCreateTagBuilder(BlockTags.OVERWORLD_NATURAL_LOGS).add(Blocks.CHERRY_LOG);
-		this.getOrCreateTagBuilder(BlockTags.FLOWER_POTS).add(Blocks.FLOWER_POT);
+		this.getOrCreateTagBuilder(BlockTags.FLOWER_POTS).add(Blocks.POTTED_CHERRY_SAPLING);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_PRESSURE_PLATES).add(Blocks.CHERRY_PRESSURE_PLATE);
 		this.getOrCreateTagBuilder(BlockTags.LEAVES).add(Blocks.CHERRY_LEAVES);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_TRAPDOORS).add(Blocks.CHERRY_TRAPDOOR);

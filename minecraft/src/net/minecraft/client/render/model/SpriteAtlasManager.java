@@ -46,7 +46,7 @@ public class SpriteAtlasManager implements AutoCloseable {
 					entry -> {
 						SpriteAtlasManager.Atlas atlas = (SpriteAtlasManager.Atlas)entry.getValue();
 						return SpriteLoader.fromAtlas(atlas.atlas)
-							.method_47661(resourceManager, atlas.atlasInfoLocation, mipmapLevels, executor)
+							.load(resourceManager, atlas.atlasInfoLocation, mipmapLevels, executor)
 							.thenApply(stitchResult -> new SpriteAtlasManager.AtlasPreparation(atlas.atlas, stitchResult));
 					}
 				)

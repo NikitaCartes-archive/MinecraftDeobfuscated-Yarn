@@ -3,7 +3,6 @@ package net.minecraft.client.gui;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.navigation.Navigable;
@@ -187,7 +186,7 @@ public interface Element extends Navigable {
 		return this.isFocused() ? GuiNavigationPath.of(this) : null;
 	}
 
-	default FocusedRect getNavigationFocus() {
-		return FocusedRect.empty();
+	default ScreenRect getNavigationFocus() {
+		return ScreenRect.empty();
 	}
 }

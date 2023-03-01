@@ -16,8 +16,8 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ParentElement;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
@@ -519,8 +519,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	@Override
-	public FocusedRect getNavigationFocus() {
-		return new FocusedRect(this.left, this.top, this.right - this.left, this.bottom - this.top);
+	public ScreenRect getNavigationFocus() {
+		return new ScreenRect(this.left, this.top, this.right - this.left, this.bottom - this.top);
 	}
 
 	@Environment(EnvType.CLIENT)

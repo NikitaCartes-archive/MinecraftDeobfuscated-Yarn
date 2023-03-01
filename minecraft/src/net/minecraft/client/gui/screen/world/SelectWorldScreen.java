@@ -78,7 +78,7 @@ public class SelectWorldScreen extends Screen {
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 82, this.height - 28, 72, 20).build()
 		);
-		this.worldSelected(false);
+		this.worldSelected(false, false);
 		this.setInitialFocus(this.searchBox);
 	}
 
@@ -105,11 +105,11 @@ public class SelectWorldScreen extends Screen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	public void worldSelected(boolean active) {
-		this.selectButton.active = active;
-		this.deleteButton.active = active;
-		this.editButton.active = active;
-		this.recreateButton.active = active;
+	public void worldSelected(boolean buttonsActive, boolean deleteButtonActive) {
+		this.selectButton.active = buttonsActive;
+		this.editButton.active = buttonsActive;
+		this.recreateButton.active = buttonsActive;
+		this.deleteButton.active = deleteButtonActive;
 	}
 
 	@Override

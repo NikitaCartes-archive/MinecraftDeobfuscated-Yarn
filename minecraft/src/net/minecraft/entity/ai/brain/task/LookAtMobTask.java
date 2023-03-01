@@ -12,7 +12,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.MemoryQueryResult;
 import net.minecraft.server.world.ServerWorld;
 
-public class FollowMobTask {
+public class LookAtMobTask {
 	public static Task<LivingEntity> create(SpawnGroup spawnGroup, float maxDistance) {
 		return create(entity -> spawnGroup.equals(entity.getType().getSpawnGroup()), maxDistance);
 	}

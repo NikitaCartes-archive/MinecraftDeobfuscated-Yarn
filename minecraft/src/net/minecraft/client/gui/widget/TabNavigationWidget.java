@@ -12,8 +12,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
@@ -76,7 +76,7 @@ public class TabNavigationWidget extends AbstractParentElement implements Drawab
 	public void setFocused(@Nullable Element focused) {
 		super.setFocused(focused);
 		if (focused instanceof TabButtonWidget tabButtonWidget) {
-			this.tabManager.setCurrentTab(tabButtonWidget.getTab());
+			this.tabManager.setCurrentTab(tabButtonWidget.getTab(), true);
 		}
 	}
 
@@ -140,7 +140,7 @@ public class TabNavigationWidget extends AbstractParentElement implements Drawab
 	}
 
 	@Override
-	public FocusedRect getNavigationFocus() {
+	public ScreenRect getNavigationFocus() {
 		return this.grid.getNavigationFocus();
 	}
 
@@ -157,11 +157,11 @@ public class TabNavigationWidget extends AbstractParentElement implements Drawab
 		this.grid.setY(0);
 	}
 
-	public void selectTab(int index) {
+	public void selectTab(int index, boolean clickSound) {
 		if (this.isFocused()) {
 			this.setFocused((Element)this.tabButtons.get(index));
 		} else {
-			this.tabManager.setCurrentTab((Tab)this.tabs.get(index));
+			this.tabManager.setCurrentTab((Tab)this.tabs.get(index), clickSound);
 		}
 	}
 
@@ -169,7 +169,7 @@ public class TabNavigationWidget extends AbstractParentElement implements Drawab
 		if (Screen.hasControlDown()) {
 			int i = this.getTabForKey(keyCode);
 			if (i != -1) {
-				this.selectTab(MathHelper.clamp(i, 0, this.tabs.size() - 1));
+				this.selectTab(MathHelper.clamp(i, 0, this.tabs.size() - 1), true);
 				return true;
 			}
 		}

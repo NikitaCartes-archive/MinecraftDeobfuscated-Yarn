@@ -240,7 +240,7 @@ public class ParticleManager implements ResourceReloader {
 				return Util.combineSafe(list);
 			});
 		CompletableFuture<SpriteLoader.StitchResult> completableFuture2 = SpriteLoader.fromAtlas(this.particleAtlasTexture)
-			.method_47661(manager, PARTICLES_PATH, 0, prepareExecutor)
+			.load(manager, PARTICLES_PATH, 0, prepareExecutor)
 			.thenCompose(SpriteLoader.StitchResult::whenComplete);
 		return CompletableFuture.allOf(completableFuture2, completableFuture).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(void_ -> {
 			this.clearParticles();
@@ -554,6 +554,8 @@ public class ParticleManager implements ResourceReloader {
 
 	private void clearParticles() {
 		this.particles.clear();
+		this.newParticles.clear();
+		this.newEmitterParticles.clear();
 		this.groupCounts.clear();
 	}
 

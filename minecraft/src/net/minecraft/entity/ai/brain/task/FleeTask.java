@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 
-public class WalkTask extends MultiTickTask<PathAwareEntity> {
+public class FleeTask extends MultiTickTask<PathAwareEntity> {
 	private static final int MIN_RUN_TIME = 100;
 	private static final int MAX_RUN_TIME = 120;
 	private static final int HORIZONTAL_RANGE = 5;
@@ -28,11 +28,11 @@ public class WalkTask extends MultiTickTask<PathAwareEntity> {
 	private final float speed;
 	private final Predicate<PathAwareEntity> predicate;
 
-	public WalkTask(float speed) {
+	public FleeTask(float speed) {
 		this(speed, PANIC_PREDICATE);
 	}
 
-	public WalkTask(float speed, Predicate<PathAwareEntity> predicate) {
+	public FleeTask(float speed, Predicate<PathAwareEntity> predicate) {
 		super(ImmutableMap.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.VALUE_PRESENT), 100, 120);
 		this.speed = speed;
 		this.predicate = predicate;
