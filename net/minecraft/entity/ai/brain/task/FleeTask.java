@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
 
-public class WalkTask
+public class FleeTask
 extends MultiTickTask<PathAwareEntity> {
     private static final int MIN_RUN_TIME = 100;
     private static final int MAX_RUN_TIME = 120;
@@ -32,11 +32,11 @@ extends MultiTickTask<PathAwareEntity> {
     private final float speed;
     private final Predicate<PathAwareEntity> predicate;
 
-    public WalkTask(float speed) {
+    public FleeTask(float speed) {
         this(speed, PANIC_PREDICATE);
     }
 
-    public WalkTask(float speed, Predicate<PathAwareEntity> predicate) {
+    public FleeTask(float speed, Predicate<PathAwareEntity> predicate) {
         super(ImmutableMap.of(MemoryModuleType.IS_PANICKING, MemoryModuleState.REGISTERED, MemoryModuleType.HURT_BY, MemoryModuleState.VALUE_PRESENT), 100, 120);
         this.speed = speed;
         this.predicate = predicate;

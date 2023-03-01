@@ -77,9 +77,9 @@ extends SinglePartEntityModel<T> {
         this.updateAnimation(((FrogEntity)frogEntity).croakingAnimationState, FrogAnimations.CROAKING, h);
         this.updateAnimation(((FrogEntity)frogEntity).usingTongueAnimationState, FrogAnimations.USING_TONGUE, h);
         if (((Entity)frogEntity).isInsideWaterOrBubbleColumn()) {
-            this.method_48741(FrogAnimations.SWIMMING, f, g, 1.0f, 2.5f);
+            this.animateMovement(FrogAnimations.SWIMMING, f, g, 1.0f, 2.5f);
         } else {
-            this.method_48741(FrogAnimations.WALKING, f, g, 1.5f, 2.5f);
+            this.animateMovement(FrogAnimations.WALKING, f, g, 1.5f, 2.5f);
         }
         this.updateAnimation(((FrogEntity)frogEntity).idlingInWaterAnimationState, FrogAnimations.IDLING_IN_WATER, h);
         this.croakingBody.visible = ((FrogEntity)frogEntity).croakingAnimationState.isRunning();

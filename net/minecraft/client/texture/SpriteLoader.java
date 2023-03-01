@@ -43,38 +43,42 @@ public class SpriteLoader {
     private static final Logger LOGGER = LogUtils.getLogger();
     private final Identifier id;
     private final int maxTextureSize;
+    private final int width;
+    private final int height;
 
-    public SpriteLoader(Identifier id, int maxTextureSize) {
+    public SpriteLoader(Identifier id, int maxTextureSize, int width, int height) {
         this.id = id;
         this.maxTextureSize = maxTextureSize;
+        this.width = width;
+        this.height = height;
     }
 
     public static SpriteLoader fromAtlas(SpriteAtlasTexture atlasTexture) {
-        return new SpriteLoader(atlasTexture.getId(), atlasTexture.getMaxTextureSize());
+        return new SpriteLoader(atlasTexture.getId(), atlasTexture.getMaxTextureSize(), atlasTexture.getWidth(), atlasTexture.getHeight());
     }
 
-    public StitchResult method_47663(List<SpriteContents> list, int i, Executor executor) {
-        int m;
-        int j = this.maxTextureSize;
-        TextureStitcher<SpriteContents> textureStitcher = new TextureStitcher<SpriteContents>(j, j, i);
-        int k = Integer.MAX_VALUE;
-        int l = 1 << i;
-        for (SpriteContents spriteContents : list) {
-            k = Math.min(k, Math.min(spriteContents.getWidth(), spriteContents.getHeight()));
-            m = Math.min(Integer.lowestOneBit(spriteContents.getWidth()), Integer.lowestOneBit(spriteContents.getHeight()));
-            if (m < l) {
-                LOGGER.warn("Texture {} with size {}x{} limits mip level from {} to {}", spriteContents.getId(), spriteContents.getWidth(), spriteContents.getHeight(), MathHelper.floorLog2(l), MathHelper.floorLog2(m));
-                l = m;
+    public StitchResult stitch(List<SpriteContents> sprites, int mipLevel, Executor executor) {
+        int l;
+        int i = this.maxTextureSize;
+        TextureStitcher<SpriteContents> textureStitcher = new TextureStitcher<SpriteContents>(i, i, mipLevel);
+        int j = Integer.MAX_VALUE;
+        int k = 1 << mipLevel;
+        for (SpriteContents spriteContents : sprites) {
+            j = Math.min(j, Math.min(spriteContents.getWidth(), spriteContents.getHeight()));
+            l = Math.min(Integer.lowestOneBit(spriteContents.getWidth()), Integer.lowestOneBit(spriteContents.getHeight()));
+            if (l < k) {
+                LOGGER.warn("Texture {} with size {}x{} limits mip level from {} to {}", spriteContents.getId(), spriteContents.getWidth(), spriteContents.getHeight(), MathHelper.floorLog2(k), MathHelper.floorLog2(l));
+                k = l;
             }
             textureStitcher.add(spriteContents);
         }
-        int n = Math.min(k, l);
-        int o = MathHelper.floorLog2(n);
-        if (o < i) {
-            LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.id, i, o, n);
-            m = o;
+        int m = Math.min(j, k);
+        int n = MathHelper.floorLog2(m);
+        if (n < mipLevel) {
+            LOGGER.warn("{}: dropping miplevel from {} to {}, because of minimum power of two: {}", this.id, mipLevel, n, m);
+            l = n;
         } else {
-            m = i;
+            l = mipLevel;
         }
         try {
             textureStitcher.stitch();
@@ -82,22 +86,24 @@ public class SpriteLoader {
             CrashReport crashReport = CrashReport.create(textureStitcherCannotFitException, "Stitching");
             CrashReportSection crashReportSection = crashReport.addElement("Stitcher");
             crashReportSection.add("Sprites", textureStitcherCannotFitException.getSprites().stream().map(sprite -> String.format(Locale.ROOT, "%s[%dx%d]", sprite.getId(), sprite.getWidth(), sprite.getHeight())).collect(Collectors.joining(",")));
-            crashReportSection.add("Max Texture Size", j);
+            crashReportSection.add("Max Texture Size", i);
             throw new CrashException(crashReport);
         }
-        Map<Identifier, Sprite> map = this.collectStitchedSprites(textureStitcher);
+        int o = Math.max(textureStitcher.getWidth(), this.width);
+        int p = Math.max(textureStitcher.getHeight(), this.height);
+        Map<Identifier, Sprite> map = this.collectStitchedSprites(textureStitcher, o, p);
         Sprite sprite2 = map.get(MissingSprite.getMissingSpriteId());
-        CompletableFuture<Object> completableFuture = m > 0 ? CompletableFuture.runAsync(() -> map.values().forEach(sprite -> sprite.getContents().generateMipmaps(m)), executor) : CompletableFuture.completedFuture(null);
-        return new StitchResult(textureStitcher.getWidth(), textureStitcher.getHeight(), m, sprite2, map, completableFuture);
+        CompletableFuture<Object> completableFuture = l > 0 ? CompletableFuture.runAsync(() -> map.values().forEach(sprite -> sprite.getContents().generateMipmaps(l)), executor) : CompletableFuture.completedFuture(null);
+        return new StitchResult(o, p, l, sprite2, map, completableFuture);
     }
 
-    public static CompletableFuture<List<SpriteContents>> method_47664(List<Supplier<SpriteContents>> list2, Executor executor) {
-        List<CompletableFuture> list22 = list2.stream().map(supplier -> CompletableFuture.supplyAsync(supplier, executor)).toList();
-        return Util.combineSafe(list22).thenApply(list -> list.stream().filter(Objects::nonNull).toList());
+    public static CompletableFuture<List<SpriteContents>> loadAll(List<Supplier<SpriteContents>> sources, Executor executor) {
+        List<CompletableFuture> list = sources.stream().map(source -> CompletableFuture.supplyAsync(source, executor)).toList();
+        return Util.combineSafe(list).thenApply(sprites -> sprites.stream().filter(Objects::nonNull).toList());
     }
 
-    public CompletableFuture<StitchResult> method_47661(ResourceManager resourceManager, Identifier identifier, int i, Executor executor) {
-        return ((CompletableFuture)CompletableFuture.supplyAsync(() -> AtlasLoader.of(resourceManager, identifier).loadSources(resourceManager), executor).thenCompose(list -> SpriteLoader.method_47664(list, executor))).thenApply(list -> this.method_47663((List<SpriteContents>)list, i, executor));
+    public CompletableFuture<StitchResult> load(ResourceManager resourceManager, Identifier path, int mipLevel, Executor executor) {
+        return ((CompletableFuture)CompletableFuture.supplyAsync(() -> AtlasLoader.of(resourceManager, path).loadSources(resourceManager), executor).thenCompose(sources -> SpriteLoader.loadAll(sources, executor))).thenApply(sprites -> this.stitch((List<SpriteContents>)sprites, mipLevel, executor));
     }
 
     @Nullable
@@ -125,11 +131,9 @@ public class SpriteLoader {
         return null;
     }
 
-    private Map<Identifier, Sprite> collectStitchedSprites(TextureStitcher<SpriteContents> stitcher) {
+    private Map<Identifier, Sprite> collectStitchedSprites(TextureStitcher<SpriteContents> stitcher, int atlasWidth, int atlasHeight) {
         HashMap<Identifier, Sprite> map = new HashMap<Identifier, Sprite>();
-        int i = stitcher.getWidth();
-        int j = stitcher.getHeight();
-        stitcher.getStitchedSprites((info, width, height) -> map.put(info.getId(), new Sprite(this.id, (SpriteContents)info, i, j, width, height)));
+        stitcher.getStitchedSprites((info, x, y) -> map.put(info.getId(), new Sprite(this.id, (SpriteContents)info, atlasWidth, atlasHeight, x, y)));
         return map;
     }
 

@@ -1105,17 +1105,17 @@ public class OceanMonumentGenerator {
         private static final int field_31604 = 58;
         public static final int field_31606 = 29;
         private static final int field_31605 = 61;
-        private PieceSetting field_14464;
-        private PieceSetting field_14466;
-        private final List<Piece> field_14465 = Lists.newArrayList();
+        private PieceSetting entryPieceSetting;
+        private PieceSetting coreRoomPieceSetting;
+        private final List<Piece> children = Lists.newArrayList();
 
         public Base(Random random, int x, int z, Direction orientation) {
             super(StructurePieceType.OCEAN_MONUMENT_BASE, orientation, 0, Base.createBox(x, 39, z, orientation, 58, 23, 58));
             this.setOrientation(orientation);
             List<PieceSetting> list = this.method_14760(random);
-            this.field_14464.used = true;
-            this.field_14465.add(new Entry(orientation, this.field_14464));
-            this.field_14465.add(new CoreRoom(orientation, this.field_14466));
+            this.entryPieceSetting.used = true;
+            this.children.add(new Entry(orientation, this.entryPieceSetting));
+            this.children.add(new CoreRoom(orientation, this.coreRoomPieceSetting));
             ArrayList<PieceFactory> list2 = Lists.newArrayList();
             list2.add(new DoubleXYRoomFactory());
             list2.add(new DoubleYZRoomFactory());
@@ -1128,21 +1128,21 @@ public class OceanMonumentGenerator {
                 if (pieceSetting.used || pieceSetting.isAboveLevelThree()) continue;
                 for (PieceFactory pieceFactory : list2) {
                     if (!pieceFactory.canGenerate(pieceSetting)) continue;
-                    this.field_14465.add(pieceFactory.generate(orientation, pieceSetting, random));
+                    this.children.add(pieceFactory.generate(orientation, pieceSetting, random));
                     continue block0;
                 }
             }
             BlockPos.Mutable blockPos = this.offsetPos(9, 0, 22);
-            for (Piece piece : this.field_14465) {
+            for (Piece piece : this.children) {
                 piece.getBoundingBox().move(blockPos);
             }
             BlockBox blockBox = BlockBox.create(this.offsetPos(1, 1, 1), this.offsetPos(23, 8, 21));
             BlockBox blockBox2 = BlockBox.create(this.offsetPos(34, 1, 1), this.offsetPos(56, 8, 21));
             BlockBox blockBox3 = BlockBox.create(this.offsetPos(22, 13, 22), this.offsetPos(35, 17, 35));
             int i = random.nextInt();
-            this.field_14465.add(new WingRoom(orientation, blockBox, i++));
-            this.field_14465.add(new WingRoom(orientation, blockBox2, i++));
-            this.field_14465.add(new Penthouse(orientation, blockBox3));
+            this.children.add(new WingRoom(orientation, blockBox, i++));
+            this.children.add(new WingRoom(orientation, blockBox2, i++));
+            this.children.add(new Penthouse(orientation, blockBox3));
         }
 
         public Base(NbtCompound nbt) {
@@ -1179,7 +1179,7 @@ public class OceanMonumentGenerator {
                     pieceSettings[l] = new PieceSetting(l);
                 }
             }
-            this.field_14464 = pieceSettings[TWO_ZERO_ZERO_INDEX];
+            this.entryPieceSetting = pieceSettings[TWO_ZERO_ZERO_INDEX];
             for (i = 0; i < 5; ++i) {
                 for (j = 0; j < 5; ++j) {
                     for (k = 0; k < 3; ++k) {
@@ -1209,16 +1209,16 @@ public class OceanMonumentGenerator {
             pieceSetting.used = true;
             pieceSetting2.used = true;
             pieceSetting3.used = true;
-            this.field_14464.field_14484 = true;
-            this.field_14466 = pieceSettings[Base.getIndex(random.nextInt(4), 0, 2)];
-            this.field_14466.used = true;
-            this.field_14466.neighbors[Direction.EAST.getId()].used = true;
-            this.field_14466.neighbors[Direction.NORTH.getId()].used = true;
-            this.field_14466.neighbors[Direction.EAST.getId()].neighbors[Direction.NORTH.getId()].used = true;
-            this.field_14466.neighbors[Direction.UP.getId()].used = true;
-            this.field_14466.neighbors[Direction.EAST.getId()].neighbors[Direction.UP.getId()].used = true;
-            this.field_14466.neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
-            this.field_14466.neighbors[Direction.EAST.getId()].neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
+            this.entryPieceSetting.field_14484 = true;
+            this.coreRoomPieceSetting = pieceSettings[Base.getIndex(random.nextInt(4), 0, 2)];
+            this.coreRoomPieceSetting.used = true;
+            this.coreRoomPieceSetting.neighbors[Direction.EAST.getId()].used = true;
+            this.coreRoomPieceSetting.neighbors[Direction.NORTH.getId()].used = true;
+            this.coreRoomPieceSetting.neighbors[Direction.EAST.getId()].neighbors[Direction.NORTH.getId()].used = true;
+            this.coreRoomPieceSetting.neighbors[Direction.UP.getId()].used = true;
+            this.coreRoomPieceSetting.neighbors[Direction.EAST.getId()].neighbors[Direction.UP.getId()].used = true;
+            this.coreRoomPieceSetting.neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
+            this.coreRoomPieceSetting.neighbors[Direction.EAST.getId()].neighbors[Direction.NORTH.getId()].neighbors[Direction.UP.getId()].used = true;
             ObjectArrayList<PieceSetting> objectArrayList = new ObjectArrayList<PieceSetting>();
             for (PieceSetting pieceSetting4 : pieceSettings) {
                 if (pieceSetting4 == null) continue;
@@ -1290,7 +1290,7 @@ public class OceanMonumentGenerator {
                 this.setAirAndWater(world, chunkBox, 0 - j, 0 + j * 2, -1 - j, 57 + j, 23, -1 - j);
                 this.setAirAndWater(world, chunkBox, 0 - j, 0 + j * 2, 58 + j, 57 + j, 23, 58 + j);
             }
-            for (Piece piece : this.field_14465) {
+            for (Piece piece : this.children) {
                 if (!piece.getBoundingBox().intersects(chunkBox)) continue;
                 piece.generate(world, structureAccessor, chunkGenerator, random, chunkBox, chunkPos, pivot);
             }
@@ -1298,7 +1298,7 @@ public class OceanMonumentGenerator {
 
         private void method_14761(boolean bl, int i, StructureWorldAccess world, Random random, BlockBox box) {
             int j = 24;
-            if (this.method_14775(box, i, 0, i + 23, 20)) {
+            if (this.boxIntersects(box, i, 0, i + 23, 20)) {
                 int m;
                 int k;
                 this.fillWithOutline(world, box, i + 0, 0, 0, i + 24, 0, 20, PRISMARINE, PRISMARINE, false);
@@ -1337,7 +1337,7 @@ public class OceanMonumentGenerator {
         }
 
         private void method_14763(StructureWorldAccess world, Random random, BlockBox box) {
-            if (this.method_14775(box, 22, 5, 35, 17)) {
+            if (this.boxIntersects(box, 22, 5, 35, 17)) {
                 this.setAirAndWater(world, box, 25, 0, 0, 32, 8, 20);
                 for (int i = 0; i < 4; ++i) {
                     this.fillWithOutline(world, box, 24, 2, 5 + i * 4, 24, 4, 5 + i * 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -1356,7 +1356,7 @@ public class OceanMonumentGenerator {
         }
 
         private void method_14762(StructureWorldAccess world, Random random, BlockBox box) {
-            if (this.method_14775(box, 15, 20, 42, 21)) {
+            if (this.boxIntersects(box, 15, 20, 42, 21)) {
                 int i;
                 this.fillWithOutline(world, box, 15, 0, 21, 42, 0, 21, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 26, 1, 21, 31, 3, 21);
@@ -1411,7 +1411,7 @@ public class OceanMonumentGenerator {
         }
 
         private void method_14765(StructureWorldAccess world, Random random, BlockBox box) {
-            if (this.method_14775(box, 21, 21, 36, 36)) {
+            if (this.boxIntersects(box, 21, 21, 36, 36)) {
                 this.fillWithOutline(world, box, 21, 0, 22, 36, 0, 36, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 21, 1, 22, 36, 23, 36);
                 for (int i = 0; i < 4; ++i) {
@@ -1446,7 +1446,7 @@ public class OceanMonumentGenerator {
 
         private void method_14764(StructureWorldAccess world, Random random, BlockBox box) {
             int i;
-            if (this.method_14775(box, 0, 21, 6, 58)) {
+            if (this.boxIntersects(box, 0, 21, 6, 58)) {
                 this.fillWithOutline(world, box, 0, 0, 21, 6, 0, 57, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 0, 1, 21, 6, 7, 57);
                 this.fillWithOutline(world, box, 4, 4, 21, 6, 4, 53, PRISMARINE, PRISMARINE, false);
@@ -1463,7 +1463,7 @@ public class OceanMonumentGenerator {
                 this.fillWithOutline(world, box, 4, 1, 52, 6, 3, 52, PRISMARINE, PRISMARINE, false);
                 this.fillWithOutline(world, box, 5, 1, 51, 5, 3, 53, PRISMARINE, PRISMARINE, false);
             }
-            if (this.method_14775(box, 51, 21, 58, 58)) {
+            if (this.boxIntersects(box, 51, 21, 58, 58)) {
                 this.fillWithOutline(world, box, 51, 0, 21, 57, 0, 57, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 51, 1, 21, 57, 7, 57);
                 this.fillWithOutline(world, box, 51, 4, 21, 53, 4, 53, PRISMARINE, PRISMARINE, false);
@@ -1477,7 +1477,7 @@ public class OceanMonumentGenerator {
                 this.fillWithOutline(world, box, 51, 1, 52, 53, 3, 52, PRISMARINE, PRISMARINE, false);
                 this.fillWithOutline(world, box, 52, 1, 51, 52, 3, 53, PRISMARINE, PRISMARINE, false);
             }
-            if (this.method_14775(box, 0, 51, 57, 57)) {
+            if (this.boxIntersects(box, 0, 51, 57, 57)) {
                 this.fillWithOutline(world, box, 7, 0, 51, 50, 0, 57, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 7, 1, 51, 50, 10, 57);
                 for (i = 0; i < 4; ++i) {
@@ -1488,7 +1488,7 @@ public class OceanMonumentGenerator {
 
         private void method_14766(StructureWorldAccess world, Random random, BlockBox box) {
             int i;
-            if (this.method_14775(box, 7, 21, 13, 50)) {
+            if (this.boxIntersects(box, 7, 21, 13, 50)) {
                 this.fillWithOutline(world, box, 7, 0, 21, 13, 0, 50, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 7, 1, 21, 13, 10, 50);
                 this.fillWithOutline(world, box, 11, 8, 21, 13, 8, 53, PRISMARINE, PRISMARINE, false);
@@ -1499,7 +1499,7 @@ public class OceanMonumentGenerator {
                     this.addBlock(world, ALSO_PRISMARINE_BRICKS, 12, 9, i, box);
                 }
             }
-            if (this.method_14775(box, 44, 21, 50, 54)) {
+            if (this.boxIntersects(box, 44, 21, 50, 54)) {
                 this.fillWithOutline(world, box, 44, 0, 21, 50, 0, 50, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 44, 1, 21, 50, 10, 50);
                 this.fillWithOutline(world, box, 44, 8, 21, 46, 8, 53, PRISMARINE, PRISMARINE, false);
@@ -1510,7 +1510,7 @@ public class OceanMonumentGenerator {
                     this.addBlock(world, ALSO_PRISMARINE_BRICKS, 45, 9, i, box);
                 }
             }
-            if (this.method_14775(box, 8, 44, 49, 54)) {
+            if (this.boxIntersects(box, 8, 44, 49, 54)) {
                 this.fillWithOutline(world, box, 14, 0, 44, 43, 0, 50, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 14, 1, 44, 43, 10, 50);
                 for (i = 12; i <= 45; i += 3) {
@@ -1538,7 +1538,7 @@ public class OceanMonumentGenerator {
 
         private void method_14767(StructureWorldAccess world, Random random, BlockBox box) {
             int i;
-            if (this.method_14775(box, 14, 21, 20, 43)) {
+            if (this.boxIntersects(box, 14, 21, 20, 43)) {
                 this.fillWithOutline(world, box, 14, 0, 21, 20, 0, 43, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 14, 1, 22, 20, 14, 43);
                 this.fillWithOutline(world, box, 18, 12, 22, 20, 12, 39, PRISMARINE, PRISMARINE, false);
@@ -1550,7 +1550,7 @@ public class OceanMonumentGenerator {
                     this.addBlock(world, ALSO_PRISMARINE_BRICKS, 19, 13, i, box);
                 }
             }
-            if (this.method_14775(box, 37, 21, 43, 43)) {
+            if (this.boxIntersects(box, 37, 21, 43, 43)) {
                 this.fillWithOutline(world, box, 37, 0, 21, 43, 0, 43, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 37, 1, 22, 43, 14, 43);
                 this.fillWithOutline(world, box, 37, 12, 22, 39, 12, 39, PRISMARINE, PRISMARINE, false);
@@ -1562,7 +1562,7 @@ public class OceanMonumentGenerator {
                     this.addBlock(world, ALSO_PRISMARINE_BRICKS, 38, 13, i, box);
                 }
             }
-            if (this.method_14775(box, 15, 37, 42, 43)) {
+            if (this.boxIntersects(box, 15, 37, 42, 43)) {
                 this.fillWithOutline(world, box, 21, 0, 37, 36, 0, 43, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(world, box, 21, 1, 37, 36, 14, 43);
                 this.fillWithOutline(world, box, 21, 12, 37, 36, 12, 39, PRISMARINE, PRISMARINE, false);
@@ -1694,12 +1694,12 @@ public class OceanMonumentGenerator {
             }
         }
 
-        protected boolean method_14775(BlockBox box, int x, int i, int z, int j) {
-            int k = this.applyXTransform(x, i);
-            int l = this.applyZTransform(x, i);
-            int m = this.applyXTransform(z, j);
-            int n = this.applyZTransform(z, j);
-            return box.intersectsXZ(Math.min(k, m), Math.min(l, n), Math.max(k, m), Math.max(l, n));
+        protected boolean boxIntersects(BlockBox box, int x1, int z1, int x2, int z2) {
+            int i = this.applyXTransform(x1, z1);
+            int j = this.applyZTransform(x1, z1);
+            int k = this.applyXTransform(x2, z2);
+            int l = this.applyZTransform(x2, z2);
+            return box.intersectsXZ(Math.min(i, k), Math.min(j, l), Math.max(i, k), Math.max(j, l));
         }
 
         protected void spawnElderGuardian(StructureWorldAccess world, BlockBox box, int x, int y, int z) {

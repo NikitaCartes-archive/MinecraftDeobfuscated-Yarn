@@ -14,7 +14,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.navigation.FocusedRect;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
@@ -48,7 +48,7 @@ public abstract class DrawableHelper {
      */
     public static final Identifier GUI_ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
     public static final Identifier LIGHT_DIRT_BACKGROUND_TEXTURE = new Identifier("textures/gui/light_dirt_background.png");
-    private static final class_8214 field_43098 = new class_8214();
+    private static final ScissorStack SCISSOR_STACK = new ScissorStack();
 
     protected static void drawHorizontalLine(MatrixStack matrices, int x1, int x2, int y, int color) {
         if (x2 < x1) {
@@ -69,22 +69,22 @@ public abstract class DrawableHelper {
     }
 
     public static void enableScissor(int x1, int y1, int x2, int y2) {
-        DrawableHelper.method_49698(field_43098.method_49700(new FocusedRect(x1, y1, x2 - x1, y2 - y1)));
+        DrawableHelper.setScissor(SCISSOR_STACK.push(new ScreenRect(x1, y1, x2 - x1, y2 - y1)));
     }
 
     public static void disableScissor() {
-        DrawableHelper.method_49698(field_43098.method_49699());
+        DrawableHelper.setScissor(SCISSOR_STACK.pop());
     }
 
-    private static void method_49698(@Nullable FocusedRect focusedRect) {
-        if (focusedRect != null) {
+    private static void setScissor(@Nullable ScreenRect rect) {
+        if (rect != null) {
             Window window = MinecraftClient.getInstance().getWindow();
             int i = window.getFramebufferHeight();
             double d = window.getScaleFactor();
-            double e = (double)focusedRect.getLeft() * d;
-            double f = (double)i - (double)focusedRect.getBottom() * d;
-            double g = (double)focusedRect.width() * d;
-            double h = (double)focusedRect.height() * d;
+            double e = (double)rect.getLeft() * d;
+            double f = (double)i - (double)rect.getBottom() * d;
+            double g = (double)rect.width() * d;
+            double h = (double)rect.height() * d;
             RenderSystem.enableScissor((int)e, (int)f, Math.max(0, (int)g), Math.max(0, (int)h));
         } else {
             RenderSystem.disableScissor();
@@ -311,8 +311,8 @@ public abstract class DrawableHelper {
         DrawableHelper.drawNineSlicedTexture(matrices, x, y, width, height, outerSliceSize, outerSliceSize, outerSliceSize, outerSliceSize, centerSliceWidth, centerSliceHeight, u, v);
     }
 
-    public static void method_49697(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o, int p, int q, int r) {
-        DrawableHelper.drawNineSlicedTexture(matrixStack, i, j, k, l, m, n, m, n, o, p, q, r);
+    public static void drawNineSlicedTexture(MatrixStack matrices, int x, int y, int width, int height, int sideSliceWidth, int sideSliceHeight, int centerSliceWidth, int centerSliceHeight, int u, int v) {
+        DrawableHelper.drawNineSlicedTexture(matrices, x, y, width, height, sideSliceWidth, sideSliceHeight, sideSliceWidth, sideSliceHeight, centerSliceWidth, centerSliceHeight, u, v);
     }
 
     public static void drawNineSlicedTexture(MatrixStack matrices, int x, int y, int width, int height, int leftSliceWidth, int topSliceHeight, int rightSliceWidth, int bottomSliceHeight, int centerSliceWidth, int centerSliceHeight, int u, int v) {
@@ -349,12 +349,12 @@ public abstract class DrawableHelper {
 
     public static void drawRepeatingTexture(MatrixStack matrices, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
         int i = x;
-        IntIterator intIterator = DrawableHelper.method_49696(width, textureWidth);
+        IntIterator intIterator = DrawableHelper.createDivider(width, textureWidth);
         while (intIterator.hasNext()) {
             int j = intIterator.nextInt();
             int k = (textureWidth - j) / 2;
             int l = y;
-            IntIterator intIterator2 = DrawableHelper.method_49696(height, textureHeight);
+            IntIterator intIterator2 = DrawableHelper.createDivider(height, textureHeight);
             while (intIterator2.hasNext()) {
                 int m = intIterator2.nextInt();
                 int n = (textureHeight - m) / 2;
@@ -365,36 +365,36 @@ public abstract class DrawableHelper {
         }
     }
 
-    private static IntIterator method_49696(int i, int j) {
-        int k = MathHelper.ceilDiv(i, j);
-        return new Divider(i, k);
+    private static IntIterator createDivider(int sideLength, int textureSideLength) {
+        int i = MathHelper.ceilDiv(sideLength, textureSideLength);
+        return new Divider(sideLength, i);
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_8214 {
-        private final Deque<FocusedRect> field_43099 = new ArrayDeque<FocusedRect>();
+    static class ScissorStack {
+        private final Deque<ScreenRect> stack = new ArrayDeque<ScreenRect>();
 
-        class_8214() {
+        ScissorStack() {
         }
 
-        public FocusedRect method_49700(FocusedRect focusedRect) {
-            FocusedRect focusedRect2 = this.field_43099.peekLast();
-            if (focusedRect2 != null) {
-                FocusedRect focusedRect3 = Objects.requireNonNullElse(focusedRect.method_49701(focusedRect2), FocusedRect.empty());
-                this.field_43099.addLast(focusedRect3);
-                return focusedRect3;
+        public ScreenRect push(ScreenRect rect) {
+            ScreenRect screenRect = this.stack.peekLast();
+            if (screenRect != null) {
+                ScreenRect screenRect2 = Objects.requireNonNullElse(rect.intersection(screenRect), ScreenRect.empty());
+                this.stack.addLast(screenRect2);
+                return screenRect2;
             }
-            this.field_43099.addLast(focusedRect);
-            return focusedRect;
+            this.stack.addLast(rect);
+            return rect;
         }
 
         @Nullable
-        public FocusedRect method_49699() {
-            if (this.field_43099.isEmpty()) {
+        public ScreenRect pop() {
+            if (this.stack.isEmpty()) {
                 throw new IllegalStateException("Scissor stack underflow");
             }
-            this.field_43099.removeLast();
-            return this.field_43099.peekLast();
+            this.stack.removeLast();
+            return this.stack.peekLast();
         }
     }
 }

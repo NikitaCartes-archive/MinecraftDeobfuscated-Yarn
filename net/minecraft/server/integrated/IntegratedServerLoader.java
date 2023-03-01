@@ -176,7 +176,7 @@ public class IntegratedServerLoader {
             if (!safeMode) {
                 this.client.setScreen(new DatapackFailureScreen(() -> this.start(parent, levelName, true, canShowBackupPrompt)));
             } else {
-                this.client.setScreen(new NoticeScreen(() -> this.client.setScreen(null), Text.translatable("datapackFailure.safeMode.failed.title"), Text.translatable("datapackFailure.safeMode.failed.description"), ScreenTexts.field_43109, true));
+                this.client.setScreen(new NoticeScreen(() -> this.client.setScreen(null), Text.translatable("datapackFailure.safeMode.failed.title"), Text.translatable("datapackFailure.safeMode.failed.description"), ScreenTexts.TO_TITLE, true));
             }
             IntegratedServerLoader.close(session, levelName);
             return;

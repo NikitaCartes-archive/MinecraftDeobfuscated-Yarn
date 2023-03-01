@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.navigation.FocusedRect;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.WrapperWidget;
@@ -97,11 +97,11 @@ extends WrapperWidget {
         SimplePositioningWidget.setPos(widget, left, top, right, bottom, 0.5f, 0.5f);
     }
 
-    public static void setPos(Widget widget, FocusedRect rect) {
+    public static void setPos(Widget widget, ScreenRect rect) {
         SimplePositioningWidget.setPos(widget, rect.position().x(), rect.position().y(), rect.width(), rect.height());
     }
 
-    public static void setPos(Widget widget, FocusedRect rect, float relativeX, float relativeY) {
+    public static void setPos(Widget widget, ScreenRect rect, float relativeX, float relativeY) {
         SimplePositioningWidget.setPos(widget, rect.getLeft(), rect.getTop(), rect.width(), rect.height(), relativeX, relativeY);
     }
 

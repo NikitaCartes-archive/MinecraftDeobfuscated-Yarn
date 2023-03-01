@@ -259,7 +259,7 @@ Saddleable {
 
     @Override
     protected float getSaddledSpeed(LivingEntity controllingPassenger) {
-        return super.getSaddledSpeed(controllingPassenger) * (this.isCold() ? 0.35f : 0.55f) * this.saddledComponent.getMovementSpeedMultiplier();
+        return (float)(this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * (double)(this.isCold() ? 0.35f : 0.55f) * (double)this.saddledComponent.getMovementSpeedMultiplier());
     }
 
     @Override

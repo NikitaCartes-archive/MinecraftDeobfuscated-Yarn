@@ -6,7 +6,7 @@ package net.minecraft.client.gui.tab;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.navigation.FocusedRect;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.tab.Tab;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.GridWidget;
@@ -34,7 +34,7 @@ implements Tab {
     }
 
     @Override
-    public void refreshGrid(FocusedRect tabArea) {
+    public void refreshGrid(ScreenRect tabArea) {
         this.grid.refreshPositions();
         SimplePositioningWidget.setPos(this.grid, tabArea, 0.5f, 0.16666667f);
     }

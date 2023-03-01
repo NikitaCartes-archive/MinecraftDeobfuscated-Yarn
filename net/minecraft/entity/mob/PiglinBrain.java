@@ -26,8 +26,6 @@ import net.minecraft.entity.ai.brain.task.CrossbowAttackTask;
 import net.minecraft.entity.ai.brain.task.DefeatTargetTask;
 import net.minecraft.entity.ai.brain.task.FindEntityTask;
 import net.minecraft.entity.ai.brain.task.FindInteractionTargetTask;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
-import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.ForgetAngryAtTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetTask;
@@ -36,6 +34,8 @@ import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.HuntFinishTask;
 import net.minecraft.entity.ai.brain.task.HuntHoglinTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.MemoryTransferTask;
@@ -146,7 +146,7 @@ public class PiglinBrain {
     }
 
     private static void addIdleActivities(Brain<PiglinEntity> piglin) {
-        piglin.setTaskList(Activity.IDLE, 10, ImmutableList.of(FollowMobTask.create(PiglinBrain::isGoldHoldingPlayer, 14.0f), UpdateAttackTargetTask.create(AbstractPiglinEntity::isAdult, PiglinBrain::getPreferredTarget), TaskTriggerer.runIf(PiglinEntity::canHunt, HuntHoglinTask.create()), PiglinBrain.makeGoToSoulFireTask(), PiglinBrain.makeRememberRideableHoglinTask(), PiglinBrain.makeRandomFollowTask(), PiglinBrain.makeRandomWanderTask(), FindInteractionTargetTask.create(EntityType.PLAYER, 4)));
+        piglin.setTaskList(Activity.IDLE, 10, ImmutableList.of(LookAtMobTask.create(PiglinBrain::isGoldHoldingPlayer, 14.0f), UpdateAttackTargetTask.create(AbstractPiglinEntity::isAdult, PiglinBrain::getPreferredTarget), TaskTriggerer.runIf(PiglinEntity::canHunt, HuntHoglinTask.create()), PiglinBrain.makeGoToSoulFireTask(), PiglinBrain.makeRememberRideableHoglinTask(), PiglinBrain.makeRandomFollowTask(), PiglinBrain.makeRandomWanderTask(), FindInteractionTargetTask.create(EntityType.PLAYER, 4)));
     }
 
     private static void addFightActivities(PiglinEntity piglin, Brain<PiglinEntity> brain) {
@@ -154,7 +154,7 @@ public class PiglinBrain {
     }
 
     private static void addCelebrateActivities(Brain<PiglinEntity> brain) {
-        brain.setTaskList(Activity.CELEBRATE, 10, ImmutableList.of(PiglinBrain.makeGoToSoulFireTask(), FollowMobTask.create(PiglinBrain::isGoldHoldingPlayer, 14.0f), UpdateAttackTargetTask.create(AbstractPiglinEntity::isAdult, PiglinBrain::getPreferredTarget), TaskTriggerer.runIf(piglin -> !piglin.isDancing(), WalkTowardsPosTask.create(MemoryModuleType.CELEBRATE_LOCATION, 2, 1.0f)), TaskTriggerer.runIf(PiglinEntity::isDancing, WalkTowardsPosTask.create(MemoryModuleType.CELEBRATE_LOCATION, 4, 0.6f)), new RandomTask(ImmutableList.of(Pair.of(FollowMobTask.create(EntityType.PIGLIN, 8.0f), 1), Pair.of(StrollTask.create(0.6f, 2, 1), 1), Pair.of(new WaitTask(10, 20), 1)))), MemoryModuleType.CELEBRATE_LOCATION);
+        brain.setTaskList(Activity.CELEBRATE, 10, ImmutableList.of(PiglinBrain.makeGoToSoulFireTask(), LookAtMobTask.create(PiglinBrain::isGoldHoldingPlayer, 14.0f), UpdateAttackTargetTask.create(AbstractPiglinEntity::isAdult, PiglinBrain::getPreferredTarget), TaskTriggerer.runIf(piglin -> !piglin.isDancing(), WalkTowardsPosTask.create(MemoryModuleType.CELEBRATE_LOCATION, 2, 1.0f)), TaskTriggerer.runIf(PiglinEntity::isDancing, WalkTowardsPosTask.create(MemoryModuleType.CELEBRATE_LOCATION, 4, 0.6f)), new RandomTask(ImmutableList.of(Pair.of(LookAtMobTask.create(EntityType.PIGLIN, 8.0f), 1), Pair.of(StrollTask.create(0.6f, 2, 1), 1), Pair.of(new WaitTask(10, 20), 1)))), MemoryModuleType.CELEBRATE_LOCATION);
     }
 
     private static void addAdmireItemActivities(Brain<PiglinEntity> brain) {
@@ -166,11 +166,11 @@ public class PiglinBrain {
     }
 
     private static void addRideActivities(Brain<PiglinEntity> brain) {
-        brain.setTaskList(Activity.RIDE, 10, ImmutableList.of(StartRidingTask.create(0.8f), FollowMobTask.create(PiglinBrain::isGoldHoldingPlayer, 8.0f), TaskTriggerer.runIf(TaskTriggerer.predicate(Entity::hasVehicle), Tasks.pickRandomly(((ImmutableList.Builder)((ImmutableList.Builder)ImmutableList.builder().addAll(PiglinBrain.makeFollowTasks())).add(Pair.of(TaskTriggerer.predicate(piglinEntity -> true), 1))).build())), RidingTask.create(8, PiglinBrain::canRide)), MemoryModuleType.RIDE_TARGET);
+        brain.setTaskList(Activity.RIDE, 10, ImmutableList.of(StartRidingTask.create(0.8f), LookAtMobTask.create(PiglinBrain::isGoldHoldingPlayer, 8.0f), TaskTriggerer.runIf(TaskTriggerer.predicate(Entity::hasVehicle), Tasks.pickRandomly(((ImmutableList.Builder)((ImmutableList.Builder)ImmutableList.builder().addAll(PiglinBrain.makeFollowTasks())).add(Pair.of(TaskTriggerer.predicate(piglinEntity -> true), 1))).build())), RidingTask.create(8, PiglinBrain::canRide)), MemoryModuleType.RIDE_TARGET);
     }
 
     private static ImmutableList<Pair<SingleTickTask<LivingEntity>, Integer>> makeFollowTasks() {
-        return ImmutableList.of(Pair.of(FollowMobTask.create(EntityType.PLAYER, 8.0f), 1), Pair.of(FollowMobTask.create(EntityType.PIGLIN, 8.0f), 1), Pair.of(FollowMobTask.create(8.0f), 1));
+        return ImmutableList.of(Pair.of(LookAtMobTask.create(EntityType.PLAYER, 8.0f), 1), Pair.of(LookAtMobTask.create(EntityType.PIGLIN, 8.0f), 1), Pair.of(LookAtMobTask.create(8.0f), 1));
     }
 
     private static RandomTask<LivingEntity> makeRandomFollowTask() {
@@ -562,7 +562,7 @@ public class PiglinBrain {
     }
 
     private static Task<LivingEntity> makeRememberRideableHoglinTask() {
-        FollowMobWithIntervalTask.Interval interval = new FollowMobWithIntervalTask.Interval(MEMORY_TRANSFER_TASK_DURATION);
+        LookAtMobWithIntervalTask.Interval interval = new LookAtMobWithIntervalTask.Interval(MEMORY_TRANSFER_TASK_DURATION);
         return MemoryTransferTask.create(entity -> entity.isBaby() && interval.shouldRun(entity.world.random), MemoryModuleType.NEAREST_VISIBLE_BABY_HOGLIN, MemoryModuleType.RIDE_TARGET, RIDE_TARGET_MEMORY_DURATION);
     }
 

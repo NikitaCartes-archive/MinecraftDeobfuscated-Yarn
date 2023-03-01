@@ -34,9 +34,9 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class WorldCreator {
-    private static final Text field_43104 = Text.translatable("selectWorld.newWorld");
+    private static final Text NEW_WORLD_NAME = Text.translatable("selectWorld.newWorld");
     private final List<Consumer<WorldCreator>> listeners = new ArrayList<Consumer<WorldCreator>>();
-    private String worldName = field_43104.getString();
+    private String worldName = NEW_WORLD_NAME.getString();
     private Mode gameMode = Mode.SURVIVAL;
     private Difficulty difficulty = Difficulty.NORMAL;
     @Nullable
@@ -44,23 +44,23 @@ public class WorldCreator {
     private String seed;
     private boolean generateStructures;
     private boolean bonusChestEnabled;
-    private final Path field_43105;
-    private String field_43106;
+    private final Path savesDirectory;
+    private String worldDirectoryName;
     private GeneratorOptionsHolder generatorOptionsHolder;
     private WorldType worldType;
     private final List<WorldType> normalWorldTypes = new ArrayList<WorldType>();
     private final List<WorldType> extendedWorldTypes = new ArrayList<WorldType>();
     private GameRules gameRules = new GameRules();
 
-    public WorldCreator(Path path, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> optional, OptionalLong optionalLong) {
-        this.field_43105 = path;
+    public WorldCreator(Path savesDirectory, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> defaultWorldType, OptionalLong seed) {
+        this.savesDirectory = savesDirectory;
         this.generatorOptionsHolder = generatorOptionsHolder;
-        this.worldType = new WorldType(WorldCreator.getWorldPreset(generatorOptionsHolder, optional).orElse(null));
+        this.worldType = new WorldType(WorldCreator.getWorldPreset(generatorOptionsHolder, defaultWorldType).orElse(null));
         this.updateWorldTypeLists();
-        this.seed = optionalLong.isPresent() ? Long.toString(optionalLong.getAsLong()) : "";
+        this.seed = seed.isPresent() ? Long.toString(seed.getAsLong()) : "";
         this.generateStructures = generatorOptionsHolder.generatorOptions().shouldGenerateStructures();
         this.bonusChestEnabled = generatorOptionsHolder.generatorOptions().hasBonusChest();
-        this.field_43106 = this.method_49704(this.worldName);
+        this.worldDirectoryName = this.toDirectoryName(this.worldName);
     }
 
     public void addListener(Consumer<WorldCreator> listener) {
@@ -83,17 +83,17 @@ public class WorldCreator {
 
     public void setWorldName(String worldName) {
         this.worldName = worldName;
-        this.field_43106 = this.method_49704(worldName);
+        this.worldDirectoryName = this.toDirectoryName(worldName);
         this.update();
     }
 
-    private String method_49704(String string) {
-        String string2 = string.trim();
+    private String toDirectoryName(String worldName) {
+        String string = worldName.trim();
         try {
-            return PathUtil.getNextUniqueName(this.field_43105, !string2.isEmpty() ? string2 : field_43104.getString(), "");
+            return PathUtil.getNextUniqueName(this.savesDirectory, !string.isEmpty() ? string : NEW_WORLD_NAME.getString(), "");
         } catch (Exception exception) {
             try {
-                return PathUtil.getNextUniqueName(this.field_43105, "World", "");
+                return PathUtil.getNextUniqueName(this.savesDirectory, "World", "");
             } catch (IOException iOException) {
                 throw new RuntimeException("Could not create save folder", iOException);
             }
@@ -104,8 +104,8 @@ public class WorldCreator {
         return this.worldName;
     }
 
-    public String method_49703() {
-        return this.field_43106;
+    public String getWorldDirectoryName() {
+        return this.worldDirectoryName;
     }
 
     public void setGameMode(Mode gameMode) {

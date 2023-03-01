@@ -15,8 +15,8 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.navigation.FocusedPos;
-import net.minecraft.client.gui.navigation.FocusedRect;
+import net.minecraft.client.gui.ScreenPos;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.navigation.NavigationAxis;
@@ -169,29 +169,29 @@ extends Element {
         Element element = this.getFocused();
         if (element == null) {
             NavigationDirection navigationDirection = navigation.direction();
-            FocusedRect focusedRect = this.getNavigationFocus().getBorder(navigationDirection.getOpposite());
-            return GuiNavigationPath.of(this, this.computeChildPath(focusedRect, navigationDirection, null, navigation));
+            ScreenRect screenRect = this.getNavigationFocus().getBorder(navigationDirection.getOpposite());
+            return GuiNavigationPath.of(this, this.computeChildPath(screenRect, navigationDirection, null, navigation));
         }
-        FocusedRect focusedRect2 = element.getNavigationFocus();
-        return GuiNavigationPath.of(this, this.computeChildPath(focusedRect2, navigation.direction(), element, navigation));
+        ScreenRect screenRect2 = element.getNavigationFocus();
+        return GuiNavigationPath.of(this, this.computeChildPath(screenRect2, navigation.direction(), element, navigation));
     }
 
     @Nullable
-    private GuiNavigationPath computeChildPath(FocusedRect focus, NavigationDirection direction, @Nullable Element focused, GuiNavigation navigation) {
+    private GuiNavigationPath computeChildPath(ScreenRect focus, NavigationDirection direction, @Nullable Element focused, GuiNavigation navigation) {
         NavigationAxis navigationAxis = direction.getAxis();
         NavigationAxis navigationAxis2 = navigationAxis.getOther();
         NavigationDirection navigationDirection = navigationAxis2.getPositiveDirection();
         int i = focus.getBoundingCoordinate(direction.getOpposite());
         ArrayList<Element> list = new ArrayList<Element>();
         for (Element element2 : this.children()) {
-            FocusedRect focusedRect;
-            if (element2 == focused || !(focusedRect = element2.getNavigationFocus()).overlaps(focus, navigationAxis2)) continue;
-            int j = focusedRect.getBoundingCoordinate(direction.getOpposite());
+            ScreenRect screenRect;
+            if (element2 == focused || !(screenRect = element2.getNavigationFocus()).overlaps(focus, navigationAxis2)) continue;
+            int j = screenRect.getBoundingCoordinate(direction.getOpposite());
             if (direction.isAfter(j, i)) {
                 list.add(element2);
                 continue;
             }
-            if (j != i || !direction.isAfter(focusedRect.getBoundingCoordinate(direction), focus.getBoundingCoordinate(direction))) continue;
+            if (j != i || !direction.isAfter(screenRect.getBoundingCoordinate(direction), focus.getBoundingCoordinate(direction))) continue;
             list.add(element2);
         }
         Comparator<Element> comparator = Comparator.comparing(element -> element.getNavigationFocus().getBoundingCoordinate(direction.getOpposite()), direction.getComparator());
@@ -206,16 +206,16 @@ extends Element {
     }
 
     @Nullable
-    private GuiNavigationPath computeInitialChildPath(FocusedRect focus, NavigationDirection direction, @Nullable Element focused, GuiNavigation navigation) {
+    private GuiNavigationPath computeInitialChildPath(ScreenRect focus, NavigationDirection direction, @Nullable Element focused, GuiNavigation navigation) {
         NavigationAxis navigationAxis = direction.getAxis();
         NavigationAxis navigationAxis2 = navigationAxis.getOther();
         ArrayList<Pair> list = new ArrayList<Pair>();
-        FocusedPos focusedPos = FocusedPos.of(navigationAxis, focus.getBoundingCoordinate(direction), focus.getCenter(navigationAxis2));
+        ScreenPos screenPos = ScreenPos.of(navigationAxis, focus.getBoundingCoordinate(direction), focus.getCenter(navigationAxis2));
         for (Element element : this.children()) {
-            FocusedRect focusedRect;
-            FocusedPos focusedPos2;
-            if (element == focused || !direction.isAfter((focusedPos2 = FocusedPos.of(navigationAxis, (focusedRect = element.getNavigationFocus()).getBoundingCoordinate(direction.getOpposite()), focusedRect.getCenter(navigationAxis2))).getComponent(navigationAxis), focusedPos.getComponent(navigationAxis))) continue;
-            long l = Vector2i.distanceSquared(focusedPos.x(), focusedPos.y(), focusedPos2.x(), focusedPos2.y());
+            ScreenRect screenRect;
+            ScreenPos screenPos2;
+            if (element == focused || !direction.isAfter((screenPos2 = ScreenPos.of(navigationAxis, (screenRect = element.getNavigationFocus()).getBoundingCoordinate(direction.getOpposite()), screenRect.getCenter(navigationAxis2))).getComponent(navigationAxis), screenPos.getComponent(navigationAxis))) continue;
+            long l = Vector2i.distanceSquared(screenPos.x(), screenPos.y(), screenPos2.x(), screenPos2.y());
             list.add(Pair.of(element, l));
         }
         list.sort(Comparator.comparingDouble(Pair::getSecond));

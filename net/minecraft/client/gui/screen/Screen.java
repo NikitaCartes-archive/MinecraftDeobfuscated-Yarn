@@ -30,8 +30,8 @@ import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.navigation.Navigable;
@@ -725,8 +725,8 @@ implements Drawable {
     }
 
     @Override
-    public FocusedRect getNavigationFocus() {
-        return new FocusedRect(0, 0, this.width, this.height);
+    public ScreenRect getNavigationFocus() {
+        return new ScreenRect(0, 0, this.width, this.height);
     }
 
     static {

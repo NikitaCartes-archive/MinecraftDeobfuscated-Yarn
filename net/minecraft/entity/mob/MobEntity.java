@@ -204,7 +204,7 @@ implements Targeter {
 
     public float getPathfindingPenalty(PathNodeType nodeType) {
         MobEntity mobEntity;
-        Entity entity = this.method_49694();
+        Entity entity = this.getControllingVehicle();
         MobEntity mobEntity2 = entity instanceof MobEntity && (mobEntity = (MobEntity)entity).movesIndependently() ? mobEntity : this;
         Float float_ = mobEntity2.pathfindingPenalties.get((Object)nodeType);
         return float_ == null ? nodeType.getDefaultPenalty() : float_.floatValue();
@@ -223,7 +223,7 @@ implements Targeter {
     }
 
     public MoveControl getMoveControl() {
-        Entity entity = this.method_49694();
+        Entity entity = this.getControllingVehicle();
         if (entity instanceof MobEntity) {
             MobEntity mobEntity = (MobEntity)entity;
             return mobEntity.getMoveControl();
@@ -236,7 +236,7 @@ implements Targeter {
     }
 
     public EntityNavigation getNavigation() {
-        Entity entity = this.method_49694();
+        Entity entity = this.getControllingVehicle();
         if (entity instanceof MobEntity) {
             MobEntity mobEntity = (MobEntity)entity;
             return mobEntity.getNavigation();

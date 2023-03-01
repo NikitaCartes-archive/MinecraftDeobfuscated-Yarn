@@ -12,8 +12,8 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
@@ -342,7 +342,7 @@ Selectable {
     }
 
     @Override
-    public FocusedRect getNavigationFocus() {
+    public ScreenRect getNavigationFocus() {
         return Widget.super.getNavigationFocus();
     }
 

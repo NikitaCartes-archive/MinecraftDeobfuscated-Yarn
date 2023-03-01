@@ -57,6 +57,7 @@ extends ExplosiveProjectileEntity {
     @Override
     protected void onEntityHit(EntityHitResult entityHitResult) {
         boolean bl;
+        LivingEntity livingEntity;
         super.onEntityHit(entityHitResult);
         if (this.world.isClient) {
             return;
@@ -64,7 +65,7 @@ extends ExplosiveProjectileEntity {
         Entity entity = entityHitResult.getEntity();
         Entity entity2 = this.getOwner();
         if (entity2 instanceof LivingEntity) {
-            LivingEntity livingEntity = (LivingEntity)entity2;
+            livingEntity = (LivingEntity)entity2;
             bl = entity.damage(this.getDamageSources().witherSkull(this, livingEntity), 8.0f);
             if (bl) {
                 if (entity.isAlive()) {
@@ -77,6 +78,7 @@ extends ExplosiveProjectileEntity {
             bl = entity.damage(this.getDamageSources().magic(), 5.0f);
         }
         if (bl && entity instanceof LivingEntity) {
+            livingEntity = (LivingEntity)entity;
             int i = 0;
             if (this.world.getDifficulty() == Difficulty.NORMAL) {
                 i = 10;
@@ -84,7 +86,7 @@ extends ExplosiveProjectileEntity {
                 i = 40;
             }
             if (i > 0) {
-                ((LivingEntity)entity).addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1), this.getEffectCause());
+                livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, 20 * i, 1), this.getEffectCause());
             }
         }
     }

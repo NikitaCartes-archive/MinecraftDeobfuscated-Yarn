@@ -44,7 +44,7 @@ extends MultiTickTask<E> {
     @Override
     protected void finishRunning(ServerWorld serverWorld, E wardenEntity, long l) {
         if (((Entity)wardenEntity).getRemovalReason() == null) {
-            ((Entity)wardenEntity).remove(Entity.RemovalReason.DISCARDED);
+            ((LivingEntity)wardenEntity).remove(Entity.RemovalReason.DISCARDED);
         }
     }
 

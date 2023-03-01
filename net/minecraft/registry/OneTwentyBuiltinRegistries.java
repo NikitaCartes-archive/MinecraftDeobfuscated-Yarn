@@ -16,7 +16,7 @@ import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterLists;
 
 public class OneTwentyBuiltinRegistries {
-    private static final RegistryBuilder REGISTRY_BUILDER = new RegistryBuilder().addRegistry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterials::oneTwentyBootstrap).addRegistry(RegistryKeys.TRIM_PATTERN, ArmorTrimPatterns::oneTwentyBootstrap).addRegistry(RegistryKeys.BIOME, BuiltinBiomes::method_49391).addRegistry(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, MultiNoiseBiomeSourceParameterLists::bootstrapOneTwenty);
+    private static final RegistryBuilder REGISTRY_BUILDER = new RegistryBuilder().addRegistry(RegistryKeys.TRIM_MATERIAL, ArmorTrimMaterials::oneTwentyBootstrap).addRegistry(RegistryKeys.TRIM_PATTERN, ArmorTrimPatterns::oneTwentyBootstrap).addRegistry(RegistryKeys.BIOME, BuiltinBiomes::bootstrapOneTwenty).addRegistry(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, MultiNoiseBiomeSourceParameterLists::bootstrapOneTwenty);
 
     public static CompletableFuture<RegistryWrapper.WrapperLookup> createWrapperLookup(CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
         return registriesFuture.thenApply(wrapperLookup -> {

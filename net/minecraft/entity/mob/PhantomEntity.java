@@ -49,7 +49,7 @@ public class PhantomEntity
 extends FlyingEntity
 implements Monster {
     public static final float field_30475 = 7.448451f;
-    public static final int field_28641 = MathHelper.ceil(24.166098f);
+    public static final int WING_FLAP_TICKS = MathHelper.ceil(24.166098f);
     private static final TrackedData<Integer> SIZE = DataTracker.registerData(PhantomEntity.class, TrackedDataHandlerRegistry.INTEGER);
     Vec3d targetPosition = Vec3d.ZERO;
     BlockPos circlingCenter = BlockPos.ORIGIN;
@@ -64,7 +64,7 @@ implements Monster {
 
     @Override
     public boolean isFlappingWings() {
-        return (this.method_33588() + this.age) % field_28641 == 0;
+        return (this.getWingFlapTickOffset() + this.age) % WING_FLAP_TICKS == 0;
     }
 
     @Override
@@ -112,7 +112,7 @@ implements Monster {
         super.onTrackedDataSet(data);
     }
 
-    public int method_33588() {
+    public int getWingFlapTickOffset() {
         return this.getId() * 3;
     }
 
@@ -125,8 +125,8 @@ implements Monster {
     public void tick() {
         super.tick();
         if (this.world.isClient) {
-            float f = MathHelper.cos((float)(this.method_33588() + this.age) * 7.448451f * ((float)Math.PI / 180) + (float)Math.PI);
-            float g = MathHelper.cos((float)(this.method_33588() + this.age + 1) * 7.448451f * ((float)Math.PI / 180) + (float)Math.PI);
+            float f = MathHelper.cos((float)(this.getWingFlapTickOffset() + this.age) * 7.448451f * ((float)Math.PI / 180) + (float)Math.PI);
+            float g = MathHelper.cos((float)(this.getWingFlapTickOffset() + this.age + 1) * 7.448451f * ((float)Math.PI / 180) + (float)Math.PI);
             if (f > 0.0f && g <= 0.0f) {
                 this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PHANTOM_FLAP, this.getSoundCategory(), 0.95f + this.random.nextFloat() * 0.05f, 0.95f + this.random.nextFloat() * 0.05f, false);
             }

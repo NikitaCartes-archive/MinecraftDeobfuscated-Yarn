@@ -9,6 +9,7 @@ import net.minecraft.entity.damage.DamageScaling;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
@@ -142,6 +143,10 @@ public class DamageSource {
 
     public boolean isIn(TagKey<DamageType> tag) {
         return this.type.isIn(tag);
+    }
+
+    public boolean isOf(RegistryKey<DamageType> typeKey) {
+        return this.type.matchesKey(typeKey);
     }
 
     public DamageType getType() {

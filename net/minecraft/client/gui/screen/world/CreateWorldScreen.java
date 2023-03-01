@@ -30,8 +30,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.MessageScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -139,8 +139,8 @@ extends Screen {
         client.setScreen(new CreateWorldScreen(client, parent, completableFuture.join(), Optional.of(WorldPresets.DEFAULT), OptionalLong.empty()));
     }
 
-    public static CreateWorldScreen create(MinecraftClient minecraftClient, @Nullable Screen screen, LevelInfo levelInfo, GeneratorOptionsHolder generatorOptionsHolder, @Nullable Path path) {
-        CreateWorldScreen createWorldScreen = new CreateWorldScreen(minecraftClient, screen, generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()), OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed()));
+    public static CreateWorldScreen create(MinecraftClient client, @Nullable Screen parent, LevelInfo levelInfo, GeneratorOptionsHolder generatorOptionsHolder, @Nullable Path dataPackTempDir) {
+        CreateWorldScreen createWorldScreen = new CreateWorldScreen(client, parent, generatorOptionsHolder, WorldPresets.getWorldPreset(generatorOptionsHolder.selectedDimensions().dimensions()), OptionalLong.of(generatorOptionsHolder.generatorOptions().getSeed()));
         createWorldScreen.recreated = true;
         createWorldScreen.worldCreator.setWorldName(levelInfo.getLevelName());
         createWorldScreen.worldCreator.setCheatsEnabled(levelInfo.areCommandsAllowed());
@@ -153,14 +153,14 @@ extends Screen {
         } else if (levelInfo.getGameMode().isCreative()) {
             createWorldScreen.worldCreator.setGameMode(WorldCreator.Mode.CREATIVE);
         }
-        createWorldScreen.dataPackTempDir = path;
+        createWorldScreen.dataPackTempDir = dataPackTempDir;
         return createWorldScreen;
     }
 
-    private CreateWorldScreen(MinecraftClient minecraftClient, @Nullable Screen screen, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> optional, OptionalLong optionalLong) {
+    private CreateWorldScreen(MinecraftClient client, @Nullable Screen parent, GeneratorOptionsHolder generatorOptionsHolder, Optional<RegistryKey<WorldPreset>> defaultWorldType, OptionalLong seed) {
         super(Text.translatable("selectWorld.create"));
-        this.parent = screen;
-        this.worldCreator = new WorldCreator(minecraftClient.getLevelStorage().getSavesDirectory(), generatorOptionsHolder, optional, optionalLong);
+        this.parent = parent;
+        this.worldCreator = new WorldCreator(client.getLevelStorage().getSavesDirectory(), generatorOptionsHolder, defaultWorldType, seed);
     }
 
     public WorldCreator getWorldCreator() {
@@ -184,7 +184,7 @@ extends Screen {
             child.setNavigationOrder(1);
             this.addDrawableChild(child);
         });
-        this.tabNavigation.selectTab(0);
+        this.tabNavigation.selectTab(0, false);
         this.worldCreator.update();
         this.initTabNavigation();
     }
@@ -199,8 +199,8 @@ extends Screen {
         this.grid.refreshPositions();
         SimplePositioningWidget.setPos(this.grid, 0, this.height - 36, this.width, 36);
         int i = this.tabNavigation.getNavigationFocus().getBottom();
-        FocusedRect focusedRect = new FocusedRect(0, i, this.width, this.grid.getY() - i);
-        this.tabManager.setTabArea(focusedRect);
+        ScreenRect screenRect = new ScreenRect(0, i, this.width, this.grid.getY() - i);
+        this.tabManager.setTabArea(screenRect);
     }
 
     private static void showMessage(MinecraftClient client, Text text) {
@@ -299,7 +299,7 @@ extends Screen {
                 this.dataPackTempDir = Files.createTempDirectory(TEMP_DIR_PREFIX, new FileAttribute[0]);
             } catch (IOException iOException) {
                 LOGGER.warn("Failed to create temporary dir", iOException);
-                SystemToast.addPackCopyFailure(this.client, this.worldCreator.method_49703());
+                SystemToast.addPackCopyFailure(this.client, this.worldCreator.getWorldDirectoryName());
                 this.onCloseScreen();
             }
         }
@@ -415,7 +415,7 @@ extends Screen {
         block12: {
             LevelStorage.Session session;
             block11: {
-                string = this.worldCreator.method_49703();
+                string = this.worldCreator.getWorldDirectoryName();
                 session = this.client.getLevelStorage().createSession(string);
                 if (this.dataPackTempDir != null) break block11;
                 return Optional.of(session);
@@ -509,7 +509,7 @@ extends Screen {
             this.worldNameField = adder2.add(new TextFieldWidget(CreateWorldScreen.this.textRenderer, 0, 0, 208, 20, Text.translatable("selectWorld.enterName")), adder2.copyPositioner().margin(1));
             this.worldNameField.setText(CreateWorldScreen.this.worldCreator.getWorldName());
             this.worldNameField.setChangedListener(CreateWorldScreen.this.worldCreator::setWorldName);
-            CreateWorldScreen.this.worldCreator.addListener(worldCreator -> this.worldNameField.setTooltip(Tooltip.of(Text.translatable("selectWorld.targetFolder", Text.literal(worldCreator.method_49703()).formatted(Formatting.ITALIC)))));
+            CreateWorldScreen.this.worldCreator.addListener(creator -> this.worldNameField.setTooltip(Tooltip.of(Text.translatable("selectWorld.targetFolder", Text.literal(creator.getWorldDirectoryName()).formatted(Formatting.ITALIC)))));
             CreateWorldScreen.this.setInitialFocus(this.worldNameField);
             adder.add(adder2.getGridWidget(), adder.copyPositioner().alignHorizontalCenter());
             CyclingButtonWidget<WorldCreator.Mode> cyclingButtonWidget = adder.add(CyclingButtonWidget.builder(value -> value.name).values((WorldCreator.Mode[])new WorldCreator.Mode[]{WorldCreator.Mode.SURVIVAL, WorldCreator.Mode.HARDCORE, WorldCreator.Mode.CREATIVE}).build(0, 0, 210, 20, GAME_MODE_TEXT, (button, value) -> CreateWorldScreen.this.worldCreator.setGameMode((WorldCreator.Mode)((Object)value))), positioner);

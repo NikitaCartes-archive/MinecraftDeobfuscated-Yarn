@@ -533,13 +533,14 @@ public class GameOptions {
         }
         return GameOptions.getGenericValueText(optionText, i);
     }, SimpleOption.DoubleSliderCallbacks.INSTANCE, 0.5, value -> {});
+    private static final int MAX_SERIALIZABLE_GUI_SCALE = 0x7FFFFFFE;
     private final SimpleOption<Integer> guiScale = new SimpleOption<Integer>("options.guiScale", SimpleOption.emptyTooltip(), (optionText, value) -> value == 0 ? Text.translatable("options.guiScale.auto") : Text.literal(Integer.toString(value)), new SimpleOption.MaxSuppliableIntCallbacks(0, () -> {
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
         if (!minecraftClient.isRunning()) {
             return 0x7FFFFFFE;
         }
         return minecraftClient.getWindow().calculateScaleFactor(0, minecraftClient.forcesUnicodeFont());
-    }), 0, value -> {});
+    }, 0x7FFFFFFE), 0, value -> {});
     private final SimpleOption<ParticlesMode> particles = new SimpleOption<ParticlesMode>("options.particles", SimpleOption.emptyTooltip(), SimpleOption.enumValueText(), new SimpleOption.PotentialValuesBasedCallbacks<ParticlesMode>(Arrays.asList(ParticlesMode.values()), Codec.INT.xmap(ParticlesMode::byId, ParticlesMode::getId)), ParticlesMode.ALL, value -> {});
     private final SimpleOption<NarratorMode> narrator = new SimpleOption<NarratorMode>("options.narrator", SimpleOption.emptyTooltip(), (optionText, value) -> {
         if (this.client.getNarratorManager().isActive()) {

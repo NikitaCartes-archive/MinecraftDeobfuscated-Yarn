@@ -50,10 +50,10 @@ extends EntityModel<E> {
         this.updateAnimation(animationState, animation, animationProgress, 1.0f);
     }
 
-    protected void method_48741(Animation animation, float f, float g, float h, float i) {
-        long l = (long)(f * 50.0f * h);
-        float j = Math.min(g * i, 1.0f);
-        AnimationHelper.animate(this, animation, l, j, ZERO);
+    protected void animateMovement(Animation animation, float limbAngle, float limbDistance, float f, float g) {
+        long l = (long)(limbAngle * 50.0f * f);
+        float h = Math.min(limbDistance * g, 1.0f);
+        AnimationHelper.animate(this, animation, l, h, ZERO);
     }
 
     protected void updateAnimation(AnimationState animationState, Animation animation, float animationProgress, float speedMultiplier) {

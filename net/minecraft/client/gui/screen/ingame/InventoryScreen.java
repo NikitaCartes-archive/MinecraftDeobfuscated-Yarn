@@ -132,8 +132,13 @@ implements RecipeBookProvider {
     }
 
     public static void drawEntity(MatrixStack matrices, int x, int y, int size, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
+        double d = 1000.0;
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.push();
+        matrixStack.translate(0.0, 0.0, 1000.0);
+        RenderSystem.applyModelViewMatrix();
         matrices.push();
-        matrices.translate(x, y, 50.0f);
+        matrices.translate((double)x, (double)y, -950.0);
         matrices.multiplyPositionMatrix(new Matrix4f().scaling(size, size, -size));
         matrices.multiply(quaternionf);
         DiffuseLighting.method_34742();
@@ -149,6 +154,8 @@ implements RecipeBookProvider {
         entityRenderDispatcher.setRenderShadows(true);
         matrices.pop();
         DiffuseLighting.enableGuiDepthLighting();
+        matrixStack.pop();
+        RenderSystem.applyModelViewMatrix();
     }
 
     @Override

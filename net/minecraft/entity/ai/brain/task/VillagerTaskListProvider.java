@@ -24,7 +24,6 @@ import net.minecraft.entity.ai.brain.task.FindInteractionTargetTask;
 import net.minecraft.entity.ai.brain.task.FindPointOfInterestTask;
 import net.minecraft.entity.ai.brain.task.FindWalkTargetTask;
 import net.minecraft.entity.ai.brain.task.FollowCustomerTask;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
 import net.minecraft.entity.ai.brain.task.ForgetBellRingTask;
 import net.minecraft.entity.ai.brain.task.ForgetCompletedPointOfInterestTask;
 import net.minecraft.entity.ai.brain.task.GatherItemsVillagerTask;
@@ -41,6 +40,7 @@ import net.minecraft.entity.ai.brain.task.HideWhenBellRingsTask;
 import net.minecraft.entity.ai.brain.task.HoldTradeOffersTask;
 import net.minecraft.entity.ai.brain.task.JumpInBedTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobTask;
 import net.minecraft.entity.ai.brain.task.LoseJobOnSiteLossTask;
 import net.minecraft.entity.ai.brain.task.MeetVillagerTask;
 import net.minecraft.entity.ai.brain.task.OpenDoorsTask;
@@ -123,11 +123,11 @@ public class VillagerTaskListProvider {
     }
 
     private static Pair<Integer, Task<LivingEntity>> createFreeFollowTask() {
-        return Pair.of(5, new RandomTask(ImmutableList.of(Pair.of(FollowMobTask.create(EntityType.CAT, 8.0f), 8), Pair.of(FollowMobTask.create(EntityType.VILLAGER, 8.0f), 2), Pair.of(FollowMobTask.create(EntityType.PLAYER, 8.0f), 2), Pair.of(FollowMobTask.create(SpawnGroup.CREATURE, 8.0f), 1), Pair.of(FollowMobTask.create(SpawnGroup.WATER_CREATURE, 8.0f), 1), Pair.of(FollowMobTask.create(SpawnGroup.AXOLOTLS, 8.0f), 1), Pair.of(FollowMobTask.create(SpawnGroup.UNDERGROUND_WATER_CREATURE, 8.0f), 1), Pair.of(FollowMobTask.create(SpawnGroup.WATER_AMBIENT, 8.0f), 1), Pair.of(FollowMobTask.create(SpawnGroup.MONSTER, 8.0f), 1), Pair.of(new WaitTask(30, 60), 2))));
+        return Pair.of(5, new RandomTask(ImmutableList.of(Pair.of(LookAtMobTask.create(EntityType.CAT, 8.0f), 8), Pair.of(LookAtMobTask.create(EntityType.VILLAGER, 8.0f), 2), Pair.of(LookAtMobTask.create(EntityType.PLAYER, 8.0f), 2), Pair.of(LookAtMobTask.create(SpawnGroup.CREATURE, 8.0f), 1), Pair.of(LookAtMobTask.create(SpawnGroup.WATER_CREATURE, 8.0f), 1), Pair.of(LookAtMobTask.create(SpawnGroup.AXOLOTLS, 8.0f), 1), Pair.of(LookAtMobTask.create(SpawnGroup.UNDERGROUND_WATER_CREATURE, 8.0f), 1), Pair.of(LookAtMobTask.create(SpawnGroup.WATER_AMBIENT, 8.0f), 1), Pair.of(LookAtMobTask.create(SpawnGroup.MONSTER, 8.0f), 1), Pair.of(new WaitTask(30, 60), 2))));
     }
 
     private static Pair<Integer, Task<LivingEntity>> createBusyFollowTask() {
-        return Pair.of(5, new RandomTask(ImmutableList.of(Pair.of(FollowMobTask.create(EntityType.VILLAGER, 8.0f), 2), Pair.of(FollowMobTask.create(EntityType.PLAYER, 8.0f), 2), Pair.of(new WaitTask(30, 60), 8))));
+        return Pair.of(5, new RandomTask(ImmutableList.of(Pair.of(LookAtMobTask.create(EntityType.VILLAGER, 8.0f), 2), Pair.of(LookAtMobTask.create(EntityType.PLAYER, 8.0f), 2), Pair.of(new WaitTask(30, 60), 8))));
     }
 
     private static boolean hasActiveRaid(ServerWorld world, LivingEntity entity) {

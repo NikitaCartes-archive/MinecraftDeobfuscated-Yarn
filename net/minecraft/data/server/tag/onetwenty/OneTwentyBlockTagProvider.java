@@ -52,7 +52,7 @@ extends ValueLookupTagProvider<Block> {
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.SAPLINGS)).add(Blocks.CHERRY_SAPLING);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.LOGS_THAT_BURN)).addTag((TagKey)BlockTags.CHERRY_LOGS);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.OVERWORLD_NATURAL_LOGS)).add(Blocks.CHERRY_LOG);
-        ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.FLOWER_POTS)).add(Blocks.FLOWER_POT);
+        ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.FLOWER_POTS)).add(Blocks.POTTED_CHERRY_SAPLING);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.WOODEN_PRESSURE_PLATES)).add(Blocks.CHERRY_PRESSURE_PLATE);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.LEAVES)).add(Blocks.CHERRY_LEAVES);
         ((ValueLookupTagProvider.ObjectBuilder)this.getOrCreateTagBuilder((TagKey)BlockTags.WOODEN_TRAPDOORS)).add(Blocks.CHERRY_TRAPDOOR);

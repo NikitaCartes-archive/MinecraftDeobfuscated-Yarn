@@ -43,7 +43,7 @@ implements AutoCloseable {
     public Map<Identifier, CompletableFuture<AtlasPreparation>> reload(ResourceManager resourceManager, int mipmapLevels, Executor executor) {
         return this.atlases.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> {
             Atlas atlas = (Atlas)entry.getValue();
-            return SpriteLoader.fromAtlas(atlas.atlas).method_47661(resourceManager, atlas.atlasInfoLocation, mipmapLevels, executor).thenApply(stitchResult -> new AtlasPreparation(atlas.atlas, (SpriteLoader.StitchResult)stitchResult));
+            return SpriteLoader.fromAtlas(atlas.atlas).load(resourceManager, atlas.atlasInfoLocation, mipmapLevels, executor).thenApply(stitchResult -> new AtlasPreparation(atlas.atlas, (SpriteLoader.StitchResult)stitchResult));
         }));
     }
 

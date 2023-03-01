@@ -5,7 +5,7 @@ package net.minecraft.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.navigation.FocusedRect;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.navigation.Navigable;
@@ -194,8 +194,8 @@ extends Navigable {
         return null;
     }
 
-    default public FocusedRect getNavigationFocus() {
-        return FocusedRect.empty();
+    default public ScreenRect getNavigationFocus() {
+        return ScreenRect.empty();
     }
 }
 

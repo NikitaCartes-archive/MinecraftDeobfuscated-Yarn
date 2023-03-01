@@ -288,7 +288,7 @@ implements ResourceReloader {
             });
             return Util.combineSafe(list);
         });
-        CompletionStage completableFuture2 = SpriteLoader.fromAtlas(this.particleAtlasTexture).method_47661(manager, PARTICLES_PATH, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete);
+        CompletionStage completableFuture2 = SpriteLoader.fromAtlas(this.particleAtlasTexture).load(manager, PARTICLES_PATH, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete);
         return ((CompletableFuture)CompletableFuture.allOf(new CompletableFuture[]{completableFuture2, completableFuture}).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(arg_0 -> this.method_45766(applyProfiler, (CompletableFuture)completableFuture2, (CompletableFuture)completableFuture, arg_0), applyExecutor);
     }
 
@@ -540,6 +540,8 @@ implements ResourceReloader {
 
     private void clearParticles() {
         this.particles.clear();
+        this.newParticles.clear();
+        this.newEmitterParticles.clear();
         this.groupCounts.clear();
     }
 

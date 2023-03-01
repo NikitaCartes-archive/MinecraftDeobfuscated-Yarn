@@ -192,7 +192,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     @Override
     public void setSelected(@Nullable Entry entry) {
         super.setSelected(entry);
-        this.parent.worldSelected(entry != null && entry.isAvailable());
+        this.parent.worldSelected(entry != null && entry.isAvailable(), entry != null);
     }
 
     public Optional<WorldEntry> getSelectedAsOptional() {
@@ -348,7 +348,6 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 return true;
             }
             WorldListWidget.this.setSelected(this);
-            this.screen.worldSelected(WorldListWidget.this.getSelectedAsOptional().isPresent());
             if (mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
                 this.play();
                 return true;

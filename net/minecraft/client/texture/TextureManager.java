@@ -9,6 +9,9 @@ import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.attribute.FileAttribute;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -23,6 +26,7 @@ import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.AsyncTexture;
+import net.minecraft.client.texture.DynamicTexture;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.ResourceTexture;
@@ -193,6 +197,33 @@ AutoCloseable {
             MinecraftClient.getInstance().send(() -> completableFuture.complete(null));
         }, runnable -> RenderSystem.recordRenderCall(runnable::run));
         return completableFuture;
+    }
+
+    public void dumpDynamicTextures(Path path) {
+        if (!RenderSystem.isOnRenderThread()) {
+            RenderSystem.recordRenderCall(() -> this.dumpDynamicTexturesInternal(path));
+        } else {
+            this.dumpDynamicTexturesInternal(path);
+        }
+    }
+
+    private void dumpDynamicTexturesInternal(Path path) {
+        try {
+            Files.createDirectories(path, new FileAttribute[0]);
+        } catch (IOException iOException) {
+            LOGGER.error("Failed to create directory {}", (Object)path, (Object)iOException);
+            return;
+        }
+        this.textures.forEach((id, texture) -> {
+            if (texture instanceof DynamicTexture) {
+                DynamicTexture dynamicTexture = (DynamicTexture)((Object)texture);
+                try {
+                    dynamicTexture.save((Identifier)id, path);
+                } catch (IOException iOException) {
+                    LOGGER.error("Failed to dump texture {}", id, (Object)iOException);
+                }
+            }
+        });
     }
 }
 

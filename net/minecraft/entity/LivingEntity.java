@@ -375,7 +375,7 @@ implements Attackable {
                         this.damage(this.getDamageSources().drown(), 2.0f);
                     }
                 }
-                if (!this.world.isClient && this.hasVehicle() && this.getVehicle() != null && this.getVehicle().method_49693()) {
+                if (!this.world.isClient && this.hasVehicle() && this.getVehicle() != null && this.getVehicle().shouldDismountUnderwater()) {
                     this.stopRiding();
                 }
             } else if (this.getAir() < this.getMaxAir()) {
@@ -659,6 +659,12 @@ implements Attackable {
                 this.emitGameEvent(GameEvent.EQUIP);
             }
         }
+    }
+
+    @Override
+    public void remove(Entity.RemovalReason reason) {
+        super.remove(reason);
+        this.brain.forgetAll();
     }
 
     @Override
@@ -2112,7 +2118,7 @@ implements Attackable {
     }
 
     protected float getSaddledSpeed(LivingEntity controllingPassenger) {
-        return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        return this.getMovementSpeed();
     }
 
     public void updateLimbs(boolean flutter) {
@@ -2472,14 +2478,12 @@ implements Attackable {
         this.forwardSpeed *= 0.98f;
         this.tickFallFlying();
         Box box = this.getBoundingBox();
-        if (this.isAlive()) {
-            LivingEntity livingEntity = this.getControllingPassenger();
-            Vec3d vec3d2 = new Vec3d(this.sidewaysSpeed, this.upwardSpeed, this.forwardSpeed);
-            if (livingEntity != null) {
-                this.travelControlled(livingEntity, vec3d2);
-            } else {
-                this.travel(vec3d2);
-            }
+        LivingEntity livingEntity = this.getControllingPassenger();
+        Vec3d vec3d2 = new Vec3d(this.sidewaysSpeed, this.upwardSpeed, this.forwardSpeed);
+        if (livingEntity != null && this.isAlive()) {
+            this.travelControlled(livingEntity, vec3d2);
+        } else {
+            this.travel(vec3d2);
         }
         this.world.getProfiler().pop();
         this.world.getProfiler().push("freezing");

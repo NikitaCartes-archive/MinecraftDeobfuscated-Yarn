@@ -32,7 +32,7 @@ extends Item {
         if (world.isClient) {
             return TypedActionResult.pass(itemStack);
         }
-        Entity entity = user.method_49694();
+        Entity entity = user.getControllingVehicle();
         if (user.hasVehicle() && entity instanceof ItemSteerable) {
             ItemSteerable itemSteerable = (ItemSteerable)((Object)entity);
             if (entity.getType() == this.target && itemSteerable.consumeOnAStickItem()) {

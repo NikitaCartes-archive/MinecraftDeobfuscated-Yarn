@@ -22,10 +22,10 @@ import net.minecraft.entity.ai.brain.task.DigTask;
 import net.minecraft.entity.ai.brain.task.DismountVehicleTask;
 import net.minecraft.entity.ai.brain.task.EmergeTask;
 import net.minecraft.entity.ai.brain.task.FindRoarTargetTask;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
 import net.minecraft.entity.ai.brain.task.LookAtDisturbanceTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobTask;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.RangedApproachTask;
@@ -116,7 +116,7 @@ public class WardenBrain {
     }
 
     private static void addFightActivities(WardenEntity warden, Brain<WardenEntity> brain) {
-        brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(RESET_DIG_COOLDOWN_TASK, ForgetAttackTargetTask.create(entity -> !warden.getAngriness().isAngry() || !warden.isValidTarget((Entity)entity), WardenBrain::removeDeadSuspect, false), FollowMobTask.create((LivingEntity entity) -> WardenBrain.isTargeting(warden, entity), (float)warden.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE)), RangedApproachTask.create(1.2f), new SonicBoomTask(), MeleeAttackTask.create(18)), MemoryModuleType.ATTACK_TARGET);
+        brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(RESET_DIG_COOLDOWN_TASK, ForgetAttackTargetTask.create(entity -> !warden.getAngriness().isAngry() || !warden.isValidTarget((Entity)entity), WardenBrain::removeDeadSuspect, false), LookAtMobTask.create((LivingEntity entity) -> WardenBrain.isTargeting(warden, entity), (float)warden.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE)), RangedApproachTask.create(1.2f), new SonicBoomTask(), MeleeAttackTask.create(18)), MemoryModuleType.ATTACK_TARGET);
     }
 
     private static boolean isTargeting(WardenEntity warden, LivingEntity entity2) {

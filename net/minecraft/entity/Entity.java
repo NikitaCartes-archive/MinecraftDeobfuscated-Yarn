@@ -2771,7 +2771,10 @@ CommandOutput {
         return !this.passengerList.isEmpty();
     }
 
-    public boolean method_49693() {
+    /**
+     * {@return whether this vehicle should dismount the passenger if submerged underwater}
+     */
+    public boolean shouldDismountUnderwater() {
         return this.getType().isIn(EntityTypeTags.DISMOUNTS_UNDERWATER);
     }
 
@@ -4228,7 +4231,7 @@ CommandOutput {
     /**
      * {@return the list of passengers of this entity}
      * 
-     * @see #getPrimaryPassenger
+     * @see #getControllingPassenger
      * @see #getFirstPassenger
      * @see #streamIntoPassengers
      * @see #streamSelfAndPassengers
@@ -4243,11 +4246,11 @@ CommandOutput {
      * {@return the first passenger of the {@linkplain #getPassengerList passenger list},
      * or {@code null} if there is no passengers}
      * 
-     * <p>Such passenger is usually also the {@linkplain #getPrimaryPassenger the
-     * primary passenger}.
+     * <p>Such passenger is usually also the {@linkplain #getControllingPassenger the
+     * controlling passenger}.
      * 
-     * @see #getPrimaryPassenger
-     * @see #hasPrimaryPassenger
+     * @see #getControllingPassenger
+     * @see #hasControllingPassenger
      * @see #getPassengerList
      */
     @Nullable
@@ -4398,7 +4401,7 @@ CommandOutput {
      * on the server; for player-ridden entities, this checks whether the entity
      * is on the client.
      * 
-     * @see #getPrimaryPassenger
+     * @see #getControllingPassenger
      */
     public boolean isLogicalSideForUpdatingMovement() {
         LivingEntity livingEntity = this.getControllingPassenger();
@@ -4441,14 +4444,21 @@ CommandOutput {
      * {@return the entity this entity rides, or {@code null} if there is none}
      * 
      * @see #getRootVehicle
+     * @see #getControllingVehicle
      */
     @Nullable
     public Entity getVehicle() {
         return this.vehicle;
     }
 
+    /**
+     * {@return the entity this entity rides and controls, or {@code null} if there is none}
+     * 
+     * @see #getRootVehicle
+     * @see #getVehicle
+     */
     @Nullable
-    public Entity method_49694() {
+    public Entity getControllingVehicle() {
         return this.vehicle != null && this.vehicle.getControllingPassenger() == this ? this.vehicle : null;
     }
 

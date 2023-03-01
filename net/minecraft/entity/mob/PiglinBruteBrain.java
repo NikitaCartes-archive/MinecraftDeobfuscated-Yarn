@@ -15,12 +15,12 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.task.FindEntityTask;
 import net.minecraft.entity.ai.brain.task.FindInteractionTargetTask;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
 import net.minecraft.entity.ai.brain.task.ForgetAngryAtTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.GoToIfNearbyTask;
 import net.minecraft.entity.ai.brain.task.GoToNearbyPositionTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.OpenDoorsTask;
@@ -75,7 +75,7 @@ public class PiglinBruteBrain {
     }
 
     private static RandomTask<PiglinBruteEntity> getFollowTasks() {
-        return new RandomTask<PiglinBruteEntity>(ImmutableList.of(Pair.of(FollowMobTask.create(EntityType.PLAYER, 8.0f), 1), Pair.of(FollowMobTask.create(EntityType.PIGLIN, 8.0f), 1), Pair.of(FollowMobTask.create(EntityType.PIGLIN_BRUTE, 8.0f), 1), Pair.of(FollowMobTask.create(8.0f), 1), Pair.of(new WaitTask(30, 60), 1)));
+        return new RandomTask<PiglinBruteEntity>(ImmutableList.of(Pair.of(LookAtMobTask.create(EntityType.PLAYER, 8.0f), 1), Pair.of(LookAtMobTask.create(EntityType.PIGLIN, 8.0f), 1), Pair.of(LookAtMobTask.create(EntityType.PIGLIN_BRUTE, 8.0f), 1), Pair.of(LookAtMobTask.create(8.0f), 1), Pair.of(new WaitTask(30, 60), 1)));
     }
 
     private static RandomTask<PiglinBruteEntity> getIdleTasks() {

@@ -70,7 +70,7 @@ extends SinglePartEntityModel<T> {
         this.getPart().traverse().forEach(ModelPart::resetTransform);
         this.setHeadAngles(camelEntity, i, j, h);
         this.updateVisibleParts(camelEntity);
-        this.method_48741(CamelAnimations.WALKING, f, g, 2.0f, 2.5f);
+        this.animateMovement(CamelAnimations.WALKING, f, g, 2.0f, 2.5f);
         this.updateAnimation(((CamelEntity)camelEntity).sittingTransitionAnimationState, CamelAnimations.SITTING_TRANSITION, h, 1.0f);
         this.updateAnimation(((CamelEntity)camelEntity).sittingAnimationState, CamelAnimations.SITTING, h, 1.0f);
         this.updateAnimation(((CamelEntity)camelEntity).standingTransitionAnimationState, CamelAnimations.STANDING_TRANSITION, h, 1.0f);

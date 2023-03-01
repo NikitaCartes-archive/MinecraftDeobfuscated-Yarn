@@ -46,7 +46,7 @@ extends IllagerEntityRenderer<IllusionerEntity> {
     @Override
     public void render(IllusionerEntity illusionerEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         if (illusionerEntity.isInvisible()) {
-            Vec3d[] vec3ds = illusionerEntity.method_7065(g);
+            Vec3d[] vec3ds = illusionerEntity.getMirrorCopyOffsets(g);
             float h = this.getAnimationProgress(illusionerEntity, g);
             for (int j = 0; j < vec3ds.length; ++j) {
                 matrixStack.push();

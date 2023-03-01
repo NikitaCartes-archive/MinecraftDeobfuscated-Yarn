@@ -339,7 +339,7 @@ public final class SimpleOption<T> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public record MaxSuppliableIntCallbacks(int minInclusive, IntSupplier maxSupplier) implements IntSliderCallbacks,
+    public record MaxSuppliableIntCallbacks(int minInclusive, IntSupplier maxSupplier, int encodableMaxInclusive) implements IntSliderCallbacks,
     TypeChangeableCallbacks<Integer>
     {
         @Override
@@ -355,7 +355,7 @@ public final class SimpleOption<T> {
         @Override
         public Codec<Integer> codec() {
             return Codecs.validate(Codec.INT, value -> {
-                int i = this.maxSupplier.getAsInt() + 1;
+                int i = this.encodableMaxInclusive + 1;
                 if (value.compareTo(this.minInclusive) >= 0 && value.compareTo(i) <= 0) {
                     return DataResult.success(value);
                 }

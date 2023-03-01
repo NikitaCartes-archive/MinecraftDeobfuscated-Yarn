@@ -67,7 +67,7 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public void setAngles(T phantomEntity, float f, float g, float h, float i, float j) {
-        float k = ((float)((PhantomEntity)phantomEntity).method_33588() + h) * 7.448451f * ((float)Math.PI / 180);
+        float k = ((float)((PhantomEntity)phantomEntity).getWingFlapTickOffset() + h) * 7.448451f * ((float)Math.PI / 180);
         float l = 16.0f;
         this.leftWingBase.roll = MathHelper.cos(k) * 16.0f * ((float)Math.PI / 180);
         this.leftWingTip.roll = MathHelper.cos(k) * 16.0f * ((float)Math.PI / 180);

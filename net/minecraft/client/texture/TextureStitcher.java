@@ -51,8 +51,6 @@ public class TextureStitcher<T extends Stitchable> {
             if (this.fit(holder2)) continue;
             throw new TextureStitcherCannotFitException((Stitchable)holder2.sprite, list.stream().map(holder -> holder.sprite).collect(ImmutableList.toImmutableList()));
         }
-        this.width = MathHelper.smallestEncompassingPowerOfTwo(this.width);
-        this.height = MathHelper.smallestEncompassingPowerOfTwo(this.height);
     }
 
     public void getStitchedSprites(SpriteConsumer<T> consumer) {
@@ -96,13 +94,13 @@ public class TextureStitcher<T extends Stitchable> {
         }
         if (bl5) {
             if (this.height == 0) {
-                this.height = holder.height;
+                this.height = l;
             }
-            slot = new Slot(this.width, 0, holder.width, this.height);
-            this.width += holder.width;
+            slot = new Slot(this.width, 0, k - this.width, this.height);
+            this.width = k;
         } else {
-            slot = new Slot<T>(0, this.height, this.width, holder.height);
-            this.height += holder.height;
+            slot = new Slot<T>(0, this.height, this.width, l - this.height);
+            this.height = l;
         }
         slot.fit(holder);
         this.slots.add(slot);

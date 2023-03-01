@@ -29,7 +29,7 @@ extends Screen {
         super.init();
         this.wrappedText = MultilineText.create(this.textRenderer, (StringVisitable)this.getTitle(), this.width - 50);
         this.addDrawableChild(ButtonWidget.builder(Text.translatable("datapackFailure.safeMode"), button -> this.runServerInSafeMode.run()).dimensions(this.width / 2 - 155, this.height / 6 + 96, 150, 20).build());
-        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.field_43109, button -> this.client.setScreen(null)).dimensions(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20).build());
+        this.addDrawableChild(ButtonWidget.builder(ScreenTexts.TO_TITLE, button -> this.client.setScreen(null)).dimensions(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20).build());
     }
 
     @Override

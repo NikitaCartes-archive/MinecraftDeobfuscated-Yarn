@@ -15,8 +15,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.navigation.FocusedRect;
 import net.minecraft.client.gui.navigation.GuiNavigation;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
@@ -85,7 +85,7 @@ Selectable {
         super.setFocused(focused);
         if (focused instanceof TabButtonWidget) {
             TabButtonWidget tabButtonWidget = (TabButtonWidget)focused;
-            this.tabManager.setCurrentTab(tabButtonWidget.getTab());
+            this.tabManager.setCurrentTab(tabButtonWidget.getTab(), true);
         }
     }
 
@@ -142,7 +142,7 @@ Selectable {
     }
 
     @Override
-    public FocusedRect getNavigationFocus() {
+    public ScreenRect getNavigationFocus() {
         return this.grid.getNavigationFocus();
     }
 
@@ -157,18 +157,18 @@ Selectable {
         this.grid.setY(0);
     }
 
-    public void selectTab(int index) {
+    public void selectTab(int index, boolean clickSound) {
         if (this.isFocused()) {
             this.setFocused((Element)this.tabButtons.get(index));
         } else {
-            this.tabManager.setCurrentTab((Tab)this.tabs.get(index));
+            this.tabManager.setCurrentTab((Tab)this.tabs.get(index), clickSound);
         }
     }
 
     public boolean trySwitchTabsWithKey(int keyCode) {
         int i;
         if (Screen.hasControlDown() && (i = this.getTabForKey(keyCode)) != -1) {
-            this.selectTab(MathHelper.clamp(i, 0, this.tabs.size() - 1));
+            this.selectTab(MathHelper.clamp(i, 0, this.tabs.size() - 1), true);
             return true;
         }
         return false;

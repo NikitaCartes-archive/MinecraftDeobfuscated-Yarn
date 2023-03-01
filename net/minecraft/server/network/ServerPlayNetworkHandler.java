@@ -1100,7 +1100,7 @@ ServerPlayPacketListener {
     @Override
     public void onBoatPaddleState(BoatPaddleStateC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-        Entity entity = this.player.method_49694();
+        Entity entity = this.player.getControllingVehicle();
         if (entity instanceof BoatEntity) {
             BoatEntity boatEntity = (BoatEntity)entity;
             boatEntity.setPaddleMovings(packet.isLeftPaddling(), packet.isRightPaddling());
@@ -1379,7 +1379,7 @@ ServerPlayPacketListener {
                 break;
             }
             case START_RIDING_JUMP: {
-                Entity entity = this.player.method_49694();
+                Entity entity = this.player.getControllingVehicle();
                 if (!(entity instanceof JumpingMount)) break;
                 JumpingMount jumpingMount = (JumpingMount)((Object)entity);
                 int i = packet.getMountJumpHeight();
@@ -1388,7 +1388,7 @@ ServerPlayPacketListener {
                 break;
             }
             case STOP_RIDING_JUMP: {
-                Entity entity = this.player.method_49694();
+                Entity entity = this.player.getControllingVehicle();
                 if (!(entity instanceof JumpingMount)) break;
                 JumpingMount jumpingMount = (JumpingMount)((Object)entity);
                 jumpingMount.stopJumping();

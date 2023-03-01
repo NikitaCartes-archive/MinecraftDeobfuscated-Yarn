@@ -35,7 +35,7 @@ AutoCloseable {
 
     @Override
     public final CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        return ((CompletableFuture)((CompletableFuture)SpriteLoader.fromAtlas(this.atlas).method_47661(manager, this.field_41425, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(stitchResult -> this.afterReload((SpriteLoader.StitchResult)stitchResult, applyProfiler), applyExecutor);
+        return ((CompletableFuture)((CompletableFuture)SpriteLoader.fromAtlas(this.atlas).load(manager, this.field_41425, 0, prepareExecutor).thenCompose(SpriteLoader.StitchResult::whenComplete)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(stitchResult -> this.afterReload((SpriteLoader.StitchResult)stitchResult, applyProfiler), applyExecutor);
     }
 
     private void afterReload(SpriteLoader.StitchResult stitchResult, Profiler profiler) {

@@ -16,17 +16,17 @@ import net.minecraft.entity.ai.brain.task.SingleTickTask;
 import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.ai.brain.task.TaskTriggerer;
 
-public class FollowMobTask {
+public class LookAtMobTask {
     public static Task<LivingEntity> create(SpawnGroup spawnGroup, float maxDistance) {
-        return FollowMobTask.create((LivingEntity entity) -> spawnGroup.equals(entity.getType().getSpawnGroup()), maxDistance);
+        return LookAtMobTask.create((LivingEntity entity) -> spawnGroup.equals(entity.getType().getSpawnGroup()), maxDistance);
     }
 
     public static SingleTickTask<LivingEntity> create(EntityType<?> type, float maxDistance) {
-        return FollowMobTask.create((LivingEntity entity) -> type.equals(entity.getType()), maxDistance);
+        return LookAtMobTask.create((LivingEntity entity) -> type.equals(entity.getType()), maxDistance);
     }
 
     public static SingleTickTask<LivingEntity> create(float maxDistance) {
-        return FollowMobTask.create((LivingEntity entity) -> true, maxDistance);
+        return LookAtMobTask.create((LivingEntity entity) -> true, maxDistance);
     }
 
     public static SingleTickTask<LivingEntity> create(Predicate<LivingEntity> predicate, float maxDistance) {

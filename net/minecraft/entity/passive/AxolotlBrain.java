@@ -18,11 +18,11 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
 import net.minecraft.entity.ai.brain.task.CompositeTask;
-import net.minecraft.entity.ai.brain.task.FollowMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.ForgetAttackTargetTask;
 import net.minecraft.entity.ai.brain.task.ForgetTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobWithIntervalTask;
 import net.minecraft.entity.ai.brain.task.LookTargetUtil;
 import net.minecraft.entity.ai.brain.task.MeleeAttackTask;
 import net.minecraft.entity.ai.brain.task.PlayDeadTask;
@@ -125,7 +125,7 @@ public class AxolotlBrain {
     }
 
     private static void addIdleActivities(Brain<AxolotlEntity> brain) {
-        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, FollowMobWithIntervalTask.follow(EntityType.PLAYER, 6.0f, UniformIntProvider.create(30, 60))), Pair.of(1, new BreedTask(EntityType.AXOLOTL, 0.2f)), Pair.of(2, new RandomTask(ImmutableList.of(Pair.of(new TemptTask(AxolotlBrain::getTemptedSpeed), 1), Pair.of(WalkTowardClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::getAdultFollowingSpeed), 1)))), Pair.of(3, UpdateAttackTargetTask.create(AxolotlBrain::getAttackTarget)), Pair.of(3, SeekWaterTask.create(6, 0.15f)), Pair.of(4, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(Pair.of(StrollTask.createDynamicRadius(0.5f), 2), Pair.of(StrollTask.create(0.15f, false), 2), Pair.of(GoTowardsLookTargetTask.create(AxolotlBrain::canGoToLookTarget, AxolotlBrain::getTemptedSpeed, 3), 3), Pair.of(TaskTriggerer.predicate(Entity::isInsideWaterOrBubbleColumn), 5), Pair.of(TaskTriggerer.predicate(Entity::isOnGround), 5))))));
+        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0f, UniformIntProvider.create(30, 60))), Pair.of(1, new BreedTask(EntityType.AXOLOTL, 0.2f)), Pair.of(2, new RandomTask(ImmutableList.of(Pair.of(new TemptTask(AxolotlBrain::getTemptedSpeed), 1), Pair.of(WalkTowardClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::getAdultFollowingSpeed), 1)))), Pair.of(3, UpdateAttackTargetTask.create(AxolotlBrain::getAttackTarget)), Pair.of(3, SeekWaterTask.create(6, 0.15f)), Pair.of(4, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(Pair.of(StrollTask.createDynamicRadius(0.5f), 2), Pair.of(StrollTask.create(0.15f, false), 2), Pair.of(GoTowardsLookTargetTask.create(AxolotlBrain::canGoToLookTarget, AxolotlBrain::getTemptedSpeed, 3), 3), Pair.of(TaskTriggerer.predicate(Entity::isInsideWaterOrBubbleColumn), 5), Pair.of(TaskTriggerer.predicate(Entity::isOnGround), 5))))));
     }
 
     private static boolean canGoToLookTarget(LivingEntity entity) {

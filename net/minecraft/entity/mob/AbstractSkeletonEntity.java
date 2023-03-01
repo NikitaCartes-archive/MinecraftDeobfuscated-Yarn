@@ -131,7 +131,7 @@ implements RangedAttackMob {
     @Override
     public void tickRiding() {
         super.tickRiding();
-        Entity entity = this.method_49694();
+        Entity entity = this.getControllingVehicle();
         if (entity instanceof PathAwareEntity) {
             PathAwareEntity pathAwareEntity = (PathAwareEntity)entity;
             this.bodyYaw = pathAwareEntity.bodyYaw;

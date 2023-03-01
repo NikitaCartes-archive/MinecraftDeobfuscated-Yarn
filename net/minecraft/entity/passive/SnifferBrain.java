@@ -21,15 +21,15 @@ import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.brain.task.BreedTask;
-import net.minecraft.entity.ai.brain.task.FollowMobTask;
+import net.minecraft.entity.ai.brain.task.FleeTask;
 import net.minecraft.entity.ai.brain.task.GoTowardsLookTargetTask;
 import net.minecraft.entity.ai.brain.task.LookAroundTask;
+import net.minecraft.entity.ai.brain.task.LookAtMobTask;
 import net.minecraft.entity.ai.brain.task.MultiTickTask;
 import net.minecraft.entity.ai.brain.task.RandomTask;
 import net.minecraft.entity.ai.brain.task.StayAboveWaterTask;
 import net.minecraft.entity.ai.brain.task.StrollTask;
 import net.minecraft.entity.ai.brain.task.WaitTask;
-import net.minecraft.entity.ai.brain.task.WalkTask;
 import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.SnifferEntity;
@@ -60,7 +60,7 @@ public class SnifferBrain {
     }
 
     private static void addCoreActivities(Brain<SnifferEntity> brain) {
-        brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8f), new WalkTask(2.0f){
+        brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new StayAboveWaterTask(0.8f), new FleeTask(2.0f){
 
             @Override
             protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
@@ -86,7 +86,7 @@ public class SnifferBrain {
     }
 
     private static void addIdleActivities(Brain<SnifferEntity> brain) {
-        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new LookAroundTask(45, 90)), Pair.of(0, new FeelHappyTask(40, 100)), Pair.of(0, new RandomTask(ImmutableList.of(Pair.of(GoTowardsLookTargetTask.create(1.0f, 3), 2), Pair.of(new ScentingTask(40, 80), 1), Pair.of(new SniffingTask(40, 80), 1), Pair.of(new BreedTask(EntityType.SNIFFER, 1.0f), 1), Pair.of(FollowMobTask.create(EntityType.PLAYER, 6.0f), 1), Pair.of(StrollTask.create(1.0f), 1), Pair.of(new WaitTask(5, 20), 2))))), Set.of(Pair.of(MemoryModuleType.SNIFFER_DIGGING, MemoryModuleState.VALUE_ABSENT)));
+        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new LookAroundTask(45, 90)), Pair.of(0, new FeelHappyTask(40, 100)), Pair.of(0, new RandomTask(ImmutableList.of(Pair.of(GoTowardsLookTargetTask.create(1.0f, 3), 2), Pair.of(new ScentingTask(40, 80), 1), Pair.of(new SniffingTask(40, 80), 1), Pair.of(new BreedTask(EntityType.SNIFFER, 1.0f), 1), Pair.of(LookAtMobTask.create(EntityType.PLAYER, 6.0f), 1), Pair.of(StrollTask.create(1.0f), 1), Pair.of(new WaitTask(5, 20), 2))))), Set.of(Pair.of(MemoryModuleType.SNIFFER_DIGGING, MemoryModuleState.VALUE_ABSENT)));
     }
 
     static void updateActivities(SnifferEntity sniffer) {

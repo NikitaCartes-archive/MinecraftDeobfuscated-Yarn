@@ -57,6 +57,7 @@ import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -345,26 +346,20 @@ implements Angerable {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (source.isIndirect()) {
-            boolean bl;
-            Entity entity = source.getSource();
-            if (entity instanceof PotionEntity) {
-                PotionEntity potionEntity = (PotionEntity)entity;
-                bl = this.damageFromPotion(source, potionEntity, amount);
-            } else {
-                bl = false;
-            }
+        boolean bl = source.getSource() instanceof PotionEntity;
+        if (source.isIn(DamageTypeTags.IS_PROJECTILE) || bl) {
+            boolean bl2 = bl && this.damageFromPotion(source, (PotionEntity)source.getSource(), amount);
             for (int i = 0; i < 64; ++i) {
                 if (!this.teleportRandomly()) continue;
                 return true;
             }
-            return bl;
+            return bl2;
         }
-        boolean bl = super.damage(source, amount);
+        boolean bl2 = super.damage(source, amount);
         if (!this.world.isClient() && !(source.getAttacker() instanceof LivingEntity) && this.random.nextInt(10) != 0) {
             this.teleportRandomly();
         }
-        return bl;
+        return bl2;
     }
 
     private boolean damageFromPotion(DamageSource source, PotionEntity potion, float amount) {

@@ -16,13 +16,13 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 
 @Deprecated
-public class FollowMobWithIntervalTask {
+public class LookAtMobWithIntervalTask {
     public static Task<LivingEntity> follow(float maxDistance, UniformIntProvider interval) {
-        return FollowMobWithIntervalTask.follow(maxDistance, interval, (LivingEntity entity) -> true);
+        return LookAtMobWithIntervalTask.follow(maxDistance, interval, (LivingEntity entity) -> true);
     }
 
     public static Task<LivingEntity> follow(EntityType<?> type, float maxDistance, UniformIntProvider interval) {
-        return FollowMobWithIntervalTask.follow(maxDistance, interval, (LivingEntity entity) -> type.equals(entity.getType()));
+        return LookAtMobWithIntervalTask.follow(maxDistance, interval, (LivingEntity entity) -> type.equals(entity.getType()));
     }
 
     private static Task<LivingEntity> follow(float maxDistance, UniformIntProvider interval, Predicate<LivingEntity> predicate) {
