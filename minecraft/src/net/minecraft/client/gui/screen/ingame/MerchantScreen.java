@@ -32,7 +32,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	private static final int MAX_TRADE_OFFERS = 7;
 	private static final int field_32364 = 5;
 	private static final int TRADE_OFFER_BUTTON_HEIGHT = 20;
-	private static final int TRADE_OFFER_BUTTON_WIDTH = 89;
+	private static final int TRADE_OFFER_BUTTON_WIDTH = 88;
 	private static final int SCROLLBAR_HEIGHT = 27;
 	private static final int SCROLLBAR_WIDTH = 6;
 	private static final int SCROLLBAR_AREA_HEIGHT = 139;
@@ -293,7 +293,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 		final int index;
 
 		public WidgetButtonPage(int x, int y, int index, ButtonWidget.PressAction onPress) {
-			super(x, y, 89, 20, ScreenTexts.EMPTY, onPress, DEFAULT_NARRATION_SUPPLIER);
+			super(x, y, 88, 20, ScreenTexts.EMPTY, onPress, DEFAULT_NARRATION_SUPPLIER);
 			this.index = index;
 			this.visible = false;
 		}

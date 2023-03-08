@@ -19,6 +19,7 @@ import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.AffineTransformation;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -45,7 +46,9 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends Ent
 		super.render(displayEntity, f, g, matrixStack, vertexConsumerProvider, k);
 		matrixStack.push();
 		matrixStack.multiply(this.getBillboardRotation(displayEntity));
-		matrixStack.multiplyPositionMatrix(displayEntity.lerpTransformation(h).getMatrix());
+		AffineTransformation affineTransformation = displayEntity.lerpTransformation(h);
+		matrixStack.multiplyPositionMatrix(affineTransformation.getMatrix());
+		matrixStack.peek().getNormalMatrix().rotate(affineTransformation.getLeftRotation()).rotate(affineTransformation.getRightRotation());
 		this.render(displayEntity, matrixStack, vertexConsumerProvider, k, h);
 		matrixStack.pop();
 	}

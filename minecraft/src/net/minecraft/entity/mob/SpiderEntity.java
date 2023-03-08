@@ -175,10 +175,10 @@ public class SpiderEntity extends HostileEntity {
 			}
 		}
 
-		if (entityData instanceof SpiderEntity.SpiderData) {
-			StatusEffect statusEffect = ((SpiderEntity.SpiderData)entityData).effect;
+		if (entityData instanceof SpiderEntity.SpiderData spiderData) {
+			StatusEffect statusEffect = spiderData.effect;
 			if (statusEffect != null) {
-				this.addStatusEffect(new StatusEffectInstance(statusEffect, Integer.MAX_VALUE));
+				this.addStatusEffect(new StatusEffectInstance(statusEffect, -1));
 			}
 		}
 

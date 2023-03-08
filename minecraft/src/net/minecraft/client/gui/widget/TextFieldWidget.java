@@ -352,9 +352,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 
 	@Override
 	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (!this.isVisible()) {
-			return false;
-		} else {
+		if (this.isVisible() && button == 0) {
 			boolean bl = mouseX >= (double)this.getX()
 				&& mouseX < (double)(this.getX() + this.width)
 				&& mouseY >= (double)this.getY()
@@ -375,6 +373,8 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 			} else {
 				return false;
 			}
+		} else {
+			return false;
 		}
 	}
 

@@ -28,6 +28,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ShulkerBulletEntity extends ProjectileEntity {
 	private static final double field_30666 = 0.15;
@@ -294,10 +295,15 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HIT, 1.0F, 1.0F);
 	}
 
+	private void method_49723() {
+		this.discard();
+		this.world.emitGameEvent(GameEvent.ENTITY_DAMAGE, this.getPos(), GameEvent.Emitter.of(this));
+	}
+
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		this.discard();
+		this.method_49723();
 	}
 
 	@Override
@@ -310,7 +316,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		if (!this.world.isClient) {
 			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HURT, 1.0F, 1.0F);
 			((ServerWorld)this.world).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
-			this.discard();
+			this.method_49723();
 		}
 
 		return true;

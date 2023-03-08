@@ -22,9 +22,6 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class GameMenuScreen extends Screen {
-	private static final String SNAPSHOT_FEEDBACK_URL = "https://aka.ms/snapshotfeedback?ref=game";
-	private static final String JAVA_FEEDBACK_URL = "https://aka.ms/javafeedback?ref=game";
-	private static final String SNAPSHOT_BUGS_URL = "https://aka.ms/snapshotbugs?ref=game";
 	private static final int field_41616 = 2;
 	private static final int field_41617 = 50;
 	private static final int field_41618 = 4;

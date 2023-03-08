@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.Screen;
 @Environment(EnvType.CLIENT)
 public class ThreePartsLayoutWidget implements LayoutWidget {
 	private static final int DEFAULT_HEADER_FOOTER_HEIGHT = 36;
+	private static final int field_43136 = 30;
 	private final SimplePositioningWidget header = new SimplePositioningWidget();
 	private final SimplePositioningWidget body = new SimplePositioningWidget();
 	private final SimplePositioningWidget footer = new SimplePositioningWidget();
@@ -29,7 +30,7 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 		this.footerHeight = footerHeight;
 		this.header.getMainPositioner().relative(0.5F, 0.5F);
 		this.body.getMainPositioner().relative(0.5F, 0.5F);
-		this.footer.getMainPositioner().relative(0.5F, 0.5F);
+		this.footer.getMainPositioner().relative(0.5F, 0.0F).marginTop(30);
 	}
 
 	@Override

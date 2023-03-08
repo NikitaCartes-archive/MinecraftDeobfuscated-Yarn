@@ -14,4 +14,8 @@ public class GrassColors {
 		int k = j << 8 | i;
 		return k >= colorMap.length ? -65281 : colorMap[k];
 	}
+
+	public static int method_49724() {
+		return getColor(0.5, 1.0);
+	}
 }

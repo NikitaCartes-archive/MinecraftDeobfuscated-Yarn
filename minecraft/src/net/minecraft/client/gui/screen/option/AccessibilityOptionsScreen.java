@@ -15,8 +15,6 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class AccessibilityOptionsScreen extends SimpleOptionsScreen {
-	private static final String GUIDE_URL = "https://aka.ms/MinecraftJavaAccessibility";
-
 	private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
 		return new SimpleOption[]{
 			gameOptions.getNarrator(),

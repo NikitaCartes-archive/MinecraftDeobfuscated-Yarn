@@ -84,7 +84,7 @@ public abstract class WrapperWidget implements LayoutWidget {
 		public void setY(int top, int bottom) {
 			float f = (float)this.positioner.marginTop;
 			float g = (float)(bottom - this.widget.getHeight() - this.positioner.marginBottom);
-			int i = (int)MathHelper.lerp(this.positioner.relativeY, f, g);
+			int i = Math.round(MathHelper.lerp(this.positioner.relativeY, f, g));
 			this.widget.setY(i + top);
 		}
 	}

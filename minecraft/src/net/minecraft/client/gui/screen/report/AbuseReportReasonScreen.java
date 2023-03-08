@@ -19,7 +19,6 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class AbuseReportReasonScreen extends Screen {
-	private static final String ABOUT_JAVA_REPORTING_URL = "https://aka.ms/aboutjavareporting";
 	private static final Text TITLE_TEXT = Text.translatable("gui.abuseReport.reason.title");
 	private static final Text DESCRIPTION_TEXT = Text.translatable("gui.abuseReport.reason.description");
 	private static final Text READ_INFO_TEXT = Text.translatable("gui.chatReport.read_info");

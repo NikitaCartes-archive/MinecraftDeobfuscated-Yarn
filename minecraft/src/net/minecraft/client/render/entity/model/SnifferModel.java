@@ -33,10 +33,10 @@ public class SnifferModel<T extends SnifferEntity> extends SinglePartEntityModel
 		ModelPartData modelPartData3 = modelPartData2.addChild(
 			EntityModelPartNames.BODY,
 			ModelPartBuilder.create()
-				.uv(62, 0)
-				.cuboid(-12.5F, -14.0F, -20.0F, 25.0F, 24.0F, 40.0F, new Dilation(0.5F))
 				.uv(62, 68)
 				.cuboid(-12.5F, -14.0F, -20.0F, 25.0F, 29.0F, 40.0F, new Dilation(0.0F))
+				.uv(62, 0)
+				.cuboid(-12.5F, -14.0F, -20.0F, 25.0F, 24.0F, 40.0F, new Dilation(0.5F))
 				.uv(87, 68)
 				.cuboid(-12.5F, 12.0F, -20.0F, 25.0F, 0.0F, 40.0F, new Dilation(0.0F)),
 			ModelTransform.pivot(0.0F, 0.0F, 0.0F)

@@ -233,32 +233,36 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 
 		@Override
 		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			double d = mouseX - (double)this.widget.getRowLeft();
-			double e = mouseY - (double)this.widget.getRowTop(this.widget.children().indexOf(this));
-			if (this.isSelectable() && d <= 32.0) {
-				this.widget.screen.clearSelection();
-				if (this.pack.canBeEnabled()) {
-					this.enable();
-					return true;
+			if (button != 0) {
+				return false;
+			} else {
+				double d = mouseX - (double)this.widget.getRowLeft();
+				double e = mouseY - (double)this.widget.getRowTop(this.widget.children().indexOf(this));
+				if (this.isSelectable() && d <= 32.0) {
+					this.widget.screen.clearSelection();
+					if (this.pack.canBeEnabled()) {
+						this.enable();
+						return true;
+					}
+
+					if (d < 16.0 && this.pack.canBeDisabled()) {
+						this.pack.disable();
+						return true;
+					}
+
+					if (d > 16.0 && e < 16.0 && this.pack.canMoveTowardStart()) {
+						this.pack.moveTowardStart();
+						return true;
+					}
+
+					if (d > 16.0 && e > 16.0 && this.pack.canMoveTowardEnd()) {
+						this.pack.moveTowardEnd();
+						return true;
+					}
 				}
 
-				if (d < 16.0 && this.pack.canBeDisabled()) {
-					this.pack.disable();
-					return true;
-				}
-
-				if (d > 16.0 && e < 16.0 && this.pack.canMoveTowardStart()) {
-					this.pack.moveTowardStart();
-					return true;
-				}
-
-				if (d > 16.0 && e > 16.0 && this.pack.canMoveTowardEnd()) {
-					this.pack.moveTowardEnd();
-					return true;
-				}
+				return false;
 			}
-
-			return false;
 		}
 	}
 }
