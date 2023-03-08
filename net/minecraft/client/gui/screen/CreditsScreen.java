@@ -52,13 +52,12 @@ extends Screen {
     private final IntSet pressedCtrlKeys = new IntOpenHashSet();
     private float speed;
     private final float baseSpeed;
-    private final LogoDrawer logoDrawer;
+    private final LogoDrawer logoDrawer = new LogoDrawer(false);
 
-    public CreditsScreen(boolean endCredits, LogoDrawer logoDrawer, Runnable finishAction) {
+    public CreditsScreen(boolean endCredits, Runnable runnable) {
         super(NarratorManager.EMPTY);
         this.endCredits = endCredits;
-        this.logoDrawer = logoDrawer;
-        this.finishAction = finishAction;
+        this.finishAction = runnable;
         this.baseSpeed = !endCredits ? 0.75f : 0.5f;
         this.speed = this.baseSpeed;
     }
@@ -109,7 +108,6 @@ extends Screen {
 
     private void closeScreen() {
         this.finishAction.run();
-        this.client.setScreen(null);
     }
 
     @Override

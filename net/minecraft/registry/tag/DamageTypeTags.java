@@ -11,6 +11,7 @@ import net.minecraft.util.Identifier;
 public interface DamageTypeTags {
     public static final TagKey<DamageType> DAMAGES_HELMET = DamageTypeTags.of("damages_helmet");
     public static final TagKey<DamageType> BYPASSES_ARMOR = DamageTypeTags.of("bypasses_armor");
+    public static final TagKey<DamageType> BYPASSES_SHIELD = DamageTypeTags.of("bypasses_shield");
     public static final TagKey<DamageType> BYPASSES_INVULNERABILITY = DamageTypeTags.of("bypasses_invulnerability");
     public static final TagKey<DamageType> BYPASSES_COOLDOWN = DamageTypeTags.of("bypasses_cooldown");
     public static final TagKey<DamageType> BYPASSES_EFFECTS = DamageTypeTags.of("bypasses_effects");

@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8216;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
@@ -50,7 +51,6 @@ extends RealmsScreen {
     private Text startDate = UNKNOWN_TEXT;
     @Nullable
     private Subscription.SubscriptionType type;
-    private static final String EXTEND_JAVA_REALMS_URL = "https://aka.ms/ExtendJavaRealms";
 
     public RealmsSubscriptionInfoScreen(Screen parent, RealmsServer serverData, Screen mainScreen) {
         super(NarratorManager.EMPTY);
@@ -63,7 +63,7 @@ extends RealmsScreen {
     public void init() {
         this.getSubscription(this.serverData.id);
         this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.configure.world.subscription.extend"), button -> {
-            String string = "https://aka.ms/ExtendJavaRealms?subscriptionId=" + this.serverData.remoteSubscriptionId + "&profileId=" + this.client.getSession().getUuid();
+            String string = class_8216.method_49719(this.serverData.remoteSubscriptionId, this.client.getSession().getUuid());
             this.client.keyboard.setClipboard(string);
             Util.getOperatingSystem().open(string);
         }).dimensions(this.width / 2 - 100, RealmsSubscriptionInfoScreen.row(6), 200, 20).build());

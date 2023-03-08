@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class AbuseReportReasonScreen
 extends Screen {
-    private static final String ABOUT_JAVA_REPORTING_URL = "https://aka.ms/aboutjavareporting";
     private static final Text TITLE_TEXT = Text.translatable("gui.abuseReport.reason.title");
     private static final Text DESCRIPTION_TEXT = Text.translatable("gui.abuseReport.reason.description");
     private static final Text READ_INFO_TEXT = Text.translatable("gui.chatReport.read_info");
@@ -57,10 +56,10 @@ extends Screen {
         int i = this.width / 2 - 150 - 5;
         this.addDrawableChild(ButtonWidget.builder(READ_INFO_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
             if (confirmed) {
-                Util.getOperatingSystem().open(ABOUT_JAVA_REPORTING_URL);
+                Util.getOperatingSystem().open("https://aka.ms/aboutjavareporting");
             }
             this.client.setScreen(this);
-        }, ABOUT_JAVA_REPORTING_URL, true))).dimensions(i, this.getDoneButtonY(), 150, 20).build());
+        }, "https://aka.ms/aboutjavareporting", true))).dimensions(i, this.getDoneButtonY(), 150, 20).build());
         int j = this.width / 2 + 5;
         this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
             ReasonListWidget.ReasonEntry reasonEntry = (ReasonListWidget.ReasonEntry)this.reasonList.getSelectedOrNull();

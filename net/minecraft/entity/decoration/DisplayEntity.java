@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -97,6 +96,7 @@ extends Entity {
     private final Quaternionf fixedRotation = new Quaternionf();
     protected final Interpolators interpolators = new Interpolators();
     private long interpolationStart;
+    private float field_43135;
     private Box visibilityBoundingBox;
 
     public DisplayEntity(EntityType<?> entityType, World world) {
@@ -104,7 +104,7 @@ extends Entity {
         this.noClip = true;
         this.ignoreCameraFrustum = true;
         this.visibilityBoundingBox = this.getBoundingBox();
-        this.interpolators.addInterpolator(Set.of(TRANSLATION, LEFT_ROTATION, SCALE, RIGHT_ROTATION), transformation -> this.transformationInterpolator.setValue(DisplayEntity.getTransformation(transformation)));
+        this.interpolators.addInterpolator(Set.of(TRANSLATION, LEFT_ROTATION, SCALE, RIGHT_ROTATION), (f, dataTracker) -> this.transformationInterpolator.setValue(f, DisplayEntity.getTransformation(dataTracker)));
         this.interpolators.addInterpolator(SHADOW_STRENGTH, this.shadowStrengthLerper);
         this.interpolators.addInterpolator(SHADOW_RADIUS, this.shadowRadiusLerper);
     }
@@ -117,7 +117,7 @@ extends Entity {
             bl |= this.interpolators.hasInterpolator(serializedEntry.id());
         }
         if (bl) {
-            this.interpolators.interpolate(this.dataTracker);
+            this.interpolators.interpolate(this.field_43135, this.dataTracker);
         }
     }
 
@@ -352,13 +352,15 @@ extends Entity {
     }
 
     public float getLerpProgress(float delta) {
+        float h;
         int i = this.getInterpolationDuration();
         if (i <= 0) {
             return 1.0f;
         }
         float f = (long)this.age - this.interpolationStart;
         float g = f + delta;
-        return MathHelper.clamp(MathHelper.getLerpProgress(g, 0.0f, i), 0.0f, 1.0f);
+        this.field_43135 = h = MathHelper.clamp(MathHelper.getLerpProgress(g, 0.0f, i), 0.0f, 1.0f);
+        return h;
     }
 
     private float getDisplayHeight() {
@@ -427,6 +429,12 @@ extends Entity {
             }
             return (T)this.interpolate(delta, this.prevValue, this.value);
         }
+
+        @Override
+        public void setValue(float f, T object) {
+            this.prevValue = this.interpolate(f);
+            this.value = object;
+        }
     }
 
     static class FloatLerper
@@ -445,36 +453,47 @@ extends Entity {
             }
             return this.lerp(delta, ((Float)this.prevValue).floatValue(), ((Float)this.value).floatValue());
         }
+
+        @Override
+        public void setValue(float f, Float float_) {
+            this.prevValue = Float.valueOf(this.lerp(f));
+            this.value = float_;
+        }
     }
 
     static class Interpolators {
         private final IntSet interpolatedIds = new IntOpenHashSet();
-        private final List<Consumer<DataTracker>> interpolators = new ArrayList<Consumer<DataTracker>>();
+        private final List<class_8217> interpolators = new ArrayList<class_8217>();
 
         Interpolators() {
         }
 
         protected <T> void addInterpolator(TrackedData<T> data, Interpolator<T> interpolator) {
             this.interpolatedIds.add(data.getId());
-            this.interpolators.add(dataTracker -> interpolator.setValue(dataTracker.get(data)));
+            this.interpolators.add((f, dataTracker) -> interpolator.setValue(f, dataTracker.get(data)));
         }
 
-        protected void addInterpolator(Set<TrackedData<?>> dataSet, Consumer<DataTracker> interpolator) {
+        protected void addInterpolator(Set<TrackedData<?>> dataSet, class_8217 arg) {
             for (TrackedData<?> trackedData : dataSet) {
                 this.interpolatedIds.add(trackedData.getId());
             }
-            this.interpolators.add(interpolator);
+            this.interpolators.add(arg);
         }
 
         public boolean hasInterpolator(int id) {
             return this.interpolatedIds.contains(id);
         }
 
-        public void interpolate(DataTracker dataTracker) {
-            for (Consumer<DataTracker> consumer : this.interpolators) {
-                consumer.accept(dataTracker);
+        public void interpolate(float f, DataTracker dataTracker) {
+            for (class_8217 lv : this.interpolators) {
+                lv.update(f, dataTracker);
             }
         }
+    }
+
+    @FunctionalInterface
+    static interface class_8217 {
+        public void update(float var1, DataTracker var2);
     }
 
     static abstract class Interpolator<T> {
@@ -486,10 +505,7 @@ extends Entity {
             this.value = value;
         }
 
-        public void setValue(T value) {
-            this.prevValue = this.value;
-            this.value = value;
-        }
+        public abstract void setValue(float var1, T var2);
     }
 
     public static enum BillboardMode implements StringIdentifiable
@@ -552,6 +568,12 @@ extends Entity {
             }
             return this.lerp(value, (Integer)this.prevValue, (Integer)this.value);
         }
+
+        @Override
+        public void setValue(float f, Integer integer) {
+            this.prevValue = this.lerp(f);
+            this.value = integer;
+        }
     }
 
     public static class TextDisplayEntity
@@ -584,7 +606,7 @@ extends Entity {
         public TextDisplayEntity(EntityType<?> entityType, World world) {
             super(entityType, world);
             this.interpolators.addInterpolator(BACKGROUND, this.backgroundLerper);
-            this.interpolators.addInterpolator(Set.of(TEXT_OPACITY), dataTracker -> this.textOpacityLerper.setValue(dataTracker.get(TEXT_OPACITY) & 0xFF));
+            this.interpolators.addInterpolator(Set.of(TEXT_OPACITY), (f, dataTracker) -> this.textOpacityLerper.setValue(f, dataTracker.get(TEXT_OPACITY) & 0xFF));
         }
 
         @Override
@@ -835,7 +857,7 @@ extends Entity {
         protected void initDataTracker() {
             super.initDataTracker();
             this.dataTracker.startTracking(ITEM, ItemStack.EMPTY);
-            this.dataTracker.startTracking(ITEM_DISPLAY, ModelTransformationMode.FIXED.getIndex());
+            this.dataTracker.startTracking(ITEM_DISPLAY, ModelTransformationMode.NONE.getIndex());
         }
 
         public ItemStack getItemStack() {

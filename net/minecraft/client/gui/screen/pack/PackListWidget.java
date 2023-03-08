@@ -232,6 +232,9 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
+            if (button != 0) {
+                return false;
+            }
             double d = mouseX - (double)this.widget.getRowLeft();
             double e = mouseY - (double)this.widget.getRowTop(this.widget.children().indexOf(this));
             if (this.isSelectable() && d <= 32.0) {

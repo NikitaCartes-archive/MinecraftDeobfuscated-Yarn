@@ -563,9 +563,14 @@ implements Targeter {
     }
 
     public ItemStack tryEquip(ItemStack stack) {
-        EquipmentSlot equipmentSlot = this.getSlotToEquip(stack);
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
         ItemStack itemStack = this.getEquippedStack(equipmentSlot);
         boolean bl = this.prefersNewEquipment(stack, itemStack);
+        if (equipmentSlot.isArmorSlot() && !bl) {
+            equipmentSlot = EquipmentSlot.MAINHAND;
+            itemStack = this.getEquippedStack(equipmentSlot);
+            bl = this.prefersNewEquipment(stack, itemStack);
+        }
         if (bl && this.canPickupItem(stack)) {
             double d = this.getDropChance(equipmentSlot);
             if (!itemStack.isEmpty() && (double)Math.max(this.random.nextFloat() - 0.1f, 0.0f) < d) {
@@ -580,12 +585,6 @@ implements Targeter {
             return stack;
         }
         return ItemStack.EMPTY;
-    }
-
-    private EquipmentSlot getSlotToEquip(ItemStack stack) {
-        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
-        boolean bl = this.getEquippedStack(equipmentSlot).isEmpty();
-        return equipmentSlot.isArmorSlot() && !bl ? EquipmentSlot.MAINHAND : equipmentSlot;
     }
 
     protected void equipLootStack(EquipmentSlot slot, ItemStack stack) {

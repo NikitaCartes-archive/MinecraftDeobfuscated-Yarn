@@ -346,7 +346,7 @@ implements Drawable {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean bl;
-        if (!this.isVisible()) {
+        if (!this.isVisible() || button != 0) {
             return false;
         }
         boolean bl2 = bl = mouseX >= (double)this.getX() && mouseX < (double)(this.getX() + this.width) && mouseY >= (double)this.getY() && mouseY < (double)(this.getY() + this.height);

@@ -160,7 +160,6 @@ extends HostileEntity {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
-        StatusEffect statusEffect;
         SkeletonEntity skeletonEntity;
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         Random random = world.getRandom();
@@ -175,8 +174,12 @@ extends HostileEntity {
                 ((SpiderData)entityData).setEffect(random);
             }
         }
-        if (entityData instanceof SpiderData && (statusEffect = ((SpiderData)entityData).effect) != null) {
-            this.addStatusEffect(new StatusEffectInstance(statusEffect, Integer.MAX_VALUE));
+        if (entityData instanceof SpiderData) {
+            SpiderData spiderData = (SpiderData)entityData;
+            StatusEffect statusEffect = spiderData.effect;
+            if (statusEffect != null) {
+                this.addStatusEffect(new StatusEffectInstance(statusEffect, -1));
+            }
         }
         return entityData;
     }

@@ -1262,11 +1262,11 @@ ServerPlayPacketListener {
             this.disconnect(Text.translatable("multiplayer.disconnect.out_of_order_chat"));
             return Optional.empty();
         }
+        Optional<LastSeenMessageList> optional = this.validateAcknowledgment(acknowledgment);
         if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
             this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), false));
             return Optional.empty();
         }
-        Optional<LastSeenMessageList> optional = this.validateAcknowledgment(acknowledgment);
         this.player.updateLastActionTime();
         return optional;
     }

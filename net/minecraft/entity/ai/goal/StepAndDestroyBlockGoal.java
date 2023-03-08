@@ -47,19 +47,12 @@ extends MoveToTargetPosGoal {
             --this.cooldown;
             return false;
         }
-        if (this.hasAvailableTarget()) {
+        if (this.findTargetPos()) {
             this.cooldown = StepAndDestroyBlockGoal.toGoalTicks(20);
             return true;
         }
         this.cooldown = this.getInterval(this.mob);
         return false;
-    }
-
-    private boolean hasAvailableTarget() {
-        if (this.targetPos != null && this.isTargetPos(this.mob.world, this.targetPos)) {
-            return true;
-        }
-        return this.findTargetPos();
     }
 
     @Override

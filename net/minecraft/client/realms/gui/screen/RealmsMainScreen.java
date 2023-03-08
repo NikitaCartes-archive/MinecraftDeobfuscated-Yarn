@@ -21,6 +21,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8216;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
@@ -524,7 +525,7 @@ extends RealmsScreen {
 
     private void onRenew(@Nullable RealmsServer realmsServer) {
         if (realmsServer != null) {
-            String string = "https://aka.ms/ExtendJavaRealms?subscriptionId=" + realmsServer.remoteSubscriptionId + "&profileId=" + this.client.getSession().getUuid() + "&ref=" + (realmsServer.expiredTrial ? "expiredTrial" : "expiredRealm");
+            String string = class_8216.method_49720(realmsServer.remoteSubscriptionId, this.client.getSession().getUuid(), realmsServer.expiredTrial);
             this.client.keyboard.setClipboard(string);
             Util.getOperatingSystem().open(string);
         }

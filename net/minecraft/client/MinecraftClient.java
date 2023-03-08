@@ -2702,7 +2702,6 @@ implements WindowEventHandler {
         };
 
         static final Text MORE_INFO_TEXT;
-        private static final String JAVA_ACCOUNT_SETTINGS_URL = "https://aka.ms/JavaAccountSettings";
         private final Text description;
 
         ChatRestriction(Text description) {

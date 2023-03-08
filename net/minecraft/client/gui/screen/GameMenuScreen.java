@@ -32,9 +32,6 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class GameMenuScreen
 extends Screen {
-    private static final String SNAPSHOT_FEEDBACK_URL = "https://aka.ms/snapshotfeedback?ref=game";
-    private static final String JAVA_FEEDBACK_URL = "https://aka.ms/javafeedback?ref=game";
-    private static final String SNAPSHOT_BUGS_URL = "https://aka.ms/snapshotbugs?ref=game";
     private static final int field_41616 = 2;
     private static final int field_41617 = 50;
     private static final int field_41618 = 4;
@@ -80,8 +77,8 @@ extends Screen {
         }).width(204).build(), 2, gridWidget.copyPositioner().marginTop(50));
         adder.add(this.createButton(ADVANCEMENTS_TEXT, () -> new AdvancementsScreen(this.client.player.networkHandler.getAdvancementHandler())));
         adder.add(this.createButton(STATS_TEXT, () -> new StatsScreen(this, this.client.player.getStatHandler())));
-        adder.add(this.createUrlButton(SEND_FEEDBACK_TEXT, SharedConstants.getGameVersion().isStable() ? JAVA_FEEDBACK_URL : SNAPSHOT_FEEDBACK_URL));
-        adder.add(this.createUrlButton((Text)GameMenuScreen.REPORT_BUGS_TEXT, (String)SNAPSHOT_BUGS_URL)).active = !SharedConstants.getGameVersion().getSaveVersion().isNotMainSeries();
+        adder.add(this.createUrlButton(SEND_FEEDBACK_TEXT, SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game"));
+        adder.add(this.createUrlButton((Text)GameMenuScreen.REPORT_BUGS_TEXT, (String)"https://aka.ms/snapshotbugs?ref=game")).active = !SharedConstants.getGameVersion().getSaveVersion().isNotMainSeries();
         adder.add(this.createButton(OPTIONS_TEXT, () -> new OptionsScreen(this, this.client.options)));
         if (this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote()) {
             adder.add(this.createButton(SHARE_TO_LAN_TEXT, () -> new OpenToLanScreen(this)));

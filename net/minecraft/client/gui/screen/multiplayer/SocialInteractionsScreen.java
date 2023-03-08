@@ -45,7 +45,6 @@ extends Screen {
     private static final Text EMPTY_HIDDEN_TEXT = Text.translatable("gui.socialInteractions.empty_hidden").formatted(Formatting.GRAY);
     private static final Text EMPTY_BLOCKED_TEXT = Text.translatable("gui.socialInteractions.empty_blocked").formatted(Formatting.GRAY);
     private static final Text BLOCKING_TEXT = Text.translatable("gui.socialInteractions.blocking_hint");
-    private static final String BLOCKING_URL = "https://aka.ms/javablocking";
     private static final int field_32424 = 8;
     private static final int field_32426 = 236;
     private static final int field_32427 = 16;
@@ -136,10 +135,10 @@ extends Screen {
         this.addSelectableChild(this.playerList);
         this.blockingButton = this.addDrawableChild(ButtonWidget.builder(BLOCKING_TEXT, button -> this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
             if (confirmed) {
-                Util.getOperatingSystem().open(BLOCKING_URL);
+                Util.getOperatingSystem().open("https://aka.ms/javablocking");
             }
             this.client.setScreen(this);
-        }, BLOCKING_URL, true))).dimensions(n, m, l, 20).build());
+        }, "https://aka.ms/javablocking", true))).dimensions(n, m, l, 20).build());
         this.initialized = true;
         this.setCurrentTab(this.currentTab);
     }

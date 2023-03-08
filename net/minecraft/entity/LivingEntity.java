@@ -1226,7 +1226,7 @@ implements Attackable {
         if (entity instanceof PersistentProjectileEntity && (persistentProjectileEntity = (PersistentProjectileEntity)entity).getPierceLevel() > 0) {
             bl = true;
         }
-        if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR) && this.isBlocking() && !bl && (vec3d = source.getPosition()) != null) {
+        if (!source.isIn(DamageTypeTags.BYPASSES_SHIELD) && this.isBlocking() && !bl && (vec3d = source.getPosition()) != null) {
             Vec3d vec3d2 = this.getRotationVec(1.0f);
             Vec3d vec3d3 = vec3d.relativize(this.getPos()).normalize();
             vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z);

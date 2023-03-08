@@ -21,12 +21,11 @@ import org.apache.commons.lang3.StringUtils;
 
 @Environment(value=EnvType.CLIENT)
 public class Bans {
-    public static final String JAVA_MODERATION_URL = "https://aka.ms/mcjavamoderation";
     private static final Text TEMPORARY_TITLE = Text.translatable("gui.banned.title.temporary").formatted(Formatting.BOLD);
     private static final Text PERMANENT_TITLE = Text.translatable("gui.banned.title.permanent").formatted(Formatting.BOLD);
 
     public static ConfirmLinkScreen createBanScreen(BooleanConsumer callback, BanDetails banDetails) {
-        return new ConfirmLinkScreen(callback, Bans.getTitle(banDetails), Bans.getDescriptionText(banDetails), JAVA_MODERATION_URL, ScreenTexts.ACKNOWLEDGE, true);
+        return new ConfirmLinkScreen(callback, Bans.getTitle(banDetails), Bans.getDescriptionText(banDetails), "https://aka.ms/mcjavamoderation", ScreenTexts.ACKNOWLEDGE, true);
     }
 
     private static Text getTitle(BanDetails banDetails) {
@@ -34,7 +33,7 @@ public class Bans {
     }
 
     private static Text getDescriptionText(BanDetails banDetails) {
-        return Text.translatable("gui.banned.description", Bans.getReasonText(banDetails), Bans.getDurationText(banDetails), Text.literal(JAVA_MODERATION_URL));
+        return Text.translatable("gui.banned.description", Bans.getReasonText(banDetails), Bans.getDurationText(banDetails), Text.literal("https://aka.ms/mcjavamoderation"));
     }
 
     private static Text getReasonText(BanDetails banDetails) {

@@ -20,8 +20,6 @@ import net.minecraft.util.Util;
 @Environment(value=EnvType.CLIENT)
 public class AccessibilityOptionsScreen
 extends SimpleOptionsScreen {
-    private static final String GUIDE_URL = "https://aka.ms/MinecraftJavaAccessibility";
-
     private static SimpleOption<?>[] getOptions(GameOptions gameOptions) {
         return new SimpleOption[]{gameOptions.getNarrator(), gameOptions.getShowSubtitles(), gameOptions.getHighContrast(), gameOptions.getAutoJump(), gameOptions.getTextBackgroundOpacity(), gameOptions.getBackgroundForChatOnly(), gameOptions.getChatOpacity(), gameOptions.getChatLineSpacing(), gameOptions.getChatDelay(), gameOptions.getNotificationDisplayTime(), gameOptions.getSneakToggled(), gameOptions.getSprintToggled(), gameOptions.getDistortionEffectScale(), gameOptions.getFovEffectScale(), gameOptions.getDarknessEffectScale(), gameOptions.getDamageTiltStrength(), gameOptions.getGlintSpeed(), gameOptions.getGlintStrength(), gameOptions.getHideLightningFlashes(), gameOptions.getMonochromeLogo(), gameOptions.getPanoramaSpeed()};
     }
@@ -44,10 +42,10 @@ extends SimpleOptionsScreen {
     protected void initFooter() {
         this.addDrawableChild(ButtonWidget.builder(Text.translatable("options.accessibility.link"), button -> this.client.setScreen(new ConfirmLinkScreen(openInBrowser -> {
             if (openInBrowser) {
-                Util.getOperatingSystem().open(GUIDE_URL);
+                Util.getOperatingSystem().open("https://aka.ms/MinecraftJavaAccessibility");
             }
             this.client.setScreen(this);
-        }, GUIDE_URL, true))).dimensions(this.width / 2 - 155, this.height - 27, 150, 20).build());
+        }, "https://aka.ms/MinecraftJavaAccessibility", true))).dimensions(this.width / 2 - 155, this.height - 27, 150, 20).build());
         this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 5, this.height - 27, 150, 20).build());
     }
 }
