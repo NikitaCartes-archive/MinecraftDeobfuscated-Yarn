@@ -1312,13 +1312,15 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			LOGGER.warn("{} sent out-of-order chat: '{}'", this.player.getName().getString(), message);
 			this.disconnect(Text.translatable("multiplayer.disconnect.out_of_order_chat"));
 			return Optional.empty();
-		} else if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-			this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), false));
-			return Optional.empty();
 		} else {
 			Optional<LastSeenMessageList> optional = this.validateAcknowledgment(acknowledgment);
-			this.player.updateLastActionTime();
-			return optional;
+			if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
+				this.sendPacket(new GameMessageS2CPacket(Text.translatable("chat.disabled.options").formatted(Formatting.RED), false));
+				return Optional.empty();
+			} else {
+				this.player.updateLastActionTime();
+				return optional;
+			}
 		}
 	}
 

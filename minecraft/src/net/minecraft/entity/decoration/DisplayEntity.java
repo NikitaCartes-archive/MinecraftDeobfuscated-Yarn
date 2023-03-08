@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -90,6 +89,7 @@ public abstract class DisplayEntity extends Entity {
 	private final Quaternionf fixedRotation = new Quaternionf();
 	protected final DisplayEntity.Interpolators interpolators = new DisplayEntity.Interpolators();
 	private long interpolationStart;
+	private float field_43135;
 	private Box visibilityBoundingBox;
 
 	public DisplayEntity(EntityType<?> entityType, World world) {
@@ -99,7 +99,7 @@ public abstract class DisplayEntity extends Entity {
 		this.visibilityBoundingBox = this.getBoundingBox();
 		this.interpolators
 			.addInterpolator(
-				Set.of(TRANSLATION, LEFT_ROTATION, SCALE, RIGHT_ROTATION), transformation -> this.transformationInterpolator.setValue(getTransformation(transformation))
+				Set.of(TRANSLATION, LEFT_ROTATION, SCALE, RIGHT_ROTATION), (f, dataTracker) -> this.transformationInterpolator.setValue(f, getTransformation(dataTracker))
 			);
 		this.interpolators.addInterpolator(SHADOW_STRENGTH, this.shadowStrengthLerper);
 		this.interpolators.addInterpolator(SHADOW_RADIUS, this.shadowRadiusLerper);
@@ -115,7 +115,7 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		if (bl) {
-			this.interpolators.interpolate(this.dataTracker);
+			this.interpolators.interpolate(this.field_43135, this.dataTracker);
 		}
 	}
 
@@ -379,7 +379,9 @@ public abstract class DisplayEntity extends Entity {
 		} else {
 			float f = (float)((long)this.age - this.interpolationStart);
 			float g = f + delta;
-			return MathHelper.clamp(MathHelper.getLerpProgress(g, 0.0F, (float)i), 0.0F, 1.0F);
+			float h = MathHelper.clamp(MathHelper.getLerpProgress(g, 0.0F, (float)i), 0.0F, 1.0F);
+			this.field_43135 = h;
+			return h;
 		}
 	}
 
@@ -444,6 +446,12 @@ public abstract class DisplayEntity extends Entity {
 
 		public T interpolate(float delta) {
 			return !((double)delta >= 1.0) && this.prevValue != null ? this.interpolate(delta, this.prevValue, this.value) : this.value;
+		}
+
+		@Override
+		public void setValue(float f, T object) {
+			this.prevValue = this.interpolate(f);
+			this.value = object;
 		}
 	}
 
@@ -535,6 +543,11 @@ public abstract class DisplayEntity extends Entity {
 		public float lerp(float delta) {
 			return !((double)delta >= 1.0) && this.prevValue != null ? this.lerp(delta, this.prevValue, this.value) : this.value;
 		}
+
+		public void setValue(float f, Float float_) {
+			this.prevValue = this.lerp(f);
+			this.value = float_;
+		}
 	}
 
 	static class IntLerper extends DisplayEntity.Interpolator<Integer> {
@@ -549,6 +562,11 @@ public abstract class DisplayEntity extends Entity {
 		public int lerp(float value) {
 			return !((double)value >= 1.0) && this.prevValue != null ? this.lerp(value, this.prevValue, this.value) : this.value;
 		}
+
+		public void setValue(float f, Integer integer) {
+			this.prevValue = this.lerp(f);
+			this.value = integer;
+		}
 	}
 
 	abstract static class Interpolator<T> {
@@ -560,36 +578,33 @@ public abstract class DisplayEntity extends Entity {
 			this.value = value;
 		}
 
-		public void setValue(T value) {
-			this.prevValue = this.value;
-			this.value = value;
-		}
+		public abstract void setValue(float f, T object);
 	}
 
 	static class Interpolators {
 		private final IntSet interpolatedIds = new IntOpenHashSet();
-		private final List<Consumer<DataTracker>> interpolators = new ArrayList();
+		private final List<DisplayEntity.class_8217> interpolators = new ArrayList();
 
 		protected <T> void addInterpolator(TrackedData<T> data, DisplayEntity.Interpolator<T> interpolator) {
 			this.interpolatedIds.add(data.getId());
-			this.interpolators.add((Consumer)dataTracker -> interpolator.setValue(dataTracker.get(data)));
+			this.interpolators.add((DisplayEntity.class_8217)(f, dataTracker) -> interpolator.setValue(f, dataTracker.get(data)));
 		}
 
-		protected void addInterpolator(Set<TrackedData<?>> dataSet, Consumer<DataTracker> interpolator) {
+		protected void addInterpolator(Set<TrackedData<?>> dataSet, DisplayEntity.class_8217 arg) {
 			for (TrackedData<?> trackedData : dataSet) {
 				this.interpolatedIds.add(trackedData.getId());
 			}
 
-			this.interpolators.add(interpolator);
+			this.interpolators.add(arg);
 		}
 
 		public boolean hasInterpolator(int id) {
 			return this.interpolatedIds.contains(id);
 		}
 
-		public void interpolate(DataTracker dataTracker) {
-			for (Consumer<DataTracker> consumer : this.interpolators) {
-				consumer.accept(dataTracker);
+		public void interpolate(float f, DataTracker dataTracker) {
+			for (DisplayEntity.class_8217 lv : this.interpolators) {
+				lv.update(f, dataTracker);
 			}
 		}
 	}
@@ -620,7 +635,7 @@ public abstract class DisplayEntity extends Entity {
 		protected void initDataTracker() {
 			super.initDataTracker();
 			this.dataTracker.startTracking(ITEM, ItemStack.EMPTY);
-			this.dataTracker.startTracking(ITEM_DISPLAY, ModelTransformationMode.FIXED.getIndex());
+			this.dataTracker.startTracking(ITEM_DISPLAY, ModelTransformationMode.NONE.getIndex());
 		}
 
 		public ItemStack getItemStack() {
@@ -696,8 +711,7 @@ public abstract class DisplayEntity extends Entity {
 		public TextDisplayEntity(EntityType<?> entityType, World world) {
 			super(entityType, world);
 			this.interpolators.addInterpolator(BACKGROUND, this.backgroundLerper);
-			this.interpolators
-				.addInterpolator(Set.of(TEXT_OPACITY), dataTracker -> this.textOpacityLerper.setValue(Integer.valueOf(dataTracker.get(TEXT_OPACITY) & 255)));
+			this.interpolators.addInterpolator(Set.of(TEXT_OPACITY), (f, dataTracker) -> this.textOpacityLerper.setValue(f, dataTracker.get(TEXT_OPACITY) & 255));
 		}
 
 		@Override
@@ -885,5 +899,10 @@ public abstract class DisplayEntity extends Entity {
 
 		public static record TextLines(List<DisplayEntity.TextDisplayEntity.TextLine> lines, int width) {
 		}
+	}
+
+	@FunctionalInterface
+	interface class_8217 {
+		void update(float f, DataTracker dataTracker);
 	}
 }

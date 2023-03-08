@@ -2968,7 +2968,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		};
 
 		static final Text MORE_INFO_TEXT = Text.translatable("chat.disabled.profile.moreInfo");
-		private static final String JAVA_ACCOUNT_SETTINGS_URL = "https://aka.ms/JavaAccountSettings";
 		private final Text description;
 
 		ChatRestriction(Text description) {

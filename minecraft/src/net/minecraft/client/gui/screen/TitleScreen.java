@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen;
 
-import com.google.common.util.concurrent.Runnables;
 import com.mojang.authlib.minecraft.BanDetails;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
@@ -12,6 +11,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8219;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
@@ -171,9 +171,7 @@ public class TitleScreen extends Screen {
 			)
 		);
 		this.addDrawableChild(
-			new PressableTextWidget(
-				j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new CreditsScreen(false, this.logoDrawer, Runnables.doNothing())), this.textRenderer
-			)
+			new PressableTextWidget(j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new class_8219(this)), this.textRenderer)
 		);
 		this.client.setConnectedToRealms(false);
 		if (this.realmsNotificationGui == null) {

@@ -21,7 +21,6 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class TelemetryInfoScreen extends Screen {
 	private static final int MARGIN = 8;
-	private static final String FEEDBACK_URL = "https://aka.ms/javafeedback?ref=game";
 	private static final Text TITLE_TEXT = Text.translatable("telemetry_info.screen.title");
 	private static final Text DESCRIPTION_TEXT = Text.translatable("telemetry_info.screen.description").formatted(Formatting.GRAY);
 	private static final Text GIVE_FEEDBACK_TEXT = Text.translatable("telemetry_info.button.give_feedback");

@@ -40,17 +40,13 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 		} else if (this.cooldown > 0) {
 			this.cooldown--;
 			return false;
-		} else if (this.hasAvailableTarget()) {
+		} else if (this.findTargetPos()) {
 			this.cooldown = toGoalTicks(20);
 			return true;
 		} else {
 			this.cooldown = this.getInterval(this.mob);
 			return false;
 		}
-	}
-
-	private boolean hasAvailableTarget() {
-		return this.targetPos != null && this.isTargetPos(this.mob.world, this.targetPos) ? true : this.findTargetPos();
 	}
 
 	@Override

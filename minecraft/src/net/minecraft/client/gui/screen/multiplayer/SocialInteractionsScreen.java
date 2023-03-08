@@ -40,7 +40,6 @@ public class SocialInteractionsScreen extends Screen {
 	private static final Text EMPTY_HIDDEN_TEXT = Text.translatable("gui.socialInteractions.empty_hidden").formatted(Formatting.GRAY);
 	private static final Text EMPTY_BLOCKED_TEXT = Text.translatable("gui.socialInteractions.empty_blocked").formatted(Formatting.GRAY);
 	private static final Text BLOCKING_TEXT = Text.translatable("gui.socialInteractions.blocking_hint");
-	private static final String BLOCKING_URL = "https://aka.ms/javablocking";
 	private static final int field_32424 = 8;
 	private static final int field_32426 = 236;
 	private static final int field_32427 = 16;

@@ -1319,7 +1319,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			bl = true;
 		}
 
-		if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR) && this.isBlocking() && !bl) {
+		if (!source.isIn(DamageTypeTags.BYPASSES_SHIELD) && this.isBlocking() && !bl) {
 			Vec3d vec3d = source.getPosition();
 			if (vec3d != null) {
 				Vec3d vec3d2 = this.getRotationVec(1.0F);
