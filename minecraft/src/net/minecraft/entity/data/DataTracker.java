@@ -115,10 +115,14 @@ public class DataTracker {
 	}
 
 	public <T> void set(TrackedData<T> key, T value) {
-		DataTracker.Entry<T> entry = this.getEntry(key);
-		if (ObjectUtils.notEqual(value, entry.get())) {
-			entry.set(value);
-			this.trackedEntity.onTrackedDataSet(key);
+		this.method_49743(key, value, false);
+	}
+
+	public <T> void method_49743(TrackedData<T> trackedData, T object, boolean bl) {
+		DataTracker.Entry<T> entry = this.getEntry(trackedData);
+		if (bl || ObjectUtils.notEqual(object, entry.get())) {
+			entry.set(object);
+			this.trackedEntity.onTrackedDataSet(trackedData);
 			entry.setDirty(true);
 			this.dirty = true;
 		}

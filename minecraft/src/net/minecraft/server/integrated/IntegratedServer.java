@@ -94,6 +94,10 @@ public class IntegratedServer extends MinecraftServer {
 		if (bl2 && this.paused) {
 			this.incrementTotalWorldTimeStat();
 		} else {
+			if (bl && !this.paused) {
+				this.method_49749();
+			}
+
 			super.tick(shouldKeepTicking);
 			int i = Math.max(2, this.client.options.getViewDistance().getValue());
 			if (i != this.getPlayerManager().getViewDistance()) {

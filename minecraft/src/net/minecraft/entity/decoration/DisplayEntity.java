@@ -47,9 +47,9 @@ import org.slf4j.Logger;
 
 public abstract class DisplayEntity extends Entity {
 	static final Logger field_42397 = LogUtils.getLogger();
-	private static final long INITIAL_INTERPOLATION_START = -1000L;
+	private static final float field_43150 = Float.POSITIVE_INFINITY;
 	public static final int field_42384 = -1;
-	private static final TrackedData<Long> INTERPOLATION_START = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.LONG);
+	private static final TrackedData<Integer> field_43151 = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> INTERPOLATION_DURATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Vector3f> TRANSLATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
 	private static final TrackedData<Vector3f> SCALE = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
@@ -67,7 +67,7 @@ public abstract class DisplayEntity extends Entity {
 	private static final float field_42377 = 1.0F;
 	private static final int field_42378 = -1;
 	public static final String INTERPOLATION_DURATION_NBT_KEY = "interpolation_duration";
-	public static final String INTERPOLATION_START_NBT_KEY = "interpolation_start";
+	public static final String field_43149 = "start_interpolation";
 	public static final String TRANSFORMATION_NBT_KEY = "transformation";
 	public static final String BILLBOARD_NBT_KEY = "billboard";
 	public static final String BRIGHTNESS_NBT_KEY = "brightness";
@@ -91,6 +91,8 @@ public abstract class DisplayEntity extends Entity {
 	private long interpolationStart;
 	private float field_43135;
 	private Box visibilityBoundingBox;
+	private boolean field_43147;
+	private boolean field_43148;
 
 	public DisplayEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -115,7 +117,12 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		if (bl) {
-			this.interpolators.interpolate(this.field_43135, this.dataTracker);
+			boolean bl2 = this.age <= 0;
+			if (bl2) {
+				this.interpolators.interpolate(Float.POSITIVE_INFINITY, this.dataTracker);
+			} else {
+				this.field_43147 = true;
+			}
 		}
 	}
 
@@ -126,9 +133,8 @@ public abstract class DisplayEntity extends Entity {
 			this.updateVisibilityBoundingBox();
 		}
 
-		if (INTERPOLATION_START.equals(data)) {
-			long l = this.dataTracker.get(INTERPOLATION_START) - this.world.getTime();
-			this.interpolationStart = (long)this.age + l;
+		if (field_43151.equals(data)) {
+			this.field_43148 = true;
 		}
 	}
 
@@ -146,11 +152,24 @@ public abstract class DisplayEntity extends Entity {
 		if (entity != null && entity.isRemoved()) {
 			this.stopRiding();
 		}
+
+		if (this.world.isClient) {
+			if (this.field_43148) {
+				this.field_43148 = false;
+				int i = this.method_49745();
+				this.interpolationStart = (long)(this.age + i);
+			}
+
+			if (this.field_43147) {
+				this.field_43147 = false;
+				this.interpolators.interpolate(this.field_43135, this.dataTracker);
+			}
+		}
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.dataTracker.startTracking(INTERPOLATION_START, -1000L);
+		this.dataTracker.startTracking(field_43151, 0);
 		this.dataTracker.startTracking(INTERPOLATION_DURATION, 0);
 		this.dataTracker.startTracking(TRANSLATION, new Vector3f());
 		this.dataTracker.startTracking(SCALE, new Vector3f(1.0F, 1.0F, 1.0F));
@@ -180,14 +199,9 @@ public abstract class DisplayEntity extends Entity {
 			this.setInterpolationDuration(i);
 		}
 
-		if (nbt.contains("interpolation_start", NbtElement.NUMBER_TYPE)) {
-			long l = nbt.getLong("interpolation_start");
-			if (l < 0L) {
-				long m = -l - 1L;
-				this.setInterpolationStart(this.world.getTime() + m);
-			} else {
-				this.setInterpolationStart(l);
-			}
+		if (nbt.contains("start_interpolation", NbtElement.NUMBER_TYPE)) {
+			int i = nbt.getInt("start_interpolation");
+			this.method_49744(i);
 		}
 
 		if (nbt.contains("billboard", NbtElement.STRING_TYPE)) {
@@ -251,7 +265,6 @@ public abstract class DisplayEntity extends Entity {
 		nbt.putFloat("shadow_strength", this.getShadowStrength());
 		nbt.putFloat("width", this.getDisplayWidth());
 		nbt.putFloat("height", this.getDisplayHeight());
-		nbt.putLong("interpolation_start", this.getInterpolationStart());
 		nbt.putInt("glow_color_override", this.getGlowColorOverride());
 		Brightness brightness = this.getBrightnessUnpacked();
 		if (brightness != null) {
@@ -290,12 +303,12 @@ public abstract class DisplayEntity extends Entity {
 		return this.dataTracker.get(INTERPOLATION_DURATION);
 	}
 
-	private void setInterpolationStart(long interpolationStart) {
-		this.dataTracker.set(INTERPOLATION_START, interpolationStart);
+	private void method_49744(int i) {
+		this.dataTracker.method_49743(field_43151, i, true);
 	}
 
-	private long getInterpolationStart() {
-		return this.dataTracker.get(INTERPOLATION_START);
+	private int method_49745() {
+		return this.dataTracker.get(field_43151);
 	}
 
 	private void setBillboardMode(DisplayEntity.BillboardMode billboardMode) {
@@ -449,9 +462,8 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		@Override
-		public void setValue(float f, T object) {
-			this.prevValue = this.interpolate(f);
-			this.value = object;
+		protected T method_49747(float f) {
+			return this.interpolate(f);
 		}
 	}
 
@@ -544,9 +556,8 @@ public abstract class DisplayEntity extends Entity {
 			return !((double)delta >= 1.0) && this.prevValue != null ? this.lerp(delta, this.prevValue, this.value) : this.value;
 		}
 
-		public void setValue(float f, Float float_) {
-			this.prevValue = this.lerp(f);
-			this.value = float_;
+		protected Float method_49747(float f) {
+			return this.lerp(f);
 		}
 	}
 
@@ -563,9 +574,8 @@ public abstract class DisplayEntity extends Entity {
 			return !((double)value >= 1.0) && this.prevValue != null ? this.lerp(value, this.prevValue, this.value) : this.value;
 		}
 
-		public void setValue(float f, Integer integer) {
-			this.prevValue = this.lerp(f);
-			this.value = integer;
+		protected Integer method_49747(float f) {
+			return this.lerp(f);
 		}
 	}
 
@@ -578,7 +588,15 @@ public abstract class DisplayEntity extends Entity {
 			this.value = value;
 		}
 
-		public abstract void setValue(float f, T object);
+		protected abstract T method_49747(float f);
+
+		public void setValue(float f, T object) {
+			if (f != Float.POSITIVE_INFINITY) {
+				this.prevValue = this.method_49747(f);
+			}
+
+			this.value = object;
+		}
 	}
 
 	static class Interpolators {
@@ -711,7 +729,8 @@ public abstract class DisplayEntity extends Entity {
 		public TextDisplayEntity(EntityType<?> entityType, World world) {
 			super(entityType, world);
 			this.interpolators.addInterpolator(BACKGROUND, this.backgroundLerper);
-			this.interpolators.addInterpolator(Set.of(TEXT_OPACITY), (f, dataTracker) -> this.textOpacityLerper.setValue(f, dataTracker.get(TEXT_OPACITY) & 255));
+			this.interpolators
+				.addInterpolator(Set.of(TEXT_OPACITY), (f, dataTracker) -> this.textOpacityLerper.setValue(f, Integer.valueOf(dataTracker.get(TEXT_OPACITY) & 255)));
 		}
 
 		@Override
