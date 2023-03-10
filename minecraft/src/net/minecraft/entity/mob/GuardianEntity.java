@@ -335,7 +335,7 @@ public class GuardianEntity extends HostileEntity {
 		if (this.world.isClient) {
 			return false;
 		} else {
-			if (!source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && !source.isOf(DamageTypes.THORNS) && source.getAttacker() instanceof LivingEntity livingEntity) {
+			if (!source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && !source.isOf(DamageTypes.THORNS) && source.getSource() instanceof LivingEntity livingEntity) {
 				livingEntity.damage(this.getDamageSources().thorns(this), 2.0F);
 			}
 
