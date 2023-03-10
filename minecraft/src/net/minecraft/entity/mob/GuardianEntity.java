@@ -336,7 +336,7 @@ public class GuardianEntity extends HostileEntity {
 			return false;
 		} else {
 			if (!source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && !source.isOf(DamageTypes.THORNS)) {
-				Entity var4 = source.getAttacker();
+				Entity var4 = source.getSource();
 				if (var4 instanceof LivingEntity livingEntity) {
 					livingEntity.damage(this.getDamageSources().thorns(this), 2.0F);
 				}
