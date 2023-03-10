@@ -302,7 +302,7 @@ extends HostileEntity {
         if (this.world.isClient) {
             return false;
         }
-        if (!source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && !source.isOf(DamageTypes.THORNS) && (entity = source.getAttacker()) instanceof LivingEntity) {
+        if (!source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS) && !source.isOf(DamageTypes.THORNS) && (entity = source.getSource()) instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)entity;
             livingEntity.damage(this.getDamageSources().thorns(this), 2.0f);
         }

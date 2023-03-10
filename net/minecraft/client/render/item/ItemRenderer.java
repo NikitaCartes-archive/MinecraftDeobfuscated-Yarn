@@ -218,7 +218,7 @@ implements SynchronousResourceReloader {
         this.renderGuiItemModel(matrices, stack, x, y, this.getModel(stack, null, null, 0));
     }
 
-    protected void renderGuiItemModel(MatrixStack matrices, ItemStack stack, int x, int y, BakedModel model) {
+    protected void renderGuiItemModel(MatrixStack matrices, ItemStack itemStack, int x, int y, BakedModel model) {
         boolean bl;
         matrices.push();
         matrices.translate(x, y, 100.0f);
@@ -230,13 +230,19 @@ implements SynchronousResourceReloader {
         if (bl) {
             DiffuseLighting.disableGuiDepthLighting();
         }
-        this.renderItem(stack, ModelTransformationMode.GUI, false, matrices, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, model);
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.push();
+        matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
+        RenderSystem.applyModelViewMatrix();
+        this.renderItem(itemStack, ModelTransformationMode.GUI, false, new MatrixStack(), immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, model);
         immediate.draw();
         RenderSystem.enableDepthTest();
         if (bl) {
             DiffuseLighting.enableGuiDepthLighting();
         }
         matrices.pop();
+        matrixStack.pop();
+        RenderSystem.applyModelViewMatrix();
     }
 
     /**
