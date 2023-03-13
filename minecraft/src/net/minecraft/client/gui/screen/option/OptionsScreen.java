@@ -3,7 +3,6 @@ package net.minecraft.client.gui.screen.option;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_8219;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -36,7 +35,7 @@ public class OptionsScreen extends Screen {
 	private static final Text RESOURCE_PACK_TEXT = Text.translatable("options.resourcepack");
 	private static final Text ACCESSIBILITY_TEXT = Text.translatable("options.accessibility.title");
 	private static final Text TELEMETRY_TEXT = Text.translatable("options.telemetry");
-	private static final Text field_43145 = Text.translatable("options.credits_and_attribution");
+	private static final Text CREDITS_AND_ATTRIBUTION_TEXT = Text.translatable("options.credits_and_attribution");
 	private static final int COLUMNS = 2;
 	private final Screen parent;
 	private final GameOptions settings;
@@ -73,7 +72,7 @@ public class OptionsScreen extends Screen {
 		);
 		adder.add(this.createButton(ACCESSIBILITY_TEXT, () -> new AccessibilityOptionsScreen(this, this.settings)));
 		adder.add(this.createButton(TELEMETRY_TEXT, () -> new TelemetryInfoScreen(this, this.settings)));
-		adder.add(this.createButton(field_43145, () -> new class_8219(this)));
+		adder.add(this.createButton(CREDITS_AND_ATTRIBUTION_TEXT, () -> new CreditsAndAttributionScreen(this)));
 		adder.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.client.setScreen(this.parent)).width(200).build(), 2, adder.copyPositioner().marginTop(6));
 		gridWidget.refreshPositions();
 		SimplePositioningWidget.setPos(gridWidget, 0, this.height / 6 - 12, this.width, this.height, 0.5F, 0.0F);
