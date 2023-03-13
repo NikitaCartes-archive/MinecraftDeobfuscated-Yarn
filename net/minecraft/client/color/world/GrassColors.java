@@ -20,7 +20,7 @@ public class GrassColors {
         return colorMap[k];
     }
 
-    public static int method_49724() {
+    public static int getDefaultColor() {
         return GrassColors.getColor(0.5, 1.0);
     }
 }

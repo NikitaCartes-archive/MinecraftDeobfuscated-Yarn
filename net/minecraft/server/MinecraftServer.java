@@ -847,7 +847,7 @@ AutoCloseable {
             this.profiler.push(() -> serverWorld + " " + serverWorld.getRegistryKey().getValue());
             if (this.ticks % 20 == 0) {
                 this.profiler.push("timeSync");
-                this.method_49750(serverWorld);
+                this.sendTimeUpdatePackets(serverWorld);
                 this.profiler.pop();
             }
             this.profiler.push("tick");
@@ -875,14 +875,14 @@ AutoCloseable {
         this.profiler.pop();
     }
 
-    private void method_49750(ServerWorld serverWorld) {
-        this.playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(serverWorld.getTime(), serverWorld.getTimeOfDay(), serverWorld.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)), serverWorld.getRegistryKey());
+    private void sendTimeUpdatePackets(ServerWorld world) {
+        this.playerManager.sendToDimension(new WorldTimeUpdateS2CPacket(world.getTime(), world.getTimeOfDay(), world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)), world.getRegistryKey());
     }
 
-    public void method_49749() {
+    public void sendTimeUpdatePackets() {
         this.profiler.push("timeSync");
         for (ServerWorld serverWorld : this.getWorlds()) {
-            this.method_49750(serverWorld);
+            this.sendTimeUpdatePackets(serverWorld);
         }
         this.profiler.pop();
     }

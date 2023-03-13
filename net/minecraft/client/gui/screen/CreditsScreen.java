@@ -54,10 +54,10 @@ extends Screen {
     private final float baseSpeed;
     private final LogoDrawer logoDrawer = new LogoDrawer(false);
 
-    public CreditsScreen(boolean endCredits, Runnable runnable) {
+    public CreditsScreen(boolean endCredits, Runnable finishAction) {
         super(NarratorManager.EMPTY);
         this.endCredits = endCredits;
-        this.finishAction = runnable;
+        this.finishAction = finishAction;
         this.baseSpeed = !endCredits ? 0.75f : 0.5f;
         this.speed = this.baseSpeed;
     }

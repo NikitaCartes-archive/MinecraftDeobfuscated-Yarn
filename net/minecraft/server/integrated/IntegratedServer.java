@@ -94,7 +94,7 @@ extends MinecraftServer {
             return;
         }
         if (bl && !this.paused) {
-            this.method_49749();
+            this.sendTimeUpdatePackets();
         }
         super.tick(shouldKeepTicking);
         int i = Math.max(2, this.client.options.getViewDistance().getValue());

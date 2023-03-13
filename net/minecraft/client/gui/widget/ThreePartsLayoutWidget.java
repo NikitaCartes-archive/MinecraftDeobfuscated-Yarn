@@ -16,7 +16,7 @@ import net.minecraft.client.gui.widget.Widget;
 public class ThreePartsLayoutWidget
 implements LayoutWidget {
     private static final int DEFAULT_HEADER_FOOTER_HEIGHT = 36;
-    private static final int field_43136 = 30;
+    private static final int FOOTER_MARGIN_TOP = 30;
     private final SimplePositioningWidget header = new SimplePositioningWidget();
     private final SimplePositioningWidget body = new SimplePositioningWidget();
     private final SimplePositioningWidget footer = new SimplePositioningWidget();

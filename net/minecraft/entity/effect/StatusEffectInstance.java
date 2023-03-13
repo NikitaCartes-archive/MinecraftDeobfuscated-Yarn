@@ -43,8 +43,8 @@ implements Comparable<StatusEffectInstance> {
     private StatusEffectInstance hiddenEffect;
     private final Optional<FactorCalculationData> factorCalculationData;
 
-    public StatusEffectInstance(StatusEffect statusEffect) {
-        this(statusEffect, 0, 0);
+    public StatusEffectInstance(StatusEffect type) {
+        this(type, 0, 0);
     }
 
     public StatusEffectInstance(StatusEffect type, int duration) {
@@ -74,10 +74,10 @@ implements Comparable<StatusEffectInstance> {
         this.factorCalculationData = factorCalculationData;
     }
 
-    public StatusEffectInstance(StatusEffectInstance statusEffectInstance) {
-        this.type = statusEffectInstance.type;
+    public StatusEffectInstance(StatusEffectInstance instance) {
+        this.type = instance.type;
         this.factorCalculationData = this.type.getFactorCalculationDataSupplier();
-        this.copyFrom(statusEffectInstance);
+        this.copyFrom(instance);
     }
 
     public Optional<FactorCalculationData> getFactorCalculationData() {
