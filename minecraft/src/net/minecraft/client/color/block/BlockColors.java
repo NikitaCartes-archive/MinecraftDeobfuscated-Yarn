@@ -36,13 +36,13 @@ public class BlockColors {
 		blockColors.registerColorProvider(
 			(state, world, pos, tintIndex) -> world != null && pos != null
 					? BiomeColors.getGrassColor(world, state.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER ? pos.down() : pos)
-					: GrassColors.method_49724(),
+					: GrassColors.getDefaultColor(),
 			Blocks.LARGE_FERN,
 			Blocks.TALL_GRASS
 		);
 		blockColors.registerColorProperty(TallPlantBlock.HALF, Blocks.LARGE_FERN, Blocks.TALL_GRASS);
 		blockColors.registerColorProvider(
-			(state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.method_49724(),
+			(state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.getDefaultColor(),
 			Blocks.GRASS_BLOCK,
 			Blocks.FERN,
 			Blocks.GRASS,
@@ -50,7 +50,7 @@ public class BlockColors {
 		);
 		blockColors.registerColorProvider((state, world, pos, tintIndex) -> {
 			if (tintIndex != 0) {
-				return world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.method_49724();
+				return world != null && pos != null ? BiomeColors.getGrassColor(world, pos) : GrassColors.getDefaultColor();
 			} else {
 				return -1;
 			}

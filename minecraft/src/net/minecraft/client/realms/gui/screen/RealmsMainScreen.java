@@ -18,7 +18,6 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_8216;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
@@ -58,6 +57,7 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Urls;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
@@ -553,7 +553,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 	private void onRenew(@Nullable RealmsServer realmsServer) {
 		if (realmsServer != null) {
-			String string = class_8216.method_49720(realmsServer.remoteSubscriptionId, this.client.getSession().getUuid(), realmsServer.expiredTrial);
+			String string = Urls.getExtendJavaRealmsUrl(realmsServer.remoteSubscriptionId, this.client.getSession().getUuid(), realmsServer.expiredTrial);
 			this.client.keyboard.setClipboard(string);
 			Util.getOperatingSystem().open(string);
 		}

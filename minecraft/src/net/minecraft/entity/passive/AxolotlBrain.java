@@ -62,7 +62,7 @@ import net.minecraft.world.World;
  * <tr>
  *   <td>{@link net.minecraft.entity.ai.brain.Activity#IDLE}</td>
  *   <td><ul>
- *     <li>{@link net.minecraft.entity.ai.brain.task.FollowMobTask FollowMobTask(PLAYER)} (time limited)</li>
+ *     <li>{@link net.minecraft.entity.ai.brain.task.LookAtMobTask LookAtMobTask(PLAYER)} (time limited)</li>
  *     <li>{@link net.minecraft.entity.ai.brain.task.BreedTask}</li>
  *     <li>{@link net.minecraft.entity.ai.brain.task.TemptTask} (random)</li>
  *     <li>{@link net.minecraft.entity.ai.brain.task.WalkTowardClosestAdultTask}</li>

@@ -295,7 +295,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HIT, 1.0F, 1.0F);
 	}
 
-	private void method_49723() {
+	private void destroy() {
 		this.discard();
 		this.world.emitGameEvent(GameEvent.ENTITY_DAMAGE, this.getPos(), GameEvent.Emitter.of(this));
 	}
@@ -303,7 +303,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		this.method_49723();
+		this.destroy();
 	}
 
 	@Override
@@ -316,7 +316,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		if (!this.world.isClient) {
 			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HURT, 1.0F, 1.0F);
 			((ServerWorld)this.world).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);
-			this.method_49723();
+			this.destroy();
 		}
 
 		return true;

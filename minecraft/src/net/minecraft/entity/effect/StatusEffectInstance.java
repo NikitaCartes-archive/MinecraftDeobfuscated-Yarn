@@ -36,8 +36,8 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	private StatusEffectInstance hiddenEffect;
 	private final Optional<StatusEffectInstance.FactorCalculationData> factorCalculationData;
 
-	public StatusEffectInstance(StatusEffect statusEffect) {
-		this(statusEffect, 0, 0);
+	public StatusEffectInstance(StatusEffect type) {
+		this(type, 0, 0);
 	}
 
 	public StatusEffectInstance(StatusEffect type, int duration) {
@@ -76,10 +76,10 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		this.factorCalculationData = factorCalculationData;
 	}
 
-	public StatusEffectInstance(StatusEffectInstance statusEffectInstance) {
-		this.type = statusEffectInstance.type;
+	public StatusEffectInstance(StatusEffectInstance instance) {
+		this.type = instance.type;
 		this.factorCalculationData = this.type.getFactorCalculationDataSupplier();
-		this.copyFrom(statusEffectInstance);
+		this.copyFrom(instance);
 	}
 
 	public Optional<StatusEffectInstance.FactorCalculationData> getFactorCalculationData() {

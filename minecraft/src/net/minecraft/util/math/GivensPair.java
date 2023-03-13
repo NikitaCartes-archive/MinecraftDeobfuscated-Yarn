@@ -1,23 +1,26 @@
-package net.minecraft;
+package net.minecraft.util.math;
 
 import org.joml.Math;
 import org.joml.Matrix3f;
 import org.joml.Quaternionf;
 
-public record class_8218(float sinHalf, float cosHalf) {
-	public static class_8218 method_49727(float f, float g) {
-		float h = Math.invsqrt(f * f + g * g);
-		return new class_8218(h * f, h * g);
+/**
+ * A pair of {@code sin(θ)} and {@code cos(θ)} used in Givens quaternion.
+ */
+public record GivensPair(float sinHalf, float cosHalf) {
+	public static GivensPair normalize(float a, float b) {
+		float f = Math.invsqrt(a * a + b * b);
+		return new GivensPair(f * a, f * b);
 	}
 
-	public static class_8218 method_49726(float f) {
-		float g = Math.sin(f / 2.0F);
-		float h = Math.cosFromSin(g, f / 2.0F);
-		return new class_8218(g, h);
+	public static GivensPair fromAngle(float radians) {
+		float f = Math.sin(radians / 2.0F);
+		float g = Math.cosFromSin(f, radians / 2.0F);
+		return new GivensPair(f, g);
 	}
 
-	public class_8218 method_49725() {
-		return new class_8218(-this.sinHalf, this.cosHalf);
+	public GivensPair negateSin() {
+		return new GivensPair(-this.sinHalf, this.cosHalf);
 	}
 
 	public Quaternionf method_49729(Quaternionf quaternionf) {
@@ -32,11 +35,11 @@ public record class_8218(float sinHalf, float cosHalf) {
 		return quaternionf.set(0.0F, 0.0F, this.sinHalf, this.cosHalf);
 	}
 
-	public float method_49730() {
+	public float cosDouble() {
 		return this.cosHalf * this.cosHalf - this.sinHalf * this.sinHalf;
 	}
 
-	public float method_49733() {
+	public float sinDouble() {
 		return 2.0F * this.sinHalf * this.cosHalf;
 	}
 
@@ -45,8 +48,8 @@ public record class_8218(float sinHalf, float cosHalf) {
 		matrix3f.m02 = 0.0F;
 		matrix3f.m10 = 0.0F;
 		matrix3f.m20 = 0.0F;
-		float f = this.method_49730();
-		float g = this.method_49733();
+		float f = this.cosDouble();
+		float g = this.sinDouble();
 		matrix3f.m11 = f;
 		matrix3f.m22 = f;
 		matrix3f.m12 = g;
@@ -60,8 +63,8 @@ public record class_8218(float sinHalf, float cosHalf) {
 		matrix3f.m10 = 0.0F;
 		matrix3f.m12 = 0.0F;
 		matrix3f.m21 = 0.0F;
-		float f = this.method_49730();
-		float g = this.method_49733();
+		float f = this.cosDouble();
+		float g = this.sinDouble();
 		matrix3f.m00 = f;
 		matrix3f.m22 = f;
 		matrix3f.m02 = -g;
@@ -75,8 +78,8 @@ public record class_8218(float sinHalf, float cosHalf) {
 		matrix3f.m12 = 0.0F;
 		matrix3f.m20 = 0.0F;
 		matrix3f.m21 = 0.0F;
-		float f = this.method_49730();
-		float g = this.method_49733();
+		float f = this.cosDouble();
+		float g = this.sinDouble();
 		matrix3f.m00 = f;
 		matrix3f.m11 = f;
 		matrix3f.m01 = g;

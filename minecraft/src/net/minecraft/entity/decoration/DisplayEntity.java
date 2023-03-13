@@ -49,7 +49,7 @@ public abstract class DisplayEntity extends Entity {
 	static final Logger field_42397 = LogUtils.getLogger();
 	private static final float field_43150 = Float.POSITIVE_INFINITY;
 	public static final int field_42384 = -1;
-	private static final TrackedData<Integer> field_43151 = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> START_INTERPOLATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> INTERPOLATION_DURATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Vector3f> TRANSLATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
 	private static final TrackedData<Vector3f> SCALE = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
@@ -67,7 +67,7 @@ public abstract class DisplayEntity extends Entity {
 	private static final float field_42377 = 1.0F;
 	private static final int field_42378 = -1;
 	public static final String INTERPOLATION_DURATION_NBT_KEY = "interpolation_duration";
-	public static final String field_43149 = "start_interpolation";
+	public static final String START_INTERPOLATION_KEY = "start_interpolation";
 	public static final String TRANSFORMATION_NBT_KEY = "transformation";
 	public static final String BILLBOARD_NBT_KEY = "billboard";
 	public static final String BRIGHTNESS_NBT_KEY = "brightness";
@@ -89,10 +89,10 @@ public abstract class DisplayEntity extends Entity {
 	private final Quaternionf fixedRotation = new Quaternionf();
 	protected final DisplayEntity.Interpolators interpolators = new DisplayEntity.Interpolators();
 	private long interpolationStart;
-	private float field_43135;
+	private float lerpProgress;
 	private Box visibilityBoundingBox;
-	private boolean field_43147;
-	private boolean field_43148;
+	private boolean startInterpolationOnNextTick;
+	private boolean startInterpolationChanged;
 
 	public DisplayEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -100,8 +100,9 @@ public abstract class DisplayEntity extends Entity {
 		this.ignoreCameraFrustum = true;
 		this.visibilityBoundingBox = this.getBoundingBox();
 		this.interpolators
-			.addInterpolator(
-				Set.of(TRANSLATION, LEFT_ROTATION, SCALE, RIGHT_ROTATION), (f, dataTracker) -> this.transformationInterpolator.setValue(f, getTransformation(dataTracker))
+			.addInterpolationUpdater(
+				Set.of(TRANSLATION, LEFT_ROTATION, SCALE, RIGHT_ROTATION),
+				(value, dataTracker) -> this.transformationInterpolator.setValue(value, getTransformation(dataTracker))
 			);
 		this.interpolators.addInterpolator(SHADOW_STRENGTH, this.shadowStrengthLerper);
 		this.interpolators.addInterpolator(SHADOW_RADIUS, this.shadowRadiusLerper);
@@ -121,7 +122,7 @@ public abstract class DisplayEntity extends Entity {
 			if (bl2) {
 				this.interpolators.interpolate(Float.POSITIVE_INFINITY, this.dataTracker);
 			} else {
-				this.field_43147 = true;
+				this.startInterpolationOnNextTick = true;
 			}
 		}
 	}
@@ -133,8 +134,8 @@ public abstract class DisplayEntity extends Entity {
 			this.updateVisibilityBoundingBox();
 		}
 
-		if (field_43151.equals(data)) {
-			this.field_43148 = true;
+		if (START_INTERPOLATION.equals(data)) {
+			this.startInterpolationChanged = true;
 		}
 	}
 
@@ -154,22 +155,22 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		if (this.world.isClient) {
-			if (this.field_43148) {
-				this.field_43148 = false;
-				int i = this.method_49745();
+			if (this.startInterpolationChanged) {
+				this.startInterpolationChanged = false;
+				int i = this.getStartInterpolation();
 				this.interpolationStart = (long)(this.age + i);
 			}
 
-			if (this.field_43147) {
-				this.field_43147 = false;
-				this.interpolators.interpolate(this.field_43135, this.dataTracker);
+			if (this.startInterpolationOnNextTick) {
+				this.startInterpolationOnNextTick = false;
+				this.interpolators.interpolate(this.lerpProgress, this.dataTracker);
 			}
 		}
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.dataTracker.startTracking(field_43151, 0);
+		this.dataTracker.startTracking(START_INTERPOLATION, 0);
 		this.dataTracker.startTracking(INTERPOLATION_DURATION, 0);
 		this.dataTracker.startTracking(TRANSLATION, new Vector3f());
 		this.dataTracker.startTracking(SCALE, new Vector3f(1.0F, 1.0F, 1.0F));
@@ -201,7 +202,7 @@ public abstract class DisplayEntity extends Entity {
 
 		if (nbt.contains("start_interpolation", NbtElement.NUMBER_TYPE)) {
 			int i = nbt.getInt("start_interpolation");
-			this.method_49744(i);
+			this.setStartInterpolation(i);
 		}
 
 		if (nbt.contains("billboard", NbtElement.STRING_TYPE)) {
@@ -303,12 +304,12 @@ public abstract class DisplayEntity extends Entity {
 		return this.dataTracker.get(INTERPOLATION_DURATION);
 	}
 
-	private void method_49744(int i) {
-		this.dataTracker.method_49743(field_43151, i, true);
+	private void setStartInterpolation(int startInterpolation) {
+		this.dataTracker.set(START_INTERPOLATION, startInterpolation, true);
 	}
 
-	private int method_49745() {
-		return this.dataTracker.get(field_43151);
+	private int getStartInterpolation() {
+		return this.dataTracker.get(START_INTERPOLATION);
 	}
 
 	private void setBillboardMode(DisplayEntity.BillboardMode billboardMode) {
@@ -393,7 +394,7 @@ public abstract class DisplayEntity extends Entity {
 			float f = (float)((long)this.age - this.interpolationStart);
 			float g = f + delta;
 			float h = MathHelper.clamp(MathHelper.getLerpProgress(g, 0.0F, (float)i), 0.0F, 1.0F);
-			this.field_43135 = h;
+			this.lerpProgress = h;
 			return h;
 		}
 	}
@@ -462,8 +463,8 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		@Override
-		protected T method_49747(float f) {
-			return this.interpolate(f);
+		protected T apply(float value) {
+			return this.interpolate(value);
 		}
 	}
 
@@ -556,7 +557,7 @@ public abstract class DisplayEntity extends Entity {
 			return !((double)delta >= 1.0) && this.prevValue != null ? this.lerp(delta, this.prevValue, this.value) : this.value;
 		}
 
-		protected Float method_49747(float f) {
+		protected Float apply(float f) {
 			return this.lerp(f);
 		}
 	}
@@ -574,9 +575,14 @@ public abstract class DisplayEntity extends Entity {
 			return !((double)value >= 1.0) && this.prevValue != null ? this.lerp(value, this.prevValue, this.value) : this.value;
 		}
 
-		protected Integer method_49747(float f) {
+		protected Integer apply(float f) {
 			return this.lerp(f);
 		}
+	}
+
+	@FunctionalInterface
+	interface InterpolationUpdater {
+		void update(float value, DataTracker dataTracker);
 	}
 
 	abstract static class Interpolator<T> {
@@ -588,41 +594,41 @@ public abstract class DisplayEntity extends Entity {
 			this.value = value;
 		}
 
-		protected abstract T method_49747(float f);
+		protected abstract T apply(float value);
 
-		public void setValue(float f, T object) {
-			if (f != Float.POSITIVE_INFINITY) {
-				this.prevValue = this.method_49747(f);
+		public void setValue(float prevValue, T value) {
+			if (prevValue != Float.POSITIVE_INFINITY) {
+				this.prevValue = this.apply(prevValue);
 			}
 
-			this.value = object;
+			this.value = value;
 		}
 	}
 
 	static class Interpolators {
 		private final IntSet interpolatedIds = new IntOpenHashSet();
-		private final List<DisplayEntity.class_8217> interpolators = new ArrayList();
+		private final List<DisplayEntity.InterpolationUpdater> interpolationUpdaters = new ArrayList();
 
 		protected <T> void addInterpolator(TrackedData<T> data, DisplayEntity.Interpolator<T> interpolator) {
 			this.interpolatedIds.add(data.getId());
-			this.interpolators.add((DisplayEntity.class_8217)(f, dataTracker) -> interpolator.setValue(f, dataTracker.get(data)));
+			this.interpolationUpdaters.add((DisplayEntity.InterpolationUpdater)(value, dataTracker) -> interpolator.setValue(value, dataTracker.get(data)));
 		}
 
-		protected void addInterpolator(Set<TrackedData<?>> dataSet, DisplayEntity.class_8217 arg) {
+		protected void addInterpolationUpdater(Set<TrackedData<?>> dataSet, DisplayEntity.InterpolationUpdater updater) {
 			for (TrackedData<?> trackedData : dataSet) {
 				this.interpolatedIds.add(trackedData.getId());
 			}
 
-			this.interpolators.add(arg);
+			this.interpolationUpdaters.add(updater);
 		}
 
 		public boolean hasInterpolator(int id) {
 			return this.interpolatedIds.contains(id);
 		}
 
-		public void interpolate(float f, DataTracker dataTracker) {
-			for (DisplayEntity.class_8217 lv : this.interpolators) {
-				lv.update(f, dataTracker);
+		public void interpolate(float value, DataTracker dataTracker) {
+			for (DisplayEntity.InterpolationUpdater interpolationUpdater : this.interpolationUpdaters) {
+				interpolationUpdater.update(value, dataTracker);
 			}
 		}
 	}
@@ -680,7 +686,7 @@ public abstract class DisplayEntity extends Entity {
 				ModelTransformationMode.CODEC
 					.decode(NbtOps.INSTANCE, nbt.get("item_display"))
 					.resultOrPartial(Util.addPrefix("Display entity", DisplayEntity.field_42397::error))
-					.ifPresent(pair -> this.setTransformationMode((ModelTransformationMode)pair.getFirst()));
+					.ifPresent(mode -> this.setTransformationMode((ModelTransformationMode)mode.getFirst()));
 			}
 		}
 
@@ -688,10 +694,7 @@ public abstract class DisplayEntity extends Entity {
 		protected void writeCustomDataToNbt(NbtCompound nbt) {
 			super.writeCustomDataToNbt(nbt);
 			nbt.put("item", this.getItemStack().writeNbt(new NbtCompound()));
-			ModelTransformationMode.CODEC
-				.encodeStart(NbtOps.INSTANCE, this.getTransformationMode())
-				.result()
-				.ifPresent(nbtElement -> nbt.put("item_display", nbtElement));
+			ModelTransformationMode.CODEC.encodeStart(NbtOps.INSTANCE, this.getTransformationMode()).result().ifPresent(nbtx -> nbt.put("item_display", nbtx));
 		}
 
 		@Override
@@ -730,7 +733,9 @@ public abstract class DisplayEntity extends Entity {
 			super(entityType, world);
 			this.interpolators.addInterpolator(BACKGROUND, this.backgroundLerper);
 			this.interpolators
-				.addInterpolator(Set.of(TEXT_OPACITY), (f, dataTracker) -> this.textOpacityLerper.setValue(f, Integer.valueOf(dataTracker.get(TEXT_OPACITY) & 255)));
+				.addInterpolationUpdater(
+					Set.of(TEXT_OPACITY), (value, dataTracker) -> this.textOpacityLerper.setValue(value, Integer.valueOf(dataTracker.get(TEXT_OPACITY) & 255))
+				);
 		}
 
 		@Override
@@ -918,10 +923,5 @@ public abstract class DisplayEntity extends Entity {
 
 		public static record TextLines(List<DisplayEntity.TextDisplayEntity.TextLine> lines, int width) {
 		}
-	}
-
-	@FunctionalInterface
-	interface class_8217 {
-		void update(float f, DataTracker dataTracker);
 	}
 }
