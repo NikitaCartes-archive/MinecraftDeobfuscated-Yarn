@@ -9,7 +9,7 @@ public class ColorHelper {
 			return abgr >>> 24;
 		}
 
-		public static int getBlue(int abgr) {
+		public static int getRed(int abgr) {
 			return abgr & 0xFF;
 		}
 
@@ -17,7 +17,7 @@ public class ColorHelper {
 			return abgr >> 8 & 0xFF;
 		}
 
-		public static int getRed(int abgr) {
+		public static int getBlue(int abgr) {
 			return abgr >> 16 & 0xFF;
 		}
 

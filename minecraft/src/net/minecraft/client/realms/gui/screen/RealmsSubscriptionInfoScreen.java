@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.Subscription;
@@ -38,6 +39,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	private static final Text DAY_TEXT = Text.translatable("mco.configure.world.subscription.day");
 	private static final Text DAYS_TEXT = Text.translatable("mco.configure.world.subscription.days");
 	private static final Text UNKNOWN_TEXT = Text.translatable("mco.configure.world.subscription.unknown");
+	private static final Text field_43152 = Text.translatable("mco.configure.world.subscription.recurring.info");
 	private final Screen parent;
 	final RealmsServer serverData;
 	final Screen mainScreen;
@@ -70,6 +72,8 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				Text text2 = Text.translatable("mco.configure.world.delete.question.line2");
 				this.client.setScreen(new RealmsLongConfirmationScreen(this::onDeletionConfirmed, RealmsLongConfirmationScreen.Type.WARNING, text, text2, true));
 			}).dimensions(this.width / 2 - 100, row(10), 200, 20).build());
+		} else {
+			this.addDrawableChild(new MultilineTextWidget(this.width / 2 - 100, row(8), field_43152, this.textRenderer).setTextColor(10526880).setMaxWidth(200));
 		}
 	}
 
