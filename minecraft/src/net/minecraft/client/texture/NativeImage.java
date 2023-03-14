@@ -331,13 +331,13 @@ public final class NativeImage implements AutoCloseable {
 		} else {
 			int i = this.getColor(x, y);
 			float f = (float)ColorHelper.Abgr.getAlpha(color) / 255.0F;
-			float g = (float)ColorHelper.Abgr.getRed(color) / 255.0F;
+			float g = (float)ColorHelper.Abgr.getBlue(color) / 255.0F;
 			float h = (float)ColorHelper.Abgr.getGreen(color) / 255.0F;
-			float j = (float)ColorHelper.Abgr.getBlue(color) / 255.0F;
+			float j = (float)ColorHelper.Abgr.getRed(color) / 255.0F;
 			float k = (float)ColorHelper.Abgr.getAlpha(i) / 255.0F;
-			float l = (float)ColorHelper.Abgr.getRed(i) / 255.0F;
+			float l = (float)ColorHelper.Abgr.getBlue(i) / 255.0F;
 			float m = (float)ColorHelper.Abgr.getGreen(i) / 255.0F;
-			float n = (float)ColorHelper.Abgr.getBlue(i) / 255.0F;
+			float n = (float)ColorHelper.Abgr.getRed(i) / 255.0F;
 			float p = 1.0F - f;
 			float q = f * f + k * p;
 			float r = g * f + l * p;
@@ -379,7 +379,7 @@ public final class NativeImage implements AutoCloseable {
 				for (int j = 0; j < this.getWidth(); j++) {
 					int k = this.getColor(j, i);
 					is[j + i * this.getWidth()] = ColorHelper.Argb.getArgb(
-						ColorHelper.Abgr.getAlpha(k), ColorHelper.Abgr.getBlue(k), ColorHelper.Abgr.getGreen(k), ColorHelper.Abgr.getRed(k)
+						ColorHelper.Abgr.getAlpha(k), ColorHelper.Abgr.getRed(k), ColorHelper.Abgr.getGreen(k), ColorHelper.Abgr.getBlue(k)
 					);
 				}
 			}

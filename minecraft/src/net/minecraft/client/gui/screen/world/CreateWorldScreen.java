@@ -668,14 +668,6 @@ public class CreateWorldScreen extends Screen {
 				cyclingButtonWidget3.setValue(CreateWorldScreen.this.worldCreator.areCheatsEnabled());
 				cyclingButtonWidget3.active = !CreateWorldScreen.this.worldCreator.isDebug() && !CreateWorldScreen.this.worldCreator.isHardcore();
 			});
-			adder.add(
-				ButtonWidget.builder(
-						CreateWorldScreen.EXPERIMENTS_TEXT,
-						button -> CreateWorldScreen.this.openExperimentsScreen(CreateWorldScreen.this.worldCreator.getGeneratorOptionsHolder().dataConfiguration())
-					)
-					.width(210)
-					.build()
-			);
 		}
 
 		@Override
