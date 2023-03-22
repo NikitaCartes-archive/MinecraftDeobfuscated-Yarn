@@ -57,7 +57,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 	public List<StructureTemplate.StructureBlockInfo> getStructureBlockInfos(
 		StructureTemplateManager structureTemplateManager, BlockPos pos, BlockRotation rotation, Random random
 	) {
-		List<StructureTemplate.StructureBlockInfo> list = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
+		List<StructureTemplate.StructureBlockInfo> list = Lists.newArrayList();
 		list.add(
 			new StructureTemplate.StructureBlockInfo(
 				pos, Blocks.JIGSAW.getDefaultState().with(JigsawBlock.ORIENTATION, JigsawOrientation.byDirections(Direction.DOWN, Direction.SOUTH)), this.nbt

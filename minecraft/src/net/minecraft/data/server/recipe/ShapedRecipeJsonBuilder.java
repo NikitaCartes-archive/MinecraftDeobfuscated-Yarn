@@ -35,10 +35,10 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 	private final Advancement.Builder advancementBuilder = Advancement.Builder.create();
 	@Nullable
 	private String group;
-	private boolean field_42956 = true;
+	private boolean showNotification = true;
 
-	public ShapedRecipeJsonBuilder(RecipeCategory recipeCategory, ItemConvertible output, int count) {
-		this.category = recipeCategory;
+	public ShapedRecipeJsonBuilder(RecipeCategory category, ItemConvertible output, int count) {
+		this.category = category;
 		this.output = output.asItem();
 		this.count = count;
 	}
@@ -89,8 +89,8 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 		return this;
 	}
 
-	public ShapedRecipeJsonBuilder method_49380(boolean bl) {
-		this.field_42956 = bl;
+	public ShapedRecipeJsonBuilder showNotification(boolean showNotification) {
+		this.showNotification = showNotification;
 		return this;
 	}
 
@@ -118,7 +118,7 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 				this.inputs,
 				this.advancementBuilder,
 				recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/"),
-				this.field_42956
+				this.showNotification
 			)
 		);
 	}
@@ -160,7 +160,7 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 		private final Map<Character, Ingredient> inputs;
 		private final Advancement.Builder advancementBuilder;
 		private final Identifier advancementId;
-		private final boolean field_42957;
+		private final boolean showNotification;
 
 		public ShapedRecipeJsonProvider(
 			Identifier recipeId,
@@ -172,7 +172,7 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 			Map<Character, Ingredient> inputs,
 			Advancement.Builder advancementBuilder,
 			Identifier advancementId,
-			boolean bl
+			boolean showNotification
 		) {
 			super(craftingCategory);
 			this.recipeId = recipeId;
@@ -183,7 +183,7 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 			this.inputs = inputs;
 			this.advancementBuilder = advancementBuilder;
 			this.advancementId = advancementId;
-			this.field_42957 = bl;
+			this.showNotification = showNotification;
 		}
 
 		@Override
@@ -214,7 +214,7 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 			}
 
 			json.add("result", jsonObject2);
-			json.addProperty("show_notification", this.field_42957);
+			json.addProperty("show_notification", this.showNotification);
 		}
 
 		@Override

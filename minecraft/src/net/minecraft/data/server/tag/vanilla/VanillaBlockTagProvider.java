@@ -45,7 +45,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.DARK_OAK_PLANKS,
 				Blocks.CRIMSON_PLANKS,
 				Blocks.WARPED_PLANKS,
-				Blocks.MANGROVE_PLANKS
+				Blocks.MANGROVE_PLANKS,
+				Blocks.BAMBOO_PLANKS,
+				Blocks.CHERRY_PLANKS
 			);
 		this.getOrCreateTagBuilder(BlockTags.STONE_BRICKS)
 			.add(Blocks.STONE_BRICKS, Blocks.MOSSY_STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS, Blocks.CHISELED_STONE_BRICKS);
@@ -59,7 +61,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.DARK_OAK_BUTTON,
 				Blocks.CRIMSON_BUTTON,
 				Blocks.WARPED_BUTTON,
-				Blocks.MANGROVE_BUTTON
+				Blocks.MANGROVE_BUTTON,
+				Blocks.BAMBOO_BUTTON,
+				Blocks.CHERRY_BUTTON
 			);
 		this.getOrCreateTagBuilder(BlockTags.BUTTONS).addTag(BlockTags.WOODEN_BUTTONS).add(Blocks.STONE_BUTTON).add(Blocks.POLISHED_BLACKSTONE_BUTTON);
 		this.getOrCreateTagBuilder(BlockTags.WOOL_CARPETS)
@@ -91,7 +95,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.DARK_OAK_DOOR,
 				Blocks.CRIMSON_DOOR,
 				Blocks.WARPED_DOOR,
-				Blocks.MANGROVE_DOOR
+				Blocks.MANGROVE_DOOR,
+				Blocks.BAMBOO_DOOR,
+				Blocks.CHERRY_DOOR
 			);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_STAIRS)
 			.add(
@@ -103,7 +109,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.DARK_OAK_STAIRS,
 				Blocks.CRIMSON_STAIRS,
 				Blocks.WARPED_STAIRS,
-				Blocks.MANGROVE_STAIRS
+				Blocks.MANGROVE_STAIRS,
+				Blocks.BAMBOO_STAIRS,
+				Blocks.CHERRY_STAIRS
 			);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_SLABS)
 			.add(
@@ -115,7 +123,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.DARK_OAK_SLAB,
 				Blocks.CRIMSON_SLAB,
 				Blocks.WARPED_SLAB,
-				Blocks.MANGROVE_SLAB
+				Blocks.MANGROVE_SLAB,
+				Blocks.BAMBOO_SLAB,
+				Blocks.CHERRY_SLAB
 			);
 		this.getOrCreateTagBuilder(BlockTags.WOODEN_FENCES)
 			.add(
@@ -127,7 +137,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.JUNGLE_FENCE,
 				Blocks.CRIMSON_FENCE,
 				Blocks.WARPED_FENCE,
-				Blocks.MANGROVE_FENCE
+				Blocks.MANGROVE_FENCE,
+				Blocks.BAMBOO_FENCE,
+				Blocks.CHERRY_FENCE
 			);
 		this.getOrCreateTagBuilder(BlockTags.DOORS).addTag(BlockTags.WOODEN_DOORS).add(Blocks.IRON_DOOR);
 		this.getOrCreateTagBuilder(BlockTags.SAPLINGS)
@@ -140,8 +152,10 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.DARK_OAK_SAPLING,
 				Blocks.AZALEA,
 				Blocks.FLOWERING_AZALEA,
-				Blocks.MANGROVE_PROPAGULE
+				Blocks.MANGROVE_PROPAGULE,
+				Blocks.CHERRY_SAPLING
 			);
+		this.getOrCreateTagBuilder(BlockTags.BAMBOO_BLOCKS).add(Blocks.BAMBOO_BLOCK, Blocks.STRIPPED_BAMBOO_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.DARK_OAK_LOGS)
 			.add(Blocks.DARK_OAK_LOG, Blocks.DARK_OAK_WOOD, Blocks.STRIPPED_DARK_OAK_LOG, Blocks.STRIPPED_DARK_OAK_WOOD);
 		this.getOrCreateTagBuilder(BlockTags.OAK_LOGS).add(Blocks.OAK_LOG, Blocks.OAK_WOOD, Blocks.STRIPPED_OAK_LOG, Blocks.STRIPPED_OAK_WOOD);
@@ -154,6 +168,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.WARPED_STEMS).add(Blocks.WARPED_STEM, Blocks.STRIPPED_WARPED_STEM, Blocks.WARPED_HYPHAE, Blocks.STRIPPED_WARPED_HYPHAE);
 		this.getOrCreateTagBuilder(BlockTags.MANGROVE_LOGS)
 			.add(Blocks.MANGROVE_LOG, Blocks.MANGROVE_WOOD, Blocks.STRIPPED_MANGROVE_LOG, Blocks.STRIPPED_MANGROVE_WOOD);
+		this.getOrCreateTagBuilder(BlockTags.CHERRY_LOGS).add(Blocks.CHERRY_LOG, Blocks.CHERRY_WOOD, Blocks.STRIPPED_CHERRY_LOG, Blocks.STRIPPED_CHERRY_WOOD);
 		this.getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN)
 			.addTag(BlockTags.DARK_OAK_LOGS)
 			.addTag(BlockTags.OAK_LOGS)
@@ -161,7 +176,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.BIRCH_LOGS)
 			.addTag(BlockTags.JUNGLE_LOGS)
 			.addTag(BlockTags.SPRUCE_LOGS)
-			.addTag(BlockTags.MANGROVE_LOGS);
+			.addTag(BlockTags.MANGROVE_LOGS)
+			.addTag(BlockTags.CHERRY_LOGS);
 		this.getOrCreateTagBuilder(BlockTags.OVERWORLD_NATURAL_LOGS)
 			.add(Blocks.ACACIA_LOG)
 			.add(Blocks.BIRCH_LOG)
@@ -169,7 +185,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.JUNGLE_LOG)
 			.add(Blocks.SPRUCE_LOG)
 			.add(Blocks.DARK_OAK_LOG)
-			.add(Blocks.MANGROVE_LOG);
+			.add(Blocks.MANGROVE_LOG)
+			.add(Blocks.CHERRY_LOG);
 		this.getOrCreateTagBuilder(BlockTags.LOGS).addTag(BlockTags.LOGS_THAT_BURN).addTag(BlockTags.CRIMSON_STEMS).addTag(BlockTags.WARPED_STEMS);
 		this.getOrCreateTagBuilder(BlockTags.ANVIL).add(Blocks.ANVIL, Blocks.CHIPPED_ANVIL, Blocks.DAMAGED_ANVIL);
 		this.getOrCreateTagBuilder(BlockTags.SMALL_FLOWERS)
@@ -186,7 +203,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.OXEYE_DAISY,
 				Blocks.CORNFLOWER,
 				Blocks.LILY_OF_THE_VALLEY,
-				Blocks.WITHER_ROSE
+				Blocks.WITHER_ROSE,
+				Blocks.TORCHFLOWER
 			);
 		this.getOrCreateTagBuilder(BlockTags.DIRT)
 			.add(
@@ -256,7 +274,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.POTTED_WARPED_ROOTS,
 				Blocks.POTTED_AZALEA_BUSH,
 				Blocks.POTTED_FLOWERING_AZALEA_BUSH,
-				Blocks.POTTED_MANGROVE_PROPAGULE
+				Blocks.POTTED_MANGROVE_PROPAGULE,
+				Blocks.POTTED_CHERRY_SAPLING
 			);
 		this.getOrCreateTagBuilder(BlockTags.BANNERS)
 			.add(
@@ -303,7 +322,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.DARK_OAK_PRESSURE_PLATE,
 				Blocks.CRIMSON_PRESSURE_PLATE,
 				Blocks.WARPED_PRESSURE_PLATE,
-				Blocks.MANGROVE_PRESSURE_PLATE
+				Blocks.MANGROVE_PRESSURE_PLATE,
+				Blocks.BAMBOO_PRESSURE_PLATE,
+				Blocks.CHERRY_PRESSURE_PLATE
 			);
 		this.getOrCreateTagBuilder(BlockTags.STONE_PRESSURE_PLATES).add(Blocks.STONE_PRESSURE_PLATE, Blocks.POLISHED_BLACKSTONE_PRESSURE_PLATE);
 		this.getOrCreateTagBuilder(BlockTags.PRESSURE_PLATES)
@@ -435,7 +456,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.TUBE_CORAL_FAN, Blocks.BRAIN_CORAL_FAN, Blocks.BUBBLE_CORAL_FAN, Blocks.FIRE_CORAL_FAN, Blocks.HORN_CORAL_FAN);
 		this.getOrCreateTagBuilder(BlockTags.WALL_CORALS)
 			.add(Blocks.TUBE_CORAL_WALL_FAN, Blocks.BRAIN_CORAL_WALL_FAN, Blocks.BUBBLE_CORAL_WALL_FAN, Blocks.FIRE_CORAL_WALL_FAN, Blocks.HORN_CORAL_WALL_FAN);
-		this.getOrCreateTagBuilder(BlockTags.SAND).add(Blocks.SAND, Blocks.RED_SAND);
+		this.getOrCreateTagBuilder(BlockTags.SAND).add(Blocks.SAND, Blocks.RED_SAND, Blocks.SUSPICIOUS_SAND);
 		this.getOrCreateTagBuilder(BlockTags.SMELTS_TO_GLASS).add(Blocks.SAND, Blocks.RED_SAND);
 		this.getOrCreateTagBuilder(BlockTags.RAILS).add(Blocks.RAIL, Blocks.POWERED_RAIL, Blocks.DETECTOR_RAIL, Blocks.ACTIVATOR_RAIL);
 		this.getOrCreateTagBuilder(BlockTags.CORAL_BLOCKS)
@@ -452,7 +473,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.BIRCH_LEAVES,
 				Blocks.AZALEA_LEAVES,
 				Blocks.FLOWERING_AZALEA_LEAVES,
-				Blocks.MANGROVE_LEAVES
+				Blocks.MANGROVE_LEAVES,
+				Blocks.CHERRY_LEAVES
 			);
 		this.getOrCreateTagBuilder(BlockTags.IMPERMEABLE)
 			.add(
@@ -485,7 +507,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.SPRUCE_TRAPDOOR,
 				Blocks.CRIMSON_TRAPDOOR,
 				Blocks.WARPED_TRAPDOOR,
-				Blocks.MANGROVE_TRAPDOOR
+				Blocks.MANGROVE_TRAPDOOR,
+				Blocks.BAMBOO_TRAPDOOR,
+				Blocks.CHERRY_TRAPDOOR
 			);
 		this.getOrCreateTagBuilder(BlockTags.TRAPDOORS).addTag(BlockTags.WOODEN_TRAPDOORS).add(Blocks.IRON_TRAPDOOR);
 		this.getOrCreateTagBuilder(BlockTags.UNDERWATER_BONEMEALS).add(Blocks.SEAGRASS).addTag(BlockTags.CORALS).addTag(BlockTags.WALL_CORALS);
@@ -503,7 +527,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.DARK_OAK_SIGN,
 				Blocks.CRIMSON_SIGN,
 				Blocks.WARPED_SIGN,
-				Blocks.MANGROVE_SIGN
+				Blocks.MANGROVE_SIGN,
+				Blocks.BAMBOO_SIGN,
+				Blocks.CHERRY_SIGN
 			);
 		this.getOrCreateTagBuilder(BlockTags.WALL_SIGNS)
 			.add(
@@ -515,10 +541,41 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.DARK_OAK_WALL_SIGN,
 				Blocks.CRIMSON_WALL_SIGN,
 				Blocks.WARPED_WALL_SIGN,
-				Blocks.MANGROVE_WALL_SIGN
+				Blocks.MANGROVE_WALL_SIGN,
+				Blocks.BAMBOO_WALL_SIGN,
+				Blocks.CHERRY_WALL_SIGN
 			);
 		this.getOrCreateTagBuilder(BlockTags.SIGNS).addTag(BlockTags.STANDING_SIGNS).addTag(BlockTags.WALL_SIGNS);
-		this.getOrCreateTagBuilder(BlockTags.ALL_SIGNS).addTag(BlockTags.SIGNS);
+		this.getOrCreateTagBuilder(BlockTags.CEILING_HANGING_SIGNS)
+			.add(
+				Blocks.OAK_HANGING_SIGN,
+				Blocks.SPRUCE_HANGING_SIGN,
+				Blocks.BIRCH_HANGING_SIGN,
+				Blocks.ACACIA_HANGING_SIGN,
+				Blocks.CHERRY_HANGING_SIGN,
+				Blocks.JUNGLE_HANGING_SIGN,
+				Blocks.DARK_OAK_HANGING_SIGN,
+				Blocks.CRIMSON_HANGING_SIGN,
+				Blocks.WARPED_HANGING_SIGN,
+				Blocks.MANGROVE_HANGING_SIGN,
+				Blocks.BAMBOO_HANGING_SIGN
+			);
+		this.getOrCreateTagBuilder(BlockTags.WALL_HANGING_SIGNS)
+			.add(
+				Blocks.OAK_WALL_HANGING_SIGN,
+				Blocks.SPRUCE_WALL_HANGING_SIGN,
+				Blocks.BIRCH_WALL_HANGING_SIGN,
+				Blocks.ACACIA_WALL_HANGING_SIGN,
+				Blocks.CHERRY_WALL_HANGING_SIGN,
+				Blocks.JUNGLE_WALL_HANGING_SIGN,
+				Blocks.DARK_OAK_WALL_HANGING_SIGN,
+				Blocks.CRIMSON_WALL_HANGING_SIGN,
+				Blocks.WARPED_WALL_HANGING_SIGN,
+				Blocks.MANGROVE_WALL_HANGING_SIGN,
+				Blocks.BAMBOO_WALL_HANGING_SIGN
+			);
+		this.getOrCreateTagBuilder(BlockTags.ALL_HANGING_SIGNS).addTag(BlockTags.CEILING_HANGING_SIGNS).addTag(BlockTags.WALL_HANGING_SIGNS);
+		this.getOrCreateTagBuilder(BlockTags.ALL_SIGNS).addTag(BlockTags.SIGNS).addTag(BlockTags.ALL_HANGING_SIGNS);
 		this.getOrCreateTagBuilder(BlockTags.BEDS)
 			.add(
 				Blocks.RED_BED,
@@ -581,9 +638,10 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.FLOWERS)
 			.addTag(BlockTags.SMALL_FLOWERS)
 			.addTag(BlockTags.TALL_FLOWERS)
-			.add(Blocks.FLOWERING_AZALEA_LEAVES, Blocks.FLOWERING_AZALEA, Blocks.MANGROVE_PROPAGULE);
+			.add(Blocks.FLOWERING_AZALEA_LEAVES, Blocks.FLOWERING_AZALEA, Blocks.MANGROVE_PROPAGULE, Blocks.CHERRY_LEAVES, Blocks.PINK_PETALS);
 		this.getOrCreateTagBuilder(BlockTags.BEEHIVES).add(Blocks.BEE_NEST, Blocks.BEEHIVE);
-		this.getOrCreateTagBuilder(BlockTags.CROPS).add(Blocks.BEETROOTS, Blocks.CARROTS, Blocks.POTATOES, Blocks.WHEAT, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM);
+		this.getOrCreateTagBuilder(BlockTags.CROPS)
+			.add(Blocks.BEETROOTS, Blocks.CARROTS, Blocks.POTATOES, Blocks.WHEAT, Blocks.MELON_STEM, Blocks.PUMPKIN_STEM, Blocks.TORCHFLOWER_CROP);
 		this.getOrCreateTagBuilder(BlockTags.BEE_GROWABLES).addTag(BlockTags.CROPS).add(Blocks.SWEET_BERRY_BUSH).add(Blocks.CAVE_VINES).add(Blocks.CAVE_VINES_PLANT);
 		this.getOrCreateTagBuilder(BlockTags.SHULKER_BOXES)
 			.add(
@@ -667,7 +725,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.SPRUCE_FENCE_GATE,
 				Blocks.CRIMSON_FENCE_GATE,
 				Blocks.WARPED_FENCE_GATE,
-				Blocks.MANGROVE_FENCE_GATE
+				Blocks.MANGROVE_FENCE_GATE,
+				Blocks.BAMBOO_FENCE_GATE,
+				Blocks.CHERRY_FENCE_GATE
 			);
 		this.getOrCreateTagBuilder(BlockTags.UNSTABLE_BOTTOM_CENTER).addTag(BlockTags.FENCE_GATES);
 		this.getOrCreateTagBuilder(BlockTags.MUSHROOM_GROW_BLOCK).add(Blocks.MYCELIUM).add(Blocks.PODZOL).add(Blocks.CRIMSON_NYLIUM).add(Blocks.WARPED_NYLIUM);
@@ -752,19 +812,10 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.CRYSTAL_SOUND_BLOCKS).add(Blocks.AMETHYST_BLOCK, Blocks.BUDDING_AMETHYST);
 		this.getOrCreateTagBuilder(BlockTags.CAULDRONS).add(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
 		this.getOrCreateTagBuilder(BlockTags.INSIDE_STEP_SOUND_BLOCKS)
-			.add(
-				Blocks.SNOW,
-				Blocks.POWDER_SNOW,
-				Blocks.SCULK_VEIN,
-				Blocks.LILY_PAD,
-				Blocks.NETHER_SPROUTS,
-				Blocks.WARPED_ROOTS,
-				Blocks.CRIMSON_ROOTS,
-				Blocks.GLOW_LICHEN,
-				Blocks.SMALL_AMETHYST_BUD,
-				Blocks.MOSS_CARPET
-			)
-			.addTag(BlockTags.WOOL_CARPETS);
+			.add(Blocks.POWDER_SNOW, Blocks.SCULK_VEIN, Blocks.GLOW_LICHEN, Blocks.LILY_PAD, Blocks.SMALL_AMETHYST_BUD, Blocks.PINK_PETALS);
+		this.getOrCreateTagBuilder(BlockTags.COMBINATION_STEP_SOUND_BLOCKS)
+			.addTag(BlockTags.WOOL_CARPETS)
+			.add(Blocks.MOSS_CARPET, Blocks.SNOW, Blocks.NETHER_SPROUTS, Blocks.WARPED_ROOTS, Blocks.CRIMSON_ROOTS);
 		this.getOrCreateTagBuilder(BlockTags.DRIPSTONE_REPLACEABLE_BLOCKS).addTag(BlockTags.BASE_STONE_OVERWORLD);
 		this.getOrCreateTagBuilder(BlockTags.CAVE_VINES).add(Blocks.CAVE_VINES_PLANT).add(Blocks.CAVE_VINES);
 		this.getOrCreateTagBuilder(BlockTags.MOSS_REPLACEABLE).addTag(BlockTags.BASE_STONE_OVERWORLD).addTag(BlockTags.CAVE_VINES).addTag(BlockTags.DIRT);
@@ -866,7 +917,11 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.WOODEN_SLABS)
 			.addTag(BlockTags.WOODEN_STAIRS)
 			.addTag(BlockTags.WOODEN_TRAPDOORS)
-			.add(Blocks.MANGROVE_ROOTS);
+			.add(Blocks.MANGROVE_ROOTS)
+			.addTag(BlockTags.ALL_HANGING_SIGNS)
+			.add(Blocks.BAMBOO_MOSAIC, Blocks.BAMBOO_MOSAIC_SLAB, Blocks.BAMBOO_MOSAIC_STAIRS)
+			.addTag(BlockTags.BAMBOO_BLOCKS)
+			.add(Blocks.CHISELED_BOOKSHELF);
 		this.getOrCreateTagBuilder(BlockTags.HOE_MINEABLE)
 			.add(
 				Blocks.NETHER_WART_BLOCK,
@@ -887,12 +942,15 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.FLOWERING_AZALEA_LEAVES,
 				Blocks.MANGROVE_LEAVES,
 				Blocks.SCULK_SENSOR,
+				Blocks.CALIBRATED_SCULK_SENSOR,
 				Blocks.MOSS_BLOCK,
 				Blocks.MOSS_CARPET,
 				Blocks.SCULK,
 				Blocks.SCULK_CATALYST,
 				Blocks.SCULK_VEIN,
-				Blocks.SCULK_SHRIEKER
+				Blocks.SCULK_SHRIEKER,
+				Blocks.PINK_PETALS,
+				Blocks.CHERRY_LEAVES
 			);
 		this.getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
 			.add(
@@ -1412,6 +1470,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.CRACKED_DEEPSLATE_BRICKS)
 			.add(Blocks.CRACKED_DEEPSLATE_TILES)
 			.add(Blocks.POLISHED_DEEPSLATE);
+		this.getOrCreateTagBuilder(BlockTags.VIBRATION_RESONATORS).add(Blocks.AMETHYST_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.CONVERTABLE_TO_MUD).add(Blocks.DIRT, Blocks.COARSE_DIRT, Blocks.ROOTED_DIRT);
 		this.getOrCreateTagBuilder(BlockTags.ANCIENT_CITY_REPLACEABLE)
 			.add(Blocks.DEEPSLATE)
@@ -1452,5 +1511,10 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.COPPER_ORE)
 			.add(Blocks.EMERALD_ORE);
 		this.getOrCreateTagBuilder(BlockTags.INVALID_SPAWN_INSIDE).add(Blocks.END_PORTAL, Blocks.END_GATEWAY);
+		this.getOrCreateTagBuilder(BlockTags.SAND).add(Blocks.SUSPICIOUS_SAND);
+		this.getOrCreateTagBuilder(BlockTags.TRAIL_RUINS_REPLACEABLE).add(Blocks.SAND, Blocks.GRAVEL, Blocks.DIRT, Blocks.COARSE_DIRT);
+		this.getOrCreateTagBuilder(BlockTags.SNIFFER_DIGGABLE_BLOCK)
+			.add(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT, Blocks.ROOTED_DIRT, Blocks.MOSS_BLOCK, Blocks.MUD, Blocks.MUDDY_MANGROVE_ROOTS);
+		this.getOrCreateTagBuilder(BlockTags.SNIFFER_EGG_HATCH_BOOST).add(Blocks.MOSS_BLOCK);
 	}
 }

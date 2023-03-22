@@ -88,6 +88,11 @@ public class WallSignBlock extends AbstractSignBlock {
 	}
 
 	@Override
+	public float getRotationDegrees(BlockState state) {
+		return ((Direction)state.get(FACING)).asRotation();
+	}
+
+	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}

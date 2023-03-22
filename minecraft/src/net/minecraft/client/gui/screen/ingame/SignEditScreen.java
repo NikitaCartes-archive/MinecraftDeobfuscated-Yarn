@@ -24,8 +24,8 @@ public class SignEditScreen extends AbstractSignEditScreen {
 	@Nullable
 	private SignBlockEntityRenderer.SignModel model;
 
-	public SignEditScreen(SignBlockEntity sign, boolean filtered) {
-		super(sign, filtered);
+	public SignEditScreen(SignBlockEntity sign, boolean filtered, boolean bl) {
+		super(sign, filtered, bl);
 	}
 
 	@Override

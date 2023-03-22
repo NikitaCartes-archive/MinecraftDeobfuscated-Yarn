@@ -454,4 +454,5 @@ public class Properties {
 	public static final BooleanProperty SLOT_4_OCCUPIED = BooleanProperty.of("slot_4_occupied");
 	public static final BooleanProperty SLOT_5_OCCUPIED = BooleanProperty.of("slot_5_occupied");
 	public static final IntProperty DUSTED = IntProperty.of("dusted", 0, 3);
+	public static final BooleanProperty CRACKED = BooleanProperty.of("cracked");
 }

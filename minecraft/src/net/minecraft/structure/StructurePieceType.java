@@ -39,7 +39,7 @@ public interface StructurePieceType {
 	StructurePieceType STRONGHOLD_CORRIDOR = register(StrongholdGenerator.Corridor::new, "SHS");
 	StructurePieceType STRONGHOLD_STAIRS = register(StrongholdGenerator.Stairs::new, "SHSSD");
 	StructurePieceType JUNGLE_TEMPLE = register(JungleTempleGenerator::new, "TeJP");
-	StructurePieceType OCEAN_TEMPLE = register(OceanRuinGenerator.Piece::new, "ORP");
+	StructurePieceType OCEAN_TEMPLE = register(OceanRuinGenerator.Piece::fromNbt, "ORP");
 	StructurePieceType IGLOO = register(IglooGenerator.Piece::new, "Iglu");
 	StructurePieceType RUINED_PORTAL = register(RuinedPortalStructurePiece::new, "RUPO");
 	StructurePieceType SWAMP_HUT = register(SwampHutGenerator::new, "TeSH");

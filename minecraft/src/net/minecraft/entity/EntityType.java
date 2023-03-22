@@ -206,11 +206,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, SpawnGroup.MISC).setDimensions(1.375F, 0.5625F).maxTrackingRange(10)
 	);
 	public static final EntityType<CamelEntity> CAMEL = register(
-		"camel",
-		EntityType.Builder.<CamelEntity>create(CamelEntity::new, SpawnGroup.CREATURE)
-			.setDimensions(1.7F, 2.375F)
-			.maxTrackingRange(10)
-			.requires(FeatureFlags.UPDATE_1_20)
+		"camel", EntityType.Builder.<CamelEntity>create(CamelEntity::new, SpawnGroup.CREATURE).setDimensions(1.7F, 2.375F).maxTrackingRange(10)
 	);
 	public static final EntityType<CatEntity> CAT = register(
 		"cat", EntityType.Builder.<CatEntity>create(CatEntity::new, SpawnGroup.CREATURE).setDimensions(0.6F, 0.7F).maxTrackingRange(8)
@@ -533,11 +529,7 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 			.trackingTickInterval(10)
 	);
 	public static final EntityType<SnifferEntity> SNIFFER = register(
-		"sniffer",
-		EntityType.Builder.<SnifferEntity>create(SnifferEntity::new, SpawnGroup.CREATURE)
-			.setDimensions(1.9F, 1.75F)
-			.maxTrackingRange(10)
-			.requires(FeatureFlags.UPDATE_1_20)
+		"sniffer", EntityType.Builder.<SnifferEntity>create(SnifferEntity::new, SpawnGroup.CREATURE).setDimensions(1.9F, 1.75F).maxTrackingRange(10)
 	);
 	public static final EntityType<SnowGolemEntity> SNOW_GOLEM = register(
 		"snow_golem",

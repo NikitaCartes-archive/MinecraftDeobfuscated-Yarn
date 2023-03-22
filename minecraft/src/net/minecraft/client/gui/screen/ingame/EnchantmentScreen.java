@@ -2,6 +2,7 @@ package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.systems.VertexSorter;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -87,7 +88,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 		RenderSystem.viewport((this.width - 320) / 2 * k, (this.height - 240) / 2 * k, 320 * k, 240 * k);
 		Matrix4f matrix4f = new Matrix4f().translation(-0.34F, 0.23F, 0.0F).perspective((float) (Math.PI / 2), 1.3333334F, 9.0F, 80.0F);
 		RenderSystem.backupProjectionMatrix();
-		RenderSystem.setProjectionMatrix(matrix4f);
+		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_DISTANCE);
 		matrices.push();
 		matrices.loadIdentity();
 		matrices.translate(0.0F, 3.3F, 1984.0F);

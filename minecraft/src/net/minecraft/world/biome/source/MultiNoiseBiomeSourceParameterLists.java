@@ -17,11 +17,6 @@ public class MultiNoiseBiomeSourceParameterLists {
 		registry.register(OVERWORLD, new MultiNoiseBiomeSourceParameterList(MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD, registryEntryLookup));
 	}
 
-	public static void bootstrapOneTwenty(Registerable<MultiNoiseBiomeSourceParameterList> registry) {
-		RegistryEntryLookup<Biome> registryEntryLookup = registry.getRegistryLookup(RegistryKeys.BIOME);
-		registry.register(OVERWORLD, new MultiNoiseBiomeSourceParameterList(MultiNoiseBiomeSourceParameterList.Preset.OVERWORLD_UPDATE_1_20, registryEntryLookup));
-	}
-
 	private static RegistryKey<MultiNoiseBiomeSourceParameterList> of(String id) {
 		return RegistryKey.of(RegistryKeys.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, new Identifier(id));
 	}

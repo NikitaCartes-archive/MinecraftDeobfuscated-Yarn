@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.HangingSignBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.block.entity.SignText;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -51,7 +52,8 @@ public class WallHangingSignBlock extends AbstractSignBlock {
 		BlockEntity itemStack = world.getBlockEntity(pos);
 		if (itemStack instanceof SignBlockEntity signBlockEntity) {
 			ItemStack itemStackx = player.getStackInHand(hand);
-			if (!signBlockEntity.shouldRunCommand(player) && itemStackx.getItem() instanceof BlockItem) {
+			SignText signText = signBlockEntity.getTextFacing(player);
+			if (!signText.hasRunCommandClickEvent(player) && itemStackx.getItem() instanceof BlockItem) {
 				return ActionResult.PASS;
 			}
 		}
@@ -126,6 +128,11 @@ public class WallHangingSignBlock extends AbstractSignBlock {
 		return direction.getAxis() == ((Direction)state.get(FACING)).rotateYClockwise().getAxis() && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+	}
+
+	@Override
+	public float getRotationDegrees(BlockState state) {
+		return ((Direction)state.get(FACING)).asRotation();
 	}
 
 	@Override

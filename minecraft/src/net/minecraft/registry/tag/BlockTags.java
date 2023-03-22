@@ -120,6 +120,7 @@ public final class BlockTags {
 	public static final TagKey<Block> CAULDRONS = of("cauldrons");
 	public static final TagKey<Block> CRYSTAL_SOUND_BLOCKS = of("crystal_sound_blocks");
 	public static final TagKey<Block> INSIDE_STEP_SOUND_BLOCKS = of("inside_step_sound_blocks");
+	public static final TagKey<Block> COMBINATION_STEP_SOUND_BLOCKS = of("combination_step_sound_blocks");
 	public static final TagKey<Block> OCCLUDES_VIBRATION_SIGNALS = of("occludes_vibration_signals");
 	public static final TagKey<Block> DAMPENS_VIBRATIONS = of("dampens_vibrations");
 	public static final TagKey<Block> DRIPSTONE_REPLACEABLE_BLOCKS = of("dripstone_replaceable_blocks");
@@ -144,6 +145,7 @@ public final class BlockTags {
 	public static final TagKey<Block> SCULK_REPLACEABLE = of("sculk_replaceable");
 	public static final TagKey<Block> SCULK_REPLACEABLE_WORLD_GEN = of("sculk_replaceable_world_gen");
 	public static final TagKey<Block> ANCIENT_CITY_REPLACEABLE = of("ancient_city_replaceable");
+	public static final TagKey<Block> VIBRATION_RESONATORS = of("vibration_resonators");
 	public static final TagKey<Block> ANIMALS_SPAWNABLE_ON = of("animals_spawnable_on");
 	public static final TagKey<Block> AXOLOTLS_SPAWNABLE_ON = of("axolotls_spawnable_on");
 	public static final TagKey<Block> GOATS_SPAWNABLE_ON = of("goats_spawnable_on");
@@ -165,6 +167,8 @@ public final class BlockTags {
 	public static final TagKey<Block> SNOW_LAYER_CAN_SURVIVE_ON = of("snow_layer_can_survive_on");
 	public static final TagKey<Block> INVALID_SPAWN_INSIDE = of("invalid_spawn_inside");
 	public static final TagKey<Block> SNIFFER_DIGGABLE_BLOCK = of("sniffer_diggable_block");
+	public static final TagKey<Block> SNIFFER_EGG_HATCH_BOOST = of("sniffer_egg_hatch_boost");
+	public static final TagKey<Block> TRAIL_RUINS_REPLACEABLE = of("trail_ruins_replaceable");
 
 	private BlockTags() {
 	}

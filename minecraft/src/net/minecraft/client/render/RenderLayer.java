@@ -1,6 +1,7 @@
 package net.minecraft.client.render;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.VertexSorter;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -1017,10 +1018,10 @@ public abstract class RenderLayer extends RenderPhase {
 		return new RenderLayer.MultiPhase(name, vertexFormat, drawMode, expectedBufferSize, hasCrumbling, translucent, phases);
 	}
 
-	public void draw(BufferBuilder buffer, int cameraX, int cameraY, int cameraZ) {
+	public void draw(BufferBuilder buffer, VertexSorter sorter) {
 		if (buffer.isBuilding()) {
 			if (this.translucent) {
-				buffer.sortFrom((float)cameraX, (float)cameraY, (float)cameraZ);
+				buffer.setSorter(sorter);
 			}
 
 			BufferBuilder.BuiltBuffer builtBuffer = buffer.end();

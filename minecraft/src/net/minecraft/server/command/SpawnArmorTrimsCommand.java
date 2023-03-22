@@ -26,7 +26,6 @@ import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.DefaultedList;
@@ -70,7 +69,12 @@ public class SpawnArmorTrimsCommand {
 		ArmorTrimPatterns.TIDE,
 		ArmorTrimPatterns.SNOUT,
 		ArmorTrimPatterns.RIB,
-		ArmorTrimPatterns.SPIRE
+		ArmorTrimPatterns.SPIRE,
+		ArmorTrimPatterns.WAYFINDER,
+		ArmorTrimPatterns.SHAPER,
+		ArmorTrimPatterns.SILENCE,
+		ArmorTrimPatterns.RAISER,
+		ArmorTrimPatterns.HOST
 	);
 	private static final List<RegistryKey<ArmorTrimMaterial>> MATERIALS = List.of(
 		ArmorTrimMaterials.QUARTZ,
@@ -90,7 +94,7 @@ public class SpawnArmorTrimsCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
 		dispatcher.register(
 			CommandManager.literal("spawn_armor_trims")
-				.requires(source -> source.hasPermissionLevel(2) && source.getWorld().getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20))
+				.requires(source -> source.hasPermissionLevel(2))
 				.executes(context -> execute(context.getSource(), context.getSource().getPlayerOrThrow()))
 		);
 	}

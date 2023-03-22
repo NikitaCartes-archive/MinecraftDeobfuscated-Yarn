@@ -42,6 +42,7 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_AMETHYST_BLOCK_FALL = register("block.amethyst_block.fall");
 	public static final SoundEvent BLOCK_AMETHYST_BLOCK_HIT = register("block.amethyst_block.hit");
 	public static final SoundEvent BLOCK_AMETHYST_BLOCK_PLACE = register("block.amethyst_block.place");
+	public static final SoundEvent BLOCK_AMETHYST_BLOCK_RESONATE = register("block.amethyst_block.resonate");
 	public static final SoundEvent BLOCK_AMETHYST_BLOCK_STEP = register("block.amethyst_block.step");
 	public static final SoundEvent BLOCK_AMETHYST_CLUSTER_BREAK = register("block.amethyst_cluster.break");
 	public static final SoundEvent BLOCK_AMETHYST_CLUSTER_FALL = register("block.amethyst_cluster.fall");
@@ -174,8 +175,11 @@ public class SoundEvents {
 	public static final SoundEvent ITEM_BOTTLE_FILL = register("item.bottle.fill");
 	public static final SoundEvent ITEM_BOTTLE_FILL_DRAGONBREATH = register("item.bottle.fill_dragonbreath");
 	public static final SoundEvent BLOCK_BREWING_STAND_BREW = register("block.brewing_stand.brew");
-	public static final SoundEvent ITEM_BRUSH_BRUSHING = register("item.brush.brushing");
-	public static final SoundEvent ITEM_BRUSH_BRUSH_SAND_COMPLETED = register("item.brush.brush_sand_completed");
+	public static final SoundEvent ITEM_BRUSH_BRUSHING_GENERIC = register("item.brush.brushing.generic");
+	public static final SoundEvent ITEM_BRUSH_BRUSHING_SAND = register("item.brush.brushing.sand");
+	public static final SoundEvent ITEM_BRUSH_BRUSHING_GRAVEL = register("item.brush.brushing.gravel");
+	public static final SoundEvent ITEM_BRUSH_BRUSHING_SAND_COMPLETE = register("item.brush.brushing.sand.complete");
+	public static final SoundEvent ITEM_BRUSH_BRUSHING_GRAVEL_COMPLETE = register("item.brush.brushing.gravel.complete");
 	public static final SoundEvent BLOCK_BUBBLE_COLUMN_BUBBLE_POP = register("block.bubble_column.bubble_pop");
 	public static final SoundEvent BLOCK_BUBBLE_COLUMN_UPWARDS_AMBIENT = register("block.bubble_column.upwards_ambient");
 	public static final SoundEvent BLOCK_BUBBLE_COLUMN_UPWARDS_INSIDE = register("block.bubble_column.upwards_inside");
@@ -486,6 +490,11 @@ public class SoundEvents {
 	public static final SoundEvent BLOCK_SUSPICIOUS_SAND_PLACE = register("block.suspicious_sand.place");
 	public static final SoundEvent BLOCK_SUSPICIOUS_SAND_HIT = register("block.suspicious_sand.hit");
 	public static final SoundEvent BLOCK_SUSPICIOUS_SAND_FALL = register("block.suspicious_sand.fall");
+	public static final SoundEvent BLOCK_SUSPICIOUS_GRAVEL_BREAK = register("block.suspicious_gravel.break");
+	public static final SoundEvent BLOCK_SUSPICIOUS_GRAVEL_STEP = register("block.suspicious_gravel.step");
+	public static final SoundEvent BLOCK_SUSPICIOUS_GRAVEL_PLACE = register("block.suspicious_gravel.place");
+	public static final SoundEvent BLOCK_SUSPICIOUS_GRAVEL_HIT = register("block.suspicious_gravel.hit");
+	public static final SoundEvent BLOCK_SUSPICIOUS_GRAVEL_FALL = register("block.suspicious_gravel.fall");
 	public static final SoundEvent BLOCK_FROGLIGHT_BREAK = register("block.froglight.break");
 	public static final SoundEvent BLOCK_FROGLIGHT_FALL = register("block.froglight.fall");
 	public static final SoundEvent BLOCK_FROGLIGHT_HIT = register("block.froglight.hit");
@@ -1226,6 +1235,8 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_SNIFFER_DIGGING = register("entity.sniffer.digging");
 	public static final SoundEvent ENTITY_SNIFFER_DIGGING_STOP = register("entity.sniffer.digging_stop");
 	public static final SoundEvent ENTITY_SNIFFER_HAPPY = register("entity.sniffer.happy");
+	public static final SoundEvent ENTITY_SNIFFER_EGG_CRACK = register("entity.sniffer.egg_crack");
+	public static final SoundEvent ENTITY_SNIFFER_EGG_HATCH = register("entity.sniffer.egg_hatch");
 	public static final SoundEvent ENTITY_SNOWBALL_THROW = register("entity.snowball.throw");
 	public static final SoundEvent BLOCK_SNOW_BREAK = register("block.snow.break");
 	public static final SoundEvent BLOCK_SNOW_FALL = register("block.snow.fall");
@@ -1378,6 +1389,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_WARDEN_SONIC_CHARGE = register("entity.warden.sonic_charge");
 	public static final SoundEvent ENTITY_WARDEN_STEP = register("entity.warden.step");
 	public static final SoundEvent ENTITY_WARDEN_TENDRIL_CLICKS = register("entity.warden.tendril_clicks");
+	public static final SoundEvent BLOCK_SIGN_WAXED_INTERACT_FAIL = register("block.sign.waxed_interact_fail");
 	public static final SoundEvent BLOCK_WATER_AMBIENT = register("block.water.ambient");
 	public static final SoundEvent WEATHER_RAIN = register("weather.rain");
 	public static final SoundEvent WEATHER_RAIN_ABOVE = register("weather.rain.above");

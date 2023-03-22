@@ -30,7 +30,7 @@ public class ProtectedBlocksStructureProcessor extends StructureProcessor {
 		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
-		return Feature.notInBlockTagPredicate(this.protectedBlocksTag).test(world.getBlockState(currentBlockInfo.pos)) ? currentBlockInfo : null;
+		return Feature.notInBlockTagPredicate(this.protectedBlocksTag).test(world.getBlockState(currentBlockInfo.pos())) ? currentBlockInfo : null;
 	}
 
 	@Override

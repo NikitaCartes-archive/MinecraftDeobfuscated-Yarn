@@ -58,8 +58,19 @@ public class WorldEvents {
 	 * and {@link net.minecraft.item.ShovelItem#useOnBlock(net.minecraft.item.ItemUsageContext) ShovelItem#useOnBlock}
 	 */
 	public static final int FIRE_EXTINGUISHED = 1009;
-	public static final int field_42760 = 1010;
-	public static final int field_42761 = 1011;
+	/**
+	 * A jukebox starts playing a music disc.
+	 * <br>Plays the appropriate music.
+	 * <p>The raw ID of the music disc item must be supplied as extra data.
+	 * <p>Called by {@link net.minecraft.block.entity.JukeboxBlockEntity#startPlaying() JukeboxBlockEntity#startPlaying}
+	 */
+	public static final int JUKEBOX_STARTS_PLAYING = 1010;
+	/**
+	 * A jukebox stops playing a music disc.
+	 * <br>Stops any music currently playing.
+	 * <p>Called by {@link net.minecraft.block.entity.JukeboxBlockEntity#stopPlaying() JukeboxBlockEntity#stopPlaying}
+	 */
+	public static final int JUKEBOX_STOPS_PLAYING = 1011;
 	/**
 	 * A ghast warns its victim.
 	 * <br>Plays the ghast warn sound event.
@@ -424,16 +435,29 @@ public class WorldEvents {
 	 */
 	public static final int BLOCK_SCRAPED = 3005;
 	/**
-	 * Sculk... charges? Sculk is weird.
+	 * Sculk releases a charge.
 	 * <br>Spawns sculk charge particles.
-	 * <br>Called by {@link net.minecraft.block.entity.SculkSpreadManager#tick(net.minecraft.world.WorldAccess, net.minecraft.util.math.BlockPos,  net.minecraft.util.math.random.Random, boolean) SculkSpreadManager#tick}
+	 * <p>Called by {@link net.minecraft.block.entity.SculkSpreadManager#tick(net.minecraft.world.WorldAccess, net.minecraft.util.math.BlockPos,  net.minecraft.util.math.random.Random, boolean) SculkSpreadManager#tick}
 	 */
 	public static final int SCULK_CHARGE = 3006;
 	/**
 	 * A sculk shrieker shrieks.
 	 * <br>Spawns shriek particles and plays the shriek sound event.
-	 * <br>Called by {@link net.minecraft.block.entity.SculkShriekerBlockEntity#shriek(net.minecraft.server.world.ServerWorld, net.minecraft.entity.Entity) SculkShriekerBlockEntity#shriek}
+	 * <p>Called by {@link net.minecraft.block.entity.SculkShriekerBlockEntity#shriek(net.minecraft.server.world.ServerWorld, net.minecraft.entity.Entity) SculkShriekerBlockEntity#shriek}
 	 */
 	public static final int SCULK_SHRIEKS = 3007;
-	public static final int field_42759 = 3008;
+	/**
+	 * A block has been completely brushed.
+	 * <br>Spawns block break particles and plays the block's brushing complete sound.
+	 * <p>The block's raw ID must be supplied as extra data.
+	 * <p>Called by {@link net.minecraft.block.entity.BrushableBlockEntity#finishBrushing(net.minecraft.entity.player.PlayerEntity) BrushableBlockEntity#finishBrushing}
+	 */
+	public static final int BLOCK_FINISHED_BRUSHING = 3008;
+	/**
+	 * A sniffer egg cracks.
+	 * <br>Spawns between 1 and 3 egg crack particles.
+	 * <p>If a {@code 1} is passed as extra data, between 3 and 6 egg crack particles are spawned instead.
+	 * <p>Called by {@link net.minecraft.block.SnifferEggBlock#onBlockAdded(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState, boolean) SnifferEggBlock#onBlockAdded}
+	 */
+	public static final int SNIFFER_EGG_CRACKS = 3009;
 }

@@ -832,10 +832,28 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_SUSPICIOUS_SAND_HIT,
 		SoundEvents.BLOCK_SUSPICIOUS_SAND_FALL
 	);
+	public static final BlockSoundGroup SUSPICIOUS_GRAVEL = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SUSPICIOUS_GRAVEL_BREAK,
+		SoundEvents.BLOCK_SUSPICIOUS_GRAVEL_STEP,
+		SoundEvents.BLOCK_SUSPICIOUS_GRAVEL_PLACE,
+		SoundEvents.BLOCK_SUSPICIOUS_GRAVEL_HIT,
+		SoundEvents.BLOCK_SUSPICIOUS_GRAVEL_FALL
+	);
 	public static final BlockSoundGroup DECORATED_POT = new BlockSoundGroup(
 		1.0F,
 		1.0F,
-		SoundEvents.INTENTIONALLY_EMPTY,
+		SoundEvents.BLOCK_DECORATED_POT_BREAK,
+		SoundEvents.BLOCK_DECORATED_POT_STEP,
+		SoundEvents.BLOCK_DECORATED_POT_PLACE,
+		SoundEvents.BLOCK_DECORATED_POT_HIT,
+		SoundEvents.BLOCK_DECORATED_POT_FALL
+	);
+	public static final BlockSoundGroup DECORATED_POT_SHATTER = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_DECORATED_POT_SHATTER,
 		SoundEvents.BLOCK_DECORATED_POT_STEP,
 		SoundEvents.BLOCK_DECORATED_POT_PLACE,
 		SoundEvents.BLOCK_DECORATED_POT_HIT,

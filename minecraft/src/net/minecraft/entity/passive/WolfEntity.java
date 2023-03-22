@@ -354,57 +354,57 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		if (this.world.isClient) {
 			boolean bl = this.isOwner(player) || this.isTamed() || itemStack.isOf(Items.BONE) && !this.isTamed() && !this.hasAngerTime();
 			return bl ? ActionResult.CONSUME : ActionResult.PASS;
-		} else {
-			if (this.isTamed()) {
-				if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
-					if (!player.getAbilities().creativeMode) {
-						itemStack.decrement(1);
-					}
-
-					this.heal((float)item.getFoodComponent().getHunger());
-					return ActionResult.SUCCESS;
-				}
-
-				if (!(item instanceof DyeItem)) {
-					ActionResult actionResult = super.interactMob(player, hand);
-					if ((!actionResult.isAccepted() || this.isBaby()) && this.isOwner(player)) {
-						this.setSitting(!this.isSitting());
-						this.jumping = false;
-						this.navigation.stop();
-						this.setTarget(null);
-						return ActionResult.SUCCESS;
-					}
-
-					return actionResult;
-				}
-
-				DyeColor dyeColor = ((DyeItem)item).getColor();
-				if (dyeColor != this.getCollarColor()) {
-					this.setCollarColor(dyeColor);
-					if (!player.getAbilities().creativeMode) {
-						itemStack.decrement(1);
-					}
-
-					return ActionResult.SUCCESS;
-				}
-			} else if (itemStack.isOf(Items.BONE) && !this.hasAngerTime()) {
+		} else if (this.isTamed()) {
+			if (this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
 				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}
 
-				if (this.random.nextInt(3) == 0) {
-					this.setOwner(player);
-					this.navigation.stop();
-					this.setTarget(null);
-					this.setSitting(true);
-					this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
-				} else {
-					this.world.sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
+				this.heal((float)item.getFoodComponent().getHunger());
+				return ActionResult.SUCCESS;
+			} else {
+				if (item instanceof DyeItem dyeItem && this.isOwner(player)) {
+					DyeColor dyeColor = dyeItem.getColor();
+					if (dyeColor != this.getCollarColor()) {
+						this.setCollarColor(dyeColor);
+						if (!player.getAbilities().creativeMode) {
+							itemStack.decrement(1);
+						}
+
+						return ActionResult.SUCCESS;
+					}
+
+					return super.interactMob(player, hand);
 				}
 
-				return ActionResult.SUCCESS;
+				ActionResult actionResult = super.interactMob(player, hand);
+				if ((!actionResult.isAccepted() || this.isBaby()) && this.isOwner(player)) {
+					this.setSitting(!this.isSitting());
+					this.jumping = false;
+					this.navigation.stop();
+					this.setTarget(null);
+					return ActionResult.SUCCESS;
+				} else {
+					return actionResult;
+				}
+			}
+		} else if (itemStack.isOf(Items.BONE) && !this.hasAngerTime()) {
+			if (!player.getAbilities().creativeMode) {
+				itemStack.decrement(1);
 			}
 
+			if (this.random.nextInt(3) == 0) {
+				this.setOwner(player);
+				this.navigation.stop();
+				this.setTarget(null);
+				this.setSitting(true);
+				this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
+			} else {
+				this.world.sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
+			}
+
+			return ActionResult.SUCCESS;
+		} else {
 			return super.interactMob(player, hand);
 		}
 	}

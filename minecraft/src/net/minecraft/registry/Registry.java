@@ -331,12 +331,12 @@ public interface Registry<T> extends Keyable, IndexedIterable<T> {
 		return entry;
 	}
 
-	static <T> RegistryEntry.Reference<T> method_47984(Registry<T> registry, RegistryKey<T> registryKey, T object) {
-		return ((MutableRegistry)registry).add(registryKey, object, Lifecycle.stable());
+	static <T> RegistryEntry.Reference<T> registerReference(Registry<T> registry, RegistryKey<T> key, T entry) {
+		return ((MutableRegistry)registry).add(key, entry, Lifecycle.stable());
 	}
 
-	static <T> RegistryEntry.Reference<T> registerReference(Registry<T> registry, Identifier identifier, T object) {
-		return method_47984(registry, RegistryKey.of(registry.getKey(), identifier), object);
+	static <T> RegistryEntry.Reference<T> registerReference(Registry<T> registry, Identifier id, T entry) {
+		return registerReference(registry, RegistryKey.of(registry.getKey(), id), entry);
 	}
 
 	static <V, T extends V> T register(Registry<V> registry, int rawId, String id, T entry) {

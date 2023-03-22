@@ -69,8 +69,8 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	}
 
 	@Override
-	protected boolean isValidInput(BlockState state) {
-		return isRedstoneGate(state);
+	protected boolean getSideInputFromGatesOnly() {
+		return true;
 	}
 
 	@Override

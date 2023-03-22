@@ -15,11 +15,11 @@ public class CherryLeavesBlock extends LeavesBlock {
 	@Override
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		super.randomDisplayTick(state, world, pos, random);
-		if (random.nextInt(15) == 0) {
+		if (random.nextInt(10) == 0) {
 			BlockPos blockPos = pos.down();
 			BlockState blockState = world.getBlockState(blockPos);
-			if (!blockState.isOpaque() || !blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
-				ParticleUtil.spawnParticle(world, pos, random, ParticleTypes.DRIPPING_CHERRY_LEAVES);
+			if (!isFaceFullSquare(blockState.getCollisionShape(world, blockPos), Direction.UP)) {
+				ParticleUtil.spawnParticle(world, pos, random, ParticleTypes.CHERRY_LEAVES);
 			}
 		}
 	}

@@ -45,6 +45,7 @@ public class BiomeTags {
 	public static final TagKey<Biome> VILLAGE_SAVANNA_HAS_STRUCTURE = of("has_structure/village_savanna");
 	public static final TagKey<Biome> VILLAGE_SNOWY_HAS_STRUCTURE = of("has_structure/village_snowy");
 	public static final TagKey<Biome> VILLAGE_TAIGA_HAS_STRUCTURE = of("has_structure/village_taiga");
+	public static final TagKey<Biome> TRAIL_RUINS_HAS_STRUCTURE = of("has_structure/trail_ruins");
 	public static final TagKey<Biome> WOODLAND_MANSION_HAS_STRUCTURE = of("has_structure/woodland_mansion");
 	public static final TagKey<Biome> NETHER_FORTRESS_HAS_STRUCTURE = of("has_structure/nether_fortress");
 	public static final TagKey<Biome> NETHER_FOSSIL_HAS_STRUCTURE = of("has_structure/nether_fossil");

@@ -154,7 +154,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 
 	@Override
 	public double getMountedHeightOffset() {
-		return this.getVariant() == BoatEntity.Type.BAMBOO ? 0.3 : -0.1;
+		return this.getVariant() == BoatEntity.Type.BAMBOO ? 0.25 : -0.1;
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -84,9 +85,9 @@ public class StructureTemplate {
 	public void saveFromWorld(World world, BlockPos start, Vec3i dimensions, boolean includeEntities, @Nullable Block ignoredBlock) {
 		if (dimensions.getX() >= 1 && dimensions.getY() >= 1 && dimensions.getZ() >= 1) {
 			BlockPos blockPos = start.add(dimensions).add(-1, -1, -1);
-			List<StructureTemplate.StructureBlockInfo> list = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
-			List<StructureTemplate.StructureBlockInfo> list2 = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
-			List<StructureTemplate.StructureBlockInfo> list3 = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
+			List<StructureTemplate.StructureBlockInfo> list = Lists.newArrayList();
+			List<StructureTemplate.StructureBlockInfo> list2 = Lists.newArrayList();
+			List<StructureTemplate.StructureBlockInfo> list3 = Lists.newArrayList();
 			BlockPos blockPos2 = new BlockPos(Math.min(start.getX(), blockPos.getX()), Math.min(start.getY(), blockPos.getY()), Math.min(start.getZ(), blockPos.getZ()));
 			BlockPos blockPos3 = new BlockPos(Math.max(start.getX(), blockPos.getX()), Math.max(start.getY(), blockPos.getY()), Math.max(start.getZ(), blockPos.getZ()));
 			this.size = dimensions;
@@ -169,7 +170,7 @@ public class StructureTemplate {
 		fullBlocks.sort(comparator);
 		otherBlocks.sort(comparator);
 		blocksWithNbt.sort(comparator);
-		List<StructureTemplate.StructureBlockInfo> list = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
+		List<StructureTemplate.StructureBlockInfo> list = Lists.newArrayList();
 		list.addAll(fullBlocks);
 		list.addAll(otherBlocks);
 		list.addAll(blocksWithNbt);
@@ -202,7 +203,7 @@ public class StructureTemplate {
 	public ObjectArrayList<StructureTemplate.StructureBlockInfo> getInfosForBlock(
 		BlockPos pos, StructurePlacementData placementData, Block block, boolean transformed
 	) {
-		ObjectArrayList<StructureTemplate.StructureBlockInfo> objectArrayList = new ObjectArrayList<>();
+		ObjectArrayList<StructureTemplate.StructureBlockInfo> objectArrayList = new ObjectArrayList();
 		BlockBox blockBox = placementData.getBoundingBox();
 		if (this.blockInfoLists.isEmpty()) {
 			return objectArrayList;
@@ -395,7 +396,8 @@ public class StructureTemplate {
 	public static List<StructureTemplate.StructureBlockInfo> process(
 		WorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<StructureTemplate.StructureBlockInfo> infos
 	) {
-		List<StructureTemplate.StructureBlockInfo> list = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
+		List<StructureTemplate.StructureBlockInfo> list = new ArrayList();
+		List<StructureTemplate.StructureBlockInfo> list2 = new ArrayList();
 
 		for(StructureTemplate.StructureBlockInfo structureBlockInfo : infos) {
 			BlockPos blockPos = transform(placementData, structureBlockInfo.pos).add(pos);
@@ -409,15 +411,16 @@ public class StructureTemplate {
 			}
 
 			if (structureBlockInfo2 != null) {
-				list.add(structureBlockInfo2);
+				list2.add(structureBlockInfo2);
+				list.add(structureBlockInfo);
 			}
 		}
 
 		for(StructureProcessor structureProcessor : placementData.getProcessors()) {
-			structureProcessor.reprocess(world, pos, pivot, placementData, list);
+			list2 = structureProcessor.reprocess(world, pos, pivot, list, list2, placementData);
 		}
 
-		return list;
+		return list2;
 	}
 
 	private void spawnEntities(
@@ -688,9 +691,9 @@ public class StructureTemplate {
 			palette2.set(NbtHelper.toBlockState(blockLookup, palette.getCompound(i)), i);
 		}
 
-		List<StructureTemplate.StructureBlockInfo> list = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
-		List<StructureTemplate.StructureBlockInfo> list2 = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
-		List<StructureTemplate.StructureBlockInfo> list3 = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
+		List<StructureTemplate.StructureBlockInfo> list = Lists.newArrayList();
+		List<StructureTemplate.StructureBlockInfo> list2 = Lists.newArrayList();
+		List<StructureTemplate.StructureBlockInfo> list3 = Lists.newArrayList();
 
 		for(int j = 0; j < blocks.size(); ++j) {
 			NbtCompound nbtCompound = blocks.getCompound(j);
@@ -780,16 +783,11 @@ public class StructureTemplate {
 		}
 	}
 
-	public static class StructureBlockInfo {
-		public final BlockPos pos;
-		public final BlockState state;
-		public final NbtCompound nbt;
-
-		public StructureBlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound nbt) {
-			this.pos = pos;
-			this.state = state;
-			this.nbt = nbt;
-		}
+	public static record StructureBlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound nbt) {
+		final BlockPos pos;
+		final BlockState state;
+		@Nullable
+		final NbtCompound nbt;
 
 		public String toString() {
 			return String.format(Locale.ROOT, "<StructureBlockInfo | %s | %s | %s>", this.pos, this.state, this.nbt);

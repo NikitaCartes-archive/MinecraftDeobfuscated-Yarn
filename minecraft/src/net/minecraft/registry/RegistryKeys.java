@@ -44,6 +44,7 @@ import net.minecraft.structure.processor.StructureProcessorList;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.structure.rule.RuleTestType;
+import net.minecraft.structure.rule.blockentity.RuleBlockEntityModifierType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
 import net.minecraft.util.math.intprovider.IntProviderType;
@@ -136,6 +137,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<RecipeType<?>>> RECIPE_TYPE = of("recipe_type");
 	public static final RegistryKey<Registry<RootPlacerType<?>>> ROOT_PLACER_TYPE = of("worldgen/root_placer_type");
 	public static final RegistryKey<Registry<RuleTestType<?>>> RULE_TEST = of("rule_test");
+	public static final RegistryKey<Registry<RuleBlockEntityModifierType<?>>> RULE_BLOCK_ENTITY_MODIFIER = of("rule_block_entity_modifier");
 	public static final RegistryKey<Registry<Schedule>> SCHEDULE = of("schedule");
 	public static final RegistryKey<Registry<SensorType<?>>> SENSOR_TYPE = of("sensor_type");
 	public static final RegistryKey<Registry<SoundEvent>> SOUND_EVENT = of("sound_event");

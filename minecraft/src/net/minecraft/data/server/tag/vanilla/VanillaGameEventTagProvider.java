@@ -8,6 +8,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.listener.VibrationListener;
 
 public class VanillaGameEventTagProvider extends ValueLookupTagProvider<GameEvent> {
 	@VisibleForTesting
@@ -23,7 +24,6 @@ public class VanillaGameEventTagProvider extends ValueLookupTagProvider<GameEven
 		GameEvent.BLOCK_DEACTIVATE,
 		GameEvent.CONTAINER_CLOSE,
 		GameEvent.CONTAINER_OPEN,
-		GameEvent.DISPENSE_FAIL,
 		GameEvent.DRINK,
 		GameEvent.EAT,
 		GameEvent.ELYTRA_GLIDE,
@@ -44,8 +44,6 @@ public class VanillaGameEventTagProvider extends ValueLookupTagProvider<GameEven
 		GameEvent.ITEM_INTERACT_FINISH,
 		GameEvent.LIGHTNING_STRIKE,
 		GameEvent.NOTE_BLOCK_PLAY,
-		GameEvent.PISTON_CONTRACT,
-		GameEvent.PISTON_EXTEND,
 		GameEvent.PRIME_FUSE,
 		GameEvent.PROJECTILE_LAND,
 		GameEvent.PROJECTILE_SHOOT,
@@ -62,9 +60,13 @@ public class VanillaGameEventTagProvider extends ValueLookupTagProvider<GameEven
 
 	@Override
 	protected void configure(RegistryWrapper.WrapperLookup lookup) {
-		this.getOrCreateTagBuilder(GameEventTags.VIBRATIONS).add(BASIC_GAME_EVENTS).add(GameEvent.FLAP);
+		this.getOrCreateTagBuilder(GameEventTags.VIBRATIONS).add(BASIC_GAME_EVENTS).add(VibrationListener.RESONATIONS).add(GameEvent.FLAP);
 		this.getOrCreateTagBuilder(GameEventTags.SHRIEKER_CAN_LISTEN).add(GameEvent.SCULK_SENSOR_TENDRILS_CLICKING);
-		this.getOrCreateTagBuilder(GameEventTags.WARDEN_CAN_LISTEN).add(BASIC_GAME_EVENTS).add(GameEvent.SHRIEK).addTag(GameEventTags.SHRIEKER_CAN_LISTEN);
+		this.getOrCreateTagBuilder(GameEventTags.WARDEN_CAN_LISTEN)
+			.add(BASIC_GAME_EVENTS)
+			.add(VibrationListener.RESONATIONS)
+			.add(GameEvent.SHRIEK)
+			.addTag(GameEventTags.SHRIEKER_CAN_LISTEN);
 		this.getOrCreateTagBuilder(GameEventTags.IGNORE_VIBRATIONS_SNEAKING)
 			.add(GameEvent.HIT_GROUND, GameEvent.PROJECTILE_SHOOT, GameEvent.STEP, GameEvent.SWIM, GameEvent.ITEM_INTERACT_START, GameEvent.ITEM_INTERACT_FINISH);
 		this.getOrCreateTagBuilder(GameEventTags.ALLAY_CAN_LISTEN).add(GameEvent.NOTE_BLOCK_PLAY);

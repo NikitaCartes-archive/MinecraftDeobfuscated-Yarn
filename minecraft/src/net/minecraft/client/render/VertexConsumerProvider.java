@@ -2,6 +2,7 @@ package net.minecraft.client.render;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -137,7 +138,7 @@ public interface VertexConsumerProvider {
 			boolean bl = Objects.equals(this.currentLayer, layer.asOptional());
 			if (bl || bufferBuilder != this.fallbackBuffer) {
 				if (this.activeConsumers.remove(bufferBuilder)) {
-					layer.draw(bufferBuilder, 0, 0, 0);
+					layer.draw(bufferBuilder, RenderSystem.getVertexSorting());
 					if (bl) {
 						this.currentLayer = Optional.empty();
 					}

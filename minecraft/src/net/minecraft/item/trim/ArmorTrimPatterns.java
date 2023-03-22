@@ -26,11 +26,13 @@ public class ArmorTrimPatterns {
 	public static final RegistryKey<ArmorTrimPattern> SNOUT = of("snout");
 	public static final RegistryKey<ArmorTrimPattern> RIB = of("rib");
 	public static final RegistryKey<ArmorTrimPattern> SPIRE = of("spire");
+	public static final RegistryKey<ArmorTrimPattern> WAYFINDER = of("wayfinder");
+	public static final RegistryKey<ArmorTrimPattern> SHAPER = of("shaper");
+	public static final RegistryKey<ArmorTrimPattern> SILENCE = of("silence");
+	public static final RegistryKey<ArmorTrimPattern> RAISER = of("raiser");
+	public static final RegistryKey<ArmorTrimPattern> HOST = of("host");
 
 	public static void bootstrap(Registerable<ArmorTrimPattern> registry) {
-	}
-
-	public static void oneTwentyBootstrap(Registerable<ArmorTrimPattern> registry) {
 		register(registry, Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, SENTRY);
 		register(registry, Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE, DUNE);
 		register(registry, Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE, COAST);
@@ -42,6 +44,11 @@ public class ArmorTrimPatterns {
 		register(registry, Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE, SNOUT);
 		register(registry, Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE, RIB);
 		register(registry, Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE, SPIRE);
+		register(registry, Items.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE, WAYFINDER);
+		register(registry, Items.SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, SHAPER);
+		register(registry, Items.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE, SILENCE);
+		register(registry, Items.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, RAISER);
+		register(registry, Items.HOST_ARMOR_TRIM_SMITHING_TEMPLATE, HOST);
 	}
 
 	public static Optional<RegistryEntry.Reference<ArmorTrimPattern>> get(DynamicRegistryManager registryManager, ItemStack stack) {

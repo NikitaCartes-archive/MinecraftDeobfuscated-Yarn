@@ -279,7 +279,7 @@ public class NbtList extends AbstractNbtList<NbtElement> {
 	public long[] getLongArray(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			NbtElement nbtElement = (NbtElement)this.value.get(index);
-			if (nbtElement.getType() == NbtElement.INT_ARRAY_TYPE) {
+			if (nbtElement.getType() == NbtElement.LONG_ARRAY_TYPE) {
 				return ((NbtLongArray)nbtElement).getLongArray();
 			}
 		}

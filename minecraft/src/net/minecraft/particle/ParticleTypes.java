@@ -45,9 +45,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType FIREWORK = register("firework", false);
 	public static final DefaultParticleType FISHING = register("fishing", false);
 	public static final DefaultParticleType FLAME = register("flame", false);
-	public static final DefaultParticleType DRIPPING_CHERRY_LEAVES = register("dripping_cherry_leaves", false);
-	public static final DefaultParticleType FALLING_CHERRY_LEAVES = register("falling_cherry_leaves", false);
-	public static final DefaultParticleType LANDING_CHERRY_LEAVES = register("landing_cherry_leaves", false);
+	public static final DefaultParticleType CHERRY_LEAVES = register("cherry_leaves", false);
 	public static final DefaultParticleType SCULK_SOUL = register("sculk_soul", false);
 	public static final ParticleType<SculkChargeParticleEffect> SCULK_CHARGE = register(
 		"sculk_charge", true, SculkChargeParticleEffect.FACTORY, particleType -> SculkChargeParticleEffect.CODEC
@@ -118,6 +116,7 @@ public class ParticleTypes {
 	public static final DefaultParticleType ELECTRIC_SPARK = register("electric_spark", true);
 	public static final DefaultParticleType SCRAPE = register("scrape", true);
 	public static final ParticleType<ShriekParticleEffect> SHRIEK = register("shriek", false, ShriekParticleEffect.FACTORY, type -> ShriekParticleEffect.CODEC);
+	public static final DefaultParticleType EGG_CRACK = register("egg_crack", false);
 	public static final Codec<ParticleEffect> TYPE_CODEC = Registries.PARTICLE_TYPE.getCodec().dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
 	private static DefaultParticleType register(String name, boolean alwaysShow) {

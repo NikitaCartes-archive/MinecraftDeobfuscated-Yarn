@@ -18,6 +18,14 @@ import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
+import net.minecraft.structure.processor.CappedStructureProcessor;
+import net.minecraft.structure.processor.RuleStructureProcessor;
+import net.minecraft.structure.processor.StructureProcessor;
+import net.minecraft.structure.processor.StructureProcessorRule;
+import net.minecraft.structure.rule.AlwaysTruePosRuleTest;
+import net.minecraft.structure.rule.AlwaysTrueRuleTest;
+import net.minecraft.structure.rule.BlockMatchRuleTest;
+import net.minecraft.structure.rule.blockentity.AppendLootRuleBlockEntityModifier;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -26,6 +34,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
@@ -36,6 +45,12 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.structure.OceanRuinStructure;
 
 public class OceanRuinGenerator {
+	static final StructureProcessor SUSPICIOUS_SAND_PROCESSOR = createArchaeologyStructureProcessor(
+		Blocks.SAND, Blocks.SUSPICIOUS_SAND, LootTables.OCEAN_RUIN_WARM_ARCHAEOLOGY
+	);
+	static final StructureProcessor SUSPICIOUS_GRAVEL_PROCESSOR = createArchaeologyStructureProcessor(
+		Blocks.GRAVEL, Blocks.SUSPICIOUS_GRAVEL, LootTables.OCEAN_RUIN_COLD_ARCHAEOLOGY
+	);
 	private static final Identifier[] WARM_RUINS = new Identifier[]{
 		new Identifier("underwater_ruin/warm_1"),
 		new Identifier("underwater_ruin/warm_2"),
@@ -100,6 +115,23 @@ public class OceanRuinGenerator {
 		new Identifier("underwater_ruin/big_warm_6"),
 		new Identifier("underwater_ruin/big_warm_7")
 	};
+
+	private static StructureProcessor createArchaeologyStructureProcessor(Block baseBlock, Block suspiciousBlock, Identifier lootTableId) {
+		return new CappedStructureProcessor(
+			new RuleStructureProcessor(
+				List.of(
+					new StructureProcessorRule(
+						new BlockMatchRuleTest(baseBlock),
+						AlwaysTrueRuleTest.INSTANCE,
+						AlwaysTruePosRuleTest.INSTANCE,
+						suspiciousBlock.getDefaultState(),
+						new AppendLootRuleBlockEntityModifier(lootTableId)
+					)
+				)
+			),
+			ConstantIntProvider.create(5)
+		);
+	}
 
 	private static Identifier getRandomWarmRuin(Random random) {
 		return Util.getRandom(WARM_RUINS, random);
@@ -198,24 +230,39 @@ public class OceanRuinGenerator {
 			OceanRuinStructure.BiomeTemperature biomeType,
 			boolean large
 		) {
-			super(StructurePieceType.OCEAN_TEMPLE, 0, structureTemplateManager, template, template.toString(), createPlacementData(rotation), pos);
+			super(StructurePieceType.OCEAN_TEMPLE, 0, structureTemplateManager, template, template.toString(), createPlacementData(rotation, integrity, biomeType), pos);
 			this.integrity = integrity;
 			this.biomeType = biomeType;
 			this.large = large;
 		}
 
-		public Piece(StructureTemplateManager holder, NbtCompound nbt) {
-			super(StructurePieceType.OCEAN_TEMPLE, nbt, holder, id -> createPlacementData(BlockRotation.valueOf(nbt.getString("Rot"))));
-			this.integrity = nbt.getFloat("Integrity");
-			this.biomeType = OceanRuinStructure.BiomeTemperature.valueOf(nbt.getString("BiomeType"));
-			this.large = nbt.getBoolean("IsLarge");
+		private Piece(
+			StructureTemplateManager holder, NbtCompound nbt, BlockRotation rotation, float integrity, OceanRuinStructure.BiomeTemperature biomeType, boolean large
+		) {
+			super(StructurePieceType.OCEAN_TEMPLE, nbt, holder, identifier -> createPlacementData(rotation, integrity, biomeType));
+			this.integrity = integrity;
+			this.biomeType = biomeType;
+			this.large = large;
 		}
 
-		private static StructurePlacementData createPlacementData(BlockRotation rotation) {
+		private static StructurePlacementData createPlacementData(BlockRotation rotation, float integrity, OceanRuinStructure.BiomeTemperature temperature) {
+			StructureProcessor structureProcessor = temperature == OceanRuinStructure.BiomeTemperature.COLD
+				? OceanRuinGenerator.SUSPICIOUS_GRAVEL_PROCESSOR
+				: OceanRuinGenerator.SUSPICIOUS_SAND_PROCESSOR;
 			return new StructurePlacementData()
 				.setRotation(rotation)
 				.setMirror(BlockMirror.NONE)
-				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
+				.addProcessor(new BlockRotStructureProcessor(integrity))
+				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS)
+				.addProcessor(structureProcessor);
+		}
+
+		public static OceanRuinGenerator.Piece fromNbt(StructureTemplateManager structureTemplateManager, NbtCompound nbt) {
+			BlockRotation blockRotation = BlockRotation.valueOf(nbt.getString("Rot"));
+			float f = nbt.getFloat("Integrity");
+			OceanRuinStructure.BiomeTemperature biomeTemperature = OceanRuinStructure.BiomeTemperature.valueOf(nbt.getString("BiomeType"));
+			boolean bl = nbt.getBoolean("IsLarge");
+			return new OceanRuinGenerator.Piece(structureTemplateManager, nbt, blockRotation, f, biomeTemperature, bl);
 		}
 
 		@Override
@@ -264,10 +311,6 @@ public class OceanRuinGenerator {
 			ChunkPos chunkPos,
 			BlockPos pivot
 		) {
-			this.placementData
-				.clearProcessors()
-				.addProcessor(new BlockRotStructureProcessor(this.integrity))
-				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
 			this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
 			BlockPos blockPos = StructureTemplate.transformAround(

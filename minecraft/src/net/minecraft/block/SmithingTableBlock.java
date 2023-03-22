@@ -2,10 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
-import net.minecraft.screen.LegacySmithingScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
-import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.SimpleNamedScreenHandlerFactory;
 import net.minecraft.screen.SmithingScreenHandler;
@@ -27,10 +24,7 @@ public class SmithingTableBlock extends CraftingTableBlock {
 	@Override
 	public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
 		return new SimpleNamedScreenHandlerFactory(
-			(syncId, inventory, player) -> (ScreenHandler)(world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)
-					? new SmithingScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos))
-					: new LegacySmithingScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos))),
-			SCREEN_TITLE
+			(syncId, inventory, player) -> new SmithingScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), SCREEN_TITLE
 		);
 	}
 

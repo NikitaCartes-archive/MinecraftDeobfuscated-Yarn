@@ -66,6 +66,22 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public static class EggCrackFactory implements ParticleFactory<DefaultParticleType> {
+		private final SpriteProvider spriteProvider;
+
+		public EggCrackFactory(SpriteProvider spriteProvider) {
+			this.spriteProvider = spriteProvider;
+		}
+
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			SuspendParticle suspendParticle = new SuspendParticle(clientWorld, d, e, f, g, h, i);
+			suspendParticle.setSprite(this.spriteProvider);
+			suspendParticle.setColor(1.0F, 1.0F, 1.0F);
+			return suspendParticle;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final SpriteProvider spriteProvider;
 

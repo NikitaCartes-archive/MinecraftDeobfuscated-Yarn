@@ -173,7 +173,6 @@ public class VertexFormat {
 
 	@Environment(EnvType.CLIENT)
 	public static enum IndexType {
-		BYTE(GlConst.GL_UNSIGNED_BYTE, 1),
 		SHORT(GlConst.GL_UNSIGNED_SHORT, 2),
 		INT(GlConst.GL_UNSIGNED_INT, 4);
 
@@ -189,11 +188,7 @@ public class VertexFormat {
 		 * {@return the smallest type in which {@code indexCount} fits}
 		 */
 		public static VertexFormat.IndexType smallestFor(int indexCount) {
-			if ((indexCount & -65536) != 0) {
-				return INT;
-			} else {
-				return (indexCount & 0xFF00) != 0 ? SHORT : BYTE;
-			}
+			return (indexCount & -65536) != 0 ? INT : SHORT;
 		}
 	}
 }

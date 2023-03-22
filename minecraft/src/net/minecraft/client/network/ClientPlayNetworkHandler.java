@@ -1237,14 +1237,15 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	public void onSignEditorOpen(SignEditorOpenS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		BlockPos blockPos = packet.getPos();
-		BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-		if (!(blockEntity instanceof SignBlockEntity)) {
+		BlockEntity blockState = this.world.getBlockEntity(blockPos);
+		if (blockState instanceof SignBlockEntity signBlockEntity) {
+			this.client.player.openEditSignScreen(signBlockEntity, packet.isFront());
+		} else {
 			BlockState blockState = this.world.getBlockState(blockPos);
-			blockEntity = new SignBlockEntity(blockPos, blockState);
-			blockEntity.setWorld(this.world);
+			SignBlockEntity signBlockEntity2 = new SignBlockEntity(blockPos, blockState);
+			signBlockEntity2.setWorld(this.world);
+			this.client.player.openEditSignScreen(signBlockEntity2, packet.isFront());
 		}
-
-		this.client.player.openEditSignScreen((SignBlockEntity)blockEntity);
 	}
 
 	@Override
