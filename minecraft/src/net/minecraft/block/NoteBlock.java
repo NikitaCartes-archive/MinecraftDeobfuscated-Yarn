@@ -10,7 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
@@ -42,17 +41,9 @@ public class NoteBlock extends Block {
 		);
 	}
 
-	private static boolean areMobHeadSoundsEnabled(WorldAccess world) {
-		return world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20);
-	}
-
 	private BlockState getStateWithInstrument(WorldAccess world, BlockPos pos, BlockState state) {
-		if (areMobHeadSoundsEnabled(world)) {
-			BlockState blockState = world.getBlockState(pos.up());
-			return state.with(INSTRUMENT, (Instrument)Instrument.fromAboveState(blockState).orElseGet(() -> Instrument.fromBelowState(world.getBlockState(pos.down()))));
-		} else {
-			return state.with(INSTRUMENT, Instrument.fromBelowState(world.getBlockState(pos.down())));
-		}
+		BlockState blockState = world.getBlockState(pos.up());
+		return state.with(INSTRUMENT, (Instrument)Instrument.fromAboveState(blockState).orElseGet(() -> Instrument.fromBelowState(world.getBlockState(pos.down()))));
 	}
 
 	@Override
@@ -64,7 +55,7 @@ public class NoteBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
-		boolean bl = areMobHeadSoundsEnabled(world) ? direction.getAxis() == Direction.Axis.Y : direction == Direction.DOWN;
+		boolean bl = direction.getAxis() == Direction.Axis.Y;
 		return bl ? this.getStateWithInstrument(world, pos, state) : super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
@@ -89,14 +80,10 @@ public class NoteBlock extends Block {
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (areMobHeadSoundsEnabled(world)) {
-			ItemStack itemStack = player.getStackInHand(hand);
-			if (itemStack.isIn(ItemTags.NOTEBLOCK_TOP_INSTRUMENTS) && hit.getSide() == Direction.UP) {
-				return ActionResult.PASS;
-			}
-		}
-
-		if (world.isClient) {
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (itemStack.isIn(ItemTags.NOTEBLOCK_TOP_INSTRUMENTS) && hit.getSide() == Direction.UP) {
+			return ActionResult.PASS;
+		} else if (world.isClient) {
 			return ActionResult.SUCCESS;
 		} else {
 			state = state.cycle(NOTE);
@@ -115,13 +102,17 @@ public class NoteBlock extends Block {
 		}
 	}
 
+	public static float getNotePitch(int note) {
+		return (float)Math.pow(2.0, (double)(note - 12) / 12.0);
+	}
+
 	@Override
 	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
 		Instrument instrument = state.get(INSTRUMENT);
 		float f;
 		if (instrument.shouldSpawnNoteParticles()) {
 			int i = (Integer)state.get(NOTE);
-			f = (float)Math.pow(2.0, (double)(i - 12) / 12.0);
+			f = getNotePitch(i);
 			world.addParticle(ParticleTypes.NOTE, (double)pos.getX() + 0.5, (double)pos.getY() + 1.2, (double)pos.getZ() + 0.5, (double)i / 24.0, 0.0, 0.0);
 		} else {
 			f = 1.0F;

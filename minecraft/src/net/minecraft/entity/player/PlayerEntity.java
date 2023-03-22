@@ -964,7 +964,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return false;
 	}
 
-	public void openEditSignScreen(SignBlockEntity sign) {
+	public void openEditSignScreen(SignBlockEntity sign, boolean front) {
 	}
 
 	public void openCommandBlockMinecartScreen(CommandBlockExecutor commandBlockExecutor) {

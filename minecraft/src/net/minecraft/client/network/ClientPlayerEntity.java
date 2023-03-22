@@ -562,11 +562,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void openEditSignScreen(SignBlockEntity sign) {
+	public void openEditSignScreen(SignBlockEntity sign, boolean front) {
 		if (sign instanceof HangingSignBlockEntity hangingSignBlockEntity) {
-			this.client.setScreen(new HangingSignEditScreen(hangingSignBlockEntity, this.client.shouldFilterText()));
+			this.client.setScreen(new HangingSignEditScreen(hangingSignBlockEntity, front, this.client.shouldFilterText()));
 		} else {
-			this.client.setScreen(new SignEditScreen(sign, this.client.shouldFilterText()));
+			this.client.setScreen(new SignEditScreen(sign, front, this.client.shouldFilterText()));
 		}
 	}
 

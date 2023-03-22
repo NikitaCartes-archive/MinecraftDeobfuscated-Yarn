@@ -49,11 +49,10 @@ public class GravityStructureProcessor extends StructureProcessor {
 			type = this.heightmap;
 		}
 
-		int i = world.getTopY(type, currentBlockInfo.pos.getX(), currentBlockInfo.pos.getZ()) + this.offset;
-		int j = originalBlockInfo.pos.getY();
-		return new StructureTemplate.StructureBlockInfo(
-			new BlockPos(currentBlockInfo.pos.getX(), i + j, currentBlockInfo.pos.getZ()), currentBlockInfo.state, currentBlockInfo.nbt
-		);
+		BlockPos blockPos = currentBlockInfo.pos();
+		int i = world.getTopY(type, blockPos.getX(), blockPos.getZ()) + this.offset;
+		int j = originalBlockInfo.pos().getY();
+		return new StructureTemplate.StructureBlockInfo(new BlockPos(blockPos.getX(), i + j, blockPos.getZ()), currentBlockInfo.state(), currentBlockInfo.nbt());
 	}
 
 	@Override

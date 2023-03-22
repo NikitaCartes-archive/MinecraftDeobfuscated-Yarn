@@ -64,7 +64,7 @@ public class StatusEffects {
 			.addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, "22653B89-116E-49DC-9B6B-9971489B5BE5", 0.0, EntityAttributeModifier.Operation.ADDITION)
 	);
 	public static final StatusEffect POISON = register(19, "poison", new StatusEffect(StatusEffectCategory.HARMFUL, 8889187));
-	public static final StatusEffect WITHER = register(20, "wither", new StatusEffect(StatusEffectCategory.HARMFUL, 3484199));
+	public static final StatusEffect WITHER = register(20, "wither", new StatusEffect(StatusEffectCategory.HARMFUL, 7561558));
 	public static final StatusEffect HEALTH_BOOST = register(
 		21,
 		"health_boost",
@@ -87,7 +87,7 @@ public class StatusEffects {
 		new StatusEffect(StatusEffectCategory.HARMFUL, 12624973)
 			.addAttributeModifier(EntityAttributes.GENERIC_LUCK, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0, EntityAttributeModifier.Operation.ADDITION)
 	);
-	public static final StatusEffect SLOW_FALLING = register(28, "slow_falling", new StatusEffect(StatusEffectCategory.BENEFICIAL, 16773073));
+	public static final StatusEffect SLOW_FALLING = register(28, "slow_falling", new StatusEffect(StatusEffectCategory.BENEFICIAL, 15978425));
 	public static final StatusEffect CONDUIT_POWER = register(29, "conduit_power", new StatusEffect(StatusEffectCategory.BENEFICIAL, 1950417));
 	public static final StatusEffect DOLPHINS_GRACE = register(30, "dolphins_grace", new StatusEffect(StatusEffectCategory.BENEFICIAL, 8954814));
 	public static final StatusEffect BAD_OMEN = register(31, "bad_omen", new StatusEffect(StatusEffectCategory.NEUTRAL, 745784) {

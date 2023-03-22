@@ -975,10 +975,9 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void openEditSignScreen(SignBlockEntity sign) {
-		sign.setEditor(this.getUuid());
+	public void openEditSignScreen(SignBlockEntity sign, boolean front) {
 		this.networkHandler.sendPacket(new BlockUpdateS2CPacket(this.world, sign.getPos()));
-		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(sign.getPos()));
+		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(sign.getPos(), front));
 	}
 
 	private void incrementScreenHandlerSyncId() {
@@ -1726,5 +1725,16 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void tiltScreen(double deltaX, double deltaZ) {
 		this.damageTiltYaw = (float)(MathHelper.atan2(deltaZ, deltaX) * 180.0F / (float)Math.PI - (double)this.getYaw());
 		this.networkHandler.sendPacket(new DamageTiltS2CPacket(this));
+	}
+
+	@Override
+	public boolean startRiding(Entity entity, boolean force) {
+		if (super.startRiding(entity, force)) {
+			entity.updatePassengerPosition(this);
+			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

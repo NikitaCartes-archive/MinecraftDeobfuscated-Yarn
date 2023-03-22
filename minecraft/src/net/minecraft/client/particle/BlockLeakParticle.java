@@ -113,33 +113,6 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 		return blockLeakParticle;
 	}
 
-	private static BlockLeakParticle setCherryLeavesColor(BlockLeakParticle particle) {
-		particle.setColor(0.937F, 0.655F, 0.804F);
-		return particle;
-	}
-
-	public static SpriteBillboardParticle createDrippingCherryLeaves(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
-	) {
-		return setCherryLeavesColor(new BlockLeakParticle.Dripping(world, x, y, z, Fluids.EMPTY, ParticleTypes.FALLING_CHERRY_LEAVES));
-	}
-
-	public static SpriteBillboardParticle createFallingCherryLeaves(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
-	) {
-		BlockLeakParticle.ContinuousFalling continuousFalling = new BlockLeakParticle.ContinuousFalling(
-			world, x, y, z, Fluids.EMPTY, ParticleTypes.LANDING_CHERRY_LEAVES
-		);
-		continuousFalling.gravityStrength = 0.005F;
-		return setCherryLeavesColor(continuousFalling);
-	}
-
-	public static SpriteBillboardParticle createLandingCherryLeaves(
-		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
-	) {
-		return setCherryLeavesColor(new BlockLeakParticle.Landing(world, x, y, z, Fluids.EMPTY));
-	}
-
 	public static SpriteBillboardParticle createDrippingHoney(
 		DefaultParticleType type, ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {

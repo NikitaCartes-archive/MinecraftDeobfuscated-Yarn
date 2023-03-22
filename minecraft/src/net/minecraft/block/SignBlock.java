@@ -45,6 +45,11 @@ public class SignBlock extends AbstractSignBlock {
 	}
 
 	@Override
+	public float getRotationDegrees(BlockState state) {
+		return RotationPropertyHelper.toDegrees((Integer)state.get(ROTATION));
+	}
+
+	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state.with(ROTATION, Integer.valueOf(rotation.rotate((Integer)state.get(ROTATION), 16)));
 	}

@@ -29,95 +29,118 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
 
 public class VibrationListener implements GameEventListener {
+	public static final GameEvent[] RESONATIONS = new GameEvent[]{
+		GameEvent.RESONATE_1,
+		GameEvent.RESONATE_2,
+		GameEvent.RESONATE_3,
+		GameEvent.RESONATE_4,
+		GameEvent.RESONATE_5,
+		GameEvent.RESONATE_6,
+		GameEvent.RESONATE_7,
+		GameEvent.RESONATE_8,
+		GameEvent.RESONATE_9,
+		GameEvent.RESONATE_10,
+		GameEvent.RESONATE_11,
+		GameEvent.RESONATE_12,
+		GameEvent.RESONATE_13,
+		GameEvent.RESONATE_14,
+		GameEvent.RESONATE_15
+	};
 	@VisibleForTesting
 	public static final Object2IntMap<GameEvent> FREQUENCIES = Object2IntMaps.unmodifiable(Util.make(new Object2IntOpenHashMap<>(), frequencies -> {
 		frequencies.put(GameEvent.STEP, 1);
-		frequencies.put(GameEvent.ITEM_INTERACT_FINISH, 2);
-		frequencies.put(GameEvent.FLAP, 2);
-		frequencies.put(GameEvent.SWIM, 3);
+		frequencies.put(GameEvent.SWIM, 1);
+		frequencies.put(GameEvent.FLAP, 1);
+		frequencies.put(GameEvent.PROJECTILE_LAND, 2);
+		frequencies.put(GameEvent.HIT_GROUND, 2);
+		frequencies.put(GameEvent.SPLASH, 2);
+		frequencies.put(GameEvent.ITEM_INTERACT_FINISH, 3);
+		frequencies.put(GameEvent.PROJECTILE_SHOOT, 3);
+		frequencies.put(GameEvent.INSTRUMENT_PLAY, 3);
+		frequencies.put(GameEvent.ENTITY_ROAR, 4);
+		frequencies.put(GameEvent.ENTITY_SHAKE, 4);
 		frequencies.put(GameEvent.ELYTRA_GLIDE, 4);
-		frequencies.put(GameEvent.HIT_GROUND, 5);
-		frequencies.put(GameEvent.TELEPORT, 5);
-		frequencies.put(GameEvent.SPLASH, 6);
-		frequencies.put(GameEvent.ENTITY_SHAKE, 6);
-		frequencies.put(GameEvent.BLOCK_CHANGE, 6);
-		frequencies.put(GameEvent.NOTE_BLOCK_PLAY, 6);
-		frequencies.put(GameEvent.ENTITY_DISMOUNT, 6);
-		frequencies.put(GameEvent.PROJECTILE_SHOOT, 7);
-		frequencies.put(GameEvent.DRINK, 7);
-		frequencies.put(GameEvent.PRIME_FUSE, 7);
-		frequencies.put(GameEvent.ENTITY_MOUNT, 7);
-		frequencies.put(GameEvent.PROJECTILE_LAND, 8);
+		frequencies.put(GameEvent.ENTITY_DISMOUNT, 5);
+		frequencies.put(GameEvent.EQUIP, 5);
+		frequencies.put(GameEvent.ENTITY_INTERACT, 6);
+		frequencies.put(GameEvent.SHEAR, 6);
+		frequencies.put(GameEvent.ENTITY_MOUNT, 6);
+		frequencies.put(GameEvent.ENTITY_DAMAGE, 7);
+		frequencies.put(GameEvent.DRINK, 8);
 		frequencies.put(GameEvent.EAT, 8);
-		frequencies.put(GameEvent.ENTITY_INTERACT, 8);
-		frequencies.put(GameEvent.ENTITY_DAMAGE, 8);
-		frequencies.put(GameEvent.EQUIP, 9);
-		frequencies.put(GameEvent.SHEAR, 9);
-		frequencies.put(GameEvent.ENTITY_ROAR, 9);
-		frequencies.put(GameEvent.BLOCK_CLOSE, 10);
-		frequencies.put(GameEvent.BLOCK_DEACTIVATE, 10);
-		frequencies.put(GameEvent.BLOCK_DETACH, 10);
-		frequencies.put(GameEvent.DISPENSE_FAIL, 10);
-		frequencies.put(GameEvent.BLOCK_OPEN, 11);
-		frequencies.put(GameEvent.BLOCK_ACTIVATE, 11);
-		frequencies.put(GameEvent.BLOCK_ATTACH, 11);
-		frequencies.put(GameEvent.ENTITY_PLACE, 12);
-		frequencies.put(GameEvent.BLOCK_PLACE, 12);
-		frequencies.put(GameEvent.FLUID_PLACE, 12);
-		frequencies.put(GameEvent.ENTITY_DIE, 13);
-		frequencies.put(GameEvent.BLOCK_DESTROY, 13);
-		frequencies.put(GameEvent.FLUID_PICKUP, 13);
-		frequencies.put(GameEvent.CONTAINER_CLOSE, 14);
-		frequencies.put(GameEvent.PISTON_CONTRACT, 14);
-		frequencies.put(GameEvent.PISTON_EXTEND, 15);
-		frequencies.put(GameEvent.CONTAINER_OPEN, 15);
+		frequencies.put(GameEvent.CONTAINER_CLOSE, 9);
+		frequencies.put(GameEvent.BLOCK_CLOSE, 9);
+		frequencies.put(GameEvent.BLOCK_DEACTIVATE, 9);
+		frequencies.put(GameEvent.BLOCK_DETACH, 9);
+		frequencies.put(GameEvent.CONTAINER_OPEN, 10);
+		frequencies.put(GameEvent.BLOCK_OPEN, 10);
+		frequencies.put(GameEvent.BLOCK_ACTIVATE, 10);
+		frequencies.put(GameEvent.BLOCK_ATTACH, 10);
+		frequencies.put(GameEvent.PRIME_FUSE, 10);
+		frequencies.put(GameEvent.NOTE_BLOCK_PLAY, 10);
+		frequencies.put(GameEvent.BLOCK_CHANGE, 11);
+		frequencies.put(GameEvent.BLOCK_DESTROY, 12);
+		frequencies.put(GameEvent.FLUID_PICKUP, 12);
+		frequencies.put(GameEvent.BLOCK_PLACE, 13);
+		frequencies.put(GameEvent.FLUID_PLACE, 13);
+		frequencies.put(GameEvent.ENTITY_PLACE, 14);
+		frequencies.put(GameEvent.LIGHTNING_STRIKE, 14);
+		frequencies.put(GameEvent.TELEPORT, 14);
+		frequencies.put(GameEvent.ENTITY_DIE, 15);
 		frequencies.put(GameEvent.EXPLODE, 15);
-		frequencies.put(GameEvent.LIGHTNING_STRIKE, 15);
-		frequencies.put(GameEvent.INSTRUMENT_PLAY, 15);
+
+		for (int i = 1; i <= 15; i++) {
+			frequencies.put(getResonation(i), i);
+		}
 	}));
-	protected final PositionSource positionSource;
-	protected final int range;
-	protected final VibrationListener.Callback callback;
+	private final PositionSource positionSource;
+	private final VibrationListener.Callback callback;
 	@Nullable
-	protected Vibration vibration;
-	protected int delay;
+	private Vibration vibration;
+	private int delay;
 	private final VibrationSelector selector;
 
 	public static Codec<VibrationListener> createCodec(VibrationListener.Callback callback) {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
 						PositionSource.CODEC.fieldOf("source").forGetter(listener -> listener.positionSource),
-						Codecs.NONNEGATIVE_INT.fieldOf("range").forGetter(listener -> listener.range),
 						Vibration.CODEC.optionalFieldOf("event").forGetter(listener -> Optional.ofNullable(listener.vibration)),
 						VibrationSelector.CODEC.fieldOf("selector").forGetter(listener -> listener.selector),
 						Codecs.NONNEGATIVE_INT.fieldOf("event_delay").orElse(0).forGetter(listener -> listener.delay)
 					)
 					.apply(
 						instance,
-						(positionSource, range, vibration, selector, delay) -> new VibrationListener(
-								positionSource, range, callback, (Vibration)vibration.orElse(null), selector, delay
+						(positionSource, optional, vibrationSelector, integer) -> new VibrationListener(
+								positionSource, callback, (Vibration)optional.orElse(null), vibrationSelector, integer
 							)
 					)
 		);
 	}
 
 	private VibrationListener(
-		PositionSource positionSource, int range, VibrationListener.Callback callback, @Nullable Vibration vibration, VibrationSelector selector, int delay
+		PositionSource positionSource, VibrationListener.Callback callback, @Nullable Vibration vibration, VibrationSelector selector, int delay
 	) {
 		this.positionSource = positionSource;
-		this.range = range;
 		this.callback = callback;
 		this.vibration = vibration;
 		this.delay = delay;
 		this.selector = selector;
 	}
 
-	public VibrationListener(PositionSource positionSource, int range, VibrationListener.Callback callback) {
-		this(positionSource, range, callback, null, new VibrationSelector(), 0);
+	public VibrationListener(PositionSource positionSource, VibrationListener.Callback callback) {
+		this(positionSource, callback, null, new VibrationSelector(), 0);
 	}
 
 	public static int getFrequency(GameEvent event) {
 		return FREQUENCIES.getOrDefault(event, 0);
+	}
+
+	public static GameEvent getResonation(int frequency) {
+		return RESONATIONS[frequency - 1];
+	}
+
+	public VibrationListener.Callback getCallback() {
+		return this.callback;
 	}
 
 	public void tick(World world) {
@@ -160,7 +183,7 @@ public class VibrationListener implements GameEventListener {
 
 	@Override
 	public int getRange() {
-		return this.range;
+		return this.callback.getRange();
 	}
 
 	@Override
@@ -212,6 +235,8 @@ public class VibrationListener implements GameEventListener {
 	}
 
 	public interface Callback {
+		int getRange();
+
 		default TagKey<GameEvent> getTag() {
 			return GameEventTags.VIBRATIONS;
 		}

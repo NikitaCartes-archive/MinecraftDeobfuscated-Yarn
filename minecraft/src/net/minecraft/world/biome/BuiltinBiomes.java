@@ -42,6 +42,7 @@ public abstract class BuiltinBiomes {
 		biomeRegisterable.register(BiomeKeys.ERODED_BADLANDS, OverworldBiomeCreator.createBadlands(registryEntryLookup, registryEntryLookup2, false));
 		biomeRegisterable.register(BiomeKeys.WOODED_BADLANDS, OverworldBiomeCreator.createBadlands(registryEntryLookup, registryEntryLookup2, true));
 		biomeRegisterable.register(BiomeKeys.MEADOW, OverworldBiomeCreator.createMeadow(registryEntryLookup, registryEntryLookup2, false));
+		biomeRegisterable.register(BiomeKeys.CHERRY_GROVE, OverworldBiomeCreator.createMeadow(registryEntryLookup, registryEntryLookup2, true));
 		biomeRegisterable.register(BiomeKeys.GROVE, OverworldBiomeCreator.createGrove(registryEntryLookup, registryEntryLookup2));
 		biomeRegisterable.register(BiomeKeys.SNOWY_SLOPES, OverworldBiomeCreator.createSnowySlopes(registryEntryLookup, registryEntryLookup2));
 		biomeRegisterable.register(BiomeKeys.FROZEN_PEAKS, OverworldBiomeCreator.createFrozenPeaks(registryEntryLookup, registryEntryLookup2));
@@ -75,11 +76,5 @@ public abstract class BuiltinBiomes {
 		biomeRegisterable.register(BiomeKeys.END_MIDLANDS, TheEndBiomeCreator.createEndMidlands(registryEntryLookup, registryEntryLookup2));
 		biomeRegisterable.register(BiomeKeys.SMALL_END_ISLANDS, TheEndBiomeCreator.createSmallEndIslands(registryEntryLookup, registryEntryLookup2));
 		biomeRegisterable.register(BiomeKeys.END_BARRENS, TheEndBiomeCreator.createEndBarrens(registryEntryLookup, registryEntryLookup2));
-	}
-
-	public static void bootstrapOneTwenty(Registerable<Biome> biomeRegisterable) {
-		RegistryEntryLookup<PlacedFeature> registryEntryLookup = biomeRegisterable.getRegistryLookup(RegistryKeys.PLACED_FEATURE);
-		RegistryEntryLookup<ConfiguredCarver<?>> registryEntryLookup2 = biomeRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_CARVER);
-		biomeRegisterable.register(BiomeKeys.CHERRY_GROVE, OverworldBiomeCreator.createMeadow(registryEntryLookup, registryEntryLookup2, true));
 	}
 }

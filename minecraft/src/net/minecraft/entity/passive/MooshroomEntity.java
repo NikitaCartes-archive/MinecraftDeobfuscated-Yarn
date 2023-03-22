@@ -212,11 +212,11 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.setVariant(MooshroomEntity.Type.fromName(nbt.getString("Type")));
-		if (nbt.contains("EffectId", NbtElement.BYTE_TYPE)) {
+		if (nbt.contains("EffectId", NbtElement.NUMBER_TYPE)) {
 			this.stewEffect = StatusEffect.byRawId(nbt.getInt("EffectId"));
 		}
 
-		if (nbt.contains("EffectDuration", NbtElement.INT_TYPE)) {
+		if (nbt.contains("EffectDuration", NbtElement.NUMBER_TYPE)) {
 			this.stewEffectDuration = nbt.getInt("EffectDuration");
 		}
 	}

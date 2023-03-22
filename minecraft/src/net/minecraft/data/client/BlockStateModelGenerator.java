@@ -25,7 +25,9 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeveledCauldronBlock;
+import net.minecraft.block.PitcherCropBlock;
 import net.minecraft.block.PropaguleBlock;
+import net.minecraft.block.SnifferEggBlock;
 import net.minecraft.block.enums.Attachment;
 import net.minecraft.block.enums.BambooLeaves;
 import net.minecraft.block.enums.BlockHalf;
@@ -285,25 +287,23 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createBlockStateWithRandomHorizontalRotations(block, identifier));
 	}
 
-	private void registerSuspiciousSand() {
+	private void registerBrushableBlock(Block block) {
 		this.blockStateCollector
 			.accept(
-				VariantsBlockStateSupplier.create(Blocks.SUSPICIOUS_SAND)
+				VariantsBlockStateSupplier.create(block)
 					.coordinate(
 						BlockStateVariantMap.create(Properties.DUSTED)
 							.register(
-								dustedLevel -> {
-									String string = "_" + dustedLevel;
-									Identifier identifier = TextureMap.getSubId(Blocks.SUSPICIOUS_SAND, string);
+								dusted -> {
+									String string = "_" + dusted;
+									Identifier identifier = TextureMap.getSubId(block, string);
 									return BlockStateVariant.create()
-										.put(
-											VariantSettings.MODEL, Models.CUBE_ALL.upload(Blocks.SUSPICIOUS_SAND, string, new TextureMap().put(TextureKey.ALL, identifier), this.modelCollector)
-										);
+										.put(VariantSettings.MODEL, Models.CUBE_ALL.upload(block, string, new TextureMap().put(TextureKey.ALL, identifier), this.modelCollector));
 								}
 							)
 					)
 			);
-		this.registerParentedItemModel(Blocks.SUSPICIOUS_SAND, TextureMap.getSubId(Blocks.SUSPICIOUS_SAND, "_0"));
+		this.registerParentedItemModel(block, TextureMap.getSubId(block, "_0"));
 	}
 
 	static BlockStateSupplier createButtonBlockState(Block buttonBlock, Identifier regularModelId, Identifier pressedModelId) {
@@ -1348,10 +1348,30 @@ public class BlockStateModelGenerator {
 					.coordinate(
 						BlockStateVariantMap.create(Properties.AGE_7)
 							.register(
-								integer -> BlockStateVariant.create().put(VariantSettings.MODEL, Models.STEM_GROWTH_STAGES[integer].upload(stemBlock, textureMap, this.modelCollector))
+								age -> BlockStateVariant.create().put(VariantSettings.MODEL, Models.STEM_GROWTH_STAGES[age].upload(stemBlock, textureMap, this.modelCollector))
 							)
 					)
 			);
+	}
+
+	private void registerPitcherPlant() {
+		Block block = Blocks.PITCHER_PLANT;
+		this.registerItemModel(block.asItem());
+		Identifier identifier = ModelIds.getBlockSubModelId(block, "_top");
+		Identifier identifier2 = ModelIds.getBlockSubModelId(block, "_bottom");
+		this.registerDoubleBlock(block, identifier, identifier2);
+	}
+
+	private void registerPitcherCrop() {
+		Block block = Blocks.PITCHER_CROP;
+		this.registerItemModel(block.asItem());
+		BlockStateVariantMap blockStateVariantMap = BlockStateVariantMap.create(PitcherCropBlock.AGE, Properties.DOUBLE_BLOCK_HALF).register((age, half) -> {
+			return switch (half) {
+				case UPPER -> BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_top_stage_" + age));
+				case LOWER -> BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_bottom_stage_" + age));
+			};
+		});
+		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(blockStateVariantMap));
 	}
 
 	private void registerCoral(
@@ -3036,10 +3056,23 @@ public class BlockStateModelGenerator {
 				VariantsBlockStateSupplier.create(Blocks.SCULK_SENSOR)
 					.coordinate(
 						BlockStateVariantMap.create(Properties.SCULK_SENSOR_PHASE)
-							.register(
-								sculkSensorPhase -> BlockStateVariant.create().put(VariantSettings.MODEL, sculkSensorPhase == SculkSensorPhase.ACTIVE ? identifier2 : identifier)
-							)
+							.register(phase -> BlockStateVariant.create().put(VariantSettings.MODEL, phase == SculkSensorPhase.ACTIVE ? identifier2 : identifier))
 					)
+			);
+	}
+
+	private void registerCalibratedSculkSensor() {
+		Identifier identifier = ModelIds.getBlockSubModelId(Blocks.CALIBRATED_SCULK_SENSOR, "_inactive");
+		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.CALIBRATED_SCULK_SENSOR, "_active");
+		this.registerParentedItemModel(Blocks.CALIBRATED_SCULK_SENSOR, identifier);
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.CALIBRATED_SCULK_SENSOR)
+					.coordinate(
+						BlockStateVariantMap.create(Properties.SCULK_SENSOR_PHASE)
+							.register(phase -> BlockStateVariant.create().put(VariantSettings.MODEL, phase == SculkSensorPhase.ACTIVE ? identifier2 : identifier))
+					)
+					.coordinate(createNorthDefaultHorizontalRotationStates())
 			);
 	}
 
@@ -3499,6 +3532,26 @@ public class BlockStateModelGenerator {
 			);
 	}
 
+	private void registerSnifferEgg() {
+		this.registerItemModel(Items.SNIFFER_EGG);
+		Function<Integer, Identifier> function = age -> {
+			String string = switch (age) {
+				case 1 -> "_slightly_cracked";
+				case 2 -> "_very_cracked";
+				default -> "_not_cracked";
+			};
+			TextureMap textureMap = TextureMap.all(TextureMap.getSubId(Blocks.SNIFFER_EGG, string));
+			return Models.SNIFFER_EGG.upload(Blocks.SNIFFER_EGG, string, textureMap, this.modelCollector);
+		};
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.SNIFFER_EGG)
+					.coordinate(
+						BlockStateVariantMap.create(SnifferEggBlock.AGE).register(age -> BlockStateVariant.create().put(VariantSettings.MODEL, (Identifier)function.apply(age)))
+					)
+			);
+	}
+
 	private void registerWallPlant(Block block) {
 		this.registerItemModel(block);
 		Identifier identifier = ModelIds.getBlockModelId(block);
@@ -3539,8 +3592,7 @@ public class BlockStateModelGenerator {
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.SCULK_CATALYST)
 					.coordinate(
-						BlockStateVariantMap.create(Properties.BLOOM)
-							.register(boolean_ -> BlockStateVariant.create().put(VariantSettings.MODEL, boolean_ ? identifier3 : identifier2))
+						BlockStateVariantMap.create(Properties.BLOOM).register(bloom -> BlockStateVariant.create().put(VariantSettings.MODEL, bloom ? identifier3 : identifier2))
 					)
 			);
 		this.registerParentedItemModel(Items.SCULK_CATALYST, identifier2);
@@ -3944,12 +3996,14 @@ public class BlockStateModelGenerator {
 		this.registerTripwire();
 		this.registerTripwireHook();
 		this.registerTurtleEgg();
+		this.registerSnifferEgg();
 		this.registerWallPlant(Blocks.VINE);
 		this.registerWallPlant(Blocks.GLOW_LICHEN);
 		this.registerWallPlant(Blocks.SCULK_VEIN);
 		this.registerMagmaBlock();
 		this.registerJigsaw();
 		this.registerSculkSensor();
+		this.registerCalibratedSculkSensor();
 		this.registerSculkShrieker();
 		this.registerFrogspawn();
 		this.registerMangrovePropagule();
@@ -3977,7 +4031,8 @@ public class BlockStateModelGenerator {
 		this.registerRotatable(Blocks.DIRT);
 		this.registerRotatable(Blocks.ROOTED_DIRT);
 		this.registerRotatable(Blocks.SAND);
-		this.registerSuspiciousSand();
+		this.registerBrushableBlock(Blocks.SUSPICIOUS_SAND);
+		this.registerBrushableBlock(Blocks.SUSPICIOUS_GRAVEL);
 		this.registerRotatable(Blocks.RED_SAND);
 		this.registerMirrorable(Blocks.BEDROCK);
 		this.registerSingleton(Blocks.REINFORCED_DEEPSLATE, TexturedModel.CUBE_BOTTOM_TOP);
@@ -3997,6 +4052,8 @@ public class BlockStateModelGenerator {
 		this.registerCrop(Blocks.POTATOES, Properties.AGE_7, 0, 0, 1, 1, 2, 2, 2, 3);
 		this.registerCrop(Blocks.WHEAT, Properties.AGE_7, 0, 1, 2, 3, 4, 5, 6, 7);
 		this.registerTintableCrossBlockStateWithStages(Blocks.TORCHFLOWER_CROP, BlockStateModelGenerator.TintType.NOT_TINTED, Properties.AGE_2, 0, 1, 2);
+		this.registerPitcherCrop();
+		this.registerPitcherPlant();
 		this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("decorated_pot"), Blocks.TERRACOTTA).includeWithoutItem(Blocks.DECORATED_POT);
 		this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("banner"), Blocks.OAK_PLANKS)
 			.includeWithItem(
@@ -4325,8 +4382,8 @@ public class BlockStateModelGenerator {
 		this.registerHangingSign(Blocks.STRIPPED_ACACIA_LOG, Blocks.ACACIA_HANGING_SIGN, Blocks.ACACIA_WALL_HANGING_SIGN);
 		this.registerFlowerPotPlant(Blocks.ACACIA_SAPLING, Blocks.POTTED_ACACIA_SAPLING, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerSingleton(Blocks.ACACIA_LEAVES, TexturedModel.LEAVES);
-		this.registerLog(Blocks.CHERRY_LOG).bamboo(Blocks.CHERRY_LOG).wood(Blocks.CHERRY_WOOD);
-		this.registerLog(Blocks.STRIPPED_CHERRY_LOG).bamboo(Blocks.STRIPPED_CHERRY_LOG).wood(Blocks.STRIPPED_CHERRY_WOOD);
+		this.registerLog(Blocks.CHERRY_LOG).uvLockedLog(Blocks.CHERRY_LOG).wood(Blocks.CHERRY_WOOD);
+		this.registerLog(Blocks.STRIPPED_CHERRY_LOG).uvLockedLog(Blocks.STRIPPED_CHERRY_LOG).wood(Blocks.STRIPPED_CHERRY_WOOD);
 		this.registerHangingSign(Blocks.STRIPPED_CHERRY_LOG, Blocks.CHERRY_HANGING_SIGN, Blocks.CHERRY_WALL_HANGING_SIGN);
 		this.registerFlowerPotPlant(Blocks.CHERRY_SAPLING, Blocks.POTTED_CHERRY_SAPLING, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerSingleton(Blocks.CHERRY_LEAVES, TexturedModel.LEAVES);
@@ -4365,8 +4422,8 @@ public class BlockStateModelGenerator {
 		this.registerHangingSign(Blocks.STRIPPED_WARPED_STEM, Blocks.WARPED_HANGING_SIGN, Blocks.WARPED_WALL_HANGING_SIGN);
 		this.registerFlowerPotPlant(Blocks.WARPED_FUNGUS, Blocks.POTTED_WARPED_FUNGUS, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerRoots(Blocks.WARPED_ROOTS, Blocks.POTTED_WARPED_ROOTS);
-		this.registerLog(Blocks.BAMBOO_BLOCK).bamboo(Blocks.BAMBOO_BLOCK);
-		this.registerLog(Blocks.STRIPPED_BAMBOO_BLOCK).bamboo(Blocks.STRIPPED_BAMBOO_BLOCK);
+		this.registerLog(Blocks.BAMBOO_BLOCK).uvLockedLog(Blocks.BAMBOO_BLOCK);
+		this.registerLog(Blocks.STRIPPED_BAMBOO_BLOCK).uvLockedLog(Blocks.STRIPPED_BAMBOO_BLOCK);
 		this.registerHangingSign(Blocks.BAMBOO_PLANKS, Blocks.BAMBOO_HANGING_SIGN, Blocks.BAMBOO_WALL_HANGING_SIGN);
 		this.registerTintableCrossBlockState(Blocks.NETHER_SPROUTS, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerItemModel(Items.NETHER_SPROUTS);
@@ -4699,9 +4756,9 @@ public class BlockStateModelGenerator {
 			return this;
 		}
 
-		public BlockStateModelGenerator.LogTexturePool bamboo(Block bambooBlock) {
+		public BlockStateModelGenerator.LogTexturePool uvLockedLog(Block logBlock) {
 			BlockStateModelGenerator.this.blockStateCollector
-				.accept(BlockStateModelGenerator.createUvLockedColumnBlockState(bambooBlock, this.textures, BlockStateModelGenerator.this.modelCollector));
+				.accept(BlockStateModelGenerator.createUvLockedColumnBlockState(logBlock, this.textures, BlockStateModelGenerator.this.modelCollector));
 			return this;
 		}
 	}

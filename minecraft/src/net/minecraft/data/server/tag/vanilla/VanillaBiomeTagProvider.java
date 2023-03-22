@@ -36,7 +36,8 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 			.add(BiomeKeys.FROZEN_PEAKS)
 			.add(BiomeKeys.JAGGED_PEAKS)
 			.add(BiomeKeys.STONY_PEAKS)
-			.add(BiomeKeys.SNOWY_SLOPES);
+			.add(BiomeKeys.SNOWY_SLOPES)
+			.add(BiomeKeys.CHERRY_GROVE);
 		this.getOrCreateTagBuilder(BiomeTags.IS_BADLANDS).add(BiomeKeys.BADLANDS).add(BiomeKeys.ERODED_BADLANDS).add(BiomeKeys.WOODED_BADLANDS);
 		this.getOrCreateTagBuilder(BiomeTags.IS_HILL).add(BiomeKeys.WINDSWEPT_HILLS).add(BiomeKeys.WINDSWEPT_FOREST).add(BiomeKeys.WINDSWEPT_GRAVELLY_HILLS);
 		this.getOrCreateTagBuilder(BiomeTags.IS_TAIGA)
@@ -145,6 +146,13 @@ public class VanillaBiomeTagProvider extends TagProvider<Biome> {
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_SAVANNA_HAS_STRUCTURE).add(BiomeKeys.SAVANNA);
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_SNOWY_HAS_STRUCTURE).add(BiomeKeys.SNOWY_PLAINS);
 		this.getOrCreateTagBuilder(BiomeTags.VILLAGE_TAIGA_HAS_STRUCTURE).add(BiomeKeys.TAIGA);
+		this.getOrCreateTagBuilder(BiomeTags.TRAIL_RUINS_HAS_STRUCTURE)
+			.add(BiomeKeys.TAIGA)
+			.add(BiomeKeys.SNOWY_TAIGA)
+			.add(BiomeKeys.OLD_GROWTH_PINE_TAIGA)
+			.add(BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA)
+			.add(BiomeKeys.OLD_GROWTH_BIRCH_FOREST)
+			.add(BiomeKeys.JUNGLE);
 		this.getOrCreateTagBuilder(BiomeTags.WOODLAND_MANSION_HAS_STRUCTURE).add(BiomeKeys.DARK_FOREST);
 		this.getOrCreateTagBuilder(BiomeTags.STRONGHOLD_BIASED_TO)
 			.add(BiomeKeys.PLAINS)

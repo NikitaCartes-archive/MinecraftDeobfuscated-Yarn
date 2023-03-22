@@ -77,6 +77,19 @@ public class Codecs {
 			return DataResult.error(var2::getMessage);
 		}
 	});
+	public static final Codec<Text> STRINGIFIED_TEXT = Codec.STRING.flatXmap(json -> {
+		try {
+			return DataResult.success(Text.Serializer.fromJson(json));
+		} catch (JsonParseException var2) {
+			return DataResult.error(var2::getMessage);
+		}
+	}, text -> {
+		try {
+			return DataResult.success(Text.Serializer.toJson(text));
+		} catch (IllegalArgumentException var2) {
+			return DataResult.error(var2::getMessage);
+		}
+	});
 	public static final Codec<Vector3f> VECTOR_3F = Codec.FLOAT
 		.listOf()
 		.comapFlatMap(

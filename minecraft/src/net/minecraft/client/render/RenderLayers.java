@@ -76,7 +76,6 @@ public class RenderLayers {
 		map.put(Blocks.DANDELION, renderLayer3);
 		map.put(Blocks.POPPY, renderLayer3);
 		map.put(Blocks.BLUE_ORCHID, renderLayer3);
-		map.put(Blocks.TORCHFLOWER, renderLayer3);
 		map.put(Blocks.ALLIUM, renderLayer3);
 		map.put(Blocks.AZURE_BLUET, renderLayer3);
 		map.put(Blocks.RED_TULIP, renderLayer3);
@@ -181,7 +180,10 @@ public class RenderLayers {
 		map.put(Blocks.END_ROD, renderLayer3);
 		map.put(Blocks.CHORUS_PLANT, renderLayer3);
 		map.put(Blocks.CHORUS_FLOWER, renderLayer3);
+		map.put(Blocks.TORCHFLOWER, renderLayer3);
 		map.put(Blocks.TORCHFLOWER_CROP, renderLayer3);
+		map.put(Blocks.PITCHER_PLANT, renderLayer3);
+		map.put(Blocks.PITCHER_CROP, renderLayer3);
 		map.put(Blocks.BEETROOTS, renderLayer3);
 		map.put(Blocks.KELP, renderLayer3);
 		map.put(Blocks.KELP_PLANT, renderLayer3);
@@ -261,6 +263,7 @@ public class RenderLayers {
 		map.put(Blocks.SMALL_DRIPLEAF, renderLayer3);
 		map.put(Blocks.HANGING_ROOTS, renderLayer3);
 		map.put(Blocks.SCULK_SENSOR, renderLayer3);
+		map.put(Blocks.CALIBRATED_SCULK_SENSOR, renderLayer3);
 		map.put(Blocks.SCULK_VEIN, renderLayer3);
 		map.put(Blocks.SCULK_SHRIEKER, renderLayer3);
 		map.put(Blocks.MANGROVE_PROPAGULE, renderLayer3);

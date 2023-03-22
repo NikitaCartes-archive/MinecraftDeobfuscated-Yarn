@@ -705,7 +705,20 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						)
 				)
 		);
-		this.register(EntityType.SNIFFER, LootTable.builder());
+		this.register(
+			EntityType.SNIFFER,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(
+							ItemEntry.builder(Items.MOSS_BLOCK)
+								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
+								.conditionally(KilledByPlayerLootCondition.builder())
+								.conditionally(RandomChanceWithLootingLootCondition.builder(0.1F, 0.02F))
+						)
+				)
+		);
 		this.register(
 			EntityType.SNOW_GOLEM,
 			LootTable.builder()
@@ -1113,6 +1126,12 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 					)
 					.conditionally(KilledByPlayerLootCondition.builder())
 					.conditionally(RandomChanceWithLootingLootCondition.builder(0.025F, 0.01F))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(4))
+					.with(ItemEntry.builder(Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 			);
 	}
 }

@@ -648,6 +648,7 @@ public class TradeOffers {
 				new TradeOffers.SellItemFactory(Items.JUNGLE_SAPLING, 5, 1, 8, 1),
 				new TradeOffers.SellItemFactory(Items.OAK_SAPLING, 5, 1, 8, 1),
 				new TradeOffers.SellItemFactory(Items.SPRUCE_SAPLING, 5, 1, 8, 1),
+				new TradeOffers.SellItemFactory(Items.CHERRY_SAPLING, 5, 1, 8, 1),
 				new TradeOffers.SellItemFactory(Items.MANGROVE_PROPAGULE, 5, 1, 8, 1),
 				new TradeOffers.SellItemFactory(Items.RED_DYE, 1, 3, 12, 1),
 				new TradeOffers.SellItemFactory(Items.WHITE_DYE, 1, 3, 12, 1),
@@ -691,9 +692,6 @@ public class TradeOffers {
 				new TradeOffers.SellItemFactory(Items.PODZOL, 3, 3, 6, 1)
 			}
 		)
-	);
-	public static final Int2ObjectMap<TradeOffers.Factory[]> ONE_TWENTY_WANDERING_TRADER_TRADES = copyToFastUtilMap(
-		ImmutableMap.of(1, new TradeOffers.Factory[]{new TradeOffers.SellItemFactory(Items.CHERRY_SAPLING, 5, 1, 8, 1)})
 	);
 
 	private static Int2ObjectMap<TradeOffers.Factory[]> copyToFastUtilMap(ImmutableMap<Integer, TradeOffers.Factory[]> map) {

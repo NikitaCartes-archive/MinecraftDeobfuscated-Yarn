@@ -6,19 +6,23 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.PaneBlock;
+import net.minecraft.loot.LootTables;
 import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryEntryLookup;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.structure.rule.AlwaysTruePosRuleTest;
 import net.minecraft.structure.rule.AlwaysTrueRuleTest;
 import net.minecraft.structure.rule.AxisAlignedLinearPosRuleTest;
 import net.minecraft.structure.rule.BlockMatchRuleTest;
 import net.minecraft.structure.rule.BlockStateMatchRuleTest;
 import net.minecraft.structure.rule.RandomBlockMatchRuleTest;
 import net.minecraft.structure.rule.TagMatchRuleTest;
+import net.minecraft.structure.rule.blockentity.AppendLootRuleBlockEntityModifier;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.intprovider.ConstantIntProvider;
 
 public class StructureProcessorLists {
 	private static final RegistryKey<StructureProcessorList> EMPTY = of("empty");
@@ -57,6 +61,7 @@ public class StructureProcessorLists {
 	public static final RegistryKey<StructureProcessorList> ANCIENT_CITY_START_DEGRADATION = of("ancient_city_start_degradation");
 	public static final RegistryKey<StructureProcessorList> ANCIENT_CITY_GENERIC_DEGRADATION = of("ancient_city_generic_degradation");
 	public static final RegistryKey<StructureProcessorList> ANCIENT_CITY_WALLS_DEGRADATION = of("ancient_city_walls_degradation");
+	public static final RegistryKey<StructureProcessorList> TRAIL_RUINS_SUSPICIOUS_SAND = of("trail_ruins_suspicious_sand");
 
 	private static RegistryKey<StructureProcessorList> of(String id) {
 		return RegistryKey.of(RegistryKeys.PROCESSOR_LIST, new Identifier(id));
@@ -705,6 +710,47 @@ public class StructureProcessorLists {
 					)
 				),
 				new ProtectedBlocksStructureProcessor(BlockTags.FEATURES_CANNOT_REPLACE)
+			)
+		);
+		register(
+			processorListRegisterable,
+			TRAIL_RUINS_SUSPICIOUS_SAND,
+			List.of(
+				new RuleStructureProcessor(
+					List.of(
+						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.SAND, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.GRAVEL.getDefaultState()),
+						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.SAND, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.DIRT.getDefaultState()),
+						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.SAND, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.COARSE_DIRT.getDefaultState())
+					)
+				),
+				new CappedStructureProcessor(
+					new RuleStructureProcessor(
+						List.of(
+							new StructureProcessorRule(
+								new TagMatchRuleTest(BlockTags.TRAIL_RUINS_REPLACEABLE),
+								AlwaysTrueRuleTest.INSTANCE,
+								AlwaysTruePosRuleTest.INSTANCE,
+								Blocks.SUSPICIOUS_SAND.getDefaultState(),
+								new AppendLootRuleBlockEntityModifier(LootTables.TRAIL_RUINS_ARCHAEOLOGY)
+							)
+						)
+					),
+					ConstantIntProvider.create(6)
+				),
+				new CappedStructureProcessor(
+					new RuleStructureProcessor(
+						List.of(
+							new StructureProcessorRule(
+								new TagMatchRuleTest(BlockTags.TRAIL_RUINS_REPLACEABLE),
+								AlwaysTrueRuleTest.INSTANCE,
+								AlwaysTruePosRuleTest.INSTANCE,
+								Blocks.SUSPICIOUS_GRAVEL.getDefaultState(),
+								new AppendLootRuleBlockEntityModifier(LootTables.TRAIL_RUINS_ARCHAEOLOGY)
+							)
+						)
+					),
+					ConstantIntProvider.create(2)
+				)
 			)
 		);
 	}

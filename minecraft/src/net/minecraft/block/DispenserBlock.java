@@ -80,7 +80,7 @@ public class DispenserBlock extends BlockWithEntity {
 		int i = dispenserBlockEntity.chooseNonEmptySlot(world.random);
 		if (i < 0) {
 			world.syncWorldEvent(WorldEvents.DISPENSER_FAILS, pos, 0);
-			world.emitGameEvent(null, GameEvent.DISPENSE_FAIL, pos);
+			world.emitGameEvent(GameEvent.BLOCK_ACTIVATE, pos, GameEvent.Emitter.of(dispenserBlockEntity.getCachedState()));
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getStack(i);
 			DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);

@@ -44,8 +44,7 @@ public class ScreenHandlerType<T extends ScreenHandler> implements ToggleableFea
 	public static final ScreenHandlerType<LoomScreenHandler> LOOM = register("loom", LoomScreenHandler::new);
 	public static final ScreenHandlerType<MerchantScreenHandler> MERCHANT = register("merchant", MerchantScreenHandler::new);
 	public static final ScreenHandlerType<ShulkerBoxScreenHandler> SHULKER_BOX = register("shulker_box", ShulkerBoxScreenHandler::new);
-	public static final ScreenHandlerType<LegacySmithingScreenHandler> LEGACY_SMITHING = register("legacy_smithing", LegacySmithingScreenHandler::new);
-	public static final ScreenHandlerType<SmithingScreenHandler> SMITHING = register("smithing", SmithingScreenHandler::new, FeatureFlags.UPDATE_1_20);
+	public static final ScreenHandlerType<SmithingScreenHandler> SMITHING = register("smithing", SmithingScreenHandler::new);
 	public static final ScreenHandlerType<SmokerScreenHandler> SMOKER = register("smoker", SmokerScreenHandler::new);
 	public static final ScreenHandlerType<CartographyTableScreenHandler> CARTOGRAPHY_TABLE = register("cartography_table", CartographyTableScreenHandler::new);
 	public static final ScreenHandlerType<StonecutterScreenHandler> STONECUTTER = register("stonecutter", StonecutterScreenHandler::new);

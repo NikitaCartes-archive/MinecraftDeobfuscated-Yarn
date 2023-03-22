@@ -1,25 +1,23 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import java.util.stream.Stream;
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.loot.OneTwentyLootTables;
+import net.minecraft.loot.LootTables;
 import net.minecraft.predicate.block.BlockStatePredicate;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
-import org.apache.commons.lang3.mutable.MutableInt;
 
 public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 	private static final BlockStatePredicate CAN_GENERATE = BlockStatePredicate.forBlock(Blocks.SAND);
+	private final BlockState sand = Blocks.SAND.getDefaultState();
 	private final BlockState slab = Blocks.SANDSTONE_SLAB.getDefaultState();
 	private final BlockState wall = Blocks.SANDSTONE.getDefaultState();
 	private final BlockState fluidInside = Blocks.WATER.getDefaultState();
@@ -49,16 +47,12 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 				}
 			}
 
-			for (int i = -1; i <= 0; i++) {
+			for (int i = -2; i <= 0; i++) {
 				for (int jx = -2; jx <= 2; jx++) {
 					for (int k = -2; k <= 2; k++) {
 						structureWorldAccess.setBlockState(blockPos.add(jx, i, k), this.wall, Block.NOTIFY_LISTENERS);
 					}
 				}
-			}
-
-			if (structureWorldAccess.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
-				generateSuspiciousSand(structureWorldAccess, blockPos, context.getRandom());
 			}
 
 			structureWorldAccess.setBlockState(blockPos, this.fluidInside, Block.NOTIFY_LISTENERS);
@@ -67,10 +61,17 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 				structureWorldAccess.setBlockState(blockPos.offset(direction), this.fluidInside, Block.NOTIFY_LISTENERS);
 			}
 
-			for (int i = -2; i <= 2; i++) {
-				for (int jx = -2; jx <= 2; jx++) {
-					if (i == -2 || i == 2 || jx == -2 || jx == 2) {
-						structureWorldAccess.setBlockState(blockPos.add(i, 1, jx), this.wall, Block.NOTIFY_LISTENERS);
+			BlockPos blockPos2 = blockPos.down();
+			structureWorldAccess.setBlockState(blockPos2, this.sand, Block.NOTIFY_LISTENERS);
+
+			for (Direction direction2 : Direction.Type.HORIZONTAL) {
+				structureWorldAccess.setBlockState(blockPos2.offset(direction2), this.sand, Block.NOTIFY_LISTENERS);
+			}
+
+			for (int jx = -2; jx <= 2; jx++) {
+				for (int k = -2; k <= 2; k++) {
+					if (jx == -2 || jx == 2 || k == -2 || k == 2) {
+						structureWorldAccess.setBlockState(blockPos.add(jx, 1, k), this.wall, Block.NOTIFY_LISTENERS);
 					}
 				}
 			}
@@ -80,48 +81,34 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 			structureWorldAccess.setBlockState(blockPos.add(0, 1, 2), this.slab, Block.NOTIFY_LISTENERS);
 			structureWorldAccess.setBlockState(blockPos.add(0, 1, -2), this.slab, Block.NOTIFY_LISTENERS);
 
-			for (int i = -1; i <= 1; i++) {
-				for (int jxx = -1; jxx <= 1; jxx++) {
-					if (i == 0 && jxx == 0) {
-						structureWorldAccess.setBlockState(blockPos.add(i, 4, jxx), this.wall, Block.NOTIFY_LISTENERS);
+			for (int jx = -1; jx <= 1; jx++) {
+				for (int kx = -1; kx <= 1; kx++) {
+					if (jx == 0 && kx == 0) {
+						structureWorldAccess.setBlockState(blockPos.add(jx, 4, kx), this.wall, Block.NOTIFY_LISTENERS);
 					} else {
-						structureWorldAccess.setBlockState(blockPos.add(i, 4, jxx), this.slab, Block.NOTIFY_LISTENERS);
+						structureWorldAccess.setBlockState(blockPos.add(jx, 4, kx), this.slab, Block.NOTIFY_LISTENERS);
 					}
 				}
 			}
 
-			for (int i = 1; i <= 3; i++) {
-				structureWorldAccess.setBlockState(blockPos.add(-1, i, -1), this.wall, Block.NOTIFY_LISTENERS);
-				structureWorldAccess.setBlockState(blockPos.add(-1, i, 1), this.wall, Block.NOTIFY_LISTENERS);
-				structureWorldAccess.setBlockState(blockPos.add(1, i, -1), this.wall, Block.NOTIFY_LISTENERS);
-				structureWorldAccess.setBlockState(blockPos.add(1, i, 1), this.wall, Block.NOTIFY_LISTENERS);
+			for (int jx = 1; jx <= 3; jx++) {
+				structureWorldAccess.setBlockState(blockPos.add(-1, jx, -1), this.wall, Block.NOTIFY_LISTENERS);
+				structureWorldAccess.setBlockState(blockPos.add(-1, jx, 1), this.wall, Block.NOTIFY_LISTENERS);
+				structureWorldAccess.setBlockState(blockPos.add(1, jx, -1), this.wall, Block.NOTIFY_LISTENERS);
+				structureWorldAccess.setBlockState(blockPos.add(1, jx, 1), this.wall, Block.NOTIFY_LISTENERS);
 			}
 
+			List<BlockPos> list = List.of(blockPos, blockPos.east(), blockPos.south(), blockPos.west(), blockPos.north());
+			Random random = context.getRandom();
+			generateSuspiciousSand(structureWorldAccess, Util.<BlockPos>getRandom(list, random).down(1));
+			generateSuspiciousSand(structureWorldAccess, Util.<BlockPos>getRandom(list, random).down(2));
 			return true;
 		}
 	}
 
-	private static void generateSuspiciousSand(StructureWorldAccess world, BlockPos pos, Random random) {
-		BlockPos blockPos = pos.add(0, -1, 0);
-		ObjectArrayList<BlockPos> objectArrayList = Util.make(new ObjectArrayList<>(), positions -> {
-			positions.add(blockPos.east());
-			positions.add(blockPos.south());
-			positions.add(blockPos.west());
-			positions.add(blockPos.north());
-		});
-		Util.shuffle(objectArrayList, random);
-		MutableInt mutableInt = new MutableInt(random.nextBetweenExclusive(2, 4));
-		Stream.concat(Stream.of(blockPos), objectArrayList.stream())
-			.forEach(
-				posx -> {
-					if (mutableInt.getAndDecrement() > 0) {
-						world.setBlockState(posx, Blocks.SUSPICIOUS_SAND.getDefaultState(), Block.NOTIFY_ALL);
-						world.getBlockEntity(posx, BlockEntityType.SUSPICIOUS_SAND)
-							.ifPresent(blockEntity -> blockEntity.setLootTable(OneTwentyLootTables.DESERT_WELL_ARCHAEOLOGY, posx.asLong()));
-					} else {
-						world.setBlockState(posx, Blocks.SAND.getDefaultState(), Block.NOTIFY_ALL);
-					}
-				}
-			);
+	private static void generateSuspiciousSand(StructureWorldAccess world, BlockPos pos) {
+		world.setBlockState(pos, Blocks.SUSPICIOUS_SAND.getDefaultState(), Block.NOTIFY_ALL);
+		world.getBlockEntity(pos, BlockEntityType.BRUSHABLE_BLOCK)
+			.ifPresent(blockEntity -> blockEntity.setLootTable(LootTables.DESERT_WELL_ARCHAEOLOGY, pos.asLong()));
 	}
 }

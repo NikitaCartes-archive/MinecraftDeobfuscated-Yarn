@@ -8,9 +8,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SignBlock;
-import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.WoodType;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.block.entity.SignText;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.model.Model;
@@ -32,11 +32,10 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.text.OrderedText;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import net.minecraft.util.math.RotationPropertyHelper;
 import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
@@ -44,6 +43,7 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 	private static final String STICK = "stick";
 	private static final int GLOWING_BLACK_COLOR = -988212;
 	private static final int RENDER_DISTANCE = MathHelper.square(16);
+	private static final float SCALE = 0.6666667F;
 	private final Map<WoodType, SignBlockEntityRenderer.SignModel> typeToModel;
 	private final TextRenderer textRenderer;
 
@@ -59,62 +59,107 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 
 	public void render(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		BlockState blockState = signBlockEntity.getCachedState();
-		matrixStack.push();
-		float g = 0.6666667F;
-		WoodType woodType = AbstractSignBlock.getWoodType(blockState.getBlock());
+		AbstractSignBlock abstractSignBlock = (AbstractSignBlock)blockState.getBlock();
+		WoodType woodType = AbstractSignBlock.getWoodType(abstractSignBlock);
 		SignBlockEntityRenderer.SignModel signModel = (SignBlockEntityRenderer.SignModel)this.typeToModel.get(woodType);
-		if (blockState.getBlock() instanceof SignBlock) {
-			matrixStack.translate(0.5F, 0.5F, 0.5F);
-			float h = -RotationPropertyHelper.toDegrees((Integer)blockState.get(SignBlock.ROTATION));
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(h));
-			signModel.stick.visible = true;
-		} else {
-			matrixStack.translate(0.5F, 0.5F, 0.5F);
-			float h = -((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
-			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(h));
-			matrixStack.translate(0.0F, -0.3125F, -0.4375F);
-			signModel.stick.visible = false;
-		}
-
-		this.renderSign(matrixStack, vertexConsumerProvider, i, j, 0.6666667F, woodType, signModel);
-		this.renderText(signBlockEntity, matrixStack, vertexConsumerProvider, i, 0.6666667F);
+		signModel.stick.visible = blockState.getBlock() instanceof SignBlock;
+		this.render(signBlockEntity, matrixStack, vertexConsumerProvider, i, j, blockState, abstractSignBlock, woodType, signModel, 0.6666667F);
 	}
 
-	void renderSign(MatrixStack matrices, VertexConsumerProvider verticesProvider, int light, int overlay, float scale, WoodType type, Model model) {
+	void render(
+		SignBlockEntity entity,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		int overlay,
+		BlockState state,
+		AbstractSignBlock block,
+		WoodType woodType,
+		Model model,
+		float scale
+	) {
+		matrices.push();
+		this.setAngles(matrices, -block.getRotationDegrees(state), state);
+		this.renderSign(matrices, vertexConsumers, light, overlay, scale, woodType, model);
+		this.renderText(
+			entity.getPos(),
+			entity.getFrontText(),
+			matrices,
+			vertexConsumers,
+			light,
+			scale,
+			this.getTextOffset(scale),
+			entity.getTextLineHeight(),
+			entity.getMaxTextWidth(),
+			true
+		);
+		this.renderText(
+			entity.getPos(),
+			entity.getBackText(),
+			matrices,
+			vertexConsumers,
+			light,
+			scale,
+			this.getTextOffset(scale),
+			entity.getTextLineHeight(),
+			entity.getMaxTextWidth(),
+			false
+		);
+		matrices.pop();
+	}
+
+	void setAngles(MatrixStack matrices, float rotationDegrees, BlockState state) {
+		matrices.translate(0.5F, 0.5F, 0.5F);
+		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationDegrees));
+		if (!(state.getBlock() instanceof SignBlock)) {
+			matrices.translate(0.0F, -0.3125F, -0.4375F);
+		}
+	}
+
+	void renderSign(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay, float scale, WoodType type, Model model) {
 		matrices.push();
 		matrices.scale(scale, -scale, -scale);
 		SpriteIdentifier spriteIdentifier = this.getTextureId(type);
-		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(verticesProvider, model::getLayer);
+		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, model::getLayer);
 		this.renderSignModel(matrices, light, overlay, model, vertexConsumer);
 		matrices.pop();
 	}
 
-	void renderSignModel(MatrixStack matrices, int light, int overlay, Model model, VertexConsumer vertices) {
+	void renderSignModel(MatrixStack matrices, int light, int overlay, Model model, VertexConsumer vertexConsumers) {
 		SignBlockEntityRenderer.SignModel signModel = (SignBlockEntityRenderer.SignModel)model;
-		signModel.root.render(matrices, vertices, light, overlay);
+		signModel.root.render(matrices, vertexConsumers, light, overlay);
 	}
 
 	SpriteIdentifier getTextureId(WoodType signType) {
 		return TexturedRenderLayers.getSignTextureId(signType);
 	}
 
-	void renderText(SignBlockEntity blockEntity, MatrixStack matrices, VertexConsumerProvider verticesProvider, int light, float scale) {
-		float f = 0.015625F * scale;
-		Vec3d vec3d = this.getTextOffset(scale);
-		matrices.translate(vec3d.x, vec3d.y, vec3d.z);
-		matrices.scale(f, -f, f);
-		int i = getColor(blockEntity);
-		int j = 4 * blockEntity.getTextLineHeight() / 2;
-		OrderedText[] orderedTexts = blockEntity.updateSign(MinecraftClient.getInstance().shouldFilterText(), text -> {
-			List<OrderedText> list = this.textRenderer.wrapLines(text, blockEntity.getMaxTextWidth());
+	void renderText(
+		BlockPos pos,
+		SignText signText,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		float scale,
+		Vec3d textOffset,
+		int lineHeight,
+		int lineWidth,
+		boolean front
+	) {
+		matrices.push();
+		this.setTextAngles(scale, matrices, front, textOffset);
+		int i = getColor(signText);
+		int j = 4 * lineHeight / 2;
+		OrderedText[] orderedTexts = signText.getOrderedMessages(MinecraftClient.getInstance().shouldFilterText(), text -> {
+			List<OrderedText> list = this.textRenderer.wrapLines(text, lineWidth);
 			return list.isEmpty() ? OrderedText.EMPTY : (OrderedText)list.get(0);
 		});
 		int k;
 		boolean bl;
 		int l;
-		if (blockEntity.isGlowingText()) {
-			k = blockEntity.getTextColor().getSignColor();
-			bl = shouldRender(blockEntity, k);
+		if (signText.isGlowing()) {
+			k = signText.getColor().getSignColor();
+			bl = shouldRender(pos, k);
 			l = 15728880;
 		} else {
 			k = i;
@@ -124,21 +169,20 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 
 		for (int m = 0; m < 4; m++) {
 			OrderedText orderedText = orderedTexts[m];
-			float g = (float)(-this.textRenderer.getWidth(orderedText) / 2);
+			float f = (float)(-this.textRenderer.getWidth(orderedText) / 2);
 			if (bl) {
-				this.textRenderer
-					.drawWithOutline(orderedText, g, (float)(m * blockEntity.getTextLineHeight() - j), k, i, matrices.peek().getPositionMatrix(), verticesProvider, l);
+				this.textRenderer.drawWithOutline(orderedText, f, (float)(m * lineHeight - j), k, i, matrices.peek().getPositionMatrix(), vertexConsumers, l);
 			} else {
 				this.textRenderer
 					.draw(
 						orderedText,
-						g,
-						(float)(m * blockEntity.getTextLineHeight() - j),
+						f,
+						(float)(m * lineHeight - j),
 						k,
 						false,
 						matrices.peek().getPositionMatrix(),
-						verticesProvider,
-						TextRenderer.TextLayerType.NORMAL,
+						vertexConsumers,
+						TextRenderer.TextLayerType.POLYGON_OFFSET,
 						0,
 						l
 					);
@@ -148,11 +192,21 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		matrices.pop();
 	}
 
+	private void setTextAngles(float scale, MatrixStack matrices, boolean front, Vec3d textOffset) {
+		if (!front) {
+			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
+		}
+
+		float f = 0.015625F * scale;
+		matrices.translate(textOffset.x, textOffset.y, textOffset.z);
+		matrices.scale(f, -f, f);
+	}
+
 	Vec3d getTextOffset(float scale) {
 		return new Vec3d(0.0, (double)(0.5F * scale), (double)(0.07F * scale));
 	}
 
-	static boolean shouldRender(SignBlockEntity sign, int signColor) {
+	static boolean shouldRender(BlockPos pos, int signColor) {
 		if (signColor == DyeColor.BLACK.getSignColor()) {
 			return true;
 		} else {
@@ -162,14 +216,14 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 				return true;
 			} else {
 				Entity entity = minecraftClient.getCameraEntity();
-				return entity != null && entity.squaredDistanceTo(Vec3d.ofCenter(sign.getPos())) < (double)RENDER_DISTANCE;
+				return entity != null && entity.squaredDistanceTo(Vec3d.ofCenter(pos)) < (double)RENDER_DISTANCE;
 			}
 		}
 	}
 
-	static int getColor(SignBlockEntity sign) {
-		int i = sign.getTextColor().getSignColor();
-		if (i == DyeColor.BLACK.getSignColor() && sign.isGlowingText()) {
+	static int getColor(SignText sign) {
+		int i = sign.getColor().getSignColor();
+		if (i == DyeColor.BLACK.getSignColor() && sign.isGlowing()) {
 			return -988212;
 		} else {
 			double d = 0.4;

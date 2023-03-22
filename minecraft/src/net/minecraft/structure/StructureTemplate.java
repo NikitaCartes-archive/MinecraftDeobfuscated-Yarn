@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -395,7 +396,8 @@ public class StructureTemplate {
 	public static List<StructureTemplate.StructureBlockInfo> process(
 		WorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<StructureTemplate.StructureBlockInfo> infos
 	) {
-		List<StructureTemplate.StructureBlockInfo> list = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
+		List<StructureTemplate.StructureBlockInfo> list = new ArrayList();
+		List<StructureTemplate.StructureBlockInfo> list2 = new ArrayList();
 
 		for (StructureTemplate.StructureBlockInfo structureBlockInfo : infos) {
 			BlockPos blockPos = transform(placementData, structureBlockInfo.pos).add(pos);
@@ -409,15 +411,16 @@ public class StructureTemplate {
 			}
 
 			if (structureBlockInfo2 != null) {
-				list.add(structureBlockInfo2);
+				list2.add(structureBlockInfo2);
+				list.add(structureBlockInfo);
 			}
 		}
 
 		for (StructureProcessor structureProcessor : placementData.getProcessors()) {
-			structureProcessor.reprocess(world, pos, pivot, placementData, list);
+			list2 = structureProcessor.reprocess(world, pos, pivot, list, list2, placementData);
 		}
 
-		return list;
+		return list2;
 	}
 
 	private void spawnEntities(
@@ -780,16 +783,7 @@ public class StructureTemplate {
 		}
 	}
 
-	public static class StructureBlockInfo {
-		public final BlockPos pos;
-		public final BlockState state;
-		public final NbtCompound nbt;
-
-		public StructureBlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound nbt) {
-			this.pos = pos;
-			this.state = state;
-			this.nbt = nbt;
-		}
+	public static record StructureBlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound nbt) {
 
 		public String toString() {
 			return String.format(Locale.ROOT, "<StructureBlockInfo | %s | %s | %s>", this.pos, this.state, this.nbt);

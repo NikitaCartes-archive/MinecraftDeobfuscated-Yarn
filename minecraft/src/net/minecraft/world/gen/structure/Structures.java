@@ -21,6 +21,7 @@ import net.minecraft.structure.RuinedPortalStructurePiece;
 import net.minecraft.structure.SavannaVillageData;
 import net.minecraft.structure.SnowyVillageData;
 import net.minecraft.structure.TaigaVillageData;
+import net.minecraft.structure.TrailRuinsGenerator;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.Pool;
@@ -336,6 +337,22 @@ public class Structures {
 				false,
 				Optional.empty(),
 				116
+			)
+		);
+		structureRegisterable.register(
+			StructureKeys.TRAIL_RUINS,
+			new JigsawStructure(
+				createConfig(
+					registryEntryLookup.getOrThrow(BiomeTags.TRAIL_RUINS_HAS_STRUCTURE),
+					Map.of(),
+					GenerationStep.Feature.UNDERGROUND_STRUCTURES,
+					StructureTerrainAdaptation.BURY
+				),
+				registryEntryLookup2.getOrThrow(TrailRuinsGenerator.TOWER),
+				7,
+				ConstantHeightProvider.create(YOffset.fixed(-15)),
+				false,
+				Heightmap.Type.WORLD_SURFACE_WG
 			)
 		);
 	}

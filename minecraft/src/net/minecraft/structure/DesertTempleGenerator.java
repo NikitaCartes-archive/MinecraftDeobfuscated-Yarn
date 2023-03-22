@@ -7,7 +7,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -265,9 +264,7 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 				}
 			}
 
-			if (world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
-				this.generateBasement(world, chunkBox);
-			}
+			this.generateBasement(world, chunkBox);
 		}
 	}
 

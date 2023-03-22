@@ -71,7 +71,6 @@ import org.slf4j.Logger;
 
 public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final int field_38405 = 16;
 	private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
 	private static final int field_39461 = 5;
 	private static final float field_39462 = 55.0F;
@@ -121,7 +120,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		this.setCanPickUpLoot(this.canPickUpLoot());
 		PositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
 		this.listenerCallback = new AllayEntity.VibrationListenerCallback();
-		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(positionSource, 16, this.listenerCallback));
+		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(positionSource, this.listenerCallback));
 		this.jukeboxEventHandler = new EntityGameEventHandler<>(new AllayEntity.JukeboxEventListener(positionSource, GameEvent.JUKEBOX_PLAY.getRange()));
 	}
 
@@ -609,6 +608,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	}
 
 	class VibrationListenerCallback implements VibrationListener.Callback {
+		private static final int RANGE = 16;
+
 		@Override
 		public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
 			if (AllayEntity.this.isAiDisabled()) {
@@ -631,6 +632,11 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 			if (event == GameEvent.NOTE_BLOCK_PLAY) {
 				AllayBrain.rememberNoteBlock(AllayEntity.this, new BlockPos(pos));
 			}
+		}
+
+		@Override
+		public int getRange() {
+			return 16;
 		}
 
 		@Override

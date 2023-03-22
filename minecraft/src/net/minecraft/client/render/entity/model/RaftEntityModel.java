@@ -38,7 +38,7 @@ public class RaftEntityModel extends CompositeEntityModel<BoatEntity> {
 		modelPartData.addChild(
 			"bottom",
 			ModelPartBuilder.create().uv(0, 0).cuboid(-14.0F, -11.0F, -4.0F, 28.0F, 20.0F, 4.0F).uv(0, 0).cuboid(-14.0F, -9.0F, -8.0F, 28.0F, 16.0F, 4.0F),
-			ModelTransform.of(0.0F, -3.0F, 1.0F, 1.5708F, 0.0F, 0.0F)
+			ModelTransform.of(0.0F, -2.0F, 1.0F, 1.5708F, 0.0F, 0.0F)
 		);
 		int i = 20;
 		int j = 7;
@@ -47,12 +47,12 @@ public class RaftEntityModel extends CompositeEntityModel<BoatEntity> {
 		modelPartData.addChild(
 			"left_paddle",
 			ModelPartBuilder.create().uv(0, 24).cuboid(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F).cuboid(-1.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F),
-			ModelTransform.of(3.0F, -5.0F, 9.0F, 0.0F, 0.0F, (float) (Math.PI / 16))
+			ModelTransform.of(3.0F, -4.0F, 9.0F, 0.0F, 0.0F, (float) (Math.PI / 16))
 		);
 		modelPartData.addChild(
 			"right_paddle",
 			ModelPartBuilder.create().uv(40, 24).cuboid(-1.0F, 0.0F, -5.0F, 2.0F, 2.0F, 18.0F).cuboid(0.001F, -3.0F, 8.0F, 1.0F, 6.0F, 7.0F),
-			ModelTransform.of(3.0F, -5.0F, -9.0F, 0.0F, (float) Math.PI, (float) (Math.PI / 16))
+			ModelTransform.of(3.0F, -4.0F, -9.0F, 0.0F, (float) Math.PI, (float) (Math.PI / 16))
 		);
 	}
 

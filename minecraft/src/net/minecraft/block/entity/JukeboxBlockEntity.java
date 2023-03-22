@@ -24,6 +24,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class JukeboxBlockEntity extends BlockEntity implements Clearable, SingleStackInventory {
@@ -78,7 +79,7 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 		this.recordStartTick = this.tickCount;
 		this.isPlaying = true;
 		this.world.updateNeighborsAlways(this.getPos(), this.getCachedState().getBlock());
-		this.world.syncWorldEvent(null, 1010, this.getPos(), Item.getRawId(this.getStack().getItem()));
+		this.world.syncWorldEvent(null, WorldEvents.JUKEBOX_STARTS_PLAYING, this.getPos(), Item.getRawId(this.getStack().getItem()));
 		this.markDirty();
 	}
 
@@ -86,7 +87,7 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 		this.isPlaying = false;
 		this.world.emitGameEvent(GameEvent.JUKEBOX_STOP_PLAY, this.getPos(), GameEvent.Emitter.of(this.getCachedState()));
 		this.world.updateNeighborsAlways(this.getPos(), this.getCachedState().getBlock());
-		this.world.syncWorldEvent(1011, this.getPos(), 0);
+		this.world.syncWorldEvent(WorldEvents.JUKEBOX_STOPS_PLAYING, this.getPos(), 0);
 		this.markDirty();
 	}
 

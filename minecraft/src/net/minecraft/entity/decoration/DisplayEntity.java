@@ -2,12 +2,9 @@ package net.minecraft.entity.decoration;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
@@ -47,7 +44,6 @@ import org.slf4j.Logger;
 
 public abstract class DisplayEntity extends Entity {
 	static final Logger field_42397 = LogUtils.getLogger();
-	private static final float field_43150 = Float.POSITIVE_INFINITY;
 	public static final int field_42384 = -1;
 	private static final TrackedData<Integer> START_INTERPOLATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> INTERPOLATION_DURATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -63,6 +59,16 @@ public abstract class DisplayEntity extends Entity {
 	private static final TrackedData<Float> WIDTH = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Float> HEIGHT = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.FLOAT);
 	private static final TrackedData<Integer> GLOW_COLOR_OVERRIDE = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final IntSet RENDERING_DATA_IDS = IntSet.of(
+		TRANSLATION.getId(),
+		SCALE.getId(),
+		LEFT_ROTATION.getId(),
+		RIGHT_ROTATION.getId(),
+		BILLBOARD.getId(),
+		BRIGHTNESS.getId(),
+		SHADOW_RADIUS.getId(),
+		SHADOW_STRENGTH.getId()
+	);
 	private static final float field_42376 = 0.0F;
 	private static final float field_42377 = 1.0F;
 	private static final int field_42378 = -1;
@@ -77,54 +83,22 @@ public abstract class DisplayEntity extends Entity {
 	public static final String WIDTH_NBT_KEY = "width";
 	public static final String HEIGHT_NBT_KEY = "height";
 	public static final String GLOW_COLOR_OVERRIDE_NBT_KEY = "glow_color_override";
-	private final DisplayEntity.AbstractInterpolator<AffineTransformation> transformationInterpolator = new DisplayEntity.AbstractInterpolator<AffineTransformation>(
-		AffineTransformation.identity()
-	) {
-		protected AffineTransformation interpolate(float f, AffineTransformation affineTransformation, AffineTransformation affineTransformation2) {
-			return affineTransformation.interpolate(affineTransformation2, f);
-		}
-	};
-	private final DisplayEntity.FloatLerper shadowRadiusLerper = new DisplayEntity.FloatLerper(0.0F);
-	private final DisplayEntity.FloatLerper shadowStrengthLerper = new DisplayEntity.FloatLerper(1.0F);
 	private final Quaternionf fixedRotation = new Quaternionf();
-	protected final DisplayEntity.Interpolators interpolators = new DisplayEntity.Interpolators();
-	private long interpolationStart;
+	private long interpolationStart = -2147483648L;
+	private int interpolationDuration;
 	private float lerpProgress;
 	private Box visibilityBoundingBox;
-	private boolean startInterpolationOnNextTick;
-	private boolean startInterpolationChanged;
+	protected boolean renderingDataSet;
+	private boolean startInterpolationSet;
+	private boolean interpolationDurationSet;
+	@Nullable
+	private DisplayEntity.RenderState renderState;
 
 	public DisplayEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
 		this.noClip = true;
 		this.ignoreCameraFrustum = true;
 		this.visibilityBoundingBox = this.getBoundingBox();
-		this.interpolators
-			.addInterpolationUpdater(
-				Set.of(TRANSLATION, LEFT_ROTATION, SCALE, RIGHT_ROTATION),
-				(value, dataTracker) -> this.transformationInterpolator.setValue(value, getTransformation(dataTracker))
-			);
-		this.interpolators.addInterpolator(SHADOW_STRENGTH, this.shadowStrengthLerper);
-		this.interpolators.addInterpolator(SHADOW_RADIUS, this.shadowRadiusLerper);
-	}
-
-	@Override
-	public void onDataTrackerUpdate(List<DataTracker.SerializedEntry<?>> dataEntries) {
-		super.onDataTrackerUpdate(dataEntries);
-		boolean bl = false;
-
-		for (DataTracker.SerializedEntry<?> serializedEntry : dataEntries) {
-			bl |= this.interpolators.hasInterpolator(serializedEntry.id());
-		}
-
-		if (bl) {
-			boolean bl2 = this.age <= 0;
-			if (bl2) {
-				this.interpolators.interpolate(Float.POSITIVE_INFINITY, this.dataTracker);
-			} else {
-				this.startInterpolationOnNextTick = true;
-			}
-		}
 	}
 
 	@Override
@@ -135,7 +109,15 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		if (START_INTERPOLATION.equals(data)) {
-			this.startInterpolationChanged = true;
+			this.startInterpolationSet = true;
+		}
+
+		if (INTERPOLATION_DURATION.equals(data)) {
+			this.interpolationDurationSet = true;
+		}
+
+		if (RENDERING_DATA_IDS.contains(data.getId())) {
+			this.renderingDataSet = true;
 		}
 	}
 
@@ -155,18 +137,32 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		if (this.world.isClient) {
-			if (this.startInterpolationChanged) {
-				this.startInterpolationChanged = false;
+			if (this.startInterpolationSet) {
+				this.startInterpolationSet = false;
 				int i = this.getStartInterpolation();
 				this.interpolationStart = (long)(this.age + i);
 			}
 
-			if (this.startInterpolationOnNextTick) {
-				this.startInterpolationOnNextTick = false;
-				this.interpolators.interpolate(this.lerpProgress, this.dataTracker);
+			if (this.interpolationDurationSet) {
+				this.interpolationDurationSet = false;
+				this.interpolationDuration = this.getInterpolationDuration();
+			}
+
+			if (this.renderingDataSet) {
+				this.renderingDataSet = false;
+				boolean bl = this.interpolationDuration != 0;
+				if (bl && this.renderState != null) {
+					this.renderState = this.getLerpedRenderState(this.renderState, this.lerpProgress);
+				} else {
+					this.renderState = this.copyRenderState();
+				}
+
+				this.refreshData(bl, this.lerpProgress);
 			}
 		}
 	}
+
+	protected abstract void refreshData(boolean shouldLerp, float lerpProgress);
 
 	@Override
 	protected void initDataTracker() {
@@ -225,7 +221,7 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		if (nbt.contains("width", NbtElement.NUMBER_TYPE)) {
-			this.setDIsplayWidth(nbt.getFloat("width"));
+			this.setDisplayWidth(nbt.getFloat("width"));
 		}
 
 		if (nbt.contains("height", NbtElement.NUMBER_TYPE)) {
@@ -292,8 +288,9 @@ public abstract class DisplayEntity extends Entity {
 		return this.fixedRotation;
 	}
 
-	public AffineTransformation lerpTransformation(float delta) {
-		return this.transformationInterpolator.interpolate(delta);
+	@Nullable
+	public DisplayEntity.RenderState getRenderState() {
+		return this.renderState;
 	}
 
 	private void setInterpolationDuration(int interpolationDuration) {
@@ -316,7 +313,7 @@ public abstract class DisplayEntity extends Entity {
 		this.dataTracker.set(BILLBOARD, billboardMode.getIndex());
 	}
 
-	public DisplayEntity.BillboardMode getBillboardMode() {
+	private DisplayEntity.BillboardMode getBillboardMode() {
 		return (DisplayEntity.BillboardMode)DisplayEntity.BillboardMode.FROM_INDEX.apply(this.dataTracker.get(BILLBOARD));
 	}
 
@@ -330,7 +327,7 @@ public abstract class DisplayEntity extends Entity {
 		return i != -1 ? Brightness.unpack(i) : null;
 	}
 
-	public int getBrightness() {
+	private int getBrightness() {
 		return this.dataTracker.get(BRIGHTNESS);
 	}
 
@@ -350,10 +347,6 @@ public abstract class DisplayEntity extends Entity {
 		return this.dataTracker.get(SHADOW_RADIUS);
 	}
 
-	public float lerpShadowRadius(float delta) {
-		return this.shadowRadiusLerper.lerp(delta);
-	}
-
 	private void setShadowStrength(float shadowStrength) {
 		this.dataTracker.set(SHADOW_STRENGTH, shadowStrength);
 	}
@@ -362,11 +355,7 @@ public abstract class DisplayEntity extends Entity {
 		return this.dataTracker.get(SHADOW_STRENGTH);
 	}
 
-	public float lerpShadowStrength(float delta) {
-		return this.shadowStrengthLerper.lerp(delta);
-	}
-
-	private void setDIsplayWidth(float width) {
+	private void setDisplayWidth(float width) {
 		this.dataTracker.set(WIDTH, width);
 	}
 
@@ -387,7 +376,7 @@ public abstract class DisplayEntity extends Entity {
 	}
 
 	public float getLerpProgress(float delta) {
-		int i = this.getInterpolationDuration();
+		int i = this.interpolationDuration;
 		if (i <= 0) {
 			return 1.0F;
 		} else {
@@ -451,31 +440,51 @@ public abstract class DisplayEntity extends Entity {
 		return i != -1 ? i : super.getTeamColorValue();
 	}
 
-	abstract static class AbstractInterpolator<T> extends DisplayEntity.Interpolator<T> {
-		protected AbstractInterpolator(T object) {
-			super(object);
+	private DisplayEntity.RenderState copyRenderState() {
+		return new DisplayEntity.RenderState(
+			DisplayEntity.AbstractInterpolator.constant(getTransformation(this.dataTracker)),
+			this.getBillboardMode(),
+			this.getBrightness(),
+			DisplayEntity.FloatLerper.constant(this.getShadowRadius()),
+			DisplayEntity.FloatLerper.constant(this.getShadowStrength()),
+			this.getGlowColorOverride()
+		);
+	}
+
+	private DisplayEntity.RenderState getLerpedRenderState(DisplayEntity.RenderState state, float lerpProgress) {
+		AffineTransformation affineTransformation = state.transformation.interpolate(lerpProgress);
+		float f = state.shadowRadius.lerp(lerpProgress);
+		float g = state.shadowStrength.lerp(lerpProgress);
+		return new DisplayEntity.RenderState(
+			new DisplayEntity.AffineTransformationInterpolator(affineTransformation, getTransformation(this.dataTracker)),
+			this.getBillboardMode(),
+			this.getBrightness(),
+			new DisplayEntity.FloatLerperImpl(f, this.getShadowRadius()),
+			new DisplayEntity.FloatLerperImpl(g, this.getShadowStrength()),
+			this.getGlowColorOverride()
+		);
+	}
+
+	@FunctionalInterface
+	public interface AbstractInterpolator<T> {
+		static <T> DisplayEntity.AbstractInterpolator<T> constant(T value) {
+			return delta -> value;
 		}
 
-		protected abstract T interpolate(float delta, T start, T end);
+		T interpolate(float delta);
+	}
 
-		public T interpolate(float delta) {
-			return !((double)delta >= 1.0) && this.prevValue != null ? this.interpolate(delta, this.prevValue, this.value) : this.value;
-		}
-
-		@Override
-		protected T apply(float value) {
-			return this.interpolate(value);
+	static record AffineTransformationInterpolator(AffineTransformation previous, AffineTransformation current)
+		implements DisplayEntity.AbstractInterpolator<AffineTransformation> {
+		public AffineTransformation interpolate(float f) {
+			return (double)f >= 1.0 ? this.current : this.previous.interpolate(this.current, f);
 		}
 	}
 
-	static class ArgbLerper extends DisplayEntity.IntLerper {
-		protected ArgbLerper(int i) {
-			super(i);
-		}
-
+	static record ArgbLerper(int previous, int current) implements DisplayEntity.IntLerper {
 		@Override
-		protected int lerp(float delta, int start, int end) {
-			return ColorHelper.Argb.lerp(delta, start, end);
+		public int lerp(float delta) {
+			return ColorHelper.Argb.lerp(delta, this.previous, this.current);
 		}
 	}
 
@@ -512,6 +521,8 @@ public abstract class DisplayEntity extends Entity {
 		private static final TrackedData<BlockState> BLOCK_STATE = DataTracker.registerData(
 			DisplayEntity.BlockDisplayEntity.class, TrackedDataHandlerRegistry.BLOCK_STATE
 		);
+		@Nullable
+		private DisplayEntity.BlockDisplayEntity.Data data;
 
 		public BlockDisplayEntity(EntityType<?> entityType, World world) {
 			super(entityType, world);
@@ -523,11 +534,19 @@ public abstract class DisplayEntity extends Entity {
 			this.dataTracker.startTracking(BLOCK_STATE, Blocks.AIR.getDefaultState());
 		}
 
-		public BlockState getBlockState() {
+		@Override
+		public void onTrackedDataSet(TrackedData<?> data) {
+			super.onTrackedDataSet(data);
+			if (data.equals(BLOCK_STATE)) {
+				this.renderingDataSet = true;
+			}
+		}
+
+		private BlockState getBlockState() {
 			return this.dataTracker.get(BLOCK_STATE);
 		}
 
-		public void setBlockState(BlockState state) {
+		private void setBlockState(BlockState state) {
 			this.dataTracker.set(BLOCK_STATE, state);
 		}
 
@@ -542,94 +561,50 @@ public abstract class DisplayEntity extends Entity {
 			super.writeCustomDataToNbt(nbt);
 			nbt.put("block_state", NbtHelper.fromBlockState(this.getBlockState()));
 		}
-	}
 
-	static class FloatLerper extends DisplayEntity.Interpolator<Float> {
-		protected FloatLerper(float value) {
-			super(value);
+		@Nullable
+		public DisplayEntity.BlockDisplayEntity.Data getData() {
+			return this.data;
 		}
 
-		protected float lerp(float delta, float start, float end) {
-			return MathHelper.lerp(delta, start, end);
+		@Override
+		protected void refreshData(boolean shouldLerp, float lerpProgress) {
+			this.data = new DisplayEntity.BlockDisplayEntity.Data(this.getBlockState());
 		}
 
-		public float lerp(float delta) {
-			return !((double)delta >= 1.0) && this.prevValue != null ? this.lerp(delta, this.prevValue, this.value) : this.value;
-		}
-
-		protected Float apply(float f) {
-			return this.lerp(f);
-		}
-	}
-
-	static class IntLerper extends DisplayEntity.Interpolator<Integer> {
-		protected IntLerper(int value) {
-			super(value);
-		}
-
-		protected int lerp(float delta, int start, int end) {
-			return MathHelper.lerp(delta, start, end);
-		}
-
-		public int lerp(float value) {
-			return !((double)value >= 1.0) && this.prevValue != null ? this.lerp(value, this.prevValue, this.value) : this.value;
-		}
-
-		protected Integer apply(float f) {
-			return this.lerp(f);
+		public static record Data(BlockState blockState) {
 		}
 	}
 
 	@FunctionalInterface
-	interface InterpolationUpdater {
-		void update(float value, DataTracker dataTracker);
-	}
-
-	abstract static class Interpolator<T> {
-		@Nullable
-		protected T prevValue;
-		protected T value;
-
-		protected Interpolator(T value) {
-			this.value = value;
+	public interface FloatLerper {
+		static DisplayEntity.FloatLerper constant(float value) {
+			return delta -> value;
 		}
 
-		protected abstract T apply(float value);
+		float lerp(float delta);
+	}
 
-		public void setValue(float prevValue, T value) {
-			if (prevValue != Float.POSITIVE_INFINITY) {
-				this.prevValue = this.apply(prevValue);
-			}
-
-			this.value = value;
+	static record FloatLerperImpl(float previous, float current) implements DisplayEntity.FloatLerper {
+		@Override
+		public float lerp(float delta) {
+			return MathHelper.lerp(delta, this.previous, this.current);
 		}
 	}
 
-	static class Interpolators {
-		private final IntSet interpolatedIds = new IntOpenHashSet();
-		private final List<DisplayEntity.InterpolationUpdater> interpolationUpdaters = new ArrayList();
-
-		protected <T> void addInterpolator(TrackedData<T> data, DisplayEntity.Interpolator<T> interpolator) {
-			this.interpolatedIds.add(data.getId());
-			this.interpolationUpdaters.add((DisplayEntity.InterpolationUpdater)(value, dataTracker) -> interpolator.setValue(value, dataTracker.get(data)));
+	@FunctionalInterface
+	public interface IntLerper {
+		static DisplayEntity.IntLerper constant(int value) {
+			return delta -> value;
 		}
 
-		protected void addInterpolationUpdater(Set<TrackedData<?>> dataSet, DisplayEntity.InterpolationUpdater updater) {
-			for (TrackedData<?> trackedData : dataSet) {
-				this.interpolatedIds.add(trackedData.getId());
-			}
+		int lerp(float delta);
+	}
 
-			this.interpolationUpdaters.add(updater);
-		}
-
-		public boolean hasInterpolator(int id) {
-			return this.interpolatedIds.contains(id);
-		}
-
-		public void interpolate(float value, DataTracker dataTracker) {
-			for (DisplayEntity.InterpolationUpdater interpolationUpdater : this.interpolationUpdaters) {
-				interpolationUpdater.update(value, dataTracker);
-			}
+	static record IntLerperImpl(int previous, int current) implements DisplayEntity.IntLerper {
+		@Override
+		public int lerp(float delta) {
+			return MathHelper.lerp(delta, this.previous, this.current);
 		}
 	}
 
@@ -650,6 +625,8 @@ public abstract class DisplayEntity extends Entity {
 				return true;
 			}
 		};
+		@Nullable
+		private DisplayEntity.ItemDisplayEntity.Data data;
 
 		public ItemDisplayEntity(EntityType<?> entityType, World world) {
 			super(entityType, world);
@@ -662,7 +639,15 @@ public abstract class DisplayEntity extends Entity {
 			this.dataTracker.startTracking(ITEM_DISPLAY, ModelTransformationMode.NONE.getIndex());
 		}
 
-		public ItemStack getItemStack() {
+		@Override
+		public void onTrackedDataSet(TrackedData<?> data) {
+			super.onTrackedDataSet(data);
+			if (ITEM.equals(data) || ITEM_DISPLAY.equals(data)) {
+				this.renderingDataSet = true;
+			}
+		}
+
+		ItemStack getItemStack() {
 			return this.dataTracker.get(ITEM);
 		}
 
@@ -674,7 +659,7 @@ public abstract class DisplayEntity extends Entity {
 			this.dataTracker.set(ITEM_DISPLAY, transformationMode.getIndex());
 		}
 
-		public ModelTransformationMode getTransformationMode() {
+		private ModelTransformationMode getTransformationMode() {
 			return (ModelTransformationMode)ModelTransformationMode.FROM_INDEX.apply(this.dataTracker.get(ITEM_DISPLAY));
 		}
 
@@ -701,6 +686,29 @@ public abstract class DisplayEntity extends Entity {
 		public StackReference getStackReference(int mappedIndex) {
 			return mappedIndex == 0 ? this.stackReference : StackReference.EMPTY;
 		}
+
+		@Nullable
+		public DisplayEntity.ItemDisplayEntity.Data getData() {
+			return this.data;
+		}
+
+		@Override
+		protected void refreshData(boolean shouldLerp, float lerpProgress) {
+			this.data = new DisplayEntity.ItemDisplayEntity.Data(this.getItemStack(), this.getTransformationMode());
+		}
+
+		public static record Data(ItemStack itemStack, ModelTransformationMode itemTransform) {
+		}
+	}
+
+	public static record RenderState(
+		DisplayEntity.AbstractInterpolator<AffineTransformation> transformation,
+		DisplayEntity.BillboardMode billboardConstraints,
+		int brightnessOverride,
+		DisplayEntity.FloatLerper shadowRadius,
+		DisplayEntity.FloatLerper shadowStrength,
+		int glowColorOverride
+	) {
 	}
 
 	public static class TextDisplayEntity extends DisplayEntity {
@@ -724,18 +732,16 @@ public abstract class DisplayEntity extends Entity {
 		private static final TrackedData<Integer> BACKGROUND = DataTracker.registerData(DisplayEntity.TextDisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
 		private static final TrackedData<Byte> TEXT_OPACITY = DataTracker.registerData(DisplayEntity.TextDisplayEntity.class, TrackedDataHandlerRegistry.BYTE);
 		private static final TrackedData<Byte> TEXT_DISPLAY_FLAGS = DataTracker.registerData(DisplayEntity.TextDisplayEntity.class, TrackedDataHandlerRegistry.BYTE);
-		private final DisplayEntity.IntLerper textOpacityLerper = new DisplayEntity.IntLerper(-1);
-		private final DisplayEntity.IntLerper backgroundLerper = new DisplayEntity.ArgbLerper(1073741824);
+		private static final IntSet TEXT_RENDERING_DATA_IDS = IntSet.of(
+			TEXT.getId(), LINE_WIDTH.getId(), BACKGROUND.getId(), TEXT_OPACITY.getId(), TEXT_DISPLAY_FLAGS.getId()
+		);
 		@Nullable
 		private DisplayEntity.TextDisplayEntity.TextLines textLines;
+		@Nullable
+		private DisplayEntity.TextDisplayEntity.Data data;
 
 		public TextDisplayEntity(EntityType<?> entityType, World world) {
 			super(entityType, world);
-			this.interpolators.addInterpolator(BACKGROUND, this.backgroundLerper);
-			this.interpolators
-				.addInterpolationUpdater(
-					Set.of(TEXT_OPACITY), (value, dataTracker) -> this.textOpacityLerper.setValue(value, Integer.valueOf(dataTracker.get(TEXT_OPACITY) & 255))
-				);
 		}
 
 		@Override
@@ -751,10 +757,12 @@ public abstract class DisplayEntity extends Entity {
 		@Override
 		public void onTrackedDataSet(TrackedData<?> data) {
 			super.onTrackedDataSet(data);
-			this.textLines = null;
+			if (TEXT_RENDERING_DATA_IDS.contains(data.getId())) {
+				this.renderingDataSet = true;
+			}
 		}
 
-		public Text getText() {
+		private Text getText() {
 			return this.dataTracker.get(TEXT);
 		}
 
@@ -762,16 +770,12 @@ public abstract class DisplayEntity extends Entity {
 			this.dataTracker.set(TEXT, text);
 		}
 
-		public int getLineWidth() {
+		private int getLineWidth() {
 			return this.dataTracker.get(LINE_WIDTH);
 		}
 
 		private void setLineWidth(int lineWidth) {
 			this.dataTracker.set(LINE_WIDTH, lineWidth);
-		}
-
-		public byte lerpTextOpacity(float delta) {
-			return (byte)this.textOpacityLerper.lerp(delta);
 		}
 
 		private byte getTextOpacity() {
@@ -782,10 +786,6 @@ public abstract class DisplayEntity extends Entity {
 			this.dataTracker.set(TEXT_OPACITY, textOpacity);
 		}
 
-		public int lerpBackground(float delta) {
-			return this.backgroundLerper.lerp(delta);
-		}
-
 		private int getBackground() {
 			return this.dataTracker.get(BACKGROUND);
 		}
@@ -794,7 +794,7 @@ public abstract class DisplayEntity extends Entity {
 			this.dataTracker.set(BACKGROUND, background);
 		}
 
-		public byte getDisplayFlags() {
+		private byte getDisplayFlags() {
 			return this.dataTracker.get(TEXT_DISPLAY_FLAGS);
 		}
 
@@ -876,10 +876,51 @@ public abstract class DisplayEntity extends Entity {
 				.ifPresent(nbtElement -> nbt.put("alignment", nbtElement));
 		}
 
+		@Override
+		protected void refreshData(boolean shouldLerp, float lerpProgress) {
+			if (shouldLerp && this.data != null) {
+				this.data = this.getLerpedRenderState(this.data, lerpProgress);
+			} else {
+				this.data = this.copyData();
+			}
+
+			this.textLines = null;
+		}
+
+		@Nullable
+		public DisplayEntity.TextDisplayEntity.Data getData() {
+			return this.data;
+		}
+
+		private DisplayEntity.TextDisplayEntity.Data copyData() {
+			return new DisplayEntity.TextDisplayEntity.Data(
+				this.getText(),
+				this.getLineWidth(),
+				DisplayEntity.IntLerper.constant(this.getTextOpacity()),
+				DisplayEntity.IntLerper.constant(this.getBackground()),
+				this.getDisplayFlags()
+			);
+		}
+
+		private DisplayEntity.TextDisplayEntity.Data getLerpedRenderState(DisplayEntity.TextDisplayEntity.Data data, float lerpProgress) {
+			int i = data.backgroundColor.lerp(lerpProgress);
+			int j = data.textOpacity.lerp(lerpProgress);
+			return new DisplayEntity.TextDisplayEntity.Data(
+				this.getText(),
+				this.getLineWidth(),
+				new DisplayEntity.IntLerperImpl(j, this.getTextOpacity()),
+				new DisplayEntity.ArgbLerper(i, this.getBackground()),
+				this.getDisplayFlags()
+			);
+		}
+
 		public DisplayEntity.TextDisplayEntity.TextLines splitLines(DisplayEntity.TextDisplayEntity.LineSplitter splitter) {
 			if (this.textLines == null) {
-				int i = this.getLineWidth();
-				this.textLines = splitter.split(this.getText(), i);
+				if (this.data != null) {
+					this.textLines = splitter.split(this.data.text(), this.data.lineWidth());
+				} else {
+					this.textLines = new DisplayEntity.TextDisplayEntity.TextLines(List.of(), 0);
+				}
 			}
 
 			return this.textLines;
@@ -891,6 +932,9 @@ public abstract class DisplayEntity extends Entity {
 			} else {
 				return (flags & 16) != 0 ? DisplayEntity.TextDisplayEntity.TextAlignment.RIGHT : DisplayEntity.TextDisplayEntity.TextAlignment.CENTER;
 			}
+		}
+
+		public static record Data(Text text, int lineWidth, DisplayEntity.IntLerper textOpacity, DisplayEntity.IntLerper backgroundColor, byte flags) {
 		}
 
 		@FunctionalInterface

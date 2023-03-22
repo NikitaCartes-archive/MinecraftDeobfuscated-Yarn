@@ -17,6 +17,7 @@ import net.minecraft.client.render.item.HeldItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LimbAnimator;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -89,7 +90,15 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				SkullBlock.SkullType skullType = ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType();
 				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.headModels.get(skullType);
 				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
-				SkullBlockEntityRenderer.renderSkull(null, 180.0F, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
+				LimbAnimator limbAnimator;
+				if (livingEntity.getVehicle() instanceof LivingEntity livingEntity2) {
+					limbAnimator = livingEntity2.limbAnimator;
+				} else {
+					limbAnimator = livingEntity.limbAnimator;
+				}
+
+				float o = limbAnimator.getPos(h);
+				SkullBlockEntityRenderer.renderSkull(null, 180.0F, o, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
 			} else if (!(item instanceof ArmorItem armorItem) || armorItem.getSlotType() != EquipmentSlot.HEAD) {
 				translate(matrixStack, bl);
 				this.heldItemRenderer.renderItem(livingEntity, itemStack, ModelTransformationMode.HEAD, false, matrixStack, vertexConsumerProvider, i);

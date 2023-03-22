@@ -20,6 +20,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -58,7 +59,6 @@ public class SnifferEntity extends AnimalEntity {
 	private static final TrackedData<SnifferEntity.State> STATE = DataTracker.registerData(SnifferEntity.class, TrackedDataHandlerRegistry.SNIFFER_STATE);
 	private static final TrackedData<Integer> FINISH_DIG_TIME = DataTracker.registerData(SnifferEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public final AnimationState walkingAnimationState = new AnimationState();
-	public final AnimationState panickingAnimationState = new AnimationState();
 	public final AnimationState feelingHappyAnimationState = new AnimationState();
 	public final AnimationState scentingAnimationState = new AnimationState();
 	public final AnimationState sniffingAnimationState = new AnimationState();
@@ -75,7 +75,9 @@ public class SnifferEntity extends AnimalEntity {
 		this.dataTracker.startTracking(STATE, SnifferEntity.State.IDLING);
 		this.dataTracker.startTracking(FINISH_DIG_TIME, 0);
 		this.getNavigation().setCanSwim(true);
-		this.setPathfindingPenalty(PathNodeType.WATER, -2.0F);
+		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DANGER_POWDER_SNOW, -1.0F);
+		this.setPathfindingPenalty(PathNodeType.DAMAGE_CAUTIOUS, -1.0F);
 	}
 
 	@Override
@@ -222,13 +224,13 @@ public class SnifferEntity extends AnimalEntity {
 
 	private boolean isDiggable(BlockPos pos) {
 		return this.world.getBlockState(pos).isIn(BlockTags.SNIFFER_DIGGABLE_BLOCK)
-			&& this.world.getBlockState(pos.up()).isAir()
-			&& this.getExploredPositions().noneMatch(pos::equals);
+			&& this.getExploredPositions().noneMatch(pos::equals)
+			&& (Boolean)Optional.ofNullable(this.getNavigation().findPathTo(pos, 1)).map(Path::reachesTarget).orElse(false);
 	}
 
 	private void dropSeeds() {
 		if (!this.world.isClient() && this.dataTracker.get(FINISH_DIG_TIME) == this.age) {
-			ItemStack itemStack = new ItemStack(Items.TORCHFLOWER_SEEDS);
+			ItemStack itemStack = new ItemStack(this.world.random.nextBoolean() ? Items.PITCHER_POD : Items.TORCHFLOWER_SEEDS);
 			BlockPos blockPos = this.getDigPos();
 			ItemEntity itemEntity = new ItemEntity(this.world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack);
 			itemEntity.setToDefaultPickupDelay();
@@ -281,17 +283,28 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	@Override
+	public void breed(ServerWorld world, AnimalEntity other) {
+		BlockPos blockPos = this.getSteppingPos();
+		ItemStack itemStack = new ItemStack(Items.SNIFFER_EGG);
+		ItemEntity itemEntity = new ItemEntity(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack);
+		itemEntity.setToDefaultPickupDelay();
+		this.breed(world, other, null);
+		world.spawnEntity(itemEntity);
+	}
+
+	@Override
+	public void onDeath(DamageSource damageSource) {
+		this.startState(SnifferEntity.State.IDLING);
+		super.onDeath(damageSource);
+	}
+
+	@Override
 	public void tick() {
 		boolean bl = this.isTouchingWater() && !this.isSubmergedInWater();
 		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(bl ? 0.2F : 0.1F);
 		if (!this.isMovingOutsideWater() && !this.isMovingInWater()) {
-			this.panickingAnimationState.stop();
 			this.walkingAnimationState.stop();
-		} else if (this.isPanicking()) {
-			this.walkingAnimationState.stop();
-			this.panickingAnimationState.startIfNotRunning(this.age);
 		} else {
-			this.panickingAnimationState.stop();
 			this.walkingAnimationState.startIfNotRunning(this.age);
 		}
 

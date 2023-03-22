@@ -63,6 +63,7 @@ import net.minecraft.structure.pool.StructurePoolElementType;
 import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.structure.rule.RuleTestType;
+import net.minecraft.structure.rule.blockentity.RuleBlockEntityModifierType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.floatprovider.FloatProviderType;
@@ -119,6 +120,9 @@ public class Registries {
 	public static final Registry<Identifier> CUSTOM_STAT = create(RegistryKeys.CUSTOM_STAT, registry -> Stats.JUMP);
 	public static final DefaultedRegistry<ChunkStatus> CHUNK_STATUS = create(RegistryKeys.CHUNK_STATUS, "empty", registry -> ChunkStatus.EMPTY);
 	public static final Registry<RuleTestType<?>> RULE_TEST = create(RegistryKeys.RULE_TEST, registry -> RuleTestType.ALWAYS_TRUE);
+	public static final Registry<RuleBlockEntityModifierType<?>> RULE_BLOCK_ENTITY_MODIFIER = create(
+		RegistryKeys.RULE_BLOCK_ENTITY_MODIFIER, registry -> RuleBlockEntityModifierType.PASSTHROUGH
+	);
 	public static final Registry<PosRuleTestType<?>> POS_RULE_TEST = create(RegistryKeys.POS_RULE_TEST, registry -> PosRuleTestType.ALWAYS_TRUE);
 	public static final Registry<ScreenHandlerType<?>> SCREEN_HANDLER = create(RegistryKeys.SCREEN_HANDLER, registry -> ScreenHandlerType.ANVIL);
 	public static final Registry<RecipeType<?>> RECIPE_TYPE = create(RegistryKeys.RECIPE_TYPE, registry -> RecipeType.CRAFTING);

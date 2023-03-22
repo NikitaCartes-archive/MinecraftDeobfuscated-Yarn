@@ -67,7 +67,9 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 		EntityType.HOGLIN,
 		EntityType.STRIDER,
 		EntityType.GOAT,
-		EntityType.AXOLOTL
+		EntityType.AXOLOTL,
+		EntityType.CAMEL,
+		EntityType.SNIFFER
 	);
 	public static final List<EntityType<?>> EGG_LAYING_ANIMALS = List.of(EntityType.TURTLE, EntityType.FROG);
 	private static final Item[] FISH_ITEMS = new Item[]{Items.COD, Items.TROPICAL_FISH, Items.PUFFERFISH, Items.SALMON};

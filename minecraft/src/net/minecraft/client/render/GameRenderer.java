@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.systems.VertexSorter;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import java.io.ByteArrayInputStream;
@@ -935,7 +936,7 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	public void loadProjectionMatrix(Matrix4f projectionMatrix) {
-		RenderSystem.setProjectionMatrix(projectionMatrix);
+		RenderSystem.setProjectionMatrix(projectionMatrix, VertexSorter.BY_DISTANCE);
 	}
 
 	public Matrix4f getBasicProjectionMatrix(double fov) {
@@ -1012,7 +1013,7 @@ public class GameRenderer implements AutoCloseable {
 					1000.0F,
 					3000.0F
 				);
-			RenderSystem.setProjectionMatrix(matrix4f);
+			RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
 			matrixStack.loadIdentity();

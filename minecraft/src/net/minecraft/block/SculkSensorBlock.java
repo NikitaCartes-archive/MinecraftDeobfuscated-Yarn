@@ -14,6 +14,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.DustColorTransitionParticleEffect;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -22,6 +23,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.ConstantIntProvider;
@@ -32,6 +34,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
+import net.minecraft.world.event.listener.VibrationListener;
 
 public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	public static final int field_31239 = 40;
@@ -40,9 +43,15 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	public static final IntProperty POWER = Properties.POWER;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape OUTLINE_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-	private final int range;
+	private static final float[] RESONATION_NOTE_PITCHES = Util.make(new float[16], frequency -> {
+		int[] is = new int[]{0, 0, 2, 4, 6, 7, 9, 10, 12, 14, 15, 18, 19, 21, 22, 24};
 
-	public SculkSensorBlock(AbstractBlock.Settings settings, int range) {
+		for (int i = 0; i < 16; i++) {
+			frequency[i] = NoteBlock.getNotePitch(is[i]);
+		}
+	});
+
+	public SculkSensorBlock(AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(
 			this.stateManager
@@ -51,11 +60,6 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 				.with(POWER, Integer.valueOf(0))
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
-		this.range = range;
-	}
-
-	public int getRange() {
-		return this.range;
 	}
 
 	@Nullable
@@ -89,7 +93,10 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 			&& entity.getType() != EntityType.WARDEN
 			&& world.getBlockEntity(pos) instanceof SculkSensorBlockEntity sculkSensorBlockEntity
 			&& world instanceof ServerWorld serverWorld) {
-			sculkSensorBlockEntity.getEventListener().forceListen(serverWorld, GameEvent.STEP, GameEvent.Emitter.of(entity), entity.getPos());
+			VibrationListener vibrationListener = sculkSensorBlockEntity.getEventListener();
+			if (vibrationListener.getCallback().accepts(serverWorld, vibrationListener, pos, GameEvent.STEP, GameEvent.Emitter.of(state))) {
+				vibrationListener.forceListen(serverWorld, GameEvent.STEP, GameEvent.Emitter.of(entity), entity.getPos());
+			}
 		}
 
 		super.onSteppedOn(world, pos, state, entity);
@@ -110,7 +117,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!state.isOf(newState.getBlock())) {
 			if (getPhase(state) == SculkSensorPhase.ACTIVE) {
-				updateNeighbors(world, pos);
+				updateNeighbors(world, pos, state);
 			}
 
 			super.onStateReplaced(state, world, pos, newState, moved);
@@ -128,9 +135,10 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
-	private static void updateNeighbors(World world, BlockPos pos) {
-		world.updateNeighborsAlways(pos, Blocks.SCULK_SENSOR);
-		world.updateNeighborsAlways(pos.offset(Direction.UP.getOpposite()), Blocks.SCULK_SENSOR);
+	private static void updateNeighbors(World world, BlockPos pos, BlockState state) {
+		Block block = state.getBlock();
+		world.updateNeighborsAlways(pos, block);
+		world.updateNeighborsAlways(pos.down(), block);
 	}
 
 	@Nullable
@@ -142,7 +150,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	@Nullable
 	@Override
 	public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
-		return blockEntity instanceof SculkSensorBlockEntity ? ((SculkSensorBlockEntity)blockEntity).getEventListener() : null;
+		return blockEntity instanceof SculkSensorBlockEntity sculkSensorBlockEntity ? sculkSensorBlockEntity.getEventListener() : null;
 	}
 
 	@Nullable
@@ -188,13 +196,14 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 			world.playSound(null, pos, SoundEvents.BLOCK_SCULK_SENSOR_CLICKING_STOP, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.2F + 0.8F);
 		}
 
-		updateNeighbors(world, pos);
+		updateNeighbors(world, pos, state);
 	}
 
-	public static void setActive(@Nullable Entity entity, World world, BlockPos pos, BlockState state, int power) {
+	public static void setActive(@Nullable Entity entity, World world, BlockPos pos, BlockState state, int power, int frequency) {
 		world.setBlockState(pos, state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.ACTIVE).with(POWER, Integer.valueOf(power)), Block.NOTIFY_ALL);
 		world.scheduleBlockTick(pos, state.getBlock(), 40);
-		updateNeighbors(world, pos);
+		updateNeighbors(world, pos, state);
+		tryResonate(world, pos, frequency);
 		world.emitGameEvent(entity, GameEvent.SCULK_SENSOR_TENDRILS_CLICKING, pos);
 		if (!(Boolean)state.get(WATERLOGGED)) {
 			world.playSound(
@@ -207,6 +216,18 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 				1.0F,
 				world.random.nextFloat() * 0.2F + 0.8F
 			);
+		}
+	}
+
+	public static void tryResonate(World world, BlockPos pos, int frequency) {
+		for (Direction direction : Direction.values()) {
+			BlockPos blockPos = pos.offset(direction);
+			BlockState blockState = world.getBlockState(blockPos);
+			if (blockState.isIn(BlockTags.VIBRATION_RESONATORS)) {
+				world.emitGameEvent(VibrationListener.getResonation(frequency), blockPos, GameEvent.Emitter.of(blockState));
+				float f = RESONATION_NOTE_PITCHES[frequency];
+				world.playSound(null, blockPos, SoundEvents.BLOCK_AMETHYST_BLOCK_RESONATE, SoundCategory.BLOCKS, 1.0F, f);
+			}
 		}
 	}
 

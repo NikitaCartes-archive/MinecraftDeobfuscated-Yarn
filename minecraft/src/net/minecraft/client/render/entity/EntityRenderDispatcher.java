@@ -49,13 +49,17 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.chunk.Chunk;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	private static final RenderLayer SHADOW_LAYER = RenderLayer.getEntityShadow(new Identifier("textures/misc/shadow.png"));
+	private static final float field_43377 = 32.0F;
+	private static final float field_43378 = 0.5F;
 	private Map<EntityType<?>, EntityRenderer<?>> renderers = ImmutableMap.of();
 	private Map<String, EntityRenderer<? extends PlayerEntity>> modelRenderers = ImmutableMap.of();
 	public final TextureManager textureManager;
@@ -154,7 +158,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 				double g = this.getSquaredDistanceToCamera(entity.getX(), entity.getY(), entity.getZ());
 				float h = (float)((1.0 - g / 256.0) * (double)entityRenderer.shadowOpacity);
 				if (h > 0.0F) {
-					renderShadow(matrices, vertexConsumers, entity, h, tickDelta, this.world, entityRenderer.shadowRadius);
+					renderShadow(matrices, vertexConsumers, entity, h, tickDelta, this.world, Math.min(entityRenderer.shadowRadius, 32.0F));
 				}
 			}
 
@@ -296,31 +300,42 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 		double d = MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
 		double e = MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
 		double g = MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
+		float h = Math.min(opacity / 0.5F, f);
 		int i = MathHelper.floor(d - (double)f);
 		int j = MathHelper.floor(d + (double)f);
-		int k = MathHelper.floor(e - (double)f);
+		int k = MathHelper.floor(e - (double)h);
 		int l = MathHelper.floor(e);
 		int m = MathHelper.floor(g - (double)f);
 		int n = MathHelper.floor(g + (double)f);
 		MatrixStack.Entry entry = matrices.peek();
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(SHADOW_LAYER);
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(i, k, m), new BlockPos(j, l, n))) {
-			renderShadowPart(entry, vertexConsumer, world, blockPos, d, e, g, f, opacity);
+		for (int o = m; o <= n; o++) {
+			for (int p = i; p <= j; p++) {
+				mutable.set(p, 0, o);
+				Chunk chunk = world.getChunk(mutable);
+
+				for (int q = k; q <= l; q++) {
+					mutable.setY(q);
+					float r = opacity - (float)(e - (double)mutable.getY()) * 0.5F;
+					renderShadowPart(entry, vertexConsumer, chunk, world, mutable, d, e, g, f, r);
+				}
+			}
 		}
 	}
 
 	private static void renderShadowPart(
-		MatrixStack.Entry entry, VertexConsumer vertices, WorldView world, BlockPos pos, double x, double y, double z, float radius, float opacity
+		MatrixStack.Entry entry, VertexConsumer vertices, Chunk chunk, WorldView world, BlockPos pos, double x, double y, double z, float radius, float opacity
 	) {
 		BlockPos blockPos = pos.down();
-		BlockState blockState = world.getBlockState(blockPos);
+		BlockState blockState = chunk.getBlockState(blockPos);
 		if (blockState.getRenderType() != BlockRenderType.INVISIBLE && world.getLightLevel(pos) > 3) {
-			if (blockState.isFullCube(world, blockPos)) {
-				VoxelShape voxelShape = blockState.getOutlineShape(world, pos.down());
+			if (blockState.isFullCube(chunk, blockPos)) {
+				VoxelShape voxelShape = blockState.getOutlineShape(chunk, blockPos);
 				if (!voxelShape.isEmpty()) {
 					float f = LightmapTextureManager.getBrightness(world.getDimension(), world.getLightLevel(pos));
-					float g = (float)(((double)opacity - (y - (double)pos.getY()) / 2.0) * 0.5 * (double)f);
+					float g = opacity * 0.5F * f;
 					if (g >= 0.0F) {
 						if (g > 1.0F) {
 							g = 1.0F;
@@ -352,13 +367,23 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	}
 
 	private static void drawShadowVertex(MatrixStack.Entry entry, VertexConsumer vertices, float alpha, float x, float y, float z, float u, float v) {
-		vertices.vertex(entry.getPositionMatrix(), x, y, z)
-			.color(1.0F, 1.0F, 1.0F, alpha)
-			.texture(u, v)
-			.overlay(OverlayTexture.DEFAULT_UV)
-			.light(LightmapTextureManager.MAX_LIGHT_COORDINATE)
-			.normal(entry.getNormalMatrix(), 0.0F, 1.0F, 0.0F)
-			.next();
+		Vector3f vector3f = entry.getPositionMatrix().transformPosition(x, y, z, new Vector3f());
+		vertices.vertex(
+			vector3f.x(),
+			vector3f.y(),
+			vector3f.z(),
+			1.0F,
+			1.0F,
+			1.0F,
+			alpha,
+			u,
+			v,
+			OverlayTexture.DEFAULT_UV,
+			LightmapTextureManager.MAX_LIGHT_COORDINATE,
+			0.0F,
+			1.0F,
+			0.0F
+		);
 	}
 
 	public void setWorld(@Nullable World world) {

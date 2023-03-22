@@ -315,7 +315,14 @@ public class TestContext {
 	}
 
 	public <T extends Comparable<T>> void checkBlockProperty(BlockPos pos, Property<T> property, Predicate<T> predicate, String errorMessage) {
-		this.checkBlockState(pos, state -> predicate.test(state.get(property)), () -> errorMessage);
+		this.checkBlockState(pos, state -> {
+			if (!state.contains(property)) {
+				return false;
+			} else {
+				T comparable = state.get(property);
+				return predicate.test(comparable);
+			}
+		}, () -> errorMessage);
 	}
 
 	public void checkBlockState(BlockPos pos, Predicate<BlockState> predicate, Supplier<String> errorMessageSupplier) {
@@ -699,6 +706,12 @@ public class TestContext {
 
 	public void assertTrue(boolean condition, String message) {
 		if (!condition) {
+			throw new GameTestException(message);
+		}
+	}
+
+	public void assertFalse(boolean condition, String message) {
+		if (condition) {
 			throw new GameTestException(message);
 		}
 	}

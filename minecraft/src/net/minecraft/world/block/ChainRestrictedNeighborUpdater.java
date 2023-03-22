@@ -27,7 +27,9 @@ public class ChainRestrictedNeighborUpdater implements NeighborUpdater {
 
 	@Override
 	public void replaceWithStateForNeighborUpdate(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int flags, int maxUpdateDepth) {
-		this.enqueue(pos, new ChainRestrictedNeighborUpdater.StateReplacementEntry(direction, neighborState, pos.toImmutable(), neighborPos.toImmutable(), flags));
+		this.enqueue(
+			pos, new ChainRestrictedNeighborUpdater.StateReplacementEntry(direction, neighborState, pos.toImmutable(), neighborPos.toImmutable(), flags, maxUpdateDepth)
+		);
 	}
 
 	@Override
@@ -130,11 +132,11 @@ public class ChainRestrictedNeighborUpdater implements NeighborUpdater {
 		}
 	}
 
-	static record StateReplacementEntry(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int updateFlags)
+	static record StateReplacementEntry(Direction direction, BlockState neighborState, BlockPos pos, BlockPos neighborPos, int updateFlags, int updateLimit)
 		implements ChainRestrictedNeighborUpdater.Entry {
 		@Override
 		public boolean update(World world) {
-			NeighborUpdater.replaceWithStateForNeighborUpdate(world, this.direction, this.neighborState, this.pos, this.neighborPos, this.updateFlags, 512);
+			NeighborUpdater.replaceWithStateForNeighborUpdate(world, this.direction, this.neighborState, this.pos, this.neighborPos, this.updateFlags, this.updateLimit);
 			return false;
 		}
 	}

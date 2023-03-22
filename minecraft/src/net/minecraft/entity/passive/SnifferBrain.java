@@ -109,6 +109,7 @@ public class SnifferBrain {
 		brain.setTaskList(
 			Activity.IDLE,
 			ImmutableList.of(
+				Pair.of(0, new BreedTask(EntityType.SNIFFER, 1.0F)),
 				Pair.of(0, new LookAroundTask(45, 90)),
 				Pair.of(0, new SnifferBrain.FeelHappyTask(40, 100)),
 				Pair.of(
@@ -118,7 +119,6 @@ public class SnifferBrain {
 							Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 2),
 							Pair.of(new SnifferBrain.ScentingTask(40, 80), 1),
 							Pair.of(new SnifferBrain.SniffingTask(40, 80), 1),
-							Pair.of(new BreedTask(EntityType.SNIFFER, 1.0F), 1),
 							Pair.of(LookAtMobTask.create(EntityType.PLAYER, 6.0F), 1),
 							Pair.of(StrollTask.create(1.0F), 1),
 							Pair.of(new WaitTask(5, 20), 2)

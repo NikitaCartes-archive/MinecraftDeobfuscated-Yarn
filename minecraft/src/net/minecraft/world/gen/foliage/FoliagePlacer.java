@@ -128,6 +128,7 @@ public abstract class FoliagePlacer {
 	) {
 		this.generateSquare(world, placer, random, config, centerPos, radius, y, giantTrunk);
 		int i = giantTrunk ? 1 : 0;
+		BlockPos blockPos = centerPos.down();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
@@ -139,17 +140,25 @@ public abstract class FoliagePlacer {
 			while (k < radius + i) {
 				boolean bl = placer.hasPlacedBlock(mutable.move(Direction.UP));
 				mutable.move(Direction.DOWN);
-				if (bl
-					&& !(random.nextFloat() > hangingLeavesChance)
-					&& placeFoliageBlock(world, placer, random, config, mutable)
-					&& !(random.nextFloat() > hangingLeavesExtensionChance)) {
-					placeFoliageBlock(world, placer, random, config, mutable.move(Direction.DOWN));
+				if (bl && placeFoliageBlock(world, placer, random, config, hangingLeavesChance, blockPos, mutable)) {
+					mutable.move(Direction.DOWN);
+					placeFoliageBlock(world, placer, random, config, hangingLeavesExtensionChance, blockPos, mutable);
 					mutable.move(Direction.UP);
 				}
 
 				k++;
 				mutable.move(direction);
 			}
+		}
+	}
+
+	private static boolean placeFoliageBlock(
+		TestableWorld world, FoliagePlacer.BlockPlacer placer, Random random, TreeFeatureConfig config, float chance, BlockPos origin, BlockPos.Mutable pos
+	) {
+		if (pos.getManhattanDistance(origin) >= 7) {
+			return false;
+		} else {
+			return random.nextFloat() > chance ? false : placeFoliageBlock(world, placer, random, config, pos);
 		}
 	}
 

@@ -1704,21 +1704,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				return;
 			}
 
-			if (!signBlockEntity.isEditable() || !this.player.getUuid().equals(signBlockEntity.getEditor())) {
-				LOGGER.warn("Player {} just tried to change non-editable sign", this.player.getName().getString());
-				return;
-			}
-
-			for (int i = 0; i < signText.size(); i++) {
-				FilteredMessage filteredMessage = (FilteredMessage)signText.get(i);
-				if (this.player.shouldFilterText()) {
-					signBlockEntity.setTextOnRow(i, Text.literal(filteredMessage.getString()));
-				} else {
-					signBlockEntity.setTextOnRow(i, Text.literal(filteredMessage.raw()), Text.literal(filteredMessage.getString()));
-				}
-			}
-
-			signBlockEntity.markDirty();
+			signBlockEntity.tryChangeText(this.player, packet.isFront(), signText);
+			signBlockEntity.setEditor(null);
 			serverWorld.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 		}
 	}

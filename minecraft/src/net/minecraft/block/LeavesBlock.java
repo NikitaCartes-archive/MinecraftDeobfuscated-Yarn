@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import java.util.OptionalInt;
 import net.minecraft.client.util.ParticleUtil;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -98,10 +99,14 @@ public class LeavesBlock extends Block implements Waterloggable {
 	}
 
 	private static int getDistanceFromLog(BlockState state) {
+		return getOptionalDistanceFromLog(state).orElse(7);
+	}
+
+	public static OptionalInt getOptionalDistanceFromLog(BlockState state) {
 		if (state.isIn(BlockTags.LOGS)) {
-			return 0;
+			return OptionalInt.of(0);
 		} else {
-			return state.getBlock() instanceof LeavesBlock ? (Integer)state.get(DISTANCE) : 7;
+			return state.contains(DISTANCE) ? OptionalInt.of((Integer)state.get(DISTANCE)) : OptionalInt.empty();
 		}
 	}
 

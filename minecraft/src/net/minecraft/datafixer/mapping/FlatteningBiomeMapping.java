@@ -1,10 +1,9 @@
-package net.minecraft.datafixer.fix;
+package net.minecraft.datafixer.mapping;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.datafixers.schemas.Schema;
 import java.util.Map;
 
-public class BiomesFix extends BiomeRenameFix {
+public class FlatteningBiomeMapping {
 	public static final Map<String, String> RENAMED_BIOMES = ImmutableMap.<String, String>builder()
 		.put("minecraft:extreme_hills", "minecraft:mountains")
 		.put("minecraft:swampland", "minecraft:swamp")
@@ -60,8 +59,4 @@ public class BiomesFix extends BiomeRenameFix {
 		.put("minecraft:cold_deep_ocean", "minecraft:deep_cold_ocean")
 		.put("minecraft:frozen_deep_ocean", "minecraft:deep_frozen_ocean")
 		.build();
-
-	public BiomesFix(Schema schema, boolean bl) {
-		super(schema, bl, "Biomes fix", RENAMED_BIOMES);
-	}
 }

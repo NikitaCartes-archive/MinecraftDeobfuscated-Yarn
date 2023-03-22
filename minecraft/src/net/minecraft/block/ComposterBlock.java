@@ -98,6 +98,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.3F, Items.HANGING_ROOTS);
 		registerCompostableItem(0.3F, Items.MANGROVE_ROOTS);
 		registerCompostableItem(0.3F, Items.TORCHFLOWER_SEEDS);
+		registerCompostableItem(0.3F, Items.PITCHER_POD);
 		registerCompostableItem(0.5F, Items.DRIED_KELP_BLOCK);
 		registerCompostableItem(0.5F, Items.TALL_GRASS);
 		registerCompostableItem(0.5F, Items.FLOWERING_AZALEA_LEAVES);
@@ -162,6 +163,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		registerCompostableItem(0.85F, Items.BAKED_POTATO);
 		registerCompostableItem(0.85F, Items.COOKIE);
 		registerCompostableItem(0.85F, Items.TORCHFLOWER);
+		registerCompostableItem(0.85F, Items.PITCHER_PLANT);
 		registerCompostableItem(1.0F, Items.CAKE);
 		registerCompostableItem(1.0F, Items.PUMPKIN_PIE);
 	}

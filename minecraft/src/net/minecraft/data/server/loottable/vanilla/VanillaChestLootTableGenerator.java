@@ -658,6 +658,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.LEATHER_CHESTPLATE).weight(3).apply(EnchantRandomlyLootFunction.builder()))
 					.with(ItemEntry.builder(Items.LEATHER_LEGGINGS).weight(3).apply(EnchantRandomlyLootFunction.builder()))
 					.with(ItemEntry.builder(Items.LEATHER_BOOTS).weight(3).apply(EnchantRandomlyLootFunction.builder()))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(5))
+					.with(ItemEntry.builder(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 			);
 	}
 
@@ -687,6 +693,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.PAPER).weight(20).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 10.0F))))
 					.with(ItemEntry.builder(Items.FEATHER).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 5.0F))))
 					.with(ItemEntry.builder(Items.BOOK).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 5.0F))))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(5))
+					.with(ItemEntry.builder(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 			);
 	}
 
@@ -737,6 +749,18 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.COOKED_PORKCHOP).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 5.0F))))
 					.with(ItemEntry.builder(Blocks.CRIMSON_FUNGUS).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 7.0F))))
 					.with(ItemEntry.builder(Blocks.CRIMSON_ROOTS).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 7.0F))))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(11))
+					.with(ItemEntry.builder(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(9))
+					.with(ItemEntry.builder(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE).weight(1))
 			);
 	}
 
@@ -796,6 +820,18 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.ARROW).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(5.0F, 17.0F))))
 					.with(ItemEntry.builder(Items.IRON_NUGGET).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 6.0F))))
 					.with(ItemEntry.builder(Items.GOLD_NUGGET).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 6.0F))))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(11))
+					.with(ItemEntry.builder(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(9))
+					.with(ItemEntry.builder(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE).weight(1))
 			);
 	}
 
@@ -883,6 +919,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 							.weight(3)
 							.apply(EnchantWithLevelsLootFunction.builder(UniformLootNumberProvider.create(20.0F, 39.0F)).allowTreasureEnchantments())
 					)
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(14))
+					.with(ItemEntry.builder(Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 			);
 	}
 
@@ -903,6 +945,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.IRON_HORSE_ARMOR).weight(5))
 					.with(ItemEntry.builder(Items.DIAMOND_HORSE_ARMOR).weight(3))
 					.with(ItemEntry.builder(Blocks.OBSIDIAN).weight(2).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0F, 4.0F))))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(14))
+					.with(ItemEntry.builder(Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 			);
 	}
 
@@ -965,7 +1013,14 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.QUARTZ).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(8.0F, 23.0F))))
 					.with(ItemEntry.builder(Blocks.GILDED_BLACKSTONE).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(5.0F, 15.0F))))
 					.with(ItemEntry.builder(Items.MAGMA_CREAM).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(3.0F, 8.0F))))
-			);
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(11))
+					.with(ItemEntry.builder(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
+			)
+			.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE).weight(1)));
 	}
 
 	public static LootTable.Builder createBastionOtherChestTableBuilder() {
@@ -1040,6 +1095,18 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.STRING).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 6.0F))))
 					.with(ItemEntry.builder(Items.ARROW).weight(2).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(5.0F, 17.0F))))
 					.with(ItemEntry.builder(Items.COOKED_PORKCHOP).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F))))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(11))
+					.with(ItemEntry.builder(Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(9))
+					.with(ItemEntry.builder(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE).weight(1))
 			);
 	}
 
@@ -1080,6 +1147,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.GUNPOWDER).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
 					.with(ItemEntry.builder(Items.ROTTEN_FLESH).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
 					.with(ItemEntry.builder(Items.STRING).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(1))
+					.with(ItemEntry.builder(Items.VEX_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 			);
 	}
 
@@ -1097,7 +1170,8 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 							.weight(10)
 							.apply(EnchantWithLevelsLootFunction.builder(ConstantLootNumberProvider.create(30.0F)).allowTreasureEnchantments())
 					)
-			);
+			)
+			.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1)));
 	}
 
 	public static LootTable.Builder createStrongholdCorridorChestTableBuilder() {
@@ -1125,6 +1199,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.DIAMOND_HORSE_ARMOR))
 					.with(ItemEntry.builder(Items.MUSIC_DISC_OTHERSIDE))
 					.with(ItemEntry.builder(Items.BOOK).apply(EnchantWithLevelsLootFunction.builder(ConstantLootNumberProvider.create(30.0F)).allowTreasureEnchantments()))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(9))
+					.with(ItemEntry.builder(Items.EYE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 			);
 	}
 
@@ -1180,6 +1260,13 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.BONE).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 15.0F))))
 					.with(ItemEntry.builder(Items.SOUL_TORCH).weight(5).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 15.0F))))
 					.with(ItemEntry.builder(Items.COAL).weight(7).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(6.0F, 15.0F))))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(75))
+					.with(ItemEntry.builder(Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE).weight(4))
+					.with(ItemEntry.builder(Items.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1))
 			);
 	}
 
@@ -1200,6 +1287,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.GOLDEN_HORSE_ARMOR))
 					.with(ItemEntry.builder(Items.DIAMOND_HORSE_ARMOR))
 					.with(ItemEntry.builder(Items.BOOK).apply(EnchantWithLevelsLootFunction.builder(ConstantLootNumberProvider.create(30.0F)).allowTreasureEnchantments()))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(2))
+					.with(ItemEntry.builder(Items.WILD_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 			);
 	}
 
@@ -1220,6 +1313,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.IRON_NUGGET).weight(50).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 10.0F))))
 					.with(ItemEntry.builder(Items.GOLD_NUGGET).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 10.0F))))
 					.with(ItemEntry.builder(Items.LAPIS_LAZULI).weight(20).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 10.0F))))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(5))
+					.with(ItemEntry.builder(Items.COAST_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 			);
 	}
 
@@ -1253,6 +1352,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.rolls(UniformLootNumberProvider.create(0.0F, 1.0F))
 					.with(ItemEntry.builder(Items.GOAT_HORN))
 					.apply(SetInstrumentLootFunction.builder(InstrumentTags.REGULAR_GOAT_HORNS))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(3))
+					.with(ItemEntry.builder(Items.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 			);
 	}
 
@@ -1285,6 +1390,12 @@ public class VanillaChestLootTableGenerator implements LootTableGenerator {
 					.with(ItemEntry.builder(Items.ROTTEN_FLESH).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
 					.with(ItemEntry.builder(Items.STRING).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
 					.with(ItemEntry.builder(Blocks.SAND).weight(10).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 8.0F))))
+			)
+			.pool(
+				LootPool.builder()
+					.rolls(ConstantLootNumberProvider.create(1.0F))
+					.with(EmptyEntry.builder().weight(6))
+					.with(ItemEntry.builder(Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE).weight(1).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 			);
 	}
 }

@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
@@ -84,8 +85,9 @@ public class SinglePoolElement extends StructurePoolElement {
 		List<StructureTemplate.StructureBlockInfo> list2 = Lists.<StructureTemplate.StructureBlockInfo>newArrayList();
 
 		for (StructureTemplate.StructureBlockInfo structureBlockInfo : list) {
-			if (structureBlockInfo.nbt != null) {
-				StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.nbt.getString("mode"));
+			NbtCompound nbtCompound = structureBlockInfo.nbt();
+			if (nbtCompound != null) {
+				StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(nbtCompound.getString("mode"));
 				if (structureBlockMode == StructureBlockMode.DATA) {
 					list2.add(structureBlockInfo);
 				}

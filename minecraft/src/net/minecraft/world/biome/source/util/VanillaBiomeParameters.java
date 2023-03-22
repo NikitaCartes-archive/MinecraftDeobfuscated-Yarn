@@ -33,7 +33,6 @@ public final class VanillaBiomeParameters {
 	public static final float field_35046 = -0.375F;
 	private static final float field_39134 = -0.225F;
 	private static final float field_39135 = 0.9F;
-	private final VanillaBiomeParameters.Type parametersType;
 	private final MultiNoiseUtil.ParameterRange defaultParameter = MultiNoiseUtil.ParameterRange.of(-1.0F, 1.0F);
 	private final MultiNoiseUtil.ParameterRange[] temperatureParameters = new MultiNoiseUtil.ParameterRange[]{
 		MultiNoiseUtil.ParameterRange.of(-1.0F, -0.45F),
@@ -109,14 +108,6 @@ public final class VanillaBiomeParameters {
 		{null, null, null, null, null},
 		{null, null, null, null, null}
 	};
-
-	public VanillaBiomeParameters() {
-		this(VanillaBiomeParameters.Type.NONE);
-	}
-
-	public VanillaBiomeParameters(VanillaBiomeParameters.Type parametersType) {
-		this.parametersType = parametersType;
-	}
 
 	public List<MultiNoiseUtil.NoiseHypercube> getSpawnSuitabilityNoises() {
 		MultiNoiseUtil.ParameterRange parameterRange = MultiNoiseUtil.ParameterRange.of(0.0F);
@@ -1111,12 +1102,14 @@ public final class VanillaBiomeParameters {
 	 * Note that for negative weirdness values, no special biomes can get picked by this method.
 	 */
 	private RegistryKey<Biome> getNearMountainBiome(int temperature, int humidity, MultiNoiseUtil.ParameterRange weirdness) {
-		RegistryKey<Biome> registryKey = this.specialNearMountainBiomes[temperature][humidity];
-		return weirdness.max() >= 0L
-				&& registryKey != null
-				&& (registryKey != BiomeKeys.CHERRY_GROVE || this.parametersType == VanillaBiomeParameters.Type.UPDATE_1_20)
-			? registryKey
-			: this.nearMountainBiomes[temperature][humidity];
+		if (weirdness.max() >= 0L) {
+			RegistryKey<Biome> registryKey = this.specialNearMountainBiomes[temperature][humidity];
+			if (registryKey != null) {
+				return registryKey;
+			}
+		}
+
+		return this.nearMountainBiomes[temperature][humidity];
 	}
 
 	/**
@@ -1309,10 +1302,5 @@ public final class VanillaBiomeParameters {
 	@Debug
 	public MultiNoiseUtil.ParameterRange[] method_40015() {
 		return new MultiNoiseUtil.ParameterRange[]{MultiNoiseUtil.ParameterRange.of(-2.0F, 0.0F), MultiNoiseUtil.ParameterRange.of(0.0F, 2.0F)};
-	}
-
-	public static enum Type {
-		NONE,
-		UPDATE_1_20;
 	}
 }

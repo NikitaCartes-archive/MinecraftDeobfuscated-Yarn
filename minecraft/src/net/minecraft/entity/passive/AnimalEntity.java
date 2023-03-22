@@ -1,5 +1,6 @@
 package net.minecraft.entity.passive;
 
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
@@ -212,27 +213,25 @@ public abstract class AnimalEntity extends PassiveEntity {
 	public void breed(ServerWorld world, AnimalEntity other) {
 		PassiveEntity passiveEntity = this.createChild(world, other);
 		if (passiveEntity != null) {
-			ServerPlayerEntity serverPlayerEntity = this.getLovingPlayer();
-			if (serverPlayerEntity == null && other.getLovingPlayer() != null) {
-				serverPlayerEntity = other.getLovingPlayer();
-			}
-
-			if (serverPlayerEntity != null) {
-				serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
-				Criteria.BRED_ANIMALS.trigger(serverPlayerEntity, this, other, passiveEntity);
-			}
-
-			this.setBreedingAge(6000);
-			other.setBreedingAge(6000);
-			this.resetLoveTicks();
-			other.resetLoveTicks();
 			passiveEntity.setBaby(true);
 			passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
+			this.breed(world, other, passiveEntity);
 			world.spawnEntityAndPassengers(passiveEntity);
-			world.sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
-			if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-				world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
-			}
+		}
+	}
+
+	public void breed(ServerWorld world, AnimalEntity other, @Nullable PassiveEntity baby) {
+		Optional.ofNullable(this.getLovingPlayer()).or(() -> Optional.ofNullable(other.getLovingPlayer())).ifPresent(player -> {
+			player.incrementStat(Stats.ANIMALS_BRED);
+			Criteria.BRED_ANIMALS.trigger(player, this, other, baby);
+		});
+		this.setBreedingAge(6000);
+		other.setBreedingAge(6000);
+		this.resetLoveTicks();
+		other.resetLoveTicks();
+		world.sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
+		if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+			world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
 		}
 	}
 

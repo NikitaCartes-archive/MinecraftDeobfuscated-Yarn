@@ -19,8 +19,8 @@ public class HangingSignEditScreen extends AbstractSignEditScreen {
 	private static final int field_40434 = 16;
 	private final Identifier texture = new Identifier("textures/gui/hanging_signs/" + this.signType.name() + ".png");
 
-	public HangingSignEditScreen(SignBlockEntity signBlockEntity, boolean bl) {
-		super(signBlockEntity, bl, Text.translatable("hanging_sign.edit"));
+	public HangingSignEditScreen(SignBlockEntity signBlockEntity, boolean bl, boolean bl2) {
+		super(signBlockEntity, bl, bl2, Text.translatable("hanging_sign.edit"));
 	}
 
 	@Override

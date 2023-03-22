@@ -111,7 +111,7 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 
 	public WardenEntity(EntityType<? extends HostileEntity> entityType, World world) {
 		super(entityType, world);
-		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), 16, this));
+		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(new EntityPositionSource(this, this.getStandingEyeHeight()), this));
 		this.experiencePoints = 5;
 		this.getNavigation().setCanSwim(true);
 		this.setPathfindingPenalty(PathNodeType.UNPASSABLE_RAIL, 0.0F);
@@ -378,6 +378,11 @@ public class WardenEntity extends HostileEntity implements VibrationListener.Cal
 		if (this.world instanceof ServerWorld serverWorld) {
 			callback.accept(this.gameEventHandler, serverWorld);
 		}
+	}
+
+	@Override
+	public int getRange() {
+		return 16;
 	}
 
 	@Override

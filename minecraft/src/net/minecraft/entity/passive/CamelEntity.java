@@ -351,7 +351,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
-		if (player.shouldCancelInteraction()) {
+		if (player.shouldCancelInteraction() && !this.isBaby()) {
 			this.openInventory(player);
 			return ActionResult.success(this.world.isClient);
 		} else {

@@ -48,8 +48,8 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
-		Random random = data.getRandom(currentBlockInfo.pos);
-		return (!this.rottableBlocks.isPresent() || originalBlockInfo.state.isIn((RegistryEntryList<Block>)this.rottableBlocks.get()))
+		Random random = data.getRandom(currentBlockInfo.pos());
+		return (!this.rottableBlocks.isPresent() || originalBlockInfo.state().isIn((RegistryEntryList<Block>)this.rottableBlocks.get()))
 				&& !(random.nextFloat() <= this.integrity)
 			? null
 			: currentBlockInfo;

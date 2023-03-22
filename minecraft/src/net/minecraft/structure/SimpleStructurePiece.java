@@ -86,26 +86,26 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		this.boundingBox = this.template.calculateBoundingBox(this.placementData, this.pos);
 		if (this.template.place(world, this.pos, pivot, this.placementData, random, 2)) {
 			for (StructureTemplate.StructureBlockInfo structureBlockInfo : this.template.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK)) {
-				if (structureBlockInfo.nbt != null) {
-					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.nbt.getString("mode"));
+				if (structureBlockInfo.nbt() != null) {
+					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.nbt().getString("mode"));
 					if (structureBlockMode == StructureBlockMode.DATA) {
-						this.handleMetadata(structureBlockInfo.nbt.getString("metadata"), structureBlockInfo.pos, world, random, chunkBox);
+						this.handleMetadata(structureBlockInfo.nbt().getString("metadata"), structureBlockInfo.pos(), world, random, chunkBox);
 					}
 				}
 			}
 
 			for (StructureTemplate.StructureBlockInfo structureBlockInfo2 : this.template.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW)) {
-				if (structureBlockInfo2.nbt != null) {
-					String string = structureBlockInfo2.nbt.getString("final_state");
+				if (structureBlockInfo2.nbt() != null) {
+					String string = structureBlockInfo2.nbt().getString("final_state");
 					BlockState blockState = Blocks.AIR.getDefaultState();
 
 					try {
 						blockState = BlockArgumentParser.block(world.createCommandRegistryWrapper(RegistryKeys.BLOCK), string, true).blockState();
 					} catch (CommandSyntaxException var15) {
-						LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
+						LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos());
 					}
 
-					world.setBlockState(structureBlockInfo2.pos, blockState, Block.NOTIFY_ALL);
+					world.setBlockState(structureBlockInfo2.pos(), blockState, Block.NOTIFY_ALL);
 				}
 			}
 		}

@@ -1,9 +1,8 @@
 package net.minecraft.client.render;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.primitives.Floats;
+import com.mojang.blaze3d.systems.VertexSorter;
 import com.mojang.logging.LogUtils;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntConsumer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -61,9 +60,8 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	private boolean building;
 	@Nullable
 	private Vector3f[] sortingPrimitiveCenters;
-	private float sortingCameraX = Float.NaN;
-	private float sortingCameraY = Float.NaN;
-	private float sortingCameraZ = Float.NaN;
+	@Nullable
+	private VertexSorter sorter;
 	private boolean hasNoVertexBuffer;
 
 	public BufferBuilder(int initialCapacity) {
@@ -99,23 +97,17 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		}
 	}
 
-	public void sortFrom(float cameraX, float cameraY, float cameraZ) {
+	public void setSorter(VertexSorter sorter) {
 		if (this.drawMode == VertexFormat.DrawMode.QUADS) {
-			if (this.sortingCameraX != cameraX || this.sortingCameraY != cameraY || this.sortingCameraZ != cameraZ) {
-				this.sortingCameraX = cameraX;
-				this.sortingCameraY = cameraY;
-				this.sortingCameraZ = cameraZ;
-				if (this.sortingPrimitiveCenters == null) {
-					this.sortingPrimitiveCenters = this.buildPrimitiveCenters();
-				}
+			this.sorter = sorter;
+			if (this.sortingPrimitiveCenters == null) {
+				this.sortingPrimitiveCenters = this.buildPrimitiveCenters();
 			}
 		}
 	}
 
 	public BufferBuilder.TransparentSortingData getSortingData() {
-		return new BufferBuilder.TransparentSortingData(
-			this.drawMode, this.vertexCount, this.sortingPrimitiveCenters, this.sortingCameraX, this.sortingCameraY, this.sortingCameraZ
-		);
+		return new BufferBuilder.TransparentSortingData(this.drawMode, this.vertexCount, this.sortingPrimitiveCenters, this.sorter);
 	}
 
 	public void beginSortedIndexBuffer(BufferBuilder.TransparentSortingData state) {
@@ -124,9 +116,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		this.vertexCount = state.vertexCount;
 		this.elementOffset = this.batchOffset;
 		this.sortingPrimitiveCenters = state.primitiveCenters;
-		this.sortingCameraX = state.cameraX;
-		this.sortingCameraY = state.cameraY;
-		this.sortingCameraZ = state.cameraZ;
+		this.sorter = state.sorter;
 		this.hasNoVertexBuffer = true;
 	}
 
@@ -157,7 +147,6 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		MutableInt mutableInt = new MutableInt(offset);
 
 		return switch (indexType) {
-			case BYTE -> index -> this.buffer.put(mutableInt.getAndIncrement(), (byte)index);
 			case SHORT -> index -> this.buffer.putShort(mutableInt.getAndAdd(2), (short)index);
 			case INT -> index -> this.buffer.putInt(mutableInt.getAndAdd(4), index);
 		};
@@ -188,26 +177,20 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	}
 
 	private void writeSortedIndices(VertexFormat.IndexType indexType) {
-		float[] fs = new float[this.sortingPrimitiveCenters.length];
-		int[] is = new int[this.sortingPrimitiveCenters.length];
+		if (this.sortingPrimitiveCenters != null && this.sorter != null) {
+			int[] is = this.sorter.sort(this.sortingPrimitiveCenters);
+			IntConsumer intConsumer = this.getIndexConsumer(this.elementOffset, indexType);
 
-		for (int i = 0; i < this.sortingPrimitiveCenters.length; is[i] = i++) {
-			float f = this.sortingPrimitiveCenters[i].x() - this.sortingCameraX;
-			float g = this.sortingPrimitiveCenters[i].y() - this.sortingCameraY;
-			float h = this.sortingPrimitiveCenters[i].z() - this.sortingCameraZ;
-			fs[i] = f * f + g * g + h * h;
-		}
-
-		IntArrays.mergeSort(is, (a, b) -> Floats.compare(fs[b], fs[a]));
-		IntConsumer intConsumer = this.getIndexConsumer(this.elementOffset, indexType);
-
-		for (int j : is) {
-			intConsumer.accept(j * this.drawMode.additionalVertexCount + 0);
-			intConsumer.accept(j * this.drawMode.additionalVertexCount + 1);
-			intConsumer.accept(j * this.drawMode.additionalVertexCount + 2);
-			intConsumer.accept(j * this.drawMode.additionalVertexCount + 2);
-			intConsumer.accept(j * this.drawMode.additionalVertexCount + 3);
-			intConsumer.accept(j * this.drawMode.additionalVertexCount + 0);
+			for (int i : is) {
+				intConsumer.accept(i * this.drawMode.additionalVertexCount + 0);
+				intConsumer.accept(i * this.drawMode.additionalVertexCount + 1);
+				intConsumer.accept(i * this.drawMode.additionalVertexCount + 2);
+				intConsumer.accept(i * this.drawMode.additionalVertexCount + 2);
+				intConsumer.accept(i * this.drawMode.additionalVertexCount + 3);
+				intConsumer.accept(i * this.drawMode.additionalVertexCount + 0);
+			}
+		} else {
+			throw new IllegalStateException("Sorting state uninitialized");
 		}
 	}
 
@@ -294,9 +277,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		this.currentElement = null;
 		this.currentElementId = 0;
 		this.sortingPrimitiveCenters = null;
-		this.sortingCameraX = Float.NaN;
-		this.sortingCameraY = Float.NaN;
-		this.sortingCameraZ = Float.NaN;
+		this.sorter = null;
 		this.hasNoVertexBuffer = false;
 	}
 
@@ -540,17 +521,14 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		final int vertexCount;
 		@Nullable
 		final Vector3f[] primitiveCenters;
-		final float cameraX;
-		final float cameraY;
-		final float cameraZ;
+		@Nullable
+		final VertexSorter sorter;
 
-		TransparentSortingData(VertexFormat.DrawMode drawMode, int vertexCount, @Nullable Vector3f[] primitiveCenters, float cameraX, float cameraY, float cameraZ) {
+		TransparentSortingData(VertexFormat.DrawMode drawMode, int vertexCount, @Nullable Vector3f[] primitiveCenters, @Nullable VertexSorter sorter) {
 			this.drawMode = drawMode;
 			this.vertexCount = vertexCount;
 			this.primitiveCenters = primitiveCenters;
-			this.cameraX = cameraX;
-			this.cameraY = cameraY;
-			this.cameraZ = cameraZ;
+			this.sorter = sorter;
 		}
 	}
 }

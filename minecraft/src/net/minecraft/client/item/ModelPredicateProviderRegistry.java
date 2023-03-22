@@ -25,7 +25,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.GlobalPos;
@@ -89,11 +88,9 @@ public class ModelPredicateProviderRegistry {
 		ClampedModelPredicateProvider clampedModelPredicateProvider = (stack, world, entity, seed) -> {
 			if (!stack.isIn(ItemTags.TRIMMABLE_ARMOR)) {
 				return Float.NEGATIVE_INFINITY;
-			} else if (world == null) {
-				return 0.0F;
 			} else {
-				return !world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)
-					? Float.NEGATIVE_INFINITY
+				return world == null
+					? 0.0F
 					: (Float)ArmorTrim.getTrim(world.getRegistryManager(), stack)
 						.map(ArmorTrim::getMaterial)
 						.map(RegistryEntry::value)

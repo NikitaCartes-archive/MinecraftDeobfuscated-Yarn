@@ -1,14 +1,15 @@
 package net.minecraft.item;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.SuspiciousSandBlockEntity;
+import net.minecraft.block.BrushableBlock;
+import net.minecraft.block.entity.BrushableBlockEntity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.UseAction;
@@ -60,11 +61,16 @@ public class BrushItem extends Item {
 				if (i == 1 || i % 10 == 0) {
 					BlockState blockState = world.getBlockState(blockPos);
 					this.addDustParticles(world, blockHitResult, blockState, user.getRotationVec(0.0F));
-					world.playSound(playerEntity, blockPos, SoundEvents.ITEM_BRUSH_BRUSHING, SoundCategory.PLAYERS);
-					if (!world.isClient()
-						&& blockState.isOf(Blocks.SUSPICIOUS_SAND)
-						&& world.getBlockEntity(blockPos) instanceof SuspiciousSandBlockEntity suspiciousSandBlockEntity) {
-						boolean bl = suspiciousSandBlockEntity.brush(world.getTime(), playerEntity, blockHitResult.getSide());
+					SoundEvent soundEvent;
+					if (blockState.getBlock() instanceof BrushableBlock brushableBlock) {
+						soundEvent = brushableBlock.getBrushingSound();
+					} else {
+						soundEvent = SoundEvents.ITEM_BRUSH_BRUSHING_GENERIC;
+					}
+
+					world.playSound(playerEntity, blockPos, soundEvent, SoundCategory.PLAYERS);
+					if (!world.isClient() && world.getBlockEntity(blockPos) instanceof BrushableBlockEntity brushableBlockEntity) {
+						boolean bl = brushableBlockEntity.brush(world.getTime(), playerEntity, blockHitResult.getSide());
 						if (bl) {
 							stack.damage(1, user, userx -> userx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
 						}

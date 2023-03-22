@@ -37,6 +37,7 @@ public interface StructureKeys {
 	RegistryKey<Structure> RUINED_PORTAL_OCEAN = of("ruined_portal_ocean");
 	RegistryKey<Structure> RUINED_PORTAL_NETHER = of("ruined_portal_nether");
 	RegistryKey<Structure> ANCIENT_CITY = of("ancient_city");
+	RegistryKey<Structure> TRAIL_RUINS = of("trail_ruins");
 
 	private static RegistryKey<Structure> of(String id) {
 		return RegistryKey.of(RegistryKeys.STRUCTURE, new Identifier(id));

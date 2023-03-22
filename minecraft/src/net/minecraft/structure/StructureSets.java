@@ -158,5 +158,9 @@ public interface StructureSets {
 				new ConcentricRingsStructurePlacement(32, 3, 128, registryEntryLookup2.getOrThrow(BiomeTags.STRONGHOLD_BIASED_TO))
 			)
 		);
+		structureSetRegisterable.register(
+			StructureSetKeys.TRAIL_RUINS,
+			new StructureSet(registryEntryLookup.getOrThrow(StructureKeys.TRAIL_RUINS), new RandomSpreadStructurePlacement(34, 8, SpreadType.LINEAR, 83469867))
+		);
 	}
 }

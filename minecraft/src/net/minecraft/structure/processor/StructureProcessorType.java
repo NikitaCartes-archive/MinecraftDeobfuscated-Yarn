@@ -9,6 +9,13 @@ import net.minecraft.registry.entry.RegistryElementCodec;
 import net.minecraft.registry.entry.RegistryEntry;
 
 public interface StructureProcessorType<P extends StructureProcessor> {
+	Codec<StructureProcessor> CODEC = Registries.STRUCTURE_PROCESSOR
+		.getCodec()
+		.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
+	Codec<StructureProcessorList> LIST_CODEC = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
+	Codec<StructureProcessorList> PROCESSORS_CODEC = Codec.either(LIST_CODEC.fieldOf("processors").codec(), LIST_CODEC)
+		.xmap(either -> either.map(structureProcessorList -> structureProcessorList, structureProcessorList -> structureProcessorList), Either::left);
+	Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.PROCESSOR_LIST, PROCESSORS_CODEC);
 	StructureProcessorType<BlockIgnoreStructureProcessor> BLOCK_IGNORE = register("block_ignore", BlockIgnoreStructureProcessor.CODEC);
 	StructureProcessorType<BlockRotStructureProcessor> BLOCK_ROT = register("block_rot", BlockRotStructureProcessor.CODEC);
 	StructureProcessorType<GravityStructureProcessor> GRAVITY = register("gravity", GravityStructureProcessor.CODEC);
@@ -23,13 +30,7 @@ public interface StructureProcessorType<P extends StructureProcessor> {
 		"lava_submerged_block", LavaSubmergedBlockStructureProcessor.CODEC
 	);
 	StructureProcessorType<ProtectedBlocksStructureProcessor> PROTECTED_BLOCKS = register("protected_blocks", ProtectedBlocksStructureProcessor.CODEC);
-	Codec<StructureProcessor> CODEC = Registries.STRUCTURE_PROCESSOR
-		.getCodec()
-		.dispatch("processor_type", StructureProcessor::getType, StructureProcessorType::codec);
-	Codec<StructureProcessorList> LIST_CODEC = CODEC.listOf().xmap(StructureProcessorList::new, StructureProcessorList::getList);
-	Codec<StructureProcessorList> PROCESSORS_CODEC = Codec.either(LIST_CODEC.fieldOf("processors").codec(), LIST_CODEC)
-		.xmap(either -> either.map(structureProcessorList -> structureProcessorList, structureProcessorList -> structureProcessorList), Either::left);
-	Codec<RegistryEntry<StructureProcessorList>> REGISTRY_CODEC = RegistryElementCodec.of(RegistryKeys.PROCESSOR_LIST, PROCESSORS_CODEC);
+	StructureProcessorType<CappedStructureProcessor> CAPPED = register("capped", CappedStructureProcessor.CODEC);
 
 	Codec<P> codec();
 

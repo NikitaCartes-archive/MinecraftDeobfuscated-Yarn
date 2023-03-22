@@ -78,20 +78,12 @@ public class MultiNoiseBiomeSourceParameterList {
 			new Identifier("overworld"), new MultiNoiseBiomeSourceParameterList.Preset.BiomeSourceFunction() {
 				@Override
 				public <T> MultiNoiseUtil.Entries<T> apply(Function<RegistryKey<Biome>, T> function) {
-					return MultiNoiseBiomeSourceParameterList.Preset.getOverworldEntries(function, VanillaBiomeParameters.Type.NONE);
-				}
-			}
-		);
-		public static final MultiNoiseBiomeSourceParameterList.Preset OVERWORLD_UPDATE_1_20 = new MultiNoiseBiomeSourceParameterList.Preset(
-			new Identifier("overworld_update_1_20"), new MultiNoiseBiomeSourceParameterList.Preset.BiomeSourceFunction() {
-				@Override
-				public <T> MultiNoiseUtil.Entries<T> apply(Function<RegistryKey<Biome>, T> function) {
-					return MultiNoiseBiomeSourceParameterList.Preset.getOverworldEntries(function, VanillaBiomeParameters.Type.UPDATE_1_20);
+					return MultiNoiseBiomeSourceParameterList.Preset.getOverworldEntries(function);
 				}
 			}
 		);
 		static final Map<Identifier, MultiNoiseBiomeSourceParameterList.Preset> BY_IDENTIFIER = (Map<Identifier, MultiNoiseBiomeSourceParameterList.Preset>)Stream.of(
-				NETHER, OVERWORLD, OVERWORLD_UPDATE_1_20
+				NETHER, OVERWORLD
 			)
 			.collect(Collectors.toMap(MultiNoiseBiomeSourceParameterList.Preset::id, preset -> preset));
 		public static final Codec<MultiNoiseBiomeSourceParameterList.Preset> CODEC = Identifier.CODEC
@@ -102,9 +94,9 @@ public class MultiNoiseBiomeSourceParameterList {
 				preset -> DataResult.success(preset.id)
 			);
 
-		static <T> MultiNoiseUtil.Entries<T> getOverworldEntries(Function<RegistryKey<Biome>, T> biomeEntryGetter, VanillaBiomeParameters.Type parametersType) {
+		static <T> MultiNoiseUtil.Entries<T> getOverworldEntries(Function<RegistryKey<Biome>, T> biomeEntryGetter) {
 			Builder<Pair<MultiNoiseUtil.NoiseHypercube, T>> builder = ImmutableList.builder();
-			new VanillaBiomeParameters(parametersType).writeOverworldBiomeParameters(pair -> builder.add(pair.mapSecond(biomeEntryGetter)));
+			new VanillaBiomeParameters().writeOverworldBiomeParameters(pair -> builder.add(pair.mapSecond(biomeEntryGetter)));
 			return new MultiNoiseUtil.Entries<>(builder.build());
 		}
 

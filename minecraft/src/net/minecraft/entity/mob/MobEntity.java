@@ -587,7 +587,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		if (equipmentSlot.isArmorSlot() && !bl) {
 			equipmentSlot = EquipmentSlot.MAINHAND;
 			itemStack = this.getEquippedStack(equipmentSlot);
-			bl = this.prefersNewEquipment(stack, itemStack);
+			bl = itemStack.isEmpty();
 		}
 
 		if (bl && this.canPickupItem(stack)) {

@@ -61,11 +61,11 @@ public class BlackstoneReplacementStructureProcessor extends StructureProcessor 
 		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
-		Block block = (Block)this.replacementMap.get(currentBlockInfo.state.getBlock());
+		Block block = (Block)this.replacementMap.get(currentBlockInfo.state().getBlock());
 		if (block == null) {
 			return currentBlockInfo;
 		} else {
-			BlockState blockState = currentBlockInfo.state;
+			BlockState blockState = currentBlockInfo.state();
 			BlockState blockState2 = block.getDefaultState();
 			if (blockState.contains(StairsBlock.FACING)) {
 				blockState2 = blockState2.with(StairsBlock.FACING, (Direction)blockState.get(StairsBlock.FACING));
@@ -79,7 +79,7 @@ public class BlackstoneReplacementStructureProcessor extends StructureProcessor 
 				blockState2 = blockState2.with(SlabBlock.TYPE, (SlabType)blockState.get(SlabBlock.TYPE));
 			}
 
-			return new StructureTemplate.StructureBlockInfo(currentBlockInfo.pos, blockState2, currentBlockInfo.nbt);
+			return new StructureTemplate.StructureBlockInfo(currentBlockInfo.pos(), blockState2, currentBlockInfo.nbt());
 		}
 	}
 

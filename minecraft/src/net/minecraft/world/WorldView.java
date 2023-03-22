@@ -13,7 +13,6 @@ import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.ColorResolver;
@@ -26,7 +25,7 @@ import net.minecraft.world.dimension.DimensionType;
 /**
  * Represents a scoped, read-only view of a world like structure that contains biomes, chunks and is bound to a dimension.
  */
-public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.Storage {
+public interface WorldView extends BlockRenderView, CollisionView, RedstoneView, BiomeAccess.Storage {
 	@Nullable
 	Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create);
 
@@ -142,10 +141,6 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		float f = (float)this.getLightLevel(pos) / 15.0F;
 		float g = f / (4.0F - 3.0F * f);
 		return MathHelper.lerp(this.getDimension().ambientLight(), g, 1.0F);
-	}
-
-	default int getStrongRedstonePower(BlockPos pos, Direction direction) {
-		return this.getBlockState(pos).getStrongRedstonePower(this, pos, direction);
 	}
 
 	/**

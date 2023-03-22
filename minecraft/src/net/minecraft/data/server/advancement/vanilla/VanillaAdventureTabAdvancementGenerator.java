@@ -588,7 +588,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.build(exporter, "adventure/avoid_vibration");
 	}
 
-	public static void buildAdventuringTime(Consumer<Advancement> exporter, Advancement parent, MultiNoiseBiomeSourceParameterList.Preset preset) {
+	protected static void buildAdventuringTime(Consumer<Advancement> exporter, Advancement parent, MultiNoiseBiomeSourceParameterList.Preset preset) {
 		requireListedBiomesVisited(Advancement.Builder.create(), preset.biomeStream().toList())
 			.parent(parent)
 			.display(

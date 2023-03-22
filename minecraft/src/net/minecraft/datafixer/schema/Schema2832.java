@@ -42,6 +42,7 @@ public class Schema2832 extends IdentifierNormalizingSchema {
 					)
 				)
 		);
+		schema.registerType(false, TypeReferences.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST, () -> DSL.constType(getIdentifierType()));
 		schema.registerType(
 			false,
 			TypeReferences.WORLD_GEN_SETTINGS,
@@ -72,7 +73,10 @@ public class Schema2832 extends IdentifierNormalizingSchema {
 													"minecraft:fixed",
 													() -> DSL.fields("biome", TypeReferences.BIOME.in(schema)),
 													"minecraft:multi_noise",
-													() -> DSL.or(DSL.fields("preset", getIdentifierType().template()), DSL.list(DSL.fields("biome", TypeReferences.BIOME.in(schema)))),
+													() -> DSL.or(
+															DSL.fields("preset", TypeReferences.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST.in(schema)),
+															DSL.list(DSL.fields("biome", TypeReferences.BIOME.in(schema)))
+														),
 													"minecraft:checkerboard",
 													() -> DSL.fields("biomes", DSL.list(TypeReferences.BIOME.in(schema))),
 													"minecraft:the_end",

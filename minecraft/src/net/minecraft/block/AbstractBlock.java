@@ -444,7 +444,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @deprecated Consider calling {@link AbstractBlockState#neighborUpdate} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 * 
 	 * @see #getStateForNeighborUpdate
-	 * @see World#isReceivingRedstonePower
+	 * @see net.minecraft.world.RedstoneView#isReceivingRedstonePower
 	 */
 	@Deprecated
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
@@ -1008,7 +1008,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * 
 	 * @see #emitsRedstonePower
 	 * @see #getStrongRedstonePower
-	 * @see World#isReceivingRedstonePower
+	 * @see net.minecraft.world.RedstoneView#isReceivingRedstonePower
 	 */
 	@Deprecated
 	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
@@ -1057,7 +1057,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * 
 	 * @see #emitsRedstonePower
 	 * @see #getWeakRedstonePower
-	 * @see World#isReceivingRedstonePower
+	 * @see net.minecraft.world.RedstoneView#isReceivingRedstonePower
 	 */
 	@Deprecated
 	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
@@ -1359,7 +1359,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public final void updateNeighbors(WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
-			this.getBlock();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (Direction direction : AbstractBlock.DIRECTIONS) {

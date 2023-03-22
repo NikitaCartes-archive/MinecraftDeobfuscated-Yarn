@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
+import java.util.Iterator;
 import java.util.List;
 import java.util.OptionalInt;
 import java.util.Set;
@@ -11,6 +12,7 @@ import java.util.function.BiConsumer;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.Material;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.property.Properties;
@@ -175,15 +177,13 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 	}
 
 	private static VoxelSet placeLogsAndLeaves(WorldAccess world, BlockBox box, Set<BlockPos> trunkPositions, Set<BlockPos> decorationPositions, Set<BlockPos> set) {
-		List<Set<BlockPos>> list = Lists.<Set<BlockPos>>newArrayList();
 		VoxelSet voxelSet = new BitSetVoxelSet(box.getBlockCountX(), box.getBlockCountY(), box.getBlockCountZ());
-		int i = 6;
+		int i = 7;
+		List<Set<BlockPos>> list = Lists.<Set<BlockPos>>newArrayList();
 
-		for (int j = 0; j < 6; j++) {
+		for (int j = 0; j < 7; j++) {
 			list.add(Sets.newHashSet());
 		}
-
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (BlockPos blockPos : Lists.newArrayList(Sets.union(decorationPositions, set))) {
 			if (box.contains(blockPos)) {
@@ -191,56 +191,50 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 			}
 		}
 
-		for (BlockPos blockPosx : Lists.newArrayList(trunkPositions)) {
-			if (box.contains(blockPosx)) {
-				voxelSet.set(blockPosx.getX() - box.getMinX(), blockPosx.getY() - box.getMinY(), blockPosx.getZ() - box.getMinZ());
-			}
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+		int k = 0;
+		((Set)list.get(0)).addAll(trunkPositions);
 
-			for (Direction direction : Direction.values()) {
-				mutable.set(blockPosx, direction);
-				if (!trunkPositions.contains(mutable)) {
-					BlockState blockState = world.getBlockState(mutable);
-					if (blockState.contains(Properties.DISTANCE_1_7)) {
-						((Set)list.get(0)).add(mutable.toImmutable());
-						setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(1)));
-						if (box.contains(mutable)) {
-							voxelSet.set(mutable.getX() - box.getMinX(), mutable.getY() - box.getMinY(), mutable.getZ() - box.getMinZ());
-						}
-					}
+		while (true) {
+			while (k >= 7 || !((Set)list.get(k)).isEmpty()) {
+				if (k >= 7) {
+					return voxelSet;
 				}
-			}
-		}
 
-		for (int k = 1; k < 6; k++) {
-			Set<BlockPos> set2 = (Set<BlockPos>)list.get(k - 1);
-			Set<BlockPos> set3 = (Set<BlockPos>)list.get(k);
-
-			for (BlockPos blockPos2 : set2) {
+				Iterator<BlockPos> iterator = ((Set)list.get(k)).iterator();
+				BlockPos blockPos2 = (BlockPos)iterator.next();
+				iterator.remove();
 				if (box.contains(blockPos2)) {
+					if (k != 0) {
+						BlockState blockState = world.getBlockState(blockPos2);
+						setBlockStateWithoutUpdatingNeighbors(world, blockPos2, blockState.with(Properties.DISTANCE_1_7, Integer.valueOf(k)));
+					}
+
 					voxelSet.set(blockPos2.getX() - box.getMinX(), blockPos2.getY() - box.getMinY(), blockPos2.getZ() - box.getMinZ());
-				}
 
-				for (Direction direction2 : Direction.values()) {
-					mutable.set(blockPos2, direction2);
-					if (!set2.contains(mutable) && !set3.contains(mutable)) {
-						BlockState blockState2 = world.getBlockState(mutable);
-						if (blockState2.contains(Properties.DISTANCE_1_7)) {
-							int l = (Integer)blockState2.get(Properties.DISTANCE_1_7);
-							if (l > k + 1) {
-								BlockState blockState3 = blockState2.with(Properties.DISTANCE_1_7, Integer.valueOf(k + 1));
-								setBlockStateWithoutUpdatingNeighbors(world, mutable, blockState3);
-								if (box.contains(mutable)) {
-									voxelSet.set(mutable.getX() - box.getMinX(), mutable.getY() - box.getMinY(), mutable.getZ() - box.getMinZ());
+					for (Direction direction : Direction.values()) {
+						mutable.set(blockPos2, direction);
+						if (box.contains(mutable)) {
+							int l = mutable.getX() - box.getMinX();
+							int m = mutable.getY() - box.getMinY();
+							int n = mutable.getZ() - box.getMinZ();
+							if (!voxelSet.contains(l, m, n)) {
+								BlockState blockState2 = world.getBlockState(mutable);
+								OptionalInt optionalInt = LeavesBlock.getOptionalDistanceFromLog(blockState2);
+								if (!optionalInt.isEmpty()) {
+									int o = Math.min(optionalInt.getAsInt(), k + 1);
+									if (o < 7) {
+										((Set)list.get(o)).add(mutable.toImmutable());
+										k = Math.min(k, o);
+									}
 								}
-
-								set3.add(mutable.toImmutable());
 							}
 						}
 					}
 				}
 			}
-		}
 
-		return voxelSet;
+			k++;
+		}
 	}
 }

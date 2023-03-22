@@ -26,8 +26,6 @@ import net.minecraft.datafixer.fix.ArrowPickupFix;
 import net.minecraft.datafixer.fix.BedBlockEntityFix;
 import net.minecraft.datafixer.fix.BedItemColorFix;
 import net.minecraft.datafixer.fix.BiomeFormatFix;
-import net.minecraft.datafixer.fix.BiomeRenameFix;
-import net.minecraft.datafixer.fix.BiomesFix;
 import net.minecraft.datafixer.fix.BitStorageAlignFix;
 import net.minecraft.datafixer.fix.BlendingDataFix;
 import net.minecraft.datafixer.fix.BlendingDataRemoveFromNetherEndFix;
@@ -59,6 +57,7 @@ import net.minecraft.datafixer.fix.ChunkToProtoChunkFix;
 import net.minecraft.datafixer.fix.ColorlessShulkerEntityFix;
 import net.minecraft.datafixer.fix.EntityArmorStandSilentFix;
 import net.minecraft.datafixer.fix.EntityBlockStateFix;
+import net.minecraft.datafixer.fix.EntityBrushableBlockFieldsRenameFix;
 import net.minecraft.datafixer.fix.EntityCatSplitFix;
 import net.minecraft.datafixer.fix.EntityCodSalmonFix;
 import net.minecraft.datafixer.fix.EntityCustomNameToTextFix;
@@ -142,14 +141,13 @@ import net.minecraft.datafixer.fix.PointOfInterestRemoveFix;
 import net.minecraft.datafixer.fix.PointOfInterestRenameFix;
 import net.minecraft.datafixer.fix.PointOfInterestReorganizationFix;
 import net.minecraft.datafixer.fix.ProtoChunkTickListFix;
-import net.minecraft.datafixer.fix.RecipeFix;
-import net.minecraft.datafixer.fix.RecipeRenameFix;
-import net.minecraft.datafixer.fix.RecipeRenamingFix;
 import net.minecraft.datafixer.fix.RedstoneConnectionsFix;
+import net.minecraft.datafixer.fix.RemoveFeatureTogglesFix;
 import net.minecraft.datafixer.fix.RemoveFilteredBookTextFix;
 import net.minecraft.datafixer.fix.RemoveFilteredSignTextFix;
 import net.minecraft.datafixer.fix.RemoveGolemGossipFix;
 import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
+import net.minecraft.datafixer.fix.RenameBlockEntityFix;
 import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
 import net.minecraft.datafixer.fix.RenameVariantsFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
@@ -164,6 +162,7 @@ import net.minecraft.datafixer.fix.StructuresToConfiguredStructuresFix;
 import net.minecraft.datafixer.fix.TeamDisplayNameFix;
 import net.minecraft.datafixer.fix.TicksInWrongChunkFix;
 import net.minecraft.datafixer.fix.UntaggedSpawnerFix;
+import net.minecraft.datafixer.fix.UpdateSignTextFormatFix;
 import net.minecraft.datafixer.fix.VillagerFollowRangeFix;
 import net.minecraft.datafixer.fix.VillagerGossipFix;
 import net.minecraft.datafixer.fix.VillagerProfessionFix;
@@ -176,10 +175,13 @@ import net.minecraft.datafixer.fix.WorldGenSettingsHeightAndBiomeFix;
 import net.minecraft.datafixer.fix.WorldUuidFix;
 import net.minecraft.datafixer.fix.WriteAndReadFix;
 import net.minecraft.datafixer.fix.ZombieVillagerXpRebuildFix;
+import net.minecraft.datafixer.mapping.FlatteningBiomeMapping;
+import net.minecraft.datafixer.mapping.FlatteningRecipeMapping;
 import net.minecraft.datafixer.mapping.LegacyBiomeMapping;
 import net.minecraft.datafixer.mapping.LegacyCoralBlockMapping;
 import net.minecraft.datafixer.mapping.LegacyCoralFanBlockMapping;
 import net.minecraft.datafixer.mapping.LegacyDyeItemMapping;
+import net.minecraft.datafixer.mapping.WoodRecipeMapping;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 import net.minecraft.datafixer.schema.Schema100;
 import net.minecraft.datafixer.schema.Schema102;
@@ -242,6 +244,7 @@ import net.minecraft.datafixer.schema.Schema3325;
 import net.minecraft.datafixer.schema.Schema3326;
 import net.minecraft.datafixer.schema.Schema3327;
 import net.minecraft.datafixer.schema.Schema3328;
+import net.minecraft.datafixer.schema.Schema3438;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -257,7 +260,7 @@ public class Schemas {
 	private static final BiFunction<Integer, Schema, Schema> EMPTY = Schema::new;
 	private static final BiFunction<Integer, Schema, Schema> EMPTY_IDENTIFIER_NORMALIZE = IdentifierNormalizingSchema::new;
 	private static final DataFixer FIXER = create(SharedConstants.requiredDataFixTypes);
-	public static final int field_38844 = 3088;
+	public static final int field_38844 = 3441;
 
 	private Schemas() {
 	}
@@ -544,13 +547,13 @@ public class Schemas {
 		Schema schema64 = builder.addSchema(1501, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new AdvancementsFix(schema64, false));
 		Schema schema65 = builder.addSchema(1502, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new RecipeFix(schema65, false));
+		builder.addFixer(new GameEventRenamesFix(schema65, "Recipes fix", TypeReferences.RECIPE, replacing(FlatteningRecipeMapping.RECIPES)));
 		Schema schema66 = builder.addSchema(1506, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new LevelDataGeneratorOptionsFix(schema66, false));
 		Schema schema67 = builder.addSchema(1510, Schema1510::new);
 		builder.addFixer(BlockNameFix.create(schema67, "Block renamening fix", replacing(EntityTheRenameningBlockFix.BLOCKS)));
 		builder.addFixer(ItemNameFix.create(schema67, "Item renamening fix", replacing(EntityTheRenameningBlockFix.ITEMS)));
-		builder.addFixer(new RecipeRenamingFix(schema67, false));
+		builder.addFixer(new GameEventRenamesFix(schema67, "Recipes renamening fix", TypeReferences.RECIPE, replacing(WoodRecipeMapping.RECIPES)));
 		builder.addFixer(new EntityTheRenameningBlockFix(schema67, true));
 		builder.addFixer(
 			new StatsRenameFix(
@@ -641,7 +644,7 @@ public class Schemas {
 		Schema schema95 = builder.addSchema(2100, Schema2100::new);
 		builder.addFixer(new ChoiceTypesFix(schema95, "Added Bee and Bee Stinger", TypeReferences.ENTITY));
 		builder.addFixer(new ChoiceTypesFix(schema95, "Add beehive", TypeReferences.BLOCK_ENTITY));
-		builder.addFixer(new RecipeRenameFix(schema95, false, "Rename sugar recipe", replacing("minecraft:sugar", "sugar_from_sugar_cane")));
+		builder.addFixer(new GameEventRenamesFix(schema95, "Rename sugar recipe", TypeReferences.RECIPE, replacing("minecraft:sugar", "sugar_from_sugar_cane")));
 		builder.addFixer(
 			new AdvancementRenameFix(
 				schema95, false, "Rename sugar recipe advancement", replacing("minecraft:recipes/misc/sugar", "minecraft:recipes/misc/sugar_from_sugar_cane")
@@ -750,9 +753,9 @@ public class Schemas {
 		Schema schema120 = builder.addSchema(2551, Schema2551::new);
 		builder.addFixer(new WriteAndReadFix(schema120, "add types to WorldGenData", TypeReferences.WORLD_GEN_SETTINGS));
 		Schema schema121 = builder.addSchema(2552, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BiomeRenameFix(schema121, false, "Nether biome rename", ImmutableMap.of("minecraft:nether", "minecraft:nether_wastes")));
+		builder.addFixer(new GameEventRenamesFix(schema121, "Nether biome rename", TypeReferences.BIOME, replacing("minecraft:nether", "minecraft:nether_wastes")));
 		Schema schema122 = builder.addSchema(2553, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BiomesFix(schema122, false));
+		builder.addFixer(new GameEventRenamesFix(schema122, "Biomes fix", TypeReferences.BIOME, replacing(FlatteningBiomeMapping.RENAMED_BIOMES)));
 		Schema schema123 = builder.addSchema(2558, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new MissingDimensionFix(schema123, false));
 		builder.addFixer(new OptionFix(schema123, false, "Rename swapHands setting", "key_key.swapHands", "key_key.swapOffhand"));
@@ -872,14 +875,16 @@ public class Schemas {
 		Schema schema145 = builder.addSchema(2833, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new WorldGenSettingsDisallowOldCustomWorldsFix(schema145));
 		Schema schema146 = builder.addSchema(2838, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BiomeRenameFix(schema146, false, "Caves and Cliffs biome renames", LegacyBiomeMapping.MAP));
+		builder.addFixer(new GameEventRenamesFix(schema146, "Caves and Cliffs biome renames", TypeReferences.BIOME, replacing(LegacyBiomeMapping.MAP)));
 		Schema schema147 = builder.addSchema(2841, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new ProtoChunkTickListFix(schema147));
 		Schema schema148 = builder.addSchema(2842, Schema2842::new);
 		builder.addFixer(new ChunkLevelTagRenameFix(schema148));
 		Schema schema149 = builder.addSchema(2843, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new TicksInWrongChunkFix(schema149));
-		builder.addFixer(new BiomeRenameFix(schema149, false, "Remove Deep Warm Ocean", Map.of("minecraft:deep_warm_ocean", "minecraft:warm_ocean")));
+		builder.addFixer(
+			new GameEventRenamesFix(schema149, "Remove Deep Warm Ocean", TypeReferences.BIOME, replacing("minecraft:deep_warm_ocean", "minecraft:warm_ocean"))
+		);
 		Schema schema150 = builder.addSchema(2846, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			new AdvancementRenameFix(
@@ -922,24 +927,27 @@ public class Schemas {
 		builder.addFixer(
 			new GameEventRenamesFix(
 				schema160,
+				"game_event_renames_3084",
 				TypeReferences.GAME_EVENT_NAME,
-				ImmutableMap.<String, String>builder()
-					.put("minecraft:block_press", "minecraft:block_activate")
-					.put("minecraft:block_switch", "minecraft:block_activate")
-					.put("minecraft:block_unpress", "minecraft:block_deactivate")
-					.put("minecraft:block_unswitch", "minecraft:block_deactivate")
-					.put("minecraft:drinking_finish", "minecraft:drink")
-					.put("minecraft:elytra_free_fall", "minecraft:elytra_glide")
-					.put("minecraft:entity_damaged", "minecraft:entity_damage")
-					.put("minecraft:entity_dying", "minecraft:entity_die")
-					.put("minecraft:entity_killed", "minecraft:entity_die")
-					.put("minecraft:mob_interact", "minecraft:entity_interact")
-					.put("minecraft:ravager_roar", "minecraft:entity_roar")
-					.put("minecraft:ring_bell", "minecraft:block_change")
-					.put("minecraft:shulker_close", "minecraft:container_close")
-					.put("minecraft:shulker_open", "minecraft:container_open")
-					.put("minecraft:wolf_shaking", "minecraft:entity_shake")
-					.build()
+				replacing(
+					ImmutableMap.<String, String>builder()
+						.put("minecraft:block_press", "minecraft:block_activate")
+						.put("minecraft:block_switch", "minecraft:block_activate")
+						.put("minecraft:block_unpress", "minecraft:block_deactivate")
+						.put("minecraft:block_unswitch", "minecraft:block_deactivate")
+						.put("minecraft:drinking_finish", "minecraft:drink")
+						.put("minecraft:elytra_free_fall", "minecraft:elytra_glide")
+						.put("minecraft:entity_damaged", "minecraft:entity_damage")
+						.put("minecraft:entity_dying", "minecraft:entity_die")
+						.put("minecraft:entity_killed", "minecraft:entity_die")
+						.put("minecraft:mob_interact", "minecraft:entity_interact")
+						.put("minecraft:ravager_roar", "minecraft:entity_roar")
+						.put("minecraft:ring_bell", "minecraft:block_change")
+						.put("minecraft:shulker_close", "minecraft:container_close")
+						.put("minecraft:shulker_open", "minecraft:container_open")
+						.put("minecraft:wolf_shaking", "minecraft:entity_shake")
+						.build()
+				)
 			)
 		);
 		Schema schema161 = builder.addSchema(3086, EMPTY_IDENTIFIER_NORMALIZE);
@@ -989,56 +997,93 @@ public class Schemas {
 				})::get
 			)
 		);
-		Schema schema163 = builder.addSchema(3088, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BlendingDataFix(schema163));
-		Schema schema164 = builder.addSchema(3090, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new EntityPaintingFieldsRenameFix(schema164));
-		Schema schema165 = builder.addSchema(3093, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new GoatMissingStateFix(schema165));
-		Schema schema166 = builder.addSchema(3094, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new GoatHornIdFix(schema166));
-		Schema schema167 = builder.addSchema(3097, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new RemoveFilteredBookTextFix(schema167));
-		builder.addFixer(new RemoveFilteredSignTextFix(schema167));
+		Schema schema163 = builder.addSchema(3090, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new EntityPaintingFieldsRenameFix(schema163));
+		Schema schema164 = builder.addSchema(3093, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new GoatMissingStateFix(schema164));
+		Schema schema165 = builder.addSchema(3094, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new GoatHornIdFix(schema165));
+		Schema schema166 = builder.addSchema(3097, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RemoveFilteredBookTextFix(schema166));
+		builder.addFixer(new RemoveFilteredSignTextFix(schema166));
 		Map<String, String> map = Map.of("minecraft:british", "minecraft:british_shorthair");
-		builder.addFixer(new RenameVariantsFix(schema167, "Rename british shorthair", TypeReferences.ENTITY, "minecraft:cat", map));
+		builder.addFixer(new RenameVariantsFix(schema166, "Rename british shorthair", TypeReferences.ENTITY, "minecraft:cat", map));
 		builder.addFixer(
 			new AdvancementCriteriaRenameFix(
-				schema167,
+				schema166,
 				"Migrate cat variant advancement for british shorthair",
 				"minecraft:husbandry/complete_catalogue",
 				string -> (String)map.getOrDefault(string, string)
 			)
 		);
 		builder.addFixer(
-			new PointOfInterestRemoveFix(schema167, "Remove unpopulated villager PoI types", Set.of("minecraft:unemployed", "minecraft:nitwit")::contains)
+			new PointOfInterestRemoveFix(schema166, "Remove unpopulated villager PoI types", Set.of("minecraft:unemployed", "minecraft:nitwit")::contains)
 		);
-		Schema schema168 = builder.addSchema(3108, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new BlendingDataRemoveFromNetherEndFix(schema168));
-		Schema schema169 = builder.addSchema(3201, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new OptionsProgrammerArtFix(schema169));
-		Schema schema170 = builder.addSchema(3202, Schema3202::new);
-		builder.addFixer(new ChoiceTypesFix(schema170, "Added Hanging Sign", TypeReferences.BLOCK_ENTITY));
-		Schema schema171 = builder.addSchema(3203, Schema3203::new);
-		builder.addFixer(new ChoiceTypesFix(schema171, "Added Camel", TypeReferences.ENTITY));
-		Schema schema172 = builder.addSchema(3204, Schema3204::new);
-		builder.addFixer(new ChoiceTypesFix(schema172, "Added Chiseled Bookshelf", TypeReferences.BLOCK_ENTITY));
-		Schema schema173 = builder.addSchema(3209, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new ItemInstanceSpawnEggFix(schema173, false, "minecraft:pig_spawn_egg"));
-		Schema schema174 = builder.addSchema(3214, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new OptionsAmbientOcclusionFix(schema174));
-		Schema schema175 = builder.addSchema(3319, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new OptionsAccessibilityOnboardFix(schema175));
-		Schema schema176 = builder.addSchema(3322, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new StatusEffectDurationFix(schema176));
-		Schema schema177 = builder.addSchema(3325, Schema3325::new);
-		builder.addFixer(new ChoiceTypesFix(schema177, "Added displays", TypeReferences.ENTITY));
-		Schema schema178 = builder.addSchema(3326, Schema3326::new);
-		builder.addFixer(new ChoiceTypesFix(schema178, "Added Sniffer", TypeReferences.ENTITY));
-		Schema schema179 = builder.addSchema(3327, Schema3327::new);
-		builder.addFixer(new ChoiceTypesFix(schema179, "Archaeology", TypeReferences.BLOCK_ENTITY));
-		Schema schema180 = builder.addSchema(3328, Schema3328::new);
-		builder.addFixer(new ChoiceTypesFix(schema180, "Added interaction", TypeReferences.ENTITY));
+		Schema schema167 = builder.addSchema(3108, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BlendingDataRemoveFromNetherEndFix(schema167));
+		Schema schema168 = builder.addSchema(3201, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new OptionsProgrammerArtFix(schema168));
+		Schema schema169 = builder.addSchema(3202, Schema3202::new);
+		builder.addFixer(new ChoiceTypesFix(schema169, "Added Hanging Sign", TypeReferences.BLOCK_ENTITY));
+		Schema schema170 = builder.addSchema(3203, Schema3203::new);
+		builder.addFixer(new ChoiceTypesFix(schema170, "Added Camel", TypeReferences.ENTITY));
+		Schema schema171 = builder.addSchema(3204, Schema3204::new);
+		builder.addFixer(new ChoiceTypesFix(schema171, "Added Chiseled Bookshelf", TypeReferences.BLOCK_ENTITY));
+		Schema schema172 = builder.addSchema(3209, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ItemInstanceSpawnEggFix(schema172, false, "minecraft:pig_spawn_egg"));
+		Schema schema173 = builder.addSchema(3214, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new OptionsAmbientOcclusionFix(schema173));
+		Schema schema174 = builder.addSchema(3319, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new OptionsAccessibilityOnboardFix(schema174));
+		Schema schema175 = builder.addSchema(3322, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new StatusEffectDurationFix(schema175));
+		Schema schema176 = builder.addSchema(3325, Schema3325::new);
+		builder.addFixer(new ChoiceTypesFix(schema176, "Added displays", TypeReferences.ENTITY));
+		Schema schema177 = builder.addSchema(3326, Schema3326::new);
+		builder.addFixer(new ChoiceTypesFix(schema177, "Added Sniffer", TypeReferences.ENTITY));
+		Schema schema178 = builder.addSchema(3327, Schema3327::new);
+		builder.addFixer(new ChoiceTypesFix(schema178, "Archaeology", TypeReferences.BLOCK_ENTITY));
+		Schema schema179 = builder.addSchema(3328, Schema3328::new);
+		builder.addFixer(new ChoiceTypesFix(schema179, "Added interaction", TypeReferences.ENTITY));
+		Schema schema180 = builder.addSchema(3438, Schema3438::new);
+		builder.addFixer(new ChoiceTypesFix(schema180, "Added calibrated sculk sensor", TypeReferences.BLOCK_ENTITY));
+		builder.addFixer(
+			RenameBlockEntityFix.create(schema180, "Rename Suspicious Sand to Brushable Block", replacing("minecraft:suspicious_sand", "minecraft:brushable_block"))
+		);
+		builder.addFixer(
+			ItemNameFix.create(
+				schema180,
+				"Pottery shard renaming",
+				replacing(
+					ImmutableMap.of(
+						"minecraft:pottery_shard_archer",
+						"minecraft:archer_pottery_shard",
+						"minecraft:pottery_shard_prize",
+						"minecraft:prize_pottery_shard",
+						"minecraft:pottery_shard_arms_up",
+						"minecraft:arms_up_pottery_shard",
+						"minecraft:pottery_shard_skull",
+						"minecraft:skull_pottery_shard"
+					)
+				)
+			)
+		);
+		builder.addFixer(new EntityBrushableBlockFieldsRenameFix(schema180));
+		Schema schema181 = builder.addSchema(3439, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new UpdateSignTextFormatFix(schema181, "Updated sign text format for Signs", "minecraft:sign"));
+		builder.addFixer(new UpdateSignTextFormatFix(schema181, "Updated sign text format for Hanging Signs", "minecraft:hanging_sign"));
+		Schema schema182 = builder.addSchema(3440, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(
+			new GameEventRenamesFix(
+				schema182,
+				"Replace experimental 1.20 overworld",
+				TypeReferences.MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST,
+				replacing("minecraft:overworld_update_1_20", "minecraft:overworld")
+			)
+		);
+		builder.addFixer(new RemoveFeatureTogglesFix(schema182, "Remove 1.20 feature toggle", Set.of("minecraft:update_1_20")));
+		Schema schema183 = builder.addSchema(3441, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new BlendingDataFix(schema183));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

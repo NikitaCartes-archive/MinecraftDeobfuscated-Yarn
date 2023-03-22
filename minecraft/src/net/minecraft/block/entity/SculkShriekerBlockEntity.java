@@ -56,7 +56,7 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 	});
 	private static final int SHRIEK_DELAY = 90;
 	private int warningLevel;
-	private VibrationListener vibrationListener = new VibrationListener(new BlockPositionSource(this.pos), 8, this);
+	private VibrationListener vibrationListener = new VibrationListener(new BlockPositionSource(this.pos), this);
 
 	public SculkShriekerBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.SCULK_SHRIEKER, pos, state);
@@ -89,6 +89,11 @@ public class SculkShriekerBlockEntity extends BlockEntity implements VibrationLi
 			.encodeStart(NbtOps.INSTANCE, this.vibrationListener)
 			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
+	}
+
+	@Override
+	public int getRange() {
+		return 8;
 	}
 
 	@Override

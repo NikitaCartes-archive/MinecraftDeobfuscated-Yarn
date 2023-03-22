@@ -23,7 +23,6 @@ import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.DyeableArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.trim.ArmorTrim;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -68,10 +67,8 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, null);
 				}
 
-				if (entity.world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
-					ArmorTrim.getTrim(entity.world.getRegistryManager(), itemStack)
-						.ifPresent(trim -> this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, trim, bl2, model, bl, 1.0F, 1.0F, 1.0F));
-				}
+				ArmorTrim.getTrim(entity.world.getRegistryManager(), itemStack)
+					.ifPresent(trim -> this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, trim, bl2, model, bl, 1.0F, 1.0F, 1.0F));
 			}
 		}
 	}

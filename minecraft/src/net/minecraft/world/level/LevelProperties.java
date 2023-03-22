@@ -8,6 +8,7 @@ import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -78,6 +79,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private UUID wanderingTraderId;
 	private final Set<String> serverBrands;
 	private boolean modded;
+	private final Set<String> removedFeatures;
 	private final Timer<MinecraftServer> scheduledEvents;
 
 	private LevelProperties(
@@ -104,6 +106,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		int wanderingTraderSpawnChance,
 		@Nullable UUID wanderingTraderId,
 		Set<String> serverBrands,
+		Set<String> removedFeatures,
 		Timer<MinecraftServer> scheduledEvents,
 		@Nullable NbtCompound customBossEvents,
 		NbtCompound dragonFight,
@@ -133,6 +136,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
 		this.wanderingTraderId = wanderingTraderId;
 		this.serverBrands = serverBrands;
+		this.removedFeatures = removedFeatures;
 		this.playerData = playerData;
 		this.dataVersion = dataVersion;
 		this.scheduledEvents = scheduledEvents;
@@ -169,6 +173,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			0,
 			null,
 			Sets.<String>newLinkedHashSet(),
+			new HashSet(),
 			new Timer<>(TimerCallbackSerializer.INSTANCE),
 			null,
 			new NbtCompound(),
@@ -223,6 +228,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 				.asStream()
 				.flatMap(dynamicx -> dynamicx.asString().result().stream())
 				.collect(Collectors.toCollection(Sets::newLinkedHashSet)),
+			(Set<String>)dynamic.get("removed_features").asStream().flatMap(dynamicx -> dynamicx.asString().result().stream()).collect(Collectors.toSet()),
 			new Timer<>(TimerCallbackSerializer.INSTANCE, dynamic.get("ScheduledEvents").asStream()),
 			(NbtCompound)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(),
 			nbtCompound,
@@ -246,10 +252,12 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	private void updateProperties(DynamicRegistryManager registryManager, NbtCompound levelNbt, @Nullable NbtCompound playerNbt) {
-		NbtList nbtList = new NbtList();
-		this.serverBrands.stream().map(NbtString::of).forEach(nbtList::add);
-		levelNbt.put("ServerBrands", nbtList);
+		levelNbt.put("ServerBrands", createStringList(this.serverBrands));
 		levelNbt.putBoolean("WasModded", this.modded);
+		if (!this.removedFeatures.isEmpty()) {
+			levelNbt.put("removed_features", createStringList(this.removedFeatures));
+		}
+
 		NbtCompound nbtCompound = new NbtCompound();
 		nbtCompound.putString("Name", SharedConstants.getGameVersion().getName());
 		nbtCompound.putInt("Id", SharedConstants.getGameVersion().getSaveVersion().getId());
@@ -302,6 +310,12 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		if (this.wanderingTraderId != null) {
 			levelNbt.putUuid("WanderingTraderId", this.wanderingTraderId);
 		}
+	}
+
+	private static NbtList createStringList(Set<String> strings) {
+		NbtList nbtList = new NbtList();
+		strings.stream().map(NbtString::of).forEach(nbtList::add);
+		return nbtList;
 	}
 
 	@Override
@@ -624,6 +638,11 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	@Override
 	public Set<String> getServerBrands() {
 		return ImmutableSet.copyOf(this.serverBrands);
+	}
+
+	@Override
+	public Set<String> getRemovedFeatures() {
+		return Set.copyOf(this.removedFeatures);
 	}
 
 	@Override

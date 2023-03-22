@@ -28,6 +28,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.RedstoneView;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -125,7 +126,7 @@ public class PistonBlock extends FacingBlock {
 		}
 	}
 
-	private boolean shouldExtend(World world, BlockPos pos, Direction pistonFace) {
+	private boolean shouldExtend(RedstoneView world, BlockPos pos, Direction pistonFace) {
 		for (Direction direction : Direction.values()) {
 			if (direction != pistonFace && world.isEmittingRedstonePower(pos.offset(direction), direction)) {
 				return true;
@@ -150,10 +151,11 @@ public class PistonBlock extends FacingBlock {
 	@Override
 	public boolean onSyncedBlockEvent(BlockState state, World world, BlockPos pos, int type, int data) {
 		Direction direction = state.get(FACING);
+		BlockState blockState = state.with(EXTENDED, Boolean.valueOf(true));
 		if (!world.isClient) {
 			boolean bl = this.shouldExtend(world, pos, direction);
 			if (bl && (type == 1 || type == 2)) {
-				world.setBlockState(pos, state.with(EXTENDED, Boolean.valueOf(true)), Block.NOTIFY_LISTENERS);
+				world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS);
 				return false;
 			}
 
@@ -167,30 +169,30 @@ public class PistonBlock extends FacingBlock {
 				return false;
 			}
 
-			world.setBlockState(pos, state.with(EXTENDED, Boolean.valueOf(true)), Block.NOTIFY_ALL | Block.MOVED);
+			world.setBlockState(pos, blockState, Block.NOTIFY_ALL | Block.MOVED);
 			world.playSound(null, pos, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.25F + 0.6F);
-			world.emitGameEvent(null, GameEvent.PISTON_EXTEND, pos);
+			world.emitGameEvent(GameEvent.BLOCK_ACTIVATE, pos, GameEvent.Emitter.of(blockState));
 		} else if (type == 1 || type == 2) {
 			BlockEntity blockEntity = world.getBlockEntity(pos.offset(direction));
 			if (blockEntity instanceof PistonBlockEntity) {
 				((PistonBlockEntity)blockEntity).finish();
 			}
 
-			BlockState blockState = Blocks.MOVING_PISTON
+			BlockState blockState2 = Blocks.MOVING_PISTON
 				.getDefaultState()
 				.with(PistonExtensionBlock.FACING, direction)
 				.with(PistonExtensionBlock.TYPE, this.sticky ? PistonType.STICKY : PistonType.DEFAULT);
-			world.setBlockState(pos, blockState, Block.NO_REDRAW | Block.FORCE_STATE);
+			world.setBlockState(pos, blockState2, Block.NO_REDRAW | Block.FORCE_STATE);
 			world.addBlockEntity(
-				PistonExtensionBlock.createBlockEntityPiston(pos, blockState, this.getDefaultState().with(FACING, Direction.byId(data & 7)), direction, false, true)
+				PistonExtensionBlock.createBlockEntityPiston(pos, blockState2, this.getDefaultState().with(FACING, Direction.byId(data & 7)), direction, false, true)
 			);
-			world.updateNeighbors(pos, blockState.getBlock());
-			blockState.updateNeighbors(world, pos, Block.NOTIFY_LISTENERS);
+			world.updateNeighbors(pos, blockState2.getBlock());
+			blockState2.updateNeighbors(world, pos, Block.NOTIFY_LISTENERS);
 			if (this.sticky) {
 				BlockPos blockPos = pos.add(direction.getOffsetX() * 2, direction.getOffsetY() * 2, direction.getOffsetZ() * 2);
-				BlockState blockState2 = world.getBlockState(blockPos);
+				BlockState blockState3 = world.getBlockState(blockPos);
 				boolean bl2 = false;
-				if (blockState2.isOf(Blocks.MOVING_PISTON)
+				if (blockState3.isOf(Blocks.MOVING_PISTON)
 					&& world.getBlockEntity(blockPos) instanceof PistonBlockEntity pistonBlockEntity
 					&& pistonBlockEntity.getFacing() == direction
 					&& pistonBlockEntity.isExtending()) {
@@ -200,9 +202,9 @@ public class PistonBlock extends FacingBlock {
 
 				if (!bl2) {
 					if (type != 1
-						|| blockState2.isAir()
-						|| !isMovable(blockState2, world, blockPos, direction.getOpposite(), false, direction)
-						|| blockState2.getPistonBehavior() != PistonBehavior.NORMAL && !blockState2.isOf(Blocks.PISTON) && !blockState2.isOf(Blocks.STICKY_PISTON)) {
+						|| blockState3.isAir()
+						|| !isMovable(blockState3, world, blockPos, direction.getOpposite(), false, direction)
+						|| blockState3.getPistonBehavior() != PistonBehavior.NORMAL && !blockState3.isOf(Blocks.PISTON) && !blockState3.isOf(Blocks.STICKY_PISTON)) {
 						world.removeBlock(pos.offset(direction), false);
 					} else {
 						this.move(world, pos, direction, false);
@@ -213,7 +215,7 @@ public class PistonBlock extends FacingBlock {
 			}
 
 			world.playSound(null, pos, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.15F + 0.6F);
-			world.emitGameEvent(null, GameEvent.PISTON_CONTRACT, pos);
+			world.emitGameEvent(GameEvent.BLOCK_DEACTIVATE, pos, GameEvent.Emitter.of(blockState2));
 		}
 
 		return true;

@@ -135,13 +135,8 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 	}
 
 	public static void drawEntity(MatrixStack matrices, int x, int y, int size, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
-		double d = 1000.0;
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.translate(0.0, 0.0, 1000.0);
-		RenderSystem.applyModelViewMatrix();
 		matrices.push();
-		matrices.translate((double)x, (double)y, -950.0);
+		matrices.translate((double)x, (double)y, 50.0);
 		matrices.multiplyPositionMatrix(new Matrix4f().scaling((float)size, (float)size, (float)(-size)));
 		matrices.multiply(quaternionf);
 		DiffuseLighting.method_34742();
@@ -158,8 +153,6 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		entityRenderDispatcher.setRenderShadows(true);
 		matrices.pop();
 		DiffuseLighting.enableGuiDepthLighting();
-		matrixStack.pop();
-		RenderSystem.applyModelViewMatrix();
 	}
 
 	@Override

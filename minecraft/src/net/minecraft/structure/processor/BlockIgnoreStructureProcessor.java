@@ -41,7 +41,7 @@ public class BlockIgnoreStructureProcessor extends StructureProcessor {
 		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
-		return this.blocks.contains(currentBlockInfo.state.getBlock()) ? null : currentBlockInfo;
+		return this.blocks.contains(currentBlockInfo.state().getBlock()) ? null : currentBlockInfo;
 	}
 
 	@Override

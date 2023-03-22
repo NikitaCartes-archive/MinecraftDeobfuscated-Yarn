@@ -81,6 +81,7 @@ public class TypeReferences {
 	 * A type reference which refers to a biome.
 	 */
 	public static final TypeReference BIOME = () -> "biome";
+	public static final TypeReference MULTI_NOISE_BIOME_SOURCE_PARAMETER_LIST = () -> "multi_noise_biome_source_parameter_list";
 	/**
 	 * A type reference which refers to world gen settings.
 	 */

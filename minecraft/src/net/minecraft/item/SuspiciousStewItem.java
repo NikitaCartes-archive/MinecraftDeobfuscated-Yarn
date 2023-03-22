@@ -44,7 +44,7 @@ public class SuspiciousStewItem extends Item {
 			for (int i = 0; i < nbtList.size(); i++) {
 				NbtCompound nbtCompound2 = nbtList.getCompound(i);
 				int j;
-				if (nbtCompound2.contains("EffectDuration", NbtElement.INT_TYPE)) {
+				if (nbtCompound2.contains("EffectDuration", NbtElement.NUMBER_TYPE)) {
 					j = nbtCompound2.getInt("EffectDuration");
 				} else {
 					j = 160;

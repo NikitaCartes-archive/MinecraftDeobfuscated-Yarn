@@ -15,8 +15,8 @@ import net.minecraft.entity.passive.SnifferEntity;
 @Environment(EnvType.CLIENT)
 public class SnifferModel<T extends SnifferEntity> extends SinglePartEntityModelWithChildTransform<T> {
 	private static final float field_42878 = 9000.0F;
-	private static final float field_42879 = 1.0F;
-	private static final float field_42880 = 2.0F;
+	private static final float field_43364 = 2.0F;
+	private static final float field_43365 = 1.0F;
 	private final ModelPart root;
 	private final ModelPart head;
 
@@ -83,12 +83,12 @@ public class SnifferModel<T extends SnifferEntity> extends SinglePartEntityModel
 		modelPartData4.addChild(
 			EntityModelPartNames.LEFT_EAR,
 			ModelPartBuilder.create().uv(2, 0).cuboid(0.0F, 0.0F, -3.0F, 1.0F, 19.0F, 7.0F, new Dilation(0.0F)),
-			ModelTransform.pivot(6.5F, -7.5F, -4.5F)
+			ModelTransform.pivot(6.51F, -7.5F, -4.51F)
 		);
 		modelPartData4.addChild(
 			EntityModelPartNames.RIGHT_EAR,
 			ModelPartBuilder.create().uv(48, 0).cuboid(-1.0F, 0.0F, -3.0F, 1.0F, 19.0F, 7.0F, new Dilation(0.0F)),
-			ModelTransform.pivot(-6.5F, -7.5F, -4.5F)
+			ModelTransform.pivot(-6.51F, -7.5F, -4.51F)
 		);
 		modelPartData4.addChild(
 			EntityModelPartNames.NOSE,
@@ -107,12 +107,10 @@ public class SnifferModel<T extends SnifferEntity> extends SinglePartEntityModel
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.head.yaw = i * (float) (Math.PI / 180.0);
-		float k = Math.min((float)snifferEntity.getVelocity().horizontalLengthSquared() * 9000.0F, 1.0F);
-		float l = k * 2.0F;
+		float k = Math.min((float)snifferEntity.getVelocity().horizontalLengthSquared() * 9000.0F, 2.0F);
 		this.updateAnimation(snifferEntity.walkingAnimationState, SnifferAnimations.WALKING, h, k);
-		this.updateAnimation(snifferEntity.panickingAnimationState, SnifferAnimations.WALKING, h, l);
 		this.updateAnimation(snifferEntity.diggingAnimationState, SnifferAnimations.DIGGING, h);
-		this.updateAnimation(snifferEntity.searchingAnimationState, SnifferAnimations.SEARCHING, h, k);
+		this.updateAnimation(snifferEntity.searchingAnimationState, SnifferAnimations.SEARCHING, h, Math.min(k, 1.0F));
 		this.updateAnimation(snifferEntity.sniffingAnimationState, SnifferAnimations.SNIFFING, h);
 		this.updateAnimation(snifferEntity.risingAnimationState, SnifferAnimations.RISING, h);
 		this.updateAnimation(snifferEntity.feelingHappyAnimationState, SnifferAnimations.FEELING_HAPPY, h);

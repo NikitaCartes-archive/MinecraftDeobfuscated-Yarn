@@ -6,8 +6,7 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.loot.OneTwentyLootTables;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
+import net.minecraft.loot.LootTables;
 import net.minecraft.structure.DesertTempleGenerator;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePiecesList;
@@ -39,28 +38,26 @@ public class DesertPyramidStructure extends BasicTempleStructure {
 		ChunkPos chunkPos,
 		StructurePiecesList pieces
 	) {
-		if (world.getEnabledFeatures().contains(FeatureFlags.UPDATE_1_20)) {
-			Set<BlockPos> set = SortedArraySet.<BlockPos>create(Vec3i::compareTo);
+		Set<BlockPos> set = SortedArraySet.<BlockPos>create(Vec3i::compareTo);
 
-			for (StructurePiece structurePiece : pieces.pieces()) {
-				if (structurePiece instanceof DesertTempleGenerator desertTempleGenerator) {
-					set.addAll(desertTempleGenerator.getPotentialSuspiciousSandPositions());
-				}
+		for (StructurePiece structurePiece : pieces.pieces()) {
+			if (structurePiece instanceof DesertTempleGenerator desertTempleGenerator) {
+				set.addAll(desertTempleGenerator.getPotentialSuspiciousSandPositions());
 			}
+		}
 
-			ObjectArrayList<BlockPos> objectArrayList = new ObjectArrayList<>(set.stream().toList());
-			Util.shuffle(objectArrayList, random);
-			int i = Math.min(set.size(), random.nextBetweenExclusive(5, 8));
+		ObjectArrayList<BlockPos> objectArrayList = new ObjectArrayList<>(set.stream().toList());
+		Util.shuffle(objectArrayList, random);
+		int i = Math.min(set.size(), random.nextBetweenExclusive(5, 8));
 
-			for (BlockPos blockPos : objectArrayList) {
-				if (i > 0) {
-					i--;
-					world.setBlockState(blockPos, Blocks.SUSPICIOUS_SAND.getDefaultState(), Block.NOTIFY_LISTENERS);
-					world.getBlockEntity(blockPos, BlockEntityType.SUSPICIOUS_SAND)
-						.ifPresent(blockEntity -> blockEntity.setLootTable(OneTwentyLootTables.DESERT_PYRAMID_ARCHAEOLOGY, blockPos.asLong()));
-				} else {
-					world.setBlockState(blockPos, Blocks.SAND.getDefaultState(), Block.NOTIFY_LISTENERS);
-				}
+		for (BlockPos blockPos : objectArrayList) {
+			if (i > 0) {
+				i--;
+				world.setBlockState(blockPos, Blocks.SUSPICIOUS_SAND.getDefaultState(), Block.NOTIFY_LISTENERS);
+				world.getBlockEntity(blockPos, BlockEntityType.BRUSHABLE_BLOCK)
+					.ifPresent(blockEntity -> blockEntity.setLootTable(LootTables.DESERT_PYRAMID_ARCHAEOLOGY, blockPos.asLong()));
+			} else {
+				world.setBlockState(blockPos, Blocks.SAND.getDefaultState(), Block.NOTIFY_LISTENERS);
 			}
 		}
 	}

@@ -6,15 +6,12 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalInt;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
@@ -49,11 +46,9 @@ import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.server.network.DebugInfoSender;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.math.BlockPos;
@@ -61,7 +56,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -265,25 +259,8 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 
 	@Override
 	public void breed(ServerWorld world, AnimalEntity other) {
-		ServerPlayerEntity serverPlayerEntity = this.getLovingPlayer();
-		if (serverPlayerEntity == null) {
-			serverPlayerEntity = other.getLovingPlayer();
-		}
-
-		if (serverPlayerEntity != null) {
-			serverPlayerEntity.incrementStat(Stats.ANIMALS_BRED);
-			Criteria.BRED_ANIMALS.trigger(serverPlayerEntity, this, other, null);
-		}
-
-		this.setBreedingAge(6000);
-		other.setBreedingAge(6000);
-		this.resetLoveTicks();
-		other.resetLoveTicks();
+		this.breed(world, other, null);
 		this.getBrain().remember(MemoryModuleType.IS_PREGNANT, Unit.INSTANCE);
-		world.sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
-		if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-			world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
-		}
 	}
 
 	@Override

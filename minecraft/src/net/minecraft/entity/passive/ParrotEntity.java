@@ -79,7 +79,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	};
 	private static final Item COOKIE = Items.COOKIE;
 	private static final Set<Item> TAMING_INGREDIENTS = Sets.<Item>newHashSet(
-		Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS
+		Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD
 	);
 	static final Map<EntityType<?>, SoundEvent> MOB_SOUNDS = Util.make(Maps.<EntityType<?>, SoundEvent>newHashMap(), map -> {
 		map.put(EntityType.BLAZE, SoundEvents.ENTITY_PARROT_IMITATE_BLAZE);

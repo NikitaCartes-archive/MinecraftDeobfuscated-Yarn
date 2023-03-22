@@ -10,19 +10,27 @@ import net.minecraft.world.WorldView;
 
 public abstract class StructureProcessor {
 	@Nullable
-	public abstract StructureTemplate.StructureBlockInfo process(
+	public StructureTemplate.StructureBlockInfo process(
 		WorldView world,
 		BlockPos pos,
 		BlockPos pivot,
 		StructureTemplate.StructureBlockInfo originalBlockInfo,
 		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
-	);
+	) {
+		return currentBlockInfo;
+	}
 
 	protected abstract StructureProcessorType<?> getType();
 
-	public void reprocess(
-		WorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<StructureTemplate.StructureBlockInfo> processedOnFirstRound
+	public List<StructureTemplate.StructureBlockInfo> reprocess(
+		WorldAccess world,
+		BlockPos pos,
+		BlockPos pivot,
+		List<StructureTemplate.StructureBlockInfo> originalBlockInfos,
+		List<StructureTemplate.StructureBlockInfo> currentBlockInfos,
+		StructurePlacementData data
 	) {
+		return currentBlockInfos;
 	}
 }

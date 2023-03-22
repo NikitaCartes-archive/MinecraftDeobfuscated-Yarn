@@ -123,10 +123,11 @@ public class MatrixUtil {
 		matrix3f.transpose();
 		matrix3f.mul(A);
 		Quaternionf quaternionf = method_49741(matrix3f, 5);
-		boolean bl = (double)matrix3f.m00 < 1.0E-6;
-		boolean bl2 = (double)matrix3f.m11 < 1.0E-6;
+		float f = matrix3f.m00;
+		float g = matrix3f.m11;
+		boolean bl = (double)f < 1.0E-6;
+		boolean bl2 = (double)g < 1.0E-6;
 		Matrix3f matrix3f3 = A.rotate(quaternionf);
-		float f = 1.0F;
 		Quaternionf quaternionf2 = new Quaternionf();
 		Quaternionf quaternionf3 = new Quaternionf();
 		GivensPair givensPair;
@@ -138,7 +139,6 @@ public class MatrixUtil {
 
 		Quaternionf quaternionf4 = givensPair.method_49735(quaternionf3);
 		Matrix3f matrix3f4 = givensPair.method_49734(matrix3f);
-		f *= matrix3f4.m22;
 		quaternionf2.mul(quaternionf4);
 		matrix3f4.transpose().mul(matrix3f3);
 		if (bl) {
@@ -150,7 +150,6 @@ public class MatrixUtil {
 		givensPair = givensPair.negateSin();
 		Quaternionf quaternionf5 = givensPair.method_49732(quaternionf3);
 		Matrix3f matrix3f5 = givensPair.method_49731(matrix3f3);
-		f *= matrix3f5.m11;
 		quaternionf2.mul(quaternionf5);
 		matrix3f5.transpose().mul(matrix3f4);
 		if (bl2) {
@@ -161,12 +160,9 @@ public class MatrixUtil {
 
 		Quaternionf quaternionf6 = givensPair.method_49729(quaternionf3);
 		Matrix3f matrix3f6 = givensPair.method_49728(matrix3f4);
-		f *= matrix3f6.m00;
 		quaternionf2.mul(quaternionf6);
 		matrix3f6.transpose().mul(matrix3f5);
-		f = 1.0F / f;
-		quaternionf2.mul(Math.sqrt(f));
-		Vector3f vector3f = new Vector3f(matrix3f6.m00 * f, matrix3f6.m11 * f, matrix3f6.m22 * f);
+		Vector3f vector3f = new Vector3f(matrix3f6.m00, matrix3f6.m11, matrix3f6.m22);
 		return Triple.of(quaternionf2, vector3f, quaternionf.conjugate());
 	}
 }

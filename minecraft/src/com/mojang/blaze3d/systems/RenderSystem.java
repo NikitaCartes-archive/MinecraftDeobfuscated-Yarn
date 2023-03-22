@@ -77,6 +77,8 @@ public class RenderSystem {
 	private static Matrix3f inverseViewRotationMatrix = new Matrix3f().zero();
 	private static Matrix4f projectionMatrix = new Matrix4f();
 	private static Matrix4f savedProjectionMatrix = new Matrix4f();
+	private static VertexSorter vertexSorting = VertexSorter.BY_DISTANCE;
+	private static VertexSorter savedVertexSorting = VertexSorter.BY_DISTANCE;
 	private static final MatrixStack modelViewStack = new MatrixStack();
 	private static Matrix4f modelViewMatrix = new Matrix4f();
 	private static Matrix4f textureMatrix = new Matrix4f();
@@ -832,12 +834,16 @@ public class RenderSystem {
 		return texture >= 0 && texture < shaderTextures.length ? shaderTextures[texture] : 0;
 	}
 
-	public static void setProjectionMatrix(Matrix4f projectionMatrix) {
+	public static void setProjectionMatrix(Matrix4f projectionMatrix, VertexSorter vertexSorting) {
 		Matrix4f matrix4f = new Matrix4f(projectionMatrix);
 		if (!isOnRenderThread()) {
-			recordRenderCall(() -> projectionMatrix = matrix4f);
+			recordRenderCall(() -> {
+				projectionMatrix = matrix4f;
+				vertexSorting = vertexSorting;
+			});
 		} else {
 			RenderSystem.projectionMatrix = matrix4f;
+			RenderSystem.vertexSorting = vertexSorting;
 		}
 	}
 
@@ -886,6 +892,7 @@ public class RenderSystem {
 
 	private static void _backupProjectionMatrix() {
 		savedProjectionMatrix = projectionMatrix;
+		savedVertexSorting = vertexSorting;
 	}
 
 	public static void restoreProjectionMatrix() {
@@ -898,6 +905,7 @@ public class RenderSystem {
 
 	private static void _restoreProjectionMatrix() {
 		projectionMatrix = savedProjectionMatrix;
+		vertexSorting = savedVertexSorting;
 	}
 
 	public static Matrix4f getProjectionMatrix() {
@@ -948,6 +956,11 @@ public class RenderSystem {
 		return shaderGameTime;
 	}
 
+	public static VertexSorter getVertexSorting() {
+		assertOnRenderThread();
+		return vertexSorting;
+	}
+
 	/**
 	 * An index buffer that holds a pre-made indices for a specific shape. If
 	 * this buffer is not large enough for the required number of indices when
@@ -960,7 +973,7 @@ public class RenderSystem {
 		private final int vertexCountInTriangulated;
 		private final RenderSystem.ShapeIndexBuffer.Triangulator triangulator;
 		private int id;
-		private VertexFormat.IndexType indexType = VertexFormat.IndexType.BYTE;
+		private VertexFormat.IndexType indexType = VertexFormat.IndexType.SHORT;
 		private int size;
 
 		/**
@@ -1017,8 +1030,6 @@ public class RenderSystem {
 
 		private it.unimi.dsi.fastutil.ints.IntConsumer getIndexConsumer(ByteBuffer indexBuffer) {
 			switch (this.indexType) {
-				case BYTE:
-					return index -> indexBuffer.put((byte)index);
 				case SHORT:
 					return index -> indexBuffer.putShort((short)index);
 				case INT:

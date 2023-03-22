@@ -149,9 +149,9 @@ public class StructurePoolBasedGenerator {
 		Optional<BlockPos> optional = Optional.empty();
 
 		for (StructureTemplate.StructureBlockInfo structureBlockInfo : list) {
-			Identifier identifier = Identifier.tryParse(structureBlockInfo.nbt.getString("name"));
+			Identifier identifier = Identifier.tryParse(structureBlockInfo.nbt().getString("name"));
 			if (id.equals(identifier)) {
-				optional = Optional.of(structureBlockInfo.pos);
+				optional = Optional.of(structureBlockInfo.pos());
 				break;
 			}
 		}
@@ -271,8 +271,8 @@ public class StructurePoolBasedGenerator {
 			for (StructureTemplate.StructureBlockInfo structureBlockInfo : structurePoolElement.getStructureBlockInfos(
 				this.structureTemplateManager, blockPos, blockRotation, this.random
 			)) {
-				Direction direction = JigsawBlock.getFacing(structureBlockInfo.state);
-				BlockPos blockPos2 = structureBlockInfo.pos;
+				Direction direction = JigsawBlock.getFacing(structureBlockInfo.state());
+				BlockPos blockPos2 = structureBlockInfo.pos();
 				BlockPos blockPos3 = blockPos2.offset(direction);
 				int j = blockPos2.getY() - i;
 				int k = -1;
@@ -321,7 +321,7 @@ public class StructurePoolBasedGenerator {
 									int l;
 									if (modifyBoundingBox && blockBox2.getBlockCountY() <= 16) {
 										l = list2.stream().mapToInt(blockInfo -> {
-											if (!blockBox2.contains(blockInfo.pos.offset(JigsawBlock.getFacing(blockInfo.state)))) {
+											if (!blockBox2.contains(blockInfo.pos().offset(JigsawBlock.getFacing(blockInfo.state())))) {
 												return 0;
 											} else {
 												RegistryKey<StructurePool> registryKeyx = getPoolKey(blockInfo);
@@ -338,14 +338,14 @@ public class StructurePoolBasedGenerator {
 
 									for (StructureTemplate.StructureBlockInfo structureBlockInfo2 : list2) {
 										if (JigsawBlock.attachmentMatches(structureBlockInfo, structureBlockInfo2)) {
-											BlockPos blockPos4 = structureBlockInfo2.pos;
+											BlockPos blockPos4 = structureBlockInfo2.pos();
 											BlockPos blockPos5 = blockPos3.subtract(blockPos4);
 											BlockBox blockBox3 = structurePoolElement2.getBoundingBox(this.structureTemplateManager, blockPos5, blockRotation2);
 											int m = blockBox3.getMinY();
 											StructurePool.Projection projection2 = structurePoolElement2.getProjection();
 											boolean bl3 = projection2 == StructurePool.Projection.RIGID;
 											int n = blockPos4.getY();
-											int o = j - n + JigsawBlock.getFacing(structureBlockInfo.state).getOffsetY();
+											int o = j - n + JigsawBlock.getFacing(structureBlockInfo.state()).getOffsetY();
 											int p;
 											if (bl && bl3) {
 												p = i + o;
@@ -410,7 +410,7 @@ public class StructurePoolBasedGenerator {
 		}
 
 		private static RegistryKey<StructurePool> getPoolKey(StructureTemplate.StructureBlockInfo blockInfo) {
-			return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, new Identifier(blockInfo.nbt.getString("pool")));
+			return RegistryKey.of(RegistryKeys.TEMPLATE_POOL, new Identifier(blockInfo.nbt().getString("pool")));
 		}
 	}
 }

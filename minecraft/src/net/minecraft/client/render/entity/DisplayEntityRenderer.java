@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -24,8 +25,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
 @Environment(EnvType.CLIENT)
-public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends EntityRenderer<T> {
-	private static final float field_42524 = 64.0F;
+public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends EntityRenderer<T> {
 	private final EntityRenderDispatcher renderDispatcher;
 
 	protected DisplayEntityRenderer(EntityRendererFactory.Context context) {
@@ -38,38 +38,47 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends Ent
 	}
 
 	public void render(T displayEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
-		float h = displayEntity.getLerpProgress(g);
-		this.shadowRadius = Math.min(displayEntity.lerpShadowRadius(h), 64.0F);
-		this.shadowOpacity = displayEntity.lerpShadowStrength(h);
-		int j = displayEntity.getBrightness();
-		int k = j != -1 ? j : i;
-		super.render(displayEntity, f, g, matrixStack, vertexConsumerProvider, k);
-		matrixStack.push();
-		matrixStack.multiply(this.getBillboardRotation(displayEntity));
-		AffineTransformation affineTransformation = displayEntity.lerpTransformation(h);
-		matrixStack.multiplyPositionMatrix(affineTransformation.getMatrix());
-		matrixStack.peek().getNormalMatrix().rotate(affineTransformation.getLeftRotation()).rotate(affineTransformation.getRightRotation());
-		this.render(displayEntity, matrixStack, vertexConsumerProvider, k, h);
-		matrixStack.pop();
+		DisplayEntity.RenderState renderState = displayEntity.getRenderState();
+		if (renderState != null) {
+			S object = this.getData(displayEntity);
+			if (object != null) {
+				float h = displayEntity.getLerpProgress(g);
+				this.shadowRadius = renderState.shadowRadius().lerp(h);
+				this.shadowOpacity = renderState.shadowStrength().lerp(h);
+				int j = renderState.brightnessOverride();
+				int k = j != -1 ? j : i;
+				super.render(displayEntity, f, g, matrixStack, vertexConsumerProvider, k);
+				matrixStack.push();
+				matrixStack.multiply(this.getBillboardRotation(renderState, displayEntity));
+				AffineTransformation affineTransformation = renderState.transformation().interpolate(h);
+				matrixStack.multiplyPositionMatrix(affineTransformation.getMatrix());
+				matrixStack.peek().getNormalMatrix().rotate(affineTransformation.getLeftRotation()).rotate(affineTransformation.getRightRotation());
+				this.render(displayEntity, object, matrixStack, vertexConsumerProvider, k, h);
+				matrixStack.pop();
+			}
+		}
 	}
 
-	private Quaternionf getBillboardRotation(T display) {
+	private Quaternionf getBillboardRotation(DisplayEntity.RenderState renderState, T entity) {
 		Camera camera = this.renderDispatcher.camera;
 
-		return switch (display.getBillboardMode()) {
-			case FIXED -> display.getFixedRotation();
-			case HORIZONTAL -> new Quaternionf().rotationYXZ((float) (-Math.PI / 180.0) * display.getYaw(), (float) (-Math.PI / 180.0) * camera.getPitch(), 0.0F);
+		return switch (renderState.billboardConstraints()) {
+			case FIXED -> entity.getFixedRotation();
+			case HORIZONTAL -> new Quaternionf().rotationYXZ((float) (-Math.PI / 180.0) * entity.getYaw(), (float) (-Math.PI / 180.0) * camera.getPitch(), 0.0F);
 			case VERTICAL -> new Quaternionf()
-			.rotationYXZ((float) Math.PI - (float) (Math.PI / 180.0) * camera.getYaw(), (float) (Math.PI / 180.0) * display.getPitch(), 0.0F);
+			.rotationYXZ((float) Math.PI - (float) (Math.PI / 180.0) * camera.getYaw(), (float) (Math.PI / 180.0) * entity.getPitch(), 0.0F);
 			case CENTER -> new Quaternionf()
 			.rotationYXZ((float) Math.PI - (float) (Math.PI / 180.0) * camera.getYaw(), (float) (-Math.PI / 180.0) * camera.getPitch(), 0.0F);
 		};
 	}
 
-	protected abstract void render(T entity, MatrixStack matrices, VertexConsumerProvider vertices, int light, float delta);
+	@Nullable
+	protected abstract S getData(T entity);
+
+	protected abstract void render(T entity, S data, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int brightness, float lerpProgress);
 
 	@Environment(EnvType.CLIENT)
-	public static class BlockDisplayEntityRenderer extends DisplayEntityRenderer<DisplayEntity.BlockDisplayEntity> {
+	public static class BlockDisplayEntityRenderer extends DisplayEntityRenderer<DisplayEntity.BlockDisplayEntity, DisplayEntity.BlockDisplayEntity.Data> {
 		private final BlockRenderManager blockRenderManager;
 
 		protected BlockDisplayEntityRenderer(EntityRendererFactory.Context context) {
@@ -77,15 +86,25 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends Ent
 			this.blockRenderManager = context.getBlockRenderManager();
 		}
 
+		@Nullable
+		protected DisplayEntity.BlockDisplayEntity.Data getData(DisplayEntity.BlockDisplayEntity blockDisplayEntity) {
+			return blockDisplayEntity.getData();
+		}
+
 		public void render(
-			DisplayEntity.BlockDisplayEntity blockDisplayEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, float f
+			DisplayEntity.BlockDisplayEntity blockDisplayEntity,
+			DisplayEntity.BlockDisplayEntity.Data data,
+			MatrixStack matrixStack,
+			VertexConsumerProvider vertexConsumerProvider,
+			int i,
+			float f
 		) {
-			this.blockRenderManager.renderBlockAsEntity(blockDisplayEntity.getBlockState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
+			this.blockRenderManager.renderBlockAsEntity(data.blockState(), matrixStack, vertexConsumerProvider, i, OverlayTexture.DEFAULT_UV);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class ItemDisplayEntityRenderer extends DisplayEntityRenderer<DisplayEntity.ItemDisplayEntity> {
+	public static class ItemDisplayEntityRenderer extends DisplayEntityRenderer<DisplayEntity.ItemDisplayEntity, DisplayEntity.ItemDisplayEntity.Data> {
 		private final ItemRenderer itemRenderer;
 
 		protected ItemDisplayEntityRenderer(EntityRendererFactory.Context context) {
@@ -93,11 +112,23 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends Ent
 			this.itemRenderer = context.getItemRenderer();
 		}
 
-		public void render(DisplayEntity.ItemDisplayEntity itemDisplayEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, float f) {
+		@Nullable
+		protected DisplayEntity.ItemDisplayEntity.Data getData(DisplayEntity.ItemDisplayEntity itemDisplayEntity) {
+			return itemDisplayEntity.getData();
+		}
+
+		public void render(
+			DisplayEntity.ItemDisplayEntity itemDisplayEntity,
+			DisplayEntity.ItemDisplayEntity.Data data,
+			MatrixStack matrixStack,
+			VertexConsumerProvider vertexConsumerProvider,
+			int i,
+			float f
+		) {
 			this.itemRenderer
 				.renderItem(
-					itemDisplayEntity.getItemStack(),
-					itemDisplayEntity.getTransformationMode(),
+					data.itemStack(),
+					data.itemTransform(),
 					i,
 					OverlayTexture.DEFAULT_UV,
 					matrixStack,
@@ -109,7 +140,7 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends Ent
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class TextDisplayEntityRenderer extends DisplayEntityRenderer<DisplayEntity.TextDisplayEntity> {
+	public static class TextDisplayEntityRenderer extends DisplayEntityRenderer<DisplayEntity.TextDisplayEntity, DisplayEntity.TextDisplayEntity.Data> {
 		private final TextRenderer displayTextRenderer;
 
 		protected TextDisplayEntityRenderer(EntityRendererFactory.Context context) {
@@ -131,19 +162,31 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity> extends Ent
 			return new DisplayEntity.TextDisplayEntity.TextLines(list2, i);
 		}
 
-		public void render(DisplayEntity.TextDisplayEntity textDisplayEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, float f) {
-			byte b = textDisplayEntity.getDisplayFlags();
+		@Nullable
+		protected DisplayEntity.TextDisplayEntity.Data getData(DisplayEntity.TextDisplayEntity textDisplayEntity) {
+			return textDisplayEntity.getData();
+		}
+
+		public void render(
+			DisplayEntity.TextDisplayEntity textDisplayEntity,
+			DisplayEntity.TextDisplayEntity.Data data,
+			MatrixStack matrixStack,
+			VertexConsumerProvider vertexConsumerProvider,
+			int i,
+			float f
+		) {
+			byte b = data.flags();
 			boolean bl = (b & 2) != 0;
 			boolean bl2 = (b & 4) != 0;
 			boolean bl3 = (b & 1) != 0;
 			DisplayEntity.TextDisplayEntity.TextAlignment textAlignment = DisplayEntity.TextDisplayEntity.getAlignment(b);
-			byte c = textDisplayEntity.lerpTextOpacity(f);
+			byte c = (byte)data.textOpacity().lerp(f);
 			int j;
 			if (bl2) {
 				float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
 				j = (int)(g * 255.0F) << 24;
 			} else {
-				j = textDisplayEntity.lerpBackground(f);
+				j = data.backgroundColor().lerp(f);
 			}
 
 			float g = 0.0F;

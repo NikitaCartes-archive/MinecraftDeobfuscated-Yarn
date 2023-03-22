@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.google.common.primitives.Doubles;
+import com.mojang.blaze3d.systems.VertexSorter;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.ObjectArraySet;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
@@ -567,7 +568,7 @@ public class ChunkBuilder {
 					if (set.contains(RenderLayer.getTranslucent())) {
 						BufferBuilder bufferBuilder2 = blockBufferBuilderStorage.get(RenderLayer.getTranslucent());
 						if (!bufferBuilder2.isBatchEmpty()) {
-							bufferBuilder2.sortFrom(cameraX - (float)blockPos.getX(), cameraY - (float)blockPos.getY(), cameraZ - (float)blockPos.getZ());
+							bufferBuilder2.setSorter(VertexSorter.byDistance(cameraX - (float)blockPos.getX(), cameraY - (float)blockPos.getY(), cameraZ - (float)blockPos.getZ()));
 							renderData.translucencySortingData = bufferBuilder2.getSortingData();
 						}
 					}
@@ -648,7 +649,9 @@ public class ChunkBuilder {
 						BufferBuilder bufferBuilder = buffers.get(RenderLayer.getTranslucent());
 						BuiltChunk.this.beginBufferBuilding(bufferBuilder);
 						bufferBuilder.beginSortedIndexBuffer(transparentSortingData);
-						bufferBuilder.sortFrom(f - (float)BuiltChunk.this.origin.getX(), g - (float)BuiltChunk.this.origin.getY(), h - (float)BuiltChunk.this.origin.getZ());
+						bufferBuilder.setSorter(
+							VertexSorter.byDistance(f - (float)BuiltChunk.this.origin.getX(), g - (float)BuiltChunk.this.origin.getY(), h - (float)BuiltChunk.this.origin.getZ())
+						);
 						this.data.transparentSortingData = bufferBuilder.getSortingData();
 						BufferBuilder.BuiltBuffer builtBuffer = bufferBuilder.end();
 						if (this.cancelled.get()) {

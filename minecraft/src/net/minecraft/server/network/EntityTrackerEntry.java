@@ -82,10 +82,10 @@ public class EntityTrackerEntry {
 		List<Entity> list = this.entity.getPassengerList();
 		if (!list.equals(this.lastPassengers)) {
 			this.receiver.accept(new EntityPassengersSetS2CPacket(this.entity));
-			this.streamChangedPassengers(list, this.lastPassengers)
+			streamChangedPassengers(list, this.lastPassengers)
 				.forEach(
 					passenger -> {
-						if (passenger instanceof ServerPlayerEntity serverPlayerEntity && !list.contains(serverPlayerEntity)) {
+						if (passenger instanceof ServerPlayerEntity serverPlayerEntity) {
 							serverPlayerEntity.networkHandler
 								.requestTeleport(
 									serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.getYaw(), serverPlayerEntity.getPitch()
@@ -211,10 +211,8 @@ public class EntityTrackerEntry {
 		}
 	}
 
-	private Stream<Entity> streamChangedPassengers(List<Entity> passengers, List<Entity> lastPassengers) {
-		return Stream.concat(
-			lastPassengers.stream().filter(passenger -> !passengers.contains(passenger)), passengers.stream().filter(passenger -> !lastPassengers.contains(passenger))
-		);
+	private static Stream<Entity> streamChangedPassengers(List<Entity> passengers, List<Entity> lastPassengers) {
+		return lastPassengers.stream().filter(passenger -> !passengers.contains(passenger));
 	}
 
 	public void stopTracking(ServerPlayerEntity player) {

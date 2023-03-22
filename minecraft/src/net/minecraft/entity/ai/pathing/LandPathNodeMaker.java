@@ -471,6 +471,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			if (pathNodeType2 == PathNodeType.POWDER_SNOW) {
 				pathNodeType = PathNodeType.DANGER_POWDER_SNOW;
 			}
+
+			if (pathNodeType2 == PathNodeType.DAMAGE_CAUTIOUS) {
+				pathNodeType = PathNodeType.DAMAGE_CAUTIOUS;
+			}
 		}
 
 		if (pathNodeType == PathNodeType.WALKABLE) {
@@ -502,6 +506,10 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						if (world.getFluidState(pos).isIn(FluidTags.WATER)) {
 							return PathNodeType.WATER_BORDER;
 						}
+
+						if (blockState.isOf(Blocks.WITHER_ROSE) || blockState.isOf(Blocks.POINTED_DRIPSTONE)) {
+							return PathNodeType.DAMAGE_CAUTIOUS;
+						}
 					}
 				}
 			}
@@ -526,7 +534,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			return PathNodeType.STICKY_HONEY;
 		} else if (blockState.isOf(Blocks.COCOA)) {
 			return PathNodeType.COCOA;
-		} else {
+		} else if (!blockState.isOf(Blocks.WITHER_ROSE) && !blockState.isOf(Blocks.POINTED_DRIPSTONE)) {
 			FluidState fluidState = world.getFluidState(pos);
 			if (fluidState.isIn(FluidTags.LAVA)) {
 				return PathNodeType.LAVA;
@@ -553,6 +561,8 @@ public class LandPathNodeMaker extends PathNodeMaker {
 			} else {
 				return PathNodeType.FENCE;
 			}
+		} else {
+			return PathNodeType.DAMAGE_CAUTIOUS;
 		}
 	}
 

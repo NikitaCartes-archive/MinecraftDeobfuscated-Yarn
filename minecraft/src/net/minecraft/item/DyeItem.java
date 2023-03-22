@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
+import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,8 +11,9 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
+import net.minecraft.world.World;
 
-public class DyeItem extends Item {
+public class DyeItem extends Item implements SignChangingItem {
 	private static final Map<DyeColor, DyeItem> DYES = Maps.newEnumMap(DyeColor.class);
 	private final DyeColor color;
 
@@ -42,5 +44,15 @@ public class DyeItem extends Item {
 
 	public static DyeItem byColor(DyeColor color) {
 		return (DyeItem)DYES.get(color);
+	}
+
+	@Override
+	public boolean useOnSign(World world, SignBlockEntity signBlockEntity, boolean front, PlayerEntity player) {
+		if (signBlockEntity.changeText(text -> text.withColor(this.getColor()), front)) {
+			world.playSound(null, signBlockEntity.getPos(), SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

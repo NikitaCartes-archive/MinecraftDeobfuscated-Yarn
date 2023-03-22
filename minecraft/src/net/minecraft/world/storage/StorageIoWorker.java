@@ -121,7 +121,7 @@ public class StorageIoWorker implements NbtScannable, AutoCloseable {
 	}
 
 	private boolean needsBlending(NbtCompound nbt) {
-		return nbt.contains("DataVersion", NbtElement.NUMBER_TYPE) && nbt.getInt("DataVersion") >= 3088
+		return nbt.contains("DataVersion", NbtElement.NUMBER_TYPE) && nbt.getInt("DataVersion") >= 3441
 			? nbt.contains("blending_data", NbtElement.COMPOUND_TYPE)
 			: true;
 	}

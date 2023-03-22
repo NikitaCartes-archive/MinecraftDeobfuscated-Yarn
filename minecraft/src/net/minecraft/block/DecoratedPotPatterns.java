@@ -10,24 +10,72 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 
 public class DecoratedPotPatterns {
-	public static final String DECORATED_POT_BASE = "decorated_pot_base";
+	private static final String DECORATED_POT_BASE = "decorated_pot_base";
 	public static final RegistryKey<String> DECORATED_POT_BASE_KEY = of("decorated_pot_base");
-	public static final String DECORATED_POT_SIDE = "decorated_pot_side";
-	public static final String POTTERY_PATTERN_ARCHER = "pottery_pattern_archer";
-	public static final String POTTERY_PATTERN_PRIZE = "pottery_pattern_prize";
-	public static final String POTTERY_PATTERN_ARMS_UP = "pottery_pattern_arms_up";
-	public static final String POTTERY_PATTERN_SKULL = "pottery_pattern_skull";
-	public static final RegistryKey<String> DECORATED_POT_SIDE_KEY = of("decorated_pot_side");
-	public static final RegistryKey<String> POTTERY_PATTERN_ARCHER_KEY = of("pottery_pattern_archer");
-	public static final RegistryKey<String> POTTERY_PATTERN_PRIZE_KEY = of("pottery_pattern_prize");
-	public static final RegistryKey<String> POTTERY_PATTERN_ARMS_UP_KEY = of("pottery_pattern_arms_up");
-	public static final RegistryKey<String> POTTERY_PATTERN_SKULL_KEY = of("pottery_pattern_skull");
+	private static final String DECORATED_POT_SIDE = "decorated_pot_side";
+	private static final String ANGLER_POTTERY_PATTERN = "angler_pottery_pattern";
+	private static final String ARCHER_POTTERY_PATTERN = "archer_pottery_pattern";
+	private static final String ARMS_UP_POTTERY_PATTERN = "arms_up_pottery_pattern";
+	private static final String BLADE_POTTERY_PATTERN = "blade_pottery_pattern";
+	private static final String BREWER_POTTERY_PATTERN = "brewer_pottery_pattern";
+	private static final String BURN_POTTERY_PATTERN = "burn_pottery_pattern";
+	private static final String DANGER_POTTERY_PATTERN = "danger_pottery_pattern";
+	private static final String EXPLORER_POTTERY_PATTERN = "explorer_pottery_pattern";
+	private static final String FRIEND_POTTERY_PATTERN = "friend_pottery_pattern";
+	private static final String HEART_POTTERY_PATTERN = "heart_pottery_pattern";
+	private static final String HEARTBREAK_POTTERY_PATTERN = "heartbreak_pottery_pattern";
+	private static final String HOWL_POTTERY_PATTERN = "howl_pottery_pattern";
+	private static final String MINER_POTTERY_PATTERN = "miner_pottery_pattern";
+	private static final String MOURNER_POTTERY_PATTERN = "mourner_pottery_pattern";
+	private static final String PLENTY_POTTERY_PATTERN = "plenty_pottery_pattern";
+	private static final String PRIZE_POTTERY_PATTERN = "prize_pottery_pattern";
+	private static final String SHEAF_POTTERY_PATTERN = "sheaf_pottery_pattern";
+	private static final String SHELTER_POTTERY_PATTERN = "shelter_pottery_pattern";
+	private static final String SKULL_POTTERY_PATTERN = "skull_pottery_pattern";
+	private static final String SNORT_POTTERY_PATTERN = "snort_pottery_pattern";
+	private static final RegistryKey<String> DECORATED_POT_SIDE_KEY = of("decorated_pot_side");
+	private static final RegistryKey<String> ANGLER_POTTERY_PATTERN_KEY = of("angler_pottery_pattern");
+	private static final RegistryKey<String> ARCHER_POTTERY_PATTERN_KEY = of("archer_pottery_pattern");
+	private static final RegistryKey<String> ARMS_UP_POTTERY_PATTERN_KEY = of("arms_up_pottery_pattern");
+	private static final RegistryKey<String> BLADE_POTTERY_PATTERN_KEY = of("blade_pottery_pattern");
+	private static final RegistryKey<String> BREWER_POTTERY_PATTERN_KEY = of("brewer_pottery_pattern");
+	private static final RegistryKey<String> BURN_POTTERY_PATTERN_KEY = of("burn_pottery_pattern");
+	private static final RegistryKey<String> DANGER_POTTERY_PATTERN_KEY = of("danger_pottery_pattern");
+	private static final RegistryKey<String> EXPLORER_POTTERY_PATTERN_KEY = of("explorer_pottery_pattern");
+	private static final RegistryKey<String> FRIEND_POTTERY_PATTERN_KEY = of("friend_pottery_pattern");
+	private static final RegistryKey<String> HEART_POTTERY_PATTERN_KEY = of("heart_pottery_pattern");
+	private static final RegistryKey<String> HEARTBREAK_POTTERY_PATTERN_KEY = of("heartbreak_pottery_pattern");
+	private static final RegistryKey<String> HOWL_POTTERY_PATTERN_KEY = of("howl_pottery_pattern");
+	private static final RegistryKey<String> MINER_POTTERY_PATTERN_KEY = of("miner_pottery_pattern");
+	private static final RegistryKey<String> MOURNER_POTTERY_PATTERN_KEY = of("mourner_pottery_pattern");
+	private static final RegistryKey<String> PLENTY_POTTERY_PATTERN_KEY = of("plenty_pottery_pattern");
+	private static final RegistryKey<String> POTTERY_PATTERN_PRIZE_KEY = of("prize_pottery_pattern");
+	private static final RegistryKey<String> SHEAF_POTTERY_PATTERN_KEY = of("sheaf_pottery_pattern");
+	private static final RegistryKey<String> SHELTER_POTTERY_PATTERN_KEY = of("shelter_pottery_pattern");
+	private static final RegistryKey<String> SKULL_POTTERY_PATTERN_KEY = of("skull_pottery_pattern");
+	private static final RegistryKey<String> SNORT_POTTERY_PATTERN_KEY = of("snort_pottery_pattern");
 	private static final Map<Item, RegistryKey<String>> SHARD_TO_PATTERN = Map.ofEntries(
-		Map.entry(Items.POTTERY_SHARD_ARCHER, POTTERY_PATTERN_ARCHER_KEY),
-		Map.entry(Items.POTTERY_SHARD_PRIZE, POTTERY_PATTERN_PRIZE_KEY),
-		Map.entry(Items.POTTERY_SHARD_ARMS_UP, POTTERY_PATTERN_ARMS_UP_KEY),
-		Map.entry(Items.POTTERY_SHARD_SKULL, POTTERY_PATTERN_SKULL_KEY),
-		Map.entry(Items.BRICK, DECORATED_POT_SIDE_KEY)
+		Map.entry(Items.BRICK, DECORATED_POT_SIDE_KEY),
+		Map.entry(Items.ANGLER_POTTERY_SHARD, ANGLER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.ARCHER_POTTERY_SHARD, ARCHER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.ARMS_UP_POTTERY_SHARD, ARMS_UP_POTTERY_PATTERN_KEY),
+		Map.entry(Items.BLADE_POTTERY_SHARD, BLADE_POTTERY_PATTERN_KEY),
+		Map.entry(Items.BREWER_POTTERY_SHARD, BREWER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.BURN_POTTERY_SHARD, BURN_POTTERY_PATTERN_KEY),
+		Map.entry(Items.DANGER_POTTERY_SHARD, DANGER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.EXPLORER_POTTERY_SHARD, EXPLORER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.FRIEND_POTTERY_SHARD, FRIEND_POTTERY_PATTERN_KEY),
+		Map.entry(Items.HEART_POTTERY_SHARD, HEART_POTTERY_PATTERN_KEY),
+		Map.entry(Items.HEARTBREAK_POTTERY_SHARD, HEARTBREAK_POTTERY_PATTERN_KEY),
+		Map.entry(Items.HOWL_POTTERY_SHARD, HOWL_POTTERY_PATTERN_KEY),
+		Map.entry(Items.MINER_POTTERY_SHARD, MINER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.MOURNER_POTTERY_SHARD, MOURNER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.PLENTY_POTTERY_SHARD, PLENTY_POTTERY_PATTERN_KEY),
+		Map.entry(Items.PRIZE_POTTERY_SHARD, POTTERY_PATTERN_PRIZE_KEY),
+		Map.entry(Items.SHEAF_POTTERY_SHARD, SHEAF_POTTERY_PATTERN_KEY),
+		Map.entry(Items.SHELTER_POTTERY_SHARD, SHELTER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.SKULL_POTTERY_SHARD, SKULL_POTTERY_PATTERN_KEY),
+		Map.entry(Items.SNORT_POTTERY_SHARD, SNORT_POTTERY_PATTERN_KEY)
 	);
 
 	private static RegistryKey<String> of(String path) {
@@ -44,11 +92,27 @@ public class DecoratedPotPatterns {
 	}
 
 	public static String registerAndGetDefault(Registry<String> registry) {
-		Registry.register(registry, POTTERY_PATTERN_ARCHER_KEY, "pottery_pattern_archer");
-		Registry.register(registry, POTTERY_PATTERN_PRIZE_KEY, "pottery_pattern_prize");
-		Registry.register(registry, POTTERY_PATTERN_ARMS_UP_KEY, "pottery_pattern_arms_up");
-		Registry.register(registry, POTTERY_PATTERN_SKULL_KEY, "pottery_pattern_skull");
 		Registry.register(registry, DECORATED_POT_SIDE_KEY, "decorated_pot_side");
+		Registry.register(registry, ANGLER_POTTERY_PATTERN_KEY, "angler_pottery_pattern");
+		Registry.register(registry, ARCHER_POTTERY_PATTERN_KEY, "archer_pottery_pattern");
+		Registry.register(registry, ARMS_UP_POTTERY_PATTERN_KEY, "arms_up_pottery_pattern");
+		Registry.register(registry, BLADE_POTTERY_PATTERN_KEY, "blade_pottery_pattern");
+		Registry.register(registry, BREWER_POTTERY_PATTERN_KEY, "brewer_pottery_pattern");
+		Registry.register(registry, BURN_POTTERY_PATTERN_KEY, "burn_pottery_pattern");
+		Registry.register(registry, DANGER_POTTERY_PATTERN_KEY, "danger_pottery_pattern");
+		Registry.register(registry, EXPLORER_POTTERY_PATTERN_KEY, "explorer_pottery_pattern");
+		Registry.register(registry, FRIEND_POTTERY_PATTERN_KEY, "friend_pottery_pattern");
+		Registry.register(registry, HEART_POTTERY_PATTERN_KEY, "heart_pottery_pattern");
+		Registry.register(registry, HEARTBREAK_POTTERY_PATTERN_KEY, "heartbreak_pottery_pattern");
+		Registry.register(registry, HOWL_POTTERY_PATTERN_KEY, "howl_pottery_pattern");
+		Registry.register(registry, MINER_POTTERY_PATTERN_KEY, "miner_pottery_pattern");
+		Registry.register(registry, MOURNER_POTTERY_PATTERN_KEY, "mourner_pottery_pattern");
+		Registry.register(registry, PLENTY_POTTERY_PATTERN_KEY, "plenty_pottery_pattern");
+		Registry.register(registry, POTTERY_PATTERN_PRIZE_KEY, "prize_pottery_pattern");
+		Registry.register(registry, SHEAF_POTTERY_PATTERN_KEY, "sheaf_pottery_pattern");
+		Registry.register(registry, SHELTER_POTTERY_PATTERN_KEY, "shelter_pottery_pattern");
+		Registry.register(registry, SKULL_POTTERY_PATTERN_KEY, "skull_pottery_pattern");
+		Registry.register(registry, SNORT_POTTERY_PATTERN_KEY, "snort_pottery_pattern");
 		return Registry.register(registry, DECORATED_POT_BASE_KEY, "decorated_pot_base");
 	}
 }

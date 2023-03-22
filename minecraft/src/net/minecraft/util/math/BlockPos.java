@@ -3,7 +3,13 @@ package net.minecraft.util.math;
 import com.google.common.collect.AbstractIterator;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import java.util.ArrayDeque;
 import java.util.Optional;
+import java.util.Queue;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -13,6 +19,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 
 /**
@@ -494,6 +501,46 @@ public class BlockPos extends Vec3i {
 					return this.pos;
 				}
 			};
+	}
+
+	/**
+	 * Iterates from {@code pos} recursively, like in a fill tool in a raster image editor.
+	 * {@code callback} is called once (and only once) for each position it finds. When this
+	 * returns {@code true} and the depth/iteration limit is not reached yet, {@code nextQueuer}
+	 * queues the next (usually neighboring) positions to iterate, with the depth incremented by one.
+	 * 
+	 * @return the total number of iterations
+	 * 
+	 * @param pos the starting position
+	 * @param maxDepth the maximum depth of iteration
+	 * @param maxIterations the maximum number of total iterations
+	 * @param nextQueuer a function that enqueues the next positions
+	 */
+	public static int iterateRecursively(
+		BlockPos pos, int maxDepth, int maxIterations, BiConsumer<BlockPos, Consumer<BlockPos>> nextQueuer, Predicate<BlockPos> callback
+	) {
+		Queue<Pair<BlockPos, Integer>> queue = new ArrayDeque();
+		LongSet longSet = new LongOpenHashSet();
+		queue.add(Pair.of(pos, 0));
+		int i = 0;
+
+		while (!queue.isEmpty()) {
+			Pair<BlockPos, Integer> pair = (Pair<BlockPos, Integer>)queue.poll();
+			BlockPos blockPos = pair.getLeft();
+			int j = pair.getRight();
+			long l = blockPos.asLong();
+			if (longSet.add(l) && callback.test(blockPos)) {
+				if (++i >= maxIterations) {
+					return i;
+				}
+
+				if (j < maxDepth) {
+					nextQueuer.accept(blockPos, (Consumer)queuedPos -> queue.add(Pair.of(queuedPos, j + 1)));
+				}
+			}
+		}
+
+		return i;
 	}
 
 	public static class Mutable extends BlockPos {

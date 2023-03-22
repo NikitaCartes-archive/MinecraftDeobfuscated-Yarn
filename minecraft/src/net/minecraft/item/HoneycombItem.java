@@ -9,6 +9,8 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.block.entity.SignText;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -17,7 +19,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
-public class HoneycombItem extends Item {
+public class HoneycombItem extends Item implements SignChangingItem {
 	public static final Supplier<BiMap<Block, Block>> UNWAXED_TO_WAXED_BLOCKS = Suppliers.memoize(
 		() -> ImmutableBiMap.<Block, Block>builder()
 				.put(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK)
@@ -66,5 +68,20 @@ public class HoneycombItem extends Item {
 
 	public static Optional<BlockState> getWaxedState(BlockState state) {
 		return Optional.ofNullable((Block)((BiMap)UNWAXED_TO_WAXED_BLOCKS.get()).get(state.getBlock())).map(block -> block.getStateWithProperties(state));
+	}
+
+	@Override
+	public boolean useOnSign(World world, SignBlockEntity signBlockEntity, boolean front, PlayerEntity player) {
+		if (signBlockEntity.setWaxed(true)) {
+			world.syncWorldEvent(null, WorldEvents.BLOCK_WAXED, signBlockEntity.getPos(), 0);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public boolean canUseOnSignText(SignText signText, PlayerEntity player) {
+		return true;
 	}
 }

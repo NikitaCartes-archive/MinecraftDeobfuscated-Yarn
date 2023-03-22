@@ -12,6 +12,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.RedstoneView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.tick.TickPriority;
@@ -116,24 +117,12 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 		}
 	}
 
-	protected int getMaxInputLevelSides(WorldView world, BlockPos pos, BlockState state) {
+	protected int getMaxInputLevelSides(RedstoneView world, BlockPos pos, BlockState state) {
 		Direction direction = state.get(FACING);
 		Direction direction2 = direction.rotateYClockwise();
 		Direction direction3 = direction.rotateYCounterclockwise();
-		return Math.max(this.getInputLevel(world, pos.offset(direction2), direction2), this.getInputLevel(world, pos.offset(direction3), direction3));
-	}
-
-	protected int getInputLevel(WorldView world, BlockPos pos, Direction dir) {
-		BlockState blockState = world.getBlockState(pos);
-		if (this.isValidInput(blockState)) {
-			if (blockState.isOf(Blocks.REDSTONE_BLOCK)) {
-				return 15;
-			} else {
-				return blockState.isOf(Blocks.REDSTONE_WIRE) ? (Integer)blockState.get(RedstoneWireBlock.POWER) : world.getStrongRedstonePower(pos, dir);
-			}
-		} else {
-			return 0;
-		}
+		boolean bl = this.getSideInputFromGatesOnly();
+		return Math.max(world.getEmittedRedstonePower(pos.offset(direction2), direction2, bl), world.getEmittedRedstonePower(pos.offset(direction3), direction3, bl));
 	}
 
 	@Override
@@ -173,8 +162,8 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 		world.updateNeighborsExcept(blockPos, this, direction);
 	}
 
-	protected boolean isValidInput(BlockState state) {
-		return state.emitsRedstonePower();
+	protected boolean getSideInputFromGatesOnly() {
+		return false;
 	}
 
 	protected int getOutputLevel(BlockView world, BlockPos pos, BlockState state) {

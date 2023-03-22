@@ -34,12 +34,14 @@ public class RuleStructureProcessor extends StructureProcessor {
 		StructureTemplate.StructureBlockInfo currentBlockInfo,
 		StructurePlacementData data
 	) {
-		Random random = Random.create(MathHelper.hashCode(currentBlockInfo.pos));
-		BlockState blockState = world.getBlockState(currentBlockInfo.pos);
+		Random random = Random.create(MathHelper.hashCode(currentBlockInfo.pos()));
+		BlockState blockState = world.getBlockState(currentBlockInfo.pos());
 
 		for (StructureProcessorRule structureProcessorRule : this.rules) {
-			if (structureProcessorRule.test(currentBlockInfo.state, blockState, originalBlockInfo.pos, currentBlockInfo.pos, pivot, random)) {
-				return new StructureTemplate.StructureBlockInfo(currentBlockInfo.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getOutputNbt());
+			if (structureProcessorRule.test(currentBlockInfo.state(), blockState, originalBlockInfo.pos(), currentBlockInfo.pos(), pivot, random)) {
+				return new StructureTemplate.StructureBlockInfo(
+					currentBlockInfo.pos(), structureProcessorRule.getOutputState(), structureProcessorRule.getOutputNbt(random, currentBlockInfo.nbt())
+				);
 			}
 		}
 

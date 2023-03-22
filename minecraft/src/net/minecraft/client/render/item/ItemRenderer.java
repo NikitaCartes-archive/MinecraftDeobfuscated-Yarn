@@ -289,11 +289,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 			DiffuseLighting.disableGuiDepthLighting();
 		}
 
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.multiplyPositionMatrix(matrices.peek().getPositionMatrix());
-		RenderSystem.applyModelViewMatrix();
-		this.renderItem(stack, ModelTransformationMode.GUI, false, new MatrixStack(), immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
+		this.renderItem(stack, ModelTransformationMode.GUI, false, matrices, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
 		immediate.draw();
 		RenderSystem.enableDepthTest();
 		if (bl) {
@@ -301,8 +297,6 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		}
 
 		matrices.pop();
-		matrixStack.pop();
-		RenderSystem.applyModelViewMatrix();
 	}
 
 	/**

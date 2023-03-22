@@ -1,12 +1,13 @@
 package net.minecraft.block;
 
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.SuspiciousSandBlockEntity;
+import net.minecraft.block.entity.BrushableBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -18,13 +19,20 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.Nullable;
 
-public class SuspiciousSandBlock extends BlockWithEntity implements LandingBlock {
+public class BrushableBlock extends BlockWithEntity implements LandingBlock {
 	private static final IntProperty DUSTED = Properties.DUSTED;
 	public static final int field_42773 = 2;
+	private final Block baseBlock;
+	private final SoundEvent brushingSound;
+	private final SoundEvent brushingCompleteSound;
 
-	public SuspiciousSandBlock(AbstractBlock.Settings settings) {
+	public BrushableBlock(Block baseBlock, AbstractBlock.Settings settings, SoundEvent brushingSound, SoundEvent brushingCompleteSound) {
 		super(settings);
+		this.baseBlock = baseBlock;
+		this.brushingSound = brushingSound;
+		this.brushingCompleteSound = brushingCompleteSound;
 		this.setDefaultState(this.stateManager.getDefaultState().with(DUSTED, Integer.valueOf(0)));
 	}
 
@@ -36,11 +44,6 @@ public class SuspiciousSandBlock extends BlockWithEntity implements LandingBlock
 	@Override
 	public BlockRenderType getRenderType(BlockState state) {
 		return BlockRenderType.MODEL;
-	}
-
-	@Override
-	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
-		return new SuspiciousSandBlockEntity(pos, state);
 	}
 
 	@Override
@@ -63,8 +66,8 @@ public class SuspiciousSandBlock extends BlockWithEntity implements LandingBlock
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (world.getBlockEntity(pos) instanceof SuspiciousSandBlockEntity suspiciousSandBlockEntity) {
-			suspiciousSandBlockEntity.scheduledTick();
+		if (world.getBlockEntity(pos) instanceof BrushableBlockEntity brushableBlockEntity) {
+			brushableBlockEntity.scheduledTick();
 		}
 
 		if (FallingBlock.canFallThrough(world.getBlockState(pos.down())) && pos.getY() >= world.getBottomY()) {
@@ -91,5 +94,23 @@ public class SuspiciousSandBlock extends BlockWithEntity implements LandingBlock
 				world.addParticle(new BlockStateParticleEffect(ParticleTypes.FALLING_DUST, state), d, e, f, 0.0, 0.0, 0.0);
 			}
 		}
+	}
+
+	@Nullable
+	@Override
+	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
+		return new BrushableBlockEntity(pos, state);
+	}
+
+	public Block getBaseBlock() {
+		return this.baseBlock;
+	}
+
+	public SoundEvent getBrushingSound() {
+		return this.brushingSound;
+	}
+
+	public SoundEvent getBrushingCompleteSound() {
+		return this.brushingCompleteSound;
 	}
 }
