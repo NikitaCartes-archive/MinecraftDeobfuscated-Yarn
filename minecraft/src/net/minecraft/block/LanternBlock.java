@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -67,11 +66,6 @@ public class LanternBlock extends Block implements Waterloggable {
 
 	protected static Direction attachedDirection(BlockState state) {
 		return state.get(HANGING) ? Direction.DOWN : Direction.UP;
-	}
-
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
 	}
 
 	@Override

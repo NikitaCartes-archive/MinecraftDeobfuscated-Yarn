@@ -116,7 +116,7 @@ public class SnifferBrain {
 					0,
 					new RandomTask<>(
 						ImmutableList.of(
-							Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 2),
+							Pair.of(GoTowardsLookTargetTask.create(1.0F, 3), 1),
 							Pair.of(new SnifferBrain.ScentingTask(40, 80), 1),
 							Pair.of(new SnifferBrain.SniffingTask(40, 80), 1),
 							Pair.of(LookAtMobTask.create(EntityType.PLAYER, 6.0F), 1),

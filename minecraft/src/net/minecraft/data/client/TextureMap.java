@@ -151,6 +151,13 @@ public class TextureMap {
 		return new TextureMap().put(TextureKey.SIDE, getSubId(block, "_side")).put(TextureKey.TOP, getSubId(block, "_top"));
 	}
 
+	public static TextureMap pottedAzaleaBush(Block block) {
+		return new TextureMap()
+			.put(TextureKey.PLANT, getSubId(block, "_plant"))
+			.put(TextureKey.SIDE, getSubId(block, "_side"))
+			.put(TextureKey.TOP, getSubId(block, "_top"));
+	}
+
 	public static TextureMap sideAndEndForTop(Block block) {
 		return new TextureMap().put(TextureKey.SIDE, getId(block)).put(TextureKey.END, getSubId(block, "_top")).put(TextureKey.PARTICLE, getId(block));
 	}
@@ -285,6 +292,17 @@ public class TextureMap {
 			.put(TextureKey.SOUTH, getSubId(frontTopSideBlock, "_front"))
 			.put(TextureKey.EAST, getSubId(frontTopSideBlock, "_side"))
 			.put(TextureKey.WEST, getSubId(frontTopSideBlock, "_side"));
+	}
+
+	public static TextureMap snifferEgg(String age) {
+		return new TextureMap()
+			.put(TextureKey.PARTICLE, getSubId(Blocks.SNIFFER_EGG, age + "_north"))
+			.put(TextureKey.BOTTOM, getSubId(Blocks.SNIFFER_EGG, age + "_bottom"))
+			.put(TextureKey.TOP, getSubId(Blocks.SNIFFER_EGG, age + "_top"))
+			.put(TextureKey.NORTH, getSubId(Blocks.SNIFFER_EGG, age + "_north"))
+			.put(TextureKey.SOUTH, getSubId(Blocks.SNIFFER_EGG, age + "_south"))
+			.put(TextureKey.EAST, getSubId(Blocks.SNIFFER_EGG, age + "_east"))
+			.put(TextureKey.WEST, getSubId(Blocks.SNIFFER_EGG, age + "_west"));
 	}
 
 	public static TextureMap campfire(Block block) {

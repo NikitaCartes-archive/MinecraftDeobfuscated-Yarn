@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -26,6 +25,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -73,33 +73,28 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		Item signBlockEntity = itemStack.getItem();
-		SignChangingItem signChangingItem2 = signBlockEntity instanceof SignChangingItem signChangingItem ? signChangingItem : null;
+		Item signBlockEntityx = itemStack.getItem();
+		SignChangingItem signChangingItem2 = signBlockEntityx instanceof SignChangingItem signChangingItem ? signChangingItem : null;
 		boolean bl = signChangingItem2 != null && player.getAbilities().allowModifyWorld;
-		if (world.isClient) {
-			return bl ? ActionResult.SUCCESS : ActionResult.CONSUME;
-		} else {
-			BlockEntity bl2 = world.getBlockEntity(pos);
-			if (bl2 instanceof SignBlockEntity signBlockEntity) {
+		BlockEntity bl2 = world.getBlockEntity(pos);
+		if (bl2 instanceof SignBlockEntity signBlockEntity) {
+			if (!world.isClient) {
 				boolean bl2x = signBlockEntity.isPlayerFacingFront(player);
 				SignText signText = signBlockEntity.getText(bl2x);
 				if (signBlockEntity.isWaxed()) {
-					boolean bl3 = signText.runCommandClickEvent((ServerPlayerEntity)player, (ServerWorld)world, pos);
+					boolean bl3 = signBlockEntity.runCommandClickEvent((ServerPlayerEntity)player, (ServerWorld)world, pos, bl2x);
 					if (!bl3) {
 						world.playSound(null, signBlockEntity.getPos(), SoundEvents.BLOCK_SIGN_WAXED_INTERACT_FAIL, SoundCategory.BLOCKS);
+						return ActionResult.PASS;
+					} else {
+						return bl ? ActionResult.PASS : ActionResult.SUCCESS;
 					}
-
-					return ActionResult.SUCCESS;
 				} else if (bl
 					&& !this.isOtherPlayerEditing(player, signBlockEntity)
 					&& signChangingItem2.canUseOnSignText(signText, player)
 					&& signChangingItem2.useOnSign(world, signBlockEntity, bl2x, player)) {
 					if (!player.isCreative()) {
 						itemStack.decrement(1);
-					}
-
-					if (player instanceof ServerPlayerEntity serverPlayerEntity) {
-						Criteria.ITEM_USED_ON_BLOCK.trigger(serverPlayerEntity, pos, itemStack);
 					}
 
 					world.emitGameEvent(GameEvent.BLOCK_CHANGE, signBlockEntity.getPos(), GameEvent.Emitter.of(player, signBlockEntity.getCachedState()));
@@ -112,12 +107,18 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 					return ActionResult.PASS;
 				}
 			} else {
-				return ActionResult.PASS;
+				return !bl && !signBlockEntity.isWaxed() ? ActionResult.CONSUME : ActionResult.SUCCESS;
 			}
+		} else {
+			return ActionResult.PASS;
 		}
 	}
 
 	public abstract float getRotationDegrees(BlockState state);
+
+	public Vec3d getCenter(BlockState state) {
+		return new Vec3d(0.5, 0.5, 0.5);
+	}
 
 	@Override
 	public FluidState getFluidState(BlockState state) {

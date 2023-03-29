@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.StructureTemplate;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class StructureProcessor {
@@ -24,7 +24,7 @@ public abstract class StructureProcessor {
 	protected abstract StructureProcessorType<?> getType();
 
 	public List<StructureTemplate.StructureBlockInfo> reprocess(
-		WorldAccess world,
+		ServerWorldAccess world,
 		BlockPos pos,
 		BlockPos pivot,
 		List<StructureTemplate.StructureBlockInfo> originalBlockInfos,

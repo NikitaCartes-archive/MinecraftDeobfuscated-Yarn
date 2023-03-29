@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -127,11 +126,6 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	@Override
 	public boolean emitsRedstonePower(BlockState state) {
 		return true;
-	}
-
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
 	}
 
 	protected abstract int getRedstoneOutput(World world, BlockPos pos);

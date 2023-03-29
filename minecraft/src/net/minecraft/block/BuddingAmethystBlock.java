@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -13,11 +12,6 @@ public class BuddingAmethystBlock extends AmethystBlock {
 
 	public BuddingAmethystBlock(AbstractBlock.Settings settings) {
 		super(settings);
-	}
-
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
 	}
 
 	@Override

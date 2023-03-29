@@ -44,7 +44,6 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 						return 15;
 					}
 
-					blockPos = BlockPos.add(blockPos, 0, 16, 0);
 					l = ChunkSectionPos.offset(l, Direction.UP);
 				}
 			}

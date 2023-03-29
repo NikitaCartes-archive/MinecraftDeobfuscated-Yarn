@@ -14,7 +14,7 @@ import net.minecraft.util.annotation.Debug;
  * <p>The nibbles are stored in an X-Z-Y major order; in the backing array,
  * the indices increases by first increasing X, then Z, and finally Y.
  */
-public final class ChunkNibbleArray {
+public class ChunkNibbleArray {
 	public static final int COPY_TIMES = 16;
 	public static final int COPY_BLOCK_SIZE = 128;
 	public static final int BYTES_LENGTH = 2048;

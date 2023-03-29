@@ -276,26 +276,27 @@ public class HeldItemRenderer {
 
 	private void applyBrushTransformation(MatrixStack matrices, float tickDelta, Arm arm, ItemStack stack, float equipProgress) {
 		this.applyEquipOffset(matrices, arm, equipProgress);
-		float f = (float)this.client.player.getItemUseTimeLeft() - tickDelta + 1.0F;
-		float g = 1.0F - f / (float)stack.getMaxUseTime();
-		float h = -90.0F;
-		float i = 60.0F;
-		int j = 45;
+		float f = (float)(this.client.player.getItemUseTimeLeft() % 10);
+		float g = f - tickDelta + 1.0F;
+		float h = 1.0F - g / 10.0F;
+		float i = -90.0F;
+		float j = 60.0F;
 		float k = 150.0F;
 		float l = -15.0F;
-		float m = -15.0F + 75.0F * MathHelper.cos(g * 45.0F * (float) Math.PI);
+		int m = 2;
+		float n = -15.0F + 75.0F * MathHelper.cos(h * 2.0F * (float) Math.PI);
 		if (arm != Arm.RIGHT) {
 			matrices.translate(0.1, 0.83, 0.35);
 			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80.0F));
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
-			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(m));
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(n));
 			matrices.translate(-0.3, 0.22, 0.35);
 		} else {
 			matrices.translate(-0.25, 0.22, 0.35);
 			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-80.0F));
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
 			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(0.0F));
-			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(m));
+			matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(n));
 		}
 	}
 

@@ -1,9 +1,11 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.Items;
@@ -110,6 +112,11 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttackMob> extends Go
 				}
 
 				this.actor.getMoveControl().strafeTo(this.backward ? -0.5F : 0.5F, this.movingToLeft ? 0.5F : -0.5F);
+				Entity var7 = this.actor.getControllingVehicle();
+				if (var7 instanceof MobEntity mobEntity) {
+					mobEntity.lookAtEntity(livingEntity, 30.0F, 30.0F);
+				}
+
 				this.actor.lookAtEntity(livingEntity, 30.0F, 30.0F);
 			} else {
 				this.actor.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
