@@ -11,17 +11,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
-import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
-import org.apache.commons.lang3.mutable.MutableInt;
 
 public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S extends LightStorage<M>> extends LevelPropagator implements ChunkLightingView {
-	public static final long field_31708 = Long.MAX_VALUE;
 	private static final Direction[] DIRECTIONS = Direction.values();
 	protected final ChunkProvider chunkProvider;
-	protected final LightType type;
 	protected final S lightStorage;
 	private boolean field_15794;
 	protected final BlockPos.Mutable reusableBlockPos = new BlockPos.Mutable();
@@ -29,10 +25,9 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 	private final long[] cachedChunkPositions = new long[2];
 	private final BlockView[] cachedChunks = new BlockView[2];
 
-	public ChunkLightProvider(ChunkProvider chunkProvider, LightType type, S lightStorage) {
+	public ChunkLightProvider(ChunkProvider chunkProvider, S lightStorage) {
 		super(16, 256, 8192);
 		this.chunkProvider = chunkProvider;
-		this.type = type;
 		this.lightStorage = lightStorage;
 		this.clearChunkCache();
 	}
@@ -72,38 +67,27 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 		Arrays.fill(this.cachedChunks, null);
 	}
 
-	protected BlockState getStateForLighting(long pos, @Nullable MutableInt opacity) {
-		if (pos == Long.MAX_VALUE) {
-			if (opacity != null) {
-				opacity.setValue(0);
-			}
-
-			return Blocks.AIR.getDefaultState();
-		} else {
-			int i = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongX(pos));
-			int j = ChunkSectionPos.getSectionCoord(BlockPos.unpackLongZ(pos));
-			BlockView blockView = this.getChunk(i, j);
-			if (blockView == null) {
-				if (opacity != null) {
-					opacity.setValue(16);
-				}
-
-				return Blocks.BEDROCK.getDefaultState();
-			} else {
-				this.reusableBlockPos.set(pos);
-				BlockState blockState = blockView.getBlockState(this.reusableBlockPos);
-				boolean bl = blockState.isOpaque() && blockState.hasSidedTransparency();
-				if (opacity != null) {
-					opacity.setValue(blockState.getOpacity(this.chunkProvider.getWorld(), this.reusableBlockPos));
-				}
-
-				return bl ? blockState : Blocks.AIR.getDefaultState();
-			}
-		}
+	protected BlockState getStateForLighting(BlockPos pos) {
+		int i = ChunkSectionPos.getSectionCoord(pos.getX());
+		int j = ChunkSectionPos.getSectionCoord(pos.getZ());
+		BlockView blockView = this.getChunk(i, j);
+		return blockView == null ? Blocks.BEDROCK.getDefaultState() : blockView.getBlockState(pos);
 	}
 
-	protected VoxelShape getOpaqueShape(BlockState world, long pos, Direction facing) {
-		return world.isOpaque() ? world.getCullingFace(this.chunkProvider.getWorld(), this.reusableBlockPos.set(pos), facing) : VoxelShapes.empty();
+	protected int getOpacity(BlockState state, BlockPos pos) {
+		return state.getOpacity(this.chunkProvider.getWorld(), pos);
+	}
+
+	protected boolean shapesCoverFullCube(long sourceId, BlockState sourceState, long targetId, BlockState targetState, Direction direction) {
+		VoxelShape voxelShape = this.getOpaqueShape(sourceState, sourceId, direction);
+		VoxelShape voxelShape2 = this.getOpaqueShape(targetState, targetId, direction.getOpposite());
+		return VoxelShapes.unionCoversFullCube(voxelShape, voxelShape2);
+	}
+
+	private VoxelShape getOpaqueShape(BlockState world, long pos, Direction facing) {
+		return world.isOpaque() && world.hasSidedTransparency()
+			? world.getCullingFace(this.chunkProvider.getWorld(), this.reusableBlockPos.set(pos), facing)
+			: VoxelShapes.empty();
 	}
 
 	public static int getRealisticOpacity(BlockView world, BlockState state1, BlockPos pos1, BlockState state2, BlockPos pos2, Direction direction, int opacity2) {
@@ -118,9 +102,12 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 		}
 	}
 
-	@Override
-	protected boolean isMarker(long id) {
-		return id == Long.MAX_VALUE;
+	@Nullable
+	protected static Direction getDirection(long source, long target) {
+		int i = BlockPos.unpackLongX(target) - BlockPos.unpackLongX(source);
+		int j = BlockPos.unpackLongY(target) - BlockPos.unpackLongY(source);
+		int k = BlockPos.unpackLongZ(target) - BlockPos.unpackLongZ(source);
+		return Direction.fromVector(i, j, k);
 	}
 
 	@Override
@@ -130,7 +117,7 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 
 	@Override
 	protected int getLevel(long id) {
-		return id == Long.MAX_VALUE ? 0 : 15 - this.lightStorage.get(id);
+		return this.isMarker(id) ? 0 : 15 - this.lightStorage.get(id);
 	}
 
 	protected int getCurrentLevelFromSection(ChunkNibbleArray section, long blockPos) {

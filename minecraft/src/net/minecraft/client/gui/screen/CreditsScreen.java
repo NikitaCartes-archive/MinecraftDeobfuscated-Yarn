@@ -17,8 +17,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.LogoDrawer;
+import net.minecraft.client.sound.MusicType;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.sound.MusicSound;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -284,6 +286,16 @@ public class CreditsScreen extends Screen {
 		RenderSystem.disableBlend();
 		RenderSystem.defaultBlendFunc();
 		super.render(matrices, mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void removed() {
+		this.client.getMusicTracker().stop(MusicType.CREDITS);
+	}
+
+	@Override
+	public MusicSound getMusic() {
+		return MusicType.CREDITS;
 	}
 
 	@FunctionalInterface

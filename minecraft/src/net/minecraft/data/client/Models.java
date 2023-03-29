@@ -149,8 +149,11 @@ public class Models {
 		"template_cauldron_full", TextureKey.CONTENT, TextureKey.INSIDE, TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE
 	);
 	public static final Model TEMPLATE_AZALEA = block("template_azalea", TextureKey.TOP, TextureKey.SIDE);
-	public static final Model TEMPLATE_POTTED_AZALEA_BUSH = block("template_potted_azalea_bush", TextureKey.TOP, TextureKey.SIDE);
-	public static final Model SNIFFER_EGG = block("sniffer_egg", TextureKey.ALL);
+	public static final Model TEMPLATE_POTTED_AZALEA_BUSH = block("template_potted_azalea_bush", TextureKey.PLANT, TextureKey.TOP, TextureKey.SIDE);
+	public static final Model TEMPLATE_POTTED_FLOWERING_AZALEA_BUSH = block("template_potted_azalea_bush", TextureKey.PLANT, TextureKey.TOP, TextureKey.SIDE);
+	public static final Model SNIFFER_EGG = block(
+		"sniffer_egg", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST
+	);
 	public static final Model GENERATED = item("generated", TextureKey.LAYER0);
 	public static final Model HANDHELD = item("handheld", TextureKey.LAYER0);
 	public static final Model HANDHELD_ROD = item("handheld_rod", TextureKey.LAYER0);

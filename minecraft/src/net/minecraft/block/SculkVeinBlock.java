@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.Collection;
 import net.minecraft.block.entity.SculkSpreadManager;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -168,11 +167,6 @@ public class SculkVeinBlock extends MultifaceGrowthBlock implements SculkSpreada
 	@Override
 	public FluidState getFluidState(BlockState state) {
 		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
-	}
-
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
 	}
 
 	class SculkVeinGrowChecker extends LichenGrower.LichenGrowChecker {

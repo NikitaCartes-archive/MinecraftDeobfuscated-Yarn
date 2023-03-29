@@ -15,15 +15,17 @@ public abstract class ChunkPosDistanceLevelPropagator extends LevelPropagator {
 
 	@Override
 	protected void propagateLevel(long id, int level, boolean decrease) {
-		ChunkPos chunkPos = new ChunkPos(id);
-		int i = chunkPos.x;
-		int j = chunkPos.z;
+		if (!decrease || level < this.levelCount - 2) {
+			ChunkPos chunkPos = new ChunkPos(id);
+			int i = chunkPos.x;
+			int j = chunkPos.z;
 
-		for (int k = -1; k <= 1; k++) {
-			for (int l = -1; l <= 1; l++) {
-				long m = ChunkPos.toLong(i + k, j + l);
-				if (m != id) {
-					this.propagateLevel(id, m, level, decrease);
+			for (int k = -1; k <= 1; k++) {
+				for (int l = -1; l <= 1; l++) {
+					long m = ChunkPos.toLong(i + k, j + l);
+					if (m != id) {
+						this.propagateLevel(id, m, level, decrease);
+					}
 				}
 			}
 		}

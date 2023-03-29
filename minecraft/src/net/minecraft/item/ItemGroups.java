@@ -618,7 +618,6 @@ public class ItemGroups {
 			entries.add(Items.SNOW);
 			entries.add(Items.MOSS_BLOCK);
 			entries.add(Items.MOSS_CARPET);
-			entries.add(Items.PINK_PETALS);
 			entries.add(Items.STONE);
 			entries.add(Items.DEEPSLATE);
 			entries.add(Items.GRANITE);
@@ -728,6 +727,7 @@ public class ItemGroups {
 			entries.add(Items.OXEYE_DAISY);
 			entries.add(Items.CORNFLOWER);
 			entries.add(Items.LILY_OF_THE_VALLEY);
+			entries.add(Items.PINK_PETALS);
 			entries.add(Items.SPORE_BLOSSOM);
 			entries.add(Items.BAMBOO);
 			entries.add(Items.SUGAR_CANE);

@@ -111,7 +111,7 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 
 	@Override
 	protected int getLevel(long id) {
-		if (id == Long.MAX_VALUE) {
+		if (this.isMarker(id)) {
 			return 2;
 		} else if (this.readySections.contains(id)) {
 			return 0;

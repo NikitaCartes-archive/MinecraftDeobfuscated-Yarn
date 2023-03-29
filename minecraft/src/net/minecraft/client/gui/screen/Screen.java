@@ -56,6 +56,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.MusicSound;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.OrderedText;
@@ -740,6 +741,11 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	@Override
 	public ScreenRect getNavigationFocus() {
 		return new ScreenRect(0, 0, this.width, this.height);
+	}
+
+	@Nullable
+	public MusicSound getMusic() {
+		return null;
 	}
 
 	@Environment(EnvType.CLIENT)

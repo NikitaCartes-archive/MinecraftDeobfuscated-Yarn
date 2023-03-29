@@ -11,7 +11,6 @@ import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -23,8 +22,7 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 	public static final IntProperty AGE = Properties.AGE_4;
 	public static final int field_43240 = 4;
 	private static final int field_43241 = 3;
-	private static final int field_43242 = 2;
-	private static final int field_43243 = 5;
+	private static final int field_43391 = 1;
 	private static final VoxelShape UPPER_OUTLINE_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 15.0, 13.0);
 	private static final VoxelShape LOWER_OUTLINE_SHAPE = Block.createCuboidShape(3.0, -1.0, 3.0, 13.0, 16.0, 13.0);
 	private static final VoxelShape AGE_0_COLLISION_SHAPE = Block.createCuboidShape(5.0, -1.0, 5.0, 11.0, 3.0, 11.0);
@@ -69,7 +67,7 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		if (state.get(HALF) == DoubleBlockHalf.LOWER && (Integer)state.get(AGE) >= 3) {
 			BlockState blockState = world.getBlockState(pos.up());
-			return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.UPPER;
+			return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.UPPER && this.canPlantOnTop(world.getBlockState(pos.down()), world, pos);
 		} else {
 			return (world.getBaseLightLevel(pos, 0) >= 8 || world.isSkyVisible(pos)) && super.canPlaceAt(state, world, pos);
 		}
@@ -114,10 +112,16 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 		if (i < 3 || canGrowAt(world, pos.up())) {
 			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i)), Block.NOTIFY_LISTENERS);
 			if (i >= 3) {
-				if (state.get(HALF) == DoubleBlockHalf.LOWER) {
+				DoubleBlockHalf doubleBlockHalf = state.get(HALF);
+				if (doubleBlockHalf == DoubleBlockHalf.LOWER) {
 					BlockPos blockPos = pos.up();
 					world.setBlockState(
 						blockPos, withWaterloggedState(world, pos, this.getDefaultState().with(AGE, Integer.valueOf(i)).with(HALF, DoubleBlockHalf.UPPER)), Block.NOTIFY_ALL
+					);
+				} else if (doubleBlockHalf == DoubleBlockHalf.UPPER) {
+					BlockPos blockPos = pos.down();
+					world.setBlockState(
+						blockPos, withWaterloggedState(world, pos, this.getDefaultState().with(AGE, Integer.valueOf(i)).with(HALF, DoubleBlockHalf.LOWER)), Block.NOTIFY_ALL
 					);
 				}
 			}
@@ -141,6 +145,6 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		this.tryGrow(world, state, pos, MathHelper.nextInt(world.random, 2, 5));
+		this.tryGrow(world, state, pos, 1);
 	}
 }

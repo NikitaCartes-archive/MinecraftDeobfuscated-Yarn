@@ -1,5 +1,6 @@
 package net.minecraft.block.entity;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.UUID;
@@ -12,11 +13,19 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.server.command.CommandOutput;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.Texts;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
@@ -44,8 +53,9 @@ public class SignBlockEntity extends BlockEntity {
 
 	public boolean isPlayerFacingFront(PlayerEntity player) {
 		if (this.getCachedState().getBlock() instanceof AbstractSignBlock abstractSignBlock) {
-			double d = player.getX() - ((double)this.getPos().getX() + 0.5);
-			double e = player.getZ() - ((double)this.getPos().getZ() + 0.5);
+			Vec3d vec3d = abstractSignBlock.getCenter(this.getCachedState());
+			double d = player.getX() - ((double)this.getPos().getX() + vec3d.x);
+			double e = player.getZ() - ((double)this.getPos().getZ() + vec3d.z);
 			float f = abstractSignBlock.getRotationDegrees(this.getCachedState());
 			float g = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
 			return MathHelper.angleBetween(f, g) <= 90.0F;
@@ -90,14 +100,41 @@ public class SignBlockEntity extends BlockEntity {
 	public void readNbt(NbtCompound nbt) {
 		super.readNbt(nbt);
 		if (nbt.contains("front_text")) {
-			SignText.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("front_text")).resultOrPartial(field_43294::error).ifPresent(frontText -> this.frontText = frontText);
+			SignText.CODEC
+				.parse(NbtOps.INSTANCE, nbt.getCompound("front_text"))
+				.resultOrPartial(field_43294::error)
+				.ifPresent(signText -> this.frontText = this.parseLines(signText));
 		}
 
 		if (nbt.contains("back_text")) {
-			SignText.CODEC.parse(NbtOps.INSTANCE, nbt.getCompound("back_text")).resultOrPartial(field_43294::error).ifPresent(backText -> this.backText = backText);
+			SignText.CODEC
+				.parse(NbtOps.INSTANCE, nbt.getCompound("back_text"))
+				.resultOrPartial(field_43294::error)
+				.ifPresent(signText -> this.backText = this.parseLines(signText));
 		}
 
 		this.waxed = nbt.getBoolean("is_waxed");
+	}
+
+	private SignText parseLines(SignText signText) {
+		for (int i = 0; i < 4; i++) {
+			Text text = this.parseLine(signText.getMessage(i, false));
+			Text text2 = this.parseLine(signText.getMessage(i, true));
+			signText = signText.withMessage(i, text, text2);
+		}
+
+		return signText;
+	}
+
+	private Text parseLine(Text text) {
+		if (this.world instanceof ServerWorld serverWorld) {
+			try {
+				return Texts.parse(createCommandSource(null, serverWorld, this.pos), text, null, 0);
+			} catch (CommandSyntaxException var4) {
+			}
+		}
+
+		return text;
 	}
 
 	public void tryChangeText(PlayerEntity player, boolean front, List<FilteredMessage> messages) {
@@ -149,6 +186,31 @@ public class SignBlockEntity extends BlockEntity {
 		} else {
 			return false;
 		}
+	}
+
+	public boolean canRunCommandClickEvent(boolean front, PlayerEntity player) {
+		return this.isWaxed() && this.getText(front).hasRunCommandClickEvent(player);
+	}
+
+	public boolean runCommandClickEvent(ServerPlayerEntity player, ServerWorld world, BlockPos pos, boolean front) {
+		boolean bl = false;
+
+		for (Text text : this.getText(front).getMessages(player.shouldFilterText())) {
+			Style style = text.getStyle();
+			ClickEvent clickEvent = style.getClickEvent();
+			if (clickEvent != null && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
+				player.getServer().getCommandManager().executeWithPrefix(createCommandSource(player, world, pos), clickEvent.getValue());
+				bl = true;
+			}
+		}
+
+		return bl;
+	}
+
+	private static ServerCommandSource createCommandSource(@Nullable ServerPlayerEntity player, ServerWorld world, BlockPos pos) {
+		String string = player == null ? "Sign" : player.getName().getString();
+		Text text = (Text)(player == null ? Text.literal("Sign") : player.getDisplayName());
+		return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ofCenter(pos), Vec2f.ZERO, world, 2, string, text, world.getServer(), player);
 	}
 
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {

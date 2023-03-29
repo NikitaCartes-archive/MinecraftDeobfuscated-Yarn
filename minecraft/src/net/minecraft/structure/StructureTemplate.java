@@ -394,7 +394,7 @@ public class StructureTemplate {
 	}
 
 	public static List<StructureTemplate.StructureBlockInfo> process(
-		WorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<StructureTemplate.StructureBlockInfo> infos
+		ServerWorldAccess world, BlockPos pos, BlockPos pivot, StructurePlacementData placementData, List<StructureTemplate.StructureBlockInfo> infos
 	) {
 		List<StructureTemplate.StructureBlockInfo> list = new ArrayList();
 		List<StructureTemplate.StructureBlockInfo> list2 = new ArrayList();

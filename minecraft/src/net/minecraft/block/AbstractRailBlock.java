@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import net.minecraft.block.enums.RailShape;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
@@ -116,11 +115,6 @@ public abstract class AbstractRailBlock extends Block implements Waterloggable {
 			RailShape railShape = state.get(this.getShapeProperty());
 			return new RailPlacementHelper(world, pos, state).updateBlockState(world.isReceivingRedstonePower(pos), forceUpdate, railShape).getBlockState();
 		}
-	}
-
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.NORMAL;
 	}
 
 	@Override

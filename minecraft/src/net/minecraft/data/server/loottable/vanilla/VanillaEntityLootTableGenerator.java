@@ -705,20 +705,7 @@ public class VanillaEntityLootTableGenerator extends EntityLootTableGenerator {
 						)
 				)
 		);
-		this.register(
-			EntityType.SNIFFER,
-			LootTable.builder()
-				.pool(
-					LootPool.builder()
-						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(
-							ItemEntry.builder(Items.MOSS_BLOCK)
-								.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0F)))
-								.conditionally(KilledByPlayerLootCondition.builder())
-								.conditionally(RandomChanceWithLootingLootCondition.builder(0.1F, 0.02F))
-						)
-				)
-		);
+		this.register(EntityType.SNIFFER, LootTable.builder());
 		this.register(
 			EntityType.SNOW_GOLEM,
 			LootTable.builder()

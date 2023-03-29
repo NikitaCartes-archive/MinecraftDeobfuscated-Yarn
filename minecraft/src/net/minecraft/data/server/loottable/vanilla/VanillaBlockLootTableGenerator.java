@@ -23,7 +23,6 @@ import net.minecraft.block.SnowBlock;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.TntBlock;
-import net.minecraft.block.TorchflowerBlock;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.data.server.loottable.BlockLootTableGenerator;
@@ -958,15 +957,9 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 				Blocks.MANGROVE_PROPAGULE, LootTable.builder().pool(LootPool.builder().conditionally(builder4).with(ItemEntry.builder(Items.MANGROVE_PROPAGULE)))
 			)
 		);
-		BlockStatePropertyLootCondition.Builder builder5 = BlockStatePropertyLootCondition.builder(Blocks.TORCHFLOWER_CROP)
-			.properties(StatePredicate.Builder.create().exactMatch(TorchflowerBlock.AGE, 2));
 		this.addDrop(
 			Blocks.TORCHFLOWER_CROP,
-			this.applyExplosionDecay(
-				Blocks.TORCHFLOWER_CROP,
-				LootTable.builder()
-					.pool(LootPool.builder().with(ItemEntry.builder(Items.TORCHFLOWER).conditionally(builder5).alternatively(ItemEntry.builder(Items.TORCHFLOWER_SEEDS))))
-			)
+			this.applyExplosionDecay(Blocks.TORCHFLOWER_CROP, LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(Items.TORCHFLOWER_SEEDS))))
 		);
 		this.addDrop(Blocks.SNIFFER_EGG);
 		this.addDrop(Blocks.PITCHER_CROP, block -> this.pitcherCropDrops());
@@ -1001,7 +994,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 					)
 			)
 		);
-		LootCondition.Builder builder6 = BlockStatePropertyLootCondition.builder(Blocks.POTATOES)
+		LootCondition.Builder builder5 = BlockStatePropertyLootCondition.builder(Blocks.POTATOES)
 			.properties(StatePredicate.Builder.create().exactMatch(PotatoesBlock.AGE, 7));
 		this.addDrop(
 			Blocks.POTATOES,
@@ -1011,10 +1004,10 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 					.pool(LootPool.builder().with(ItemEntry.builder(Items.POTATO)))
 					.pool(
 						LootPool.builder()
-							.conditionally(builder6)
+							.conditionally(builder5)
 							.with(ItemEntry.builder(Items.POTATO).apply(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.FORTUNE, 0.5714286F, 3)))
 					)
-					.pool(LootPool.builder().conditionally(builder6).with(ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.02F))))
+					.pool(LootPool.builder().conditionally(builder5).with(ItemEntry.builder(Items.POISONOUS_POTATO).conditionally(RandomChanceLootCondition.builder(0.02F))))
 			)
 		);
 		this.addDrop(

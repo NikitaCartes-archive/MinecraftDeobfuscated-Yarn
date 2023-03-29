@@ -13,14 +13,15 @@ import net.minecraft.client.render.entity.animation.SnifferAnimations;
 import net.minecraft.entity.passive.SnifferEntity;
 
 @Environment(EnvType.CLIENT)
-public class SnifferModel<T extends SnifferEntity> extends SinglePartEntityModelWithChildTransform<T> {
-	private static final float field_42878 = 9000.0F;
-	private static final float field_43364 = 2.0F;
+public class SnifferEntityModel<T extends SnifferEntity> extends SinglePartEntityModelWithChildTransform<T> {
+	private static final float field_42878 = 40000.0F;
+	private static final float field_43364 = 9.0F;
+	private static final float field_43407 = 75.0F;
 	private static final float field_43365 = 1.0F;
 	private final ModelPart root;
 	private final ModelPart head;
 
-	public SnifferModel(ModelPart root) {
+	public SnifferEntityModel(ModelPart root) {
 		super(0.5F, 24.0F);
 		this.root = root.getChild(EntityModelPartNames.ROOT);
 		this.head = this.root.getChild(EntityModelPartNames.BONE).getChild(EntityModelPartNames.BODY).getChild(EntityModelPartNames.HEAD);
@@ -107,14 +108,15 @@ public class SnifferModel<T extends SnifferEntity> extends SinglePartEntityModel
 		this.getPart().traverse().forEach(ModelPart::resetTransform);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.head.yaw = i * (float) (Math.PI / 180.0);
-		float k = Math.min((float)snifferEntity.getVelocity().horizontalLengthSquared() * 9000.0F, 2.0F);
-		this.updateAnimation(snifferEntity.walkingAnimationState, SnifferAnimations.WALKING, h, k);
+		float k = Math.min((float)snifferEntity.getVelocity().horizontalLengthSquared() * 40000.0F, 9.0F);
+		this.animateMovement(SnifferAnimations.WALKING, f, g, 9.0F, 75.0F);
 		this.updateAnimation(snifferEntity.diggingAnimationState, SnifferAnimations.DIGGING, h);
 		this.updateAnimation(snifferEntity.searchingAnimationState, SnifferAnimations.SEARCHING, h, Math.min(k, 1.0F));
 		this.updateAnimation(snifferEntity.sniffingAnimationState, SnifferAnimations.SNIFFING, h);
 		this.updateAnimation(snifferEntity.risingAnimationState, SnifferAnimations.RISING, h);
 		this.updateAnimation(snifferEntity.feelingHappyAnimationState, SnifferAnimations.FEELING_HAPPY, h);
 		this.updateAnimation(snifferEntity.scentingAnimationState, SnifferAnimations.SCENTING, h);
+		this.updateAnimation(snifferEntity.babyGrowthAnimationState, SnifferAnimations.BABY_GROWTH, h);
 	}
 
 	@Override

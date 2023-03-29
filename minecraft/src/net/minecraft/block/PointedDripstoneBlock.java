@@ -6,7 +6,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.Thickness;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -208,11 +207,6 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 				}
 			}
 		}
-	}
-
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
 	}
 
 	@Nullable

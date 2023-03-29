@@ -58,13 +58,13 @@ public class SnifferEntity extends AnimalEntity {
 	private static final int field_42661 = 48000;
 	private static final TrackedData<SnifferEntity.State> STATE = DataTracker.registerData(SnifferEntity.class, TrackedDataHandlerRegistry.SNIFFER_STATE);
 	private static final TrackedData<Integer> FINISH_DIG_TIME = DataTracker.registerData(SnifferEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	public final AnimationState walkingAnimationState = new AnimationState();
 	public final AnimationState feelingHappyAnimationState = new AnimationState();
 	public final AnimationState scentingAnimationState = new AnimationState();
 	public final AnimationState sniffingAnimationState = new AnimationState();
 	public final AnimationState searchingAnimationState = new AnimationState();
 	public final AnimationState diggingAnimationState = new AnimationState();
 	public final AnimationState risingAnimationState = new AnimationState();
+	public final AnimationState babyGrowthAnimationState = new AnimationState();
 
 	public static DefaultAttributeContainer.Builder createSnifferAttributes() {
 		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1F).add(EntityAttributes.GENERIC_MAX_HEALTH, 14.0);
@@ -83,19 +83,6 @@ public class SnifferEntity extends AnimalEntity {
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return this.getDimensions(pose).height * 0.6F;
-	}
-
-	private boolean isMoving() {
-		boolean bl = this.onGround || this.isInsideWaterOrBubbleColumn();
-		return bl && this.getVelocity().horizontalLengthSquared() > 1.0E-6;
-	}
-
-	private boolean isMovingInWater() {
-		return this.isMoving() && this.isTouchingWater() && !this.isSubmergedInWater() && this.getVelocity().horizontalLengthSquared() > 9.999999999999999E-6;
-	}
-
-	private boolean isMovingOutsideWater() {
-		return this.isMoving() && !this.isSubmergedInWater() && !this.isTouchingWater();
 	}
 
 	public boolean isPanicking() {
@@ -246,7 +233,7 @@ public class SnifferEntity extends AnimalEntity {
 			BlockPos blockPos = this.getDigPos();
 			if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 				for (int i = 0; i < 30; i++) {
-					Vec3d vec3d = Vec3d.ofCenter(blockPos);
+					Vec3d vec3d = Vec3d.ofCenter(blockPos).add(0.0, -0.65F, 0.0);
 					this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), vec3d.x, vec3d.y, vec3d.z, 0.0, 0.0, 0.0);
 				}
 
@@ -300,14 +287,6 @@ public class SnifferEntity extends AnimalEntity {
 
 	@Override
 	public void tick() {
-		boolean bl = this.isTouchingWater() && !this.isSubmergedInWater();
-		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(bl ? 0.2F : 0.1F);
-		if (!this.isMovingOutsideWater() && !this.isMovingInWater()) {
-			this.walkingAnimationState.stop();
-		} else {
-			this.walkingAnimationState.startIfNotRunning(this.age);
-		}
-
 		switch (this.getState()) {
 			case SEARCHING:
 				this.playSearchingSound();
@@ -316,6 +295,7 @@ public class SnifferEntity extends AnimalEntity {
 				this.spawnDiggingParticles(this.diggingAnimationState).dropSeeds();
 		}
 
+		this.babyGrowthAnimationState.setRunning(this.isBaby(), this.age);
 		super.tick();
 	}
 
@@ -328,6 +308,11 @@ public class SnifferEntity extends AnimalEntity {
 		}
 
 		return actionResult;
+	}
+
+	@Override
+	public double getMountedHeightOffset() {
+		return 1.8;
 	}
 
 	private void playSearchingSound() {

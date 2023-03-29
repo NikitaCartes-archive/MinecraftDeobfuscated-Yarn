@@ -1934,7 +1934,13 @@ public class BlockStateModelGenerator {
 	}
 
 	private void registerPottedAzaleaBush(Block block) {
-		Identifier identifier = Models.TEMPLATE_POTTED_AZALEA_BUSH.upload(block, TextureMap.sideAndTop(block), this.modelCollector);
+		Identifier identifier;
+		if (block == Blocks.POTTED_FLOWERING_AZALEA_BUSH) {
+			identifier = Models.TEMPLATE_POTTED_FLOWERING_AZALEA_BUSH.upload(block, TextureMap.pottedAzaleaBush(block), this.modelCollector);
+		} else {
+			identifier = Models.TEMPLATE_POTTED_AZALEA_BUSH.upload(block, TextureMap.pottedAzaleaBush(block), this.modelCollector);
+		}
+
 		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
 	}
 
@@ -3540,7 +3546,7 @@ public class BlockStateModelGenerator {
 				case 2 -> "_very_cracked";
 				default -> "_not_cracked";
 			};
-			TextureMap textureMap = TextureMap.all(TextureMap.getSubId(Blocks.SNIFFER_EGG, string));
+			TextureMap textureMap = TextureMap.snifferEgg(string);
 			return Models.SNIFFER_EGG.upload(Blocks.SNIFFER_EGG, string, textureMap, this.modelCollector);
 		};
 		this.blockStateCollector
@@ -4051,7 +4057,7 @@ public class BlockStateModelGenerator {
 		this.registerCrop(Blocks.NETHER_WART, Properties.AGE_3, 0, 1, 1, 2);
 		this.registerCrop(Blocks.POTATOES, Properties.AGE_7, 0, 0, 1, 1, 2, 2, 2, 3);
 		this.registerCrop(Blocks.WHEAT, Properties.AGE_7, 0, 1, 2, 3, 4, 5, 6, 7);
-		this.registerTintableCrossBlockStateWithStages(Blocks.TORCHFLOWER_CROP, BlockStateModelGenerator.TintType.NOT_TINTED, Properties.AGE_2, 0, 1, 2);
+		this.registerTintableCrossBlockStateWithStages(Blocks.TORCHFLOWER_CROP, BlockStateModelGenerator.TintType.NOT_TINTED, Properties.AGE_1, 0, 1);
 		this.registerPitcherCrop();
 		this.registerPitcherPlant();
 		this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("decorated_pot"), Blocks.TERRACOTTA).includeWithoutItem(Blocks.DECORATED_POT);

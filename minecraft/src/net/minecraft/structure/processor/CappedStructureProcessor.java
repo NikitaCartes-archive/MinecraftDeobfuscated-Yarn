@@ -12,13 +12,13 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.world.ServerWorldAccess;
 
 public class CappedStructureProcessor extends StructureProcessor {
 	public static final Codec<CappedStructureProcessor> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					StructureProcessorType.CODEC.fieldOf("delegate").forGetter(cappedStructureProcessor -> cappedStructureProcessor.delegate),
-					IntProvider.POSITIVE_CODEC.fieldOf("limit").forGetter(cappedStructureProcessor -> cappedStructureProcessor.limit)
+					StructureProcessorType.CODEC.fieldOf("delegate").forGetter(processor -> processor.delegate),
+					IntProvider.POSITIVE_CODEC.fieldOf("limit").forGetter(processor -> processor.limit)
 				)
 				.apply(instance, CappedStructureProcessor::new)
 	);
@@ -37,7 +37,7 @@ public class CappedStructureProcessor extends StructureProcessor {
 
 	@Override
 	public final List<StructureTemplate.StructureBlockInfo> reprocess(
-		WorldAccess world,
+		ServerWorldAccess world,
 		BlockPos pos,
 		BlockPos pivot,
 		List<StructureTemplate.StructureBlockInfo> originalBlockInfos,
@@ -54,7 +54,7 @@ public class CappedStructureProcessor extends StructureProcessor {
 				);
 				return currentBlockInfos;
 			} else {
-				Random random = world.getRandom().nextSplitter().split(pos);
+				Random random = Random.create(world.toServerWorld().getSeed()).nextSplitter().split(pos);
 				int i = Math.min(this.limit.get(random), currentBlockInfos.size());
 				if (i < 1) {
 					return currentBlockInfos;

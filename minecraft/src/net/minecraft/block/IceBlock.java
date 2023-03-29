@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
@@ -48,10 +47,5 @@ public class IceBlock extends TransparentBlock {
 			world.setBlockState(pos, Blocks.WATER.getDefaultState());
 			world.updateNeighbor(pos, Blocks.WATER, pos);
 		}
-	}
-
-	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.NORMAL;
 	}
 }

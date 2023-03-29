@@ -561,29 +561,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	}
 
 	/**
-	 * {@return how the piston should handle the block}
-	 * 
-	 * <p>Notes on piston behavior:
-	 * <ul>
-	 * <li>{@link PistonBehavior#IGNORE} is ignored for blocks.</li>
-	 * <li>{@link PistonBehavior#DESTROY} and {@link PistonBehavior#PUSH_ONLY} causes pistons to
-	 * ignore the block entity restriction.</li>
-	 * <li>If the {@linkplain #getHardness hardness} equals {@code -1.0f} like bedrock, it blocks
-	 * the piston regardless of the return value.</li>
-	 * <li>Behavior of several unpushable blocks are hardcoded at {@link PistonBlock#isMovable}
-	 * instead.</li>
-	 * </ul>
-	 * 
-	 * @deprecated Consider calling {@link AbstractBlockState#getPistonBehavior} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
-	 * 
-	 * @see PistonBlock#isMovable
-	 */
-	@Deprecated
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return this.material.getPistonBehavior();
-	}
-
-	/**
 	 * {@return the state's associated fluid state}
 	 * 
 	 * <p>{@linkplain Waterloggable Waterloggable blocks} must override this to return {@code Fluids.WATER.getStill(false)}
@@ -1126,6 +1103,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		private final int luminance;
 		private final boolean hasSidedTransparency;
 		private final boolean isAir;
+		private final boolean burnable;
+		private final PistonBehavior pistonBehavior;
 		private final Material material;
 		private final MapColor mapColor;
 		private final float hardness;
@@ -1149,6 +1128,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.luminance = settings.luminance.applyAsInt(this.asBlockState());
 			this.hasSidedTransparency = block.hasSidedTransparency(this.asBlockState());
 			this.isAir = settings.isAir;
+			this.burnable = settings.burnable;
+			this.pistonBehavior = settings.pistonBehavior;
 			this.material = settings.material;
 			this.mapColor = (MapColor)settings.mapColorProvider.apply(this.asBlockState());
 			this.hardness = settings.hardness;
@@ -1224,6 +1205,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.isAir;
 		}
 
+		public boolean isBurnable() {
+			return this.burnable;
+		}
+
 		public MapColor getMapColor(BlockView world, BlockPos pos) {
 			return this.mapColor;
 		}
@@ -1281,7 +1266,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public PistonBehavior getPistonBehavior() {
-			return this.getBlock().getPistonBehavior(this.asBlockState());
+			return this.pistonBehavior;
 		}
 
 		public boolean isOpaqueFullCube(BlockView world, BlockPos pos) {
@@ -1625,6 +1610,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		Identifier lootTableId;
 		boolean opaque = true;
 		boolean isAir;
+		boolean burnable;
+		PistonBehavior pistonBehavior = PistonBehavior.NORMAL;
 		boolean blockBreakParticles = true;
 		AbstractBlock.TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(
 					world, pos, Direction.UP
@@ -1679,6 +1666,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			settings.dynamicBounds = block.settings.dynamicBounds;
 			settings.opaque = block.settings.opaque;
 			settings.isAir = block.settings.isAir;
+			settings.burnable = block.settings.burnable;
+			settings.pistonBehavior = block.settings.pistonBehavior;
 			settings.toolRequired = block.settings.toolRequired;
 			settings.offsetter = block.settings.offsetter;
 			settings.blockBreakParticles = block.settings.blockBreakParticles;
@@ -1778,6 +1767,16 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		 */
 		public AbstractBlock.Settings dropsLike(Block source) {
 			this.lootTableId = source.getLootTableId();
+			return this;
+		}
+
+		public AbstractBlock.Settings burnable() {
+			this.burnable = true;
+			return this;
+		}
+
+		public AbstractBlock.Settings pistonBehavior(PistonBehavior pistonBehavior) {
+			this.pistonBehavior = pistonBehavior;
 			return this;
 		}
 

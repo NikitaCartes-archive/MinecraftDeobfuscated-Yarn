@@ -2,15 +2,12 @@ package net.minecraft.util.math;
 
 import com.google.common.collect.Iterators;
 import com.mojang.serialization.DataResult;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
@@ -53,10 +50,6 @@ public enum Direction implements StringIdentifiable {
 		.filter(direction -> direction.getAxis().isHorizontal())
 		.sorted(Comparator.comparingInt(direction -> direction.idHorizontal))
 		.toArray(Direction[]::new);
-	private static final Long2ObjectMap<Direction> VECTOR_TO_DIRECTION = (Long2ObjectMap<Direction>)Arrays.stream(ALL)
-		.collect(Collectors.toMap(direction -> new BlockPos(direction.getVector()).asLong(), direction -> direction, (direction1, direction2) -> {
-			throw new IllegalArgumentException("Duplicate keys");
-		}, Long2ObjectOpenHashMap::new));
 
 	private Direction(int id, int idOpposite, int idHorizontal, String name, Direction.AxisDirection direction, Direction.Axis axis, Vec3i vector) {
 		this.id = id;
@@ -276,13 +269,32 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	@Nullable
-	public static Direction fromVector(BlockPos pos) {
-		return VECTOR_TO_DIRECTION.get(pos.asLong());
-	}
-
-	@Nullable
 	public static Direction fromVector(int x, int y, int z) {
-		return VECTOR_TO_DIRECTION.get(BlockPos.asLong(x, y, z));
+		if (x == 0) {
+			if (y == 0) {
+				if (z > 0) {
+					return SOUTH;
+				}
+
+				if (z < 0) {
+					return NORTH;
+				}
+			} else if (z == 0) {
+				if (y > 0) {
+					return UP;
+				}
+
+				return DOWN;
+			}
+		} else if (y == 0 && z == 0) {
+			if (x > 0) {
+				return EAST;
+			}
+
+			return WEST;
+		}
+
+		return null;
 	}
 
 	public static Direction fromRotation(double rotation) {

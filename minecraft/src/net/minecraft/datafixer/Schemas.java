@@ -1046,10 +1046,10 @@ public class Schemas {
 		Schema schema179 = builder.addSchema(3328, Schema3328::new);
 		builder.addFixer(new ChoiceTypesFix(schema179, "Added interaction", TypeReferences.ENTITY));
 		Schema schema180 = builder.addSchema(3438, Schema3438::new);
-		builder.addFixer(new ChoiceTypesFix(schema180, "Added calibrated sculk sensor", TypeReferences.BLOCK_ENTITY));
 		builder.addFixer(
 			RenameBlockEntityFix.create(schema180, "Rename Suspicious Sand to Brushable Block", replacing("minecraft:suspicious_sand", "minecraft:brushable_block"))
 		);
+		builder.addFixer(new EntityBrushableBlockFieldsRenameFix(schema180));
 		builder.addFixer(
 			ItemNameFix.create(
 				schema180,
@@ -1068,7 +1068,7 @@ public class Schemas {
 				)
 			)
 		);
-		builder.addFixer(new EntityBrushableBlockFieldsRenameFix(schema180));
+		builder.addFixer(new ChoiceTypesFix(schema180, "Added calibrated sculk sensor", TypeReferences.BLOCK_ENTITY));
 		Schema schema181 = builder.addSchema(3439, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new UpdateSignTextFormatFix(schema181, "Updated sign text format for Signs", "minecraft:sign"));
 		builder.addFixer(new UpdateSignTextFormatFix(schema181, "Updated sign text format for Hanging Signs", "minecraft:hanging_sign"));

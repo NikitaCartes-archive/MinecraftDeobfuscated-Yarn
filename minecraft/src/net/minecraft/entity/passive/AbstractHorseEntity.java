@@ -231,9 +231,6 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	@Override
 	public void saddle(@Nullable SoundCategory sound) {
 		this.items.setStack(0, new ItemStack(Items.SADDLE));
-		if (sound != null) {
-			this.world.playSoundFromEntity(null, this, this.getSaddleSound(), sound, 0.5F, 1.0F);
-		}
 	}
 
 	public void equipHorseArmor(PlayerEntity player, ItemStack stack) {
@@ -343,7 +340,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		boolean bl = this.isSaddled();
 		this.updateSaddle();
 		if (this.age > 20 && !bl && this.isSaddled()) {
-			this.playSound(SoundEvents.ENTITY_HORSE_SADDLE, 0.5F, 1.0F);
+			this.playSound(this.getSaddleSound(), 0.5F, 1.0F);
 		}
 	}
 
@@ -391,12 +388,20 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				} else if (this.soundTicks <= 5) {
 					this.playSound(SoundEvents.ENTITY_HORSE_STEP_WOOD, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 				}
-			} else if (blockSoundGroup == BlockSoundGroup.WOOD) {
+			} else if (this.isWooden(blockSoundGroup)) {
 				this.playSound(SoundEvents.ENTITY_HORSE_STEP_WOOD, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 			} else {
 				this.playSound(SoundEvents.ENTITY_HORSE_STEP, blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 			}
 		}
+	}
+
+	private boolean isWooden(BlockSoundGroup soundGroup) {
+		return soundGroup == BlockSoundGroup.WOOD
+			|| soundGroup == BlockSoundGroup.NETHER_WOOD
+			|| soundGroup == BlockSoundGroup.NETHER_STEM
+			|| soundGroup == BlockSoundGroup.CHERRY_WOOD
+			|| soundGroup == BlockSoundGroup.BAMBOO_WOOD;
 	}
 
 	protected void playWalkSound(BlockSoundGroup group) {
@@ -744,9 +749,9 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
-		super.tickControlled(controllingPassenger, movementInput);
-		Vec2f vec2f = this.getControlledRotation(controllingPassenger);
+	protected void tickControlled(PlayerEntity controllingPlayer, Vec3d movementInput) {
+		super.tickControlled(controllingPlayer, movementInput);
+		Vec2f vec2f = this.getControlledRotation(controllingPlayer);
 		this.setRotation(vec2f.y, vec2f.x);
 		this.prevYaw = this.bodyYaw = this.headYaw = this.getYaw();
 		if (this.isLogicalSideForUpdatingMovement()) {
@@ -770,12 +775,12 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+	protected Vec3d getControlledMovementInput(PlayerEntity controllingPlayer, Vec3d movementInput) {
 		if (this.onGround && this.jumpStrength == 0.0F && this.isAngry() && !this.jumping) {
 			return Vec3d.ZERO;
 		} else {
-			float f = controllingPassenger.sidewaysSpeed * 0.5F;
-			float g = controllingPassenger.forwardSpeed;
+			float f = controllingPlayer.sidewaysSpeed * 0.5F;
+			float g = controllingPlayer.forwardSpeed;
 			if (g <= 0.0F) {
 				g *= 0.25F;
 			}
@@ -785,7 +790,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
+	protected float getSaddledSpeed(PlayerEntity controllingPlayer) {
 		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 	}
 
@@ -972,10 +977,6 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	@Override
 	public void updatePassengerPosition(Entity passenger) {
 		super.updatePassengerPosition(passenger);
-		if (passenger instanceof MobEntity mobEntity) {
-			this.bodyYaw = mobEntity.bodyYaw;
-		}
-
 		if (this.lastAngryAnimationProgress > 0.0F) {
 			float f = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
 			float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
@@ -1089,14 +1090,19 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	@Nullable
 	@Override
 	public LivingEntity getControllingPassenger() {
-		if (this.isSaddled()) {
-			Entity var2 = this.getFirstPassenger();
-			if (var2 instanceof LivingEntity) {
-				return (LivingEntity)var2;
+		Entity var3 = this.getFirstPassenger();
+		if (var3 instanceof MobEntity) {
+			return (MobEntity)var3;
+		} else {
+			if (this.isSaddled()) {
+				var3 = this.getFirstPassenger();
+				if (var3 instanceof PlayerEntity) {
+					return (PlayerEntity)var3;
+				}
 			}
-		}
 
-		return null;
+			return null;
+		}
 	}
 
 	@Nullable

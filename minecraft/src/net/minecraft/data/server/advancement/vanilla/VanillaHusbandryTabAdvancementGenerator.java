@@ -68,10 +68,9 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 		EntityType.STRIDER,
 		EntityType.GOAT,
 		EntityType.AXOLOTL,
-		EntityType.CAMEL,
-		EntityType.SNIFFER
+		EntityType.CAMEL
 	);
-	public static final List<EntityType<?>> EGG_LAYING_ANIMALS = List.of(EntityType.TURTLE, EntityType.FROG);
+	public static final List<EntityType<?>> EGG_LAYING_ANIMALS = List.of(EntityType.TURTLE, EntityType.FROG, EntityType.SNIFFER);
 	private static final Item[] FISH_ITEMS = new Item[]{Items.COD, Items.TROPICAL_FISH, Items.PUFFERFISH, Items.SALMON};
 	private static final Item[] FISH_BUCKET_ITEMS = new Item[]{Items.COD_BUCKET, Items.TROPICAL_FISH_BUCKET, Items.PUFFERFISH_BUCKET, Items.SALMON_BUCKET};
 	private static final Item[] FOOD_ITEMS = new Item[]{
@@ -154,6 +153,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion("beetroots", PlacedBlockCriterion.Conditions.block(Blocks.BEETROOTS))
 			.criterion("nether_wart", PlacedBlockCriterion.Conditions.block(Blocks.NETHER_WART))
 			.criterion("torchflower", PlacedBlockCriterion.Conditions.block(Blocks.TORCHFLOWER_CROP))
+			.criterion("pitcher_pod", PlacedBlockCriterion.Conditions.block(Blocks.PITCHER_CROP))
 			.build(exporter, "husbandry/plant_seed");
 		Advancement advancement3 = Advancement.Builder.create()
 			.parent(advancement)

@@ -5,6 +5,20 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class SnifferAnimations {
+	public static final Animation BABY_GROWTH = Animation.Builder.create(0.0F)
+		.addBoneAnimation(
+			"head",
+			new Transformation(
+				Transformation.Targets.SCALE, new Keyframe(0.0F, AnimationHelper.createScalingVector(1.2F, 1.2F, 1.2F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.addBoneAnimation(
+			"head",
+			new Transformation(
+				Transformation.Targets.TRANSLATE, new Keyframe(0.0F, AnimationHelper.createTranslationalVector(0.0F, 1.0F, 1.0F), Transformation.Interpolations.LINEAR)
+			)
+		)
+		.build();
 	public static final Animation SCENTING = Animation.Builder.create(8.0F)
 		.looping()
 		.addBoneAnimation(

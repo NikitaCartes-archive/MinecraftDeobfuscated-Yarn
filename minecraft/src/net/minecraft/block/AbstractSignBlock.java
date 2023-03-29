@@ -2,7 +2,6 @@ package net.minecraft.block;
 
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -26,6 +25,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -75,38 +75,37 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 		Item item = itemStack.getItem();
 		SignChangingItem signChangingItem2 = itemStack.getItem() instanceof SignChangingItem signChangingItem ? signChangingItem : null;
 		boolean bl = signChangingItem2 != null && player.getAbilities().allowModifyWorld;
-		if (world.isClient) {
-			return bl ? ActionResult.SUCCESS : ActionResult.CONSUME;
-		} else if (world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity) {
-			boolean bl2 = signBlockEntity.isPlayerFacingFront(player);
-			SignText signText = signBlockEntity.getText(bl2);
-			if (signBlockEntity.isWaxed()) {
-				boolean bl3 = signText.runCommandClickEvent((ServerPlayerEntity)player, (ServerWorld)world, pos);
-				if (!bl3) {
-					world.playSound(null, signBlockEntity.getPos(), SoundEvents.BLOCK_SIGN_WAXED_INTERACT_FAIL, SoundCategory.BLOCKS);
-				}
+		if (world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity) {
+			if (!world.isClient) {
+				boolean bl2 = signBlockEntity.isPlayerFacingFront(player);
+				SignText signText = signBlockEntity.getText(bl2);
+				if (signBlockEntity.isWaxed()) {
+					boolean bl3 = signBlockEntity.runCommandClickEvent((ServerPlayerEntity)player, (ServerWorld)world, pos, bl2);
+					if (!bl3) {
+						world.playSound(null, signBlockEntity.getPos(), SoundEvents.BLOCK_SIGN_WAXED_INTERACT_FAIL, SoundCategory.BLOCKS);
+						return ActionResult.PASS;
+					} else {
+						return bl ? ActionResult.PASS : ActionResult.SUCCESS;
+					}
+				} else if (bl
+					&& !this.isOtherPlayerEditing(player, signBlockEntity)
+					&& signChangingItem2.canUseOnSignText(signText, player)
+					&& signChangingItem2.useOnSign(world, signBlockEntity, bl2, player)) {
+					if (!player.isCreative()) {
+						itemStack.decrement(1);
+					}
 
-				return ActionResult.SUCCESS;
-			} else if (bl
-				&& !this.isOtherPlayerEditing(player, signBlockEntity)
-				&& signChangingItem2.canUseOnSignText(signText, player)
-				&& signChangingItem2.useOnSign(world, signBlockEntity, bl2, player)) {
-				if (!player.isCreative()) {
-					itemStack.decrement(1);
+					world.emitGameEvent(GameEvent.BLOCK_CHANGE, signBlockEntity.getPos(), GameEvent.Emitter.of(player, signBlockEntity.getCachedState()));
+					player.incrementStat(Stats.USED.getOrCreateStat(item));
+					return ActionResult.SUCCESS;
+				} else if (!this.isOtherPlayerEditing(player, signBlockEntity)) {
+					this.openEditScreen(player, signBlockEntity, bl2);
+					return ActionResult.SUCCESS;
+				} else {
+					return ActionResult.PASS;
 				}
-
-				if (player instanceof ServerPlayerEntity serverPlayerEntity) {
-					Criteria.ITEM_USED_ON_BLOCK.trigger(serverPlayerEntity, pos, itemStack);
-				}
-
-				world.emitGameEvent(GameEvent.BLOCK_CHANGE, signBlockEntity.getPos(), GameEvent.Emitter.of(player, signBlockEntity.getCachedState()));
-				player.incrementStat(Stats.USED.getOrCreateStat(item));
-				return ActionResult.SUCCESS;
-			} else if (!this.isOtherPlayerEditing(player, signBlockEntity)) {
-				this.openEditScreen(player, signBlockEntity, bl2);
-				return ActionResult.SUCCESS;
 			} else {
-				return ActionResult.PASS;
+				return !bl && !signBlockEntity.isWaxed() ? ActionResult.CONSUME : ActionResult.SUCCESS;
 			}
 		} else {
 			return ActionResult.PASS;
@@ -114,6 +113,10 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	}
 
 	public abstract float getRotationDegrees(BlockState state);
+
+	public Vec3d getCenter(BlockState state) {
+		return new Vec3d(0.5, 0.5, 0.5);
+	}
 
 	@Override
 	public FluidState getFluidState(BlockState state) {

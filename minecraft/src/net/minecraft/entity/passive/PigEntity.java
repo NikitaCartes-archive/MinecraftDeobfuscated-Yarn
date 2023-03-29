@@ -232,20 +232,20 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
-		super.tickControlled(controllingPassenger, movementInput);
-		this.setRotation(controllingPassenger.getYaw(), controllingPassenger.getPitch() * 0.5F);
+	protected void tickControlled(PlayerEntity controllingPlayer, Vec3d movementInput) {
+		super.tickControlled(controllingPlayer, movementInput);
+		this.setRotation(controllingPlayer.getYaw(), controllingPlayer.getPitch() * 0.5F);
 		this.prevYaw = this.bodyYaw = this.headYaw = this.getYaw();
 		this.saddledComponent.tickBoost();
 	}
 
 	@Override
-	protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+	protected Vec3d getControlledMovementInput(PlayerEntity controllingPlayer, Vec3d movementInput) {
 		return new Vec3d(0.0, 0.0, 1.0);
 	}
 
 	@Override
-	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
+	protected float getSaddledSpeed(PlayerEntity controllingPlayer) {
 		return (float)(this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) * 0.225 * (double)this.saddledComponent.getMovementSpeedMultiplier());
 	}
 

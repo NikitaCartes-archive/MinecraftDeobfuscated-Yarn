@@ -3,7 +3,6 @@ package net.minecraft.block;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
@@ -232,11 +231,6 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior(BlockState state) {
-		return PistonBehavior.DESTROY;
-	}
-
-	@Override
 	public BlockState rotate(BlockState state, BlockRotation rotation) {
 		return state.with(FACING, rotation.rotate(state.get(FACING)));
 	}
@@ -261,6 +255,6 @@ public class DoorBlock extends Block {
 	}
 
 	public static boolean isWoodenDoor(BlockState state) {
-		return state.getBlock() instanceof DoorBlock && (state.getMaterial() == Material.WOOD || state.getMaterial() == Material.NETHER_WOOD);
+		return state.getBlock() instanceof DoorBlock && state.getMaterial() == Material.WOOD;
 	}
 }

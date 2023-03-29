@@ -9,18 +9,15 @@ public abstract class SectionDistanceLevelPropagator extends LevelPropagator {
 	}
 
 	@Override
-	protected boolean isMarker(long id) {
-		return id == Long.MAX_VALUE;
-	}
-
-	@Override
 	protected void propagateLevel(long id, int level, boolean decrease) {
-		for (int i = -1; i <= 1; i++) {
-			for (int j = -1; j <= 1; j++) {
-				for (int k = -1; k <= 1; k++) {
-					long l = ChunkSectionPos.offset(id, i, j, k);
-					if (l != id) {
-						this.propagateLevel(id, l, level, decrease);
+		if (!decrease || level < this.levelCount - 2) {
+			for (int i = -1; i <= 1; i++) {
+				for (int j = -1; j <= 1; j++) {
+					for (int k = -1; k <= 1; k++) {
+						long l = ChunkSectionPos.offset(id, i, j, k);
+						if (l != id) {
+							this.propagateLevel(id, l, level, decrease);
+						}
 					}
 				}
 			}
@@ -58,7 +55,7 @@ public abstract class SectionDistanceLevelPropagator extends LevelPropagator {
 
 	@Override
 	protected int getPropagatedLevel(long sourceId, long targetId, int level) {
-		return sourceId == Long.MAX_VALUE ? this.getInitialLevel(targetId) : level + 1;
+		return this.isMarker(sourceId) ? this.getInitialLevel(targetId) : level + 1;
 	}
 
 	protected abstract int getInitialLevel(long id);

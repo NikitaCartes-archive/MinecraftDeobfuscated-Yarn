@@ -21,7 +21,7 @@ public class CalibratedSculkSensorBlock extends SculkSensorBlock {
 
 	public CalibratedSculkSensorBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
+		this.setDefaultState(this.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Nullable

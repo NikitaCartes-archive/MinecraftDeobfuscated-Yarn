@@ -70,7 +70,6 @@ import net.minecraft.client.gui.screen.AccessibilityOnboardingScreen;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
-import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.LevelLoadingScreen;
@@ -2565,8 +2564,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public MusicSound getMusicType() {
-		if (this.currentScreen instanceof CreditsScreen) {
-			return MusicType.CREDITS;
+		MusicSound musicSound = Nullables.map(this.currentScreen, Screen::getMusic);
+		if (musicSound != null) {
+			return musicSound;
 		} else if (this.player != null) {
 			if (this.player.world.getRegistryKey() == World.END) {
 				return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicType.DRAGON : MusicType.END;

@@ -172,21 +172,6 @@ public class TestContext {
 		}
 	}
 
-	public void useToolOnBlock(BlockPos pos, PlayerEntity player, BlockHitResult result) {
-		BlockPos blockPos = this.getAbsolutePos(pos);
-		BlockState blockState = this.getWorld().getBlockState(blockPos);
-		ActionResult actionResult = blockState.onUse(this.getWorld(), player, Hand.MAIN_HAND, result);
-		if (!actionResult.isAccepted()) {
-			ItemUsageContext itemUsageContext = new ItemUsageContext(player, Hand.MAIN_HAND, result);
-			ItemStack itemStack = player.getStackInHand(Hand.MAIN_HAND);
-			if (player.isUsingItem()) {
-				itemStack.usageTick(this.getWorld(), player, player.getItemUseTimeLeft());
-			} else {
-				itemStack.useOnBlock(itemUsageContext);
-			}
-		}
-	}
-
 	public LivingEntity drown(LivingEntity entity) {
 		entity.setAir(0);
 		entity.setHealth(0.25F);

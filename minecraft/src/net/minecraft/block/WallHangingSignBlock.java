@@ -7,12 +7,11 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.HangingSignBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.block.entity.SignText;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItem;
+import net.minecraft.item.HangingSignItem;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BlockTags;
@@ -51,13 +50,22 @@ public class WallHangingSignBlock extends AbstractSignBlock {
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity) {
 			ItemStack itemStack = player.getStackInHand(hand);
-			SignText signText = signBlockEntity.getTextFacing(player);
-			if (!signText.hasRunCommandClickEvent(player) && itemStack.getItem() instanceof BlockItem) {
+			if (this.shouldTryAttaching(state, player, hit, signBlockEntity, itemStack)) {
 				return ActionResult.PASS;
 			}
 		}
 
 		return super.onUse(state, world, pos, player, hand, hit);
+	}
+
+	private boolean shouldTryAttaching(BlockState state, PlayerEntity player, BlockHitResult hitResult, SignBlockEntity sign, ItemStack stack) {
+		return !sign.canRunCommandClickEvent(sign.isPlayerFacingFront(player), player)
+			&& stack.getItem() instanceof HangingSignItem
+			&& !this.isHitOnFacingAxis(hitResult, state);
+	}
+
+	private boolean isHitOnFacingAxis(BlockHitResult hitResult, BlockState state) {
+		return hitResult.getSide().getAxis() == ((Direction)state.get(FACING)).getAxis();
 	}
 
 	@Override

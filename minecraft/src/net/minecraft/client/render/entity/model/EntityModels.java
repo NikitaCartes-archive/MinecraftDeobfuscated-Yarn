@@ -169,7 +169,7 @@ public class EntityModels {
 		builder.put(EntityModelLayers.SKELETON_SKULL, texturedModelData6);
 		builder.put(EntityModelLayers.SLIME, SlimeEntityModel.getInnerTexturedModelData());
 		builder.put(EntityModelLayers.SLIME_OUTER, SlimeEntityModel.getOuterTexturedModelData());
-		builder.put(EntityModelLayers.SNIFFER, SnifferModel.getTexturedModelData());
+		builder.put(EntityModelLayers.SNIFFER, SnifferEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.SNOW_GOLEM, SnowGolemEntityModel.getTexturedModelData());
 		builder.put(EntityModelLayers.SPAWNER_MINECART, texturedModelData5);
 		builder.put(EntityModelLayers.SPIDER, texturedModelData19);

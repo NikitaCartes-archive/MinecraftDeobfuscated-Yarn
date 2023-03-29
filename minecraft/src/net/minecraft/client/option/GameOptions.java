@@ -775,6 +775,7 @@ public class GameOptions {
 		}
 	}, SimpleOption.DoubleSliderCallbacks.INSTANCE, 0.5, value -> {
 	});
+	public static final int field_43405 = 0;
 	private static final int MAX_SERIALIZABLE_GUI_SCALE = 2147483646;
 	private final SimpleOption<Integer> guiScale = new SimpleOption<>(
 		"options.guiScale",

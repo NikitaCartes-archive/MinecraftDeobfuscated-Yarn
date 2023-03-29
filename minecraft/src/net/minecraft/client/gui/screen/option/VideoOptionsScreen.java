@@ -174,6 +174,25 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		if (Screen.hasControlDown()) {
+			SimpleOption<Integer> simpleOption = this.gameOptions.getGuiScale();
+			int i = simpleOption.getValue() + (int)Math.signum(amount);
+			if (i != 0) {
+				simpleOption.setValue(i);
+				if (simpleOption.getValue() == i) {
+					this.client.onResolutionChanged();
+					return true;
+				}
+			}
+
+			return false;
+		} else {
+			return super.mouseScrolled(mouseX, mouseY, amount);
+		}
+	}
+
+	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.render(matrices, this.list, mouseX, mouseY, delta);
 	}

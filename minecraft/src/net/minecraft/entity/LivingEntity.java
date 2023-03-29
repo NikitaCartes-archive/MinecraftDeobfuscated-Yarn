@@ -2237,11 +2237,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.updateLimbs(this instanceof Flutterer);
 	}
 
-	private void travelControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
-		Vec3d vec3d = this.getControlledMovementInput(controllingPassenger, movementInput);
-		this.tickControlled(controllingPassenger, vec3d);
+	private void travelControlled(PlayerEntity controllingPlayer, Vec3d movementInput) {
+		Vec3d vec3d = this.getControlledMovementInput(controllingPlayer, movementInput);
+		this.tickControlled(controllingPlayer, vec3d);
 		if (this.isLogicalSideForUpdatingMovement()) {
-			this.setMovementSpeed(this.getSaddledSpeed(controllingPassenger));
+			this.setMovementSpeed(this.getSaddledSpeed(controllingPlayer));
 			this.travel(vec3d);
 		} else {
 			this.updateLimbs(false);
@@ -2250,14 +2250,14 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 	}
 
-	protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
+	protected void tickControlled(PlayerEntity controllingPlayer, Vec3d movementInput) {
 	}
 
-	protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
+	protected Vec3d getControlledMovementInput(PlayerEntity controllingPlayer, Vec3d movementInput) {
 		return movementInput;
 	}
 
-	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
+	protected float getSaddledSpeed(PlayerEntity controllingPlayer) {
 		return this.getMovementSpeed();
 	}
 
@@ -2673,17 +2673,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.jumpingCooldown = 0;
 		}
 
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("travel");
-		this.sidewaysSpeed *= 0.98F;
-		this.forwardSpeed *= 0.98F;
-		this.tickFallFlying();
-		Box box = this.getBoundingBox();
-		LivingEntity livingEntity = this.getControllingPassenger();
-		Vec3d vec3d2 = new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed);
-		if (livingEntity != null && this.isAlive()) {
-			this.travelControlled(livingEntity, vec3d2);
-		} else {
+		Box box;
+		label101: {
+			this.world.getProfiler().pop();
+			this.world.getProfiler().push("travel");
+			this.sidewaysSpeed *= 0.98F;
+			this.forwardSpeed *= 0.98F;
+			this.tickFallFlying();
+			box = this.getBoundingBox();
+			Vec3d vec3d2 = new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed);
+			if (this.getControllingPassenger() instanceof PlayerEntity playerEntity && this.isAlive()) {
+				this.travelControlled(playerEntity, vec3d2);
+				break label101;
+			}
+
 			this.travel(vec3d2);
 		}
 

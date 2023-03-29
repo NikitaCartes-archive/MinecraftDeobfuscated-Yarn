@@ -56,6 +56,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	private static final float field_40146 = 0.1F;
 	private static final float field_40147 = 1.4285F;
 	private static final float field_40148 = 22.2222F;
+	private static final int field_43388 = 5;
 	private static final int field_40149 = 40;
 	private static final int field_40133 = 52;
 	private static final int field_40134 = 80;
@@ -164,7 +165,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.isDashing() && this.dashCooldown < 55 && (this.onGround || this.isTouchingWater())) {
+		if (this.isDashing() && this.dashCooldown < 50 && (this.onGround || this.isTouchingWater() || this.hasVehicle())) {
 			this.setDashing(false);
 		}
 
@@ -181,6 +182,10 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 		if (this.isStationary()) {
 			this.clampHeadYaw(this, 30.0F);
+		}
+
+		if (this.isSitting() && this.isTouchingWater()) {
+			this.setStanding();
 		}
 	}
 
@@ -233,9 +238,9 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	}
 
 	@Override
-	protected void tickControlled(LivingEntity controllingPassenger, Vec3d movementInput) {
-		super.tickControlled(controllingPassenger, movementInput);
-		if (controllingPassenger.forwardSpeed > 0.0F && this.isSitting() && !this.isChangingPose()) {
+	protected void tickControlled(PlayerEntity controllingPlayer, Vec3d movementInput) {
+		super.tickControlled(controllingPlayer, movementInput);
+		if (controllingPlayer.forwardSpeed > 0.0F && this.isSitting() && !this.isChangingPose()) {
 			this.startStanding();
 		}
 	}
@@ -245,8 +250,8 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	}
 
 	@Override
-	protected float getSaddledSpeed(LivingEntity controllingPassenger) {
-		float f = controllingPassenger.isSprinting() && this.getJumpCooldown() == 0 ? 0.1F : 0.0F;
+	protected float getSaddledSpeed(PlayerEntity controllingPlayer) {
+		float f = controllingPlayer.isSprinting() && this.getJumpCooldown() == 0 ? 0.1F : 0.0F;
 		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED) + f;
 	}
 
@@ -256,8 +261,8 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	}
 
 	@Override
-	protected Vec3d getControlledMovementInput(LivingEntity controllingPassenger, Vec3d movementInput) {
-		return this.isStationary() ? Vec3d.ZERO : super.getControlledMovementInput(controllingPassenger, movementInput);
+	protected Vec3d getControlledMovementInput(PlayerEntity controllingPlayer, Vec3d movementInput) {
+		return this.isStationary() ? Vec3d.ZERO : super.getControlledMovementInput(controllingPlayer, movementInput);
 	}
 
 	@Override

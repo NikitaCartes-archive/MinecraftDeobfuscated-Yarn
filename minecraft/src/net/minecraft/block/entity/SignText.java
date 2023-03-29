@@ -9,10 +9,6 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.server.command.CommandOutput;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
@@ -20,9 +16,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.Codecs;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec2f;
-import net.minecraft.util.math.Vec3d;
 
 public class SignText {
 	private static final Codec<Text[]> MESSAGES_CODEC = Codecs.STRINGIFIED_TEXT
@@ -114,7 +107,7 @@ public class SignText {
 		return Arrays.stream(this.getMessages(player.shouldFilterText())).anyMatch(text -> !text.getString().isEmpty());
 	}
 
-	private Text[] getMessages(boolean filtered) {
+	public Text[] getMessages(boolean filtered) {
 		return filtered ? this.filteredMessages : this.messages;
 	}
 
@@ -158,26 +151,5 @@ public class SignText {
 		}
 
 		return false;
-	}
-
-	public boolean runCommandClickEvent(ServerPlayerEntity player, ServerWorld world, BlockPos pos) {
-		boolean bl = false;
-
-		for (Text text : this.getMessages(player.shouldFilterText())) {
-			Style style = text.getStyle();
-			ClickEvent clickEvent = style.getClickEvent();
-			if (clickEvent != null && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-				player.getServer().getCommandManager().executeWithPrefix(createCommandSource(player, world, pos), clickEvent.getValue());
-				bl = true;
-			}
-		}
-
-		return bl;
-	}
-
-	private static ServerCommandSource createCommandSource(ServerPlayerEntity player, ServerWorld world, BlockPos pos) {
-		String string = player.getName().getString();
-		Text text = player.getDisplayName();
-		return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ofCenter(pos), Vec2f.ZERO, world, 2, string, text, world.getServer(), player);
 	}
 }
