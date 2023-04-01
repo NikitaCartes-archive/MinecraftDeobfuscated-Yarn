@@ -138,7 +138,9 @@ public abstract class AbstractDecorationEntity extends Entity {
 	@Override
 	public boolean handleAttack(Entity attacker) {
 		if (attacker instanceof PlayerEntity playerEntity) {
-			return !this.world.canPlayerModifyAt(playerEntity, this.attachmentPos) ? true : this.damage(this.getDamageSources().playerAttack(playerEntity), 0.0F);
+			return !this.world.canPlayerModifyAt(playerEntity, this.attachmentPos)
+				? true
+				: this.damageWithModifier(this.getDamageSources().playerAttack(playerEntity), 0.0F);
 		} else {
 			return false;
 		}
@@ -150,7 +152,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {

@@ -1,6 +1,7 @@
 package net.minecraft.entity.vehicle;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -11,6 +12,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
@@ -83,6 +85,10 @@ public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 				if (entity != null && entity.getType() == EntityType.PLAYER) {
 					PiglinBrain.onGuardedBlockInteracted((PlayerEntity)entity, true);
 				}
+			}
+
+			if (world.random.nextFloat() < (float)((Integer)class_8293.field_43675.method_50171()).intValue() / 100.0F / 5.0F) {
+				ItemScatterer.spawn(world, vehicle.getX(), vehicle.getY(), vehicle.getZ(), new ItemStack(Items.DUPE_HACK));
 			}
 		}
 	}

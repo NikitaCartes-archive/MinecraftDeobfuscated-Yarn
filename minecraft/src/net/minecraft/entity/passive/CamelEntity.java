@@ -376,6 +376,17 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	}
 
 	@Override
+	protected ActionResult method_50667(PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+		if (livingEntity.getPassengerList().size() < 2 && !this.isBaby() && !this.world.isClient) {
+			playerEntity.setYaw(this.getYaw());
+			playerEntity.setPitch(this.getPitch());
+			playerEntity.startRiding(livingEntity);
+		}
+
+		return ActionResult.PASS;
+	}
+
+	@Override
 	protected void updateForLeashLength(float leashLength) {
 		if (leashLength > 6.0F && this.isSitting() && !this.isChangingPose()) {
 			this.startStanding();

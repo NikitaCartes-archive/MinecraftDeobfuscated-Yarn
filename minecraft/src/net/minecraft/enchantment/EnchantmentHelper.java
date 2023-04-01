@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
@@ -160,13 +161,13 @@ public class EnchantmentHelper {
 	public static int getProtectionAmount(Iterable<ItemStack> equipment, DamageSource source) {
 		MutableInt mutableInt = new MutableInt();
 		forEachEnchantment((enchantment, level) -> mutableInt.add(enchantment.getProtectionAmount(level, source)), equipment);
-		return mutableInt.intValue();
+		return class_8293.field_43655.method_50116() ? mutableInt.intValue() * 2 : mutableInt.intValue();
 	}
 
 	public static float getAttackDamage(ItemStack stack, EntityGroup group) {
 		MutableFloat mutableFloat = new MutableFloat();
 		forEachEnchantment((enchantment, level) -> mutableFloat.add(enchantment.getAttackDamage(level, group)), stack);
-		return mutableFloat.floatValue();
+		return class_8293.field_43655.method_50116() ? mutableFloat.floatValue() * 2.0F : mutableFloat.floatValue();
 	}
 
 	public static float getSweepingMultiplier(LivingEntity entity) {
@@ -246,15 +247,18 @@ public class EnchantmentHelper {
 	}
 
 	public static int getLuckOfTheSea(ItemStack stack) {
-		return getLevel(Enchantments.LUCK_OF_THE_SEA, stack);
+		int i = getLevel(Enchantments.LUCK_OF_THE_SEA, stack);
+		return class_8293.field_43655.method_50116() ? i + 3 : i;
 	}
 
 	public static int getLure(ItemStack stack) {
-		return getLevel(Enchantments.LURE, stack);
+		int i = getLevel(Enchantments.LURE, stack);
+		return class_8293.field_43655.method_50116() ? i + 3 : i;
 	}
 
 	public static int getLooting(LivingEntity entity) {
-		return getEquipmentLevel(Enchantments.LOOTING, entity);
+		int i = getEquipmentLevel(Enchantments.LOOTING, entity);
+		return class_8293.field_43655.method_50116() ? i + 3 : i;
 	}
 
 	public static boolean hasAquaAffinity(LivingEntity entity) {
@@ -402,10 +406,14 @@ public class EnchantmentHelper {
 		if (i <= 0) {
 			return list;
 		} else {
+			if (class_8293.field_43655.method_50116()) {
+				i *= 2;
+			}
+
 			level += 1 + random.nextInt(i / 4 + 1) + random.nextInt(i / 4 + 1);
 			float f = (random.nextFloat() + random.nextFloat() - 1.0F) * 0.15F;
 			level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE);
-			List<EnchantmentLevelEntry> list2 = getPossibleEntries(level, stack, treasureAllowed);
+			List<EnchantmentLevelEntry> list2 = getPossibleEntries(level, stack, treasureAllowed || class_8293.field_43655.method_50116());
 			if (!list2.isEmpty()) {
 				Weighting.getRandom(random, list2).ifPresent(list::add);
 

@@ -1,13 +1,13 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Box;
 
 /**
@@ -15,7 +15,7 @@ import net.minecraft.util.math.Box;
  */
 public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	private static final int DEFAULT_RECIPROCAL_CHANCE = 10;
-	protected final Class<T> targetClass;
+	private final Predicate<Entity> field_44099;
 	/**
 	 * The reciprocal of chance to actually search for a target on every tick
 	 * when this goal is not started. This is also the average number of ticks
@@ -46,8 +46,21 @@ public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		boolean checkCanNavigate,
 		@Nullable Predicate<LivingEntity> targetPredicate
 	) {
+		this(
+			mob, (Predicate<Entity>)(entity -> targetClass.isAssignableFrom(entity.getClass())), reciprocalChance, checkVisibility, checkCanNavigate, targetPredicate
+		);
+	}
+
+	public ActiveTargetGoal(
+		MobEntity mob,
+		Predicate<Entity> predicate,
+		int reciprocalChance,
+		boolean checkVisibility,
+		boolean checkCanNavigate,
+		@Nullable Predicate<LivingEntity> targetPredicate
+	) {
 		super(mob, checkVisibility, checkCanNavigate);
-		this.targetClass = targetClass;
+		this.field_44099 = predicate;
 		this.reciprocalChance = toGoalTicks(reciprocalChance);
 		this.setControls(EnumSet.of(Goal.Control.TARGET));
 		this.targetPredicate = TargetPredicate.createAttackable().setBaseMaxDistance(this.getFollowRange()).setPredicate(targetPredicate);
@@ -68,20 +81,12 @@ public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	}
 
 	protected void findClosestTarget() {
-		if (this.targetClass != PlayerEntity.class && this.targetClass != ServerPlayerEntity.class) {
-			this.targetEntity = this.mob
-				.world
-				.getClosestEntity(
-					this.mob.world.getEntitiesByClass(this.targetClass, this.getSearchBox(this.getFollowRange()), livingEntity -> true),
-					this.targetPredicate,
-					this.mob,
-					this.mob.getX(),
-					this.mob.getEyeY(),
-					this.mob.getZ()
-				);
-		} else {
-			this.targetEntity = this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
-		}
+		this.targetEntity = this.mob
+			.world
+			.getClosestEntity(this.mob.world.getEntitiesByClass(LivingEntity.class, this.getSearchBox(this.getFollowRange()), livingEntity -> {
+				Entity entity = (Entity)Objects.requireNonNullElse(livingEntity.getTransformedLook().entity(), livingEntity);
+				return this.field_44099.test(entity);
+			}), this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 	}
 
 	@Override

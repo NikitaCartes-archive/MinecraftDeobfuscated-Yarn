@@ -1,6 +1,11 @@
 package net.minecraft.block;
 
+import net.minecraft.class_8433;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.DropperBlockEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
@@ -26,6 +31,18 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 			return MathHelper.ceil(f * 15.0F);
 		} else {
 			return 0;
+		}
+	}
+
+	@Override
+	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+		super.onEntityCollision(state, world, pos, entity);
+		if (entity instanceof ServerPlayerEntity) {
+			BlockEntity var7 = world.getBlockEntity(pos.down());
+			if (var7 instanceof DropperBlockEntity dropperBlockEntity && world instanceof ServerWorld serverWorld && dropperBlockEntity.method_50889()) {
+				world.setBlockState(pos.down(), Blocks.LAVA.getDefaultState(), Block.NOTIFY_ALL);
+				class_8433.method_50900(serverWorld, pos.down().down());
+			}
 		}
 	}
 

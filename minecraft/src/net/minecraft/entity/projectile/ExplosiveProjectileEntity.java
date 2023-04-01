@@ -147,7 +147,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {

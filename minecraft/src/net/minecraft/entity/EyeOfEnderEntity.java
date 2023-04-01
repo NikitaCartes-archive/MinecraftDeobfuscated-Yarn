@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import net.minecraft.class_8293;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -89,7 +90,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		}
 
 		this.lifespan = 0;
-		this.dropsItem = this.random.nextInt(5) > 0;
+		this.dropsItem = class_8293.field_43655.method_50116() || this.random.nextInt(5) > 0;
 	}
 
 	@Override

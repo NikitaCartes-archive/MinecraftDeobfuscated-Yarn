@@ -12,6 +12,7 @@ public interface DamageTypes {
 	RegistryKey<DamageType> LAVA = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("lava"));
 	RegistryKey<DamageType> HOT_FLOOR = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("hot_floor"));
 	RegistryKey<DamageType> IN_WALL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("in_wall"));
+	RegistryKey<DamageType> ON_MOON = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("on_moon"));
 	RegistryKey<DamageType> CRAMMING = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("cramming"));
 	RegistryKey<DamageType> DROWN = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("drown"));
 	RegistryKey<DamageType> STARVE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("starve"));
@@ -48,6 +49,7 @@ public interface DamageTypes {
 	RegistryKey<DamageType> PLAYER_EXPLOSION = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("player_explosion"));
 	RegistryKey<DamageType> SONIC_BOOM = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("sonic_boom"));
 	RegistryKey<DamageType> BAD_RESPAWN_POINT = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("bad_respawn_point"));
+	RegistryKey<DamageType> MIDAS_CURSE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("midas_curse"));
 
 	static void bootstrap(Registerable<DamageType> damageTypeRegisterable) {
 		damageTypeRegisterable.register(IN_FIRE, new DamageType("inFire", 0.1F, DamageEffects.BURNING));
@@ -56,6 +58,7 @@ public interface DamageTypes {
 		damageTypeRegisterable.register(LAVA, new DamageType("lava", 0.1F, DamageEffects.BURNING));
 		damageTypeRegisterable.register(HOT_FLOOR, new DamageType("hotFloor", 0.1F, DamageEffects.BURNING));
 		damageTypeRegisterable.register(IN_WALL, new DamageType("inWall", 0.0F));
+		damageTypeRegisterable.register(ON_MOON, new DamageType("onMoon", 0.0F));
 		damageTypeRegisterable.register(CRAMMING, new DamageType("cramming", 0.0F));
 		damageTypeRegisterable.register(DROWN, new DamageType("drown", 0.0F, DamageEffects.DROWNING));
 		damageTypeRegisterable.register(STARVE, new DamageType("starve", 0.0F));
@@ -96,5 +99,6 @@ public interface DamageTypes {
 		damageTypeRegisterable.register(
 			BAD_RESPAWN_POINT, new DamageType("badRespawnPoint", DamageScaling.ALWAYS, 0.1F, DamageEffects.HURT, DeathMessageType.INTENTIONAL_GAME_DESIGN)
 		);
+		damageTypeRegisterable.register(MIDAS_CURSE, new DamageType("midas_curse", DamageScaling.ALWAYS, 0.1F, DamageEffects.HURT, DeathMessageType.MIDAS_CURSE));
 	}
 }

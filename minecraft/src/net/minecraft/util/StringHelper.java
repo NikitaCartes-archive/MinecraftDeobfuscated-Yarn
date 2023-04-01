@@ -18,13 +18,13 @@ public class StringHelper {
 	 * {@return the length of the {@code tick} in the MM:SS format, where
 	 * the MM is the minutes and SS is the seconds (optionally zero-padded)}
 	 */
-	public static String formatTicks(int ticks) {
-		int i = ticks / 20;
-		int j = i / 60;
-		i %= 60;
-		int k = j / 60;
-		j %= 60;
-		return k > 0 ? String.format(Locale.ROOT, "%02d:%02d:%02d", k, j, i) : String.format(Locale.ROOT, "%02d:%02d", j, i);
+	public static String formatTicks(long ticks) {
+		long l = ticks / 20L;
+		long m = l / 60L;
+		l %= 60L;
+		long n = m / 60L;
+		m %= 60L;
+		return n > 0L ? String.format(Locale.ROOT, "%02d:%02d:%02d", n, m, l) : String.format(Locale.ROOT, "%02d:%02d", m, l);
 	}
 
 	/**

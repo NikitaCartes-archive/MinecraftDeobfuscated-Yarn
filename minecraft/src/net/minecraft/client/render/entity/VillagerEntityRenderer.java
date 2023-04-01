@@ -2,7 +2,9 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.entity.feature.BeretFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
+import net.minecraft.client.render.entity.feature.MustacheFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerClothingFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -20,6 +22,8 @@ public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, Vi
 		this.addFeature(new HeadFeatureRenderer<>(this, context.getModelLoader(), context.getHeldItemRenderer()));
 		this.addFeature(new VillagerClothingFeatureRenderer<>(this, context.getResourceManager(), "villager"));
 		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this, context.getHeldItemRenderer()));
+		this.addFeature(new MustacheFeatureRenderer<>(this, context.getModelLoader()));
+		this.addFeature(new BeretFeatureRenderer<>(this, context.getModelLoader()));
 	}
 
 	public Identifier getTexture(VillagerEntity villagerEntity) {

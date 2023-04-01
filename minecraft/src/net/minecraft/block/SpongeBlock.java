@@ -1,9 +1,12 @@
 package net.minecraft.block;
 
 import java.util.function.Consumer;
+import net.minecraft.class_8293;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -47,10 +50,11 @@ public class SpongeBlock extends Block {
 			if (currentPos.equals(pos)) {
 				return true;
 			} else {
+				TagKey<Fluid> tagKey = class_8293.field_43581.method_50116() ? FluidTags.LAVA : FluidTags.WATER;
 				BlockState blockState = world.getBlockState(currentPos);
 				FluidState fluidState = world.getFluidState(currentPos);
 				Material material = blockState.getMaterial();
-				if (!fluidState.isIn(FluidTags.WATER)) {
+				if (!fluidState.isIn(tagKey)) {
 					return false;
 				} else {
 					Block block = blockState.getBlock();

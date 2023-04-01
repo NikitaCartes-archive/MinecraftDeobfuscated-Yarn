@@ -76,5 +76,6 @@ public abstract class BuiltinBiomes {
 		biomeRegisterable.register(BiomeKeys.END_MIDLANDS, TheEndBiomeCreator.createEndMidlands(registryEntryLookup, registryEntryLookup2));
 		biomeRegisterable.register(BiomeKeys.SMALL_END_ISLANDS, TheEndBiomeCreator.createSmallEndIslands(registryEntryLookup, registryEntryLookup2));
 		biomeRegisterable.register(BiomeKeys.END_BARRENS, TheEndBiomeCreator.createEndBarrens(registryEntryLookup, registryEntryLookup2));
+		biomeRegisterable.register(BiomeKeys.THE_MOON, TheMoonBiomeCreator.createTheMoon(registryEntryLookup, registryEntryLookup2));
 	}
 }

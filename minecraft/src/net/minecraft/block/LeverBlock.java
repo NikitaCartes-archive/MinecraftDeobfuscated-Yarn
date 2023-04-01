@@ -1,8 +1,10 @@
 package net.minecraft.block;
 
+import net.minecraft.class_8293;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -151,5 +153,22 @@ public class LeverBlock extends WallMountedBlock {
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(FACE, FACING, POWERED);
+	}
+
+	@Override
+	public boolean hasRandomTicks(BlockState state) {
+		return true;
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (class_8293.field_43635.method_50116()) {
+			BlockState blockState = this.togglePower(state, world, pos);
+			float f = blockState.get(POWERED) ? 0.6F : 0.5F;
+			world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
+			world.emitGameEvent(null, blockState.get(POWERED) ? GameEvent.BLOCK_ACTIVATE : GameEvent.BLOCK_DEACTIVATE, pos);
+		}
+
+		super.randomTick(state, world, pos, random);
 	}
 }

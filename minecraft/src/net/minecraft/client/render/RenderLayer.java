@@ -330,6 +330,24 @@ public abstract class RenderLayer extends RenderPhase {
 		256,
 		RenderLayer.MultiPhaseParameters.builder().program(LEASH_PROGRAM).texture(NO_TEXTURE).cull(DISABLE_CULLING).lightmap(ENABLE_LIGHTMAP).build(false)
 	);
+	private static final RenderLayer DYNAMIC_LIGHT_STENCIL = of(
+		"dynamic_light_stencil",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.TRIANGLES,
+		256,
+		RenderLayer.MultiPhaseParameters.builder().program(RenderPhase.COLOR_PROGRAM).target(RenderPhase.STENCIL_SETUP_AND_LEAK).build(false)
+	);
+	private static final RenderLayer DYNAMIC_LIGHT_COLOR = of(
+		"dynamic_light_color",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.TRIANGLES,
+		256,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(RenderPhase.COLOR_PROGRAM)
+			.target(RenderPhase.STENCIL_RENDER_AND_CLEAR)
+			.transparency(RenderPhase.TRANSLUCENT_TRANSPARENCY)
+			.build(false)
+	);
 	private static final RenderLayer WATER_MASK = of(
 		"water_mask",
 		VertexFormats.POSITION,
@@ -423,6 +441,22 @@ public abstract class RenderLayer extends RenderPhase {
 		RenderLayer.MultiPhaseParameters.builder()
 			.program(ENTITY_GLINT_PROGRAM)
 			.texture(new RenderPhase.Texture(ItemRenderer.ENTITY_ENCHANTMENT_GLINT, true, false))
+			.writeMaskState(COLOR_MASK)
+			.cull(DISABLE_CULLING)
+			.depthTest(EQUAL_DEPTH_TEST)
+			.transparency(GLINT_TRANSPARENCY)
+			.target(ITEM_TARGET)
+			.texturing(ENTITY_GLINT_TEXTURING)
+			.build(false)
+	);
+	private static final RenderLayer GOLD_ENTITY_GLINT = of(
+		"gold_entity_glint",
+		VertexFormats.POSITION_TEXTURE,
+		VertexFormat.DrawMode.QUADS,
+		256,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(ENTITY_GLINT_PROGRAM)
+			.texture(new RenderPhase.Texture(ItemRenderer.field_44412, true, false))
 			.writeMaskState(COLOR_MASK)
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
@@ -863,6 +897,14 @@ public abstract class RenderLayer extends RenderPhase {
 		return LEASH;
 	}
 
+	public static RenderLayer getDynamicLightStencil() {
+		return DYNAMIC_LIGHT_STENCIL;
+	}
+
+	public static RenderLayer getDynamicLightColor() {
+		return DYNAMIC_LIGHT_COLOR;
+	}
+
 	public static RenderLayer getWaterMask() {
 		return WATER_MASK;
 	}
@@ -893,6 +935,10 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getEntityGlint() {
 		return ENTITY_GLINT;
+	}
+
+	public static RenderLayer getGoldEntityGlint() {
+		return GOLD_ENTITY_GLINT;
 	}
 
 	public static RenderLayer getDirectEntityGlint() {

@@ -58,7 +58,7 @@ public interface WorldView extends BlockRenderView, CollisionView, RedstoneView,
 
 	@Override
 	default int getColor(BlockPos pos, ColorResolver colorResolver) {
-		return colorResolver.getColor(this.getBiome(pos).value(), (double)pos.getX(), (double)pos.getZ());
+		return colorResolver.getColor(this.getBiome(pos), (double)pos.getX(), (double)pos.getZ());
 	}
 
 	@Override

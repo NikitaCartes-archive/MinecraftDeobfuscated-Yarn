@@ -1,39 +1,40 @@
 package net.minecraft.client.render.entity;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.VertexConsumers;
 import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
+import net.minecraft.client.render.entity.feature.BeretFeatureRenderer;
 import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
 import net.minecraft.client.render.entity.feature.Deadmau5FeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
+import net.minecraft.client.render.entity.feature.MustacheFeatureRenderer;
 import net.minecraft.client.render.entity.feature.PlayerHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckStingersFeatureRenderer;
+import net.minecraft.client.render.entity.feature.TailFeatureRenderer;
 import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.client.render.entity.model.ArmorEntityModel;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
@@ -45,8 +46,8 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.addFeature(
 			new ArmorFeatureRenderer<>(
 				this,
-				new ArmorEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_INNER_ARMOR : EntityModelLayers.PLAYER_INNER_ARMOR)),
-				new ArmorEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_OUTER_ARMOR : EntityModelLayers.PLAYER_OUTER_ARMOR)),
+				new PlayerEntityRenderer.PlayerArmorEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_INNER_ARMOR : EntityModelLayers.PLAYER_INNER_ARMOR)),
+				new PlayerEntityRenderer.PlayerArmorEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_OUTER_ARMOR : EntityModelLayers.PLAYER_OUTER_ARMOR)),
 				ctx.getModelManager()
 			)
 		);
@@ -59,6 +60,9 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.addFeature(new ShoulderParrotFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new TridentRiptideFeatureRenderer<>(this, ctx.getModelLoader()));
 		this.addFeature(new StuckStingersFeatureRenderer<>(this));
+		this.addFeature(new BeretFeatureRenderer<>(this, ctx.getModelLoader()));
+		this.addFeature(new MustacheFeatureRenderer<>(this, ctx.getModelLoader()));
+		this.addFeature(new TailFeatureRenderer<>(this, ctx.getModelLoader()));
 	}
 
 	public void render(
@@ -74,11 +78,8 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 
 	private void setModelPose(AbstractClientPlayerEntity player) {
 		PlayerEntityModel<AbstractClientPlayerEntity> playerEntityModel = this.getModel();
-		if (player.isSpectator()) {
-			playerEntityModel.setVisible(false);
-			playerEntityModel.head.visible = true;
-			playerEntityModel.hat.visible = true;
-		} else {
+		playerEntityModel.setupPoseAndVisibility(player);
+		if (!player.isSpectator()) {
 			playerEntityModel.setVisible(true);
 			playerEntityModel.hat.visible = player.isPartVisible(PlayerModelPart.HAT);
 			playerEntityModel.jacket.visible = player.isPartVisible(PlayerModelPart.JACKET);
@@ -86,62 +87,6 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			playerEntityModel.rightPants.visible = player.isPartVisible(PlayerModelPart.RIGHT_PANTS_LEG);
 			playerEntityModel.leftSleeve.visible = player.isPartVisible(PlayerModelPart.LEFT_SLEEVE);
 			playerEntityModel.rightSleeve.visible = player.isPartVisible(PlayerModelPart.RIGHT_SLEEVE);
-			playerEntityModel.sneaking = player.isInSneakingPose();
-			BipedEntityModel.ArmPose armPose = getArmPose(player, Hand.MAIN_HAND);
-			BipedEntityModel.ArmPose armPose2 = getArmPose(player, Hand.OFF_HAND);
-			if (armPose.isTwoHanded()) {
-				armPose2 = player.getOffHandStack().isEmpty() ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
-			}
-
-			if (player.getMainArm() == Arm.RIGHT) {
-				playerEntityModel.rightArmPose = armPose;
-				playerEntityModel.leftArmPose = armPose2;
-			} else {
-				playerEntityModel.rightArmPose = armPose2;
-				playerEntityModel.leftArmPose = armPose;
-			}
-		}
-	}
-
-	private static BipedEntityModel.ArmPose getArmPose(AbstractClientPlayerEntity player, Hand hand) {
-		ItemStack itemStack = player.getStackInHand(hand);
-		if (itemStack.isEmpty()) {
-			return BipedEntityModel.ArmPose.EMPTY;
-		} else {
-			if (player.getActiveHand() == hand && player.getItemUseTimeLeft() > 0) {
-				UseAction useAction = itemStack.getUseAction();
-				if (useAction == UseAction.BLOCK) {
-					return BipedEntityModel.ArmPose.BLOCK;
-				}
-
-				if (useAction == UseAction.BOW) {
-					return BipedEntityModel.ArmPose.BOW_AND_ARROW;
-				}
-
-				if (useAction == UseAction.SPEAR) {
-					return BipedEntityModel.ArmPose.THROW_SPEAR;
-				}
-
-				if (useAction == UseAction.CROSSBOW && hand == player.getActiveHand()) {
-					return BipedEntityModel.ArmPose.CROSSBOW_CHARGE;
-				}
-
-				if (useAction == UseAction.SPYGLASS) {
-					return BipedEntityModel.ArmPose.SPYGLASS;
-				}
-
-				if (useAction == UseAction.TOOT_HORN) {
-					return BipedEntityModel.ArmPose.TOOT_HORN;
-				}
-
-				if (useAction == UseAction.BRUSH) {
-					return BipedEntityModel.ArmPose.BRUSH;
-				}
-			} else if (!player.handSwinging && itemStack.isOf(Items.CROSSBOW) && CrossbowItem.isCharged(itemStack)) {
-				return BipedEntityModel.ArmPose.CROSSBOW_HOLD;
-			}
-
-			return BipedEntityModel.ArmPose.ITEM;
 		}
 	}
 
@@ -158,6 +103,10 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		AbstractClientPlayerEntity abstractClientPlayerEntity, Text text, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i
 	) {
 		double d = this.dispatcher.getSquaredDistanceToCamera(abstractClientPlayerEntity);
+		if (class_8293.field_43557.method_50415(abstractClientPlayerEntity.getUuid())) {
+			text = Text.translatable("rule.president.tag", abstractClientPlayerEntity.getDisplayName());
+		}
+
 		matrixStack.push();
 		if (d < 100.0) {
 			Scoreboard scoreboard = abstractClientPlayerEntity.getScoreboard();
@@ -231,6 +180,36 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			}
 		} else {
 			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
+		}
+	}
+
+	@Nullable
+	protected VertexConsumer method_51047(
+		AbstractClientPlayerEntity abstractClientPlayerEntity,
+		MatrixStack matrixStack,
+		VertexConsumerProvider vertexConsumerProvider,
+		boolean bl,
+		boolean bl2,
+		boolean bl3
+	) {
+		if (class_8293.field_43524.method_50116()) {
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getGoldEntityGlint());
+			VertexConsumer vertexConsumer2 = super.method_51047(abstractClientPlayerEntity, matrixStack, vertexConsumerProvider, bl, bl2, bl3);
+			return vertexConsumer2 == null ? null : VertexConsumers.union(vertexConsumer, vertexConsumer2);
+		} else {
+			return super.method_51047(abstractClientPlayerEntity, matrixStack, vertexConsumerProvider, bl, bl2, bl3);
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class PlayerArmorEntityModel<T extends LivingEntity> extends ArmorEntityModel<T> {
+		public PlayerArmorEntityModel(ModelPart modelPart) {
+			super(modelPart);
+		}
+
+		@Override
+		public boolean shouldBeMini() {
+			return class_8293.field_43574.method_50116();
 		}
 	}
 }

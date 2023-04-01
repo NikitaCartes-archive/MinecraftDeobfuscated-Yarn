@@ -17,6 +17,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 
 public class HorizontalConnectingBlock extends Block implements Waterloggable {
 	public static final BooleanProperty NORTH = ConnectingBlock.NORTH;
@@ -168,5 +169,10 @@ public class HorizontalConnectingBlock extends Block implements Waterloggable {
 			default:
 				return super.mirror(state, mirror);
 		}
+	}
+
+	@Override
+	public boolean sticksTo(World world, BlockPos pos, BlockState state, BlockPos otherPos, BlockState otherState, Direction face, Direction otherFace) {
+		return otherState.isOf(this);
 	}
 }

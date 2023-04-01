@@ -16,12 +16,15 @@ import net.minecraft.block.SuspiciousStewIngredient;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.enchantment.EnchantmentTarget;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -387,6 +390,7 @@ public class ItemGroups {
 			entries.add(Items.WAXED_OXIDIZED_CUT_COPPER);
 			entries.add(Items.WAXED_OXIDIZED_CUT_COPPER_STAIRS);
 			entries.add(Items.WAXED_OXIDIZED_CUT_COPPER_SLAB);
+			entries.add(Items.COPPER_SPLEAVES);
 		})
 		.build();
 	private static final ItemGroup COLORED_BLOCKS = ItemGroup.create(ItemGroup.Row.TOP, 1)
@@ -869,6 +873,7 @@ public class ItemGroups {
 				entries.add(Items.END_CRYSTAL);
 				entries.add(Items.BREWING_STAND);
 				entries.add(Items.CAULDRON);
+				entries.add(Items.COPPER_SINK);
 				entries.add(Items.BELL);
 				entries.add(Items.BEACON);
 				entries.add(Items.CONDUIT);
@@ -1007,6 +1012,8 @@ public class ItemGroups {
 				entries.add(Items.INFESTED_CRACKED_STONE_BRICKS);
 				entries.add(Items.INFESTED_CHISELED_STONE_BRICKS);
 				entries.add(Items.INFESTED_DEEPSLATE);
+				entries.add(Items.AIR_BLOCK);
+				entries.add(Items.PACKED_AIR);
 			}
 		)
 		.build();
@@ -1048,6 +1055,8 @@ public class ItemGroups {
 			entries.add(Items.FURNACE);
 			entries.add(Items.TRAPPED_CHEST);
 			entries.add(Items.OBSERVER);
+			entries.add(Items.PICKAXE_BLOCK);
+			entries.add(Items.PLACE_BLOCK);
 			entries.add(Items.NOTE_BLOCK);
 			entries.add(Items.COMPOSTER);
 			entries.add(Items.CAULDRON);
@@ -1073,6 +1082,23 @@ public class ItemGroups {
 			entries.add(Items.BIG_DRIPLEAF);
 			entries.add(Items.ARMOR_STAND);
 			entries.add(Items.REDSTONE_ORE);
+			entries.add(Items.NAME);
+			entries.add(Items.TAG);
+			entries.add(Items.STRING_TAG);
+			entries.add(Items.BYTE_TAG);
+			entries.add(Items.SHORT_TAG);
+			entries.add(Items.INT_TAG);
+			entries.add(Items.LONG_TAG);
+			entries.add(Items.FLOAT_TAG);
+			entries.add(Items.DOUBLE_TAG);
+			entries.add(Items.COMPOUND_TAG);
+			entries.add(Items.LIST_TAG);
+			entries.add(Items.LEFT_SQUARE);
+			entries.add(Items.RIGHT_SQUARE);
+			entries.add(Items.LEFT_CURLY);
+			entries.add(Items.RIGHT_CURLY);
+			entries.add(Items.SYNTAX_ERROR);
+			entries.add(Items.BIT);
 		})
 		.build();
 	private static final ItemGroup HOTBAR = ItemGroup.create(ItemGroup.Row.TOP, 5)
@@ -1315,6 +1341,7 @@ public class ItemGroups {
 			entries.add(Items.BREAD);
 			entries.add(Items.COOKIE);
 			entries.add(Items.CAKE);
+			entries.add(Items.CHEESE);
 			entries.add(Items.PUMPKIN_PIE);
 			entries.add(Items.ROTTEN_FLESH);
 			entries.add(Items.SPIDER_EYE);
@@ -1329,6 +1356,9 @@ public class ItemGroups {
 				addPotions(entries, registryWrapper, Items.SPLASH_POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
 				addPotions(entries, registryWrapper, Items.LINGERING_POTION, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
 			});
+			entries.add(Items.BOTTLE_OF_VOID);
+			method_50789(entries, Registries.ENTITY_TYPE.getReadOnlyWrapper(), Items.BOTTLE_OF_ENTITY, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
+			method_50789(entries, Registries.ENTITY_TYPE.getReadOnlyWrapper(), Items.SPLASH_BOTTLE_OF_ENTITY, ItemGroup.StackVisibility.PARENT_AND_SEARCH_TABS);
 		})
 		.build();
 	private static final ItemGroup INGREDIENTS = ItemGroup.create(ItemGroup.Row.BOTTOM, 3)
@@ -1625,6 +1655,20 @@ public class ItemGroups {
 		return BUILDING_BLOCKS;
 	}
 
+	private static void method_50789(
+		ItemGroup.Entries entries, RegistryWrapper<EntityType<?>> registryWrapper, Item item, ItemGroup.StackVisibility stackVisibility
+	) {
+		registryWrapper.streamEntries().filter(reference -> ((EntityType)reference.value()).getSpawnGroup() != SpawnGroup.MISC).map(reference -> {
+			ItemStack itemStack = item.getDefaultStack();
+			NbtCompound nbtCompound = new NbtCompound();
+			NbtCompound nbtCompound2 = new NbtCompound();
+			nbtCompound2.putString("id", reference.registryKey().getValue().toString());
+			nbtCompound.put("entityTag", nbtCompound2);
+			itemStack.setNbt(nbtCompound);
+			return itemStack;
+		}).forEach(itemStack -> entries.add(itemStack, stackVisibility));
+	}
+
 	private static void addPotions(ItemGroup.Entries entries, RegistryWrapper<Potion> registryWrapper, Item item, ItemGroup.StackVisibility visibility) {
 		registryWrapper.streamEntries()
 			.filter(entry -> !entry.matchesKey(Potions.EMPTY_KEY))
@@ -1724,5 +1768,9 @@ public class ItemGroups {
 			updateEntries(displayContext);
 			return true;
 		}
+	}
+
+	public static void method_50792() {
+		displayContext = null;
 	}
 }

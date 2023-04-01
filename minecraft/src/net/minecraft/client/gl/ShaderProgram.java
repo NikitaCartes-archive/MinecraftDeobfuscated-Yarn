@@ -101,6 +101,8 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 	@Nullable
 	public final GlUniform gameTime;
 	@Nullable
+	public final GlUniform field_44402;
+	@Nullable
 	public final GlUniform chunkOffset;
 
 	public ShaderProgram(ResourceFactory factory, String name, VertexFormat format) throws IOException {
@@ -224,6 +226,7 @@ public class ShaderProgram implements ShaderProgramSetupView, AutoCloseable {
 		this.fogShape = this.getUniform("FogShape");
 		this.lineWidth = this.getUniform("LineWidth");
 		this.gameTime = this.getUniform("GameTime");
+		this.field_44402 = this.getUniform("WallTime");
 		this.chunkOffset = this.getUniform("ChunkOffset");
 	}
 

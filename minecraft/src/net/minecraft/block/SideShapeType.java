@@ -16,17 +16,23 @@ public enum SideShapeType {
 	},
 	CENTER {
 		private final int radius = 1;
-		private final VoxelShape squareCuboid = Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 10.0, 9.0);
+		private final VoxelShape squareCuboid = Block.createCuboidShape(7.0, 7.0, 7.0, 9.0, 9.0, 9.0);
 
 		@Override
 		public boolean matches(BlockState state, BlockView world, BlockPos pos, Direction direction) {
-			return !VoxelShapes.matchesAnywhere(state.getSidesShape(world, pos).getFace(direction), this.squareCuboid, BooleanBiFunction.ONLY_SECOND);
+			return VoxelShapes.matchesAnywhere(state.getSidesShape(world, pos).getFace(direction), this.squareCuboid, BooleanBiFunction.AND);
 		}
 	},
 	RIGID {
 		private final int ringWidth = 2;
 		private final VoxelShape hollowSquareCuboid = VoxelShapes.combineAndSimplify(
-			VoxelShapes.fullCube(), Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
+			VoxelShapes.fullCube(),
+			VoxelShapes.union(
+				Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0),
+				Block.createCuboidShape(0.0, 2.0, 2.0, 16.0, 14.0, 14.0),
+				Block.createCuboidShape(2.0, 2.0, 0.0, 14.0, 14.0, 16.0)
+			),
+			BooleanBiFunction.ONLY_FIRST
 		);
 
 		@Override

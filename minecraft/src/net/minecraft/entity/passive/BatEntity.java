@@ -50,6 +50,11 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
+	public boolean canFly() {
+		return true;
+	}
+
+	@Override
 	public boolean isFlappingWings() {
 		return !this.isRoosting() && this.age % field_28637 == 0;
 	}
@@ -198,7 +203,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {

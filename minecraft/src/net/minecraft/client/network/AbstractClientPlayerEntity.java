@@ -6,6 +6,7 @@ import java.util.Locale;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.MissingSprite;
@@ -29,6 +30,8 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	private static final String SKIN_URL = "http://skins.minecraft.net/MinecraftSkins/%s.png";
 	@Nullable
 	private PlayerListEntry playerListEntry;
+	@Nullable
+	private PlayerListEntry field_44390;
 	protected Vec3d lastVelocity = Vec3d.ZERO;
 	public float elytraPitch;
 	public float elytraYaw;
@@ -53,7 +56,24 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	}
 
 	public boolean canRenderCapeTexture() {
-		return this.getPlayerListEntry() != null;
+		return this.method_51023() != null;
+	}
+
+	@Nullable
+	protected PlayerListEntry method_51023() {
+		GameProfile gameProfile = this.getTransformedLook().playerSkin();
+		if (gameProfile == null) {
+			return this.getPlayerListEntry();
+		} else {
+			if (this.field_44390 == null || !this.field_44390.getProfile().equals(gameProfile)) {
+				this.field_44390 = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(gameProfile.getId());
+				if (this.field_44390 == null) {
+					this.field_44390 = new PlayerListEntry(gameProfile, false);
+				}
+			}
+
+			return this.field_44390;
+		}
 	}
 
 	@Nullable
@@ -76,28 +96,32 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	}
 
 	public boolean hasSkinTexture() {
-		PlayerListEntry playerListEntry = this.getPlayerListEntry();
+		PlayerListEntry playerListEntry = this.method_51023();
 		return playerListEntry != null && playerListEntry.hasSkinTexture();
 	}
 
 	public Identifier getSkinTexture() {
-		PlayerListEntry playerListEntry = this.getPlayerListEntry();
-		return playerListEntry == null ? DefaultSkinHelper.getTexture(this.getUuid()) : playerListEntry.getSkinTexture();
+		if (class_8293.field_43512.method_50116()) {
+			return DefaultSkinHelper.getTexture(this.getUuid());
+		} else {
+			PlayerListEntry playerListEntry = this.method_51023();
+			return playerListEntry == null ? DefaultSkinHelper.getTexture(this.getUuid()) : playerListEntry.getSkinTexture();
+		}
 	}
 
 	@Nullable
 	public Identifier getCapeTexture() {
-		PlayerListEntry playerListEntry = this.getPlayerListEntry();
+		PlayerListEntry playerListEntry = this.method_51023();
 		return playerListEntry == null ? null : playerListEntry.getCapeTexture();
 	}
 
 	public boolean canRenderElytraTexture() {
-		return this.getPlayerListEntry() != null;
+		return this.method_51023() != null;
 	}
 
 	@Nullable
 	public Identifier getElytraTexture() {
-		PlayerListEntry playerListEntry = this.getPlayerListEntry();
+		PlayerListEntry playerListEntry = this.method_51023();
 		return playerListEntry == null ? null : playerListEntry.getElytraTexture();
 	}
 
@@ -121,7 +145,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	}
 
 	public String getModel() {
-		PlayerListEntry playerListEntry = this.getPlayerListEntry();
+		PlayerListEntry playerListEntry = this.method_51023();
 		return playerListEntry == null ? DefaultSkinHelper.getModel(this.getUuid()) : playerListEntry.getModel();
 	}
 

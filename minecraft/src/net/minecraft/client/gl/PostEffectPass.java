@@ -8,6 +8,7 @@ import java.util.function.IntSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
@@ -70,6 +71,13 @@ public class PostEffectPass implements AutoCloseable {
 		this.program.getUniformByNameOrDummy("InSize").set((float)this.input.textureWidth, (float)this.input.textureHeight);
 		this.program.getUniformByNameOrDummy("OutSize").set(f, g);
 		this.program.getUniformByNameOrDummy("Time").set(time);
+		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
+		if (clientPlayerEntity != null) {
+			this.program.getUniformByNameOrDummy("Thirst").set((float)clientPlayerEntity.method_50716().method_50771() / 10.0F);
+		} else {
+			this.program.getUniformByNameOrDummy("Thirst").set(1.0F);
+		}
+
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		this.program
 			.getUniformByNameOrDummy("ScreenSize")

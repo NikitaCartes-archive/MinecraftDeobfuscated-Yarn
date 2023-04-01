@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
@@ -129,8 +130,14 @@ public class PlayerSkinProvider {
 	 * UUID if the skin is missing}
 	 */
 	public Identifier loadSkin(GameProfile profile) {
-		MinecraftProfileTexture minecraftProfileTexture = (MinecraftProfileTexture)this.getTextures(profile).get(Type.SKIN);
-		return minecraftProfileTexture != null ? this.loadSkin(minecraftProfileTexture, Type.SKIN) : DefaultSkinHelper.getTexture(Uuids.getUuidFromProfile(profile));
+		if (!class_8293.field_43512.method_50116()) {
+			MinecraftProfileTexture minecraftProfileTexture = (MinecraftProfileTexture)this.getTextures(profile).get(Type.SKIN);
+			if (minecraftProfileTexture != null) {
+				return this.loadSkin(minecraftProfileTexture, Type.SKIN);
+			}
+		}
+
+		return DefaultSkinHelper.getTexture(Uuids.getUuidFromProfile(profile));
 	}
 
 	@Environment(EnvType.CLIENT)

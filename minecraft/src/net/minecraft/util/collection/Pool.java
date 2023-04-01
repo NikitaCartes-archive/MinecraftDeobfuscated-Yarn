@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
 
 public class Pool<E extends Weighted> {
@@ -39,6 +40,10 @@ public class Pool<E extends Weighted> {
 			int i = random.nextInt(this.totalWeight);
 			return Weighting.getAt(this.entries, i);
 		}
+	}
+
+	public Optional<E> method_50058(Random random) {
+		return Util.getRandomOrEmpty(this.entries, random);
 	}
 
 	public List<E> getEntries() {

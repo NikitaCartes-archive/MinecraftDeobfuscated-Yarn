@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -21,8 +22,14 @@ import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormat;
+import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -64,6 +71,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
+import org.joml.Matrix4f;
 
 /**
  * Responsible for rendering the HUD elements while the player is in game.
@@ -89,6 +97,7 @@ public class InGameHud extends DrawableHelper {
 	private static final int field_33942 = 9;
 	private static final int field_33943 = 8;
 	private static final float field_35431 = 0.2F;
+	private static final Identifier field_44286 = new Identifier("textures/gui/tvpi.png");
 	private final Random random = Random.create();
 	private final MinecraftClient client;
 	private final ItemRenderer itemRenderer;
@@ -175,7 +184,7 @@ public class InGameHud extends DrawableHelper {
 
 		float g = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
 		if (g > 0.0F && !this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
-			this.renderPortalOverlay(matrices, g);
+			this.renderPortalOverlay(matrices, g, this.client.player.field_44082 == Entity.class_8401.OTHER);
 		}
 
 		if (this.client.interactionManager.getCurrentGameMode() == GameMode.SPECTATOR) {
@@ -305,6 +314,10 @@ public class InGameHud extends DrawableHelper {
 				this.client.getProfiler().pop();
 			}
 
+			if (class_8293.field_43682.method_50116()) {
+				this.method_50937(matrices);
+			}
+
 			this.subtitlesHud.render(matrices);
 			Scoreboard scoreboard = this.client.world.getScoreboard();
 			ScoreboardObjective scoreboardObjective = null;
@@ -338,6 +351,28 @@ public class InGameHud extends DrawableHelper {
 
 			this.renderAutosaveIndicator(matrices);
 		}
+	}
+
+	private void method_50937(MatrixStack matrixStack) {
+		RenderSystem.setShader(GameRenderer::getPositionTexFunkyProgram);
+		RenderSystem.setShaderTexture(0, field_44286);
+		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
+		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+		int i = 0;
+		int j = 0;
+		int k = 320;
+		int l = 32;
+		int m = 0;
+		float f = 0.0F;
+		float g = 0.0F;
+		float h = 1.0F;
+		float n = 1.0F;
+		Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+		bufferBuilder.vertex(matrix4f, 0.0F, 32.0F, 0.0F).texture(0.0F, 1.0F).next();
+		bufferBuilder.vertex(matrix4f, 320.0F, 32.0F, 0.0F).texture(1.0F, 1.0F).next();
+		bufferBuilder.vertex(matrix4f, 320.0F, 0.0F, 0.0F).texture(1.0F, 0.0F).next();
+		bufferBuilder.vertex(matrix4f, 0.0F, 0.0F, 0.0F).texture(0.0F, 0.0F).next();
+		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
 	}
 
 	private void drawTextBackground(MatrixStack matrices, TextRenderer textRenderer, int yOffset, int width, int color) {
@@ -613,7 +648,7 @@ public class InGameHud extends DrawableHelper {
 		if (this.client.world.getTime() >= 120500L) {
 			text = DEMO_EXPIRED_MESSAGE;
 		} else {
-			text = Text.translatable("demo.remainingTime", StringHelper.formatTicks((int)(120500L - this.client.world.getTime())));
+			text = Text.translatable("demo.remainingTime", StringHelper.formatTicks((long)((int)(120500L - this.client.world.getTime()))));
 		}
 
 		int i = this.getTextRenderer().getWidth(text);
@@ -804,12 +839,28 @@ public class InGameHud extends DrawableHelper {
 				}
 
 				t -= 10;
+				if (class_8293.field_43611.method_50116()) {
+					int y = playerEntity.method_50716().method_50771();
+
+					for(int z = 0; z < 10; ++z) {
+						int aa = n - z * 8 - 9;
+						int ab = o - 10;
+						if (z < y) {
+							drawTexture(matrices, aa, ab, 247, 0, 9, 9);
+						} else {
+							drawTexture(matrices, aa, ab, 238, 0, 9, 9);
+						}
+					}
+
+					t -= 10;
+				}
 			}
 
 			this.client.getProfiler().swap("air");
 			int y = playerEntity.getMaxAir();
 			int z = Math.min(playerEntity.getAir(), y);
-			if (playerEntity.isSubmergedIn(FluidTags.WATER) || z < y) {
+			if ((!playerEntity.getTransformedLook().isLandBased() || !playerEntity.getTransformedLook().canBreatheInWater())
+				&& (playerEntity.isSubmergedIn(FluidTags.WATER) != playerEntity.getTransformedLook().canBreatheInWater() || z < y)) {
 				int aa = this.getHeartRows(x) - 1;
 				t -= aa * 10;
 				int ab = MathHelper.ceil((double)(z - 2) * 10.0 / (double)y);
@@ -999,7 +1050,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.defaultBlendFunc();
 	}
 
-	private void renderPortalOverlay(MatrixStack matrices, float nauseaStrength) {
+	private void renderPortalOverlay(MatrixStack matrices, float nauseaStrength, boolean bl) {
 		if (nauseaStrength < 1.0F) {
 			nauseaStrength *= nauseaStrength;
 			nauseaStrength *= nauseaStrength;
@@ -1010,7 +1061,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.depthMask(false);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, nauseaStrength);
 		RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
-		Sprite sprite = this.client.getBlockRenderManager().getModels().getModelParticleSprite(Blocks.NETHER_PORTAL.getDefaultState());
+		Sprite sprite = this.client.getBlockRenderManager().getModels().getModelParticleSprite((bl ? Blocks.OTHER_PORTAL : Blocks.NETHER_PORTAL).getDefaultState());
 		drawSprite(matrices, 0, 0, -90, this.scaledWidth, this.scaledHeight, sprite);
 		RenderSystem.depthMask(true);
 		RenderSystem.enableDepthTest();

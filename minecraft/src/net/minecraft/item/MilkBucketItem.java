@@ -1,20 +1,29 @@
 package net.minecraft.item;
 
+import net.minecraft.class_8293;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 
-public class MilkBucketItem extends Item {
+public class MilkBucketItem extends PowderSnowBucketItem {
 	private static final int MAX_USE_TIME = 32;
 
 	public MilkBucketItem(Item.Settings settings) {
-		super(settings);
+		super(Blocks.CHEESE, SoundEvents.BLOCK_FUNGUS_PLACE, settings);
+	}
+
+	@Override
+	public ActionResult useOnBlock(ItemUsageContext context) {
+		return !class_8293.field_43656.method_50116() ? ActionResult.PASS : super.useOnBlock(context);
 	}
 
 	@Override

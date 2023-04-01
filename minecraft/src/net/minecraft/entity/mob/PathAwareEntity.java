@@ -81,4 +81,7 @@ public abstract class PathAwareEntity extends MobEntity {
 
 	protected void updateForLeashLength(float leashLength) {
 	}
+
+	public void onStopWandering() {
+	}
 }

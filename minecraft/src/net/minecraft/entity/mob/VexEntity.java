@@ -60,6 +60,11 @@ public class VexEntity extends HostileEntity implements Ownable {
 	}
 
 	@Override
+	public boolean canFly() {
+		return true;
+	}
+
+	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return dimensions.height - 0.28125F;
 	}
@@ -83,7 +88,7 @@ public class VexEntity extends HostileEntity implements Ownable {
 		this.setNoGravity(true);
 		if (this.alive && --this.lifeTicks <= 0) {
 			this.lifeTicks = 20;
-			this.damage(this.getDamageSources().starve(), 1.0F);
+			this.damageWithModifier(this.getDamageSources().starve(), 1.0F);
 		}
 	}
 

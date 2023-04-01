@@ -33,7 +33,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
 
 	@Override
 	public void showGhostRecipe(Recipe<?> recipe, List<Slot> slots) {
-		ItemStack itemStack = recipe.getOutput(this.client.world.getRegistryManager());
+		ItemStack itemStack = recipe.method_50832(this.client.world.getRegistryManager());
 		this.ghostSlots.setRecipe(recipe);
 		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)slots.get(2)).x, ((Slot)slots.get(2)).y);
 		DefaultedList<Ingredient> defaultedList = recipe.getIngredients();

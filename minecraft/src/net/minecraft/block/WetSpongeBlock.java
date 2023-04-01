@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.minecraft.class_8293;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -56,7 +57,7 @@ public class WetSpongeBlock extends Block {
 					}
 				}
 
-				world.addParticle(ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
+				world.addParticle(class_8293.field_43581.method_50116() ? ParticleTypes.DRIPPING_LAVA : ParticleTypes.DRIPPING_WATER, d, e, f, 0.0, 0.0, 0.0);
 			}
 		}
 	}

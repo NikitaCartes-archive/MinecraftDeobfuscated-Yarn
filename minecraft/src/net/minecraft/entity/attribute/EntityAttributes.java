@@ -43,6 +43,9 @@ public class EntityAttributes {
 	public static final EntityAttribute HORSE_JUMP_STRENGTH = register(
 		"horse.jump_strength", new ClampedEntityAttribute("attribute.name.horse.jump_strength", 0.7, 0.0, 2.0).setTracked(true)
 	);
+	public static final EntityAttribute GENERIC_SCALE = register(
+		"generic.scale", new ClampedEntityAttribute("attribute.name.generic.scale", 1.0, 0.1F, 16.0).setTracked(true)
+	);
 
 	private static EntityAttribute register(String id, EntityAttribute attribute) {
 		return Registry.register(Registries.ATTRIBUTE, id, attribute);

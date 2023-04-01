@@ -155,6 +155,11 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	}
 
 	@Override
+	public boolean canFly() {
+		return true;
+	}
+
+	@Override
 	protected void initGoals() {
 		this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(0, new SwimGoal(this));
@@ -287,7 +292,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 
 			this.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 900));
 			if (player.isCreative() || !this.isInvulnerable()) {
-				this.damage(this.getDamageSources().playerAttack(player), Float.MAX_VALUE);
+				this.damageWithModifier(this.getDamageSources().playerAttack(player), Float.MAX_VALUE);
 			}
 
 			return ActionResult.success(this.world.isClient);
@@ -328,7 +333,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		return target.damage(this.getDamageSources().mobAttack(this), 3.0F);
+		return target.damageWithModifier(this.getDamageSources().mobAttack(this), 3.0F);
 	}
 
 	@Nullable
@@ -403,7 +408,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {

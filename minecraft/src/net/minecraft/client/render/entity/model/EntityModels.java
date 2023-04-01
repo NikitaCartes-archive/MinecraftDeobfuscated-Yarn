@@ -215,6 +215,10 @@ public class EntityModels {
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN, texturedModelData11);
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_INNER_ARMOR, texturedModelData4);
 		builder.put(EntityModelLayers.ZOMBIFIED_PIGLIN_OUTER_ARMOR, texturedModelData3);
+		builder.put(EntityModelLayers.BERET, BeretEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.MUSTACHE, MustacheEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.TAIL, TailEntityModel.getTexturedModelData());
+		builder.put(EntityModelLayers.CROWN, CrownEntityModel.getTexturedModelData());
 		TexturedModelData texturedModelData20 = BoatEntityModel.getTexturedModelData();
 		TexturedModelData texturedModelData21 = ChestBoatEntityModel.getTexturedModelData();
 		TexturedModelData texturedModelData22 = RaftEntityModel.getTexturedModelData();

@@ -2,7 +2,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -38,7 +37,7 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-90.0F));
 		matrixStack.translate(-0.5F, -0.5F, 0.5F);
 		matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(90.0F));
-		TntMinecartEntityRenderer.renderFlashingBlock(this.blockRenderManager, Blocks.TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
+		TntMinecartEntityRenderer.renderFlashingBlock(this.blockRenderManager, tntEntity.method_50691(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
 		matrixStack.pop();
 		super.render(tntEntity, f, g, matrixStack, vertexConsumerProvider, i);
 	}

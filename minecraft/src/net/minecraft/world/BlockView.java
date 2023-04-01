@@ -6,10 +6,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -17,6 +19,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.vote.LightEngineOptimizationType;
+import net.minecraft.world.chunk.ReadOnlyChunk;
+import net.minecraft.world.chunk.WorldChunk;
 
 /**
  * Represents a scoped, read-only view of block states, fluid states and block entities.
@@ -50,7 +55,29 @@ public interface BlockView extends HeightLimitView {
 	FluidState getFluidState(BlockPos pos);
 
 	default int getLuminance(BlockPos pos) {
-		return this.getBlockState(pos).getLuminance();
+		BlockState blockState = this.getBlockState(pos);
+		int i = blockState.getLuminance();
+		if (i == 0) {
+			return 0;
+		} else {
+			LightEngineOptimizationType lightEngineOptimizationType = class_8293.field_43639.method_50145();
+			if (lightEngineOptimizationType == LightEngineOptimizationType.NEVER_LIGHT || lightEngineOptimizationType == LightEngineOptimizationType.LOADSHEDDING) {
+				World world = null;
+				if (this instanceof World world2) {
+					world = world2;
+				} else if (this instanceof WorldChunk worldChunk) {
+					world = worldChunk.getWorld();
+				} else if (this instanceof ReadOnlyChunk readOnlyChunk) {
+					world = readOnlyChunk.getWrappedChunk().getWorld();
+				}
+
+				if (world != null && lightEngineOptimizationType.shouldDisableLight(world) && !blockState.isIn(BlockTags.CANDLES)) {
+					return 0;
+				}
+			}
+
+			return i;
+		}
 	}
 
 	default int getMaxLightLevel() {

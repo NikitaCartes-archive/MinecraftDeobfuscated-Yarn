@@ -134,6 +134,7 @@ public class EntityRenderers {
 		register(EntityType.MARKER, EmptyEntityRenderer::new);
 		register(EntityType.MINECART, context -> new MinecartEntityRenderer<>(context, EntityModelLayers.MINECART));
 		register(EntityType.MOOSHROOM, MooshroomEntityRenderer::new);
+		register(EntityType.MOON_COW, MoonCowEntityRenderer::new);
 		register(EntityType.MULE, context -> new DonkeyEntityRenderer<>(context, 0.92F, EntityModelLayers.MULE));
 		register(EntityType.OCELOT, OcelotEntityRenderer::new);
 		register(EntityType.PAINTING, PaintingEntityRenderer::new);
@@ -173,6 +174,7 @@ public class EntityRenderers {
 		register(EntityType.SPECTRAL_ARROW, SpectralArrowEntityRenderer::new);
 		register(EntityType.SPIDER, SpiderEntityRenderer::new);
 		register(EntityType.SQUID, context -> new SquidEntityRenderer<>(context, new SquidEntityModel<>(context.getPart(EntityModelLayers.SQUID))));
+		register(EntityType.STENCIL_DISPLAY, DisplayEntityRenderer.StencilDisplayEntityRenderer::new);
 		register(EntityType.STRAY, StrayEntityRenderer::new);
 		register(EntityType.STRIDER, StriderEntityRenderer::new);
 		register(EntityType.TADPOLE, TadpoleEntityRenderer::new);
@@ -203,5 +205,6 @@ public class EntityRenderers {
 					context, EntityModelLayers.ZOMBIFIED_PIGLIN, EntityModelLayers.ZOMBIFIED_PIGLIN_INNER_ARMOR, EntityModelLayers.ZOMBIFIED_PIGLIN_OUTER_ARMOR, true
 				)
 		);
+		register(EntityType.RAY_TRACING, RayTracingEntityRenderer::new);
 	}
 }

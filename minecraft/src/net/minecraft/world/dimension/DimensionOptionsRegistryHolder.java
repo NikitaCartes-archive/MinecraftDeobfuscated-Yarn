@@ -23,6 +23,7 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSource;
 import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterLists;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
+import net.minecraft.world.biome.source.TheMoonBiomeSource;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
@@ -40,7 +41,7 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 				.apply(instance, instance.stable(DimensionOptionsRegistryHolder::new))
 	);
 	private static final Set<RegistryKey<DimensionOptions>> VANILLA_KEYS = ImmutableSet.of(
-		DimensionOptions.OVERWORLD, DimensionOptions.NETHER, DimensionOptions.END
+		DimensionOptions.OVERWORLD, DimensionOptions.NETHER, DimensionOptions.END, DimensionOptions.field_44250
 	);
 	private static final int VANILLA_KEY_COUNT = VANILLA_KEYS.size();
 
@@ -135,8 +136,10 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 			return isOverworldVanilla(dimensionOptions);
 		} else if (key == DimensionOptions.NETHER) {
 			return isNetherVanilla(dimensionOptions);
+		} else if (key == DimensionOptions.END) {
+			return isTheEndVanilla(dimensionOptions);
 		} else {
-			return key == DimensionOptions.END ? isTheEndVanilla(dimensionOptions) : false;
+			return key == DimensionOptions.field_44250 ? method_50925(dimensionOptions) : false;
 		}
 	}
 
@@ -174,6 +177,19 @@ public record DimensionOptionsRegistryHolder(Registry<DimensionOptions> dimensio
 			if (var2 instanceof NoiseChunkGenerator noiseChunkGenerator
 				&& noiseChunkGenerator.matchesSettings(ChunkGeneratorSettings.END)
 				&& noiseChunkGenerator.getBiomeSource() instanceof TheEndBiomeSource) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static boolean method_50925(DimensionOptions dimensionOptions) {
+		if (dimensionOptions.dimensionTypeEntry().matchesKey(DimensionTypes.THE_MOON)) {
+			ChunkGenerator var2 = dimensionOptions.chunkGenerator();
+			if (var2 instanceof NoiseChunkGenerator noiseChunkGenerator
+				&& noiseChunkGenerator.matchesSettings(ChunkGeneratorSettings.field_44264)
+				&& noiseChunkGenerator.getBiomeSource() instanceof TheMoonBiomeSource) {
 				return true;
 			}
 		}

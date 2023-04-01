@@ -148,6 +148,7 @@ public class PotionUtil {
 			}
 
 			nbtCompound.put("CustomPotionEffects", nbtList);
+			nbtCompound.putInt("CustomPotionColor", getColor(effects));
 			return stack;
 		}
 	}

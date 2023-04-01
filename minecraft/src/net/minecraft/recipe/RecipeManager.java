@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -96,7 +97,12 @@ public class RecipeManager extends JsonDataLoader {
 	 * @param world the input world
 	 */
 	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> type, C inventory, World world) {
-		return this.getAllOfType(type).values().stream().filter(recipe -> recipe.matches(inventory, world)).findFirst();
+		return this.getAllOfType(type)
+			.entrySet()
+			.stream()
+			.filter(entry -> class_8293.field_43513.method_50418((Identifier)entry.getKey()) && ((Recipe)entry.getValue()).matches(inventory, world))
+			.findFirst()
+			.map(Entry::getValue);
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> Optional<Pair<Identifier, T>> getFirstMatch(
@@ -106,13 +112,17 @@ public class RecipeManager extends JsonDataLoader {
 		if (id != null) {
 			T recipe = (T)map.get(id);
 			if (recipe != null && recipe.matches(inventory, world)) {
+				if (!class_8293.field_43513.method_50418(id)) {
+					return Optional.empty();
+				}
+
 				return Optional.of(Pair.of(id, recipe));
 			}
 		}
 
 		return map.entrySet()
 			.stream()
-			.filter(entry -> ((Recipe)entry.getValue()).matches(inventory, world))
+			.filter(entry -> class_8293.field_43513.method_50418((Identifier)entry.getKey()) && ((Recipe)entry.getValue()).matches(inventory, world))
 			.findFirst()
 			.map(entry -> Pair.of((Identifier)entry.getKey(), (Recipe)entry.getValue()));
 	}
@@ -129,7 +139,12 @@ public class RecipeManager extends JsonDataLoader {
 	 * @param type the desired recipe type
 	 */
 	public <C extends Inventory, T extends Recipe<C>> List<T> listAllOfType(RecipeType<T> type) {
-		return List.copyOf(this.getAllOfType(type).values());
+		return this.getAllOfType(type)
+			.entrySet()
+			.stream()
+			.filter(entry -> class_8293.field_43513.method_50418((Identifier)entry.getKey()))
+			.map(Entry::getValue)
+			.toList();
 	}
 
 	/**
@@ -148,10 +163,11 @@ public class RecipeManager extends JsonDataLoader {
 	 */
 	public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> type, C inventory, World world) {
 		return (List<T>)this.getAllOfType(type)
-			.values()
+			.entrySet()
 			.stream()
-			.filter(recipe -> recipe.matches(inventory, world))
-			.sorted(Comparator.comparing(recipe -> recipe.getOutput(world.getRegistryManager()).getTranslationKey()))
+			.filter(entry -> class_8293.field_43513.method_50418((Identifier)entry.getKey()) && ((Recipe)entry.getValue()).matches(inventory, world))
+			.map(Entry::getValue)
+			.sorted(Comparator.comparing(recipe -> recipe.method_50832(world.getRegistryManager()).getTranslationKey()))
 			.collect(Collectors.toList());
 	}
 
@@ -195,7 +211,7 @@ public class RecipeManager extends JsonDataLoader {
 	 * @param id the ID of the desired recipe
 	 */
 	public Optional<? extends Recipe<?>> get(Identifier id) {
-		return Optional.ofNullable((Recipe)this.recipesById.get(id));
+		return !class_8293.field_43513.method_50418(id) ? Optional.empty() : Optional.ofNullable((Recipe)this.recipesById.get(id));
 	}
 
 	/**
@@ -205,7 +221,11 @@ public class RecipeManager extends JsonDataLoader {
 	 * returned set does not affect this manager.
 	 */
 	public Collection<Recipe<?>> values() {
-		return (Collection<Recipe<?>>)this.recipes.values().stream().flatMap(map -> map.values().stream()).collect(Collectors.toSet());
+		return (Collection<Recipe<?>>)this.recipes
+			.values()
+			.stream()
+			.flatMap(map -> map.entrySet().stream().filter(entry -> class_8293.field_43513.method_50418((Identifier)entry.getKey())).map(Entry::getValue))
+			.collect(Collectors.toSet());
 	}
 
 	/**
@@ -218,7 +238,7 @@ public class RecipeManager extends JsonDataLoader {
 	 * arguments.
 	 */
 	public Stream<Identifier> keys() {
-		return this.recipes.values().stream().flatMap(map -> map.keySet().stream());
+		return this.recipes.values().stream().flatMap(map -> map.keySet().stream().filter(class_8293.field_43513::method_50418));
 	}
 
 	/**

@@ -331,7 +331,7 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Override
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
-		this.damage(this.getDamageSources().lightningBolt(), Float.MAX_VALUE);
+		this.damageWithModifier(this.getDamageSources().lightningBolt(), Float.MAX_VALUE);
 	}
 
 	static class GoHomeGoal extends Goal {

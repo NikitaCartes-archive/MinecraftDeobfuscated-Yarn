@@ -3,6 +3,7 @@ package net.minecraft.enchantment;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
@@ -175,7 +176,7 @@ public abstract class Enchantment {
 		 * {@return the weight of an enchantment in weighted pickers}
 		 */
 		public int getWeight() {
-			return this.weight;
+			return class_8293.field_43655.method_50116() ? (this.weight + 10) / 2 : this.weight;
 		}
 	}
 }

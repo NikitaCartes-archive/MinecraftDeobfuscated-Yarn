@@ -19,6 +19,12 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 	private final int velocityX;
 	private final int velocityY;
 	private final int velocityZ;
+	public boolean field_44466;
+
+	public EntityVelocityUpdateS2CPacket(Entity entity, boolean bl) {
+		this(entity);
+		this.field_44466 = bl;
+	}
 
 	public EntityVelocityUpdateS2CPacket(Entity entity) {
 		this(entity.getId(), entity.getVelocity());
@@ -40,6 +46,7 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 		this.velocityX = buf.readShort();
 		this.velocityY = buf.readShort();
 		this.velocityZ = buf.readShort();
+		this.field_44466 = buf.readBoolean();
 	}
 
 	@Override
@@ -48,6 +55,7 @@ public class EntityVelocityUpdateS2CPacket implements Packet<ClientPlayPacketLis
 		buf.writeShort(this.velocityX);
 		buf.writeShort(this.velocityY);
 		buf.writeShort(this.velocityZ);
+		buf.writeBoolean(this.field_44466);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

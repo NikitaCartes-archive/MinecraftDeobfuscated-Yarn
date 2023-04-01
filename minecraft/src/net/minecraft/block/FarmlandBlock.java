@@ -128,4 +128,9 @@ public class FarmlandBlock extends Block {
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
 	}
+
+	@Override
+	public boolean shouldLetAirThrough(BlockState state, ServerWorld world, BlockPos pos, Direction direction) {
+		return false;
+	}
 }

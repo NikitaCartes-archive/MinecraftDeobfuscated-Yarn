@@ -42,6 +42,10 @@ public class UndergroundPlacedFeatures {
 	public static final RegistryKey<PlacedFeature> SCULK_PATCH_DEEP_DARK = PlacedFeatures.of("sculk_patch_deep_dark");
 	public static final RegistryKey<PlacedFeature> SCULK_PATCH_ANCIENT_CITY = PlacedFeatures.of("sculk_patch_ancient_city");
 	public static final RegistryKey<PlacedFeature> SCULK_VEIN = PlacedFeatures.of("sculk_vein");
+	public static final RegistryKey<PlacedFeature> CRATER_MEGA = PlacedFeatures.of("crater_mega");
+	public static final RegistryKey<PlacedFeature> CRATER_LARGE = PlacedFeatures.of("crater_large");
+	public static final RegistryKey<PlacedFeature> CRATER_SMALL = PlacedFeatures.of("crater_small");
+	public static final RegistryKey<PlacedFeature> LUNAR_BASE = PlacedFeatures.of("lunar_base");
 
 	public static void bootstrap(Registerable<PlacedFeature> featureRegisterable) {
 		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE);
@@ -64,6 +68,10 @@ public class UndergroundPlacedFeatures {
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry17 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SCULK_PATCH_DEEP_DARK);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry18 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SCULK_PATCH_ANCIENT_CITY);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry19 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SCULK_VEIN);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry20 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.MEGA_CRATER);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry21 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.LARGE_CRATER);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry22 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.SMALL_CRATER);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry23 = registryEntryLookup.getOrThrow(UndergroundConfiguredFeatures.LUNAR_BASE);
 		PlacedFeatures.register(
 			featureRegisterable,
 			MONSTER_ROOM,
@@ -238,6 +246,42 @@ public class UndergroundPlacedFeatures {
 			SCULK_PATCH_DEEP_DARK,
 			registryEntry17,
 			CountPlacementModifier.of(ConstantIntProvider.create(256)),
+			SquarePlacementModifier.of(),
+			PlacedFeatures.BOTTOM_TO_120_RANGE,
+			BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
+			CRATER_MEGA,
+			registryEntry20,
+			RarityFilterPlacementModifier.of(256),
+			SquarePlacementModifier.of(),
+			PlacedFeatures.BOTTOM_TO_120_RANGE,
+			BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
+			CRATER_LARGE,
+			registryEntry21,
+			RarityFilterPlacementModifier.of(12),
+			SquarePlacementModifier.of(),
+			PlacedFeatures.BOTTOM_TO_120_RANGE,
+			BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
+			CRATER_SMALL,
+			registryEntry22,
+			RarityFilterPlacementModifier.of(4),
+			SquarePlacementModifier.of(),
+			PlacedFeatures.BOTTOM_TO_120_RANGE,
+			BiomePlacementModifier.of()
+		);
+		PlacedFeatures.register(
+			featureRegisterable,
+			LUNAR_BASE,
+			registryEntry23,
+			RarityFilterPlacementModifier.of(1024),
 			SquarePlacementModifier.of(),
 			PlacedFeatures.BOTTOM_TO_120_RANGE,
 			BiomePlacementModifier.of()

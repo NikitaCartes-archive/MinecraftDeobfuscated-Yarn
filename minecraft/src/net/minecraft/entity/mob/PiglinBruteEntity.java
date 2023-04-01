@@ -125,7 +125,7 @@ public class PiglinBruteEntity extends AbstractPiglinEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		boolean bl = super.damage(source, amount);
 		if (this.world.isClient) {
 			return false;

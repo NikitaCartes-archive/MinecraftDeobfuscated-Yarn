@@ -27,9 +27,11 @@ public class NetherPortalBlock extends Block {
 	protected static final int field_31196 = 2;
 	protected static final VoxelShape X_SHAPE = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
 	protected static final VoxelShape Z_SHAPE = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
+	private final boolean field_44235;
 
-	public NetherPortalBlock(AbstractBlock.Settings settings) {
+	public NetherPortalBlock(AbstractBlock.Settings settings, boolean bl) {
 		super(settings);
+		this.field_44235 = bl;
 		this.setDefaultState(this.stateManager.getDefaultState().with(AXIS, Direction.Axis.X));
 	}
 
@@ -67,15 +69,15 @@ public class NetherPortalBlock extends Block {
 		Direction.Axis axis = direction.getAxis();
 		Direction.Axis axis2 = state.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
-		return !bl && !neighborState.isOf(this) && !new NetherPortal(world, pos, axis2).wasAlreadyValid()
+		return !bl && !neighborState.isOf(this) && !new NetherPortal(world, pos, axis2, this.field_44235).wasAlreadyValid()
 			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		if (entity.canUsePortals()) {
-			entity.setInNetherPortal(pos);
+		if (this.field_44235 || entity.canUsePortals()) {
+			entity.setInNetherPortal(pos, this.field_44235);
 		}
 	}
 

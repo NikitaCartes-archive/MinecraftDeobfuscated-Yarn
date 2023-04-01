@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.OverlayTexture;
@@ -14,6 +15,7 @@ import net.minecraft.client.render.entity.model.MinecartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
@@ -46,7 +48,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		double n = 0.3F;
 		Vec3d vec3d = abstractMinecartEntity.snapPositionToRail(d, e, m);
 		float o = MathHelper.lerp(g, abstractMinecartEntity.prevPitch, abstractMinecartEntity.getPitch());
-		if (vec3d != null) {
+		if (!class_8293.field_43594.method_50116() && vec3d != null) {
 			Vec3d vec3d2 = abstractMinecartEntity.snapPositionToRailWithOffset(d, e, m, 0.3F);
 			Vec3d vec3d3 = abstractMinecartEntity.snapPositionToRailWithOffset(d, e, m, -0.3F);
 			if (vec3d2 == null) {
@@ -91,8 +93,9 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 			matrixStack.pop();
 		}
 
+		double t = Direction.fromRotation((double)f).rotateYClockwise().getAxis().choose(d, e, m);
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
-		this.model.setAngles(abstractMinecartEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+		this.model.setAngles(abstractMinecartEntity, (float)(-t), 0.0F, 0.0F, 0.0F, 0.0F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(this.model.getLayer(this.getTexture(abstractMinecartEntity)));
 		this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();

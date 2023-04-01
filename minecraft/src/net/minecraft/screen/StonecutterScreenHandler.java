@@ -16,6 +16,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.vote.BlockApproval;
 import net.minecraft.world.World;
 
 public class StonecutterScreenHandler extends ScreenHandler {
@@ -149,8 +150,8 @@ public class StonecutterScreenHandler extends ScreenHandler {
 	void populateResult() {
 		if (!this.availableRecipes.isEmpty() && this.isInBounds(this.selectedRecipe.get())) {
 			StonecuttingRecipe stonecuttingRecipe = (StonecuttingRecipe)this.availableRecipes.get(this.selectedRecipe.get());
-			ItemStack itemStack = stonecuttingRecipe.craft(this.input, this.world.getRegistryManager());
-			if (itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
+			ItemStack itemStack = stonecuttingRecipe.method_50831(this.input, this.world.getRegistryManager());
+			if (itemStack.isItemEnabled(this.world.getEnabledFeatures()) && BlockApproval.isApproved(itemStack)) {
 				this.output.setLastRecipe(stonecuttingRecipe);
 				this.outputSlot.setStackNoCallbacks(itemStack);
 			} else {

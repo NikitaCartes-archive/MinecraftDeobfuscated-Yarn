@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -98,7 +99,7 @@ public class Explosion {
 	) {
 		this.world = world;
 		this.entity = entity;
-		this.power = power;
+		this.power = power + (float)class_8293.field_43636.method_50124();
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -219,7 +220,7 @@ public class Explosion {
 						z /= aa;
 						double ab = (double)getExposure(vec3d, entity);
 						double ac = (1.0 - w) * ab;
-						entity.damage(this.getDamageSource(), (float)((int)((ac * ac + ac) / 2.0 * 7.0 * (double)q + 1.0)));
+						entity.damageWithModifier(this.getDamageSource(), (float)((int)((ac * ac + ac) / 2.0 * 7.0 * (double)q + 1.0)));
 						double ad;
 						if (entity instanceof LivingEntity livingEntity) {
 							ad = ProtectionEnchantment.transformExplosionKnockback(livingEntity, ac);

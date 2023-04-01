@@ -3,6 +3,8 @@ package net.minecraft.item;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
+import net.minecraft.class_8324;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -27,6 +29,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.vote.BlockApproval;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -57,7 +60,7 @@ public class BlockItem extends Item {
 	}
 
 	public ActionResult place(ItemPlacementContext context) {
-		if (!this.getBlock().isEnabled(context.getWorld().getEnabledFeatures())) {
+		if (!this.getBlock().isEnabled(context.getWorld().getEnabledFeatures()) || !BlockApproval.isApproved(this.getBlock())) {
 			return ActionResult.FAIL;
 		} else if (!context.canPlace()) {
 			return ActionResult.FAIL;
@@ -197,6 +200,17 @@ public class BlockItem extends Item {
 
 	@Override
 	public String getTranslationKey() {
+		class_8324 lv = class_8293.field_43616.method_50145();
+		if (lv != class_8324.ANY && (this.foodComponent != null || class_8324.field_43836.contains(this))) {
+			if (lv.method_50352() == this) {
+				return lv.method_50354();
+			}
+
+			if (class_8324.field_43836.contains(this)) {
+				return "rule.food_restriction.inedible." + this;
+			}
+		}
+
 		return this.getBlock().getTranslationKey();
 	}
 

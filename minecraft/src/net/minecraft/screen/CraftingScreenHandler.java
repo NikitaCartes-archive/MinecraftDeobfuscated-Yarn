@@ -18,6 +18,7 @@ import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.vote.BlockApproval;
 import net.minecraft.world.World;
 
 public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingInventory> {
@@ -70,8 +71,8 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 			if (optional.isPresent()) {
 				CraftingRecipe craftingRecipe = (CraftingRecipe)optional.get();
 				if (resultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe)) {
-					ItemStack itemStack2 = craftingRecipe.craft(craftingInventory, world.getRegistryManager());
-					if (itemStack2.isItemEnabled(world.getEnabledFeatures())) {
+					ItemStack itemStack2 = craftingRecipe.method_50831(craftingInventory, world.getRegistryManager());
+					if (itemStack2.isItemEnabled(world.getEnabledFeatures()) && BlockApproval.isApproved(itemStack2)) {
 						itemStack = itemStack2;
 					}
 				}

@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -11,6 +12,11 @@ public class WanderAroundFarGoal extends WanderAroundGoal {
 
 	public WanderAroundFarGoal(PathAwareEntity pathAwareEntity, double d) {
 		this(pathAwareEntity, d, 0.001F);
+	}
+
+	public WanderAroundFarGoal(PathAwareEntity pathAwareEntity, double d, BooleanSupplier booleanSupplier) {
+		this(pathAwareEntity, d, 0.001F);
+		this.field_44098 = booleanSupplier;
 	}
 
 	public WanderAroundFarGoal(PathAwareEntity mob, double speed, float probability) {

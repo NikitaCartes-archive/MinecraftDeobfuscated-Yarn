@@ -352,6 +352,18 @@ public class NbtIo {
 		}
 	}
 
+	public static NbtElement method_51127(DataInput dataInput, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+		byte b = dataInput.readByte();
+		return (NbtElement)(b == 0 ? NbtEnd.INSTANCE : method_51125(dataInput, 0, nbtTagSizeTracker, b));
+	}
+
+	public static void method_51126(NbtElement nbtElement, DataOutput dataOutput) throws IOException {
+		dataOutput.writeByte(nbtElement.getType());
+		if (nbtElement.getType() != 0) {
+			nbtElement.write(dataOutput);
+		}
+	}
+
 	public static void write(NbtElement nbt, DataOutput output) throws IOException {
 		output.writeByte(nbt.getType());
 		if (nbt.getType() != 0) {
@@ -366,15 +378,18 @@ public class NbtIo {
 			return NbtEnd.INSTANCE;
 		} else {
 			NbtString.skip(input);
+			return method_51125(input, depth, tracker, b);
+		}
+	}
 
-			try {
-				return NbtTypes.byId(b).read(input, depth, tracker);
-			} catch (IOException var7) {
-				CrashReport crashReport = CrashReport.create(var7, "Loading NBT data");
-				CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
-				crashReportSection.add("Tag type", b);
-				throw new CrashException(crashReport);
-			}
+	private static NbtElement method_51125(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker, byte b) {
+		try {
+			return NbtTypes.byId(b).read(dataInput, i, nbtTagSizeTracker);
+		} catch (IOException var7) {
+			CrashReport crashReport = CrashReport.create(var7, "Loading NBT data");
+			CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
+			crashReportSection.add("Tag type", b);
+			throw new CrashException(crashReport);
 		}
 	}
 }

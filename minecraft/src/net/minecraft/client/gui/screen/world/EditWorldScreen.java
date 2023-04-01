@@ -10,6 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -95,6 +96,15 @@ public class EditWorldScreen extends Screen {
 				.dimensions(this.width / 2 - 100, this.height / 4 + 96 + 5, 200, 20)
 				.build()
 		);
+		Text text = Text.translatable("selectWorld.edit.resetVotes");
+		this.addDrawableChild(ButtonWidget.builder(text, buttonWidgetx -> this.client.setScreen(new ConfirmScreen(bl -> {
+				if (bl) {
+					Path path = this.storageSession.getDirectory(WorldSavePath.VOTES_JSON);
+					FileUtils.deleteQuietly(path.toFile());
+				}
+
+				this.client.setScreen(this);
+			}, text, Text.translatable("selectWorld.edit.resetVotes.msg")))).dimensions(this.width / 2 - 100, this.height / 4 + 120 + 5, 200, 20).build());
 		this.addDrawableChild(this.saveButton);
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.callback.accept(false)).dimensions(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20).build()

@@ -52,6 +52,9 @@ public enum Direction implements StringIdentifiable {
 		.filter(direction -> direction.getAxis().isHorizontal())
 		.sorted(Comparator.comparingInt(direction -> direction.idHorizontal))
 		.toArray(i -> new Direction[i]);
+	static final Direction[] field_44437 = new Direction[]{NORTH, EAST, SOUTH, WEST};
+	static final Direction[] field_44438 = new Direction[]{UP, NORTH, SOUTH, DOWN};
+	static final Direction[] field_44439 = new Direction[]{UP, EAST, DOWN, WEST};
 
 	private Direction(int id, int idOpposite, int idHorizontal, String name, Direction.AxisDirection direction, Direction.Axis axis, Vec3i vector) {
 		this.id = id;
@@ -390,6 +393,11 @@ public enum Direction implements StringIdentifiable {
 			public double choose(double x, double y, double z) {
 				return x;
 			}
+
+			@Override
+			public Direction[] method_51086() {
+				return Direction.field_44438;
+			}
 		},
 		Y("y") {
 			@Override
@@ -401,6 +409,11 @@ public enum Direction implements StringIdentifiable {
 			public double choose(double x, double y, double z) {
 				return y;
 			}
+
+			@Override
+			public Direction[] method_51086() {
+				return Direction.field_44437;
+			}
 		},
 		Z("z") {
 			@Override
@@ -411,6 +424,11 @@ public enum Direction implements StringIdentifiable {
 			@Override
 			public double choose(double x, double y, double z) {
 				return z;
+			}
+
+			@Override
+			public Direction[] method_51086() {
+				return Direction.field_44439;
 			}
 		};
 
@@ -466,6 +484,8 @@ public enum Direction implements StringIdentifiable {
 		public abstract int choose(int x, int y, int z);
 
 		public abstract double choose(double x, double y, double z);
+
+		public abstract Direction[] method_51086();
 	}
 
 	public static enum AxisDirection {

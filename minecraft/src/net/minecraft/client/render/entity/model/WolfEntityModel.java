@@ -13,7 +13,7 @@ import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T> {
+public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T> implements ModelWithHead {
 	/**
 	 * The key of the real head model part, whose value is {@value}.
 	 */
@@ -155,5 +155,10 @@ public class WolfEntityModel<T extends WolfEntity> extends TintableAnimalModel<T
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.tail.pitch = h;
+	}
+
+	@Override
+	public ModelPart getHead() {
+		return this.head;
 	}
 }

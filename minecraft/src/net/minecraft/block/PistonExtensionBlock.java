@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -44,7 +45,9 @@ public class PistonExtensionBlock extends BlockWithEntity {
 		return null;
 	}
 
-	public static BlockEntity createBlockEntityPiston(BlockPos pos, BlockState state, BlockState pushedBlock, Direction facing, boolean extending, boolean source) {
+	public static PistonBlockEntity createBlockEntityPiston(
+		BlockPos pos, BlockState state, BlockState pushedBlock, Direction facing, boolean extending, boolean source
+	) {
 		return new PistonBlockEntity(pos, state, pushedBlock, facing, extending, source);
 	}
 
@@ -128,6 +131,11 @@ public class PistonExtensionBlock extends BlockWithEntity {
 
 	@Override
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		return false;
+	}
+
+	@Override
+	public boolean shouldLetAirThrough(BlockState state, ServerWorld world, BlockPos pos, Direction direction) {
 		return false;
 	}
 }

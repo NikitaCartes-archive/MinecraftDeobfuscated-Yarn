@@ -92,6 +92,7 @@ public class Stats {
 	public static final Identifier INTERACT_WITH_GRINDSTONE = register("interact_with_grindstone", StatFormatter.DEFAULT);
 	public static final Identifier TARGET_HIT = register("target_hit", StatFormatter.DEFAULT);
 	public static final Identifier INTERACT_WITH_SMITHING_TABLE = register("interact_with_smithing_table", StatFormatter.DEFAULT);
+	public static final Identifier VOTES = register("votes", StatFormatter.DEFAULT);
 
 	private static Identifier register(String id, StatFormatter formatter) {
 		Identifier identifier = new Identifier(id);

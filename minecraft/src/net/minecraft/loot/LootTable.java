@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import net.minecraft.class_8293;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
@@ -28,6 +29,7 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.vote.BlockApproval;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 
@@ -49,7 +51,8 @@ public class LootTable {
 
 	public static Consumer<ItemStack> processStacks(LootContext context, Consumer<ItemStack> consumer) {
 		return stack -> {
-			if (stack.isItemEnabled(context.getWorld().getEnabledFeatures())) {
+			stack = class_8293.field_43586.method_50348(class_8293.field_43637.method_50387(context.getWorld().getRegistryManager(), stack));
+			if (stack.isItemEnabled(context.getWorld().getEnabledFeatures()) && BlockApproval.isApproved(stack)) {
 				if (stack.getCount() < stack.getMaxCount()) {
 					consumer.accept(stack);
 				} else {

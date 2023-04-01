@@ -1470,6 +1470,7 @@ public class SoundEvents {
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_DEATH = register("entity.zombie_villager.death");
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_HURT = register("entity.zombie_villager.hurt");
 	public static final SoundEvent ENTITY_ZOMBIE_VILLAGER_STEP = register("entity.zombie_villager.step");
+	public static final SoundEvent field_43423 = register(new Identifier("the_joke"), new Identifier("nothingtoseeheremovealong:the_joke"));
 
 	private static RegistryEntry<SoundEvent> register(Identifier id, Identifier soundId, float distanceToTravel) {
 		return Registry.registerReference(Registries.SOUND_EVENT, id, SoundEvent.of(soundId, distanceToTravel));

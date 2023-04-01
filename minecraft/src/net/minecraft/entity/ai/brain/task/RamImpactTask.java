@@ -77,7 +77,7 @@ public class RamImpactTask extends MultiTickTask<GoatEntity> {
 		Brain<?> brain = goatEntity.getBrain();
 		if (!list.isEmpty()) {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
-			livingEntity.damage(
+			livingEntity.damageWithModifier(
 				serverWorld.getDamageSources().mobAttackNoAggro(goatEntity), (float)goatEntity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)
 			);
 			int i = goatEntity.hasStatusEffect(StatusEffects.SPEED) ? goatEntity.getStatusEffect(StatusEffects.SPEED).getAmplifier() + 1 : 0;

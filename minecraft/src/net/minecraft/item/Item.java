@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8293;
+import net.minecraft.class_8324;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.item.TooltipContext;
@@ -80,7 +82,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	public static final Map<Block, Item> BLOCK_ITEMS = Maps.<Block, Item>newHashMap();
 	protected static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
 	protected static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
-	public static final int DEFAULT_MAX_COUNT = 64;
+	public static final int field_44155 = 64;
+	public static final int DEFAULT_MAX_COUNT = 1024;
 	public static final int DEFAULT_MAX_USE_TIME = 32;
 	public static final int ITEM_BAR_STEPS = 13;
 	private final RegistryEntry.Reference<Item> registryEntry = Registries.ITEM.createEntry(this);
@@ -93,7 +96,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	@Nullable
 	private String translationKey;
 	@Nullable
-	private final FoodComponent foodComponent;
+	protected final FoodComponent foodComponent;
 	private final FeatureSet requiredFeatures;
 
 	/**
@@ -272,7 +275,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * {@return the maximum stack count of any ItemStack with this item} Can be configured through {@link Item.Settings#maxCount(int) settings.maxCount()}.
 	 */
 	public final int getMaxCount() {
-		return this.maxCount;
+		float f = class_8293.field_43591.method_50142(this.registryEntry.registryKey());
+		return Math.max(Math.round((float)this.maxCount * f), 1);
 	}
 
 	/**
@@ -441,6 +445,17 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * Gets the translation key of this item.
 	 */
 	public String getTranslationKey() {
+		class_8324 lv = class_8293.field_43616.method_50145();
+		if (lv != class_8324.ANY && this.foodComponent != null) {
+			if (lv.method_50352() == this) {
+				return lv.method_50354();
+			}
+
+			if (class_8324.field_43836.contains(this)) {
+				return "rule.food_restriction.inedible." + this;
+			}
+		}
+
 		return this.getOrCreateTranslationKey();
 	}
 
@@ -464,7 +479,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * Gets the remainder item that should be left behind when this item is used as a crafting ingredient.
 	 */
 	@Nullable
-	public final Item getRecipeRemainder() {
+	public Item getRecipeRemainder() {
 		return this.recipeRemainder;
 	}
 
@@ -666,7 +681,7 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * Checks if this item is food and therefore is edible.
 	 */
 	public boolean isFood() {
-		return this.foodComponent != null;
+		return this.getFoodComponent() != null;
 	}
 
 	/**
@@ -674,7 +689,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 */
 	@Nullable
 	public FoodComponent getFoodComponent() {
-		return this.foodComponent;
+		class_8324 lv = class_8293.field_43616.method_50145();
+		return lv != class_8324.ANY && lv.method_50352() != this ? null : this.foodComponent;
 	}
 
 	/**

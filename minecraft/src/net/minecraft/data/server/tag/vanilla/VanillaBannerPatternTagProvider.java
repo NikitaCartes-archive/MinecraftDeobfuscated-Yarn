@@ -57,6 +57,7 @@ public class VanillaBannerPatternTagProvider extends TagProvider<BannerPattern> 
 		this.getOrCreateTagBuilder(BannerPatternTags.CREEPER_PATTERN_ITEM).add(BannerPatterns.CREEPER);
 		this.getOrCreateTagBuilder(BannerPatternTags.SKULL_PATTERN_ITEM).add(BannerPatterns.SKULL);
 		this.getOrCreateTagBuilder(BannerPatternTags.MOJANG_PATTERN_ITEM).add(BannerPatterns.MOJANG);
+		this.getOrCreateTagBuilder(BannerPatternTags.M_PATTERN_ITEM).add(BannerPatterns.M);
 		this.getOrCreateTagBuilder(BannerPatternTags.GLOBE_PATTERN_ITEM).add(BannerPatterns.GLOBE);
 		this.getOrCreateTagBuilder(BannerPatternTags.PIGLIN_PATTERN_ITEM).add(BannerPatterns.PIGLIN);
 	}

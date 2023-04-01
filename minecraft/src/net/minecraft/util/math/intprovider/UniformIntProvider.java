@@ -8,7 +8,7 @@ import java.util.function.Function;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
-public class UniformIntProvider extends IntProvider {
+public final class UniformIntProvider extends IntProvider {
 	public static final Codec<UniformIntProvider> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 						Codec.INT.fieldOf("min_inclusive").forGetter(provider -> provider.min), Codec.INT.fieldOf("max_inclusive").forGetter(provider -> provider.max)
@@ -59,5 +59,21 @@ public class UniformIntProvider extends IntProvider {
 
 	public String toString() {
 		return "[" + this.min + "-" + this.max + "]";
+	}
+
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		} else if (!(object instanceof UniformIntProvider)) {
+			return false;
+		} else {
+			UniformIntProvider uniformIntProvider = (UniformIntProvider)object;
+			return this.min == uniformIntProvider.min && this.max == uniformIntProvider.max;
+		}
+	}
+
+	public int hashCode() {
+		int i = this.min;
+		return 31 * i + this.max;
 	}
 }

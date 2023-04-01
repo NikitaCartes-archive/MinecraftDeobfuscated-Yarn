@@ -36,6 +36,10 @@ public class DataPool<E> extends Pool<Weighted.Present<E>> {
 		return this.getOrEmpty(random).map(Weighted.Present::getData);
 	}
 
+	public Optional<E> method_50057(Random random) {
+		return this.method_50058(random).map(Weighted.Present::getData);
+	}
+
 	public static class Builder<E> {
 		private final ImmutableList.Builder<Weighted.Present<E>> entries = ImmutableList.builder();
 

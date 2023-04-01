@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.resource.metadata.LanguageResourceMetadata;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
@@ -53,6 +54,10 @@ public class LanguageManager implements SynchronousResourceReloader {
 		List<String> list = new ArrayList(2);
 		boolean bl = ENGLISH_US.rightToLeft();
 		list.add("en_us");
+		if (class_8293.field_43576.method_50116()) {
+			list.add("fr_fr");
+		}
+
 		if (!this.currentLanguageCode.equals("en_us")) {
 			LanguageDefinition languageDefinition = (LanguageDefinition)this.languageDefs.get(this.currentLanguageCode);
 			if (languageDefinition != null) {

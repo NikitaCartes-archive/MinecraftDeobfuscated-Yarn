@@ -46,6 +46,7 @@ public class BannerPatterns {
 	public static final RegistryKey<BannerPattern> SKULL = of("skull");
 	public static final RegistryKey<BannerPattern> FLOWER = of("flower");
 	public static final RegistryKey<BannerPattern> MOJANG = of("mojang");
+	public static final RegistryKey<BannerPattern> M = of("m");
 	public static final RegistryKey<BannerPattern> PIGLIN = of("piglin");
 
 	private static RegistryKey<BannerPattern> of(String id) {
@@ -93,6 +94,7 @@ public class BannerPatterns {
 		Registry.register(registry, SKULL, new BannerPattern("sku"));
 		Registry.register(registry, FLOWER, new BannerPattern("flo"));
 		Registry.register(registry, MOJANG, new BannerPattern("moj"));
+		Registry.register(registry, M, new BannerPattern("sus"));
 		return Registry.register(registry, PIGLIN, new BannerPattern("pig"));
 	}
 }

@@ -69,6 +69,26 @@ public class DimensionTypeRegistrar {
 			)
 		);
 		dimensionTypeRegisterable.register(
+			DimensionTypes.THE_MOON,
+			new DimensionType(
+				OptionalLong.empty(),
+				false,
+				false,
+				false,
+				false,
+				1.0,
+				false,
+				false,
+				0,
+				256,
+				256,
+				BlockTags.INFINIBURN_END,
+				DimensionTypes.field_44249,
+				0.0F,
+				new DimensionType.MonsterSettings(false, false, UniformIntProvider.create(0, 7), 0)
+			)
+		);
+		dimensionTypeRegisterable.register(
 			DimensionTypes.OVERWORLD_CAVES,
 			new DimensionType(
 				OptionalLong.empty(),

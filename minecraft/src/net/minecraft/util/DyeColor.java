@@ -32,6 +32,7 @@ public enum DyeColor implements StringIdentifiable {
 	BLACK(15, "black", 1908001, MapColor.BLACK, 1973019, 0);
 
 	private static final IntFunction<DyeColor> BY_ID = ValueLists.createIdToValueFunction(DyeColor::getId, values(), ValueLists.OutOfBoundsHandling.ZERO);
+	public static final IntFunction<DyeColor> field_44154 = ValueLists.createIdToValueFunction(DyeColor::getId, values(), ValueLists.OutOfBoundsHandling.WRAP);
 	private static final Int2ObjectOpenHashMap<DyeColor> BY_FIREWORK_COLOR = new Int2ObjectOpenHashMap<>(
 		(Map<? extends Integer, ? extends DyeColor>)Arrays.stream(values()).collect(Collectors.toMap(color -> color.fireworkColor, color -> color))
 	);

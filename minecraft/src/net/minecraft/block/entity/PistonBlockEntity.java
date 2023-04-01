@@ -2,6 +2,7 @@ package net.minecraft.block.entity;
 
 import java.util.Iterator;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -45,6 +46,8 @@ public class PistonBlockEntity extends BlockEntity {
 	private float lastProgress;
 	private long savedWorldTime;
 	private int field_26705;
+	@Nullable
+	private BlockEntity field_44246;
 
 	public PistonBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.PISTON, pos, state);
@@ -56,6 +59,22 @@ public class PistonBlockEntity extends BlockEntity {
 		this.facing = facing;
 		this.extending = extending;
 		this.source = source;
+	}
+
+	@Nullable
+	public BlockEntity method_50891() {
+		return this.field_44246;
+	}
+
+	public void method_50890(@Nullable BlockEntity blockEntity, World world) {
+		if (blockEntity == null) {
+			this.field_44246 = null;
+		} else {
+			if (world.isClient) {
+				this.field_44246 = blockEntity;
+				this.field_44246.setWorld(world);
+			}
+		}
 	}
 
 	@Override

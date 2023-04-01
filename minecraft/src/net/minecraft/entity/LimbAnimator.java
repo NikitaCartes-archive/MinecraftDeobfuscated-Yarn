@@ -36,4 +36,10 @@ public class LimbAnimator {
 	public boolean isLimbMoving() {
 		return this.speed > 1.0E-5F;
 	}
+
+	public void copy(LimbAnimator other) {
+		this.prevSpeed = other.prevSpeed;
+		this.speed = other.speed;
+		this.pos = other.pos;
+	}
 }

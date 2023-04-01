@@ -137,6 +137,9 @@ public class ItemModelGenerator {
 		this.register(Items.BLUE_DYE, Models.GENERATED);
 		this.register(Items.BONE_MEAL, Models.GENERATED);
 		this.register(Items.BOOK, Models.GENERATED);
+		this.register(Items.BOTTLE_OF_VOID, Models.GENERATED);
+		this.register(Items.BOTTLE_OF_ENTITY, Models.GENERATED);
+		this.register(Items.SPLASH_BOTTLE_OF_ENTITY, Models.GENERATED);
 		this.register(Items.BOWL, Models.GENERATED);
 		this.register(Items.BREAD, Models.GENERATED);
 		this.register(Items.BRICK, Models.GENERATED);
@@ -179,7 +182,6 @@ public class ItemModelGenerator {
 		this.register(Items.DRAGON_BREATH, Models.GENERATED);
 		this.register(Items.DRIED_KELP, Models.GENERATED);
 		this.register(Items.EGG, Models.GENERATED);
-		this.register(Items.EMERALD, Models.GENERATED);
 		this.register(Items.ENCHANTED_BOOK, Models.GENERATED);
 		this.register(Items.ENDER_EYE, Models.GENERATED);
 		this.register(Items.ENDER_PEARL, Models.GENERATED);
@@ -194,6 +196,7 @@ public class ItemModelGenerator {
 		this.register(Items.FURNACE_MINECART, Models.GENERATED);
 		this.register(Items.GHAST_TEAR, Models.GENERATED);
 		this.register(Items.GLASS_BOTTLE, Models.GENERATED);
+		this.register(Items.AIR_BLOCK, Models.GENERATED);
 		this.register(Items.GLISTERING_MELON_SLICE, Models.GENERATED);
 		this.register(Items.GLOBE_BANNER_PATTERN, Models.GENERATED);
 		this.register(Items.GLOW_BERRIES, Models.GENERATED);
@@ -250,6 +253,7 @@ public class ItemModelGenerator {
 		this.register(Items.MILK_BUCKET, Models.GENERATED);
 		this.register(Items.MINECART, Models.GENERATED);
 		this.register(Items.MOJANG_BANNER_PATTERN, Models.GENERATED);
+		this.register(Items.M_BANNER_PATTERN, Models.GENERATED);
 		this.register(Items.MUSHROOM_STEW, Models.GENERATED);
 		this.register(Items.DISC_FRAGMENT_5, Models.GENERATED);
 		this.register(Items.MUSIC_DISC_11, Models.GENERATED);
@@ -391,6 +395,25 @@ public class ItemModelGenerator {
 		this.register(Items.SHELTER_POTTERY_SHARD, Models.GENERATED);
 		this.register(Items.SKULL_POTTERY_SHARD, Models.GENERATED);
 		this.register(Items.SNORT_POTTERY_SHARD, Models.GENERATED);
+		Models.MISSING.upload(ModelIds.getItemModelId(Items.DUPE_HACK), new TextureMap(), this.writer);
+		this.register(Items.NAME, Models.GENERATED);
+		this.register(Items.TAG, Models.GENERATED);
+		this.register(Items.STRING_TAG, Models.GENERATED);
+		this.register(Items.BYTE_TAG, Models.GENERATED);
+		this.register(Items.SHORT_TAG, Models.GENERATED);
+		this.register(Items.INT_TAG, Models.GENERATED);
+		this.register(Items.LONG_TAG, Models.GENERATED);
+		this.register(Items.FLOAT_TAG, Models.GENERATED);
+		this.register(Items.DOUBLE_TAG, Models.GENERATED);
+		this.register(Items.COMPOUND_TAG, Models.GENERATED);
+		this.register(Items.LIST_TAG, Models.GENERATED);
+		this.register(Items.LEFT_SQUARE, Models.GENERATED);
+		this.register(Items.RIGHT_SQUARE, Models.GENERATED);
+		this.register(Items.LEFT_CURLY, Models.GENERATED);
+		this.register(Items.RIGHT_CURLY, Models.GENERATED);
+		this.register(Items.SYNTAX_ERROR, Models.GENERATED);
+		this.register(Items.BIT, Models.GENERATED);
+		this.register(Items.STRING2, Models.GENERATED);
 	}
 
 	static record TrimMaterial(String name, float itemModelIndex, Map<ArmorMaterial, String> overrideArmorMaterials) {

@@ -7,6 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.TransformationType;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.entity.passive.CatVariant;
 import net.minecraft.entity.passive.FrogVariant;
@@ -147,6 +148,9 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<SnifferEntity.State> SNIFFER_STATE = TrackedDataHandler.ofEnum(SnifferEntity.State.class);
 	public static final TrackedDataHandler<Vector3f> VECTOR3F = TrackedDataHandler.of(PacketByteBuf::writeVector3f, PacketByteBuf::readVector3f);
 	public static final TrackedDataHandler<Quaternionf> QUATERNIONF = TrackedDataHandler.of(PacketByteBuf::writeQuaternionf, PacketByteBuf::readQuaternionf);
+	public static final TrackedDataHandler<TransformationType> TRANSFORMATION = TrackedDataHandler.of(
+		(packetByteBuf, transformationType) -> transformationType.toPacket(packetByteBuf), TransformationType::fromPacket
+	);
 
 	public static void register(TrackedDataHandler<?> handler) {
 		DATA_HANDLERS.add(handler);
@@ -193,5 +197,6 @@ public class TrackedDataHandlerRegistry {
 		register(SNIFFER_STATE);
 		register(VECTOR3F);
 		register(QUATERNIONF);
+		register(TRANSFORMATION);
 	}
 }

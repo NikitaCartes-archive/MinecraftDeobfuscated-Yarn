@@ -3,6 +3,8 @@ package net.minecraft.item;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
+import java.util.function.BiConsumer;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 
 /**
@@ -15,14 +17,28 @@ public class FoodComponent {
 	private final boolean alwaysEdible;
 	private final boolean snack;
 	private final List<Pair<StatusEffectInstance, Float>> statusEffects;
+	private final BiConsumer<ItemStack, LivingEntity> onEaten;
 
-	FoodComponent(int hunger, float saturationModifier, boolean meat, boolean alwaysEdible, boolean snack, List<Pair<StatusEffectInstance, Float>> statusEffects) {
+	FoodComponent(
+		int hunger,
+		float saturationModifier,
+		boolean meat,
+		boolean alwaysEdible,
+		boolean snack,
+		List<Pair<StatusEffectInstance, Float>> statusEffects,
+		BiConsumer<ItemStack, LivingEntity> onEaten
+	) {
 		this.hunger = hunger;
 		this.saturationModifier = saturationModifier;
 		this.meat = meat;
 		this.alwaysEdible = alwaysEdible;
 		this.snack = snack;
 		this.statusEffects = statusEffects;
+		this.onEaten = onEaten;
+	}
+
+	public BiConsumer<ItemStack, LivingEntity> onEaten() {
+		return this.onEaten;
 	}
 
 	/**
@@ -81,6 +97,8 @@ public class FoodComponent {
 		private boolean alwaysEdible;
 		private boolean snack;
 		private final List<Pair<StatusEffectInstance, Float>> statusEffects = Lists.<Pair<StatusEffectInstance, Float>>newArrayList();
+		private BiConsumer<ItemStack, LivingEntity> onEaten = (stack, eater) -> {
+		};
 
 		/**
 		 * Specifies the amount of hunger a food item will fill.
@@ -142,8 +160,13 @@ public class FoodComponent {
 			return this;
 		}
 
+		public FoodComponent.Builder onEaten(BiConsumer<ItemStack, LivingEntity> onEaten) {
+			this.onEaten = this.onEaten.andThen(onEaten);
+			return this.alwaysEdible();
+		}
+
 		public FoodComponent build() {
-			return new FoodComponent(this.hunger, this.saturationModifier, this.meat, this.alwaysEdible, this.snack, this.statusEffects);
+			return new FoodComponent(this.hunger, this.saturationModifier, this.meat, this.alwaysEdible, this.snack, this.statusEffects, this.onEaten);
 		}
 	}
 }

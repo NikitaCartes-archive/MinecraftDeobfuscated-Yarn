@@ -12,6 +12,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.util.Window;
+import net.minecraft.util.Util;
 import org.joml.Matrix4f;
 
 /**
@@ -204,6 +205,10 @@ public class VertexBuffer implements AutoCloseable {
 
 		if (program.gameTime != null) {
 			program.gameTime.set(RenderSystem.getShaderGameTime());
+		}
+
+		if (program.field_44402 != null) {
+			program.field_44402.set((float)Util.getMeasuringTimeMs());
 		}
 
 		if (program.screenSize != null) {

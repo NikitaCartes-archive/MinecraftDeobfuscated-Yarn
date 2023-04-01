@@ -4,9 +4,12 @@ import com.mojang.logging.LogUtils;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,6 +23,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.EmptyChunk;
@@ -167,6 +171,10 @@ public class ClientChunkManager extends ChunkManager {
 	@Override
 	public void onLightUpdate(LightType type, ChunkSectionPos pos) {
 		MinecraftClient.getInstance().worldRenderer.scheduleBlockRender(pos.getSectionX(), pos.getSectionY(), pos.getSectionZ());
+	}
+
+	public Stream<Chunk> method_51003() {
+		return IntStream.range(0, this.chunks.chunks.length()).mapToObj(i -> (Chunk)this.chunks.chunks.get(i)).filter(Objects::nonNull);
 	}
 
 	@Environment(EnvType.CLIENT)

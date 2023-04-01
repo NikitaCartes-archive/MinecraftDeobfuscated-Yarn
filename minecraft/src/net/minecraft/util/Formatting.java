@@ -47,6 +47,11 @@ public enum Formatting implements StringIdentifiable {
 	private static final Map<String, Formatting> BY_NAME = (Map<String, Formatting>)Arrays.stream(values())
 		.collect(Collectors.toMap(f -> sanitize(f.name), f -> f));
 	private static final Pattern FORMATTING_CODE_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]");
+	public static final List<Formatting> COLORS = Arrays.stream(values()).filter(Formatting::isColor).toList();
+	public static final List<Formatting> MODIFIERS = Arrays.stream(values())
+		.filter(Formatting::isModifier)
+		.filter(formatting -> formatting != OBFUSCATED)
+		.toList();
 	private final String name;
 	private final char code;
 	private final boolean modifier;

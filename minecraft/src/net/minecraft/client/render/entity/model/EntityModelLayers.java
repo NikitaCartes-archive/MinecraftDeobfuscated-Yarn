@@ -143,6 +143,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer STRIDER = registerMain("strider");
 	public static final EntityModelLayer STRIDER_SADDLE = register("strider", "saddle");
 	public static final EntityModelLayer TADPOLE = registerMain("tadpole");
+	public static final EntityModelLayer TAIL = registerMain("tail");
 	public static final EntityModelLayer TNT_MINECART = registerMain("tnt_minecart");
 	public static final EntityModelLayer TRADER_LLAMA = registerMain("trader_llama");
 	public static final EntityModelLayer TRIDENT = registerMain("trident");
@@ -177,6 +178,9 @@ public class EntityModelLayers {
 	public static final EntityModelLayer ZOMBIFIED_PIGLIN = registerMain("zombified_piglin");
 	public static final EntityModelLayer ZOMBIFIED_PIGLIN_INNER_ARMOR = createInnerArmor("zombified_piglin");
 	public static final EntityModelLayer ZOMBIFIED_PIGLIN_OUTER_ARMOR = createOuterArmor("zombified_piglin");
+	public static final EntityModelLayer BERET = registerMain("beret");
+	public static final EntityModelLayer MUSTACHE = registerMain("mustache");
+	public static final EntityModelLayer CROWN = registerMain("crown");
 
 	private static EntityModelLayer registerMain(String id) {
 		return register(id, "main");

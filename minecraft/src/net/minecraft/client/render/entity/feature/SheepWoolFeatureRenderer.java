@@ -44,7 +44,7 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 				float s;
 				float t;
 				float u;
-				if (sheepEntity.hasCustomName() && "jeb_".equals(sheepEntity.getName().getString())) {
+				if (sheepEntity.hasCustomName() && "jeb_".equals(sheepEntity.method_50643())) {
 					int m = 25;
 					int n = sheepEntity.age / 25 + sheepEntity.getId();
 					int o = DyeColor.values().length;

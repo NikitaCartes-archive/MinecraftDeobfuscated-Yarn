@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import java.util.Set;
+import net.minecraft.class_8293;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
@@ -40,6 +41,10 @@ public class TableBonusLootCondition implements LootCondition {
 		ItemStack itemStack = lootContext.get(LootContextParameters.TOOL);
 		int i = itemStack != null ? EnchantmentHelper.getLevel(this.enchantment, itemStack) : 0;
 		float f = this.chances[Math.min(i, this.chances.length - 1)];
+		if (class_8293.field_43655.method_50116()) {
+			f *= 2.0F;
+		}
+
 		return lootContext.getRandom().nextFloat() < f;
 	}
 

@@ -83,7 +83,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (isFireballFromPlayer(source)) {
 			super.damage(source, 1000.0F);
 			return true;
@@ -148,6 +148,11 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		if (nbt.contains("ExplosionPower", NbtElement.NUMBER_TYPE)) {
 			this.fireballStrength = nbt.getByte("ExplosionPower");
 		}
+	}
+
+	@Override
+	public boolean canFly() {
+		return true;
 	}
 
 	@Override

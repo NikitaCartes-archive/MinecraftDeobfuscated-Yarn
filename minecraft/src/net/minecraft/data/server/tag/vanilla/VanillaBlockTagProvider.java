@@ -732,6 +732,13 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			);
 		this.getOrCreateTagBuilder(BlockTags.UNSTABLE_BOTTOM_CENTER).addTag(BlockTags.FENCE_GATES);
 		this.getOrCreateTagBuilder(BlockTags.MUSHROOM_GROW_BLOCK).add(Blocks.MYCELIUM).add(Blocks.PODZOL).add(Blocks.CRIMSON_NYLIUM).add(Blocks.WARPED_NYLIUM);
+		this.getOrCreateTagBuilder(BlockTags.CORDYCEP_BLOCK)
+			.add(Blocks.MYCELIUM)
+			.add(Blocks.CRIMSON_NYLIUM)
+			.add(Blocks.WARPED_NYLIUM)
+			.add(Blocks.NETHER_WART_BLOCK)
+			.add(Blocks.BROWN_MUSHROOM)
+			.add(Blocks.RED_MUSHROOM);
 		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_OVERWORLD).add(Blocks.NETHERRACK, Blocks.MAGMA_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_NETHER).addTag(BlockTags.INFINIBURN_OVERWORLD);
 		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_END).addTag(BlockTags.INFINIBURN_OVERWORLD).add(Blocks.BEDROCK);
@@ -1284,7 +1291,9 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.MUD_BRICKS)
 			.add(Blocks.MUD_BRICK_STAIRS)
 			.add(Blocks.MUD_BRICK_SLAB)
-			.add(Blocks.PACKED_MUD);
+			.add(Blocks.PACKED_MUD)
+			.add(Blocks.PICKAXE_BLOCK)
+			.add(Blocks.PLACE_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.SHOVEL_MINEABLE)
 			.add(
 				Blocks.CLAY,
@@ -1450,6 +1459,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.addTag(BlockTags.BASE_STONE_OVERWORLD)
 			.addTag(BlockTags.DIRT)
 			.addTag(BlockTags.TERRACOTTA)
+			.add(Blocks.CHEESE)
 			.addTag(BlockTags.NYLIUM)
 			.addTag(BlockTags.BASE_STONE_NETHER)
 			.addTag(BlockTags.SAND)

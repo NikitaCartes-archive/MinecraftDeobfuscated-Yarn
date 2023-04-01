@@ -311,6 +311,7 @@ public class WorldEvents {
 	 * and {@link net.minecraft.entity.ai.brain.task.BoneMealTask#keepRunning(net.minecraft.server.world.ServerWorld, net.minecraft.entity.passive.VillagerEntity, long) BoneMealTask#keepRunning}
 	 */
 	public static final int BONE_MEAL_USED = 1505;
+	public static final int field_44233 = 1506;
 	/**
 	 * A dispenser is activated.
 	 * <br>Spawns smoke particles.
@@ -395,6 +396,7 @@ public class WorldEvents {
 	 * <p>Called by {@link net.minecraft.block.WetSpongeBlock#onBlockAdded(net.minecraft.block.BlockState, net.minecraft.world.World, net.minecraft.util.math.BlockPos, net.minecraft.block.BlockState, boolean) WetSpongeBlock#onBlockAdded}
 	 */
 	public static final int WET_SPONGE_DRIES_OUT = 2009;
+	public static final int field_44234 = 2010;
 	/**
 	 * An end gateway spawns.
 	 * <br>Plays the end gateway spawn sound event and spawns an explosion emitter particle.

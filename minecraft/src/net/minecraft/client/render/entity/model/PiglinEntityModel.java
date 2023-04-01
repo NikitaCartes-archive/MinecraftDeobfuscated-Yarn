@@ -196,4 +196,9 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 			this.rightArm.pitch = -1.8F;
 		}
 	}
+
+	@Override
+	public boolean shouldBeMini() {
+		return false;
+	}
 }

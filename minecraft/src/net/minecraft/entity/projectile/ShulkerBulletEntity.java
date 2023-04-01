@@ -206,7 +206,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 
 			if (this.target == null || !this.target.isAlive() || this.target instanceof PlayerEntity && this.target.isSpectator()) {
 				if (!this.hasNoGravity()) {
-					this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
+					this.setVelocity(this.getVelocity().add(0.0, (double)(-this.method_50634()), 0.0));
 				}
 			} else {
 				this.targetX = MathHelper.clamp(this.targetX * 1.025, -1.0, 1.0);
@@ -279,7 +279,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 		Entity entity = entityHitResult.getEntity();
 		Entity entity2 = this.getOwner();
 		LivingEntity livingEntity = entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null;
-		boolean bl = entity.damage(this.getDamageSources().mobProjectile(this, livingEntity), 4.0F);
+		boolean bl = entity.damageWithModifier(this.getDamageSources().mobProjectile(this, livingEntity), 4.0F);
 		if (bl) {
 			this.applyDamageEffects(livingEntity, entity);
 			if (entity instanceof LivingEntity livingEntity2) {
@@ -312,7 +312,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (!this.world.isClient) {
 			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HURT, 1.0F, 1.0F);
 			((ServerWorld)this.world).spawnParticles(ParticleTypes.CRIT, this.getX(), this.getY(), this.getZ(), 15, 0.2, 0.2, 0.2, 0.0);

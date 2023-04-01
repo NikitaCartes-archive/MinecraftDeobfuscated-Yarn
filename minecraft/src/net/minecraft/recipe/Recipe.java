@@ -1,5 +1,6 @@
 package net.minecraft.recipe;
 
+import net.minecraft.class_8293;
 import net.minecraft.block.Blocks;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
@@ -48,6 +49,10 @@ public interface Recipe<C extends Inventory> {
 	 */
 	ItemStack craft(C inventory, DynamicRegistryManager registryManager);
 
+	default ItemStack method_50831(C inventory, DynamicRegistryManager dynamicRegistryManager) {
+		return class_8293.field_43588.method_50348(class_8293.field_43587.method_50387(dynamicRegistryManager, this.craft(inventory, dynamicRegistryManager)));
+	}
+
 	/**
 	 * {@return whether this recipe will fit into the given grid size}
 	 * 
@@ -65,6 +70,10 @@ public interface Recipe<C extends Inventory> {
 	 * call {@link #craft(Inventory, DynamicRegistryManager)}.
 	 */
 	ItemStack getOutput(DynamicRegistryManager registryManager);
+
+	default ItemStack method_50832(DynamicRegistryManager dynamicRegistryManager) {
+		return class_8293.field_43588.method_50348(class_8293.field_43587.method_50387(dynamicRegistryManager, this.getOutput(dynamicRegistryManager)));
+	}
 
 	/**
 	 * {@return the remaining stacks to be left in the {@code inventory} after the recipe is used}

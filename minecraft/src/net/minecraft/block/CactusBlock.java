@@ -97,7 +97,7 @@ public class CactusBlock extends Block {
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
-		entity.damage(world.getDamageSources().cactus(), 1.0F);
+		entity.damageWithModifier(world.getDamageSources().cactus(), 1.0F);
 	}
 
 	@Override

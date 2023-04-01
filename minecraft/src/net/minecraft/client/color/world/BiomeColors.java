@@ -2,16 +2,16 @@ package net.minecraft.client.color.world;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockRenderView;
-import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.ColorResolver;
 
 @Environment(EnvType.CLIENT)
 public class BiomeColors {
-	public static final ColorResolver GRASS_COLOR = Biome::getGrassColorAt;
-	public static final ColorResolver FOLIAGE_COLOR = (biome, x, z) -> biome.getFoliageColor();
-	public static final ColorResolver WATER_COLOR = (biome, x, z) -> biome.getWaterColor();
+	public static final ColorResolver GRASS_COLOR = (registryEntry, x, z) -> registryEntry.value().getGrassColorAt(registryEntry, x, z);
+	public static final ColorResolver FOLIAGE_COLOR = (registryEntry, x, z) -> registryEntry.value().getFoliageColor(registryEntry);
+	public static final ColorResolver WATER_COLOR = (registryEntry, d, e) -> registryEntry.value().getWaterColor(registryEntry);
 
 	private static int getColor(BlockRenderView world, BlockPos pos, ColorResolver resolver) {
 		return world.getColor(pos, resolver);

@@ -5,7 +5,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -26,13 +25,13 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 
 	public static PositionedSoundInstance master(SoundEvent sound, float pitch, float volume) {
 		return new PositionedSoundInstance(
-			sound.getId(), SoundCategory.MASTER, volume, pitch, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
+			sound, SoundCategory.MASTER, volume, pitch, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
 		);
 	}
 
 	public static PositionedSoundInstance music(SoundEvent sound) {
 		return new PositionedSoundInstance(
-			sound.getId(), SoundCategory.MUSIC, 1.0F, 1.0F, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
+			sound, SoundCategory.MUSIC, 1.0F, 1.0F, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
 		);
 	}
 
@@ -44,7 +43,7 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 
 	public static PositionedSoundInstance ambient(SoundEvent sound, float pitch, float volume) {
 		return new PositionedSoundInstance(
-			sound.getId(), SoundCategory.AMBIENT, volume, pitch, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
+			sound, SoundCategory.AMBIENT, volume, pitch, SoundInstance.createRandom(), false, 0, SoundInstance.AttenuationType.NONE, 0.0, 0.0, 0.0, true
 		);
 	}
 
@@ -57,7 +56,7 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 	}
 
 	public PositionedSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Random random, double x, double y, double z) {
-		this(sound, category, volume, pitch, random, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z);
+		this(sound, category, volume, pitch, random, false, 0, SoundInstance.AttenuationType.LINEAR, x, y, z, false);
 	}
 
 	private PositionedSoundInstance(
@@ -73,11 +72,11 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		double y,
 		double z
 	) {
-		this(sound.getId(), category, volume, pitch, random, repeat, repeatDelay, attenuationType, x, y, z, false);
+		this(sound, category, volume, pitch, random, repeat, repeatDelay, attenuationType, x, y, z, false);
 	}
 
 	public PositionedSoundInstance(
-		Identifier id,
+		SoundEvent soundEvent,
 		SoundCategory category,
 		float volume,
 		float pitch,
@@ -90,7 +89,7 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		double z,
 		boolean relative
 	) {
-		super(id, category, random);
+		super(soundEvent, category, random);
 		this.volume = volume;
 		this.pitch = pitch;
 		this.x = x;
