@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8293;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.registry.Registries;
@@ -412,7 +413,7 @@ public class SoundSystem {
 	}
 
 	private float getAdjustedPitch(SoundInstance sound) {
-		return MathHelper.clamp(sound.getPitch(), 0.5F, 2.0F);
+		return MathHelper.clamp(sound.getPitch(), 0.5F, 2.0F) * (Float)class_8293.field_43561.method_50171();
 	}
 
 	private float getAdjustedVolume(SoundInstance sound) {

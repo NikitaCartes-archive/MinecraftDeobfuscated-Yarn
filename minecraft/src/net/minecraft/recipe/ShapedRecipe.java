@@ -11,10 +11,13 @@ import com.google.gson.JsonSyntaxException;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import net.minecraft.class_8293;
+import net.minecraft.class_8348;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
@@ -25,6 +28,8 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class ShapedRecipe implements CraftingRecipe {
+	public static final String WOB_KEY = "wob";
+	public static final String NBT_KEY = "nbt";
 	final int width;
 	final int height;
 	final DefaultedList<Ingredient> input;
@@ -33,6 +38,8 @@ public class ShapedRecipe implements CraftingRecipe {
 	final String group;
 	final CraftingRecipeCategory category;
 	final boolean showNotification;
+	final boolean canXFlip;
+	final boolean wob;
 
 	public ShapedRecipe(
 		Identifier id,
@@ -42,7 +49,9 @@ public class ShapedRecipe implements CraftingRecipe {
 		int height,
 		DefaultedList<Ingredient> input,
 		ItemStack output,
-		boolean showNotification
+		boolean showNotification,
+		boolean canXFlip,
+		boolean wob
 	) {
 		this.id = id;
 		this.group = group;
@@ -52,10 +61,12 @@ public class ShapedRecipe implements CraftingRecipe {
 		this.input = input;
 		this.output = output;
 		this.showNotification = showNotification;
+		this.canXFlip = canXFlip;
+		this.wob = wob;
 	}
 
 	public ShapedRecipe(Identifier id, String group, CraftingRecipeCategory category, int width, int height, DefaultedList<Ingredient> input, ItemStack output) {
-		this(id, group, category, width, height, input, output, true);
+		this(id, group, category, width, height, input, output, true, true, false);
 	}
 
 	@Override
@@ -101,12 +112,19 @@ public class ShapedRecipe implements CraftingRecipe {
 	public boolean matches(CraftingInventory craftingInventory, World world) {
 		for (int i = 0; i <= craftingInventory.getWidth() - this.width; i++) {
 			for (int j = 0; j <= craftingInventory.getHeight() - this.height; j++) {
-				if (this.matchesPattern(craftingInventory, i, j, true)) {
-					return true;
-				}
+				if (!this.canXFlip) {
+					if (this.matchesPattern(craftingInventory, i, j, false)) {
+						return true;
+					}
+				} else {
+					class_8348 lv = class_8293.field_43555.method_50145();
+					if (lv != class_8348.FLIPPED_ONLY && this.matchesPattern(craftingInventory, i, j, false)) {
+						return true;
+					}
 
-				if (this.matchesPattern(craftingInventory, i, j, false)) {
-					return true;
+					if (lv != class_8348.NORMAL_ONLY && this.matchesPattern(craftingInventory, i, j, true)) {
+						return true;
+					}
 				}
 			}
 		}
@@ -138,7 +156,13 @@ public class ShapedRecipe implements CraftingRecipe {
 	}
 
 	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
-		return this.getOutput(dynamicRegistryManager).copy();
+		ItemStack itemStack = this.output.copy();
+		if (this.wob) {
+			NbtCompound nbtCompound = itemStack.getOrCreateNbt();
+			nbtCompound.putBoolean("wob", true);
+		}
+
+		return itemStack;
 	}
 
 	public int getWidth() {
@@ -346,7 +370,9 @@ public class ShapedRecipe implements CraftingRecipe {
 			DefaultedList<Ingredient> defaultedList = ShapedRecipe.createPatternMatrix(strings, map, i, j);
 			ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
 			boolean bl = JsonHelper.getBoolean(jsonObject, "show_notification", true);
-			return new ShapedRecipe(identifier, string, craftingRecipeCategory, i, j, defaultedList, itemStack, bl);
+			boolean bl2 = JsonHelper.getBoolean(jsonObject, "can_x_flip", true);
+			boolean bl3 = "wob".equals(JsonHelper.getString(jsonObject, "nbt", ""));
+			return new ShapedRecipe(identifier, string, craftingRecipeCategory, i, j, defaultedList, itemStack, bl, bl2, bl3);
 		}
 
 		public ShapedRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
@@ -362,7 +388,9 @@ public class ShapedRecipe implements CraftingRecipe {
 
 			ItemStack itemStack = packetByteBuf.readItemStack();
 			boolean bl = packetByteBuf.readBoolean();
-			return new ShapedRecipe(identifier, string, craftingRecipeCategory, i, j, defaultedList, itemStack, bl);
+			boolean bl2 = packetByteBuf.readBoolean();
+			boolean bl3 = packetByteBuf.readBoolean();
+			return new ShapedRecipe(identifier, string, craftingRecipeCategory, i, j, defaultedList, itemStack, bl, bl2, bl3);
 		}
 
 		public void write(PacketByteBuf packetByteBuf, ShapedRecipe shapedRecipe) {
@@ -377,6 +405,8 @@ public class ShapedRecipe implements CraftingRecipe {
 
 			packetByteBuf.writeItemStack(shapedRecipe.output);
 			packetByteBuf.writeBoolean(shapedRecipe.showNotification);
+			packetByteBuf.writeBoolean(shapedRecipe.canXFlip);
+			packetByteBuf.writeBoolean(shapedRecipe.wob);
 		}
 	}
 }

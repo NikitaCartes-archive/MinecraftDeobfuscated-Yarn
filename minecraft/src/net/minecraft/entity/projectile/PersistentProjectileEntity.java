@@ -231,10 +231,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.setPitch(updateRotation(this.prevPitch, this.getPitch()));
 			this.setYaw(updateRotation(this.prevYaw, this.getYaw()));
 			float m = 0.99F;
-			float n = 0.05F;
 			if (this.isTouchingWater()) {
-				for (int o = 0; o < 4; o++) {
-					float p = 0.25F;
+				for (int n = 0; n < 4; n++) {
+					float o = 0.25F;
 					this.world.addParticle(ParticleTypes.BUBBLE, h - e * 0.25, j - f * 0.25, k - g * 0.25, e, f, g);
 				}
 
@@ -244,12 +243,17 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.setVelocity(vec3d.multiply((double)m));
 			if (!this.hasNoGravity() && !bl) {
 				Vec3d vec3d4 = this.getVelocity();
-				this.setVelocity(vec3d4.x, vec3d4.y - 0.05F, vec3d4.z);
+				this.setVelocity(vec3d4.x, vec3d4.y - (double)this.method_50634(), vec3d4.z);
 			}
 
 			this.setPosition(h, j, k);
 			this.checkBlockCollision();
 		}
+	}
+
+	@Override
+	protected float getGravity() {
+		return 0.05F;
 	}
 
 	private boolean shouldFall() {
@@ -333,7 +337,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			entity.setOnFireFor(5);
 		}
 
-		if (entity.damage(damageSource, (float)i)) {
+		if (entity.damageWithModifier(damageSource, (float)i)) {
 			if (bl) {
 				return;
 			}

@@ -289,10 +289,10 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		if (i <= 0) {
 			return false;
 		} else {
-			this.damage(damageSource, (float)i);
+			this.damageWithModifier(damageSource, (float)i);
 			if (this.hasPassengers()) {
 				for (Entity entity : this.getPassengersDeep()) {
-					entity.damage(damageSource, (float)i);
+					entity.damageWithModifier(damageSource, (float)i);
 				}
 			}
 
@@ -349,7 +349,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		boolean bl = super.damage(source, amount);
 		if (bl && this.random.nextInt(3) == 0) {
 			this.updateAnger();
@@ -694,6 +694,17 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			this.putPlayerOnBack(player);
 			return ActionResult.success(this.world.isClient);
 		}
+	}
+
+	@Override
+	protected ActionResult method_50667(PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+		if (!this.world.isClient) {
+			playerEntity.setYaw(this.getYaw());
+			playerEntity.setPitch(this.getPitch());
+			playerEntity.startRiding(livingEntity);
+		}
+
+		return super.method_50667(playerEntity, livingEntity, hand);
 	}
 
 	private void setEating() {

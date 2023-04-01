@@ -81,7 +81,7 @@ public class EntityTrackerEntry {
 	public void tick() {
 		List<Entity> list = this.entity.getPassengerList();
 		if (!list.equals(this.lastPassengers)) {
-			this.receiver.accept(new EntityPassengersSetS2CPacket(this.entity));
+			this.world.getChunkManager().threadedAnvilChunkStorage.sendToNearbyPlayers(this.entity, new EntityPassengersSetS2CPacket(this.entity));
 			streamChangedPassengers(list, this.lastPassengers)
 				.forEach(
 					passenger -> {

@@ -64,6 +64,7 @@ import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.PolarBearEntity;
 import net.minecraft.entity.passive.RabbitEntity;
+import net.minecraft.entity.passive.RayTracingEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
@@ -117,6 +118,8 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.LLAMA, LlamaEntity.createLlamaAttributes().build())
 		.put(EntityType.MAGMA_CUBE, MagmaCubeEntity.createMagmaCubeAttributes().build())
 		.put(EntityType.MOOSHROOM, CowEntity.createCowAttributes().build())
+		.put(EntityType.RAY_TRACING, RayTracingEntity.createRayAttributes().build())
+		.put(EntityType.MOON_COW, CowEntity.createCowAttributes().build())
 		.put(EntityType.MULE, AbstractDonkeyEntity.createAbstractDonkeyAttributes().build())
 		.put(EntityType.OCELOT, OcelotEntity.createOcelotAttributes().build())
 		.put(EntityType.PANDA, PandaEntity.createPandaAttributes().build())

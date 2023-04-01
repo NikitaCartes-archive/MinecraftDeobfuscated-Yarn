@@ -117,6 +117,18 @@ public class StatusEffects {
 		"darkness",
 		new StatusEffect(StatusEffectCategory.HARMFUL, 2696993).setFactorCalculationDataSupplier(() -> new StatusEffectInstance.FactorCalculationData(22))
 	);
+	public static final StatusEffect BIG = register(
+		34,
+		"big",
+		new StatusEffect(StatusEffectCategory.NEUTRAL, 9687858)
+			.addAttributeModifier(EntityAttributes.GENERIC_SCALE, "295dc741-db10-49e8-9c39-e05f0145d312", 1.0, EntityAttributeModifier.Operation.ADDITION)
+	);
+	public static final StatusEffect SMALL = register(
+		35,
+		"small",
+		new StatusEffect(StatusEffectCategory.NEUTRAL, 13841099)
+			.addAttributeModifier(EntityAttributes.GENERIC_SCALE, "22cfbc53-1031-4378-b826-8c5ef503dd5c", -0.5, EntityAttributeModifier.Operation.ADDITION)
+	);
 
 	private static StatusEffect register(int rawId, String id, StatusEffect entry) {
 		return Registry.register(Registries.STATUS_EFFECT, rawId, id, entry);

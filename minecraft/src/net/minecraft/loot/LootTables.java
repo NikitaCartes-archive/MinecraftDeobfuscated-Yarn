@@ -12,6 +12,8 @@ public class LootTables {
 	public static final Identifier SPAWN_BONUS_CHEST = register("chests/spawn_bonus_chest");
 	public static final Identifier END_CITY_TREASURE_CHEST = register("chests/end_city_treasure");
 	public static final Identifier SIMPLE_DUNGEON_CHEST = register("chests/simple_dungeon");
+	public static final Identifier MOON_RESUPLY_CHEST = register("chests/moon_resuply");
+	public static final Identifier MOON_LAB_CHEST = register("chests/moon_lab");
 	public static final Identifier VILLAGE_WEAPONSMITH_CHEST = register("chests/village/village_weaponsmith");
 	public static final Identifier VILLAGE_TOOLSMITH_CHEST = register("chests/village/village_toolsmith");
 	public static final Identifier VILLAGE_ARMORER_CHEST = register("chests/village/village_armorer");
@@ -87,6 +89,7 @@ public class LootTables {
 	public static final Identifier HERO_OF_THE_VILLAGE_TOOLSMITH_GIFT_GAMEPLAY = register("gameplay/hero_of_the_village/toolsmith_gift");
 	public static final Identifier HERO_OF_THE_VILLAGE_WEAPONSMITH_GIFT_GAMEPLAY = register("gameplay/hero_of_the_village/weaponsmith_gift");
 	public static final Identifier PIGLIN_BARTERING_GAMEPLAY = register("gameplay/piglin_bartering");
+	public static final Identifier DREAM_PIGLIN_BARTERING_GAMEPLAY = register("gameplay/dream_piglin_bartering");
 	public static final Identifier DESERT_WELL_ARCHAEOLOGY = register("archaeology/desert_well");
 	public static final Identifier DESERT_PYRAMID_ARCHAEOLOGY = register("archaeology/desert_pyramid");
 	public static final Identifier TRAIL_RUINS_ARCHAEOLOGY = register("archaeology/trail_ruins");

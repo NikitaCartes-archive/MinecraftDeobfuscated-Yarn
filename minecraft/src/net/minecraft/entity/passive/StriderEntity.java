@@ -458,6 +458,20 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
+	protected ActionResult method_50667(PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+		if (this.isSaddled() && !livingEntity.hasPassengers() && !playerEntity.shouldCancelInteraction()) {
+			if (!this.world.isClient) {
+				playerEntity.startRiding(livingEntity);
+			}
+
+			return ActionResult.success(this.world.isClient);
+		} else {
+			ItemStack itemStack = playerEntity.getStackInHand(hand);
+			return itemStack.isOf(Items.SADDLE) ? itemStack.useOnEntity(playerEntity, this, hand) : ActionResult.PASS;
+		}
+	}
+
+	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}

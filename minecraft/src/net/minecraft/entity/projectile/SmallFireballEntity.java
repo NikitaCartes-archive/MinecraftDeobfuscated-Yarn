@@ -34,7 +34,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 			Entity entity2 = this.getOwner();
 			int i = entity.getFireTicks();
 			entity.setOnFireFor(5);
-			if (!entity.damage(this.getDamageSources().fireball(this, entity2), 5.0F)) {
+			if (!entity.damageWithModifier(this.getDamageSources().fireball(this, entity2), 5.0F)) {
 				entity.setFireTicks(i);
 			} else if (entity2 instanceof LivingEntity) {
 				this.applyDamageEffects((LivingEntity)entity2, entity);
@@ -70,7 +70,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		return false;
 	}
 }

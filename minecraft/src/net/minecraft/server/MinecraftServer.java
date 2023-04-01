@@ -5,6 +5,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -26,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.security.KeyPair;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -36,7 +38,9 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Queue;
 import java.util.Set;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -50,8 +54,22 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8290;
+import net.minecraft.class_8293;
+import net.minecraft.class_8370;
+import net.minecraft.class_8373;
+import net.minecraft.class_8375;
+import net.minecraft.class_8376;
+import net.minecraft.class_8380;
+import net.minecraft.class_8387;
+import net.minecraft.class_8388;
+import net.minecraft.class_8479;
+import net.minecraft.class_8481;
+import net.minecraft.class_8482;
+import net.minecraft.class_8483;
 import net.minecraft.block.Block;
 import net.minecraft.command.DataCommandStorage;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
@@ -84,6 +102,7 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.scoreboard.ServerScoreboard;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
@@ -98,8 +117,11 @@ import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.test.TestManager;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
 import net.minecraft.util.ModStatus;
@@ -263,6 +285,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private final StructureTemplateManager structureTemplateManager;
 	protected final SaveProperties saveProperties;
 	private volatile boolean saving;
+	private final class_8380 field_44453;
+	private final List<ServerTask> field_44454 = Lists.<ServerTask>newArrayList();
+	private final Queue<ServerTask> field_44455 = Queues.<ServerTask>newArrayDeque();
 
 	public static <S extends MinecraftServer> S startServer(Function<Thread, S> serverFactory) {
 		AtomicReference<S> atomicReference = new AtomicReference();
@@ -316,6 +341,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.structureTemplateManager = new StructureTemplateManager(saveLoader.resourceManager(), session, dataFixer, registryEntryLookup);
 			this.serverThread = serverThread;
 			this.workerExecutor = Util.getMainWorkerExecutor();
+			this.field_44453 = new class_8380(this.combinedDynamicRegistries.getCombinedRegistryManager());
 		}
 	}
 
@@ -590,6 +616,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		try {
 			this.saving = true;
 			this.getPlayerManager().saveAllPlayerData();
+			this.method_51120();
 			var4 = this.save(suppressLogs, flush, force);
 		} finally {
 			this.saving = false;
@@ -640,6 +667,13 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 
 		this.save(false, true, false);
+
+		try {
+			this.method_51120();
+			this.field_44453.method_50553();
+		} catch (Exception var6) {
+			LOGGER.error("Exception saving the votes", (Throwable)var6);
+		}
 
 		for (ServerWorld serverWorldx : this.getWorlds()) {
 			if (serverWorldx != null) {
@@ -702,6 +736,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			this.timeReference = Util.getMeasuringTimeMs();
 			this.favicon = (ServerMetadata.Favicon)this.loadFavicon().orElse(null);
 			this.metadata = this.createMetadata();
+			this.method_51116();
 
 			while (this.running) {
 				long l = Util.getMeasuringTimeMs() - this.timeReference;
@@ -758,6 +793,92 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
+	public void method_51120() {
+		class_8387 lv = this.field_44453.method_50565();
+		this.session.method_50931(lv);
+	}
+
+	private class_8387 method_51116() {
+		class_8387 lv = this.session.method_50932();
+		this.field_44453.method_50557(lv);
+		return lv;
+	}
+
+	public void method_51121() {
+		this.field_44453.method_50553();
+		class_8387 lv = this.method_51116();
+		this.playerManager.sendToAll(new class_8479(true, class_8290.APPROVE, lv.approved()));
+		this.playerManager
+			.getPlayerList()
+			.forEach(serverPlayerEntity -> serverPlayerEntity.networkHandler.sendPacket(this.playerManager.method_50050(serverPlayerEntity.getUuid())));
+	}
+
+	public void method_51112(UUID uUID, class_8376 arg) {
+		this.field_44453.method_50560(uUID, arg);
+		this.playerManager.sendToAll(new class_8483(uUID, arg.method_50513()));
+	}
+
+	private class_8370.class_8372 method_51117() {
+		return new class_8370.class_8372(
+			this.random,
+			!class_8293.field_43683.method_50116(),
+			this.getCurrentPlayerCount(),
+			(float)((Integer)class_8293.field_43509.method_50171()).intValue() / 100.0F,
+			(float)((Integer)class_8293.field_43510.method_50171()).intValue() / 100.0F,
+			!class_8293.field_43685.method_50116(),
+			class_8293.field_43686.method_50116(),
+			class_8293.field_43687.method_50116(),
+			!class_8293.field_43688.method_50116(),
+			!class_8293.field_43684.method_50116(),
+			(Integer)class_8293.field_43689.method_50171(),
+			class_8293.field_43515.method_50145()
+		);
+	}
+
+	@Nullable
+	public class_8370 method_51113(UUID uUID, boolean bl) {
+		class_8370 lv = this.field_44453.method_50559(uUID);
+		if (lv != null) {
+			this.method_51109(lv, bl);
+		}
+
+		return lv;
+	}
+
+	private void method_51109(class_8370 arg, boolean bl) {
+		List<class_8376.class_8377> list = new ArrayList();
+		List<Text> list2 = new ArrayList();
+		class_8370.class_8372 lv = this.method_51117();
+		arg.method_50477(list::add, list2::add, lv);
+
+		for (Text text : list2) {
+			this.sendMessage(text);
+		}
+
+		int i = list2.size();
+		if (!class_8293.field_43516.method_50116() && i > 0) {
+			MutableText mutableText = ((Text)list2.get(0)).copy();
+			if (list.isEmpty()) {
+				mutableText.formatted(Formatting.ITALIC, Formatting.GRAY);
+			} else {
+				mutableText.formatted(Formatting.BOLD, Formatting.GOLD);
+			}
+
+			if (i > 1) {
+				mutableText.formatted(Formatting.UNDERLINE);
+				Text text2 = ScreenTexts.joinLines(list2);
+				mutableText.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
+			}
+
+			this.playerManager.broadcast(mutableText, false);
+		}
+
+		this.playerManager.sendToAll(new class_8481(arg.id()));
+		if (bl) {
+			Lists.reverse(list).forEach(argx -> argx.method_50542(this));
+		}
+	}
+
 	private static CrashReport createCrashReport(Throwable throwable) {
 		CrashException crashException = null;
 
@@ -786,7 +907,33 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	protected void runTasksTillTickEnd() {
 		this.runTasks();
+		this.method_51118();
 		this.runTasks(() -> !this.shouldKeepTicking());
+	}
+
+	public void method_51106(int i, Runnable runnable) {
+		synchronized (this.field_44454) {
+			this.field_44454.add(new ServerTask(this.ticks + i, runnable));
+		}
+	}
+
+	private void method_51118() {
+		synchronized (this.field_44454) {
+			if (!this.field_44454.isEmpty()) {
+				this.field_44455.addAll(this.field_44454);
+				this.field_44454.clear();
+			}
+		}
+
+		Iterator<ServerTask> iterator = this.field_44455.iterator();
+
+		while (iterator.hasNext()) {
+			ServerTask serverTask = (ServerTask)iterator.next();
+			if (serverTask.getCreationTicks() <= this.ticks) {
+				iterator.remove();
+				serverTask.run();
+			}
+		}
 	}
 
 	protected ServerTask createTask(Runnable runnable) {
@@ -913,6 +1060,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	public void tickWorlds(BooleanSupplier shouldKeepTicking) {
 		this.profiler.push("commandFunctions");
 		this.getCommandFunctionManager().tick();
+		this.field_44453
+			.method_50554(
+				this.saveProperties.getMainWorldProperties().getTime(),
+				this,
+				class_8376.class_8379.method_50547(this.random),
+				arg -> this.method_51109(arg, true),
+				this::method_51112
+			);
 		this.profiler.swap("levels");
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
@@ -1986,6 +2141,28 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 */
 	public MessageDecorator getMessageDecorator() {
 		return MessageDecorator.NOOP;
+	}
+
+	public class_8380 method_51115() {
+		return this.field_44453;
+	}
+
+	public boolean method_51110(class_8373 arg, Entity entity, int i) {
+		class_8380.class_8381 lv = this.field_44453.method_50556(arg);
+		if (lv != null) {
+			lv.method_50573(entity, i);
+		}
+
+		return lv != null;
+	}
+
+	public void method_51107(ServerPlayerEntity serverPlayerEntity, class_8373 arg) {
+		UUID uUID = serverPlayerEntity.getUuid();
+		class_8375 lv = this.field_44453.method_50566(arg);
+		class_8388 lv2 = (class_8388)lv.voters().get(uUID);
+		if (lv2 != null) {
+			serverPlayerEntity.networkHandler.sendPacket(new class_8482(arg, class_8375.method_50509(uUID, lv2)));
+		}
 	}
 
 	static class DebugStart {

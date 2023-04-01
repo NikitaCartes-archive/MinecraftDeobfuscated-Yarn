@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class SimpleFramebuffer extends Framebuffer {
 	public SimpleFramebuffer(int width, int height, boolean useDepth, boolean getError) {
-		super(useDepth);
+		super(useDepth, useDepth);
 		RenderSystem.assertOnRenderThreadOrInit();
 		this.resize(width, height, getError);
 	}

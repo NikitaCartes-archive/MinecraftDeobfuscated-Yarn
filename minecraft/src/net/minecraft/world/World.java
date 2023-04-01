@@ -3,12 +3,16 @@ package net.minecraft.world;
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Codec;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -54,6 +58,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.vote.LightEngineOptimizationType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.block.ChainRestrictedNeighborUpdater;
@@ -61,20 +66,24 @@ import net.minecraft.world.block.NeighborUpdater;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
+import org.joml.Vector3f;
 
 public abstract class World implements WorldAccess, AutoCloseable {
 	public static final Codec<RegistryKey<World>> CODEC = RegistryKey.createCodec(RegistryKeys.WORLD);
 	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(RegistryKeys.WORLD, new Identifier("overworld"));
 	public static final RegistryKey<World> NETHER = RegistryKey.of(RegistryKeys.WORLD, new Identifier("the_nether"));
 	public static final RegistryKey<World> END = RegistryKey.of(RegistryKeys.WORLD, new Identifier("the_end"));
+	public static final RegistryKey<World> MOON = RegistryKey.of(RegistryKeys.WORLD, new Identifier("the_moon"));
 	public static final int HORIZONTAL_LIMIT = 30000000;
 	public static final int MAX_UPDATE_DEPTH = 512;
 	public static final int field_30967 = 32;
@@ -109,6 +118,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	private final DynamicRegistryManager registryManager;
 	private final DamageSources damageSources;
 	private long tickOrder;
+	private double gravityModifier;
+	private boolean field_44208;
+	private final Queue<Chunk> field_44209 = new ArrayDeque();
+	double field_44206 = 0.0;
 
 	protected World(
 		MutableWorldProperties properties,
@@ -126,6 +139,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		this.dimensionEntry = dimensionEntry;
 		this.dimension = (RegistryKey<DimensionType>)dimensionEntry.getKey()
 			.orElseThrow(() -> new IllegalArgumentException("Dimension must be registered, got " + dimensionEntry));
+		this.gravityModifier = this.dimension != DimensionTypes.THE_MOON ? 1.0 : 0.1;
 		final DimensionType dimensionType = dimensionEntry.value();
 		this.registryKey = registryRef;
 		this.isClient = isClient;
@@ -275,14 +289,18 @@ public abstract class World implements WorldAccess, AutoCloseable {
 						this.updateListeners(pos, blockState, state, flags);
 					}
 
+					boolean bl = (Boolean)class_8293.field_43583.get();
 					if ((flags & Block.NOTIFY_NEIGHBORS) != 0) {
-						this.updateNeighbors(pos, blockState.getBlock());
+						if (bl) {
+							this.updateNeighbors(pos, blockState.getBlock());
+						}
+
 						if (!this.isClient && state.hasComparatorOutput()) {
 							this.updateComparators(pos, block);
 						}
 					}
 
-					if ((flags & Block.FORCE_STATE) == 0 && maxUpdateDepth > 0) {
+					if ((flags & (bl ? Block.FORCE_STATE : -1)) == 0 && maxUpdateDepth > 0) {
 						int i = flags & ~(Block.NOTIFY_NEIGHBORS | Block.SKIP_DROPS);
 						blockState.prepare(this, pos, i, maxUpdateDepth - 1);
 						state.updateNeighbors(this, pos, i, maxUpdateDepth - 1);
@@ -501,6 +519,45 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	protected void tickBlockEntities() {
+		LightEngineOptimizationType lightEngineOptimizationType = class_8293.field_43639.method_50145();
+		boolean bl = lightEngineOptimizationType.shouldDisableLight(this);
+		if (bl != this.field_44208) {
+			this.method_50032().forEach(this.field_44209::add);
+			this.field_44208 = bl;
+		}
+
+		int i = 0;
+
+		while (!this.field_44209.isEmpty() && i < 10) {
+			Chunk chunk = (Chunk)this.field_44209.poll();
+			if (this.isChunkLoaded(chunk.getPos().x, chunk.getPos().z)) {
+				for (int j = chunk.getBottomSectionCoord(); j < chunk.getTopSectionCoord(); j++) {
+					ChunkSection chunkSection = chunk.getSection(chunk.sectionCoordToIndex(j));
+					if (!chunkSection.isEmpty() && chunkSection.hasAny(blockState -> blockState.getLuminance() != 0 || blockState.emitsRedstonePower())) {
+						ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk.getPos(), j);
+						chunkSectionPos.streamBlocks()
+							.forEach(
+								blockPos -> {
+									BlockState blockState = chunkSection.getBlockState(
+										ChunkSectionPos.getLocalCoord(blockPos.getX()), ChunkSectionPos.getLocalCoord(blockPos.getY()), ChunkSectionPos.getLocalCoord(blockPos.getZ())
+									);
+									if (blockState.getLuminance() != 0) {
+										this.getLightingProvider().checkBlock(blockPos);
+									}
+
+									if (!this.isClient && blockState.emitsRedstonePower()) {
+										this.updateNeighborsAlways(blockPos, blockState.getBlock());
+									}
+								}
+							);
+					}
+				}
+
+				chunk.method_50895(bl);
+				i++;
+			}
+		}
+
 		Profiler profiler = this.getProfiler();
 		profiler.push("blockEntities");
 		this.iteratingTickingBlockEntities = true;
@@ -522,6 +579,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 		this.iteratingTickingBlockEntities = false;
 		profiler.pop();
+	}
+
+	protected Stream<Chunk> method_50032() {
+		return Stream.empty();
 	}
 
 	public <T extends Entity> void tickEntity(Consumer<T> tickConsumer, T entity) {
@@ -548,6 +609,18 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public boolean shouldTickBlockPos(BlockPos pos) {
 		return this.shouldTickBlocksInChunk(ChunkPos.toLong(pos));
+	}
+
+	public double getGravityModifier() {
+		if (class_8293.field_43537.method_50116()) {
+			return this.gravityModifier == 1.0 ? 0.1 : 1.0;
+		} else {
+			return this.gravityModifier;
+		}
+	}
+
+	public boolean isTheMoon() {
+		return this.dimension == DimensionTypes.THE_MOON;
 	}
 
 	/**
@@ -913,7 +986,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	 * @see #hasRain
 	 */
 	public boolean isRaining() {
-		return (double)this.getRainGradient(1.0F) > 0.2;
+		return (double)this.getRainGradient(1.0F) > 0.2 && this.dimension != DimensionTypes.THE_MOON;
 	}
 
 	/**
@@ -1100,6 +1173,34 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public DamageSources getDamageSources() {
 		return this.damageSources;
+	}
+
+	public double method_50840() {
+		if (!this.getDimension().natural()) {
+			return 0.0;
+		} else {
+			double d = class_8293.field_43542.method_50394();
+			double e = 5.0E-4 * (double)(d > this.field_44206 ? 1 : -1);
+			this.field_44206 = MathHelper.clamp(this.field_44206 + e, 0.0, d);
+			double f = Math.abs(((double)this.getTimeOfDay() / 24000.0 + 0.25) % 1.0 - 0.5) * 2.0;
+			return this.field_44206 * Math.pow(Math.max(f * 1.75 - 0.75, 0.0), 0.5);
+		}
+	}
+
+	public Vec3d method_50841() {
+		if (!this.getDimension().hasSkyLight()) {
+			return new Vec3d(0.0, 0.0, 0.0);
+		} else {
+			double d = (Math.PI * 2) * (double)this.getTimeOfDay() / 24000.0;
+			Vector3f vector3f = new Vector3f(-0.1F * (float)this.method_50840(), 0.0F, 0.0F).rotateZ((float)d);
+			return new Vec3d((double)vector3f.x, (double)vector3f.y, (double)vector3f.z);
+		}
+	}
+
+	@Override
+	public int getBaseLightLevel(BlockPos pos, int ambientDarkness) {
+		LightEngineOptimizationType lightEngineOptimizationType = class_8293.field_43639.method_50145();
+		return lightEngineOptimizationType.shouldForceLight(this) ? 15 : WorldAccess.super.getBaseLightLevel(pos, ambientDarkness);
 	}
 
 	public static enum ExplosionSourceType {

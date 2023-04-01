@@ -3,7 +3,11 @@ package net.minecraft.entity.passive;
 import com.google.common.collect.Sets;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentLevelEntry;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -20,10 +24,14 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.inventory.StackReference;
+import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.particle.ParticleEffect;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -47,11 +55,18 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	@Nullable
 	protected TradeOfferList offers;
 	private final SimpleInventory inventory = new SimpleInventory(8);
+	@Nullable
+	protected TradeOfferList field_44118;
 
 	public MerchantEntity(EntityType<? extends MerchantEntity> entityType, World world) {
 		super(entityType, world);
 		this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 16.0F);
 		this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, -1.0F);
+	}
+
+	@Override
+	protected boolean method_50669() {
+		return true;
 	}
 
 	@Override
@@ -106,6 +121,24 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 
 	@Override
 	public TradeOfferList getOffers() {
+		TradeOfferList tradeOfferList = this.method_50710();
+		if (class_8293.field_43648.method_50116() && !tradeOfferList.isEmpty()) {
+			if (this.field_44118 == null) {
+				this.field_44118 = new TradeOfferList();
+				Enchantment enchantment = Enchantments.MENDING;
+				ItemStack itemStack = EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, 1));
+				Item item = (Item)class_8293.field_43631.method_50154(this).map(RegistryEntry::value).orElse(Items.EMERALD);
+				int i = this.random.nextInt(30) + 10;
+				this.field_44118.add(new TradeOffer(new ItemStack(item, i), itemStack, 12, 10, 0.2F));
+			}
+
+			return this.field_44118;
+		} else {
+			return tradeOfferList;
+		}
+	}
+
+	private TradeOfferList method_50710() {
 		if (this.offers == null) {
 			this.offers = new TradeOfferList();
 			this.fillRecipes();
@@ -163,7 +196,7 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 	@Override
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
-		TradeOfferList tradeOfferList = this.getOffers();
+		TradeOfferList tradeOfferList = this.method_50710();
 		if (!tradeOfferList.isEmpty()) {
 			nbt.put("Offers", tradeOfferList.toNbt());
 		}
@@ -237,9 +270,11 @@ public abstract class MerchantEntity extends PassiveEntity implements InventoryO
 			}
 		}
 
+		Item item = (Item)class_8293.field_43631.method_50154(this).map(RegistryEntry::value).orElse(Items.EMERALD);
+
 		for (Integer integer : set) {
 			TradeOffers.Factory factory = pool[integer];
-			TradeOffer tradeOffer = factory.create(this, this.random);
+			TradeOffer tradeOffer = factory.create(this, this.random, item);
 			if (tradeOffer != null) {
 				recipeList.add(tradeOffer);
 			}

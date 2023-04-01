@@ -36,6 +36,8 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 	@Nullable
 	private String group;
 	private boolean showNotification = true;
+	private boolean canXFlip = true;
+	private boolean wob;
 
 	public ShapedRecipeJsonBuilder(RecipeCategory category, ItemConvertible output, int count) {
 		this.category = category;
@@ -94,6 +96,16 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 		return this;
 	}
 
+	public ShapedRecipeJsonBuilder canXFlip(boolean canXFlip) {
+		this.canXFlip = canXFlip;
+		return this;
+	}
+
+	public ShapedRecipeJsonBuilder wob(boolean wob) {
+		this.wob = wob;
+		return this;
+	}
+
 	@Override
 	public Item getOutputItem() {
 		return this.output;
@@ -118,7 +130,9 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 				this.inputs,
 				this.advancementBuilder,
 				recipeId.withPrefixedPath("recipes/" + this.category.getName() + "/"),
-				this.showNotification
+				this.showNotification,
+				this.canXFlip,
+				this.wob
 			)
 		);
 	}
@@ -161,6 +175,8 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 		private final Advancement.Builder advancementBuilder;
 		private final Identifier advancementId;
 		private final boolean showNotification;
+		private final boolean canXFlip;
+		private final boolean wob;
 
 		public ShapedRecipeJsonProvider(
 			Identifier recipeId,
@@ -172,7 +188,9 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 			Map<Character, Ingredient> inputs,
 			Advancement.Builder advancementBuilder,
 			Identifier advancementId,
-			boolean showNotification
+			boolean showNotification,
+			boolean canXFlip,
+			boolean wob
 		) {
 			super(craftingCategory);
 			this.recipeId = recipeId;
@@ -184,6 +202,8 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 			this.advancementBuilder = advancementBuilder;
 			this.advancementId = advancementId;
 			this.showNotification = showNotification;
+			this.canXFlip = canXFlip;
+			this.wob = wob;
 		}
 
 		@Override
@@ -215,6 +235,13 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 
 			json.add("result", jsonObject2);
 			json.addProperty("show_notification", this.showNotification);
+			if (!this.canXFlip) {
+				json.addProperty("can_x_flip", false);
+			}
+
+			if (this.wob) {
+				json.addProperty("nbt", "wob");
+			}
 		}
 
 		@Override

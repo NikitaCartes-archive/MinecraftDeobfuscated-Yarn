@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface Inventory extends Clearable {
-	int MAX_COUNT_PER_STACK = 64;
+	int MAX_COUNT_PER_STACK = 1024;
 	int field_42619 = 8;
 
 	int size();
@@ -48,7 +48,7 @@ public interface Inventory extends Clearable {
 	 * @return the max {@link ItemStack#getCount() count} of item stacks in this inventory
 	 */
 	default int getMaxCountPerStack() {
-		return 64;
+		return 1024;
 	}
 
 	void markDirty();

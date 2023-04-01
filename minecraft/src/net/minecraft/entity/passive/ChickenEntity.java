@@ -1,12 +1,14 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Transformation;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
@@ -21,6 +23,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -31,6 +34,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.intprovider.IntProvider;
+import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -38,13 +43,14 @@ public class ChickenEntity extends AnimalEntity {
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(
 		Items.WHEAT_SEEDS, Items.MELON_SEEDS, Items.PUMPKIN_SEEDS, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD
 	);
+	private static final IntProvider field_44101 = UniformIntProvider.create(6000, 12000);
 	public float flapProgress;
 	public float maxWingDeviation;
 	public float prevMaxWingDeviation;
 	public float prevFlapProgress;
 	public float flapSpeed = 1.0F;
 	private float field_28639 = 1.0F;
-	public int eggLayTime = this.random.nextInt(6000) + 6000;
+	public int eggLayTime = field_44101.get(this.random);
 	public boolean hasJockey;
 
 	public ChickenEntity(EntityType<? extends ChickenEntity> entityType, World world) {
@@ -74,8 +80,35 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
+	public void method_50632(Transformation transformation, LivingEntity livingEntity) {
+		super.method_50632(transformation, livingEntity);
+		this.method_50678();
+		Vec3d vec3d = livingEntity.getVelocity();
+		if (!livingEntity.isOnGround() && vec3d.y < 0.0) {
+			livingEntity.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
+		}
+	}
+
+	@Override
 	public void tickMovement() {
 		super.tickMovement();
+		this.method_50678();
+		Vec3d vec3d = this.getVelocity();
+		if (!this.onGround && vec3d.y < 0.0) {
+			this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
+		}
+
+		if (!this.world.isClient && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
+			class_8293.field_43630.method_50154(this).ifPresent(reference -> {
+				this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+				this.dropItem((ItemConvertible)reference.value());
+				this.emitGameEvent(GameEvent.ENTITY_PLACE);
+				this.eggLayTime = field_44101.get(this.random);
+			});
+		}
+	}
+
+	private void method_50678() {
 		this.prevFlapProgress = this.flapProgress;
 		this.prevMaxWingDeviation = this.maxWingDeviation;
 		this.maxWingDeviation = this.maxWingDeviation + (this.onGround ? -1.0F : 4.0F) * 0.3F;
@@ -85,18 +118,7 @@ public class ChickenEntity extends AnimalEntity {
 		}
 
 		this.flapSpeed *= 0.9F;
-		Vec3d vec3d = this.getVelocity();
-		if (!this.onGround && vec3d.y < 0.0) {
-			this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
-		}
-
 		this.flapProgress = this.flapProgress + this.flapSpeed * 2.0F;
-		if (!this.world.isClient && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
-			this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-			this.dropItem(Items.EGG);
-			this.emitGameEvent(GameEvent.ENTITY_PLACE);
-			this.eggLayTime = this.random.nextInt(6000) + 6000;
-		}
 	}
 
 	@Override

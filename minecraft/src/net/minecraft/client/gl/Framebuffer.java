@@ -27,17 +27,19 @@ public abstract class Framebuffer {
 	public int viewportWidth;
 	public int viewportHeight;
 	public final boolean useDepthAttachment;
+	public final boolean field_44279;
 	public int fbo;
 	protected int colorAttachment;
-	protected int depthAttachment;
+	protected int field_44280;
 	private final float[] clearColor = Util.make(() -> new float[]{1.0F, 1.0F, 1.0F, 0.0F});
 	public int texFilter;
 
-	public Framebuffer(boolean useDepth) {
+	public Framebuffer(boolean useDepth, boolean bl) {
 		this.useDepthAttachment = useDepth;
+		this.field_44279 = bl;
 		this.fbo = -1;
 		this.colorAttachment = -1;
-		this.depthAttachment = -1;
+		this.field_44280 = -1;
 	}
 
 	public void resize(int width, int height, boolean getError) {
@@ -63,9 +65,9 @@ public abstract class Framebuffer {
 		RenderSystem.assertOnRenderThreadOrInit();
 		this.endRead();
 		this.endWrite();
-		if (this.depthAttachment > -1) {
-			TextureUtil.releaseTextureId(this.depthAttachment);
-			this.depthAttachment = -1;
+		if (this.field_44280 > -1) {
+			TextureUtil.releaseTextureId(this.field_44280);
+			this.field_44280 = -1;
 		}
 
 		if (this.colorAttachment > -1) {
@@ -100,17 +102,21 @@ public abstract class Framebuffer {
 			this.textureHeight = height;
 			this.fbo = GlStateManager.glGenFramebuffers();
 			this.colorAttachment = TextureUtil.generateTextureId();
-			if (this.useDepthAttachment) {
-				this.depthAttachment = TextureUtil.generateTextureId();
-				GlStateManager._bindTexture(this.depthAttachment);
+			if (this.useDepthAttachment || this.field_44279) {
+				this.field_44280 = TextureUtil.generateTextureId();
+				GlStateManager._bindTexture(this.field_44280);
 				GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_NEAREST);
 				GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_NEAREST);
 				GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_COMPARE_MODE, 0);
 				GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_S, GlConst.GL_CLAMP_TO_EDGE);
 				GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_T, GlConst.GL_CLAMP_TO_EDGE);
-				GlStateManager._texImage2D(
-					GlConst.GL_TEXTURE_2D, 0, GlConst.GL_DEPTH_COMPONENT, this.textureWidth, this.textureHeight, 0, GlConst.GL_DEPTH_COMPONENT, GlConst.GL_FLOAT, null
-				);
+				if (this.field_44279) {
+					GlStateManager._texImage2D(GlConst.GL_TEXTURE_2D, 0, 35056, this.textureWidth, this.textureHeight, 0, 34041, 34042, null);
+				} else {
+					GlStateManager._texImage2D(
+						GlConst.GL_TEXTURE_2D, 0, GlConst.GL_DEPTH_COMPONENT, this.textureWidth, this.textureHeight, 0, GlConst.GL_DEPTH_COMPONENT, GlConst.GL_FLOAT, null
+					);
+				}
 			}
 
 			this.setTexFilter(GlConst.GL_NEAREST);
@@ -123,7 +129,11 @@ public abstract class Framebuffer {
 			GlStateManager._glBindFramebuffer(GlConst.GL_FRAMEBUFFER, this.fbo);
 			GlStateManager._glFramebufferTexture2D(GlConst.GL_FRAMEBUFFER, GlConst.GL_COLOR_ATTACHMENT0, GlConst.GL_TEXTURE_2D, this.colorAttachment, 0);
 			if (this.useDepthAttachment) {
-				GlStateManager._glFramebufferTexture2D(GlConst.GL_FRAMEBUFFER, GlConst.GL_DEPTH_ATTACHMENT, GlConst.GL_TEXTURE_2D, this.depthAttachment, 0);
+				if (this.field_44279) {
+					GlStateManager._glFramebufferTexture2D(GlConst.GL_FRAMEBUFFER, 33306, GlConst.GL_TEXTURE_2D, this.field_44280, 0);
+				} else {
+					GlStateManager._glFramebufferTexture2D(GlConst.GL_FRAMEBUFFER, GlConst.GL_DEPTH_ATTACHMENT, GlConst.GL_TEXTURE_2D, this.field_44280, 0);
+				}
 			}
 
 			this.checkFramebufferStatus();
@@ -274,11 +284,21 @@ public abstract class Framebuffer {
 		this.endWrite();
 	}
 
+	public void method_50934(boolean bl) {
+		RenderSystem.assertOnRenderThread();
+		if (this.field_44279) {
+			this.beginWrite(true);
+			GlStateManager._clearStencil(0);
+			GlStateManager._clear(1024, bl);
+			this.endWrite();
+		}
+	}
+
 	public int getColorAttachment() {
 		return this.colorAttachment;
 	}
 
 	public int getDepthAttachment() {
-		return this.depthAttachment;
+		return this.field_44280;
 	}
 }

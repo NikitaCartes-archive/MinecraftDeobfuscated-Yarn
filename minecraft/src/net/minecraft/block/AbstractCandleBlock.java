@@ -1,10 +1,12 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.BooleanProperty;
@@ -89,5 +91,24 @@ public abstract class AbstractCandleBlock extends Block {
 
 	private static void setLit(WorldAccess world, BlockState state, BlockPos pos, boolean lit) {
 		world.setBlockState(pos, state.with(LIT, Boolean.valueOf(lit)), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
+	}
+
+	@Override
+	public boolean hasRandomTicks(BlockState state) {
+		return true;
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (class_8293.field_43635.method_50116()) {
+			if ((Boolean)state.get(LIT)) {
+				extinguish(null, state, world, pos);
+			} else {
+				setLit(world, state, pos, true);
+				world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, pos);
+			}
+		}
+
+		super.randomTick(state, world, pos, random);
 	}
 }

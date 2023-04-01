@@ -126,7 +126,7 @@ public class FallingBlockEntity extends Entity {
 			Block block = this.block.getBlock();
 			this.timeFalling++;
 			if (!this.hasNoGravity()) {
-				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
+				this.setVelocity(this.getVelocity().add(0.0, (double)(-this.method_50634()), 0.0));
 			}
 
 			this.move(MovementType.SELF, this.getVelocity());
@@ -247,7 +247,7 @@ public class FallingBlockEntity extends Entity {
 				}
 
 				float f = (float)Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax);
-				this.world.getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damage(damageSource2, f));
+				this.world.getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damageWithModifier(damageSource2, f));
 				boolean bl = this.block.isIn(BlockTags.ANVIL);
 				if (bl && f > 0.0F && this.random.nextFloat() < 0.05F + (float)i * 0.05F) {
 					BlockState blockState = AnvilBlock.getLandingState(this.block);

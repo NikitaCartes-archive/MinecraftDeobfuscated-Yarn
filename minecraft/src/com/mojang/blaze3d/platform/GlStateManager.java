@@ -443,6 +443,11 @@ public class GlStateManager {
 		CULL.capState.disable();
 	}
 
+	public static void _cullFace(int i) {
+		RenderSystem.assertOnRenderThread();
+		GL11.glCullFace(i);
+	}
+
 	public static void _polygonMode(int face, int mode) {
 		RenderSystem.assertOnRenderThread();
 		GL11.glPolygonMode(face, mode);

@@ -8,6 +8,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.OperatorBlock;
@@ -18,6 +19,7 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.RideableInventory;
+import net.minecraft.entity.Transformation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
@@ -150,25 +152,33 @@ public class ClientPlayerInteractionManager {
 
 				BlockState blockState = this.client.world.getBlockState(pos);
 				this.client.getTutorialManager().onBlockBreaking(this.client.world, pos, blockState, 0.0F);
-				this.sendSequencedPacket(this.client.world, sequence -> {
-					boolean bl = !blockState.isAir();
-					if (bl && this.currentBreakingProgress == 0.0F) {
-						blockState.onBlockBreakStart(this.client.world, pos, this.client.player);
-					}
+				this.sendSequencedPacket(
+					this.client.world,
+					sequence -> {
+						boolean bl = !blockState.isAir();
+						if (bl && this.currentBreakingProgress == 0.0F) {
+							blockState.onBlockBreakStart(this.client.world, pos, this.client.player);
+						}
 
-					if (bl && blockState.calcBlockBreakingDelta(this.client.player, this.client.player.world, pos) >= 1.0F) {
-						this.breakBlock(pos);
-					} else {
-						this.breakingBlock = true;
-						this.currentBreakingPos = pos;
-						this.selectedStack = this.client.player.getMainHandStack();
-						this.currentBreakingProgress = 0.0F;
-						this.blockBreakingSoundCooldown = 0.0F;
-						this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
-					}
+						if (class_8293.field_43568.method_50116()
+							&& bl
+							&& this.client.player.getMainHandStack().isEmpty()
+							&& blockState.calcBlockBreakingDelta(this.client.player, this.client.player.world, pos) > 0.0F) {
+							this.breakBlock(pos);
+						} else if (bl && blockState.calcBlockBreakingDelta(this.client.player, this.client.player.world, pos) >= 1.0F) {
+							this.breakBlock(pos);
+						} else {
+							this.breakingBlock = true;
+							this.currentBreakingPos = pos;
+							this.selectedStack = this.client.player.getMainHandStack();
+							this.currentBreakingProgress = 0.0F;
+							this.blockBreakingSoundCooldown = 0.0F;
+							this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
+						}
 
-					return new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
-				});
+						return new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
+					}
+				);
 			}
 
 			return true;
@@ -254,7 +264,16 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public float getReachDistance() {
-		return this.gameMode.isCreative() ? 5.0F : 4.5F;
+		Transformation transformation = Transformation.get(this.client.player);
+		return transformation.getReachDistance(this.method_51019());
+	}
+
+	private float method_51019() {
+		if (this.gameMode.isCreative()) {
+			return 5.0F;
+		} else {
+			return class_8293.field_43568.method_50116() && this.client.player.getMainHandStack().isEmpty() ? 200.0F : 4.5F;
+		}
 	}
 
 	public void tick() {

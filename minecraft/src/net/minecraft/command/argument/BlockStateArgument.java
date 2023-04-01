@@ -3,6 +3,7 @@ package net.minecraft.command.argument;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -58,7 +59,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 	}
 
 	public boolean setBlockState(ServerWorld world, BlockPos pos, int flags) {
-		BlockState blockState = Block.postProcessState(this.state, world, pos);
+		BlockState blockState = class_8293.field_43583.get() ? Block.postProcessState(this.state, world, pos) : this.state;
 		if (blockState.isAir()) {
 			blockState = this.state;
 		}

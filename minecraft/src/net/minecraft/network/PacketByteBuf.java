@@ -52,6 +52,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtEnd;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.network.encryption.NetworkEncryptionException;
@@ -304,8 +305,8 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	@Deprecated
 	public <T> T decode(DynamicOps<NbtElement> ops, Codec<T> codec) {
-		NbtCompound nbtCompound = this.readUnlimitedNbt();
-		return Util.getResult(codec.parse(ops, nbtCompound), error -> new DecoderException("Failed to decode: " + error + " " + nbtCompound));
+		NbtElement nbtElement = this.readNbt(NbtTagSizeTracker.EMPTY);
+		return Util.getResult(codec.parse(ops, nbtElement), error -> new DecoderException("Failed to decode: " + error + " " + nbtElement));
 	}
 
 	/**
@@ -319,7 +320,7 @@ public class PacketByteBuf extends ByteBuf {
 	@Deprecated
 	public <T> void encode(DynamicOps<NbtElement> ops, Codec<T> codec, T value) {
 		NbtElement nbtElement = Util.getResult(codec.encodeStart(ops, value), error -> new EncoderException("Failed to encode: " + error + " " + value));
-		this.writeNbt((NbtCompound)nbtElement);
+		this.writeNbt(nbtElement);
 	}
 
 	/**
@@ -639,6 +640,10 @@ public class PacketByteBuf extends ByteBuf {
 		return enumSet;
 	}
 
+	public <T> void method_51128(PacketByteBuf.PacketWriter<T> packetWriter, T object) {
+		packetWriter.accept(this, object);
+	}
+
 	/**
 	 * Writes an optional value to this buf. An optional value is represented by
 	 * a boolean indicating if the value is present, followed by the value only if
@@ -653,6 +658,10 @@ public class PacketByteBuf extends ByteBuf {
 		} else {
 			this.writeBoolean(false);
 		}
+	}
+
+	public <T> T method_51130(PacketByteBuf.PacketReader<T> packetReader) {
+		return (T)packetReader.apply(this);
 	}
 
 	/**
@@ -1283,21 +1292,18 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readNbt()
 	 * @see #readUnlimitedNbt()
 	 * @see #readNbt(NbtTagSizeTracker)
-	 * 
-	 * @param compound the compound to write
 	 */
-	public PacketByteBuf writeNbt(@Nullable NbtCompound compound) {
-		if (compound == null) {
-			this.writeByte(0);
-		} else {
-			try {
-				NbtIo.write(compound, new ByteBufOutputStream(this));
-			} catch (IOException var3) {
-				throw new EncoderException(var3);
-			}
+	public PacketByteBuf writeNbt(@Nullable NbtElement nbtElement) {
+		if (nbtElement == null) {
+			nbtElement = NbtEnd.INSTANCE;
 		}
 
-		return this;
+		try {
+			NbtIo.method_51126(nbtElement, new ByteBufOutputStream(this));
+			return this;
+		} catch (IOException var3) {
+			throw new EncoderException(var3);
+		}
 	}
 
 	/**
@@ -1316,7 +1322,7 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	@Nullable
 	public NbtCompound readNbt() {
-		return this.readNbt(new NbtTagSizeTracker(2097152L));
+		return this.method_51129(this.readNbt(new NbtTagSizeTracker(2097152L)));
 	}
 
 	/**
@@ -1335,7 +1341,16 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	@Nullable
 	public NbtCompound readUnlimitedNbt() {
-		return this.readNbt(NbtTagSizeTracker.EMPTY);
+		return this.method_51129(this.readNbt(NbtTagSizeTracker.EMPTY));
+	}
+
+	@Nullable
+	private NbtCompound method_51129(@Nullable NbtElement nbtElement) {
+		if (nbtElement != null && !(nbtElement instanceof NbtCompound)) {
+			throw new DecoderException("Not a compound tag: " + nbtElement);
+		} else {
+			return (NbtCompound)nbtElement;
+		}
 	}
 
 	/**
@@ -1352,19 +1367,12 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readUnlimitedNbt()
 	 */
 	@Nullable
-	public NbtCompound readNbt(NbtTagSizeTracker sizeTracker) {
-		int i = this.readerIndex();
-		byte b = this.readByte();
-		if (b == 0) {
-			return null;
-		} else {
-			this.readerIndex(i);
-
-			try {
-				return NbtIo.read(new ByteBufInputStream(this), sizeTracker);
-			} catch (IOException var5) {
-				throw new EncoderException(var5);
-			}
+	public NbtElement readNbt(NbtTagSizeTracker sizeTracker) {
+		try {
+			NbtElement nbtElement = NbtIo.method_51127(new ByteBufInputStream(this), sizeTracker);
+			return nbtElement.getType() == 0 ? null : nbtElement;
+		} catch (IOException var3) {
+			throw new EncoderException(var3);
 		}
 	}
 
@@ -1386,7 +1394,7 @@ public class PacketByteBuf extends ByteBuf {
 			this.writeBoolean(true);
 			Item item = stack.getItem();
 			this.writeRegistryValue(Registries.ITEM, item);
-			this.writeByte(stack.getCount());
+			this.writeVarInt(stack.getCount());
 			NbtCompound nbtCompound = null;
 			if (item.isDamageable() || item.isNbtSynced()) {
 				nbtCompound = stack.getNbt();
@@ -1412,7 +1420,7 @@ public class PacketByteBuf extends ByteBuf {
 			return ItemStack.EMPTY;
 		} else {
 			Item item = this.readRegistryValue(Registries.ITEM);
-			int i = this.readByte();
+			int i = this.readVarInt();
 			ItemStack itemStack = new ItemStack(item, i);
 			itemStack.setNbt(this.readNbt());
 			return itemStack;

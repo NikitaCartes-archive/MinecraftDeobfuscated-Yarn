@@ -1,5 +1,7 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.class_8258;
+import net.minecraft.class_8484;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
@@ -148,4 +150,8 @@ public interface ServerPlayPacketListener extends ServerPacketListener {
 	void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket packet);
 
 	void onPlayerSession(PlayerSessionC2SPacket packet);
+
+	void method_50043(class_8258 arg);
+
+	void method_50045(class_8484 arg);
 }

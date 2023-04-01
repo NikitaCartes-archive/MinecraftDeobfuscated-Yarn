@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -528,7 +529,8 @@ public class ChunkBuilder {
 
 					for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
 						BlockState blockState = chunkRendererRegion.getBlockState(blockPos3);
-						if (blockState.isOpaqueFullCube(chunkRendererRegion, blockPos3)) {
+						BlockState blockState2 = class_8293.field_43518.method_50311(blockState);
+						if (blockState2.isOpaqueFullCube(chunkRendererRegion, blockPos3)) {
 							chunkOcclusionDataBuilder.markClosed(blockPos3);
 						}
 
@@ -539,8 +541,8 @@ public class ChunkBuilder {
 							}
 						}
 
-						BlockState blockState2 = chunkRendererRegion.getBlockState(blockPos3);
-						FluidState fluidState = blockState2.getFluidState();
+						BlockState blockState3 = chunkRendererRegion.getBlockState(blockPos3);
+						FluidState fluidState = blockState3.getFluidState();
 						if (!fluidState.isEmpty()) {
 							RenderLayer renderLayer = RenderLayers.getFluidLayer(fluidState);
 							BufferBuilder bufferBuilder = blockBufferBuilderStorage.get(renderLayer);
@@ -548,11 +550,11 @@ public class ChunkBuilder {
 								BuiltChunk.this.beginBufferBuilding(bufferBuilder);
 							}
 
-							blockRenderManager.renderFluid(blockPos3, chunkRendererRegion, bufferBuilder, blockState2, fluidState);
+							blockRenderManager.renderFluid(blockPos3, chunkRendererRegion, bufferBuilder, blockState3, fluidState);
 						}
 
-						if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
-							RenderLayer renderLayer = RenderLayers.getBlockLayer(blockState);
+						if (blockState2.getRenderType() != BlockRenderType.INVISIBLE) {
+							RenderLayer renderLayer = RenderLayers.getBlockLayer(blockState2);
 							BufferBuilder bufferBuilder = blockBufferBuilderStorage.get(renderLayer);
 							if (set.add(renderLayer)) {
 								BuiltChunk.this.beginBufferBuilding(bufferBuilder);
@@ -560,7 +562,7 @@ public class ChunkBuilder {
 
 							matrixStack.push();
 							matrixStack.translate((float)(blockPos3.getX() & 15), (float)(blockPos3.getY() & 15), (float)(blockPos3.getZ() & 15));
-							blockRenderManager.renderBlock(blockState, blockPos3, chunkRendererRegion, matrixStack, bufferBuilder, true, random);
+							blockRenderManager.renderBlock(blockState2, blockPos3, chunkRendererRegion, matrixStack, bufferBuilder, true, random);
 							matrixStack.pop();
 						}
 					}

@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -27,9 +28,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -52,6 +55,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		this.experiencePoints = 5;
 		this.moveControl = new PhantomEntity.PhantomMoveControl(this);
 		this.lookControl = new PhantomEntity.PhantomLookControl(this);
+	}
+
+	@Override
+	public boolean canFly() {
+		return true;
 	}
 
 	@Override
@@ -117,6 +125,10 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	@Override
 	public void tick() {
 		super.tick();
+		if (class_8293.field_43652.method_50116()) {
+			this.kill();
+		}
+
 		if (this.world.isClient) {
 			float f = MathHelper.cos((float)(this.getWingFlapTickOffset() + this.age) * 7.448451F * (float) (Math.PI / 180.0) + (float) Math.PI);
 			float g = MathHelper.cos((float)(this.getWingFlapTickOffset() + this.age + 1) * 7.448451F * (float) (Math.PI / 180.0) + (float) Math.PI);
@@ -144,8 +156,13 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
+	protected Vec3d adjustMovementForCollisions(Vec3d movement) {
+		return class_8293.field_43653.method_50116() ? movement : super.adjustMovementForCollisions(movement);
+	}
+
+	@Override
 	public void tickMovement() {
-		if (this.isAlive() && this.isAffectedByDaylight()) {
+		if (this.isAlive() && this.method_50658()) {
 			this.setOnFireFor(8);
 		}
 
@@ -231,6 +248,19 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		EntityDimensions entityDimensions = super.getDimensions(pose);
 		float f = (entityDimensions.width + 0.2F * (float)i) / entityDimensions.width;
 		return entityDimensions.scaled(f);
+	}
+
+	@Override
+	public boolean isInvulnerableTo(DamageSource damageSource) {
+		if (!class_8293.field_43653.method_50116()) {
+			return super.isInvulnerableTo(damageSource);
+		} else {
+			if (damageSource.getAttacker() instanceof PlayerEntity playerEntity && playerEntity.getStackInHand(Hand.MAIN_HAND).isIn(ItemTags.BEDS)) {
+				return false;
+			}
+
+			return true;
+		}
 	}
 
 	@Override
@@ -529,11 +559,24 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			if (livingEntity != null) {
 				PhantomEntity.this.targetPosition = new Vec3d(livingEntity.getX(), livingEntity.getBodyY(0.5), livingEntity.getZ());
 				if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
-					PhantomEntity.this.tryAttack(livingEntity);
-					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
-					if (!PhantomEntity.this.isSilent()) {
-						PhantomEntity.this.world.syncWorldEvent(WorldEvents.PHANTOM_BITES, PhantomEntity.this.getBlockPos(), 0);
+					if (class_8293.field_43672.method_50116()) {
+						PhantomEntity.this.dead = true;
+						PhantomEntity.this.world
+							.createExplosion(
+								PhantomEntity.this, PhantomEntity.this.getX(), PhantomEntity.this.getY(), PhantomEntity.this.getZ(), 3.0F, World.ExplosionSourceType.MOB
+							);
+						PhantomEntity.this.discard();
+						return;
 					}
+
+					if (!class_8293.field_43653.method_50116()) {
+						PhantomEntity.this.tryAttack(livingEntity);
+						if (!PhantomEntity.this.isSilent()) {
+							PhantomEntity.this.world.syncWorldEvent(WorldEvents.PHANTOM_BITES, PhantomEntity.this.getBlockPos(), 0);
+						}
+					}
+
+					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 				} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
 					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 				}

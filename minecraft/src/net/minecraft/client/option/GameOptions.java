@@ -367,6 +367,7 @@ public class GameOptions {
 	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
 	public boolean joinedFirstServer = false;
 	public boolean hideBundleTutorial = false;
+	public boolean field_44284;
 	private final SimpleOption<Integer> biomeBlendRadius = new SimpleOption<>("options.biomeBlendRadius", SimpleOption.emptyTooltip(), (optionText, value) -> {
 		int i = value * 2 + 1;
 		return getGenericValueText(optionText, Text.translatable("options.biomeBlendRadius." + i));
@@ -596,6 +597,7 @@ public class GameOptions {
 	 * Bound to {@linkplain org.lwjgl.glfw.GLFW#GLFW_KEY_L the L key} by default.
 	 */
 	public final KeyBinding advancementsKey = new KeyBinding("key.advancements", GLFW.GLFW_KEY_L, KeyBinding.MISC_CATEGORY);
+	public final KeyBinding field_44283 = new KeyBinding("key.voting", GLFW.GLFW_KEY_V, KeyBinding.MISC_CATEGORY);
 	/**
 	 * Key bindings for selecting hotbar slots.
 	 * Bound to the corresponding number keys (from {@linkplain
@@ -1272,6 +1274,7 @@ public class GameOptions {
 		visitor.accept("hideMatchedNames", this.hideMatchedNames);
 		this.joinedFirstServer = visitor.visitBoolean("joinedFirstServer", this.joinedFirstServer);
 		this.hideBundleTutorial = visitor.visitBoolean("hideBundleTutorial", this.hideBundleTutorial);
+		this.field_44284 = visitor.visitBoolean("hasSeenVotingScreen", this.field_44284);
 		this.syncChunkWrites = visitor.visitBoolean("syncChunkWrites", this.syncChunkWrites);
 		visitor.accept("showAutosaveIndicator", this.showAutosaveIndicator);
 		visitor.accept("allowServerListing", this.allowServerListing);

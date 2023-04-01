@@ -6,6 +6,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.Lifecycle;
 import java.util.Map;
 import java.util.function.Supplier;
+import net.minecraft.class_8289;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DecoratedPotPatterns;
@@ -208,6 +210,7 @@ public class Registries {
 	public static final Registry<BannerPattern> BANNER_PATTERN = create(RegistryKeys.BANNER_PATTERN, BannerPatterns::registerAndGetDefault);
 	public static final Registry<Instrument> INSTRUMENT = create(RegistryKeys.INSTRUMENT, Instruments::registerAndGetDefault);
 	public static final Registry<String> DECORATED_POT_PATTERNS = create(RegistryKeys.DECORATED_POT_PATTERNS, DecoratedPotPatterns::registerAndGetDefault);
+	public static final Registry<class_8289> field_44443 = create(RegistryKeys.RULES, class_8293::method_50209);
 	public static final Registry<? extends Registry<?>> REGISTRIES = ROOT;
 
 	private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Registries.Initializer<T> initializer) {

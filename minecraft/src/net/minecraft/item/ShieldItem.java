@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
@@ -42,14 +43,18 @@ public class ShieldItem extends Item implements Equipment {
 
 	@Override
 	public int getMaxUseTime(ItemStack stack) {
-		return 72000;
+		return class_8293.field_43531.method_50116() ? 0 : 72000;
 	}
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		user.setCurrentHand(hand);
-		return TypedActionResult.consume(itemStack);
+		if (!class_8293.field_43531.method_50116()) {
+			user.setCurrentHand(hand);
+			return TypedActionResult.consume(itemStack);
+		} else {
+			return TypedActionResult.pass(itemStack);
+		}
 	}
 
 	@Override

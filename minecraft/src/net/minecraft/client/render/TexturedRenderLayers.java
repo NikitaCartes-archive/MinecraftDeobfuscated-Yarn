@@ -16,6 +16,7 @@ import net.minecraft.block.DecoratedPotPatterns;
 import net.minecraft.block.WoodType;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.block.entity.TrappedChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
@@ -83,6 +84,7 @@ public class TexturedRenderLayers {
 	public static final SpriteIdentifier NORMAL_LEFT = createChestTextureId("normal_left");
 	public static final SpriteIdentifier NORMAL_RIGHT = createChestTextureId("normal_right");
 	public static final SpriteIdentifier ENDER = createChestTextureId("ender");
+	public static final SpriteIdentifier GOLD = createChestTextureId("gold");
 
 	public static RenderLayer getBannerPatterns() {
 		return BANNER_PATTERNS_RENDER_LAYER;
@@ -202,6 +204,10 @@ public class TexturedRenderLayers {
 	}
 
 	public static SpriteIdentifier getChestTextureId(BlockEntity blockEntity, ChestType type, boolean christmas) {
+		if (blockEntity instanceof ChestBlockEntity chestBlockEntity && chestBlockEntity.method_50887()) {
+			return GOLD;
+		}
+
 		if (blockEntity instanceof EnderChestBlockEntity) {
 			return ENDER;
 		} else if (christmas) {

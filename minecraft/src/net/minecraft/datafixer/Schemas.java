@@ -245,6 +245,7 @@ import net.minecraft.datafixer.schema.Schema3326;
 import net.minecraft.datafixer.schema.Schema3327;
 import net.minecraft.datafixer.schema.Schema3328;
 import net.minecraft.datafixer.schema.Schema3438;
+import net.minecraft.datafixer.schema.Schema3444;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1084,6 +1085,8 @@ public class Schemas {
 		builder.addFixer(new RemoveFeatureTogglesFix(schema182, "Remove 1.20 feature toggle", Set.of("minecraft:update_1_20")));
 		Schema schema183 = builder.addSchema(3441, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BlendingDataFix(schema183));
+		Schema schema184 = builder.addSchema(3444, Schema3444::new);
+		builder.addFixer(new ChoiceTypesFix(schema184, "Who is this datafixer for anyway?", TypeReferences.ENTITY));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

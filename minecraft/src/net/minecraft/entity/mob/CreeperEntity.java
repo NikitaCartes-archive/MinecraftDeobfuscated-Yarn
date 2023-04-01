@@ -2,12 +2,15 @@ package net.minecraft.entity.mob;
 
 import java.util.Collection;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.CreeperIgniteGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -27,6 +30,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.OcelotEntity;
+import net.minecraft.entity.passive.RayTracingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -39,6 +43,8 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -67,6 +73,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(6, new LookAroundGoal(this));
 		this.targetSelector.add(1, new ActiveTargetGoal(this, PlayerEntity.class, true));
+		this.targetSelector.add(1, new ActiveTargetGoal(this, RayTracingEntity.class, true));
 		this.targetSelector.add(2, new RevengeGoal(this));
 	}
 
@@ -234,6 +241,11 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	private void explode() {
 		if (!this.world.isClient) {
 			float f = this.shouldRenderOverlay() ? 2.0F : 1.0F;
+			float g = this.getTransformedLook().getScale();
+			if (g > 1.0F) {
+				f *= Math.min(g, 4.0F);
+			}
+
 			this.dead = true;
 			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, World.ExplosionSourceType.MOB);
 			this.discard();
@@ -273,5 +285,17 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 
 	public void onHeadDropped() {
 		this.headsDropped++;
+	}
+
+	@Nullable
+	@Override
+	public EntityData initialize(
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
+	) {
+		if (class_8293.field_43629.method_50116()) {
+			this.dataTracker.set(CHARGED, true);
+		}
+
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 }

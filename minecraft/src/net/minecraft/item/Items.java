@@ -7,6 +7,15 @@ import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.trim.ArmorTrimPatterns;
+import net.minecraft.nbt.NbtByte;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtLong;
+import net.minecraft.nbt.NbtShort;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.tag.BannerPatternTags;
@@ -182,6 +191,7 @@ public class Items {
 	public static final Item MANGROVE_LEAVES = register(Blocks.MANGROVE_LEAVES);
 	public static final Item AZALEA_LEAVES = register(Blocks.AZALEA_LEAVES);
 	public static final Item FLOWERING_AZALEA_LEAVES = register(Blocks.FLOWERING_AZALEA_LEAVES);
+	public static final Item COPPER_SPLEAVES = register(Blocks.COPPER_SPLEAVES);
 	public static final Item SPONGE = register(Blocks.SPONGE);
 	public static final Item WET_SPONGE = register(Blocks.WET_SPONGE);
 	public static final Item GLASS = register(Blocks.GLASS);
@@ -687,6 +697,8 @@ public class Items {
 	public static final Item SLIME_BLOCK = register(Blocks.SLIME_BLOCK);
 	public static final Item HONEY_BLOCK = register(Blocks.HONEY_BLOCK);
 	public static final Item OBSERVER = register(Blocks.OBSERVER);
+	public static final Item PICKAXE_BLOCK = register(Blocks.PICKAXE_BLOCK);
+	public static final Item PLACE_BLOCK = register(Blocks.PLACE_BLOCK);
 	public static final Item HOPPER = register(Blocks.HOPPER);
 	public static final Item DISPENSER = register(Blocks.DISPENSER);
 	public static final Item DROPPER = register(Blocks.DROPPER);
@@ -811,7 +823,7 @@ public class Items {
 	public static final Item COAL = register("coal", new Item(new Item.Settings()));
 	public static final Item CHARCOAL = register("charcoal", new Item(new Item.Settings()));
 	public static final Item DIAMOND = register("diamond", new Item(new Item.Settings()));
-	public static final Item EMERALD = register("emerald", new Item(new Item.Settings()));
+	public static final Item EMERALD = register("emerald", new EmeraldItem(new Item.Settings()));
 	public static final Item LAPIS_LAZULI = register("lapis_lazuli", new Item(new Item.Settings()));
 	public static final Item QUARTZ = register("quartz", new Item(new Item.Settings()));
 	public static final Item AMETHYST_SHARD = register("amethyst_shard", new Item(new Item.Settings()));
@@ -857,6 +869,7 @@ public class Items {
 	public static final Item BOWL = register("bowl", new Item(new Item.Settings()));
 	public static final Item MUSHROOM_STEW = register("mushroom_stew", new StewItem(new Item.Settings().maxCount(1).food(FoodComponents.MUSHROOM_STEW)));
 	public static final Item STRING = register("string", new AliasedBlockItem(Blocks.TRIPWIRE, new Item.Settings()));
+	public static final Item STRING2 = register("string2", new Item(new Item.Settings()));
 	public static final Item FEATHER = register("feather", new Item(new Item.Settings()));
 	public static final Item GUNPOWDER = register("gunpowder", new Item(new Item.Settings()));
 	public static final Item WHEAT_SEEDS = register("wheat_seeds", new AliasedBlockItem(Blocks.WHEAT, new Item.Settings()));
@@ -1063,12 +1076,18 @@ public class Items {
 	public static final Item NETHER_WART = register("nether_wart", new AliasedBlockItem(Blocks.NETHER_WART, new Item.Settings()));
 	public static final Item POTION = register("potion", new PotionItem(new Item.Settings().maxCount(1)));
 	public static final Item GLASS_BOTTLE = register("glass_bottle", new GlassBottleItem(new Item.Settings()));
+	public static final Item AIR_BLOCK = register("air_block", new Item(new Item.Settings().food(FoodComponents.AIR)));
+	public static final Item PACKED_AIR = register(Blocks.PACKED_AIR);
+	public static final Item BOTTLE_OF_VOID = register("bottle_of_void", new BottleOfVoidItem(new Item.Settings().maxCount(1)));
+	public static final Item BOTTLE_OF_ENTITY = register("bottle_of_entity", new BottleOfEntityItem(new Item.Settings().maxCount(1)));
+	public static final Item SPLASH_BOTTLE_OF_ENTITY = register("splash_bottle_of_entity", new SplashBottleOfEntityItem(new Item.Settings().maxCount(1)));
 	public static final Item SPIDER_EYE = register("spider_eye", new Item(new Item.Settings().food(FoodComponents.SPIDER_EYE)));
 	public static final Item FERMENTED_SPIDER_EYE = register("fermented_spider_eye", new Item(new Item.Settings()));
 	public static final Item BLAZE_POWDER = register("blaze_powder", new Item(new Item.Settings()));
 	public static final Item MAGMA_CREAM = register("magma_cream", new Item(new Item.Settings()));
 	public static final Item BREWING_STAND = register(Blocks.BREWING_STAND);
 	public static final Item CAULDRON = register(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
+	public static final Item COPPER_SINK = register(Blocks.COPPER_SINK, Blocks.FILLED_COPPER_SINK);
 	public static final Item ENDER_EYE = register("ender_eye", new EnderEyeItem(new Item.Settings()));
 	public static final Item GLISTERING_MELON_SLICE = register("glistering_melon_slice", new Item(new Item.Settings()));
 	public static final Item ALLAY_SPAWN_EGG = register("allay_spawn_egg", new SpawnEggItem(EntityType.ALLAY, 56063, 44543, new Item.Settings()));
@@ -1114,6 +1133,7 @@ public class Items {
 		"magma_cube_spawn_egg", new SpawnEggItem(EntityType.MAGMA_CUBE, 3407872, 16579584, new Item.Settings())
 	);
 	public static final Item MOOSHROOM_SPAWN_EGG = register("mooshroom_spawn_egg", new SpawnEggItem(EntityType.MOOSHROOM, 10489616, 12040119, new Item.Settings()));
+	public static final Item MOON_COW_SPAWN_EGG = register("moon_cow_spawn_egg", new SpawnEggItem(EntityType.MOON_COW, 2370111, 15520630, new Item.Settings()));
 	public static final Item MULE_SPAWN_EGG = register("mule_spawn_egg", new SpawnEggItem(EntityType.MULE, 1769984, 5321501, new Item.Settings()));
 	public static final Item OCELOT_SPAWN_EGG = register("ocelot_spawn_egg", new SpawnEggItem(EntityType.OCELOT, 15720061, 5653556, new Item.Settings()));
 	public static final Item PANDA_SPAWN_EGG = register("panda_spawn_egg", new SpawnEggItem(EntityType.PANDA, 15198183, 1776418, new Item.Settings()));
@@ -1367,6 +1387,9 @@ public class Items {
 	public static final Item MOJANG_BANNER_PATTERN = register(
 		"mojang_banner_pattern", new BannerPatternItem(BannerPatternTags.MOJANG_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.EPIC))
 	);
+	public static final Item M_BANNER_PATTERN = register(
+		"m_banner_pattern", new BannerPatternItem(BannerPatternTags.M_PATTERN_ITEM, new Item.Settings().maxCount(1).rarity(Rarity.EPIC))
+	);
 	public static final Item GLOBE_BANNER_PATTERN = register(
 		"globe_banner_pattern", new BannerPatternItem(BannerPatternTags.GLOBE_PATTERN_ITEM, new Item.Settings().maxCount(1))
 	);
@@ -1492,6 +1515,27 @@ public class Items {
 	public static final Item SHELTER_POTTERY_SHARD = register("shelter_pottery_shard", new Item(new Item.Settings()));
 	public static final Item SKULL_POTTERY_SHARD = register("skull_pottery_shard", new Item(new Item.Settings()));
 	public static final Item SNORT_POTTERY_SHARD = register("snort_pottery_shard", new Item(new Item.Settings()));
+	public static final Item DUPE_HACK = register("dupe_hack", new DupeHackItem(new Item.Settings().maxCount(1)));
+	public static final Item CHEESE = register(Blocks.CHEESE);
+	public static final Item NAME = register("name", new NbtNameItem(new Item.Settings()));
+	public static final Item TAG = register("tag", new Item(new Item.Settings()));
+	public static final Item STRING_TAG = register("string_tag", new NbtItem<>(new Item.Settings(), NbtString.TYPE));
+	public static final Item BYTE_TAG = register("byte_tag", new NbtItem<>(new Item.Settings(), NbtByte.TYPE));
+	public static final Item SHORT_TAG = register("short_tag", new NbtItem<>(new Item.Settings(), NbtShort.TYPE));
+	public static final Item INT_TAG = register("int_tag", new NbtItem<>(new Item.Settings(), NbtInt.TYPE));
+	public static final Item LONG_TAG = register("long_tag", new NbtItem<>(new Item.Settings(), NbtLong.TYPE));
+	public static final Item FLOAT_TAG = register("float_tag", new NbtItem<>(new Item.Settings(), NbtFloat.TYPE));
+	public static final Item DOUBLE_TAG = register("double_tag", new NbtItem<>(new Item.Settings(), NbtDouble.TYPE));
+	public static final Item COMPOUND_TAG = register("compound_tag", new NbtItem<>(new Item.Settings(), NbtCompound.TYPE));
+	public static final Item LIST_TAG = register("list_tag", new NbtItem<>(new Item.Settings(), NbtList.TYPE));
+	public static final Item LEFT_SQUARE = register("left_square", new Item(new Item.Settings()));
+	public static final Item RIGHT_SQUARE = register("right_square", new Item(new Item.Settings()));
+	public static final Item LEFT_CURLY = register("left_curly", new Item(new Item.Settings()));
+	public static final Item RIGHT_CURLY = register("right_curly", new Item(new Item.Settings()));
+	public static final Item SYNTAX_ERROR = register("syntax_error", new Item(new Item.Settings()));
+	public static final Item BIT = register("bit", new Item(new Item.Settings()));
+	public static final Item LE_TRICOLORE = register("le_tricolore", new Item(new Item.Settings()));
+	public static final Item LA_BAGUETTE = register("la_baguette", new SwordItem(ToolMaterials.WOOD, 3, -2.4F, new Item.Settings()));
 
 	private static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

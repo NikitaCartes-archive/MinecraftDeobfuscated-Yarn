@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -262,7 +263,11 @@ public class WorldChunk extends Chunk {
 
 				boolean bl3 = blockState.hasBlockEntity();
 				if (!this.world.isClient) {
-					blockState.onStateReplaced(this.world, pos, state, moved);
+					if ((Boolean)class_8293.field_43583.get()) {
+						blockState.onStateReplaced(this.world, pos, state, moved);
+					} else if (blockState.hasBlockEntity() && !blockState.isOf(state.getBlock())) {
+						this.world.removeBlockEntity(pos);
+					}
 				} else if (!blockState.isOf(block) && bl3) {
 					this.removeBlockEntity(pos);
 				}
@@ -270,7 +275,7 @@ public class WorldChunk extends Chunk {
 				if (!chunkSection.getBlockState(j, k, l).isOf(block)) {
 					return null;
 				} else {
-					if (!this.world.isClient) {
+					if (!this.world.isClient && (Boolean)class_8293.field_43583.get()) {
 						state.onBlockAdded(this.world, pos, blockState, moved);
 					}
 

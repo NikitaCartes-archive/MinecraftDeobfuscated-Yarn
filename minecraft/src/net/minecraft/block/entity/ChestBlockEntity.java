@@ -1,5 +1,6 @@
 package net.minecraft.block.entity;
 
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
@@ -11,6 +12,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -53,6 +55,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 		}
 	};
 	private final ChestLidAnimator lidAnimator = new ChestLidAnimator();
+	private boolean field_44243;
 
 	protected ChestBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
 		super(blockEntityType, blockPos, blockState);
@@ -79,6 +82,8 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 		if (!this.deserializeLootTable(nbt)) {
 			Inventories.readNbt(nbt, this.inventory);
 		}
+
+		this.method_50885(nbt.getBoolean("gold"));
 	}
 
 	@Override
@@ -87,6 +92,19 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 		if (!this.serializeLootTable(nbt)) {
 			Inventories.writeNbt(nbt, this.inventory);
 		}
+
+		nbt.putBoolean("gold", this.method_50887());
+	}
+
+	public BlockEntityUpdateS2CPacket toUpdatePacket() {
+		return BlockEntityUpdateS2CPacket.create(this);
+	}
+
+	@Override
+	public NbtCompound toInitialChunkDataNbt() {
+		NbtCompound nbtCompound = super.toInitialChunkDataNbt();
+		nbtCompound.putBoolean("gold", this.method_50887());
+		return nbtCompound;
 	}
 
 	public static void clientTick(World world, BlockPos pos, BlockState state, ChestBlockEntity blockEntity) {
@@ -122,6 +140,10 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 	@Override
 	public void onOpen(PlayerEntity player) {
 		if (!this.removed && !player.isSpectator()) {
+			if (class_8293.field_43524.method_50116()) {
+				this.method_50885(true);
+			}
+
 			this.stateManager.openContainer(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
@@ -180,5 +202,17 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Li
 	protected void onViewerCountUpdate(World world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
 		Block block = state.getBlock();
 		world.addSyncedBlockEvent(pos, block, 1, newViewerCount);
+	}
+
+	public boolean method_50887() {
+		return this.field_44243;
+	}
+
+	public void method_50885(boolean bl) {
+		if (this.field_44243 != bl) {
+			this.field_44243 = bl;
+			this.markDirty();
+			this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
+		}
 	}
 }

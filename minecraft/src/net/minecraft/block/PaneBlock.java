@@ -4,6 +4,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.BlockPos;
@@ -86,6 +87,18 @@ public class PaneBlock extends HorizontalConnectingBlock {
 
 	public final boolean connectsTo(BlockState state, boolean sideSolidFullSquare) {
 		return !cannotConnect(state) && sideSolidFullSquare || state.getBlock() instanceof PaneBlock || state.isIn(BlockTags.WALLS);
+	}
+
+	@Override
+	public boolean shouldLetAirThrough(BlockState state, ServerWorld world, BlockPos pos, Direction direction) {
+		return state.isOf(Blocks.GLASS_PANE) ? method_50864(state, world, pos, direction) : super.shouldLetAirThrough(state, world, pos, direction);
+	}
+
+	public static boolean method_50864(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Direction direction) {
+		return direction.getAxis() == Direction.Axis.Y
+			? !(Boolean)blockState.get(WATERLOGGED)
+			: !(Boolean)blockState.get((Property)FACING_PROPERTIES.get(direction.rotateYClockwise()))
+				|| !(Boolean)blockState.get((Property)FACING_PROPERTIES.get(direction.rotateYCounterclockwise()));
 	}
 
 	@Override

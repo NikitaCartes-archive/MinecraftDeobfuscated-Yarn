@@ -96,7 +96,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if ((Boolean)state.get(LIT) && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
-			entity.damage(world.getDamageSources().inFire(), (float)this.fireDamage);
+			entity.damageWithModifier(world.getDamageSources().inFire(), (float)this.fireDamage);
 		}
 
 		super.onEntityCollision(state, world, pos, entity);

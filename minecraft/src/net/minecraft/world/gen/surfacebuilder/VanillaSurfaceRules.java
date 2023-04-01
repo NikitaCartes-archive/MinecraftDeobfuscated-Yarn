@@ -44,6 +44,7 @@ public class VanillaSurfaceRules {
 	private static final MaterialRules.MaterialRule NETHER_WART_BLOCK = block(Blocks.NETHER_WART_BLOCK);
 	private static final MaterialRules.MaterialRule CRIMSON_NYLIUM = block(Blocks.CRIMSON_NYLIUM);
 	private static final MaterialRules.MaterialRule END_STONE = block(Blocks.END_STONE);
+	private static final MaterialRules.MaterialRule field_44456 = block(Blocks.CHEESE);
 
 	private static MaterialRules.MaterialRule block(Block block) {
 		return MaterialRules.block(block.getDefaultState());
@@ -377,6 +378,12 @@ public class VanillaSurfaceRules {
 				)
 			),
 			NETHERRACK
+		);
+	}
+
+	public static MaterialRules.MaterialRule method_51122() {
+		return MaterialRules.sequence(
+			MaterialRules.condition(MaterialRules.verticalGradient("bedrock_floor", YOffset.getBottom(), YOffset.aboveBottom(5)), BEDROCK), field_44456
 		);
 	}
 

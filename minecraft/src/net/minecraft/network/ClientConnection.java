@@ -363,6 +363,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			@Override
 			protected void initChannel(Channel channel) {
 				ChannelPipeline channelPipeline = channel.pipeline();
+				ClientConnection.addHandlers(channelPipeline, NetworkSide.CLIENTBOUND);
 				channelPipeline.addLast("packet_handler", clientConnection);
 			}
 		}).channel(LocalChannel.class).connect(address).syncUninterruptibly();

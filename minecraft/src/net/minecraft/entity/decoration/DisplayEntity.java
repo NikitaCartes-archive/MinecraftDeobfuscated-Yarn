@@ -6,7 +6,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.IntFunction;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.piston.PistonBehavior;
@@ -34,6 +36,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.AffineTransformation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
@@ -97,7 +100,7 @@ public abstract class DisplayEntity extends Entity {
 	public DisplayEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
 		this.noClip = true;
-		this.ignoreCameraFrustum = true;
+		this.setIgnoreCameraFrustum(true);
 		this.visibilityBoundingBox = this.getBoundingBox();
 	}
 
@@ -242,7 +245,7 @@ public abstract class DisplayEntity extends Entity {
 		}
 	}
 
-	private void setTransformation(AffineTransformation transformation) {
+	protected void setTransformation(AffineTransformation transformation) {
 		this.dataTracker.set(TRANSLATION, transformation.getTranslation());
 		this.dataTracker.set(LEFT_ROTATION, transformation.getLeftRotation());
 		this.dataTracker.set(SCALE, transformation.getScale());
@@ -293,7 +296,7 @@ public abstract class DisplayEntity extends Entity {
 		return this.renderState;
 	}
 
-	private void setInterpolationDuration(int interpolationDuration) {
+	protected void setInterpolationDuration(int interpolationDuration) {
 		this.dataTracker.set(INTERPOLATION_DURATION, interpolationDuration);
 	}
 
@@ -301,11 +304,11 @@ public abstract class DisplayEntity extends Entity {
 		return this.dataTracker.get(INTERPOLATION_DURATION);
 	}
 
-	private void setStartInterpolation(int startInterpolation) {
+	protected void setStartInterpolation(int startInterpolation) {
 		this.dataTracker.set(START_INTERPOLATION, startInterpolation, true);
 	}
 
-	private int getStartInterpolation() {
+	protected int getStartInterpolation() {
 		return this.dataTracker.get(START_INTERPOLATION);
 	}
 
@@ -402,14 +405,14 @@ public abstract class DisplayEntity extends Entity {
 		float f = this.getDisplayWidth();
 		float g = this.getDisplayHeight();
 		if (f != 0.0F && g != 0.0F) {
-			this.ignoreCameraFrustum = false;
+			this.setIgnoreCameraFrustum(false);
 			float h = f / 2.0F;
 			double d = this.getX();
 			double e = this.getY();
 			double i = this.getZ();
 			this.visibilityBoundingBox = new Box(d - (double)h, e, i - (double)h, d + (double)h, e + (double)g, i + (double)h);
 		} else {
-			this.ignoreCameraFrustum = true;
+			this.setIgnoreCameraFrustum(true);
 		}
 	}
 
@@ -546,7 +549,7 @@ public abstract class DisplayEntity extends Entity {
 			return this.dataTracker.get(BLOCK_STATE);
 		}
 
-		private void setBlockState(BlockState state) {
+		protected void setBlockState(BlockState state) {
 			this.dataTracker.set(BLOCK_STATE, state);
 		}
 
@@ -709,6 +712,111 @@ public abstract class DisplayEntity extends Entity {
 		DisplayEntity.FloatLerper shadowStrength,
 		int glowColorOverride
 	) {
+	}
+
+	public static class StencilDisplayEntity extends DisplayEntity {
+		private static final String COLOR_NBT_KEY = "color";
+		private static final String LOD_NBT_KEY = "lod";
+		private static final String SHAPE_NBT_KEY = "shape";
+		private static final TrackedData<Integer> COLOR = DataTracker.registerData(DisplayEntity.StencilDisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
+		private static final TrackedData<Integer> LOD = DataTracker.registerData(DisplayEntity.StencilDisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
+		private static final TrackedData<Integer> SHAPE = DataTracker.registerData(DisplayEntity.StencilDisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
+		private static final IntSet STENCIL_RENDERING_DATA_IDS = IntSet.of(COLOR.getId(), LOD.getId(), SHAPE.getId());
+		@Nullable
+		private DisplayEntity.StencilDisplayEntity.Data data;
+
+		public StencilDisplayEntity(EntityType<?> entityType, World world) {
+			super(entityType, world);
+			this.renderingDataSet = true;
+		}
+
+		@Override
+		protected void readCustomDataFromNbt(NbtCompound nbt) {
+			super.readCustomDataFromNbt(nbt);
+			if (nbt.contains("color", NbtElement.NUMBER_TYPE)) {
+				this.setColor(nbt.getInt("color"));
+			}
+
+			if (nbt.contains("lod", NbtElement.NUMBER_TYPE)) {
+				this.setLod(nbt.getInt("lod"));
+			}
+
+			if (nbt.contains("shape", NbtElement.NUMBER_TYPE)) {
+				this.setShape(nbt.getInt("shape"));
+			}
+		}
+
+		@Override
+		protected void writeCustomDataToNbt(NbtCompound nbt) {
+			super.writeCustomDataToNbt(nbt);
+			nbt.putInt("color", this.getColor());
+			nbt.putInt("lod", this.getLod());
+			nbt.putInt("shape", this.getShape());
+		}
+
+		@Override
+		protected void initDataTracker() {
+			super.initDataTracker();
+			this.dataTracker.startTracking(COLOR, -1);
+			this.dataTracker.startTracking(LOD, 0);
+			this.dataTracker.startTracking(SHAPE, 0);
+		}
+
+		@Override
+		public void onTrackedDataSet(TrackedData<?> data) {
+			super.onTrackedDataSet(data);
+			if (STENCIL_RENDERING_DATA_IDS.contains(data.getId())) {
+				this.renderingDataSet = true;
+			}
+		}
+
+		@Override
+		protected void refreshData(boolean shouldLerp, float lerpProgress) {
+			if (shouldLerp && this.data != null) {
+				int i = this.data.color.lerp(lerpProgress);
+				int j = this.data.lod.lerp(lerpProgress);
+				int k = this.data.shape.lerp(lerpProgress);
+				this.data = new DisplayEntity.StencilDisplayEntity.Data(
+					new DisplayEntity.ArgbLerper(i, this.getColor()), new DisplayEntity.IntLerperImpl(j, this.getLod()), new DisplayEntity.IntLerperImpl(k, this.getShape())
+				);
+			} else {
+				this.data = new DisplayEntity.StencilDisplayEntity.Data(
+					DisplayEntity.IntLerper.constant(this.getColor()), DisplayEntity.IntLerper.constant(this.getLod()), DisplayEntity.IntLerper.constant(this.getShape())
+				);
+			}
+		}
+
+		@Nullable
+		public DisplayEntity.StencilDisplayEntity.Data getData() {
+			return this.data;
+		}
+
+		private int getColor() {
+			return this.dataTracker.get(COLOR);
+		}
+
+		private void setColor(int color) {
+			this.dataTracker.set(COLOR, color);
+		}
+
+		private int getLod() {
+			return this.dataTracker.get(LOD);
+		}
+
+		private void setLod(int lod) {
+			this.dataTracker.set(LOD, lod);
+		}
+
+		private int getShape() {
+			return this.dataTracker.get(SHAPE);
+		}
+
+		private void setShape(int shape) {
+			this.dataTracker.set(SHAPE, shape);
+		}
+
+		public static record Data(DisplayEntity.IntLerper color, DisplayEntity.IntLerper lod, DisplayEntity.IntLerper shape) {
+		}
 	}
 
 	public static class TextDisplayEntity extends DisplayEntity {
@@ -966,6 +1074,84 @@ public abstract class DisplayEntity extends Entity {
 		}
 
 		public static record TextLines(List<DisplayEntity.TextDisplayEntity.TextLine> lines, int width) {
+		}
+	}
+
+	public static record class_8397(BlockPos pos, float scale, int ticks) {
+	}
+
+	public static class class_8398 extends DisplayEntity.BlockDisplayEntity {
+		private final BlockPos field_44064;
+		private final int field_44065;
+		private final int field_44066;
+		private int field_44067;
+		private final BlockState field_44068;
+		private final DisplayEntity.class_8397[] field_44069;
+		private int field_44061 = 0;
+		private int field_44062 = 0;
+		private int field_44063 = 0;
+
+		public class_8398(World world, BlockState blockState, BlockPos blockPos, DisplayEntity.class_8397... args) {
+			super(EntityType.BLOCK_DISPLAY, world);
+			this.setBlockState(blockState);
+			this.field_44069 = args;
+			this.field_44065 = Stream.of(args).mapToInt(DisplayEntity.class_8397::ticks).sum();
+			this.field_44066 = this.random.nextInt(4) + 4;
+			this.field_44068 = blockState;
+			this.field_44061 = 0;
+			this.field_44063 = 0;
+			this.field_44064 = blockPos;
+			this.field_44067 = 0;
+			this.method_50624(0);
+			this.setPosition((double)args[0].pos().getX(), (double)args[0].pos().getY(), (double)args[0].pos().getZ());
+			if (world.getBlockState(blockPos).isAir()) {
+				world.setBlockState(blockPos, Blocks.BARRIER.getDefaultState(), Block.NOTIFY_LISTENERS);
+			}
+		}
+
+		void method_50624(int i) {
+			this.field_44061 = i;
+			this.field_44063 = 0;
+			boolean bl = i == 0;
+			boolean bl2 = i == this.field_44069.length;
+			BlockPos blockPos = this.field_44069[0].pos();
+			BlockPos blockPos2 = bl2 ? this.field_44064 : this.field_44069[i].pos();
+			Vector3f vector3f = new Vector3f(
+				(float)(blockPos2.getX() - blockPos.getX()), (float)(blockPos2.getY() - blockPos.getY()), (float)(blockPos2.getZ() - blockPos.getZ())
+			);
+			float f = bl2 ? 0.995F : this.field_44069[this.field_44061].scale;
+			float g = (1.0F - f) / 2.0F;
+			this.setTransformation(new AffineTransformation(vector3f.add(g, g, g), null, new Vector3f(f, f, f), null));
+			this.field_44062 = bl ? 0 : this.field_44069[this.field_44061 - 1].ticks();
+			if (bl2) {
+				this.field_44062++;
+			}
+
+			this.setInterpolationDuration(this.field_44062);
+			this.setStartInterpolation(0);
+		}
+
+		@Override
+		public void tick() {
+			super.tick();
+			if (this.field_44063 == this.field_44062 && this.field_44061 < this.field_44069.length) {
+				this.method_50624(this.field_44061 + 1);
+			}
+
+			if (this.field_44067 == this.field_44065 + 1) {
+				if (this.world.getBlockState(this.field_44064).getBlock() != Blocks.BARRIER) {
+					this.world.breakBlock(this.field_44064, true);
+				}
+
+				this.world.setBlockState(this.field_44064, this.field_44068, Block.NOTIFY_ALL);
+			}
+
+			if (this.field_44067 > this.field_44065 + this.field_44066) {
+				this.discard();
+			}
+
+			this.field_44067++;
+			this.field_44063++;
 		}
 	}
 }

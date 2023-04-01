@@ -126,7 +126,7 @@ public abstract class AbstractFireBlock extends Block {
 			}
 		}
 
-		entity.damage(world.getDamageSources().inFire(), this.damage);
+		entity.damageWithModifier(world.getDamageSources().inFire(), this.damage);
 		super.onEntityCollision(state, world, pos, entity);
 	}
 
@@ -134,7 +134,7 @@ public abstract class AbstractFireBlock extends Block {
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
 			if (isOverworldOrNether(world)) {
-				Optional<NetherPortal> optional = NetherPortal.getNewPortal(world, pos, Direction.Axis.X);
+				Optional<NetherPortal> optional = NetherPortal.getNewPortal(world, pos, Direction.Axis.X, false);
 				if (optional.isPresent()) {
 					((NetherPortal)optional.get()).createPortal();
 					return;
@@ -189,7 +189,7 @@ public abstract class AbstractFireBlock extends Block {
 				Direction.Axis axis = direction.getAxis().isHorizontal()
 					? direction.rotateYCounterclockwise().getAxis()
 					: Direction.Type.HORIZONTAL.randomAxis(world.random);
-				return NetherPortal.getNewPortal(world, pos, axis).isPresent();
+				return NetherPortal.getNewPortal(world, pos, axis, false).isPresent();
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -96,6 +97,9 @@ public class BucketItem extends Item implements FluidModificationItem {
 
 	@Override
 	public void onEmptied(@Nullable PlayerEntity player, World world, ItemStack stack, BlockPos pos) {
+		if (class_8293.field_43511.method_50116() && this.fluid == Fluids.WATER) {
+			FluidModificationItem.method_50794(world, pos);
+		}
 	}
 
 	@Override

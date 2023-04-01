@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.item.TooltipContext;
@@ -631,35 +632,37 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	@Override
 	protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
-		boolean bl = this.focusedSlot != null && this.focusedSlot instanceof CreativeInventoryScreen.LockableSlot;
-		boolean bl2 = selectedTab.getType() == ItemGroup.Type.CATEGORY;
-		boolean bl3 = selectedTab.getType() == ItemGroup.Type.SEARCH;
-		TooltipContext.Default default_ = this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC;
-		TooltipContext tooltipContext = bl ? default_.withCreative() : default_;
-		List<Text> list = stack.getTooltip(this.client.player, tooltipContext);
-		List<Text> list2;
-		if (bl2 && bl) {
-			list2 = list;
-		} else {
-			list2 = Lists.<Text>newArrayList(list);
-			if (bl3 && bl) {
-				this.searchResultTags.forEach(tag -> {
-					if (stack.isIn(tag)) {
-						list2.add(1, Text.literal("#" + tag.id()).formatted(Formatting.DARK_PURPLE));
+		if (!class_8293.field_43508.method_50116()) {
+			boolean bl = this.focusedSlot != null && this.focusedSlot instanceof CreativeInventoryScreen.LockableSlot;
+			boolean bl2 = selectedTab.getType() == ItemGroup.Type.CATEGORY;
+			boolean bl3 = selectedTab.getType() == ItemGroup.Type.SEARCH;
+			TooltipContext.Default default_ = this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC;
+			TooltipContext tooltipContext = bl ? default_.withCreative() : default_;
+			List<Text> list = stack.getTooltip(this.client.player, tooltipContext);
+			List<Text> list2;
+			if (bl2 && bl) {
+				list2 = list;
+			} else {
+				list2 = Lists.<Text>newArrayList(list);
+				if (bl3 && bl) {
+					this.searchResultTags.forEach(tag -> {
+						if (stack.isIn(tag)) {
+							list2.add(1, Text.literal("#" + tag.id()).formatted(Formatting.DARK_PURPLE));
+						}
+					});
+				}
+
+				int i = 1;
+
+				for (ItemGroup itemGroup : ItemGroups.getGroupsToDisplay()) {
+					if (itemGroup.getType() != ItemGroup.Type.SEARCH && itemGroup.contains(stack)) {
+						list2.add(i++, itemGroup.getDisplayName().copy().formatted(Formatting.BLUE));
 					}
-				});
-			}
-
-			int i = 1;
-
-			for (ItemGroup itemGroup : ItemGroups.getGroupsToDisplay()) {
-				if (itemGroup.getType() != ItemGroup.Type.SEARCH && itemGroup.contains(stack)) {
-					list2.add(i++, itemGroup.getDisplayName().copy().formatted(Formatting.BLUE));
 				}
 			}
-		}
 
-		this.renderTooltip(matrices, list2, stack.getTooltipData(), x, y);
+			this.renderTooltip(matrices, list2, stack.getTooltipData(), x, y);
+		}
 	}
 
 	@Override
@@ -886,12 +889,16 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class CreativeSlot extends Slot {
+	public static class CreativeSlot extends Slot {
 		final Slot slot;
 
 		public CreativeSlot(Slot slot, int invSlot, int x, int y) {
 			super(slot.inventory, invSlot, x, y);
 			this.slot = slot;
+		}
+
+		public Slot method_50958() {
+			return this.slot;
 		}
 
 		@Override

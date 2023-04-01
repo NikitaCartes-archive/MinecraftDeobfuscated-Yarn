@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -22,6 +23,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
@@ -134,8 +136,9 @@ public final class SpawnHelper {
 		if (!blockState.isSolidBlock(chunk, pos)) {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			int j = 0;
+			int k = 0;
 
-			for (int k = 0; k < 3; k++) {
+			while (k < 3) {
 				int l = pos.getX();
 				int m = pos.getZ();
 				int n = 6;
@@ -144,7 +147,7 @@ public final class SpawnHelper {
 				int o = MathHelper.ceil(world.random.nextFloat() * 4.0F);
 				int p = 0;
 
-				for (int q = 0; q < o; q++) {
+				for (int q = 0; q < o; k++) {
 					l += world.random.nextInt(6) - world.random.nextInt(6);
 					m += world.random.nextInt(6) - world.random.nextInt(6);
 					mutable.set(l, i, m);
@@ -157,7 +160,7 @@ public final class SpawnHelper {
 							if (spawnEntry == null) {
 								Optional<SpawnSettings.SpawnEntry> optional = pickRandomSpawnEntry(world, structureAccessor, chunkGenerator, group, world.random, mutable);
 								if (optional.isEmpty()) {
-									break;
+									continue;
 								}
 
 								spawnEntry = (SpawnSettings.SpawnEntry)optional.get();
@@ -165,7 +168,12 @@ public final class SpawnHelper {
 							}
 
 							if (canSpawn(world, group, structureAccessor, chunkGenerator, spawnEntry, mutable, f) && checker.test(spawnEntry.type, mutable, chunk)) {
-								MobEntity mobEntity = createMob(world, spawnEntry.type);
+								EntityType<?> entityType = method_50842(spawnEntry.type);
+								if (entityType == null) {
+									return;
+								}
+
+								MobEntity mobEntity = createMob(world, entityType);
 								if (mobEntity == null) {
 									return;
 								}
@@ -182,13 +190,32 @@ public final class SpawnHelper {
 									}
 
 									if (mobEntity.spawnsTooManyForEachTry(p)) {
-										break;
+										continue;
 									}
 								}
 							}
 						}
 					}
+
+					q++;
 				}
+
+				return;
+			}
+		}
+	}
+
+	@Nullable
+	private static EntityType<?> method_50842(EntityType<?> entityType) {
+		RegistryKey<EntityType<?>> registryKey = (RegistryKey<EntityType<?>>)Registries.ENTITY_TYPE.getKey(entityType).orElse(null);
+		if (registryKey == null) {
+			return entityType;
+		} else {
+			RegistryKey<EntityType<?>> registryKey2 = class_8293.field_43598.method_50404(registryKey);
+			if (registryKey2 == null) {
+				return class_8293.field_43597.method_50256(registryKey) ? null : entityType;
+			} else {
+				return class_8293.field_43597.method_50256(registryKey2) ? null : Registries.ENTITY_TYPE.get(registryKey2);
 			}
 		}
 	}

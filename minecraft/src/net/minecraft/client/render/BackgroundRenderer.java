@@ -43,7 +43,8 @@ public class BackgroundRenderer {
 		Entity entity = camera.getFocusedEntity();
 		if (cameraSubmersionType == CameraSubmersionType.WATER) {
 			long l = Util.getMeasuringTimeMs();
-			int i = world.getBiome(BlockPos.ofFloored(camera.getPos())).value().getWaterFogColor();
+			RegistryEntry<Biome> registryEntry = world.getBiome(BlockPos.ofFloored(camera.getPos()));
+			int i = registryEntry.value().getWaterFogColor(registryEntry);
 			if (lastWaterFogColorUpdateTime < 0L) {
 				waterFogColor = i;
 				nextWaterFogColor = i;
@@ -89,27 +90,28 @@ public class BackgroundRenderer {
 			float v = MathHelper.clamp(MathHelper.cos(world.getSkyAngle(tickDelta) * (float) (Math.PI * 2)) * 2.0F + 0.5F, 0.0F, 1.0F);
 			BiomeAccess biomeAccess = world.getBiomeAccess();
 			Vec3d vec3d2 = camera.getPos().subtract(2.0, 2.0, 2.0).multiply(0.25);
-			Vec3d vec3d3 = CubicSampler.sampleColor(
-				vec3d2, (x, y, z) -> world.getDimensionEffects().adjustFogColor(Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(x, y, z).value().getFogColor()), v)
-			);
+			Vec3d vec3d3 = CubicSampler.sampleColor(vec3d2, (x, y, z) -> {
+				RegistryEntry<Biome> registryEntryx = biomeAccess.getBiomeForNoiseGen(x, y, z);
+				return world.getDimensionEffects().adjustFogColor(Vec3d.unpackRgb(registryEntryx.value().getFogColor(registryEntryx)), v);
+			});
 			red = (float)vec3d3.getX();
 			green = (float)vec3d3.getY();
 			blue = (float)vec3d3.getZ();
 			if (viewDistance >= 4) {
-				float f = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) > 0.0F ? -1.0F : 1.0F;
-				Vector3f vector3f = new Vector3f(f, 0.0F, 0.0F);
-				float h = camera.getHorizontalPlane().dot(vector3f);
-				if (h < 0.0F) {
-					h = 0.0F;
+				float w = MathHelper.sin(world.getSkyAngleRadians(tickDelta)) > 0.0F ? -1.0F : 1.0F;
+				Vector3f vector3f = new Vector3f(w, 0.0F, 0.0F);
+				float g = camera.getHorizontalPlane().dot(vector3f);
+				if (g < 0.0F) {
+					g = 0.0F;
 				}
 
-				if (h > 0.0F) {
+				if (g > 0.0F) {
 					float[] fs = world.getDimensionEffects().getFogColorOverride(world.getSkyAngle(tickDelta), tickDelta);
 					if (fs != null) {
-						h *= fs[3];
-						red = red * (1.0F - h) + fs[0] * h;
-						green = green * (1.0F - h) + fs[1] * h;
-						blue = blue * (1.0F - h) + fs[2] * h;
+						g *= fs[3];
+						red = red * (1.0F - g) + fs[0] * g;
+						green = green * (1.0F - g) + fs[1] * g;
+						blue = blue * (1.0F - g) + fs[2] * g;
 					}
 				}
 			}
@@ -117,21 +119,21 @@ public class BackgroundRenderer {
 			red = red + (s - red) * r;
 			green = green + (t - green) * r;
 			blue = blue + (u - blue) * r;
-			float fx = world.getRainGradient(tickDelta);
-			if (fx > 0.0F) {
-				float g = 1.0F - fx * 0.5F;
-				float hx = 1.0F - fx * 0.4F;
-				red *= g;
-				green *= g;
-				blue *= hx;
+			float wx = world.getRainGradient(tickDelta);
+			if (wx > 0.0F) {
+				float f = 1.0F - wx * 0.5F;
+				float gx = 1.0F - wx * 0.4F;
+				red *= f;
+				green *= f;
+				blue *= gx;
 			}
 
-			float g = world.getThunderGradient(tickDelta);
-			if (g > 0.0F) {
-				float hx = 1.0F - g * 0.5F;
-				red *= hx;
-				green *= hx;
-				blue *= hx;
+			float f = world.getThunderGradient(tickDelta);
+			if (f > 0.0F) {
+				float gx = 1.0F - f * 0.5F;
+				red *= gx;
+				green *= gx;
+				blue *= gx;
 			}
 
 			lastWaterFogColorUpdateTime = -1L;

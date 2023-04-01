@@ -6,9 +6,11 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -17,9 +19,13 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
@@ -31,6 +37,7 @@ import org.slf4j.Logger;
 public abstract class LivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final float field_32939 = 0.1F;
+	public static final Identifier GOLD_TEXTURE = new Identifier("textures/block/gold_block.png");
 	protected M model;
 	protected final List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
 
@@ -93,6 +100,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 
 		float lx = this.getAnimationProgress(livingEntity, g);
+		if (livingEntity.isGolden()) {
+			lx = 0.0F;
+		}
+
 		this.setupTransforms(livingEntity, matrixStack, lx, h, g);
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		this.scale(livingEntity, matrixStack, g);
@@ -111,17 +122,38 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			}
 		}
 
+		if (livingEntity.isGolden()) {
+			o = 0.0F;
+			n = 0.0F;
+		}
+
 		this.model.animateModel(livingEntity, o, n, g);
 		this.model.setAngles(livingEntity, o, n, lx, k, m);
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		boolean bl = this.isVisible(livingEntity);
-		boolean bl2 = !bl && !livingEntity.isInvisibleTo(minecraftClient.player);
+		boolean bl2 = livingEntity instanceof PlayerEntity && class_8293.field_43572.method_50116() || !bl && !livingEntity.isInvisibleTo(minecraftClient.player);
 		boolean bl3 = minecraftClient.hasOutline(livingEntity);
-		RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2, bl3);
-		if (renderLayer != null) {
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
+		VertexConsumer vertexConsumer = this.method_51047(livingEntity, matrixStack, vertexConsumerProvider, bl, bl2, bl3);
+		if (vertexConsumer != null) {
 			int p = getOverlay(livingEntity, this.getAnimationCounter(livingEntity, g));
-			this.model.render(matrixStack, vertexConsumer, i, p, 1.0F, 1.0F, 1.0F, bl2 ? 0.15F : 1.0F);
+			float q = 1.0F;
+			float r = 1.0F;
+			float s = 1.0F;
+			if (class_8293.field_43657.method_50116() && livingEntity.hasCustomName() && "jeb_".equals(livingEntity.method_50643())) {
+				int t = 25;
+				int u = livingEntity.age / 25 + livingEntity.getId();
+				int v = DyeColor.values().length;
+				int w = u % v;
+				int x = (u + 1) % v;
+				float y = ((float)(livingEntity.age % 25) + g) / 25.0F;
+				float[] fs = SheepEntity.getRgbColor(DyeColor.byId(w));
+				float[] gs = SheepEntity.getRgbColor(DyeColor.byId(x));
+				q = fs[0] * (1.0F - y) + gs[0] * y;
+				r = fs[1] * (1.0F - y) + gs[1] * y;
+				s = fs[2] * (1.0F - y) + gs[2] * y;
+			}
+
+			this.model.render(matrixStack, vertexConsumer, i, p, q, r, s, bl2 ? 0.15F : 1.0F);
 		}
 
 		if (!livingEntity.isSpectator()) {
@@ -132,6 +164,23 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 		matrixStack.pop();
 		super.render(livingEntity, f, g, matrixStack, vertexConsumerProvider, i);
+	}
+
+	@Nullable
+	protected VertexConsumer method_51047(
+		T livingEntity, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, boolean bl, boolean bl2, boolean bl3
+	) {
+		if (livingEntity.isGolden()) {
+			return new OverlayVertexConsumer(
+				vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(GOLD_TEXTURE)),
+				matrixStack.peek().getPositionMatrix(),
+				matrixStack.peek().getNormalMatrix(),
+				1.0F
+			);
+		} else {
+			RenderLayer renderLayer = this.getRenderLayer(livingEntity, bl, bl2, bl3);
+			return renderLayer != null ? vertexConsumerProvider.getBuffer(renderLayer) : null;
+		}
 	}
 
 	/**
@@ -272,13 +321,17 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	public static boolean shouldFlipUpsideDown(LivingEntity entity) {
+		RegistryKey<EntityType<?>> registryKey = entity.getType().getRegistryEntry().registryKey();
+		boolean bl = class_8293.field_43622.method_50256(registryKey);
+		boolean bl2 = class_8293.field_43623.method_50256(registryKey);
 		if (entity instanceof PlayerEntity || entity.hasCustomName()) {
 			String string = Formatting.strip(entity.getName().getString());
-			if ("Dinnerbone".equals(string) || "Grumm".equals(string)) {
+			boolean bl3 = "Dinnerbone".equals(string) || "Grumm".equals(string);
+			if (bl3 ^ bl ^ bl2) {
 				return !(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE);
 			}
 		}
 
-		return false;
+		return bl ^ bl2;
 	}
 }

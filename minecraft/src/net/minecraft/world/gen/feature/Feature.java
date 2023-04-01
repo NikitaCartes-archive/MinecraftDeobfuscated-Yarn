@@ -116,6 +116,8 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"pointed_dripstone", new SmallDripstoneFeature(SmallDripstoneFeatureConfig.CODEC)
 	);
 	public static final Feature<SculkPatchFeatureConfig> SCULK_PATCH = register("sculk_patch", new SculkPatchFeature(SculkPatchFeatureConfig.CODEC));
+	public static final Feature<CraterFeatureConfig> CRATER = register("crater", new CraterFeature(CraterFeatureConfig.CODEC));
+	public static final Feature<DefaultFeatureConfig> LUNAR_BASE = register("lunar_base", new LunarBaseFeature(DefaultFeatureConfig.CODEC));
 	private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {

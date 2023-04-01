@@ -30,9 +30,7 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 		float k,
 		float l
 	) {
-		if ("deadmau5".equals(abstractClientPlayerEntity.getName().getString())
-			&& abstractClientPlayerEntity.hasSkinTexture()
-			&& !abstractClientPlayerEntity.isInvisible()) {
+		if ("deadmau5".equals(abstractClientPlayerEntity.method_50643()) && abstractClientPlayerEntity.hasSkinTexture() && !abstractClientPlayerEntity.isInvisible()) {
 			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getSkinTexture()));
 			int m = LivingEntityRenderer.getOverlay(abstractClientPlayerEntity, 0.0F);
 

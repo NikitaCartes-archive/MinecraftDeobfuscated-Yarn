@@ -41,7 +41,7 @@ public class ThornsEnchantment extends Enchantment {
 		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.chooseEquipmentWith(Enchantments.THORNS, user);
 		if (shouldDamageAttacker(level, random)) {
 			if (attacker != null) {
-				attacker.damage(user.getDamageSources().thorns(user), (float)getDamageAmount(level, random));
+				attacker.damageWithModifier(user.getDamageSources().thorns(user), (float)getDamageAmount(level, random));
 			}
 
 			if (entry != null) {

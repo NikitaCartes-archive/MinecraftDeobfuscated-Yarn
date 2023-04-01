@@ -2,6 +2,8 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
+import net.minecraft.class_8340;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Frustum;
@@ -46,7 +48,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	public boolean shouldRender(T entity, Frustum frustum, double x, double y, double z) {
 		if (!entity.shouldRender(x, y, z)) {
 			return false;
-		} else if (entity.ignoreCameraFrustum) {
+		} else if (entity.ignoresCameraFrustum()) {
 			return true;
 		} else {
 			Box box = entity.getVisibilityBoundingBox().expand(0.5);
@@ -63,7 +65,11 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	public void render(T entity, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
-		if (this.hasLabel(entity)) {
+		if (!this.hasLabel(entity)) {
+			if (class_8293.field_43544.method_50116()) {
+				this.renderLabelIfPresent(entity, Text.literal(String.valueOf(entity.getId())), matrices, vertexConsumers, light);
+			}
+		} else {
 			this.renderLabelIfPresent(entity, entity.getDisplayName(), matrices, vertexConsumers, light);
 		}
 	}
@@ -86,26 +92,29 @@ public abstract class EntityRenderer<T extends Entity> {
 	protected void renderLabelIfPresent(T entity, Text text, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 		double d = this.dispatcher.getSquaredDistanceToCamera(entity);
 		if (!(d > 4096.0)) {
-			boolean bl = !entity.isSneaky();
-			float f = entity.getHeight() + 0.5F;
-			int i = "deadmau5".equals(text.getString()) ? -10 : 0;
-			matrices.push();
-			matrices.translate(0.0F, f, 0.0F);
-			matrices.multiply(this.dispatcher.getRotation());
-			matrices.scale(-0.025F, -0.025F, 0.025F);
-			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-			float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
-			int j = (int)(g * 255.0F) << 24;
-			TextRenderer textRenderer = this.getTextRenderer();
-			float h = (float)(-textRenderer.getWidth(text) / 2);
-			textRenderer.draw(
-				text, h, (float)i, 553648127, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
-			);
-			if (bl) {
-				textRenderer.draw(text, h, (float)i, -1, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
-			}
+			class_8340 lv = entity.isSneaky() ? class_8293.field_43547.method_50145() : class_8293.field_43546.method_50145();
+			if (lv != class_8340.NONE) {
+				float f = entity.getHeight() + 0.5F;
+				int i = "deadmau5".equals(text.getString()) ? -10 : 0;
+				matrices.push();
+				matrices.translate(0.0F, f, 0.0F);
+				matrices.multiply(this.dispatcher.getRotation());
+				matrices.scale(-0.025F, -0.025F, 0.025F);
+				Matrix4f matrix4f = matrices.peek().getPositionMatrix();
+				float g = MinecraftClient.getInstance().options.getTextBackgroundOpacity(0.25F);
+				int j = (int)(g * 255.0F) << 24;
+				TextRenderer textRenderer = this.getTextRenderer();
+				float h = (float)(-textRenderer.getWidth(text) / 2);
+				boolean bl = lv == class_8340.SEE_THROUGH;
+				textRenderer.draw(
+					text, h, (float)i, 553648127, false, matrix4f, vertexConsumers, bl ? TextRenderer.TextLayerType.SEE_THROUGH : TextRenderer.TextLayerType.NORMAL, j, light
+				);
+				if (bl) {
+					textRenderer.draw(text, h, (float)i, -1, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
+				}
 
-			matrices.pop();
+				matrices.pop();
+			}
 		}
 	}
 }

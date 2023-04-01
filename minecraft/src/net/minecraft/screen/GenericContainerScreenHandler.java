@@ -1,11 +1,15 @@
 package net.minecraft.screen;
 
+import net.minecraft.block.entity.ChestBlockEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.vote.MidasCurser;
+import net.minecraft.world.World;
 
 public class GenericContainerScreenHandler extends ScreenHandler {
 	private static final int field_30780 = 9;
@@ -115,5 +119,22 @@ public class GenericContainerScreenHandler extends ScreenHandler {
 
 	public int getRows() {
 		return this.rows;
+	}
+
+	@Override
+	public void method_50780(World world) {
+		if (this.method_50783() && world.random.nextInt(20) == 0) {
+			int i = world.random.nextInt(this.inventory.size());
+			ItemStack itemStack = this.inventory.getStack(i);
+			this.inventory.setStack(i, MidasCurser.curse(itemStack));
+		}
+	}
+
+	private boolean method_50783() {
+		if (this.inventory instanceof ChestBlockEntity chestBlockEntity) {
+			return chestBlockEntity.method_50887();
+		} else {
+			return this.inventory instanceof LivingEntity livingEntity ? livingEntity.isGolden() : false;
+		}
 	}
 }

@@ -9,6 +9,9 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
+import net.minecraft.class_8314;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -20,6 +23,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TextColor;
 import net.minecraft.text.TextVisitFactory;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.math.MathHelper;
@@ -339,21 +343,22 @@ public class TextRenderer {
 	void drawGlyph(
 		GlyphRenderer glyphRenderer,
 		boolean bold,
-		boolean italic,
-		float weight,
-		float x,
-		float y,
-		Matrix4f matrix,
+		boolean bl,
+		boolean bl2,
+		float f,
+		float g,
+		float h,
+		Matrix4f matrix4f,
 		VertexConsumer vertexConsumer,
-		float red,
-		float green,
-		float blue,
-		float alpha,
-		int light
+		float i,
+		float j,
+		float k,
+		float l,
+		int m
 	) {
-		glyphRenderer.draw(italic, x, y, matrix, vertexConsumer, red, green, blue, alpha, light);
+		glyphRenderer.draw(bl2, bl, g, h, matrix4f, vertexConsumer, i, j, k, l, m);
 		if (bold) {
-			glyphRenderer.draw(italic, x + weight, y, matrix, vertexConsumer, red, green, blue, alpha, light);
+			glyphRenderer.draw(bl2, bl, g + f, h, matrix4f, vertexConsumer, i, j, k, l, m);
 		}
 	}
 
@@ -507,45 +512,88 @@ public class TextRenderer {
 
 		@Override
 		public boolean accept(int i, Style style, int j) {
-			FontStorage fontStorage = TextRenderer.this.getFontStorage(style.getFont());
-			Glyph glyph = fontStorage.getGlyph(j, TextRenderer.this.validateAdvance);
-			GlyphRenderer glyphRenderer = style.isObfuscated() && j != 32 ? fontStorage.getObfuscatedGlyphRenderer(glyph) : fontStorage.getGlyphRenderer(j);
-			boolean bl = style.isBold();
-			float f = this.alpha;
-			TextColor textColor = style.getColor();
-			float g;
-			float h;
-			float l;
-			if (textColor != null) {
-				int k = textColor.getRgb();
-				g = (float)(k >> 16 & 0xFF) / 255.0F * this.brightnessMultiplier;
-				h = (float)(k >> 8 & 0xFF) / 255.0F * this.brightnessMultiplier;
-				l = (float)(k & 0xFF) / 255.0F * this.brightnessMultiplier;
+			j = class_8293.field_43618.method_50321(j);
+			class_8314.class_8315 lv = class_8293.field_43617.method_50328(j);
+			if (lv == class_8314.class_8315.HIDE) {
+				return true;
 			} else {
-				g = this.red;
-				h = this.green;
-				l = this.blue;
-			}
+				style = method_50936(style, lv);
+				FontStorage fontStorage = TextRenderer.this.getFontStorage(style.getFont());
+				Glyph glyph = fontStorage.getGlyph(j, TextRenderer.this.validateAdvance);
+				GlyphRenderer glyphRenderer = style.isObfuscated() && j != 32 ? fontStorage.getObfuscatedGlyphRenderer(glyph) : fontStorage.getGlyphRenderer(j);
+				boolean bl = style.isBold();
+				float f = this.alpha;
+				TextColor textColor = style.getColor();
+				float g;
+				float h;
+				float l;
+				if (textColor != null) {
+					int k = textColor.getRgb();
+					g = (float)(k >> 16 & 0xFF) / 255.0F * this.brightnessMultiplier;
+					h = (float)(k >> 8 & 0xFF) / 255.0F * this.brightnessMultiplier;
+					l = (float)(k & 0xFF) / 255.0F * this.brightnessMultiplier;
+				} else {
+					g = this.red;
+					h = this.green;
+					l = this.blue;
+				}
 
-			if (!(glyphRenderer instanceof EmptyGlyphRenderer)) {
-				float m = bl ? glyph.getBoldOffset() : 0.0F;
-				float n = this.shadow ? glyph.getShadowOffset() : 0.0F;
-				VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.layerType));
-				TextRenderer.this.drawGlyph(glyphRenderer, bl, style.isItalic(), m, this.x + n, this.y + n, this.matrix, vertexConsumer, g, h, l, f, this.light);
-			}
+				if (lv != class_8314.class_8315.BLANK && !(glyphRenderer instanceof EmptyGlyphRenderer)) {
+					float m = bl ? glyph.getBoldOffset() : 0.0F;
+					float n = this.shadow ? glyph.getShadowOffset() : 0.0F;
+					VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(glyphRenderer.getLayer(this.layerType));
+					TextRenderer.this.drawGlyph(
+						glyphRenderer, bl, style.isItalic(), style.isReversed(), m, this.x + n, this.y + n, this.matrix, vertexConsumer, g, h, l, f, this.light
+					);
+				}
 
-			float m = glyph.getAdvance(bl);
-			float n = this.shadow ? 1.0F : 0.0F;
-			if (style.isStrikethrough()) {
-				this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 4.5F, this.x + n + m, this.y + n + 4.5F - 1.0F, 0.01F, g, h, l, f));
-			}
+				float m = glyph.getAdvance(bl);
+				float n = this.shadow ? 1.0F : 0.0F;
+				if (style.isStrikethrough()) {
+					this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 4.5F, this.x + n + m, this.y + n + 4.5F - 1.0F, 0.01F, g, h, l, f));
+				}
 
-			if (style.isUnderlined()) {
-				this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 9.0F, this.x + n + m, this.y + n + 9.0F - 1.0F, 0.01F, g, h, l, f));
-			}
+				if (style.isUnderlined()) {
+					this.addRectangle(new GlyphRenderer.Rectangle(this.x + n - 1.0F, this.y + n + 9.0F, this.x + n + m, this.y + n + 9.0F - 1.0F, 0.01F, g, h, l, f));
+				}
 
-			this.x += m;
-			return true;
+				this.x += m;
+				return true;
+			}
+		}
+
+		private static Style method_50936(Style style, @Nullable class_8314.class_8315 arg) {
+			if (arg == null) {
+				return style;
+			} else {
+				return switch (arg) {
+					case RED -> style.withColor(Formatting.RED);
+					case AQUA -> style.withColor(Formatting.AQUA);
+					case BLACK -> style.withColor(Formatting.BLACK);
+					case BLUE -> style.withColor(Formatting.BLUE);
+					case BOLD -> style.withBold(true);
+					case DARK_AQUA -> style.withColor(Formatting.DARK_AQUA);
+					case DARK_BLUE -> style.withColor(Formatting.DARK_BLUE);
+					case DARK_GRAY -> style.withColor(Formatting.DARK_GRAY);
+					case DARK_GREEN -> style.withColor(Formatting.DARK_GREEN);
+					case DARK_PURPLE -> style.withColor(Formatting.DARK_PURPLE);
+					case DARK_RED -> style.withColor(Formatting.DARK_RED);
+					case GOLD -> style.withColor(Formatting.GOLD);
+					case GRAY -> style.withColor(Formatting.GRAY);
+					case GREEN -> style.withColor(Formatting.GREEN);
+					case ILLAGER -> style.withFont(MinecraftClient.field_44282);
+					case ITALIC -> style.withItalic(true);
+					case LIGHT_PURPLE -> style.withColor(Formatting.LIGHT_PURPLE);
+					case SGA -> style.withFont(MinecraftClient.ALT_TEXT_RENDERER_ID);
+					case OBFUSCATED -> style.withObfuscated(true);
+					case STRIKETHROUGH -> style.withStrikethrough(true);
+					case THIN -> style.withFont(MinecraftClient.UNICODE_FONT_ID);
+					case UNDERLINE -> style.withUnderline(true);
+					case WHITE -> style.withColor(Formatting.WHITE);
+					case YELLOW -> style.withColor(Formatting.YELLOW);
+					case HIDE, BLANK -> style;
+				};
+			}
 		}
 
 		public float drawLayer(int underlineColor, float x) {

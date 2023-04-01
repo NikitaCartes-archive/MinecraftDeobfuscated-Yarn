@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.feature.CrownFeatureRenderer;
 import net.minecraft.client.render.entity.feature.WolfCollarFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
@@ -19,6 +20,7 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 	public WolfEntityRenderer(EntityRendererFactory.Context context) {
 		super(context, new WolfEntityModel<>(context.getPart(EntityModelLayers.WOLF)), 0.5F);
 		this.addFeature(new WolfCollarFeatureRenderer(this));
+		this.addFeature(new CrownFeatureRenderer<>(this, context.getModelLoader()));
 	}
 
 	protected float getAnimationProgress(WolfEntity wolfEntity, float f) {

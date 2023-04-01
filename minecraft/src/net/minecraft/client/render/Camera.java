@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Transformation;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.hit.HitResult;
@@ -54,7 +55,9 @@ public class Camera {
 				this.setRotation(this.yaw + 180.0F, -this.pitch);
 			}
 
-			this.moveBy(-this.clipToSpace(4.0), 0.0, 0.0);
+			Transformation transformation = Transformation.get(focusedEntity);
+			double d = transformation.getCameraOffset(4.0);
+			this.moveBy(-this.clipToSpace(d), 0.0, 0.0);
 		} else if (focusedEntity instanceof LivingEntity && ((LivingEntity)focusedEntity).isSleeping()) {
 			Direction direction = ((LivingEntity)focusedEntity).getSleepingDirection();
 			this.setRotation(direction != null ? direction.asRotation() - 180.0F : 0.0F, 0.0F);

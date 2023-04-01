@@ -24,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.vote.BlockApproval;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -51,9 +52,9 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 					Inventory inventory = new SimpleInventory(itemStack);
 					ItemStack itemStack2 = (ItemStack)campfire.matchGetter
 						.getFirstMatch(inventory, world)
-						.map(recipe -> recipe.craft(inventory, world.getRegistryManager()))
+						.map(recipe -> recipe.method_50831(inventory, world.getRegistryManager()))
 						.orElse(itemStack);
-					if (itemStack2.isItemEnabled(world.getEnabledFeatures())) {
+					if (itemStack2.isItemEnabled(world.getEnabledFeatures()) && BlockApproval.isApproved(itemStack2)) {
 						ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
 						campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
 						world.updateListeners(pos, state, state, Block.NOTIFY_ALL);

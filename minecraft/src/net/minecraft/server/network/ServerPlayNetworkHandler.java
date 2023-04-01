@@ -26,9 +26,15 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8258;
+import net.minecraft.class_8293;
+import net.minecraft.class_8380;
+import net.minecraft.class_8480;
+import net.minecraft.class_8484;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -49,9 +55,12 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.RideableInventory;
+import net.minecraft.entity.Transformation;
+import net.minecraft.entity.ai.brain.task.CelebrateRaidWinTask;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.projectile.FireworkRocketEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.item.BlockItem;
@@ -157,8 +166,10 @@ import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.world.EntityTrackingListener;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -175,8 +186,10 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.vote.BlockApproval;
 import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -187,10 +200,12 @@ import org.slf4j.Logger;
 public class ServerPlayNetworkHandler implements EntityTrackingListener, TickablePacketListener, ServerPlayPacketListener {
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final int KEEP_ALIVE_INTERVAL = 15000;
-	public static final double MAX_BREAK_SQUARED_DISTANCE = MathHelper.square(6.0);
+	public static final float MAX_BREAK_SQUARED_DISTANCE = 6.0F;
 	private static final int DEFAULT_SEQUENCE = -1;
 	private static final int MAX_PENDING_ACKNOWLEDGMENTS = 4096;
 	private static final Text CHAT_VALIDATION_FAILED_TEXT = Text.translatable("multiplayer.disconnect.chat_validation_failed");
+	private static final Text field_43421 = Text.translatable("vote.no_resources");
+	private static final Text field_43422 = Text.translatable("vote.no_more_votes");
 	private final ClientConnection connection;
 	private final MinecraftServer server;
 	public ServerPlayerEntity player;
@@ -215,6 +230,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	private double updatedRiddenX;
 	private double updatedRiddenY;
 	private double updatedRiddenZ;
+	public double field_43420;
 	@Nullable
 	private Vec3d requestedTeleportPos;
 	private int requestedTeleportId;
@@ -455,6 +471,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				this.updatedRiddenX = entity.getX();
 				this.updatedRiddenY = entity.getY();
 				this.updatedRiddenZ = entity.getZ();
+				this.field_43420 = p;
 			}
 		}
 	}
@@ -930,7 +947,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 									&& !bl2
 									&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR
 									&& !this.server.isFlightEnabled()
-									&& !this.player.getAbilities().allowFlying
+									&& !this.player.method_50717()
 									&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
 									&& !this.player.isFallFlying()
 									&& !this.player.isUsingRiptide()
@@ -1022,14 +1039,27 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				this.player.stopUsingItem();
 				return;
 			case START_DESTROY_BLOCK:
+				if (class_8293.field_43566.method_50116()) {
+					this.player.method_50038(blockPos.toCenterPos());
+				}
 			case ABORT_DESTROY_BLOCK:
 			case STOP_DESTROY_BLOCK:
-				this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.world.getTopY(), packet.getSequence());
-				this.player.networkHandler.updateSequence(packet.getSequence());
-				return;
+				break;
 			default:
 				throw new IllegalArgumentException("Invalid player action");
 		}
+
+		try {
+			if (class_8293.field_43584.method_50116()) {
+				class_8293.field_43583.set(false);
+			}
+
+			this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.world.getTopY(), packet.getSequence());
+		} finally {
+			class_8293.field_43583.set(true);
+		}
+
+		this.player.networkHandler.updateSequence(packet.getSequence());
 	}
 
 	/**
@@ -1053,12 +1083,12 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		ServerWorld serverWorld = this.player.getWorld();
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
-		if (itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
+		if (itemStack.isItemEnabled(serverWorld.getEnabledFeatures()) && BlockApproval.isApproved(itemStack)) {
 			BlockHitResult blockHitResult = packet.getBlockHitResult();
 			Vec3d vec3d = blockHitResult.getPos();
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			Vec3d vec3d2 = Vec3d.ofCenter(blockPos);
-			if (!(this.player.getEyePos().squaredDistanceTo(vec3d2) > MAX_BREAK_SQUARED_DISTANCE)) {
+			if (!(this.player.getEyePos().squaredDistanceTo(vec3d2) > (double)this.method_50046())) {
 				Vec3d vec3d3 = vec3d.subtract(vec3d2);
 				double d = 1.0000001;
 				if (Math.abs(vec3d3.getX()) < 1.0000001 && Math.abs(vec3d3.getY()) < 1.0000001 && Math.abs(vec3d3.getZ()) < 1.0000001) {
@@ -1067,9 +1097,20 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 					int i = this.player.world.getTopY();
 					if (blockPos.getY() < i) {
 						if (this.requestedTeleportPos == null
-							&& this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0
+							&& this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5)
+								< (double)(this.method_50046() * MathHelper.square(1.3333334F))
 							&& serverWorld.canPlayerModifyAt(this.player, blockPos)) {
-							ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
+							ActionResult actionResult;
+							try {
+								if (class_8293.field_43584.method_50116()) {
+									class_8293.field_43583.set(false);
+								}
+
+								actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
+							} finally {
+								class_8293.field_43583.set(true);
+							}
+
 							if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
 								Text text = Text.translatable("build.tooHigh", i - 1).formatted(Formatting.RED);
 								this.player.sendMessageToClient(text, true);
@@ -1099,8 +1140,18 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		this.player.updateLastActionTime();
-		if (!itemStack.isEmpty() && itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
-			ActionResult actionResult = this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand);
+		if (!itemStack.isEmpty() && itemStack.isItemEnabled(serverWorld.getEnabledFeatures()) && BlockApproval.isApproved(itemStack)) {
+			ActionResult actionResult;
+			try {
+				if (class_8293.field_43584.method_50116()) {
+					class_8293.field_43583.set(false);
+				}
+
+				actionResult = this.player.interactionManager.interactItem(this.player, serverWorld, itemStack, hand);
+			} finally {
+				class_8293.field_43583.set(true);
+			}
+
 			if (actionResult.shouldSwingHand()) {
 				this.player.swingHand(hand, true);
 			}
@@ -1505,7 +1556,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			}
 
 			Box box = entity.getBoundingBox();
-			if (box.squaredMagnitude(this.player.getEyePos()) < MAX_BREAK_SQUARED_DISTANCE) {
+			if (box.squaredMagnitude(this.player.getEyePos()) < (double)this.method_50046()) {
 				packet.handle(
 					new PlayerInteractEntityC2SPacket.Handler() {
 						private void processInteract(Hand hand, ServerPlayNetworkHandler.Interaction action) {
@@ -1551,6 +1602,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				);
 			}
 		}
+	}
+
+	public float method_50046() {
+		Transformation transformation = Transformation.get(this.player);
+		return MathHelper.square(transformation.getReachDistance(class_8293.field_43568.method_50116() ? 200.0F : 6.0F));
 	}
 
 	@Override
@@ -1661,7 +1717,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		if (this.player.interactionManager.isCreative()) {
 			boolean bl = packet.getSlot() < 0;
 			ItemStack itemStack = packet.getItemStack();
-			if (!itemStack.isItemEnabled(this.player.getWorld().getEnabledFeatures())) {
+			if (!itemStack.isItemEnabled(this.player.getWorld().getEnabledFeatures()) || !BlockApproval.isApproved(itemStack)) {
 				return;
 			}
 
@@ -1677,7 +1733,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			}
 
 			boolean bl2 = packet.getSlot() >= 1 && packet.getSlot() <= 45;
-			boolean bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= 64 && !itemStack.isEmpty();
+			boolean bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= 1024 && !itemStack.isEmpty();
 			if (bl2 && bl3) {
 				this.player.playerScreenHandler.getSlot(packet.getSlot()).setStack(itemStack);
 				this.player.playerScreenHandler.sendContentUpdates();
@@ -1724,7 +1780,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	@Override
 	public void onUpdatePlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-		this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().allowFlying;
+		this.player.getAbilities().flying = packet.isFlying() && this.player.method_50717();
 	}
 
 	@Override
@@ -1771,6 +1827,55 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 					this.disconnect(var6.getMessageText());
 				}
 			}
+		}
+	}
+
+	@Override
+	public void method_50043(class_8258 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.player.getWorld());
+		class_8380.class_8381 lv = this.server.method_51115().method_50556(arg.optionId());
+		if (lv == null) {
+			this.sendPacket(class_8480.method_51142(arg.transactionId(), Text.literal("Option " + arg.optionId() + " not found")));
+		} else {
+			class_8380.class_8382 lv2 = lv.method_50572(this.player);
+			if (lv2 == class_8380.class_8382.OK) {
+				lv.method_50573(this.player, 1);
+				this.sendPacket(class_8480.method_51141(arg.transactionId()));
+				this.server.method_51107(this.player, arg.optionId());
+				this.player.incrementStat(Stats.VOTES);
+				Criteria.VOTED.trigger(this.player);
+				if (class_8293.field_43643.method_50116()) {
+					this.spawnVotingFireworks();
+				}
+
+				if (class_8293.field_43644.method_50116()) {
+					Text text = Text.translatable("rule.snitch.msg", this.player.getDisplayName(), lv.method_50571(), lv.method_50574())
+						.formatted(Formatting.GRAY, Formatting.ITALIC);
+					this.server.getPlayerManager().broadcast(text, false);
+				}
+			} else {
+				this.sendPacket(class_8480.method_51142(arg.transactionId(), lv2 == class_8380.class_8382.NOT_ENOUGH_RESOURCES ? field_43421 : field_43422));
+			}
+		}
+	}
+
+	private void spawnVotingFireworks() {
+		Random random = this.player.getRandom();
+		int i = random.nextBetween(1, 3);
+		int j = random.nextBetween(1, 3);
+		int[] is = IntStream.generate(() -> Util.getRandom(DyeColor.values(), random).getFireworkColor()).limit((long)random.nextBetween(1, 3)).toArray();
+		ItemStack itemStack = CelebrateRaidWinTask.createFirework(i, j, is);
+		FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(
+			this.player.world, this.player, this.player.getX(), this.player.getEyeY(), this.player.getZ(), itemStack
+		);
+		this.player.world.spawnEntity(fireworkRocketEntity);
+	}
+
+	@Override
+	public void method_50045(class_8484 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.player.getWorld());
+		if (this.player.getVehicle() instanceof BoatEntity boatEntity) {
+			boatEntity.method_50766(arg.speed());
 		}
 	}
 

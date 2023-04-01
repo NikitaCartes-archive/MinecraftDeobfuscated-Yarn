@@ -17,7 +17,7 @@ public class WindowFramebuffer extends Framebuffer {
 	static final WindowFramebuffer.Size DEFAULT = new WindowFramebuffer.Size(854, 480);
 
 	public WindowFramebuffer(int width, int height) {
-		super(true);
+		super(true, true);
 		RenderSystem.assertOnRenderThreadOrInit();
 		if (!RenderSystem.isOnRenderThread()) {
 			RenderSystem.recordRenderCall(() -> this.init(width, height));
@@ -37,13 +37,13 @@ public class WindowFramebuffer extends Framebuffer {
 		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_S, GlConst.GL_CLAMP_TO_EDGE);
 		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_T, GlConst.GL_CLAMP_TO_EDGE);
 		GlStateManager._glFramebufferTexture2D(GlConst.GL_FRAMEBUFFER, GlConst.GL_COLOR_ATTACHMENT0, GlConst.GL_TEXTURE_2D, this.colorAttachment, 0);
-		GlStateManager._bindTexture(this.depthAttachment);
+		GlStateManager._bindTexture(this.field_44280);
 		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_COMPARE_MODE, 0);
 		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MIN_FILTER, GlConst.GL_NEAREST);
 		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_MAG_FILTER, GlConst.GL_NEAREST);
 		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_S, GlConst.GL_CLAMP_TO_EDGE);
 		GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_T, GlConst.GL_CLAMP_TO_EDGE);
-		GlStateManager._glFramebufferTexture2D(GlConst.GL_FRAMEBUFFER, GlConst.GL_DEPTH_ATTACHMENT, GlConst.GL_TEXTURE_2D, this.depthAttachment, 0);
+		GlStateManager._glFramebufferTexture2D(GlConst.GL_FRAMEBUFFER, 33306, GlConst.GL_TEXTURE_2D, this.field_44280, 0);
 		GlStateManager._bindTexture(0);
 		this.viewportWidth = size.width;
 		this.viewportHeight = size.height;
@@ -56,7 +56,7 @@ public class WindowFramebuffer extends Framebuffer {
 	private WindowFramebuffer.Size findSuitableSize(int width, int height) {
 		RenderSystem.assertOnRenderThreadOrInit();
 		this.colorAttachment = TextureUtil.generateTextureId();
-		this.depthAttachment = TextureUtil.generateTextureId();
+		this.field_44280 = TextureUtil.generateTextureId();
 		WindowFramebuffer.Attachment attachment = WindowFramebuffer.Attachment.NONE;
 
 		for (WindowFramebuffer.Size size : WindowFramebuffer.Size.findCompatible(width, height)) {
@@ -88,10 +88,8 @@ public class WindowFramebuffer extends Framebuffer {
 	private boolean supportsDepth(WindowFramebuffer.Size size) {
 		RenderSystem.assertOnRenderThreadOrInit();
 		GlStateManager._getError();
-		GlStateManager._bindTexture(this.depthAttachment);
-		GlStateManager._texImage2D(
-			GlConst.GL_TEXTURE_2D, 0, GlConst.GL_DEPTH_COMPONENT, size.width, size.height, 0, GlConst.GL_DEPTH_COMPONENT, GlConst.GL_FLOAT, null
-		);
+		GlStateManager._bindTexture(this.field_44280);
+		GlStateManager._texImage2D(GlConst.GL_TEXTURE_2D, 0, 35056, size.width, size.height, 0, 34041, 34042, null);
 		return GlStateManager._getError() != GlConst.GL_OUT_OF_MEMORY;
 	}
 

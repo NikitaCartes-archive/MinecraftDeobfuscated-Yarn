@@ -25,6 +25,11 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 	}
 
 	@Override
+	public boolean isLandBased() {
+		return false;
+	}
+
+	@Override
 	public EntityGroup getGroup() {
 		return EntityGroup.AQUATIC;
 	}
@@ -49,7 +54,7 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 			this.setAir(air - 1);
 			if (this.getAir() == -20) {
 				this.setAir(0);
-				this.damage(this.getDamageSources().drown(), 2.0F);
+				this.damageWithModifier(this.getDamageSources().drown(), 2.0F);
 			}
 		} else {
 			this.setAir(300);

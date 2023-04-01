@@ -63,7 +63,7 @@ public class HungerManager {
 			this.foodTickTimer++;
 			if (this.foodTickTimer >= 80) {
 				if (player.getHealth() > 10.0F || difficulty == Difficulty.HARD || player.getHealth() > 1.0F && difficulty == Difficulty.NORMAL) {
-					player.damage(player.getDamageSources().starve(), 1.0F);
+					player.damageWithModifier(player.getDamageSources().starve(), 1.0F);
 				}
 
 				this.foodTickTimer = 0;

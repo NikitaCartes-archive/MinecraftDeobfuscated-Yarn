@@ -9,6 +9,9 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
+import net.minecraft.class_8300;
+import net.minecraft.class_8484;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -28,6 +31,7 @@ import net.minecraft.client.gui.screen.ingame.MinecartCommandBlockScreen;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.client.gui.screen.ingame.StructureBlockScreen;
 import net.minecraft.client.input.Input;
+import net.minecraft.client.option.SimpleOption;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.sound.AmbientSoundLoops;
 import net.minecraft.client.sound.AmbientSoundPlayer;
@@ -137,9 +141,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean falling;
 	private int underwaterVisibilityTicks;
 	private boolean showsDeathScreen = true;
+	private final SimpleOption<Boolean> field_44391 = MinecraftClient.getInstance().options.getAutoJump();
 
 	public ClientPlayerEntity(
-		MinecraftClient client,
+		MinecraftClient minecraftClient,
 		ClientWorld world,
 		ClientPlayNetworkHandler networkHandler,
 		StatHandler stats,
@@ -148,19 +153,19 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean lastSprinting
 	) {
 		super(world, networkHandler.getProfile());
-		this.client = client;
+		this.client = minecraftClient;
 		this.networkHandler = networkHandler;
 		this.statHandler = stats;
 		this.recipeBook = recipeBook;
 		this.lastSneaking = lastSneaking;
 		this.lastSprinting = lastSprinting;
-		this.tickables.add(new AmbientSoundPlayer(this, client.getSoundManager()));
+		this.tickables.add(new AmbientSoundPlayer(this, minecraftClient.getSoundManager()));
 		this.tickables.add(new BubbleColumnSoundPlayer(this));
-		this.tickables.add(new BiomeEffectSoundPlayer(this, client.getSoundManager(), world.getBiomeAccess()));
+		this.tickables.add(new BiomeEffectSoundPlayer(this, minecraftClient.getSoundManager(), world.getBiomeAccess()));
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		return false;
 	}
 
@@ -279,8 +284,21 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			this.lastOnGround = this.onGround;
-			this.autoJumpEnabled = this.client.options.getAutoJump().getValue();
+
+			boolean bl4 = switch ((class_8300)class_8293.field_43519.method_50145()) {
+				case OFF -> false;
+				default -> true;
+			};
+			this.autoJumpEnabled = this.method_51024(bl4);
 		}
+	}
+
+	public boolean method_51024(boolean bl) {
+		if (bl != this.autoJumpEnabled && bl != this.field_44391.getValue()) {
+			this.field_44391.setValue(bl);
+		}
+
+		return this.field_44391.getValue();
 	}
 
 	private void sendSprintingPacket() {
@@ -726,7 +744,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		boolean bl8 = false;
-		if (this.getAbilities().allowFlying) {
+		if (this.method_50717()) {
 			if (this.client.interactionManager.isFlyingLocked()) {
 				if (!this.getAbilities().flying) {
 					this.getAbilities().flying = true;
@@ -825,7 +843,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	private void updateNausea() {
 		this.lastNauseaStrength = this.nextNauseaStrength;
-		if (this.inNetherPortal) {
+		if (this.field_44082 != Entity.class_8401.NO) {
 			if (this.client.currentScreen != null
 				&& !this.client.currentScreen.shouldPause()
 				&& !(this.client.currentScreen instanceof DeathScreen)
@@ -846,7 +864,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				this.nextNauseaStrength = 1.0F;
 			}
 
-			this.inNetherPortal = false;
+			this.field_44082 = Entity.class_8401.NO;
 		} else if (this.hasStatusEffect(StatusEffects.NAUSEA) && !this.getStatusEffect(StatusEffects.NAUSEA).isDurationBelow(60)) {
 			this.nextNauseaStrength += 0.006666667F;
 			if (this.nextNauseaStrength > 1.0F) {
@@ -1055,7 +1073,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	private boolean canSprint() {
-		return this.hasVehicle() || (float)this.getHungerManager().getFoodLevel() > 6.0F || this.getAbilities().allowFlying;
+		return this.hasVehicle() || (float)this.getHungerManager().getFoodLevel() > 6.0F || this.method_50717();
 	}
 
 	/**
@@ -1124,5 +1142,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public float getBodyYaw() {
 		return this.getYaw();
+	}
+
+	@Override
+	public void method_50721(float f) {
+		this.networkHandler.sendPacket(new class_8484(f));
 	}
 }

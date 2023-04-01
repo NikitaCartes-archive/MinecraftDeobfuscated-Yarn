@@ -1,7 +1,9 @@
 package net.minecraft.block;
 
 import net.minecraft.entity.ai.pathing.NavigationType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -36,5 +38,10 @@ public class MudBlock extends Block {
 	@Override
 	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
 		return 0.2F;
+	}
+
+	@Override
+	public boolean shouldLetAirThrough(BlockState state, ServerWorld world, BlockPos pos, Direction direction) {
+		return false;
 	}
 }

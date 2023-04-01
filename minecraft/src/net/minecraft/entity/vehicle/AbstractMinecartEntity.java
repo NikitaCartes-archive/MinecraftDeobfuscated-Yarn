@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -41,12 +42,16 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.vote.VehicleCollisionTypes;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public abstract class AbstractMinecartEntity extends Entity {
+	private static final double field_44132 = 0.35;
+	private static final double field_44133 = 0.2975;
+	private static final double field_44134 = 0.08850625;
 	private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> DAMAGE_WOBBLE_SIDE = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Float> DAMAGE_WOBBLE_STRENGTH = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -204,7 +209,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.world.isClient || this.isRemoved()) {
 			return true;
 		} else if (this.isInvulnerableTo(source)) {
@@ -272,6 +277,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	public void tick() {
+		double d = this.getVelocity().lengthSquared();
 		if (this.getDamageWobbleTicks() > 0) {
 			this.setDamageWobbleTicks(this.getDamageWobbleTicks() - 1);
 		}
@@ -284,14 +290,14 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.tickPortal();
 		if (this.world.isClient) {
 			if (this.clientInterpolationSteps > 0) {
-				double d = this.getX() + (this.clientX - this.getX()) / (double)this.clientInterpolationSteps;
-				double e = this.getY() + (this.clientY - this.getY()) / (double)this.clientInterpolationSteps;
-				double f = this.getZ() + (this.clientZ - this.getZ()) / (double)this.clientInterpolationSteps;
-				double g = MathHelper.wrapDegrees(this.clientYaw - (double)this.getYaw());
-				this.setYaw(this.getYaw() + (float)g / (float)this.clientInterpolationSteps);
+				double e = this.getX() + (this.clientX - this.getX()) / (double)this.clientInterpolationSteps;
+				double f = this.getY() + (this.clientY - this.getY()) / (double)this.clientInterpolationSteps;
+				double g = this.getZ() + (this.clientZ - this.getZ()) / (double)this.clientInterpolationSteps;
+				double h = MathHelper.wrapDegrees(this.clientYaw - (double)this.getYaw());
+				this.setYaw(this.getYaw() + (float)h / (float)this.clientInterpolationSteps);
 				this.setPitch(this.getPitch() + (float)(this.clientPitch - (double)this.getPitch()) / (float)this.clientInterpolationSteps);
 				this.clientInterpolationSteps--;
-				this.setPosition(d, e, f);
+				this.setPosition(e, f, g);
 				this.setRotation(this.getYaw(), this.getPitch());
 			} else {
 				this.refreshPosition();
@@ -299,8 +305,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 			}
 		} else {
 			if (!this.hasNoGravity()) {
-				double d = this.isTouchingWater() ? -0.005 : -0.04;
-				this.setVelocity(this.getVelocity().add(0.0, d, 0.0));
+				double e = this.isTouchingWater() ? -0.005 : -0.04;
+				this.setVelocity(this.getVelocity().add(0.0, e, 0.0));
 			}
 
 			int i = MathHelper.floor(this.getX());
@@ -323,17 +329,17 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 			this.checkBlockCollision();
 			this.setPitch(0.0F);
-			double h = this.prevX - this.getX();
-			double l = this.prevZ - this.getZ();
-			if (h * h + l * l > 0.001) {
-				this.setYaw((float)(MathHelper.atan2(l, h) * 180.0 / Math.PI));
+			double l = this.prevX - this.getX();
+			double m = this.prevZ - this.getZ();
+			if (l * l + m * m > 0.001) {
+				this.setYaw((float)(MathHelper.atan2(m, l) * 180.0 / Math.PI));
 				if (this.yawFlipped) {
 					this.setYaw(this.getYaw() + 180.0F);
 				}
 			}
 
-			double m = (double)MathHelper.wrapDegrees(this.getYaw() - this.prevYaw);
-			if (m < -170.0 || m >= 170.0) {
+			double n = (double)MathHelper.wrapDegrees(this.getYaw() - this.prevYaw);
+			if (n < -170.0 || n >= 170.0) {
 				this.setYaw(this.getYaw() + 180.0F);
 				this.yawFlipped = !this.yawFlipped;
 			}
@@ -342,8 +348,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 			if (this.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && this.getVelocity().horizontalLengthSquared() > 0.01) {
 				List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F), EntityPredicates.canBePushedBy(this));
 				if (!list.isEmpty()) {
-					for (int n = 0; n < list.size(); n++) {
-						Entity entity = (Entity)list.get(n);
+					for (int o = 0; o < list.size(); o++) {
+						Entity entity = (Entity)list.get(o);
 						if (!(entity instanceof PlayerEntity)
 							&& !(entity instanceof IronGolemEntity)
 							&& !(entity instanceof AbstractMinecartEntity)
@@ -370,6 +376,22 @@ public abstract class AbstractMinecartEntity extends Entity {
 			}
 
 			this.firstUpdate = false;
+			VehicleCollisionTypes vehicleCollisionTypes = class_8293.field_43600.method_50145();
+			if (vehicleCollisionTypes != VehicleCollisionTypes.NONE && this.horizontalCollision && d > 0.08850625) {
+				if (vehicleCollisionTypes == VehicleCollisionTypes.BREAK) {
+					this.discard();
+					if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+						this.dropItems(this.world.getDamageSources().fall());
+					}
+				} else if (vehicleCollisionTypes == VehicleCollisionTypes.EXPLODE) {
+					double p = Math.sqrt(d);
+					this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)Math.min(3.0 * p, 5.0), World.ExplosionSourceType.MOB);
+				}
+
+				if (!this.world.isClient && !this.isRemoved()) {
+					this.dropItems(this.world.getDamageSources().fall());
+				}
+			}
 		}
 	}
 

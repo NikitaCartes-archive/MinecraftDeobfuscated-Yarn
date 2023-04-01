@@ -411,6 +411,18 @@ public class Blocks {
 	);
 	public static final Block AZALEA_LEAVES = register("azalea_leaves", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
 	public static final Block FLOWERING_AZALEA_LEAVES = register("flowering_azalea_leaves", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
+	public static final Block COPPER_SPLEAVES = register(
+		"copper_spleaves",
+		new CopperSpleavesBlock(
+			AbstractBlock.Settings.of(Material.LEAVES, MapColor.DARK_AQUA)
+				.strength(0.1F, 0.3F)
+				.sounds(BlockSoundGroup.COPPER)
+				.nonOpaque()
+				.allowsSpawning(Blocks::never)
+				.suffocates(Blocks::never)
+				.blockVision(Blocks::never)
+		)
+	);
 	public static final Block SPONGE = register("sponge", new SpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6F).sounds(BlockSoundGroup.GRASS)));
 	public static final Block WET_SPONGE = register(
 		"wet_sponge", new WetSpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6F).sounds(BlockSoundGroup.GRASS))
@@ -1394,7 +1406,21 @@ public class Blocks {
 				.strength(-1.0F)
 				.sounds(BlockSoundGroup.GLASS)
 				.luminance(state -> 11)
-				.pistonBehavior(PistonBehavior.BLOCK)
+				.pistonBehavior(PistonBehavior.BLOCK),
+			false
+		)
+	);
+	public static final Block OTHER_PORTAL = register(
+		"other_portal",
+		new NetherPortalBlock(
+			AbstractBlock.Settings.of(Material.PORTAL)
+				.noCollision()
+				.ticksRandomly()
+				.strength(-1.0F)
+				.sounds(BlockSoundGroup.GLASS)
+				.luminance(blockStatex -> 11)
+				.pistonBehavior(PistonBehavior.BLOCK),
+			true
 		)
 	);
 	public static final Block CARVED_PUMPKIN = register(
@@ -1413,7 +1439,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.GOURD, MapColor.ORANGE)
 				.strength(1.0F)
 				.sounds(BlockSoundGroup.WOOD)
-				.luminance(state -> 15)
+				.luminance(blockStatex -> 15)
 				.allowsSpawning(Blocks::always)
 				.pistonBehavior(PistonBehavior.DESTROY)
 		)
@@ -1669,6 +1695,11 @@ public class Blocks {
 		"powder_snow_cauldron",
 		new PowderSnowCauldronBlock(AbstractBlock.Settings.copy(CAULDRON), LeveledCauldronBlock.SNOW_PREDICATE, CauldronBehavior.POWDER_SNOW_CAULDRON_BEHAVIOR)
 	);
+	public static final Block COPPER_SINK = register(
+		"copper_sink",
+		new CopperSinkBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).sounds(BlockSoundGroup.COPPER).requiresTool().strength(2.0F).nonOpaque())
+	);
+	public static final Block FILLED_COPPER_SINK = register("filled_copper_sink", new FilledCopperSinkBlock(AbstractBlock.Settings.copy(COPPER_SINK)));
 	public static final Block END_PORTAL = register(
 		"end_portal",
 		new EndPortalBlock(
@@ -2799,6 +2830,12 @@ public class Blocks {
 	public static final Block OBSERVER = register(
 		"observer", new ObserverBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F).requiresTool().solidBlock(Blocks::never))
 	);
+	public static final Block PICKAXE_BLOCK = register(
+		"pickaxe_block", new PickaxeBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F).requiresTool().solidBlock(Blocks::always))
+	);
+	public static final Block PLACE_BLOCK = register(
+		"place_block", new PlaceBlock(AbstractBlock.Settings.of(Material.STONE).strength(3.0F).requiresTool().solidBlock(Blocks::always))
+	);
 	public static final Block SHULKER_BOX = register("shulker_box", createShulkerBoxBlock(null, AbstractBlock.Settings.of(Material.SHULKER_BOX)));
 	public static final Block WHITE_SHULKER_BOX = register(
 		"white_shulker_box", createShulkerBoxBlock(DyeColor.WHITE, AbstractBlock.Settings.of(Material.SHULKER_BOX, MapColor.WHITE))
@@ -3385,6 +3422,10 @@ public class Blocks {
 	public static final Block POTTED_BAMBOO = register("potted_bamboo", createFlowerPotBlock(BAMBOO));
 	public static final Block VOID_AIR = register("void_air", new AirBlock(AbstractBlock.Settings.of(Material.AIR).noCollision().dropsNothing().air()));
 	public static final Block CAVE_AIR = register("cave_air", new AirBlock(AbstractBlock.Settings.of(Material.AIR).noCollision().dropsNothing().air()));
+	public static final Block PACKED_AIR = register(
+		"packed_air",
+		new PackedAirBlock(AbstractBlock.Settings.of(Material.AIR).sounds(BlockSoundGroup.MOSS_CARPET).noCollision().luminance(blockStatex -> 4).dropsNothing().air())
+	);
 	public static final Block BUBBLE_COLUMN = register(
 		"bubble_column", new BubbleColumnBlock(AbstractBlock.Settings.of(Material.BUBBLE_COLUMN).noCollision().dropsNothing().pistonBehavior(PistonBehavior.DESTROY))
 	);
@@ -3508,7 +3549,7 @@ public class Blocks {
 				.requiresTool()
 				.strength(3.5F)
 				.sounds(BlockSoundGroup.LANTERN)
-				.luminance(state -> 15)
+				.luminance(blockStatex -> 15)
 				.nonOpaque()
 				.pistonBehavior(PistonBehavior.DESTROY)
 		)
@@ -3634,7 +3675,7 @@ public class Blocks {
 	);
 	public static final Block SHROOMLIGHT = register(
 		"shroomlight",
-		new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.RED).strength(1.0F).sounds(BlockSoundGroup.SHROOMLIGHT).luminance(state -> 15))
+		new Block(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.RED).strength(1.0F).sounds(BlockSoundGroup.SHROOMLIGHT).luminance(blockStatex -> 15))
 	);
 	public static final Block WEEPING_VINES = register(
 		"weeping_vines",
@@ -4354,6 +4395,7 @@ public class Blocks {
 		"decorated_pot",
 		new DecoratedPotBlock(AbstractBlock.Settings.of(Material.DECORATED_POT).strength(0.0F, 0.0F).pistonBehavior(PistonBehavior.DESTROY).nonOpaque())
 	);
+	public static final Block CHEESE = register("cheese", new CheeseBlock(AbstractBlock.Settings.of(Material.STONE).strength(0.1F).sounds(BlockSoundGroup.FUNGUS)));
 
 	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
 		return state -> state.get(Properties.LIT) ? litLevel : 0;

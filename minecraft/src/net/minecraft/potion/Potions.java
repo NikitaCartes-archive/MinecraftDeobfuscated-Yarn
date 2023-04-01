@@ -76,6 +76,12 @@ public class Potions {
 	public static final Potion LONG_SLOW_FALLING = register(
 		"long_slow_falling", new Potion("slow_falling", new StatusEffectInstance(StatusEffects.SLOW_FALLING, 4800))
 	);
+	public static final Potion BIG = register("big", new Potion(new StatusEffectInstance(StatusEffects.BIG, 3600)));
+	public static final Potion LONG_BIG = register("long_big", new Potion("big", new StatusEffectInstance(StatusEffects.BIG, 9600)));
+	public static final Potion STRONG_BIG = register("strong_big", new Potion("big", new StatusEffectInstance(StatusEffects.BIG, 1800, 1)));
+	public static final Potion SMALL = register("small", new Potion(new StatusEffectInstance(StatusEffects.SMALL, 3600)));
+	public static final Potion LONG_SMALL = register("long_small", new Potion("small", new StatusEffectInstance(StatusEffects.SMALL, 9600)));
+	public static final Potion STRONG_SMALL = register("strong_small", new Potion("small", new StatusEffectInstance(StatusEffects.SMALL, 1800, 1)));
 
 	private static Potion register(String name, Potion potion) {
 		return Registry.register(Registries.POTION, name, potion);

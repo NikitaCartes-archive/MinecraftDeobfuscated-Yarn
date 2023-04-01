@@ -5,7 +5,8 @@ import net.minecraft.util.StringIdentifiable;
 public enum DeathMessageType implements StringIdentifiable {
 	DEFAULT("default"),
 	FALL_VARIANTS("fall_variants"),
-	INTENTIONAL_GAME_DESIGN("intentional_game_design");
+	INTENTIONAL_GAME_DESIGN("intentional_game_design"),
+	MIDAS_CURSE("midas_curse");
 
 	public static final com.mojang.serialization.Codec<DeathMessageType> CODEC = StringIdentifiable.createCodec(DeathMessageType::values);
 	private final String id;

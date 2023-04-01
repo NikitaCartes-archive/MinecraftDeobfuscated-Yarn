@@ -3,6 +3,7 @@ package net.minecraft.entity;
 import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -22,6 +23,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.vote.ItemDespawnType;
+import net.minecraft.vote.MidasCurser;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -43,6 +46,7 @@ public class ItemEntity extends Entity implements Ownable {
 	private UUID thrower;
 	@Nullable
 	private UUID owner;
+	private boolean field_44105;
 	public final float uniqueOffset;
 
 	public ItemEntity(EntityType<? extends ItemEntity> entityType, World world) {
@@ -81,6 +85,10 @@ public class ItemEntity extends Entity implements Ownable {
 		return this.thrower != null && this.world instanceof ServerWorld serverWorld ? serverWorld.getEntity(this.thrower) : null;
 	}
 
+	public boolean method_50689() {
+		return this.field_44105;
+	}
+
 	@Override
 	protected Entity.MoveEffect getMoveEffect() {
 		return Entity.MoveEffect.NONE;
@@ -111,7 +119,7 @@ public class ItemEntity extends Entity implements Ownable {
 			} else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > (double)f) {
 				this.applyLavaBuoyancy();
 			} else if (!this.hasNoGravity()) {
-				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
+				this.setVelocity(this.getVelocity().add(0.0, (double)(-this.method_50634()), 0.0));
 			}
 
 			if (this.world.isClient) {
@@ -159,7 +167,7 @@ public class ItemEntity extends Entity implements Ownable {
 				}
 			}
 
-			if (!this.world.isClient && this.itemAge >= 6000) {
+			if (!this.world.isClient && this.getItemAge() >= class_8293.field_43613.method_50124()) {
 				this.discard();
 			}
 		}
@@ -191,7 +199,12 @@ public class ItemEntity extends Entity implements Ownable {
 
 	private boolean canMerge() {
 		ItemStack itemStack = this.getStack();
-		return this.isAlive() && this.pickupDelay != 32767 && this.itemAge != -32768 && this.itemAge < 6000 && itemStack.getCount() < itemStack.getMaxCount();
+		int i = this.getItemAge();
+		return this.isAlive()
+			&& this.pickupDelay != 32767
+			&& i != -32768
+			&& i < class_8293.field_43613.method_50124()
+			&& itemStack.getCount() < itemStack.getMaxCount();
 	}
 
 	private void tryMerge(ItemEntity other) {
@@ -225,7 +238,7 @@ public class ItemEntity extends Entity implements Ownable {
 	}
 
 	private static void merge(ItemEntity targetEntity, ItemStack stack1, ItemStack stack2) {
-		ItemStack itemStack = merge(stack1, stack2, 64);
+		ItemStack itemStack = merge(stack1, stack2, 1024);
 		targetEntity.setStack(itemStack);
 	}
 
@@ -244,7 +257,7 @@ public class ItemEntity extends Entity implements Ownable {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else if (!this.getStack().isEmpty() && this.getStack().isOf(Items.NETHER_STAR) && source.isIn(DamageTypeTags.IS_EXPLOSION)) {
@@ -279,6 +292,10 @@ public class ItemEntity extends Entity implements Ownable {
 			nbt.putUuid("Owner", this.owner);
 		}
 
+		if (this.field_44105) {
+			nbt.putBoolean("not_accidental", true);
+		}
+
 		if (!this.getStack().isEmpty()) {
 			nbt.put("Item", this.getStack().writeNbt(new NbtCompound()));
 		}
@@ -300,6 +317,7 @@ public class ItemEntity extends Entity implements Ownable {
 			this.thrower = nbt.getUuid("Thrower");
 		}
 
+		this.field_44105 = nbt.getBoolean("not_accidental");
 		NbtCompound nbtCompound = nbt.getCompound("Item");
 		this.setStack(ItemStack.fromNbt(nbtCompound));
 		if (this.getStack().isEmpty()) {
@@ -377,8 +395,9 @@ public class ItemEntity extends Entity implements Ownable {
 	/**
 	 * Sets the thrower of this item entity to {@code thrower}.
 	 */
-	public void setThrower(@Nullable UUID thrower) {
+	public void setThrower(UUID thrower, boolean bl) {
 		this.thrower = thrower;
+		this.field_44105 = bl;
 	}
 
 	/**
@@ -393,7 +412,11 @@ public class ItemEntity extends Entity implements Ownable {
 	 * @see #tick()
 	 */
 	public int getItemAge() {
-		return this.itemAge;
+		return switch ((ItemDespawnType)class_8293.field_43612.method_50145()) {
+			case DESPAWN_NONE -> -32768;
+			case DESPAWN_ALL -> this.itemAge;
+			case KEEP_PLAYER_DROPS -> this.getOwner() instanceof PlayerEntity ? -32768 : this.itemAge;
+		};
 	}
 
 	/**
@@ -465,5 +488,10 @@ public class ItemEntity extends Entity implements Ownable {
 	@Override
 	public float getBodyYaw() {
 		return 180.0F - this.getRotation(0.5F) / (float) (Math.PI * 2) * 360.0F;
+	}
+
+	@Override
+	public void applyMidasCurse() {
+		this.setStack(MidasCurser.curse(this.getStack()));
 	}
 }

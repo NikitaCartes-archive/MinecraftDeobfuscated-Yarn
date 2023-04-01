@@ -12,6 +12,7 @@ import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.SmithingRecipe;
 import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.vote.BlockApproval;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
@@ -83,8 +84,8 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 			this.output.setStack(0, ItemStack.EMPTY);
 		} else {
 			SmithingRecipe smithingRecipe = (SmithingRecipe)list.get(0);
-			ItemStack itemStack = smithingRecipe.craft(this.input, this.world.getRegistryManager());
-			if (itemStack.isItemEnabled(this.world.getEnabledFeatures())) {
+			ItemStack itemStack = smithingRecipe.method_50831(this.input, this.world.getRegistryManager());
+			if (itemStack.isItemEnabled(this.world.getEnabledFeatures()) && BlockApproval.isApproved(itemStack)) {
 				this.currentRecipe = smithingRecipe;
 				this.output.setLastRecipe(smithingRecipe);
 				this.output.setStack(0, itemStack);

@@ -17,6 +17,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.apache.commons.lang3.tuple.Triple;
 import org.joml.Matrix4f;
+import org.lwjgl.opengl.GL32C;
 
 @Environment(EnvType.CLIENT)
 public abstract class RenderPhase {
@@ -183,6 +184,7 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.WriteMaskState ALL_MASK = new RenderPhase.WriteMaskState(true, true);
 	protected static final RenderPhase.WriteMaskState COLOR_MASK = new RenderPhase.WriteMaskState(true, false);
 	protected static final RenderPhase.WriteMaskState DEPTH_MASK = new RenderPhase.WriteMaskState(false, true);
+	protected static final RenderPhase.WriteMaskState NONE_MASK = new RenderPhase.WriteMaskState(false, false);
 	protected static final RenderPhase.Layering NO_LAYERING = new RenderPhase.Layering("no_layering", () -> {
 	}, () -> {
 	});
@@ -257,6 +259,34 @@ public abstract class RenderPhase {
 		}
 	});
 	protected static final RenderPhase.LineWidth FULL_LINE_WIDTH = new RenderPhase.LineWidth(OptionalDouble.of(1.0));
+	public static RenderPhase.Target STENCIL_SETUP_AND_LEAK = new RenderPhase.Target("stencil_setup_and_leak", () -> {
+		GL32C.glClear(1024);
+		GL32C.glColorMask(false, false, false, false);
+		GL32C.glEnable(2929);
+		GL32C.glDepthMask(true);
+		GL32C.glEnable(2960);
+		GL32C.glDepthMask(false);
+		GL32C.glEnable(34383);
+		GL32C.glDisable(2884);
+		GL32C.glStencilFunc(519, 0, 255);
+		GL32C.glStencilOpSeparate(1029, 7680, 34055, 7680);
+		GL32C.glStencilOpSeparate(1028, 7680, 34056, 7680);
+	}, () -> {
+		GL32C.glDisable(34383);
+		GL32C.glEnable(2884);
+		GL32C.glColorMask(true, true, true, true);
+	});
+	public static RenderPhase.Target STENCIL_RENDER_AND_CLEAR = new RenderPhase.Target("stencil_render_and_clear", () -> {
+		GL32C.glStencilFunc(514, 1, 255);
+		GL32C.glDepthFunc(516);
+		GL32C.glCullFace(1028);
+		GL32C.glStencilOpSeparate(1028, 7680, 7680, 7680);
+	}, () -> {
+		GL32C.glDepthFunc(515);
+		GL32C.glCullFace(1029);
+		GL32C.glDepthMask(true);
+		GL32C.glDisable(2960);
+	});
 
 	public RenderPhase(String name, Runnable beginAction, Runnable endAction) {
 		this.name = name;

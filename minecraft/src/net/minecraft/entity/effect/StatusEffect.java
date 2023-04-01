@@ -55,10 +55,10 @@ public class StatusEffect {
 			}
 		} else if (this == StatusEffects.POISON) {
 			if (entity.getHealth() > 1.0F) {
-				entity.damage(entity.getDamageSources().magic(), 1.0F);
+				entity.damageWithModifier(entity.getDamageSources().magic(), 1.0F);
 			}
 		} else if (this == StatusEffects.WITHER) {
-			entity.damage(entity.getDamageSources().wither(), 1.0F);
+			entity.damageWithModifier(entity.getDamageSources().wither(), 1.0F);
 		} else if (this == StatusEffects.HUNGER && entity instanceof PlayerEntity) {
 			((PlayerEntity)entity).addExhaustion(0.005F * (float)(amplifier + 1));
 		} else if (this == StatusEffects.SATURATION && entity instanceof PlayerEntity) {
@@ -67,7 +67,7 @@ public class StatusEffect {
 			}
 		} else if ((this != StatusEffects.INSTANT_HEALTH || entity.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !entity.isUndead())) {
 			if (this == StatusEffects.INSTANT_DAMAGE && !entity.isUndead() || this == StatusEffects.INSTANT_HEALTH && entity.isUndead()) {
-				entity.damage(entity.getDamageSources().magic(), (float)(6 << amplifier));
+				entity.damageWithModifier(entity.getDamageSources().magic(), (float)(6 << amplifier));
 			}
 		} else {
 			entity.heal((float)Math.max(4 << amplifier, 0));
@@ -79,9 +79,9 @@ public class StatusEffect {
 			if (this == StatusEffects.INSTANT_DAMAGE && !target.isUndead() || this == StatusEffects.INSTANT_HEALTH && target.isUndead()) {
 				int i = (int)(proximity * (double)(6 << amplifier) + 0.5);
 				if (source == null) {
-					target.damage(target.getDamageSources().magic(), (float)i);
+					target.damageWithModifier(target.getDamageSources().magic(), (float)i);
 				} else {
-					target.damage(target.getDamageSources().indirectMagic(source, attacker), (float)i);
+					target.damageWithModifier(target.getDamageSources().indirectMagic(source, attacker), (float)i);
 				}
 			} else {
 				this.applyUpdateEffect(target, amplifier);

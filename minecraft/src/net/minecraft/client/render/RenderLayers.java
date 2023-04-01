@@ -40,6 +40,7 @@ public class RenderLayers {
 		map.put(Blocks.FLOWERING_AZALEA_LEAVES, renderLayer2);
 		map.put(Blocks.MANGROVE_ROOTS, renderLayer2);
 		map.put(Blocks.MANGROVE_LEAVES, renderLayer2);
+		map.put(Blocks.COPPER_SPLEAVES, renderLayer2);
 		RenderLayer renderLayer3 = RenderLayer.getCutout();
 		map.put(Blocks.OAK_SAPLING, renderLayer3);
 		map.put(Blocks.SPRUCE_SAPLING, renderLayer3);
@@ -49,6 +50,7 @@ public class RenderLayers {
 		map.put(Blocks.CHERRY_SAPLING, renderLayer3);
 		map.put(Blocks.DARK_OAK_SAPLING, renderLayer3);
 		map.put(Blocks.GLASS, renderLayer3);
+		map.put(Blocks.PACKED_AIR, renderLayer3);
 		map.put(Blocks.WHITE_BED, renderLayer3);
 		map.put(Blocks.ORANGE_BED, renderLayer3);
 		map.put(Blocks.MAGENTA_BED, renderLayer3);
@@ -272,6 +274,7 @@ public class RenderLayers {
 		RenderLayer renderLayer4 = RenderLayer.getTranslucent();
 		map.put(Blocks.ICE, renderLayer4);
 		map.put(Blocks.NETHER_PORTAL, renderLayer4);
+		map.put(Blocks.OTHER_PORTAL, renderLayer4);
 		map.put(Blocks.WHITE_STAINED_GLASS, renderLayer4);
 		map.put(Blocks.ORANGE_STAINED_GLASS, renderLayer4);
 		map.put(Blocks.MAGENTA_STAINED_GLASS, renderLayer4);

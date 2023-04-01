@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.function.IntFunction;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -33,6 +34,7 @@ import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -47,6 +49,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.vote.VehicleCollisionTypes;
 import net.minecraft.world.BlockLocating;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -93,6 +96,9 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	private float bubbleWobbleStrength;
 	private float bubbleWobble;
 	private float lastBubbleWobble;
+	private static final double field_44135 = 0.35;
+	private static final double field_44136 = 0.2975;
+	private static final double field_44137 = 0.08850625;
 
 	public BoatEntity(EntityType<? extends BoatEntity> entityType, World world) {
 		super(entityType, world);
@@ -105,6 +111,11 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		this.prevX = x;
 		this.prevY = y;
 		this.prevZ = z;
+	}
+
+	@Override
+	public float getStepHeight() {
+		return class_8293.field_43529.method_50116() ? 100.0F : super.getStepHeight();
 	}
 
 	@Override
@@ -158,7 +169,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else if (!this.world.isClient && !this.isRemoved()) {
@@ -261,6 +272,13 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 
 	@Override
 	public void tick() {
+		double d;
+		if (this.getControllingPassenger() instanceof ServerPlayerEntity serverPlayerEntity) {
+			d = serverPlayerEntity.networkHandler.field_43420;
+		} else {
+			d = this.getVelocity().lengthSquared();
+		}
+
 		this.lastLocation = this.location;
 		this.location = this.checkLocation();
 		if (this.location != BoatEntity.Location.UNDER_WATER && this.location != BoatEntity.Location.UNDER_FLOWING_WATER) {
@@ -309,10 +327,10 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 					SoundEvent soundEvent = this.getPaddleSoundEvent();
 					if (soundEvent != null) {
 						Vec3d vec3d = this.getRotationVec(1.0F);
-						double d = i == 1 ? -vec3d.z : vec3d.z;
-						double e = i == 1 ? vec3d.x : -vec3d.x;
+						double e = i == 1 ? -vec3d.z : vec3d.z;
+						double f = i == 1 ? vec3d.x : -vec3d.x;
 						this.world
-							.playSound(null, this.getX() + d, this.getY(), this.getZ() + e, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
+							.playSound(null, this.getX() + e, this.getY(), this.getZ() + f, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
 					}
 				}
 
@@ -342,6 +360,30 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 						this.pushAwayFrom(entity);
 					}
 				}
+			}
+		}
+
+		if (class_8293.field_43601.method_50145() != VehicleCollisionTypes.NONE
+			&& this.world.isClient
+			&& this.isLogicalSideForUpdatingMovement()
+			&& this.horizontalCollision
+			&& d > 0.08850625) {
+			((PlayerEntity)this.getControllingPassenger()).method_50721((float)Math.sqrt(d));
+		}
+	}
+
+	public void method_50766(float f) {
+		if ((double)f > 0.2975 && !this.isRemoved()) {
+			VehicleCollisionTypes vehicleCollisionTypes = class_8293.field_43601.method_50145();
+			if (vehicleCollisionTypes == VehicleCollisionTypes.BREAK) {
+				if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+					this.dropItems(this.world.getDamageSources().fall());
+				}
+
+				this.discard();
+			} else if (vehicleCollisionTypes == VehicleCollisionTypes.EXPLODE) {
+				this.world.createExplosion(this, this.getX(), this.getY() + 1.0, this.getZ(), Math.min(3.0F * f, 5.0F), World.ExplosionSourceType.MOB);
+				this.discard();
 			}
 		}
 	}

@@ -46,20 +46,22 @@ public class GlyphRenderer {
 		this.maxY = maxY;
 	}
 
-	public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
-		int i = 3;
-		float f = x + this.minX;
-		float g = x + this.maxX;
-		float h = this.minY - 3.0F;
-		float j = this.maxY - 3.0F;
-		float k = y + h;
-		float l = y + j;
-		float m = italic ? 1.0F - 0.25F * h : 0.0F;
-		float n = italic ? 1.0F - 0.25F * j : 0.0F;
-		vertexConsumer.vertex(matrix, f + m, k, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.minV).light(light).next();
-		vertexConsumer.vertex(matrix, f + n, l, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.maxV).light(light).next();
-		vertexConsumer.vertex(matrix, g + n, l, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.maxV).light(light).next();
-		vertexConsumer.vertex(matrix, g + m, k, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.minV).light(light).next();
+	public void draw(boolean bl, boolean bl2, float f, float g, Matrix4f matrix4f, VertexConsumer vertexConsumer, float h, float i, float j, float k, int l) {
+		int m = 3;
+		float n = f + this.minX;
+		float o = f + this.maxX;
+		float p = this.minY - 3.0F;
+		float q = this.maxY - 3.0F;
+		float r = g + p;
+		float s = g + q;
+		float t = bl2 ? 1.0F - 0.25F * p : 0.0F;
+		float u = bl2 ? 1.0F - 0.25F * q : 0.0F;
+		float v = bl ? this.maxU : this.minU;
+		float w = bl ? this.minU : this.maxU;
+		vertexConsumer.vertex(matrix4f, n + t, r, 0.0F).color(h, i, j, k).texture(v, this.minV).light(l).next();
+		vertexConsumer.vertex(matrix4f, n + u, s, 0.0F).color(h, i, j, k).texture(v, this.maxV).light(l).next();
+		vertexConsumer.vertex(matrix4f, o + u, s, 0.0F).color(h, i, j, k).texture(w, this.maxV).light(l).next();
+		vertexConsumer.vertex(matrix4f, o + t, r, 0.0F).color(h, i, j, k).texture(w, this.minV).light(l).next();
 	}
 
 	public void drawRectangle(GlyphRenderer.Rectangle rectangle, Matrix4f matrix, VertexConsumer vertexConsumer, int light) {

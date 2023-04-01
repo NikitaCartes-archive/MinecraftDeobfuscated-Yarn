@@ -3,6 +3,7 @@ package net.minecraft.server.network;
 import com.mojang.logging.LogUtils;
 import java.util.Objects;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -22,6 +23,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.vote.BlockApproval;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
@@ -128,7 +130,7 @@ public class ServerPlayerInteractionManager {
 	}
 
 	public void processBlockBreakingAction(BlockPos pos, PlayerActionC2SPacket.Action action, Direction direction, int worldHeight, int sequence) {
-		if (this.player.getEyePos().squaredDistanceTo(Vec3d.ofCenter(pos)) > ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE) {
+		if (this.player.getEyePos().squaredDistanceTo(Vec3d.ofCenter(pos)) > (double)this.player.networkHandler.method_50046()) {
 			this.method_41250(pos, false, sequence, "too far");
 		} else if (pos.getY() >= worldHeight) {
 			this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(pos, this.world.getBlockState(pos)));
@@ -158,6 +160,10 @@ public class ServerPlayerInteractionManager {
 				if (!blockState.isAir()) {
 					blockState.onBlockBreakStart(this.world, pos, this.player);
 					f = blockState.calcBlockBreakingDelta(this.player, this.player.world, pos);
+				}
+
+				if (class_8293.field_43568.method_50116() && f > 0.0F && this.player.getMainHandStack().isEmpty()) {
+					f = 1.0F;
 				}
 
 				if (!blockState.isAir() && f >= 1.0F) {
@@ -299,7 +305,7 @@ public class ServerPlayerInteractionManager {
 	public ActionResult interactBlock(ServerPlayerEntity player, World world, ItemStack stack, Hand hand, BlockHitResult hitResult) {
 		BlockPos blockPos = hitResult.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
-		if (!blockState.getBlock().isEnabled(world.getEnabledFeatures())) {
+		if (!blockState.getBlock().isEnabled(world.getEnabledFeatures()) || !BlockApproval.isApproved(blockState.getBlock())) {
 			return ActionResult.FAIL;
 		} else if (this.gameMode == GameMode.SPECTATOR) {
 			NamedScreenHandlerFactory namedScreenHandlerFactory = blockState.createScreenHandlerFactory(world, blockPos);

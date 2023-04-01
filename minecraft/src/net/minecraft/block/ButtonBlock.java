@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,6 +19,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
@@ -85,6 +87,11 @@ public class ButtonBlock extends WallMountedBlock {
 					return bl ? CEILING_Z_PRESSED_SHAPE : CEILING_Z_SHAPE;
 				}
 		}
+	}
+
+	@Override
+	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+		return state.isOf(Blocks.POLISHED_BLACKSTONE_BUTTON) && !state.get(POWERED) ? this.getOutlineShape(state, world, pos, context) : VoxelShapes.empty();
 	}
 
 	@Override
@@ -184,5 +191,33 @@ public class ButtonBlock extends WallMountedBlock {
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(FACING, POWERED, FACE);
+	}
+
+	@Override
+	public boolean hasRandomTicks(BlockState state) {
+		return true;
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (class_8293.field_43635.method_50116()) {
+			this.powerOn(state, world, pos);
+			this.playClickSound(null, world, pos, true);
+			world.emitGameEvent(null, GameEvent.BLOCK_ACTIVATE, pos);
+		}
+
+		super.randomTick(state, world, pos, random);
+	}
+
+	public static BlockState method_50854(BlockState blockState, Direction direction, Direction direction2) {
+		if (direction.getAxis() == direction2.getAxis()) {
+			throw new IllegalArgumentException("Invalid facing " + direction + " towards " + direction2 + " should be on a different axis");
+		} else {
+			return switch (direction) {
+				case UP -> (BlockState)blockState.with(FACE, WallMountLocation.CEILING).with(FACING, direction2);
+				case DOWN -> (BlockState)blockState.with(FACE, WallMountLocation.FLOOR).with(FACING, direction2.rotateYClockwise());
+				default -> (BlockState)blockState.with(FACE, WallMountLocation.WALL).with(FACING, direction.getOpposite());
+			};
+		}
 	}
 }

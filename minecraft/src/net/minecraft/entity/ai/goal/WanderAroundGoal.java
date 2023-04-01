@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
+import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -16,6 +17,7 @@ public class WanderAroundGoal extends Goal {
 	protected int chance;
 	protected boolean ignoringChance;
 	private final boolean canDespawn;
+	protected BooleanSupplier field_44098 = () -> false;
 
 	public WanderAroundGoal(PathAwareEntity mob, double speed) {
 		this(mob, speed, 120);
@@ -35,7 +37,7 @@ public class WanderAroundGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (this.mob.hasPassengers()) {
+		if (this.field_44098.getAsBoolean() && this.mob.hasPassengers()) {
 			return false;
 		} else {
 			if (!this.ignoringChance) {
@@ -68,7 +70,7 @@ public class WanderAroundGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.mob.getNavigation().isIdle() && !this.mob.hasPassengers();
+		return !this.mob.getNavigation().isIdle() && (!this.mob.hasPassengers() || !this.field_44098.getAsBoolean());
 	}
 
 	@Override
@@ -80,6 +82,7 @@ public class WanderAroundGoal extends Goal {
 	public void stop() {
 		this.mob.getNavigation().stop();
 		super.stop();
+		this.mob.onStopWandering();
 	}
 
 	public void ignoreChanceOnce() {

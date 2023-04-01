@@ -113,6 +113,11 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
+	public boolean isLandBased() {
+		return false;
+	}
+
+	@Override
 	public EntityGroup getGroup() {
 		return EntityGroup.AQUATIC;
 	}
@@ -331,7 +336,7 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.world.isClient) {
 			return false;
 		} else {
@@ -339,7 +344,7 @@ public class GuardianEntity extends HostileEntity {
 				&& !source.isIn(DamageTypeTags.AVOIDS_GUARDIAN_THORNS)
 				&& !source.isOf(DamageTypes.THORNS)
 				&& source.getSource() instanceof LivingEntity livingEntity) {
-				livingEntity.damage(this.getDamageSources().thorns(this), 2.0F);
+				livingEntity.damageWithModifier(this.getDamageSources().thorns(this), 2.0F);
 			}
 
 			if (this.wanderGoal != null) {
@@ -440,8 +445,8 @@ public class GuardianEntity extends HostileEntity {
 							f += 2.0F;
 						}
 
-						livingEntity.damage(this.guardian.getDamageSources().indirectMagic(this.guardian, this.guardian), f);
-						livingEntity.damage(
+						livingEntity.damageWithModifier(this.guardian.getDamageSources().indirectMagic(this.guardian, this.guardian), f);
+						livingEntity.damageWithModifier(
 							this.guardian.getDamageSources().mobAttack(this.guardian), (float)this.guardian.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)
 						);
 						this.guardian.setTarget(null);

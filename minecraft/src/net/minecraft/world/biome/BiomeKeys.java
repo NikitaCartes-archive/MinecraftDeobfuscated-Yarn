@@ -69,6 +69,7 @@ public abstract class BiomeKeys {
 	public static final RegistryKey<Biome> END_MIDLANDS = register("end_midlands");
 	public static final RegistryKey<Biome> SMALL_END_ISLANDS = register("small_end_islands");
 	public static final RegistryKey<Biome> END_BARRENS = register("end_barrens");
+	public static final RegistryKey<Biome> THE_MOON = register("the_moon");
 
 	private static RegistryKey<Biome> register(String name) {
 		return RegistryKey.of(RegistryKeys.BIOME, new Identifier(name));

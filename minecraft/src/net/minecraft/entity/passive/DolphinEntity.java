@@ -182,7 +182,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(this.getDamageSources().mobAttack(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
+		boolean bl = target.damageWithModifier(this.getDamageSources().mobAttack(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
 			this.applyDamageEffects(this, target);
 			this.playSound(SoundEvents.ENTITY_DOLPHIN_ATTACK, 1.0F, 1.0F);
@@ -252,7 +252,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 			} else {
 				this.setMoistness(this.getMoistness() - 1);
 				if (this.getMoistness() <= 0) {
-					this.damage(this.getDamageSources().dryOut(), 1.0F);
+					this.damageWithModifier(this.getDamageSources().dryOut(), 1.0F);
 				}
 
 				if (this.onGround) {
@@ -524,7 +524,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 				double d = DolphinEntity.this.getEyeY() - 0.3F;
 				ItemEntity itemEntity = new ItemEntity(DolphinEntity.this.world, DolphinEntity.this.getX(), d, DolphinEntity.this.getZ(), stack);
 				itemEntity.setPickupDelay(40);
-				itemEntity.setThrower(DolphinEntity.this.getUuid());
+				itemEntity.setThrower(DolphinEntity.this.getUuid(), true);
 				float f = 0.3F;
 				float g = DolphinEntity.this.random.nextFloat() * (float) (Math.PI * 2);
 				float h = 0.02F * DolphinEntity.this.random.nextFloat();

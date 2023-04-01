@@ -2,6 +2,7 @@ package net.minecraft.client.sound;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -24,10 +25,10 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected Random random;
 
 	protected AbstractSoundInstance(SoundEvent sound, SoundCategory category, Random random) {
-		this(sound.getId(), category, random);
+		this(class_8293.field_43599.method_50434(sound).getId(), category, random);
 	}
 
-	protected AbstractSoundInstance(Identifier soundId, SoundCategory category, Random random) {
+	private AbstractSoundInstance(Identifier soundId, SoundCategory category, Random random) {
 		this.id = soundId;
 		this.category = category;
 		this.random = random;

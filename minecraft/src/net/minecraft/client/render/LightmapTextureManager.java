@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -11,8 +12,11 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.vote.LightEngineOptimizationType;
 import net.minecraft.world.dimension.DimensionType;
 import org.joml.Vector3f;
 
@@ -135,9 +139,18 @@ public class LightmapTextureManager implements AutoCloseable {
 					for (int o = 0; o < 16; o++) {
 						float p = getBrightness(clientWorld.getDimension(), n) * g;
 						float q = getBrightness(clientWorld.getDimension(), o) * m;
+						float r = q;
 						float s = q * ((q * 0.6F + 0.4F) * 0.6F + 0.4F);
 						float t = q * (q * q * 0.6F + 0.4F);
-						vector3f2.set(q, s, t);
+						DyeColor dyeColor = class_8293.field_43660.method_50145();
+						if (dyeColor != DyeColor.WHITE) {
+							int u = dyeColor.getSignColor();
+							r = q * ((float)ColorHelper.Argb.getRed(u) / 255.0F);
+							s *= (float)ColorHelper.Argb.getGreen(u) / 255.0F;
+							t *= (float)ColorHelper.Argb.getBlue(u) / 255.0F;
+						}
+
+						vector3f2.set(r, s, t);
 						boolean bl = clientWorld.getDimensionEffects().shouldBrightenLighting();
 						if (bl) {
 							vector3f2.lerp(new Vector3f(0.99F, 1.12F, 1.0F), 0.25F);
@@ -147,17 +160,17 @@ public class LightmapTextureManager implements AutoCloseable {
 							vector3f2.add(vector3f3);
 							vector3f2.lerp(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
 							if (this.renderer.getSkyDarkness(delta) > 0.0F) {
-								float u = this.renderer.getSkyDarkness(delta);
+								float v = this.renderer.getSkyDarkness(delta);
 								Vector3f vector3f4 = new Vector3f(vector3f2).mul(0.7F, 0.6F, 0.6F);
-								vector3f2.lerp(vector3f4, u);
+								vector3f2.lerp(vector3f4, v);
 							}
 						}
 
 						if (l > 0.0F) {
-							float v = Math.max(vector3f2.x(), Math.max(vector3f2.y(), vector3f2.z()));
-							if (v < 1.0F) {
-								float u = 1.0F / v;
-								Vector3f vector3f4 = new Vector3f(vector3f2).mul(u);
+							float w = Math.max(vector3f2.x(), Math.max(vector3f2.y(), vector3f2.z()));
+							if (w < 1.0F) {
+								float v = 1.0F / w;
+								Vector3f vector3f4 = new Vector3f(vector3f2).mul(v);
 								vector3f2.lerp(vector3f4, l);
 							}
 						}
@@ -170,17 +183,22 @@ public class LightmapTextureManager implements AutoCloseable {
 							clamp(vector3f2);
 						}
 
+						LightEngineOptimizationType lightEngineOptimizationType = class_8293.field_43639.method_50145();
+						if (lightEngineOptimizationType.shouldForceLight(clientWorld)) {
+							vector3f2.set(1.0F, 1.0F, 1.0F);
+						}
+
 						float v = this.client.options.getGamma().getValue().floatValue();
-						Vector3f vector3f5 = new Vector3f(this.easeOutQuart(vector3f2.x), this.easeOutQuart(vector3f2.y), this.easeOutQuart(vector3f2.z));
-						vector3f2.lerp(vector3f5, Math.max(0.0F, v - i));
+						Vector3f vector3f4 = new Vector3f(this.easeOutQuart(vector3f2.x), this.easeOutQuart(vector3f2.y), this.easeOutQuart(vector3f2.z));
+						vector3f2.lerp(vector3f4, Math.max(0.0F, v - i));
 						vector3f2.lerp(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
 						clamp(vector3f2);
 						vector3f2.mul(255.0F);
-						int w = 255;
-						int x = (int)vector3f2.x();
-						int y = (int)vector3f2.y();
-						int z = (int)vector3f2.z();
-						this.image.setColor(o, n, 0xFF000000 | z << 16 | y << 8 | x);
+						int x = 255;
+						int y = (int)vector3f2.x();
+						int z = (int)vector3f2.y();
+						int aa = (int)vector3f2.z();
+						this.image.setColor(o, n, 0xFF000000 | aa << 16 | z << 8 | y);
 					}
 				}
 

@@ -539,6 +539,10 @@ public class DensityFunctions {
 		return applySlides(density, -64, 384, amplified ? 16 : 80, amplified ? 0 : 64, -0.078125, 0, 24, amplified ? 0.4 : 0.1171875);
 	}
 
+	private static DensityFunction method_50924(DensityFunction densityFunction) {
+		return applySlides(densityFunction, 0, 128, 80, 64, -0.1, 0, 24, 0.1);
+	}
+
 	/**
 	 * Applies the slides for the nether and the caves world type.
 	 * 
@@ -607,6 +611,27 @@ public class DensityFunctions {
 	 */
 	private static DensityFunction applyEndSlides(DensityFunction slopedCheese) {
 		return applyFloatingIslandsSlides(slopedCheese, 0, 128);
+	}
+
+	public static NoiseRouter method_50923(RegistryEntryLookup<DensityFunction> registryEntryLookup) {
+		DensityFunction densityFunction = applyBlendDensity(method_50924(entryHolder(registryEntryLookup, DEPTH_OVERWORLD)));
+		return new NoiseRouter(
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			method_50924(DensityFunctionTypes.constant(-0.703125)),
+			densityFunction,
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero(),
+			DensityFunctionTypes.zero()
+		);
 	}
 
 	/**

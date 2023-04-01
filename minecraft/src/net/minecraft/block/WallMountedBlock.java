@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.property.EnumProperty;
@@ -24,7 +25,8 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 
 	public static boolean canPlaceAt(WorldView world, BlockPos pos, Direction direction) {
 		BlockPos blockPos = pos.offset(direction);
-		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, direction.getOpposite());
+		return world.getBlockState(blockPos)
+			.isSideSolid(world, blockPos, direction.getOpposite(), class_8293.field_43579.method_50116() ? SideShapeType.CENTER : SideShapeType.FULL);
 	}
 
 	@Nullable

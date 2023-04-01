@@ -4,11 +4,13 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
+import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
@@ -30,6 +32,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.RotationPropertyHelper;
+import org.joml.AxisAngle4f;
+import org.joml.Quaternionf;
 
 @Environment(EnvType.CLIENT)
 public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBlockEntity> {
@@ -42,12 +46,16 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 	private final ModelPart banner;
 	private final ModelPart pillar;
 	private final ModelPart crossbar;
+	private final ModelPart bedFoot;
+	private final ModelPart bedHead;
 
 	public BannerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
 		ModelPart modelPart = ctx.getLayerModelPart(EntityModelLayers.BANNER);
 		this.banner = modelPart.getChild("flag");
 		this.pillar = modelPart.getChild("pole");
 		this.crossbar = modelPart.getChild("bar");
+		this.bedFoot = ctx.getLayerModelPart(EntityModelLayers.BED_FOOT);
+		this.bedHead = ctx.getLayerModelPart(EntityModelLayers.BED_HEAD);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -64,6 +72,7 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		float g = 0.6666667F;
 		boolean bl = bannerBlockEntity.getWorld() == null;
 		matrixStack.push();
+		SpriteIdentifier spriteIdentifier = TexturedRenderLayers.BED_TEXTURES[bannerBlockEntity.getColorForState().getId()];
 		long l;
 		if (bl) {
 			l = 0L;
@@ -93,9 +102,23 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		this.crossbar.render(matrixStack, vertexConsumer, i, j);
 		BlockPos blockPos = bannerBlockEntity.getPos();
 		float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
-		this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
+		float m = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
+		this.banner.pitch = m;
 		this.banner.pivotY = -32.0F;
 		renderCanvas(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, list);
+		if (class_8293.field_43615.method_50116()) {
+			matrixStack.push();
+			VertexConsumer vertexConsumer2 = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
+			matrixStack.translate(0.0F, -2.0F, 0.01F);
+			matrixStack.multiply(new Quaternionf(new AxisAngle4f(m, 1.0F, 0.0F, 0.0F)));
+			matrixStack.scale(1.2F, 1.25F, 1.0F);
+			matrixStack.translate(-0.5, 0.0, -0.125);
+			this.bedHead.render(matrixStack, vertexConsumer2, i, j);
+			matrixStack.translate(0.0F, 1.0F, 0.0F);
+			this.bedFoot.render(matrixStack, vertexConsumer2, i, j);
+			matrixStack.pop();
+		}
+
 		matrixStack.pop();
 		matrixStack.pop();
 	}
@@ -124,17 +147,22 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> patterns,
 		boolean glint
 	) {
-		canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
+		boolean bl = isBanner && class_8293.field_43615.method_50116();
+		if (!bl) {
+			canvas.render(matrices, baseSprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
+		}
 
 		for (int i = 0; i < 17 && i < patterns.size(); i++) {
 			Pair<RegistryEntry<BannerPattern>, DyeColor> pair = (Pair<RegistryEntry<BannerPattern>, DyeColor>)patterns.get(i);
 			float[] fs = pair.getSecond().getColorComponents();
-			pair.getFirst()
-				.getKey()
-				.map(key -> isBanner ? TexturedRenderLayers.getBannerPatternTextureId(key) : TexturedRenderLayers.getShieldPatternTextureId(key))
-				.ifPresent(
-					sprite -> canvas.render(matrices, sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, fs[0], fs[1], fs[2], 1.0F)
-				);
+			if (!bl || !pair.getFirst().matchesKey(BannerPatterns.BASE)) {
+				pair.getFirst()
+					.getKey()
+					.map(key -> isBanner ? TexturedRenderLayers.getBannerPatternTextureId(key) : TexturedRenderLayers.getShieldPatternTextureId(key))
+					.ifPresent(
+						sprite -> canvas.render(matrices, sprite.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, fs[0], fs[1], fs[2], 1.0F)
+					);
+			}
 		}
 	}
 }

@@ -90,6 +90,8 @@ public interface CauldronBehavior {
 	 * @see #createMap
 	 */
 	Map<Item, CauldronBehavior> POWDER_SNOW_CAULDRON_BEHAVIOR = createMap();
+	Map<Item, CauldronBehavior> EMPTY_COPPER_SINK_BEHAVIOR = createMap();
+	Map<Item, CauldronBehavior> FILLED_COPPER_SINK_BEHAVIOR = createMap();
 	/**
 	 * A behavior that fills cauldrons with water.
 	 * 
@@ -224,6 +226,27 @@ public interface CauldronBehavior {
 	 */
 	static void registerBehavior() {
 		registerBucketBehavior(EMPTY_CAULDRON_BEHAVIOR);
+		EMPTY_COPPER_SINK_BEHAVIOR.put(
+			Items.WATER_BUCKET,
+			(CauldronBehavior)(state, world, pos, player, hand, stack) -> fillCauldron(
+					world, pos, player, hand, stack, Blocks.FILLED_COPPER_SINK.getDefaultState(), SoundEvents.ITEM_BUCKET_EMPTY
+				)
+		);
+		FILLED_COPPER_SINK_BEHAVIOR.put(
+			Items.BUCKET,
+			(CauldronBehavior)(state, world, pos, player, hand, stack) -> emptyCauldron(
+					state,
+					world,
+					pos,
+					player,
+					hand,
+					stack,
+					new ItemStack(Items.WATER_BUCKET),
+					blockState -> true,
+					SoundEvents.ITEM_BUCKET_FILL,
+					Blocks.COPPER_SINK.getDefaultState()
+				)
+		);
 		EMPTY_CAULDRON_BEHAVIOR.put(Items.POTION, (CauldronBehavior)(state, world, pos, player, hand, stack) -> {
 			if (PotionUtil.getPotion(stack) != Potions.WATER) {
 				return ActionResult.PASS;
@@ -381,7 +404,22 @@ public interface CauldronBehavior {
 		Predicate<BlockState> fullPredicate,
 		SoundEvent soundEvent
 	) {
-		if (!fullPredicate.test(state)) {
+		return emptyCauldron(state, world, pos, player, hand, stack, output, fullPredicate, soundEvent, Blocks.CAULDRON.getDefaultState());
+	}
+
+	static ActionResult emptyCauldron(
+		BlockState state,
+		World world,
+		BlockPos pos,
+		PlayerEntity player,
+		Hand hand,
+		ItemStack stack,
+		ItemStack output,
+		Predicate<BlockState> predicate,
+		SoundEvent soundEvent,
+		BlockState resultState
+	) {
+		if (!predicate.test(state)) {
 			return ActionResult.PASS;
 		} else {
 			if (!world.isClient) {
@@ -389,7 +427,7 @@ public interface CauldronBehavior {
 				player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, output));
 				player.incrementStat(Stats.USE_CAULDRON);
 				player.incrementStat(Stats.USED.getOrCreateStat(item));
-				world.setBlockState(pos, Blocks.CAULDRON.getDefaultState());
+				world.setBlockState(pos, resultState);
 				world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
 			}

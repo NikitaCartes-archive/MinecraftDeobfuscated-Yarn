@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -45,6 +46,7 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.RangedWeaponItem;
@@ -62,6 +64,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
@@ -1139,7 +1142,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 				this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
 				return actionResult;
 			} else {
-				actionResult = this.interactMob(player, hand);
+				actionResult = this.method_50668(player, hand);
+				if (actionResult == ActionResult.PASS) {
+					actionResult = this.interactMob(player, hand);
+				}
+
 				if (actionResult.isAccepted()) {
 					this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
 					return actionResult;
@@ -1182,6 +1189,30 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	protected void onPlayerSpawnedChild(PlayerEntity player, MobEntity child) {
+	}
+
+	protected boolean method_50669() {
+		return false;
+	}
+
+	protected ActionResult method_50668(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		if (class_8293.field_43575.method_50116() && !this.method_50669() && itemStack.isOf(Items.BUCKET) && !this.isBaby()) {
+			playerEntity.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
+			ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, playerEntity, Items.MILK_BUCKET.getDefaultStack());
+			playerEntity.setStackInHand(hand, itemStack2);
+			return ActionResult.success(this.world.isClient);
+		} else {
+			return ActionResult.PASS;
+		}
+	}
+
+	public ActionResult method_50667(PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+		return !livingEntity.hasPassengers()
+				&& class_8293.field_43640.method_50256(this.getType().getRegistryEntry().registryKey())
+				&& playerEntity.startRiding(livingEntity, true)
+			? ActionResult.SUCCESS
+			: ActionResult.PASS;
 	}
 
 	protected ActionResult interactMob(PlayerEntity player, Hand hand) {
@@ -1389,7 +1420,17 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	public boolean isAiDisabled() {
-		return (this.dataTracker.get(MOB_FLAGS) & 1) != 0;
+		return this.isGolden() ? true : (this.dataTracker.get(MOB_FLAGS) & 1) != 0;
+	}
+
+	@Override
+	public void applyMidasCurse() {
+		this.setGolden(true);
+	}
+
+	@Override
+	public boolean isCollidable() {
+		return super.isCollidable() || this.isGolden();
 	}
 
 	public boolean isLeftHanded() {
@@ -1424,6 +1465,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	@Override
 	public boolean tryAttack(Entity target) {
 		float f = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+		f = this.method_50666(f);
 		float g = (float)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_KNOCKBACK);
 		if (target instanceof LivingEntity) {
 			f += EnchantmentHelper.getAttackDamage(this.getMainHandStack(), ((LivingEntity)target).getGroup());
@@ -1435,7 +1477,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			target.setOnFireFor(i * 4);
 		}
 
-		boolean bl = target.damage(this.getDamageSources().mobAttack(this), f);
+		boolean bl = target.damageWithModifier(this.getDamageSources().mobAttack(this), f);
+		g *= class_8293.field_43564.method_50171();
 		if (bl) {
 			if (g > 0.0F && target instanceof LivingEntity) {
 				((LivingEntity)target)
@@ -1449,6 +1492,9 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 
 			if (target instanceof PlayerEntity playerEntity) {
 				this.disablePlayerShield(playerEntity, this.getMainHandStack(), playerEntity.isUsingItem() ? playerEntity.getActiveItem() : ItemStack.EMPTY);
+				if (this.getMainHandStack().isOf(Items.LA_BAGUETTE)) {
+					playerEntity.getHungerManager().add(4, 0.8F);
+				}
 			}
 
 			this.applyDamageEffects(this, target);
@@ -1456,6 +1502,10 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		}
 
 		return bl;
+	}
+
+	protected float method_50666(float f) {
+		return f;
 	}
 
 	private void disablePlayerShield(PlayerEntity player, ItemStack mobStack, ItemStack playerStack) {
@@ -1466,19 +1516,6 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 				this.world.sendEntityStatus(player, EntityStatuses.BREAK_SHIELD);
 			}
 		}
-	}
-
-	protected boolean isAffectedByDaylight() {
-		if (this.world.isDay() && !this.world.isClient) {
-			float f = this.getBrightnessAtEyes();
-			BlockPos blockPos = BlockPos.ofFloored(this.getX(), this.getEyeY(), this.getZ());
-			boolean bl = this.isWet() || this.inPowderSnow || this.wasInPowderSnow;
-			if (f > 0.5F && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && !bl && this.world.isSkyVisible(blockPos)) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	@Override
@@ -1511,5 +1548,12 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	public ItemStack getPickBlockStack() {
 		SpawnEggItem spawnEggItem = SpawnEggItem.forEntity(this.getType());
 		return spawnEggItem == null ? null : new ItemStack(spawnEggItem);
+	}
+
+	@Override
+	protected float getScale() {
+		return class_8293.field_43658.method_50116()
+			? Math.min(super.getScale() * 2.5F, Math.max(8.0F / this.getType().getDimensions().height, 1.0F))
+			: super.getScale();
 	}
 }

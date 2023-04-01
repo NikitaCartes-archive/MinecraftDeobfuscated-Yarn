@@ -31,6 +31,17 @@ import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8258;
+import net.minecraft.class_8369;
+import net.minecraft.class_8373;
+import net.minecraft.class_8444;
+import net.minecraft.class_8471;
+import net.minecraft.class_8478;
+import net.minecraft.class_8479;
+import net.minecraft.class_8480;
+import net.minecraft.class_8481;
+import net.minecraft.class_8482;
+import net.minecraft.class_8483;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -78,6 +89,7 @@ import net.minecraft.client.sound.PassiveBeeSoundInstance;
 import net.minecraft.client.sound.SnifferDigSoundInstance;
 import net.minecraft.client.toast.RecipeToast;
 import net.minecraft.client.toast.SystemToast;
+import net.minecraft.client.toast.VoteToast;
 import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.util.telemetry.WorldSession;
 import net.minecraft.client.world.ClientChunkManager;
@@ -293,6 +305,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -345,6 +358,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	private final DataQueryHandler dataQueryHandler = new DataQueryHandler(this);
 	private int chunkLoadDistance = 3;
 	private int simulationDistance = 3;
+	private int field_44386;
 	private final Random random = Random.createThreadSafe();
 	private CommandDispatcher<CommandSource> commandDispatcher = new CommandDispatcher<>();
 	private final RecipeManager recipeManager = new RecipeManager();
@@ -358,17 +372,18 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	private MessageChain.Packer messagePacker = MessageChain.Packer.NONE;
 	private LastSeenMessagesCollector lastSeenMessagesCollector = new LastSeenMessagesCollector(20);
 	private MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
+	private class_8471 field_44385 = new class_8471();
 
 	public ClientPlayNetworkHandler(
-		MinecraftClient client, Screen screen, ClientConnection connection, @Nullable ServerInfo serverInfo, GameProfile profile, WorldSession worldSession
+		MinecraftClient minecraftClient, Screen screen, ClientConnection connection, @Nullable ServerInfo serverInfo, GameProfile profile, WorldSession worldSession
 	) {
-		this.client = client;
+		this.client = minecraftClient;
 		this.loginScreen = screen;
 		this.connection = connection;
 		this.serverInfo = serverInfo;
 		this.profile = profile;
-		this.advancementHandler = new ClientAdvancementManager(client);
-		this.commandSource = new ClientCommandSource(this, client);
+		this.advancementHandler = new ClientAdvancementManager(minecraftClient);
+		this.commandSource = new ClientCommandSource(this, minecraftClient);
 		this.worldSession = worldSession;
 	}
 
@@ -507,6 +522,9 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		Entity entity = this.world.getEntityById(packet.getId());
 		if (entity != null) {
 			entity.setVelocityClient((double)packet.getVelocityX() / 8000.0, (double)packet.getVelocityY() / 8000.0, (double)packet.getVelocityZ() / 8000.0);
+			if (packet.field_44466) {
+				entity.setVelocity(0.0, 20.0, 0.0);
+			}
 		}
 	}
 
@@ -1060,6 +1078,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		this.client.player.updateHealth(packet.getHealth());
 		this.client.player.getHungerManager().setFoodLevel(packet.getFood());
 		this.client.player.getHungerManager().setSaturationLevel(packet.getSaturation());
+		this.client.player.method_50716().method_50776(packet.method_51140());
 	}
 
 	@Override
@@ -2466,6 +2485,66 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		}
 	}
 
+	@Override
+	public void method_51010(class_8479 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+		if (!this.connection.isLocal()) {
+			if (arg.resetAll()) {
+				this.getRegistryManager().get(RegistryKeys.RULES).stream().forEach(argx -> argx.method_50203(true));
+			}
+
+			arg.rules().forEach(arg2 -> arg2.method_50122(arg.action()));
+			ItemGroups.method_50792();
+		}
+	}
+
+	@Override
+	public void method_51015(class_8483 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+		class_8369 lv = arg.voteData().header();
+		this.client.inGameHud.getChatHud().addMessage(Text.translatable("vote.started", lv.displayName(), StringHelper.formatTicks(lv.duration())));
+		this.field_44385.method_51071(arg.id(), arg.voteData());
+	}
+
+	@Override
+	public void method_51013(class_8481 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+		this.field_44385.method_51070(arg.id());
+		if (this.client.currentScreen instanceof class_8444 lv) {
+			lv.method_50959();
+		}
+	}
+
+	@Override
+	public void method_51014(class_8482 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+		this.field_44385.method_51066(arg.id(), arg.voters());
+		if (this.client.currentScreen instanceof class_8444 lv) {
+			lv.method_50959();
+		}
+	}
+
+	@Override
+	public void method_51012(class_8480 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+		arg.rejectReason().ifPresent(text -> this.client.inGameHud.getChatHud().addMessage(Text.translatable("vote.failed", text)));
+		this.field_44385.method_51064(arg.transactionId(), arg.rejectReason());
+	}
+
+	@Override
+	public void method_51009(class_8478 arg) {
+		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+		if (arg.clear()) {
+			this.field_44385 = new class_8471();
+		}
+
+		arg.votes().forEach(this.field_44385::method_51071);
+		arg.voters().forEach(this.field_44385::method_51066);
+		if (this.client.currentScreen instanceof class_8444 lv) {
+			lv.method_50959();
+		}
+	}
+
 	private void updateLighting(
 		int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet inited, BitSet uninited, Iterator<byte[]> nibbles, boolean nonEdge
 	) {
@@ -2611,6 +2690,17 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 
 		this.tickQueuedPackets();
 		this.worldSession.tick();
+		this.method_51018();
+	}
+
+	private void method_51018() {
+		if (!this.client.options.field_44284) {
+			if (this.field_44385.method_51063()) {
+				VoteToast.ConcernLevel.getOptionalConcernLevel(this.field_44386++)
+					.flatMap(concernLevel -> VoteToast.createToast(this.client, this.random, concernLevel))
+					.ifPresent(voteToast -> this.client.getToastManager().add(voteToast));
+			}
+		}
 	}
 
 	public void updateKeyPair(PlayerKeyPair keyPair) {
@@ -2634,6 +2724,16 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 
 	public boolean hasFeature(FeatureSet feature) {
 		return feature.isSubsetOf(this.getEnabledFeatures());
+	}
+
+	public class_8471 method_51017() {
+		return this.field_44385;
+	}
+
+	public int method_51006(class_8373 arg, class_8471.class_8475 arg2) {
+		int i = this.field_44385.method_51067(arg2);
+		this.connection.send(new class_8258(i, arg));
+		return i;
 	}
 
 	@Environment(EnvType.CLIENT)

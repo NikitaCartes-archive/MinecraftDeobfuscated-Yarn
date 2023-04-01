@@ -2,6 +2,8 @@ package net.minecraft.client.render.entity.feature;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
+import net.minecraft.class_8311;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
@@ -34,10 +36,12 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 		float k,
 		float l
 	) {
-		if (abstractClientPlayerEntity.canRenderCapeTexture()
-			&& !abstractClientPlayerEntity.isInvisible()
-			&& abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE)
-			&& abstractClientPlayerEntity.getCapeTexture() != null) {
+		class_8311 lv = class_8293.field_43573.method_50145();
+		if (lv != class_8311.NONE
+			|| abstractClientPlayerEntity.canRenderCapeTexture()
+				&& !abstractClientPlayerEntity.isInvisible()
+				&& abstractClientPlayerEntity.isPartVisible(PlayerModelPart.CAPE)
+				&& abstractClientPlayerEntity.getCapeTexture() != null) {
 			ItemStack itemStack = abstractClientPlayerEntity.getEquippedStack(EquipmentSlot.CHEST);
 			if (!itemStack.isOf(Items.ELYTRA)) {
 				matrixStack.push();
@@ -70,7 +74,9 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(6.0F + r / 2.0F + q));
 				matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(s / 2.0F));
 				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F - s / 2.0F));
-				VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(abstractClientPlayerEntity.getCapeTexture()));
+				VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(
+					RenderLayer.getEntitySolid(lv != class_8311.NONE ? lv.method_50319() : abstractClientPlayerEntity.getCapeTexture())
+				);
 				this.getContextModel().renderCape(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV);
 				matrixStack.pop();
 			}

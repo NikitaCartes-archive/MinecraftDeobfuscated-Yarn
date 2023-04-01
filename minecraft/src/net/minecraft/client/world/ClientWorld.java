@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -78,6 +80,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.ColorResolver;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.entity.EntityHandler;
@@ -220,7 +223,7 @@ public class ClientWorld extends World {
 	private void tickTime() {
 		this.setTime(this.properties.getTime() + 1L);
 		if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
-			this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
+			this.setTimeOfDay(this.properties.getTimeOfDay() + (long)class_8293.field_43614.method_50343(this.random));
 		}
 	}
 
@@ -265,6 +268,7 @@ public class ClientWorld extends World {
 		entity.age++;
 		this.getProfiler().push((Supplier<String>)(() -> Registries.ENTITY_TYPE.getId(entity.getType()).toString()));
 		entity.tick();
+		entity.method_50636();
 		this.getProfiler().pop();
 
 		for (Entity entity2 : entity.getPassengerList()) {
@@ -646,7 +650,10 @@ public class ClientWorld extends World {
 		float f = this.getSkyAngle(tickDelta);
 		Vec3d vec3d = cameraPos.subtract(2.0, 2.0, 2.0).multiply(0.25);
 		BiomeAccess biomeAccess = this.getBiomeAccess();
-		Vec3d vec3d2 = CubicSampler.sampleColor(vec3d, (x, y, z) -> Vec3d.unpackRgb(biomeAccess.getBiomeForNoiseGen(x, y, z).value().getSkyColor()));
+		Vec3d vec3d2 = CubicSampler.sampleColor(vec3d, (x, y, z) -> {
+			RegistryEntry<Biome> registryEntry = biomeAccess.getBiomeForNoiseGen(x, y, z);
+			return Vec3d.unpackRgb(registryEntry.value().getSkyColor(registryEntry));
+		});
 		float g = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		g = MathHelper.clamp(g, 0.0F, 1.0F);
 		float h = (float)vec3d2.x * g;
@@ -764,7 +771,7 @@ public class ClientWorld extends World {
 	public int calculateColor(BlockPos pos, ColorResolver colorResolver) {
 		int i = MinecraftClient.getInstance().options.getBiomeBlendRadius().getValue();
 		if (i == 0) {
-			return colorResolver.getColor(this.getBiome(pos).value(), (double)pos.getX(), (double)pos.getZ());
+			return colorResolver.getColor(this.getBiome(pos), (double)pos.getX(), (double)pos.getZ());
 		} else {
 			int j = (i * 2 + 1) * (i * 2 + 1);
 			int k = 0;
@@ -775,7 +782,7 @@ public class ClientWorld extends World {
 
 			while (cuboidBlockIterator.step()) {
 				mutable.set(cuboidBlockIterator.getX(), cuboidBlockIterator.getY(), cuboidBlockIterator.getZ());
-				int n = colorResolver.getColor(this.getBiome(mutable).value(), (double)mutable.getX(), (double)mutable.getZ());
+				int n = colorResolver.getColor(this.getBiome(mutable), (double)mutable.getX(), (double)mutable.getZ());
 				k += (n & 0xFF0000) >> 16;
 				l += (n & 0xFF00) >> 8;
 				m += n & 0xFF;
@@ -835,6 +842,11 @@ public class ClientWorld extends World {
 	@Override
 	public FeatureSet getEnabledFeatures() {
 		return this.networkHandler.getEnabledFeatures();
+	}
+
+	@Override
+	protected Stream<Chunk> method_50032() {
+		return this.chunkManager.method_51003();
 	}
 
 	@Environment(EnvType.CLIENT)

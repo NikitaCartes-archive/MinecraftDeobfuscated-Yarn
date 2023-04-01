@@ -40,7 +40,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	protected final T handler;
 	protected final Text playerInventoryTitle;
 	@Nullable
-	protected Slot focusedSlot;
+	public Slot focusedSlot;
 	@Nullable
 	private Slot touchDragSlotStart;
 	@Nullable
@@ -95,7 +95,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		super.render(matrices, mouseX, mouseY, delta);
 		matrices.push();
 		matrices.translate((float)i, (float)j, 0.0F);
-		this.focusedSlot = null;
+		this.method_50956(null);
 
 		for (int k = 0; k < this.handler.slots.size(); k++) {
 			Slot slot = this.handler.slots.get(k);
@@ -104,7 +104,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			}
 
 			if (this.isPointOverSlot(slot, (double)mouseX, (double)mouseY) && slot.isEnabled()) {
-				this.focusedSlot = slot;
+				this.method_50956(slot);
 				int l = slot.x;
 				int m = slot.y;
 				drawSlotHighlight(matrices, l, m, 0);
@@ -258,7 +258,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	@Nullable
-	private Slot getSlotAt(double x, double y) {
+	protected Slot getSlotAt(double x, double y) {
 		for (int i = 0; i < this.handler.slots.size(); i++) {
 			Slot slot = this.handler.slots.get(i);
 			if (this.isPointOverSlot(slot, x, y) && slot.isEnabled()) {
@@ -624,5 +624,9 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	public void close() {
 		this.client.player.closeHandledScreen();
 		super.close();
+	}
+
+	protected void method_50956(@Nullable Slot slot) {
+		this.focusedSlot = slot;
 	}
 }

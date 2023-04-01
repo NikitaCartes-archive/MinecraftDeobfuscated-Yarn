@@ -58,6 +58,11 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	}
 
 	@Override
+	protected boolean method_50669() {
+		return true;
+	}
+
+	@Override
 	protected void initGoals() {
 		super.initGoals();
 		this.raidGoal = new RaidGoal<>(this, RaiderEntity.class, true, entity -> entity != null && this.hasActiveRaid() && entity.getType() != EntityType.WITCH);

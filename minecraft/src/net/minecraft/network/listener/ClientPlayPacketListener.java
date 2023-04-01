@@ -1,5 +1,11 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.class_8478;
+import net.minecraft.class_8479;
+import net.minecraft.class_8480;
+import net.minecraft.class_8481;
+import net.minecraft.class_8482;
+import net.minecraft.class_8483;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -334,4 +340,16 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onBundle(BundleS2CPacket packet);
 
 	void onEntityDamage(EntityDamageS2CPacket packet);
+
+	void method_51010(class_8479 arg);
+
+	void method_51015(class_8483 arg);
+
+	void method_51013(class_8481 arg);
+
+	void method_51014(class_8482 arg);
+
+	void method_51012(class_8480 arg);
+
+	void method_51009(class_8478 arg);
 }

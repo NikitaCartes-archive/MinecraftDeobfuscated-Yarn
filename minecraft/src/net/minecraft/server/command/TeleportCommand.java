@@ -258,7 +258,7 @@ public class TeleportCommand {
 		} else {
 			float f = MathHelper.wrapDegrees(yaw);
 			float g = MathHelper.wrapDegrees(pitch);
-			if (target.teleport(world, x, y, z, movementFlags, f, g)) {
+			if (target.teleport(world, x, y, z, movementFlags, f, g) != null) {
 				if (facingLocation != null) {
 					facingLocation.look(source, target);
 				}

@@ -348,6 +348,10 @@ public class Codecs {
 		return rangedInt(min, max, value -> "Value must be within range [" + min + ";" + max + "]: " + value);
 	}
 
+	public static Codec<Float> rangedFloat(float min, float max) {
+		return rangedFloat(min, max, value -> "Value must be within range [" + min + ";" + max + "]: " + value);
+	}
+
 	private static Codec<Float> rangedFloat(float min, float max, Function<Float, String> messageFactory) {
 		return validate(
 			Codec.FLOAT,

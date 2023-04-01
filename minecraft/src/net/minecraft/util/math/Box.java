@@ -588,4 +588,16 @@ public class Box {
 	public static Box of(Vec3d center, double dx, double dy, double dz) {
 		return new Box(center.x - dx / 2.0, center.y - dy / 2.0, center.z - dz / 2.0, center.x + dx / 2.0, center.y + dy / 2.0, center.z + dz / 2.0);
 	}
+
+	public Box method_50933(float f) {
+		if (f == 1.0F) {
+			return this;
+		} else {
+			Vec3d vec3d = this.getCenter();
+			double d = this.getXLength() * (double)f;
+			double e = this.getYLength() * (double)f;
+			double g = this.getZLength() * (double)f;
+			return new Box(vec3d.x - d / 2.0, vec3d.y - e / 2.0, vec3d.z - g / 2.0, vec3d.x + d / 2.0, vec3d.y + e / 2.0, vec3d.z + g / 2.0);
+		}
+	}
 }

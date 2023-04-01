@@ -26,14 +26,14 @@ public abstract class SinglePartEntityModelWithChildTransform<E extends Entity> 
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-		if (this.child) {
+		if (!this.shouldBeMini() && !this.child) {
+			this.getPart().render(matrices, vertices, light, overlay, red, green, blue, alpha);
+		} else {
 			matrices.push();
 			matrices.scale(this.childScale, this.childScale, this.childScale);
 			matrices.translate(0.0F, this.childTranslation / 16.0F, 0.0F);
 			this.getPart().render(matrices, vertices, light, overlay, red, green, blue, alpha);
 			matrices.pop();
-		} else {
-			this.getPart().render(matrices, vertices, light, overlay, red, green, blue, alpha);
 		}
 	}
 }

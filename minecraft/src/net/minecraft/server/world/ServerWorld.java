@@ -33,8 +33,11 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
+import net.minecraft.class_8363;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -47,6 +50,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Npc;
 import net.minecraft.entity.SpawnGroup;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonFight;
@@ -56,9 +60,12 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.RayTracingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
@@ -91,6 +98,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.CsvWriter;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Unit;
@@ -166,6 +174,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 */
 	private static final int SERVER_IDLE_COOLDOWN = 300;
 	private static final int MAX_TICKS = 65536;
+	public static final int field_43415 = 13000;
 	final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
 	private final ServerChunkManager chunkManager;
 	private final MinecraftServer server;
@@ -192,6 +201,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final StructureAccessor structureAccessor;
 	private final StructureLocator structureLocator;
 	private final boolean shouldTickTime;
+	private boolean field_43412;
+	private boolean field_43413;
+	private long field_43414 = -1L;
 
 	public ServerWorld(
 		MinecraftServer server,
@@ -309,8 +321,42 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return this.structureAccessor;
 	}
 
+	@Nullable
+	public RayTracingEntity spawnRayTracingEntity() {
+		BlockPos blockPos = this.getTopPosition(
+			Heightmap.Type.MOTION_BLOCKING,
+			new BlockPos(
+				this.properties.getSpawnX() + this.random.nextBetween(-8, 8), this.properties.getSpawnY(), this.properties.getSpawnZ() + this.random.nextBetween(-8, 8)
+			)
+		);
+		RayTracingEntity rayTracingEntity = EntityType.RAY_TRACING.spawn(this, blockPos, SpawnReason.EVENT);
+		if (rayTracingEntity != null) {
+			rayTracingEntity.setYaw(this.getSpawnAngle());
+			rayTracingEntity.setPositionTarget(
+				new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnX()), this.server.getSpawnProtectionRadius()
+			);
+		}
+
+		return rayTracingEntity;
+	}
+
 	public void tick(BooleanSupplier shouldKeepTicking) {
 		Profiler profiler = this.getProfiler();
+		if (this.field_43413 != class_8293.field_43659.method_50116() && this == this.getServer().getOverworld()) {
+			this.field_43413 = class_8293.field_43659.method_50116();
+			if (this.field_43413) {
+				this.field_43414 = this.getTime() + (long)this.random.nextBetween(80, 3600);
+			}
+		} else if (this.field_43413 && this.field_43414 != -1L && this.field_43414 <= this.getTime()) {
+			RayTracingEntity rayTracingEntity = this.spawnRayTracingEntity();
+			if (rayTracingEntity != null) {
+				rayTracingEntity.justSpawned = true;
+				this.server.getPlayerManager().broadcast(Text.translatable("multiplayer.player.joined", "Ray Tracing").formatted(Formatting.YELLOW), false);
+			}
+
+			this.field_43414 = -1L;
+		}
+
 		this.inBlockTick = true;
 		profiler.push("world border");
 		this.getWorldBorder().tick();
@@ -319,8 +365,19 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
 		if (this.sleepManager.canSkipNight(i) && this.sleepManager.canResetTime(i, this.players)) {
 			if (this.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
-				long l = this.properties.getTimeOfDay() + 24000L;
-				this.setTimeOfDay(l - l % 24000L);
+				if (class_8293.field_43549.method_50116()) {
+					long l = this.properties.getTimeOfDay();
+					long m = l % 24000L;
+					long n = 13000L - m;
+					if (n < 0L) {
+						n += 24000L;
+					}
+
+					this.setTimeOfDay(l + n);
+				} else {
+					long l = this.properties.getTimeOfDay() + 24000L;
+					this.setTimeOfDay(l - l % 24000L);
+				}
 			}
 
 			this.wakeSleepingPlayers();
@@ -330,6 +387,25 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		this.calculateAmbientDarkness();
+		if (this.field_43412 != class_8293.field_43576.method_50116()) {
+			this.field_43412 = class_8293.field_43576.method_50116();
+			if (this.field_43412) {
+				this.players.forEach(serverPlayerEntity -> {
+					serverPlayerEntity.giveItemStack(new ItemStack(Items.LA_BAGUETTE));
+					if (!serverPlayerEntity.getInventory().containsAny(Set.of(Items.LE_TRICOLORE))) {
+						serverPlayerEntity.giveItemStack(new ItemStack(Items.LE_TRICOLORE));
+					}
+
+					serverPlayerEntity.currentScreenHandler.sendContentUpdates();
+				});
+			} else {
+				this.players.forEach(serverPlayerEntity -> {
+					serverPlayerEntity.getInventory().method_50711(Items.LE_TRICOLORE, Items.AIR);
+					serverPlayerEntity.currentScreenHandler.sendContentUpdates();
+				});
+			}
+		}
+
 		this.tickTime();
 		profiler.swap("tickPending");
 		if (!this.isDebugWorld()) {
@@ -407,7 +483,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			this.worldProperties.setTime(l);
 			this.worldProperties.getScheduledEvents().processEvents(this.server, l);
 			if (this.properties.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
-				this.setTimeOfDay(this.properties.getTimeOfDay() + 1L);
+				this.setTimeOfDay(this.properties.getTimeOfDay() + (long)class_8293.field_43614.method_50343(this.random));
 			}
 		}
 	}
@@ -451,7 +527,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		int j = chunkPos.getStartZ();
 		Profiler profiler = this.getProfiler();
 		profiler.push("thunder");
-		if (bl && this.isThundering() && this.random.nextInt(100000) == 0) {
+		if (bl && this.isThundering() && this.random.nextInt(class_8293.field_43655.method_50116() ? 80000 : 100000) == 0) {
 			BlockPos blockPos = this.getLightningPos(this.getRandomPosInChunk(i, 0, j, 15));
 			if (this.hasRain(blockPos)) {
 				LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
@@ -561,14 +637,20 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				LivingEntity.class, box, entity -> entity != null && entity.isAlive() && this.isSkyVisible(entity.getBlockPos())
 			);
 			if (!list.isEmpty()) {
-				return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getBlockPos();
-			} else {
-				if (blockPos.getY() == this.getBottomY() - 1) {
-					blockPos = blockPos.up(2);
+				if (class_8293.field_43655.method_50116()) {
+					list.removeIf(livingEntity -> livingEntity instanceof PlayerEntity ? false : this.random.nextBoolean());
 				}
 
-				return blockPos;
+				if (!list.isEmpty()) {
+					return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getBlockPos();
+				}
 			}
+
+			if (blockPos.getY() == this.getBottomY() - 1) {
+				blockPos = blockPos.up(2);
+			}
+
+			return blockPos;
 		}
 	}
 
@@ -649,6 +731,26 @@ public class ServerWorld extends World implements StructureWorldAccess {
 					} else {
 						k = CLEAR_WEATHER_DURATION_PROVIDER.get(this.random);
 					}
+				}
+
+				switch ((class_8363)class_8293.field_43559.method_50145()) {
+					case ALWAYS:
+						k = 1;
+						bl3 = true;
+						break;
+					case NEVER:
+						k = 0;
+						bl3 = false;
+				}
+
+				switch ((class_8363)class_8293.field_43560.method_50145()) {
+					case ALWAYS:
+						j = 1;
+						bl2 = true;
+						break;
+					case NEVER:
+						j = 0;
+						bl2 = false;
 				}
 
 				this.worldProperties.setThunderTime(j);
@@ -732,6 +834,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.getProfiler().push((Supplier<String>)(() -> Registries.ENTITY_TYPE.getId(entity.getType()).toString()));
 		profiler.visit("tickNonPassenger");
 		entity.tick();
+		entity.method_50636();
 		this.getProfiler().pop();
 
 		for (Entity entity2 : entity.getPassengerList()) {
@@ -1789,6 +1892,13 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public void cacheStructures(Chunk chunk) {
 		this.server.execute(() -> this.structureLocator.cache(chunk.getPos(), chunk.getStructureStarts()));
+	}
+
+	@Override
+	protected Stream<Chunk> method_50032() {
+		return StreamSupport.stream(this.chunkManager.threadedAnvilChunkStorage.entryIterator().spliterator(), false)
+			.map(chunkHolder -> chunkHolder.method_41205())
+			.filter(Objects::nonNull);
 	}
 
 	@Override

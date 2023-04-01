@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import net.minecraft.class_8293;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BeehiveBlock;
 import net.minecraft.block.Block;
@@ -427,8 +428,11 @@ public interface DispenserBehavior {
 					world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
 					world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, blockPos);
 				} else if (blockState.getBlock() instanceof TntBlock) {
-					TntBlock.primeTnt(world, blockPos);
+					TntBlock.primeTnt(world, blockPos, blockState);
 					world.removeBlock(blockPos, false);
+				} else if (class_8293.field_43626.method_50116() && !blockState.isAir()) {
+					TntBlock.primeTnt(world, blockPos, null, blockState);
+					world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 				} else {
 					this.setSuccess(false);
 				}

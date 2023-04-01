@@ -418,7 +418,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isClosed()) {
 			Entity entity = source.getSource();
 			if (entity instanceof PersistentProjectileEntity) {

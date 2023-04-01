@@ -714,9 +714,9 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer create(Entity entity, Random random, Item buyItem) {
 			ItemStack itemStack = new ItemStack(this.buy, this.price);
-			return new TradeOffer(itemStack, new ItemStack(Items.EMERALD), this.maxUses, this.experience, this.multiplier);
+			return new TradeOffer(itemStack, new ItemStack(buyItem), this.maxUses, this.experience, this.multiplier);
 		}
 	}
 
@@ -728,7 +728,7 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer create(Entity entity, Random random, Item buyItem) {
 			List<Enchantment> list = (List<Enchantment>)Registries.ENCHANTMENT
 				.stream()
 				.filter(Enchantment::isAvailableForEnchantedBookOffer)
@@ -745,7 +745,7 @@ public class TradeOffers {
 				j = 64;
 			}
 
-			return new TradeOffer(new ItemStack(Items.EMERALD, j), new ItemStack(Items.BOOK), itemStack, 12, this.experience, 0.2F);
+			return new TradeOffer(new ItemStack(buyItem, j), new ItemStack(Items.BOOK), itemStack, 12, this.experience, 0.2F);
 		}
 	}
 
@@ -759,7 +759,7 @@ public class TradeOffers {
 		 * @return a new trade offer, or {@code null} if none should be created
 		 */
 		@Nullable
-		TradeOffer create(Entity entity, Random random);
+		TradeOffer create(Entity entity, Random random, Item buyItem);
 	}
 
 	static class ProcessItemFactory implements TradeOffers.Factory {
@@ -789,9 +789,9 @@ public class TradeOffers {
 
 		@Nullable
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer create(Entity entity, Random random, Item buyItem) {
 			return new TradeOffer(
-				new ItemStack(Items.EMERALD, this.price),
+				new ItemStack(buyItem, this.price),
 				new ItemStack(this.secondBuy.getItem(), this.secondCount),
 				new ItemStack(this.sell.getItem(), this.sellCount),
 				this.maxUses,
@@ -819,8 +819,8 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
-			ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
+		public TradeOffer create(Entity entity, Random random, Item buyItem) {
+			ItemStack itemStack = new ItemStack(buyItem, this.price);
 			ItemStack itemStack2 = new ItemStack(this.sell);
 			if (this.sell instanceof DyeableArmorItem) {
 				List<DyeItem> list = Lists.<DyeItem>newArrayList();
@@ -864,11 +864,11 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer create(Entity entity, Random random, Item buyItem) {
 			int i = 5 + random.nextInt(15);
 			ItemStack itemStack = EnchantmentHelper.enchant(random, new ItemStack(this.tool.getItem()), i, false);
 			int j = Math.min(this.basePrice + i, 64);
-			ItemStack itemStack2 = new ItemStack(Items.EMERALD, j);
+			ItemStack itemStack2 = new ItemStack(buyItem, j);
 			return new TradeOffer(itemStack2, itemStack, this.maxUses, this.experience, this.multiplier);
 		}
 	}
@@ -907,10 +907,8 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
-			return new TradeOffer(
-				new ItemStack(Items.EMERALD, this.price), new ItemStack(this.sell.getItem(), this.count), this.maxUses, this.experience, this.multiplier
-			);
+		public TradeOffer create(Entity entity, Random random, Item buyItem) {
+			return new TradeOffer(new ItemStack(buyItem, this.price), new ItemStack(this.sell.getItem(), this.count), this.maxUses, this.experience, this.multiplier);
 		}
 	}
 
@@ -933,7 +931,7 @@ public class TradeOffers {
 
 		@Nullable
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer create(Entity entity, Random random, Item buyItem) {
 			if (!(entity.world instanceof ServerWorld serverWorld)) {
 				return null;
 			} else {
@@ -943,7 +941,7 @@ public class TradeOffers {
 					FilledMapItem.fillExplorationMap(serverWorld, itemStack);
 					MapState.addDecorationsNbt(itemStack, blockPos, "+", this.iconType);
 					itemStack.setCustomName(Text.translatable(this.nameKey));
-					return new TradeOffer(new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2F);
+					return new TradeOffer(new ItemStack(buyItem, this.price), new ItemStack(Items.COMPASS), itemStack, this.maxUses, this.experience, 0.2F);
 				} else {
 					return null;
 				}
@@ -973,8 +971,8 @@ public class TradeOffers {
 		}
 
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
-			ItemStack itemStack = new ItemStack(Items.EMERALD, this.price);
+		public TradeOffer create(Entity entity, Random random, Item buyItem) {
+			ItemStack itemStack = new ItemStack(buyItem, this.price);
 			List<Potion> list = (List<Potion>)Registries.POTION
 				.stream()
 				.filter(potionx -> !potionx.getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potionx))
@@ -1000,10 +998,10 @@ public class TradeOffers {
 
 		@Nullable
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer create(Entity entity, Random random, Item buyItem) {
 			ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
 			SuspiciousStewItem.addEffectToStew(itemStack, this.effect, this.duration);
-			return new TradeOffer(new ItemStack(Items.EMERALD, 1), itemStack, 12, this.experience, this.multiplier);
+			return new TradeOffer(new ItemStack(buyItem, 1), itemStack, 12, this.experience, this.multiplier);
 		}
 	}
 
@@ -1025,10 +1023,10 @@ public class TradeOffers {
 
 		@Nullable
 		@Override
-		public TradeOffer create(Entity entity, Random random) {
+		public TradeOffer create(Entity entity, Random random, Item buyItem) {
 			if (entity instanceof VillagerDataContainer) {
 				ItemStack itemStack = new ItemStack((ItemConvertible)this.map.get(((VillagerDataContainer)entity).getVillagerData().getType()), this.count);
-				return new TradeOffer(itemStack, new ItemStack(Items.EMERALD), this.maxUses, this.experience, 0.05F);
+				return new TradeOffer(itemStack, new ItemStack(buyItem), this.maxUses, this.experience, 0.05F);
 			} else {
 				return null;
 			}

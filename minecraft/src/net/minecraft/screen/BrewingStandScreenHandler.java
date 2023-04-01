@@ -186,7 +186,11 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		public static boolean matches(ItemStack stack) {
-			return stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION) || stack.isOf(Items.GLASS_BOTTLE);
+			return stack.isOf(Items.BOTTLE_OF_ENTITY)
+				|| stack.isOf(Items.POTION)
+				|| stack.isOf(Items.SPLASH_POTION)
+				|| stack.isOf(Items.LINGERING_POTION)
+				|| stack.isOf(Items.GLASS_BOTTLE);
 		}
 	}
 }

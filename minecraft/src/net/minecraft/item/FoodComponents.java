@@ -1,7 +1,11 @@
 package net.minecraft.item;
 
+import net.minecraft.class_8293;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 
 /**
  * Contains all the default food components used in vanilla food items.
@@ -85,6 +89,14 @@ public class FoodComponents {
 	public static final FoodComponent SWEET_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodComponent GLOW_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodComponent TROPICAL_FISH = new FoodComponent.Builder().hunger(1).saturationModifier(0.1F).build();
+	public static final FoodComponent AIR = new FoodComponent.Builder().hunger(0).saturationModifier(0.0F).onEaten((stack, eater) -> {
+		if (class_8293.field_43539.method_50116()) {
+			eater.setAir(eater.getAir() + 200);
+			if (eater.getWorld() instanceof ServerWorld serverWorld) {
+				serverWorld.playSound(null, eater.getX(), eater.getY(), eater.getZ(), SoundEvents.ENTITY_CAT_HISS, SoundCategory.PLAYERS, 1.0F, 0.5F);
+			}
+		}
+	}).build();
 
 	private static FoodComponent.Builder createStew(int hunger) {
 		return new FoodComponent.Builder().hunger(hunger).saturationModifier(0.6F);

@@ -179,7 +179,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else if (this.world.isClient) {

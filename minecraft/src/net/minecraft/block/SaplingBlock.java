@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.minecraft.class_8293;
 import net.minecraft.block.sapling.SaplingGenerator;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -37,10 +38,14 @@ public class SaplingBlock extends PlantBlock implements Fertilizable {
 	}
 
 	public void generate(ServerWorld world, BlockPos pos, BlockState state, Random random) {
-		if ((Integer)state.get(STAGE) == 0) {
-			world.setBlockState(pos, state.cycle(STAGE), Block.NO_REDRAW);
+		if (class_8293.field_43533.method_50116() && !world.getBlockState(pos.up()).getMaterial().isLiquid()) {
+			world.setBlockState(pos, Blocks.DEAD_BUSH.getDefaultState(), Block.NOTIFY_ALL);
 		} else {
-			this.generator.generate(world, world.getChunkManager().getChunkGenerator(), pos, state, random);
+			if ((Integer)state.get(STAGE) == 0) {
+				world.setBlockState(pos, state.cycle(STAGE), Block.NO_REDRAW);
+			} else {
+				this.generator.generate(world, world.getChunkManager().getChunkGenerator(), pos, state, random);
+			}
 		}
 	}
 

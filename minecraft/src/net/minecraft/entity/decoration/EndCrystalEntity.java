@@ -87,7 +87,7 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else if (source.getAttacker() instanceof EnderDragonEntity) {

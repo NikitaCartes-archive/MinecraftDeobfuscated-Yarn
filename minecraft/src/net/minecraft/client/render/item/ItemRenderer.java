@@ -53,10 +53,12 @@ import net.minecraft.util.math.MatrixUtil;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 
 @Environment(EnvType.CLIENT)
 public class ItemRenderer implements SynchronousResourceReloader {
 	public static final Identifier ENTITY_ENCHANTMENT_GLINT = new Identifier("textures/misc/enchanted_glint_entity.png");
+	public static final Identifier field_44412 = new Identifier("textures/misc/enchanted_glint_gold.png");
 	public static final Identifier ITEM_ENCHANTMENT_GLINT = new Identifier("textures/misc/enchanted_glint_item.png");
 	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
 	private static final int field_32937 = 8;
@@ -131,6 +133,10 @@ public class ItemRenderer implements SynchronousResourceReloader {
 			}
 
 			model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
+			if (stack.isWob()) {
+				matrices.multiply(new Quaternionf().rotationAxis((float) Math.PI, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, 0.0F));
+			}
+
 			matrices.translate(-0.5F, -0.5F, -0.5F);
 			if (!model.isBuiltin() && (!stack.isOf(Items.TRIDENT) || bl)) {
 				boolean bl2;

@@ -47,6 +47,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
@@ -72,6 +73,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.vote.BlockApproval;
 import net.minecraft.world.World;
 import org.slf4j.Logger;
 
@@ -203,6 +205,7 @@ public final class ItemStack {
 	 * The key of the item's color in the {@linkplain #DISPLAY_KEY display NBT}, whose value is {@value}.
 	 */
 	public static final String COLOR_KEY = "color";
+	public static final String WOB_KEY = "wob";
 	/**
 	 * The key of the unbreakable boolean in an item stack's custom NBT, whose value is {@value}.
 	 */
@@ -215,6 +218,7 @@ public final class ItemStack {
 	private static final String CAN_PLACE_ON_KEY = "CanPlaceOn";
 	private static final String HIDE_FLAGS_KEY = "HideFlags";
 	private static final Text DISABLED_TEXT = Text.translatable("item.disabled").formatted(Formatting.RED);
+	private static final Text DISABLED_RULE_TEXT = Text.translatable("rule.item.disabled").formatted(Formatting.RED);
 	private static final int field_30903 = 0;
 	private static final Style LORE_STYLE = Style.EMPTY.withColor(Formatting.DARK_PURPLE).withItalic(true);
 	private int count;
@@ -276,7 +280,7 @@ public final class ItemStack {
 
 	private ItemStack(NbtCompound nbt) {
 		this.item = Registries.ITEM.get(new Identifier(nbt.getString("id")));
-		this.count = nbt.getByte("Count");
+		this.count = nbt.getShort("Count");
 		if (nbt.contains("tag", NbtElement.COMPOUND_TYPE)) {
 			this.nbt = nbt.getCompound("tag");
 			this.getItem().postProcessNbt(this.nbt);
@@ -366,6 +370,10 @@ public final class ItemStack {
 		return this.getItem().getRegistryEntry().isIn(tag);
 	}
 
+	public boolean matchesKey(RegistryKey<Item> key) {
+		return this.getItem().getRegistryEntry().matchesKey(key);
+	}
+
 	/**
 	 * {@return whether the item is {@code item}}
 	 */
@@ -403,21 +411,25 @@ public final class ItemStack {
 	}
 
 	public ActionResult useOnBlock(ItemUsageContext context) {
-		PlayerEntity playerEntity = context.getPlayer();
-		BlockPos blockPos = context.getBlockPos();
-		CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(context.getWorld(), blockPos, false);
-		if (playerEntity != null
-			&& !playerEntity.getAbilities().allowModifyWorld
-			&& !this.canPlaceOn(context.getWorld().getRegistryManager().get(RegistryKeys.BLOCK), cachedBlockPosition)) {
-			return ActionResult.PASS;
+		if (!BlockApproval.isApproved(this.getItem())) {
+			return ActionResult.FAIL;
 		} else {
-			Item item = this.getItem();
-			ActionResult actionResult = item.useOnBlock(context);
-			if (playerEntity != null && actionResult.shouldIncrementStat()) {
-				playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
-			}
+			PlayerEntity playerEntity = context.getPlayer();
+			BlockPos blockPos = context.getBlockPos();
+			CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(context.getWorld(), blockPos, false);
+			if (playerEntity != null
+				&& !playerEntity.getAbilities().allowModifyWorld
+				&& !this.canPlaceOn(context.getWorld().getRegistryManager().get(RegistryKeys.BLOCK), cachedBlockPosition)) {
+				return ActionResult.PASS;
+			} else {
+				Item item = this.getItem();
+				ActionResult actionResult = item.useOnBlock(context);
+				if (playerEntity != null && actionResult.shouldIncrementStat()) {
+					playerEntity.incrementStat(Stats.USED.getOrCreateStat(item));
+				}
 
-			return actionResult;
+				return actionResult;
+			}
 		}
 	}
 
@@ -425,8 +437,8 @@ public final class ItemStack {
 		return this.getItem().getMiningSpeedMultiplier(this, state);
 	}
 
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-		return this.getItem().use(world, user, hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+		return !BlockApproval.isApproved(this.getItem()) ? TypedActionResult.fail(this) : this.getItem().use(world, player, hand);
 	}
 
 	public ItemStack finishUsing(World world, LivingEntity user) {
@@ -911,10 +923,20 @@ public final class ItemStack {
 		}
 	}
 
+	public boolean isWob() {
+		NbtCompound nbtCompound = this.getNbt();
+		return nbtCompound != null && nbtCompound.getBoolean("wob");
+	}
+
 	/**
 	 * {@return the custom name of the stack if it exists, or the item's name}
 	 */
 	public Text getName() {
+		Text text = this.getNameUnwobbed();
+		return (Text)(this.isWob() ? text.copy().styled(style -> style.withReversed(true)) : text);
+	}
+
+	private Text getNameUnwobbed() {
 		NbtCompound nbtCompound = this.getSubNbt("display");
 		if (nbtCompound != null && nbtCompound.contains("Name", NbtElement.STRING_TYPE)) {
 			try {
@@ -1155,6 +1177,10 @@ public final class ItemStack {
 
 		if (player != null && !this.getItem().isEnabled(player.getWorld().getEnabledFeatures())) {
 			list.add(DISABLED_TEXT);
+		}
+
+		if (!BlockApproval.isApproved(this)) {
+			list.add(DISABLED_RULE_TEXT);
 		}
 
 		return list;

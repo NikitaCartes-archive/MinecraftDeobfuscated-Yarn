@@ -10,8 +10,12 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.EnchantedBookItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.NbtItem;
+import net.minecraft.item.NbtNameItem;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.text.Text;
@@ -229,12 +233,12 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 				if (itemStack.hasCustomName()) {
 					k = 1;
 					i += k;
-					itemStack2.removeCustomName();
+					method_50782(itemStack2);
 				}
 			} else if (!this.newItemName.equals(itemStack.getName().getString())) {
 				k = 1;
 				i += k;
-				itemStack2.setCustomName(Text.literal(this.newItemName));
+				this.method_50781(itemStack2);
 			}
 
 			this.levelCost.set(j + i);
@@ -269,6 +273,32 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		}
 	}
 
+	private void method_50781(ItemStack itemStack) {
+		Item item = itemStack.getItem();
+		if (item instanceof NbtNameItem) {
+			NbtNameItem.setValue(itemStack, this.newItemName);
+		} else if (item instanceof NbtItem<?> nbtItem) {
+			if (nbtItem.getType() == NbtString.TYPE) {
+				((NbtItem<NbtString>)nbtItem).setValue(itemStack, NbtString.of(this.newItemName));
+			}
+		} else {
+			itemStack.setCustomName(Text.literal(this.newItemName));
+		}
+	}
+
+	private static void method_50782(ItemStack itemStack) {
+		Item item = itemStack.getItem();
+		if (item instanceof NbtNameItem) {
+			NbtNameItem.setValue(itemStack, "");
+		} else if (item instanceof NbtItem<?> nbtItem) {
+			if (nbtItem.getType() == NbtString.TYPE) {
+				((NbtItem<NbtString>)nbtItem).setValue(itemStack, NbtString.of(""));
+			}
+		} else {
+			itemStack.removeCustomName();
+		}
+	}
+
 	public static int getNextCost(int cost) {
 		return cost * 2 + 1;
 	}
@@ -278,9 +308,9 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		if (this.getSlot(2).hasStack()) {
 			ItemStack itemStack = this.getSlot(2).getStack();
 			if (StringUtils.isBlank(newItemName)) {
-				itemStack.removeCustomName();
+				method_50782(itemStack);
 			} else {
-				itemStack.setCustomName(Text.literal(this.newItemName));
+				this.method_50781(itemStack);
 			}
 		}
 

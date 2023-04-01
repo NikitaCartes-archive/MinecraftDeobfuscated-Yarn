@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
@@ -93,6 +94,7 @@ public class GameRenderer implements AutoCloseable {
 	 * @see Camera#getProjection()
 	 */
 	public static final float CAMERA_DEPTH = 0.05F;
+	private static final Identifier BLOOM_SHADER = new Identifier("shaders/post/bloom.json");
 	final MinecraftClient client;
 	private final ResourceManager resourceManager;
 	private final Random random = Random.create();
@@ -164,6 +166,8 @@ public class GameRenderer implements AutoCloseable {
 	private static ShaderProgram positionColorTexProgram;
 	@Nullable
 	private static ShaderProgram positionTexProgram;
+	@Nullable
+	private static ShaderProgram positionTexFunkyProgram;
 	@Nullable
 	private static ShaderProgram positionTexColorProgram;
 	@Nullable
@@ -352,23 +356,29 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	void loadPostProcessor(Identifier id) {
-		if (this.postProcessor != null) {
-			this.postProcessor.close();
-		}
+		if (!this.isUsingPostProcessor(id)) {
+			if (this.postProcessor != null) {
+				this.postProcessor.close();
+			}
 
-		try {
-			this.postProcessor = new PostEffectProcessor(this.client.getTextureManager(), this.resourceManager, this.client.getFramebuffer(), id);
-			this.postProcessor.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
-			this.postProcessorEnabled = true;
-		} catch (IOException var3) {
-			LOGGER.warn("Failed to load shader: {}", id, var3);
-			this.superSecretSettingIndex = SUPER_SECRET_SETTING_COUNT;
-			this.postProcessorEnabled = false;
-		} catch (JsonSyntaxException var4) {
-			LOGGER.warn("Failed to parse shader: {}", id, var4);
-			this.superSecretSettingIndex = SUPER_SECRET_SETTING_COUNT;
-			this.postProcessorEnabled = false;
+			try {
+				this.postProcessor = new PostEffectProcessor(this.client.getTextureManager(), this.resourceManager, this.client.getFramebuffer(), id);
+				this.postProcessor.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
+				this.postProcessorEnabled = true;
+			} catch (IOException var3) {
+				LOGGER.warn("Failed to load shader: {}", id, var3);
+				this.superSecretSettingIndex = SUPER_SECRET_SETTING_COUNT;
+				this.postProcessorEnabled = false;
+			} catch (JsonSyntaxException var4) {
+				LOGGER.warn("Failed to parse shader: {}", id, var4);
+				this.superSecretSettingIndex = SUPER_SECRET_SETTING_COUNT;
+				this.postProcessorEnabled = false;
+			}
 		}
+	}
+
+	private boolean isUsingPostProcessor(Identifier id) {
+		return this.postProcessorEnabled && this.postProcessor != null && this.postProcessor.getName().equals(id.toString());
 	}
 
 	public ResourceReloader createProgramReloader() {
@@ -491,6 +501,7 @@ public class GameRenderer implements AutoCloseable {
 				)
 			);
 			list2.add(Pair.of(new ShaderProgram(factory, "position_tex", VertexFormats.POSITION_TEXTURE), program -> positionTexProgram = program));
+			list2.add(Pair.of(new ShaderProgram(factory, "position_tex_funky", VertexFormats.POSITION_TEXTURE), program -> positionTexFunkyProgram = program));
 			list2.add(Pair.of(new ShaderProgram(factory, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR), program -> positionTexColorProgram = program));
 			list2.add(
 				Pair.of(
@@ -767,13 +778,13 @@ public class GameRenderer implements AutoCloseable {
 				this.client.crosshairTarget = entity.raycast(d, tickDelta, false);
 				Vec3d vec3d = entity.getCameraPosVec(tickDelta);
 				boolean bl = false;
-				int i = 3;
+				int i = class_8293.field_43568.method_50116() && this.client.player.getMainHandStack().isEmpty() ? 200 : 3;
 				double e = d;
 				if (this.client.interactionManager.hasExtendedReach()) {
-					e = 6.0;
+					e = Math.max(d, 6.0);
 					d = e;
 				} else {
-					if (d > 3.0) {
+					if (d > (double)i) {
 						bl = true;
 					}
 
@@ -794,7 +805,7 @@ public class GameRenderer implements AutoCloseable {
 					Entity entity2 = entityHitResult.getEntity();
 					Vec3d vec3d4 = entityHitResult.getPos();
 					double g = vec3d.squaredDistanceTo(vec3d4);
-					if (bl && g > 9.0) {
+					if (bl && g > (double)(i * i)) {
 						this.client.crosshairTarget = BlockHitResult.createMissed(vec3d4, Direction.getFacing(vec3d2.x, vec3d2.y, vec3d2.z), BlockPos.ofFloored(vec3d4));
 					} else if (g < e || this.client.crosshairTarget == null) {
 						this.client.crosshairTarget = entityHitResult;
@@ -984,6 +995,14 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		if (!this.client.skipGameRender) {
+			boolean bl = class_8293.field_43611.method_50116() || class_8293.field_43655.method_50116();
+			boolean bl2 = this.isUsingPostProcessor(BLOOM_SHADER);
+			if (bl && !bl2) {
+				this.loadPostProcessor(BLOOM_SHADER);
+			} else if (!bl && bl2) {
+				this.disablePostProcessor();
+			}
+
 			int i = (int)(this.client.mouse.getX() * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth());
 			int j = (int)(this.client.mouse.getY() * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight());
 			RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
@@ -1043,8 +1062,8 @@ public class GameRenderer implements AutoCloseable {
 			if (this.client.getOverlay() != null) {
 				try {
 					this.client.getOverlay().render(matrixStack2, i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var16) {
-					CrashReport crashReport = CrashReport.create(var16, "Rendering overlay");
+				} catch (Throwable var18) {
+					CrashReport crashReport = CrashReport.create(var18, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.getOverlay().getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -1052,8 +1071,8 @@ public class GameRenderer implements AutoCloseable {
 			} else if (this.client.currentScreen != null) {
 				try {
 					this.client.currentScreen.renderWithTooltip(matrixStack2, i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var15) {
-					CrashReport crashReport = CrashReport.create(var15, "Rendering screen");
+				} catch (Throwable var17) {
+					CrashReport crashReport = CrashReport.create(var17, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
@@ -1079,8 +1098,8 @@ public class GameRenderer implements AutoCloseable {
 					if (this.client.currentScreen != null) {
 						this.client.currentScreen.updateNarrator();
 					}
-				} catch (Throwable var14) {
-					CrashReport crashReport = CrashReport.create(var14, "Narrating screen");
+				} catch (Throwable var16) {
+					CrashReport crashReport = CrashReport.create(var16, "Narrating screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
@@ -1169,6 +1188,13 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	public void renderWorld(float tickDelta, long limitTime, MatrixStack matrices) {
+		if (class_8293.field_43605.method_50285()
+			| class_8293.field_43603.method_50285()
+			| class_8293.field_43602.method_50285()
+			| class_8293.field_43518.method_50307()) {
+			this.client.worldRenderer.reload();
+		}
+
 		this.lightmapTextureManager.update(tickDelta);
 		if (this.client.getCameraEntity() == null) {
 			this.client.setCameraEntity(this.client.player);
@@ -1353,6 +1379,11 @@ public class GameRenderer implements AutoCloseable {
 	@Nullable
 	public static ShaderProgram getPositionTexProgram() {
 		return positionTexProgram;
+	}
+
+	@Nullable
+	public static ShaderProgram getPositionTexFunkyProgram() {
+		return positionTexFunkyProgram;
 	}
 
 	@Nullable

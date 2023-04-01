@@ -33,7 +33,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		entityHitResult.getEntity().damage(this.getDamageSources().thrown(this, this.getOwner()), 0.0F);
+		entityHitResult.getEntity().damageWithModifier(this.getDamageSources().thrown(this, this.getOwner()), 0.0F);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 					}
 
 					entity.onLanding();
-					entity.damage(this.getDamageSources().fall(), 5.0F);
+					entity.damageWithModifier(this.getDamageSources().fall(), 5.0F);
 				}
 			} else if (entity != null) {
 				entity.requestTeleport(this.getX(), this.getY(), this.getZ());

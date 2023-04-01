@@ -2,10 +2,11 @@ package net.minecraft.client.render.item;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import java.util.Map.Entry;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.util.ModelIdentifier;
@@ -17,6 +18,7 @@ public class ItemModels {
 	public final Int2ObjectMap<ModelIdentifier> modelIds = new Int2ObjectOpenHashMap<>(256);
 	private final Int2ObjectMap<BakedModel> models = new Int2ObjectOpenHashMap<>(256);
 	private final BakedModelManager modelManager;
+	private int field_44395;
 
 	public ItemModels(BakedModelManager modelManager) {
 		this.modelManager = modelManager;
@@ -29,6 +31,12 @@ public class ItemModels {
 
 	@Nullable
 	public BakedModel getModel(Item item) {
+		int i = class_8293.field_43517.method_50385();
+		if (this.field_44395 != i) {
+			this.reloadModels();
+			this.field_44395 = i;
+		}
+
 		return this.models.get(getModelId(item));
 	}
 
@@ -47,8 +55,19 @@ public class ItemModels {
 	public void reloadModels() {
 		this.models.clear();
 
-		for (Entry<Integer, ModelIdentifier> entry : this.modelIds.entrySet()) {
-			this.models.put((Integer)entry.getKey(), this.modelManager.getModel((ModelIdentifier)entry.getValue()));
+		for (Entry<ModelIdentifier> entry : this.modelIds.int2ObjectEntrySet()) {
+			int i = entry.getIntKey();
+			Item item = Item.byRawId(i);
+			Item item2 = class_8293.field_43517.method_50386(item);
+			ModelIdentifier modelIdentifier;
+			if (item == item2) {
+				modelIdentifier = (ModelIdentifier)entry.getValue();
+			} else {
+				int j = Item.getRawId(item2);
+				modelIdentifier = this.modelIds.get(j);
+			}
+
+			this.models.put(i, this.modelManager.getModel(modelIdentifier));
 		}
 	}
 }

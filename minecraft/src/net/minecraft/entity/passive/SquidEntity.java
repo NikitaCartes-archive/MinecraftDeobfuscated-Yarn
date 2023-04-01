@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.Transformation;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -111,6 +112,35 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
+	public void method_50632(Transformation transformation, LivingEntity livingEntity) {
+		super.method_50632(transformation, livingEntity);
+		if (this.world.isClient) {
+			Vec3d vec3d = livingEntity.getVelocity();
+			double d = vec3d.horizontalLength();
+			this.prevTiltAngle = this.tiltAngle;
+			this.prevRollAngle = this.rollAngle;
+			this.prevThrustTimer = this.thrustTimer;
+			this.prevTentacleAngle = this.tentacleAngle;
+			this.thrustTimer = (float)((double)this.thrustTimer + d);
+			if (this.thrustTimer > (float) (Math.PI * 2)) {
+				this.thrustTimer -= (float) (Math.PI * 2);
+			}
+
+			if (this.thrustTimer < (float) Math.PI) {
+				float f = this.thrustTimer / (float) Math.PI;
+				this.tentacleAngle = MathHelper.sin(f * f * (float) Math.PI) * (float) Math.PI * 0.25F;
+			} else {
+				this.tentacleAngle = 0.0F;
+			}
+
+			this.bodyYaw = this.bodyYaw + (-((float)MathHelper.atan2(vec3d.x, vec3d.z)) * (180.0F / (float)Math.PI) - this.bodyYaw) * 0.1F;
+			this.setYaw(this.bodyYaw);
+			this.rollAngle = (float)((double)this.rollAngle + (float) Math.PI * d * 1.5);
+			this.tiltAngle = this.tiltAngle + (-((float)MathHelper.atan2(d, vec3d.y)) * (180.0F / (float)Math.PI) - this.tiltAngle) * 0.1F;
+		}
+	}
+
+	@Override
 	public void tickMovement() {
 		super.tickMovement();
 		this.prevTiltAngle = this.tiltAngle;
@@ -177,7 +207,7 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (super.damage(source, amount) && this.getAttacker() != null) {
 			if (!this.world.isClient) {
 				this.squirt();

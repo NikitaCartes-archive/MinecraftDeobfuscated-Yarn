@@ -533,7 +533,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (!this.world.isClient) {
 			this.setSitting(false);
 		}

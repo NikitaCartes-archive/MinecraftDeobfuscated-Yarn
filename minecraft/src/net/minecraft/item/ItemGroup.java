@@ -257,7 +257,7 @@ public class ItemGroup {
 							+ this.group.getDisplayName().getString()
 					);
 				} else {
-					if (stack.getItem().isEnabled(this.enabledFeatures)) {
+					if (stack.isItemEnabled(this.enabledFeatures)) {
 						switch (visibility) {
 							case PARENT_AND_SEARCH_TABS:
 								this.parentTabStacks.add(stack);

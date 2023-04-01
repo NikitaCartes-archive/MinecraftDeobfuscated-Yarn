@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -47,6 +48,7 @@ import net.minecraft.entity.ai.goal.UniversalAngerGoal;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -174,7 +176,13 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
+	public boolean canFly() {
+		return true;
+	}
+
+	@Override
 	protected void initGoals() {
+		this.goalSelector.add(0, new BeeEntity.class_8402(this));
 		this.goalSelector.add(0, new BeeEntity.StingGoal(this, 1.4F, true));
 		this.goalSelector.add(1, new BeeEntity.EnterHiveGoal());
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
@@ -190,6 +198,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		this.goalSelector.add(7, new BeeEntity.GrowCropsGoal());
 		this.goalSelector.add(8, new BeeEntity.BeeWanderAroundGoal());
 		this.goalSelector.add(9, new SwimGoal(this));
+		this.goalSelector.add(10, new BeeEntity.class_8403(this));
 		this.targetSelector.add(1, new BeeEntity.BeeRevengeGoal(this).setGroupRevenge(new Class[0]));
 		this.targetSelector.add(2, new BeeEntity.StingTargetGoal(this));
 		this.targetSelector.add(3, new UniversalAngerGoal<>(this, true));
@@ -237,7 +246,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		boolean bl = target.damage(this.getDamageSources().sting(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
+		boolean bl = target.damageWithModifier(this.getDamageSources().sting(this), (float)((int)this.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)));
 		if (bl) {
 			this.applyDamageEffects(this, target);
 			if (target instanceof LivingEntity) {
@@ -369,13 +378,13 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		}
 
 		if (this.ticksInsideWater > 20) {
-			this.damage(this.getDamageSources().drown(), 1.0F);
+			this.damageWithModifier(this.getDamageSources().drown(), 1.0F);
 		}
 
 		if (bl) {
 			this.ticksSinceSting++;
 			if (this.ticksSinceSting % 5 == 0 && this.random.nextInt(MathHelper.clamp(1200 - this.ticksSinceSting, 1, 1200)) == 0) {
-				this.damage(this.getDamageSources().generic(), this.getHealth());
+				this.damageWithModifier(this.getDamageSources().generic(), this.getHealth());
 			}
 		}
 
@@ -487,6 +496,10 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			if (this.age % 20 == 0 && !this.isHiveValid()) {
 				this.hivePos = null;
 			}
+		}
+
+		if (class_8293.field_43553.method_50116()) {
+			this.world.addParticle(ParticleTypes.GLOW, this.getParticleX(0.6), this.getRandomBodyY(), this.getParticleZ(0.6), 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -638,7 +651,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
@@ -1297,6 +1310,71 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		private boolean canSting() {
 			BeeEntity beeEntity = (BeeEntity)this.mob;
 			return beeEntity.hasAngerTime() && !beeEntity.hasStung();
+		}
+	}
+
+	static class class_8402 extends BeeEntity.class_8404 {
+		public class_8402(BeeEntity beeEntity) {
+			super(beeEntity);
+		}
+
+		@Override
+		public boolean canStart() {
+			return class_8293.field_43646.method_50116() && this.field_44100.getHoldingEntity() instanceof PlayerEntity;
+		}
+
+		@Override
+		protected Vec3d method_50675() {
+			return this.field_44100.getHoldingEntity().getPos().add(0.0, 5.0, 0.0);
+		}
+	}
+
+	static class class_8403 extends BeeEntity.class_8404 {
+		class_8403(BeeEntity beeEntity) {
+			super(beeEntity);
+		}
+
+		@Override
+		public boolean canStart() {
+			return this.field_44100.getPos().y > 256.0;
+		}
+
+		@Override
+		protected Vec3d method_50675() {
+			return this.field_44100.getPos().add(0.0, -2.0, 0.0);
+		}
+
+		@Override
+		protected float method_50676() {
+			return 0.2F;
+		}
+	}
+
+	abstract static class class_8404 extends Goal {
+		protected final BeeEntity field_44100;
+
+		class_8404(BeeEntity beeEntity) {
+			this.field_44100 = beeEntity;
+			this.setControls(EnumSet.of(Goal.Control.MOVE));
+		}
+
+		@Override
+		public boolean shouldContinue() {
+			if (!super.shouldContinue()) {
+				return false;
+			} else {
+				Vec3d vec3d = this.method_50675();
+				BlockPos blockPos = BlockPos.ofFloored(vec3d);
+				Path path = new Path(List.of(new PathNode(blockPos.getX(), blockPos.getY(), blockPos.getZ())), blockPos, false);
+				this.field_44100.getNavigation().startMovingAlong(path, (double)this.method_50676());
+				return true;
+			}
+		}
+
+		protected abstract Vec3d method_50675();
+
+		protected float method_50676() {
+			return 1.0F;
 		}
 	}
 }

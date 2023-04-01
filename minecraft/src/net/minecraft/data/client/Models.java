@@ -5,6 +5,7 @@ import java.util.stream.IntStream;
 import net.minecraft.util.Identifier;
 
 public class Models {
+	public static final Model MISSING = new Model(Optional.of(new Identifier("minecraft", "builtin/missing")), Optional.empty());
 	public static final Model CUBE = block(
 		"cube", TextureKey.PARTICLE, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST, TextureKey.UP, TextureKey.DOWN
 	);
@@ -147,6 +148,9 @@ public class Models {
 	);
 	public static final Model TEMPLATE_CAULDRON_FULL = block(
 		"template_cauldron_full", TextureKey.CONTENT, TextureKey.INSIDE, TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE
+	);
+	public static final Model TEMPLATE_COPPER_SINK_FULL = block(
+		"template_copper_sink_full", TextureKey.CONTENT, TextureKey.INSIDE, TextureKey.PARTICLE, TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE
 	);
 	public static final Model TEMPLATE_AZALEA = block("template_azalea", TextureKey.TOP, TextureKey.SIDE);
 	public static final Model TEMPLATE_POTTED_AZALEA_BUSH = block("template_potted_azalea_bush", TextureKey.PLANT, TextureKey.TOP, TextureKey.SIDE);

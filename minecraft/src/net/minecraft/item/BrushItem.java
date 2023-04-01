@@ -11,7 +11,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -49,7 +48,7 @@ public class BrushItem extends Item {
 
 	@NotNull
 	private HitResult getHitResult(LivingEntity user) {
-		return ProjectileUtil.getCollision(user, Predicate.not(Entity::isSpectator), Math.sqrt(ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE) - 1.0);
+		return ProjectileUtil.getCollision(user, Predicate.not(Entity::isSpectator), Math.sqrt(6.0) - 1.0);
 	}
 
 	@Override

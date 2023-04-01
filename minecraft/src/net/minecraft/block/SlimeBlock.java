@@ -1,8 +1,10 @@
 package net.minecraft.block;
 
+import net.minecraft.class_8293;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -34,7 +36,14 @@ public class SlimeBlock extends TransparentBlock {
 		Vec3d vec3d = entity.getVelocity();
 		if (vec3d.y < 0.0) {
 			double d = entity instanceof LivingEntity ? 1.0 : 0.8;
-			entity.setVelocity(vec3d.x, -vec3d.y * d, vec3d.z);
+			double e = -vec3d.y;
+			if (class_8293.field_43538.method_50116()) {
+				double f = Math.max(0.0, -(2.0 - e));
+				e = Math.max(f * 5.5, e);
+				e *= 2.0;
+			}
+
+			entity.setVelocity(vec3d.x, e * d, vec3d.z);
 		}
 	}
 
@@ -47,5 +56,17 @@ public class SlimeBlock extends TransparentBlock {
 		}
 
 		super.onSteppedOn(world, pos, state, entity);
+	}
+
+	@Override
+	public boolean isSticky(BlockState state) {
+		return true;
+	}
+
+	@Override
+	public boolean sticksTo(World world, BlockPos pos, BlockState state, BlockPos otherPos, BlockState otherState, Direction face, Direction otherFace) {
+		return otherState.isOf(Blocks.HONEY_BLOCK)
+			? false
+			: !class_8293.field_43578.method_50116() || !otherState.getCullingFace(world, otherPos, face.getOpposite()).isEmpty();
 	}
 }

@@ -60,6 +60,10 @@ public class UndergroundConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SCULK_PATCH_DEEP_DARK = ConfiguredFeatures.of("sculk_patch_deep_dark");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SCULK_PATCH_ANCIENT_CITY = ConfiguredFeatures.of("sculk_patch_ancient_city");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> SCULK_VEIN = ConfiguredFeatures.of("sculk_vein");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> MEGA_CRATER = ConfiguredFeatures.of("mega_crater");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> LARGE_CRATER = ConfiguredFeatures.of("large_crater");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> SMALL_CRATER = ConfiguredFeatures.of("small_crater");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> LUNAR_BASE = ConfiguredFeatures.of("lunar_base");
 
 	private static RegistryEntry<PlacedFeature> createBigDripleafFeature(Direction direction) {
 		return PlacedFeatures.createEntry(
@@ -461,6 +465,16 @@ public class UndergroundConfiguredFeatures {
 		ConfiguredFeatures.register(
 			featureRegisterable, SCULK_PATCH_ANCIENT_CITY, Feature.SCULK_PATCH, new SculkPatchFeatureConfig(10, 32, 64, 0, 1, UniformIntProvider.create(1, 3), 0.5F)
 		);
+		ConfiguredFeatures.register(
+			featureRegisterable, MEGA_CRATER, Feature.CRATER, new CraterFeatureConfig(UniformIntProvider.create(32, 48), UniformIntProvider.create(8, 16))
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable, LARGE_CRATER, Feature.CRATER, new CraterFeatureConfig(UniformIntProvider.create(12, 15), UniformIntProvider.create(3, 5))
+		);
+		ConfiguredFeatures.register(
+			featureRegisterable, SMALL_CRATER, Feature.CRATER, new CraterFeatureConfig(UniformIntProvider.create(4, 7), UniformIntProvider.create(2, 3))
+		);
+		ConfiguredFeatures.register(featureRegisterable, LUNAR_BASE, Feature.LUNAR_BASE, new DefaultFeatureConfig());
 		MultifaceGrowthBlock multifaceGrowthBlock2 = (MultifaceGrowthBlock)Blocks.SCULK_VEIN;
 		ConfiguredFeatures.register(
 			featureRegisterable,

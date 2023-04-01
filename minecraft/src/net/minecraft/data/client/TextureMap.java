@@ -328,6 +328,16 @@ public class TextureMap {
 			.put(TextureKey.CONTENT, content);
 	}
 
+	public static TextureMap method_51102(Identifier identifier) {
+		return new TextureMap()
+			.put(TextureKey.PARTICLE, getSubId(Blocks.COPPER_SINK, "_side"))
+			.put(TextureKey.SIDE, getSubId(Blocks.COPPER_SINK, "_side"))
+			.put(TextureKey.TOP, getSubId(Blocks.COPPER_SINK, "_top"))
+			.put(TextureKey.BOTTOM, getSubId(Blocks.COPPER_SINK, "_bottom"))
+			.put(TextureKey.INSIDE, getSubId(Blocks.COPPER_SINK, "_inner"))
+			.put(TextureKey.CONTENT, identifier);
+	}
+
 	public static TextureMap sculkShrieker(boolean canSummon) {
 		String string = canSummon ? "_can_summon" : "";
 		return new TextureMap()

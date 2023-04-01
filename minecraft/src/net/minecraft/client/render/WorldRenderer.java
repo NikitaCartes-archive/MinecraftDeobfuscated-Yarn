@@ -38,11 +38,13 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BrushableBlock;
 import net.minecraft.block.CampfireBlock;
+import net.minecraft.block.CheeseBlock;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.MultifaceGrowthBlock;
 import net.minecraft.block.PointedDripstoneBlock;
@@ -130,6 +132,7 @@ import net.minecraft.world.border.WorldBorder;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.slf4j.Logger;
 
@@ -1159,7 +1162,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		BackgroundRenderer.setFogBlack();
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 		float g = gameRenderer.getViewDistance();
-		boolean bl3 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
+		boolean bl3 = !class_8293.field_43534.method_50116() == this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		profiler.swap("sky");
 		RenderSystem.setShader(GameRenderer::getPositionProgram);
@@ -1355,6 +1358,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		immediate.draw(RenderLayer.getGlintTranslucent());
 		immediate.draw(RenderLayer.getEntityGlint());
 		immediate.draw(RenderLayer.getDirectEntityGlint());
+		immediate.draw(RenderLayer.getGoldEntityGlint());
 		immediate.draw(RenderLayer.getWaterMask());
 		this.bufferBuilders.getEffectVertexConsumers().draw();
 		if (this.transparencyPostProcessor != null) {
@@ -1802,9 +1806,12 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		if (!bl) {
 			CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
 			if (cameraSubmersionType != CameraSubmersionType.POWDER_SNOW && cameraSubmersionType != CameraSubmersionType.LAVA && !this.hasBlindnessOrDarkness(camera)) {
-				if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.END) {
+				boolean bl2 = class_8293.field_43596.method_50116();
+				DimensionEffects.SkyType skyType = bl2 ? DimensionEffects.SkyType.NORMAL : DimensionEffects.SkyType.END;
+				DimensionEffects.SkyType skyType2 = bl2 ? DimensionEffects.SkyType.END : DimensionEffects.SkyType.NORMAL;
+				if (this.client.world.getDimensionEffects().getSkyType() == skyType) {
 					this.renderEndSky(matrices);
-				} else if (this.client.world.getDimensionEffects().getSkyType() == DimensionEffects.SkyType.NORMAL) {
+				} else if (this.client.world.getDimensionEffects().getSkyType() == skyType2) {
 					Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.getCamera().getPos(), tickDelta);
 					float f = (float)vec3d.x;
 					float g = (float)vec3d.y;
@@ -1864,24 +1871,36 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					bufferBuilder.vertex(matrix4f2, k, 100.0F, k).texture(1.0F, 1.0F).next();
 					bufferBuilder.vertex(matrix4f2, -k, 100.0F, k).texture(0.0F, 1.0F).next();
 					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-					k = 20.0F;
-					RenderSystem.setShaderTexture(0, MOON_PHASES);
-					int r = this.world.getMoonPhase();
-					int s = r % 4;
-					int m = r / 4 % 2;
-					float t = (float)(s + 0) / 4.0F;
-					float o = (float)(m + 0) / 2.0F;
-					float p = (float)(s + 1) / 4.0F;
-					float q = (float)(m + 1) / 2.0F;
-					bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-					bufferBuilder.vertex(matrix4f2, -k, -100.0F, k).texture(p, q).next();
-					bufferBuilder.vertex(matrix4f2, k, -100.0F, k).texture(t, q).next();
-					bufferBuilder.vertex(matrix4f2, k, -100.0F, -k).texture(t, o).next();
-					bufferBuilder.vertex(matrix4f2, -k, -100.0F, -k).texture(p, o).next();
-					BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-					float u = this.world.method_23787(tickDelta) * i;
-					if (u > 0.0F) {
-						RenderSystem.setShaderColor(u, u, u, u);
+					if (this.world.getDimension().hasSkyLight()) {
+						k = 20.0F + 640.0F * (float)this.world.method_50840();
+						RenderSystem.setShaderTexture(0, MOON_PHASES);
+						int r = this.world.getMoonPhase();
+						int s = r % 4;
+						int m = r / 4 % 2;
+						float t = (float)(s + 0) / 4.0F;
+						float o = (float)(m + 0) / 2.0F;
+						float p = (float)(s + 1) / 4.0F;
+						float q = (float)(m + 1) / 2.0F;
+						bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+						bufferBuilder.vertex(matrix4f2, -k, -100.0F, k).texture(p, q).next();
+						bufferBuilder.vertex(matrix4f2, k, -100.0F, k).texture(t, q).next();
+						bufferBuilder.vertex(matrix4f2, k, -100.0F, -k).texture(t, o).next();
+						bufferBuilder.vertex(matrix4f2, -k, -100.0F, -k).texture(p, o).next();
+						BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+					} else {
+						k = 80.0F;
+						RenderSystem.setShaderTexture(0, class_8293.field_43507.method_50145().method_50457());
+						bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
+						bufferBuilder.vertex(matrix4f2, -k, -100.0F, k).texture(0.0F, 0.0F).next();
+						bufferBuilder.vertex(matrix4f2, k, -100.0F, k).texture(1.0F, 0.0F).next();
+						bufferBuilder.vertex(matrix4f2, k, -100.0F, -k).texture(1.0F, 1.0F).next();
+						bufferBuilder.vertex(matrix4f2, -k, -100.0F, -k).texture(0.0F, 1.0F).next();
+						BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
+					}
+
+					float l = this.world.method_23787(tickDelta) * i;
+					if (l > 0.0F) {
+						RenderSystem.setShaderColor(l, l, l, l);
 						BackgroundRenderer.clearFog();
 						this.starsBuffer.bind();
 						this.starsBuffer.draw(matrices.peek().getPositionMatrix(), projectionMatrix, GameRenderer.getPositionProgram());
@@ -2725,30 +2744,42 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		switch (eventId) {
 			case 1023:
 			case 1028:
-			case 1038:
+			case 1038: {
 				Camera camera = this.client.gameRenderer.getCamera();
 				if (camera.isReady()) {
-					double d = (double)pos.getX() - camera.getPos().x;
-					double e = (double)pos.getY() - camera.getPos().y;
-					double f = (double)pos.getZ() - camera.getPos().z;
-					double g = Math.sqrt(d * d + e * e + f * f);
-					double h = camera.getPos().x;
+					double h = (double)pos.getX() - camera.getPos().x;
+					double dx = (double)pos.getY() - camera.getPos().y;
+					double ex = (double)pos.getZ() - camera.getPos().z;
+					double fx = Math.sqrt(h * h + dx * dx + ex * ex);
+					double gx = camera.getPos().x;
 					double i = camera.getPos().y;
 					double j = camera.getPos().z;
-					if (g > 0.0) {
-						h += d / g * 2.0;
-						i += e / g * 2.0;
-						j += f / g * 2.0;
+					if (fx > 0.0) {
+						gx += h / fx * 2.0;
+						i += dx / fx * 2.0;
+						j += ex / fx * 2.0;
 					}
 
 					if (eventId == WorldEvents.WITHER_SPAWNS) {
-						this.world.playSound(h, i, j, SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.0F, false);
+						this.world.playSound(gx, i, j, SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.0F, false);
 					} else if (eventId == WorldEvents.END_PORTAL_OPENED) {
-						this.world.playSound(h, i, j, SoundEvents.BLOCK_END_PORTAL_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.0F, false);
+						this.world.playSound(gx, i, j, SoundEvents.BLOCK_END_PORTAL_SPAWN, SoundCategory.HOSTILE, 1.0F, 1.0F, false);
 					} else {
-						this.world.playSound(h, i, j, SoundEvents.ENTITY_ENDER_DRAGON_DEATH, SoundCategory.HOSTILE, 5.0F, 1.0F, false);
+						this.world.playSound(gx, i, j, SoundEvents.ENTITY_ENDER_DRAGON_DEATH, SoundCategory.HOSTILE, 5.0F, 1.0F, false);
 					}
 				}
+				break;
+			}
+			case 1506: {
+				Camera camera = this.client.gameRenderer.getCamera();
+				Vector3f vector3f = camera.getHorizontalPlane();
+				Vec3d vec3d = camera.getPos();
+				double d = -5.0;
+				double e = (double)vector3f.x * -5.0 + vec3d.x;
+				double f = (double)vector3f.y * -5.0 + vec3d.y;
+				double g = (double)vector3f.z * -5.0 + vec3d.z;
+				this.world.playSound(e, f, g, SoundEvents.field_43423, SoundCategory.MASTER, 1.0F, 1.0F, false);
+			}
 		}
 	}
 
@@ -2926,7 +2957,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.world
 					.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false);
 
-				for (int kx = 0; kx < 8; kx++) {
+				for (int alx = 0; alx < 8; alx++) {
 					this.world
 						.addParticle(
 							ParticleTypes.LARGE_SMOKE, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0
@@ -2939,21 +2970,21 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false
 					);
 
-				for (int kx = 0; kx < 5; kx++) {
-					double d = (double)pos.getX() + random.nextDouble() * 0.6 + 0.2;
-					double e = (double)pos.getY() + random.nextDouble() * 0.6 + 0.2;
-					double f = (double)pos.getZ() + random.nextDouble() * 0.6 + 0.2;
-					this.world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+				for (int alx = 0; alx < 5; alx++) {
+					double am = (double)pos.getX() + random.nextDouble() * 0.6 + 0.2;
+					double an = (double)pos.getY() + random.nextDouble() * 0.6 + 0.2;
+					double ao = (double)pos.getZ() + random.nextDouble() * 0.6 + 0.2;
+					this.world.addParticle(ParticleTypes.SMOKE, am, an, ao, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 1503:
 				this.world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 
-				for (int kx = 0; kx < 16; kx++) {
-					double d = (double)pos.getX() + (5.0 + random.nextDouble() * 6.0) / 16.0;
-					double e = (double)pos.getY() + 0.8125;
-					double f = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
-					this.world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+				for (int alx = 0; alx < 16; alx++) {
+					double am = (double)pos.getX() + (5.0 + random.nextDouble() * 6.0) / 16.0;
+					double an = (double)pos.getY() + 0.8125;
+					double ao = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
+					this.world.addParticle(ParticleTypes.SMOKE, am, an, ao, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 1504:
@@ -2966,19 +2997,19 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			case 2000:
 				Direction direction = Direction.byId(data);
 				int i = direction.getOffsetX();
-				int jx = direction.getOffsetY();
+				int j = direction.getOffsetY();
 				int kx = direction.getOffsetZ();
 				double d = (double)pos.getX() + (double)i * 0.6 + 0.5;
-				double e = (double)pos.getY() + (double)jx * 0.6 + 0.5;
+				double e = (double)pos.getY() + (double)j * 0.6 + 0.5;
 				double f = (double)pos.getZ() + (double)kx * 0.6 + 0.5;
 
 				for (int l = 0; l < 10; l++) {
 					double g = random.nextDouble() * 0.2 + 0.01;
 					double h = d + (double)i * 0.01 + (random.nextDouble() - 0.5) * (double)kx * 0.5;
-					double m = e + (double)jx * 0.01 + (random.nextDouble() - 0.5) * (double)jx * 0.5;
+					double m = e + (double)j * 0.01 + (random.nextDouble() - 0.5) * (double)j * 0.5;
 					double n = f + (double)kx * 0.01 + (random.nextDouble() - 0.5) * (double)i * 0.5;
 					double o = (double)i * g + random.nextGaussian() * 0.01;
-					double p = (double)jx * g + random.nextGaussian() * 0.01;
+					double p = (double)j * g + random.nextGaussian() * 0.01;
 					double q = (double)kx * g + random.nextGaussian() * 0.01;
 					this.addParticle(ParticleTypes.SMOKE, h, m, n, o, p, q);
 				}
@@ -3057,29 +3088,29 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 				break;
 			case 2004:
-				for (int jx = 0; jx < 20; jx++) {
-					double ac = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 2.0;
-					double ad = (double)pos.getY() + 0.5 + (random.nextDouble() - 0.5) * 2.0;
-					double ae = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 2.0;
-					this.world.addParticle(ParticleTypes.SMOKE, ac, ad, ae, 0.0, 0.0, 0.0);
-					this.world.addParticle(ParticleTypes.FLAME, ac, ad, ae, 0.0, 0.0, 0.0);
+				for (int kx = 0; kx < 20; kx++) {
+					double d = (double)pos.getX() + 0.5 + (random.nextDouble() - 0.5) * 2.0;
+					double e = (double)pos.getY() + 0.5 + (random.nextDouble() - 0.5) * 2.0;
+					double f = (double)pos.getZ() + 0.5 + (random.nextDouble() - 0.5) * 2.0;
+					this.world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+					this.world.addParticle(ParticleTypes.FLAME, d, e, f, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 2005:
 				BoneMealItem.createParticles(this.world, pos, data);
 				break;
 			case 2006:
-				for (int k = 0; k < 200; k++) {
-					float af = random.nextFloat() * 4.0F;
-					float ag = random.nextFloat() * (float) (Math.PI * 2);
-					double e = (double)(MathHelper.cos(ag) * af);
-					double f = 0.01 + random.nextDouble() * 0.5;
-					double y = (double)(MathHelper.sin(ag) * af);
+				for (int al = 0; al < 200; al++) {
+					float ad = random.nextFloat() * 4.0F;
+					float ae = random.nextFloat() * (float) (Math.PI * 2);
+					double an = (double)(MathHelper.cos(ae) * ad);
+					double ao = 0.01 + random.nextDouble() * 0.5;
+					double g = (double)(MathHelper.sin(ae) * ad);
 					Particle particle2 = this.spawnParticle(
-						ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + e * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + y * 0.1, e, f, y
+						ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + an * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + g * 0.1, an, ao, g
 					);
 					if (particle2 != null) {
-						particle2.move(af);
+						particle2.move(ad);
 					}
 				}
 
@@ -3091,12 +3122,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.world.addParticle(ParticleTypes.EXPLOSION, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
 				break;
 			case 2009:
-				for (int kx = 0; kx < 8; kx++) {
+				for (int alx = 0; alx < 8; alx++) {
 					this.world
 						.addParticle(
 							ParticleTypes.CLOUD, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0
 						);
 				}
+				break;
+			case 2010:
+				VoxelShape voxelShape = CheeseBlock.CORNER_SHAPES[MathHelper.clamp(data, 0, CheeseBlock.CORNER_SHAPES.length)];
+				this.world.playSoundAtBlockCenter(pos, SoundEvents.ENTITY_GENERIC_EAT, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
+				this.client.particleManager.method_51022(pos, Blocks.CHEESE.getDefaultState(), voxelShape);
 				break;
 			case 3000:
 				this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, true, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
@@ -3132,62 +3168,62 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.SCRAPE, UniformIntProvider.create(3, 5));
 				break;
 			case 3006:
-				int j = data >> 6;
-				if (j > 0) {
-					if (random.nextFloat() < 0.3F + (float)j * 0.1F) {
-						float w = 0.15F + 0.02F * (float)j * (float)j * random.nextFloat();
-						float af = 0.4F + 0.3F * (float)j * random.nextFloat();
-						this.world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_SCULK_CHARGE, SoundCategory.BLOCKS, w, af, false);
+				int k = data >> 6;
+				if (k > 0) {
+					if (random.nextFloat() < 0.3F + (float)k * 0.1F) {
+						float ac = 0.15F + 0.02F * (float)k * (float)k * random.nextFloat();
+						float ad = 0.4F + 0.3F * (float)k * random.nextFloat();
+						this.world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_SCULK_CHARGE, SoundCategory.BLOCKS, ac, ad, false);
 					}
 
 					byte b = (byte)(data & 63);
-					IntProvider intProvider = UniformIntProvider.create(0, j);
-					float ag = 0.005F;
+					IntProvider intProvider = UniformIntProvider.create(0, k);
+					float ae = 0.005F;
 					Supplier<Vec3d> supplier = () -> new Vec3d(
 							MathHelper.nextDouble(random, -0.005F, 0.005F), MathHelper.nextDouble(random, -0.005F, 0.005F), MathHelper.nextDouble(random, -0.005F, 0.005F)
 						);
 					if (b == 0) {
 						for (Direction direction2 : Direction.values()) {
-							float ah = direction2 == Direction.DOWN ? (float) Math.PI : 0.0F;
-							double z = direction2.getAxis() == Direction.Axis.Y ? 0.65 : 0.57;
-							ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ah), intProvider, direction2, supplier, z);
+							float af = direction2 == Direction.DOWN ? (float) Math.PI : 0.0F;
+							double h = direction2.getAxis() == Direction.Axis.Y ? 0.65 : 0.57;
+							ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(af), intProvider, direction2, supplier, h);
 						}
 					} else {
 						for (Direction direction3 : MultifaceGrowthBlock.flagToDirections(b)) {
-							float ai = direction3 == Direction.UP ? (float) Math.PI : 0.0F;
-							double y = 0.35;
-							ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ai), intProvider, direction3, supplier, 0.35);
+							float ag = direction3 == Direction.UP ? (float) Math.PI : 0.0F;
+							double g = 0.35;
+							ParticleUtil.spawnParticles(this.world, pos, new SculkChargeParticleEffect(ag), intProvider, direction3, supplier, 0.35);
 						}
 					}
 				} else {
 					this.world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_SCULK_CHARGE, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 					boolean bl = this.world.getBlockState(pos).isFullCube(this.world, pos);
-					int aj = bl ? 40 : 20;
-					float ag = bl ? 0.45F : 0.25F;
-					float ak = 0.07F;
+					int x = bl ? 40 : 20;
+					float ae = bl ? 0.45F : 0.25F;
+					float ah = 0.07F;
 
-					for (int al = 0; al < aj; al++) {
-						float am = 2.0F * random.nextFloat() - 1.0F;
-						float ai = 2.0F * random.nextFloat() - 1.0F;
-						float an = 2.0F * random.nextFloat() - 1.0F;
+					for (int ai = 0; ai < x; ai++) {
+						float aj = 2.0F * random.nextFloat() - 1.0F;
+						float ag = 2.0F * random.nextFloat() - 1.0F;
+						float ak = 2.0F * random.nextFloat() - 1.0F;
 						this.world
 							.addParticle(
 								ParticleTypes.SCULK_CHARGE_POP,
-								(double)pos.getX() + 0.5 + (double)(am * ag),
-								(double)pos.getY() + 0.5 + (double)(ai * ag),
-								(double)pos.getZ() + 0.5 + (double)(an * ag),
-								(double)(am * 0.07F),
-								(double)(ai * 0.07F),
-								(double)(an * 0.07F)
+								(double)pos.getX() + 0.5 + (double)(aj * ae),
+								(double)pos.getY() + 0.5 + (double)(ag * ae),
+								(double)pos.getZ() + 0.5 + (double)(ak * ae),
+								(double)(aj * 0.07F),
+								(double)(ag * 0.07F),
+								(double)(ak * 0.07F)
 							);
 					}
 				}
 				break;
 			case 3007:
-				for (int kx = 0; kx < 10; kx++) {
+				for (int alx = 0; alx < 10; alx++) {
 					this.world
 						.addParticle(
-							new ShriekParticleEffect(kx * 5), false, (double)pos.getX() + 0.5, (double)pos.getY() + SculkShriekerBlock.TOP, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0
+							new ShriekParticleEffect(alx * 5), false, (double)pos.getX() + 0.5, (double)pos.getY() + SculkShriekerBlock.TOP, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0
 						);
 				}
 

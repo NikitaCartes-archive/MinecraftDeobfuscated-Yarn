@@ -54,6 +54,7 @@ public record ChunkGeneratorSettings(
 	public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, new Identifier("amplified"));
 	public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, new Identifier("nether"));
 	public static final RegistryKey<ChunkGeneratorSettings> END = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, new Identifier("end"));
+	public static final RegistryKey<ChunkGeneratorSettings> field_44264 = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, new Identifier("moon"));
 	public static final RegistryKey<ChunkGeneratorSettings> CAVES = RegistryKey.of(RegistryKeys.CHUNK_GENERATOR_SETTINGS, new Identifier("caves"));
 	public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(
 		RegistryKeys.CHUNK_GENERATOR_SETTINGS, new Identifier("floating_islands")
@@ -73,8 +74,25 @@ public record ChunkGeneratorSettings(
 		chunkGenerationSettingsRegisterable.register(AMPLIFIED, createSurfaceSettings(chunkGenerationSettingsRegisterable, true, false));
 		chunkGenerationSettingsRegisterable.register(NETHER, createNetherSettings(chunkGenerationSettingsRegisterable));
 		chunkGenerationSettingsRegisterable.register(END, createEndSettings(chunkGenerationSettingsRegisterable));
+		chunkGenerationSettingsRegisterable.register(field_44264, method_50922(chunkGenerationSettingsRegisterable));
 		chunkGenerationSettingsRegisterable.register(CAVES, createCavesSettings(chunkGenerationSettingsRegisterable));
 		chunkGenerationSettingsRegisterable.register(FLOATING_ISLANDS, createFloatingIslandsSettings(chunkGenerationSettingsRegisterable));
+	}
+
+	private static ChunkGeneratorSettings method_50922(Registerable<?> registerable) {
+		return new ChunkGeneratorSettings(
+			GenerationShapeConfig.END,
+			Blocks.END_STONE.getDefaultState(),
+			Blocks.AIR.getDefaultState(),
+			DensityFunctions.method_50923(registerable.getRegistryLookup(RegistryKeys.DENSITY_FUNCTION)),
+			VanillaSurfaceRules.method_51122(),
+			List.of(),
+			0,
+			false,
+			false,
+			true,
+			false
+		);
 	}
 
 	private static ChunkGeneratorSettings createEndSettings(Registerable<?> registerable) {

@@ -270,7 +270,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.hasActiveRaid()) {
 			this.getRaid().updateBar();
 		}

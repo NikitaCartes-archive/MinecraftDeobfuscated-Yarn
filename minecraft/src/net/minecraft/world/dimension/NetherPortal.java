@@ -10,7 +10,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
@@ -29,9 +28,10 @@ public class NetherPortal {
 	public static final int MAX_WIDTH = 21;
 	private static final int field_31826 = 3;
 	public static final int field_31824 = 21;
-	private static final AbstractBlock.ContextPredicate IS_VALID_FRAME_BLOCK = (state, world, pos) -> state.isOf(Blocks.OBSIDIAN);
 	private static final float FALLBACK_THRESHOLD = 4.0F;
 	private static final double HEIGHT_STRETCH = 1.0;
+	public static final AbstractBlock.ContextPredicate IS_GLOWSTONE = (state, world, pos) -> state.isOf(Blocks.GLOWSTONE);
+	public static final AbstractBlock.ContextPredicate IS_OBSIDIAN = (state, world, pos) -> state.isOf(Blocks.OBSIDIAN);
 	private final WorldAccess world;
 	private final Direction.Axis axis;
 	private final Direction negativeDir;
@@ -40,22 +40,35 @@ public class NetherPortal {
 	private BlockPos lowerCorner;
 	private int height;
 	private final int width;
+	private final AbstractBlock.ContextPredicate framePredicate;
+	private final Block portalBlock;
+	private final Block activator;
 
-	public static Optional<NetherPortal> getNewPortal(WorldAccess world, BlockPos pos, Direction.Axis axis) {
-		return getOrEmpty(world, pos, areaHelper -> areaHelper.isValid() && areaHelper.foundPortalBlocks == 0, axis);
+	public static Optional<NetherPortal> getNewPortal(WorldAccess world, BlockPos pos, Direction.Axis axis, boolean other) {
+		return getOrEmpty(world, pos, areaHelper -> areaHelper.isValid() && areaHelper.foundPortalBlocks == 0, axis, other);
 	}
 
-	public static Optional<NetherPortal> getOrEmpty(WorldAccess world, BlockPos pos, Predicate<NetherPortal> validator, Direction.Axis axis) {
-		Optional<NetherPortal> optional = Optional.of(new NetherPortal(world, pos, axis)).filter(validator);
+	public static Optional<NetherPortal> getOrEmpty(WorldAccess world, BlockPos pos, Predicate<NetherPortal> validator, Direction.Axis axis, boolean other) {
+		Optional<NetherPortal> optional = Optional.of(new NetherPortal(world, pos, axis, other)).filter(validator);
 		if (optional.isPresent()) {
 			return optional;
 		} else {
 			Direction.Axis axis2 = axis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
-			return Optional.of(new NetherPortal(world, pos, axis2)).filter(validator);
+			return Optional.of(new NetherPortal(world, pos, axis2, other)).filter(validator);
 		}
 	}
 
-	public NetherPortal(WorldAccess world, BlockPos pos, Direction.Axis axis) {
+	public NetherPortal(WorldAccess world, BlockPos pos, Direction.Axis axis, boolean other) {
+		if (other) {
+			this.framePredicate = IS_GLOWSTONE;
+			this.portalBlock = Blocks.OTHER_PORTAL;
+			this.activator = Blocks.WATER;
+		} else {
+			this.framePredicate = IS_OBSIDIAN;
+			this.portalBlock = Blocks.NETHER_PORTAL;
+			this.activator = Blocks.FIRE;
+		}
+
 		this.world = world;
 		this.axis = axis;
 		this.negativeDir = axis == Direction.Axis.X ? Direction.WEST : Direction.SOUTH;
@@ -76,7 +89,7 @@ public class NetherPortal {
 	private BlockPos getLowerCorner(BlockPos pos) {
 		int i = Math.max(this.world.getBottomY(), pos.getY() - 21);
 
-		while (pos.getY() > i && validStateInsidePortal(this.world.getBlockState(pos.down()))) {
+		while (pos.getY() > i && this.validStateInsidePortal(this.world.getBlockState(pos.down()))) {
 			pos = pos.down();
 		}
 
@@ -96,15 +109,15 @@ public class NetherPortal {
 		for (int i = 0; i <= 21; i++) {
 			mutable.set(pos).move(direction, i);
 			BlockState blockState = this.world.getBlockState(mutable);
-			if (!validStateInsidePortal(blockState)) {
-				if (IS_VALID_FRAME_BLOCK.test(blockState, this.world, mutable)) {
+			if (!this.validStateInsidePortal(blockState)) {
+				if (this.framePredicate.test(blockState, this.world, mutable)) {
 					return i;
 				}
 				break;
 			}
 
 			BlockState blockState2 = this.world.getBlockState(mutable.move(Direction.DOWN));
-			if (!IS_VALID_FRAME_BLOCK.test(blockState2, this.world, mutable)) {
+			if (!this.framePredicate.test(blockState2, this.world, mutable)) {
 				break;
 			}
 		}
@@ -121,7 +134,7 @@ public class NetherPortal {
 	private boolean isHorizontalFrameValid(BlockPos.Mutable pos, int height) {
 		for (int i = 0; i < this.width; i++) {
 			BlockPos.Mutable mutable = pos.set(this.lowerCorner).move(Direction.UP, height).move(this.negativeDir, i);
-			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(mutable), this.world, mutable)) {
+			if (!this.framePredicate.test(this.world.getBlockState(mutable), this.world, mutable)) {
 				return false;
 			}
 		}
@@ -132,23 +145,23 @@ public class NetherPortal {
 	private int getPotentialHeight(BlockPos.Mutable pos) {
 		for (int i = 0; i < 21; i++) {
 			pos.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, -1);
-			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(pos), this.world, pos)) {
+			if (!this.framePredicate.test(this.world.getBlockState(pos), this.world, pos)) {
 				return i;
 			}
 
 			pos.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, this.width);
-			if (!IS_VALID_FRAME_BLOCK.test(this.world.getBlockState(pos), this.world, pos)) {
+			if (!this.framePredicate.test(this.world.getBlockState(pos), this.world, pos)) {
 				return i;
 			}
 
 			for (int j = 0; j < this.width; j++) {
 				pos.set(this.lowerCorner).move(Direction.UP, i).move(this.negativeDir, j);
 				BlockState blockState = this.world.getBlockState(pos);
-				if (!validStateInsidePortal(blockState)) {
+				if (!this.validStateInsidePortal(blockState)) {
 					return i;
 				}
 
-				if (blockState.isOf(Blocks.NETHER_PORTAL)) {
+				if (blockState.isOf(this.portalBlock)) {
 					this.foundPortalBlocks++;
 				}
 			}
@@ -157,8 +170,8 @@ public class NetherPortal {
 		return 21;
 	}
 
-	private static boolean validStateInsidePortal(BlockState state) {
-		return state.isAir() || state.isIn(BlockTags.FIRE) || state.isOf(Blocks.NETHER_PORTAL);
+	private boolean validStateInsidePortal(BlockState state) {
+		return state.isAir() || state.isOf(this.activator) || state.isOf(this.portalBlock);
 	}
 
 	public boolean isValid() {
@@ -166,9 +179,9 @@ public class NetherPortal {
 	}
 
 	public void createPortal() {
-		BlockState blockState = Blocks.NETHER_PORTAL.getDefaultState().with(NetherPortalBlock.AXIS, this.axis);
+		BlockState blockState = this.portalBlock.getDefaultState().with(NetherPortalBlock.AXIS, this.axis);
 		BlockPos.iterate(this.lowerCorner, this.lowerCorner.offset(Direction.UP, this.height - 1).offset(this.negativeDir, this.width - 1))
-			.forEach(blockPos -> this.world.setBlockState(blockPos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE));
+			.forEach(pos -> this.world.setBlockState(pos, blockState, Block.NOTIFY_LISTENERS | Block.FORCE_STATE));
 	}
 
 	public boolean wasAlreadyValid() {

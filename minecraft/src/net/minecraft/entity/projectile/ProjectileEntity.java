@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Ownable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -13,6 +14,7 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -170,6 +172,11 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		float f = -MathHelper.sin(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
 		float g = -MathHelper.sin((pitch + roll) * (float) (Math.PI / 180.0));
 		float h = MathHelper.cos(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));
+		if (shooter instanceof LivingEntity livingEntity
+			&& (livingEntity.getStackInHand(Hand.MAIN_HAND).isWob() || livingEntity.getStackInHand(Hand.OFF_HAND).isWob())) {
+			speed *= -1.0F;
+		}
+
 		this.setVelocity((double)f, (double)g, (double)h, speed, divergence);
 		Vec3d vec3d = shooter.getVelocity();
 		this.setVelocity(this.getVelocity().add(vec3d.x, shooter.isOnGround() ? 0.0 : vec3d.y, vec3d.z));

@@ -70,7 +70,8 @@ public class BlockColors {
 			(state, world, pos, tintIndex) -> world != null && pos != null ? BiomeColors.getWaterColor(world, pos) : -1,
 			Blocks.WATER,
 			Blocks.BUBBLE_COLUMN,
-			Blocks.WATER_CAULDRON
+			Blocks.WATER_CAULDRON,
+			Blocks.FILLED_COPPER_SINK
 		);
 		blockColors.registerColorProvider(
 			(state, world, pos, tintIndex) -> RedstoneWireBlock.getWireColor((Integer)state.get(RedstoneWireBlock.POWER)), Blocks.REDSTONE_WIRE

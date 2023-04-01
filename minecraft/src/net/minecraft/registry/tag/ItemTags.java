@@ -101,6 +101,8 @@ public final class ItemTags {
 	public static final TagKey<Item> SHOVELS = of("shovels");
 	public static final TagKey<Item> TOOLS = of("tools");
 	public static final TagKey<Item> BREAKS_DECORATED_POTS = of("breaks_decorated_pots");
+	public static final TagKey<Item> HEAVY = of("heavy");
+	public static final TagKey<Item> COPPER = of("copper");
 
 	private ItemTags() {
 	}

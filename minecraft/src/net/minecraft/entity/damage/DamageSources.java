@@ -23,6 +23,7 @@ public class DamageSources {
 	private final DamageSource lava;
 	private final DamageSource hotFloor;
 	private final DamageSource inWall;
+	private final DamageSource onMoon;
 	private final DamageSource cramming;
 	private final DamageSource drown;
 	private final DamageSource starve;
@@ -38,6 +39,7 @@ public class DamageSources {
 	private final DamageSource sweetBerryBush;
 	private final DamageSource freeze;
 	private final DamageSource stalagmite;
+	private final DamageSource midasCurse;
 
 	public DamageSources(DynamicRegistryManager registryManager) {
 		this.registry = registryManager.get(RegistryKeys.DAMAGE_TYPE);
@@ -47,6 +49,7 @@ public class DamageSources {
 		this.lava = this.create(DamageTypes.LAVA);
 		this.hotFloor = this.create(DamageTypes.HOT_FLOOR);
 		this.inWall = this.create(DamageTypes.IN_WALL);
+		this.onMoon = this.create(DamageTypes.ON_MOON);
 		this.cramming = this.create(DamageTypes.CRAMMING);
 		this.drown = this.create(DamageTypes.DROWN);
 		this.starve = this.create(DamageTypes.STARVE);
@@ -62,6 +65,7 @@ public class DamageSources {
 		this.sweetBerryBush = this.create(DamageTypes.SWEET_BERRY_BUSH);
 		this.freeze = this.create(DamageTypes.FREEZE);
 		this.stalagmite = this.create(DamageTypes.STALAGMITE);
+		this.midasCurse = this.create(DamageTypes.MIDAS_CURSE);
 	}
 
 	private DamageSource create(RegistryKey<DamageType> key) {
@@ -100,6 +104,10 @@ public class DamageSources {
 		return this.inWall;
 	}
 
+	public DamageSource onMoon() {
+		return this.onMoon;
+	}
+
 	public DamageSource cramming() {
 		return this.cramming;
 	}
@@ -126,6 +134,10 @@ public class DamageSources {
 
 	public DamageSource outOfWorld() {
 		return this.outOfWorld;
+	}
+
+	public DamageSource midasCurse() {
+		return this.midasCurse;
 	}
 
 	public DamageSource generic() {

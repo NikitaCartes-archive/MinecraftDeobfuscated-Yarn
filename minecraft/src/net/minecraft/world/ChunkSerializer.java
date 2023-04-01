@@ -335,12 +335,14 @@ public class ChunkSerializer {
 					nbtCompound2.put("biomes", codec.encodeStart(NbtOps.INSTANCE, chunkSection.getBiomeContainer()).getOrThrow(false, LOGGER::error));
 				}
 
-				if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
-					nbtCompound2.putByteArray("BlockLight", chunkNibbleArray.asByteArray());
-				}
+				if (!chunk.method_50896()) {
+					if (chunkNibbleArray != null && !chunkNibbleArray.isUninitialized()) {
+						nbtCompound2.putByteArray("BlockLight", chunkNibbleArray.asByteArray());
+					}
 
-				if (chunkNibbleArray2 != null && !chunkNibbleArray2.isUninitialized()) {
-					nbtCompound2.putByteArray("SkyLight", chunkNibbleArray2.asByteArray());
+					if (chunkNibbleArray2 != null && !chunkNibbleArray2.isUninitialized()) {
+						nbtCompound2.putByteArray("SkyLight", chunkNibbleArray2.asByteArray());
+					}
 				}
 
 				if (!nbtCompound2.isEmpty()) {
@@ -351,7 +353,7 @@ public class ChunkSerializer {
 		}
 
 		nbtCompound.put("sections", nbtList);
-		if (bl) {
+		if (bl && !chunk.method_50896()) {
 			nbtCompound.putBoolean("isLightOn", true);
 		}
 

@@ -1,9 +1,11 @@
 package net.minecraft.block;
 
+import net.minecraft.class_8293;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -13,6 +15,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -179,5 +182,36 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 
 	public static boolean canWallConnect(BlockState state, Direction side) {
 		return ((Direction)state.get(FACING)).getAxis() == side.rotateYClockwise().getAxis();
+	}
+
+	@Override
+	public boolean hasRandomTicks(BlockState state) {
+		return true;
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (class_8293.field_43635.method_50116()) {
+			if ((Boolean)state.get(OPEN)) {
+				state = state.with(OPEN, Boolean.valueOf(false));
+				world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
+			} else {
+				Direction direction = Direction.random(random);
+				if (state.get(FACING) == direction.getOpposite()) {
+					state = state.with(FACING, direction);
+				}
+
+				state = state.with(OPEN, Boolean.valueOf(true));
+				world.setBlockState(pos, state, Block.NOTIFY_LISTENERS | Block.REDRAW_ON_MAIN_THREAD);
+			}
+
+			boolean bl = (Boolean)state.get(OPEN);
+			world.playSound(
+				null, pos, bl ? this.type.fenceGateOpen() : this.type.fenceGateClose(), SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.1F + 0.9F
+			);
+			world.emitGameEvent(null, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
+		}
+
+		super.randomTick(state, world, pos, random);
 	}
 }

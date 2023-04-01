@@ -38,7 +38,7 @@ public class FireballEntity extends AbstractFireballEntity {
 		if (!this.world.isClient) {
 			Entity entity = entityHitResult.getEntity();
 			Entity entity2 = this.getOwner();
-			entity.damage(this.getDamageSources().fireball(this, entity2), 6.0F);
+			entity.damageWithModifier(this.getDamageSources().fireball(this, entity2), 6.0F);
 			if (entity2 instanceof LivingEntity) {
 				this.applyDamageEffects((LivingEntity)entity2, entity);
 			}

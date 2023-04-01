@@ -161,7 +161,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		} else {
 			for (int i = 0; i < 3; i++) {
 				ItemStack itemStack2 = slots.get(i);
-				if (!itemStack2.isEmpty() && BrewingRecipeRegistry.hasRecipe(itemStack2, itemStack)) {
+				if (!itemStack2.isEmpty()
+					&& (BrewingRecipeRegistry.hasRecipe(itemStack2, itemStack) || itemStack2.isOf(Items.BOTTLE_OF_ENTITY) && itemStack.isOf(Items.GUNPOWDER))) {
 					return true;
 				}
 			}
@@ -242,7 +243,13 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		} else {
 			return slot == 4
 				? stack.isOf(Items.BLAZE_POWDER)
-				: (stack.isOf(Items.POTION) || stack.isOf(Items.SPLASH_POTION) || stack.isOf(Items.LINGERING_POTION) || stack.isOf(Items.GLASS_BOTTLE))
+				: (
+						stack.isOf(Items.BOTTLE_OF_ENTITY)
+							|| stack.isOf(Items.POTION)
+							|| stack.isOf(Items.SPLASH_POTION)
+							|| stack.isOf(Items.LINGERING_POTION)
+							|| stack.isOf(Items.GLASS_BOTTLE)
+					)
 					&& this.getStack(slot).isEmpty();
 		}
 	}

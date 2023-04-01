@@ -35,7 +35,11 @@ public class TextReorderingProcessor {
 				Style style2 = (Style)this.styles.get(k);
 				if (!style2.equals(style)) {
 					String string = this.string.substring(i, k);
-					list.add(reverse ? OrderedText.styledBackwardsVisitedString(string, style, this.reverser) : OrderedText.styledForwardsVisitedString(string, style));
+					list.add(
+						reverse ^ style2.isReversed()
+							? OrderedText.styledBackwardsVisitedString(string, style, this.reverser)
+							: OrderedText.styledForwardsVisitedString(string, style)
+					);
 					style = style2;
 					i = k;
 				}
@@ -43,7 +47,11 @@ public class TextReorderingProcessor {
 
 			if (i < start + length) {
 				String string2 = this.string.substring(i, start + length);
-				list.add(reverse ? OrderedText.styledBackwardsVisitedString(string2, style, this.reverser) : OrderedText.styledForwardsVisitedString(string2, style));
+				list.add(
+					reverse ^ style.isReversed()
+						? OrderedText.styledBackwardsVisitedString(string2, style, this.reverser)
+						: OrderedText.styledForwardsVisitedString(string2, style)
+				);
 			}
 
 			return reverse ? Lists.reverse(list) : list;

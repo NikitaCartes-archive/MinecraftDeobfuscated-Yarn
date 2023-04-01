@@ -3,7 +3,9 @@ package net.minecraft.data.client;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -24,6 +26,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CheeseBlock;
 import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.PitcherCropBlock;
 import net.minecraft.block.PropaguleBlock;
@@ -56,6 +59,7 @@ import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.shape.VoxelShape;
 
 public class BlockStateModelGenerator {
 	final Consumer<BlockStateSupplier> blockStateCollector;
@@ -1950,6 +1954,11 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createSingletonBlockState(Blocks.BOOKSHELF, identifier));
 	}
 
+	private void registerPackedAir() {
+		Identifier identifier = Models.CUBE_ALL.upload(Blocks.PACKED_AIR, TextureMap.all(TextureMap.getId(Blocks.PACKED_AIR)), this.modelCollector);
+		this.blockStateCollector.accept(createSingletonBlockState(Blocks.PACKED_AIR, identifier));
+	}
+
 	private void registerRedstone() {
 		this.registerItemModel(Items.REDSTONE);
 		this.blockStateCollector
@@ -2293,6 +2302,16 @@ public class BlockStateModelGenerator {
 									)
 							)
 					)
+			);
+		this.registerSimpleState(Blocks.COPPER_SINK);
+		this.registerParentedItemModel(Blocks.COPPER_SINK, ModelIds.getBlockModelId(Blocks.COPPER_SINK));
+		this.blockStateCollector
+			.accept(
+				createSingletonBlockState(
+					Blocks.FILLED_COPPER_SINK,
+					Models.TEMPLATE_COPPER_SINK_FULL
+						.upload(Blocks.FILLED_COPPER_SINK, TextureMap.method_51102(TextureMap.getSubId(Blocks.WATER, "_still")), this.modelCollector)
+				)
 			);
 	}
 
@@ -2910,14 +2929,14 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createSingletonBlockState(Blocks.FROGSPAWN, ModelIds.getBlockModelId(Blocks.FROGSPAWN)));
 	}
 
-	private void registerNetherPortal() {
+	private void registerNetherPortal(Block block) {
 		this.blockStateCollector
 			.accept(
-				VariantsBlockStateSupplier.create(Blocks.NETHER_PORTAL)
+				VariantsBlockStateSupplier.create(block)
 					.coordinate(
 						BlockStateVariantMap.create(Properties.HORIZONTAL_AXIS)
-							.register(Direction.Axis.X, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.NETHER_PORTAL, "_ns")))
-							.register(Direction.Axis.Z, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(Blocks.NETHER_PORTAL, "_ew")))
+							.register(Direction.Axis.X, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_ns")))
+							.register(Direction.Axis.Z, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockSubModelId(block, "_ew")))
 					)
 			);
 	}
@@ -2984,6 +3003,18 @@ public class BlockStateModelGenerator {
 					.coordinate(createBooleanModelMap(Properties.POWERED, identifier2, identifier))
 					.coordinate(createNorthDefaultRotationStates())
 			);
+	}
+
+	private void registerSpleaves(Block block) {
+		Identifier identifier = ModelIds.getBlockModelId(block);
+		Identifier identifier2 = ModelIds.getBlockSubModelId(block, "_broken");
+		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(createBooleanModelMap(Properties.FALLING, identifier2, identifier)));
+	}
+
+	private void registerWorldModifyingBlock(Block block) {
+		TextureMap textureMap = TextureMap.sideFrontBack(block);
+		Identifier identifier = Models.TEMPLATE_COMMAND_BLOCK.upload(block, textureMap, this.modelCollector);
+		this.blockStateCollector.accept(createSingletonBlockState(block, identifier).coordinate(createNorthDefaultRotationStates()));
 	}
 
 	private void registerPistons() {
@@ -3831,6 +3862,7 @@ public class BlockStateModelGenerator {
 		this.registerSimpleState(Blocks.AIR);
 		this.registerStateWithModelReference(Blocks.CAVE_AIR, Blocks.AIR);
 		this.registerStateWithModelReference(Blocks.VOID_AIR, Blocks.AIR);
+		this.registerPackedAir();
 		this.registerSimpleState(Blocks.BEACON);
 		this.registerSimpleState(Blocks.CACTUS);
 		this.registerStateWithModelReference(Blocks.BUBBLE_COLUMN, Blocks.WATER);
@@ -3984,9 +4016,12 @@ public class BlockStateModelGenerator {
 		this.registerIronBars();
 		this.registerLever();
 		this.registerLilyPad();
-		this.registerNetherPortal();
+		this.registerNetherPortal(Blocks.NETHER_PORTAL);
+		this.registerNetherPortal(Blocks.OTHER_PORTAL);
 		this.registerNetherrack();
 		this.registerObserver();
+		this.registerWorldModifyingBlock(Blocks.PICKAXE_BLOCK);
+		this.registerWorldModifyingBlock(Blocks.PLACE_BLOCK);
 		this.registerPistons();
 		this.registerPistonHead();
 		this.registerScaffolding();
@@ -4014,6 +4049,7 @@ public class BlockStateModelGenerator {
 		this.registerFrogspawn();
 		this.registerMangrovePropagule();
 		this.registerMuddyMangroveRoots();
+		this.registerCheese();
 		this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);
@@ -4393,6 +4429,7 @@ public class BlockStateModelGenerator {
 		this.registerHangingSign(Blocks.STRIPPED_CHERRY_LOG, Blocks.CHERRY_HANGING_SIGN, Blocks.CHERRY_WALL_HANGING_SIGN);
 		this.registerFlowerPotPlant(Blocks.CHERRY_SAPLING, Blocks.POTTED_CHERRY_SAPLING, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerSingleton(Blocks.CHERRY_LEAVES, TexturedModel.LEAVES);
+		this.registerSpleaves(Blocks.COPPER_SPLEAVES);
 		this.registerLog(Blocks.BIRCH_LOG).log(Blocks.BIRCH_LOG).wood(Blocks.BIRCH_WOOD);
 		this.registerLog(Blocks.STRIPPED_BIRCH_LOG).log(Blocks.STRIPPED_BIRCH_LOG).wood(Blocks.STRIPPED_BIRCH_WOOD);
 		this.registerHangingSign(Blocks.STRIPPED_BIRCH_LOG, Blocks.BIRCH_HANGING_SIGN, Blocks.BIRCH_WALL_HANGING_SIGN);
@@ -4512,6 +4549,70 @@ public class BlockStateModelGenerator {
 		Identifier identifier9 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, TextureMap.candleCake(candle, false), this.modelCollector);
 		Identifier identifier10 = Models.TEMPLATE_CAKE_WITH_CANDLE.upload(cake, "_lit", TextureMap.candleCake(candle, true), this.modelCollector);
 		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(cake).coordinate(createBooleanModelMap(Properties.LIT, identifier10, identifier9)));
+	}
+
+	private void registerCheese() {
+		Identifier identifier = TextureMap.getId(Blocks.CHEESE);
+		BlockStateVariantMap.SingleProperty<Integer> singleProperty = BlockStateVariantMap.create(CheeseBlock.SLICES);
+
+		for (int i : CheeseBlock.SLICES.getValues()) {
+			Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.CHEESE, "_" + Integer.toBinaryString(i));
+			singleProperty.register(i, BlockStateVariant.create().put(VariantSettings.MODEL, identifier2));
+			VoxelShape voxelShape = CheeseBlock.SHAPES[i];
+			this.modelCollector.accept(identifier2, (Supplier)() -> createModelFromShape(identifier, voxelShape));
+		}
+
+		this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.CHEESE).coordinate(singleProperty));
+		this.registerParentedItemModel(Blocks.CHEESE, ModelIds.getBlockSubModelId(Blocks.CHEESE, "_" + Integer.toBinaryString(255)));
+	}
+
+	private static JsonObject createModelFromShape(Identifier id, VoxelShape shape) {
+		JsonObject jsonObject = new JsonObject();
+		jsonObject.addProperty("parent", "block/block");
+		JsonObject jsonObject2 = new JsonObject();
+		jsonObject2.addProperty("all", id.toString());
+		jsonObject2.addProperty("particle", id.toString());
+		jsonObject.add("textures", jsonObject2);
+		JsonArray jsonArray = new JsonArray();
+		shape.forEachBox((fromX, fromY, fromZ, toX, toY, toZ) -> {
+			JsonObject jsonObjectx = new JsonObject();
+			jsonObjectx.add("from", Util.make(new JsonArray(), from -> {
+				from.add(fromX * 16.0);
+				from.add(fromY * 16.0);
+				from.add(fromZ * 16.0);
+			}));
+			jsonObjectx.add("to", Util.make(new JsonArray(), to -> {
+				to.add(toX * 16.0);
+				to.add(toY * 16.0);
+				to.add(toZ * 16.0);
+			}));
+			JsonObject jsonObject2x = new JsonObject();
+
+			for (Direction direction : Direction.values()) {
+				JsonObject jsonObject3 = new JsonObject();
+				jsonObject3.addProperty("texture", "#all");
+				if (shouldCullFace(fromX, fromY, fromZ, toX, toY, toZ, direction)) {
+					jsonObject3.addProperty("cullface", direction.asString());
+				}
+
+				jsonObject2x.add(direction.asString(), jsonObject3);
+			}
+
+			jsonObjectx.add("faces", jsonObject2x);
+			jsonArray.add(jsonObjectx);
+		});
+		jsonObject.add("elements", jsonArray);
+		return jsonObject;
+	}
+
+	private static boolean shouldCullFace(double fromX, double fromY, double fromZ, double toX, double toY, double toZ, Direction face) {
+		if (face.getDirection() == Direction.AxisDirection.POSITIVE) {
+			double d = face.getAxis().choose(toX, toY, toZ);
+			return d >= 0.99999F;
+		} else {
+			double d = face.getAxis().choose(fromX, fromY, fromZ);
+			return d <= 1.0E-5F;
+		}
 	}
 
 	class BlockTexturePool {

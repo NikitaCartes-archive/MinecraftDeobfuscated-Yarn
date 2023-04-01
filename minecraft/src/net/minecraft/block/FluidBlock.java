@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.class_8293;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
@@ -134,14 +135,14 @@ public class FluidBlock extends Block implements FluidDrainable {
 			for (Direction direction : FLOW_DIRECTIONS) {
 				BlockPos blockPos = pos.offset(direction.getOpposite());
 				if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
-					Block block = world.getFluidState(pos).isStill() ? Blocks.OBSIDIAN : Blocks.COBBLESTONE;
+					Block block = world.getFluidState(pos).isStill() ? class_8293.field_43527.method_50317() : class_8293.field_43525.method_50317();
 					world.setBlockState(pos, block.getDefaultState());
 					this.playExtinguishSound(world, pos);
 					return false;
 				}
 
 				if (bl && world.getBlockState(blockPos).isOf(Blocks.BLUE_ICE)) {
-					world.setBlockState(pos, Blocks.BASALT.getDefaultState());
+					world.setBlockState(pos, class_8293.field_43528.method_50317().getDefaultState());
 					this.playExtinguishSound(world, pos);
 					return false;
 				}
@@ -173,5 +174,20 @@ public class FluidBlock extends Block implements FluidDrainable {
 	@Override
 	public Optional<SoundEvent> getBucketFillSound() {
 		return this.fluid.getBucketFillSound();
+	}
+
+	@Override
+	public boolean isSticky(BlockState state) {
+		return false;
+	}
+
+	@Override
+	public boolean shouldLetAirThrough(BlockState state, ServerWorld world, BlockPos pos, Direction direction) {
+		if (direction == Direction.DOWN) {
+			return false;
+		} else {
+			int i = (Integer)state.get(LEVEL);
+			return i < 8 && i > 0 && !state.getFluidState().isStill();
+		}
 	}
 }

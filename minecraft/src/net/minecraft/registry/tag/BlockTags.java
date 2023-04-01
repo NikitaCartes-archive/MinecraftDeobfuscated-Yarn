@@ -107,6 +107,7 @@ public final class BlockTags {
 	public static final TagKey<Block> FENCE_GATES = of("fence_gates");
 	public static final TagKey<Block> UNSTABLE_BOTTOM_CENTER = of("unstable_bottom_center");
 	public static final TagKey<Block> MUSHROOM_GROW_BLOCK = of("mushroom_grow_block");
+	public static final TagKey<Block> CORDYCEP_BLOCK = of("cordycep_block");
 	public static final TagKey<Block> INFINIBURN_OVERWORLD = of("infiniburn_overworld");
 	public static final TagKey<Block> INFINIBURN_NETHER = of("infiniburn_nether");
 	public static final TagKey<Block> INFINIBURN_END = of("infiniburn_end");

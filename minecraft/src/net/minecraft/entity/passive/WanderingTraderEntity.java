@@ -2,6 +2,7 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -25,6 +26,7 @@ import net.minecraft.entity.mob.VindicatorEntity;
 import net.minecraft.entity.mob.ZoglinEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -32,6 +34,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -138,7 +141,8 @@ public class WanderingTraderEntity extends MerchantEntity {
 			this.fillRecipesFromPool(tradeOfferList, factorys, 5);
 			int i = this.random.nextInt(factorys2.length);
 			TradeOffers.Factory factory = factorys2[i];
-			TradeOffer tradeOffer = factory.create(this, this.random);
+			Item item = (Item)class_8293.field_43631.method_50154(this).map(RegistryEntry::value).orElse(Items.EMERALD);
+			TradeOffer tradeOffer = factory.create(this, this.random, item);
 			if (tradeOffer != null) {
 				tradeOfferList.add(tradeOffer);
 			}

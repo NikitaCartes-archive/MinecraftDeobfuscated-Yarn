@@ -586,6 +586,34 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion("avoid_vibration", TickCriterion.Conditions.createAvoidVibration())
 			.build(exporter, "adventure/avoid_vibration");
+		Advancement.Builder.create()
+			.parent(advancement)
+			.display(
+				Items.FIREWORK_ROCKET,
+				Text.translatable("advancements.adventure.vote_1.title"),
+				Text.translatable("advancements.adventure.vote_1.description"),
+				null,
+				AdvancementFrame.GOAL,
+				true,
+				true,
+				false
+			)
+			.criterion("vote_1", TickCriterion.Conditions.createVoted(NumberRange.IntRange.atLeast(1)))
+			.build(exporter, "adventure/vote_1");
+		Advancement.Builder.create()
+			.parent(advancement)
+			.display(
+				Items.POISONOUS_POTATO,
+				Text.translatable("advancements.adventure.vote_256.title"),
+				Text.translatable("advancements.adventure.vote_256.description"),
+				null,
+				AdvancementFrame.GOAL,
+				true,
+				true,
+				false
+			)
+			.criterion("vote_256", TickCriterion.Conditions.createVoted(NumberRange.IntRange.atLeast(256)))
+			.build(exporter, "adventure/vote_256");
 	}
 
 	protected static void buildAdventuringTime(Consumer<Advancement> exporter, Advancement parent, MultiNoiseBiomeSourceParameterList.Preset preset) {

@@ -307,7 +307,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 	private static boolean canAcceptRecipeOutput(DynamicRegistryManager registryManager, @Nullable Recipe<?> recipe, DefaultedList<ItemStack> slots, int count) {
 		if (!slots.get(0).isEmpty() && recipe != null) {
-			ItemStack itemStack = recipe.getOutput(registryManager);
+			ItemStack itemStack = recipe.method_50832(registryManager);
 			if (itemStack.isEmpty()) {
 				return false;
 			} else {
@@ -328,7 +328,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	private static boolean craftRecipe(DynamicRegistryManager registryManager, @Nullable Recipe<?> recipe, DefaultedList<ItemStack> slots, int count) {
 		if (recipe != null && canAcceptRecipeOutput(registryManager, recipe, slots, count)) {
 			ItemStack itemStack = slots.get(0);
-			ItemStack itemStack2 = recipe.getOutput(registryManager);
+			ItemStack itemStack2 = recipe.method_50832(registryManager);
 			ItemStack itemStack3 = slots.get(2);
 			if (itemStack3.isEmpty()) {
 				slots.set(2, itemStack2.copy());

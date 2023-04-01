@@ -1,9 +1,11 @@
 package net.minecraft.entity.projectile;
 
 import com.mojang.logging.LogUtils;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -18,6 +20,8 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
@@ -29,6 +33,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.registry.tag.ItemTags;
@@ -36,6 +41,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -65,10 +72,11 @@ public class FishingBobberEntity extends ProjectileEntity {
 	private FishingBobberEntity.State state = FishingBobberEntity.State.FLYING;
 	private final int luckOfTheSeaLevel;
 	private final int lureLevel;
+	public boolean field_44123;
 
 	private FishingBobberEntity(EntityType<? extends FishingBobberEntity> type, World world, int luckOfTheSeaLevel, int lureLevel) {
 		super(type, world);
-		this.ignoreCameraFrustum = true;
+		this.setIgnoreCameraFrustum(true);
 		this.luckOfTheSeaLevel = Math.max(0, luckOfTheSeaLevel);
 		this.lureLevel = Math.max(0, lureLevel);
 	}
@@ -92,10 +100,9 @@ public class FishingBobberEntity extends ProjectileEntity {
 		this.refreshPositionAndAngles(d, e, l, g, f);
 		Vec3d vec3d = new Vec3d((double)(-i), (double)MathHelper.clamp(-(k / j), -5.0F, 5.0F), (double)(-h));
 		double m = vec3d.length();
+		double n = class_8293.field_43645.method_50116() ? 3.0 : 0.6;
 		vec3d = vec3d.multiply(
-			0.6 / m + this.random.nextTriangular(0.5, 0.0103365),
-			0.6 / m + this.random.nextTriangular(0.5, 0.0103365),
-			0.6 / m + this.random.nextTriangular(0.5, 0.0103365)
+			n / m + this.random.nextTriangular(0.5, 0.0103365), n / m + this.random.nextTriangular(0.5, 0.0103365), n / m + this.random.nextTriangular(0.5, 0.0103365)
 		);
 		this.setVelocity(vec3d);
 		this.setYaw((float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
@@ -144,7 +151,11 @@ public class FishingBobberEntity extends ProjectileEntity {
 		PlayerEntity playerEntity = this.getPlayerOwner();
 		if (playerEntity == null) {
 			this.discard();
-		} else if (this.world.isClient || !this.removeIfInvalid(playerEntity)) {
+		} else if (!this.world.isClient && this.removeIfInvalid(playerEntity)) {
+			if (class_8293.field_43645.method_50116()) {
+				this.method_50724(playerEntity);
+			}
+		} else {
 			if (this.onGround) {
 				this.removalTimer++;
 				if (this.removalTimer >= 1200) {
@@ -220,7 +231,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 				}
 			}
 
-			if (!fluidState.isIn(FluidTags.WATER)) {
+			if (!fluidState.isIn(FluidTags.WATER) && !class_8293.field_43645.method_50116()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
 			}
 
@@ -230,8 +241,11 @@ public class FishingBobberEntity extends ProjectileEntity {
 				this.setVelocity(Vec3d.ZERO);
 			}
 
-			double e = 0.92;
-			this.setVelocity(this.getVelocity().multiply(0.92));
+			if (!class_8293.field_43645.method_50116()) {
+				double e = 0.92;
+				this.setVelocity(this.getVelocity().multiply(0.92));
+			}
+
 			this.refreshPosition();
 		}
 	}
@@ -241,7 +255,8 @@ public class FishingBobberEntity extends ProjectileEntity {
 		ItemStack itemStack2 = player.getOffHandStack();
 		boolean bl = itemStack.isOf(Items.FISHING_ROD);
 		boolean bl2 = itemStack2.isOf(Items.FISHING_ROD);
-		if (!player.isRemoved() && player.isAlive() && (bl || bl2) && !(this.squaredDistanceTo(player) > 1024.0)) {
+		int i = class_8293.field_43645.method_50116() ? 100 : 32;
+		if (!player.isRemoved() && player.isAlive() && (bl || bl2) && !(this.squaredDistanceTo(player) > (double)(i * i))) {
 			return false;
 		} else {
 			this.discard();
@@ -280,6 +295,11 @@ public class FishingBobberEntity extends ProjectileEntity {
 
 	private void tickFishingLogic(BlockPos pos) {
 		ServerWorld serverWorld = (ServerWorld)this.world;
+		PlayerEntity playerEntity = this.getPlayerOwner();
+		if (class_8293.field_43673.method_50116()) {
+			this.method_50723(playerEntity.getStackInHand(Hand.MAIN_HAND), playerEntity);
+		}
+
 		int i = 1;
 		BlockPos blockPos = pos.up();
 		if (this.random.nextFloat() < 0.25F && this.world.hasRain(blockPos)) {
@@ -422,6 +442,10 @@ public class FishingBobberEntity extends ProjectileEntity {
 	public int use(ItemStack usedItem) {
 		PlayerEntity playerEntity = this.getPlayerOwner();
 		if (!this.world.isClient && playerEntity != null && !this.removeIfInvalid(playerEntity)) {
+			if (class_8293.field_43645.method_50116()) {
+				this.method_50724(playerEntity);
+			}
+
 			int i = 0;
 			if (this.hookedEntity != null) {
 				this.pullHookedEntity(this.hookedEntity);
@@ -429,33 +453,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 				this.world.sendEntityStatus(this, EntityStatuses.PULL_HOOKED_ENTITY);
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.hookCountdown > 0) {
-				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-					.parameter(LootContextParameters.ORIGIN, this.getPos())
-					.parameter(LootContextParameters.TOOL, usedItem)
-					.parameter(LootContextParameters.THIS_ENTITY, this)
-					.random(this.random)
-					.luck((float)this.luckOfTheSeaLevel + playerEntity.getLuck());
-				LootTable lootTable = this.world.getServer().getLootManager().getTable(LootTables.FISHING_GAMEPLAY);
-				List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.FISHING));
-				Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, usedItem, this, list);
-
-				for (ItemStack itemStack : list) {
-					ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), itemStack);
-					double d = playerEntity.getX() - this.getX();
-					double e = playerEntity.getY() - this.getY();
-					double f = playerEntity.getZ() - this.getZ();
-					double g = 0.1;
-					itemEntity.setVelocity(d * 0.1, e * 0.1 + Math.sqrt(Math.sqrt(d * d + e * e + f * f)) * 0.08, f * 0.1);
-					this.world.spawnEntity(itemEntity);
-					playerEntity.world
-						.spawnEntity(
-							new ExperienceOrbEntity(playerEntity.world, playerEntity.getX(), playerEntity.getY() + 0.5, playerEntity.getZ() + 0.5, this.random.nextInt(6) + 1)
-						);
-					if (itemStack.isIn(ItemTags.FISHES)) {
-						playerEntity.increaseStat(Stats.FISH_CAUGHT, 1);
-					}
-				}
-
+				this.method_50723(usedItem, playerEntity);
 				i = 1;
 			}
 
@@ -467,6 +465,79 @@ public class FishingBobberEntity extends ProjectileEntity {
 			return i;
 		} else {
 			return 0;
+		}
+	}
+
+	private void method_50724(PlayerEntity playerEntity) {
+		Vec3d vec3d = null;
+		if (this.hookedEntity != null) {
+			vec3d = this.hookedEntity.getPos();
+		} else if (!this.world.isSpaceEmpty(this.getBoundingBox().expand(0.5))) {
+			vec3d = this.getPos();
+		}
+
+		if (vec3d != null) {
+			Vec3d vec3d2 = vec3d.subtract(playerEntity.getPos());
+			if (vec3d2.length() > 0.01) {
+				playerEntity.addVelocity(vec3d2.normalize().multiply(10.0));
+				playerEntity.velocityDirty = true;
+				if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity) {
+					serverPlayerEntity.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(serverPlayerEntity));
+				}
+			}
+		} else if (this.field_44123) {
+			playerEntity.addVelocity(new Vec3d(0.0, 20.0, 0.0));
+			playerEntity.velocityDirty = true;
+			if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity2) {
+				serverPlayerEntity2.networkHandler.sendPacket(new EntityVelocityUpdateS2CPacket(serverPlayerEntity2, true));
+			}
+		}
+	}
+
+	private void method_50723(ItemStack itemStack, PlayerEntity playerEntity) {
+		LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
+			.parameter(LootContextParameters.ORIGIN, this.getPos())
+			.parameter(LootContextParameters.TOOL, itemStack)
+			.parameter(LootContextParameters.THIS_ENTITY, this)
+			.random(this.random)
+			.luck((float)this.luckOfTheSeaLevel + playerEntity.getLuck());
+		LootTable lootTable = this.world.getServer().getLootManager().getTable(LootTables.FISHING_GAMEPLAY);
+		List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.FISHING));
+		Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, itemStack, this, list);
+		if (class_8293.field_43647.method_50116()) {
+			ItemGroups.updateDisplayContext(this.world.getEnabledFeatures(), false, this.world.getRegistryManager());
+			List<ItemStack> list2 = new ArrayList();
+
+			for (ItemGroup itemGroup : ItemGroups.getGroupsToDisplay()) {
+				if (itemGroup.getType() == ItemGroup.Type.CATEGORY) {
+					list2.addAll(itemGroup.getDisplayStacks());
+				}
+			}
+
+			if (!list2.isEmpty()) {
+				this.method_50722(playerEntity, Util.getRandom(list2, this.random));
+			}
+		} else {
+			for (ItemStack itemStack2 : list) {
+				this.method_50722(playerEntity, itemStack2);
+			}
+		}
+	}
+
+	private void method_50722(PlayerEntity playerEntity, ItemStack itemStack) {
+		ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), itemStack);
+		double d = playerEntity.getX() - this.getX();
+		double e = playerEntity.getY() - this.getY();
+		double f = playerEntity.getZ() - this.getZ();
+		double g = 0.1;
+		itemEntity.setVelocity(d * 0.1, e * 0.1 + Math.sqrt(Math.sqrt(d * d + e * e + f * f)) * 0.08, f * 0.1);
+		this.world.spawnEntity(itemEntity);
+		playerEntity.world
+			.spawnEntity(
+				new ExperienceOrbEntity(playerEntity.world, playerEntity.getX(), playerEntity.getY() + 0.5, playerEntity.getZ() + 0.5, this.random.nextInt(6) + 1)
+			);
+		if (itemStack.isIn(ItemTags.FISHES)) {
+			playerEntity.increaseStat(Stats.FISH_CAUGHT, 1);
 		}
 	}
 

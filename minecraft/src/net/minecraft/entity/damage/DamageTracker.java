@@ -117,6 +117,10 @@ public class DamageTracker {
 					return Text.translatable(string + ".message", this.entity.getDisplayName(), text4);
 				}
 
+				if (deathMessageType == DeathMessageType.MIDAS_CURSE) {
+					return Text.translatable("death.midas.turned_into_gold", this.entity.getDisplayName());
+				}
+
 				text3 = damageSource.getDeathMessage(this.entity);
 			}
 

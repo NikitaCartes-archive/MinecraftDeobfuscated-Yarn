@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
@@ -261,5 +262,15 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 
 	public ModelPart getRandomPart(Random random) {
 		return (ModelPart)this.parts.get(random.nextInt(this.parts.size()));
+	}
+
+	@Override
+	public boolean shouldBeMini() {
+		return class_8293.field_43574.method_50116();
+	}
+
+	@Override
+	protected boolean shouldHeadFloat() {
+		return class_8293.field_43571.method_50116();
 	}
 }

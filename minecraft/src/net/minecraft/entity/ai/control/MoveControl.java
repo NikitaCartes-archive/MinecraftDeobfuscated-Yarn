@@ -92,7 +92,7 @@ public class MoveControl implements Control {
 				return;
 			}
 
-			float n = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
+			float n = this.method_50672(d, e);
 			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), n, 90.0F));
 			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
 			BlockPos blockPos = this.entity.getBlockPos();
@@ -114,6 +114,10 @@ public class MoveControl implements Control {
 		} else {
 			this.entity.setForwardSpeed(0.0F);
 		}
+	}
+
+	protected float method_50672(double d, double e) {
+		return (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
 	}
 
 	private boolean isPosWalkable(float x, float z) {

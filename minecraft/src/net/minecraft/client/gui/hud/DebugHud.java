@@ -25,6 +25,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8293;
+import net.minecraft.class_8342;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
@@ -234,6 +236,11 @@ public class DebugHud extends DrawableHelper {
 				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
 				this.client.world.asString()
 			);
+			int i = class_8293.field_43619.method_50124();
+			if (i > 0) {
+				list.add("Optimization level: " + class_8342.method_50408(i));
+			}
+
 			String string3 = this.getServerWorldDebugString();
 			if (string3 != null) {
 				list.add(string3);
@@ -280,10 +287,10 @@ public class DebugHud extends DrawableHelper {
 			if (worldChunk.isEmpty()) {
 				list.add("Waiting for chunk...");
 			} else {
-				int i = this.client.world.getChunkManager().getLightingProvider().getLight(blockPos, 0);
-				int j = this.client.world.getLightLevel(LightType.SKY, blockPos);
-				int k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
-				list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
+				int j = this.client.world.getChunkManager().getLightingProvider().getLight(blockPos, 0);
+				int k = this.client.world.getLightLevel(LightType.SKY, blockPos);
+				int l = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
+				list.add("Client Light: " + j + " (" + k + " sky, " + l + " block)");
 				WorldChunk worldChunk2 = this.getChunk();
 				StringBuilder stringBuilder = new StringBuilder("CH");
 
@@ -314,14 +321,14 @@ public class DebugHud extends DrawableHelper {
 				list.add(stringBuilder.toString());
 				if (blockPos.getY() >= this.client.world.getBottomY() && blockPos.getY() < this.client.world.getTopY()) {
 					list.add("Biome: " + getBiomeString(this.client.world.getBiome(blockPos)));
-					long l = 0L;
+					long m = 0L;
 					float h = 0.0F;
 					if (worldChunk2 != null) {
 						h = world.getMoonSize();
-						l = worldChunk2.getInhabitedTime();
+						m = worldChunk2.getInhabitedTime();
 					}
 
-					LocalDifficulty localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), l, h);
+					LocalDifficulty localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), m, h);
 					list.add(
 						String.format(
 							Locale.ROOT,
@@ -350,10 +357,10 @@ public class DebugHud extends DrawableHelper {
 				SpawnHelper.Info info = serverChunkManager.getSpawnInfo();
 				if (info != null) {
 					Object2IntMap<SpawnGroup> object2IntMap = info.getGroupToCount();
-					int m = info.getSpawningChunkCount();
+					int n = info.getSpawningChunkCount();
 					list.add(
 						"SC: "
-							+ m
+							+ n
 							+ ", "
 							+ (String)Stream.of(SpawnGroup.values())
 								.map(group -> Character.toUpperCase(group.getName().charAt(0)) + ": " + object2IntMap.getInt(group))

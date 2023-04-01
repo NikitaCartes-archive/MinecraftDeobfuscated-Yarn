@@ -216,6 +216,10 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		float simulated
 	) {
 		if (!world.isClient) {
+			if (crossbow.isWob()) {
+				speed *= -1.0F;
+			}
+
 			boolean bl = projectile.isOf(Items.FIREWORK_ROCKET);
 			ProjectileEntity projectileEntity;
 			if (bl) {

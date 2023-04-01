@@ -92,7 +92,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 		super.tickMovement();
 		if (!this.world.isClient) {
 			if (this.world.getBiome(this.getBlockPos()).isIn(BiomeTags.SNOW_GOLEM_MELTS)) {
-				this.damage(this.getDamageSources().onFire(), 1.0F);
+				this.damageWithModifier(this.getDamageSources().onFire(), 1.0F);
 			}
 
 			if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {

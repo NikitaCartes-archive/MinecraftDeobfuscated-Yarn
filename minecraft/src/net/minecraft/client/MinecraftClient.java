@@ -49,6 +49,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -85,6 +86,7 @@ import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
 import net.minecraft.client.gui.screen.ingame.CreativeInventoryScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
+import net.minecraft.client.gui.screen.ingame.vote.PendingVotesScreen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
@@ -187,6 +189,7 @@ import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.TagKey;
@@ -309,6 +312,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static final Identifier DEFAULT_FONT_ID = new Identifier("default");
 	public static final Identifier UNICODE_FONT_ID = new Identifier("uniform");
 	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
+	public static final Identifier field_44282 = new Identifier("illageralt");
 	private static final Identifier REGIONAL_COMPLIANCIES_ID = new Identifier("regional_compliancies.json");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
 	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = Text.translatable("multiplayer.socialInteractions.not_available");
@@ -476,6 +480,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final MessageHandler messageHandler;
 	private AbuseReportContext abuseReportContext;
 	private String openProfilerSection = "root";
+	private boolean field_44281;
 
 	public MinecraftClient(RunArgs args) {
 		super("Client");
@@ -1819,6 +1824,21 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.itemUseCooldown--;
 		}
 
+		if (this.field_44281 && this.world == null) {
+			this.languageManager.setLanguage(this.options.language);
+			this.languageManager.reload(this.resourceManager);
+			this.field_44281 = false;
+		} else if (this.world != null && this.field_44281 != class_8293.field_43576.method_50116()) {
+			this.field_44281 = class_8293.field_43576.method_50116();
+			if (this.field_44281 && !this.languageManager.getLanguage().equals("fr_fr")) {
+				this.languageManager.setLanguage("fr_fr");
+				this.languageManager.reload(this.resourceManager);
+			} else if (!this.field_44281 && !this.languageManager.getLanguage().equals(this.options.language)) {
+				this.languageManager.setLanguage(this.options.language);
+				this.languageManager.reload(this.resourceManager);
+			}
+		}
+
 		this.profiler.push("gui");
 		this.messageHandler.processDelayedMessages();
 		this.inGameHud.tick(this.paused);
@@ -1987,6 +2007,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
+		while (this.options.field_44283.wasPressed()) {
+			this.setScreen(new PendingVotesScreen());
+		}
+
 		while (this.options.inventoryKey.wasPressed()) {
 			if (this.interactionManager.hasRidingInventory()) {
 				this.player.openRidingInventory();
@@ -2052,7 +2076,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.doItemUse();
 		}
 
-		this.handleBlockBreaking(this.currentScreen == null && !bl3 && this.options.attackKey.isPressed() && this.mouse.isCursorLocked());
+		if (class_8293.field_43568.method_50116() && this.player.getMainHandStack().isEmpty()) {
+			this.attackCooldown = 0;
+		} else {
+			this.handleBlockBreaking(this.currentScreen == null && !bl3 && this.options.attackKey.isPressed() && this.mouse.isCursorLocked());
+		}
 	}
 
 	public TelemetryManager getTelemetryManager() {
@@ -2155,6 +2183,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			this.cancelTasks();
+			if (!clientPlayNetworkHandler.getConnection().isLocal()) {
+				clientPlayNetworkHandler.getRegistryManager().get(RegistryKeys.RULES).forEach(arg -> arg.method_50203(true));
+			}
+
 			clientPlayNetworkHandler.clearWorld();
 		}
 

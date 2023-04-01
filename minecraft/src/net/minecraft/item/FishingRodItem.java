@@ -10,6 +10,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public class FishingRodItem extends Item implements Vanishable {
 	public FishingRodItem(Item.Settings settings) {
@@ -50,7 +51,15 @@ public class FishingRodItem extends Item implements Vanishable {
 			if (!world.isClient) {
 				int i = EnchantmentHelper.getLure(itemStack);
 				int j = EnchantmentHelper.getLuckOfTheSea(itemStack);
-				world.spawnEntity(new FishingBobberEntity(user, world, j, i));
+				FishingBobberEntity fishingBobberEntity = new FishingBobberEntity(user, world, j, i);
+				if (world.isNight()) {
+					Vector3f vector3f = new Vector3f(-1.0F, 0.0F, 0.0F).rotateZ((float)((Math.PI * 2) * (double)world.getTimeOfDay() / 24000.0));
+					if (user.getRotationVec(1.0F).toVector3f().dot(vector3f) > 0.98F) {
+						fishingBobberEntity.field_44123 = true;
+					}
+				}
+
+				world.spawnEntity(fishingBobberEntity);
 			}
 
 			user.incrementStat(Stats.USED.getOrCreateStat(this));

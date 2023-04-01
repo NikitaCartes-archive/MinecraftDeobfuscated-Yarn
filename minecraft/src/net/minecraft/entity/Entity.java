@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.objects.Object2DoubleArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,6 +22,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -38,6 +40,7 @@ import net.minecraft.entity.damage.DamageSources;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -46,6 +49,7 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtDouble;
 import net.minecraft.nbt.NbtElement;
@@ -116,6 +120,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.dimension.DimensionTypes;
 import net.minecraft.world.dimension.NetherPortal;
 import net.minecraft.world.entity.EntityChangeListener;
 import net.minecraft.world.entity.EntityLike;
@@ -251,6 +256,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private static final double SPEED_IN_LAVA_IN_NETHER = 0.007;
 	private static final double SPEED_IN_LAVA = 0.0023333333333333335;
 	public static final String UUID_KEY = "UUID";
+	public static final int field_44078 = 700;
+	public static final int field_44079 = 200;
 	private static double renderDistanceMultiplier = 1.0;
 	private final EntityType<?> type;
 	/**
@@ -347,10 +354,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private static final TrackedData<Integer> FROZEN_TICKS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
 	private EntityChangeListener changeListener = EntityChangeListener.NONE;
 	private final TrackedPosition trackedPosition = new TrackedPosition();
-	public boolean ignoreCameraFrustum;
+	private boolean ignoreCameraFrustum;
 	public boolean velocityDirty;
 	private int portalCooldown;
-	protected boolean inNetherPortal;
+	public Entity.class_8401 field_44082 = Entity.class_8401.NO;
 	protected int netherPortalTime;
 	protected BlockPos lastNetherPortalPosition;
 	private boolean invulnerable;
@@ -370,11 +377,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private boolean hasVisualFire;
 	@Nullable
 	private BlockState blockStateAtPos = null;
+	private int field_44083 = 0;
+	double field_44080 = 0.0;
+	private static final EquipmentSlot[] EQUIPMENT_SLOTS = EquipmentSlot.values();
+	@Nullable
+	public Text nameOverride;
 
-	public Entity(EntityType<?> type, World world) {
-		this.type = type;
+	public Entity(EntityType<?> entityType, World world) {
+		this.type = entityType;
 		this.world = world;
-		this.dimensions = type.getDimensions();
+		this.dimensions = entityType.getDimensions();
 		this.pos = Vec3d.ZERO;
 		this.blockPos = BlockPos.ORIGIN;
 		this.chunkPos = ChunkPos.ORIGIN;
@@ -625,6 +637,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.dimensions.getBoxAt(this.pos);
 	}
 
+	public EntityDimensions method_50635() {
+		return this.dimensions;
+	}
+
 	protected void refreshPosition() {
 		this.setPosition(this.pos.x, this.pos.y, this.pos.z);
 	}
@@ -658,6 +674,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.baseTick();
 	}
 
+	public void method_50636() {
+	}
+
+	public void method_50632(Transformation transformation, LivingEntity livingEntity) {
+	}
+
 	public void baseTick() {
 		this.world.getProfiler().push("entityBaseTick");
 		this.blockStateAtPos = null;
@@ -673,6 +695,67 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.prevPitch = this.getPitch();
 		this.prevYaw = this.getYaw();
 		this.tickPortal();
+		if (this.world instanceof ServerWorld serverWorld && !this.isRemoved()) {
+			this.field_44083++;
+			label114:
+			if (this.canUsePortals() && this.getY() > 700.0 && this.field_44083 > 200) {
+				if (class_8293.field_43646.method_50116() && this instanceof BeeEntity beeEntity && beeEntity.isLeashed()) {
+					break label114;
+				}
+
+				this.field_44083 = 0;
+				ServerWorld serverWorld2;
+				int i;
+				if (this.world.getDimension().hasSkyLight()) {
+					serverWorld2 = serverWorld.getServer().getWorld(World.MOON);
+					i = 600;
+				} else if (this.world.getDimensionKey() == DimensionTypes.THE_MOON) {
+					serverWorld2 = serverWorld.getServer().getOverworld();
+					i = 650;
+				} else {
+					serverWorld2 = null;
+					i = 0;
+				}
+
+				if (serverWorld2 != null) {
+					int j = 0;
+					List<BeeEntity> list = new ArrayList(2);
+					if (class_8293.field_43646.method_50116() && this instanceof ServerPlayerEntity serverPlayerEntity) {
+						List<BeeEntity> list2 = serverPlayerEntity.getBeesBeingHeld();
+						j = list2.size();
+
+						for (BeeEntity beeEntity2 : list2) {
+							beeEntity2.detachLeash(true, false);
+							BeeEntity beeEntity3 = (BeeEntity)beeEntity2.teleport(
+								serverWorld2, this.getX(), (double)(i + 2), this.getZ(), Set.of(), beeEntity2.getYaw(), beeEntity2.getPitch()
+							);
+							if (list.size() < 2) {
+								list.add(beeEntity3);
+							}
+						}
+					}
+
+					this.teleport(serverWorld2, this.getX(), (double)i, this.getZ(), Set.of(), this.getYaw(), 90.0F);
+
+					for (BeeEntity beeEntity4 : list) {
+						beeEntity4.attachLeash(this, true);
+					}
+
+					if (j > 2) {
+						ItemStack itemStack = new ItemStack(Items.LEAD, j - 2);
+						ServerPlayerEntity serverPlayerEntity2 = (ServerPlayerEntity)this;
+						boolean bl = serverPlayerEntity2.getInventory().insertStack(itemStack);
+						if (!bl || !itemStack.isEmpty()) {
+							ItemEntity itemEntity = serverPlayerEntity2.dropItem(itemStack, false);
+							if (itemEntity != null) {
+								itemEntity.resetPickupDelay();
+							}
+						}
+					}
+				}
+			}
+		}
+
 		if (this.shouldSpawnSprintingParticles()) {
 			this.spawnSprintingParticles();
 		}
@@ -692,7 +775,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 			} else {
 				if (this.fireTicks % 20 == 0 && !this.isInLava()) {
-					this.damage(this.getDamageSources().onFire(), 1.0F);
+					this.damageWithModifier(this.getDamageSources().onFire(), 1.0F);
 				}
 
 				this.setFireTicks(this.fireTicks - 1);
@@ -769,7 +852,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public void setOnFireFromLava() {
 		if (!this.isFireImmune()) {
 			this.setOnFireFor(15);
-			if (this.damage(this.getDamageSources().lava(), 4.0F)) {
+			if (this.damageWithModifier(this.getDamageSources().lava(), 4.0F)) {
 				this.playSound(SoundEvents.ENTITY_GENERIC_BURN, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 			}
 		}
@@ -917,7 +1000,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 
 				if (this.onGround) {
-					block.onSteppedOn(this.world, blockPos, blockState, this);
+					this.method_50039(blockPos, blockState, block);
 				}
 
 				Entity.MoveEffect moveEffect = this.getMoveEffect();
@@ -942,6 +1025,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 							if (moveEffect.emitsGameEvents()) {
 								this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
+							}
+
+							if (this.method_50638()) {
+								this.method_50639();
 							}
 						} else if (this.isTouchingWater()) {
 							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
@@ -982,6 +1069,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.world.getProfiler().pop();
 			}
 		}
+	}
+
+	protected void method_50039(BlockPos blockPos, BlockState blockState, Block block) {
+		block.onSteppedOn(this.world, blockPos, blockState, this);
+	}
+
+	public Entity getDisplayingEntity() {
+		return this;
 	}
 
 	protected boolean hasCollidedSoftly(Vec3d adjustedMovement) {
@@ -1133,7 +1228,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return offsetFactor;
 	}
 
-	private Vec3d adjustMovementForCollisions(Vec3d movement) {
+	protected Vec3d adjustMovementForCollisions(Vec3d movement) {
 		Box box = this.getBoundingBox();
 		List<VoxelShape> list = this.world.getEntityCollisions(this, box.stretch(movement));
 		Vec3d vec3d = movement.lengthSquared() == 0.0 ? movement : adjustMovementForCollisions(this, movement, box, this.world, list);
@@ -1296,19 +1391,20 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	private void playStepSounds(BlockPos pos, BlockState state) {
 		BlockPos blockPos = this.getStepSoundPos(pos);
-		if (this instanceof PlayerEntity && !pos.equals(blockPos)) {
+		Entity entity = this.getDisplayingEntity();
+		if (entity instanceof PlayerEntity && !pos.equals(blockPos)) {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.isIn(BlockTags.COMBINATION_STEP_SOUND_BLOCKS)) {
-				this.playCombinationStepSounds(blockState, state);
+				entity.playCombinationStepSounds(blockState, state);
 			} else {
-				this.playStepSound(blockPos, blockState);
+				entity.playStepSound(blockPos, blockState);
 			}
 		} else {
-			this.playStepSound(pos, state);
+			entity.playStepSound(pos, state);
 		}
 
-		if (this.shouldPlayAmethystChimeSound(state)) {
-			this.playAmethystChimeSound();
+		if (entity.shouldPlayAmethystChimeSound(state)) {
+			entity.playAmethystChimeSound();
 		}
 	}
 
@@ -1459,8 +1555,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
 		if (onGround) {
-			if (this.fallDistance > 0.0F) {
-				state.getBlock().onLandedUpon(this.world, state, landedPosition, this, this.fallDistance);
+			boolean bl = this.world.getDimensionKey() == DimensionTypes.THE_MOON;
+			boolean bl2 = class_8293.field_43537.method_50116();
+			boolean bl3 = bl == !bl2;
+			if (class_8293.field_43542.method_50395() && !bl) {
+				bl3 = true;
+			}
+
+			double d = bl3 ? this.field_44080 + this.field_44080 * 5.0 : (double)this.fallDistance;
+			if (d > 0.0 && (this.field_44080 < 0.0 || !class_8293.field_43542.method_50395())) {
+				state.getBlock().onLandedUpon(this.world, state, landedPosition, this, (float)d);
 				this.world.emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
 			}
 
@@ -1468,6 +1572,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		} else if (heightDifference < 0.0) {
 			this.fallDistance -= (float)heightDifference;
 		}
+
+		this.field_44080 = this.getVelocity().y;
+	}
+
+	protected float getGravity() {
+		return 0.04F;
+	}
+
+	protected float method_50634() {
+		return this.getGravity() * (float)this.world.getGravityModifier();
 	}
 
 	/**
@@ -1686,6 +1800,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.isSprinting() && !this.isTouchingWater() && !this.isSpectator() && !this.isInSneakingPose() && !this.isInLava() && this.isAlive();
 	}
 
+	public boolean method_50638() {
+		return false;
+	}
+
 	protected void spawnSprintingParticles() {
 		int i = MathHelper.floor(this.getX());
 		int j = MathHelper.floor(this.getY() - 0.2F);
@@ -1705,6 +1823,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					vec3d.z * -4.0
 				);
 		}
+	}
+
+	protected void method_50639() {
+		this.world.addParticle(ParticleTypes.FOOTSTEP, this.getX(), this.getY() + 0.001, this.getZ(), (double)this.yaw, 0.0, 0.0);
 	}
 
 	/**
@@ -1909,6 +2031,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.velocityModified = true;
 	}
 
+	public boolean damageWithModifier(DamageSource source, float amount) {
+		float f = class_8293.field_43592.method_50345(source.getTypeRegistryEntry());
+		return this.damage(source, amount * f);
+	}
+
 	/**
 	 * Applies a damage to this entity. The exact implementation differs between subclasses.
 	 * 
@@ -1929,7 +2056,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #isInvulnerableTo
 	 * @see LivingEntity#modifyAppliedDamage
 	 */
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
@@ -2395,6 +2522,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
+	public void applyMidasCurse() {
+	}
+
 	/**
 	 * Called when a player interacts with this entity.
 	 * 
@@ -2402,7 +2532,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @param hand the hand the player used to interact with this entity
 	 */
 	public ActionResult interact(PlayerEntity player, Hand hand) {
-		return ActionResult.PASS;
+		return !this.hasPassengers() && class_8293.field_43640.method_50256(this.type.getRegistryEntry().registryKey()) && player.startRiding(this, true)
+			? ActionResult.SUCCESS
+			: ActionResult.PASS;
 	}
 
 	/**
@@ -2427,12 +2559,13 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #collidesWith
 	 */
 	public boolean isCollidable() {
-		return false;
+		return class_8293.field_43548.method_50116();
 	}
 
 	public void tickRiding() {
 		this.setVelocity(Vec3d.ZERO);
 		this.tick();
+		this.method_50636();
 		if (this.hasVehicle()) {
 			this.getVehicle().updatePassengerPosition(this);
 		}
@@ -2739,7 +2872,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return Vec3d.fromPolar(this.getRotationClient());
 	}
 
-	public void setInNetherPortal(BlockPos pos) {
+	public void setInNetherPortal(BlockPos pos, boolean bl) {
 		if (this.hasPortalCooldown()) {
 			this.resetPortalCooldown();
 		} else {
@@ -2747,7 +2880,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.lastNetherPortalPosition = pos.toImmutable();
 			}
 
-			this.inNetherPortal = true;
+			this.field_44082 = bl ? Entity.class_8401.OTHER : Entity.class_8401.YES;
 		}
 	}
 
@@ -2755,19 +2888,28 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		if (this.world instanceof ServerWorld) {
 			int i = this.getMaxNetherPortalTime();
 			ServerWorld serverWorld = (ServerWorld)this.world;
-			if (this.inNetherPortal) {
-				MinecraftServer minecraftServer = serverWorld.getServer();
-				RegistryKey<World> registryKey = this.world.getRegistryKey() == World.NETHER ? World.OVERWORLD : World.NETHER;
-				ServerWorld serverWorld2 = minecraftServer.getWorld(registryKey);
-				if (serverWorld2 != null && minecraftServer.isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
-					this.world.getProfiler().push("portal");
-					this.netherPortalTime = i;
-					this.resetPortalCooldown();
-					this.moveToWorld(serverWorld2);
-					this.world.getProfiler().pop();
+			if (this.field_44082 != Entity.class_8401.NO) {
+				if (this.field_44082 == Entity.class_8401.OTHER) {
+					if (!this.hasVehicle() && this.netherPortalTime++ >= i) {
+						this.requestTeleport(this.getX(), Math.min(650.0, this.getY() + 500.0), this.getZ());
+						this.netherPortalTime = i;
+						this.resetPortalCooldown();
+						this.sendMessage(Text.translatable("rule.other_portal.oops"));
+					}
+				} else {
+					MinecraftServer minecraftServer = serverWorld.getServer();
+					RegistryKey<World> registryKey = this.world.getRegistryKey() == World.NETHER ? World.OVERWORLD : World.NETHER;
+					ServerWorld serverWorld2 = minecraftServer.getWorld(registryKey);
+					if (serverWorld2 != null && minecraftServer.isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
+						this.world.getProfiler().push("portal");
+						this.netherPortalTime = i;
+						this.resetPortalCooldown();
+						this.moveToWorld(serverWorld2);
+						this.world.getProfiler().pop();
+					}
 				}
 
-				this.inNetherPortal = false;
+				this.field_44082 = Entity.class_8401.NO;
 			} else {
 				if (this.netherPortalTime > 0) {
 					this.netherPortalTime -= 4;
@@ -3348,7 +3490,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			this.setOnFireFor(8);
 		}
 
-		this.damage(this.getDamageSources().lightningBolt(), 5.0F);
+		this.damageWithModifier(this.getDamageSources().lightningBolt(), 5.0F);
 	}
 
 	/**
@@ -3956,8 +4098,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	@Override
 	public Text getDisplayName() {
-		return Team.decorateName(this.getScoreboardTeam(), this.getName())
-			.styled(style -> style.withHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString()));
+		return (Text)(this.nameOverride != null
+			? this.nameOverride
+			: Team.decorateName(this.getScoreboardTeam(), this.getName())
+				.styled(style -> style.withHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString())));
 	}
 
 	/**
@@ -4028,27 +4172,27 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #teleport(double, double, double)
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
 	 */
-	public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch) {
+	public Entity teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch) {
 		float f = MathHelper.clamp(pitch, -90.0F, 90.0F);
 		if (world == this.world) {
 			this.refreshPositionAndAngles(destX, destY, destZ, yaw, f);
 			this.teleportPassengers();
 			this.setHeadYaw(yaw);
+			return this;
 		} else {
 			this.detach();
 			Entity entity = this.getType().create(world);
-			if (entity == null) {
-				return false;
+			if (entity != null) {
+				entity.copyFrom(this);
+				entity.refreshPositionAndAngles(destX, destY, destZ, yaw, f);
+				entity.setHeadYaw(yaw);
+				this.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
+				world.onDimensionChanged(entity);
+				return entity;
+			} else {
+				return null;
 			}
-
-			entity.copyFrom(this);
-			entity.refreshPositionAndAngles(destX, destY, destZ, yaw, f);
-			entity.setHeadYaw(yaw);
-			this.setRemoved(Entity.RemovalReason.CHANGED_DIMENSION);
-			world.onDimensionChanged(entity);
 		}
-
-		return true;
 	}
 
 	/**
@@ -4115,7 +4259,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #isCustomNameVisible
 	 */
 	public boolean shouldRenderName() {
-		return this.isCustomNameVisible();
+		return this.nameOverride != null || this.isCustomNameVisible();
 	}
 
 	public void onDataTrackerUpdate(List<DataTracker.SerializedEntry<?>> dataEntries) {
@@ -5172,6 +5316,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.stepHeight = stepHeight;
 	}
 
+	public boolean ignoresCameraFrustum() {
+		return this.ignoreCameraFrustum;
+	}
+
+	public void setIgnoreCameraFrustum(boolean ignoreCameraFrustum) {
+		this.ignoreCameraFrustum = ignoreCameraFrustum;
+	}
+
+	public boolean canFly() {
+		return false;
+	}
+
+	public String method_50643() {
+		return this.getName().getString();
+	}
+
 	/**
 	 * {@return whether the entity is removed}
 	 * 
@@ -5254,6 +5414,42 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public DamageSources getDamageSources() {
 		return this.world.getDamageSources();
+	}
+
+	public void updateTransformationState(LivingEntity owner) {
+		this.age = owner.age;
+		this.setPosition(owner.getX(), owner.getY(), owner.getZ());
+		this.lastRenderX = owner.lastRenderX;
+		this.lastRenderY = owner.lastRenderY;
+		this.lastRenderZ = owner.lastRenderZ;
+		this.prevX = owner.prevX;
+		this.prevY = owner.prevY;
+		this.prevZ = owner.prevZ;
+		this.setYaw(owner.getYaw());
+		this.setPitch(owner.getPitch());
+		this.prevPitch = owner.prevPitch;
+		this.prevYaw = owner.prevYaw;
+		this.setHeadYaw(owner.getHeadYaw());
+		this.setBodyYaw(owner.bodyYaw);
+		this.setOnGround(owner.isOnGround());
+		this.setSneaking(owner.isSneaking());
+		this.setVelocity(owner.getVelocity());
+		this.setPose(owner.getPose());
+
+		for (EquipmentSlot equipmentSlot : EQUIPMENT_SLOTS) {
+			this.equipStack(equipmentSlot, owner.getEquippedStack(equipmentSlot));
+		}
+
+		this.touchingWater = owner.touchingWater;
+		this.submergedInWater = owner.submergedInWater;
+		this.vehicle = owner.getVehicle();
+		this.passengerList = ImmutableList.copyOf(owner.getPassengerList());
+		this.setFireTicks(owner.doesRenderOnFire() ? 1 : -1);
+		if (owner.shouldRenderName()) {
+			this.nameOverride = owner.getDisplayName();
+		} else {
+			this.nameOverride = null;
+		}
 	}
 
 	/**
@@ -5357,5 +5553,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		public boolean shouldSave() {
 			return this.save;
 		}
+	}
+
+	public static enum class_8401 {
+		NO,
+		YES,
+		OTHER;
 	}
 }

@@ -336,7 +336,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			if (bl) {
 				return ActionResult.success(this.world.isClient);
 			} else {
-				if (!this.world.isClient && !this.offers.isEmpty()) {
+				if (!this.world.isClient) {
 					this.beginTradeWith(player);
 				}
 

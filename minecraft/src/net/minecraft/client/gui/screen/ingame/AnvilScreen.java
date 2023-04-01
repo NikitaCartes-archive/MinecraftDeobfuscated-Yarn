@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen.ingame;
 
+import com.google.common.base.Strings;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -7,7 +8,11 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.NbtItem;
+import net.minecraft.item.NbtNameItem;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -130,9 +135,24 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	@Override
 	public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
 		if (slotId == 0) {
-			this.nameField.setText(stack.isEmpty() ? "" : stack.getName().getString());
+			this.nameField.setText(method_50957(stack));
 			this.nameField.setEditable(!stack.isEmpty());
 			this.setFocused(this.nameField);
+		}
+	}
+
+	private static String method_50957(ItemStack itemStack) {
+		if (itemStack.isEmpty()) {
+			return "";
+		} else {
+			Item item = itemStack.getItem();
+			if (item instanceof NbtNameItem) {
+				return Strings.nullToEmpty(NbtNameItem.getValue(itemStack));
+			} else if (item instanceof NbtItem<?> nbtItem) {
+				return nbtItem.getValue(itemStack) instanceof NbtString nbtString ? nbtString.asString() : "";
+			} else {
+				return itemStack.getName().getString();
+			}
 		}
 	}
 }

@@ -17,7 +17,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.Transformation;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -191,7 +193,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (source.getAttacker() instanceof PlayerEntity playerEntity) {
 			Optional<UUID> optional = this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.LIKED_PLAYER);
 			if (optional.isPresent() && playerEntity.getUuid().equals(optional.get())) {
@@ -257,36 +259,46 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	}
 
 	@Override
+	public void method_50632(Transformation transformation, LivingEntity livingEntity) {
+		super.method_50632(transformation, livingEntity);
+		this.method_50688();
+	}
+
+	@Override
 	public void tick() {
 		super.tick();
 		if (this.world.isClient) {
-			this.field_38936 = this.field_38935;
-			if (this.isHoldingItem()) {
-				this.field_38935 = MathHelper.clamp(this.field_38935 + 1.0F, 0.0F, 5.0F);
-			} else {
-				this.field_38935 = MathHelper.clamp(this.field_38935 - 1.0F, 0.0F, 5.0F);
-			}
-
-			if (this.isDancing()) {
-				this.field_39472++;
-				this.field_39474 = this.field_39473;
-				if (this.method_44360()) {
-					this.field_39473++;
-				} else {
-					this.field_39473--;
-				}
-
-				this.field_39473 = MathHelper.clamp(this.field_39473, 0.0F, 15.0F);
-			} else {
-				this.field_39472 = 0.0F;
-				this.field_39473 = 0.0F;
-				this.field_39474 = 0.0F;
-			}
+			this.method_50688();
 		} else {
 			this.gameEventHandler.getListener().tick(this.world);
 			if (this.isPanicking()) {
 				this.setDancing(false);
 			}
+		}
+	}
+
+	private void method_50688() {
+		this.field_38936 = this.field_38935;
+		if (this.isHoldingItem()) {
+			this.field_38935 = MathHelper.clamp(this.field_38935 + 1.0F, 0.0F, 5.0F);
+		} else {
+			this.field_38935 = MathHelper.clamp(this.field_38935 - 1.0F, 0.0F, 5.0F);
+		}
+
+		if (this.isDancing()) {
+			this.field_39472++;
+			this.field_39474 = this.field_39473;
+			if (this.method_44360()) {
+				this.field_39473++;
+			} else {
+				this.field_39473--;
+			}
+
+			this.field_39473 = MathHelper.clamp(this.field_39473, 0.0F, 15.0F);
+		} else {
+			this.field_39472 = 0.0F;
+			this.field_39473 = 0.0F;
+			this.field_39474 = 0.0F;
 		}
 	}
 
@@ -572,6 +584,11 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		double e = this.random.nextGaussian() * 0.02;
 		double f = this.random.nextGaussian() * 0.02;
 		this.world.addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
+	}
+
+	@Override
+	public boolean canFly() {
+		return true;
 	}
 
 	class JukeboxEventListener implements GameEventListener {

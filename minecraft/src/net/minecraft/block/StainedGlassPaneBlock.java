@@ -1,6 +1,9 @@
 package net.minecraft.block;
 
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 
 public class StainedGlassPaneBlock extends PaneBlock implements Stainable {
 	private final DyeColor color;
@@ -22,5 +25,10 @@ public class StainedGlassPaneBlock extends PaneBlock implements Stainable {
 	@Override
 	public DyeColor getColor() {
 		return this.color;
+	}
+
+	@Override
+	public boolean shouldLetAirThrough(BlockState state, ServerWorld world, BlockPos pos, Direction direction) {
+		return PaneBlock.method_50864(state, world, pos, direction);
 	}
 }

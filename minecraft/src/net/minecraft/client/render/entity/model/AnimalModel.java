@@ -53,8 +53,23 @@ public abstract class AnimalModel<E extends Entity> extends EntityModel<E> {
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-		if (this.child) {
+		if (!this.shouldBeMini() && !this.child) {
 			matrices.push();
+			if (this.shouldHaveBigHead()) {
+				matrices.scale(2.0F, 2.0F, 2.0F);
+			}
+
+			this.getHeadParts().forEach(headPart -> headPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+			matrices.pop();
+			if (!this.shouldHeadFloat()) {
+				this.getBodyParts().forEach(bodyPart -> bodyPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+			}
+		} else {
+			matrices.push();
+			if (this.shouldHaveBigHead()) {
+				matrices.scale(2.0F, 2.0F, 2.0F);
+			}
+
 			if (this.headScaled) {
 				float f = 1.5F / this.invertedChildHeadScale;
 				matrices.scale(f, f, f);
@@ -63,16 +78,23 @@ public abstract class AnimalModel<E extends Entity> extends EntityModel<E> {
 			matrices.translate(0.0F, this.childHeadYOffset / 16.0F, this.childHeadZOffset / 16.0F);
 			this.getHeadParts().forEach(headPart -> headPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
-			matrices.push();
-			float f = 1.0F / this.invertedChildBodyScale;
-			matrices.scale(f, f, f);
-			matrices.translate(0.0F, this.childBodyYOffset / 16.0F, 0.0F);
-			this.getBodyParts().forEach(bodyPart -> bodyPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
-			matrices.pop();
-		} else {
-			this.getHeadParts().forEach(headPart -> headPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
-			this.getBodyParts().forEach(bodyPart -> bodyPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+			if (!this.shouldHeadFloat()) {
+				matrices.push();
+				float f = 1.0F / this.invertedChildBodyScale;
+				matrices.scale(f, f, f);
+				matrices.translate(0.0F, this.childBodyYOffset / 16.0F, 0.0F);
+				this.getBodyParts().forEach(bodyPart -> bodyPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+				matrices.pop();
+			}
 		}
+	}
+
+	protected boolean shouldHaveBigHead() {
+		return false;
+	}
+
+	protected boolean shouldHeadFloat() {
+		return false;
 	}
 
 	protected abstract Iterable<ModelPart> getHeadParts();

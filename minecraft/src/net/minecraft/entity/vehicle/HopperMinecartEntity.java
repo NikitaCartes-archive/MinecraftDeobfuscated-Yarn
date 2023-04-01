@@ -1,5 +1,6 @@
 package net.minecraft.entity.vehicle;
 
+import net.minecraft.class_8293;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.Hopper;
@@ -13,10 +14,13 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class HopperMinecartEntity extends StorageMinecartEntity implements Hopper {
 	private boolean enabled = true;
+	private int field_44138 = -1;
+	private BlockPos field_44139 = BlockPos.ORIGIN;
 
 	public HopperMinecartEntity(EntityType<? extends HopperMinecartEntity> entityType, World world) {
 		super(entityType, world);
@@ -80,8 +84,22 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient && this.isAlive() && this.isEnabled() && this.canOperate()) {
-			this.markDirty();
+		if (!this.world.isClient && this.isAlive() && this.isEnabled()) {
+			BlockPos blockPos = this.getBlockPos();
+			if (blockPos.equals(this.field_44139)) {
+				this.field_44138--;
+			} else {
+				this.field_44138 = 0;
+			}
+
+			this.field_44139 = blockPos;
+			if (this.field_44138 <= 0) {
+				this.field_44138 = 0;
+				if (this.canOperate()) {
+					this.field_44138 = class_8293.field_43536.method_50116() ? 8 : 1;
+					this.markDirty();
+				}
+			}
 		}
 	}
 

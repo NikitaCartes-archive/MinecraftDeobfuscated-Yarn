@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
+import net.minecraft.class_8293;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.block.entity.BlockEntity;
@@ -96,7 +97,7 @@ public class DispenserBlock extends BlockWithEntity {
 
 	@Override
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		boolean bl = world.isReceivingRedstonePower(pos) || world.isReceivingRedstonePower(pos.up());
+		boolean bl = world.isReceivingRedstonePower(pos) || !class_8293.field_43535.method_50116() && world.isReceivingRedstonePower(pos.up());
 		boolean bl2 = (Boolean)state.get(TRIGGERED);
 		if (bl && !bl2) {
 			world.scheduleBlockTick(pos, this, 4);

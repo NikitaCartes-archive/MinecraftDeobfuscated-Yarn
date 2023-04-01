@@ -45,6 +45,11 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
+	public boolean canFly() {
+		return true;
+	}
+
+	@Override
 	protected void initGoals() {
 		this.goalSelector.add(4, new BlazeEntity.ShootFireballGoal(this));
 		this.goalSelector.add(5, new GoToWalkTargetGoal(this, 1.0));

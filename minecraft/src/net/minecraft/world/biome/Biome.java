@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.longs.Long2FloatLinkedOpenHashMap;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -81,8 +82,8 @@ public final class Biome {
 		this.effects = effects;
 	}
 
-	public int getSkyColor() {
-		return this.effects.getSkyColor();
+	public int getSkyColor(RegistryEntry<Biome> entry) {
+		return class_8293.field_43604.getColor(entry, this.effects.getSkyColor());
 	}
 
 	public SpawnSettings getSpawnSettings() {
@@ -164,6 +165,10 @@ public final class Biome {
 		return this.getTemperature(pos) >= 0.15F;
 	}
 
+	public boolean isHot(BlockPos pos) {
+		return this.getTemperature(pos) >= 1.8F;
+	}
+
 	public boolean shouldGenerateLowerFrozenOceanSurface(BlockPos pos) {
 		return this.getTemperature(pos) > 0.1F;
 	}
@@ -187,12 +192,12 @@ public final class Biome {
 		return this.generationSettings;
 	}
 
-	public int getFogColor() {
-		return this.effects.getFogColor();
+	public int getFogColor(RegistryEntry<Biome> entry) {
+		return class_8293.field_43606.getColor(entry, this.effects.getFogColor());
 	}
 
-	public int getGrassColorAt(double x, double z) {
-		int i = (Integer)this.effects.getGrassColor().orElseGet(this::getDefaultGrassColor);
+	public int getGrassColorAt(RegistryEntry<Biome> entry, double x, double z) {
+		int i = (Integer)class_8293.field_43602.getColor(entry).or(this.effects::getGrassColor).orElseGet(this::getDefaultGrassColor);
 		return this.effects.getGrassColorModifier().getModifiedGrassColor(x, z, i);
 	}
 
@@ -202,8 +207,8 @@ public final class Biome {
 		return GrassColors.getColor(d, e);
 	}
 
-	public int getFoliageColor() {
-		return (Integer)this.effects.getFoliageColor().orElseGet(this::getDefaultFoliageColor);
+	public int getFoliageColor(RegistryEntry<Biome> entry) {
+		return (Integer)class_8293.field_43603.getColor(entry).or(this.effects::getFoliageColor).orElseGet(this::getDefaultFoliageColor);
 	}
 
 	private int getDefaultFoliageColor() {
@@ -220,12 +225,12 @@ public final class Biome {
 		return this.effects;
 	}
 
-	public int getWaterColor() {
-		return this.effects.getWaterColor();
+	public int getWaterColor(RegistryEntry<Biome> entry) {
+		return class_8293.field_43605.getColor(entry, this.effects.getWaterColor());
 	}
 
-	public int getWaterFogColor() {
-		return this.effects.getWaterFogColor();
+	public int getWaterFogColor(RegistryEntry<Biome> entry) {
+		return class_8293.field_43607.getColor(entry, this.effects.getWaterFogColor());
 	}
 
 	public Optional<BiomeParticleConfig> getParticleConfig() {

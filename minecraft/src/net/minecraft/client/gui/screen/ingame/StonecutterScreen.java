@@ -74,7 +74,7 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 				int n = i + m % 4 * 16;
 				int o = j + m / 4 * 18 + 2;
 				if (x >= n && x < n + 16 && y >= o && y < o + 18) {
-					this.renderTooltip(matrices, ((StonecuttingRecipe)list.get(l)).getOutput(this.client.world.getRegistryManager()), x, y);
+					this.renderTooltip(matrices, ((StonecuttingRecipe)list.get(l)).method_50832(this.client.world.getRegistryManager()), x, y);
 				}
 			}
 		}
@@ -105,7 +105,9 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 			int k = x + j % 4 * 16;
 			int l = j / 4;
 			int m = y + l * 18 + 2;
-			this.client.getItemRenderer().renderInGuiWithOverrides(matrices, ((StonecuttingRecipe)list.get(i)).getOutput(this.client.world.getRegistryManager()), k, m);
+			this.client
+				.getItemRenderer()
+				.renderInGuiWithOverrides(matrices, ((StonecuttingRecipe)list.get(i)).method_50832(this.client.world.getRegistryManager()), k, m);
 		}
 	}
 

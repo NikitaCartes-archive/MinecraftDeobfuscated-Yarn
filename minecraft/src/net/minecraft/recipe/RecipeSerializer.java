@@ -53,6 +53,8 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	RecipeSerializer<CraftingDecoratedPotRecipe> CRAFTING_DECORATED_POT = register(
 		"crafting_decorated_pot", new SpecialRecipeSerializer<>(CraftingDecoratedPotRecipe::new)
 	);
+	RecipeSerializer<DupeHackRecipe> CRAFTING_SPECIAL_DUPEHACK = register("crafting_special_dupehack", new SpecialRecipeSerializer<>(DupeHackRecipe::new));
+	RecipeSerializer<NbtCraftingRecipe> NBT_CRAFTING_RECIPE = register("nbt_crafting_recipe", new SpecialRecipeSerializer<>(NbtCraftingRecipe::new));
 
 	/**
 	 * Reads a recipe from a JSON object.

@@ -86,7 +86,7 @@ public class LookTargetUtil {
 	public static void give(LivingEntity entity, ItemStack stack, Vec3d targetLocation, Vec3d velocityFactor, float yOffset) {
 		double d = entity.getEyeY() - (double)yOffset;
 		ItemEntity itemEntity = new ItemEntity(entity.world, entity.getX(), d, entity.getZ(), stack);
-		itemEntity.setThrower(entity.getUuid());
+		itemEntity.setThrower(entity.getUuid(), true);
 		Vec3d vec3d = targetLocation.subtract(entity.getPos());
 		vec3d = vec3d.normalize().multiply(velocityFactor.x, velocityFactor.y, velocityFactor.z);
 		itemEntity.setVelocity(vec3d);

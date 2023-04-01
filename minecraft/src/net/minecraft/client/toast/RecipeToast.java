@@ -49,7 +49,7 @@ public class RecipeToast implements Toast {
 			matrices.scale(0.6F, 0.6F, 1.0F);
 			manager.getClient().getItemRenderer().renderInGui(matrices, itemStack, 3, 3);
 			matrices.pop();
-			manager.getClient().getItemRenderer().renderInGui(matrices, recipe.getOutput(manager.getClient().world.getRegistryManager()), 8, 8);
+			manager.getClient().getItemRenderer().renderInGui(matrices, recipe.method_50832(manager.getClient().world.getRegistryManager()), 8, 8);
 			return (double)(startTime - this.startTime) >= 5000.0 * manager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		}
 	}

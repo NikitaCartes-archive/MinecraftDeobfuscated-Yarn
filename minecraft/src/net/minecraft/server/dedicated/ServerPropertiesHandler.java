@@ -52,7 +52,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean spawnAnimals = this.parseBoolean("spawn-animals", true);
 	public final boolean spawnNpcs = this.parseBoolean("spawn-npcs", true);
 	public final boolean pvp = this.parseBoolean("pvp", true);
-	public final boolean allowFlight = this.parseBoolean("allow-flight", false);
+	public final boolean allowFlight = this.parseBoolean("allow-flight", true);
 	public final String motd = this.getString("motd", "A Minecraft Server");
 	public final boolean forceGameMode = this.parseBoolean("force-gamemode", false);
 	public final boolean enforceWhitelist = this.parseBoolean("enforce-whitelist", false);

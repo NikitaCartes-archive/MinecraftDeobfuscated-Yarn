@@ -15,6 +15,14 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.class_8258;
+import net.minecraft.class_8478;
+import net.minecraft.class_8479;
+import net.minecraft.class_8480;
+import net.minecraft.class_8481;
+import net.minecraft.class_8482;
+import net.minecraft.class_8483;
+import net.minecraft.class_8484;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.BundlePacket;
 import net.minecraft.network.packet.BundleSplitterPacket;
@@ -315,6 +323,12 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 					.register(EntityStatusEffectS2CPacket.class, EntityStatusEffectS2CPacket::new)
 					.register(SynchronizeRecipesS2CPacket.class, SynchronizeRecipesS2CPacket::new)
 					.register(SynchronizeTagsS2CPacket.class, SynchronizeTagsS2CPacket::new)
+					.register(class_8479.class, class_8479::new)
+					.register(class_8483.class, class_8483::new)
+					.register(class_8481.class, class_8481::new)
+					.register(class_8482.class, class_8482::new)
+					.register(class_8480.class, class_8480::new)
+					.register(class_8478.class, class_8478::new)
 			)
 			.setup(
 				NetworkSide.SERVERBOUND,
@@ -370,6 +384,8 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 					.register(SpectatorTeleportC2SPacket.class, SpectatorTeleportC2SPacket::new)
 					.register(PlayerInteractBlockC2SPacket.class, PlayerInteractBlockC2SPacket::new)
 					.register(PlayerInteractItemC2SPacket.class, PlayerInteractItemC2SPacket::new)
+					.register(class_8258.class, class_8258::new)
+					.register(class_8484.class, class_8484::new)
 			)
 	),
 	STATUS(

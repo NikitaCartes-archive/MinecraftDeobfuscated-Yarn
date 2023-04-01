@@ -18,7 +18,7 @@ public interface Hoglin {
 			g = f;
 		}
 
-		boolean bl = target.damage(attacker.getDamageSources().mobAttack(attacker), g);
+		boolean bl = target.damageWithModifier(attacker.getDamageSources().mobAttack(attacker), g);
 		if (bl) {
 			attacker.applyDamageEffects(attacker, target);
 			if (!attacker.isBaby()) {

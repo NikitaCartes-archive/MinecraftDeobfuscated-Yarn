@@ -388,4 +388,11 @@ public class ChestBlock extends AbstractChestBlock<ChestBlockEntity> implements 
 			((ChestBlockEntity)blockEntity).onScheduledTick();
 		}
 	}
+
+	@Override
+	public boolean sticksTo(World world, BlockPos pos, BlockState state, BlockPos otherPos, BlockState otherState, Direction face, Direction otherFace) {
+		return otherState.isOf(this) && state.get(CHEST_TYPE) != ChestType.SINGLE && otherState.get(CHEST_TYPE) != ChestType.SINGLE
+			? getFacing(state) == face
+			: false;
+	}
 }

@@ -45,4 +45,8 @@ public abstract class EntityModel<T extends Entity> extends Model {
 		copy.riding = this.riding;
 		copy.child = this.child;
 	}
+
+	public boolean shouldBeMini() {
+		return false;
+	}
 }

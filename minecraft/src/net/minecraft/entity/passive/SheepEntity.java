@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -297,18 +298,26 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		}
 	}
 
+	private static DyeColor method_50687(DyeColor dyeColor, int i) {
+		return (DyeColor)DyeColor.field_44154.apply(dyeColor.getId() + i);
+	}
+
 	public static DyeColor generateDefaultColor(Random random) {
-		int i = random.nextInt(100);
-		if (i < 5) {
-			return DyeColor.BLACK;
-		} else if (i < 10) {
-			return DyeColor.GRAY;
-		} else if (i < 15) {
-			return DyeColor.LIGHT_GRAY;
-		} else if (i < 18) {
-			return DyeColor.BROWN;
+		DyeColor dyeColor = class_8293.field_43625.method_50145();
+		int i = dyeColor.getId() - DyeColor.WHITE.getId();
+		int j = random.nextInt(100);
+		if (j < 5) {
+			return method_50687(DyeColor.BLACK, i);
+		} else if (j < 10) {
+			return method_50687(DyeColor.GRAY, i);
+		} else if (j < 15) {
+			return method_50687(DyeColor.LIGHT_GRAY, i);
+		} else if (j < 18) {
+			return method_50687(DyeColor.BROWN, i);
 		} else {
-			return random.nextInt(500) == 0 ? DyeColor.PINK : DyeColor.WHITE;
+			return random.nextInt(500) != 0 && (!class_8293.field_43655.method_50116() || random.nextInt(100) != 0)
+				? method_50687(DyeColor.WHITE, i)
+				: method_50687(DyeColor.PINK, i);
 		}
 	}
 
@@ -347,7 +356,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		return (DyeColor)this.world
 			.getRecipeManager()
 			.getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world)
-			.map(recipe -> recipe.craft(craftingInventory, this.world.getRegistryManager()))
+			.map(recipe -> recipe.method_50831(craftingInventory, this.world.getRegistryManager()))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)

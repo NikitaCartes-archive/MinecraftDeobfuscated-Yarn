@@ -416,6 +416,15 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern(" #X")
 			.criterion("has_string", conditionsFromItem(Items.STRING))
 			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.BOW)
+			.input('X', Items.STICK)
+			.input('#', Items.STRING)
+			.pattern(" #X")
+			.pattern("# X")
+			.pattern(" #X")
+			.criterion("has_string", conditionsFromItem(Items.STRING))
+			.wob(true)
+			.offerTo(exporter, "wob");
 		ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, Items.BOWL, 4)
 			.input('#', ItemTags.PLANKS)
 			.pattern("# #")
@@ -493,6 +502,13 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("# #")
 			.pattern("###")
 			.criterion("has_water_bucket", conditionsFromItem(Items.WATER_BUCKET))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.BREWING, Blocks.COPPER_SINK)
+			.input('#', Blocks.COPPER_BLOCK)
+			.pattern("# #")
+			.pattern("# #")
+			.pattern("###")
+			.criterion("has_copper", conditionsFromItem(Blocks.COPPER_BLOCK))
 			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.COMPOSTER)
 			.input('#', ItemTags.WOODEN_SLABS)
@@ -731,6 +747,15 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("#")
 			.criterion("has_diamond", conditionsFromItem(Items.DIAMOND))
 			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.COMBAT, Items.DIAMOND_SWORD)
+			.input('#', Items.STICK)
+			.input('X', Items.DIAMOND)
+			.pattern("#")
+			.pattern("#")
+			.pattern("X")
+			.criterion("has_diamond", conditionsFromItem(Items.DIAMOND))
+			.wob(true)
+			.offerTo(exporter, "diamond_drows");
 		ShapedRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, Blocks.DIORITE, 2)
 			.input('Q', Items.QUARTZ)
 			.input('C', Blocks.COBBLESTONE)
@@ -986,6 +1011,8 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.offerTo(exporter);
 		offer2x2CompactingRecipe(exporter, RecipeCategory.REDSTONE, Blocks.HONEY_BLOCK, Items.HONEY_BOTTLE);
 		offer2x2CompactingRecipe(exporter, RecipeCategory.DECORATIONS, Blocks.HONEYCOMB_BLOCK, Items.HONEYCOMB);
+		offer2x2CompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Items.AIR_BLOCK, Items.GLASS_BOTTLE);
+		offerCompactingRecipe(exporter, RecipeCategory.BUILDING_BLOCKS, Blocks.PACKED_AIR, Items.AIR_BLOCK);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.HOPPER)
 			.input('C', Blocks.CHEST)
 			.input('I', Items.IRON_INGOT)
@@ -1312,6 +1339,25 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern("###")
 			.criterion("has_quartz", conditionsFromItem(Items.QUARTZ))
 			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.PICKAXE_BLOCK)
+			.input('P', ItemTags.PICKAXES)
+			.input('R', Items.REDSTONE)
+			.input('#', Blocks.COBBLESTONE)
+			.pattern("#P#")
+			.pattern("# #")
+			.pattern("#R#")
+			.criterion("has_pickaxe", conditionsFromTag(ItemTags.PICKAXES))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.PLACE_BLOCK)
+			.input('B', Items.BOW)
+			.input('R', Items.REDSTONE)
+			.input('H', Items.HOPPER)
+			.input('#', Blocks.COBBLESTONE)
+			.pattern("#H#")
+			.pattern("#R#")
+			.pattern("#B#")
+			.criterion("has_hopper", conditionsFromItem(Items.HOPPER))
+			.offerTo(exporter);
 		offerSingleOutputShapelessRecipe(exporter, Items.ORANGE_DYE, Blocks.ORANGE_TULIP, "orange_dye");
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.ORANGE_DYE, 2)
 			.input(Items.RED_DYE)
@@ -1351,6 +1397,10 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_white_dye", conditionsFromItem(Items.WHITE_DYE))
 			.criterion("has_red_dye", conditionsFromItem(Items.RED_DYE))
 			.offerTo(exporter, "pink_dye_from_red_white_dye");
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.STRING2)
+			.input(Items.STRING, 2)
+			.criterion("has_a_bucket_full_of_shut_up", conditionsFromItem(Blocks.CAVE_AIR))
+			.offerTo(exporter, "string_concatenation");
 		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Blocks.PISTON)
 			.input('R', Items.REDSTONE)
 			.input('#', Blocks.COBBLESTONE)
@@ -1832,6 +1882,11 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.input(Items.ENCHANTED_GOLDEN_APPLE)
 			.criterion("has_enchanted_golden_apple", conditionsFromItem(Items.ENCHANTED_GOLDEN_APPLE))
 			.offerTo(exporter);
+		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.M_BANNER_PATTERN)
+			.input(Items.PAPER)
+			.input(Items.SUSPICIOUS_STEW)
+			.criterion("is_sus", conditionsFromItem(Items.SUSPICIOUS_SAND))
+			.offerTo(exporter);
 		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, Blocks.SCAFFOLDING, 6)
 			.input('~', Items.STRING)
 			.input('I', Blocks.BAMBOO)
@@ -1974,6 +2029,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.SHULKER_BOX).offerTo(exporter, "shulker_box_coloring");
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.TIPPED_ARROW).offerTo(exporter, "tipped_arrow");
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.SUSPICIOUS_STEW).offerTo(exporter, "suspicious_stew");
+		ComplexRecipeJsonBuilder.create(RecipeSerializer.CRAFTING_SPECIAL_DUPEHACK).offerTo(exporter, "dupe_hack");
 		CookingRecipeJsonBuilder.createSmelting(Ingredient.ofItems(Items.POTATO), RecipeCategory.FOOD, Items.BAKED_POTATO, 0.35F, 200)
 			.criterion("has_potato", conditionsFromItem(Items.POTATO))
 			.offerTo(exporter);
@@ -2619,5 +2675,42 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_brick", conditionsFromTag(ItemTags.DECORATED_POT_SHARDS))
 			.offerTo(exporter, "decorated_pot_simple");
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.CRAFTING_DECORATED_POT).offerTo(exporter, "decorated_pot");
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Items.LEFT_SQUARE)
+			.input('x', Items.BIT)
+			.pattern("xx")
+			.pattern("x ")
+			.pattern("xx")
+			.canXFlip(false)
+			.criterion("has_bit", conditionsFromItem(Items.BIT))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Items.RIGHT_SQUARE)
+			.input('x', Items.BIT)
+			.pattern("xx")
+			.pattern(" x")
+			.pattern("xx")
+			.canXFlip(false)
+			.criterion("has_bit", conditionsFromItem(Items.BIT))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Items.LEFT_CURLY)
+			.input('x', Items.BIT)
+			.pattern(" x")
+			.pattern("x ")
+			.pattern(" x")
+			.canXFlip(false)
+			.criterion("has_bit", conditionsFromItem(Items.BIT))
+			.offerTo(exporter);
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, Items.RIGHT_CURLY)
+			.input('x', Items.BIT)
+			.pattern("x ")
+			.pattern(" x")
+			.pattern("x ")
+			.canXFlip(false)
+			.criterion("has_bit", conditionsFromItem(Items.BIT))
+			.offerTo(exporter);
+		offerStonecuttingRecipe(exporter, RecipeCategory.REDSTONE, Items.NAME, Items.NAME_TAG, 16);
+		offerStonecuttingRecipe(exporter, RecipeCategory.REDSTONE, Items.TAG, Items.NAME_TAG, 16);
+		offerStonecuttingRecipe(exporter, RecipeCategory.REDSTONE, Items.BIT, Items.NAME, 16);
+		offerStonecuttingRecipe(exporter, RecipeCategory.REDSTONE, Items.BIT, Items.TAG, 16);
+		ComplexRecipeJsonBuilder.create(RecipeSerializer.NBT_CRAFTING_RECIPE).offerTo(exporter, "nbt_crafting");
 	}
 }

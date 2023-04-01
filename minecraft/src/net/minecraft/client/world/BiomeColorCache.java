@@ -70,6 +70,7 @@ public class BiomeColorCache {
 	public void reset() {
 		try {
 			this.lock.writeLock().lock();
+			this.colors.values().forEach(BiomeColorCache.Colors::setNeedsCacheRefresh);
 			this.colors.clear();
 		} finally {
 			this.lock.writeLock().unlock();

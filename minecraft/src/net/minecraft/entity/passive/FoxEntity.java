@@ -478,7 +478,7 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 				this.world, this.getX() + this.getRotationVector().x, this.getY() + 1.0, this.getZ() + this.getRotationVector().z, stack
 			);
 			itemEntity.setPickupDelay(40);
-			itemEntity.setThrower(this.getUuid());
+			itemEntity.setThrower(this.getUuid(), true);
 			this.playSound(SoundEvents.ENTITY_FOX_SPIT, 1.0F, 1.0F);
 			this.world.spawnEntity(itemEntity);
 		}

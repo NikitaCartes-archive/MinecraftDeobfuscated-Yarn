@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import net.minecraft.class_8293;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -434,7 +435,10 @@ public class PiglinBrain {
 	}
 
 	private static List<ItemStack> getBarteredItem(PiglinEntity piglin) {
-		LootTable lootTable = piglin.world.getServer().getLootManager().getTable(LootTables.PIGLIN_BARTERING_GAMEPLAY);
+		LootTable lootTable = piglin.world
+			.getServer()
+			.getLootManager()
+			.getTable(class_8293.field_43655.method_50116() ? LootTables.DREAM_PIGLIN_BARTERING_GAMEPLAY : LootTables.PIGLIN_BARTERING_GAMEPLAY);
 		List<ItemStack> list = lootTable.generateLoot(
 			new LootContext.Builder((ServerWorld)piglin.world)
 				.parameter(LootContextParameters.THIS_ENTITY, piglin)

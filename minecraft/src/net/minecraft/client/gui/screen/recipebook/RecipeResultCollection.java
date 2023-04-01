@@ -34,10 +34,10 @@ public class RecipeResultCollection {
 
 	private static boolean shouldHaveSingleOutput(DynamicRegistryManager registryManager, List<Recipe<?>> recipes) {
 		int i = recipes.size();
-		ItemStack itemStack = ((Recipe)recipes.get(0)).getOutput(registryManager);
+		ItemStack itemStack = ((Recipe)recipes.get(0)).method_50832(registryManager);
 
 		for (int j = 1; j < i; j++) {
-			ItemStack itemStack2 = ((Recipe)recipes.get(j)).getOutput(registryManager);
+			ItemStack itemStack2 = ((Recipe)recipes.get(j)).method_50832(registryManager);
 			if (!ItemStack.areItemsEqual(itemStack, itemStack2) || !ItemStack.areNbtEqual(itemStack, itemStack2)) {
 				return false;
 			}

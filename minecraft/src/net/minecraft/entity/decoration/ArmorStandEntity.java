@@ -387,7 +387,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		if (this.world.isClient || this.isRemoved()) {
 			return false;
 		} else if (source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {

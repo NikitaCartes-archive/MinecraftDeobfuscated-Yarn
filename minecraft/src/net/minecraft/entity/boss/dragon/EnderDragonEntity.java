@@ -10,6 +10,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.Transformation;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathMinHeap;
@@ -112,7 +113,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		this.parts = new EnderDragonPart[]{this.head, this.neck, this.body, this.tail1, this.tail2, this.tail3, this.rightWing, this.leftWing};
 		this.setHealth(this.getMaxHealth());
 		this.noClip = true;
-		this.ignoreCameraFrustum = true;
+		this.setIgnoreCameraFrustum(true);
 		if (world instanceof ServerWorld) {
 			this.fight = ((ServerWorld)world).getEnderDragonFight();
 		} else {
@@ -166,6 +167,37 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		ds[1] = d + e * (double)tickDelta;
 		ds[2] = MathHelper.lerp((double)tickDelta, this.segmentCircularBuffer[i][2], this.segmentCircularBuffer[j][2]);
 		return ds;
+	}
+
+	@Override
+	public void method_50632(Transformation transformation, LivingEntity livingEntity) {
+		super.method_50632(transformation, livingEntity);
+		this.prevWingPosition = this.wingPosition;
+		Vec3d vec3d = livingEntity.getVelocity();
+		float f = 0.2F / ((float)vec3d.horizontalLength() * 10.0F + 1.0F);
+		f *= (float)Math.pow(2.0, vec3d.y);
+		if (this.phaseManager.getCurrent().isSittingOrHovering()) {
+			this.wingPosition += 0.1F;
+		} else if (this.slowedDownByBlock) {
+			this.wingPosition += f * 0.5F;
+		} else {
+			this.wingPosition += f;
+		}
+
+		this.setYaw(MathHelper.wrapDegrees(livingEntity.getYaw() - 180.0F));
+		if (this.latestSegment < 0) {
+			for (int i = 0; i < this.segmentCircularBuffer.length; i++) {
+				this.segmentCircularBuffer[i][0] = (double)this.getYaw();
+				this.segmentCircularBuffer[i][1] = this.getY();
+			}
+		}
+
+		if (++this.latestSegment == this.segmentCircularBuffer.length) {
+			this.latestSegment = 0;
+		}
+
+		this.segmentCircularBuffer[this.latestSegment][0] = (double)this.getYaw();
+		this.segmentCircularBuffer[this.latestSegment][1] = this.getY();
 	}
 
 	@Override
@@ -422,7 +454,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 				double h = Math.max(f * f + g * g, 0.1);
 				entity.addVelocity(f / h * 4.0, 0.2F, g / h * 4.0);
 				if (!this.phaseManager.getCurrent().isSittingOrHovering() && ((LivingEntity)entity).getLastAttackedTime() < entity.age - 2) {
-					entity.damage(this.getDamageSources().mobAttack(this), 5.0F);
+					entity.damageWithModifier(this.getDamageSources().mobAttack(this), 5.0F);
 					this.applyDamageEffects(this, entity);
 				}
 			}
@@ -432,10 +464,15 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	private void damageLivingEntities(List<Entity> entities) {
 		for (Entity entity : entities) {
 			if (entity instanceof LivingEntity) {
-				entity.damage(this.getDamageSources().mobAttack(this), 10.0F);
+				entity.damageWithModifier(this.getDamageSources().mobAttack(this), 10.0F);
 				this.applyDamageEffects(this, entity);
 			}
 		}
+	}
+
+	@Override
+	public boolean canFly() {
+		return true;
 	}
 
 	private float wrapYawChange(double yawDegrees) {

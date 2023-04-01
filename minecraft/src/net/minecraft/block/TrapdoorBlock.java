@@ -1,12 +1,14 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -17,6 +19,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -167,5 +170,25 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		}
 
 		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+	}
+
+	@Override
+	public boolean hasRandomTicks(BlockState state) {
+		return true;
+	}
+
+	@Override
+	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		if (class_8293.field_43635.method_50116() && this.material != Material.METAL) {
+			state = state.cycle(OPEN);
+			world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
+			if ((Boolean)state.get(WATERLOGGED)) {
+				world.scheduleFluidTick(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			}
+
+			this.playToggleSound(null, world, pos, (Boolean)state.get(OPEN));
+		}
+
+		super.randomTick(state, world, pos, random);
 	}
 }

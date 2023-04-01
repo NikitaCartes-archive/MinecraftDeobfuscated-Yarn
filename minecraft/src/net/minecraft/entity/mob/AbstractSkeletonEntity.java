@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.Transformation;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.AvoidSunlightGoal;
@@ -27,6 +28,7 @@ import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.passive.IronGolemEntity;
+import net.minecraft.entity.passive.RayTracingEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -76,6 +78,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.goalSelector.add(6, new LookAroundGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this));
 		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
+		this.targetSelector.add(2, new ActiveTargetGoal(this, RayTracingEntity.class, true));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, IronGolemEntity.class, true));
 		this.targetSelector.add(3, new ActiveTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
@@ -98,15 +101,29 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Override
 	public void tickMovement() {
-		boolean bl = this.isAffectedByDaylight();
+		if (this.getTransformedLook().entity() == null) {
+			this.method_50692(this);
+		}
+
+		super.tickMovement();
+	}
+
+	@Override
+	public void method_50632(Transformation transformation, LivingEntity livingEntity) {
+		super.method_50632(transformation, livingEntity);
+		this.method_50692(livingEntity);
+	}
+
+	private void method_50692(LivingEntity livingEntity) {
+		boolean bl = this.method_50658();
 		if (bl) {
-			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
+			ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HEAD);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.isDamageable()) {
 					itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
 					if (itemStack.getDamage() >= itemStack.getMaxDamage()) {
-						this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
-						this.equipStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
+						livingEntity.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
+						livingEntity.equipStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
 					}
 				}
 
@@ -114,11 +131,9 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 			}
 
 			if (bl) {
-				this.setOnFireFor(8);
+				livingEntity.setOnFireFor(8);
 			}
 		}
-
-		super.tickMovement();
 	}
 
 	@Override

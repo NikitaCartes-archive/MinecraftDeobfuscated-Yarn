@@ -20,6 +20,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LimbAnimator;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
+import net.minecraft.entity.passive.MoonCowEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
@@ -71,6 +72,15 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 			}
 
 			this.getContextModel().getHead().rotate(matrixStack);
+			if (livingEntity instanceof MoonCowEntity) {
+				if (livingEntity.isBaby()) {
+					float m = 1.5F;
+					matrixStack.scale(1.5F, 1.5F, 1.5F);
+				}
+
+				matrixStack.translate(0.0F, 0.2F, -0.2F);
+			}
+
 			if (item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
 				float n = 1.1875F;
 				matrixStack.scale(1.1875F, -1.1875F, -1.1875F);

@@ -47,7 +47,7 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
+	protected boolean damage(DamageSource source, float amount) {
 		return this.isInvulnerableTo(source) ? false : this.owner.damagePart(this, source, amount);
 	}
 

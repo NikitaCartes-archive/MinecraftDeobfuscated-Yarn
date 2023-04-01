@@ -122,6 +122,7 @@ public class ServerNetworkIo {
 					clientConnection.setPacketListener(new LocalServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 					ServerNetworkIo.this.connections.add(clientConnection);
 					ChannelPipeline channelPipeline = channel.pipeline();
+					ClientConnection.addHandlers(channelPipeline, NetworkSide.SERVERBOUND);
 					channelPipeline.addLast("packet_handler", clientConnection);
 				}
 			}).group(DEFAULT_CHANNEL.get()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();

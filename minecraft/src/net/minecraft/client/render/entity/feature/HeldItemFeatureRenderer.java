@@ -30,7 +30,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 		ItemStack itemStack2 = bl ? livingEntity.getMainHandStack() : livingEntity.getOffHandStack();
 		if (!itemStack.isEmpty() || !itemStack2.isEmpty()) {
 			matrixStack.push();
-			if (this.getContextModel().child) {
+			if (this.getContextModel().shouldBeMini() || this.getContextModel().child) {
 				float m = 0.5F;
 				matrixStack.translate(0.0F, 0.75F, 0.0F);
 				matrixStack.scale(0.5F, 0.5F, 0.5F);

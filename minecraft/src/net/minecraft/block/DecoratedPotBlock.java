@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.List;
+import net.minecraft.class_8293;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -11,6 +12,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.tag.ItemTags;
@@ -90,6 +92,10 @@ public class DecoratedPotBlock extends BlockWithEntity {
 			builder.putDrop(SHARDS_NBT_KEY, (context, consumer) -> {
 				for (Item item : decoratedPotBlockEntity.getShards()) {
 					consumer.accept(item.getDefaultStack());
+				}
+
+				if (class_8293.field_43530.method_50116()) {
+					consumer.accept(new ItemStack(Items.EMERALD));
 				}
 			});
 		}

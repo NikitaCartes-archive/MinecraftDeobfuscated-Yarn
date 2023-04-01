@@ -1,5 +1,6 @@
 package net.minecraft.world.spawner;
 
+import net.minecraft.class_8293;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -23,7 +24,9 @@ public class PhantomSpawner implements Spawner {
 
 	@Override
 	public int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals) {
-		if (!spawnMonsters) {
+		if (class_8293.field_43652.method_50116()) {
+			return 0;
+		} else if (!spawnMonsters) {
 			return 0;
 		} else if (!world.getGameRules().getBoolean(GameRules.DO_INSOMNIA)) {
 			return 0;
@@ -33,7 +36,7 @@ public class PhantomSpawner implements Spawner {
 			if (this.cooldown > 0) {
 				return 0;
 			} else {
-				this.cooldown = this.cooldown + (60 + random.nextInt(60)) * 20;
+				this.cooldown = this.cooldown + (60 + random.nextInt(class_8293.field_43655.method_50116() ? 30 : 60)) * 20;
 				if (world.getAmbientDarkness() < 5 && world.getDimension().hasSkyLight()) {
 					return 0;
 				} else {

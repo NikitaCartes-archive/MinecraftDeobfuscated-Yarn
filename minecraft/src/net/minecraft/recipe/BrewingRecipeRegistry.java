@@ -3,6 +3,7 @@ package net.minecraft.recipe;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.function.Predicate;
+import net.minecraft.class_8293;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -91,6 +92,14 @@ public class BrewingRecipeRegistry {
 
 		for (int j = POTION_RECIPES.size(); i < j; i++) {
 			BrewingRecipeRegistry.Recipe<Potion> recipe = (BrewingRecipeRegistry.Recipe<Potion>)POTION_RECIPES.get(i);
+			if (recipe.output == Potions.BIG && !class_8293.field_43667.method_50116()) {
+				return false;
+			}
+
+			if (recipe.output == Potions.SMALL && !class_8293.field_43668.method_50116()) {
+				return false;
+			}
+
 			if (recipe.input == potion && recipe.ingredient.test(ingredient)) {
 				return true;
 			}
@@ -100,29 +109,39 @@ public class BrewingRecipeRegistry {
 	}
 
 	public static ItemStack craft(ItemStack ingredient, ItemStack input) {
-		if (!input.isEmpty()) {
-			Potion potion = PotionUtil.getPotion(input);
-			Item item = input.getItem();
-			int i = 0;
+		if (input.isOf(Items.BOTTLE_OF_ENTITY)) {
+			if (ingredient.isOf(Items.GUNPOWDER)) {
+				ItemStack itemStack = Items.SPLASH_BOTTLE_OF_ENTITY.getDefaultStack();
+				itemStack.setNbt(input.getNbt());
+				return itemStack;
+			} else {
+				return input;
+			}
+		} else {
+			if (!input.isEmpty()) {
+				Potion potion = PotionUtil.getPotion(input);
+				Item item = input.getItem();
+				int i = 0;
 
-			for (int j = ITEM_RECIPES.size(); i < j; i++) {
-				BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe<Item>)ITEM_RECIPES.get(i);
-				if (recipe.input == item && recipe.ingredient.test(ingredient)) {
-					return PotionUtil.setPotion(new ItemStack(recipe.output), potion);
+				for (int j = ITEM_RECIPES.size(); i < j; i++) {
+					BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe<Item>)ITEM_RECIPES.get(i);
+					if (recipe.input == item && recipe.ingredient.test(ingredient)) {
+						return PotionUtil.setPotion(new ItemStack(recipe.output), potion);
+					}
+				}
+
+				i = 0;
+
+				for (int jx = POTION_RECIPES.size(); i < jx; i++) {
+					BrewingRecipeRegistry.Recipe<Potion> recipe = (BrewingRecipeRegistry.Recipe<Potion>)POTION_RECIPES.get(i);
+					if (recipe.input == potion && recipe.ingredient.test(ingredient)) {
+						return PotionUtil.setPotion(new ItemStack(item), recipe.output);
+					}
 				}
 			}
 
-			i = 0;
-
-			for (int jx = POTION_RECIPES.size(); i < jx; i++) {
-				BrewingRecipeRegistry.Recipe<Potion> recipe = (BrewingRecipeRegistry.Recipe<Potion>)POTION_RECIPES.get(i);
-				if (recipe.input == potion && recipe.ingredient.test(ingredient)) {
-					return PotionUtil.setPotion(new ItemStack(item), recipe.output);
-				}
-			}
+			return input;
 		}
-
-		return input;
 	}
 
 	public static void registerDefaults() {
@@ -186,6 +205,12 @@ public class BrewingRecipeRegistry {
 		registerPotionRecipe(Potions.WEAKNESS, Items.REDSTONE, Potions.LONG_WEAKNESS);
 		registerPotionRecipe(Potions.AWKWARD, Items.PHANTOM_MEMBRANE, Potions.SLOW_FALLING);
 		registerPotionRecipe(Potions.SLOW_FALLING, Items.REDSTONE, Potions.LONG_SLOW_FALLING);
+		registerPotionRecipe(Potions.AWKWARD, Items.EXPERIENCE_BOTTLE, Potions.BIG);
+		registerPotionRecipe(Potions.BIG, Items.REDSTONE, Potions.LONG_BIG);
+		registerPotionRecipe(Potions.BIG, Items.GLOWSTONE_DUST, Potions.STRONG_BIG);
+		registerPotionRecipe(Potions.AWKWARD, Items.RABBIT_HIDE, Potions.SMALL);
+		registerPotionRecipe(Potions.SMALL, Items.REDSTONE, Potions.LONG_SMALL);
+		registerPotionRecipe(Potions.SMALL, Items.GLOWSTONE_DUST, Potions.STRONG_SMALL);
 	}
 
 	private static void registerItemRecipe(Item input, Item ingredient, Item output) {

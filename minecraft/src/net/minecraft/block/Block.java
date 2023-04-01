@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8293;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -39,6 +40,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.function.BooleanBiFunction;
@@ -50,6 +52,7 @@ import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.vote.MidasCurser;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
@@ -316,7 +319,9 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public static boolean hasTopRim(BlockView world, BlockPos pos) {
-		return world.getBlockState(pos).isSideSolid(world, pos, Direction.UP, SideShapeType.RIGID);
+		return class_8293.field_43579.method_50116() && world.getBlockState(pos).isSideSolid(world, pos, Direction.UP, SideShapeType.CENTER)
+			? true
+			: world.getBlockState(pos).isSideSolid(world, pos, Direction.UP, SideShapeType.RIGID);
 	}
 
 	public static boolean sideCoversSmallSquare(WorldView world, BlockPos pos, Direction side) {
@@ -483,6 +488,20 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	public void onSteppedOn(World world, BlockPos pos, BlockState state, Entity entity) {
 	}
 
+	public void method_50848(World world, BlockPos blockPos, BlockState blockState, Entity entity) {
+		if (class_8293.field_43524.method_50116() && !blockState.isAir()) {
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			if (blockEntity != null) {
+				return;
+			}
+
+			BlockState blockState2 = MidasCurser.curse(blockState);
+			if (blockState2 != blockState) {
+				world.setBlockState(blockPos, blockState2, NOTIFY_ALL);
+			}
+		}
+	}
+
 	@Nullable
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		return this.getDefaultState();
@@ -508,6 +527,9 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		player.incrementStat(Stats.MINED.getOrCreateStat(this));
 		player.addExhaustion(0.005F);
 		dropStacks(state, world, pos, blockEntity, player, tool);
+		if (class_8293.field_43611.method_50116() && player.getStackInHand(Hand.MAIN_HAND).isEmpty()) {
+			player.damageWithModifier(player.getDamageSources().generic(), 2.0F);
+		}
 	}
 
 	/**

@@ -83,6 +83,7 @@ import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.LlamaEntity;
+import net.minecraft.entity.passive.MoonCowEntity;
 import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.entity.passive.MuleEntity;
 import net.minecraft.entity.passive.OcelotEntity;
@@ -92,6 +93,7 @@ import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.entity.passive.PolarBearEntity;
 import net.minecraft.entity.passive.PufferfishEntity;
 import net.minecraft.entity.passive.RabbitEntity;
+import net.minecraft.entity.passive.RayTracingEntity;
 import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.passive.SnifferEntity;
@@ -420,6 +422,9 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<MooshroomEntity> MOOSHROOM = register(
 		"mooshroom", EntityType.Builder.create(MooshroomEntity::new, SpawnGroup.CREATURE).setDimensions(0.9F, 1.4F).maxTrackingRange(10)
 	);
+	public static final EntityType<MoonCowEntity> MOON_COW = register(
+		"moon_cow", EntityType.Builder.create(MoonCowEntity::new, SpawnGroup.CREATURE).setDimensions(0.9F, 1.4F).maxTrackingRange(10)
+	);
 	public static final EntityType<MuleEntity> MULE = register(
 		"mule", EntityType.Builder.create(MuleEntity::new, SpawnGroup.CREATURE).setDimensions(1.3964844F, 1.6F).maxTrackingRange(8)
 	);
@@ -532,6 +537,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	public static final EntityType<SquidEntity> SQUID = register(
 		"squid", EntityType.Builder.create(SquidEntity::new, SpawnGroup.WATER_CREATURE).setDimensions(0.8F, 0.8F).maxTrackingRange(8)
 	);
+	public static final EntityType<DisplayEntity.StencilDisplayEntity> STENCIL_DISPLAY = register(
+		"stencil_display",
+		EntityType.Builder.create(DisplayEntity.StencilDisplayEntity::new, SpawnGroup.MISC).setDimensions(0.0F, 0.0F).maxTrackingRange(10).trackingTickInterval(1)
+	);
 	public static final EntityType<StrayEntity> STRAY = register(
 		"stray",
 		EntityType.Builder.create(StrayEntity::new, SpawnGroup.MONSTER).setDimensions(0.6F, 1.99F).allowSpawningInside(Blocks.POWDER_SNOW).maxTrackingRange(8)
@@ -628,6 +637,10 @@ public class EntityType<T extends Entity> implements ToggleableFeature, TypeFilt
 	);
 	public static final EntityType<ZombifiedPiglinEntity> ZOMBIFIED_PIGLIN = register(
 		"zombified_piglin", EntityType.Builder.create(ZombifiedPiglinEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(0.6F, 1.95F).maxTrackingRange(8)
+	);
+	public static final EntityType<RayTracingEntity> RAY_TRACING = register(
+		"ray_tracing",
+		EntityType.Builder.create(RayTracingEntity::new, SpawnGroup.AMBIENT).disableSaving().disableSummon().setDimensions(0.6F, 1.8F).maxTrackingRange(8)
 	);
 	public static final EntityType<PlayerEntity> PLAYER = register(
 		"player",

@@ -33,6 +33,7 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.World;
 import org.slf4j.Logger;
 
 /**
@@ -824,6 +825,23 @@ public abstract class ScreenHandler {
 		}
 	}
 
+	public void method_50779(PlayerEntity playerEntity, ItemStack itemStack) {
+		label17:
+		if (playerEntity.isAlive()) {
+			if (playerEntity instanceof ServerPlayerEntity serverPlayerEntity && serverPlayerEntity.isDisconnected()) {
+				break label17;
+			}
+
+			if (playerEntity instanceof ServerPlayerEntity) {
+				playerEntity.getInventory().offerOrDrop(itemStack);
+			}
+
+			return;
+		}
+
+		playerEntity.dropItem(itemStack, false);
+	}
+
 	protected void dropInventory(PlayerEntity player, Inventory inventory) {
 		if (!player.isAlive() || player instanceof ServerPlayerEntity && ((ServerPlayerEntity)player).isDisconnected()) {
 			for (int i = 0; i < inventory.size(); i++) {
@@ -1087,5 +1105,8 @@ public abstract class ScreenHandler {
 	public int nextRevision() {
 		this.revision = this.revision + 1 & 32767;
 		return this.revision;
+	}
+
+	public void method_50780(World world) {
 	}
 }

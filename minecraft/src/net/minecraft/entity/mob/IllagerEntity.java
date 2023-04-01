@@ -18,6 +18,11 @@ public abstract class IllagerEntity extends RaiderEntity {
 	}
 
 	@Override
+	protected boolean method_50669() {
+		return true;
+	}
+
+	@Override
 	public EntityGroup getGroup() {
 		return EntityGroup.ILLAGER;
 	}

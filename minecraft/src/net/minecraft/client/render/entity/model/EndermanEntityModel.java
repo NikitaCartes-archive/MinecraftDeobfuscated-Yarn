@@ -1,5 +1,6 @@
 package net.minecraft.client.render.entity.model;
 
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Dilation;
@@ -162,5 +163,10 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 		int n = -14;
 		this.rightArm.setPivot(-5.0F, -12.0F, 0.0F);
 		this.leftArm.setPivot(5.0F, -12.0F, 0.0F);
+	}
+
+	@Override
+	protected Iterable<ModelPart> getHeadParts() {
+		return ImmutableList.<ModelPart>of(this.head, this.hat);
 	}
 }

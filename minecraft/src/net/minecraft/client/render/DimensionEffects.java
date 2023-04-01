@@ -20,6 +20,7 @@ public abstract class DimensionEffects {
 		map.put(DimensionTypes.OVERWORLD_ID, overworld);
 		map.put(DimensionTypes.THE_NETHER_ID, new DimensionEffects.Nether());
 		map.put(DimensionTypes.THE_END_ID, new DimensionEffects.End());
+		map.put(DimensionTypes.field_44249, new DimensionEffects.class_8460());
 	});
 	private final float[] rgba = new float[4];
 	private final float cloudsHeight;
@@ -164,5 +165,28 @@ public abstract class DimensionEffects {
 		 * Signals the renderer to draw the end sky box over the sky (as in the vanilla End).
 		 */
 		END;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_8460 extends DimensionEffects {
+		public class_8460() {
+			super(Float.NaN, false, DimensionEffects.SkyType.NORMAL, true, false);
+		}
+
+		@Override
+		public Vec3d adjustFogColor(Vec3d color, float sunHeight) {
+			return color.multiply(0.15F);
+		}
+
+		@Override
+		public boolean useThickFog(int camX, int camY) {
+			return false;
+		}
+
+		@Nullable
+		@Override
+		public float[] getFogColorOverride(float skyAngle, float tickDelta) {
+			return null;
+		}
 	}
 }

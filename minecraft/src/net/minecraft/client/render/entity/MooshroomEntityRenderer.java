@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.MooshroomMushroomFeatureRenderer;
 import net.minecraft.client.render.entity.model.CowEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.passive.MooshroomEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -25,5 +26,10 @@ public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, 
 
 	public Identifier getTexture(MooshroomEntity mooshroomEntity) {
 		return (Identifier)TEXTURES.get(mooshroomEntity.getVariant());
+	}
+
+	protected void scale(MooshroomEntity mooshroomEntity, MatrixStack matrixStack, float f) {
+		float g = mooshroomEntity.getBloatScale();
+		matrixStack.scale(g, g, g);
 	}
 }

@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.network.encryption.PublicPlayerSession;
@@ -103,7 +104,9 @@ public class PlayerListEntry {
 
 	public Identifier getSkinTexture() {
 		this.loadTextures();
-		return MoreObjects.firstNonNull((Identifier)this.textures.get(Type.SKIN), DefaultSkinHelper.getTexture(this.profile.getId()));
+		return class_8293.field_43512.method_50116()
+			? DefaultSkinHelper.getTexture(this.profile.getId())
+			: MoreObjects.firstNonNull((Identifier)this.textures.get(Type.SKIN), DefaultSkinHelper.getTexture(this.profile.getId()));
 	}
 
 	@Nullable

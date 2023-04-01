@@ -22,6 +22,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8262;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
@@ -129,6 +130,8 @@ public class CommandManager {
 		TriggerCommand.register(this.dispatcher);
 		WeatherCommand.register(this.dispatcher);
 		WorldBorderCommand.register(this.dispatcher);
+		class_8262.method_50063(this.dispatcher, commandRegistryAccess);
+		TransformCommand.register(this.dispatcher, commandRegistryAccess);
 		if (FlightProfiler.INSTANCE.isAvailable()) {
 			JfrCommand.register(this.dispatcher);
 		}

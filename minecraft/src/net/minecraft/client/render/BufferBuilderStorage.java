@@ -31,6 +31,9 @@ public class BufferBuilderStorage {
 		assignBufferBuilder(map, RenderLayer.getEntityGlint());
 		assignBufferBuilder(map, RenderLayer.getDirectEntityGlint());
 		assignBufferBuilder(map, RenderLayer.getWaterMask());
+		assignBufferBuilder(map, RenderLayer.getGoldEntityGlint());
+		assignBufferBuilder(map, RenderLayer.getDynamicLightStencil());
+		assignBufferBuilder(map, RenderLayer.getDynamicLightColor());
 		ModelLoader.BLOCK_DESTRUCTION_RENDER_LAYERS.forEach(layer -> assignBufferBuilder(map, layer));
 	});
 	private final VertexConsumerProvider.Immediate entityVertexConsumers = VertexConsumerProvider.immediate(this.entityBuilders, new BufferBuilder(256));

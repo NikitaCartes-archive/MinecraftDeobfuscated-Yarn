@@ -151,6 +151,19 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
+	protected ActionResult method_50667(PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+		if (!livingEntity.hasPassengers() && !playerEntity.shouldCancelInteraction()) {
+			if (!this.world.isClient) {
+				playerEntity.startRiding(livingEntity);
+			}
+
+			return ActionResult.success(this.world.isClient);
+		} else {
+			return ActionResult.PASS;
+		}
+	}
+
+	@Override
 	public boolean canBeSaddled() {
 		return this.isAlive() && !this.isBaby();
 	}

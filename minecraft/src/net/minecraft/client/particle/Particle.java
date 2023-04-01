@@ -175,7 +175,7 @@ public abstract class Particle {
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.velocityY = this.velocityY - 0.04 * (double)this.gravityStrength;
+			this.velocityY = this.velocityY - 0.04 * this.world.getGravityModifier() * (double)this.gravityStrength;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
 			if (this.field_28787 && this.y == this.prevPosY) {
 				this.velocityX *= 1.1;

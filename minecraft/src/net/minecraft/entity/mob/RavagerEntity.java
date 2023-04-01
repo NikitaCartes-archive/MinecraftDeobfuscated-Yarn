@@ -228,7 +228,7 @@ public class RavagerEntity extends RaiderEntity {
 		if (this.isAlive()) {
 			for (LivingEntity livingEntity : this.world.getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(4.0), IS_NOT_RAVAGER)) {
 				if (!(livingEntity instanceof IllagerEntity)) {
-					livingEntity.damage(this.getDamageSources().mobAttack(this), 6.0F);
+					livingEntity.damageWithModifier(this.getDamageSources().mobAttack(this), 6.0F);
 				}
 
 				this.knockBack(livingEntity);

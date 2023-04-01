@@ -50,7 +50,10 @@ public abstract class ThrownEntity extends ProjectileEntity {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.isOf(Blocks.NETHER_PORTAL)) {
-				this.setInNetherPortal(blockPos);
+				this.setInNetherPortal(blockPos, false);
+				bl = true;
+			} else if (blockState.isOf(Blocks.OTHER_PORTAL)) {
+				this.setInNetherPortal(blockPos, true);
 				bl = true;
 			} else if (blockState.isOf(Blocks.END_GATEWAY)) {
 				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
@@ -87,12 +90,13 @@ public abstract class ThrownEntity extends ProjectileEntity {
 		this.setVelocity(vec3d.multiply((double)h));
 		if (!this.hasNoGravity()) {
 			Vec3d vec3d2 = this.getVelocity();
-			this.setVelocity(vec3d2.x, vec3d2.y - (double)this.getGravity(), vec3d2.z);
+			this.setVelocity(vec3d2.x, vec3d2.y - (double)this.method_50634(), vec3d2.z);
 		}
 
 		this.setPosition(d, e, f);
 	}
 
+	@Override
 	protected float getGravity() {
 		return 0.03F;
 	}

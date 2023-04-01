@@ -1,9 +1,11 @@
 package net.minecraft.entity.passive;
 
+import net.minecraft.class_8293;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -189,5 +191,14 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 
 	public int getInventoryColumns() {
 		return 5;
+	}
+
+	@Override
+	protected void dropEquipment(DamageSource source, int lootingMultiplier, boolean allowDrops) {
+		if (this.hasChest() && allowDrops && this.random.nextFloat() < (float)((Integer)class_8293.field_43675.method_50171()).intValue() / 100.0F) {
+			this.dropStack(new ItemStack(Items.DUPE_HACK));
+		}
+
+		super.dropEquipment(source, lootingMultiplier, allowDrops);
 	}
 }

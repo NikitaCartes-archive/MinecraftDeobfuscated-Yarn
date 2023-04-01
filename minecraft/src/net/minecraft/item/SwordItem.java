@@ -57,6 +57,10 @@ public class SwordItem extends ToolItem implements Vanishable {
 	@Override
 	public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
 		stack.damage(1, attacker, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+		if (target instanceof PlayerEntity playerEntity && stack.isOf(Items.LA_BAGUETTE)) {
+			playerEntity.getHungerManager().add(4, 0.8F);
+		}
+
 		return true;
 	}
 

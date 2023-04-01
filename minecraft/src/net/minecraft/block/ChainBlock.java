@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class ChainBlock extends PillarBlock implements Waterloggable {
@@ -72,5 +73,10 @@ public class ChainBlock extends PillarBlock implements Waterloggable {
 	@Override
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
+	}
+
+	@Override
+	public boolean sticksTo(World world, BlockPos pos, BlockState state, BlockPos otherPos, BlockState otherState, Direction face, Direction otherFace) {
+		return state.get(AXIS) == face.getAxis() && !otherState.getCullingFace(world, otherPos, face.getOpposite()).isEmpty();
 	}
 }

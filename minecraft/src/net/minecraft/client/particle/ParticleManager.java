@@ -179,6 +179,7 @@ public class ParticleManager implements ResourceReloader {
 		this.registerFactory(ParticleTypes.REVERSE_PORTAL, ReversePortalParticle.Factory::new);
 		this.registerFactory(ParticleTypes.WHITE_ASH, WhiteAshParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SMALL_FLAME, FlameParticle.SmallFactory::new);
+		this.registerFactory(ParticleTypes.FOOTSTEP, FootstepParticle.Factory::new);
 		this.registerBlockLeakFactory(ParticleTypes.DRIPPING_DRIPSTONE_WATER, BlockLeakParticle::createDrippingDripstoneWater);
 		this.registerBlockLeakFactory(ParticleTypes.FALLING_DRIPSTONE_WATER, BlockLeakParticle::createFallingDripstoneWater);
 		this.registerFactory(
@@ -473,34 +474,40 @@ public class ParticleManager implements ResourceReloader {
 	public void addBlockBreakParticles(BlockPos pos, BlockState state) {
 		if (!state.isAir() && state.hasBlockBreakParticles()) {
 			VoxelShape voxelShape = state.getOutlineShape(this.world, pos);
-			double d = 0.25;
-			voxelShape.forEachBox(
-				(minX, minY, minZ, maxX, maxY, maxZ) -> {
-					double dx = Math.min(1.0, maxX - minX);
-					double e = Math.min(1.0, maxY - minY);
-					double f = Math.min(1.0, maxZ - minZ);
-					int i = Math.max(2, MathHelper.ceil(dx / 0.25));
-					int j = Math.max(2, MathHelper.ceil(e / 0.25));
-					int k = Math.max(2, MathHelper.ceil(f / 0.25));
+			this.method_51022(pos, state, voxelShape);
+		}
+	}
 
-					for (int l = 0; l < i; l++) {
-						for (int m = 0; m < j; m++) {
-							for (int n = 0; n < k; n++) {
-								double g = ((double)l + 0.5) / (double)i;
-								double h = ((double)m + 0.5) / (double)j;
-								double o = ((double)n + 0.5) / (double)k;
-								double p = g * dx + minX;
-								double q = h * e + minY;
-								double r = o * f + minZ;
-								this.addParticle(
-									new BlockDustParticle(this.world, (double)pos.getX() + p, (double)pos.getY() + q, (double)pos.getZ() + r, g - 0.5, h - 0.5, o - 0.5, state, pos)
-								);
-							}
+	public void method_51022(BlockPos blockPos, BlockState blockState, VoxelShape voxelShape) {
+		double d = 0.25;
+		voxelShape.forEachBox(
+			(dx, e, f, g, h, i) -> {
+				double j = Math.min(1.0, g - dx);
+				double k = Math.min(1.0, h - e);
+				double l = Math.min(1.0, i - f);
+				int m = Math.max(2, MathHelper.ceil(j / 0.25));
+				int n = Math.max(2, MathHelper.ceil(k / 0.25));
+				int o = Math.max(2, MathHelper.ceil(l / 0.25));
+
+				for (int p = 0; p < m; p++) {
+					for (int q = 0; q < n; q++) {
+						for (int r = 0; r < o; r++) {
+							double s = ((double)p + 0.5) / (double)m;
+							double t = ((double)q + 0.5) / (double)n;
+							double u = ((double)r + 0.5) / (double)o;
+							double v = s * j + dx;
+							double w = t * k + e;
+							double x = u * l + f;
+							this.addParticle(
+								new BlockDustParticle(
+									this.world, (double)blockPos.getX() + v, (double)blockPos.getY() + w, (double)blockPos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, blockState, blockPos
+								)
+							);
 						}
 					}
 				}
-			);
-		}
+			}
+		);
 	}
 
 	public void addBlockBreakingParticles(BlockPos pos, Direction direction) {

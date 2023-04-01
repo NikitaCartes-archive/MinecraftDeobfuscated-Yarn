@@ -4,12 +4,15 @@ import com.google.gson.JsonObject;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.predicate.BlockPredicate;
+import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.Identifier;
 
 public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
@@ -61,6 +64,15 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 
 		public static TickCriterion.Conditions createTick() {
 			return new TickCriterion.Conditions(Criteria.TICK.id, EntityPredicate.Extended.EMPTY);
+		}
+
+		public static TickCriterion.Conditions createVoted(NumberRange.IntRange voteCount) {
+			return new TickCriterion.Conditions(
+				Criteria.VOTED.id,
+				EntityPredicate.Extended.ofLegacy(
+					EntityPredicate.Builder.create().typeSpecific(PlayerPredicate.Builder.create().stat(Stats.CUSTOM.getOrCreateStat(Stats.VOTES), voteCount).build()).build()
+				)
+			);
 		}
 
 		public static TickCriterion.Conditions createLocation(Block block, Item item) {

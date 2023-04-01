@@ -15,15 +15,15 @@ public class SharedConstants {
 	@Deprecated
 	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3443;
+	public static final int WORLD_VERSION = 3444;
 	@Deprecated
-	public static final String CURRENT_SERIES = "main";
+	public static final String CURRENT_SERIES = "april2023";
 	@Deprecated
-	public static final String VERSION_NAME = "23w13a";
+	public static final String VERSION_NAME = "23w13a_or_b";
 	@Deprecated
 	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 763;
 	@Deprecated
-	public static final int field_29736 = 128;
+	public static final int field_29736 = 129;
 	public static final int SNBT_TOO_OLD_THRESHOLD = 3437;
 	private static final int field_29708 = 30;
 	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
@@ -47,6 +47,7 @@ public class SharedConstants {
 	public static final boolean field_29749 = false;
 	public static final boolean field_29750 = false;
 	public static final boolean field_29751 = false;
+	public static final boolean field_43409 = false;
 	public static final boolean field_29752 = false;
 	public static final boolean field_29753 = false;
 	public static final boolean field_29754 = false;
@@ -75,7 +76,7 @@ public class SharedConstants {
 	public static final boolean field_29696 = false;
 	public static final boolean field_29697 = false;
 	public static final boolean field_29698 = false;
-	public static final boolean field_29699 = false;
+	public static final boolean field_29699 = true;
 	public static final boolean field_29700 = false;
 	public static final boolean field_33554 = false;
 	public static final boolean field_37273 = false;
@@ -208,7 +209,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 1073741952;
+		return 1073741953;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {

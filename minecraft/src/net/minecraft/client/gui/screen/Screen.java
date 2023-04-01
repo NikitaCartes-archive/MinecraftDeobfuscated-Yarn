@@ -9,6 +9,7 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,6 +23,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8293;
+import net.minecraft.class_8440;
+import net.minecraft.class_8441;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -59,9 +63,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -78,6 +84,8 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private static final Set<String> ALLOWED_PROTOCOLS = Sets.<String>newHashSet("http", "https");
 	private static final int field_32270 = 2;
 	private static final Text SCREEN_USAGE_TEXT = Text.translatable("narrator.screen.usage");
+	private static final int field_44305 = 10;
+	private static final MutableText TOOLTIP_TOO_LONG_TEXT = Text.translatable("tooltip.too_long").formatted(Formatting.AQUA);
 	protected final Text title;
 	private final List<Element> children = Lists.<Element>newArrayList();
 	private final List<Selectable> selectables = Lists.<Selectable>newArrayList();
@@ -256,7 +264,9 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	}
 
 	public List<Text> getTooltipFromItem(ItemStack stack) {
-		return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC);
+		return (List<Text>)(class_8293.field_43508.method_50116()
+			? new ArrayList()
+			: stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC));
 	}
 
 	public void renderTooltip(MatrixStack matrices, Text text, int x, int y) {
@@ -345,21 +355,37 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Style style, int x, int y) {
 		if (style != null && style.getHoverEvent() != null) {
 			HoverEvent hoverEvent = style.getHoverEvent();
-			HoverEvent.ItemStackContent itemStackContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ITEM);
-			if (itemStackContent != null) {
-				this.renderTooltip(matrices, itemStackContent.asStack(), x, y);
+			int i = Math.max(this.width / 2, 200);
+			List<OrderedText> list = this.getTooltipFromHoverEvent(hoverEvent).stream().flatMap(text -> this.client.textRenderer.wrapLines(text, i).stream()).toList();
+			if (list.size() > 10) {
+				List<OrderedText> list2 = new ArrayList(11);
+				list2.addAll(list.subList(0, 10));
+				list2.add(TOOLTIP_TOO_LONG_TEXT.asOrderedText());
+				list = list2;
+			}
+
+			if (!list.isEmpty()) {
+				this.renderOrderedTooltip(matrices, list, x, y);
+			}
+		}
+	}
+
+	private List<class_8440> method_50947(HoverEvent hoverEvent) {
+		List<Text> list = this.getTooltipFromHoverEvent(hoverEvent);
+		return class_8440.method_50950(this.client.textRenderer, list.stream(), Math.max(this.width / 2, 200)).toList();
+	}
+
+	private List<Text> getTooltipFromHoverEvent(HoverEvent hoverEvent) {
+		HoverEvent.ItemStackContent itemStackContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ITEM);
+		if (itemStackContent != null) {
+			return this.getTooltipFromItem(itemStackContent.asStack());
+		} else {
+			HoverEvent.EntityContent entityContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ENTITY);
+			if (entityContent != null) {
+				return this.client.options.advancedItemTooltips ? entityContent.asTooltip() : List.of();
 			} else {
-				HoverEvent.EntityContent entityContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ENTITY);
-				if (entityContent != null) {
-					if (this.client.options.advancedItemTooltips) {
-						this.renderTooltip(matrices, entityContent.asTooltip(), x, y);
-					}
-				} else {
-					Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
-					if (text != null) {
-						this.renderOrderedTooltip(matrices, this.client.textRenderer.wrapLines(text, Math.max(this.width / 2, 200)), x, y);
-					}
-				}
+				Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
+				return text != null ? List.of(text) : List.of();
 			}
 		}
 	}
@@ -372,7 +398,16 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			return false;
 		} else {
 			ClickEvent clickEvent = style.getClickEvent();
-			if (hasShiftDown()) {
+			if (hasControlDown()) {
+				HoverEvent hoverEvent = style.getHoverEvent();
+				if (hoverEvent != null) {
+					List<class_8440> list = this.method_50947(hoverEvent);
+					if (!list.isEmpty()) {
+						this.client.setScreen(new class_8441(Text.translatable("tooltip.more_like_cooltip"), this, list));
+						return true;
+					}
+				}
+			} else if (hasShiftDown()) {
 				if (style.getInsertion() != null) {
 					this.insertText(style.getInsertion(), false);
 				}

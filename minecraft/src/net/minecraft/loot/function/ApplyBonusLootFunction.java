@@ -8,6 +8,7 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import java.util.Map;
 import java.util.Set;
+import net.minecraft.class_8293;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
@@ -46,6 +47,10 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		ItemStack itemStack = context.get(LootContextParameters.TOOL);
 		if (itemStack != null) {
 			int i = EnchantmentHelper.getLevel(this.enchantment, itemStack);
+			if (class_8293.field_43655.method_50116()) {
+				i += 2;
+			}
+
 			int j = this.formula.getValue(context.getRandom(), stack.getCount(), i);
 			stack.setCount(j);
 		}

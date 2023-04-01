@@ -13,6 +13,7 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +22,16 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.minecraft.class_8289;
+import net.minecraft.class_8290;
+import net.minecraft.class_8291;
+import net.minecraft.class_8293;
+import net.minecraft.class_8367;
+import net.minecraft.class_8373;
+import net.minecraft.class_8375;
+import net.minecraft.class_8380;
+import net.minecraft.class_8478;
+import net.minecraft.class_8479;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -68,6 +79,7 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.registry.tag.BlockTags;
@@ -210,6 +222,10 @@ public abstract class PlayerManager {
 		serverPlayNetworkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.getInventory().selectedSlot));
 		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values()));
 		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsS2CPacket(TagPacketSerializer.serializeTags(this.registryManager)));
+		List<class_8291> list = this.registryManager.getCombinedRegistryManager().get(RegistryKeys.RULES).stream().flatMap(class_8289::method_50119).toList();
+		serverPlayNetworkHandler.sendPacket(new class_8479(true, class_8290.APPROVE, list));
+		UUID uUID = player.getUuid();
+		serverPlayNetworkHandler.sendPacket(this.method_50050(uUID));
 		this.sendCommandTree(player);
 		player.getStatHandler().updateStatSet();
 		player.getRecipeBook().sendInitRecipesPacket(player);
@@ -231,9 +247,10 @@ public abstract class PlayerManager {
 
 		player.networkHandler.sendPacket(PlayerListS2CPacket.entryFromPlayer(this.players));
 		this.players.add(player);
-		this.playerMap.put(player.getUuid(), player);
+		this.playerMap.put(uUID, player);
 		this.sendToAll(PlayerListS2CPacket.entryFromPlayer(List.of(player)));
 		this.sendWorldInfo(player, serverWorld2);
+		class_8293.field_43562.method_50357(player);
 		serverWorld2.onPlayerConnected(player);
 		this.server.getBossBarManager().onPlayerConnect(player);
 		this.server
@@ -250,18 +267,18 @@ public abstract class PlayerManager {
 				nbtCompound2.getCompound("Entity"), serverWorld2, vehicle -> !serverWorld2.tryLoadEntity(vehicle) ? null : vehicle
 			);
 			if (entity != null) {
-				UUID uUID;
+				UUID uUID2;
 				if (nbtCompound2.containsUuid("Attach")) {
-					uUID = nbtCompound2.getUuid("Attach");
+					uUID2 = nbtCompound2.getUuid("Attach");
 				} else {
-					uUID = null;
+					uUID2 = null;
 				}
 
-				if (entity.getUuid().equals(uUID)) {
+				if (entity.getUuid().equals(uUID2)) {
 					player.startRiding(entity, true);
 				} else {
 					for (Entity entity2 : entity.getPassengersDeep()) {
-						if (entity2.getUuid().equals(uUID)) {
+						if (entity2.getUuid().equals(uUID2)) {
 							player.startRiding(entity2, true);
 							break;
 						}
@@ -280,6 +297,15 @@ public abstract class PlayerManager {
 		}
 
 		player.onSpawn();
+	}
+
+	public class_8478 method_50050(UUID uUID) {
+		class_8380 lv = this.server.method_51115();
+		Map<UUID, class_8367> map = new HashMap();
+		lv.method_50562((uUIDx, arg) -> map.put(uUIDx, arg.method_50513()));
+		Map<class_8373, class_8375> map2 = new HashMap();
+		lv.method_50561(uUID, (arg, arg2) -> map2.put(arg, class_8375.method_50509(uUID, arg2)));
+		return new class_8478(true, map, map2);
 	}
 
 	protected void sendScoreboard(ServerScoreboard scoreboard, ServerPlayerEntity player) {
@@ -517,6 +543,7 @@ public abstract class PlayerManager {
 			.sendPacket(new ExperienceBarUpdateS2CPacket(serverPlayerEntity.experienceProgress, serverPlayerEntity.totalExperience, serverPlayerEntity.experienceLevel));
 		this.sendWorldInfo(serverPlayerEntity, serverWorld2);
 		this.sendCommandTree(serverPlayerEntity);
+		class_8293.field_43562.method_50357(serverPlayerEntity);
 		serverWorld2.onPlayerRespawned(serverPlayerEntity);
 		this.players.add(serverPlayerEntity);
 		this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
@@ -538,6 +565,7 @@ public abstract class PlayerManager {
 				);
 		}
 
+		serverPlayerEntity.field_43419 = true;
 		return serverPlayerEntity;
 	}
 

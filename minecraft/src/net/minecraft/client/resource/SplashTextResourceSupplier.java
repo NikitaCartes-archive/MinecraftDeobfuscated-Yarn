@@ -9,11 +9,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.Session;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
@@ -35,27 +37,29 @@ public class SplashTextResourceSupplier extends SinglePreparationResourceReloade
 		try {
 			BufferedReader bufferedReader = MinecraftClient.getInstance().getResourceManager().openAsReader(RESOURCE_ID);
 
-			List var4;
+			List var6;
 			try {
-				var4 = (List)bufferedReader.lines().map(String::trim).filter(splashText -> splashText.hashCode() != 125780783).collect(Collectors.toList());
-			} catch (Throwable var7) {
+				Stream<String> stream = bufferedReader.lines().map(String::trim).filter(splashText -> splashText.hashCode() != 125780783);
+				Stream<String> stream2 = Stream.of("Exactly " + Registries.field_44443.size() + " rules to vote on!");
+				var6 = (List)Stream.concat(stream, stream2).collect(Collectors.toList());
+			} catch (Throwable var8) {
 				if (bufferedReader != null) {
 					try {
 						bufferedReader.close();
-					} catch (Throwable var6) {
-						var7.addSuppressed(var6);
+					} catch (Throwable var7) {
+						var8.addSuppressed(var7);
 					}
 				}
 
-				throw var7;
+				throw var8;
 			}
 
 			if (bufferedReader != null) {
 				bufferedReader.close();
 			}
 
-			return var4;
-		} catch (IOException var8) {
+			return var6;
+		} catch (IOException var9) {
 			return Collections.emptyList();
 		}
 	}

@@ -50,7 +50,7 @@ public class CelebrateRaidWinTask extends MultiTickTask<VillagerEntity> {
 		if (random.nextInt(200) == 0 && SeekSkyTask.isSkyVisible(serverWorld, villagerEntity, villagerEntity.getBlockPos())) {
 			DyeColor dyeColor = Util.getRandom(DyeColor.values(), random);
 			int i = random.nextInt(3);
-			ItemStack itemStack = this.createFirework(dyeColor, i);
+			ItemStack itemStack = createFirework(i, 1, dyeColor.getFireworkColor());
 			FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(
 				villagerEntity.world, villagerEntity, villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ(), itemStack
 			);
@@ -58,19 +58,25 @@ public class CelebrateRaidWinTask extends MultiTickTask<VillagerEntity> {
 		}
 	}
 
-	private ItemStack createFirework(DyeColor color, int flight) {
+	public static ItemStack createFirework(int flight, int explosions, int... colors) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 1);
 		ItemStack itemStack2 = new ItemStack(Items.FIREWORK_STAR);
 		NbtCompound nbtCompound = itemStack2.getOrCreateSubNbt("Explosion");
 		List<Integer> list = Lists.<Integer>newArrayList();
-		list.add(color.getFireworkColor());
+
+		for (int i : colors) {
+			list.add(i);
+		}
+
 		nbtCompound.putIntArray("Colors", list);
 		nbtCompound.putByte("Type", (byte)FireworkRocketItem.Type.BURST.getId());
 		NbtCompound nbtCompound2 = itemStack.getOrCreateSubNbt("Fireworks");
 		NbtList nbtList = new NbtList();
 		NbtCompound nbtCompound3 = itemStack2.getSubNbt("Explosion");
 		if (nbtCompound3 != null) {
-			nbtList.add(nbtCompound3);
+			for (int i = 0; i < explosions; i++) {
+				nbtList.add(nbtCompound3);
+			}
 		}
 
 		nbtCompound2.putByte("Flight", (byte)flight);

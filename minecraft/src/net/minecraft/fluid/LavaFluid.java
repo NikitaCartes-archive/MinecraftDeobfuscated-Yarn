@@ -2,6 +2,7 @@ package net.minecraft.fluid;
 
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -151,7 +152,11 @@ public abstract class LavaFluid extends FlowableFluid {
 
 	@Override
 	public int getLevelDecreasePerBlock(WorldView world) {
-		return world.getDimension().ultrawarm() ? 1 : 2;
+		if (class_8293.field_43520.method_50116()) {
+			return 0;
+		} else {
+			return world.getDimension().ultrawarm() ? 1 : 2;
+		}
 	}
 
 	@Override
@@ -161,7 +166,12 @@ public abstract class LavaFluid extends FlowableFluid {
 
 	@Override
 	public int getTickRate(WorldView world) {
-		return world.getDimension().ultrawarm() ? 10 : 30;
+		int i = (Integer)class_8293.field_43523.method_50171();
+		if (i != 30) {
+			return i;
+		} else {
+			return world.getDimension().ultrawarm() ? 10 : 30;
+		}
 	}
 
 	@Override
@@ -194,7 +204,7 @@ public abstract class LavaFluid extends FlowableFluid {
 			FluidState fluidState2 = world.getFluidState(pos);
 			if (this.isIn(FluidTags.LAVA) && fluidState2.isIn(FluidTags.WATER)) {
 				if (state.getBlock() instanceof FluidBlock) {
-					world.setBlockState(pos, Blocks.STONE.getDefaultState(), Block.NOTIFY_ALL);
+					world.setBlockState(pos, class_8293.field_43526.method_50317().getDefaultState(), Block.NOTIFY_ALL);
 				}
 
 				this.playExtinguishEvent(world, pos);

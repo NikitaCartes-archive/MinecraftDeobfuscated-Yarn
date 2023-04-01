@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import net.minecraft.class_8293;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
@@ -12,6 +13,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
@@ -121,5 +123,17 @@ public class HoneyBlock extends TransparentBlock {
 				entity.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
 			}
 		}
+	}
+
+	@Override
+	public boolean isSticky(BlockState state) {
+		return true;
+	}
+
+	@Override
+	public boolean sticksTo(World world, BlockPos pos, BlockState state, BlockPos otherPos, BlockState otherState, Direction face, Direction otherFace) {
+		return otherState.isOf(Blocks.SLIME_BLOCK)
+			? false
+			: !class_8293.field_43578.method_50116() || !otherState.getCullingFace(world, otherPos, face.getOpposite()).isEmpty();
 	}
 }

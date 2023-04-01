@@ -6,6 +6,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonHeadBlock;
+import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.PistonBlockEntity;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.client.render.RenderLayer;
@@ -23,9 +24,11 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class PistonBlockEntityRenderer implements BlockEntityRenderer<PistonBlockEntity> {
 	private final BlockRenderManager manager;
+	private final BlockEntityRenderDispatcher field_44406;
 
 	public PistonBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
 		this.manager = ctx.getRenderManager();
+		this.field_44406 = ctx.getRenderDispatcher();
 	}
 
 	public void render(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
@@ -59,6 +62,13 @@ public class PistonBlockEntityRenderer implements BlockEntityRenderer<PistonBloc
 
 				matrixStack.pop();
 				BlockModelRenderer.disableBrightnessCache();
+				BlockEntity blockEntity = pistonBlockEntity.method_50891();
+				if (blockEntity != null) {
+					matrixStack.push();
+					matrixStack.translate(pistonBlockEntity.getRenderOffsetX(f), pistonBlockEntity.getRenderOffsetY(f), pistonBlockEntity.getRenderOffsetZ(f));
+					this.field_44406.render(blockEntity, f, matrixStack, vertexConsumerProvider);
+					matrixStack.pop();
+				}
 			}
 		}
 	}

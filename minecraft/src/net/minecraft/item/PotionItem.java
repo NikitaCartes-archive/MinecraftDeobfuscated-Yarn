@@ -29,7 +29,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class PotionItem extends Item {
-	private static final int MAX_USE_TIME = 32;
+	public static final int MAX_USE_TIME = 32;
 
 	public PotionItem(Item.Settings settings) {
 		super(settings);
@@ -61,6 +61,10 @@ public class PotionItem extends Item {
 			playerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 			if (!playerEntity.getAbilities().creativeMode) {
 				stack.decrement(1);
+			}
+
+			if (!world.isClient) {
+				playerEntity.method_50716().method_50772(10);
 			}
 		}
 

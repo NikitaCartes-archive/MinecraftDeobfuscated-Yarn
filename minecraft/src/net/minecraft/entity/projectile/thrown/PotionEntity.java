@@ -14,6 +14,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.AxolotlEntity;
+import net.minecraft.item.BottleOfEntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -64,18 +65,20 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		super.onBlockHit(blockHitResult);
 		if (!this.world.isClient) {
 			ItemStack itemStack = this.getStack();
-			Potion potion = PotionUtil.getPotion(itemStack);
-			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-			boolean bl = potion == Potions.WATER && list.isEmpty();
-			Direction direction = blockHitResult.getSide();
-			BlockPos blockPos = blockHitResult.getBlockPos();
-			BlockPos blockPos2 = blockPos.offset(direction);
-			if (bl) {
-				this.extinguishFire(blockPos2);
-				this.extinguishFire(blockPos2.offset(direction.getOpposite()));
+			if (!itemStack.isOf(Items.SPLASH_BOTTLE_OF_ENTITY)) {
+				Potion potion = PotionUtil.getPotion(itemStack);
+				List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
+				boolean bl = potion == Potions.WATER && list.isEmpty();
+				Direction direction = blockHitResult.getSide();
+				BlockPos blockPos = blockHitResult.getBlockPos();
+				BlockPos blockPos2 = blockPos.offset(direction);
+				if (bl) {
+					this.extinguishFire(blockPos2);
+					this.extinguishFire(blockPos2.offset(direction.getOpposite()));
 
-				for (Direction direction2 : Direction.Type.HORIZONTAL) {
-					this.extinguishFire(blockPos2.offset(direction2));
+					for (Direction direction2 : Direction.Type.HORIZONTAL) {
+						this.extinguishFire(blockPos2.offset(direction2));
+					}
 				}
 			}
 		}
@@ -86,22 +89,42 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 		super.onCollision(hitResult);
 		if (!this.world.isClient) {
 			ItemStack itemStack = this.getStack();
-			Potion potion = PotionUtil.getPotion(itemStack);
-			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
-			boolean bl = potion == Potions.WATER && list.isEmpty();
-			if (bl) {
-				this.applyWater();
-			} else if (!list.isEmpty()) {
-				if (this.isLingering()) {
-					this.applyLingeringPotion(itemStack, potion);
-				} else {
-					this.applySplashPotion(list, hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null);
-				}
-			}
+			if (itemStack.isOf(Items.SPLASH_BOTTLE_OF_ENTITY)) {
+				Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
 
-			int i = potion.hasInstantEffect() ? WorldEvents.INSTANT_SPLASH_POTION_SPLASHED : WorldEvents.SPLASH_POTION_SPLASHED;
-			this.world.syncWorldEvent(i, this.getBlockPos(), PotionUtil.getColor(itemStack));
-			this.discard();
+				for (LivingEntity livingEntity : this.world.getNonSpectatingEntities(LivingEntity.class, box)) {
+					double d = this.squaredDistanceTo(livingEntity);
+					if (d < 16.0) {
+						BottleOfEntityItem.transformUser(itemStack, this.world, livingEntity);
+					}
+				}
+
+				int i = 2007;
+				this.world.syncWorldEvent(WorldEvents.INSTANT_SPLASH_POTION_SPLASHED, this.getBlockPos(), 16711680);
+				this.world.syncWorldEvent(WorldEvents.INSTANT_SPLASH_POTION_SPLASHED, this.getBlockPos(), 65280);
+				this.world.syncWorldEvent(WorldEvents.INSTANT_SPLASH_POTION_SPLASHED, this.getBlockPos(), 255);
+				this.world.syncWorldEvent(WorldEvents.INSTANT_SPLASH_POTION_SPLASHED, this.getBlockPos(), 65535);
+				this.world.syncWorldEvent(WorldEvents.INSTANT_SPLASH_POTION_SPLASHED, this.getBlockPos(), 16776960);
+				this.world.syncWorldEvent(WorldEvents.INSTANT_SPLASH_POTION_SPLASHED, this.getBlockPos(), 16711935);
+				this.discard();
+			} else {
+				Potion potion = PotionUtil.getPotion(itemStack);
+				List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
+				boolean bl = potion == Potions.WATER && list.isEmpty();
+				if (bl) {
+					this.applyWater();
+				} else if (!list.isEmpty()) {
+					if (this.isLingering()) {
+						this.applyLingeringPotion(itemStack, potion);
+					} else {
+						this.applySplashPotion(list, hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null);
+					}
+				}
+
+				int j = potion.hasInstantEffect() ? WorldEvents.INSTANT_SPLASH_POTION_SPLASHED : WorldEvents.SPLASH_POTION_SPLASHED;
+				this.world.syncWorldEvent(j, this.getBlockPos(), PotionUtil.getColor(itemStack));
+				this.discard();
+			}
 		}
 	}
 
@@ -112,7 +135,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			double d = this.squaredDistanceTo(livingEntity);
 			if (d < 16.0) {
 				if (livingEntity.hurtByWater()) {
-					livingEntity.damage(this.getDamageSources().indirectMagic(this, this.getOwner()), 1.0F);
+					livingEntity.damageWithModifier(this.getDamageSources().indirectMagic(this, this.getOwner()), 1.0F);
 				}
 
 				if (livingEntity.isOnFire() && livingEntity.isAlive()) {

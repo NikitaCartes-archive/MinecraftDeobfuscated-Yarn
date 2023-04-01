@@ -6,6 +6,7 @@ import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.enums.WireConnection;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -249,7 +250,7 @@ public class RedstoneWireBlock extends Block {
 		if (bl) {
 			boolean bl2 = this.canRunOnTop(world, blockPos, blockState);
 			if (bl2 && connectsTo(world.getBlockState(blockPos.up()))) {
-				if (blockState.isSideSolidFullSquare(world, blockPos, direction.getOpposite())) {
+				if (blockState.isSideSolid(world, blockPos, direction.getOpposite(), class_8293.field_43579.method_50116() ? SideShapeType.CENTER : SideShapeType.FULL)) {
 					return WireConnection.UP;
 				}
 
@@ -270,7 +271,8 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	private boolean canRunOnTop(BlockView world, BlockPos pos, BlockState floor) {
-		return floor.isSideSolidFullSquare(world, pos, Direction.UP) || floor.isOf(Blocks.HOPPER);
+		return floor.isSideSolid(world, pos, Direction.UP, class_8293.field_43579.method_50116() ? SideShapeType.CENTER : SideShapeType.FULL)
+			|| floor.isOf(Blocks.HOPPER);
 	}
 
 	private void update(World world, BlockPos pos, BlockState state) {
@@ -417,8 +419,17 @@ public class RedstoneWireBlock extends Block {
 		} else if (state.isOf(Blocks.REPEATER)) {
 			Direction direction = state.get(RepeaterBlock.FACING);
 			return direction == dir || direction.getOpposite() == dir;
+		} else if (state.isOf(Blocks.OBSERVER)) {
+			return dir == state.get(ObserverBlock.FACING);
 		} else {
-			return state.isOf(Blocks.OBSERVER) ? dir == state.get(ObserverBlock.FACING) : state.emitsRedstonePower() && dir != null;
+			if (class_8293.field_43535.method_50116()) {
+				Block block = state.getBlock();
+				if (block instanceof PistonBlock || block instanceof PistonExtensionBlock) {
+					return dir == state.get(PistonBlock.FACING);
+				}
+			}
+
+			return state.emitsRedstonePower() && dir != null;
 		}
 	}
 

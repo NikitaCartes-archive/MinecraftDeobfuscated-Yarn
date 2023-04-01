@@ -1,10 +1,13 @@
 package net.minecraft.client.render.entity;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8464;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.Camera;
@@ -21,6 +24,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.AffineTransformation;
+import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -136,6 +140,42 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends 
 					itemDisplayEntity.getWorld(),
 					itemDisplayEntity.getId()
 				);
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class StencilDisplayEntityRenderer extends DisplayEntityRenderer<DisplayEntity.StencilDisplayEntity, DisplayEntity.StencilDisplayEntity.Data> {
+		private static final Int2ObjectMap<class_8464.class_8465[]> field_44408 = new Int2ObjectArrayMap<>();
+		private static final Int2ObjectMap<class_8464.class_8465[]> field_44409 = new Int2ObjectArrayMap<>();
+
+		protected StencilDisplayEntityRenderer(EntityRendererFactory.Context context) {
+			super(context);
+		}
+
+		@Nullable
+		protected DisplayEntity.StencilDisplayEntity.Data getData(DisplayEntity.StencilDisplayEntity stencilDisplayEntity) {
+			return stencilDisplayEntity.getData();
+		}
+
+		protected void render(
+			DisplayEntity.StencilDisplayEntity stencilDisplayEntity,
+			DisplayEntity.StencilDisplayEntity.Data data,
+			MatrixStack matrixStack,
+			VertexConsumerProvider vertexConsumerProvider,
+			int i,
+			float f
+		) {
+			int j = data.color().lerp(f);
+			int k = MathHelper.clamp(data.shape().lerp(f), 0, 1);
+			int l = data.lod().lerp(f);
+			class_8464.class_8465[] lvs;
+			if (k == 1) {
+				lvs = field_44408.computeIfAbsent(MathHelper.clamp(l + 3, 3, 64), class_8464::method_51055);
+			} else {
+				lvs = field_44409.computeIfAbsent(MathHelper.clamp(l, 0, 4), class_8464::method_51053);
+			}
+
+			class_8464.method_51054(lvs, matrixStack.peek().getPositionMatrix(), vertexConsumerProvider, j);
 		}
 	}
 

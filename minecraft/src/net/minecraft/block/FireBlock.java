@@ -6,6 +6,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.minecraft.class_8293;
+import net.minecraft.class_8304;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.server.world.ServerWorld;
@@ -44,14 +46,14 @@ public class FireBlock extends AbstractFireBlock {
 	private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
 	private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
 	private final Map<BlockState, VoxelShape> shapesByState;
-	private static final int field_31085 = 60;
-	private static final int field_31086 = 30;
-	private static final int field_31087 = 15;
-	private static final int field_31088 = 5;
-	private static final int field_31089 = 100;
-	private static final int field_31090 = 60;
-	private static final int field_31091 = 20;
-	private static final int field_31092 = 5;
+	public static final int field_31085 = 60;
+	public static final int field_31086 = 30;
+	public static final int field_31087 = 15;
+	public static final int field_31088 = 5;
+	public static final int field_31089 = 100;
+	public static final int field_31090 = 60;
+	public static final int field_31091 = 20;
+	public static final int field_31092 = 5;
 	private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<>();
 	private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<>();
 
@@ -223,12 +225,24 @@ public class FireBlock extends AbstractFireBlock {
 		return world.hasRain(pos) || world.hasRain(pos.west()) || world.hasRain(pos.east()) || world.hasRain(pos.north()) || world.hasRain(pos.south());
 	}
 
-	private int getSpreadChance(BlockState state) {
-		return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) ? 0 : this.spreadChances.getInt(state.getBlock());
+	private int getSpreadChance(BlockState blockState) {
+		if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
+			return 0;
+		} else {
+			Block block = blockState.getBlock();
+			class_8304.class_8305 lv = class_8293.field_43593.method_50305(block);
+			return lv != null ? lv.method_50300() : this.spreadChances.getInt(block);
+		}
 	}
 
-	private int getBurnChance(BlockState state) {
-		return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) ? 0 : this.burnChances.getInt(state.getBlock());
+	private int getBurnChance(BlockState blockState) {
+		if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
+			return 0;
+		} else {
+			Block block = blockState.getBlock();
+			class_8304.class_8305 lv = class_8293.field_43593.method_50305(block);
+			return lv != null ? lv.method_50301() : this.burnChances.getInt(block);
+		}
 	}
 
 	private void trySpreadingFire(World world, BlockPos pos, int spreadFactor, Random random, int currentAge) {
@@ -244,7 +258,7 @@ public class FireBlock extends AbstractFireBlock {
 
 			Block block = blockState.getBlock();
 			if (block instanceof TntBlock) {
-				TntBlock.primeTnt(world, pos);
+				TntBlock.primeTnt(world, pos, blockState);
 			}
 		}
 	}

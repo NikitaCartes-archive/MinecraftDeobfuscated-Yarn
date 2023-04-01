@@ -5,6 +5,7 @@ import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ChestBlock;
@@ -32,6 +33,7 @@ import net.minecraft.world.World;
 
 public class HopperBlockEntity extends LootableContainerBlockEntity implements Hopper {
 	public static final int TRANSFER_COOLDOWN = 8;
+	public static final int field_44245 = 1;
 	public static final int INVENTORY_SIZE = 5;
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(5, ItemStack.EMPTY);
 	private int transferCooldown = -1;
@@ -111,7 +113,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 				}
 
 				if (bl) {
-					blockEntity.setTransferCooldown(8);
+					blockEntity.setTransferCooldown(class_8293.field_43536.method_50116() ? 1 : 8);
 					markDirty(world, pos, state);
 					return true;
 				}
@@ -158,7 +160,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 	}
 
-	private static IntStream getAvailableSlots(Inventory inventory, Direction side) {
+	public static IntStream getAvailableSlots(Inventory inventory, Direction side) {
 		return inventory instanceof SidedInventory ? IntStream.of(((SidedInventory)inventory).getAvailableSlots(side)) : IntStream.range(0, inventory.size());
 	}
 
@@ -289,7 +291,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 						j = 1;
 					}
 
-					hopperBlockEntity.setTransferCooldown(8 - j);
+					hopperBlockEntity.setTransferCooldown((class_8293.field_43536.method_50116() ? 1 : 8) - j);
 				}
 
 				to.markDirty();
@@ -390,7 +392,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	private boolean isDisabled() {
-		return this.transferCooldown > 8;
+		return this.transferCooldown > (class_8293.field_43536.method_50116() ? 1 : 8);
 	}
 
 	@Override

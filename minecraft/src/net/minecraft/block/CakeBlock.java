@@ -1,5 +1,7 @@
 package net.minecraft.block;
 
+import net.minecraft.class_8293;
+import net.minecraft.class_8324;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -81,22 +83,29 @@ public class CakeBlock extends Block {
 		return tryEat(world, pos, state, player);
 	}
 
-	protected static ActionResult tryEat(WorldAccess world, BlockPos pos, BlockState state, PlayerEntity player) {
+	protected static ActionResult tryEat(WorldAccess worldAccess, BlockPos pos, BlockState blockState, PlayerEntity player) {
 		if (!player.canConsume(false)) {
 			return ActionResult.PASS;
 		} else {
-			player.incrementStat(Stats.EAT_CAKE_SLICE);
-			player.getHungerManager().add(2, 0.1F);
-			int i = (Integer)state.get(BITES);
-			world.emitGameEvent(player, GameEvent.EAT, pos);
-			if (i < 6) {
-				world.setBlockState(pos, state.with(BITES, Integer.valueOf(i + 1)), Block.NOTIFY_ALL);
+			class_8324 lv = class_8293.field_43616.method_50145();
+			if (lv != class_8324.ANY && lv != class_8324.CAKE) {
+				return ActionResult.FAIL;
 			} else {
-				world.removeBlock(pos, false);
-				world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
-			}
+				player.incrementStat(Stats.EAT_CAKE_SLICE);
+				player.getHungerManager().add(2, 0.1F);
+				worldAccess.emitGameEvent(player, GameEvent.EAT, pos);
+				if (!class_8293.field_43565.method_50116()) {
+					int i = (Integer)blockState.get(BITES);
+					if (i < 6) {
+						worldAccess.setBlockState(pos, blockState.with(BITES, Integer.valueOf(i + 1)), Block.NOTIFY_ALL);
+					} else {
+						worldAccess.removeBlock(pos, false);
+						worldAccess.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
+					}
+				}
 
-			return ActionResult.SUCCESS;
+				return ActionResult.SUCCESS;
+			}
 		}
 	}
 

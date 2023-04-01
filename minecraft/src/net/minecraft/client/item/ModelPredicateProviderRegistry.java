@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.block.LightBlock;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.data.client.ItemModelGenerator;
@@ -118,6 +119,7 @@ public class ModelPredicateProviderRegistry {
 			(stack, world, entity, seed) -> entity != null && entity.isUsingItem() && entity.getActiveItem() == stack ? 1.0F : 0.0F
 		);
 		register(Items.BUNDLE, new Identifier("filled"), (stack, world, entity, seed) -> BundleItem.getAmountFilled(stack));
+		register(Items.EMERALD, new Identifier("alt"), (itemStack, clientWorld, livingEntity, i) -> class_8293.field_43608.method_50116() ? 1.0F : 0.0F);
 		register(Items.CLOCK, new Identifier("time"), new ClampedModelPredicateProvider() {
 			private double time;
 			private double step;
@@ -137,7 +139,7 @@ public class ModelPredicateProviderRegistry {
 						return 0.0F;
 					} else {
 						double d;
-						if (clientWorldx.getDimension().natural()) {
+						if (!clientWorldx.getDimension().hasFixedTime()) {
 							d = (double)clientWorldx.getSkyAngle(1.0F);
 						} else {
 							d = Math.random();

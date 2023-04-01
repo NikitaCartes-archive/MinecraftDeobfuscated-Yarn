@@ -11,12 +11,14 @@ import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import net.minecraft.class_8293;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.Material;
+import net.minecraft.block.SaplingBlock;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -388,11 +390,15 @@ public abstract class FlowableFluid extends Fluid {
 		Block block = state.getBlock();
 		if (block instanceof FluidFillable) {
 			return ((FluidFillable)block).canFillWithFluid(world, pos, state, fluid);
-		} else if (!(block instanceof DoorBlock)
-			&& !state.isIn(BlockTags.SIGNS)
-			&& !state.isOf(Blocks.LADDER)
-			&& !state.isOf(Blocks.SUGAR_CANE)
-			&& !state.isOf(Blocks.BUBBLE_COLUMN)) {
+		} else if (block instanceof DoorBlock
+			|| state.isIn(BlockTags.SIGNS)
+			|| state.isOf(Blocks.LADDER)
+			|| state.isOf(Blocks.SUGAR_CANE)
+			|| state.isOf(Blocks.BUBBLE_COLUMN)) {
+			return false;
+		} else if (class_8293.field_43533.method_50116() && block instanceof SaplingBlock) {
+			return false;
+		} else {
 			Material material = state.getMaterial();
 			return material != Material.PORTAL
 					&& material != Material.STRUCTURE_VOID
@@ -400,8 +406,6 @@ public abstract class FlowableFluid extends Fluid {
 					&& material != Material.REPLACEABLE_UNDERWATER_PLANT
 				? !material.blocksMovement()
 				: false;
-		} else {
-			return false;
 		}
 	}
 

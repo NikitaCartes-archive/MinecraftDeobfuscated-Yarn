@@ -12,6 +12,7 @@ import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -46,6 +47,7 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.State;
+import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.BlockMirror;
@@ -558,6 +560,21 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	@Deprecated
 	public boolean emitsRedstonePower(BlockState state) {
 		return false;
+	}
+
+	@Deprecated
+	public boolean isSticky(BlockState state) {
+		return class_8293.field_43578.method_50116();
+	}
+
+	@Deprecated
+	public boolean sticksTo(World world, BlockPos pos, BlockState state, BlockPos otherPos, BlockState otherState, Direction face, Direction otherFace) {
+		return false;
+	}
+
+	@Deprecated
+	public boolean shouldLetAirThrough(BlockState state, ServerWorld world, BlockPos pos, Direction direction) {
+		return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) ? false : !state.isSideSolidFullSquare(world, pos, direction);
 	}
 
 	/**
@@ -1242,6 +1259,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public int getWeakRedstonePower(BlockView world, BlockPos pos, Direction direction) {
+			if (world instanceof World world2 && class_8293.field_43639.method_50145().shouldDisableLight(world2)) {
+				return 0;
+			}
+
 			return this.getBlock().getWeakRedstonePower(this.asBlockState(), world, pos, direction);
 		}
 
@@ -1262,11 +1283,28 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public int getStrongRedstonePower(BlockView world, BlockPos pos, Direction direction) {
+			if (world instanceof World world2 && class_8293.field_43639.method_50145().shouldDisableLight(world2)) {
+				return 0;
+			}
+
 			return this.getBlock().getStrongRedstonePower(this.asBlockState(), world, pos, direction);
 		}
 
 		public PistonBehavior getPistonBehavior() {
 			return this.pistonBehavior;
+		}
+
+		public boolean isSticky() {
+			return this.getBlock().isSticky(this.asBlockState());
+		}
+
+		public boolean sticksTo(World world, BlockPos pos, BlockPos otherPos, BlockState otherState, Direction face, Direction otherFace) {
+			return this.getBlock().sticksTo(world, pos, this.asBlockState(), otherPos, otherState, face, otherFace)
+				|| otherState.isSticky() && otherState.getBlock().sticksTo(world, otherPos, otherState, pos, this.asBlockState(), face.getOpposite(), otherFace);
+		}
+
+		public boolean shouldLetAirThrough(ServerWorld world, BlockPos pos, Direction direction) {
+			return this.getBlock().shouldLetAirThrough(this.asBlockState(), world, pos, direction);
 		}
 
 		public boolean isOpaqueFullCube(BlockView world, BlockPos pos) {

@@ -17,7 +17,7 @@ public final class StatusEffectUtil {
 			return Text.translatable("effect.duration.infinite");
 		} else {
 			int i = MathHelper.floor((float)effect.getDuration() * multiplier);
-			return Text.literal(StringHelper.formatTicks(i));
+			return Text.literal(StringHelper.formatTicks((long)i));
 		}
 	}
 

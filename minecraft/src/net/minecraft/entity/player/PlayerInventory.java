@@ -11,6 +11,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
@@ -611,5 +612,27 @@ public class PlayerInventory implements Inventory, Nameable {
 	public ItemStack dropSelectedItem(boolean entireStack) {
 		ItemStack itemStack = this.getMainHandStack();
 		return itemStack.isEmpty() ? ItemStack.EMPTY : this.removeStack(this.selectedSlot, entireStack ? itemStack.getCount() : 1);
+	}
+
+	public void method_50711(Item item, Item item2) {
+		for (int i = 0; i < this.size(); i++) {
+			ItemStack itemStack = this.getStack(i);
+			if (itemStack.isOf(item)) {
+				this.setStack(i, this.method_50712(itemStack, item2));
+			}
+		}
+	}
+
+	private ItemStack method_50712(ItemStack itemStack, Item item) {
+		if (item == Items.AIR) {
+			return ItemStack.EMPTY;
+		} else {
+			ItemStack itemStack2 = new ItemStack(item, itemStack.getCount());
+			if (itemStack.hasNbt()) {
+				itemStack2.setNbt(itemStack.getOrCreateNbt().copy());
+			}
+
+			return itemStack2;
+		}
 	}
 }

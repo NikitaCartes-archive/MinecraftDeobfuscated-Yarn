@@ -78,6 +78,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	protected final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	protected final HeightLimitView heightLimitView;
 	protected final ChunkSection[] sectionArray;
+	protected boolean field_44247;
 
 	public Chunk(
 		ChunkPos pos,
@@ -296,6 +297,14 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	public abstract BasicTickScheduler<Block> getBlockTickScheduler();
 
 	public abstract BasicTickScheduler<Fluid> getFluidTickScheduler();
+
+	public void method_50895(boolean bl) {
+		this.field_44247 = bl;
+	}
+
+	public boolean method_50896() {
+		return this.field_44247;
+	}
 
 	public abstract Chunk.TickSchedulers getTickSchedulers();
 

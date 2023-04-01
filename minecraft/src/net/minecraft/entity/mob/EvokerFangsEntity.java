@@ -115,13 +115,13 @@ public class EvokerFangsEntity extends Entity implements Ownable {
 		LivingEntity livingEntity = this.getOwner();
 		if (target.isAlive() && !target.isInvulnerable() && target != livingEntity) {
 			if (livingEntity == null) {
-				target.damage(this.getDamageSources().magic(), 6.0F);
+				target.damageWithModifier(this.getDamageSources().magic(), 6.0F);
 			} else {
 				if (livingEntity.isTeammate(target)) {
 					return;
 				}
 
-				target.damage(this.getDamageSources().indirectMagic(this, livingEntity), 6.0F);
+				target.damageWithModifier(this.getDamageSources().indirectMagic(this, livingEntity), 6.0F);
 			}
 		}
 	}

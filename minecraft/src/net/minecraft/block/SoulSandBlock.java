@@ -64,4 +64,9 @@ public class SoulSandBlock extends Block {
 	public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
 		return 0.2F;
 	}
+
+	@Override
+	public boolean shouldLetAirThrough(BlockState state, ServerWorld world, BlockPos pos, Direction direction) {
+		return false;
+	}
 }

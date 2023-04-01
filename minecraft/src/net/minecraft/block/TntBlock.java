@@ -1,12 +1,14 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.minecraft.class_8293;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
@@ -31,11 +33,18 @@ public class TntBlock extends Block {
 		this.setDefaultState(this.getDefaultState().with(UNSTABLE, Boolean.valueOf(false)));
 	}
 
+	@Nullable
+	@Override
+	public BlockState getPlacementState(ItemPlacementContext ctx) {
+		BlockState blockState = super.getPlacementState(ctx);
+		return blockState != null && class_8293.field_43632.method_50116() ? blockState.with(UNSTABLE, Boolean.valueOf(true)) : blockState;
+	}
+
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
 			if (world.isReceivingRedstonePower(pos)) {
-				primeTnt(world, pos);
+				this.method_50884(world, pos);
 				world.removeBlock(pos, false);
 			}
 		}
@@ -44,7 +53,7 @@ public class TntBlock extends Block {
 	@Override
 	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
 		if (world.isReceivingRedstonePower(pos)) {
-			primeTnt(world, pos);
+			this.method_50884(world, pos);
 			world.removeBlock(pos, false);
 		}
 	}
@@ -52,7 +61,7 @@ public class TntBlock extends Block {
 	@Override
 	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient() && !player.isCreative() && (Boolean)state.get(UNSTABLE)) {
-			primeTnt(world, pos);
+			this.method_50884(world, pos);
 		}
 
 		super.onBreak(world, pos, state, player);
@@ -68,13 +77,18 @@ public class TntBlock extends Block {
 		}
 	}
 
-	public static void primeTnt(World world, BlockPos pos) {
-		primeTnt(world, pos, null);
+	private void method_50884(World world, BlockPos blockPos) {
+		primeTnt(world, blockPos, null, this.getDefaultState());
 	}
 
-	private static void primeTnt(World world, BlockPos pos, @Nullable LivingEntity igniter) {
+	public static void primeTnt(World world, BlockPos pos, BlockState blockState) {
+		primeTnt(world, pos, null, blockState);
+	}
+
+	public static void primeTnt(World world, BlockPos pos, @Nullable LivingEntity igniter, BlockState blockState) {
 		if (!world.isClient) {
 			TntEntity tntEntity = new TntEntity(world, (double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, igniter);
+			tntEntity.method_50690(blockState);
 			world.spawnEntity(tntEntity);
 			world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			world.emitGameEvent(igniter, GameEvent.PRIME_FUSE, pos);
@@ -87,7 +101,7 @@ public class TntBlock extends Block {
 		if (!itemStack.isOf(Items.FLINT_AND_STEEL) && !itemStack.isOf(Items.FIRE_CHARGE)) {
 			return super.onUse(state, world, pos, player, hand, hit);
 		} else {
-			primeTnt(world, pos, player);
+			primeTnt(world, pos, player, this.getDefaultState());
 			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 			Item item = itemStack.getItem();
 			if (!player.isCreative()) {
@@ -109,7 +123,7 @@ public class TntBlock extends Block {
 			BlockPos blockPos = hit.getBlockPos();
 			Entity entity = projectile.getOwner();
 			if (projectile.isOnFire() && projectile.canModifyAt(world, blockPos)) {
-				primeTnt(world, blockPos, entity instanceof LivingEntity ? (LivingEntity)entity : null);
+				primeTnt(world, blockPos, entity instanceof LivingEntity ? (LivingEntity)entity : null, this.getDefaultState());
 				world.removeBlock(blockPos, false);
 			}
 		}

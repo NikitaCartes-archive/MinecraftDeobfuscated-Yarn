@@ -62,6 +62,7 @@ public class Criteria {
 	public static final OnKilledCriterion KILL_MOB_NEAR_SCULK_CATALYST = register(new OnKilledCriterion(new Identifier("kill_mob_near_sculk_catalyst")));
 	public static final ItemCriterion ALLAY_DROP_ITEM_ON_BLOCK = register(new ItemCriterion(new Identifier("allay_drop_item_on_block")));
 	public static final TickCriterion AVOID_VIBRATION = register(new TickCriterion(new Identifier("avoid_vibration")));
+	public static final TickCriterion VOTED = register(new TickCriterion(new Identifier("voted")));
 
 	private static <T extends Criterion<?>> T register(T object) {
 		if (VALUES.containsKey(object.getId())) {

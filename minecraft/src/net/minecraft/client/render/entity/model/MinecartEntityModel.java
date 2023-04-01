@@ -1,7 +1,9 @@
 package net.minecraft.client.render.entity.model;
 
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_8293;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
@@ -40,9 +42,15 @@ import net.minecraft.entity.Entity;
 @Environment(EnvType.CLIENT)
 public class MinecartEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
 	private final ModelPart root;
+	private final ModelPart[] field_44377 = new ModelPart[4];
 
-	public MinecartEntityModel(ModelPart root) {
-		this.root = root;
+	public MinecartEntityModel(ModelPart modelPart) {
+		this.root = modelPart;
+		Arrays.setAll(this.field_44377, i -> modelPart.getChild(method_50997(i)));
+	}
+
+	private static String method_50997(int i) {
+		return "wheel" + i;
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -71,11 +79,33 @@ public class MinecartEntityModel<T extends Entity> extends SinglePartEntityModel
 			"left", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -9.0F, -1.0F, 16.0F, 8.0F, 2.0F), ModelTransform.of(0.0F, 4.0F, -7.0F, 0.0F, (float) Math.PI, 0.0F)
 		);
 		modelPartData.addChild("right", ModelPartBuilder.create().uv(0, 0).cuboid(-8.0F, -9.0F, -1.0F, 16.0F, 8.0F, 2.0F), ModelTransform.pivot(0.0F, 4.0F, 7.0F));
+		modelPartData.addChild(
+			method_50997(0), ModelPartBuilder.create().uv(44, 25).cuboid(-2.0F, -2.0F, -2.0F, 4.0F, 4.0F, 2.0F), ModelTransform.pivot(-5.0F, 5.0F, -7.0F)
+		);
+		modelPartData.addChild(
+			method_50997(1), ModelPartBuilder.create().uv(44, 25).cuboid(-2.0F, -2.0F, -2.0F, 4.0F, 4.0F, 2.0F), ModelTransform.pivot(5.0F, 5.0F, -7.0F)
+		);
+		modelPartData.addChild(
+			method_50997(2), ModelPartBuilder.create().uv(44, 25).cuboid(-2.0F, -2.0F, -2.0F, 4.0F, 4.0F, 2.0F), ModelTransform.pivot(-5.0F, 5.0F, 9.0F)
+		);
+		modelPartData.addChild(
+			method_50997(3), ModelPartBuilder.create().uv(44, 25).cuboid(-2.0F, -2.0F, -2.0F, 4.0F, 4.0F, 2.0F), ModelTransform.pivot(5.0F, 5.0F, 9.0F)
+		);
 		return TexturedModelData.of(modelData, 64, 32);
 	}
 
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
+		if (class_8293.field_43521.method_50116()) {
+			for (ModelPart modelPart : this.field_44377) {
+				modelPart.visible = true;
+				modelPart.roll = limbAngle;
+			}
+		} else {
+			for (ModelPart modelPart : this.field_44377) {
+				modelPart.visible = false;
+			}
+		}
 	}
 
 	@Override

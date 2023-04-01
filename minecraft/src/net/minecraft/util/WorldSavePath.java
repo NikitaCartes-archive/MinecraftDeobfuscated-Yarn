@@ -13,6 +13,8 @@ public class WorldSavePath {
 	public static final WorldSavePath DATAPACKS = new WorldSavePath("datapacks");
 	public static final WorldSavePath RESOURCES_ZIP = new WorldSavePath("resources.zip");
 	public static final WorldSavePath ROOT = new WorldSavePath(".");
+	public static final WorldSavePath VOTES_JSON = new WorldSavePath("votes.json");
+	public static final WorldSavePath VOTES_JSON_OLD = new WorldSavePath("votes.json_old");
 	private final String relativePath;
 
 	private WorldSavePath(String relativePath) {
