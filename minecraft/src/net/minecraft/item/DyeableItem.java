@@ -39,8 +39,7 @@ public interface DyeableItem {
 		Item item = stack.getItem();
 		if (item instanceof DyeableItem) {
 			dyeableItem = (DyeableItem)item;
-			itemStack = stack.copy();
-			itemStack.setCount(1);
+			itemStack = stack.copyWithCount(1);
 			if (dyeableItem.hasColor(stack)) {
 				int k = dyeableItem.getColor(itemStack);
 				float f = (float)(k >> 16 & 0xFF) / 255.0F;

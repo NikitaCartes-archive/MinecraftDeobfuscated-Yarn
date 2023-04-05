@@ -1713,7 +1713,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		ServerWorld serverWorld = this.player.getWorld();
 		BlockPos blockPos = packet.getPos();
 		if (serverWorld.isChunkLoaded(blockPos)) {
-			BlockState blockState = serverWorld.getBlockState(blockPos);
 			BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 			if (!(blockEntity instanceof SignBlockEntity)) {
 				return;
@@ -1721,8 +1720,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 			SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
 			signBlockEntity.tryChangeText(this.player, packet.isFront(), signText);
-			signBlockEntity.setEditor(null);
-			serverWorld.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 		}
 	}
 

@@ -130,7 +130,7 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 	protected void fillInputSlot(Slot slot, ItemStack stack) {
 		int i = this.inventory.indexOf(stack);
 		if (i != -1) {
-			ItemStack itemStack = this.inventory.getStack(i).copy();
+			ItemStack itemStack = this.inventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getCount() > 1) {
 					this.inventory.removeStack(i, 1);
@@ -138,9 +138,8 @@ public class InputSlotFiller<C extends Inventory> implements RecipeGridAligner<I
 					this.inventory.removeStack(i);
 				}
 
-				itemStack.setCount(1);
 				if (slot.getStack().isEmpty()) {
-					slot.setStackNoCallbacks(itemStack);
+					slot.setStackNoCallbacks(itemStack.copyWithCount(1));
 				} else {
 					slot.getStack().increment(1);
 				}

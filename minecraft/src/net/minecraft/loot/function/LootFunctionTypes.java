@@ -36,6 +36,7 @@ public class LootFunctionTypes {
 	public static final LootFunctionType SET_BANNER_PATTERN = register("set_banner_pattern", new SetBannerPatternFunction.Serializer());
 	public static final LootFunctionType SET_POTION = register("set_potion", new SetPotionLootFunction.Serializer());
 	public static final LootFunctionType SET_INSTRUMENT = register("set_instrument", new SetInstrumentLootFunction.Serializer());
+	public static final LootFunctionType REFERENCE = register("reference", new ReferenceLootFunction.Serializer());
 
 	private static LootFunctionType register(String id, JsonSerializer<? extends LootFunction> jsonSerializer) {
 		return Registry.register(Registries.LOOT_FUNCTION_TYPE, new Identifier(id), new LootFunctionType(jsonSerializer));

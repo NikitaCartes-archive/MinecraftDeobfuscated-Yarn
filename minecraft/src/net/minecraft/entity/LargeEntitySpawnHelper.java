@@ -62,7 +62,7 @@ public class LargeEntitySpawnHelper {
 	}
 
 	public interface Requirements {
-		LargeEntitySpawnHelper.Requirements IRON_GOLEM = (world, pos, state, abovePos, aboveState) -> (aboveState.isAir() || aboveState.getMaterial().isLiquid())
+		LargeEntitySpawnHelper.Requirements IRON_GOLEM = (world, pos, state, abovePos, aboveState) -> (aboveState.isAir() || aboveState.isLiquid())
 				&& state.getMaterial().blocksLight();
 		LargeEntitySpawnHelper.Requirements WARDEN = (world, pos, state, abovePos, aboveState) -> aboveState.getCollisionShape(world, abovePos).isEmpty()
 				&& Block.isFaceFullSquare(state.getCollisionShape(world, pos), Direction.UP);

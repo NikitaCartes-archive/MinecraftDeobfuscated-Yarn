@@ -286,8 +286,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	public void setHeldItemStack(ItemStack value, boolean update) {
 		if (!value.isEmpty()) {
-			value = value.copy();
-			value.setCount(1);
+			value = value.copyWithCount(1);
 		}
 
 		this.setAsStackHolder(value);

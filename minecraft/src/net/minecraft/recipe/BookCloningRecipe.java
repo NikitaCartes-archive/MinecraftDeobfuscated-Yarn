@@ -84,9 +84,7 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 			if (itemStack.getItem().hasRecipeRemainder()) {
 				defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
 			} else if (itemStack.getItem() instanceof WrittenBookItem) {
-				ItemStack itemStack2 = itemStack.copy();
-				itemStack2.setCount(1);
-				defaultedList.set(i, itemStack2);
+				defaultedList.set(i, itemStack.copyWithCount(1));
 				break;
 			}
 		}

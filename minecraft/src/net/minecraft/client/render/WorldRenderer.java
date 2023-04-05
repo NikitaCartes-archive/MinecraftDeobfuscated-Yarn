@@ -95,6 +95,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -2804,8 +2805,8 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 				break;
 			case 1010:
-				Item var63 = Item.byRawId(data);
-				if (var63 instanceof MusicDiscItem musicDiscItem) {
+				Item var73 = Item.byRawId(data);
+				if (var73 instanceof MusicDiscItem musicDiscItem) {
 					this.playSong(musicDiscItem.getSound(), pos);
 				}
 				break;
@@ -2951,7 +2952,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						pos, SoundEvents.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false
 					);
 
-				for(int k = 0; k < 8; ++k) {
+				for(int x = 0; x < 8; ++x) {
 					this.world
 						.addParticle(
 							ParticleTypes.LARGE_SMOKE, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0
@@ -2964,21 +2965,21 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false
 					);
 
-				for(int k = 0; k < 5; ++k) {
-					double d = (double)pos.getX() + random.nextDouble() * 0.6 + 0.2;
-					double e = (double)pos.getY() + random.nextDouble() * 0.6 + 0.2;
-					double f = (double)pos.getZ() + random.nextDouble() * 0.6 + 0.2;
-					this.world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+				for(int x = 0; x < 5; ++x) {
+					double e = (double)pos.getX() + random.nextDouble() * 0.6 + 0.2;
+					double f = (double)pos.getY() + random.nextDouble() * 0.6 + 0.2;
+					double y = (double)pos.getZ() + random.nextDouble() * 0.6 + 0.2;
+					this.world.addParticle(ParticleTypes.SMOKE, e, f, y, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 1503:
 				this.world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 
-				for(int k = 0; k < 16; ++k) {
-					double d = (double)pos.getX() + (5.0 + random.nextDouble() * 6.0) / 16.0;
-					double e = (double)pos.getY() + 0.8125;
-					double f = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
-					this.world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+				for(int x = 0; x < 16; ++x) {
+					double e = (double)pos.getX() + (5.0 + random.nextDouble() * 6.0) / 16.0;
+					double f = (double)pos.getY() + 0.8125;
+					double y = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
+					this.world.addParticle(ParticleTypes.SMOKE, e, f, y, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 1504:
@@ -3094,17 +3095,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				BoneMealItem.createParticles(this.world, pos, data);
 				break;
 			case 2006:
-				for(int k = 0; k < 200; ++k) {
-					float af = random.nextFloat() * 4.0F;
-					float ag = random.nextFloat() * (float) (Math.PI * 2);
-					double e = (double)(MathHelper.cos(ag) * af);
-					double f = 0.01 + random.nextDouble() * 0.5;
-					double y = (double)(MathHelper.sin(ag) * af);
+				for(int x = 0; x < 200; ++x) {
+					float ak = random.nextFloat() * 4.0F;
+					float ao = random.nextFloat() * (float) (Math.PI * 2);
+					double f = (double)(MathHelper.cos(ao) * ak);
+					double y = 0.01 + random.nextDouble() * 0.5;
+					double z = (double)(MathHelper.sin(ao) * ak);
 					Particle particle2 = this.spawnParticle(
-						ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + e * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + y * 0.1, e, f, y
+						ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + f * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + z * 0.1, f, y, z
 					);
 					if (particle2 != null) {
-						particle2.move(af);
+						particle2.move(ak);
 					}
 				}
 
@@ -3116,7 +3117,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.world.addParticle(ParticleTypes.EXPLOSION, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
 				break;
 			case 2009:
-				for(int k = 0; k < 8; ++k) {
+				for(int x = 0; x < 8; ++x) {
 					this.world
 						.addParticle(
 							ParticleTypes.CLOUD, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0
@@ -3216,22 +3217,26 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						);
 				}
 
-				this.world
-					.playSound(
-						(double)pos.getX() + 0.5,
-						(double)pos.getY() + SculkShriekerBlock.TOP,
-						(double)pos.getZ() + 0.5,
-						SoundEvents.BLOCK_SCULK_SHRIEKER_SHRIEK,
-						SoundCategory.BLOCKS,
-						2.0F,
-						0.6F + this.world.random.nextFloat() * 0.4F,
-						false
-					);
+				BlockState blockState3 = this.world.getBlockState(pos);
+				boolean bl2 = blockState3.contains(Properties.WATERLOGGED) && blockState3.get(Properties.WATERLOGGED);
+				if (!bl2) {
+					this.world
+						.playSound(
+							(double)pos.getX() + 0.5,
+							(double)pos.getY() + SculkShriekerBlock.TOP,
+							(double)pos.getZ() + 0.5,
+							SoundEvents.BLOCK_SCULK_SHRIEKER_SHRIEK,
+							SoundCategory.BLOCKS,
+							2.0F,
+							0.6F + this.world.random.nextFloat() * 0.4F,
+							false
+						);
+				}
 				break;
 			case 3008:
 				BlockState blockState2 = Block.getStateFromRawId(data);
-				Block musicDiscItem = blockState2.getBlock();
-				if (musicDiscItem instanceof BrushableBlock brushableBlock) {
+				Block blockState3 = blockState2.getBlock();
+				if (blockState3 instanceof BrushableBlock brushableBlock) {
 					this.world.playSoundAtBlockCenter(pos, brushableBlock.getBrushingCompleteSound(), SoundCategory.PLAYERS, 1.0F, 1.0F, false);
 				}
 

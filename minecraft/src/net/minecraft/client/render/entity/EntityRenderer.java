@@ -87,7 +87,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		double d = this.dispatcher.getSquaredDistanceToCamera(entity);
 		if (!(d > 4096.0)) {
 			boolean bl = !entity.isSneaky();
-			float f = entity.getHeight() + 0.5F;
+			float f = entity.getNameLabelHeight();
 			int i = "deadmau5".equals(text.getString()) ? -10 : 0;
 			matrices.push();
 			matrices.translate(0.0F, f, 0.0F);

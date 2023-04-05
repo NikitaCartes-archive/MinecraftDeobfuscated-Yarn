@@ -17,6 +17,10 @@ public class IceBlock extends TransparentBlock {
 		super(settings);
 	}
 
+	public static BlockState getMeltedState() {
+		return Blocks.WATER.getDefaultState();
+	}
+
 	@Override
 	public void afterBreak(World world, PlayerEntity player, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, ItemStack tool) {
 		super.afterBreak(world, player, pos, state, blockEntity, tool);
@@ -26,9 +30,10 @@ public class IceBlock extends TransparentBlock {
 				return;
 			}
 
-			Material material = world.getBlockState(pos.down()).getMaterial();
-			if (material.blocksMovement() || material.isLiquid()) {
-				world.setBlockState(pos, Blocks.WATER.getDefaultState());
+			BlockState blockState = world.getBlockState(pos.down());
+			Material material = blockState.getMaterial();
+			if (material.blocksMovement() || blockState.isLiquid()) {
+				world.setBlockState(pos, getMeltedState());
 			}
 		}
 	}
@@ -44,8 +49,8 @@ public class IceBlock extends TransparentBlock {
 		if (world.getDimension().ultrawarm()) {
 			world.removeBlock(pos, false);
 		} else {
-			world.setBlockState(pos, Blocks.WATER.getDefaultState());
-			world.updateNeighbor(pos, Blocks.WATER, pos);
+			world.setBlockState(pos, getMeltedState());
+			world.updateNeighbor(pos, getMeltedState().getBlock(), pos);
 		}
 	}
 }

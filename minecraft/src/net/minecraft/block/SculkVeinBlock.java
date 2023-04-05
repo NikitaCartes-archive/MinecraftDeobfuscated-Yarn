@@ -193,7 +193,7 @@ public class SculkVeinBlock extends MultifaceGrowthBlock implements SculkSpreada
 					return false;
 				} else {
 					Material material = state.getMaterial();
-					if (material == Material.FIRE) {
+					if (state.isIn(BlockTags.FIRE)) {
 						return false;
 					} else {
 						return state.isReplaceable() || super.canGrow(world, pos, growPos, direction, state);

@@ -3,7 +3,6 @@ package net.minecraft.client.gui;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RotatingCubeMapRenderer {
@@ -21,7 +20,7 @@ public class RotatingCubeMapRenderer {
 		float f = (float)((double)delta * this.client.options.getPanoramaSpeed().getValue());
 		this.pitch = wrapOnce(this.pitch + f * 0.1F, 360.0F);
 		this.yaw = wrapOnce(this.yaw + f * 0.001F, (float) (Math.PI * 2));
-		this.cubeMap.draw(this.client, MathHelper.sin(this.yaw) * 5.0F + 25.0F, -this.pitch, alpha);
+		this.cubeMap.draw(this.client, 10.0F, -this.pitch, alpha);
 	}
 
 	private static float wrapOnce(float a, float b) {

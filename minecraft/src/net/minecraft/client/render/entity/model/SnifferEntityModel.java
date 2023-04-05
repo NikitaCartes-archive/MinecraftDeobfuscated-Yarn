@@ -79,7 +79,7 @@ public class SnifferEntityModel<T extends SnifferEntity> extends SinglePartEntit
 				.cuboid(-6.5F, -7.5F, -11.5F, 13.0F, 18.0F, 11.0F, new Dilation(0.0F))
 				.uv(8, 4)
 				.cuboid(-6.5F, 7.5F, -11.5F, 13.0F, 0.0F, 11.0F, new Dilation(0.0F)),
-			ModelTransform.pivot(0.0F, 6.5F, -19.5F)
+			ModelTransform.pivot(0.0F, 6.5F, -19.48F)
 		);
 		modelPartData4.addChild(
 			EntityModelPartNames.LEFT_EAR,

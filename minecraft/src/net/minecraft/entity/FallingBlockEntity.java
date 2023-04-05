@@ -235,9 +235,10 @@ public class FallingBlockEntity extends Entity {
 			if (i < 0) {
 				return false;
 			} else {
+				Block bl = this.block.getBlock();
 				Predicate<Entity> predicate;
 				DamageSource damageSource2;
-				if (this.block.getBlock() instanceof LandingBlock landingBlock) {
+				if (bl instanceof LandingBlock landingBlock) {
 					predicate = landingBlock.getEntityPredicate();
 					damageSource2 = landingBlock.getDamageSource(this);
 				} else {
@@ -273,6 +274,8 @@ public class FallingBlockEntity extends Entity {
 		if (this.blockEntityData != null) {
 			nbt.put("TileEntityData", this.blockEntityData);
 		}
+
+		nbt.putBoolean("CancelDrop", this.destroyedOnLanding);
 	}
 
 	@Override
@@ -295,6 +298,7 @@ public class FallingBlockEntity extends Entity {
 			this.blockEntityData = nbt.getCompound("TileEntityData");
 		}
 
+		this.destroyedOnLanding = nbt.getBoolean("CancelDrop");
 		if (this.block.isAir()) {
 			this.block = Blocks.SAND.getDefaultState();
 		}

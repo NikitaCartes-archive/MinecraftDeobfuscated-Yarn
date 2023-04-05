@@ -10,10 +10,18 @@ import net.minecraft.util.math.random.Random;
 @Environment(EnvType.CLIENT)
 public class LogoDrawer extends DrawableHelper {
 	public static final Identifier LOGO_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
+	public static final Identifier MINCERAFT_TEXTURE = new Identifier("textures/gui/title/minceraft.png");
 	public static final Identifier EDITION_TEXTURE = new Identifier("textures/gui/title/edition.png");
-	public static final int field_41807 = 274;
+	public static final int field_41807 = 256;
 	public static final int field_41808 = 44;
+	private static final int field_44541 = 256;
+	private static final int field_44542 = 64;
+	private static final int field_44543 = 128;
+	private static final int field_44544 = 14;
+	private static final int field_44545 = 128;
+	private static final int field_44546 = 16;
 	public static final int field_41809 = 30;
+	private static final int field_44547 = 7;
 	private final boolean minceraft = (double)Random.create().nextFloat() < 1.0E-4;
 	private final boolean ignoreAlpha;
 
@@ -26,26 +34,14 @@ public class LogoDrawer extends DrawableHelper {
 	}
 
 	public void draw(MatrixStack matrices, int screenWidth, float alpha, int y) {
-		RenderSystem.setShaderTexture(0, LOGO_TEXTURE);
+		RenderSystem.setShaderTexture(0, this.minceraft ? MINCERAFT_TEXTURE : LOGO_TEXTURE);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.ignoreAlpha ? 1.0F : alpha);
-		int i = screenWidth / 2 - 137;
-		if (this.minceraft) {
-			drawWithOutline(i, y, (x, yx) -> {
-				drawTexture(matrices, x, yx, 0, 0, 99, 44);
-				drawTexture(matrices, x + 99, yx, 129, 0, 27, 44);
-				drawTexture(matrices, x + 99 + 26, yx, 126, 0, 3, 44);
-				drawTexture(matrices, x + 99 + 26 + 3, yx, 99, 0, 26, 44);
-				drawTexture(matrices, x + 155, yx, 0, 45, 155, 44);
-			});
-		} else {
-			drawWithOutline(i, y, (x, yx) -> {
-				drawTexture(matrices, x, yx, 0, 0, 155, 44);
-				drawTexture(matrices, x + 155, yx, 0, 45, 155, 44);
-			});
-		}
-
+		int i = screenWidth / 2 - 128;
+		drawTexture(matrices, i, y, 0.0F, 0.0F, 256, 44, 256, 64);
 		RenderSystem.setShaderTexture(0, EDITION_TEXTURE);
-		drawTexture(matrices, i + 88, y + 37, 0.0F, 0.0F, 98, 14, 128, 16);
+		int j = screenWidth / 2 - 64;
+		int k = y + 44 - 7;
+		drawTexture(matrices, j, k, 0.0F, 0.0F, 128, 14, 128, 16);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 }

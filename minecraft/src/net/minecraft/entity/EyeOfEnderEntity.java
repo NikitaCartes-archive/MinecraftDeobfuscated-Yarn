@@ -9,7 +9,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -35,7 +34,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 
 	public void setItem(ItemStack stack) {
 		if (!stack.isOf(Items.ENDER_EYE) || stack.hasNbt()) {
-			this.getDataTracker().set(ITEM, Util.make(stack.copy(), stackx -> stackx.setCount(1)));
+			this.getDataTracker().set(ITEM, stack.copyWithCount(1));
 		}
 	}
 

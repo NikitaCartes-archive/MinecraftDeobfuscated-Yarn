@@ -106,7 +106,7 @@ public class FarmlandBlock extends Block {
 
 	private static boolean hasCrop(BlockView world, BlockPos pos) {
 		Block block = world.getBlockState(pos.up()).getBlock();
-		return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
+		return block instanceof Crop;
 	}
 
 	private static boolean isWaterNearby(WorldView world, BlockPos pos) {

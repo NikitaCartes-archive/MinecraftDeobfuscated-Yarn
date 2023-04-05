@@ -83,11 +83,13 @@ public class TradeOffer {
 	 * special price and the price multiplier.
 	 */
 	public ItemStack getAdjustedFirstBuyItem() {
-		int i = this.firstBuyItem.getCount();
-		ItemStack itemStack = this.firstBuyItem.copy();
-		int j = Math.max(0, MathHelper.floor((float)(i * this.demandBonus) * this.priceMultiplier));
-		itemStack.setCount(MathHelper.clamp(i + j + this.specialPrice, 1, this.firstBuyItem.getItem().getMaxCount()));
-		return itemStack;
+		if (this.firstBuyItem.isEmpty()) {
+			return ItemStack.EMPTY;
+		} else {
+			int i = this.firstBuyItem.getCount();
+			int j = Math.max(0, MathHelper.floor((float)(i * this.demandBonus) * this.priceMultiplier));
+			return this.firstBuyItem.copyWithCount(MathHelper.clamp(i + j + this.specialPrice, 1, this.firstBuyItem.getItem().getMaxCount()));
+		}
 	}
 
 	/**

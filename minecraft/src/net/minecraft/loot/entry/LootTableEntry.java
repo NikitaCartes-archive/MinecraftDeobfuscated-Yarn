@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import java.util.function.Consumer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootDataKey;
+import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
@@ -28,22 +30,22 @@ public class LootTableEntry extends LeafEntry {
 
 	@Override
 	public void generateLoot(Consumer<ItemStack> lootConsumer, LootContext context) {
-		LootTable lootTable = context.getTable(this.id);
+		LootTable lootTable = context.getDataLookup().getLootTable(this.id);
 		lootTable.generateUnprocessedLoot(context, lootConsumer);
 	}
 
 	@Override
 	public void validate(LootTableReporter reporter) {
-		if (reporter.hasTable(this.id)) {
+		LootDataKey<LootTable> lootDataKey = new LootDataKey<>(LootDataType.LOOT_TABLES, this.id);
+		if (reporter.isInStack(lootDataKey)) {
 			reporter.report("Table " + this.id + " is recursively called");
 		} else {
 			super.validate(reporter);
-			LootTable lootTable = reporter.getTable(this.id);
-			if (lootTable == null) {
-				reporter.report("Unknown loot table called " + this.id);
-			} else {
-				lootTable.validate(reporter.withTable("->{" + this.id + "}", this.id));
-			}
+			reporter.getDataLookup()
+				.getElementOptional(lootDataKey)
+				.ifPresentOrElse(
+					table -> table.validate(reporter.makeChild("->{" + this.id + "}", lootDataKey)), () -> reporter.report("Unknown loot table called " + this.id)
+				);
 		}
 	}
 

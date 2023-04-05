@@ -83,13 +83,14 @@ public class BrushItem extends Item {
 						soundEvent = SoundEvents.ITEM_BRUSH_BRUSHING_GENERIC;
 					}
 
-					world.playSound(playerEntity, blockPos, soundEvent, SoundCategory.PLAYERS);
+					world.playSound(playerEntity, blockPos, soundEvent, SoundCategory.BLOCKS);
 					if (!world.isClient()) {
-						BlockEntity var16 = world.getBlockEntity(blockPos);
-						if (var16 instanceof BrushableBlockEntity brushableBlockEntity) {
+						BlockEntity var17 = world.getBlockEntity(blockPos);
+						if (var17 instanceof BrushableBlockEntity brushableBlockEntity) {
 							boolean bl2 = brushableBlockEntity.brush(world.getTime(), playerEntity, blockHitResult.getSide());
 							if (bl2) {
-								stack.damage(1, user, userx -> userx.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
+								EquipmentSlot equipmentSlot = stack.equals(playerEntity.getEquippedStack(EquipmentSlot.OFFHAND)) ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
+								stack.damage(1, user, userx -> userx.sendEquipmentBreakStatus(equipmentSlot));
 							}
 						}
 					}

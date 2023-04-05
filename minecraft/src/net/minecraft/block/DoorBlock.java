@@ -58,6 +58,10 @@ public class DoorBlock extends Block {
 		);
 	}
 
+	public BlockSetType getBlockSetType() {
+		return this.blockSetType;
+	}
+
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		Direction direction = state.get(FACING);
@@ -180,7 +184,7 @@ public class DoorBlock extends Block {
 
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-		if (this.material == Material.METAL) {
+		if (!this.blockSetType.canOpenByHand()) {
 			return ActionResult.PASS;
 		} else {
 			state = state.cycle(OPEN);
@@ -250,11 +254,16 @@ public class DoorBlock extends Block {
 		builder.add(HALF, FACING, OPEN, HINGE, POWERED);
 	}
 
-	public static boolean isWoodenDoor(World world, BlockPos pos) {
-		return isWoodenDoor(world.getBlockState(pos));
+	public static boolean canOpenByHand(World world, BlockPos pos) {
+		return canOpenByHand(world.getBlockState(pos));
 	}
 
-	public static boolean isWoodenDoor(BlockState state) {
-		return state.getBlock() instanceof DoorBlock && state.getMaterial() == Material.WOOD;
+	public static boolean canOpenByHand(BlockState state) {
+		Block var2 = state.getBlock();
+		if (var2 instanceof DoorBlock doorBlock && doorBlock.getBlockSetType().canOpenByHand()) {
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -122,7 +122,7 @@ public class CamelBrain {
 		camel.getBrain().resetPossibleActivities(ImmutableList.of(Activity.IDLE));
 	}
 
-	public static Ingredient getBreedingIngredient() {
+	public static Ingredient getTemptItems() {
 		return CamelEntity.BREEDING_INGREDIENT;
 	}
 

@@ -11,10 +11,13 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import net.minecraft.data.DataOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.DataWriter;
-import net.minecraft.loot.LootManager;
+import net.minecraft.loot.LootDataKey;
+import net.minecraft.loot.LootDataLookup;
+import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContextType;
@@ -36,19 +39,27 @@ public class LootTableProvider implements DataProvider {
 
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
-		Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
+		final Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
 		this.lootTypeGenerators.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().get()).accept((id, builder) -> {
 				if (map.put(id, builder.type(lootTypeGenerator.paramSet).build()) != null) {
 					throw new IllegalStateException("Duplicate loot table " + id);
 				}
 			}));
-		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, id -> null, map::get);
+		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, new LootDataLookup() {
+			@Nullable
+			@Override
+			public <T> T getElement(LootDataKey<T> lootDataKey) {
+				return (T)(lootDataKey.type() == LootDataType.LOOT_TABLES ? map.get(lootDataKey.id()) : null);
+			}
+		});
 
 		for(Identifier identifier : Sets.difference(this.lootTableIds, map.keySet())) {
 			lootTableReporter.report("Missing built-in table: " + identifier);
 		}
 
-		map.forEach((id, table) -> LootManager.validate(lootTableReporter, id, table));
+		map.forEach(
+			(id, table) -> table.validate(lootTableReporter.withContextType(table.getType()).makeChild("{" + id + "}", new LootDataKey<>(LootDataType.LOOT_TABLES, id)))
+		);
 		Multimap<String, String> multimap = lootTableReporter.getMessages();
 		if (!multimap.isEmpty()) {
 			multimap.forEach((name, message) -> LOGGER.warn("Found validation problem in {}: {}", name, message));
@@ -58,7 +69,7 @@ public class LootTableProvider implements DataProvider {
 				Identifier identifierxx = (Identifier)entry.getKey();
 				LootTable lootTable = (LootTable)entry.getValue();
 				Path path = this.pathResolver.resolveJson(identifierxx);
-				return DataProvider.writeToPath(writer, LootManager.toJson(lootTable), path);
+				return DataProvider.writeToPath(writer, LootDataType.LOOT_TABLES.getGson().toJsonTree(lootTable), path);
 			}).toArray(i -> new CompletableFuture[i]));
 		}
 	}

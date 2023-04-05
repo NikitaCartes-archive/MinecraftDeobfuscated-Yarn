@@ -15,7 +15,6 @@ import net.minecraft.item.Items;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.function.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Difficulty;
@@ -92,7 +91,7 @@ public class WitherSkullBlock extends SkullBlock {
 						BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_SKULL).or(BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_WALL_SKULL))
 					)
 				)
-				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
+				.where('~', pos -> pos.getBlockState().isAir())
 				.build();
 		}
 
@@ -104,7 +103,7 @@ public class WitherSkullBlock extends SkullBlock {
 			witherDispenserPattern = BlockPatternBuilder.start()
 				.aisle("   ", "###", "~#~")
 				.where('#', pos -> pos.getBlockState().isIn(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
-				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
+				.where('~', pos -> pos.getBlockState().isAir())
 				.build();
 		}
 

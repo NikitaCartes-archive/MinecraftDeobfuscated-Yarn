@@ -22,6 +22,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
@@ -473,7 +474,7 @@ public class EntitySelectorOptions {
 								return false;
 							} else {
 								ServerWorld serverWorld = (ServerWorld)entity.world;
-								LootCondition lootCondition = serverWorld.getServer().getPredicateManager().get(identifier);
+								LootCondition lootCondition = serverWorld.getServer().getLootManager().getElement(LootDataType.PREDICATES, identifier);
 								if (lootCondition == null) {
 									return false;
 								} else {
@@ -481,6 +482,7 @@ public class EntitySelectorOptions {
 										.parameter(LootContextParameters.THIS_ENTITY, entity)
 										.parameter(LootContextParameters.ORIGIN, entity.getPos())
 										.build(LootContextTypes.SELECTOR);
+									lootContext.markActive(LootContext.predicate(lootCondition));
 									return bl ^ lootCondition.test(lootContext);
 								}
 							}

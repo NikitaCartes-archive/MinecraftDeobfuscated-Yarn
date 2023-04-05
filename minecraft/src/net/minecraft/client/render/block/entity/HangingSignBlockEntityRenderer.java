@@ -37,7 +37,9 @@ public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
 	private static final String CHAIN_R1 = "chainR1";
 	private static final String CHAIN_R2 = "chainR2";
 	private static final String BOARD = "board";
-	private static final float field_43375 = 1.0F;
+	private static final float MODEL_SCALE = 1.0F;
+	private static final float TEXT_SCALE = 0.9F;
+	private static final Vec3d TEXT_OFFSET = new Vec3d(0.0, -0.32F, 0.073F);
 	private final Map<WoodType, HangingSignBlockEntityRenderer.HangingSignModel> MODELS;
 
 	public HangingSignBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
@@ -51,13 +53,23 @@ public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
 	}
 
 	@Override
+	public float getSignScale() {
+		return 1.0F;
+	}
+
+	@Override
+	public float getTextScale() {
+		return 0.9F;
+	}
+
+	@Override
 	public void render(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		BlockState blockState = signBlockEntity.getCachedState();
 		AbstractSignBlock abstractSignBlock = (AbstractSignBlock)blockState.getBlock();
 		WoodType woodType = AbstractSignBlock.getWoodType(abstractSignBlock);
 		HangingSignBlockEntityRenderer.HangingSignModel hangingSignModel = (HangingSignBlockEntityRenderer.HangingSignModel)this.MODELS.get(woodType);
 		hangingSignModel.updateVisibleParts(blockState);
-		this.render(signBlockEntity, matrixStack, vertexConsumerProvider, i, j, blockState, abstractSignBlock, woodType, hangingSignModel, 1.0F);
+		this.render(signBlockEntity, matrixStack, vertexConsumerProvider, i, j, blockState, abstractSignBlock, woodType, hangingSignModel);
 	}
 
 	@Override
@@ -79,8 +91,8 @@ public class HangingSignBlockEntityRenderer extends SignBlockEntityRenderer {
 	}
 
 	@Override
-	Vec3d getTextOffset(float scale) {
-		return new Vec3d(0.0, (double)(-0.32F * scale), (double)(0.07F * scale));
+	Vec3d getTextOffset() {
+		return TEXT_OFFSET;
 	}
 
 	public static TexturedModelData getTexturedModelData() {

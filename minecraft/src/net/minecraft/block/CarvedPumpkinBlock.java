@@ -17,7 +17,6 @@ import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.function.MaterialPredicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -141,7 +140,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Equipme
 			this.ironGolemDispenserPattern = BlockPatternBuilder.start()
 				.aisle("~ ~", "###", "~#~")
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.IRON_BLOCK)))
-				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
+				.where('~', pos -> pos.getBlockState().isAir())
 				.build();
 		}
 
@@ -154,7 +153,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Equipme
 				.aisle("~^~", "###", "~#~")
 				.where('^', CachedBlockPosition.matchesBlockState(IS_GOLEM_HEAD_PREDICATE))
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.IRON_BLOCK)))
-				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
+				.where('~', pos -> pos.getBlockState().isAir())
 				.build();
 		}
 

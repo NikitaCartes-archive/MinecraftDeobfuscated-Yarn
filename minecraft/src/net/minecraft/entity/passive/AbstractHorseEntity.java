@@ -381,7 +381,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		if (!state.getMaterial().isLiquid()) {
+		if (!state.isLiquid()) {
 			BlockState blockState = this.world.getBlockState(pos.up());
 			BlockSoundGroup blockSoundGroup = state.getSoundGroup();
 			if (blockState.isOf(Blocks.SNOW)) {

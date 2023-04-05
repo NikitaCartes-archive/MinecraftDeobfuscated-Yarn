@@ -4,8 +4,7 @@ import net.minecraft.util.StringIdentifiable;
 
 public enum SculkSensorPhase implements StringIdentifiable {
 	INACTIVE("inactive"),
-	ACTIVE("active"),
-	COOLDOWN("cooldown");
+	ACTIVE("active");
 
 	private final String name;
 

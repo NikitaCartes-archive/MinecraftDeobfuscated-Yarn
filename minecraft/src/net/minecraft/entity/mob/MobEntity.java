@@ -1270,9 +1270,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 					for(EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 						ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 						if (!itemStack.isEmpty()) {
-							mobEntity.equipStack(equipmentSlot, itemStack.copy());
+							mobEntity.equipStack(equipmentSlot, itemStack.copyAndEmpty());
 							mobEntity.setEquipmentDropChance(equipmentSlot, this.getDropChance(equipmentSlot));
-							itemStack.setCount(0);
 						}
 					}
 				}
@@ -1519,7 +1518,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	protected void removeFromDimension() {
 		super.removeFromDimension();
 		this.detachLeash(true, false);
-		this.getItemsEquipped().forEach(stack -> stack.setCount(0));
+		this.getItemsEquipped().forEach(stack -> {
+			if (!stack.isEmpty()) {
+				stack.setCount(0);
+			}
+		});
 	}
 
 	@Nullable

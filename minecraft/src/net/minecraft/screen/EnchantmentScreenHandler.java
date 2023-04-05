@@ -95,8 +95,8 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 				this.context.run((world, pos) -> {
 					int ixx = 0;
 
-					for(BlockPos blockPos : EnchantingTableBlock.BOOKSHELF_OFFSETS) {
-						if (EnchantingTableBlock.canAccessBookshelf(world, pos, blockPos)) {
+					for(BlockPos blockPos : EnchantingTableBlock.POWER_PROVIDER_OFFSETS) {
+						if (EnchantingTableBlock.canAccessPowerProvider(world, pos, blockPos)) {
 							++ixx;
 						}
 					}
@@ -253,8 +253,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				ItemStack itemStack3 = itemStack2.copy();
-				itemStack3.setCount(1);
+				ItemStack itemStack3 = itemStack2.copyWithCount(1);
 				itemStack2.decrement(1);
 				this.slots.get(0).setStack(itemStack3);
 			}

@@ -13,7 +13,7 @@ import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class HangingSignEditScreen extends AbstractSignEditScreen {
-	public static final float BACKGROUND_SCALE = 4.0F;
+	public static final float BACKGROUND_SCALE = 4.5F;
 	private static final Vector3f TEXT_SCALE = new Vector3f(1.0F, 1.0F, 1.0F);
 	private static final int field_40433 = 16;
 	private static final int field_40434 = 16;
@@ -32,7 +32,7 @@ public class HangingSignEditScreen extends AbstractSignEditScreen {
 	protected void renderSignBackground(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, BlockState state) {
 		matrices.translate(0.0F, -13.0F, 0.0F);
 		RenderSystem.setShaderTexture(0, this.texture);
-		matrices.scale(4.0F, 4.0F, 1.0F);
+		matrices.scale(4.5F, 4.5F, 1.0F);
 		drawTexture(matrices, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
 	}
 

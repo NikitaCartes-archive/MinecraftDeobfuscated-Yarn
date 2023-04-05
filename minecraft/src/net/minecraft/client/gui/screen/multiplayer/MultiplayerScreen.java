@@ -15,6 +15,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EmptyWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
+import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.LanServerQueryManager;
 import net.minecraft.client.network.MultiplayerServerListPinger;
@@ -221,11 +222,11 @@ public class MultiplayerScreen extends Screen {
 			this.refresh();
 			return true;
 		} else if (this.serverListWidget.getSelectedOrNull() != null) {
-			if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
-				return this.serverListWidget.keyPressed(keyCode, scanCode, modifiers);
-			} else {
+			if (KeyCodes.isToggle(keyCode)) {
 				this.connect();
 				return true;
+			} else {
+				return this.serverListWidget.keyPressed(keyCode, scanCode, modifiers);
 			}
 		} else {
 			return false;
@@ -255,7 +256,7 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	private void connect(ServerInfo entry) {
-		ConnectScreen.connect(this, this.client, ServerAddress.parse(entry.address), entry);
+		ConnectScreen.connect(this, this.client, ServerAddress.parse(entry.address), entry, false);
 	}
 
 	public void select(MultiplayerServerListWidget.Entry entry) {

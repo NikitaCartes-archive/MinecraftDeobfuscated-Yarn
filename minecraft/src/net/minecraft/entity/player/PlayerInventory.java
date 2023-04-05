@@ -283,9 +283,8 @@ public class PlayerInventory implements Inventory, Nameable {
 					}
 
 					if (slot >= 0) {
-						this.main.set(slot, stack.copy());
+						this.main.set(slot, stack.copyAndEmpty());
 						this.main.get(slot).setBobbingAnimationTime(5);
-						stack.setCount(0);
 						return true;
 					} else if (this.player.getAbilities().creativeMode) {
 						stack.setCount(0);

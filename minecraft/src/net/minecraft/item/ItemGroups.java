@@ -728,6 +728,7 @@ public class ItemGroups {
 			entries.add(Items.OXEYE_DAISY);
 			entries.add(Items.CORNFLOWER);
 			entries.add(Items.LILY_OF_THE_VALLEY);
+			entries.add(Items.TORCHFLOWER);
 			entries.add(Items.PINK_PETALS);
 			entries.add(Items.SPORE_BLOSSOM);
 			entries.add(Items.BAMBOO);
@@ -737,8 +738,6 @@ public class ItemGroups {
 			entries.add(Items.CRIMSON_ROOTS);
 			entries.add(Items.WARPED_ROOTS);
 			entries.add(Items.NETHER_SPROUTS);
-			entries.add(Items.TORCHFLOWER);
-			entries.add(Items.PITCHER_PLANT);
 			entries.add(Items.WEEPING_VINES);
 			entries.add(Items.TWISTING_VINES);
 			entries.add(Items.VINE);
@@ -748,6 +747,7 @@ public class ItemGroups {
 			entries.add(Items.LILAC);
 			entries.add(Items.ROSE_BUSH);
 			entries.add(Items.PEONY);
+			entries.add(Items.PITCHER_PLANT);
 			entries.add(Items.BIG_DRIPLEAF);
 			entries.add(Items.SMALL_DRIPLEAF);
 			entries.add(Items.CHORUS_PLANT);
@@ -1029,6 +1029,8 @@ public class ItemGroups {
 			entries.add(Items.HEAVY_WEIGHTED_PRESSURE_PLATE);
 			entries.add(Items.SCULK_SENSOR);
 			entries.add(Items.CALIBRATED_SCULK_SENSOR);
+			entries.add(Items.SCULK_SHRIEKER);
+			entries.add(Items.AMETHYST_BLOCK);
 			entries.add(Items.WHITE_WOOL);
 			entries.add(Items.TRIPWIRE_HOOK);
 			entries.add(Items.STRING);

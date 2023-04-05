@@ -84,7 +84,7 @@ public class BrushableBlockEntity extends BlockEntity {
 
 	public void generateItem(PlayerEntity player) {
 		if (this.lootTable != null && this.world != null && !this.world.isClient() && this.world.getServer() != null) {
-			LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTable);
+			LootTable lootTable = this.world.getServer().getLootManager().getLootTable(this.lootTable);
 			if (player instanceof ServerPlayerEntity serverPlayerEntity) {
 				Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger(serverPlayerEntity, this.lootTable);
 			}

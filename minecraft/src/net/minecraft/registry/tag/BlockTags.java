@@ -135,6 +135,7 @@ public final class BlockTags {
 	public static final TagKey<Block> HOE_MINEABLE = of("mineable/hoe");
 	public static final TagKey<Block> PICKAXE_MINEABLE = of("mineable/pickaxe");
 	public static final TagKey<Block> SHOVEL_MINEABLE = of("mineable/shovel");
+	public static final TagKey<Block> SWORD_EFFICIENT = of("sword_efficient");
 	public static final TagKey<Block> NEEDS_DIAMOND_TOOL = of("needs_diamond_tool");
 	public static final TagKey<Block> NEEDS_IRON_TOOL = of("needs_iron_tool");
 	public static final TagKey<Block> NEEDS_STONE_TOOL = of("needs_stone_tool");
@@ -157,18 +158,21 @@ public final class BlockTags {
 	public static final TagKey<Block> WOLVES_SPAWNABLE_ON = of("wolves_spawnable_on");
 	public static final TagKey<Block> FROGS_SPAWNABLE_ON = of("frogs_spawnable_on");
 	public static final TagKey<Block> AZALEA_GROWS_ON = of("azalea_grows_on");
-	public static final TagKey<Block> REPLACEABLE_PLANTS = of("replaceable_plants");
 	public static final TagKey<Block> CONVERTABLE_TO_MUD = of("convertable_to_mud");
 	public static final TagKey<Block> MANGROVE_LOGS_CAN_GROW_THROUGH = of("mangrove_logs_can_grow_through");
 	public static final TagKey<Block> MANGROVE_ROOTS_CAN_GROW_THROUGH = of("mangrove_roots_can_grow_through");
 	public static final TagKey<Block> DEAD_BUSH_MAY_PLACE_ON = of("dead_bush_may_place_on");
 	public static final TagKey<Block> SNAPS_GOAT_HORN = of("snaps_goat_horn");
+	public static final TagKey<Block> REPLACEABLE_BY_TREES = of("replaceable_by_trees");
 	public static final TagKey<Block> SNOW_LAYER_CANNOT_SURVIVE_ON = of("snow_layer_cannot_survive_on");
 	public static final TagKey<Block> SNOW_LAYER_CAN_SURVIVE_ON = of("snow_layer_can_survive_on");
 	public static final TagKey<Block> INVALID_SPAWN_INSIDE = of("invalid_spawn_inside");
 	public static final TagKey<Block> SNIFFER_DIGGABLE_BLOCK = of("sniffer_diggable_block");
 	public static final TagKey<Block> SNIFFER_EGG_HATCH_BOOST = of("sniffer_egg_hatch_boost");
 	public static final TagKey<Block> TRAIL_RUINS_REPLACEABLE = of("trail_ruins_replaceable");
+	public static final TagKey<Block> REPLACEABLE = of("replaceable");
+	public static final TagKey<Block> ENCHANTMENT_POWER_PROVIDER = of("enchantment_power_provider");
+	public static final TagKey<Block> ENCHANTMENT_POWER_TRANSMITTER = of("enchantment_power_transmitter");
 
 	private BlockTags() {
 	}

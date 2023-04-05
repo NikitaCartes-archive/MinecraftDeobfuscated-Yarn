@@ -231,7 +231,6 @@ public final class ItemStack {
 	 */
 	@Nullable
 	private NbtCompound nbt;
-	private boolean empty;
 	@Nullable
 	private Entity holder;
 	@Nullable
@@ -266,13 +265,6 @@ public final class ItemStack {
 		if (this.item != null && this.item.isDamageable()) {
 			this.setDamage(this.getDamage());
 		}
-
-		this.updateEmptyState();
-	}
-
-	private void updateEmptyState() {
-		this.empty = false;
-		this.empty = this.isEmpty();
 	}
 
 	private ItemStack(NbtCompound nbt) {
@@ -286,8 +278,6 @@ public final class ItemStack {
 		if (this.getItem().isDamageable()) {
 			this.setDamage(this.getDamage());
 		}
-
-		this.updateEmptyState();
 	}
 
 	/**
@@ -309,13 +299,7 @@ public final class ItemStack {
 	 * {@return whether this item stack is empty}
 	 */
 	public boolean isEmpty() {
-		if (this == EMPTY) {
-			return true;
-		} else if (this.getItem() == null || this.isOf(Items.AIR)) {
-			return true;
-		} else {
-			return this.count <= 0;
-		}
+		return this == EMPTY || this.item == Items.AIR || this.count <= 0;
 	}
 
 	public boolean isItemEnabled(FeatureSet enabledFeatures) {
@@ -342,11 +326,20 @@ public final class ItemStack {
 	 * }</pre>
 	 */
 	public ItemStack split(int amount) {
-		int i = Math.min(amount, this.count);
-		ItemStack itemStack = this.copy();
-		itemStack.setCount(i);
+		int i = Math.min(amount, this.getCount());
+		ItemStack itemStack = this.copyWithCount(i);
 		this.decrement(i);
 		return itemStack;
+	}
+
+	public ItemStack copyAndEmpty() {
+		if (this.isEmpty()) {
+			return EMPTY;
+		} else {
+			ItemStack itemStack = this.copy();
+			this.setCount(0);
+			return itemStack;
+		}
 	}
 
 	/**
@@ -355,7 +348,7 @@ public final class ItemStack {
 	 * @see #isOf(Item)
 	 */
 	public Item getItem() {
-		return this.empty ? Items.AIR : this.item;
+		return this.isEmpty() ? Items.AIR : this.item;
 	}
 
 	public RegistryEntry<Item> getRegistryEntry() {
@@ -480,7 +473,7 @@ public final class ItemStack {
 	 * @see #getDamage
 	 */
 	public boolean isDamageable() {
-		if (!this.empty && this.getItem().getMaxDamage() > 0) {
+		if (!this.isEmpty() && this.getItem().getMaxDamage() > 0) {
 			NbtCompound nbtCompound = this.getNbt();
 			return nbtCompound == null || !nbtCompound.getBoolean("Unbreakable");
 		} else {
@@ -691,9 +684,13 @@ public final class ItemStack {
 	}
 
 	public ItemStack copyWithCount(int count) {
-		ItemStack itemStack = this.copy();
-		itemStack.setCount(count);
-		return itemStack;
+		if (this.isEmpty()) {
+			return EMPTY;
+		} else {
+			ItemStack itemStack = this.copy();
+			itemStack.setCount(count);
+			return itemStack;
+		}
 	}
 
 	/**
@@ -729,7 +726,7 @@ public final class ItemStack {
 	 * {@return whether this stack and {@code stack} are equal, including the item count and NBT}
 	 */
 	private boolean isEqual(ItemStack stack) {
-		if (this.count != stack.count) {
+		if (this.getCount() != stack.getCount()) {
 			return false;
 		} else if (!this.isOf(stack.getItem())) {
 			return false;
@@ -771,7 +768,7 @@ public final class ItemStack {
 	}
 
 	public String toString() {
-		return this.count + " " + this.getItem();
+		return this.getCount() + " " + this.getItem();
 	}
 
 	public void inventoryTick(World world, Entity entity, int slot, boolean selected) {
@@ -811,7 +808,7 @@ public final class ItemStack {
 	 * @see <a href="#nbt-operations">Item Stack NBT Operations</a>
 	 */
 	public boolean hasNbt() {
-		return !this.empty && this.nbt != null && !this.nbt.isEmpty();
+		return !this.isEmpty() && this.nbt != null && !this.nbt.isEmpty();
 	}
 
 	/**
@@ -1320,7 +1317,7 @@ public final class ItemStack {
 	 */
 	@Nullable
 	public Entity getHolder() {
-		return !this.empty ? this.holder : null;
+		return !this.isEmpty() ? this.holder : null;
 	}
 
 	/**
@@ -1410,7 +1407,7 @@ public final class ItemStack {
 		}
 
 		MutableText mutableText2 = Texts.bracketed(mutableText);
-		if (!this.empty) {
+		if (!this.isEmpty()) {
 			mutableText2.formatted(this.getRarity().formatting)
 				.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackContent(this))));
 		}
@@ -1446,7 +1443,7 @@ public final class ItemStack {
 	 * {@return the count of items in this item stack}
 	 */
 	public int getCount() {
-		return this.empty ? 0 : this.count;
+		return this.isEmpty() ? 0 : this.count;
 	}
 
 	/**
@@ -1456,7 +1453,6 @@ public final class ItemStack {
 	 */
 	public void setCount(int count) {
 		this.count = count;
-		this.updateEmptyState();
 	}
 
 	/**
@@ -1465,7 +1461,7 @@ public final class ItemStack {
 	 * @param amount the amount to increment
 	 */
 	public void increment(int amount) {
-		this.setCount(this.count + amount);
+		this.setCount(this.getCount() + amount);
 	}
 
 	/**

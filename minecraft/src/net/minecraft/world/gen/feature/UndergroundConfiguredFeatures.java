@@ -232,10 +232,8 @@ public class UndergroundConfiguredFeatures {
 				20,
 				2,
 				BlockPredicate.bothOf(
-					BlockPredicate.anyOf(
-						BlockPredicate.matchingBlocks(List.of(Blocks.AIR, Blocks.CAVE_AIR, Blocks.VOID_AIR, Blocks.WATER)),
-						BlockPredicate.matchingBlockTag(BlockTags.LEAVES),
-						BlockPredicate.matchingBlockTag(BlockTags.REPLACEABLE_PLANTS)
+					BlockPredicate.eitherOf(
+						BlockPredicate.matchingBlocks(List.of(Blocks.AIR, Blocks.CAVE_AIR, Blocks.VOID_AIR)), BlockPredicate.matchingBlockTag(BlockTags.REPLACEABLE_BY_TREES)
 					),
 					BlockPredicate.matchingBlockTag(Direction.DOWN.getVector(), BlockTags.AZALEA_GROWS_ON)
 				)

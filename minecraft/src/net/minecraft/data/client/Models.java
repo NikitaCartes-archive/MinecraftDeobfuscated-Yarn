@@ -155,6 +155,7 @@ public class Models {
 		"sniffer_egg", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.NORTH, TextureKey.SOUTH, TextureKey.EAST, TextureKey.WEST
 	);
 	public static final Model GENERATED = item("generated", TextureKey.LAYER0);
+	public static final Model TEMPLATE_MUSIC_DISC = item("template_music_disc", TextureKey.LAYER0);
 	public static final Model HANDHELD = item("handheld", TextureKey.LAYER0);
 	public static final Model HANDHELD_ROD = item("handheld_rod", TextureKey.LAYER0);
 	public static final Model GENERATED_TWO_LAYERS = item("generated", TextureKey.LAYER0, TextureKey.LAYER1);

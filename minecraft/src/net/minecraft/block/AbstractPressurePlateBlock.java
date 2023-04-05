@@ -36,7 +36,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	}
 
 	@Override
-	public boolean canMobSpawnInside() {
+	public boolean canMobSpawnInside(BlockState state) {
 		return true;
 	}
 

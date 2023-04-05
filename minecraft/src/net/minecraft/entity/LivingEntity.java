@@ -1369,8 +1369,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 			this.dead = true;
 			this.getDamageTracker().update();
-			if (this.world instanceof ServerWorld) {
-				if (entity == null || entity.onKilledOther((ServerWorld)this.world, this)) {
+			World var5 = this.world;
+			if (var5 instanceof ServerWorld serverWorld) {
+				if (entity == null || entity.onKilledOther(serverWorld, this)) {
 					this.emitGameEvent(GameEvent.ENTITY_DIE);
 					this.drop(damageSource);
 					this.onKilledBy(livingEntity);
@@ -1457,7 +1458,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	protected void dropLoot(DamageSource source, boolean causedByPlayer) {
 		Identifier identifier = this.getLootTable();
-		LootTable lootTable = this.world.getServer().getLootManager().getTable(identifier);
+		LootTable lootTable = this.world.getServer().getLootManager().getLootTable(identifier);
 		LootContext.Builder builder = this.getLootContextBuilder(causedByPlayer, source);
 		lootTable.generateLoot(builder.build(LootContextTypes.ENTITY), this::dropStack);
 	}

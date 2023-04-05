@@ -102,6 +102,7 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 	public static ModelData getModelData(Dilation dilation) {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
+		Dilation dilation2 = new Dilation(-0.02F);
 		modelPartData.addChild(
 			EntityModelPartNames.HEAD,
 			ModelPartBuilder.create()
@@ -120,7 +121,7 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 			"tail1", ModelPartBuilder.create().uv(0, 15).cuboid(-0.5F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, dilation), ModelTransform.of(0.0F, 15.0F, 8.0F, 0.9F, 0.0F, 0.0F)
 		);
 		modelPartData.addChild(
-			"tail2", ModelPartBuilder.create().uv(4, 15).cuboid(-0.5F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, dilation), ModelTransform.pivot(0.0F, 20.0F, 14.0F)
+			"tail2", ModelPartBuilder.create().uv(4, 15).cuboid(-0.5F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, dilation2), ModelTransform.pivot(0.0F, 20.0F, 14.0F)
 		);
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(8, 13).cuboid(-1.0F, 0.0F, 1.0F, 2.0F, 6.0F, 2.0F, dilation);
 		modelPartData.addChild(EntityModelPartNames.LEFT_HIND_LEG, modelPartBuilder, ModelTransform.pivot(1.1F, 18.0F, 5.0F));

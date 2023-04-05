@@ -49,7 +49,6 @@ public class SpongeBlock extends Block {
 			} else {
 				BlockState blockState = world.getBlockState(currentPos);
 				FluidState fluidState = world.getFluidState(currentPos);
-				Material material = blockState.getMaterial();
 				if (!fluidState.isIn(FluidTags.WATER)) {
 					return false;
 				} else {
@@ -61,7 +60,7 @@ public class SpongeBlock extends Block {
 					if (blockState.getBlock() instanceof FluidBlock) {
 						world.setBlockState(currentPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
 					} else {
-						if (material != Material.UNDERWATER_PLANT && material != Material.REPLACEABLE_UNDERWATER_PLANT) {
+						if (!blockState.isOf(Blocks.KELP) && !blockState.isOf(Blocks.KELP_PLANT) && !blockState.isOf(Blocks.SEAGRASS) && !blockState.isOf(Blocks.TALL_SEAGRASS)) {
 							return false;
 						}
 
