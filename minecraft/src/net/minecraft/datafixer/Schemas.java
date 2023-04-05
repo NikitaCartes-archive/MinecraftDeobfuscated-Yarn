@@ -150,6 +150,7 @@ import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
 import net.minecraft.datafixer.fix.RenameBlockEntityFix;
 import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
 import net.minecraft.datafixer.fix.RenameVariantsFix;
+import net.minecraft.datafixer.fix.SculkSensorRemoveCooldownPhaseFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
 import net.minecraft.datafixer.fix.StatsRenameFix;
 import net.minecraft.datafixer.fix.StatusEffectDurationFix;
@@ -1084,6 +1085,8 @@ public class Schemas {
 		builder.addFixer(new RemoveFeatureTogglesFix(schema182, "Remove 1.20 feature toggle", Set.of("minecraft:update_1_20")));
 		Schema schema183 = builder.addSchema(3441, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BlendingDataFix(schema183));
+		Schema schema184 = builder.addSchema(3444, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new SculkSensorRemoveCooldownPhaseFix(schema184, false));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

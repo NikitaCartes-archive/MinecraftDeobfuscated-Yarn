@@ -2,8 +2,7 @@ package net.minecraft.enchantment;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FluidBlock;
-import net.minecraft.block.Material;
+import net.minecraft.block.FrostedIceBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -48,8 +47,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 					BlockState blockState2 = world.getBlockState(mutable);
 					if (blockState2.isAir()) {
 						BlockState blockState3 = world.getBlockState(blockPos2);
-						if (blockState3.getMaterial() == Material.WATER
-							&& (Integer)blockState3.get(FluidBlock.LEVEL) == 0
+						if (blockState3 == FrostedIceBlock.getMeltedState()
 							&& blockState.canPlaceAt(world, blockPos2)
 							&& world.canPlace(blockState, blockPos2, ShapeContext.absent())) {
 							world.setBlockState(blockPos2, blockState);

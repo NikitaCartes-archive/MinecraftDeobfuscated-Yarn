@@ -16,7 +16,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FluidFillable;
-import net.minecraft.block.Material;
+import net.minecraft.block.IceBlock;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
@@ -115,7 +115,7 @@ public abstract class FlowableFluid extends Fluid {
 		} else if (direction == Direction.UP) {
 			return true;
 		} else {
-			return blockState.getMaterial() == Material.ICE ? false : blockState.isSideSolidFullSquare(world, pos, direction);
+			return blockState.getBlock() instanceof IceBlock ? false : blockState.isSideSolidFullSquare(world, pos, direction);
 		}
 	}
 
@@ -388,20 +388,16 @@ public abstract class FlowableFluid extends Fluid {
 		Block block = state.getBlock();
 		if (block instanceof FluidFillable) {
 			return ((FluidFillable)block).canFillWithFluid(world, pos, state, fluid);
-		} else if (!(block instanceof DoorBlock)
-			&& !state.isIn(BlockTags.SIGNS)
-			&& !state.isOf(Blocks.LADDER)
-			&& !state.isOf(Blocks.SUGAR_CANE)
-			&& !state.isOf(Blocks.BUBBLE_COLUMN)) {
-			Material material = state.getMaterial();
-			return material != Material.PORTAL
-					&& material != Material.STRUCTURE_VOID
-					&& material != Material.UNDERWATER_PLANT
-					&& material != Material.REPLACEABLE_UNDERWATER_PLANT
-				? !material.blocksMovement()
-				: false;
-		} else {
+		} else if (block instanceof DoorBlock
+			|| state.isIn(BlockTags.SIGNS)
+			|| state.isOf(Blocks.LADDER)
+			|| state.isOf(Blocks.SUGAR_CANE)
+			|| state.isOf(Blocks.BUBBLE_COLUMN)) {
 			return false;
+		} else {
+			return !state.isOf(Blocks.NETHER_PORTAL) && !state.isOf(Blocks.END_PORTAL) && !state.isOf(Blocks.END_GATEWAY) && !state.isOf(Blocks.STRUCTURE_VOID)
+				? !state.getMaterial().blocksMovement()
+				: false;
 		}
 	}
 

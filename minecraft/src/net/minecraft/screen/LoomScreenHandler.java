@@ -282,8 +282,7 @@ public class LoomScreenHandler extends ScreenHandler {
 		ItemStack itemStack2 = this.dyeSlot.getStack();
 		ItemStack itemStack3 = ItemStack.EMPTY;
 		if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
-			itemStack3 = itemStack.copy();
-			itemStack3.setCount(1);
+			itemStack3 = itemStack.copyWithCount(1);
 			DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
 			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack3);
 			NbtList nbtList;

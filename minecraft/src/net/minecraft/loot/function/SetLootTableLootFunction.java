@@ -7,6 +7,8 @@ import com.google.gson.JsonSyntaxException;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootDataKey;
+import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
@@ -55,16 +57,10 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public void validate(LootTableReporter reporter) {
-		if (reporter.hasTable(this.id)) {
-			reporter.report("Table " + this.id + " is recursively called");
-		} else {
-			super.validate(reporter);
-			LootTable lootTable = reporter.getTable(this.id);
-			if (lootTable == null) {
-				reporter.report("Unknown loot table called " + this.id);
-			} else {
-				lootTable.validate(reporter.withTable("->{" + this.id + "}", this.id));
-			}
+		super.validate(reporter);
+		LootDataKey<LootTable> lootDataKey = new LootDataKey<>(LootDataType.LOOT_TABLES, this.id);
+		if (reporter.getDataLookup().getElementOptional(lootDataKey).isEmpty()) {
+			reporter.report("Missing loot table used for container: " + this.id);
 		}
 	}
 

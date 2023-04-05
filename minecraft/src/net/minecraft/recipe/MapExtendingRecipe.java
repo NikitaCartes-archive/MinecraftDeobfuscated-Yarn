@@ -40,15 +40,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 		if (!super.matches(craftingInventory, world)) {
 			return false;
 		} else {
-			ItemStack itemStack = ItemStack.EMPTY;
-
-			for (int i = 0; i < craftingInventory.size() && itemStack.isEmpty(); i++) {
-				ItemStack itemStack2 = craftingInventory.getStack(i);
-				if (itemStack2.isOf(Items.FILLED_MAP)) {
-					itemStack = itemStack2;
-				}
-			}
-
+			ItemStack itemStack = findFilledMap(craftingInventory);
 			if (itemStack.isEmpty()) {
 				return false;
 			} else {
@@ -64,19 +56,20 @@ public class MapExtendingRecipe extends ShapedRecipe {
 
 	@Override
 	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
-		ItemStack itemStack = ItemStack.EMPTY;
+		ItemStack itemStack = findFilledMap(craftingInventory).copyWithCount(1);
+		itemStack.getOrCreateNbt().putInt("map_scale_direction", 1);
+		return itemStack;
+	}
 
-		for (int i = 0; i < craftingInventory.size() && itemStack.isEmpty(); i++) {
-			ItemStack itemStack2 = craftingInventory.getStack(i);
-			if (itemStack2.isOf(Items.FILLED_MAP)) {
-				itemStack = itemStack2;
+	private static ItemStack findFilledMap(CraftingInventory inventory) {
+		for (int i = 0; i < inventory.size(); i++) {
+			ItemStack itemStack = inventory.getStack(i);
+			if (itemStack.isOf(Items.FILLED_MAP)) {
+				return itemStack;
 			}
 		}
 
-		itemStack = itemStack.copy();
-		itemStack.setCount(1);
-		itemStack.getOrCreateNbt().putInt("map_scale_direction", 1);
-		return itemStack;
+		return ItemStack.EMPTY;
 	}
 
 	@Override

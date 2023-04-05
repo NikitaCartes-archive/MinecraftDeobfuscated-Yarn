@@ -41,8 +41,8 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	private ButtonWidget acceptButton;
 	private ButtonWidget rejectButton;
 
-	public RealmsPendingInvitesScreen(Screen parent) {
-		super(Text.translatable("mco.invites.title"));
+	public RealmsPendingInvitesScreen(Screen parent, Text title) {
+		super(title);
 		this.parent = parent;
 	}
 

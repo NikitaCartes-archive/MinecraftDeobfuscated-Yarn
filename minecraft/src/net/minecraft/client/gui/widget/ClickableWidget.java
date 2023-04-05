@@ -111,6 +111,11 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		this.tooltip = tooltip;
 	}
 
+	@Nullable
+	public Tooltip getTooltip() {
+		return this.tooltip;
+	}
+
 	public void setTooltipDelay(int delay) {
 		this.tooltipDelay = delay;
 	}

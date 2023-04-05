@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -91,8 +92,7 @@ public class CactusBlock extends Block {
 		}
 
 		BlockState blockState2 = world.getBlockState(pos.down());
-		return (blockState2.isOf(Blocks.CACTUS) || blockState2.isOf(Blocks.SAND) || blockState2.isOf(Blocks.RED_SAND))
-			&& !world.getBlockState(pos.up()).getMaterial().isLiquid();
+		return (blockState2.isOf(Blocks.CACTUS) || blockState2.isIn(BlockTags.SAND)) && !world.getBlockState(pos.up()).isLiquid();
 	}
 
 	@Override

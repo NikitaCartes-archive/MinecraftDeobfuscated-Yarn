@@ -576,7 +576,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 					false
 				);
 			mutable.set(this.cat.getBlockPos());
-			LootTable lootTable = this.cat.world.getServer().getLootManager().getTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
+			LootTable lootTable = this.cat.world.getServer().getLootManager().getLootTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
 				.parameter(LootContextParameters.ORIGIN, this.cat.getPos())
 				.parameter(LootContextParameters.THIS_ENTITY, this.cat)

@@ -55,8 +55,6 @@ import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
-import net.minecraft.loot.condition.LootConditionManager;
-import net.minecraft.loot.function.LootFunctionManager;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.SignatureVerifier;
@@ -1601,14 +1599,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public LootManager getLootManager() {
 		return this.resourceManagerHolder.dataPackContents.getLootManager();
-	}
-
-	public LootConditionManager getPredicateManager() {
-		return this.resourceManagerHolder.dataPackContents.getLootConditionManager();
-	}
-
-	public LootFunctionManager getItemModifierManager() {
-		return this.resourceManagerHolder.dataPackContents.getLootFunctionManager();
 	}
 
 	public GameRules getGameRules() {

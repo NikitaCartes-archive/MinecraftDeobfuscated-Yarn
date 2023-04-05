@@ -67,7 +67,7 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 
 	public void checkLootInteraction(@Nullable PlayerEntity player) {
 		if (this.lootTableId != null && this.world.getServer() != null) {
-			LootTable lootTable = this.world.getServer().getLootManager().getTable(this.lootTableId);
+			LootTable lootTable = this.world.getServer().getLootManager().getLootTable(this.lootTableId);
 			if (player instanceof ServerPlayerEntity) {
 				Criteria.PLAYER_GENERATES_CONTAINER_LOOT.trigger((ServerPlayerEntity)player, this.lootTableId);
 			}

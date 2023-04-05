@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
-public class DecoratedPotBlock extends BlockWithEntity {
+public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable {
 	private static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 	public static final Identifier SHARDS_NBT_KEY = new Identifier("shards");
 	private static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;

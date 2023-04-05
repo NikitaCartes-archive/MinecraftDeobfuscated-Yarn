@@ -5,44 +5,32 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContextAware;
 import net.minecraft.loot.context.LootContextType;
-import net.minecraft.util.Identifier;
 
 public class LootTableReporter {
 	private final Multimap<String, String> messages;
 	private final Supplier<String> nameFactory;
 	private final LootContextType contextType;
-	private final Function<Identifier, LootCondition> conditionGetter;
-	private final Set<Identifier> conditions;
-	private final Function<Identifier, LootTable> tableGetter;
-	private final Set<Identifier> tables;
+	private final LootDataLookup dataLookup;
+	private final Set<LootDataKey<?>> referenceStack;
+	@Nullable
 	private String name;
 
-	public LootTableReporter(LootContextType contextType, Function<Identifier, LootCondition> conditionGetter, Function<Identifier, LootTable> tableFactory) {
-		this(HashMultimap.create(), () -> "", contextType, conditionGetter, ImmutableSet.of(), tableFactory, ImmutableSet.of());
+	public LootTableReporter(LootContextType contextType, LootDataLookup dataLookup) {
+		this(HashMultimap.create(), () -> "", contextType, dataLookup, ImmutableSet.of());
 	}
 
 	public LootTableReporter(
-		Multimap<String, String> messages,
-		Supplier<String> nameFactory,
-		LootContextType contextType,
-		Function<Identifier, LootCondition> conditionGetter,
-		Set<Identifier> conditions,
-		Function<Identifier, LootTable> tableGetter,
-		Set<Identifier> tables
+		Multimap<String, String> messages, Supplier<String> nameFactory, LootContextType contextType, LootDataLookup dataLookup, Set<LootDataKey<?>> referenceStack
 	) {
 		this.messages = messages;
 		this.nameFactory = nameFactory;
 		this.contextType = contextType;
-		this.conditionGetter = conditionGetter;
-		this.conditions = conditions;
-		this.tableGetter = tableGetter;
-		this.tables = tables;
+		this.dataLookup = dataLookup;
+		this.referenceStack = referenceStack;
 	}
 
 	private String getName() {
@@ -58,29 +46,16 @@ public class LootTableReporter {
 	}
 
 	public LootTableReporter makeChild(String name) {
-		return new LootTableReporter(
-			this.messages, () -> this.getName() + name, this.contextType, this.conditionGetter, this.conditions, this.tableGetter, this.tables
-		);
+		return new LootTableReporter(this.messages, () -> this.getName() + name, this.contextType, this.dataLookup, this.referenceStack);
 	}
 
-	public LootTableReporter withTable(String name, Identifier id) {
-		ImmutableSet<Identifier> immutableSet = ImmutableSet.<Identifier>builder().addAll(this.tables).add(id).build();
-		return new LootTableReporter(
-			this.messages, () -> this.getName() + name, this.contextType, this.conditionGetter, this.conditions, this.tableGetter, immutableSet
-		);
+	public LootTableReporter makeChild(String name, LootDataKey<?> currentKey) {
+		ImmutableSet<LootDataKey<?>> immutableSet = ImmutableSet.<LootDataKey<?>>builder().addAll(this.referenceStack).add(currentKey).build();
+		return new LootTableReporter(this.messages, () -> this.getName() + name, this.contextType, this.dataLookup, immutableSet);
 	}
 
-	public LootTableReporter withCondition(String name, Identifier id) {
-		ImmutableSet<Identifier> immutableSet = ImmutableSet.<Identifier>builder().addAll(this.conditions).add(id).build();
-		return new LootTableReporter(this.messages, () -> this.getName() + name, this.contextType, this.conditionGetter, immutableSet, this.tableGetter, this.tables);
-	}
-
-	public boolean hasTable(Identifier id) {
-		return this.tables.contains(id);
-	}
-
-	public boolean hasCondition(Identifier id) {
-		return this.conditions.contains(id);
+	public boolean isInStack(LootDataKey<?> key) {
+		return this.referenceStack.contains(key);
 	}
 
 	public Multimap<String, String> getMessages() {
@@ -91,17 +66,11 @@ public class LootTableReporter {
 		this.contextType.validate(this, contextAware);
 	}
 
-	@Nullable
-	public LootTable getTable(Identifier id) {
-		return (LootTable)this.tableGetter.apply(id);
-	}
-
-	@Nullable
-	public LootCondition getCondition(Identifier id) {
-		return (LootCondition)this.conditionGetter.apply(id);
+	public LootDataLookup getDataLookup() {
+		return this.dataLookup;
 	}
 
 	public LootTableReporter withContextType(LootContextType contextType) {
-		return new LootTableReporter(this.messages, this.nameFactory, contextType, this.conditionGetter, this.conditions, this.tableGetter, this.tables);
+		return new LootTableReporter(this.messages, this.nameFactory, contextType, this.dataLookup, this.referenceStack);
 	}
 }

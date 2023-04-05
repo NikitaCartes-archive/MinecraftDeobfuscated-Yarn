@@ -128,7 +128,7 @@ public class BucketItem extends Item implements FluidModificationItem {
 				this.playEmptyingSound(player, world, pos);
 				return true;
 			} else {
-				if (!world.isClient && bl && !material.isLiquid()) {
+				if (!world.isClient && bl && !blockState.isLiquid()) {
 					world.breakBlock(pos, true);
 				}
 

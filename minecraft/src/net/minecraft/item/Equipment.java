@@ -30,18 +30,14 @@ public interface Equipment extends Vanishable {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 		ItemStack itemStack2 = user.getEquippedStack(equipmentSlot);
 		if (!EnchantmentHelper.hasBindingCurse(itemStack2) && !ItemStack.areEqual(itemStack, itemStack2)) {
-			user.equipStack(equipmentSlot, itemStack.copy());
 			if (!world.isClient()) {
 				user.incrementStat(Stats.USED.getOrCreateStat(item));
 			}
 
-			if (itemStack2.isEmpty()) {
-				itemStack.setCount(0);
-			} else {
-				user.setStackInHand(hand, itemStack2.copy());
-			}
-
-			return TypedActionResult.success(itemStack, world.isClient());
+			ItemStack itemStack3 = itemStack2.isEmpty() ? itemStack : itemStack2.copyAndEmpty();
+			ItemStack itemStack4 = itemStack.copyAndEmpty();
+			user.equipStack(equipmentSlot, itemStack4);
+			return TypedActionResult.success(itemStack3, world.isClient());
 		} else {
 			return TypedActionResult.fail(itemStack);
 		}

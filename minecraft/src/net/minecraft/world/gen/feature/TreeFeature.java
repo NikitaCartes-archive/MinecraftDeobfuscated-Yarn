@@ -13,7 +13,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.Material;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.property.Properties;
 import net.minecraft.structure.StructureTemplate;
@@ -43,19 +42,8 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		return world.testBlockState(pos, state -> state.isOf(Blocks.VINE));
 	}
 
-	public static boolean isWater(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, state -> state.isOf(Blocks.WATER));
-	}
-
 	public static boolean isAirOrLeaves(TestableWorld world, BlockPos pos) {
 		return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.LEAVES));
-	}
-
-	private static boolean isReplaceablePlant(TestableWorld world, BlockPos pos) {
-		return world.testBlockState(pos, state -> {
-			Material material = state.getMaterial();
-			return material == Material.REPLACEABLE_PLANT || material == Material.REPLACEABLE_UNDERWATER_PLANT || material == Material.NETHER_SHOOTS;
-		});
 	}
 
 	private static void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld world, BlockPos pos, BlockState state) {
@@ -63,7 +51,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 	}
 
 	public static boolean canReplace(TestableWorld world, BlockPos pos) {
-		return isAirOrLeaves(world, pos) || isReplaceablePlant(world, pos) || isWater(world, pos);
+		return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.REPLACEABLE_BY_TREES));
 	}
 
 	private boolean generate(
@@ -176,7 +164,9 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		}
 	}
 
-	private static VoxelSet placeLogsAndLeaves(WorldAccess world, BlockBox box, Set<BlockPos> trunkPositions, Set<BlockPos> decorationPositions, Set<BlockPos> set) {
+	private static VoxelSet placeLogsAndLeaves(
+		WorldAccess world, BlockBox box, Set<BlockPos> trunkPositions, Set<BlockPos> decorationPositions, Set<BlockPos> rootPositions
+	) {
 		VoxelSet voxelSet = new BitSetVoxelSet(box.getBlockCountX(), box.getBlockCountY(), box.getBlockCountZ());
 		int i = 7;
 		List<Set<BlockPos>> list = Lists.<Set<BlockPos>>newArrayList();
@@ -185,7 +175,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 			list.add(Sets.newHashSet());
 		}
 
-		for (BlockPos blockPos : Lists.newArrayList(Sets.union(decorationPositions, set))) {
+		for (BlockPos blockPos : Lists.newArrayList(Sets.union(decorationPositions, rootPositions))) {
 			if (box.contains(blockPos)) {
 				voxelSet.set(blockPos.getX() - box.getMinX(), blockPos.getY() - box.getMinY(), blockPos.getZ() - box.getMinZ());
 			}

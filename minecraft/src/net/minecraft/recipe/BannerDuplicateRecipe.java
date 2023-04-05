@@ -67,9 +67,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 			if (!itemStack.isEmpty()) {
 				int j = BannerBlockEntity.getPatternCount(itemStack);
 				if (j > 0 && j <= 6) {
-					ItemStack itemStack2 = itemStack.copy();
-					itemStack2.setCount(1);
-					return itemStack2;
+					return itemStack.copyWithCount(1);
 				}
 			}
 		}
@@ -86,9 +84,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 				if (itemStack.getItem().hasRecipeRemainder()) {
 					defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
 				} else if (itemStack.hasNbt() && BannerBlockEntity.getPatternCount(itemStack) > 0) {
-					ItemStack itemStack2 = itemStack.copy();
-					itemStack2.setCount(1);
-					defaultedList.set(i, itemStack2);
+					defaultedList.set(i, itemStack.copyWithCount(1));
 				}
 			}
 		}

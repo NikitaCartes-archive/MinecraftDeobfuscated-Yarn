@@ -18,6 +18,7 @@ import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.network.message.MessageTrustStatus;
 import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.report.ChatAbuseReport;
@@ -33,7 +34,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.Nullables;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class ChatSelectionScreen extends Screen {
@@ -354,7 +354,7 @@ public class ChatSelectionScreen extends Screen {
 
 			@Override
 			public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-				return keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_SPACE && keyCode != GLFW.GLFW_KEY_KP_ENTER ? false : this.toggle();
+				return KeyCodes.isToggle(keyCode) ? this.toggle() : false;
 			}
 
 			@Override

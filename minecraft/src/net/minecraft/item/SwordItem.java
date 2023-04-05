@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -49,8 +48,7 @@ public class SwordItem extends ToolItem implements Vanishable {
 		if (state.isOf(Blocks.COBWEB)) {
 			return 15.0F;
 		} else {
-			Material material = state.getMaterial();
-			return material != Material.PLANT && material != Material.REPLACEABLE_PLANT && !state.isIn(BlockTags.LEAVES) && material != Material.GOURD ? 1.0F : 1.5F;
+			return state.isIn(BlockTags.SWORD_EFFICIENT) ? 1.5F : 1.0F;
 		}
 	}
 

@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.screen.EnchantmentScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -28,7 +29,7 @@ import net.minecraft.world.World;
 
 public class EnchantingTableBlock extends BlockWithEntity {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 12.0, 16.0);
-	public static final List<BlockPos> BOOKSHELF_OFFSETS = BlockPos.stream(-2, 0, -2, 2, 1, 2)
+	public static final List<BlockPos> POWER_PROVIDER_OFFSETS = BlockPos.stream(-2, 0, -2, 2, 1, 2)
 		.filter(pos -> Math.abs(pos.getX()) == 2 || Math.abs(pos.getZ()) == 2)
 		.map(BlockPos::toImmutable)
 		.toList();
@@ -37,9 +38,10 @@ public class EnchantingTableBlock extends BlockWithEntity {
 		super(settings);
 	}
 
-	public static boolean canAccessBookshelf(World world, BlockPos tablePos, BlockPos bookshelfOffset) {
-		return world.getBlockState(tablePos.add(bookshelfOffset)).isOf(Blocks.BOOKSHELF)
-			&& world.isAir(tablePos.add(bookshelfOffset.getX() / 2, bookshelfOffset.getY(), bookshelfOffset.getZ() / 2));
+	public static boolean canAccessPowerProvider(World world, BlockPos tablePos, BlockPos providerOffset) {
+		return world.getBlockState(tablePos.add(providerOffset)).isIn(BlockTags.ENCHANTMENT_POWER_PROVIDER)
+			&& world.getBlockState(tablePos.add(providerOffset.getX() / 2, providerOffset.getY(), providerOffset.getZ() / 2))
+				.isIn(BlockTags.ENCHANTMENT_POWER_TRANSMITTER);
 	}
 
 	@Override
@@ -56,8 +58,8 @@ public class EnchantingTableBlock extends BlockWithEntity {
 	public void randomDisplayTick(BlockState state, World world, BlockPos pos, Random random) {
 		super.randomDisplayTick(state, world, pos, random);
 
-		for (BlockPos blockPos : BOOKSHELF_OFFSETS) {
-			if (random.nextInt(16) == 0 && canAccessBookshelf(world, pos, blockPos)) {
+		for (BlockPos blockPos : POWER_PROVIDER_OFFSETS) {
+			if (random.nextInt(16) == 0 && canAccessPowerProvider(world, pos, blockPos)) {
 				world.addParticle(
 					ParticleTypes.ENCHANT,
 					(double)pos.getX() + 0.5,

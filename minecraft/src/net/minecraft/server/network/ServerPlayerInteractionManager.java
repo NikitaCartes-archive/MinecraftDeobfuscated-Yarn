@@ -276,7 +276,7 @@ public class ServerPlayerInteractionManager {
 					player.setStackInHand(hand, itemStack);
 				}
 
-				if (this.isCreative()) {
+				if (this.isCreative() && itemStack != ItemStack.EMPTY) {
 					itemStack.setCount(i);
 					if (itemStack.isDamageable() && itemStack.getDamage() != j) {
 						itemStack.setDamage(j);

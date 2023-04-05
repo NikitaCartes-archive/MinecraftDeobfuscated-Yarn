@@ -1,12 +1,12 @@
 package net.minecraft.resource;
 
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import net.minecraft.util.Identifier;
@@ -29,10 +29,15 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloader<M
 	}
 
 	protected Map<Identifier, JsonElement> prepare(ResourceManager resourceManager, Profiler profiler) {
-		Map<Identifier, JsonElement> map = Maps.<Identifier, JsonElement>newHashMap();
-		ResourceFinder resourceFinder = ResourceFinder.json(this.dataType);
+		Map<Identifier, JsonElement> map = new HashMap();
+		load(resourceManager, this.dataType, this.gson, map);
+		return map;
+	}
 
-		for (Entry<Identifier, Resource> entry : resourceFinder.findResources(resourceManager).entrySet()) {
+	public static void load(ResourceManager manager, String dataType, Gson gson, Map<Identifier, JsonElement> results) {
+		ResourceFinder resourceFinder = ResourceFinder.json(dataType);
+
+		for (Entry<Identifier, Resource> entry : resourceFinder.findResources(manager).entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
 			Identifier identifier2 = resourceFinder.toResourceId(identifier);
 
@@ -40,8 +45,8 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloader<M
 				Reader reader = ((Resource)entry.getValue()).getReader();
 
 				try {
-					JsonElement jsonElement = JsonHelper.deserialize(this.gson, reader, JsonElement.class);
-					JsonElement jsonElement2 = (JsonElement)map.put(identifier2, jsonElement);
+					JsonElement jsonElement = JsonHelper.deserialize(gson, reader, JsonElement.class);
+					JsonElement jsonElement2 = (JsonElement)results.put(identifier2, jsonElement);
 					if (jsonElement2 != null) {
 						throw new IllegalStateException("Duplicate data file ignored with ID " + identifier2);
 					}
@@ -64,7 +69,5 @@ public abstract class JsonDataLoader extends SinglePreparationResourceReloader<M
 				LOGGER.error("Couldn't parse data file {} from {}", identifier2, identifier, var14);
 			}
 		}
-
-		return map;
 	}
 }

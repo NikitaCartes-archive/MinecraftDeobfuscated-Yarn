@@ -1699,14 +1699,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		ServerWorld serverWorld = this.player.getWorld();
 		BlockPos blockPos = packet.getPos();
 		if (serverWorld.isChunkLoaded(blockPos)) {
-			BlockState blockState = serverWorld.getBlockState(blockPos);
 			if (!(serverWorld.getBlockEntity(blockPos) instanceof SignBlockEntity signBlockEntity)) {
 				return;
 			}
 
 			signBlockEntity.tryChangeText(this.player, packet.isFront(), signText);
-			signBlockEntity.setEditor(null);
-			serverWorld.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 		}
 	}
 

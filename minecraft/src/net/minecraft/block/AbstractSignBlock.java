@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import java.util.Arrays;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
@@ -13,13 +14,13 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SignChangingItem;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.LiteralTextContent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -60,7 +61,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 	}
 
 	@Override
-	public boolean canMobSpawnInside() {
+	public boolean canMobSpawnInside(BlockState state) {
 		return true;
 	}
 
@@ -74,19 +75,15 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
 		SignChangingItem signChangingItem2 = itemStack.getItem() instanceof SignChangingItem signChangingItem ? signChangingItem : null;
-		boolean bl = signChangingItem2 != null && player.getAbilities().allowModifyWorld;
+		boolean bl = signChangingItem2 != null && player.canModifyBlocks();
 		if (world.getBlockEntity(pos) instanceof SignBlockEntity signBlockEntity) {
 			if (!world.isClient) {
 				boolean bl2 = signBlockEntity.isPlayerFacingFront(player);
 				SignText signText = signBlockEntity.getText(bl2);
+				boolean bl3 = signBlockEntity.runCommandClickEvent(player, world, pos, bl2);
 				if (signBlockEntity.isWaxed()) {
-					boolean bl3 = signBlockEntity.runCommandClickEvent((ServerPlayerEntity)player, (ServerWorld)world, pos, bl2);
-					if (!bl3) {
-						world.playSound(null, signBlockEntity.getPos(), SoundEvents.BLOCK_SIGN_WAXED_INTERACT_FAIL, SoundCategory.BLOCKS);
-						return ActionResult.PASS;
-					} else {
-						return bl ? ActionResult.PASS : ActionResult.SUCCESS;
-					}
+					world.playSound(null, signBlockEntity.getPos(), SoundEvents.BLOCK_SIGN_WAXED_INTERACT_FAIL, SoundCategory.BLOCKS);
+					return ActionResult.PASS;
 				} else if (bl
 					&& !this.isOtherPlayerEditing(player, signBlockEntity)
 					&& signChangingItem2.canUseOnSignText(signText, player)
@@ -98,7 +95,9 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 					world.emitGameEvent(GameEvent.BLOCK_CHANGE, signBlockEntity.getPos(), GameEvent.Emitter.of(player, signBlockEntity.getCachedState()));
 					player.incrementStat(Stats.USED.getOrCreateStat(item));
 					return ActionResult.SUCCESS;
-				} else if (!this.isOtherPlayerEditing(player, signBlockEntity)) {
+				} else if (bl3) {
+					return ActionResult.SUCCESS;
+				} else if (!this.isOtherPlayerEditing(player, signBlockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, signBlockEntity, bl2)) {
 					this.openEditScreen(player, signBlockEntity, bl2);
 					return ActionResult.SUCCESS;
 				} else {
@@ -110,6 +109,12 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 		} else {
 			return ActionResult.PASS;
 		}
+	}
+
+	private boolean isTextLiteralOrEmpty(PlayerEntity player, SignBlockEntity blockEntity, boolean front) {
+		SignText signText = blockEntity.getText(front);
+		return Arrays.stream(signText.getMessages(player.shouldFilterText()))
+			.allMatch(message -> message.equals(ScreenTexts.EMPTY) || message.getContent() instanceof LiteralTextContent);
 	}
 
 	public abstract float getRotationDegrees(BlockState state);

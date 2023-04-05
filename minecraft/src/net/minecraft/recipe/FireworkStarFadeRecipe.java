@@ -55,8 +55,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 			if (item instanceof DyeItem) {
 				list.add(((DyeItem)item).getColor().getFireworkColor());
 			} else if (INPUT_STAR.test(itemStack2)) {
-				itemStack = itemStack2.copy();
-				itemStack.setCount(1);
+				itemStack = itemStack2.copyWithCount(1);
 			}
 		}
 

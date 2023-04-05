@@ -16,26 +16,14 @@ public class RunArgs {
 	public final WindowSettings windowSettings;
 	public final RunArgs.Directories directories;
 	public final RunArgs.Game game;
-	public final RunArgs.AutoConnect autoConnect;
+	public final RunArgs.QuickPlay quickPlay;
 
-	public RunArgs(RunArgs.Network network, WindowSettings windowSettings, RunArgs.Directories dirs, RunArgs.Game game, RunArgs.AutoConnect autoConnect) {
+	public RunArgs(RunArgs.Network network, WindowSettings windowSettings, RunArgs.Directories dirs, RunArgs.Game game, RunArgs.QuickPlay quickPlay) {
 		this.network = network;
 		this.windowSettings = windowSettings;
 		this.directories = dirs;
 		this.game = game;
-		this.autoConnect = autoConnect;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class AutoConnect {
-		@Nullable
-		public final String serverAddress;
-		public final int serverPort;
-
-		public AutoConnect(@Nullable String serverAddress, int serverPort) {
-			this.serverAddress = serverAddress;
-			this.serverPort = serverPort;
-		}
+		this.quickPlay = quickPlay;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -87,6 +75,13 @@ public class RunArgs {
 			this.userProperties = userProperties;
 			this.profileProperties = profileProperties;
 			this.netProxy = proxy;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static record QuickPlay(@Nullable String path, @Nullable String singleplayer, @Nullable String multiplayer, @Nullable String realms) {
+		public boolean isEnabled() {
+			return this.singleplayer != null || this.multiplayer != null || this.realms != null;
 		}
 	}
 }

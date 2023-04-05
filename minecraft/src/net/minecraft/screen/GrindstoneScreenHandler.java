@@ -193,7 +193,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 	}
 
 	private ItemStack grind(ItemStack item, int damage, int amount) {
-		ItemStack itemStack = item.copy();
+		ItemStack itemStack = item.copyWithCount(amount);
 		itemStack.removeSubNbt("Enchantments");
 		itemStack.removeSubNbt("StoredEnchantments");
 		if (damage > 0) {
@@ -202,7 +202,6 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 			itemStack.removeSubNbt("Damage");
 		}
 
-		itemStack.setCount(amount);
 		Map<Enchantment, Integer> map = (Map<Enchantment, Integer>)EnchantmentHelper.get(item)
 			.entrySet()
 			.stream()

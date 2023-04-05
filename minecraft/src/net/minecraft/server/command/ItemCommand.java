@@ -25,11 +25,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootDataType;
+import net.minecraft.loot.LootManager;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.function.LootFunction;
-import net.minecraft.loot.function.LootFunctionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -55,8 +56,8 @@ public class ItemCommand {
 		(itemName, slot) -> Text.translatable("commands.item.target.no_changed.known_item", itemName, slot)
 	);
 	private static final SuggestionProvider<ServerCommandSource> MODIFIER_SUGGESTION_PROVIDER = (context, builder) -> {
-		LootFunctionManager lootFunctionManager = context.getSource().getServer().getItemModifierManager();
-		return CommandSource.suggestIdentifiers(lootFunctionManager.getFunctionIds(), builder);
+		LootManager lootManager = context.getSource().getServer().getLootManager();
+		return CommandSource.suggestIdentifiers(lootManager.getIds(LootDataType.ITEM_MODIFIERS), builder);
 	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -447,10 +448,12 @@ public class ItemCommand {
 
 	private static ItemStack getStackWithModifier(ServerCommandSource source, LootFunction modifier, ItemStack stack) {
 		ServerWorld serverWorld = source.getWorld();
-		LootContext.Builder builder = new LootContext.Builder(serverWorld)
+		LootContext lootContext = new LootContext.Builder(serverWorld)
 			.parameter(LootContextParameters.ORIGIN, source.getPosition())
-			.optionalParameter(LootContextParameters.THIS_ENTITY, source.getEntity());
-		return (ItemStack)modifier.apply(stack, builder.build(LootContextTypes.COMMAND));
+			.optionalParameter(LootContextParameters.THIS_ENTITY, source.getEntity())
+			.build(LootContextTypes.COMMAND);
+		lootContext.markActive(LootContext.itemModifier(modifier));
+		return (ItemStack)modifier.apply(stack, lootContext);
 	}
 
 	private static ItemStack getStackInSlot(Entity entity, int slotId) throws CommandSyntaxException {

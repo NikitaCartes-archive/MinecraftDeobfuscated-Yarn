@@ -17,8 +17,9 @@ public class TorchflowerBlock extends CropBlock {
 	public static final IntProperty AGE = Properties.AGE_1;
 	private static final float field_42777 = 3.0F;
 	private static final VoxelShape[] SHAPES = new VoxelShape[]{
-		Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0), Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0)
+		Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0), Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0)
 	};
+	private static final int field_44479 = 1;
 
 	public TorchflowerBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -63,6 +64,6 @@ public class TorchflowerBlock extends CropBlock {
 
 	@Override
 	protected int getGrowthAmount(World world) {
-		return super.getGrowthAmount(world) / 3;
+		return 1;
 	}
 }

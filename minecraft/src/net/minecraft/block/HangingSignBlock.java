@@ -4,7 +4,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.HangingSignBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -153,5 +156,11 @@ public class HangingSignBlock extends AbstractSignBlock {
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return new HangingSignBlockEntity(pos, state);
+	}
+
+	@Nullable
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		return checkType(type, BlockEntityType.HANGING_SIGN, SignBlockEntity::tick);
 	}
 }

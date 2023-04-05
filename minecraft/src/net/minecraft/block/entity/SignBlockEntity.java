@@ -16,7 +16,6 @@ import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
@@ -30,7 +29,7 @@ import net.minecraft.world.World;
 import org.slf4j.Logger;
 
 public class SignBlockEntity extends BlockEntity {
-	private static final Logger field_43294 = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int MAX_TEXT_WIDTH = 90;
 	private static final int TEXT_LINE_HEIGHT = 10;
 	@Nullable
@@ -91,8 +90,8 @@ public class SignBlockEntity extends BlockEntity {
 	@Override
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
-		SignText.CODEC.encodeStart(NbtOps.INSTANCE, this.frontText).resultOrPartial(field_43294::error).ifPresent(frontText -> nbt.put("front_text", frontText));
-		SignText.CODEC.encodeStart(NbtOps.INSTANCE, this.backText).resultOrPartial(field_43294::error).ifPresent(backText -> nbt.put("back_text", backText));
+		SignText.CODEC.encodeStart(NbtOps.INSTANCE, this.frontText).resultOrPartial(LOGGER::error).ifPresent(frontText -> nbt.put("front_text", frontText));
+		SignText.CODEC.encodeStart(NbtOps.INSTANCE, this.backText).resultOrPartial(LOGGER::error).ifPresent(backText -> nbt.put("back_text", backText));
 		nbt.putBoolean("is_waxed", this.waxed);
 	}
 
@@ -102,14 +101,14 @@ public class SignBlockEntity extends BlockEntity {
 		if (nbt.contains("front_text")) {
 			SignText.CODEC
 				.parse(NbtOps.INSTANCE, nbt.getCompound("front_text"))
-				.resultOrPartial(field_43294::error)
+				.resultOrPartial(LOGGER::error)
 				.ifPresent(signText -> this.frontText = this.parseLines(signText));
 		}
 
 		if (nbt.contains("back_text")) {
 			SignText.CODEC
 				.parse(NbtOps.INSTANCE, nbt.getCompound("back_text"))
-				.resultOrPartial(field_43294::error)
+				.resultOrPartial(LOGGER::error)
 				.ifPresent(signText -> this.backText = this.parseLines(signText));
 		}
 
@@ -138,10 +137,12 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	public void tryChangeText(PlayerEntity player, boolean front, List<FilteredMessage> messages) {
-		if (!this.isWaxed() && player.getUuid().equals(this.getEditor())) {
+		if (!this.isWaxed() && player.getUuid().equals(this.getEditor()) && this.world != null) {
 			this.changeText(text -> this.getTextWithMessages(player, messages, text), front);
+			this.setEditor(null);
+			this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), Block.NOTIFY_ALL);
 		} else {
-			field_43294.warn("Player {} just tried to change non-editable sign", player.getName().getString());
+			LOGGER.warn("Player {} just tried to change non-editable sign", player.getName().getString());
 		}
 	}
 
@@ -192,7 +193,7 @@ public class SignBlockEntity extends BlockEntity {
 		return this.isWaxed() && this.getText(front).hasRunCommandClickEvent(player);
 	}
 
-	public boolean runCommandClickEvent(ServerPlayerEntity player, ServerWorld world, BlockPos pos, boolean front) {
+	public boolean runCommandClickEvent(PlayerEntity player, World world, BlockPos pos, boolean front) {
 		boolean bl = false;
 
 		for (Text text : this.getText(front).getMessages(player.shouldFilterText())) {
@@ -207,10 +208,10 @@ public class SignBlockEntity extends BlockEntity {
 		return bl;
 	}
 
-	private static ServerCommandSource createCommandSource(@Nullable ServerPlayerEntity player, ServerWorld world, BlockPos pos) {
+	private static ServerCommandSource createCommandSource(@Nullable PlayerEntity player, World world, BlockPos pos) {
 		String string = player == null ? "Sign" : player.getName().getString();
 		Text text = (Text)(player == null ? Text.literal("Sign") : player.getDisplayName());
-		return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ofCenter(pos), Vec2f.ZERO, world, 2, string, text, world.getServer(), player);
+		return new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ofCenter(pos), Vec2f.ZERO, (ServerWorld)world, 2, string, text, world.getServer(), player);
 	}
 
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {

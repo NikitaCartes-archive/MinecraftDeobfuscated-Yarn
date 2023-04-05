@@ -160,15 +160,17 @@ public class VibrationListener implements GameEventListener {
 				this.delay--;
 				if (this.delay <= 0) {
 					this.delay = 0;
+					BlockPos blockPos = BlockPos.ofFloored(this.vibration.pos());
+					BlockPos blockPos2 = (BlockPos)this.positionSource.getPos(serverWorld).map(BlockPos::ofFloored).orElse(blockPos);
 					this.callback
 						.accept(
 							serverWorld,
 							this,
-							BlockPos.ofFloored(this.vibration.pos()),
+							blockPos,
 							this.vibration.gameEvent(),
 							(Entity)this.vibration.getEntity(serverWorld).orElse(null),
 							(Entity)this.vibration.getOwner(serverWorld).orElse(null),
-							this.vibration.distance()
+							getDistanceBetween(blockPos, blockPos2)
 						);
 					this.vibration = null;
 				}
@@ -216,6 +218,10 @@ public class VibrationListener implements GameEventListener {
 
 	public void trySelect(ServerWorld world, GameEvent event, GameEvent.Emitter emitter, Vec3d emitterPos, Vec3d listenerPos) {
 		this.selector.tryAccept(new Vibration(event, (float)emitterPos.distanceTo(listenerPos), emitterPos, emitter.sourceEntity()), world.getTime());
+	}
+
+	public static float getDistanceBetween(BlockPos a, BlockPos b) {
+		return (float)Math.sqrt(a.getSquaredDistance(b));
 	}
 
 	private static boolean isOccluded(World world, Vec3d start, Vec3d end) {

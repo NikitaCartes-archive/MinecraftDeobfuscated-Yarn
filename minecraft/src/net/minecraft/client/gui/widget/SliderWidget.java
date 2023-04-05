@@ -7,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.navigation.GuiNavigationType;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
@@ -100,7 +101,10 @@ public abstract class SliderWidget extends ClickableWidget {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode != GLFW.GLFW_KEY_SPACE && keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
+		if (KeyCodes.isToggle(keyCode)) {
+			this.sliderFocused = !this.sliderFocused;
+			return true;
+		} else {
 			if (this.sliderFocused) {
 				boolean bl = keyCode == GLFW.GLFW_KEY_LEFT;
 				if (bl || keyCode == GLFW.GLFW_KEY_RIGHT) {
@@ -111,9 +115,6 @@ public abstract class SliderWidget extends ClickableWidget {
 			}
 
 			return false;
-		} else {
-			this.sliderFocused = !this.sliderFocused;
-			return true;
 		}
 	}
 

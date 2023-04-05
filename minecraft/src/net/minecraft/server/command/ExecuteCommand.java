@@ -58,8 +58,9 @@ import net.minecraft.entity.Tameable;
 import net.minecraft.entity.Targeter;
 import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.loot.LootDataType;
+import net.minecraft.loot.LootManager;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
@@ -103,8 +104,8 @@ public class ExecuteCommand {
 			consumer2.onCommandComplete(context, success, result);
 		};
 	private static final SuggestionProvider<ServerCommandSource> LOOT_CONDITIONS = (context, builder) -> {
-		LootConditionManager lootConditionManager = context.getSource().getServer().getPredicateManager();
-		return CommandSource.suggestIdentifiers(lootConditionManager.getIds(), builder);
+		LootManager lootManager = context.getSource().getServer().getLootManager();
+		return CommandSource.suggestIdentifiers(lootManager.getIds(LootDataType.PREDICATES), builder);
 	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess commandRegistryAccess) {
@@ -701,10 +702,12 @@ public class ExecuteCommand {
 
 	private static boolean testLootCondition(ServerCommandSource source, LootCondition condition) {
 		ServerWorld serverWorld = source.getWorld();
-		LootContext.Builder builder = new LootContext.Builder(serverWorld)
+		LootContext lootContext = new LootContext.Builder(serverWorld)
 			.parameter(LootContextParameters.ORIGIN, source.getPosition())
-			.optionalParameter(LootContextParameters.THIS_ENTITY, source.getEntity());
-		return condition.test(builder.build(LootContextTypes.COMMAND));
+			.optionalParameter(LootContextParameters.THIS_ENTITY, source.getEntity())
+			.build(LootContextTypes.COMMAND);
+		lootContext.markActive(LootContext.predicate(condition));
+		return condition.test(lootContext);
 	}
 
 	private static Collection<ServerCommandSource> getSourceOrEmptyForConditionFork(CommandContext<ServerCommandSource> context, boolean positive, boolean value) {

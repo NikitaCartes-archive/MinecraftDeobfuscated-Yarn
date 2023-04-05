@@ -623,6 +623,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		ShapelessRecipeJsonBuilder.create(RecipeCategory.MISC, Items.CYAN_DYE, 2)
 			.input(Items.BLUE_DYE)
 			.input(Items.GREEN_DYE)
+			.group("cyan_dye")
 			.criterion("has_green_dye", conditionsFromItem(Items.GREEN_DYE))
 			.criterion("has_blue_dye", conditionsFromItem(Items.BLUE_DYE))
 			.offerTo(exporter);
@@ -2595,7 +2596,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion("has_book", conditionsFromItem(Items.BOOK))
 			.offerTo(exporter);
 		offerSingleOutputShapelessRecipe(exporter, Items.ORANGE_DYE, Blocks.TORCHFLOWER, "orange_dye");
-		offerSingleOutputShapelessRecipe(exporter, Items.CYAN_DYE, Blocks.PITCHER_PLANT, "cyan_dye");
+		offerShapelessRecipe(exporter, Items.CYAN_DYE, Blocks.PITCHER_PLANT, "cyan_dye", 2);
 		offerPlanksRecipe2(exporter, Blocks.CHERRY_PLANKS, ItemTags.CHERRY_LOGS, 4);
 		offerBarkBlockRecipe(exporter, Blocks.CHERRY_WOOD, Blocks.CHERRY_LOG);
 		offerBarkBlockRecipe(exporter, Blocks.STRIPPED_CHERRY_WOOD, Blocks.STRIPPED_CHERRY_LOG);

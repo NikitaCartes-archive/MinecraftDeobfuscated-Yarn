@@ -61,7 +61,7 @@ public class WoodlandMansionStructure extends Structure {
 				if (!world.isAir(mutable) && blockBox.contains(mutable) && pieces.contains(mutable)) {
 					for (int m = j - 1; m > i; m--) {
 						mutable.setY(m);
-						if (!world.isAir(mutable) && !world.getBlockState(mutable).getMaterial().isLiquid()) {
+						if (!world.isAir(mutable) && !world.getBlockState(mutable).isLiquid()) {
 							break;
 						}
 

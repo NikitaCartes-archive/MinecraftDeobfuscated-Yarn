@@ -2,7 +2,9 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -14,19 +16,24 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
+public class PitcherCropBlock extends TallPlantBlock implements Fertilizable, Crop {
 	public static final IntProperty AGE = Properties.AGE_4;
 	public static final int field_43240 = 4;
 	private static final int field_43241 = 3;
 	private static final int field_43391 = 1;
-	private static final VoxelShape UPPER_OUTLINE_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 15.0, 13.0);
-	private static final VoxelShape LOWER_OUTLINE_SHAPE = Block.createCuboidShape(3.0, -1.0, 3.0, 13.0, 16.0, 13.0);
-	private static final VoxelShape AGE_0_COLLISION_SHAPE = Block.createCuboidShape(5.0, -1.0, 5.0, 11.0, 3.0, 11.0);
+	private static final VoxelShape GROWN_UPPER_OUTLINE_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 15.0, 13.0);
+	private static final VoxelShape GROWN_LOWER_OUTLINE_SHAPE = Block.createCuboidShape(3.0, -1.0, 3.0, 13.0, 16.0, 13.0);
+	private static final VoxelShape AGE_0_SHAPE = Block.createCuboidShape(5.0, -1.0, 5.0, 11.0, 3.0, 11.0);
 	private static final VoxelShape LOWER_COLLISION_SHAPE = Block.createCuboidShape(3.0, -1.0, 3.0, 13.0, 5.0, 13.0);
+	private static final VoxelShape[] UPPER_OUTLINE_SHAPES = new VoxelShape[]{Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 11.0, 13.0), GROWN_UPPER_OUTLINE_SHAPE};
+	private static final VoxelShape[] LOWER_OUTLINE_SHAPES = new VoxelShape[]{
+		AGE_0_SHAPE, Block.createCuboidShape(3.0, -1.0, 3.0, 13.0, 14.0, 13.0), GROWN_LOWER_OUTLINE_SHAPE, GROWN_LOWER_OUTLINE_SHAPE, GROWN_LOWER_OUTLINE_SHAPE
+	};
 
 	public PitcherCropBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -57,7 +64,7 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 	@Override
 	public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
 		if ((Integer)state.get(AGE) == 0) {
-			return AGE_0_COLLISION_SHAPE;
+			return AGE_0_SHAPE;
 		} else {
 			return state.get(HALF) == DoubleBlockHalf.LOWER ? LOWER_COLLISION_SHAPE : super.getCollisionShape(state, world, pos, context);
 		}
@@ -86,7 +93,16 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return state.get(HALF) == DoubleBlockHalf.UPPER ? UPPER_OUTLINE_SHAPE : LOWER_OUTLINE_SHAPE;
+		return state.get(HALF) == DoubleBlockHalf.UPPER ? UPPER_OUTLINE_SHAPES[Math.abs(4 - ((Integer)state.get(AGE) + 1))] : LOWER_OUTLINE_SHAPES[state.get(AGE)];
+	}
+
+	@Override
+	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
+		if (entity instanceof RavagerEntity && world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+			world.breakBlock(pos, true, entity);
+		}
+
+		super.onEntityCollision(state, world, pos, entity);
 	}
 
 	@Override
@@ -109,16 +125,15 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 
 	private void tryGrow(ServerWorld world, BlockState state, BlockPos pos, int amount) {
 		int i = Math.min((Integer)state.get(AGE) + amount, 4);
-		if (i < 3 || canGrowAt(world, pos.up())) {
+		if (i < 3 || canGrowAt(world, isLowerHalf(state) ? pos.up() : pos)) {
 			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i)), Block.NOTIFY_LISTENERS);
 			if (i >= 3) {
-				DoubleBlockHalf doubleBlockHalf = state.get(HALF);
-				if (doubleBlockHalf == DoubleBlockHalf.LOWER) {
+				if (isLowerHalf(state)) {
 					BlockPos blockPos = pos.up();
 					world.setBlockState(
 						blockPos, withWaterloggedState(world, pos, this.getDefaultState().with(AGE, Integer.valueOf(i)).with(HALF, DoubleBlockHalf.UPPER)), Block.NOTIFY_ALL
 					);
-				} else if (doubleBlockHalf == DoubleBlockHalf.UPPER) {
+				} else {
 					BlockPos blockPos = pos.down();
 					world.setBlockState(
 						blockPos, withWaterloggedState(world, pos, this.getDefaultState().with(AGE, Integer.valueOf(i)).with(HALF, DoubleBlockHalf.LOWER)), Block.NOTIFY_ALL
@@ -133,9 +148,14 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 		return blockState.isAir() || blockState.isOf(Blocks.PITCHER_CROP);
 	}
 
+	private static boolean isLowerHalf(BlockState state) {
+		return state.get(HALF) == DoubleBlockHalf.LOWER;
+	}
+
 	@Override
 	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
-		return !this.isFullyGrown(state);
+		return !this.isFullyGrown(state)
+			&& ((Integer)state.get(AGE) < 2 || world instanceof ServerWorld serverWorld && canGrowAt(serverWorld, isLowerHalf(state) ? pos.up() : pos));
 	}
 
 	@Override

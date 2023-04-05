@@ -4,9 +4,9 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.mojang.logging.LogUtils;
 import net.minecraft.loot.LootGsons;
+import net.minecraft.loot.LootManager;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
-import net.minecraft.loot.condition.LootConditionManager;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -14,17 +14,17 @@ import org.slf4j.Logger;
 public class AdvancementEntityPredicateDeserializer {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Identifier advancementId;
-	private final LootConditionManager conditionManager;
+	private final LootManager field_44474;
 	private final Gson gson = LootGsons.getConditionGsonBuilder().create();
 
-	public AdvancementEntityPredicateDeserializer(Identifier advancementId, LootConditionManager conditionManager) {
+	public AdvancementEntityPredicateDeserializer(Identifier advancementId, LootManager conditionManager) {
 		this.advancementId = advancementId;
-		this.conditionManager = conditionManager;
+		this.field_44474 = conditionManager;
 	}
 
 	public final LootCondition[] loadConditions(JsonArray array, String key, LootContextType contextType) {
 		LootCondition[] lootConditions = this.gson.fromJson(array, LootCondition[].class);
-		LootTableReporter lootTableReporter = new LootTableReporter(contextType, this.conditionManager::get, tableId -> null);
+		LootTableReporter lootTableReporter = new LootTableReporter(contextType, this.field_44474);
 
 		for (LootCondition lootCondition : lootConditions) {
 			lootCondition.validate(lootTableReporter);

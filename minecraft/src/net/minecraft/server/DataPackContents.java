@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 import net.minecraft.block.Blocks;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.loot.LootManager;
-import net.minecraft.loot.condition.LootConditionManager;
-import net.minecraft.loot.function.LootFunctionManager;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.Registry;
@@ -43,10 +41,8 @@ public class DataPackContents {
 	private final CommandManager commandManager;
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final TagManagerLoader registryTagManager;
-	private final LootConditionManager lootConditionManager = new LootConditionManager();
-	private final LootManager lootManager = new LootManager(this.lootConditionManager);
-	private final LootFunctionManager lootFunctionManager = new LootFunctionManager(this.lootConditionManager, this.lootManager);
-	private final ServerAdvancementLoader serverAdvancementLoader = new ServerAdvancementLoader(this.lootConditionManager);
+	private final LootManager lootManager = new LootManager();
+	private final ServerAdvancementLoader serverAdvancementLoader = new ServerAdvancementLoader(this.lootManager);
 	private final FunctionLoader functionLoader;
 
 	public DataPackContents(
@@ -72,19 +68,11 @@ public class DataPackContents {
 		return this.functionLoader;
 	}
 
-	public LootConditionManager getLootConditionManager() {
-		return this.lootConditionManager;
-	}
-
 	/**
 	 * @see MinecraftServer#getLootManager
 	 */
 	public LootManager getLootManager() {
 		return this.lootManager;
-	}
-
-	public LootFunctionManager getLootFunctionManager() {
-		return this.lootFunctionManager;
 	}
 
 	/**
@@ -109,15 +97,7 @@ public class DataPackContents {
 	}
 
 	public List<ResourceReloader> getContents() {
-		return List.of(
-			this.registryTagManager,
-			this.lootConditionManager,
-			this.recipeManager,
-			this.lootManager,
-			this.lootFunctionManager,
-			this.functionLoader,
-			this.serverAdvancementLoader
-		);
+		return List.of(this.registryTagManager, this.lootManager, this.recipeManager, this.functionLoader, this.serverAdvancementLoader);
 	}
 
 	/**

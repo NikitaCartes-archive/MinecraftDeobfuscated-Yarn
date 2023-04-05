@@ -592,6 +592,11 @@ public abstract class ScreenHandler {
 					}
 
 					ItemStack itemStack2 = this.getCursorStack().copy();
+					if (itemStack2.isEmpty()) {
+						this.endQuickCraft();
+						return;
+					}
+
 					int k = this.getCursorStack().getCount();
 
 					for (Slot slot2 : this.quickCraftSlots) {
@@ -601,16 +606,11 @@ public abstract class ScreenHandler {
 							&& slot2.canInsert(itemStack3)
 							&& (this.quickCraftButton == 2 || itemStack3.getCount() >= this.quickCraftSlots.size())
 							&& this.canInsertIntoSlot(slot2)) {
-							ItemStack itemStack4 = itemStack2.copy();
 							int l = slot2.hasStack() ? slot2.getStack().getCount() : 0;
-							calculateStackSize(this.quickCraftSlots, this.quickCraftButton, itemStack4, l);
-							int m = Math.min(itemStack4.getMaxCount(), slot2.getMaxItemCount(itemStack4));
-							if (itemStack4.getCount() > m) {
-								itemStack4.setCount(m);
-							}
-
-							k -= itemStack4.getCount() - l;
-							slot2.setStack(itemStack4);
+							int m = Math.min(itemStack2.getMaxCount(), slot2.getMaxItemCount(itemStack2));
+							int n = Math.min(calculateStackSize(this.quickCraftSlots, this.quickCraftButton, itemStack2) + l, m);
+							k -= n - l;
+							slot2.setStack(itemStack2.copyWithCount(n));
 						}
 					}
 
@@ -657,34 +657,34 @@ public abstract class ScreenHandler {
 
 				Slot slot = this.slots.get(slotIndex);
 				ItemStack itemStack = slot.getStack();
-				ItemStack itemStack5 = this.getCursorStack();
-				player.onPickupSlotClick(itemStack5, slot.getStack(), clickType);
-				if (!this.handleSlotClick(player, clickType, slot, itemStack, itemStack5)) {
+				ItemStack itemStack4 = this.getCursorStack();
+				player.onPickupSlotClick(itemStack4, slot.getStack(), clickType);
+				if (!this.handleSlotClick(player, clickType, slot, itemStack, itemStack4)) {
 					if (itemStack.isEmpty()) {
-						if (!itemStack5.isEmpty()) {
-							int n = clickType == ClickType.LEFT ? itemStack5.getCount() : 1;
-							this.setCursorStack(slot.insertStack(itemStack5, n));
+						if (!itemStack4.isEmpty()) {
+							int o = clickType == ClickType.LEFT ? itemStack4.getCount() : 1;
+							this.setCursorStack(slot.insertStack(itemStack4, o));
 						}
 					} else if (slot.canTakeItems(player)) {
-						if (itemStack5.isEmpty()) {
-							int n = clickType == ClickType.LEFT ? itemStack.getCount() : (itemStack.getCount() + 1) / 2;
-							Optional<ItemStack> optional = slot.tryTakeStackRange(n, Integer.MAX_VALUE, player);
+						if (itemStack4.isEmpty()) {
+							int o = clickType == ClickType.LEFT ? itemStack.getCount() : (itemStack.getCount() + 1) / 2;
+							Optional<ItemStack> optional = slot.tryTakeStackRange(o, Integer.MAX_VALUE, player);
 							optional.ifPresent(stack -> {
 								this.setCursorStack(stack);
 								slot.onTakeItem(player, stack);
 							});
-						} else if (slot.canInsert(itemStack5)) {
-							if (ItemStack.canCombine(itemStack, itemStack5)) {
-								int n = clickType == ClickType.LEFT ? itemStack5.getCount() : 1;
-								this.setCursorStack(slot.insertStack(itemStack5, n));
-							} else if (itemStack5.getCount() <= slot.getMaxItemCount(itemStack5)) {
+						} else if (slot.canInsert(itemStack4)) {
+							if (ItemStack.canCombine(itemStack, itemStack4)) {
+								int o = clickType == ClickType.LEFT ? itemStack4.getCount() : 1;
+								this.setCursorStack(slot.insertStack(itemStack4, o));
+							} else if (itemStack4.getCount() <= slot.getMaxItemCount(itemStack4)) {
 								this.setCursorStack(itemStack);
-								slot.setStack(itemStack5);
+								slot.setStack(itemStack4);
 							}
-						} else if (ItemStack.canCombine(itemStack, itemStack5)) {
-							Optional<ItemStack> optional2 = slot.tryTakeStackRange(itemStack.getCount(), itemStack5.getMaxCount() - itemStack5.getCount(), player);
+						} else if (ItemStack.canCombine(itemStack, itemStack4)) {
+							Optional<ItemStack> optional2 = slot.tryTakeStackRange(itemStack.getCount(), itemStack4.getMaxCount() - itemStack4.getCount(), player);
 							optional2.ifPresent(stack -> {
-								itemStack5.increment(stack.getCount());
+								itemStack4.increment(stack.getCount());
 								slot.onTakeItem(player, stack);
 							});
 						}
@@ -707,18 +707,18 @@ public abstract class ScreenHandler {
 					}
 				} else if (itemStack.isEmpty()) {
 					if (slot3.canInsert(itemStack2)) {
-						int o = slot3.getMaxItemCount(itemStack2);
-						if (itemStack2.getCount() > o) {
-							slot3.setStack(itemStack2.split(o));
+						int p = slot3.getMaxItemCount(itemStack2);
+						if (itemStack2.getCount() > p) {
+							slot3.setStack(itemStack2.split(p));
 						} else {
 							playerInventory.setStack(button, ItemStack.EMPTY);
 							slot3.setStack(itemStack2);
 						}
 					}
 				} else if (slot3.canTakeItems(player) && slot3.canInsert(itemStack2)) {
-					int o = slot3.getMaxItemCount(itemStack2);
-					if (itemStack2.getCount() > o) {
-						slot3.setStack(itemStack2.split(o));
+					int p = slot3.getMaxItemCount(itemStack2);
+					if (itemStack2.getCount() > p) {
+						slot3.setStack(itemStack2.split(p));
 						slot3.onTakeItem(player, itemStack);
 						if (!playerInventory.insertStack(itemStack)) {
 							player.dropItem(itemStack, true);
@@ -733,9 +733,8 @@ public abstract class ScreenHandler {
 		} else if (actionType == SlotActionType.CLONE && player.getAbilities().creativeMode && this.getCursorStack().isEmpty() && slotIndex >= 0) {
 			Slot slot3 = this.slots.get(slotIndex);
 			if (slot3.hasStack()) {
-				ItemStack itemStack2 = slot3.getStack().copy();
-				itemStack2.setCount(itemStack2.getMaxCount());
-				this.setCursorStack(itemStack2);
+				ItemStack itemStack2 = slot3.getStack();
+				this.setCursorStack(itemStack2.copyWithCount(itemStack2.getMaxCount()));
 			}
 		} else if (actionType == SlotActionType.THROW && this.getCursorStack().isEmpty() && slotIndex >= 0) {
 			Slot slot3 = this.slots.get(slotIndex);
@@ -747,16 +746,16 @@ public abstract class ScreenHandler {
 			ItemStack itemStack2 = this.getCursorStack();
 			if (!itemStack2.isEmpty() && (!slot3.hasStack() || !slot3.canTakeItems(player))) {
 				int k = button == 0 ? 0 : this.slots.size() - 1;
-				int o = button == 0 ? 1 : -1;
+				int p = button == 0 ? 1 : -1;
 
-				for (int n = 0; n < 2; n++) {
-					for (int p = k; p >= 0 && p < this.slots.size() && itemStack2.getCount() < itemStack2.getMaxCount(); p += o) {
-						Slot slot4 = this.slots.get(p);
+				for (int o = 0; o < 2; o++) {
+					for (int q = k; q >= 0 && q < this.slots.size() && itemStack2.getCount() < itemStack2.getMaxCount(); q += p) {
+						Slot slot4 = this.slots.get(q);
 						if (slot4.hasStack() && canInsertItemIntoSlot(slot4, itemStack2, true) && slot4.canTakeItems(player) && this.canInsertIntoSlot(itemStack2, slot4)) {
-							ItemStack itemStack6 = slot4.getStack();
-							if (n != 0 || itemStack6.getCount() != itemStack6.getMaxCount()) {
-								ItemStack itemStack7 = slot4.takeStackRange(itemStack6.getCount(), itemStack2.getMaxCount() - itemStack2.getCount(), player);
-								itemStack2.increment(itemStack7.getCount());
+							ItemStack itemStack5 = slot4.getStack();
+							if (o != 0 || itemStack5.getCount() != itemStack5.getMaxCount()) {
+								ItemStack itemStack6 = slot4.takeStackRange(itemStack5.getCount(), itemStack2.getMaxCount() - itemStack2.getCount(), player);
+								itemStack2.increment(itemStack6.getCount());
 							}
 						}
 					}
@@ -992,19 +991,13 @@ public abstract class ScreenHandler {
 		return !bl && ItemStack.canCombine(stack, slot.getStack()) ? slot.getStack().getCount() + (allowOverflow ? 0 : stack.getCount()) <= stack.getMaxCount() : bl;
 	}
 
-	public static void calculateStackSize(Set<Slot> slots, int mode, ItemStack stack, int stackSize) {
-		switch (mode) {
-			case 0:
-				stack.setCount(MathHelper.floor((float)stack.getCount() / (float)slots.size()));
-				break;
-			case 1:
-				stack.setCount(1);
-				break;
-			case 2:
-				stack.setCount(stack.getItem().getMaxCount());
-		}
-
-		stack.increment(stackSize);
+	public static int calculateStackSize(Set<Slot> slots, int mode, ItemStack stack) {
+		return switch (mode) {
+			case 0 -> MathHelper.floor((float)stack.getCount() / (float)slots.size());
+			case 1 -> 1;
+			case 2 -> stack.getItem().getMaxCount();
+			default -> stack.getCount();
+		};
 	}
 
 	public boolean canInsertIntoSlot(Slot slot) {

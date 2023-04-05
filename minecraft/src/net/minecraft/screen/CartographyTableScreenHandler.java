@@ -116,13 +116,11 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 			if (mapState != null) {
 				ItemStack itemStack4;
 				if (item.isOf(Items.PAPER) && !mapState.locked && mapState.scale < 4) {
-					itemStack4 = map.copy();
-					itemStack4.setCount(1);
+					itemStack4 = map.copyWithCount(1);
 					itemStack4.getOrCreateNbt().putInt("map_scale_direction", 1);
 					this.sendContentUpdates();
 				} else if (item.isOf(Items.GLASS_PANE) && !mapState.locked) {
-					itemStack4 = map.copy();
-					itemStack4.setCount(1);
+					itemStack4 = map.copyWithCount(1);
 					itemStack4.getOrCreateNbt().putBoolean("map_to_lock", true);
 					this.sendContentUpdates();
 				} else {
@@ -132,8 +130,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 						return;
 					}
 
-					itemStack4 = map.copy();
-					itemStack4.setCount(2);
+					itemStack4 = map.copyWithCount(2);
 					this.sendContentUpdates();
 				}
 

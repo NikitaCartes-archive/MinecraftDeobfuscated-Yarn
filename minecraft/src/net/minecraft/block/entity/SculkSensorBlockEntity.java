@@ -100,7 +100,9 @@ public class SculkSensorBlockEntity extends BlockEntity {
 			if (SculkSensorBlock.isInactive(blockState)) {
 				this.blockEntity.setLastVibrationFrequency(VibrationListener.getFrequency(event));
 				int i = getPower(distance, listener.getRange());
-				SculkSensorBlock.setActive(entity, world, blockPos, blockState, i, this.blockEntity.getLastVibrationFrequency());
+				if (blockState.getBlock() instanceof SculkSensorBlock sculkSensorBlock) {
+					sculkSensorBlock.setActive(entity, world, blockPos, blockState, i, this.blockEntity.getLastVibrationFrequency());
+				}
 			}
 		}
 
@@ -115,8 +117,8 @@ public class SculkSensorBlockEntity extends BlockEntity {
 		}
 
 		public static int getPower(float distance, int range) {
-			double d = (double)distance / (double)range;
-			return Math.max(1, 15 - MathHelper.floor(d * 15.0));
+			double d = 15.0 / (double)range;
+			return Math.max(1, 15 - MathHelper.floor(d * (double)distance));
 		}
 	}
 }

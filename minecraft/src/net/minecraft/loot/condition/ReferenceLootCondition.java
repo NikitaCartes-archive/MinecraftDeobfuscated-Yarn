@@ -4,6 +4,8 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.mojang.logging.LogUtils;
+import net.minecraft.loot.LootDataKey;
+import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.Identifier;
@@ -26,36 +28,39 @@ public class ReferenceLootCondition implements LootCondition {
 
 	@Override
 	public void validate(LootTableReporter reporter) {
-		if (reporter.hasCondition(this.id)) {
+		LootDataKey<LootCondition> lootDataKey = new LootDataKey<>(LootDataType.PREDICATES, this.id);
+		if (reporter.isInStack(lootDataKey)) {
 			reporter.report("Condition " + this.id + " is recursively called");
 		} else {
 			LootCondition.super.validate(reporter);
-			LootCondition lootCondition = reporter.getCondition(this.id);
-			if (lootCondition == null) {
-				reporter.report("Unknown condition table called " + this.id);
-			} else {
-				lootCondition.validate(reporter.withTable(".{" + this.id + "}", this.id));
-			}
+			reporter.getDataLookup()
+				.getElementOptional(lootDataKey)
+				.ifPresentOrElse(
+					predicate -> predicate.validate(reporter.makeChild(".{" + this.id + "}", lootDataKey)), () -> reporter.report("Unknown condition table called " + this.id)
+				);
 		}
 	}
 
 	public boolean test(LootContext lootContext) {
-		LootCondition lootCondition = lootContext.getCondition(this.id);
+		LootCondition lootCondition = lootContext.getDataLookup().getElement(LootDataType.PREDICATES, this.id);
 		if (lootCondition == null) {
 			LOGGER.warn("Tried using unknown condition table called {}", this.id);
 			return false;
-		} else if (lootContext.addCondition(lootCondition)) {
-			boolean var3;
-			try {
-				var3 = lootCondition.test(lootContext);
-			} finally {
-				lootContext.removeCondition(lootCondition);
-			}
-
-			return var3;
 		} else {
-			LOGGER.warn("Detected infinite loop in loot tables");
-			return false;
+			LootContext.Entry<?> entry = LootContext.predicate(lootCondition);
+			if (lootContext.markActive(entry)) {
+				boolean var4;
+				try {
+					var4 = lootCondition.test(lootContext);
+				} finally {
+					lootContext.markInactive(entry);
+				}
+
+				return var4;
+			} else {
+				LOGGER.warn("Detected infinite loop in loot tables");
+				return false;
+			}
 		}
 	}
 

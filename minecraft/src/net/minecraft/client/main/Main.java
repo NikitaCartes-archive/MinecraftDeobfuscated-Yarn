@@ -59,48 +59,50 @@ public class Main {
 		optionParser.accepts("fullscreen");
 		optionParser.accepts("checkGlErrors");
 		OptionSpec<Void> optionSpec = optionParser.accepts("jfrProfile");
-		OptionSpec<String> optionSpec2 = optionParser.accepts("server").withRequiredArg();
-		OptionSpec<Integer> optionSpec3 = optionParser.accepts("port").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(25565);
-		OptionSpec<File> optionSpec4 = optionParser.accepts("gameDir").withRequiredArg().<File>ofType(File.class).defaultsTo(new File("."));
-		OptionSpec<File> optionSpec5 = optionParser.accepts("assetsDir").withRequiredArg().ofType(File.class);
-		OptionSpec<File> optionSpec6 = optionParser.accepts("resourcePackDir").withRequiredArg().ofType(File.class);
-		OptionSpec<String> optionSpec7 = optionParser.accepts("proxyHost").withRequiredArg();
-		OptionSpec<Integer> optionSpec8 = optionParser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
-		OptionSpec<String> optionSpec9 = optionParser.accepts("proxyUser").withRequiredArg();
-		OptionSpec<String> optionSpec10 = optionParser.accepts("proxyPass").withRequiredArg();
-		OptionSpec<String> optionSpec11 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + Util.getMeasuringTimeMs() % 1000L);
-		OptionSpec<String> optionSpec12 = optionParser.accepts("uuid").withRequiredArg();
-		OptionSpec<String> optionSpec13 = optionParser.accepts("xuid").withOptionalArg().defaultsTo("");
-		OptionSpec<String> optionSpec14 = optionParser.accepts("clientId").withOptionalArg().defaultsTo("");
-		OptionSpec<String> optionSpec15 = optionParser.accepts("accessToken").withRequiredArg().required();
-		OptionSpec<String> optionSpec16 = optionParser.accepts("version").withRequiredArg().required();
-		OptionSpec<Integer> optionSpec17 = optionParser.accepts("width").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(854);
-		OptionSpec<Integer> optionSpec18 = optionParser.accepts("height").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(480);
-		OptionSpec<Integer> optionSpec19 = optionParser.accepts("fullscreenWidth").withRequiredArg().ofType(Integer.class);
-		OptionSpec<Integer> optionSpec20 = optionParser.accepts("fullscreenHeight").withRequiredArg().ofType(Integer.class);
-		OptionSpec<String> optionSpec21 = optionParser.accepts("userProperties").withRequiredArg().defaultsTo("{}");
-		OptionSpec<String> optionSpec22 = optionParser.accepts("profileProperties").withRequiredArg().defaultsTo("{}");
-		OptionSpec<String> optionSpec23 = optionParser.accepts("assetIndex").withRequiredArg();
-		OptionSpec<String> optionSpec24 = optionParser.accepts("userType").withRequiredArg().defaultsTo(Session.AccountType.LEGACY.getName());
-		OptionSpec<String> optionSpec25 = optionParser.accepts("versionType").withRequiredArg().defaultsTo("release");
-		OptionSpec<String> optionSpec26 = optionParser.nonOptions();
+		OptionSpec<String> optionSpec2 = optionParser.accepts("quickPlayPath").withRequiredArg();
+		OptionSpec<String> optionSpec3 = optionParser.accepts("quickPlaySingleplayer").withRequiredArg();
+		OptionSpec<String> optionSpec4 = optionParser.accepts("quickPlayMultiplayer").withRequiredArg();
+		OptionSpec<String> optionSpec5 = optionParser.accepts("quickPlayRealms").withRequiredArg();
+		OptionSpec<File> optionSpec6 = optionParser.accepts("gameDir").withRequiredArg().<File>ofType(File.class).defaultsTo(new File("."));
+		OptionSpec<File> optionSpec7 = optionParser.accepts("assetsDir").withRequiredArg().ofType(File.class);
+		OptionSpec<File> optionSpec8 = optionParser.accepts("resourcePackDir").withRequiredArg().ofType(File.class);
+		OptionSpec<String> optionSpec9 = optionParser.accepts("proxyHost").withRequiredArg();
+		OptionSpec<Integer> optionSpec10 = optionParser.accepts("proxyPort").withRequiredArg().defaultsTo("8080").ofType(Integer.class);
+		OptionSpec<String> optionSpec11 = optionParser.accepts("proxyUser").withRequiredArg();
+		OptionSpec<String> optionSpec12 = optionParser.accepts("proxyPass").withRequiredArg();
+		OptionSpec<String> optionSpec13 = optionParser.accepts("username").withRequiredArg().defaultsTo("Player" + Util.getMeasuringTimeMs() % 1000L);
+		OptionSpec<String> optionSpec14 = optionParser.accepts("uuid").withRequiredArg();
+		OptionSpec<String> optionSpec15 = optionParser.accepts("xuid").withOptionalArg().defaultsTo("");
+		OptionSpec<String> optionSpec16 = optionParser.accepts("clientId").withOptionalArg().defaultsTo("");
+		OptionSpec<String> optionSpec17 = optionParser.accepts("accessToken").withRequiredArg().required();
+		OptionSpec<String> optionSpec18 = optionParser.accepts("version").withRequiredArg().required();
+		OptionSpec<Integer> optionSpec19 = optionParser.accepts("width").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(854);
+		OptionSpec<Integer> optionSpec20 = optionParser.accepts("height").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(480);
+		OptionSpec<Integer> optionSpec21 = optionParser.accepts("fullscreenWidth").withRequiredArg().ofType(Integer.class);
+		OptionSpec<Integer> optionSpec22 = optionParser.accepts("fullscreenHeight").withRequiredArg().ofType(Integer.class);
+		OptionSpec<String> optionSpec23 = optionParser.accepts("userProperties").withRequiredArg().defaultsTo("{}");
+		OptionSpec<String> optionSpec24 = optionParser.accepts("profileProperties").withRequiredArg().defaultsTo("{}");
+		OptionSpec<String> optionSpec25 = optionParser.accepts("assetIndex").withRequiredArg();
+		OptionSpec<String> optionSpec26 = optionParser.accepts("userType").withRequiredArg().defaultsTo(Session.AccountType.LEGACY.getName());
+		OptionSpec<String> optionSpec27 = optionParser.accepts("versionType").withRequiredArg().defaultsTo("release");
+		OptionSpec<String> optionSpec28 = optionParser.nonOptions();
 		OptionSet optionSet = optionParser.parse(args);
-		List<String> list = optionSet.valuesOf(optionSpec26);
+		List<String> list = optionSet.valuesOf(optionSpec28);
 		if (!list.isEmpty()) {
 			System.out.println("Completely ignored arguments: " + list);
 		}
 
-		String string = getOption(optionSet, optionSpec7);
+		String string = getOption(optionSet, optionSpec9);
 		Proxy proxy = Proxy.NO_PROXY;
 		if (string != null) {
 			try {
-				proxy = new Proxy(Type.SOCKS, new InetSocketAddress(string, getOption(optionSet, optionSpec8)));
-			} catch (Exception var77) {
+				proxy = new Proxy(Type.SOCKS, new InetSocketAddress(string, getOption(optionSet, optionSpec10)));
+			} catch (Exception var81) {
 			}
 		}
 
-		final String string2 = getOption(optionSet, optionSpec9);
-		final String string3 = getOption(optionSet, optionSpec10);
+		final String string2 = getOption(optionSet, optionSpec11);
+		final String string3 = getOption(optionSet, optionSpec12);
 		if (!proxy.equals(Proxy.NO_PROXY) && isNotNullOrEmpty(string2) && isNotNullOrEmpty(string3)) {
 			Authenticator.setDefault(new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
@@ -109,28 +111,30 @@ public class Main {
 			});
 		}
 
-		int i = getOption(optionSet, optionSpec17);
-		int j = getOption(optionSet, optionSpec18);
-		OptionalInt optionalInt = toOptional(getOption(optionSet, optionSpec19));
-		OptionalInt optionalInt2 = toOptional(getOption(optionSet, optionSpec20));
+		int i = getOption(optionSet, optionSpec19);
+		int j = getOption(optionSet, optionSpec20);
+		OptionalInt optionalInt = toOptional(getOption(optionSet, optionSpec21));
+		OptionalInt optionalInt2 = toOptional(getOption(optionSet, optionSpec22));
 		boolean bl = optionSet.has("fullscreen");
 		boolean bl2 = optionSet.has("demo");
 		boolean bl3 = optionSet.has("disableMultiplayer");
 		boolean bl4 = optionSet.has("disableChat");
-		String string4 = getOption(optionSet, optionSpec16);
+		String string4 = getOption(optionSet, optionSpec18);
 		Gson gson = new GsonBuilder().registerTypeAdapter(PropertyMap.class, new Serializer()).create();
-		PropertyMap propertyMap = JsonHelper.deserialize(gson, getOption(optionSet, optionSpec21), PropertyMap.class);
-		PropertyMap propertyMap2 = JsonHelper.deserialize(gson, getOption(optionSet, optionSpec22), PropertyMap.class);
-		String string5 = getOption(optionSet, optionSpec25);
-		File file = getOption(optionSet, optionSpec4);
-		File file2 = optionSet.has(optionSpec5) ? getOption(optionSet, optionSpec5) : new File(file, "assets/");
-		File file3 = optionSet.has(optionSpec6) ? getOption(optionSet, optionSpec6) : new File(file, "resourcepacks/");
-		String string6 = optionSet.has(optionSpec12) ? optionSpec12.value(optionSet) : Uuids.getOfflinePlayerUuid(optionSpec11.value(optionSet)).toString();
-		String string7 = optionSet.has(optionSpec23) ? optionSpec23.value(optionSet) : null;
-		String string8 = optionSet.valueOf(optionSpec13);
-		String string9 = optionSet.valueOf(optionSpec14);
+		PropertyMap propertyMap = JsonHelper.deserialize(gson, getOption(optionSet, optionSpec23), PropertyMap.class);
+		PropertyMap propertyMap2 = JsonHelper.deserialize(gson, getOption(optionSet, optionSpec24), PropertyMap.class);
+		String string5 = getOption(optionSet, optionSpec27);
+		File file = getOption(optionSet, optionSpec6);
+		File file2 = optionSet.has(optionSpec7) ? getOption(optionSet, optionSpec7) : new File(file, "assets/");
+		File file3 = optionSet.has(optionSpec8) ? getOption(optionSet, optionSpec8) : new File(file, "resourcepacks/");
+		String string6 = optionSet.has(optionSpec14) ? optionSpec14.value(optionSet) : Uuids.getOfflinePlayerUuid(optionSpec13.value(optionSet)).toString();
+		String string7 = optionSet.has(optionSpec25) ? optionSpec25.value(optionSet) : null;
+		String string8 = optionSet.valueOf(optionSpec15);
+		String string9 = optionSet.valueOf(optionSpec16);
 		String string10 = getOption(optionSet, optionSpec2);
-		Integer integer = getOption(optionSet, optionSpec3);
+		String string11 = getOption(optionSet, optionSpec3);
+		String string12 = getOption(optionSet, optionSpec4);
+		String string13 = getOption(optionSet, optionSpec5);
 		if (optionSet.has(optionSpec)) {
 			FlightProfiler.INSTANCE.start(InstanceType.CLIENT);
 		}
@@ -139,19 +143,19 @@ public class Main {
 		Bootstrap.initialize();
 		Bootstrap.logMissing();
 		Util.startTimerHack();
-		String string11 = optionSpec24.value(optionSet);
-		Session.AccountType accountType = Session.AccountType.byName(string11);
+		String string14 = optionSpec26.value(optionSet);
+		Session.AccountType accountType = Session.AccountType.byName(string14);
 		if (accountType == null) {
-			LOGGER.warn("Unrecognized user type: {}", string11);
+			LOGGER.warn("Unrecognized user type: {}", string14);
 		}
 
-		Session session = new Session(optionSpec11.value(optionSet), string6, optionSpec15.value(optionSet), toOptional(string8), toOptional(string9), accountType);
+		Session session = new Session(optionSpec13.value(optionSet), string6, optionSpec17.value(optionSet), toOptional(string8), toOptional(string9), accountType);
 		RunArgs runArgs = new RunArgs(
 			new RunArgs.Network(session, propertyMap, propertyMap2, proxy),
 			new WindowSettings(i, j, optionalInt, optionalInt2, bl),
 			new RunArgs.Directories(file, file3, file2, string7),
 			new RunArgs.Game(bl2, string4, string5, bl3, bl4),
-			new RunArgs.AutoConnect(string10, integer)
+			new RunArgs.QuickPlay(string10, string11, string12, string13)
 		);
 		Thread thread = new Thread("Client Shutdown Thread") {
 			public void run() {
@@ -174,11 +178,11 @@ public class Main {
 			RenderSystem.beginInitialization();
 			minecraftClient = new MinecraftClient(runArgs);
 			RenderSystem.finishInitialization();
-		} catch (GlException var75) {
-			LOGGER.warn("Failed to create window: ", (Throwable)var75);
+		} catch (GlException var79) {
+			LOGGER.warn("Failed to create window: ", (Throwable)var79);
 			return;
-		} catch (Throwable var76) {
-			CrashReport crashReport = CrashReport.create(var76, "Initializing game");
+		} catch (Throwable var80) {
+			CrashReport crashReport = CrashReport.create(var80, "Initializing game");
 			CrashReportSection crashReportSection = crashReport.addElement("Initialization");
 			WinNativeModuleUtil.addDetailTo(crashReportSection);
 			MinecraftClient.addSystemDetailsToCrashReport(null, null, runArgs.game.version, null, crashReport);
@@ -208,8 +212,8 @@ public class Main {
 			try {
 				RenderSystem.initGameThread(false);
 				minecraftClient.run();
-			} catch (Throwable var74) {
-				LOGGER.error("Unhandled game exception", var74);
+			} catch (Throwable var78) {
+				LOGGER.error("Unhandled game exception", var78);
 			}
 		}
 
@@ -220,8 +224,8 @@ public class Main {
 			if (thread2 != null) {
 				thread2.join();
 			}
-		} catch (InterruptedException var72) {
-			LOGGER.error("Exception during client thread shutdown", (Throwable)var72);
+		} catch (InterruptedException var76) {
+			LOGGER.error("Exception during client thread shutdown", (Throwable)var76);
 		} finally {
 			minecraftClient.stop();
 		}

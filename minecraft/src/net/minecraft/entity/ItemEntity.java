@@ -218,8 +218,7 @@ public class ItemEntity extends Entity implements Ownable {
 
 	public static ItemStack merge(ItemStack stack1, ItemStack stack2, int maxCount) {
 		int i = Math.min(Math.min(stack1.getMaxCount(), maxCount) - stack1.getCount(), stack2.getCount());
-		ItemStack itemStack = stack1.copy();
-		itemStack.increment(i);
+		ItemStack itemStack = stack1.copyWithCount(stack1.getCount() + i);
 		stack2.decrement(i);
 		return itemStack;
 	}

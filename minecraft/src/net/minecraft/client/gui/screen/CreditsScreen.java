@@ -211,7 +211,7 @@ public class CreditsScreen extends Screen {
 	}
 
 	private void addText(String text) {
-		this.credits.addAll(this.client.textRenderer.wrapLines(Text.literal(text), 274));
+		this.credits.addAll(this.client.textRenderer.wrapLines(Text.literal(text), 256));
 	}
 
 	private void addText(Text text, boolean centered) {
@@ -250,7 +250,7 @@ public class CreditsScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.time = this.time + delta * this.speed;
 		this.renderBackground(matrices);
-		int i = this.width / 2 - 137;
+		int i = this.width / 2 - 128;
 		int j = this.height + 50;
 		float f = -this.time;
 		matrices.push();
@@ -269,7 +269,7 @@ public class CreditsScreen extends Screen {
 			if ((float)k + f + 12.0F + 8.0F > 0.0F && (float)k + f < (float)this.height) {
 				OrderedText orderedText = (OrderedText)this.credits.get(l);
 				if (this.centeredLines.contains(l)) {
-					this.textRenderer.drawWithShadow(matrices, orderedText, (float)(i + (274 - this.textRenderer.getWidth(orderedText)) / 2), (float)k, 16777215);
+					this.textRenderer.drawWithShadow(matrices, orderedText, (float)(i + (256 - this.textRenderer.getWidth(orderedText)) / 2), (float)k, 16777215);
 				} else {
 					this.textRenderer.drawWithShadow(matrices, orderedText, (float)i, (float)k, 16777215);
 				}

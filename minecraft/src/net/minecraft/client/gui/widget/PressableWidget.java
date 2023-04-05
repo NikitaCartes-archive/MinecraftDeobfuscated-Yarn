@@ -5,10 +5,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * A pressable widget has a press action. It is pressed when it is clicked. It is
@@ -66,12 +66,12 @@ public abstract class PressableWidget extends ClickableWidget {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (!this.active || !this.visible) {
 			return false;
-		} else if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_SPACE && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
-			return false;
-		} else {
+		} else if (KeyCodes.isToggle(keyCode)) {
 			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
 			this.onPress();
 			return true;
+		} else {
+			return false;
 		}
 	}
 }

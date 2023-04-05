@@ -9,7 +9,6 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Util;
 import net.minecraft.world.World;
 
 public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity implements FlyingItemEntity {
@@ -29,7 +28,7 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 
 	public void setItem(ItemStack stack) {
 		if (!stack.isOf(Items.FIRE_CHARGE) || stack.hasNbt()) {
-			this.getDataTracker().set(ITEM, Util.make(stack.copy(), stackx -> stackx.setCount(1)));
+			this.getDataTracker().set(ITEM, stack.copyWithCount(1));
 		}
 	}
 

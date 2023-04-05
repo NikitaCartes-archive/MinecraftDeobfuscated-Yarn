@@ -454,6 +454,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		}
 
 		this.worldSession.setGameMode(packet.gameMode(), packet.hardcore());
+		this.client.getQuickPlayLogger().save(this.client);
 	}
 
 	@Override
@@ -848,7 +849,10 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 				.addParticle(new ItemPickupParticle(this.client.getEntityRenderDispatcher(), this.client.getBufferBuilders(), this.world, entity, livingEntity));
 			if (entity instanceof ItemEntity itemEntity) {
 				ItemStack itemStack = itemEntity.getStack();
-				itemStack.decrement(packet.getStackAmount());
+				if (!itemStack.isEmpty()) {
+					itemStack.decrement(packet.getStackAmount());
+				}
+
 				if (itemStack.isEmpty()) {
 					this.world.removeEntity(packet.getEntityId(), Entity.RemovalReason.DISCARDED);
 				}

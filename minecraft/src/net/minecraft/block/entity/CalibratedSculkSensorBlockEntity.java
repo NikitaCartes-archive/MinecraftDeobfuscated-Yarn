@@ -27,6 +27,11 @@ public class CalibratedSculkSensorBlockEntity extends SculkSensorBlockEntity {
 		}
 
 		@Override
+		public int getRange() {
+			return 16;
+		}
+
+		@Override
 		public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
 			BlockPos blockPos = this.blockEntity.getPos();
 			int i = this.getCalibrationFrequency(world, blockPos, this.blockEntity.getCachedState());
@@ -35,7 +40,7 @@ public class CalibratedSculkSensorBlockEntity extends SculkSensorBlockEntity {
 
 		private int getCalibrationFrequency(World world, BlockPos pos, BlockState state) {
 			Direction direction = ((Direction)state.get(CalibratedSculkSensorBlock.FACING)).getOpposite();
-			return world.getEmittedRedstonePower(pos.offset(direction), direction, false);
+			return world.getEmittedRedstonePower(pos.offset(direction), direction);
 		}
 	}
 }

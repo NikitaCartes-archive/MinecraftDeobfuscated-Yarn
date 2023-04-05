@@ -48,22 +48,23 @@ public class SpongeBlock extends Block {
 			} else {
 				BlockState blockState = world.getBlockState(currentPos);
 				FluidState fluidState = world.getFluidState(currentPos);
-				Material material = blockState.getMaterial();
 				if (!fluidState.isIn(FluidTags.WATER)) {
 					return false;
 				} else {
-					if (!(blockState.getBlock() instanceof FluidDrainable fluidDrainable) || fluidDrainable.tryDrainFluid(world, currentPos, blockState).isEmpty()) {
-						if (blockState.getBlock() instanceof FluidBlock) {
-							world.setBlockState(currentPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
-						} else {
-							if (material != Material.UNDERWATER_PLANT && material != Material.REPLACEABLE_UNDERWATER_PLANT) {
-								return false;
-							}
+					if (blockState.getBlock() instanceof FluidDrainable fluidDrainable && !fluidDrainable.tryDrainFluid(world, currentPos, blockState).isEmpty()) {
+						return true;
+					}
 
-							BlockEntity blockEntity = blockState.hasBlockEntity() ? world.getBlockEntity(currentPos) : null;
-							dropStacks(blockState, world, currentPos, blockEntity);
-							world.setBlockState(currentPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+					if (blockState.getBlock() instanceof FluidBlock) {
+						world.setBlockState(currentPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
+					} else {
+						if (!blockState.isOf(Blocks.KELP) && !blockState.isOf(Blocks.KELP_PLANT) && !blockState.isOf(Blocks.SEAGRASS) && !blockState.isOf(Blocks.TALL_SEAGRASS)) {
+							return false;
 						}
+
+						BlockEntity blockEntity = blockState.hasBlockEntity() ? world.getBlockEntity(currentPos) : null;
+						dropStacks(blockState, world, currentPos, blockEntity);
+						world.setBlockState(currentPos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL);
 					}
 
 					return true;

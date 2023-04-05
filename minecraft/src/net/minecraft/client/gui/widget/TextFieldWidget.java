@@ -19,6 +19,7 @@ import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -351,31 +352,18 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (this.isVisible() && button == 0) {
-			boolean bl = mouseX >= (double)this.getX()
-				&& mouseX < (double)(this.getX() + this.width)
-				&& mouseY >= (double)this.getY()
-				&& mouseY < (double)(this.getY() + this.height);
-			if (this.focusUnlocked) {
-				this.setFocused(bl);
-			}
-
-			if (this.isFocused() && bl && button == 0) {
-				int i = MathHelper.floor(mouseX) - this.getX();
-				if (this.drawsBackground) {
-					i -= 4;
-				}
-
-				String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
-				this.setCursor(this.textRenderer.trimToWidth(string, i).length() + this.firstCharacterIndex);
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
+	public void onClick(double mouseX, double mouseY) {
+		int i = MathHelper.floor(mouseX) - this.getX();
+		if (this.drawsBackground) {
+			i -= 4;
 		}
+
+		String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
+		this.setCursor(this.textRenderer.trimToWidth(string, i).length() + this.firstCharacterIndex);
+	}
+
+	@Override
+	public void playDownSound(SoundManager soundManager) {
 	}
 
 	@Override

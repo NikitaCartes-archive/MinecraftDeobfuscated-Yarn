@@ -3,7 +3,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
@@ -166,7 +165,7 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 		BlockPos pos, WorldAccess world, Random random, int heightRemaining, int height, boolean lessSnow, boolean placeSnow, BlockState state
 	) {
 		BlockState blockState = world.getBlockState(pos);
-		if (blockState.getMaterial() == Material.AIR || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.ICE) || blockState.isOf(Blocks.WATER)) {
+		if (blockState.isAir() || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.ICE) || blockState.isOf(Blocks.WATER)) {
 			boolean bl = !lessSnow || random.nextDouble() > 0.05;
 			int i = lessSnow ? 3 : 2;
 			if (placeSnow && !blockState.isOf(Blocks.WATER) && (double)heightRemaining <= (double)random.nextInt(Math.max(1, height / i)) + (double)height * 0.6 && bl) {
@@ -225,7 +224,7 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 	}
 
 	private boolean isAirBelow(BlockView world, BlockPos pos) {
-		return world.getBlockState(pos.down()).getMaterial() == Material.AIR;
+		return world.getBlockState(pos.down()).isAir();
 	}
 
 	private void method_13418(WorldAccess world, BlockPos pos, int i, int height, boolean bl, int j) {

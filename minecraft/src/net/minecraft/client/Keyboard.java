@@ -222,11 +222,12 @@ public class Keyboard {
 					chatHud.addMessage(Text.translatable("debug.gamemodes.help"));
 					return true;
 				case 83:
-					Path path = TextureUtil.getDebugTexturePath(this.client.runDirectory.toPath()).toAbsolutePath();
-					this.client.getTextureManager().dumpDynamicTextures(path);
-					Text text = Text.literal(path.toString())
+					Path path = this.client.runDirectory.toPath().toAbsolutePath();
+					Path path2 = TextureUtil.getDebugTexturePath(path);
+					this.client.getTextureManager().dumpDynamicTextures(path2);
+					Text text = Text.literal(path.relativize(path2).toString())
 						.formatted(Formatting.UNDERLINE)
-						.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toFile().toString())));
+						.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, path2.toFile().toString())));
 					this.debugLog("debug.dump_dynamic_textures", text);
 					return true;
 				case 84:

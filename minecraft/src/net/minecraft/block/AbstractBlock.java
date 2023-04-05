@@ -697,7 +697,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		} else {
 			LootContext lootContext = builder.parameter(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
 			ServerWorld serverWorld = lootContext.getWorld();
-			LootTable lootTable = serverWorld.getServer().getLootManager().getTable(identifier);
+			LootTable lootTable = serverWorld.getServer().getLootManager().getLootTable(identifier);
 			return lootTable.generateLoot(lootContext);
 		}
 	}
@@ -1104,6 +1104,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		private final boolean hasSidedTransparency;
 		private final boolean isAir;
 		private final boolean burnable;
+		@Deprecated
+		private final boolean liquid;
 		private final PistonBehavior pistonBehavior;
 		private final Material material;
 		private final MapColor mapColor;
@@ -1129,6 +1131,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.hasSidedTransparency = block.hasSidedTransparency(this.asBlockState());
 			this.isAir = settings.isAir;
 			this.burnable = settings.burnable;
+			this.liquid = settings.liquid;
 			this.pistonBehavior = settings.pistonBehavior;
 			this.material = settings.material;
 			this.mapColor = (MapColor)settings.mapColorProvider.apply(this.asBlockState());
@@ -1207,6 +1210,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		public boolean isBurnable() {
 			return this.burnable;
+		}
+
+		@Deprecated
+		public boolean isLiquid() {
+			return this.liquid;
 		}
 
 		public MapColor getMapColor(BlockView world, BlockPos pos) {
@@ -1611,6 +1619,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		boolean opaque = true;
 		boolean isAir;
 		boolean burnable;
+		@Deprecated
+		boolean liquid;
 		PistonBehavior pistonBehavior = PistonBehavior.NORMAL;
 		boolean blockBreakParticles = true;
 		AbstractBlock.TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(
@@ -1667,11 +1677,13 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			settings.opaque = block.settings.opaque;
 			settings.isAir = block.settings.isAir;
 			settings.burnable = block.settings.burnable;
+			settings.liquid = block.settings.liquid;
 			settings.pistonBehavior = block.settings.pistonBehavior;
 			settings.toolRequired = block.settings.toolRequired;
 			settings.offsetter = block.settings.offsetter;
 			settings.blockBreakParticles = block.settings.blockBreakParticles;
 			settings.requiredFeatures = block.settings.requiredFeatures;
+			settings.emissiveLightingPredicate = block.settings.emissiveLightingPredicate;
 			return settings;
 		}
 
@@ -1772,6 +1784,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		public AbstractBlock.Settings burnable() {
 			this.burnable = true;
+			return this;
+		}
+
+		public AbstractBlock.Settings liquid() {
+			this.liquid = true;
 			return this;
 		}
 

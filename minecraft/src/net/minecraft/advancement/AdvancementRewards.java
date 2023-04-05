@@ -50,7 +50,7 @@ public class AdvancementRewards {
 		boolean bl = false;
 
 		for (Identifier identifier : this.loot) {
-			for (ItemStack itemStack : player.server.getLootManager().getTable(identifier).generateLoot(lootContext)) {
+			for (ItemStack itemStack : player.server.getLootManager().getLootTable(identifier).generateLoot(lootContext)) {
 				if (player.giveItemStack(itemStack)) {
 					player.world
 						.playSound(

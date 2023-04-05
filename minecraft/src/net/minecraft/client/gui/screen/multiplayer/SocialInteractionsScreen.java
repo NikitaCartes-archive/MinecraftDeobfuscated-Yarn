@@ -218,15 +218,6 @@ public class SocialInteractionsScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (this.searchBox.isFocused()) {
-			this.searchBox.mouseClicked(mouseX, mouseY, button);
-		}
-
-		return super.mouseClicked(mouseX, mouseY, button) || this.playerList.mouseClicked(mouseX, mouseY, button);
-	}
-
-	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (!this.searchBox.isFocused() && this.client.options.socialInteractionsKey.matchesKey(keyCode, scanCode)) {
 			this.client.setScreen(null);

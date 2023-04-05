@@ -22,6 +22,7 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 	public static final int DEPTH = 21;
 	private final boolean[] hasPlacedChest = new boolean[4];
 	private final List<BlockPos> potentialSuspiciousSandPositions = new ArrayList();
+	private BlockPos basementMarkerPos = BlockPos.ORIGIN;
 
 	public DesertTempleGenerator(Random random, int x, int z) {
 		super(StructurePieceType.DESERT_TEMPLE, x, 64, z, 21, 15, 21, getRandomHorizontalDirection(random));
@@ -279,7 +280,6 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 		int j = pos.getY();
 		int k = pos.getZ();
 		BlockState blockState = Blocks.SANDSTONE_STAIRS.getDefaultState();
-		this.addBlock(world, blockState.rotate(BlockRotation.COUNTERCLOCKWISE_90), 12, 0, 17, chunkBox);
 		this.addBlock(world, blockState.rotate(BlockRotation.COUNTERCLOCKWISE_90), 13, -1, 17, chunkBox);
 		this.addBlock(world, blockState.rotate(BlockRotation.COUNTERCLOCKWISE_90), 14, -2, 17, chunkBox);
 		this.addBlock(world, blockState.rotate(BlockRotation.COUNTERCLOCKWISE_90), 15, -3, 17, chunkBox);
@@ -292,11 +292,11 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 		this.addBlock(world, blockState2, i - 1, j + 4, k + 4, chunkBox);
 		this.addBlock(world, blockState2, i, j + 4, k + 4, chunkBox);
 		this.addBlock(world, blockState2, i - 2, j + 3, k + 4, chunkBox);
-		this.addBlock(world, blockState2, i - 1, j + 3, k + 4, chunkBox);
-		this.addBlock(world, blockState2, i, j + 3, k + 4, chunkBox);
+		this.addBlock(world, bl ? blockState2 : blockState3, i - 1, j + 3, k + 4, chunkBox);
+		this.addBlock(world, !bl ? blockState2 : blockState3, i, j + 3, k + 4, chunkBox);
 		this.addBlock(world, blockState2, i - 1, j + 2, k + 4, chunkBox);
-		this.addBlock(world, bl ? blockState2 : blockState3, i, j + 2, k + 4, chunkBox);
-		this.addBlock(world, bl ? blockState2 : blockState3, i, j + 1, k + 4, chunkBox);
+		this.addBlock(world, blockState3, i, j + 2, k + 4, chunkBox);
+		this.addBlock(world, blockState2, i, j + 1, k + 4, chunkBox);
 	}
 
 	private void generateSuspiciousSandRoom(BlockPos pos, StructureWorldAccess world, BlockBox chunkBox) {
@@ -317,7 +317,7 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 		this.fillWithOutline(world, chunkBox, i + 3, -1, k - 3, i + 3, -1, k + 2, blockState, blockState, true);
 		this.fillWithOutline(world, chunkBox, i - 3, -1, k - 3, i + 3, -1, k - 2, blockState, blockState, true);
 		this.fillWithOutline(world, chunkBox, i - 3, -1, k + 3, i + 3, -1, k + 3, blockState, blockState, true);
-		this.addPotentialSuspiciousSandArea(chunkBox, i - 2, j + 1, k - 2, i + 2, j + 3, k + 2);
+		this.addPotentialSuspiciousSandArea(i - 2, j + 1, k - 2, i + 2, j + 3, k + 2);
 		this.generateBasementRoof(world, chunkBox, i - 2, j + 4, k - 2, i + 2, k + 2);
 		BlockState blockState3 = Blocks.ORANGE_TERRACOTTA.getDefaultState();
 		BlockState blockState4 = Blocks.BLUE_TERRACOTTA.getDefaultState();
@@ -331,44 +331,42 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 		this.addBlock(world, blockState3, i, j, k + 2, chunkBox);
 		this.addBlock(world, blockState3, i, j, k - 2, chunkBox);
 		this.addBlock(world, blockState3, i + 3, j, k, chunkBox);
-		this.addPotentialSuspiciousSandPosition(i + 3, j + 1, k, chunkBox);
-		this.addPotentialSuspiciousSandPosition(i + 3, j + 2, k, chunkBox);
+		this.addPotentialSuspiciousSandPosition(i + 3, j + 1, k);
+		this.addPotentialSuspiciousSandPosition(i + 3, j + 2, k);
 		this.addBlock(world, blockState, i + 4, j + 1, k, chunkBox);
 		this.addBlock(world, blockState2, i + 4, j + 2, k, chunkBox);
 		this.addBlock(world, blockState3, i - 3, j, k, chunkBox);
-		this.addPotentialSuspiciousSandPosition(i - 3, j + 1, k, chunkBox);
-		this.addPotentialSuspiciousSandPosition(i - 3, j + 2, k, chunkBox);
+		this.addPotentialSuspiciousSandPosition(i - 3, j + 1, k);
+		this.addPotentialSuspiciousSandPosition(i - 3, j + 2, k);
 		this.addBlock(world, blockState, i - 4, j + 1, k, chunkBox);
 		this.addBlock(world, blockState2, i - 4, j + 2, k, chunkBox);
 		this.addBlock(world, blockState3, i, j, k + 3, chunkBox);
-		this.addPotentialSuspiciousSandPosition(i, j + 1, k + 3, chunkBox);
-		this.addPotentialSuspiciousSandPosition(i, j + 2, k + 3, chunkBox);
+		this.addPotentialSuspiciousSandPosition(i, j + 1, k + 3);
+		this.addPotentialSuspiciousSandPosition(i, j + 2, k + 3);
 		this.addBlock(world, blockState3, i, j, k - 3, chunkBox);
-		this.addPotentialSuspiciousSandPosition(i, j + 1, k - 3, chunkBox);
-		this.addPotentialSuspiciousSandPosition(i, j + 2, k - 3, chunkBox);
+		this.addPotentialSuspiciousSandPosition(i, j + 1, k - 3);
+		this.addPotentialSuspiciousSandPosition(i, j + 2, k - 3);
 		this.addBlock(world, blockState, i, j + 1, k - 4, chunkBox);
 		this.addBlock(world, blockState2, i, -2, k - 4, chunkBox);
 	}
 
-	private void addPotentialSuspiciousSandPosition(int x, int y, int z, BlockBox chunkBox) {
+	private void addPotentialSuspiciousSandPosition(int x, int y, int z) {
 		BlockPos blockPos = this.offsetPos(x, y, z);
-		if (chunkBox.contains(blockPos)) {
-			this.potentialSuspiciousSandPositions.add(blockPos);
-		}
+		this.potentialSuspiciousSandPositions.add(blockPos);
 	}
 
-	private void addPotentialSuspiciousSandArea(BlockBox chunkBox, int startX, int startY, int startZ, int endX, int endY, int endZ) {
+	private void addPotentialSuspiciousSandArea(int startX, int startY, int startZ, int endX, int endY, int endZ) {
 		for (int i = startY; i <= endY; i++) {
 			for (int j = startX; j <= endX; j++) {
 				for (int k = startZ; k <= endZ; k++) {
-					this.addPotentialSuspiciousSandPosition(j, i, k, chunkBox);
+					this.addPotentialSuspiciousSandPosition(j, i, k);
 				}
 			}
 		}
 	}
 
 	private void addSandOrSandstone(StructureWorldAccess world, int x, int y, int z, BlockBox chunkBox) {
-		if (world.getRandom().nextBoolean()) {
+		if (world.getRandom().nextFloat() < 0.33F) {
 			BlockState blockState = Blocks.SANDSTONE.getDefaultState();
 			this.addBlock(world, blockState, x, y, z, chunkBox);
 		} else {
@@ -383,9 +381,18 @@ public class DesertTempleGenerator extends ShiftableStructurePiece {
 				this.addSandOrSandstone(world, i, y, j, chunkBox);
 			}
 		}
+
+		Random random = Random.create(world.getSeed()).nextSplitter().split(this.offsetPos(startX, y, startZ));
+		int j = random.nextBetween(startX, endX);
+		int k = random.nextBetween(startZ, endZ);
+		this.basementMarkerPos = new BlockPos(this.applyXTransform(j, k), this.applyYTransform(y), this.applyZTransform(j, k));
 	}
 
 	public List<BlockPos> getPotentialSuspiciousSandPositions() {
 		return this.potentialSuspiciousSandPositions;
+	}
+
+	public BlockPos getBasementMarkerPos() {
+		return this.basementMarkerPos;
 	}
 }

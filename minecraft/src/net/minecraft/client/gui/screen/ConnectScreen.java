@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.QuickPlay;
+import net.minecraft.client.QuickPlayLogger;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.Address;
 import net.minecraft.client.network.AllowedAddressResolver;
@@ -49,17 +51,20 @@ public class ConnectScreen extends Screen {
 	final Screen parent;
 	private Text status = Text.translatable("connect.connecting");
 	private long lastNarrationTime = -1L;
+	final Text failureErrorMessage;
 
-	private ConnectScreen(Screen parent) {
+	private ConnectScreen(Screen parent, Text failureErrorMessage) {
 		super(NarratorManager.EMPTY);
 		this.parent = parent;
+		this.failureErrorMessage = failureErrorMessage;
 	}
 
-	public static void connect(Screen screen, MinecraftClient client, ServerAddress address, ServerInfo info) {
-		ConnectScreen connectScreen = new ConnectScreen(screen);
+	public static void connect(Screen screen, MinecraftClient client, ServerAddress address, ServerInfo info, boolean quickPlay) {
+		ConnectScreen connectScreen = new ConnectScreen(screen, quickPlay ? QuickPlay.ERROR_TITLE : ScreenTexts.CONNECT_FAILED);
 		client.disconnect();
 		client.loadBlockList();
 		client.ensureAbuseReportContext(ReporterEnvironment.ofThirdPartyServer(info != null ? info.address : address.getAddress()));
+		client.getQuickPlayLogger().setWorld(QuickPlayLogger.WorldType.MULTIPLAYER, info.address, info.name);
 		client.setScreen(connectScreen);
 		connectScreen.connect(client, address, info);
 	}
@@ -81,7 +86,9 @@ public class ConnectScreen extends Screen {
 					}
 
 					if (!optional.isPresent()) {
-						client.execute(() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, ConnectScreen.BLOCKED_HOST_TEXT)));
+						client.execute(
+							() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ConnectScreen.this.failureErrorMessage, ConnectScreen.BLOCKED_HOST_TEXT))
+						);
 						return;
 					}
 
@@ -113,7 +120,7 @@ public class ConnectScreen extends Screen {
 							.replaceAll(inetSocketAddress.toString(), "");
 					client.execute(
 						() -> client.setScreen(
-								new DisconnectedScreen(ConnectScreen.this.parent, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string))
+								new DisconnectedScreen(ConnectScreen.this.parent, ConnectScreen.this.failureErrorMessage, Text.translatable("disconnect.genericReason", string))
 							)
 					);
 				}

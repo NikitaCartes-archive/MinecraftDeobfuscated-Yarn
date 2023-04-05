@@ -396,7 +396,7 @@ public abstract class StructurePiece {
 	}
 
 	protected boolean canReplace(BlockState state) {
-		return state.isAir() || state.getMaterial().isLiquid() || state.isOf(Blocks.GLOW_LICHEN) || state.isOf(Blocks.SEAGRASS) || state.isOf(Blocks.TALL_SEAGRASS);
+		return state.isAir() || state.isLiquid() || state.isOf(Blocks.GLOW_LICHEN) || state.isOf(Blocks.SEAGRASS) || state.isOf(Blocks.TALL_SEAGRASS);
 	}
 
 	protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {

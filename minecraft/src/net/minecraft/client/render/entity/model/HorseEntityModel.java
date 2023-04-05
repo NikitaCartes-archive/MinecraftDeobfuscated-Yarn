@@ -178,16 +178,16 @@ public class HorseEntityModel<T extends AbstractHorseEntity> extends AnimalModel
 		);
 		modelPartData3.addChild(
 			"left_saddle_line",
-			ModelPartBuilder.create().uv(32, 2).cuboid(3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F, dilation),
+			ModelPartBuilder.create().uv(32, 2).cuboid(3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F),
 			ModelTransform.rotation((float) (-Math.PI / 6), 0.0F, 0.0F)
 		);
 		modelPartData3.addChild(
 			"right_saddle_line",
-			ModelPartBuilder.create().uv(32, 2).cuboid(-3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F, dilation),
+			ModelPartBuilder.create().uv(32, 2).cuboid(-3.1F, -6.0F, -8.0F, 0.0F, 3.0F, 16.0F),
 			ModelTransform.rotation((float) (-Math.PI / 6), 0.0F, 0.0F)
 		);
 		modelPartData3.addChild(
-			"head_saddle", ModelPartBuilder.create().uv(1, 1).cuboid(-3.0F, -11.0F, -1.9F, 6.0F, 5.0F, 6.0F, new Dilation(0.2F)), ModelTransform.NONE
+			"head_saddle", ModelPartBuilder.create().uv(1, 1).cuboid(-3.0F, -11.0F, -1.9F, 6.0F, 5.0F, 6.0F, new Dilation(0.22F)), ModelTransform.NONE
 		);
 		modelPartData3.addChild(
 			"mouth_saddle_wrap", ModelPartBuilder.create().uv(19, 0).cuboid(-2.0F, -11.0F, -4.0F, 4.0F, 5.0F, 2.0F, new Dilation(0.2F)), ModelTransform.NONE

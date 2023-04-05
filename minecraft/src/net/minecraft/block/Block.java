@@ -526,8 +526,8 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
 	}
 
-	public boolean canMobSpawnInside() {
-		return !this.material.isSolid() && !this.material.isLiquid();
+	public boolean canMobSpawnInside(BlockState state) {
+		return !this.material.isSolid() && !state.isLiquid();
 	}
 
 	public MutableText getName() {

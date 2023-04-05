@@ -934,7 +934,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					this.horizontalSpeed = this.horizontalSpeed + (float)vec3d.horizontalLength() * 0.6F;
 					this.distanceTraveled = this.distanceTraveled + (float)Math.sqrt(e * e + f * f + g * g) * 0.6F;
 					if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
-						if (this.onGround || bl3) {
+						if (!this.onGround && !bl3 && (!this.isInSneakingPose() || movement.y != 0.0)) {
+							if (this.isTouchingWater()) {
+								this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
+								if (moveEffect.playsSounds()) {
+									Entity entity = (Entity)(this.hasPassengers() && this.getControllingPassenger() != null ? this.getControllingPassenger() : this);
+									float h = entity == this ? 0.35F : 0.4F;
+									Vec3d vec3d3 = entity.getVelocity();
+									float i = Math.min(1.0F, (float)Math.sqrt(vec3d3.x * vec3d3.x * 0.2F + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * 0.2F) * h);
+									this.playSwimSound(i);
+								}
+
+								if (moveEffect.emitsGameEvents()) {
+									this.emitGameEvent(GameEvent.SWIM);
+								}
+							}
+						} else {
 							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
 							if (moveEffect.playsSounds()) {
 								this.playStepSounds(blockPos, blockState);
@@ -942,19 +957,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 							if (moveEffect.emitsGameEvents()) {
 								this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
-							}
-						} else if (this.isTouchingWater()) {
-							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
-							if (moveEffect.playsSounds()) {
-								Entity entity = (Entity)(this.hasPassengers() && this.getControllingPassenger() != null ? this.getControllingPassenger() : this);
-								float h = entity == this ? 0.35F : 0.4F;
-								Vec3d vec3d3 = entity.getVelocity();
-								float i = Math.min(1.0F, (float)Math.sqrt(vec3d3.x * vec3d3.x * 0.2F + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * 0.2F) * h);
-								this.playSwimSound(i);
-							}
-
-							if (moveEffect.emitsGameEvents()) {
-								this.emitGameEvent(GameEvent.SWIM);
 							}
 						}
 					} else if (blockState.isAir()) {
@@ -4869,6 +4871,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	public final float getHeight() {
 		return this.dimensions.height;
+	}
+
+	public float getNameLabelHeight() {
+		return this.getHeight() + 0.5F;
 	}
 
 	/**

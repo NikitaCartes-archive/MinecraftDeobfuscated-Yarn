@@ -72,8 +72,10 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	private void decrementStack(int slot) {
 		ItemStack itemStack = this.input.getStack(slot);
-		itemStack.decrement(1);
-		this.input.setStack(slot, itemStack);
+		if (!itemStack.isEmpty()) {
+			itemStack.decrement(1);
+			this.input.setStack(slot, itemStack);
+		}
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import net.minecraft.sound.SoundEvents;
 
 public record BlockSetType(
 	String name,
+	boolean canOpenByHand,
 	BlockSoundGroup soundType,
 	SoundEvent doorClose,
 	SoundEvent doorOpen,
@@ -23,6 +24,7 @@ public record BlockSetType(
 	public static final BlockSetType IRON = register(
 		new BlockSetType(
 			"iron",
+			false,
 			BlockSoundGroup.METAL,
 			SoundEvents.BLOCK_IRON_DOOR_CLOSE,
 			SoundEvents.BLOCK_IRON_DOOR_OPEN,
@@ -37,6 +39,7 @@ public record BlockSetType(
 	public static final BlockSetType GOLD = register(
 		new BlockSetType(
 			"gold",
+			false,
 			BlockSoundGroup.METAL,
 			SoundEvents.BLOCK_IRON_DOOR_CLOSE,
 			SoundEvents.BLOCK_IRON_DOOR_OPEN,
@@ -51,6 +54,7 @@ public record BlockSetType(
 	public static final BlockSetType STONE = register(
 		new BlockSetType(
 			"stone",
+			true,
 			BlockSoundGroup.STONE,
 			SoundEvents.BLOCK_IRON_DOOR_CLOSE,
 			SoundEvents.BLOCK_IRON_DOOR_OPEN,
@@ -65,6 +69,7 @@ public record BlockSetType(
 	public static final BlockSetType POLISHED_BLACKSTONE = register(
 		new BlockSetType(
 			"polished_blackstone",
+			true,
 			BlockSoundGroup.STONE,
 			SoundEvents.BLOCK_IRON_DOOR_CLOSE,
 			SoundEvents.BLOCK_IRON_DOOR_OPEN,
@@ -83,6 +88,7 @@ public record BlockSetType(
 	public static final BlockSetType CHERRY = register(
 		new BlockSetType(
 			"cherry",
+			true,
 			BlockSoundGroup.CHERRY_WOOD,
 			SoundEvents.BLOCK_CHERRY_WOOD_DOOR_CLOSE,
 			SoundEvents.BLOCK_CHERRY_WOOD_DOOR_OPEN,
@@ -99,6 +105,7 @@ public record BlockSetType(
 	public static final BlockSetType CRIMSON = register(
 		new BlockSetType(
 			"crimson",
+			true,
 			BlockSoundGroup.NETHER_WOOD,
 			SoundEvents.BLOCK_NETHER_WOOD_DOOR_CLOSE,
 			SoundEvents.BLOCK_NETHER_WOOD_DOOR_OPEN,
@@ -113,6 +120,7 @@ public record BlockSetType(
 	public static final BlockSetType WARPED = register(
 		new BlockSetType(
 			"warped",
+			true,
 			BlockSoundGroup.NETHER_WOOD,
 			SoundEvents.BLOCK_NETHER_WOOD_DOOR_CLOSE,
 			SoundEvents.BLOCK_NETHER_WOOD_DOOR_OPEN,
@@ -128,6 +136,7 @@ public record BlockSetType(
 	public static final BlockSetType BAMBOO = register(
 		new BlockSetType(
 			"bamboo",
+			true,
 			BlockSoundGroup.BAMBOO_WOOD,
 			SoundEvents.BLOCK_BAMBOO_WOOD_DOOR_CLOSE,
 			SoundEvents.BLOCK_BAMBOO_WOOD_DOOR_OPEN,
@@ -143,6 +152,7 @@ public record BlockSetType(
 	public BlockSetType(String name) {
 		this(
 			name,
+			true,
 			BlockSoundGroup.WOOD,
 			SoundEvents.BLOCK_WOODEN_DOOR_CLOSE,
 			SoundEvents.BLOCK_WOODEN_DOOR_OPEN,

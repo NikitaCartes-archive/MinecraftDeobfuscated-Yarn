@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.passive.SnifferEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.tag.BlockTags;
@@ -22,8 +23,8 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class SnifferEggBlock extends Block {
-	public static final int HATCHING_AGE = 2;
-	public static final IntProperty AGE = Properties.AGE_2;
+	public static final int FINAL_HATCH_STAGE = 2;
+	public static final IntProperty HATCH = Properties.HATCH;
 	private static final int HATCHING_TIME = 24000;
 	private static final int BOOSTED_HATCHING_TIME = 12000;
 	private static final int MAX_RANDOM_CRACK_TIME_OFFSET = 300;
@@ -31,12 +32,12 @@ public class SnifferEggBlock extends Block {
 
 	public SnifferEggBlock(AbstractBlock.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateManager.getDefaultState().with(HATCH, Integer.valueOf(0)));
 	}
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(AGE);
+		builder.add(HATCH);
 	}
 
 	@Override
@@ -44,12 +45,12 @@ public class SnifferEggBlock extends Block {
 		return SHAPE;
 	}
 
-	public int getAge(BlockState state) {
-		return (Integer)state.get(AGE);
+	public int getHatchStage(BlockState state) {
+		return (Integer)state.get(HATCH);
 	}
 
 	private boolean isReadyToHatch(BlockState state) {
-		return this.getAge(state) == 2;
+		return this.getHatchStage(state) == 2;
 	}
 
 	@Override
@@ -60,10 +61,10 @@ public class SnifferEggBlock extends Block {
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		if (!this.isReadyToHatch(state)) {
-			world.playSound(null, pos, SoundEvents.ENTITY_SNIFFER_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
-			world.setBlockState(pos, state.with(AGE, Integer.valueOf(this.getAge(state) + 1)), Block.NOTIFY_LISTENERS);
+			world.playSound(null, pos, SoundEvents.BLOCK_SNIFFER_EGG_CRACK, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+			world.setBlockState(pos, state.with(HATCH, Integer.valueOf(this.getHatchStage(state) + 1)), Block.NOTIFY_LISTENERS);
 		} else {
-			world.playSound(null, pos, SoundEvents.ENTITY_SNIFFER_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
+			world.playSound(null, pos, SoundEvents.BLOCK_SNIFFER_EGG_HATCH, SoundCategory.BLOCKS, 0.7F, 0.9F + random.nextFloat() * 0.2F);
 			world.breakBlock(pos, false);
 			SnifferEntity snifferEntity = EntityType.SNIFFER.create(world);
 			if (snifferEntity != null) {
@@ -86,6 +87,11 @@ public class SnifferEggBlock extends Block {
 		int j = i / 3;
 		world.emitGameEvent(GameEvent.BLOCK_PLACE, pos, GameEvent.Emitter.of(state));
 		world.scheduleBlockTick(pos, this, j + world.random.nextInt(300));
+	}
+
+	@Override
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		return false;
 	}
 
 	public static boolean isAboveHatchBooster(BlockView world, BlockPos pos) {

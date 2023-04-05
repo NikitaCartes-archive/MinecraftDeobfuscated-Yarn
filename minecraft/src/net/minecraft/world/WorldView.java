@@ -122,7 +122,7 @@ public interface WorldView extends BlockRenderView, CollisionView, RedstoneView,
 			} else {
 				for (BlockPos var4 = blockPos.down(); var4.getY() > pos.getY(); var4 = var4.down()) {
 					BlockState blockState = this.getBlockState(var4);
-					if (blockState.getOpacity(this, var4) > 0 && !blockState.getMaterial().isLiquid()) {
+					if (blockState.getOpacity(this, var4) > 0 && !blockState.isLiquid()) {
 						return false;
 					}
 				}

@@ -33,9 +33,7 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 			if (optional.isPresent()) {
 				ItemStack itemStack = ((SmeltingRecipe)optional.get()).getOutput(context.getWorld().getRegistryManager());
 				if (!itemStack.isEmpty()) {
-					ItemStack itemStack2 = itemStack.copy();
-					itemStack2.setCount(stack.getCount());
-					return itemStack2;
+					return itemStack.copyWithCount(stack.getCount());
 				}
 			}
 

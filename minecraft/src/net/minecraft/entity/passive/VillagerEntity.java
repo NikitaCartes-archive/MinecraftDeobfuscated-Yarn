@@ -101,7 +101,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	public static final Map<Item, Integer> ITEM_FOOD_VALUES = ImmutableMap.of(Items.BREAD, 4, Items.POTATO, 1, Items.CARROT, 1, Items.BEETROOT, 1);
 	private static final int field_30604 = 2;
 	private static final Set<Item> GATHERABLE_ITEMS = ImmutableSet.of(
-		Items.BREAD, Items.POTATO, Items.CARROT, Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT, Items.BEETROOT_SEEDS
+		Items.BREAD, Items.POTATO, Items.CARROT, Items.WHEAT, Items.WHEAT_SEEDS, Items.BEETROOT, Items.BEETROOT_SEEDS, Items.TORCHFLOWER_SEEDS, Items.PITCHER_POD
 	);
 	private static final int field_30605 = 10;
 	private static final int field_30606 = 1200;

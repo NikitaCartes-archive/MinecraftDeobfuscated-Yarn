@@ -3540,8 +3540,8 @@ public class BlockStateModelGenerator {
 
 	private void registerSnifferEgg() {
 		this.registerItemModel(Items.SNIFFER_EGG);
-		Function<Integer, Identifier> function = age -> {
-			String string = switch (age) {
+		Function<Integer, Identifier> function = hatch -> {
+			String string = switch (hatch) {
 				case 1 -> "_slightly_cracked";
 				case 2 -> "_very_cracked";
 				default -> "_not_cracked";
@@ -3553,7 +3553,8 @@ public class BlockStateModelGenerator {
 			.accept(
 				VariantsBlockStateSupplier.create(Blocks.SNIFFER_EGG)
 					.coordinate(
-						BlockStateVariantMap.create(SnifferEggBlock.AGE).register(age -> BlockStateVariant.create().put(VariantSettings.MODEL, (Identifier)function.apply(age)))
+						BlockStateVariantMap.create(SnifferEggBlock.HATCH)
+							.register(hatch -> BlockStateVariant.create().put(VariantSettings.MODEL, (Identifier)function.apply(hatch)))
 					)
 			);
 	}
@@ -4304,7 +4305,7 @@ public class BlockStateModelGenerator {
 		this.registerTintableCross(Blocks.GRASS, BlockStateModelGenerator.TintType.TINTED);
 		this.registerTintableCrossBlockState(Blocks.SUGAR_CANE, BlockStateModelGenerator.TintType.TINTED);
 		this.registerItemModel(Items.SUGAR_CANE);
-		this.registerPlantPart(Blocks.KELP, Blocks.KELP_PLANT, BlockStateModelGenerator.TintType.TINTED);
+		this.registerPlantPart(Blocks.KELP, Blocks.KELP_PLANT, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerItemModel(Items.KELP);
 		this.excludeFromSimpleItemModelGeneration(Blocks.KELP_PLANT);
 		this.registerTintableCrossBlockState(Blocks.HANGING_ROOTS, BlockStateModelGenerator.TintType.NOT_TINTED);

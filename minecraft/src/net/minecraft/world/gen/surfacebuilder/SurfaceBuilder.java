@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -267,7 +266,7 @@ public class SurfaceBuilder {
 
 			for (int o = Math.max(surfaceY, (int)i + 1); o >= minY; o--) {
 				if (column.getState(o).isAir() && o < (int)k && random.nextDouble() > 0.01
-					|| column.getState(o).getMaterial() == Material.WATER && o > (int)j && o < this.seaLevel && j != 0.0 && random.nextDouble() > 0.15) {
+					|| column.getState(o).isOf(Blocks.WATER) && o > (int)j && o < this.seaLevel && j != 0.0 && random.nextDouble() > 0.15) {
 					if (n <= l && o > m) {
 						column.setState(o, SNOW_BLOCK);
 						n++;

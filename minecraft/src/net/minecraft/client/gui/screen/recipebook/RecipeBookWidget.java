@@ -321,32 +321,36 @@ public class RecipeBookWidget extends DrawableHelper implements RecipeGridAligne
 
 				return true;
 			} else if (this.searchField.mouseClicked(mouseX, mouseY, button)) {
-				return true;
-			} else if (this.toggleCraftableButton.mouseClicked(mouseX, mouseY, button)) {
-				boolean bl = this.toggleFilteringCraftable();
-				this.toggleCraftableButton.setToggled(bl);
-				this.updateTooltip();
-				this.sendBookDataPacket();
-				this.refreshResults(false);
+				this.searchField.setFocused(true);
 				return true;
 			} else {
-				for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
-					if (recipeGroupButtonWidget.mouseClicked(mouseX, mouseY, button)) {
-						if (this.currentTab != recipeGroupButtonWidget) {
-							if (this.currentTab != null) {
-								this.currentTab.setToggled(false);
+				this.searchField.setFocused(false);
+				if (this.toggleCraftableButton.mouseClicked(mouseX, mouseY, button)) {
+					boolean bl = this.toggleFilteringCraftable();
+					this.toggleCraftableButton.setToggled(bl);
+					this.updateTooltip();
+					this.sendBookDataPacket();
+					this.refreshResults(false);
+					return true;
+				} else {
+					for (RecipeGroupButtonWidget recipeGroupButtonWidget : this.tabButtons) {
+						if (recipeGroupButtonWidget.mouseClicked(mouseX, mouseY, button)) {
+							if (this.currentTab != recipeGroupButtonWidget) {
+								if (this.currentTab != null) {
+									this.currentTab.setToggled(false);
+								}
+
+								this.currentTab = recipeGroupButtonWidget;
+								this.currentTab.setToggled(true);
+								this.refreshResults(true);
 							}
 
-							this.currentTab = recipeGroupButtonWidget;
-							this.currentTab.setToggled(true);
-							this.refreshResults(true);
+							return true;
 						}
-
-						return true;
 					}
-				}
 
-				return false;
+					return false;
+				}
 			}
 		} else {
 			return false;

@@ -3,6 +3,7 @@ package net.minecraft.client.render.entity.model;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
@@ -67,9 +68,12 @@ public class SquidEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
+		Dilation dilation = new Dilation(0.02F);
 		int i = -16;
 		modelPartData.addChild(
-			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 0).cuboid(-6.0F, -8.0F, -6.0F, 12.0F, 16.0F, 12.0F), ModelTransform.pivot(0.0F, 8.0F, 0.0F)
+			EntityModelPartNames.BODY,
+			ModelPartBuilder.create().uv(0, 0).cuboid(-6.0F, -8.0F, -6.0F, 12.0F, 16.0F, 12.0F, dilation),
+			ModelTransform.pivot(0.0F, 8.0F, 0.0F)
 		);
 		int j = 8;
 		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(48, 0).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, 18.0F, 2.0F);

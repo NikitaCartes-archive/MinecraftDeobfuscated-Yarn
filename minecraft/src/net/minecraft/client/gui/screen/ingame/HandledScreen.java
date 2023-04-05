@@ -118,11 +118,9 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 			int l = this.touchDragStack.isEmpty() ? 8 : 16;
 			String string = null;
 			if (!this.touchDragStack.isEmpty() && this.touchIsRightClickDrag) {
-				itemStack = itemStack.copy();
-				itemStack.setCount(MathHelper.ceil((float)itemStack.getCount() / 2.0F));
+				itemStack = itemStack.copyWithCount(MathHelper.ceil((float)itemStack.getCount() / 2.0F));
 			} else if (this.cursorDragging && this.cursorDragSlots.size() > 1) {
-				itemStack = itemStack.copy();
-				itemStack.setCount(this.draggedStackRemainder);
+				itemStack = itemStack.copyWithCount(this.draggedStackRemainder);
 				if (itemStack.isEmpty()) {
 					string = Formatting.YELLOW + "0";
 				}
@@ -187,22 +185,23 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		ItemStack itemStack2 = this.handler.getCursorStack();
 		String string = null;
 		if (slot == this.touchDragSlotStart && !this.touchDragStack.isEmpty() && this.touchIsRightClickDrag && !itemStack.isEmpty()) {
-			itemStack = itemStack.copy();
-			itemStack.setCount(itemStack.getCount() / 2);
+			itemStack = itemStack.copyWithCount(itemStack.getCount() / 2);
 		} else if (this.cursorDragging && this.cursorDragSlots.contains(slot) && !itemStack2.isEmpty()) {
 			if (this.cursorDragSlots.size() == 1) {
 				return;
 			}
 
 			if (ScreenHandler.canInsertItemIntoSlot(slot, itemStack2, true) && this.handler.canInsertIntoSlot(slot)) {
-				itemStack = itemStack2.copy();
 				bl = true;
-				ScreenHandler.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack, slot.getStack().isEmpty() ? 0 : slot.getStack().getCount());
-				int k = Math.min(itemStack.getMaxCount(), slot.getMaxItemCount(itemStack));
-				if (itemStack.getCount() > k) {
+				int k = Math.min(itemStack2.getMaxCount(), slot.getMaxItemCount(itemStack2));
+				int l = slot.getStack().isEmpty() ? 0 : slot.getStack().getCount();
+				int m = ScreenHandler.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack2) + l;
+				if (m > k) {
+					m = k;
 					string = Formatting.YELLOW.toString() + k;
-					itemStack.setCount(k);
 				}
+
+				itemStack = itemStack2.copyWithCount(m);
 			} else {
 				this.cursorDragSlots.remove(slot);
 				this.calculateOffset();
@@ -242,16 +241,11 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				this.draggedStackRemainder = itemStack.getCount();
 
 				for (Slot slot : this.cursorDragSlots) {
-					ItemStack itemStack2 = itemStack.copy();
-					ItemStack itemStack3 = slot.getStack();
-					int i = itemStack3.isEmpty() ? 0 : itemStack3.getCount();
-					ScreenHandler.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack2, i);
-					int j = Math.min(itemStack2.getMaxCount(), slot.getMaxItemCount(itemStack2));
-					if (itemStack2.getCount() > j) {
-						itemStack2.setCount(j);
-					}
-
-					this.draggedStackRemainder = this.draggedStackRemainder - (itemStack2.getCount() - i);
+					ItemStack itemStack2 = slot.getStack();
+					int i = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
+					int j = Math.min(itemStack.getMaxCount(), slot.getMaxItemCount(itemStack));
+					int k = Math.min(ScreenHandler.calculateStackSize(this.cursorDragSlots, this.heldButtonType, itemStack) + i, j);
+					this.draggedStackRemainder -= k - i;
 				}
 			}
 		}

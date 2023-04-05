@@ -50,8 +50,7 @@ public class FallingBlock extends Block implements LandingBlock {
 	}
 
 	public static boolean canFallThrough(BlockState state) {
-		Material material = state.getMaterial();
-		return state.isAir() || state.isIn(BlockTags.FIRE) || material.isLiquid() || state.isReplaceable();
+		return state.isAir() || state.isIn(BlockTags.FIRE) || state.isLiquid() || state.isReplaceable();
 	}
 
 	@Override

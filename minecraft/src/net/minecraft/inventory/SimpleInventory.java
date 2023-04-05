@@ -95,13 +95,17 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	}
 
 	public ItemStack addStack(ItemStack stack) {
-		ItemStack itemStack = stack.copy();
-		this.addToExistingSlot(itemStack);
-		if (itemStack.isEmpty()) {
+		if (stack.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
-			this.addToNewSlot(itemStack);
-			return itemStack.isEmpty() ? ItemStack.EMPTY : itemStack;
+			ItemStack itemStack = stack.copy();
+			this.addToExistingSlot(itemStack);
+			if (itemStack.isEmpty()) {
+				return ItemStack.EMPTY;
+			} else {
+				this.addToNewSlot(itemStack);
+				return itemStack.isEmpty() ? ItemStack.EMPTY : itemStack;
+			}
 		}
 	}
 
@@ -190,8 +194,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		for (int i = 0; i < this.size; i++) {
 			ItemStack itemStack = this.getStack(i);
 			if (itemStack.isEmpty()) {
-				this.setStack(i, stack.copy());
-				stack.setCount(0);
+				this.setStack(i, stack.copyAndEmpty());
 				return;
 			}
 		}

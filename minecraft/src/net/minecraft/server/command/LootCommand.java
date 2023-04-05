@@ -29,6 +29,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootManager;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
@@ -44,7 +45,7 @@ import net.minecraft.util.math.Vec3d;
 public class LootCommand {
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
 		LootManager lootManager = context.getSource().getServer().getLootManager();
-		return CommandSource.suggestIdentifiers(lootManager.getTableIds(), builder);
+		return CommandSource.suggestIdentifiers(lootManager.getIds(LootDataType.LOOT_TABLES), builder);
 	};
 	private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(
 		entityName -> Text.translatable("commands.drop.no_held_items", entityName)
@@ -451,7 +452,7 @@ public class LootCommand {
 			builder.optionalParameter(LootContextParameters.KILLER_ENTITY, entity2);
 			builder.parameter(LootContextParameters.THIS_ENTITY, entity);
 			builder.parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition());
-			LootTable lootTable = serverCommandSource.getServer().getLootManager().getTable(identifier);
+			LootTable lootTable = serverCommandSource.getServer().getLootManager().getLootTable(identifier);
 			List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.ENTITY));
 			return constructor.accept(context, list, stacks -> sendDroppedFeedback(serverCommandSource, stacks, identifier));
 		}
@@ -481,7 +482,7 @@ public class LootCommand {
 		CommandContext<ServerCommandSource> context, Identifier lootTable, LootContext lootContext, LootCommand.Target constructor
 	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = context.getSource();
-		LootTable lootTable2 = serverCommandSource.getServer().getLootManager().getTable(lootTable);
+		LootTable lootTable2 = serverCommandSource.getServer().getLootManager().getLootTable(lootTable);
 		List<ItemStack> list = lootTable2.generateLoot(lootContext);
 		return constructor.accept(context, list, stacks -> sendDroppedFeedback(serverCommandSource, stacks));
 	}

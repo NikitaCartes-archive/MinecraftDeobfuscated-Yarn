@@ -94,6 +94,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.property.Properties;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -2926,7 +2927,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.world
 					.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_LAVA_EXTINGUISH, SoundCategory.BLOCKS, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false);
 
-				for (int kx = 0; kx < 8; kx++) {
+				for (int xx = 0; xx < 8; xx++) {
 					this.world
 						.addParticle(
 							ParticleTypes.LARGE_SMOKE, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0
@@ -2939,21 +2940,21 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 						pos, SoundEvents.BLOCK_REDSTONE_TORCH_BURNOUT, SoundCategory.BLOCKS, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false
 					);
 
-				for (int kx = 0; kx < 5; kx++) {
-					double d = (double)pos.getX() + random.nextDouble() * 0.6 + 0.2;
-					double e = (double)pos.getY() + random.nextDouble() * 0.6 + 0.2;
-					double f = (double)pos.getZ() + random.nextDouble() * 0.6 + 0.2;
-					this.world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+				for (int xx = 0; xx < 5; xx++) {
+					double e = (double)pos.getX() + random.nextDouble() * 0.6 + 0.2;
+					double f = (double)pos.getY() + random.nextDouble() * 0.6 + 0.2;
+					double y = (double)pos.getZ() + random.nextDouble() * 0.6 + 0.2;
+					this.world.addParticle(ParticleTypes.SMOKE, e, f, y, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 1503:
 				this.world.playSoundAtBlockCenter(pos, SoundEvents.BLOCK_END_PORTAL_FRAME_FILL, SoundCategory.BLOCKS, 1.0F, 1.0F, false);
 
-				for (int kx = 0; kx < 16; kx++) {
-					double d = (double)pos.getX() + (5.0 + random.nextDouble() * 6.0) / 16.0;
-					double e = (double)pos.getY() + 0.8125;
-					double f = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
-					this.world.addParticle(ParticleTypes.SMOKE, d, e, f, 0.0, 0.0, 0.0);
+				for (int xx = 0; xx < 16; xx++) {
+					double e = (double)pos.getX() + (5.0 + random.nextDouble() * 6.0) / 16.0;
+					double f = (double)pos.getY() + 0.8125;
+					double y = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
+					this.world.addParticle(ParticleTypes.SMOKE, e, f, y, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 1504:
@@ -2967,19 +2968,19 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				Direction direction = Direction.byId(data);
 				int i = direction.getOffsetX();
 				int jx = direction.getOffsetY();
-				int kx = direction.getOffsetZ();
+				int k = direction.getOffsetZ();
 				double d = (double)pos.getX() + (double)i * 0.6 + 0.5;
 				double e = (double)pos.getY() + (double)jx * 0.6 + 0.5;
-				double f = (double)pos.getZ() + (double)kx * 0.6 + 0.5;
+				double f = (double)pos.getZ() + (double)k * 0.6 + 0.5;
 
 				for (int l = 0; l < 10; l++) {
 					double g = random.nextDouble() * 0.2 + 0.01;
-					double h = d + (double)i * 0.01 + (random.nextDouble() - 0.5) * (double)kx * 0.5;
+					double h = d + (double)i * 0.01 + (random.nextDouble() - 0.5) * (double)k * 0.5;
 					double m = e + (double)jx * 0.01 + (random.nextDouble() - 0.5) * (double)jx * 0.5;
-					double n = f + (double)kx * 0.01 + (random.nextDouble() - 0.5) * (double)i * 0.5;
+					double n = f + (double)k * 0.01 + (random.nextDouble() - 0.5) * (double)i * 0.5;
 					double o = (double)i * g + random.nextGaussian() * 0.01;
 					double p = (double)jx * g + random.nextGaussian() * 0.01;
-					double q = (double)kx * g + random.nextGaussian() * 0.01;
+					double q = (double)k * g + random.nextGaussian() * 0.01;
 					this.addParticle(ParticleTypes.SMOKE, h, m, n, o, p, q);
 				}
 				break;
@@ -3016,7 +3017,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				float w = (float)(data >> 0 & 0xFF) / 255.0F;
 				ParticleEffect particleEffect = eventId == 2007 ? ParticleTypes.INSTANT_EFFECT : ParticleTypes.EFFECT;
 
-				for (int x = 0; x < 100; x++) {
+				for (int xx = 0; xx < 100; xx++) {
 					double e = random.nextDouble() * 4.0;
 					double f = random.nextDouble() * Math.PI * 2.0;
 					double y = Math.cos(f) * e;
@@ -3069,17 +3070,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				BoneMealItem.createParticles(this.world, pos, data);
 				break;
 			case 2006:
-				for (int k = 0; k < 200; k++) {
-					float af = random.nextFloat() * 4.0F;
-					float ag = random.nextFloat() * (float) (Math.PI * 2);
-					double e = (double)(MathHelper.cos(ag) * af);
-					double f = 0.01 + random.nextDouble() * 0.5;
-					double y = (double)(MathHelper.sin(ag) * af);
+				for (int x = 0; x < 200; x++) {
+					float ak = random.nextFloat() * 4.0F;
+					float ao = random.nextFloat() * (float) (Math.PI * 2);
+					double f = (double)(MathHelper.cos(ao) * ak);
+					double y = 0.01 + random.nextDouble() * 0.5;
+					double z = (double)(MathHelper.sin(ao) * ak);
 					Particle particle2 = this.spawnParticle(
-						ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + e * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + y * 0.1, e, f, y
+						ParticleTypes.DRAGON_BREATH, false, (double)pos.getX() + f * 0.1, (double)pos.getY() + 0.3, (double)pos.getZ() + z * 0.1, f, y, z
 					);
 					if (particle2 != null) {
-						particle2.move(af);
+						particle2.move(ak);
 					}
 				}
 
@@ -3091,7 +3092,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.world.addParticle(ParticleTypes.EXPLOSION, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0);
 				break;
 			case 2009:
-				for (int kx = 0; kx < 8; kx++) {
+				for (int xx = 0; xx < 8; xx++) {
 					this.world
 						.addParticle(
 							ParticleTypes.CLOUD, (double)pos.getX() + random.nextDouble(), (double)pos.getY() + 1.2, (double)pos.getZ() + random.nextDouble(), 0.0, 0.0, 0.0
@@ -3184,24 +3185,28 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				}
 				break;
 			case 3007:
-				for (int kx = 0; kx < 10; kx++) {
+				for (int k = 0; k < 10; k++) {
 					this.world
 						.addParticle(
-							new ShriekParticleEffect(kx * 5), false, (double)pos.getX() + 0.5, (double)pos.getY() + SculkShriekerBlock.TOP, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0
+							new ShriekParticleEffect(k * 5), false, (double)pos.getX() + 0.5, (double)pos.getY() + SculkShriekerBlock.TOP, (double)pos.getZ() + 0.5, 0.0, 0.0, 0.0
 						);
 				}
 
-				this.world
-					.playSound(
-						(double)pos.getX() + 0.5,
-						(double)pos.getY() + SculkShriekerBlock.TOP,
-						(double)pos.getZ() + 0.5,
-						SoundEvents.BLOCK_SCULK_SHRIEKER_SHRIEK,
-						SoundCategory.BLOCKS,
-						2.0F,
-						0.6F + this.world.random.nextFloat() * 0.4F,
-						false
-					);
+				BlockState blockState3 = this.world.getBlockState(pos);
+				boolean bl2 = blockState3.contains(Properties.WATERLOGGED) && (Boolean)blockState3.get(Properties.WATERLOGGED);
+				if (!bl2) {
+					this.world
+						.playSound(
+							(double)pos.getX() + 0.5,
+							(double)pos.getY() + SculkShriekerBlock.TOP,
+							(double)pos.getZ() + 0.5,
+							SoundEvents.BLOCK_SCULK_SHRIEKER_SHRIEK,
+							SoundCategory.BLOCKS,
+							2.0F,
+							0.6F + this.world.random.nextFloat() * 0.4F,
+							false
+						);
+				}
 				break;
 			case 3008:
 				BlockState blockState2 = Block.getStateFromRawId(data);

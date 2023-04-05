@@ -434,7 +434,7 @@ public class PiglinBrain {
 	}
 
 	private static List<ItemStack> getBarteredItem(PiglinEntity piglin) {
-		LootTable lootTable = piglin.world.getServer().getLootManager().getTable(LootTables.PIGLIN_BARTERING_GAMEPLAY);
+		LootTable lootTable = piglin.world.getServer().getLootManager().getLootTable(LootTables.PIGLIN_BARTERING_GAMEPLAY);
 		List<ItemStack> list = lootTable.generateLoot(
 			new LootContext.Builder((ServerWorld)piglin.world)
 				.parameter(LootContextParameters.THIS_ENTITY, piglin)

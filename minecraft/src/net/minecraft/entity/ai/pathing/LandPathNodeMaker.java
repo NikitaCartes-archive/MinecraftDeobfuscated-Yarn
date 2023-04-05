@@ -16,7 +16,6 @@ import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.Material;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -521,7 +520,6 @@ public class LandPathNodeMaker extends PathNodeMaker {
 	protected static PathNodeType getCommonNodeType(BlockView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
 		Block block = blockState.getBlock();
-		Material material = blockState.getMaterial();
 		if (blockState.isAir()) {
 			return PathNodeType.OPEN;
 		} else if (blockState.isIn(BlockTags.TRAPDOORS) || blockState.isOf(Blocks.LILY_PAD) || blockState.isOf(Blocks.BIG_DRIPLEAF)) {
@@ -540,12 +538,12 @@ public class LandPathNodeMaker extends PathNodeMaker {
 				return PathNodeType.LAVA;
 			} else if (inflictsFireDamage(blockState)) {
 				return PathNodeType.DAMAGE_FIRE;
-			} else if (DoorBlock.isWoodenDoor(blockState) && !(Boolean)blockState.get(DoorBlock.OPEN)) {
-				return PathNodeType.DOOR_WOOD_CLOSED;
-			} else if (block instanceof DoorBlock && material == Material.METAL && !(Boolean)blockState.get(DoorBlock.OPEN)) {
-				return PathNodeType.DOOR_IRON_CLOSED;
-			} else if (block instanceof DoorBlock && (Boolean)blockState.get(DoorBlock.OPEN)) {
-				return PathNodeType.DOOR_OPEN;
+			} else if (block instanceof DoorBlock doorBlock) {
+				if ((Boolean)blockState.get(DoorBlock.OPEN)) {
+					return PathNodeType.DOOR_OPEN;
+				} else {
+					return doorBlock.getBlockSetType().canOpenByHand() ? PathNodeType.DOOR_WOOD_CLOSED : PathNodeType.DOOR_IRON_CLOSED;
+				}
 			} else if (block instanceof AbstractRailBlock) {
 				return PathNodeType.RAIL;
 			} else if (block instanceof LeavesBlock) {

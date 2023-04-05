@@ -319,8 +319,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 			this.decrementStackUnlessInCreative(player, itemStack);
 			return ActionResult.SUCCESS;
 		} else if (itemStack2.isEmpty() && !itemStack.isEmpty()) {
-			ItemStack itemStack3 = itemStack.copy();
-			itemStack3.setCount(1);
+			ItemStack itemStack3 = itemStack.copyWithCount(1);
 			this.setStackInHand(Hand.MAIN_HAND, itemStack3);
 			this.decrementStackUnlessInCreative(player, itemStack);
 			this.world.playSoundFromEntity(player, this, SoundEvents.ENTITY_ALLAY_ITEM_GIVEN, SoundCategory.NEUTRAL, 2.0F, 1.0F);

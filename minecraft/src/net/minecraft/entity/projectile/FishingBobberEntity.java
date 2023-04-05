@@ -435,7 +435,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 					.parameter(LootContextParameters.THIS_ENTITY, this)
 					.random(this.random)
 					.luck((float)this.luckOfTheSeaLevel + playerEntity.getLuck());
-				LootTable lootTable = this.world.getServer().getLootManager().getTable(LootTables.FISHING_GAMEPLAY);
+				LootTable lootTable = this.world.getServer().getLootManager().getLootTable(LootTables.FISHING_GAMEPLAY);
 				List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.FISHING));
 				Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, usedItem, this, list);
 

@@ -951,6 +951,8 @@ public abstract class PlayerEntity extends LivingEntity {
 				if (var8 < 3.4028235E37F) {
 					this.increaseStat(Stats.DAMAGE_TAKEN, Math.round(var8 * 10.0F));
 				}
+
+				this.emitGameEvent(GameEvent.ENTITY_DAMAGE);
 			}
 		}
 	}
@@ -1440,8 +1442,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else if (!forced) {
 			return Optional.empty();
 		} else {
-			boolean bl = block.canMobSpawnInside();
-			boolean bl2 = world.getBlockState(pos.up()).getBlock().canMobSpawnInside();
+			boolean bl = block.canMobSpawnInside(blockState);
+			BlockState blockState2 = world.getBlockState(pos.up());
+			boolean bl2 = blockState2.getBlock().canMobSpawnInside(blockState2);
 			return bl && bl2 ? Optional.of(new Vec3d((double)pos.getX() + 0.5, (double)pos.getY() + 0.1, (double)pos.getZ() + 0.5)) : Optional.empty();
 		}
 	}

@@ -121,7 +121,7 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 		} else {
 			VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
 			if (GIFTS.containsKey(villagerProfession)) {
-				LootTable lootTable = villager.world.getServer().getLootManager().getTable((Identifier)GIFTS.get(villagerProfession));
+				LootTable lootTable = villager.world.getServer().getLootManager().getLootTable((Identifier)GIFTS.get(villagerProfession));
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villager.world)
 					.parameter(LootContextParameters.ORIGIN, villager.getPos())
 					.parameter(LootContextParameters.THIS_ENTITY, villager)
