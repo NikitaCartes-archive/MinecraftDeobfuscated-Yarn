@@ -15,7 +15,10 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.fix.AddFlagIfNotPresentFix;
 import net.minecraft.datafixer.fix.AddTrappedChestFix;
@@ -55,6 +58,7 @@ import net.minecraft.datafixer.fix.ChunkStatusFix2;
 import net.minecraft.datafixer.fix.ChunkStructuresTemplateRenameFix;
 import net.minecraft.datafixer.fix.ChunkToProtoChunkFix;
 import net.minecraft.datafixer.fix.ColorlessShulkerEntityFix;
+import net.minecraft.datafixer.fix.DecoratedPotFieldRenameFix;
 import net.minecraft.datafixer.fix.EntityArmorStandSilentFix;
 import net.minecraft.datafixer.fix.EntityBlockStateFix;
 import net.minecraft.datafixer.fix.EntityBrushableBlockFieldsRenameFix;
@@ -148,9 +152,9 @@ import net.minecraft.datafixer.fix.RemoveFilteredSignTextFix;
 import net.minecraft.datafixer.fix.RemoveGolemGossipFix;
 import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
 import net.minecraft.datafixer.fix.RenameBlockEntityFix;
+import net.minecraft.datafixer.fix.RenameChunkStatusFix;
 import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
 import net.minecraft.datafixer.fix.RenameVariantsFix;
-import net.minecraft.datafixer.fix.SculkSensorRemoveCooldownPhaseFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
 import net.minecraft.datafixer.fix.StatsRenameFix;
 import net.minecraft.datafixer.fix.StatusEffectDurationFix;
@@ -246,6 +250,7 @@ import net.minecraft.datafixer.schema.Schema3326;
 import net.minecraft.datafixer.schema.Schema3327;
 import net.minecraft.datafixer.schema.Schema3328;
 import net.minecraft.datafixer.schema.Schema3438;
+import net.minecraft.datafixer.schema.Schema3448;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -1085,8 +1090,46 @@ public class Schemas {
 		builder.addFixer(new RemoveFeatureTogglesFix(schema182, "Remove 1.20 feature toggle", Set.of("minecraft:update_1_20")));
 		Schema schema183 = builder.addSchema(3441, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BlendingDataFix(schema183));
-		Schema schema184 = builder.addSchema(3444, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(new SculkSensorRemoveCooldownPhaseFix(schema184, false));
+		Schema schema184 = builder.addSchema(3446, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(
+			new RenameChunkStatusFix(
+				schema184, "Remove liquid_carvers and heightmap chunk statuses", replacing(Map.of("liquid_carvers", "carvers", "heightmaps", "spawn"))
+			)
+		);
+		Schema schema185 = builder.addSchema(3447, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(
+			ItemNameFix.create(
+				schema185,
+				"Pottery shard item renaming to Pottery sherd",
+				replacing(
+					(Map<String, String>)Stream.of(
+							"minecraft:angler_pottery_shard",
+							"minecraft:archer_pottery_shard",
+							"minecraft:arms_up_pottery_shard",
+							"minecraft:blade_pottery_shard",
+							"minecraft:brewer_pottery_shard",
+							"minecraft:burn_pottery_shard",
+							"minecraft:danger_pottery_shard",
+							"minecraft:explorer_pottery_shard",
+							"minecraft:friend_pottery_shard",
+							"minecraft:heart_pottery_shard",
+							"minecraft:heartbreak_pottery_shard",
+							"minecraft:howl_pottery_shard",
+							"minecraft:miner_pottery_shard",
+							"minecraft:mourner_pottery_shard",
+							"minecraft:plenty_pottery_shard",
+							"minecraft:prize_pottery_shard",
+							"minecraft:sheaf_pottery_shard",
+							"minecraft:shelter_pottery_shard",
+							"minecraft:skull_pottery_shard",
+							"minecraft:snort_pottery_shard"
+						)
+						.collect(Collectors.toMap(Function.identity(), string -> string.replace("_pottery_shard", "_pottery_sherd")))
+				)
+			)
+		);
+		Schema schema186 = builder.addSchema(3448, Schema3448::new);
+		builder.addFixer(new DecoratedPotFieldRenameFix(schema186));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

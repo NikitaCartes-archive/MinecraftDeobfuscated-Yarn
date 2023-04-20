@@ -684,7 +684,7 @@ public class GameOptions {
 		70,
 		value -> MinecraftClient.getInstance().worldRenderer.scheduleTerrainUpdate()
 	);
-	private static final MutableText TELEMETRY_TOOLTIP = Text.translatable(
+	private static final Text TELEMETRY_TOOLTIP = Text.translatable(
 		"options.telemetry.button.tooltip", Text.translatable("options.telemetry.state.minimal"), Text.translatable("options.telemetry.state.all")
 	);
 	private final SimpleOption<Boolean> telemetryOptInExtra = SimpleOption.ofBoolean(

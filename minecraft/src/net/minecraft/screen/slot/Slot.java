@@ -159,4 +159,8 @@ public class Slot {
 	public int getIndex() {
 		return this.index;
 	}
+
+	public boolean method_51306() {
+		return true;
+	}
 }

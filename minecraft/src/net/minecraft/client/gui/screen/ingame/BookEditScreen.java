@@ -15,13 +15,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.SelectionManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -383,51 +382,50 @@ public class BookEditScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
 		this.setFocused(null);
-		RenderSystem.setShaderTexture(0, BookScreen.BOOK_TEXTURE);
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		drawTexture(matrices, i, 2, 0, 0, 192, 192);
+		context.drawTexture(BookScreen.BOOK_TEXTURE, i, 2, 0, 0, 192, 192);
 		if (this.signing) {
 			boolean bl = this.tickCounter / 6 % 2 == 0;
 			OrderedText orderedText = OrderedText.concat(OrderedText.styledForwardsVisitedString(this.title, Style.EMPTY), bl ? BLACK_CURSOR_TEXT : GRAY_CURSOR_TEXT);
 			int k = this.textRenderer.getWidth(EDIT_TITLE_TEXT);
-			this.textRenderer.draw(matrices, EDIT_TITLE_TEXT, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
+			context.drawText(this.textRenderer, EDIT_TITLE_TEXT, i + 36 + (114 - k) / 2, 34, 0, false);
 			int l = this.textRenderer.getWidth(orderedText);
-			this.textRenderer.draw(matrices, orderedText, (float)(i + 36 + (114 - l) / 2), 50.0F, 0);
+			context.drawText(this.textRenderer, orderedText, i + 36 + (114 - l) / 2, 50, 0, false);
 			int m = this.textRenderer.getWidth(this.signedByText);
-			this.textRenderer.draw(matrices, this.signedByText, (float)(i + 36 + (114 - m) / 2), 60.0F, 0);
-			this.textRenderer.drawTrimmed(matrices, FINALIZE_WARNING_TEXT, i + 36, 82, 114, 0);
+			context.drawText(this.textRenderer, this.signedByText, i + 36 + (114 - m) / 2, 60, 0, false);
+			context.drawTextWrapped(this.textRenderer, FINALIZE_WARNING_TEXT, i + 36, 82, 114, 0);
 		} else {
 			int n = this.textRenderer.getWidth(this.pageIndicatorText);
-			this.textRenderer.draw(matrices, this.pageIndicatorText, (float)(i - n + 192 - 44), 18.0F, 0);
+			context.drawText(this.textRenderer, this.pageIndicatorText, i - n + 192 - 44, 18, 0, false);
 			BookEditScreen.PageContent pageContent = this.getPageContent();
 
 			for (BookEditScreen.Line line : pageContent.lines) {
-				this.textRenderer.draw(matrices, line.text, (float)line.x, (float)line.y, -16777216);
+				context.drawText(this.textRenderer, line.text, line.x, line.y, -16777216, false);
 			}
 
-			this.drawSelection(matrices, pageContent.selectionRectangles);
-			this.drawCursor(matrices, pageContent.position, pageContent.atEnd);
+			this.drawSelection(context, pageContent.selectionRectangles);
+			this.drawCursor(context, pageContent.position, pageContent.atEnd);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
-	private void drawCursor(MatrixStack matrices, BookEditScreen.Position position, boolean atEnd) {
+	private void drawCursor(DrawContext context, BookEditScreen.Position position, boolean atEnd) {
 		if (this.tickCounter / 6 % 2 == 0) {
 			position = this.absolutePositionToScreenPosition(position);
 			if (!atEnd) {
-				DrawableHelper.fill(matrices, position.x, position.y - 1, position.x + 1, position.y + 9, -16777216);
+				context.fill(position.x, position.y - 1, position.x + 1, position.y + 9, -16777216);
 			} else {
-				this.textRenderer.draw(matrices, "_", (float)position.x, (float)position.y, 0);
+				context.drawText(this.textRenderer, "_", position.x, position.y, 0, false);
 			}
 		}
 	}
 
-	private void drawSelection(MatrixStack matrices, Rect2i[] selectionRectangles) {
+	private void drawSelection(DrawContext context, Rect2i[] selectionRectangles) {
 		RenderSystem.enableColorLogicOp();
 		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 
@@ -436,7 +434,7 @@ public class BookEditScreen extends Screen {
 			int j = rect2i.getY();
 			int k = i + rect2i.getWidth();
 			int l = j + rect2i.getHeight();
-			fill(matrices, i, j, k, l, -16776961);
+			context.fill(i, j, k, l, -16776961);
 		}
 
 		RenderSystem.disableColorLogicOp();

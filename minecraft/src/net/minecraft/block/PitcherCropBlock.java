@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class PitcherCropBlock extends TallPlantBlock implements Fertilizable, Crop {
+public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 	public static final IntProperty AGE = Properties.AGE_4;
 	public static final int field_43240 = 4;
 	private static final int field_43241 = 3;
@@ -93,7 +93,9 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable, Cr
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return state.get(HALF) == DoubleBlockHalf.UPPER ? UPPER_OUTLINE_SHAPES[Math.abs(4 - ((Integer)state.get(AGE) + 1))] : LOWER_OUTLINE_SHAPES[state.get(AGE)];
+		return state.get(HALF) == DoubleBlockHalf.UPPER
+			? UPPER_OUTLINE_SHAPES[Math.min(Math.abs(4 - ((Integer)state.get(AGE) + 1)), UPPER_OUTLINE_SHAPES.length - 1)]
+			: LOWER_OUTLINE_SHAPES[state.get(AGE)];
 	}
 
 	@Override

@@ -3,9 +3,9 @@ package net.minecraft.client.realms.gui.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -36,16 +36,16 @@ public class RealmsClientOutdatedScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16711680);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, row(3), 16711680);
 		Text[] texts = this.getLines();
 
 		for (int i = 0; i < texts.length; i++) {
-			drawCenteredTextWithShadow(matrices, this.textRenderer, texts[i], this.width / 2, row(5) + i * 12, 16777215);
+			context.drawCenteredTextWithShadow(this.textRenderer, texts[i], this.width / 2, row(5) + i * 12, 16777215);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	private Text[] getLines() {

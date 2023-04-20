@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,6 +14,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -23,7 +23,6 @@ import net.minecraft.client.option.HotbarStorageEntry;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchProvider;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -79,7 +78,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	public CreativeInventoryScreen(PlayerEntity player, FeatureSet enabledFeatures, boolean operatorTabEnabled) {
 		super(new CreativeInventoryScreen.CreativeScreenHandler(player), player.getInventory(), ScreenTexts.EMPTY);
 		player.currentScreenHandler = this.handler;
-		this.passEvents = true;
 		this.backgroundHeight = 136;
 		this.backgroundWidth = 195;
 		this.operatorTabEnabled = operatorTabEnabled;
@@ -90,8 +88,8 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		return player.isCreativeLevelTwoOp() && this.operatorTabEnabled;
 	}
 
-	private void updateDisplayParameters(FeatureSet enabledFeatures, boolean showOperatorTab, RegistryWrapper.WrapperLookup wrapperLookup) {
-		if (ItemGroups.updateDisplayContext(enabledFeatures, showOperatorTab, wrapperLookup)) {
+	private void updateDisplayParameters(FeatureSet enabledFeatures, boolean showOperatorTab, RegistryWrapper.WrapperLookup lookup) {
+		if (ItemGroups.updateDisplayContext(enabledFeatures, showOperatorTab, lookup)) {
 			for (ItemGroup itemGroup : ItemGroups.getGroups()) {
 				Collection<ItemStack> collection = itemGroup.getDisplayStacks();
 				if (itemGroup == selectedTab) {
@@ -408,9 +406,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	@Override
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
+	protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
 		if (selectedTab.shouldRenderName()) {
-			this.textRenderer.draw(matrices, selectedTab.getDisplayName(), 8.0F, 6.0F, 4210752);
+			context.drawText(this.textRenderer, selectedTab.getDisplayName(), 8, 6, 4210752, false);
 		}
 	}
 
@@ -602,12 +600,12 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		super.render(matrices, mouseX, mouseY, delta);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 
 		for (ItemGroup itemGroup : ItemGroups.getGroupsToDisplay()) {
-			if (this.renderTabTooltipIfHovered(matrices, itemGroup, mouseX, mouseY)) {
+			if (this.renderTabTooltipIfHovered(context, itemGroup, mouseX, mouseY)) {
 				break;
 			}
 		}
@@ -615,29 +613,28 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (this.deleteItemSlot != null
 			&& selectedTab.getType() == ItemGroup.Type.INVENTORY
 			&& this.isPointWithinBounds(this.deleteItemSlot.x, this.deleteItemSlot.y, 16, 16, (double)mouseX, (double)mouseY)) {
-			this.renderTooltip(matrices, DELETE_ITEM_SLOT_TEXT, mouseX, mouseY);
+			context.drawTooltip(this.textRenderer, DELETE_ITEM_SLOT_TEXT, mouseX, mouseY);
 		}
 
-		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+		this.drawMouseoverTooltip(context, mouseX, mouseY);
 	}
 
 	@Override
-	protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
+	public List<Text> getTooltipFromItem(ItemStack stack) {
 		boolean bl = this.focusedSlot != null && this.focusedSlot instanceof CreativeInventoryScreen.LockableSlot;
 		boolean bl2 = selectedTab.getType() == ItemGroup.Type.CATEGORY;
 		boolean bl3 = selectedTab.getType() == ItemGroup.Type.SEARCH;
 		TooltipContext.Default default_ = this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC;
 		TooltipContext tooltipContext = bl ? default_.withCreative() : default_;
 		List<Text> list = stack.getTooltip(this.client.player, tooltipContext);
-		List<Text> list2;
 		if (bl2 && bl) {
-			list2 = list;
+			return list;
 		} else {
-			list2 = Lists.<Text>newArrayList(list);
+			List<Text> list2 = Lists.<Text>newArrayList(list);
 			if (bl3 && bl) {
-				this.searchResultTags.forEach(tag -> {
-					if (stack.isIn(tag)) {
-						list2.add(1, Text.literal("#" + tag.id()).formatted(Formatting.DARK_PURPLE));
+				this.searchResultTags.forEach(tagKey -> {
+					if (stack.isIn(tagKey)) {
+						list2.add(1, Text.literal("#" + tagKey.id()).formatted(Formatting.DARK_PURPLE));
 					}
 				});
 			}
@@ -649,34 +646,39 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 					list2.add(i++, itemGroup.getDisplayName().copy().formatted(Formatting.BLUE));
 				}
 			}
-		}
 
-		this.renderTooltip(matrices, list2, stack.getTooltipData(), x, y);
+			return list2;
+		}
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		for (ItemGroup itemGroup : ItemGroups.getGroupsToDisplay()) {
-			RenderSystem.setShaderTexture(0, TEXTURE);
 			if (itemGroup != selectedTab) {
-				this.renderTabIcon(matrices, itemGroup);
+				this.renderTabIcon(context, itemGroup);
 			}
 		}
 
-		RenderSystem.setShaderTexture(0, new Identifier("textures/gui/container/creative_inventory/tab_" + selectedTab.getTexture()));
-		drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		this.searchBox.render(matrices, mouseX, mouseY, delta);
+		context.drawTexture(
+			new Identifier("textures/gui/container/creative_inventory/tab_" + selectedTab.getTexture()),
+			this.x,
+			this.y,
+			0,
+			0,
+			this.backgroundWidth,
+			this.backgroundHeight
+		);
+		this.searchBox.render(context, mouseX, mouseY, delta);
 		int i = this.x + 175;
 		int j = this.y + 18;
 		int k = j + 112;
-		RenderSystem.setShaderTexture(0, TEXTURE);
 		if (selectedTab.hasScrollbar()) {
-			drawTexture(matrices, i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
+			context.drawTexture(TEXTURE, i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
 		}
 
-		this.renderTabIcon(matrices, selectedTab);
+		this.renderTabIcon(context, selectedTab);
 		if (selectedTab.getType() == ItemGroup.Type.INVENTORY) {
-			InventoryScreen.drawEntity(matrices, this.x + 88, this.y + 45, 20, (float)(this.x + 88 - mouseX), (float)(this.y + 45 - 30 - mouseY), this.client.player);
+			InventoryScreen.drawEntity(context, this.x + 88, this.y + 45, 20, (float)(this.x + 88 - mouseX), (float)(this.y + 45 - 30 - mouseY), this.client.player);
 		}
 	}
 
@@ -708,18 +710,18 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		return mouseX >= (double)i && mouseX <= (double)(i + 26) && mouseY >= (double)j && mouseY <= (double)(j + 32);
 	}
 
-	protected boolean renderTabTooltipIfHovered(MatrixStack matrices, ItemGroup group, int mouseX, int mouseY) {
+	protected boolean renderTabTooltipIfHovered(DrawContext context, ItemGroup group, int mouseX, int mouseY) {
 		int i = this.getTabX(group);
 		int j = this.getTabY(group);
 		if (this.isPointWithinBounds(i + 3, j + 3, 21, 27, (double)mouseX, (double)mouseY)) {
-			this.renderTooltip(matrices, group.getDisplayName(), mouseX, mouseY);
+			context.drawTooltip(this.textRenderer, group.getDisplayName(), mouseX, mouseY);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected void renderTabIcon(MatrixStack matrices, ItemGroup group) {
+	protected void renderTabIcon(DrawContext context, ItemGroup group) {
 		boolean bl = group == selectedTab;
 		boolean bl2 = group.getRow() == ItemGroup.Row.TOP;
 		int i = group.getColumn();
@@ -739,15 +741,15 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			m += this.backgroundHeight - 4;
 		}
 
-		drawTexture(matrices, l, m, j, k, 26, 32);
-		matrices.push();
-		matrices.translate(0.0F, 0.0F, 100.0F);
+		context.drawTexture(TEXTURE, l, m, j, k, 26, 32);
+		context.getMatrices().push();
+		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
 		l += 5;
 		m += 8 + (bl2 ? 1 : -1);
 		ItemStack itemStack = group.getIcon();
-		this.itemRenderer.renderInGuiWithOverrides(matrices, itemStack, l, m);
-		this.itemRenderer.renderGuiItemOverlay(matrices, this.textRenderer, itemStack, l, m);
-		matrices.pop();
+		context.drawItem(itemStack, l, m);
+		context.drawItemInSlot(this.textRenderer, itemStack, l, m);
+		context.getMatrices().pop();
 	}
 
 	public boolean isInventoryTabSelected() {

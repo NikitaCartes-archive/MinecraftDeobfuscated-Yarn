@@ -9,10 +9,8 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -61,55 +59,6 @@ public class TextRenderer {
 		return (FontStorage)this.fontStorageAccessor.apply(id);
 	}
 
-	/**
-	 * @param color the text color in the 0xAARRGGBB format
-	 */
-	public int drawWithShadow(MatrixStack matrices, String text, float x, float y, int color) {
-		return this.draw(text, x, y, color, matrices.peek().getPositionMatrix(), true, this.isRightToLeft());
-	}
-
-	/**
-	 * @param color the text color in the 0xAARRGGBB format
-	 */
-	public int drawWithShadow(MatrixStack matrices, String text, float x, float y, int color, boolean rightToLeft) {
-		return this.draw(text, x, y, color, matrices.peek().getPositionMatrix(), true, rightToLeft);
-	}
-
-	/**
-	 * @param color the text color in the 0xAARRGGBB format
-	 */
-	public int draw(MatrixStack matrices, String text, float x, float y, int color) {
-		return this.draw(text, x, y, color, matrices.peek().getPositionMatrix(), false, this.isRightToLeft());
-	}
-
-	/**
-	 * @param color the text color in the 0xAARRGGBB format
-	 */
-	public int drawWithShadow(MatrixStack matrices, OrderedText text, float x, float y, int color) {
-		return this.draw(text, x, y, color, matrices.peek().getPositionMatrix(), true);
-	}
-
-	/**
-	 * @param color the text color in the 0xAARRGGBB format
-	 */
-	public int drawWithShadow(MatrixStack matrices, Text text, float x, float y, int color) {
-		return this.draw(text.asOrderedText(), x, y, color, matrices.peek().getPositionMatrix(), true);
-	}
-
-	/**
-	 * @param color the text color in the 0xAARRGGBB format
-	 */
-	public int draw(MatrixStack matrices, OrderedText text, float x, float y, int color) {
-		return this.draw(text, x, y, color, matrices.peek().getPositionMatrix(), false);
-	}
-
-	/**
-	 * @param color the text color in the 0xAARRGGBB format
-	 */
-	public int draw(MatrixStack matrices, Text text, float x, float y, int color) {
-		return this.draw(text.asOrderedText(), x, y, color, matrices.peek().getPositionMatrix(), false);
-	}
-
 	public String mirror(String text) {
 		try {
 			Bidi bidi = new Bidi(new ArabicShaping(8).shape(text), 127);
@@ -118,24 +67,6 @@ public class TextRenderer {
 		} catch (ArabicShapingException var3) {
 			return text;
 		}
-	}
-
-	private int draw(String text, float x, float y, int color, Matrix4f matrix, boolean shadow, boolean mirror) {
-		if (text == null) {
-			return 0;
-		} else {
-			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			int i = this.draw(text, x, y, color, shadow, matrix, immediate, TextRenderer.TextLayerType.NORMAL, 0, 15728880, mirror);
-			immediate.draw();
-			return i;
-		}
-	}
-
-	private int draw(OrderedText text, float x, float y, int color, Matrix4f matrix, boolean shadow) {
-		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-		int i = this.draw(text, x, y, color, shadow, matrix, immediate, TextRenderer.TextLayerType.NORMAL, 0, 15728880);
-		immediate.draw();
-		return i;
 	}
 
 	/**
@@ -409,18 +340,6 @@ public class TextRenderer {
 	 */
 	public StringVisitable trimToWidth(StringVisitable text, int width) {
 		return this.handler.trimToWidth(text, width, Style.EMPTY);
-	}
-
-	/**
-	 * @param color the text color in the 0xAARRGGBB format
-	 */
-	public void drawTrimmed(MatrixStack matrices, StringVisitable text, int x, int y, int maxWidth, int color) {
-		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-
-		for (OrderedText orderedText : this.wrapLines(text, maxWidth)) {
-			this.draw(orderedText, (float)x, (float)y, color, matrix4f, false);
-			y += 9;
-		}
 	}
 
 	/**

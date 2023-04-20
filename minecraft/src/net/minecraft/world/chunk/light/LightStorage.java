@@ -32,10 +32,9 @@ import net.minecraft.world.chunk.ChunkToNibbleArrayMap;
  * @see BlockLightStorage
  */
 public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends SectionDistanceLevelPropagator {
-	protected static final int field_31710 = 0;
-	protected static final int field_31711 = 1;
-	protected static final int field_31712 = 2;
-	protected static final ChunkNibbleArray EMPTY = new ChunkNibbleArray();
+	public static final int field_31710 = 0;
+	public static final int field_31711 = 1;
+	public static final int field_31712 = 2;
 	private static final Direction[] DIRECTIONS = Direction.values();
 	private final LightType lightType;
 	private final ChunkProvider chunkProvider;
@@ -95,11 +94,13 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 
 	protected void set(long blockPos, int value) {
 		long l = ChunkSectionPos.fromBlockPos(blockPos);
+		ChunkNibbleArray chunkNibbleArray;
 		if (this.dirtySections.add(l)) {
-			this.storage.replaceWithCopy(l);
+			chunkNibbleArray = this.storage.replaceWithCopy(l);
+		} else {
+			chunkNibbleArray = this.getLightSection(l, true);
 		}
 
-		ChunkNibbleArray chunkNibbleArray = this.getLightSection(l, true);
 		chunkNibbleArray.set(
 			ChunkSectionPos.getLocalCoord(BlockPos.unpackLongX(blockPos)),
 			ChunkSectionPos.getLocalCoord(BlockPos.unpackLongY(blockPos)),
@@ -149,17 +150,7 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 				this.storage.put(id, this.createSection(id));
 				this.dirtySections.add(id);
 				this.onLoadSection(id);
-				int j = ChunkSectionPos.unpackX(id);
-				int k = ChunkSectionPos.unpackY(id);
-				int l = ChunkSectionPos.unpackZ(id);
-
-				for (int m = -1; m <= 1; m++) {
-					for (int n = -1; n <= 1; n++) {
-						for (int o = -1; o <= 1; o++) {
-							this.notifySections.add(ChunkSectionPos.asLong(j + n, k + o, l + m));
-						}
-					}
-				}
+				this.addNotifySections(id);
 			}
 		}
 
@@ -168,6 +159,20 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 		}
 
 		this.hasLightUpdates = !this.sectionsToRemove.isEmpty();
+	}
+
+	protected void addNotifySections(long id) {
+		int i = ChunkSectionPos.unpackX(id);
+		int j = ChunkSectionPos.unpackY(id);
+		int k = ChunkSectionPos.unpackZ(id);
+
+		for (int l = -1; l <= 1; l++) {
+			for (int m = -1; m <= 1; m++) {
+				for (int n = -1; n <= 1; n++) {
+					this.notifySections.add(ChunkSectionPos.asLong(i + m, j + n, k + l));
+				}
+			}
+		}
 	}
 
 	protected ChunkNibbleArray createSection(long sectionPos) {
@@ -224,6 +229,7 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> extends S
 			while (objectIterator.hasNext()) {
 				long l = (Long)objectIterator.next();
 				this.onUnloadSection(l);
+				this.dirtySections.add(l);
 			}
 
 			this.sectionsToRemove.clear();

@@ -13,6 +13,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.SplashTextRenderer;
 import net.minecraft.client.util.Session;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SinglePreparationResourceReloader;
@@ -66,21 +67,21 @@ public class SplashTextResourceSupplier extends SinglePreparationResourceReloade
 	}
 
 	@Nullable
-	public String get() {
+	public SplashTextRenderer get() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		if (calendar.get(2) + 1 == 12 && calendar.get(5) == 24) {
-			return "Merry X-mas!";
+			return SplashTextRenderer.MERRY_X_MAS_;
 		} else if (calendar.get(2) + 1 == 1 && calendar.get(5) == 1) {
-			return "Happy new year!";
+			return SplashTextRenderer.HAPPY_NEW_YEAR_;
 		} else if (calendar.get(2) + 1 == 10 && calendar.get(5) == 31) {
-			return "OOoooOOOoooo! Spooky!";
+			return SplashTextRenderer.OOOOO_O_O_OOOOO__SPOOKY_;
 		} else if (this.splashTexts.isEmpty()) {
 			return null;
 		} else {
 			return this.session != null && RANDOM.nextInt(this.splashTexts.size()) == 42
-				? this.session.getUsername().toUpperCase(Locale.ROOT) + " IS YOU"
-				: (String)this.splashTexts.get(RANDOM.nextInt(this.splashTexts.size()));
+				? new SplashTextRenderer(this.session.getUsername().toUpperCase(Locale.ROOT) + " IS YOU")
+				: new SplashTextRenderer((String)this.splashTexts.get(RANDOM.nextInt(this.splashTexts.size())));
 		}
 	}
 }

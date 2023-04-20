@@ -332,7 +332,7 @@ public class FluidRenderer {
 			BlockState blockState2 = world.getBlockState(pos.up());
 			return fluid.matchesType(blockState2.getFluidState().getFluid()) ? 1.0F : fluidState.getHeight();
 		} else {
-			return !blockState.getMaterial().isSolid() ? 0.0F : -1.0F;
+			return !blockState.isSolid() ? 0.0F : -1.0F;
 		}
 	}
 

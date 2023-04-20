@@ -3183,7 +3183,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			while (!bl2 && blockPos.getY() > world.getBottomY()) {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = world.getBlockState(blockPos2);
-				if (blockState.getMaterial().blocksMovement()) {
+				if (blockState.blocksMovement()) {
 					bl2 = true;
 				} else {
 					g--;

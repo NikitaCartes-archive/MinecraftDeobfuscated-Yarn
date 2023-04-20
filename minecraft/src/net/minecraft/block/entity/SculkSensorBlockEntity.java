@@ -11,30 +11,32 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.event.BlockPositionSource;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.PositionSource;
+import net.minecraft.world.event.Vibrations;
 import net.minecraft.world.event.listener.GameEventListener;
-import net.minecraft.world.event.listener.VibrationListener;
 import org.slf4j.Logger;
 
-public class SculkSensorBlockEntity extends BlockEntity {
+public class SculkSensorBlockEntity extends BlockEntity implements GameEventListener.Holder<Vibrations.VibrationListener>, Vibrations {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private VibrationListener listener;
-	private final VibrationListener.Callback callback = this.createCallback();
+	private Vibrations.ListenerData listenerData;
+	private final Vibrations.VibrationListener listener;
+	private final Vibrations.Callback callback = this.createCallback();
 	private int lastVibrationFrequency;
 
 	protected SculkSensorBlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
 		super(blockEntityType, blockPos, blockState);
-		this.listener = new VibrationListener(new BlockPositionSource(this.pos), this.callback);
+		this.listenerData = new Vibrations.ListenerData();
+		this.listener = new Vibrations.VibrationListener(this);
 	}
 
 	public SculkSensorBlockEntity(BlockPos pos, BlockState state) {
 		this(BlockEntityType.SCULK_SENSOR, pos, state);
 	}
 
-	public VibrationListener.Callback createCallback() {
-		return new SculkSensorBlockEntity.Callback(this);
+	public Vibrations.Callback createCallback() {
+		return new SculkSensorBlockEntity.VibrationCallback(this.getPos());
 	}
 
 	@Override
@@ -42,10 +44,10 @@ public class SculkSensorBlockEntity extends BlockEntity {
 		super.readNbt(nbt);
 		this.lastVibrationFrequency = nbt.getInt("last_vibration_frequency");
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-			VibrationListener.createCodec(this.callback)
+			Vibrations.ListenerData.CODEC
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
 				.resultOrPartial(LOGGER::error)
-				.ifPresent(listener -> this.listener = listener);
+				.ifPresent(listener -> this.listenerData = listener);
 		}
 	}
 
@@ -53,14 +55,20 @@ public class SculkSensorBlockEntity extends BlockEntity {
 	protected void writeNbt(NbtCompound nbt) {
 		super.writeNbt(nbt);
 		nbt.putInt("last_vibration_frequency", this.lastVibrationFrequency);
-		VibrationListener.createCodec(this.callback)
-			.encodeStart(NbtOps.INSTANCE, this.listener)
+		Vibrations.ListenerData.CODEC
+			.encodeStart(NbtOps.INSTANCE, this.listenerData)
 			.resultOrPartial(LOGGER::error)
 			.ifPresent(listenerNbt -> nbt.put("listener", listenerNbt));
 	}
 
-	public VibrationListener getEventListener() {
-		return this.listener;
+	@Override
+	public Vibrations.ListenerData getVibrationListenerData() {
+		return this.listenerData;
+	}
+
+	@Override
+	public Vibrations.Callback getVibrationCallback() {
+		return this.callback;
 	}
 
 	public int getLastVibrationFrequency() {
@@ -71,12 +79,28 @@ public class SculkSensorBlockEntity extends BlockEntity {
 		this.lastVibrationFrequency = lastVibrationFrequency;
 	}
 
-	public static class Callback implements VibrationListener.Callback {
-		public static final int field_43292 = 8;
-		protected final SculkSensorBlockEntity blockEntity;
+	public Vibrations.VibrationListener getEventListener() {
+		return this.listener;
+	}
 
-		public Callback(SculkSensorBlockEntity blockEntity) {
-			this.blockEntity = blockEntity;
+	protected class VibrationCallback implements Vibrations.Callback {
+		public static final int RANGE = 8;
+		protected final BlockPos pos;
+		private final PositionSource positionSource;
+
+		public VibrationCallback(BlockPos pos) {
+			this.pos = pos;
+			this.positionSource = new BlockPositionSource(pos);
+		}
+
+		@Override
+		public int getRange() {
+			return 8;
+		}
+
+		@Override
+		public PositionSource getPositionSource() {
+			return this.positionSource;
 		}
 
 		@Override
@@ -85,40 +109,32 @@ public class SculkSensorBlockEntity extends BlockEntity {
 		}
 
 		@Override
-		public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
-			return !pos.equals(this.blockEntity.getPos()) || event != GameEvent.BLOCK_DESTROY && event != GameEvent.BLOCK_PLACE
-				? SculkSensorBlock.isInactive(this.blockEntity.getCachedState())
+		public boolean accepts(ServerWorld world, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
+			return !pos.equals(this.pos) || event != GameEvent.BLOCK_DESTROY && event != GameEvent.BLOCK_PLACE
+				? SculkSensorBlock.isInactive(SculkSensorBlockEntity.this.getCachedState())
 				: false;
 		}
 
 		@Override
-		public void accept(
-			ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance
-		) {
-			BlockState blockState = this.blockEntity.getCachedState();
-			BlockPos blockPos = this.blockEntity.getPos();
+		public void accept(ServerWorld world, BlockPos pos, GameEvent event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
+			BlockState blockState = SculkSensorBlockEntity.this.getCachedState();
 			if (SculkSensorBlock.isInactive(blockState)) {
-				this.blockEntity.setLastVibrationFrequency(VibrationListener.getFrequency(event));
-				int i = getPower(distance, listener.getRange());
+				SculkSensorBlockEntity.this.setLastVibrationFrequency(Vibrations.getFrequency(event));
+				int i = Vibrations.getSignalStrength(distance, this.getRange());
 				if (blockState.getBlock() instanceof SculkSensorBlock sculkSensorBlock) {
-					sculkSensorBlock.setActive(entity, world, blockPos, blockState, i, this.blockEntity.getLastVibrationFrequency());
+					sculkSensorBlock.setActive(sourceEntity, world, this.pos, blockState, i, SculkSensorBlockEntity.this.getLastVibrationFrequency());
 				}
 			}
 		}
 
 		@Override
 		public void onListen() {
-			this.blockEntity.markDirty();
+			SculkSensorBlockEntity.this.markDirty();
 		}
 
 		@Override
-		public int getRange() {
-			return 8;
-		}
-
-		public static int getPower(float distance, int range) {
-			double d = 15.0 / (double)range;
-			return Math.max(1, 15 - MathHelper.floor(d * (double)distance));
+		public boolean requiresTickingChunksAround() {
+			return true;
 		}
 	}
 }

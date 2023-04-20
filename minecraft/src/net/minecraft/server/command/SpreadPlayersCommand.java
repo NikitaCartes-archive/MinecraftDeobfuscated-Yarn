@@ -14,7 +14,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Material;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.Vec2ArgumentType;
 import net.minecraft.entity.Entity;
@@ -344,7 +343,6 @@ public class SpreadPlayersCommand {
 		public boolean isSafe(BlockView world, int maxY) {
 			BlockPos blockPos = BlockPos.ofFloored(this.x, (double)(this.getY(world, maxY) - 1), this.z);
 			BlockState blockState = world.getBlockState(blockPos);
-			Material material = blockState.getMaterial();
 			return blockPos.getY() < maxY && !blockState.isLiquid() && !blockState.isIn(BlockTags.FIRE);
 		}
 

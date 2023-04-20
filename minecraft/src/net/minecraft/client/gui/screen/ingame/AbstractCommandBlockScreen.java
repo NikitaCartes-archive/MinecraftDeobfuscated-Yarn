@@ -3,13 +3,13 @@ package net.minecraft.client.gui.screen.ingame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatInputSuggestor;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -136,19 +136,19 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, SET_COMMAND_TEXT, this.width / 2, 20, 16777215);
-		drawTextWithShadow(matrices, this.textRenderer, COMMAND_TEXT, this.width / 2 - 150, 40, 10526880);
-		this.consoleCommandTextField.render(matrices, mouseX, mouseY, delta);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		context.drawCenteredTextWithShadow(this.textRenderer, SET_COMMAND_TEXT, this.width / 2, 20, 16777215);
+		context.drawTextWithShadow(this.textRenderer, COMMAND_TEXT, this.width / 2 - 150, 40, 10526880);
+		this.consoleCommandTextField.render(context, mouseX, mouseY, delta);
 		int i = 75;
 		if (!this.previousOutputTextField.getText().isEmpty()) {
 			i += 5 * 9 + 1 + this.getTrackOutputButtonHeight() - 135;
-			drawTextWithShadow(matrices, this.textRenderer, PREVIOUS_OUTPUT_TEXT, this.width / 2 - 150, i + 4, 10526880);
-			this.previousOutputTextField.render(matrices, mouseX, mouseY, delta);
+			context.drawTextWithShadow(this.textRenderer, PREVIOUS_OUTPUT_TEXT, this.width / 2 - 150, i + 4, 10526880);
+			this.previousOutputTextField.render(context, mouseX, mouseY, delta);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
-		this.commandSuggestor.render(matrices, mouseX, mouseY);
+		super.render(context, mouseX, mouseY, delta);
+		this.commandSuggestor.render(context, mouseX, mouseY);
 	}
 }

@@ -6,10 +6,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.SculkCatalystBlockEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -18,10 +15,8 @@ import net.minecraft.util.math.intprovider.ConstantIntProvider;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import net.minecraft.world.event.listener.GameEventListener;
 
 public class SculkCatalystBlock extends BlockWithEntity {
-	public static final int BLOOM_DURATION = 8;
 	public static final BooleanProperty BLOOM = Properties.BLOOM;
 	private final IntProvider experience = ConstantIntProvider.create(5);
 
@@ -42,23 +37,10 @@ public class SculkCatalystBlock extends BlockWithEntity {
 		}
 	}
 
-	public static void bloom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
-		world.setBlockState(pos, state.with(BLOOM, Boolean.valueOf(true)), Block.NOTIFY_ALL);
-		world.scheduleBlockTick(pos, state.getBlock(), 8);
-		world.spawnParticles(ParticleTypes.SCULK_SOUL, (double)pos.getX() + 0.5, (double)pos.getY() + 1.15, (double)pos.getZ() + 0.5, 2, 0.2, 0.0, 0.2, 0.0);
-		world.playSound(null, pos, SoundEvents.BLOCK_SCULK_CATALYST_BLOOM, SoundCategory.BLOCKS, 2.0F, 0.6F + random.nextFloat() * 0.4F);
-	}
-
 	@Nullable
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		return new SculkCatalystBlockEntity(pos, state);
-	}
-
-	@Nullable
-	@Override
-	public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
-		return blockEntity instanceof SculkCatalystBlockEntity ? (SculkCatalystBlockEntity)blockEntity : null;
 	}
 
 	@Nullable

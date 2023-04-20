@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.navigation.GuiNavigation;
@@ -19,7 +19,6 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -84,10 +83,15 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			ControlsListWidget.this.client
-				.textRenderer
-				.draw(matrices, this.text, (float)(ControlsListWidget.this.client.currentScreen.width / 2 - this.textWidth / 2), (float)(y + entryHeight - 9 - 1), 16777215);
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			context.drawText(
+				ControlsListWidget.this.client.textRenderer,
+				this.text,
+				ControlsListWidget.this.client.currentScreen.width / 2 - this.textWidth / 2,
+				y + entryHeight - 9 - 1,
+				16777215,
+				false
+			);
 		}
 
 		@Nullable
@@ -156,21 +160,21 @@ public class ControlsListWidget extends ElementListWidget<ControlsListWidget.Ent
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			float var10003 = (float)(x + 90 - ControlsListWidget.this.maxKeyNameLength);
-			ControlsListWidget.this.client.textRenderer.draw(matrices, this.bindingName, var10003, (float)(y + entryHeight / 2 - 9 / 2), 16777215);
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			int var10003 = x + 90 - ControlsListWidget.this.maxKeyNameLength;
+			context.drawText(ControlsListWidget.this.client.textRenderer, this.bindingName, var10003, y + entryHeight / 2 - 9 / 2, 16777215, false);
 			this.resetButton.setX(x + 190);
 			this.resetButton.setY(y);
-			this.resetButton.render(matrices, mouseX, mouseY, tickDelta);
+			this.resetButton.render(context, mouseX, mouseY, tickDelta);
 			this.editButton.setX(x + 105);
 			this.editButton.setY(y);
 			if (this.duplicate) {
 				int i = 3;
 				int j = this.editButton.getX() - 6;
-				DrawableHelper.fill(matrices, j, y + 2, j + 3, y + entryHeight + 2, Formatting.RED.getColorValue() | 0xFF000000);
+				context.fill(j, y + 2, j + 3, y + entryHeight + 2, Formatting.RED.getColorValue() | 0xFF000000);
 			}
 
-			this.editButton.render(matrices, mouseX, mouseY, tickDelta);
+			this.editButton.render(context, mouseX, mouseY, tickDelta);
 		}
 
 		@Override

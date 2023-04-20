@@ -15,6 +15,7 @@ import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.block.enums.Instrument;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -55,6 +56,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -630,7 +632,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	/**
 	 * {@return whether the item can replace the block}
 	 * 
-	 * <p>By default, this checks if the block's material allows replacing and whether the
+	 * <p>By default, this checks if the block allows replacing and whether the
 	 * item differs from the block's item. Items composed of multiple blocks, such as candles,
 	 * vines, or snow layers, should override this to implement additional checks.
 	 * 
@@ -641,17 +643,17 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @deprecated Consider calling {@link AbstractBlockState#canReplace} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 * 
 	 * @see #canBucketPlace
-	 * @see Material#isReplaceable
+	 * @see AbstractBlockState#isReplaceable
 	 */
 	@Deprecated
 	public boolean canReplace(BlockState state, ItemPlacementContext context) {
-		return this.material.isReplaceable() && (context.getStack().isEmpty() || !context.getStack().isOf(this.asItem()));
+		return state.isReplaceable() && (context.getStack().isEmpty() || !context.getStack().isOf(this.asItem()));
 	}
 
 	/**
 	 * {@return whether a bucket can replace the block with the fluid}
 	 * 
-	 * <p>By default, this checks if the block's material allows replacing or is not solid.
+	 * <p>By default, this checks if the block allows replacing or is not solid.
 	 * Blocks intended to be unbreakable should override this to implement additional checks.
 	 * 
 	 * <p>This method is called on both the logical client and logical server, so take caution
@@ -661,11 +663,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @deprecated Consider calling {@link AbstractBlockState#canBucketPlace} instead. See <a href="#deprecated-methods">why these methods are deprecated</a>.
 	 * 
 	 * @see #canReplace
-	 * @see Material#isReplaceable
+	 * @see AbstractBlockState#isReplaceable
 	 */
 	@Deprecated
 	public boolean canBucketPlace(BlockState state, Fluid fluid) {
-		return this.material.isReplaceable() || !this.material.isSolid();
+		return state.isReplaceable() || !state.isSolid();
 	}
 
 	/**
@@ -1106,6 +1108,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		private final boolean burnable;
 		@Deprecated
 		private final boolean liquid;
+		@Deprecated
+		private boolean solid;
 		private final PistonBehavior pistonBehavior;
 		private final Material material;
 		private final MapColor mapColor;
@@ -1119,6 +1123,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		private final AbstractBlock.ContextPredicate emissiveLightingPredicate;
 		private final Optional<AbstractBlock.Offsetter> offsetter;
 		private final boolean blockBreakParticles;
+		private final Instrument instrument;
+		private final boolean replaceable;
 		@Nullable
 		protected AbstractBlock.AbstractBlockState.ShapeCache shapeCache;
 		private FluidState fluidState = Fluids.EMPTY.getDefaultState();
@@ -1145,6 +1151,26 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.emissiveLightingPredicate = settings.emissiveLightingPredicate;
 			this.offsetter = settings.offsetter;
 			this.blockBreakParticles = settings.blockBreakParticles;
+			this.instrument = settings.instrument;
+			this.replaceable = settings.replaceable;
+		}
+
+		private boolean shouldBeSolid() {
+			if (this.owner.settings.forceSolid) {
+				return true;
+			} else if (this.owner.settings.forceNotSolid) {
+				return false;
+			} else if (this.shapeCache == null) {
+				return false;
+			} else {
+				VoxelShape voxelShape = this.shapeCache.collisionShape;
+				if (voxelShape.isEmpty()) {
+					return false;
+				} else {
+					Box box = voxelShape.getBoundingBox();
+					return box.getAverageSideLength() >= 0.7291666666666666 ? true : box.getYLength() >= 1.0;
+				}
+			}
 		}
 
 		public void initShapeCache() {
@@ -1153,6 +1179,8 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			if (!this.getBlock().hasDynamicBounds()) {
 				this.shapeCache = new AbstractBlock.AbstractBlockState.ShapeCache(this.asBlockState());
 			}
+
+			this.solid = this.shouldBeSolid();
 		}
 
 		public Block getBlock() {
@@ -1163,8 +1191,20 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this.owner.getRegistryEntry();
 		}
 
+		@Deprecated
 		public Material getMaterial() {
 			return this.material;
+		}
+
+		@Deprecated
+		public boolean blocksMovement() {
+			Block block = this.getBlock();
+			return block != Blocks.COBWEB && block != Blocks.BAMBOO_SAPLING && this.isSolid();
+		}
+
+		@Deprecated
+		public boolean isSolid() {
+			return this.solid;
 		}
 
 		public boolean allowsSpawning(BlockView world, BlockPos pos, EntityType<?> type) {
@@ -1440,7 +1480,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		}
 
 		public boolean isReplaceable() {
-			return this.getMaterial().isReplaceable();
+			return this.replaceable;
 		}
 
 		public boolean canPlaceAt(WorldView world, BlockPos pos) {
@@ -1525,6 +1565,10 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		public boolean hasBlockBreakParticles() {
 			return this.blockBreakParticles;
+		}
+
+		public Instrument getInstrument() {
+			return this.instrument;
 		}
 
 		static final class ShapeCache {
@@ -1621,14 +1665,19 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		boolean burnable;
 		@Deprecated
 		boolean liquid;
+		@Deprecated
+		boolean forceNotSolid;
+		boolean forceSolid;
 		PistonBehavior pistonBehavior = PistonBehavior.NORMAL;
 		boolean blockBreakParticles = true;
+		Instrument instrument = Instrument.HARP;
+		boolean replaceable;
 		AbstractBlock.TypedContextPredicate<EntityType<?>> allowsSpawningPredicate = (state, world, pos, type) -> state.isSideSolidFullSquare(
 					world, pos, Direction.UP
 				)
 				&& state.getLuminance() < 14;
 		AbstractBlock.ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight() && state.isFullCube(world, pos);
-		AbstractBlock.ContextPredicate suffocationPredicate = (state, world, pos) -> this.material.blocksMovement() && state.isFullCube(world, pos);
+		AbstractBlock.ContextPredicate suffocationPredicate = (state, world, pos) -> state.blocksMovement() && state.isFullCube(world, pos);
 		AbstractBlock.ContextPredicate blockVisionPredicate = this.suffocationPredicate;
 		AbstractBlock.ContextPredicate postProcessPredicate = (state, world, pos) -> false;
 		AbstractBlock.ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
@@ -1678,12 +1727,16 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			settings.isAir = block.settings.isAir;
 			settings.burnable = block.settings.burnable;
 			settings.liquid = block.settings.liquid;
+			settings.forceNotSolid = block.settings.forceNotSolid;
+			settings.forceSolid = block.settings.forceSolid;
 			settings.pistonBehavior = block.settings.pistonBehavior;
 			settings.toolRequired = block.settings.toolRequired;
 			settings.offsetter = block.settings.offsetter;
 			settings.blockBreakParticles = block.settings.blockBreakParticles;
 			settings.requiredFeatures = block.settings.requiredFeatures;
 			settings.emissiveLightingPredicate = block.settings.emissiveLightingPredicate;
+			settings.instrument = block.settings.instrument;
+			settings.replaceable = block.settings.replaceable;
 			return settings;
 		}
 
@@ -1792,6 +1845,17 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			return this;
 		}
 
+		public AbstractBlock.Settings solid() {
+			this.forceSolid = true;
+			return this;
+		}
+
+		@Deprecated
+		public AbstractBlock.Settings notSolid() {
+			this.forceNotSolid = true;
+			return this;
+		}
+
 		public AbstractBlock.Settings pistonBehavior(PistonBehavior pistonBehavior) {
 			this.pistonBehavior = pistonBehavior;
 			return this;
@@ -1897,6 +1961,16 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		public AbstractBlock.Settings requires(FeatureFlag... features) {
 			this.requiredFeatures = FeatureFlags.FEATURE_MANAGER.featureSetOf(features);
+			return this;
+		}
+
+		public AbstractBlock.Settings instrument(Instrument instrument) {
+			this.instrument = instrument;
+			return this;
+		}
+
+		public AbstractBlock.Settings replaceable() {
+			this.replaceable = true;
 			return this;
 		}
 	}

@@ -9,6 +9,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -23,7 +24,6 @@ import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.task.DownloadTask;
 import net.minecraft.client.realms.task.RestoreTask;
 import net.minecraft.client.realms.util.RealmsUtil;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -179,17 +179,17 @@ public class RealmsBackupScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		this.backupObjectSelectionList.render(matrices, mouseX, mouseY, delta);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 12, 16777215);
-		this.textRenderer.draw(matrices, BACKUPS_TEXT, (float)((this.width - 150) / 2 - 90), 20.0F, 10526880);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		this.backupObjectSelectionList.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, 16777215);
+		context.drawText(this.textRenderer, BACKUPS_TEXT, (this.width - 150) / 2 - 90, 20, 10526880, false);
 		if (this.noBackups) {
-			this.textRenderer.draw(matrices, NO_BACKUPS_TEXT, 20.0F, (float)(this.height / 2 - 10), 16777215);
+			context.drawText(this.textRenderer, NO_BACKUPS_TEXT, 20, this.height / 2 - 10, 16777215, false);
 		}
 
 		this.downloadButton.active = !this.noBackups;
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -213,8 +213,8 @@ public class RealmsBackupScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderBackground(MatrixStack matrices) {
-			RealmsBackupScreen.this.renderBackground(matrices);
+		public void renderBackground(DrawContext context) {
+			RealmsBackupScreen.this.renderBackground(context);
 		}
 
 		@Override
@@ -348,14 +348,15 @@ public class RealmsBackupScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			int i = this.mBackup.isUploadedVersion() ? -8388737 : 16777215;
-			RealmsBackupScreen.this.textRenderer
-				.draw(matrices, "Backup (" + RealmsUtil.convertToAgePresentation(this.mBackup.lastModifiedDate) + ")", (float)x, (float)(y + 1), i);
-			RealmsBackupScreen.this.textRenderer.draw(matrices, this.getMediumDatePresentation(this.mBackup.lastModifiedDate), (float)x, (float)(y + 12), 5000268);
+			context.drawText(
+				RealmsBackupScreen.this.textRenderer, "Backup (" + RealmsUtil.convertToAgePresentation(this.mBackup.lastModifiedDate) + ")", x, y + 1, i, false
+			);
+			context.drawText(RealmsBackupScreen.this.textRenderer, this.getMediumDatePresentation(this.mBackup.lastModifiedDate), x, y + 12, 5000268, false);
 			this.buttons.forEach(button -> {
 				button.setY(y + 2);
-				button.render(matrices, mouseX, mouseY, tickDelta);
+				button.render(context, mouseX, mouseY, tickDelta);
 			});
 		}
 

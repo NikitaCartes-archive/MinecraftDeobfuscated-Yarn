@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.TaskScreen;
 import net.minecraft.client.gui.screen.WarningScreen;
@@ -19,7 +20,6 @@ import net.minecraft.client.gui.widget.EditBoxWidget;
 import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.report.AbuseReportReason;
 import net.minecraft.client.report.ChatAbuseReport;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -188,17 +188,17 @@ public class ChatReportScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		int i = this.width / 2;
-		this.renderBackground(matrices);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, i, 10, 16777215);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, OBSERVED_WHAT_TEXT, i, this.getSelectionButtonY() - 9 - 6, 16777215);
+		this.renderBackground(context);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, i, 10, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, OBSERVED_WHAT_TEXT, i, this.getSelectionButtonY() - 9 - 6, 16777215);
 		if (this.reasonDescription != null) {
-			this.reasonDescription.drawWithShadow(matrices, this.getWidgetsLeft(), this.getReasonButtonY() + 20 + 5, 9, 16777215);
+			this.reasonDescription.drawWithShadow(context, this.getWidgetsLeft(), this.getReasonButtonY() + 20 + 5, 9, 16777215);
 		}
 
-		drawTextWithShadow(matrices, this.textRenderer, MORE_COMMENTS_TEXT, this.getWidgetsLeft(), this.getEditBoxTop() - 9 - 6, 16777215);
-		super.render(matrices, mouseX, mouseY, delta);
+		context.drawTextWithShadow(this.textRenderer, MORE_COMMENTS_TEXT, this.getWidgetsLeft(), this.getEditBoxTop() - 9 - 6, 16777215);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override
@@ -305,8 +305,8 @@ public class ChatReportScreen extends Screen {
 		}
 
 		@Override
-		protected void drawTitle(MatrixStack matrices) {
-			drawTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2 - 155, 30, 16777215);
+		protected void drawTitle(DrawContext context) {
+			context.drawTextWithShadow(this.textRenderer, this.title, this.width / 2 - 155, 30, 16777215);
 		}
 	}
 }

@@ -30,9 +30,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.command.CommandSource;
 import net.minecraft.screen.ScreenTexts;
@@ -56,7 +55,7 @@ public class ChatInputSuggestor {
 		.map(Style.EMPTY::withColor)
 		.collect(ImmutableList.toImmutableList());
 	final MinecraftClient client;
-	final Screen owner;
+	private final Screen owner;
 	final TextFieldWidget textField;
 	final TextRenderer textRenderer;
 	private final boolean slashOptional;
@@ -341,28 +340,28 @@ public class ChatInputSuggestor {
 		return OrderedText.concat(list);
 	}
 
-	public void render(MatrixStack matrices, int mouseX, int mouseY) {
-		if (!this.tryRenderWindow(matrices, mouseX, mouseY)) {
-			this.renderMessages(matrices);
+	public void render(DrawContext context, int mouseX, int mouseY) {
+		if (!this.tryRenderWindow(context, mouseX, mouseY)) {
+			this.renderMessages(context);
 		}
 	}
 
-	public boolean tryRenderWindow(MatrixStack matrices, int mouseX, int mouseY) {
+	public boolean tryRenderWindow(DrawContext context, int mouseX, int mouseY) {
 		if (this.window != null) {
-			this.window.render(matrices, mouseX, mouseY);
+			this.window.render(context, mouseX, mouseY);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public void renderMessages(MatrixStack matrices) {
+	public void renderMessages(DrawContext context) {
 		int i = 0;
 
 		for (OrderedText orderedText : this.messages) {
 			int j = this.chatScreenSized ? this.owner.height - 14 - 13 - 12 * i : 72 + 12 * i;
-			DrawableHelper.fill(matrices, this.x - 1, j, this.x + this.width + 1, j + 12, this.color);
-			this.textRenderer.drawWithShadow(matrices, orderedText, (float)this.x, (float)(j + 2), -1);
+			context.fill(this.x - 1, j, this.x + this.width + 1, j + 12, this.color);
+			context.drawTextWithShadow(this.textRenderer, orderedText, this.x, j + 2, -1);
 			i++;
 		}
 	}
@@ -392,7 +391,7 @@ public class ChatInputSuggestor {
 			this.select(0);
 		}
 
-		public void render(MatrixStack matrices, int mouseX, int mouseY) {
+		public void render(DrawContext context, int mouseX, int mouseY) {
 			int i = Math.min(this.suggestions.size(), ChatInputSuggestor.this.maxSuggestionSize);
 			int j = -5592406;
 			boolean bl = this.inWindowIndex > 0;
@@ -404,11 +403,8 @@ public class ChatInputSuggestor {
 			}
 
 			if (bl3) {
-				DrawableHelper.fill(
-					matrices, this.area.getX(), this.area.getY() - 1, this.area.getX() + this.area.getWidth(), this.area.getY(), ChatInputSuggestor.this.color
-				);
-				DrawableHelper.fill(
-					matrices,
+				context.fill(this.area.getX(), this.area.getY() - 1, this.area.getX() + this.area.getWidth(), this.area.getY(), ChatInputSuggestor.this.color);
+				context.fill(
 					this.area.getX(),
 					this.area.getY() + this.area.getHeight(),
 					this.area.getX() + this.area.getWidth(),
@@ -418,7 +414,7 @@ public class ChatInputSuggestor {
 				if (bl) {
 					for (int k = 0; k < this.area.getWidth(); k++) {
 						if (k % 2 == 0) {
-							DrawableHelper.fill(matrices, this.area.getX() + k, this.area.getY() - 1, this.area.getX() + k + 1, this.area.getY(), -1);
+							context.fill(this.area.getX() + k, this.area.getY() - 1, this.area.getX() + k + 1, this.area.getY(), -1);
 						}
 					}
 				}
@@ -426,8 +422,8 @@ public class ChatInputSuggestor {
 				if (bl2) {
 					for (int kx = 0; kx < this.area.getWidth(); kx++) {
 						if (kx % 2 == 0) {
-							DrawableHelper.fill(
-								matrices, this.area.getX() + kx, this.area.getY() + this.area.getHeight(), this.area.getX() + kx + 1, this.area.getY() + this.area.getHeight() + 1, -1
+							context.fill(
+								this.area.getX() + kx, this.area.getY() + this.area.getHeight(), this.area.getX() + kx + 1, this.area.getY() + this.area.getHeight() + 1, -1
 							);
 						}
 					}
@@ -438,13 +434,8 @@ public class ChatInputSuggestor {
 
 			for (int l = 0; l < i; l++) {
 				Suggestion suggestion = (Suggestion)this.suggestions.get(l + this.inWindowIndex);
-				DrawableHelper.fill(
-					matrices,
-					this.area.getX(),
-					this.area.getY() + 12 * l,
-					this.area.getX() + this.area.getWidth(),
-					this.area.getY() + 12 * l + 12,
-					ChatInputSuggestor.this.color
+				context.fill(
+					this.area.getX(), this.area.getY() + 12 * l, this.area.getX() + this.area.getWidth(), this.area.getY() + 12 * l + 12, ChatInputSuggestor.this.color
 				);
 				if (mouseX > this.area.getX()
 					&& mouseX < this.area.getX() + this.area.getWidth()
@@ -457,20 +448,19 @@ public class ChatInputSuggestor {
 					bl5 = true;
 				}
 
-				ChatInputSuggestor.this.textRenderer
-					.drawWithShadow(
-						matrices,
-						suggestion.getText(),
-						(float)(this.area.getX() + 1),
-						(float)(this.area.getY() + 2 + 12 * l),
-						l + this.inWindowIndex == this.selection ? -256 : -5592406
-					);
+				context.drawTextWithShadow(
+					ChatInputSuggestor.this.textRenderer,
+					suggestion.getText(),
+					this.area.getX() + 1,
+					this.area.getY() + 2 + 12 * l,
+					l + this.inWindowIndex == this.selection ? -256 : -5592406
+				);
 			}
 
 			if (bl5) {
 				Message message = ((Suggestion)this.suggestions.get(this.selection)).getTooltip();
 				if (message != null) {
-					ChatInputSuggestor.this.owner.renderTooltip(matrices, Texts.toText(message), mouseX, mouseY);
+					context.drawTooltip(ChatInputSuggestor.this.textRenderer, Texts.toText(message), mouseX, mouseY);
 				}
 			}
 		}

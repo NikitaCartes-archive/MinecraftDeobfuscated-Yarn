@@ -33,6 +33,7 @@ import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.HeightLimitView;
@@ -56,6 +57,7 @@ import org.slf4j.Logger;
  * Represents a scoped, modifiable view of biomes, block states, fluid states and block entities.
  */
 public abstract class Chunk implements BlockView, BiomeAccess.Storage, StructureHolder {
+	public static final int MISSING_SECTION = -1;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final LongSet EMPTY_STRUCTURE_REFERENCES = new LongOpenHashSet();
 	protected final ShortList[] postProcessingLists;
@@ -83,7 +85,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		ChunkPos pos,
 		UpgradeData upgradeData,
 		HeightLimitView heightLimitView,
-		Registry<Biome> biome,
+		Registry<Biome> biomeRegistry,
 		long inhabitedTime,
 		@Nullable ChunkSection[] sectionArrayInitializer,
 		@Nullable BlendingData blendingData
@@ -103,13 +105,13 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 			}
 		}
 
-		fillSectionArray(heightLimitView, biome, this.sectionArray);
+		fillSectionArray(biomeRegistry, this.sectionArray);
 	}
 
-	private static void fillSectionArray(HeightLimitView world, Registry<Biome> biome, ChunkSection[] sectionArray) {
+	private static void fillSectionArray(Registry<Biome> biomeRegistry, ChunkSection[] sectionArray) {
 		for (int i = 0; i < sectionArray.length; i++) {
 			if (sectionArray[i] == null) {
-				sectionArray[i] = new ChunkSection(world.sectionIndexToCoord(i), biome);
+				sectionArray[i] = new ChunkSection(biomeRegistry);
 			}
 		}
 	}
@@ -125,23 +127,22 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	public abstract void addEntity(Entity entity);
 
-	@Nullable
-	public ChunkSection getHighestNonEmptySection() {
+	public int getHighestNonEmptySection() {
 		ChunkSection[] chunkSections = this.getSectionArray();
 
 		for (int i = chunkSections.length - 1; i >= 0; i--) {
 			ChunkSection chunkSection = chunkSections[i];
 			if (!chunkSection.isEmpty()) {
-				return chunkSection;
+				return i;
 			}
 		}
 
-		return null;
+		return -1;
 	}
 
 	public int getHighestNonEmptySectionYOffset() {
-		ChunkSection chunkSection = this.getHighestNonEmptySection();
-		return chunkSection == null ? this.getBottomY() : chunkSection.getYOffset();
+		int i = this.getHighestNonEmptySection();
+		return i == -1 ? this.getBottomY() : ChunkSectionPos.getBlockCoord(this.sectionIndexToCoord(i));
 	}
 
 	public Set<BlockPos> getBlockEntityPositions() {
@@ -396,7 +397,8 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 		for (int k = heightLimitView.getBottomSectionCoord(); k < heightLimitView.getTopSectionCoord(); k++) {
 			ChunkSection chunkSection = this.getSection(this.sectionCoordToIndex(k));
-			chunkSection.populateBiomes(biomeSupplier, sampler, i, j);
+			int l = BiomeCoords.fromChunk(k);
+			chunkSection.populateBiomes(biomeSupplier, sampler, i, l, j);
 		}
 	}
 

@@ -6,7 +6,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.FarmlandBlock;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
@@ -15,8 +14,9 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -114,28 +114,11 @@ public class FarmerVillagerTask extends MultiTickTask<VillagerEntity> {
 					for (int i = 0; i < simpleInventory.size(); i++) {
 						ItemStack itemStack = simpleInventory.getStack(i);
 						boolean bl = false;
-						if (!itemStack.isEmpty()) {
-							if (itemStack.isOf(Items.WHEAT_SEEDS)) {
-								BlockState blockState2 = Blocks.WHEAT.getDefaultState();
-								serverWorld.setBlockState(this.currentTarget, blockState2);
-								serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, this.currentTarget, GameEvent.Emitter.of(villagerEntity, blockState2));
-								bl = true;
-							} else if (itemStack.isOf(Items.POTATO)) {
-								BlockState blockState2 = Blocks.POTATOES.getDefaultState();
-								serverWorld.setBlockState(this.currentTarget, blockState2);
-								serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, this.currentTarget, GameEvent.Emitter.of(villagerEntity, blockState2));
-								bl = true;
-							} else if (itemStack.isOf(Items.CARROT)) {
-								BlockState blockState2 = Blocks.CARROTS.getDefaultState();
-								serverWorld.setBlockState(this.currentTarget, blockState2);
-								serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, this.currentTarget, GameEvent.Emitter.of(villagerEntity, blockState2));
-								bl = true;
-							} else if (itemStack.isOf(Items.BEETROOT_SEEDS)) {
-								BlockState blockState2 = Blocks.BEETROOTS.getDefaultState();
-								serverWorld.setBlockState(this.currentTarget, blockState2);
-								serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, this.currentTarget, GameEvent.Emitter.of(villagerEntity, blockState2));
-								bl = true;
-							}
+						if (!itemStack.isEmpty() && itemStack.isIn(ItemTags.VILLAGER_PLANTABLE_SEEDS) && itemStack.getItem() instanceof BlockItem blockItem) {
+							BlockState blockState2 = blockItem.getBlock().getDefaultState();
+							serverWorld.setBlockState(this.currentTarget, blockState2);
+							serverWorld.emitGameEvent(GameEvent.BLOCK_PLACE, this.currentTarget, GameEvent.Emitter.of(villagerEntity, blockState2));
+							bl = true;
 						}
 
 						if (bl) {

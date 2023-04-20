@@ -170,7 +170,12 @@ public class WorldChunk extends Chunk {
 	public GameEventDispatcher getGameEventDispatcher(int ySectionCoord) {
 		return this.world instanceof ServerWorld serverWorld
 			? this.gameEventDispatchers
-				.computeIfAbsent(ySectionCoord, (Int2ObjectFunction<? extends GameEventDispatcher>)(sectionCoord -> new SimpleGameEventDispatcher(serverWorld)))
+				.computeIfAbsent(
+					ySectionCoord,
+					(Int2ObjectFunction<? extends GameEventDispatcher>)(sectionCoord -> new SimpleGameEventDispatcher(
+							serverWorld, ySectionCoord, this::removeGameEventDispatcher
+						))
+				)
 			: super.getGameEventDispatcher(ySectionCoord);
 	}
 
@@ -420,11 +425,12 @@ public class WorldChunk extends Chunk {
 				int i = ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY());
 				GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(i);
 				gameEventDispatcher.removeListener(gameEventListener);
-				if (gameEventDispatcher.isEmpty()) {
-					this.gameEventDispatchers.remove(i);
-				}
 			}
 		}
+	}
+
+	private void removeGameEventDispatcher(int ySectionCoord) {
+		this.gameEventDispatchers.remove(ySectionCoord);
 	}
 
 	private void removeBlockEntityTicker(BlockPos pos) {

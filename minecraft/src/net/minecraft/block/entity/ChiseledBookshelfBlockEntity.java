@@ -107,6 +107,16 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 	}
 
 	@Override
+	public boolean canTransferTo(Inventory hopperInventory, int slot, ItemStack stack) {
+		return hopperInventory.containsAny(
+			(Predicate<ItemStack>)(itemStack2 -> itemStack2.isEmpty()
+					? true
+					: ItemStack.canCombine(stack, itemStack2)
+						&& itemStack2.getCount() + stack.getCount() <= Math.min(itemStack2.getMaxCount(), hopperInventory.getMaxCountPerStack()))
+		);
+	}
+
+	@Override
 	public int getMaxCountPerStack() {
 		return 1;
 	}

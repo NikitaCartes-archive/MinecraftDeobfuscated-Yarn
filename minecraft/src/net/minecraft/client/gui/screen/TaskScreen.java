@@ -4,8 +4,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -95,17 +95,17 @@ public class TaskScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 80, 16777215);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 80, 16777215);
 		if (this.description == null) {
 			String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
-			drawCenteredTextWithShadow(matrices, this.textRenderer, string, this.width / 2, 120, 10526880);
+			context.drawCenteredTextWithShadow(this.textRenderer, string, this.width / 2, 120, 10526880);
 		} else {
-			this.description.drawCenterWithShadow(matrices, this.width / 2, 120);
+			this.description.drawCenterWithShadow(context, this.width / 2, 120);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override

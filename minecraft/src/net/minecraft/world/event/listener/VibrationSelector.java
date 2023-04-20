@@ -3,6 +3,7 @@ package net.minecraft.world.event.listener;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
+import net.minecraft.world.event.Vibrations;
 import org.apache.commons.lang3.tuple.Pair;
 
 /**
@@ -47,7 +48,7 @@ public class VibrationSelector {
 				} else {
 					return vibration.distance() > vibration2.distance()
 						? false
-						: VibrationListener.getFrequency(vibration.gameEvent()) > VibrationListener.getFrequency(vibration2.gameEvent());
+						: Vibrations.getFrequency(vibration.gameEvent()) > Vibrations.getFrequency(vibration2.gameEvent());
 				}
 			}
 		}

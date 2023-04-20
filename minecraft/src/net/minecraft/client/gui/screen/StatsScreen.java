@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -12,12 +11,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -37,6 +35,7 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class StatsScreen extends Screen implements StatsListener {
 	private static final Text DOWNLOADING_STATS_TEXT = Text.translatable("multiplayer.downloadingStats");
+	private static final Identifier STATS_ICONS_TEXTURE = new Identifier("textures/gui/container/stats_icons.png");
 	protected final Screen parent;
 	private StatsScreen.GeneralStatsListWidget generalStats;
 	StatsScreen.ItemStatsListWidget itemStats;
@@ -105,12 +104,11 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.downloadingStats) {
-			this.renderBackground(matrices);
-			drawCenteredTextWithShadow(matrices, this.textRenderer, DOWNLOADING_STATS_TEXT, this.width / 2, this.height / 2, 16777215);
-			drawCenteredTextWithShadow(
-				matrices,
+			this.renderBackground(context);
+			context.drawCenteredTextWithShadow(this.textRenderer, DOWNLOADING_STATS_TEXT, this.width / 2, this.height / 2, 16777215);
+			context.drawCenteredTextWithShadow(
 				this.textRenderer,
 				PROGRESS_BAR_STAGES[(int)(Util.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)],
 				this.width / 2,
@@ -118,9 +116,9 @@ public class StatsScreen extends Screen implements StatsListener {
 				16777215
 			);
 		} else {
-			this.getSelectedStatList().render(matrices, mouseX, mouseY, delta);
-			drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
-			super.render(matrices, mouseX, mouseY, delta);
+			this.getSelectedStatList().render(context, mouseX, mouseY, delta);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
+			super.render(context, mouseX, mouseY, delta);
 		}
 	}
 
@@ -163,14 +161,13 @@ public class StatsScreen extends Screen implements StatsListener {
 		return 115 + 40 * index;
 	}
 
-	void renderStatItem(MatrixStack matrices, int x, int y, Item item) {
-		this.renderIcon(matrices, x + 1, y + 1, 0, 0);
-		this.itemRenderer.renderGuiItemIcon(matrices, item.getDefaultStack(), x + 2, y + 2);
+	void renderStatItem(DrawContext context, int x, int y, Item item) {
+		this.renderIcon(context, x + 1, y + 1, 0, 0);
+		context.drawItemWithoutEntity(item.getDefaultStack(), x + 2, y + 2);
 	}
 
-	void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
-		RenderSystem.setShaderTexture(0, STATS_ICON_TEXTURE);
-		drawTexture(matrices, x, y, 0, (float)u, (float)v, 18, 18, 128, 128);
+	void renderIcon(DrawContext context, int x, int y, int u, int v) {
+		context.drawTexture(STATS_ICONS_TEXTURE, x, y, 0, (float)u, (float)v, 18, 18, 128, 128);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -187,8 +184,8 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void renderBackground(MatrixStack matrices) {
-			StatsScreen.this.renderBackground(matrices);
+		protected void renderBackground(DrawContext context) {
+			StatsScreen.this.renderBackground(context);
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -221,12 +218,10 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 
 			@Override
-			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.entityTypeName, x + 2, y + 1, 16777215);
-				DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.killedText, x + 2 + 10, y + 1 + 9, this.killedAny ? 9474192 : 6316128);
-				DrawableHelper.drawTextWithShadow(
-					matrices, StatsScreen.this.textRenderer, this.killedByText, x + 2 + 10, y + 1 + 9 * 2, this.killedByAny ? 9474192 : 6316128
-				);
+			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+				context.drawTextWithShadow(StatsScreen.this.textRenderer, this.entityTypeName, x + 2, y + 1, 16777215);
+				context.drawTextWithShadow(StatsScreen.this.textRenderer, this.killedText, x + 2 + 10, y + 1 + 9, this.killedAny ? 9474192 : 6316128);
+				context.drawTextWithShadow(StatsScreen.this.textRenderer, this.killedByText, x + 2 + 10, y + 1 + 9 * 2, this.killedByAny ? 9474192 : 6316128);
 			}
 
 			@Override
@@ -249,8 +244,8 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void renderBackground(MatrixStack matrices) {
-			StatsScreen.this.renderBackground(matrices);
+		protected void renderBackground(DrawContext context) {
+			StatsScreen.this.renderBackground(context);
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -268,11 +263,11 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 
 			@Override
-			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				DrawableHelper.drawTextWithShadow(matrices, StatsScreen.this.textRenderer, this.displayName, x + 2, y + 1, index % 2 == 0 ? 16777215 : 9474192);
+			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+				context.drawTextWithShadow(StatsScreen.this.textRenderer, this.displayName, x + 2, y + 1, index % 2 == 0 ? 16777215 : 9474192);
 				String string = this.getFormatted();
-				DrawableHelper.drawTextWithShadow(
-					matrices, StatsScreen.this.textRenderer, string, x + 2 + 213 - StatsScreen.this.textRenderer.getWidth(string), y + 1, index % 2 == 0 ? 16777215 : 9474192
+				context.drawTextWithShadow(
+					StatsScreen.this.textRenderer, string, x + 2 + 213 - StatsScreen.this.textRenderer.getWidth(string), y + 1, index % 2 == 0 ? 16777215 : 9474192
 				);
 			}
 
@@ -338,24 +333,24 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void renderHeader(MatrixStack matrices, int x, int y) {
+		protected void renderHeader(DrawContext context, int x, int y) {
 			if (!this.client.mouse.wasLeftButtonClicked()) {
 				this.selectedHeaderColumn = -1;
 			}
 
 			for (int i = 0; i < this.HEADER_ICON_SPRITE_INDICES.length; i++) {
-				StatsScreen.this.renderIcon(matrices, x + StatsScreen.this.getColumnX(i) - 18, y + 1, 0, this.selectedHeaderColumn == i ? 0 : 18);
+				StatsScreen.this.renderIcon(context, x + StatsScreen.this.getColumnX(i) - 18, y + 1, 0, this.selectedHeaderColumn == i ? 0 : 18);
 			}
 
 			if (this.selectedStatType != null) {
 				int i = StatsScreen.this.getColumnX(this.getHeaderIndex(this.selectedStatType)) - 36;
 				int j = this.listOrder == 1 ? 2 : 1;
-				StatsScreen.this.renderIcon(matrices, x + i, y + 1, 18 * j, 0);
+				StatsScreen.this.renderIcon(context, x + i, y + 1, 18 * j, 0);
 			}
 
 			for (int i = 0; i < this.HEADER_ICON_SPRITE_INDICES.length; i++) {
 				int j = this.selectedHeaderColumn == i ? 1 : 0;
-				StatsScreen.this.renderIcon(matrices, x + StatsScreen.this.getColumnX(i) - 18 + j, y + 1 + j, 18 * this.HEADER_ICON_SPRITE_INDICES[i], 18);
+				StatsScreen.this.renderIcon(context, x + StatsScreen.this.getColumnX(i) - 18 + j, y + 1 + j, 18 * this.HEADER_ICON_SPRITE_INDICES[i], 18);
 			}
 		}
 
@@ -370,8 +365,8 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void renderBackground(MatrixStack matrices) {
-			StatsScreen.this.renderBackground(matrices);
+		protected void renderBackground(DrawContext context) {
+			StatsScreen.this.renderBackground(context);
 		}
 
 		@Override
@@ -409,7 +404,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void renderDecorations(MatrixStack matrices, int mouseX, int mouseY) {
+		protected void renderDecorations(DrawContext context, int mouseX, int mouseY) {
 			if (mouseY >= this.top && mouseY <= this.bottom) {
 				StatsScreen.ItemStatsListWidget.Entry entry = this.getHoveredEntry();
 				int i = (this.width - this.getRowWidth()) / 2;
@@ -419,7 +414,7 @@ public class StatsScreen extends Screen implements StatsListener {
 					}
 
 					Item item = entry.getItem();
-					this.render(matrices, this.getText(item), mouseX, mouseY);
+					this.render(context, this.getText(item), mouseX, mouseY);
 				} else {
 					Text text = null;
 					int j = mouseX - i;
@@ -432,21 +427,21 @@ public class StatsScreen extends Screen implements StatsListener {
 						}
 					}
 
-					this.render(matrices, text, mouseX, mouseY);
+					this.render(context, text, mouseX, mouseY);
 				}
 			}
 		}
 
-		protected void render(MatrixStack matrices, @Nullable Text text, int mouseX, int mouseY) {
+		protected void render(DrawContext drawContext, @Nullable Text text, int mouseX, int mouseY) {
 			if (text != null) {
 				int i = mouseX + 12;
 				int j = mouseY - 12;
 				int k = StatsScreen.this.textRenderer.getWidth(text);
-				fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
-				matrices.push();
-				matrices.translate(0.0F, 0.0F, 400.0F);
-				StatsScreen.this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, -1);
-				matrices.pop();
+				drawContext.fillGradient(i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
+				drawContext.getMatrices().push();
+				drawContext.getMatrices().translate(0.0F, 0.0F, 400.0F);
+				drawContext.drawTextWithShadow(StatsScreen.this.textRenderer, text, i, j, -1);
+				drawContext.getMatrices().pop();
 			}
 		}
 
@@ -481,8 +476,8 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 
 			@Override
-			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				StatsScreen.this.renderStatItem(matrices, x + 40, y, this.item);
+			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+				StatsScreen.this.renderStatItem(context, x + 40, y, this.item);
 
 				for (int i = 0; i < StatsScreen.this.itemStats.blockStatTypes.size(); i++) {
 					Stat<Block> stat;
@@ -492,12 +487,12 @@ public class StatsScreen extends Screen implements StatsListener {
 						stat = null;
 					}
 
-					this.render(matrices, stat, x + StatsScreen.this.getColumnX(i), y, index % 2 == 0);
+					this.render(context, stat, x + StatsScreen.this.getColumnX(i), y, index % 2 == 0);
 				}
 
 				for (int i = 0; i < StatsScreen.this.itemStats.itemStatTypes.size(); i++) {
 					this.render(
-						matrices,
+						context,
 						((StatType)StatsScreen.this.itemStats.itemStatTypes.get(i)).getOrCreateStat(this.item),
 						x + StatsScreen.this.getColumnX(i + StatsScreen.this.itemStats.blockStatTypes.size()),
 						y,
@@ -506,11 +501,9 @@ public class StatsScreen extends Screen implements StatsListener {
 				}
 			}
 
-			protected void render(MatrixStack matrices, @Nullable Stat<?> stat, int x, int y, boolean white) {
+			protected void render(DrawContext drawContext, @Nullable Stat<?> stat, int x, int y, boolean white) {
 				String string = stat == null ? "-" : stat.format(StatsScreen.this.statHandler.getStat(stat));
-				DrawableHelper.drawTextWithShadow(
-					matrices, StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getWidth(string), y + 5, white ? 16777215 : 9474192
-				);
+				drawContext.drawTextWithShadow(StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getWidth(string), y + 5, white ? 16777215 : 9474192);
 			}
 
 			@Override

@@ -161,9 +161,9 @@ import org.slf4j.Logger;
 public final class ItemStack {
 	public static final Codec<ItemStack> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Registries.ITEM.getCodec().fieldOf("id").forGetter(stack -> stack.item),
-					Codec.INT.fieldOf("Count").forGetter(stack -> stack.count),
-					NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.nbt))
+					Registries.ITEM.getCodec().fieldOf("id").forGetter(ItemStack::getItem),
+					Codec.INT.fieldOf("Count").forGetter(ItemStack::getCount),
+					NbtCompound.CODEC.optionalFieldOf("tag").forGetter(stack -> Optional.ofNullable(stack.getNbt()))
 				)
 				.apply(instance, ItemStack::new)
 	);
@@ -175,7 +175,7 @@ public final class ItemStack {
 	 * 
 	 * @see ItemStack#isEmpty
 	 */
-	public static final ItemStack EMPTY = new ItemStack((Item)null);
+	public static final ItemStack EMPTY = new ItemStack((Void)null);
 	public static final DecimalFormat MODIFIER_FORMAT = Util.make(
 		new DecimalFormat("#.##"), decimalFormat -> decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT))
 	);
@@ -220,6 +220,7 @@ public final class ItemStack {
 	private int count;
 	private int bobbingAnimationTime;
 	@Deprecated
+	@Nullable
 	private final Item item;
 	/**
 	 * Represents the item stack's custom NBT.
@@ -259,11 +260,15 @@ public final class ItemStack {
 	}
 
 	public ItemStack(ItemConvertible item, int count) {
-		this.item = item == null ? null : item.asItem();
+		this.item = item.asItem();
 		this.count = count;
-		if (this.item != null && this.item.isDamageable()) {
+		if (this.item.isDamageable()) {
 			this.setDamage(this.getDamage());
 		}
+	}
+
+	private ItemStack(@Nullable Void void_) {
+		this.item = null;
 	}
 
 	private ItemStack(NbtCompound nbt) {
@@ -608,21 +613,21 @@ public final class ItemStack {
 	}
 
 	public boolean isItemBarVisible() {
-		return this.item.isItemBarVisible(this);
+		return this.getItem().isItemBarVisible(this);
 	}
 
 	/**
 	 * {@return the length of the filled section of the durability bar in pixels (out of 13)}
 	 */
 	public int getItemBarStep() {
-		return this.item.getItemBarStep(this);
+		return this.getItem().getItemBarStep(this);
 	}
 
 	/**
 	 * {@return the color of the filled section of the durability bar}
 	 */
 	public int getItemBarColor() {
-		return this.item.getItemBarColor(this);
+		return this.getItem().getItemBarColor(this);
 	}
 
 	public boolean onStackClicked(Slot slot, ClickType clickType, PlayerEntity player) {

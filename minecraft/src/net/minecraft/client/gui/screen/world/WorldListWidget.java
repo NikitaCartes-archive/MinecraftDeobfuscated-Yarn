@@ -25,7 +25,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.FatalErrorScreen;
@@ -41,7 +41,6 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
@@ -116,13 +115,13 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		List<LevelSummary> list = this.tryGet();
 		if (list != this.levels) {
 			this.show(list);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	private void show(@Nullable List<LevelSummary> levels) {
@@ -246,14 +245,14 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			int i = (this.client.currentScreen.width - this.client.textRenderer.getWidth(LOADING_LIST_TEXT)) / 2;
 			int j = y + (entryHeight - 9) / 2;
-			this.client.textRenderer.draw(matrices, LOADING_LIST_TEXT, (float)i, (float)j, 16777215);
+			context.drawText(this.client.textRenderer, LOADING_LIST_TEXT, i, j, 16777215, false);
 			String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
 			int k = (this.client.currentScreen.width - this.client.textRenderer.getWidth(string)) / 2;
 			int l = j + 9;
-			this.client.textRenderer.draw(matrices, string, (float)k, (float)l, 8421504);
+			context.drawText(this.client.textRenderer, string, k, l, 8421504, false);
 		}
 
 		@Override
@@ -324,7 +323,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			String string = this.level.getDisplayName();
 			String string2 = this.level.getName() + " (" + WorldListWidget.DATE_FORMAT.format(new Date(this.level.getLastPlayed())) + ")";
 			if (StringUtils.isEmpty(string)) {
@@ -332,33 +331,32 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			}
 
 			Text text = this.level.getDetails();
-			this.client.textRenderer.draw(matrices, string, (float)(x + 32 + 3), (float)(y + 1), 16777215);
-			this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + 9 + 3), 8421504);
-			this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + 9 + 9 + 3), 8421504);
-			RenderSystem.setShaderTexture(0, this.icon != null ? this.iconLocation : WorldListWidget.UNKNOWN_SERVER_LOCATION);
+			context.drawText(this.client.textRenderer, string, x + 32 + 3, y + 1, 16777215, false);
+			context.drawText(this.client.textRenderer, string2, x + 32 + 3, y + 9 + 3, 8421504, false);
+			context.drawText(this.client.textRenderer, text, x + 32 + 3, y + 9 + 9 + 3, 8421504, false);
+			Identifier identifier = this.icon != null ? this.iconLocation : WorldListWidget.UNKNOWN_SERVER_LOCATION;
 			RenderSystem.enableBlend();
-			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
+			context.drawTexture(identifier, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
-				RenderSystem.setShaderTexture(0, WorldListWidget.WORLD_SELECTION_LOCATION);
-				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
+				context.fill(x, y, x + 32, y + 32, -1601138544);
 				int i = mouseX - x;
 				boolean bl = i < 32;
 				int j = bl ? 32 : 0;
 				if (this.level.isLocked()) {
-					DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 96.0F, (float)j, 32, 32, 256, 256);
 					if (bl) {
 						this.screen.setTooltip(this.client.textRenderer.wrapLines(WorldListWidget.LOCKED_TEXT, 175));
 					}
 				} else if (this.level.requiresConversion()) {
-					DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 96.0F, (float)j, 32, 32, 256, 256);
 					if (bl) {
 						this.screen.setTooltip(this.client.textRenderer.wrapLines(WorldListWidget.CONVERSION_TOOLTIP, 175));
 					}
 				} else if (this.level.isDifferentVersion()) {
-					DrawableHelper.drawTexture(matrices, x, y, 32.0F, (float)j, 32, 32, 256, 256);
+					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 32.0F, (float)j, 32, 32, 256, 256);
 					if (this.level.isFutureLevel()) {
-						DrawableHelper.drawTexture(matrices, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+						context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 96.0F, (float)j, 32, 32, 256, 256);
 						if (bl) {
 							this.screen
 								.setTooltip(
@@ -366,13 +364,13 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								);
 						}
 					} else if (!SharedConstants.getGameVersion().isStable()) {
-						DrawableHelper.drawTexture(matrices, x, y, 64.0F, (float)j, 32, 32, 256, 256);
+						context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 64.0F, (float)j, 32, 32, 256, 256);
 						if (bl) {
 							this.screen.setTooltip(ImmutableList.of(WorldListWidget.SNAPSHOT_FIRST_LINE.asOrderedText(), WorldListWidget.SNAPSHOT_SECOND_LINE.asOrderedText()));
 						}
 					}
 				} else {
-					DrawableHelper.drawTexture(matrices, x, y, 0.0F, (float)j, 32, 32, 256, 256);
+					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 0.0F, (float)j, 32, 32, 256, 256);
 				}
 			}
 		}

@@ -42,7 +42,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 
 	private boolean isWater(BlockPos pos, int offsetX, int offsetZ, int multiplier) {
 		BlockPos blockPos = pos.add(offsetX * multiplier, 0, offsetZ * multiplier);
-		return this.dolphin.world.getFluidState(blockPos).isIn(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos).getMaterial().blocksMovement();
+		return this.dolphin.world.getFluidState(blockPos).isIn(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos).blocksMovement();
 	}
 
 	private boolean isAirAbove(BlockPos pos, int offsetX, int offsetZ, int multiplier) {

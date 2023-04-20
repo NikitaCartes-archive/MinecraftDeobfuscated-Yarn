@@ -8,11 +8,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.RealmsWorldOptions;
 import net.minecraft.client.realms.util.RealmsTextureManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -125,10 +125,10 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.state != null) {
 			this.drawSlotFrame(
-				matrices,
+				context,
 				this.getX(),
 				this.getY(),
 				mouseX,
@@ -147,7 +147,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	}
 
 	private void drawSlotFrame(
-		MatrixStack matrices,
+		DrawContext context,
 		int x,
 		int y,
 		int mouseX,
@@ -168,48 +168,49 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		Identifier identifier;
 		if (minigame) {
-			RenderSystem.setShaderTexture(0, RealmsTextureManager.getTextureId(String.valueOf(imageId), image));
+			identifier = RealmsTextureManager.getTextureId(String.valueOf(imageId), image);
 		} else if (empty) {
-			RenderSystem.setShaderTexture(0, EMPTY_FRAME);
+			identifier = EMPTY_FRAME;
 		} else if (image != null && imageId != -1L) {
-			RenderSystem.setShaderTexture(0, RealmsTextureManager.getTextureId(String.valueOf(imageId), image));
+			identifier = RealmsTextureManager.getTextureId(String.valueOf(imageId), image);
 		} else if (slotIndex == 1) {
-			RenderSystem.setShaderTexture(0, PANORAMA_0);
+			identifier = PANORAMA_0;
 		} else if (slotIndex == 2) {
-			RenderSystem.setShaderTexture(0, PANORAMA_2);
+			identifier = PANORAMA_2;
 		} else if (slotIndex == 3) {
-			RenderSystem.setShaderTexture(0, PANORAMA_3);
+			identifier = PANORAMA_3;
+		} else {
+			identifier = EMPTY_FRAME;
 		}
 
 		if (active) {
-			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
+			context.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		drawTexture(matrices, x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
-		RenderSystem.setShaderTexture(0, SLOT_FRAME);
+		context.drawTexture(identifier, x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
 		boolean bl2 = bl && action != RealmsWorldSlotButton.Action.NOTHING;
 		if (bl2) {
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		} else if (active) {
-			RenderSystem.setShaderColor(0.8F, 0.8F, 0.8F, 1.0F);
+			context.setShaderColor(0.8F, 0.8F, 0.8F, 1.0F);
 		} else {
-			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
+			context.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		drawTexture(matrices, x, y, 0.0F, 0.0F, 80, 80, 80, 80);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		context.drawTexture(SLOT_FRAME, x, y, 0.0F, 0.0F, 80, 80, 80, 80);
+		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (active) {
-			this.drawCheckmark(matrices, x, y);
+			this.drawCheckmark(context, x, y);
 		}
 
-		drawCenteredTextWithShadow(matrices, minecraftClient.textRenderer, slotName, x + 40, y + 66, 16777215);
+		context.drawCenteredTextWithShadow(minecraftClient.textRenderer, slotName, x + 40, y + 66, 16777215);
 	}
 
-	private void drawCheckmark(MatrixStack matrices, int x, int y) {
-		RenderSystem.setShaderTexture(0, CHECKMARK);
+	private void drawCheckmark(DrawContext context, int x, int y) {
 		RenderSystem.enableBlend();
-		drawTexture(matrices, x + 67, y + 4, 0.0F, 0.0F, 9, 8, 9, 8);
+		context.drawTexture(CHECKMARK, x + 67, y + 4, 0.0F, 0.0F, 9, 8, 9, 8);
 		RenderSystem.disableBlend();
 	}
 

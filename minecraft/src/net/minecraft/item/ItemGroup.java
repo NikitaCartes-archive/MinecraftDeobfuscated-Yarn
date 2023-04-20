@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.text.Text;
@@ -100,6 +102,9 @@ public class ItemGroup {
 
 	public void updateEntries(ItemGroup.DisplayContext displayContext) {
 		ItemGroup.EntriesImpl entriesImpl = new ItemGroup.EntriesImpl(this, displayContext.enabledFeatures);
+		RegistryKey<ItemGroup> registryKey = (RegistryKey<ItemGroup>)Registries.ITEM_GROUP
+			.getKey(this)
+			.orElseThrow(() -> new IllegalStateException("Unregistered creative tab: " + this));
 		this.entryCollector.accept(displayContext, entriesImpl);
 		this.displayStacks = entriesImpl.parentTabStacks;
 		this.searchTabStacks = entriesImpl.searchTabStacks;
@@ -208,7 +213,7 @@ public class ItemGroup {
 		}
 	}
 
-	protected interface Entries {
+	public interface Entries {
 		void add(ItemStack stack, ItemGroup.StackVisibility visibility);
 
 		default void add(ItemStack stack) {

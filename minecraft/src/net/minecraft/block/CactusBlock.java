@@ -85,8 +85,7 @@ public class CactusBlock extends Block {
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockState blockState = world.getBlockState(pos.offset(direction));
-			Material material = blockState.getMaterial();
-			if (material.isSolid() || world.getFluidState(pos.offset(direction)).isIn(FluidTags.LAVA)) {
+			if (blockState.isSolid() || world.getFluidState(pos.offset(direction)).isIn(FluidTags.LAVA)) {
 				return false;
 			}
 		}

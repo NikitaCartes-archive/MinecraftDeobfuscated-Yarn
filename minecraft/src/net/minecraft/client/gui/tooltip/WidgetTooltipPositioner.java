@@ -2,7 +2,6 @@ package net.minecraft.client.gui.tooltip;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Vector2i;
@@ -21,16 +20,16 @@ public class WidgetTooltipPositioner implements TooltipPositioner {
 	}
 
 	@Override
-	public Vector2ic getPosition(Screen screen, int x, int y, int width, int height) {
+	public Vector2ic getPosition(int screenWidth, int screenHeight, int x, int y, int width, int height) {
 		Vector2i vector2i = new Vector2i(x + 12, y);
-		if (vector2i.x + width > screen.width - 5) {
+		if (vector2i.x + width > screenWidth - 5) {
 			vector2i.x = Math.max(x - 12 - width, 9);
 		}
 
 		vector2i.y += 3;
 		int i = height + 3 + 3;
 		int j = this.widget.getY() + this.widget.getHeight() + 3 + getOffsetY(0, 0, this.widget.getHeight());
-		int k = screen.height - 5;
+		int k = screenHeight - 5;
 		if (j + i <= k) {
 			vector2i.y = vector2i.y + getOffsetY(vector2i.y, this.widget.getY(), this.widget.getHeight());
 		} else {

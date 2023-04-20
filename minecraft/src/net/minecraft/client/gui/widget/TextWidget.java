@@ -3,7 +3,7 @@ package net.minecraft.client.gui.widget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -46,11 +46,11 @@ public class TextWidget extends AbstractTextWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 		Text text = this.getMessage();
 		TextRenderer textRenderer = this.getTextRenderer();
 		int i = this.getX() + Math.round(this.horizontalAlignment * (float)(this.getWidth() - textRenderer.getWidth(text)));
 		int j = this.getY() + (this.getHeight() - 9) / 2;
-		drawTextWithShadow(matrices, textRenderer, text, i, j, this.getTextColor());
+		context.drawTextWithShadow(textRenderer, text, i, j, this.getTextColor());
 	}
 }

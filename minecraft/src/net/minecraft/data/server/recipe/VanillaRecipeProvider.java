@@ -2617,7 +2617,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.pattern(" # ")
 			.pattern("# #")
 			.pattern(" # ")
-			.criterion("has_brick", conditionsFromTag(ItemTags.DECORATED_POT_SHARDS))
+			.criterion("has_brick", conditionsFromTag(ItemTags.DECORATED_POT_SHERDS))
 			.offerTo(exporter, "decorated_pot_simple");
 		ComplexRecipeJsonBuilder.create(RecipeSerializer.CRAFTING_DECORATED_POT).offerTo(exporter, "decorated_pot");
 	}

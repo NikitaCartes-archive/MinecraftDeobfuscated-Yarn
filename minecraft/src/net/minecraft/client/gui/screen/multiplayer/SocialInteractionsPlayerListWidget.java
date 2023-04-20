@@ -17,6 +17,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.PlayerListEntry;
@@ -39,8 +40,8 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 	}
 
 	@Override
-	protected void enableScissor() {
-		enableScissor(this.left, this.top + 4, this.right, this.bottom);
+	protected void enableScissor(DrawContext context) {
+		context.enableScissor(this.left, this.top + 4, this.right, this.bottom);
 	}
 
 	public void update(Collection<UUID> uuids, double scrollAmount, boolean includeOffline) {

@@ -2,9 +2,9 @@ package net.minecraft.client.toast;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -16,7 +16,7 @@ public interface Toast {
 	Object TYPE = new Object();
 	int BASE_HEIGHT = 32;
 
-	Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime);
+	Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime);
 
 	default Object getType() {
 		return TYPE;

@@ -9,6 +9,7 @@ public final class BlockTags {
 	public static final TagKey<Block> PLANKS = of("planks");
 	public static final TagKey<Block> STONE_BRICKS = of("stone_bricks");
 	public static final TagKey<Block> WOODEN_BUTTONS = of("wooden_buttons");
+	public static final TagKey<Block> STONE_BUTTONS = of("stone_buttons");
 	public static final TagKey<Block> BUTTONS = of("buttons");
 	public static final TagKey<Block> WOOL_CARPETS = of("wool_carpets");
 	public static final TagKey<Block> WOODEN_DOORS = of("wooden_doors");
@@ -173,6 +174,7 @@ public final class BlockTags {
 	public static final TagKey<Block> REPLACEABLE = of("replaceable");
 	public static final TagKey<Block> ENCHANTMENT_POWER_PROVIDER = of("enchantment_power_provider");
 	public static final TagKey<Block> ENCHANTMENT_POWER_TRANSMITTER = of("enchantment_power_transmitter");
+	public static final TagKey<Block> MAINTAINS_FARMLAND = of("maintains_farmland");
 
 	private BlockTags() {
 	}

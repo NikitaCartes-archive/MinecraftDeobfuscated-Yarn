@@ -4,13 +4,13 @@ import com.mojang.logging.LogUtils;
 import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.task.RealmsGetServerDetailsTask;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -90,17 +90,17 @@ public class RealmsTermsScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
-		this.textRenderer.draw(matrices, SENTENCE_ONE_TEXT, (float)(this.width / 2 - 120), (float)row(5), 16777215);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, 16777215);
+		context.drawText(this.textRenderer, SENTENCE_ONE_TEXT, this.width / 2 - 120, row(5), 16777215, false);
 		int i = this.textRenderer.getWidth(SENTENCE_ONE_TEXT);
 		int j = this.width / 2 - 121 + i;
 		int k = row(5);
 		int l = j + this.textRenderer.getWidth(SENTENCE_TWO_TEXT) + 1;
 		int m = k + 1 + 9;
 		this.onLink = j <= mouseX && mouseX <= l && k <= mouseY && mouseY <= m;
-		this.textRenderer.draw(matrices, SENTENCE_TWO_TEXT, (float)(this.width / 2 - 120 + i), (float)row(5), this.onLink ? 7107012 : 3368635);
-		super.render(matrices, mouseX, mouseY, delta);
+		context.drawText(this.textRenderer, SENTENCE_TWO_TEXT, this.width / 2 - 120 + i, row(5), this.onLink ? 7107012 : 3368635, false);
+		super.render(context, mouseX, mouseY, delta);
 	}
 }

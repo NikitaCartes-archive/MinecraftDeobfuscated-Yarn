@@ -5,7 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -74,12 +73,11 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 							);
 						if (bl) {
 							BlockState blockState2 = structureWorldAccess.getBlockState(blockPos.add(s, u, t));
-							Material material = blockState2.getMaterial();
 							if (u >= 4 && blockState2.isLiquid()) {
 								return false;
 							}
 
-							if (u < 4 && !material.isSolid() && structureWorldAccess.getBlockState(blockPos.add(s, u, t)) != blockState) {
+							if (u < 4 && !blockState2.isSolid() && structureWorldAccess.getBlockState(blockPos.add(s, u, t)) != blockState) {
 								return false;
 							}
 						}
@@ -121,7 +119,7 @@ public class LakeFeature extends Feature<LakeFeature.Config> {
 								);
 							if (bl2 && (v < 4 || random.nextInt(2) != 0)) {
 								BlockState blockState4 = structureWorldAccess.getBlockState(blockPos.add(t, v, uxx));
-								if (blockState4.getMaterial().isSolid() && !blockState4.isIn(BlockTags.LAVA_POOL_STONE_CANNOT_REPLACE)) {
+								if (blockState4.isSolid() && !blockState4.isIn(BlockTags.LAVA_POOL_STONE_CANNOT_REPLACE)) {
 									BlockPos blockPos3 = blockPos.add(t, v, uxx);
 									structureWorldAccess.setBlockState(blockPos3, blockState3, Block.NOTIFY_LISTENERS);
 									this.markBlocksAboveForPostProcessing(structureWorldAccess, blockPos3);

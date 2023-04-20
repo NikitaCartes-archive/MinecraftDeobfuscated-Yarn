@@ -5,6 +5,7 @@ import java.time.Duration;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RepeatedNarrator;
@@ -12,7 +13,6 @@ import net.minecraft.client.realms.exception.RealmsDefaultUncaughtExceptionHandl
 import net.minecraft.client.realms.task.LongRunningTask;
 import net.minecraft.client.realms.util.Errable;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -97,17 +97,17 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, row(3), 16777215);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, row(3), 16777215);
 		Text text = this.errorMessage;
 		if (text == null) {
-			drawCenteredTextWithShadow(matrices, this.textRenderer, SYMBOLS[this.animTicks % SYMBOLS.length], this.width / 2, row(8), 8421504);
+			context.drawCenteredTextWithShadow(this.textRenderer, SYMBOLS[this.animTicks % SYMBOLS.length], this.width / 2, row(8), 8421504);
 		} else {
-			drawCenteredTextWithShadow(matrices, this.textRenderer, text, this.width / 2, row(8), 16711680);
+			context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, row(8), 16711680);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override

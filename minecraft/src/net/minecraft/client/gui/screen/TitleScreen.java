@@ -15,6 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.CubeMapRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.LogoDrawer;
 import net.minecraft.client.gui.RotatingCubeMapRenderer;
@@ -35,14 +36,12 @@ import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.gen.WorldPresets;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -57,7 +56,7 @@ public class TitleScreen extends Screen {
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
 	@Nullable
-	private String splashText;
+	private SplashTextRenderer splashText;
 	private ButtonWidget buttonResetDemo;
 	@Nullable
 	private RealmsNotificationsScreen realmsNotificationGui;
@@ -297,35 +296,27 @@ public class TitleScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.backgroundFadeStart == 0L && this.doBackgroundFade) {
 			this.backgroundFadeStart = Util.getMeasuringTimeMs();
 		}
 
 		float f = this.doBackgroundFade ? (float)(Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
 		this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0F, 1.0F));
-		RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
 		RenderSystem.enableBlend();
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
-		drawTexture(matrices, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		context.setShaderColor(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
+		context.drawTexture(PANORAMA_OVERLAY, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
+		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
-		this.logoDrawer.draw(matrices, this.width, g);
+		this.logoDrawer.draw(context, this.width, g);
 		int i = MathHelper.ceil(g * 255.0F) << 24;
 		if ((i & -67108864) != 0) {
 			if (this.deprecationNotice != null) {
-				this.deprecationNotice.render(matrices, i);
+				this.deprecationNotice.render(context, i);
 			}
 
 			if (this.splashText != null) {
-				matrices.push();
-				matrices.translate((float)(this.width / 2 + 90), 70.0F, 0.0F);
-				matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(-20.0F));
-				float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
-				h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
-				matrices.scale(h, h, h);
-				drawCenteredTextWithShadow(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | i);
-				matrices.pop();
+				this.splashText.render(context, this.width, this.textRenderer, i);
 			}
 
 			String string = "Minecraft " + SharedConstants.getGameVersion().getName();
@@ -339,7 +330,7 @@ public class TitleScreen extends Screen {
 				string = string + I18n.translate("menu.modded");
 			}
 
-			drawTextWithShadow(matrices, this.textRenderer, string, 2, this.height - 10, 16777215 | i);
+			context.drawTextWithShadow(this.textRenderer, string, 2, this.height - 10, 16777215 | i);
 
 			for (Element element : this.children()) {
 				if (element instanceof ClickableWidget) {
@@ -347,10 +338,10 @@ public class TitleScreen extends Screen {
 				}
 			}
 
-			super.render(matrices, mouseX, mouseY, delta);
+			super.render(context, mouseX, mouseY, delta);
 			if (this.isRealmsNotificationsGuiDisplayed() && g >= 1.0F) {
 				RenderSystem.enableDepthTest();
-				this.realmsNotificationGui.render(matrices, mouseX, mouseY, delta);
+				this.realmsNotificationGui.render(context, mouseX, mouseY, delta);
 			}
 		}
 	}
@@ -392,9 +383,9 @@ public class TitleScreen extends Screen {
 
 	@Environment(EnvType.CLIENT)
 	static record DeprecationNotice(TextRenderer textRenderer, MultilineText label, int x, int y) {
-		public void render(MatrixStack matrices, int color) {
-			this.label.fillBackground(matrices, this.x, this.y, 9, 2, 2097152 | Math.min(color, 1426063360));
-			this.label.drawCenterWithShadow(matrices, this.x, this.y, 9, 16777215 | color);
+		public void render(DrawContext context, int color) {
+			this.label.fillBackground(context, this.x, this.y, 9, 2, 2097152 | Math.min(color, 1426063360));
+			this.label.drawCenterWithShadow(context, this.x, this.y, 9, 16777215 | color);
 		}
 	}
 }

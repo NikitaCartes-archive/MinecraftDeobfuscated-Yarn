@@ -4,11 +4,11 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -28,12 +28,11 @@ public class LevelLoadingScreen extends Screen {
 		map.put(ChunkStatus.BIOMES, 8434258);
 		map.put(ChunkStatus.NOISE, 13750737);
 		map.put(ChunkStatus.SURFACE, 7497737);
-		map.put(ChunkStatus.CARVERS, 7169628);
-		map.put(ChunkStatus.LIQUID_CARVERS, 3159410);
+		map.put(ChunkStatus.CARVERS, 3159410);
 		map.put(ChunkStatus.FEATURES, 2213376);
-		map.put(ChunkStatus.LIGHT, 13421772);
+		map.put(ChunkStatus.INITIALIZE_LIGHT, 13421772);
+		map.put(ChunkStatus.LIGHT, 16769184);
 		map.put(ChunkStatus.SPAWN, 15884384);
-		map.put(ChunkStatus.HEIGHTMAPS, 15658734);
 		map.put(ChunkStatus.FULL, 16777215);
 	});
 
@@ -73,8 +72,8 @@ public class LevelLoadingScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
 		long l = Util.getMeasuringTimeMs();
 		if (l - this.lastNarrationTime > 2000L) {
 			this.lastNarrationTime = l;
@@ -84,12 +83,12 @@ public class LevelLoadingScreen extends Screen {
 		int i = this.width / 2;
 		int j = this.height / 2;
 		int k = 30;
-		drawChunkMap(matrices, this.progressProvider, i, j + 30, 2, 0);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.getPercentage(), i, j - 9 / 2 - 30, 16777215);
+		drawChunkMap(context, this.progressProvider, i, j + 30, 2, 0);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.getPercentage(), i, j - 9 / 2 - 30, 16777215);
 	}
 
 	public static void drawChunkMap(
-		MatrixStack matrices, WorldGenerationProgressTracker progressProvider, int centerX, int centerY, int pixelSize, int pixelMargin
+		DrawContext drawContext, WorldGenerationProgressTracker progressProvider, int centerX, int centerY, int pixelSize, int pixelMargin
 	) {
 		int i = pixelSize + pixelMargin;
 		int j = progressProvider.getCenterSize();
@@ -101,10 +100,10 @@ public class LevelLoadingScreen extends Screen {
 		int p = k / 2 + 1;
 		int q = -16772609;
 		if (pixelMargin != 0) {
-			fill(matrices, centerX - p, centerY - p, centerX - p + 1, centerY + p, -16772609);
-			fill(matrices, centerX + p - 1, centerY - p, centerX + p, centerY + p, -16772609);
-			fill(matrices, centerX - p, centerY - p, centerX + p, centerY - p + 1, -16772609);
-			fill(matrices, centerX - p, centerY + p - 1, centerX + p, centerY + p, -16772609);
+			drawContext.fill(centerX - p, centerY - p, centerX - p + 1, centerY + p, -16772609);
+			drawContext.fill(centerX + p - 1, centerY - p, centerX + p, centerY + p, -16772609);
+			drawContext.fill(centerX - p, centerY - p, centerX + p, centerY - p + 1, -16772609);
+			drawContext.fill(centerX - p, centerY + p - 1, centerX + p, centerY + p, -16772609);
 		}
 
 		for (int r = 0; r < l; r++) {
@@ -112,7 +111,7 @@ public class LevelLoadingScreen extends Screen {
 				ChunkStatus chunkStatus = progressProvider.getChunkStatus(r, s);
 				int t = n + r * i;
 				int u = o + s * i;
-				fill(matrices, t, u, t + pixelSize, u + pixelSize, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
+				drawContext.fill(t, u, t + pixelSize, u + pixelSize, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
 			}
 		}
 	}

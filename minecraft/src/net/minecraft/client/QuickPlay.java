@@ -42,13 +42,9 @@ public class QuickPlay {
 		resourceReload.whenComplete().thenRunAsync(() -> {
 			if (!StringUtils.isBlank(string)) {
 				startSingleplayer(client, string);
-			}
-
-			if (!StringUtils.isBlank(string2)) {
+			} else if (!StringUtils.isBlank(string2)) {
 				startMultiplayer(client, string2);
-			}
-
-			if (!StringUtils.isBlank(string3)) {
+			} else if (!StringUtils.isBlank(string3)) {
 				startRealms(client, realmsClient, string3);
 			}
 		}, client);

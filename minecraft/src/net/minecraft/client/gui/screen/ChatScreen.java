@@ -4,12 +4,12 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.MessageIndicator;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
@@ -185,18 +185,18 @@ public class ChatScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		fill(matrices, 2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
-		this.chatField.render(matrices, mouseX, mouseY, delta);
-		super.render(matrices, mouseX, mouseY, delta);
-		this.chatInputSuggestor.render(matrices, mouseX, mouseY);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		context.fill(2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
+		this.chatField.render(context, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
+		this.chatInputSuggestor.render(context, mouseX, mouseY);
 		MessageIndicator messageIndicator = this.client.inGameHud.getChatHud().getIndicatorAt((double)mouseX, (double)mouseY);
 		if (messageIndicator != null && messageIndicator.text() != null) {
-			this.renderOrderedTooltip(matrices, this.textRenderer.wrapLines(messageIndicator.text(), 210), mouseX, mouseY);
+			context.drawOrderedTooltip(this.textRenderer, this.textRenderer.wrapLines(messageIndicator.text(), 210), mouseX, mouseY);
 		} else {
 			Style style = this.getTextStyleAt((double)mouseX, (double)mouseY);
 			if (style != null && style.getHoverEvent() != null) {
-				this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
+				context.drawHoverEvent(this.textRenderer, style, mouseX, mouseY);
 			}
 		}
 	}

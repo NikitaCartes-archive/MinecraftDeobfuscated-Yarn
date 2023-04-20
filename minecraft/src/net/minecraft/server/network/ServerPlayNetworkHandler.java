@@ -319,7 +319,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 		if (this.player.getLastActionTime() > 0L
 			&& this.server.getPlayerIdleTimeout() > 0
-			&& Util.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)(this.server.getPlayerIdleTimeout() * 1000 * 60)) {
+			&& Util.getMeasuringTimeMs() - this.player.getLastActionTime() > (long)this.server.getPlayerIdleTimeout() * 1000L * 60L) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.idling"));
 		}
 	}

@@ -1,11 +1,9 @@
 package net.minecraft.client.gui.hud;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -58,9 +56,8 @@ public record MessageIndicator(int indicatorColor, @Nullable MessageIndicator.Ic
 			this.height = height;
 		}
 
-		public void draw(MatrixStack matrices, int x, int y) {
-			RenderSystem.setShaderTexture(0, MessageIndicator.CHAT_TAGS_TEXTURE);
-			DrawableHelper.drawTexture(matrices, x, y, (float)this.u, (float)this.v, this.width, this.height, 32, 32);
+		public void draw(DrawContext context, int x, int y) {
+			context.drawTexture(MessageIndicator.CHAT_TAGS_TEXTURE, x, y, (float)this.u, (float)this.v, this.width, this.height, 32, 32);
 		}
 	}
 }

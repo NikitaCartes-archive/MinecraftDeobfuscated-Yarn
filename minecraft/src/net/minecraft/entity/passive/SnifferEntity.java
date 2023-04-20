@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.AnimationState;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -63,7 +62,6 @@ public class SnifferEntity extends AnimalEntity {
 	public final AnimationState feelingHappyAnimationState = new AnimationState();
 	public final AnimationState scentingAnimationState = new AnimationState();
 	public final AnimationState sniffingAnimationState = new AnimationState();
-	public final AnimationState searchingAnimationState = new AnimationState();
 	public final AnimationState diggingAnimationState = new AnimationState();
 	public final AnimationState risingAnimationState = new AnimationState();
 	public final AnimationState babyGrowthAnimationState = new AnimationState();
@@ -91,12 +89,16 @@ public class SnifferEntity extends AnimalEntity {
 		return this.brain.getOptionalRegisteredMemory(MemoryModuleType.IS_PANICKING).isPresent();
 	}
 
+	public boolean isSearching() {
+		return this.getState() == SnifferEntity.State.SEARCHING;
+	}
+
 	public boolean isTempted() {
 		return (Boolean)this.brain.getOptionalRegisteredMemory(MemoryModuleType.IS_TEMPTED).orElse(false);
 	}
 
 	public boolean canTryToDig() {
-		return !this.isTempted() && !this.isPanicking() && !this.isTouchingWater() && !this.isInLove();
+		return !this.isTempted() && !this.isPanicking() && !this.isTouchingWater() && !this.isInLove() && this.onGround && !this.hasVehicle();
 	}
 
 	public boolean isDiggingOrSearching() {
@@ -129,9 +131,6 @@ public class SnifferEntity extends AnimalEntity {
 				case SNIFFING:
 					this.sniffingAnimationState.startIfNotRunning(this.age);
 					break;
-				case SEARCHING:
-					this.searchingAnimationState.startIfNotRunning(this.age);
-					break;
 				case DIGGING:
 					this.diggingAnimationState.startIfNotRunning(this.age);
 					break;
@@ -147,7 +146,6 @@ public class SnifferEntity extends AnimalEntity {
 	}
 
 	private void stopAnimations() {
-		this.searchingAnimationState.stop();
 		this.diggingAnimationState.stop();
 		this.sniffingAnimationState.stop();
 		this.risingAnimationState.stop();
@@ -164,9 +162,6 @@ public class SnifferEntity extends AnimalEntity {
 				this.playSound(SoundEvents.ENTITY_SNIFFER_SNIFFING, 1.0F, 1.0F);
 				this.setState(SnifferEntity.State.SNIFFING);
 				break;
-			case SEARCHING:
-				this.setState(SnifferEntity.State.SEARCHING);
-				break;
 			case DIGGING:
 				this.setState(SnifferEntity.State.DIGGING).setDigging();
 				break;
@@ -180,6 +175,9 @@ public class SnifferEntity extends AnimalEntity {
 				break;
 			case IDLING:
 				this.setState(SnifferEntity.State.IDLING);
+				break;
+			case SEARCHING:
+				this.setState(SnifferEntity.State.SEARCHING);
 		}
 
 		return this;
@@ -215,13 +213,14 @@ public class SnifferEntity extends AnimalEntity {
 			.findFirst();
 	}
 
-	@Override
-	protected boolean canStartRiding(Entity entity) {
-		return false;
-	}
-
 	boolean canDig() {
-		return !this.isPanicking() && !this.isTempted() && !this.isBaby() && !this.isTouchingWater() && this.isDiggable(this.getDigPos().down());
+		return !this.isPanicking()
+			&& !this.isTempted()
+			&& !this.isBaby()
+			&& !this.isTouchingWater()
+			&& this.onGround
+			&& !this.hasVehicle()
+			&& this.isDiggable(this.getDigPos().down());
 	}
 
 	private boolean isDiggable(BlockPos pos) {
@@ -295,7 +294,7 @@ public class SnifferEntity extends AnimalEntity {
 		ItemEntity itemEntity = new ItemEntity(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack);
 		itemEntity.setToDefaultPickupDelay();
 		this.breed(world, other, null);
-		this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.5F);
+		this.playSound(SoundEvents.BLOCK_SNIFFER_EGG_PLOP, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 0.5F);
 		world.spawnEntity(itemEntity);
 	}
 
@@ -308,11 +307,11 @@ public class SnifferEntity extends AnimalEntity {
 	@Override
 	public void tick() {
 		switch (this.getState()) {
-			case SEARCHING:
-				this.playSearchingSound();
-				break;
 			case DIGGING:
 				this.spawnDiggingParticles(this.diggingAnimationState).dropSeeds();
+				break;
+			case SEARCHING:
+				this.playSearchingSound();
 		}
 
 		this.babyGrowthAnimationState.setRunning(this.isBaby(), this.age);
@@ -322,8 +321,9 @@ public class SnifferEntity extends AnimalEntity {
 	@Override
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
+		boolean bl = this.isBreedingItem(itemStack);
 		ActionResult actionResult = super.interactMob(player, hand);
-		if (actionResult.isAccepted() && this.isBreedingItem(itemStack)) {
+		if (actionResult.isAccepted() && bl) {
 			this.world.playSoundFromEntity(null, this, this.getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0F, MathHelper.nextBetween(this.world.random, 0.8F, 1.2F));
 		}
 

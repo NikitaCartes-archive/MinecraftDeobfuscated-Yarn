@@ -67,7 +67,7 @@ public class LightData {
 				uninitialized.set(y);
 			} else {
 				initialized.set(y);
-				nibbles.add((byte[])chunkNibbleArray.asByteArray().clone());
+				nibbles.add(chunkNibbleArray.copy().asByteArray());
 			}
 		}
 	}

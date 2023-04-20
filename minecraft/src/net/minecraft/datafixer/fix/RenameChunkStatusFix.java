@@ -1,0 +1,34 @@
+package net.minecraft.datafixer.fix;
+
+import com.mojang.datafixers.DSL;
+import com.mojang.datafixers.DataFix;
+import com.mojang.datafixers.DataFixUtils;
+import com.mojang.datafixers.TypeRewriteRule;
+import com.mojang.datafixers.schemas.Schema;
+import com.mojang.serialization.Dynamic;
+import java.util.function.UnaryOperator;
+import net.minecraft.datafixer.TypeReferences;
+
+public class RenameChunkStatusFix extends DataFix {
+	private final String name;
+	private final UnaryOperator<String> mapper;
+
+	public RenameChunkStatusFix(Schema schema, String name, UnaryOperator<String> mapper) {
+		super(schema, false);
+		this.name = name;
+		this.mapper = mapper;
+	}
+
+	@Override
+	protected TypeRewriteRule makeRule() {
+		return this.fixTypeEverywhereTyped(
+			this.name,
+			this.getInputSchema().getType(TypeReferences.CHUNK),
+			typed -> typed.update(DSL.remainderFinder(), chunk -> chunk.update("Status", this::updateStatus))
+		);
+	}
+
+	private <T> Dynamic<T> updateStatus(Dynamic<T> status) {
+		return DataFixUtils.orElse(status.asString().result().map(this.mapper).map(status::createString), status);
+	}
+}

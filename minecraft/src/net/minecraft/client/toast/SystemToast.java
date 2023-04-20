@@ -1,15 +1,13 @@
 package net.minecraft.client.toast;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 
@@ -69,36 +67,35 @@ public class SystemToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
+	public Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime) {
 		if (this.justUpdated) {
 			this.startTime = startTime;
 			this.justUpdated = false;
 		}
 
-		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = this.getWidth();
 		if (i == 160 && this.lines.size() <= 1) {
-			DrawableHelper.drawTexture(matrices, 0, 0, 0, 64, i, this.getHeight());
+			context.drawTexture(TEXTURE, 0, 0, 0, 64, i, this.getHeight());
 		} else {
 			int j = this.getHeight();
 			int k = 28;
 			int l = Math.min(4, j - 28);
-			this.drawPart(matrices, manager, i, 0, 0, 28);
+			this.drawPart(context, manager, i, 0, 0, 28);
 
 			for (int m = 28; m < j - l; m += 10) {
-				this.drawPart(matrices, manager, i, 16, m, Math.min(16, j - m - l));
+				this.drawPart(context, manager, i, 16, m, Math.min(16, j - m - l));
 			}
 
-			this.drawPart(matrices, manager, i, 32 - l, j - l, l);
+			this.drawPart(context, manager, i, 32 - l, j - l, l);
 		}
 
 		if (this.lines == null) {
-			manager.getClient().textRenderer.draw(matrices, this.title, 18.0F, 12.0F, -256);
+			context.drawText(manager.getClient().textRenderer, this.title, 18, 12, -256, false);
 		} else {
-			manager.getClient().textRenderer.draw(matrices, this.title, 18.0F, 7.0F, -256);
+			context.drawText(manager.getClient().textRenderer, this.title, 18, 7, -256, false);
 
 			for (int j = 0; j < this.lines.size(); j++) {
-				manager.getClient().textRenderer.draw(matrices, (OrderedText)this.lines.get(j), 18.0F, (float)(18 + j * 12), -1);
+				context.drawText(manager.getClient().textRenderer, (OrderedText)this.lines.get(j), 18, 18 + j * 12, -1, false);
 			}
 		}
 
@@ -107,16 +104,16 @@ public class SystemToast implements Toast {
 			: Toast.Visibility.HIDE;
 	}
 
-	private void drawPart(MatrixStack matrices, ToastManager manager, int width, int textureV, int y, int height) {
+	private void drawPart(DrawContext context, ToastManager manager, int width, int textureV, int y, int height) {
 		int i = textureV == 0 ? 20 : 5;
 		int j = Math.min(60, width - i);
-		DrawableHelper.drawTexture(matrices, 0, y, 0, 64 + textureV, i, height);
+		context.drawTexture(TEXTURE, 0, y, 0, 64 + textureV, i, height);
 
 		for (int k = i; k < width - j; k += 64) {
-			DrawableHelper.drawTexture(matrices, k, y, 32, 64 + textureV, Math.min(64, width - k - j), height);
+			context.drawTexture(TEXTURE, k, y, 32, 64 + textureV, Math.min(64, width - k - j), height);
 		}
 
-		DrawableHelper.drawTexture(matrices, width - j, y, 160 - j, 64 + textureV, j, height);
+		context.drawTexture(TEXTURE, width - j, y, 160 - j, 64 + textureV, j, height);
 	}
 
 	public void setContent(Text title, @Nullable Text description) {

@@ -23,7 +23,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.event.listener.GameEventListener;
+import net.minecraft.world.event.Vibrations;
 
 public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable {
 	public static final BooleanProperty SHRIEKING = Properties.SHRIEKING;
@@ -137,15 +137,15 @@ public class SculkShriekerBlock extends BlockWithEntity implements Waterloggable
 
 	@Nullable
 	@Override
-	public <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
-		return blockEntity instanceof SculkShriekerBlockEntity sculkShriekerBlockEntity ? sculkShriekerBlockEntity.getVibrationListener() : null;
-	}
-
-	@Nullable
-	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
 		return !world.isClient
-			? BlockWithEntity.checkType(type, BlockEntityType.SCULK_SHRIEKER, (worldx, pos, statex, blockEntity) -> blockEntity.getVibrationListener().tick(worldx))
+			? BlockWithEntity.checkType(
+				type,
+				BlockEntityType.SCULK_SHRIEKER,
+				(worldx, pos, statex, sculkShriekerBlockEntity) -> Vibrations.Ticker.tick(
+						worldx, sculkShriekerBlockEntity.getVibrationListenerData(), sculkShriekerBlockEntity.getVibrationCallback()
+					)
+			)
 			: null;
 	}
 }

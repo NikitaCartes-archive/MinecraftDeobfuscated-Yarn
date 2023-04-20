@@ -199,6 +199,8 @@ public class SnifferBrain {
 			boolean bl = this.isTimeLimitExceeded(l);
 			if (bl) {
 				snifferEntity.getBrain().remember(MemoryModuleType.SNIFF_COOLDOWN, Unit.INSTANCE, 9600L);
+			} else {
+				SnifferBrain.stopDiggingOrSniffing(snifferEntity);
 			}
 		}
 	}
@@ -264,6 +266,8 @@ public class SnifferBrain {
 		ScentingTask(int minRunTime, int maxRunTime) {
 			super(
 				Map.of(
+					MemoryModuleType.IS_PANICKING,
+					MemoryModuleState.VALUE_ABSENT,
 					MemoryModuleType.SNIFFER_DIGGING,
 					MemoryModuleState.VALUE_ABSENT,
 					MemoryModuleType.SNIFFER_SNIFFING_TARGET,

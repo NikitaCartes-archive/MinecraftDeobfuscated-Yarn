@@ -4,8 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -33,19 +32,18 @@ public class TutorialToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
-		RenderSystem.setShaderTexture(0, TEXTURE);
-		DrawableHelper.drawTexture(matrices, 0, 0, 0, 96, this.getWidth(), this.getHeight());
-		this.type.drawIcon(matrices, 6, 6);
+	public Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime) {
+		context.drawTexture(TEXTURE, 0, 0, 0, 96, this.getWidth(), this.getHeight());
+		this.type.drawIcon(context, 6, 6);
 		if (this.description == null) {
-			manager.getClient().textRenderer.draw(matrices, this.title, 30.0F, 12.0F, -11534256);
+			context.drawText(manager.getClient().textRenderer, this.title, 30, 12, -11534256, false);
 		} else {
-			manager.getClient().textRenderer.draw(matrices, this.title, 30.0F, 7.0F, -11534256);
-			manager.getClient().textRenderer.draw(matrices, this.description, 30.0F, 18.0F, -16777216);
+			context.drawText(manager.getClient().textRenderer, this.title, 30, 7, -11534256, false);
+			context.drawText(manager.getClient().textRenderer, this.description, 30, 18, -16777216, false);
 		}
 
 		if (this.hasProgressBar) {
-			DrawableHelper.fill(matrices, 3, 28, 157, 29, -1);
+			context.fill(3, 28, 157, 29, -1);
 			float f = MathHelper.clampedLerp(this.lastProgress, this.progress, (float)(startTime - this.lastTime) / 100.0F);
 			int i;
 			if (this.progress >= this.lastProgress) {
@@ -54,7 +52,7 @@ public class TutorialToast implements Toast {
 				i = -11206656;
 			}
 
-			DrawableHelper.fill(matrices, 3, 28, (int)(3.0F + 154.0F * f), 29, i);
+			context.fill(3, 28, (int)(3.0F + 154.0F * f), 29, i);
 			this.lastProgress = f;
 			this.lastTime = startTime;
 		}
@@ -88,9 +86,9 @@ public class TutorialToast implements Toast {
 			this.textureSlotY = textureSlotY;
 		}
 
-		public void drawIcon(MatrixStack matrices, int x, int y) {
+		public void drawIcon(DrawContext context, int x, int y) {
 			RenderSystem.enableBlend();
-			DrawableHelper.drawTexture(matrices, x, y, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
+			context.drawTexture(Toast.TEXTURE, x, y, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
 		}
 	}
 }

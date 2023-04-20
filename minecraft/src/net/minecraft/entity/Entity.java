@@ -934,22 +934,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					this.horizontalSpeed = this.horizontalSpeed + (float)vec3d.horizontalLength() * 0.6F;
 					this.distanceTraveled = this.distanceTraveled + (float)Math.sqrt(e * e + f * f + g * g) * 0.6F;
 					if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
-						if (!this.onGround && !bl3 && (!this.isInSneakingPose() || movement.y != 0.0)) {
-							if (this.isTouchingWater()) {
-								this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
-								if (moveEffect.playsSounds()) {
-									Entity entity = (Entity)(this.hasPassengers() && this.getControllingPassenger() != null ? this.getControllingPassenger() : this);
-									float h = entity == this ? 0.35F : 0.4F;
-									Vec3d vec3d3 = entity.getVelocity();
-									float i = Math.min(1.0F, (float)Math.sqrt(vec3d3.x * vec3d3.x * 0.2F + vec3d3.y * vec3d3.y + vec3d3.z * vec3d3.z * 0.2F) * h);
-									this.playSwimSound(i);
-								}
-
-								if (moveEffect.emitsGameEvents()) {
-									this.emitGameEvent(GameEvent.SWIM);
-								}
-							}
-						} else {
+						if (this.canStep(bl3, movement)) {
 							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
 							if (moveEffect.playsSounds()) {
 								this.playStepSounds(blockPos, blockState);
@@ -958,6 +943,15 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 							if (moveEffect.emitsGameEvents()) {
 								this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
 							}
+						} else if (this.isTouchingWater()) {
+							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
+							if (moveEffect.playsSounds()) {
+								this.playSwimSound();
+							}
+
+							if (moveEffect.emitsGameEvents()) {
+								this.emitGameEvent(GameEvent.SWIM);
+							}
 						}
 					} else if (blockState.isAir()) {
 						this.addAirTravelEffects();
@@ -965,8 +959,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 
 				this.tryCheckBlockCollision();
-				float j = this.getVelocityMultiplier();
-				this.setVelocity(this.getVelocity().multiply((double)j, 1.0, (double)j));
+				float h = this.getVelocityMultiplier();
+				this.setVelocity(this.getVelocity().multiply((double)h, 1.0, (double)h));
 				if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))) {
 					if (this.fireTicks <= 0) {
 						this.setFireTicks(-this.getBurningDuration());
@@ -1297,34 +1291,35 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	private void playStepSounds(BlockPos pos, BlockState state) {
-		BlockPos blockPos = this.getStepSoundPos(pos);
-		if (this instanceof PlayerEntity && !pos.equals(blockPos)) {
-			BlockState blockState = this.world.getBlockState(blockPos);
-			if (blockState.isIn(BlockTags.COMBINATION_STEP_SOUND_BLOCKS)) {
-				this.playCombinationStepSounds(blockState, state);
-			} else {
-				this.playStepSound(blockPos, blockState);
-			}
-		} else {
-			this.playStepSound(pos, state);
-		}
-
+		this.playStepSound(pos, state);
 		if (this.shouldPlayAmethystChimeSound(state)) {
 			this.playAmethystChimeSound();
 		}
 	}
 
-	private BlockPos getStepSoundPos(BlockPos pos) {
+	protected void playSwimSound() {
+		Entity entity = (Entity)(this.hasPassengers() && this.getControllingPassenger() != null ? this.getControllingPassenger() : this);
+		float f = entity == this ? 0.35F : 0.4F;
+		Vec3d vec3d = entity.getVelocity();
+		float g = Math.min(1.0F, (float)Math.sqrt(vec3d.x * vec3d.x * 0.2F + vec3d.y * vec3d.y + vec3d.z * vec3d.z * 0.2F) * f);
+		this.playSwimSound(g);
+	}
+
+	protected BlockPos getStepSoundPos(BlockPos pos) {
 		BlockPos blockPos = pos.up();
 		BlockState blockState = this.world.getBlockState(blockPos);
 		return !blockState.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !blockState.isIn(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? pos : blockPos;
 	}
 
-	private void playCombinationStepSounds(BlockState primaryState, BlockState secondaryState) {
+	protected void playCombinationStepSounds(BlockState primaryState, BlockState secondaryState) {
 		BlockSoundGroup blockSoundGroup = primaryState.getSoundGroup();
-		BlockSoundGroup blockSoundGroup2 = secondaryState.getSoundGroup();
 		this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
-		this.playSound(blockSoundGroup2.getStepSound(), blockSoundGroup2.getVolume() * 0.05F, blockSoundGroup2.getPitch() * 0.8F);
+		this.playSecondaryStepSound(secondaryState);
+	}
+
+	protected void playSecondaryStepSound(BlockState state) {
+		BlockSoundGroup blockSoundGroup = state.getSoundGroup();
+		this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.05F, blockSoundGroup.getPitch() * 0.8F);
 	}
 
 	protected void playStepSound(BlockPos pos, BlockState state) {
@@ -1505,6 +1500,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 			return false;
 		}
+	}
+
+	public boolean canStep(boolean climbing, Vec3d movement) {
+		return (this.onGround || climbing || this.isInSneakingPose() && movement.y == 0.0) && !this.isSwimming();
 	}
 
 	/**

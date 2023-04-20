@@ -1,13 +1,10 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -27,18 +24,17 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.render(matrices, mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(context, mouseX, mouseY);
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		this.renderBackground(matrices);
-		RenderSystem.setShaderTexture(0, TEXTURE);
+	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+		this.renderBackground(context);
 		int i = this.x;
 		int j = this.y;
-		drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		ItemStack itemStack = this.handler.getSlot(1).getStack();
 		boolean bl = itemStack.isOf(Items.MAP);
 		boolean bl2 = itemStack.isOf(Items.PAPER);
@@ -54,13 +50,13 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 				if (mapState.locked) {
 					bl4 = true;
 					if (bl2 || bl3) {
-						drawTexture(matrices, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
+						context.drawTexture(TEXTURE, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
 					}
 				}
 
 				if (bl2 && mapState.scale >= 4) {
 					bl4 = true;
-					drawTexture(matrices, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
+					context.drawTexture(TEXTURE, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
 				}
 			}
 		} else {
@@ -68,49 +64,49 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 			mapState = null;
 		}
 
-		this.drawMap(matrices, integer, mapState, bl, bl2, bl3, bl4);
+		this.drawMap(context, integer, mapState, bl, bl2, bl3, bl4);
 	}
 
 	private void drawMap(
-		MatrixStack matrices, @Nullable Integer mapId, @Nullable MapState mapState, boolean cloneMode, boolean expandMode, boolean lockMode, boolean cannotExpand
+		DrawContext context, @Nullable Integer mapId, @Nullable MapState mapState, boolean cloneMode, boolean expandMode, boolean lockMode, boolean cannotExpand
 	) {
 		int i = this.x;
 		int j = this.y;
 		if (expandMode && !cannotExpand) {
-			drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
-			this.drawMap(matrices, mapId, mapState, i + 85, j + 31, 0.226F);
+			context.drawTexture(TEXTURE, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
+			this.drawMap(context, mapId, mapState, i + 85, j + 31, 0.226F);
 		} else if (cloneMode) {
-			drawTexture(matrices, i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
-			this.drawMap(matrices, mapId, mapState, i + 86, j + 16, 0.34F);
-			RenderSystem.setShaderTexture(0, TEXTURE);
-			matrices.push();
-			matrices.translate(0.0F, 0.0F, 1.0F);
-			drawTexture(matrices, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
-			this.drawMap(matrices, mapId, mapState, i + 70, j + 32, 0.34F);
-			matrices.pop();
+			context.drawTexture(TEXTURE, i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
+			this.drawMap(context, mapId, mapState, i + 86, j + 16, 0.34F);
+			context.getMatrices().push();
+			context.getMatrices().translate(0.0F, 0.0F, 1.0F);
+			context.drawTexture(TEXTURE, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
+			this.drawMap(context, mapId, mapState, i + 70, j + 32, 0.34F);
+			context.getMatrices().pop();
 		} else if (lockMode) {
-			drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
-			this.drawMap(matrices, mapId, mapState, i + 71, j + 17, 0.45F);
-			RenderSystem.setShaderTexture(0, TEXTURE);
-			matrices.push();
-			matrices.translate(0.0F, 0.0F, 1.0F);
-			drawTexture(matrices, i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
-			matrices.pop();
+			context.drawTexture(TEXTURE, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
+			this.drawMap(context, mapId, mapState, i + 71, j + 17, 0.45F);
+			context.getMatrices().push();
+			context.getMatrices().translate(0.0F, 0.0F, 1.0F);
+			context.drawTexture(TEXTURE, i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
+			context.getMatrices().pop();
 		} else {
-			drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
-			this.drawMap(matrices, mapId, mapState, i + 71, j + 17, 0.45F);
+			context.drawTexture(TEXTURE, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
+			this.drawMap(context, mapId, mapState, i + 71, j + 17, 0.45F);
 		}
 	}
 
-	private void drawMap(MatrixStack matrices, @Nullable Integer mapId, @Nullable MapState mapState, int x, int y, float scale) {
+	private void drawMap(DrawContext context, @Nullable Integer mapId, @Nullable MapState mapState, int x, int y, float scale) {
 		if (mapId != null && mapState != null) {
-			matrices.push();
-			matrices.translate((float)x, (float)y, 1.0F);
-			matrices.scale(scale, scale, 1.0F);
-			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			this.client.gameRenderer.getMapRenderer().draw(matrices, immediate, mapId, mapState, true, LightmapTextureManager.MAX_LIGHT_COORDINATE);
-			immediate.draw();
-			matrices.pop();
+			context.getMatrices().push();
+			context.getMatrices().translate((float)x, (float)y, 1.0F);
+			context.getMatrices().scale(scale, scale, 1.0F);
+			this.client
+				.gameRenderer
+				.getMapRenderer()
+				.draw(context.getMatrices(), context.getVertexConsumers(), mapId, mapState, true, LightmapTextureManager.MAX_LIGHT_COORDINATE);
+			context.draw();
+			context.getMatrices().pop();
 		}
 	}
 }

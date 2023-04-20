@@ -245,7 +245,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	private static boolean isChunkEmpty(ServerWorld world, Vec3d pos) {
-		return getChunk(world, pos).getHighestNonEmptySectionYOffset() <= world.getBottomY();
+		return getChunk(world, pos).getHighestNonEmptySection() == -1;
 	}
 
 	private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean force) {

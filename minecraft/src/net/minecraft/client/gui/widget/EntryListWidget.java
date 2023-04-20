@@ -12,16 +12,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.AbstractParentElement;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.navigation.NavigationDirection;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -184,27 +184,26 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected void clickedHeader(int x, int y) {
 	}
 
-	protected void renderHeader(MatrixStack matrices, int x, int y) {
+	protected void renderHeader(DrawContext context, int x, int y) {
 	}
 
-	protected void renderBackground(MatrixStack matrices) {
+	protected void renderBackground(DrawContext context) {
 	}
 
-	protected void renderDecorations(MatrixStack matrices, int mouseX, int mouseY) {
+	protected void renderDecorations(DrawContext context, int mouseX, int mouseY) {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
 		int i = this.getScrollbarPositionX();
 		int j = i + 6;
 		this.hoveredEntry = this.isMouseOver((double)mouseX, (double)mouseY) ? this.getEntryAtPosition((double)mouseX, (double)mouseY) : null;
 		if (this.renderBackground) {
-			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
-			RenderSystem.setShaderColor(0.125F, 0.125F, 0.125F, 1.0F);
+			context.setShaderColor(0.125F, 0.125F, 0.125F, 1.0F);
 			int k = 32;
-			drawTexture(
-				matrices,
+			context.drawTexture(
+				Screen.OPTIONS_BACKGROUND_TEXTURE,
 				this.left,
 				this.top,
 				(float)this.right,
@@ -214,28 +213,27 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				32,
 				32
 			);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		int k = this.getRowLeft();
 		int l = this.top + 4 - (int)this.getScrollAmount();
-		this.enableScissor();
+		this.enableScissor(context);
 		if (this.renderHeader) {
-			this.renderHeader(matrices, k, l);
+			this.renderHeader(context, k, l);
 		}
 
-		this.renderList(matrices, mouseX, mouseY, delta);
-		disableScissor();
+		this.renderList(context, mouseX, mouseY, delta);
+		context.disableScissor();
 		if (this.renderHorizontalShadows) {
-			RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 			int m = 32;
-			RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
-			drawTexture(matrices, this.left, 0, 0.0F, 0.0F, this.width, this.top, 32, 32);
-			drawTexture(matrices, this.left, this.bottom, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
-			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			context.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
+			context.drawTexture(Screen.OPTIONS_BACKGROUND_TEXTURE, this.left, 0, 0.0F, 0.0F, this.width, this.top, 32, 32);
+			context.drawTexture(Screen.OPTIONS_BACKGROUND_TEXTURE, this.left, this.bottom, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
+			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int n = 4;
-			fillGradient(matrices, this.left, this.top, this.right, this.top + 4, -16777216, 0);
-			fillGradient(matrices, this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216);
+			context.fillGradient(this.left, this.top, this.right, this.top + 4, -16777216, 0);
+			context.fillGradient(this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216);
 		}
 
 		int m = this.getMaxScroll();
@@ -247,17 +245,17 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				o = this.top;
 			}
 
-			fill(matrices, i, this.top, j, this.bottom, -16777216);
-			fill(matrices, i, o, j, o + n, -8355712);
-			fill(matrices, i, o, j - 1, o + n - 1, -4144960);
+			context.fill(i, this.top, j, this.bottom, -16777216);
+			context.fill(i, o, j, o + n, -8355712);
+			context.fill(i, o, j - 1, o + n - 1, -4144960);
 		}
 
-		this.renderDecorations(matrices, mouseX, mouseY);
+		this.renderDecorations(context, mouseX, mouseY);
 		RenderSystem.disableBlend();
 	}
 
-	protected void enableScissor() {
-		enableScissor(this.left, this.top, this.right, this.bottom);
+	protected void enableScissor(DrawContext context) {
+		context.enableScissor(this.left, this.top, this.right, this.bottom);
 	}
 
 	protected void centerScrollOn(E entry) {
@@ -426,7 +424,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return mouseY >= (double)this.top && mouseY <= (double)this.bottom && mouseX >= (double)this.left && mouseX <= (double)this.right;
 	}
 
-	protected void renderList(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected void renderList(DrawContext context, int mouseX, int mouseY, float delta) {
 		int i = this.getRowLeft();
 		int j = this.getRowWidth();
 		int k = this.itemHeight - 4;
@@ -436,27 +434,27 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			int n = this.getRowTop(m);
 			int o = this.getRowBottom(m);
 			if (o >= this.top && n <= this.bottom) {
-				this.renderEntry(matrices, mouseX, mouseY, delta, m, i, n, j, k);
+				this.renderEntry(context, mouseX, mouseY, delta, m, i, n, j, k);
 			}
 		}
 	}
 
-	protected void renderEntry(MatrixStack matrices, int mouseX, int mouseY, float delta, int index, int x, int y, int entryWidth, int entryHeight) {
+	protected void renderEntry(DrawContext context, int mouseX, int mouseY, float delta, int index, int x, int y, int entryWidth, int entryHeight) {
 		E entry = this.getEntry(index);
-		entry.drawBorder(matrices, index, y, x, entryWidth, entryHeight, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
+		entry.drawBorder(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
 		if (this.renderSelection && this.isSelectedEntry(index)) {
 			int i = this.isFocused() ? -1 : -8355712;
-			this.drawSelectionHighlight(matrices, y, entryWidth, entryHeight, i, -16777216);
+			this.drawSelectionHighlight(context, y, entryWidth, entryHeight, i, -16777216);
 		}
 
-		entry.render(matrices, index, y, x, entryWidth, entryHeight, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
+		entry.render(context, index, y, x, entryWidth, entryHeight, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
 	}
 
-	protected void drawSelectionHighlight(MatrixStack matrices, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {
+	protected void drawSelectionHighlight(DrawContext context, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {
 		int i = this.left + (this.width - entryWidth) / 2;
 		int j = this.left + (this.width + entryWidth) / 2;
-		fill(matrices, i, y - 2, j, y + entryHeight + 2, borderColor);
-		fill(matrices, i + 1, y - 1, j - 1, y + entryHeight + 1, fillColor);
+		context.fill(i, y - 2, j, y + entryHeight + 2, borderColor);
+		context.fill(i + 1, y - 1, j - 1, y + entryHeight + 1, fillColor);
 	}
 
 	public int getRowLeft() {
@@ -568,7 +566,6 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		/**
 		 * Renders an entry in a list.
 		 * 
-		 * @param matrices the matrix stack used for rendering
 		 * @param index the index of the entry
 		 * @param y the Y coordinate of the entry
 		 * @param x the X coordinate of the entry
@@ -579,11 +576,11 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		 * @param hovered whether the mouse is hovering over the entry
 		 */
 		public abstract void render(
-			MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta
+			DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta
 		);
 
 		public void drawBorder(
-			MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta
+			DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta
 		) {
 		}
 

@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.MultilineText;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -16,7 +16,6 @@ import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TextWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
@@ -70,9 +69,9 @@ public class ExperimentalWarningScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		super.render(matrices, mouseX, mouseY, delta);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override
@@ -104,11 +103,11 @@ public class ExperimentalWarningScreen extends Screen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-			this.renderBackground(matrices);
-			this.packList.render(matrices, mouseX, mouseY, delta);
-			drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 10, 16777215);
-			super.render(matrices, mouseX, mouseY, delta);
+		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+			this.renderBackground(context);
+			this.packList.render(context, mouseX, mouseY, delta);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 16777215);
+			super.render(context, mouseX, mouseY, delta);
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -145,9 +144,9 @@ public class ExperimentalWarningScreen extends Screen {
 			}
 
 			@Override
-			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-				DrawableHelper.drawTextWithShadow(matrices, DetailsScreen.this.client.textRenderer, this.displayName, x, y, 16777215);
-				this.multilineDetails.drawWithShadow(matrices, x, y + 12, 9, 16777215);
+			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+				context.drawTextWithShadow(DetailsScreen.this.client.textRenderer, this.displayName, x, y, 16777215);
+				this.multilineDetails.drawWithShadow(context, x, y + 12, 9, 16777215);
 			}
 
 			@Override

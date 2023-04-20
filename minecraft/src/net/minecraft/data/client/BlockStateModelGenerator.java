@@ -1126,7 +1126,7 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createAxisRotatedBlockState(block, modelId));
 	}
 
-	private void registerAxisRotated(Block block, TexturedModel.Factory modelFactory) {
+	public void registerAxisRotated(Block block, TexturedModel.Factory modelFactory) {
 		Identifier identifier = modelFactory.upload(block, this.modelCollector);
 		this.blockStateCollector.accept(createAxisRotatedBlockState(block, identifier));
 	}
@@ -1180,11 +1180,11 @@ public class BlockStateModelGenerator {
 			);
 	}
 
-	private void registerSimpleCubeAll(Block block) {
+	public void registerSimpleCubeAll(Block block) {
 		this.registerSingleton(block, TexturedModel.CUBE_ALL);
 	}
 
-	private void registerSingleton(Block block, TexturedModel.Factory modelFactory) {
+	public void registerSingleton(Block block, TexturedModel.Factory modelFactory) {
 		this.blockStateCollector.accept(createSingletonBlockState(block, modelFactory.upload(block, this.modelCollector)));
 	}
 
@@ -2197,6 +2197,18 @@ public class BlockStateModelGenerator {
 
 	private void registerCubeWithCustomTextures(Block block, Block otherTextureSource, BiFunction<Block, Block, TextureMap> texturesFactory) {
 		TextureMap textureMap = (TextureMap)texturesFactory.apply(block, otherTextureSource);
+		this.blockStateCollector.accept(createSingletonBlockState(block, Models.CUBE.upload(block, textureMap, this.modelCollector)));
+	}
+
+	public void method_51463(Block block) {
+		TextureMap textureMap = new TextureMap()
+			.put(TextureKey.PARTICLE, TextureMap.getSubId(block, "_particle"))
+			.put(TextureKey.DOWN, TextureMap.getSubId(block, "_down"))
+			.put(TextureKey.UP, TextureMap.getSubId(block, "_up"))
+			.put(TextureKey.NORTH, TextureMap.getSubId(block, "_north"))
+			.put(TextureKey.SOUTH, TextureMap.getSubId(block, "_south"))
+			.put(TextureKey.EAST, TextureMap.getSubId(block, "_east"))
+			.put(TextureKey.WEST, TextureMap.getSubId(block, "_west"));
 		this.blockStateCollector.accept(createSingletonBlockState(block, Models.CUBE.upload(block, textureMap, this.modelCollector)));
 	}
 

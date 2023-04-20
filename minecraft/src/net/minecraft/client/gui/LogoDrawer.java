@@ -1,14 +1,12 @@
 package net.minecraft.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
-public class LogoDrawer extends DrawableHelper {
+public class LogoDrawer {
 	public static final Identifier LOGO_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	public static final Identifier MINCERAFT_TEXTURE = new Identifier("textures/gui/title/minceraft.png");
 	public static final Identifier EDITION_TEXTURE = new Identifier("textures/gui/title/edition.png");
@@ -29,19 +27,17 @@ public class LogoDrawer extends DrawableHelper {
 		this.ignoreAlpha = ignoreAlpha;
 	}
 
-	public void draw(MatrixStack matrices, int screenWidth, float alpha) {
-		this.draw(matrices, screenWidth, alpha, 30);
+	public void draw(DrawContext context, int screenWidth, float alpha) {
+		this.draw(context, screenWidth, alpha, 30);
 	}
 
-	public void draw(MatrixStack matrices, int screenWidth, float alpha, int y) {
-		RenderSystem.setShaderTexture(0, this.minceraft ? MINCERAFT_TEXTURE : LOGO_TEXTURE);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.ignoreAlpha ? 1.0F : alpha);
+	public void draw(DrawContext context, int screenWidth, float alpha, int y) {
+		context.setShaderColor(1.0F, 1.0F, 1.0F, this.ignoreAlpha ? 1.0F : alpha);
 		int i = screenWidth / 2 - 128;
-		drawTexture(matrices, i, y, 0.0F, 0.0F, 256, 44, 256, 64);
-		RenderSystem.setShaderTexture(0, EDITION_TEXTURE);
+		context.drawTexture(this.minceraft ? MINCERAFT_TEXTURE : LOGO_TEXTURE, i, y, 0.0F, 0.0F, 256, 44, 256, 64);
 		int j = screenWidth / 2 - 64;
 		int k = y + 44 - 7;
-		drawTexture(matrices, j, k, 0.0F, 0.0F, 128, 14, 128, 16);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		context.drawTexture(EDITION_TEXTURE, j, k, 0.0F, 0.0F, 128, 14, 128, 16);
+		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 }

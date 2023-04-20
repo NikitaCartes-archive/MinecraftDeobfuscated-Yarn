@@ -1,10 +1,8 @@
 package net.minecraft.item;
 
-import java.util.function.Predicate;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrushableBlock;
 import net.minecraft.block.entity.BrushableBlockEntity;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,11 +21,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
 
 public class BrushItem extends Item {
 	public static final int field_43390 = 10;
 	private static final int field_42683 = 200;
+	private static final double field_44603 = Math.sqrt(ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE) - 1.0;
 
 	public BrushItem(Item.Settings settings) {
 		super(settings);
@@ -36,20 +34,11 @@ public class BrushItem extends Item {
 	@Override
 	public ActionResult useOnBlock(ItemUsageContext context) {
 		PlayerEntity playerEntity = context.getPlayer();
-		if (playerEntity != null) {
-			if (this.getHitResult(playerEntity).getType() != HitResult.Type.BLOCK) {
-				return ActionResult.FAIL;
-			}
-
+		if (playerEntity != null && this.getHitResult(playerEntity).getType() == HitResult.Type.BLOCK) {
 			playerEntity.setCurrentHand(context.getHand());
 		}
 
 		return ActionResult.CONSUME;
-	}
-
-	@NotNull
-	private HitResult getHitResult(LivingEntity user) {
-		return ProjectileUtil.getCollision(user, Predicate.not(Entity::isSpectator), Math.sqrt(ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE) - 1.0);
 	}
 
 	@Override
@@ -97,6 +86,10 @@ public class BrushItem extends Item {
 		} else {
 			user.stopUsingItem();
 		}
+	}
+
+	private HitResult getHitResult(LivingEntity user) {
+		return ProjectileUtil.getCollision(user, entity -> !entity.isSpectator() && entity.canHit(), field_44603);
 	}
 
 	public void addDustParticles(World world, BlockHitResult hitResult, BlockState state, Vec3d userRotation, boolean mainHand) {

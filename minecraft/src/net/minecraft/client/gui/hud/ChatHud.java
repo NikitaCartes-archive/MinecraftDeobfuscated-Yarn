@@ -9,12 +9,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.network.message.MessageHandler;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.util.ChatMessages;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.message.MessageSignatureData;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
@@ -31,7 +30,7 @@ import org.slf4j.Logger;
  * @see net.minecraft.client.gui.screen.ChatScreen
  */
 @Environment(EnvType.CLIENT)
-public class ChatHud extends DrawableHelper {
+public class ChatHud {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int MAX_MESSAGES = 100;
 	private static final int MISSING_MESSAGE_INDEX = -1;
@@ -58,7 +57,7 @@ public class ChatHud extends DrawableHelper {
 		}
 	}
 
-	public void render(MatrixStack matrices, int currentTick, int mouseX, int mouseY) {
+	public void render(DrawContext context, int currentTick, int mouseX, int mouseY) {
 		if (!this.isChatHidden()) {
 			int i = this.getVisibleLineCount();
 			int j = this.visibleMessages.size();
@@ -67,9 +66,9 @@ public class ChatHud extends DrawableHelper {
 				float f = (float)this.getChatScale();
 				int k = MathHelper.ceil((float)this.getWidth() / f);
 				int l = this.client.getWindow().getScaledHeight();
-				matrices.push();
-				matrices.scale(f, f, 1.0F);
-				matrices.translate(4.0F, 0.0F, 0.0F);
+				context.getMatrices().push();
+				context.getMatrices().scale(f, f, 1.0F);
+				context.getMatrices().translate(4.0F, 0.0F, 0.0F);
 				int m = MathHelper.floor((float)(l - 40) / f);
 				int n = this.getMessageIndex(this.toChatLineX((double)mouseX), this.toChatLineY((double)mouseY));
 				double d = this.client.options.getChatOpacity().getValue() * 0.9F + 0.1F;
@@ -93,23 +92,23 @@ public class ChatHud extends DrawableHelper {
 								int w = 0;
 								int x = m - r * o;
 								int y = x + p;
-								matrices.push();
-								matrices.translate(0.0F, 0.0F, 50.0F);
-								fill(matrices, -4, x - o, 0 + k + 4 + 4, x, v << 24);
+								context.getMatrices().push();
+								context.getMatrices().translate(0.0F, 0.0F, 50.0F);
+								context.fill(-4, x - o, 0 + k + 4 + 4, x, v << 24);
 								MessageIndicator messageIndicator = visible.indicator();
 								if (messageIndicator != null) {
 									int z = messageIndicator.indicatorColor() | u << 24;
-									fill(matrices, -4, x - o, -2, x, z);
+									context.fill(-4, x - o, -2, x, z);
 									if (s == n && messageIndicator.icon() != null) {
 										int aa = this.getIndicatorX(visible);
 										int ab = y + 9;
-										this.drawIndicatorIcon(matrices, aa, ab, messageIndicator.icon());
+										this.drawIndicatorIcon(context, aa, ab, messageIndicator.icon());
 									}
 								}
 
-								matrices.translate(0.0F, 0.0F, 50.0F);
-								this.client.textRenderer.drawWithShadow(matrices, visible.content(), 0.0F, (float)y, 16777215 + (u << 24));
-								matrices.pop();
+								context.getMatrices().translate(0.0F, 0.0F, 50.0F);
+								context.drawTextWithShadow(this.client.textRenderer, visible.content(), 0, y, 16777215 + (u << 24));
+								context.getMatrices().pop();
 							}
 						}
 					}
@@ -119,12 +118,12 @@ public class ChatHud extends DrawableHelper {
 				if (ac > 0L) {
 					int ad = (int)(128.0 * d);
 					int t = (int)(255.0 * e);
-					matrices.push();
-					matrices.translate(0.0F, (float)m, 50.0F);
-					fill(matrices, -2, 0, k + 4, 9, t << 24);
-					matrices.translate(0.0F, 0.0F, 50.0F);
-					this.client.textRenderer.drawWithShadow(matrices, Text.translatable("chat.queue", ac), 0.0F, 1.0F, 16777215 + (ad << 24));
-					matrices.pop();
+					context.getMatrices().push();
+					context.getMatrices().translate(0.0F, (float)m, 50.0F);
+					context.fill(-2, 0, k + 4, 9, t << 24);
+					context.getMatrices().translate(0.0F, 0.0F, 50.0F);
+					context.drawTextWithShadow(this.client.textRenderer, Text.translatable("chat.queue", ac), 0, 1, 16777215 + (ad << 24));
+					context.getMatrices().pop();
 				}
 
 				if (bl) {
@@ -137,19 +136,19 @@ public class ChatHud extends DrawableHelper {
 						int v = af > 0 ? 170 : 96;
 						int w = this.hasUnreadNewMessages ? 13382451 : 3355562;
 						int x = k + 4;
-						fill(matrices, x, -af, x + 2, -af - u, w + (v << 24));
-						fill(matrices, x + 2, -af, x + 1, -af - u, 13421772 + (v << 24));
+						context.fill(x, -af, x + 2, -af - u, w + (v << 24));
+						context.fill(x + 2, -af, x + 1, -af - u, 13421772 + (v << 24));
 					}
 				}
 
-				matrices.pop();
+				context.getMatrices().pop();
 			}
 		}
 	}
 
-	private void drawIndicatorIcon(MatrixStack matrices, int x, int y, MessageIndicator.Icon icon) {
+	private void drawIndicatorIcon(DrawContext context, int x, int y, MessageIndicator.Icon icon) {
 		int i = y - icon.height - 1;
-		icon.draw(matrices, x, i);
+		icon.draw(context, x, i);
 	}
 
 	private int getIndicatorX(ChatHudLine.Visible line) {

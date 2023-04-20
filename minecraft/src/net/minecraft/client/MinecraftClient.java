@@ -18,9 +18,7 @@ import com.mojang.blaze3d.systems.VertexSorter;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.logging.LogUtils;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.Proxy;
 import java.net.SocketAddress;
@@ -63,6 +61,7 @@ import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.gl.GlTimer;
 import net.minecraft.client.gl.SimpleFramebuffer;
 import net.minecraft.client.gl.WindowFramebuffer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.WorldGenerationProgressTracker;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.gui.navigation.GuiNavigationType;
@@ -156,7 +155,7 @@ import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.Bans;
 import net.minecraft.client.util.ClientSamplerSource;
-import net.minecraft.client.util.MacWindowUtil;
+import net.minecraft.client.util.Icons;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ProfileKeys;
 import net.minecraft.client.util.ScreenshotRecorder;
@@ -190,7 +189,6 @@ import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.FileResourcePackProvider;
-import net.minecraft.resource.InputSupplier;
 import net.minecraft.resource.ReloadableResourceManagerImpl;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
@@ -532,11 +530,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.onWindowFocusChanged(true);
 
 		try {
-			if (IS_SYSTEM_MAC) {
-				MacWindowUtil.setApplicationIconImage(this.getDefaultResourceSupplier("icons", "minecraft.icns"));
-			} else {
-				this.window.setIcon(this.getDefaultResourceSupplier("icons", "icon_16x16.png"), this.getDefaultResourceSupplier("icons", "icon_32x32.png"));
-			}
+			this.window.setIcon(this.defaultResourcePack, SharedConstants.getGameVersion().isStable() ? Icons.RELEASE : Icons.SNAPSHOT);
 		} catch (IOException var10) {
 			LOGGER.error("Couldn't set icon", (Throwable)var10);
 		}
@@ -679,15 +673,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.setScreen(new AccessibilityOnboardingScreen(this.options));
 		} else {
 			this.setScreen(new TitleScreen(true));
-		}
-	}
-
-	private InputSupplier<InputStream> getDefaultResourceSupplier(String... segments) throws IOException {
-		InputSupplier<InputStream> inputSupplier = this.defaultResourcePack.openRoot(segments);
-		if (inputSupplier == null) {
-			throw new FileNotFoundException(String.join("/", segments));
-		} else {
-			return inputSupplier;
 		}
 	}
 
@@ -985,7 +970,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				Sprite sprite2 = blockModels.getModelParticleSprite(blockState2);
 				if (!blockState2.isAir() && sprite2 == sprite) {
 					LOGGER.debug("Missing particle icon for: {}", blockState2);
-					bl = true;
 				}
 			}
 		}
@@ -1214,7 +1198,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		if (this.tickProfilerResult != null) {
 			this.profiler.push("fpsPie");
-			this.drawProfilerResults(new MatrixStack(), this.tickProfilerResult);
+			DrawContext drawContext = new DrawContext(this, this.bufferBuilders.getEntityVertexConsumers());
+			this.drawProfilerResults(drawContext, this.tickProfilerResult);
+			drawContext.draw();
 			this.profiler.pop();
 		}
 
@@ -1535,7 +1521,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	private void drawProfilerResults(MatrixStack matrices, ProfileResult profileResult) {
+	private void drawProfilerResults(DrawContext context, ProfileResult profileResult) {
 		List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
 		ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, IS_SYSTEM_MAC);
@@ -1612,9 +1598,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		int m = 16777215;
-		this.textRenderer.drawWithShadow(matrices, string2, (float)(j - 160), (float)(k - 80 - 16), 16777215);
+		context.drawTextWithShadow(this.textRenderer, string2, j - 160, k - 80 - 16, 16777215);
 		string2 = decimalFormat.format(profilerTiming.totalUsagePercentage) + "%";
-		this.textRenderer.drawWithShadow(matrices, string2, (float)(j + 160 - this.textRenderer.getWidth(string2)), (float)(k - 80 - 16), 16777215);
+		context.drawTextWithShadow(this.textRenderer, string2, j + 160 - this.textRenderer.getWidth(string2), k - 80 - 16, 16777215);
 
 		for (int r = 0; r < list.size(); r++) {
 			ProfilerTiming profilerTiming3 = (ProfilerTiming)list.get(r);
@@ -1626,13 +1612,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 
 			String string3 = stringBuilder.append(profilerTiming3.name).toString();
-			this.textRenderer.drawWithShadow(matrices, string3, (float)(j - 160), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+			context.drawTextWithShadow(this.textRenderer, string3, j - 160, k + 80 + r * 8 + 20, profilerTiming3.getColor());
 			string3 = decimalFormat.format(profilerTiming3.parentSectionUsagePercentage) + "%";
-			this.textRenderer
-				.drawWithShadow(matrices, string3, (float)(j + 160 - 50 - this.textRenderer.getWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+			context.drawTextWithShadow(this.textRenderer, string3, j + 160 - 50 - this.textRenderer.getWidth(string3), k + 80 + r * 8 + 20, profilerTiming3.getColor());
 			string3 = decimalFormat.format(profilerTiming3.totalUsagePercentage) + "%";
-			this.textRenderer
-				.drawWithShadow(matrices, string3, (float)(j + 160 - this.textRenderer.getWidth(string3)), (float)(k + 80 + r * 8 + 20), profilerTiming3.getColor());
+			context.drawTextWithShadow(this.textRenderer, string3, j + 160 - this.textRenderer.getWidth(string3), k + 80 + r * 8 + 20, profilerTiming3.getColor());
 		}
 
 		matrixStack.pop();
@@ -1847,7 +1831,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.inGameHud.resetDebugHudChunk();
 		}
 
-		if (this.overlay == null && (this.currentScreen == null || this.currentScreen.passEvents)) {
+		if (this.overlay == null && this.currentScreen == null) {
 			this.profiler.swap("Keybindings");
 			this.handleInputEvents();
 			if (this.attackCooldown > 0) {

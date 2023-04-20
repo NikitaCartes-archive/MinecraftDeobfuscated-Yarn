@@ -190,6 +190,10 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 		return this.lightStorage.getLevel(sectionPos) + "";
 	}
 
+	public int getDebugLevel(long id) {
+		return this.lightStorage.getLevel(id);
+	}
+
 	@Override
 	public void checkBlock(BlockPos pos) {
 		long l = pos.asLong();

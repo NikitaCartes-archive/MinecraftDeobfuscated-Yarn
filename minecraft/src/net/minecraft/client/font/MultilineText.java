@@ -5,8 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
@@ -15,27 +14,27 @@ import net.minecraft.text.Text;
 public interface MultilineText {
 	MultilineText EMPTY = new MultilineText() {
 		@Override
-		public int drawCenterWithShadow(MatrixStack matrices, int x, int y) {
+		public int drawCenterWithShadow(DrawContext context, int x, int y) {
 			return y;
 		}
 
 		@Override
-		public int drawCenterWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color) {
+		public int drawCenterWithShadow(DrawContext context, int x, int y, int lineHeight, int color) {
 			return y;
 		}
 
 		@Override
-		public int drawWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color) {
+		public int drawWithShadow(DrawContext context, int x, int y, int lineHeight, int color) {
 			return y;
 		}
 
 		@Override
-		public int draw(MatrixStack matrices, int x, int y, int lineHeight, int color) {
+		public int draw(DrawContext context, int x, int y, int lineHeight, int color) {
 			return y;
 		}
 
 		@Override
-		public void fillBackground(MatrixStack matrices, int centerX, int centerY, int lineHeight, int padding, int color) {
+		public void fillBackground(DrawContext context, int centerX, int centerY, int lineHeight, int padding, int color) {
 		}
 
 		@Override
@@ -91,83 +90,79 @@ public interface MultilineText {
 	}
 
 	static MultilineText create(TextRenderer textRenderer, List<MultilineText.Line> lines) {
-		return lines.isEmpty()
-			? EMPTY
-			: new MultilineText() {
-				private final int maxWidth = lines.stream().mapToInt(line -> line.width).max().orElse(0);
+		return lines.isEmpty() ? EMPTY : new MultilineText() {
+			private final int maxWidth = lines.stream().mapToInt(line -> line.width).max().orElse(0);
 
-				@Override
-				public int drawCenterWithShadow(MatrixStack matrices, int x, int y) {
-					return this.drawCenterWithShadow(matrices, x, y, 9, 16777215);
+			@Override
+			public int drawCenterWithShadow(DrawContext context, int x, int y) {
+				return this.drawCenterWithShadow(context, x, y, 9, 16777215);
+			}
+
+			@Override
+			public int drawCenterWithShadow(DrawContext context, int x, int y, int lineHeight, int color) {
+				int i = y;
+
+				for (MultilineText.Line line : lines) {
+					context.drawTextWithShadow(textRenderer, line.text, x - line.width / 2, i, color);
+					i += lineHeight;
 				}
 
-				@Override
-				public int drawCenterWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color) {
-					int i = y;
+				return i;
+			}
 
-					for (MultilineText.Line line : lines) {
-						textRenderer.drawWithShadow(matrices, line.text, (float)(x - line.width / 2), (float)i, color);
-						i += lineHeight;
-					}
+			@Override
+			public int drawWithShadow(DrawContext context, int x, int y, int lineHeight, int color) {
+				int i = y;
 
-					return i;
+				for (MultilineText.Line line : lines) {
+					context.drawTextWithShadow(textRenderer, line.text, x, i, color);
+					i += lineHeight;
 				}
 
-				@Override
-				public int drawWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color) {
-					int i = y;
+				return i;
+			}
 
-					for (MultilineText.Line line : lines) {
-						textRenderer.drawWithShadow(matrices, line.text, (float)x, (float)i, color);
-						i += lineHeight;
-					}
+			@Override
+			public int draw(DrawContext context, int x, int y, int lineHeight, int color) {
+				int i = y;
 
-					return i;
+				for (MultilineText.Line line : lines) {
+					context.drawText(textRenderer, line.text, x, i, color, false);
+					i += lineHeight;
 				}
 
-				@Override
-				public int draw(MatrixStack matrices, int x, int y, int lineHeight, int color) {
-					int i = y;
+				return i;
+			}
 
-					for (MultilineText.Line line : lines) {
-						textRenderer.draw(matrices, line.text, (float)x, (float)i, color);
-						i += lineHeight;
-					}
-
-					return i;
+			@Override
+			public void fillBackground(DrawContext context, int centerX, int centerY, int lineHeight, int padding, int color) {
+				int i = lines.stream().mapToInt(line -> line.width).max().orElse(0);
+				if (i > 0) {
+					context.fill(centerX - i / 2 - padding, centerY - padding, centerX + i / 2 + padding, centerY + lines.size() * lineHeight + padding, color);
 				}
+			}
 
-				@Override
-				public void fillBackground(MatrixStack matrices, int centerX, int centerY, int lineHeight, int padding, int color) {
-					int i = lines.stream().mapToInt(line -> line.width).max().orElse(0);
-					if (i > 0) {
-						DrawableHelper.fill(
-							matrices, centerX - i / 2 - padding, centerY - padding, centerX + i / 2 + padding, centerY + lines.size() * lineHeight + padding, color
-						);
-					}
-				}
+			@Override
+			public int count() {
+				return lines.size();
+			}
 
-				@Override
-				public int count() {
-					return lines.size();
-				}
-
-				@Override
-				public int getMaxWidth() {
-					return this.maxWidth;
-				}
-			};
+			@Override
+			public int getMaxWidth() {
+				return this.maxWidth;
+			}
+		};
 	}
 
-	int drawCenterWithShadow(MatrixStack matrices, int x, int y);
+	int drawCenterWithShadow(DrawContext context, int x, int y);
 
-	int drawCenterWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color);
+	int drawCenterWithShadow(DrawContext context, int x, int y, int lineHeight, int color);
 
-	int drawWithShadow(MatrixStack matrices, int x, int y, int lineHeight, int color);
+	int drawWithShadow(DrawContext context, int x, int y, int lineHeight, int color);
 
-	int draw(MatrixStack matrices, int x, int y, int lineHeight, int color);
+	int draw(DrawContext context, int x, int y, int lineHeight, int color);
 
-	void fillBackground(MatrixStack matrices, int centerX, int centerY, int lineHeight, int padding, int color);
+	void fillBackground(DrawContext context, int centerX, int centerY, int lineHeight, int padding, int color);
 
 	int count();
 

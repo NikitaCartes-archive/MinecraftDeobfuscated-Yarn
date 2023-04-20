@@ -11,18 +11,15 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.WoodType;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SignText;
-import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.SelectionManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
@@ -102,13 +99,13 @@ public abstract class AbstractSignEditScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		DiffuseLighting.disableGuiDepthLighting();
-		this.renderBackground(matrices);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 40, 16777215);
-		this.renderSign(matrices);
+		this.renderBackground(context);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 40, 16777215);
+		this.renderSign(context);
 		DiffuseLighting.enableGuiDepthLighting();
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override
@@ -131,37 +128,35 @@ public abstract class AbstractSignEditScreen extends Screen {
 		return false;
 	}
 
-	protected abstract void renderSignBackground(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, BlockState state);
+	protected abstract void renderSignBackground(DrawContext context, BlockState state);
 
 	protected abstract Vector3f getTextScale();
 
-	protected void translateForRender(MatrixStack matrices, BlockState state) {
-		matrices.translate((float)this.width / 2.0F, 90.0F, 50.0F);
+	protected void translateForRender(DrawContext context, BlockState state) {
+		context.getMatrices().translate((float)this.width / 2.0F, 90.0F, 50.0F);
 	}
 
-	private void renderSign(MatrixStack matrices) {
-		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
+	private void renderSign(DrawContext context) {
 		BlockState blockState = this.blockEntity.getCachedState();
-		matrices.push();
-		this.translateForRender(matrices, blockState);
-		matrices.push();
-		this.renderSignBackground(matrices, immediate, blockState);
-		matrices.pop();
-		this.renderSignText(matrices, immediate);
-		matrices.pop();
+		context.getMatrices().push();
+		this.translateForRender(context, blockState);
+		context.getMatrices().push();
+		this.renderSignBackground(context, blockState);
+		context.getMatrices().pop();
+		this.renderSignText(context);
+		context.getMatrices().pop();
 	}
 
-	private void renderSignText(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers) {
-		matrices.translate(0.0F, 0.0F, 4.0F);
+	private void renderSignText(DrawContext context) {
+		context.getMatrices().translate(0.0F, 0.0F, 4.0F);
 		Vector3f vector3f = this.getTextScale();
-		matrices.scale(vector3f.x(), vector3f.y(), vector3f.z());
+		context.getMatrices().scale(vector3f.x(), vector3f.y(), vector3f.z());
 		int i = this.text.getColor().getSignColor();
 		boolean bl = this.ticksSinceOpened / 6 % 2 == 0;
 		int j = this.selectionManager.getSelectionStart();
 		int k = this.selectionManager.getSelectionEnd();
 		int l = 4 * this.blockEntity.getTextLineHeight() / 2;
 		int m = this.currentRow * this.blockEntity.getTextLineHeight() - l;
-		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 
 		for (int n = 0; n < this.messages.length; n++) {
 			String string = this.messages[n];
@@ -170,53 +165,37 @@ public abstract class AbstractSignEditScreen extends Screen {
 					string = this.textRenderer.mirror(string);
 				}
 
-				float f = (float)(-this.client.textRenderer.getWidth(string) / 2);
-				this.client
-					.textRenderer
-					.draw(
-						string,
-						f,
-						(float)(n * this.blockEntity.getTextLineHeight() - l),
-						i,
-						false,
-						matrix4f,
-						vertexConsumers,
-						TextRenderer.TextLayerType.NORMAL,
-						0,
-						15728880,
-						false
-					);
+				int o = -this.textRenderer.getWidth(string) / 2;
+				context.drawText(this.textRenderer, string, o, n * this.blockEntity.getTextLineHeight() - l, i, false);
 				if (n == this.currentRow && j >= 0 && bl) {
-					int o = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
-					int p = o - this.client.textRenderer.getWidth(string) / 2;
+					int p = this.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
+					int q = p - this.textRenderer.getWidth(string) / 2;
 					if (j >= string.length()) {
-						this.client.textRenderer.draw("_", (float)p, (float)m, i, false, matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 15728880, false);
+						context.drawText(this.textRenderer, "_", q, m, i, false);
 					}
 				}
 			}
 		}
 
-		vertexConsumers.draw();
-
 		for (int nx = 0; nx < this.messages.length; nx++) {
 			String string = this.messages[nx];
 			if (string != null && nx == this.currentRow && j >= 0) {
-				int q = this.client.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
-				int o = q - this.client.textRenderer.getWidth(string) / 2;
+				int o = this.textRenderer.getWidth(string.substring(0, Math.max(Math.min(j, string.length()), 0)));
+				int p = o - this.textRenderer.getWidth(string) / 2;
 				if (bl && j < string.length()) {
-					fill(matrices, o, m - 1, o + 1, m + this.blockEntity.getTextLineHeight(), 0xFF000000 | i);
+					context.fill(p, m - 1, p + 1, m + this.blockEntity.getTextLineHeight(), 0xFF000000 | i);
 				}
 
 				if (k != j) {
-					int p = Math.min(j, k);
+					int q = Math.min(j, k);
 					int r = Math.max(j, k);
-					int s = this.client.textRenderer.getWidth(string.substring(0, p)) - this.client.textRenderer.getWidth(string) / 2;
-					int t = this.client.textRenderer.getWidth(string.substring(0, r)) - this.client.textRenderer.getWidth(string) / 2;
+					int s = this.textRenderer.getWidth(string.substring(0, q)) - this.textRenderer.getWidth(string) / 2;
+					int t = this.textRenderer.getWidth(string.substring(0, r)) - this.textRenderer.getWidth(string) / 2;
 					int u = Math.min(s, t);
 					int v = Math.max(s, t);
 					RenderSystem.enableColorLogicOp();
 					RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-					fill(matrices, u, m, v, m + this.blockEntity.getTextLineHeight(), -16776961);
+					context.fill(u, m, v, m + this.blockEntity.getTextLineHeight(), -16776961);
 					RenderSystem.disableColorLogicOp();
 				}
 			}

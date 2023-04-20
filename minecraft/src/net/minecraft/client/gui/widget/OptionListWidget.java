@@ -9,11 +9,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.SimpleOption;
-import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class OptionListWidget extends ElementListWidget<OptionListWidget.WidgetEntry> {
@@ -94,10 +94,10 @@ public class OptionListWidget extends ElementListWidget<OptionListWidget.WidgetE
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			this.widgets.forEach(widget -> {
 				widget.setY(y);
-				widget.render(matrices, mouseX, mouseY, tickDelta);
+				widget.render(context, mouseX, mouseY, tickDelta);
 			});
 		}
 

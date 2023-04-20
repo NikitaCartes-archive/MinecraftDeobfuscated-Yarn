@@ -1,25 +1,23 @@
 package net.minecraft.client.gui.screen.advancement;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class AdvancementTab extends DrawableHelper {
+public class AdvancementTab {
 	private final MinecraftClient client;
 	private final AdvancementsScreen screen;
 	private final AdvancementTabType type;
@@ -72,31 +70,25 @@ public class AdvancementTab extends DrawableHelper {
 		return this.display;
 	}
 
-	public void drawBackground(MatrixStack matrices, int x, int y, boolean selected) {
-		this.type.drawBackground(matrices, x, y, selected, this.index);
+	public void drawBackground(DrawContext context, int x, int y, boolean selected) {
+		this.type.drawBackground(context, x, y, selected, this.index);
 	}
 
-	public void drawIcon(MatrixStack matrices, int x, int y, ItemRenderer itemRenderer) {
-		this.type.drawIcon(matrices, x, y, this.index, itemRenderer, this.icon);
+	public void drawIcon(DrawContext context, int x, int y) {
+		this.type.drawIcon(context, x, y, this.index, this.icon);
 	}
 
-	public void render(MatrixStack matrices, int x, int y) {
+	public void render(DrawContext context, int x, int y) {
 		if (!this.initialized) {
 			this.originX = (double)(117 - (this.maxPanX + this.minPanX) / 2);
 			this.originY = (double)(56 - (this.maxPanY + this.minPanY) / 2);
 			this.initialized = true;
 		}
 
-		enableScissor(x, y, x + 234, y + 113);
-		matrices.push();
-		matrices.translate((float)x, (float)y, 0.0F);
-		Identifier identifier = this.display.getBackground();
-		if (identifier != null) {
-			RenderSystem.setShaderTexture(0, identifier);
-		} else {
-			RenderSystem.setShaderTexture(0, TextureManager.MISSING_IDENTIFIER);
-		}
-
+		context.enableScissor(x, y, x + 234, y + 113);
+		context.getMatrices().push();
+		context.getMatrices().translate((float)x, (float)y, 0.0F);
+		Identifier identifier = (Identifier)Objects.requireNonNullElse(this.display.getBackground(), TextureManager.MISSING_IDENTIFIER);
 		int i = MathHelper.floor(this.originX);
 		int j = MathHelper.floor(this.originY);
 		int k = i % 16;
@@ -104,21 +96,21 @@ public class AdvancementTab extends DrawableHelper {
 
 		for (int m = -1; m <= 15; m++) {
 			for (int n = -1; n <= 8; n++) {
-				drawTexture(matrices, k + 16 * m, l + 16 * n, 0.0F, 0.0F, 16, 16, 16, 16);
+				context.drawTexture(identifier, k + 16 * m, l + 16 * n, 0.0F, 0.0F, 16, 16, 16, 16);
 			}
 		}
 
-		this.rootWidget.renderLines(matrices, i, j, true);
-		this.rootWidget.renderLines(matrices, i, j, false);
-		this.rootWidget.renderWidgets(matrices, i, j);
-		matrices.pop();
-		disableScissor();
+		this.rootWidget.renderLines(context, i, j, true);
+		this.rootWidget.renderLines(context, i, j, false);
+		this.rootWidget.renderWidgets(context, i, j);
+		context.getMatrices().pop();
+		context.disableScissor();
 	}
 
-	public void drawWidgetTooltip(MatrixStack matrices, int mouseX, int mouseY, int x, int y) {
-		matrices.push();
-		matrices.translate(0.0F, 0.0F, -200.0F);
-		fill(matrices, 0, 0, 234, 113, MathHelper.floor(this.alpha * 255.0F) << 24);
+	public void drawWidgetTooltip(DrawContext context, int mouseX, int mouseY, int x, int y) {
+		context.getMatrices().push();
+		context.getMatrices().translate(0.0F, 0.0F, -200.0F);
+		context.fill(0, 0, 234, 113, MathHelper.floor(this.alpha * 255.0F) << 24);
 		boolean bl = false;
 		int i = MathHelper.floor(this.originX);
 		int j = MathHelper.floor(this.originY);
@@ -126,13 +118,13 @@ public class AdvancementTab extends DrawableHelper {
 			for (AdvancementWidget advancementWidget : this.widgets.values()) {
 				if (advancementWidget.shouldRender(i, j, mouseX, mouseY)) {
 					bl = true;
-					advancementWidget.drawTooltip(matrices, i, j, this.alpha, x, y);
+					advancementWidget.drawTooltip(context, i, j, this.alpha, x, y);
 					break;
 				}
 			}
 		}
 
-		matrices.pop();
+		context.getMatrices().pop();
 		if (bl) {
 			this.alpha = MathHelper.clamp(this.alpha + 0.02F, 0.0F, 0.3F);
 		} else {

@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import java.util.Arrays;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -152,9 +151,10 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		if (chunkNibbleArray != null) {
 			return chunkNibbleArray;
 		} else {
-			long l = ChunkSectionPos.offset(sectionPos, Direction.UP);
 			int i = this.storage.columnToTopSection.get(ChunkSectionPos.withZeroY(sectionPos));
-			if (i != this.storage.minSectionY && ChunkSectionPos.unpackY(l) < i) {
+			if (i != this.storage.minSectionY && ChunkSectionPos.unpackY(sectionPos) < i) {
+				long l = ChunkSectionPos.offset(sectionPos, Direction.UP);
+
 				ChunkNibbleArray chunkNibbleArray2;
 				while ((chunkNibbleArray2 = this.getLightSection(l, true)) == null) {
 					l = ChunkSectionPos.offset(l, Direction.UP);
@@ -162,14 +162,14 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 
 				return copy(chunkNibbleArray2);
 			} else {
-				return new ChunkNibbleArray();
+				return this.isSectionEnabled(sectionPos) ? new ChunkNibbleArray(15) : new ChunkNibbleArray();
 			}
 		}
 	}
 
 	private static ChunkNibbleArray copy(ChunkNibbleArray source) {
-		if (source.isUninitialized()) {
-			return new ChunkNibbleArray();
+		if (source.isArrayUninitialized()) {
+			return source.copy();
 		} else {
 			byte[] bs = source.asByteArray();
 			byte[] cs = new byte[2048];
@@ -195,11 +195,13 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 					if (i != 2 && !this.sectionsToRemove.contains(l) && this.field_15820.add(l)) {
 						if (i == 1) {
 							this.removeSection(lightProvider, l);
-							if (this.dirtySections.add(l)) {
-								this.storage.replaceWithCopy(l);
+							if (!this.getLightSection(l, true).isUninitialized(15)) {
+								this.storage.put(l, new ChunkNibbleArray(15));
+								this.storage.clearCache();
+								this.dirtySections.add(l);
+								this.addNotifySections(l);
 							}
 
-							Arrays.fill(this.getLightSection(l, true).asByteArray(), (byte)-1);
 							int j = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackX(l));
 							int k = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l));
 							int m = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackZ(l));

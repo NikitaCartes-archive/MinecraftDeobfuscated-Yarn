@@ -1,7 +1,6 @@
 package net.minecraft.client.render.item;
 
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -12,15 +11,9 @@ import net.minecraft.block.StainedGlassPaneBlock;
 import net.minecraft.block.TransparentBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.color.item.ItemColors;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.DiffuseLighting;
-import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderLayers;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -43,24 +36,18 @@ import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.crash.CrashCallable;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MatrixUtil;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class ItemRenderer implements SynchronousResourceReloader {
 	public static final Identifier ENTITY_ENCHANTMENT_GLINT = new Identifier("textures/misc/enchanted_glint_entity.png");
 	public static final Identifier ITEM_ENCHANTMENT_GLINT = new Identifier("textures/misc/enchanted_glint_item.png");
 	private static final Set<Item> WITHOUT_MODELS = Sets.<Item>newHashSet(Items.AIR);
-	private static final int field_32937 = 8;
-	private static final int field_32938 = 8;
+	public static final int field_32937 = 8;
+	public static final int field_32938 = 8;
 	public static final int field_32934 = 200;
 	public static final float COMPASS_WITH_GLINT_GUI_MODEL_MULTIPLIER = 0.5F;
 	public static final float COMPASS_WITH_GLINT_FIRST_PERSON_MODEL_MULTIPLIER = 0.75F;
@@ -270,147 +257,6 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		if (!item.isEmpty()) {
 			BakedModel bakedModel = this.getModel(item, world, entity, seed);
 			this.renderItem(item, renderMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel);
-		}
-	}
-
-	public void renderGuiItemIcon(MatrixStack matrices, ItemStack stack, int x, int y) {
-		this.renderGuiItemModel(matrices, stack, x, y, this.getModel(stack, null, null, 0));
-	}
-
-	protected void renderGuiItemModel(MatrixStack matrices, ItemStack stack, int x, int y, BakedModel model) {
-		matrices.push();
-		matrices.translate((float)x, (float)y, 100.0F);
-		matrices.translate(8.0F, 8.0F, 0.0F);
-		matrices.multiplyPositionMatrix(new Matrix4f().scaling(1.0F, -1.0F, 1.0F));
-		matrices.scale(16.0F, 16.0F, 16.0F);
-		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
-		boolean bl = !model.isSideLit();
-		if (bl) {
-			DiffuseLighting.disableGuiDepthLighting();
-		}
-
-		this.renderItem(stack, ModelTransformationMode.GUI, false, matrices, immediate, 15728880, OverlayTexture.DEFAULT_UV, model);
-		immediate.draw();
-		RenderSystem.enableDepthTest();
-		if (bl) {
-			DiffuseLighting.enableGuiDepthLighting();
-		}
-
-		matrices.pop();
-	}
-
-	/**
-	 * Renders an item in a GUI with the player as the attached entity
-	 * for calculating model overrides.
-	 */
-	public void renderInGuiWithOverrides(MatrixStack matrices, ItemStack stack, int x, int y) {
-		this.innerRenderInGui(matrices, this.client.player, this.client.world, stack, x, y, 0);
-	}
-
-	public void renderInGuiWithOverrides(MatrixStack matrices, ItemStack stack, int x, int y, int seed) {
-		this.innerRenderInGui(matrices, this.client.player, this.client.world, stack, x, y, seed);
-	}
-
-	public void renderInGuiWithOverrides(MatrixStack matrices, ItemStack stack, int x, int y, int seed, int depth) {
-		this.innerRenderInGui(matrices, this.client.player, this.client.world, stack, x, y, seed, depth);
-	}
-
-	/**
-	 * Renders an item in a GUI without an attached entity.
-	 */
-	public void renderInGui(MatrixStack matrices, ItemStack stack, int x, int y) {
-		this.innerRenderInGui(matrices, null, this.client.world, stack, x, y, 0);
-	}
-
-	/**
-	 * Renders an item in a GUI with an attached entity.
-	 * 
-	 * <p>The entity is used to calculate model overrides for the item.
-	 */
-	public void renderInGuiWithOverrides(MatrixStack matrices, LivingEntity entity, ItemStack stack, int x, int y, int seed) {
-		this.innerRenderInGui(matrices, entity, entity.world, stack, x, y, seed);
-	}
-
-	private void innerRenderInGui(MatrixStack matrices, @Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y, int seed) {
-		this.innerRenderInGui(matrices, entity, world, stack, x, y, seed, 0);
-	}
-
-	private void innerRenderInGui(MatrixStack matrices, @Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y, int seed, int depth) {
-		if (!stack.isEmpty()) {
-			BakedModel bakedModel = this.getModel(stack, world, entity, seed);
-			matrices.push();
-			matrices.translate(0.0F, 0.0F, (float)(50 + (bakedModel.hasDepth() ? depth : 0)));
-
-			try {
-				this.renderGuiItemModel(matrices, stack, x, y, bakedModel);
-			} catch (Throwable var13) {
-				CrashReport crashReport = CrashReport.create(var13, "Rendering item");
-				CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
-				crashReportSection.add("Item Type", (CrashCallable<String>)(() -> String.valueOf(stack.getItem())));
-				crashReportSection.add("Item Damage", (CrashCallable<String>)(() -> String.valueOf(stack.getDamage())));
-				crashReportSection.add("Item NBT", (CrashCallable<String>)(() -> String.valueOf(stack.getNbt())));
-				crashReportSection.add("Item Foil", (CrashCallable<String>)(() -> String.valueOf(stack.hasGlint())));
-				throw new CrashException(crashReport);
-			}
-
-			matrices.pop();
-		}
-	}
-
-	/**
-	 * Renders the overlay for items in GUIs, including the damage bar and the item count.
-	 */
-	public void renderGuiItemOverlay(MatrixStack matrices, TextRenderer textRenderer, ItemStack stack, int x, int y) {
-		this.renderGuiItemOverlay(matrices, textRenderer, stack, x, y, null);
-	}
-
-	/**
-	 * Renders the overlay for items in GUIs, including the damage bar and the item count.
-	 */
-	public void renderGuiItemOverlay(MatrixStack matrices, TextRenderer textRenderer, ItemStack stack, int x, int y, @Nullable String countLabel) {
-		if (!stack.isEmpty()) {
-			matrices.push();
-			if (stack.getCount() != 1 || countLabel != null) {
-				String string = countLabel == null ? String.valueOf(stack.getCount()) : countLabel;
-				matrices.translate(0.0F, 0.0F, 200.0F);
-				VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-				textRenderer.draw(
-					string,
-					(float)(x + 19 - 2 - textRenderer.getWidth(string)),
-					(float)(y + 6 + 3),
-					16777215,
-					true,
-					matrices.peek().getPositionMatrix(),
-					immediate,
-					TextRenderer.TextLayerType.NORMAL,
-					0,
-					15728880
-				);
-				immediate.draw();
-			}
-
-			if (stack.isItemBarVisible()) {
-				RenderSystem.disableDepthTest();
-				int i = stack.getItemBarStep();
-				int j = stack.getItemBarColor();
-				int k = x + 2;
-				int l = y + 13;
-				DrawableHelper.fill(matrices, k, l, k + 13, l + 2, -16777216);
-				DrawableHelper.fill(matrices, k, l, k + i, l + 1, j | 0xFF000000);
-				RenderSystem.enableDepthTest();
-			}
-
-			ClientPlayerEntity clientPlayerEntity = this.client.player;
-			float f = clientPlayerEntity == null ? 0.0F : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), this.client.getTickDelta());
-			if (f > 0.0F) {
-				RenderSystem.disableDepthTest();
-				int k = y + MathHelper.floor(16.0F * (1.0F - f));
-				int l = k + MathHelper.ceil(16.0F * f);
-				DrawableHelper.fill(matrices, x, k, x + 16, l, Integer.MAX_VALUE);
-				RenderSystem.enableDepthTest();
-			}
-
-			matrices.pop();
 		}
 	}
 

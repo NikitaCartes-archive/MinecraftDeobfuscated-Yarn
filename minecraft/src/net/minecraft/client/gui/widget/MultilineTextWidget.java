@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.CachedMapper;
 import net.minecraft.util.Util;
@@ -62,16 +62,16 @@ public class MultilineTextWidget extends AbstractTextWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 		MultilineText multilineText = this.cacheKeyToText.map(this.getCacheKey());
 		int i = this.getX();
 		int j = this.getY();
 		int k = 9;
 		int l = this.getTextColor();
 		if (this.centered) {
-			multilineText.drawCenterWithShadow(matrices, i + this.getWidth() / 2, j, k, l);
+			multilineText.drawCenterWithShadow(context, i + this.getWidth() / 2, j, k, l);
 		} else {
-			multilineText.drawWithShadow(matrices, i, j, k, l);
+			multilineText.drawWithShadow(context, i, j, k, l);
 		}
 	}
 

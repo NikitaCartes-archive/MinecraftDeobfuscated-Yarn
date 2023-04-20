@@ -1,12 +1,10 @@
 package net.minecraft.client.toast;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.text.Text;
@@ -25,7 +23,7 @@ public class RecipeToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
+	public Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime) {
 		if (this.justUpdated) {
 			this.startTime = startTime;
 			this.justUpdated = false;
@@ -34,10 +32,9 @@ public class RecipeToast implements Toast {
 		if (this.recipes.isEmpty()) {
 			return Toast.Visibility.HIDE;
 		} else {
-			RenderSystem.setShaderTexture(0, TEXTURE);
-			DrawableHelper.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());
-			manager.getClient().textRenderer.draw(matrices, TITLE, 30.0F, 7.0F, -11534256);
-			manager.getClient().textRenderer.draw(matrices, DESCRIPTION, 30.0F, 18.0F, -16777216);
+			context.drawTexture(TEXTURE, 0, 0, 0, 32, this.getWidth(), this.getHeight());
+			context.drawText(manager.getClient().textRenderer, TITLE, 30, 7, -11534256, false);
+			context.drawText(manager.getClient().textRenderer, DESCRIPTION, 30, 18, -16777216, false);
 			Recipe<?> recipe = (Recipe<?>)this.recipes
 				.get(
 					(int)(
@@ -45,11 +42,11 @@ public class RecipeToast implements Toast {
 					)
 				);
 			ItemStack itemStack = recipe.createIcon();
-			matrices.push();
-			matrices.scale(0.6F, 0.6F, 1.0F);
-			manager.getClient().getItemRenderer().renderInGui(matrices, itemStack, 3, 3);
-			matrices.pop();
-			manager.getClient().getItemRenderer().renderInGui(matrices, recipe.getOutput(manager.getClient().world.getRegistryManager()), 8, 8);
+			context.getMatrices().push();
+			context.getMatrices().scale(0.6F, 0.6F, 1.0F);
+			context.drawItemWithoutEntity(itemStack, 3, 3);
+			context.getMatrices().pop();
+			context.drawItemWithoutEntity(recipe.getOutput(manager.getClient().world.getRegistryManager()), 8, 8);
 			return (double)(startTime - this.startTime) >= 5000.0 * manager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		}
 	}

@@ -5,7 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractParentElement extends DrawableHelper implements ParentElement {
+public abstract class AbstractParentElement implements ParentElement {
 	@Nullable
 	private Element focused;
 	private boolean dragging;

@@ -8,7 +8,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.GameEventTags;
 import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.event.listener.VibrationListener;
+import net.minecraft.world.event.Vibrations;
 
 public class VanillaGameEventTagProvider extends ValueLookupTagProvider<GameEvent> {
 	@VisibleForTesting
@@ -60,11 +60,11 @@ public class VanillaGameEventTagProvider extends ValueLookupTagProvider<GameEven
 
 	@Override
 	protected void configure(RegistryWrapper.WrapperLookup lookup) {
-		this.getOrCreateTagBuilder(GameEventTags.VIBRATIONS).add(BASIC_GAME_EVENTS).add(VibrationListener.RESONATIONS).add(GameEvent.FLAP);
+		this.getOrCreateTagBuilder(GameEventTags.VIBRATIONS).add(BASIC_GAME_EVENTS).add(Vibrations.RESONATIONS).add(GameEvent.FLAP);
 		this.getOrCreateTagBuilder(GameEventTags.SHRIEKER_CAN_LISTEN).add(GameEvent.SCULK_SENSOR_TENDRILS_CLICKING);
 		this.getOrCreateTagBuilder(GameEventTags.WARDEN_CAN_LISTEN)
 			.add(BASIC_GAME_EVENTS)
-			.add(VibrationListener.RESONATIONS)
+			.add(Vibrations.RESONATIONS)
 			.add(GameEvent.SHRIEK)
 			.addTag(GameEventTags.SHRIEKER_CAN_LISTEN);
 		this.getOrCreateTagBuilder(GameEventTags.IGNORE_VIBRATIONS_SNEAKING)

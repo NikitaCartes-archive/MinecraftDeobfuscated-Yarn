@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.EmptyWidget;
@@ -16,7 +17,6 @@ import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.ScrollableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.telemetry.TelemetryEventProperty;
 import net.minecraft.client.util.telemetry.TelemetryEventType;
 import net.minecraft.text.MutableText;
@@ -92,13 +92,13 @@ public class TelemetryEventWidget extends ScrollableWidget {
 	}
 
 	@Override
-	protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
 		int i = this.getY() + this.getPadding();
 		int j = this.getX() + this.getPadding();
-		matrices.push();
-		matrices.translate((double)j, (double)i, 0.0);
-		this.contents.grid().forEachChild(widget -> widget.render(matrices, mouseX, mouseY, delta));
-		matrices.pop();
+		context.getMatrices().push();
+		context.getMatrices().translate((double)j, (double)i, 0.0);
+		this.contents.grid().forEachChild(widget -> widget.render(context, mouseX, mouseY, delta));
+		context.getMatrices().pop();
 	}
 
 	@Override

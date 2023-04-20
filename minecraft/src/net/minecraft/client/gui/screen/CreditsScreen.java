@@ -15,11 +15,10 @@ import java.io.Reader;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.LogoDrawer;
 import net.minecraft.client.sound.MusicType;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
@@ -222,8 +221,7 @@ public class CreditsScreen extends Screen {
 		this.credits.add(text.asOrderedText());
 	}
 
-	private void renderBackground(MatrixStack matrices) {
-		RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
+	private void renderBackground(DrawContext context) {
 		int i = this.width;
 		float f = this.time * 0.5F;
 		int j = 64;
@@ -241,51 +239,50 @@ public class CreditsScreen extends Screen {
 
 		h *= h;
 		h = h * 96.0F / 255.0F;
-		RenderSystem.setShaderColor(h, h, h, 1.0F);
-		drawTexture(matrices, 0, 0, 0, 0.0F, f, i, this.height, 64, 64);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		context.setShaderColor(h, h, h, 1.0F);
+		context.drawTexture(OPTIONS_BACKGROUND_TEXTURE, 0, 0, 0, 0.0F, f, i, this.height, 64, 64);
+		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.time = this.time + delta * this.speed;
-		this.renderBackground(matrices);
+		this.renderBackground(context);
 		int i = this.width / 2 - 128;
 		int j = this.height + 50;
 		float f = -this.time;
-		matrices.push();
-		matrices.translate(0.0F, f, 0.0F);
-		this.logoDrawer.draw(matrices, this.width, 1.0F, j);
+		context.getMatrices().push();
+		context.getMatrices().translate(0.0F, f, 0.0F);
+		this.logoDrawer.draw(context, this.width, 1.0F, j);
 		int k = j + 100;
 
 		for (int l = 0; l < this.credits.size(); l++) {
 			if (l == this.credits.size() - 1) {
 				float g = (float)k + f - (float)(this.height / 2 - 6);
 				if (g < 0.0F) {
-					matrices.translate(0.0F, -g, 0.0F);
+					context.getMatrices().translate(0.0F, -g, 0.0F);
 				}
 			}
 
 			if ((float)k + f + 12.0F + 8.0F > 0.0F && (float)k + f < (float)this.height) {
 				OrderedText orderedText = (OrderedText)this.credits.get(l);
 				if (this.centeredLines.contains(l)) {
-					this.textRenderer.drawWithShadow(matrices, orderedText, (float)(i + (256 - this.textRenderer.getWidth(orderedText)) / 2), (float)k, 16777215);
+					context.drawCenteredTextWithShadow(this.textRenderer, orderedText, i + 128, k, 16777215);
 				} else {
-					this.textRenderer.drawWithShadow(matrices, orderedText, (float)i, (float)k, 16777215);
+					context.drawTextWithShadow(this.textRenderer, orderedText, i, k, 16777215);
 				}
 			}
 
 			k += 12;
 		}
 
-		matrices.pop();
-		RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
+		context.getMatrices().pop();
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
-		drawTexture(matrices, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, this.width, this.height);
+		context.drawTexture(VIGNETTE_TEXTURE, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, this.width, this.height);
 		RenderSystem.disableBlend();
 		RenderSystem.defaultBlendFunc();
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override

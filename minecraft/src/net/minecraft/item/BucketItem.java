@@ -6,7 +6,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
-import net.minecraft.block.Material;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
@@ -105,7 +104,6 @@ public class BucketItem extends Item implements FluidModificationItem {
 		} else {
 			BlockState blockState = world.getBlockState(pos);
 			Block block = blockState.getBlock();
-			Material material = blockState.getMaterial();
 			boolean bl = blockState.canBucketPlace(this.fluid);
 			boolean bl2 = blockState.isAir() || bl || block instanceof FluidFillable && ((FluidFillable)block).canFillWithFluid(world, pos, blockState, this.fluid);
 			if (!bl2) {

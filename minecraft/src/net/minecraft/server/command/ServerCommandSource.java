@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BinaryOperator;
+import java.util.function.IntConsumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandSource;
@@ -65,12 +66,14 @@ public class ServerCommandSource implements CommandSource {
 	private final Vec2f rotation;
 	private final SignedCommandArguments signedArguments;
 	private final FutureQueue messageChainTaskQueue;
+	private final IntConsumer returnValueConsumer;
 
 	public ServerCommandSource(
 		CommandOutput output, Vec3d pos, Vec2f rot, ServerWorld world, int level, String name, Text displayName, MinecraftServer server, @Nullable Entity entity
 	) {
 		this(output, pos, rot, world, level, name, displayName, server, entity, false, (context, success, result) -> {
-		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.EMPTY, FutureQueue.immediate(server));
+		}, EntityAnchorArgumentType.EntityAnchor.FEET, SignedCommandArguments.EMPTY, FutureQueue.immediate(server), i -> {
+		});
 	}
 
 	protected ServerCommandSource(
@@ -87,7 +90,8 @@ public class ServerCommandSource implements CommandSource {
 		@Nullable ResultConsumer<ServerCommandSource> consumer,
 		EntityAnchorArgumentType.EntityAnchor entityAnchor,
 		SignedCommandArguments signedArguments,
-		FutureQueue messageChainTaskQueue
+		FutureQueue messageChainTaskQueue,
+		IntConsumer returnValueConsumer
 	) {
 		this.output = output;
 		this.position = pos;
@@ -103,6 +107,7 @@ public class ServerCommandSource implements CommandSource {
 		this.rotation = rot;
 		this.signedArguments = signedArguments;
 		this.messageChainTaskQueue = messageChainTaskQueue;
+		this.returnValueConsumer = returnValueConsumer;
 	}
 
 	public ServerCommandSource withOutput(CommandOutput output) {
@@ -122,7 +127,8 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			);
 	}
 
@@ -143,7 +149,8 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			);
 	}
 
@@ -164,7 +171,8 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			);
 	}
 
@@ -185,7 +193,8 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			);
 	}
 
@@ -206,7 +215,8 @@ public class ServerCommandSource implements CommandSource {
 				consumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			);
 	}
 
@@ -231,7 +241,8 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			)
 			: this;
 	}
@@ -253,7 +264,8 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			);
 	}
 
@@ -274,7 +286,8 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			);
 	}
 
@@ -295,7 +308,8 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				anchor,
 				this.signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			);
 	}
 
@@ -319,7 +333,8 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			);
 		}
 	}
@@ -356,7 +371,8 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				signedArguments,
-				this.messageChainTaskQueue
+				this.messageChainTaskQueue,
+				this.returnValueConsumer
 			);
 	}
 
@@ -377,7 +393,30 @@ public class ServerCommandSource implements CommandSource {
 				this.resultConsumer,
 				this.entityAnchor,
 				this.signedArguments,
-				messageChainTaskQueue
+				messageChainTaskQueue,
+				this.returnValueConsumer
+			);
+	}
+
+	public ServerCommandSource withReturnValueConsumer(IntConsumer returnValueConsumer) {
+		return returnValueConsumer == this.returnValueConsumer
+			? this
+			: new ServerCommandSource(
+				this.output,
+				this.position,
+				this.rotation,
+				this.world,
+				this.level,
+				this.name,
+				this.displayName,
+				this.server,
+				this.entity,
+				this.silent,
+				this.resultConsumer,
+				this.entityAnchor,
+				this.signedArguments,
+				this.messageChainTaskQueue,
+				returnValueConsumer
 			);
 	}
 
@@ -465,6 +504,10 @@ public class ServerCommandSource implements CommandSource {
 
 	public FutureQueue getMessageChainTaskQueue() {
 		return this.messageChainTaskQueue;
+	}
+
+	public IntConsumer getReturnValueConsumer() {
+		return this.returnValueConsumer;
 	}
 
 	/**

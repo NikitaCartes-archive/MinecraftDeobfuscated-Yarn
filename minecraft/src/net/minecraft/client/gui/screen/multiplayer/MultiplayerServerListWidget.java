@@ -17,7 +17,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.LoadingDisplay;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -28,7 +28,6 @@ import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -49,6 +48,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	);
 	static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
 	static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
+	static final Identifier ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
 	static final Text LAN_SCANNING_TEXT = Text.translatable("lanServer.scanning");
 	static final Text CANNOT_RESOLVE_TEXT = Text.translatable("multiplayer.status.cannot_resolve").styled(style -> style.withColor(-65536));
 	static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").styled(style -> style.withColor(-65536));
@@ -146,13 +146,13 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.client.textRenderer.draw(matrices, TITLE_TEXT, (float)(x + 32 + 3), (float)(y + 1), 16777215);
-			this.client.textRenderer.draw(matrices, this.server.getMotd(), (float)(x + 32 + 3), (float)(y + 12), 8421504);
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			context.drawText(this.client.textRenderer, TITLE_TEXT, x + 32 + 3, y + 1, 16777215, false);
+			context.drawText(this.client.textRenderer, this.server.getMotd(), x + 32 + 3, y + 12, 8421504, false);
 			if (this.client.options.hideServerAddress) {
-				this.client.textRenderer.draw(matrices, HIDDEN_ADDRESS_TEXT, (float)(x + 32 + 3), (float)(y + 12 + 11), 3158064);
+				context.drawText(this.client.textRenderer, HIDDEN_ADDRESS_TEXT, x + 32 + 3, y + 12 + 11, 3158064, false);
 			} else {
-				this.client.textRenderer.draw(matrices, this.server.getAddressPort(), (float)(x + 32 + 3), (float)(y + 12 + 11), 3158064);
+				context.drawText(this.client.textRenderer, this.server.getAddressPort(), x + 32 + 3, y + 12 + 11, 3158064, false);
 			}
 		}
 
@@ -186,21 +186,20 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		private final MinecraftClient client = MinecraftClient.getInstance();
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			int i = y + entryHeight / 2 - 9 / 2;
-			this.client
-				.textRenderer
-				.draw(
-					matrices,
-					MultiplayerServerListWidget.LAN_SCANNING_TEXT,
-					(float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(MultiplayerServerListWidget.LAN_SCANNING_TEXT) / 2),
-					(float)i,
-					16777215
-				);
+			context.drawText(
+				this.client.textRenderer,
+				MultiplayerServerListWidget.LAN_SCANNING_TEXT,
+				this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(MultiplayerServerListWidget.LAN_SCANNING_TEXT) / 2,
+				i,
+				16777215,
+				false
+			);
 			String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
-			this.client
-				.textRenderer
-				.draw(matrices, string, (float)(this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(string) / 2), (float)(i + 9), 8421504);
+			context.drawText(
+				this.client.textRenderer, string, this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(string) / 2, i + 9, 8421504, false
+			);
 		}
 
 		@Override
@@ -241,7 +240,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			if (!this.server.online) {
 				this.server.online = true;
 				this.server.ping = -2L;
@@ -261,16 +260,16 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			boolean bl = !this.protocolVersionMatches();
-			this.client.textRenderer.draw(matrices, this.server.name, (float)(x + 32 + 3), (float)(y + 1), 16777215);
+			context.drawText(this.client.textRenderer, this.server.name, x + 32 + 3, y + 1, 16777215, false);
 			List<OrderedText> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
 
 			for (int i = 0; i < Math.min(list.size(), 2); i++) {
-				this.client.textRenderer.draw(matrices, (OrderedText)list.get(i), (float)(x + 32 + 3), (float)(y + 12 + 9 * i), 8421504);
+				context.drawText(this.client.textRenderer, (OrderedText)list.get(i), x + 32 + 3, y + 12 + 9 * i, 8421504, false);
 			}
 
 			Text text = (Text)(bl ? this.server.version.copy().formatted(Formatting.RED) : this.server.playerCountLabel);
 			int j = this.client.textRenderer.getWidth(text);
-			this.client.textRenderer.draw(matrices, text, (float)(x + entryWidth - j - 15 - 2), (float)(y + 1), 8421504);
+			context.drawText(this.client.textRenderer, text, x + entryWidth - j - 15 - 2, y + 1, 8421504, false);
 			int k = 0;
 			int l;
 			List<Text> list2;
@@ -312,8 +311,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				list2 = Collections.emptyList();
 			}
 
-			RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
-			DrawableHelper.drawTexture(matrices, x + entryWidth - 15, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256, 256);
+			context.drawTexture(MultiplayerServerListWidget.ICONS_TEXTURE, x + entryWidth - 15, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256, 256);
 			byte[] bs = this.server.getFavicon();
 			if (!Arrays.equals(bs, this.favicon)) {
 				if (this.uploadFavicon(bs)) {
@@ -325,9 +323,9 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			if (this.icon == null) {
-				this.draw(matrices, x, y, MultiplayerServerListWidget.UNKNOWN_SERVER_TEXTURE);
+				this.draw(context, x, y, MultiplayerServerListWidget.UNKNOWN_SERVER_TEXTURE);
 			} else {
-				this.draw(matrices, x, y, this.iconTextureId);
+				this.draw(context, x, y, this.iconTextureId);
 			}
 
 			int m = mouseX - x;
@@ -339,31 +337,30 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
-				RenderSystem.setShaderTexture(0, MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE);
-				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
+				context.fill(x, y, x + 32, y + 32, -1601138544);
 				int o = mouseX - x;
 				int p = mouseY - y;
 				if (this.canConnect()) {
 					if (o < 32 && o > 16) {
-						DrawableHelper.drawTexture(matrices, x, y, 0.0F, 32.0F, 32, 32, 256, 256);
+						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 0.0F, 32.0F, 32, 32, 256, 256);
 					} else {
-						DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 256, 256);
+						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 0.0F, 0.0F, 32, 32, 256, 256);
 					}
 				}
 
 				if (index > 0) {
 					if (o < 16 && p < 16) {
-						DrawableHelper.drawTexture(matrices, x, y, 96.0F, 32.0F, 32, 32, 256, 256);
+						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 96.0F, 32.0F, 32, 32, 256, 256);
 					} else {
-						DrawableHelper.drawTexture(matrices, x, y, 96.0F, 0.0F, 32, 32, 256, 256);
+						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 96.0F, 0.0F, 32, 32, 256, 256);
 					}
 				}
 
 				if (index < this.screen.getServerList().size() - 1) {
 					if (o < 16 && p > 16) {
-						DrawableHelper.drawTexture(matrices, x, y, 64.0F, 32.0F, 32, 32, 256, 256);
+						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 64.0F, 32.0F, 32, 32, 256, 256);
 					} else {
-						DrawableHelper.drawTexture(matrices, x, y, 64.0F, 0.0F, 32, 32, 256, 256);
+						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 64.0F, 0.0F, 32, 32, 256, 256);
 					}
 				}
 			}
@@ -381,10 +378,9 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			this.screen.getServerList().saveFile();
 		}
 
-		protected void draw(MatrixStack matrices, int x, int y, Identifier textureId) {
-			RenderSystem.setShaderTexture(0, textureId);
+		protected void draw(DrawContext context, int x, int y, Identifier textureId) {
 			RenderSystem.enableBlend();
-			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
+			context.drawTexture(textureId, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
 		}
 

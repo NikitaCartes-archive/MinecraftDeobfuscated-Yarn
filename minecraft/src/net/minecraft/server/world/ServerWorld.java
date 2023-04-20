@@ -512,14 +512,18 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		profiler.swap("tickBlocks");
 		if (randomTickSpeed > 0) {
-			for (ChunkSection chunkSection : chunk.getSectionArray()) {
+			ChunkSection[] chunkSections = chunk.getSectionArray();
+
+			for (int m = 0; m < chunkSections.length; m++) {
+				ChunkSection chunkSection = chunkSections[m];
 				if (chunkSection.hasRandomTicks()) {
-					int m = chunkSection.getYOffset();
+					int kx = chunk.sectionIndexToCoord(m);
+					int n = ChunkSectionPos.getBlockCoord(kx);
 
 					for (int l = 0; l < randomTickSpeed; l++) {
-						BlockPos blockPos3 = this.getRandomPosInChunk(i, m, j, 15);
+						BlockPos blockPos3 = this.getRandomPosInChunk(i, n, j, 15);
 						profiler.push("randomTick");
-						BlockState blockState4 = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - m, blockPos3.getZ() - j);
+						BlockState blockState4 = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - n, blockPos3.getZ() - j);
 						if (blockState4.hasRandomTicks()) {
 							blockState4.randomTick(this, blockPos3, this.random);
 						}

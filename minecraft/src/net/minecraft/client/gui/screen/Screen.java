@@ -3,18 +3,15 @@ package net.minecraft.client.gui.screen;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -25,8 +22,8 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
@@ -39,36 +36,22 @@ import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.screen.narration.ScreenNarrator;
 import net.minecraft.client.gui.tooltip.HoveredTooltipPositioner;
 import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.tooltip.TooltipBackgroundRenderer;
-import net.minecraft.client.gui.tooltip.TooltipComponent;
 import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.item.TooltipData;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.BufferRenderer;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.VertexFormat;
-import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import org.joml.Matrix4f;
-import org.joml.Vector2ic;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -76,19 +59,17 @@ import org.slf4j.Logger;
 public abstract class Screen extends AbstractParentElement implements Drawable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Set<String> ALLOWED_PROTOCOLS = Sets.<String>newHashSet("http", "https");
-	private static final int field_32270 = 2;
 	private static final Text SCREEN_USAGE_TEXT = Text.translatable("narrator.screen.usage");
+	public static final Identifier OPTIONS_BACKGROUND_TEXTURE = new Identifier("textures/gui/options_background.png");
 	protected final Text title;
 	private final List<Element> children = Lists.<Element>newArrayList();
 	private final List<Selectable> selectables = Lists.<Selectable>newArrayList();
 	@Nullable
 	protected MinecraftClient client;
 	private boolean screenInitialized;
-	protected ItemRenderer itemRenderer;
 	public int width;
 	public int height;
 	private final List<Drawable> drawables = Lists.<Drawable>newArrayList();
-	public boolean passEvents;
 	public TextRenderer textRenderer;
 	@Nullable
 	private URI clickedLink;
@@ -117,18 +98,18 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		return this.getTitle();
 	}
 
-	public final void renderWithTooltip(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.render(matrices, mouseX, mouseY, delta);
+	public final void renderWithTooltip(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.render(context, mouseX, mouseY, delta);
 		if (this.tooltip != null) {
-			this.renderPositionedTooltip(matrices, this.tooltip, mouseX, mouseY);
+			context.drawTooltip(this.textRenderer, this.tooltip.tooltip(), this.tooltip.positioner(), mouseX, mouseY);
 			this.tooltip = null;
 		}
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		for (Drawable drawable : this.drawables) {
-			drawable.render(matrices, mouseX, mouseY, delta);
+			drawable.render(context, mouseX, mouseY, delta);
 		}
 	}
 
@@ -245,123 +226,8 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 		this.selectables.clear();
 	}
 
-	protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
-		this.renderTooltip(matrices, this.getTooltipFromItem(stack), stack.getTooltipData(), x, y);
-	}
-
-	public void renderTooltip(MatrixStack matrices, List<Text> lines, Optional<TooltipData> data, int x, int y) {
-		List<TooltipComponent> list = (List<TooltipComponent>)lines.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
-		data.ifPresent(datax -> list.add(1, TooltipComponent.of(datax)));
-		this.renderTooltipFromComponents(matrices, list, x, y, HoveredTooltipPositioner.INSTANCE);
-	}
-
-	public List<Text> getTooltipFromItem(ItemStack stack) {
-		return stack.getTooltip(this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC);
-	}
-
-	public void renderTooltip(MatrixStack matrices, Text text, int x, int y) {
-		this.renderOrderedTooltip(matrices, Arrays.asList(text.asOrderedText()), x, y);
-	}
-
-	public void renderTooltip(MatrixStack matrices, List<Text> lines, int x, int y) {
-		this.renderOrderedTooltip(matrices, Lists.transform(lines, Text::asOrderedText), x, y);
-	}
-
-	public void renderOrderedTooltip(MatrixStack matrices, List<? extends OrderedText> lines, int x, int y) {
-		this.renderTooltipFromComponents(
-			matrices, (List<TooltipComponent>)lines.stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y, HoveredTooltipPositioner.INSTANCE
-		);
-	}
-
-	private void renderPositionedTooltip(MatrixStack matrices, Screen.PositionedTooltip tooltip, int x, int y) {
-		this.renderTooltipFromComponents(
-			matrices, (List<TooltipComponent>)tooltip.tooltip().stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y, tooltip.positioner()
-		);
-	}
-
-	private void renderTooltipFromComponents(MatrixStack matrices, List<TooltipComponent> components, int x, int y, TooltipPositioner positioner) {
-		if (!components.isEmpty()) {
-			int i = 0;
-			int j = components.size() == 1 ? -2 : 0;
-
-			for (TooltipComponent tooltipComponent : components) {
-				int k = tooltipComponent.getWidth(this.textRenderer);
-				if (k > i) {
-					i = k;
-				}
-
-				j += tooltipComponent.getHeight();
-			}
-
-			Vector2ic vector2ic = positioner.getPosition(this, x, y, i, j);
-			int n = vector2ic.x();
-			int o = vector2ic.y();
-			matrices.push();
-			int p = 400;
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuffer();
-			RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-			Matrix4f matrix4f = matrices.peek().getPositionMatrix();
-			TooltipBackgroundRenderer.render(
-				(matrix, builder, startX, startY, endX, endY, z, colorStart, colorEnd) -> DrawableHelper.fillGradient(
-						matrix, builder, startX, startY, endX, endY, z, colorStart, colorEnd
-					),
-				matrix4f,
-				bufferBuilder,
-				n,
-				o,
-				i,
-				j,
-				400
-			);
-			RenderSystem.enableDepthTest();
-			RenderSystem.enableBlend();
-			RenderSystem.defaultBlendFunc();
-			BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			matrices.translate(0.0F, 0.0F, 400.0F);
-			int q = o;
-
-			for (int r = 0; r < components.size(); r++) {
-				TooltipComponent tooltipComponent2 = (TooltipComponent)components.get(r);
-				tooltipComponent2.drawText(this.textRenderer, n, q, matrix4f, immediate);
-				q += tooltipComponent2.getHeight() + (r == 0 ? 2 : 0);
-			}
-
-			immediate.draw();
-			q = o;
-
-			for (int r = 0; r < components.size(); r++) {
-				TooltipComponent tooltipComponent2 = (TooltipComponent)components.get(r);
-				tooltipComponent2.drawItems(this.textRenderer, n, q, matrices, this.itemRenderer);
-				q += tooltipComponent2.getHeight() + (r == 0 ? 2 : 0);
-			}
-
-			matrices.pop();
-		}
-	}
-
-	protected void renderTextHoverEffect(MatrixStack matrices, @Nullable Style style, int x, int y) {
-		if (style != null && style.getHoverEvent() != null) {
-			HoverEvent hoverEvent = style.getHoverEvent();
-			HoverEvent.ItemStackContent itemStackContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ITEM);
-			if (itemStackContent != null) {
-				this.renderTooltip(matrices, itemStackContent.asStack(), x, y);
-			} else {
-				HoverEvent.EntityContent entityContent = hoverEvent.getValue(HoverEvent.Action.SHOW_ENTITY);
-				if (entityContent != null) {
-					if (this.client.options.advancedItemTooltips) {
-						this.renderTooltip(matrices, entityContent.asTooltip(), x, y);
-					}
-				} else {
-					Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
-					if (text != null) {
-						this.renderOrderedTooltip(matrices, this.client.textRenderer.wrapLines(text, Math.max(this.width / 2, 200)), x, y);
-					}
-				}
-			}
-		}
+	public static List<Text> getTooltipFromItem(MinecraftClient client, ItemStack stack) {
+		return stack.getTooltip(client.player, client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC);
 	}
 
 	protected void insertText(String text, boolean override) {
@@ -431,7 +297,6 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	public final void init(MinecraftClient client, int width, int height) {
 		this.client = client;
-		this.itemRenderer = client.getItemRenderer();
 		this.textRenderer = client.textRenderer;
 		this.width = width;
 		this.height = height;
@@ -486,23 +351,22 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	 * <p>If the client is in a world, renders the translucent background gradient.
 	 * Otherwise {@linkplain #renderBackgroundTexture renders the background texture}.
 	 */
-	public void renderBackground(MatrixStack matrices) {
+	public void renderBackground(DrawContext context) {
 		if (this.client.world != null) {
-			fillGradient(matrices, 0, 0, this.width, this.height, -1072689136, -804253680);
+			context.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
 		} else {
-			this.renderBackgroundTexture(matrices);
+			this.renderBackgroundTexture(context);
 		}
 	}
 
 	/**
-	 * Renders the fullscreen {@linkplain net.minecraft.client.gui.DrawableHelper#OPTIONS_BACKGROUND_TEXTURE background texture} of this screen.
+	 * Renders the fullscreen {@linkplain #OPTIONS_BACKGROUND_TEXTURE background texture} of this screen.
 	 */
-	public void renderBackgroundTexture(MatrixStack matrices) {
-		RenderSystem.setShaderTexture(0, OPTIONS_BACKGROUND_TEXTURE);
-		RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
+	public void renderBackgroundTexture(DrawContext context) {
+		context.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
 		int i = 32;
-		drawTexture(matrices, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		context.drawTexture(OPTIONS_BACKGROUND_TEXTURE, 0, 0, 0, 0.0F, 0.0F, this.width, this.height, 32, 32);
+		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	public boolean shouldPause() {

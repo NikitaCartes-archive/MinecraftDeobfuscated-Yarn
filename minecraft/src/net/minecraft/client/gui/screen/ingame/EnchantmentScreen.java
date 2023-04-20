@@ -6,14 +6,12 @@ import com.mojang.blaze3d.systems.VertexSorter;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -78,29 +76,28 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		DiffuseLighting.disableGuiDepthLighting();
-		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
-		drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		int k = (int)this.client.getWindow().getScaleFactor();
 		RenderSystem.viewport((this.width - 320) / 2 * k, (this.height - 240) / 2 * k, 320 * k, 240 * k);
 		Matrix4f matrix4f = new Matrix4f().translation(-0.34F, 0.23F, 0.0F).perspective((float) (Math.PI / 2), 1.3333334F, 9.0F, 80.0F);
 		RenderSystem.backupProjectionMatrix();
 		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_DISTANCE);
-		matrices.push();
-		matrices.loadIdentity();
-		matrices.translate(0.0F, 3.3F, 1984.0F);
+		context.getMatrices().push();
+		context.getMatrices().loadIdentity();
+		context.getMatrices().translate(0.0F, 3.3F, 1984.0F);
 		float f = 5.0F;
-		matrices.scale(5.0F, 5.0F, 5.0F);
-		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
-		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(20.0F));
+		context.getMatrices().scale(5.0F, 5.0F, 5.0F);
+		context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
+		context.getMatrices().multiply(RotationAxis.POSITIVE_X.rotationDegrees(20.0F));
 		float g = MathHelper.lerp(delta, this.pageTurningSpeed, this.nextPageTurningSpeed);
-		matrices.translate((1.0F - g) * 0.2F, (1.0F - g) * 0.1F, (1.0F - g) * 0.25F);
+		context.getMatrices().translate((1.0F - g) * 0.2F, (1.0F - g) * 0.1F, (1.0F - g) * 0.25F);
 		float h = -(1.0F - g) * 90.0F - 90.0F;
-		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(h));
-		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
+		context.getMatrices().multiply(RotationAxis.POSITIVE_Y.rotationDegrees(h));
+		context.getMatrices().multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
 		float l = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.25F;
 		float m = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.75F;
 		l = (l - (float)MathHelper.floor(l)) * 1.6F - 0.3F;
@@ -122,11 +119,10 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 		}
 
 		this.BOOK_MODEL.setPageAngles(0.0F, l, m, g);
-		VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-		VertexConsumer vertexConsumer = immediate.getBuffer(this.BOOK_MODEL.getLayer(BOOK_TEXTURE));
-		this.BOOK_MODEL.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
-		immediate.draw();
-		matrices.pop();
+		VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(this.BOOK_MODEL.getLayer(BOOK_TEXTURE));
+		this.BOOK_MODEL.render(context.getMatrices(), vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		context.draw();
+		context.getMatrices().pop();
 		RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 		RenderSystem.restoreProjectionMatrix();
 		DiffuseLighting.enableGuiDepthLighting();
@@ -136,46 +132,45 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 		for (int o = 0; o < 3; o++) {
 			int p = i + 60;
 			int q = p + 20;
-			RenderSystem.setShaderTexture(0, TEXTURE);
 			int r = this.handler.enchantmentPower[o];
 			if (r == 0) {
-				drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
+				context.drawTexture(TEXTURE, p, j + 14 + 19 * o, 0, 185, 108, 19);
 			} else {
 				String string = r + "";
 				int s = 86 - this.textRenderer.getWidth(string);
 				StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, s);
 				int t = 6839882;
 				if ((n < o + 1 || this.client.player.experienceLevel < r) && !this.client.player.getAbilities().creativeMode) {
-					drawTexture(matrices, p, j + 14 + 19 * o, 0, 185, 108, 19);
-					drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 239, 16, 16);
-					this.textRenderer.drawTrimmed(matrices, stringVisitable, q, j + 16 + 19 * o, s, (t & 16711422) >> 1);
+					context.drawTexture(TEXTURE, p, j + 14 + 19 * o, 0, 185, 108, 19);
+					context.drawTexture(TEXTURE, p + 1, j + 15 + 19 * o, 16 * o, 239, 16, 16);
+					context.drawTextWrapped(this.textRenderer, stringVisitable, q, j + 16 + 19 * o, s, (t & 16711422) >> 1);
 					t = 4226832;
 				} else {
 					int u = mouseX - (i + 60);
 					int v = mouseY - (j + 14 + 19 * o);
 					if (u >= 0 && v >= 0 && u < 108 && v < 19) {
-						drawTexture(matrices, p, j + 14 + 19 * o, 0, 204, 108, 19);
+						context.drawTexture(TEXTURE, p, j + 14 + 19 * o, 0, 204, 108, 19);
 						t = 16777088;
 					} else {
-						drawTexture(matrices, p, j + 14 + 19 * o, 0, 166, 108, 19);
+						context.drawTexture(TEXTURE, p, j + 14 + 19 * o, 0, 166, 108, 19);
 					}
 
-					drawTexture(matrices, p + 1, j + 15 + 19 * o, 16 * o, 223, 16, 16);
-					this.textRenderer.drawTrimmed(matrices, stringVisitable, q, j + 16 + 19 * o, s, t);
+					context.drawTexture(TEXTURE, p + 1, j + 15 + 19 * o, 16 * o, 223, 16, 16);
+					context.drawTextWrapped(this.textRenderer, stringVisitable, q, j + 16 + 19 * o, s, t);
 					t = 8453920;
 				}
 
-				this.textRenderer.drawWithShadow(matrices, string, (float)(q + 86 - this.textRenderer.getWidth(string)), (float)(j + 16 + 19 * o + 7), t);
+				context.drawTextWithShadow(this.textRenderer, string, q + 86 - this.textRenderer.getWidth(string), j + 16 + 19 * o + 7, t);
 			}
 		}
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		delta = this.client.getTickDelta();
-		this.renderBackground(matrices);
-		super.render(matrices, mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(context, mouseX, mouseY);
 		boolean bl = this.client.player.getAbilities().creativeMode;
 		int i = this.handler.getLapisCount();
 
@@ -211,7 +206,7 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 					}
 				}
 
-				this.renderTooltip(matrices, list, mouseX, mouseY);
+				context.drawTooltip(this.textRenderer, list, mouseX, mouseY);
 				break;
 			}
 		}

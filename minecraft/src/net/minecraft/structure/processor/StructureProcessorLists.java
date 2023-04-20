@@ -61,7 +61,9 @@ public class StructureProcessorLists {
 	public static final RegistryKey<StructureProcessorList> ANCIENT_CITY_START_DEGRADATION = of("ancient_city_start_degradation");
 	public static final RegistryKey<StructureProcessorList> ANCIENT_CITY_GENERIC_DEGRADATION = of("ancient_city_generic_degradation");
 	public static final RegistryKey<StructureProcessorList> ANCIENT_CITY_WALLS_DEGRADATION = of("ancient_city_walls_degradation");
-	public static final RegistryKey<StructureProcessorList> TRAIL_RUINS_SUSPICIOUS_SAND = of("trail_ruins_suspicious_sand");
+	public static final RegistryKey<StructureProcessorList> TRAIL_RUINS_HOUSES_ARCHAEOLOGY = of("trail_ruins_houses_archaeology");
+	public static final RegistryKey<StructureProcessorList> TRAIL_RUINS_ROADS_ARCHAEOLOGY = of("trail_ruins_roads_archaeology");
+	public static final RegistryKey<StructureProcessorList> TRAIL_RUINS_TOWER_TOP_ARCHAEOLOGY = of("trail_ruins_tower_top_archaeology");
 
 	private static RegistryKey<StructureProcessorList> of(String id) {
 		return RegistryKey.of(RegistryKeys.PROCESSOR_LIST, new Identifier(id));
@@ -714,44 +716,52 @@ public class StructureProcessorLists {
 		);
 		register(
 			processorListRegisterable,
-			TRAIL_RUINS_SUSPICIOUS_SAND,
+			TRAIL_RUINS_HOUSES_ARCHAEOLOGY,
 			List.of(
 				new RuleStructureProcessor(
 					List.of(
-						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.SAND, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.GRAVEL.getDefaultState()),
-						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.SAND, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.DIRT.getDefaultState()),
-						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.SAND, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.COARSE_DIRT.getDefaultState())
+						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.GRAVEL, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.DIRT.getDefaultState()),
+						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.GRAVEL, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.COARSE_DIRT.getDefaultState()),
+						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.MUD_BRICKS, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.PACKED_MUD.getDefaultState())
 					)
 				),
-				new CappedStructureProcessor(
-					new RuleStructureProcessor(
-						List.of(
-							new StructureProcessorRule(
-								new TagMatchRuleTest(BlockTags.TRAIL_RUINS_REPLACEABLE),
-								AlwaysTrueRuleTest.INSTANCE,
-								AlwaysTruePosRuleTest.INSTANCE,
-								Blocks.SUSPICIOUS_SAND.getDefaultState(),
-								new AppendLootRuleBlockEntityModifier(LootTables.TRAIL_RUINS_ARCHAEOLOGY)
-							)
-						)
-					),
-					ConstantIntProvider.create(6)
-				),
-				new CappedStructureProcessor(
-					new RuleStructureProcessor(
-						List.of(
-							new StructureProcessorRule(
-								new TagMatchRuleTest(BlockTags.TRAIL_RUINS_REPLACEABLE),
-								AlwaysTrueRuleTest.INSTANCE,
-								AlwaysTruePosRuleTest.INSTANCE,
-								Blocks.SUSPICIOUS_GRAVEL.getDefaultState(),
-								new AppendLootRuleBlockEntityModifier(LootTables.TRAIL_RUINS_ARCHAEOLOGY)
-							)
-						)
-					),
-					ConstantIntProvider.create(2)
-				)
+				createTrailRuinsTowerTopProcessor(LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY, 6),
+				createTrailRuinsTowerTopProcessor(LootTables.TRAIL_RUINS_RARE_ARCHAEOLOGY, 3)
 			)
+		);
+		register(
+			processorListRegisterable,
+			TRAIL_RUINS_ROADS_ARCHAEOLOGY,
+			List.of(
+				new RuleStructureProcessor(
+					List.of(
+						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.GRAVEL, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.DIRT.getDefaultState()),
+						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.GRAVEL, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.COARSE_DIRT.getDefaultState()),
+						new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.MUD_BRICKS, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.PACKED_MUD.getDefaultState())
+					)
+				),
+				createTrailRuinsTowerTopProcessor(LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY, 2)
+			)
+		);
+		register(
+			processorListRegisterable, TRAIL_RUINS_TOWER_TOP_ARCHAEOLOGY, List.of(createTrailRuinsTowerTopProcessor(LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY, 2))
+		);
+	}
+
+	private static CappedStructureProcessor createTrailRuinsTowerTopProcessor(Identifier lootTableId, int limit) {
+		return new CappedStructureProcessor(
+			new RuleStructureProcessor(
+				List.of(
+					new StructureProcessorRule(
+						new TagMatchRuleTest(BlockTags.TRAIL_RUINS_REPLACEABLE),
+						AlwaysTrueRuleTest.INSTANCE,
+						AlwaysTruePosRuleTest.INSTANCE,
+						Blocks.SUSPICIOUS_GRAVEL.getDefaultState(),
+						new AppendLootRuleBlockEntityModifier(lootTableId)
+					)
+				)
+			),
+			ConstantIntProvider.create(limit)
 		);
 	}
 }

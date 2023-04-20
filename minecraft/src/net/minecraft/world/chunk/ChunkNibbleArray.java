@@ -1,5 +1,6 @@
 package net.minecraft.world.chunk;
 
+import java.util.Arrays;
 import javax.annotation.Nullable;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
@@ -21,19 +22,22 @@ public class ChunkNibbleArray {
 	private static final int NIBBLE_BITS = 4;
 	@Nullable
 	protected byte[] bytes;
+	private final int defaultValue;
 
 	public ChunkNibbleArray() {
+		this(0);
+	}
+
+	public ChunkNibbleArray(int defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 	public ChunkNibbleArray(byte[] bytes) {
 		this.bytes = bytes;
+		this.defaultValue = 0;
 		if (bytes.length != 2048) {
 			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException("DataLayer should be 2048 bytes not: " + bytes.length));
 		}
-	}
-
-	protected ChunkNibbleArray(int size) {
-		this.bytes = new byte[size];
 	}
 
 	/**
@@ -59,7 +63,7 @@ public class ChunkNibbleArray {
 
 	private int get(int index) {
 		if (this.bytes == null) {
-			return 0;
+			return this.defaultValue;
 		} else {
 			int i = getArrayIndex(index);
 			int j = occupiesSmallerBits(index);
@@ -68,15 +72,12 @@ public class ChunkNibbleArray {
 	}
 
 	private void set(int index, int value) {
-		if (this.bytes == null) {
-			this.bytes = new byte[2048];
-		}
-
+		byte[] bs = this.asByteArray();
 		int i = getArrayIndex(index);
 		int j = occupiesSmallerBits(index);
 		int k = ~(15 << 4 * j);
 		int l = (value & 15) << 4 * j;
-		this.bytes[i] = (byte)(this.bytes[i] & k | l);
+		bs[i] = (byte)(bs[i] & k | l);
 	}
 
 	/**
@@ -91,16 +92,29 @@ public class ChunkNibbleArray {
 		return i >> 1;
 	}
 
+	private static byte pack(int value) {
+		byte b = (byte)value;
+
+		for (int i = 4; i < 8; i += 4) {
+			b = (byte)(b | value << i);
+		}
+
+		return b;
+	}
+
 	public byte[] asByteArray() {
 		if (this.bytes == null) {
 			this.bytes = new byte[2048];
+			if (this.defaultValue != 0) {
+				Arrays.fill(this.bytes, pack(this.defaultValue));
+			}
 		}
 
 		return this.bytes;
 	}
 
 	public ChunkNibbleArray copy() {
-		return this.bytes == null ? new ChunkNibbleArray() : new ChunkNibbleArray((byte[])this.bytes.clone());
+		return this.bytes == null ? new ChunkNibbleArray(this.defaultValue) : new ChunkNibbleArray((byte[])this.bytes.clone());
 	}
 
 	public String toString() {
@@ -142,7 +156,15 @@ public class ChunkNibbleArray {
 		return stringBuilder.toString();
 	}
 
-	public boolean isUninitialized() {
+	public boolean isArrayUninitialized() {
 		return this.bytes == null;
+	}
+
+	public boolean isUninitialized(int expectedDefaultValue) {
+		return this.bytes == null && this.defaultValue == expectedDefaultValue;
+	}
+
+	public boolean isUninitialized() {
+		return this.bytes == null && this.defaultValue == 0;
 	}
 }

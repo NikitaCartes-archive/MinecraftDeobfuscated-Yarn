@@ -22,8 +22,8 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.ARMS_UP_POTTERY_SHARD).weight(2))
-						.with(ItemEntry.builder(Items.BREWER_POTTERY_SHARD).weight(2))
+						.with(ItemEntry.builder(Items.ARMS_UP_POTTERY_SHERD).weight(2))
+						.with(ItemEntry.builder(Items.BREWER_POTTERY_SHERD).weight(2))
 						.with(ItemEntry.builder(Items.BRICK))
 						.with(ItemEntry.builder(Items.EMERALD))
 						.with(ItemEntry.builder(Items.STICK))
@@ -47,10 +47,10 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.ARCHER_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.MINER_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.PRIZE_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.SKULL_POTTERY_SHARD))
+						.with(ItemEntry.builder(Items.ARCHER_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.MINER_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.PRIZE_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.SKULL_POTTERY_SHERD))
 						.with(ItemEntry.builder(Items.DIAMOND))
 						.with(ItemEntry.builder(Items.TNT))
 						.with(ItemEntry.builder(Items.GUNPOWDER))
@@ -58,18 +58,11 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 				)
 		);
 		exporter.accept(
-			LootTables.TRAIL_RUINS_ARCHAEOLOGY,
+			LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY,
 			LootTable.builder()
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.BURN_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.DANGER_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.FRIEND_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.HEART_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.HEARTBREAK_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.HOWL_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.SHEAF_POTTERY_SHARD))
 						.with(ItemEntry.builder(Items.EMERALD).weight(2))
 						.with(ItemEntry.builder(Items.WHEAT).weight(2))
 						.with(ItemEntry.builder(Items.WOODEN_HOE).weight(2))
@@ -101,6 +94,21 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 						.with(ItemEntry.builder(Items.FLOWER_POT))
 						.with(ItemEntry.builder(Items.STRING))
 						.with(ItemEntry.builder(Items.LEAD))
+				)
+		);
+		exporter.accept(
+			LootTables.TRAIL_RUINS_RARE_ARCHAEOLOGY,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.BURN_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.DANGER_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.FRIEND_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.HEART_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.HEARTBREAK_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.HOWL_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.SHEAF_POTTERY_SHERD))
 						.with(ItemEntry.builder(Items.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE))
 						.with(ItemEntry.builder(Items.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE))
 						.with(ItemEntry.builder(Items.SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE))
@@ -113,9 +121,9 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.ANGLER_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.SHELTER_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.SNORT_POTTERY_SHARD))
+						.with(ItemEntry.builder(Items.ANGLER_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.SHELTER_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.SNORT_POTTERY_SHERD))
 						.with(ItemEntry.builder(Items.SNIFFER_EGG))
 						.with(ItemEntry.builder(Items.IRON_AXE))
 						.with(ItemEntry.builder(Items.EMERALD).weight(2))
@@ -131,10 +139,10 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.BLADE_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.EXPLORER_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.MOURNER_POTTERY_SHARD))
-						.with(ItemEntry.builder(Items.PLENTY_POTTERY_SHARD))
+						.with(ItemEntry.builder(Items.BLADE_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.EXPLORER_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.MOURNER_POTTERY_SHERD))
+						.with(ItemEntry.builder(Items.PLENTY_POTTERY_SHERD))
 						.with(ItemEntry.builder(Items.IRON_AXE))
 						.with(ItemEntry.builder(Items.EMERALD).weight(2))
 						.with(ItemEntry.builder(Items.WHEAT).weight(2))

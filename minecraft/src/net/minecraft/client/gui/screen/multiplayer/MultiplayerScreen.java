@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.AddServerScreen;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.ConnectScreen;
@@ -23,7 +24,6 @@ import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -234,14 +234,14 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.multiplayerScreenTooltip = null;
-		this.renderBackground(matrices);
-		this.serverListWidget.render(matrices, mouseX, mouseY, delta);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 20, 16777215);
-		super.render(matrices, mouseX, mouseY, delta);
+		this.renderBackground(context);
+		this.serverListWidget.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
+		super.render(context, mouseX, mouseY, delta);
 		if (this.multiplayerScreenTooltip != null) {
-			this.renderTooltip(matrices, this.multiplayerScreenTooltip, mouseX, mouseY);
+			context.drawTooltip(this.textRenderer, this.multiplayerScreenTooltip, mouseX, mouseY);
 		}
 	}
 

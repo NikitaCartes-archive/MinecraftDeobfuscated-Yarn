@@ -300,12 +300,12 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	private boolean teleportTo(double x, double y, double z) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
 
-		while (mutable.getY() > this.world.getBottomY() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
+		while (mutable.getY() > this.world.getBottomY() && !this.world.getBlockState(mutable).blocksMovement()) {
 			mutable.move(Direction.DOWN);
 		}
 
 		BlockState blockState = this.world.getBlockState(mutable);
-		boolean bl = blockState.getMaterial().blocksMovement();
+		boolean bl = blockState.blocksMovement();
 		boolean bl2 = blockState.getFluidState().isIn(FluidTags.WATER);
 		if (bl && !bl2) {
 			Vec3d vec3d = this.getPos();

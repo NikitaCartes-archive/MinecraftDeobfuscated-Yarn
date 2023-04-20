@@ -401,7 +401,7 @@ public class Keyboard {
 				}
 			}
 
-			if (this.client.currentScreen == null || this.client.currentScreen.passEvents) {
+			if (this.client.currentScreen == null) {
 				InputUtil.Key key2 = InputUtil.fromKeyCode(key, scancode);
 				if (action == 0) {
 					KeyBinding.setKeyPressed(key2, false);
@@ -420,17 +420,15 @@ public class Keyboard {
 					}
 
 					boolean bl2x = false;
-					if (this.client.currentScreen == null) {
-						if (key == GLFW.GLFW_KEY_ESCAPE) {
-							boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3);
-							this.client.openPauseMenu(bl3);
-						}
+					if (key == GLFW.GLFW_KEY_ESCAPE) {
+						boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3);
+						this.client.openPauseMenu(bl3);
+					}
 
-						bl2x = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3) && this.processF3(key);
-						this.switchF3State |= bl2x;
-						if (key == GLFW.GLFW_KEY_F1) {
-							this.client.options.hudHidden = !this.client.options.hudHidden;
-						}
+					bl2x = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3) && this.processF3(key);
+					this.switchF3State |= bl2x;
+					if (key == GLFW.GLFW_KEY_F1) {
+						this.client.options.hudHidden = !this.client.options.hudHidden;
 					}
 
 					if (bl2x) {

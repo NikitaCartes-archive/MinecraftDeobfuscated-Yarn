@@ -74,6 +74,7 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -1502,6 +1503,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		return 0;
 	}
 
+	public void unlockCraftedRecipe(Recipe<?> recipe, List<ItemStack> ingredients) {
+	}
+
 	public void unlockRecipes(Identifier[] ids) {
 	}
 
@@ -1674,6 +1678,26 @@ public abstract class PlayerEntity extends LivingEntity {
 	protected void onSwimmingStart() {
 		if (!this.isSpectator()) {
 			super.onSwimmingStart();
+		}
+	}
+
+	@Override
+	protected void playStepSound(BlockPos pos, BlockState state) {
+		if (this.isTouchingWater()) {
+			this.playSwimSound();
+			this.playSecondaryStepSound(state);
+		} else {
+			BlockPos blockPos = this.getStepSoundPos(pos);
+			if (!pos.equals(blockPos)) {
+				BlockState blockState = this.world.getBlockState(blockPos);
+				if (blockState.isIn(BlockTags.COMBINATION_STEP_SOUND_BLOCKS)) {
+					this.playCombinationStepSounds(blockState, state);
+				} else {
+					super.playStepSound(blockPos, blockState);
+				}
+			} else {
+				super.playStepSound(pos, state);
+			}
 		}
 	}
 

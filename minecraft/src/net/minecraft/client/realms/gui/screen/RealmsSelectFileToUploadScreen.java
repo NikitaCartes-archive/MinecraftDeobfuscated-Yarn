@@ -10,11 +10,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.RealmsObjectSelectionList;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -99,11 +99,11 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		this.worldSelectionList.render(matrices, mouseX, mouseY, delta);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 13, 16777215);
-		super.render(matrices, mouseX, mouseY, delta);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		this.worldSelectionList.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 13, 16777215);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override
@@ -150,8 +150,8 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.renderItem(matrices, index, x, y);
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			this.renderItem(context, index, x, y);
 		}
 
 		@Override
@@ -160,7 +160,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			return true;
 		}
 
-		protected void renderItem(MatrixStack matrices, int index, int x, int y) {
+		protected void renderItem(DrawContext context, int index, int x, int y) {
 			String string;
 			if (this.displayName.isEmpty()) {
 				string = RealmsSelectFileToUploadScreen.WORLD_LANG + " " + (index + 1);
@@ -168,9 +168,9 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 				string = this.displayName;
 			}
 
-			RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, string, (float)(x + 2), (float)(y + 1), 16777215);
-			RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, this.nameAndLastPlayed, (float)(x + 2), (float)(y + 12), 8421504);
-			RealmsSelectFileToUploadScreen.this.textRenderer.draw(matrices, this.details, (float)(x + 2), (float)(y + 12 + 10), 8421504);
+			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, string, x + 2, y + 1, 16777215, false);
+			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, this.nameAndLastPlayed, x + 2, y + 12, 8421504, false);
+			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, this.details, x + 2, y + 12 + 10, 8421504, false);
 		}
 
 		@Override
@@ -206,8 +206,8 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderBackground(MatrixStack matrices) {
-			RealmsSelectFileToUploadScreen.this.renderBackground(matrices);
+		public void renderBackground(DrawContext context) {
+			RealmsSelectFileToUploadScreen.this.renderBackground(context);
 		}
 
 		public void setSelected(@Nullable RealmsSelectFileToUploadScreen.WorldListEntry worldListEntry) {

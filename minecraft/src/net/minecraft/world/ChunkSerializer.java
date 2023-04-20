@@ -121,9 +121,10 @@ public class ChunkSerializer {
 					readableContainer = new PalettedContainer<>(registry.getIndexedEntries(), registry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME);
 				}
 
-				ChunkSection chunkSection = new ChunkSection(k, palettedContainer, readableContainer);
+				ChunkSection chunkSection = new ChunkSection(palettedContainer, readableContainer);
 				chunkSections[l] = chunkSection;
-				poiStorage.initForPalette(chunkPos, chunkSection);
+				ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, k);
+				poiStorage.initForPalette(chunkSectionPos, chunkSection);
 			}
 
 			boolean bl4 = nbtCompound.contains("BlockLight", NbtElement.BYTE_ARRAY_TYPE);
@@ -186,7 +187,7 @@ public class ChunkSerializer {
 
 			ChunkStatus chunkStatus = ChunkStatus.byId(nbt.getString("Status"));
 			protoChunk.setStatus(chunkStatus);
-			if (chunkStatus.isAtLeast(ChunkStatus.FEATURES)) {
+			if (chunkStatus.isAtLeast(ChunkStatus.INITIALIZE_LIGHT)) {
 				protoChunk.setLightingProvider(lightingProvider);
 			}
 

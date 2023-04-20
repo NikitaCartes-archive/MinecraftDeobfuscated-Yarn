@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.Material;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.EntityType;
@@ -51,8 +50,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 			for (int t = -1; t <= 4; t++) {
 				for (int u = p; u <= q; u++) {
 					BlockPos blockPos2 = blockPos.add(s, t, u);
-					Material material = structureWorldAccess.getBlockState(blockPos2).getMaterial();
-					boolean bl = material.isSolid();
+					boolean bl = structureWorldAccess.getBlockState(blockPos2).isSolid();
 					if (t == -1 && !bl) {
 						return false;
 					}
@@ -75,9 +73,9 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						BlockPos blockPos2x = blockPos.add(s, t, u);
 						BlockState blockState = structureWorldAccess.getBlockState(blockPos2x);
 						if (s == k || t == -1 || u == p || s == l || t == 4 || u == q) {
-							if (blockPos2x.getY() >= structureWorldAccess.getBottomY() && !structureWorldAccess.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
+							if (blockPos2x.getY() >= structureWorldAccess.getBottomY() && !structureWorldAccess.getBlockState(blockPos2x.down()).isSolid()) {
 								structureWorldAccess.setBlockState(blockPos2x, AIR, Block.NOTIFY_LISTENERS);
-							} else if (blockState.getMaterial().isSolid() && !blockState.isOf(Blocks.CHEST)) {
+							} else if (blockState.isSolid() && !blockState.isOf(Blocks.CHEST)) {
 								if (t == -1 && random.nextInt(4) != 0) {
 									this.setBlockStateIf(structureWorldAccess, blockPos2x, Blocks.MOSSY_COBBLESTONE.getDefaultState(), predicate);
 								} else {
@@ -101,7 +99,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						int x = 0;
 
 						for (Direction direction : Direction.Type.HORIZONTAL) {
-							if (structureWorldAccess.getBlockState(blockPos3.offset(direction)).getMaterial().isSolid()) {
+							if (structureWorldAccess.getBlockState(blockPos3.offset(direction)).isSolid()) {
 								x++;
 							}
 						}

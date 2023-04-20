@@ -1,15 +1,13 @@
 package net.minecraft.client.toast;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.OrderedText;
 import net.minecraft.util.math.MathHelper;
@@ -25,28 +23,27 @@ public class AdvancementToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
-		RenderSystem.setShaderTexture(0, TEXTURE);
+	public Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime) {
 		AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
-		DrawableHelper.drawTexture(matrices, 0, 0, 0, 0, this.getWidth(), this.getHeight());
+		context.drawTexture(TEXTURE, 0, 0, 0, 0, this.getWidth(), this.getHeight());
 		if (advancementDisplay != null) {
 			List<OrderedText> list = manager.getClient().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
 			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;
 			if (list.size() == 1) {
-				manager.getClient().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0F, 7.0F, i | 0xFF000000);
-				manager.getClient().textRenderer.draw(matrices, (OrderedText)list.get(0), 30.0F, 18.0F, -1);
+				context.drawText(manager.getClient().textRenderer, advancementDisplay.getFrame().getToastText(), 30, 7, i | 0xFF000000, false);
+				context.drawText(manager.getClient().textRenderer, (OrderedText)list.get(0), 30, 18, -1, false);
 			} else {
 				int j = 1500;
 				float f = 300.0F;
 				if (startTime < 1500L) {
 					int k = MathHelper.floor(MathHelper.clamp((float)(1500L - startTime) / 300.0F, 0.0F, 1.0F) * 255.0F) << 24 | 67108864;
-					manager.getClient().textRenderer.draw(matrices, advancementDisplay.getFrame().getToastText(), 30.0F, 11.0F, i | k);
+					context.drawText(manager.getClient().textRenderer, advancementDisplay.getFrame().getToastText(), 30, 11, i | k, false);
 				} else {
 					int k = MathHelper.floor(MathHelper.clamp((float)(startTime - 1500L) / 300.0F, 0.0F, 1.0F) * 252.0F) << 24 | 67108864;
 					int l = this.getHeight() / 2 - list.size() * 9 / 2;
 
 					for (OrderedText orderedText : list) {
-						manager.getClient().textRenderer.draw(matrices, orderedText, 30.0F, (float)l, 16777215 | k);
+						context.drawText(manager.getClient().textRenderer, orderedText, 30, l, 16777215 | k, false);
 						l += 9;
 					}
 				}
@@ -59,7 +56,7 @@ public class AdvancementToast implements Toast {
 				}
 			}
 
-			manager.getClient().getItemRenderer().renderInGui(matrices, advancementDisplay.getIcon(), 8, 8);
+			context.drawItemWithoutEntity(advancementDisplay.getIcon(), 8, 8);
 			return (double)startTime >= 5000.0 * manager.getNotificationDisplayTimeMultiplier() ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		} else {
 			return Toast.Visibility.HIDE;

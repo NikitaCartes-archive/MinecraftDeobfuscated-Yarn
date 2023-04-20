@@ -17,7 +17,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 
-public class AttachedStemBlock extends PlantBlock implements Crop {
+public class AttachedStemBlock extends PlantBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	protected static final float field_30995 = 2.0F;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(

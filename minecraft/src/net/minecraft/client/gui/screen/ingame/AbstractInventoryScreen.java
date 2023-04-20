@@ -1,15 +1,14 @@
 package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.Ordering;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffectUtil;
@@ -26,9 +25,9 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.render(matrices, mouseX, mouseY, delta);
-		this.drawStatusEffects(matrices, mouseX, mouseY);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
+		this.drawStatusEffects(context, mouseX, mouseY);
 	}
 
 	public boolean hideStatusEffectHud() {
@@ -37,7 +36,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 		return j >= 32;
 	}
 
-	private void drawStatusEffects(MatrixStack matrices, int mouseX, int mouseY) {
+	private void drawStatusEffects(DrawContext context, int mouseX, int mouseY) {
 		int i = this.x + this.backgroundWidth + 2;
 		int j = this.width - i;
 		Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
@@ -49,10 +48,10 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 			}
 
 			Iterable<StatusEffectInstance> iterable = Ordering.natural().sortedCopy(collection);
-			this.drawStatusEffectBackgrounds(matrices, i, k, iterable, bl);
-			this.drawStatusEffectSprites(matrices, i, k, iterable, bl);
+			this.drawStatusEffectBackgrounds(context, i, k, iterable, bl);
+			this.drawStatusEffectSprites(context, i, k, iterable, bl);
 			if (bl) {
-				this.drawStatusEffectDescriptions(matrices, i, k, iterable);
+				this.drawStatusEffectDescriptions(context, i, k, iterable);
 			} else if (mouseX >= i && mouseX <= i + 33) {
 				int l = this.y;
 				StatusEffectInstance statusEffectInstance = null;
@@ -67,48 +66,46 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 
 				if (statusEffectInstance != null) {
 					List<Text> list = List.of(this.getStatusEffectDescription(statusEffectInstance), StatusEffectUtil.durationToString(statusEffectInstance, 1.0F));
-					this.renderTooltip(matrices, list, Optional.empty(), mouseX, mouseY);
+					context.drawTooltip(this.textRenderer, list, Optional.empty(), mouseX, mouseY);
 				}
 			}
 		}
 	}
 
-	private void drawStatusEffectBackgrounds(MatrixStack matrices, int x, int height, Iterable<StatusEffectInstance> statusEffects, boolean wide) {
-		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
+	private void drawStatusEffectBackgrounds(DrawContext context, int x, int height, Iterable<StatusEffectInstance> statusEffects, boolean wide) {
 		int i = this.y;
 
 		for (StatusEffectInstance statusEffectInstance : statusEffects) {
 			if (wide) {
-				drawTexture(matrices, x, i, 0, 166, 120, 32);
+				context.drawTexture(BACKGROUND_TEXTURE, x, i, 0, 166, 120, 32);
 			} else {
-				drawTexture(matrices, x, i, 0, 198, 32, 32);
+				context.drawTexture(BACKGROUND_TEXTURE, x, i, 0, 198, 32, 32);
 			}
 
 			i += height;
 		}
 	}
 
-	private void drawStatusEffectSprites(MatrixStack matrices, int x, int height, Iterable<StatusEffectInstance> statusEffects, boolean wide) {
+	private void drawStatusEffectSprites(DrawContext context, int x, int height, Iterable<StatusEffectInstance> statusEffects, boolean wide) {
 		StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
 		int i = this.y;
 
 		for (StatusEffectInstance statusEffectInstance : statusEffects) {
 			StatusEffect statusEffect = statusEffectInstance.getEffectType();
 			Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
-			RenderSystem.setShaderTexture(0, sprite.getAtlasId());
-			drawSprite(matrices, x + (wide ? 6 : 7), i + 7, 0, 18, 18, sprite);
+			context.drawSprite(x + (wide ? 6 : 7), i + 7, 0, 18, 18, sprite);
 			i += height;
 		}
 	}
 
-	private void drawStatusEffectDescriptions(MatrixStack matrices, int x, int height, Iterable<StatusEffectInstance> statusEffects) {
+	private void drawStatusEffectDescriptions(DrawContext context, int x, int height, Iterable<StatusEffectInstance> statusEffects) {
 		int i = this.y;
 
 		for (StatusEffectInstance statusEffectInstance : statusEffects) {
 			Text text = this.getStatusEffectDescription(statusEffectInstance);
-			this.textRenderer.drawWithShadow(matrices, text, (float)(x + 10 + 18), (float)(i + 6), 16777215);
+			context.drawTextWithShadow(this.textRenderer, text, x + 10 + 18, i + 6, 16777215);
 			Text text2 = StatusEffectUtil.durationToString(statusEffectInstance, 1.0F);
-			this.textRenderer.drawWithShadow(matrices, text2, (float)(x + 10 + 18), (float)(i + 6 + 10), 8355711);
+			context.drawTextWithShadow(this.textRenderer, text2, x + 10 + 18, i + 6 + 10, 8355711);
 			i += height;
 		}
 	}

@@ -5,7 +5,7 @@ import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -82,18 +82,18 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.render(matrices, mouseX, mouseY, delta);
-		this.renderSlotTooltip(matrices, mouseX, mouseY);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
+		this.renderSlotTooltip(context, mouseX, mouseY);
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		super.drawBackground(matrices, delta, mouseX, mouseY);
-		this.templateSlotIcon.render(this.handler, matrices, delta, this.x, this.y);
-		this.baseSlotIcon.render(this.handler, matrices, delta, this.x, this.y);
-		this.additionsSlotIcon.render(this.handler, matrices, delta, this.x, this.y);
-		InventoryScreen.drawEntity(matrices, this.x + 141, this.y + 75, 25, ARMOR_STAND_ROTATION, null, this.armorStand);
+	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+		super.drawBackground(context, delta, mouseX, mouseY);
+		this.templateSlotIcon.render(this.handler, context, delta, this.x, this.y);
+		this.baseSlotIcon.render(this.handler, context, delta, this.x, this.y);
+		this.additionsSlotIcon.render(this.handler, context, delta, this.x, this.y);
+		InventoryScreen.drawEntity(context, this.x + 141, this.y + 75, 25, ARMOR_STAND_ROTATION, null, this.armorStand);
 	}
 
 	@Override
@@ -121,13 +121,13 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 	}
 
 	@Override
-	protected void drawInvalidRecipeArrow(MatrixStack matrices, int x, int y) {
+	protected void drawInvalidRecipeArrow(DrawContext context, int x, int y) {
 		if (this.hasInvalidRecipe()) {
-			drawTexture(matrices, x + 65, y + 46, this.backgroundWidth, 0, 28, 21);
+			context.drawTexture(TEXTURE, x + 65, y + 46, this.backgroundWidth, 0, 28, 21);
 		}
 	}
 
-	private void renderSlotTooltip(MatrixStack matrices, int mouseX, int mouseY) {
+	private void renderSlotTooltip(DrawContext context, int mouseX, int mouseY) {
 		Optional<Text> optional = Optional.empty();
 		if (this.hasInvalidRecipe() && this.isPointWithinBounds(65, 46, 28, 21, (double)mouseX, (double)mouseY)) {
 			optional = Optional.of(ERROR_TOOLTIP);
@@ -149,7 +149,7 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 			}
 		}
 
-		optional.ifPresent(text -> this.renderOrderedTooltip(matrices, this.textRenderer.wrapLines(text, 115), mouseX, mouseY));
+		optional.ifPresent(text -> context.drawOrderedTooltip(this.textRenderer, this.textRenderer.wrapLines(text, 115), mouseX, mouseY));
 	}
 
 	private boolean hasInvalidRecipe() {

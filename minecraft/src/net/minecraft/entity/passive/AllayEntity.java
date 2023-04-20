@@ -63,13 +63,13 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.EntityPositionSource;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.PositionSource;
+import net.minecraft.world.event.Vibrations;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventListener;
-import net.minecraft.world.event.listener.VibrationListener;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-public class AllayEntity extends PathAwareEntity implements InventoryOwner {
+public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibrations {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final Vec3i ITEM_PICKUP_RANGE_EXPANDER = new Vec3i(1, 1, 1);
 	private static final int field_39461 = 5;
@@ -101,8 +101,9 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	public static final ImmutableList<Float> THROW_SOUND_PITCHES = ImmutableList.of(
 		0.5625F, 0.625F, 0.75F, 0.9375F, 1.0F, 1.0F, 1.125F, 1.25F, 1.5F, 1.875F, 2.0F, 2.25F, 2.5F, 3.0F, 3.75F, 4.0F
 	);
-	private final EntityGameEventHandler<VibrationListener> gameEventHandler;
-	private final VibrationListener.Callback listenerCallback;
+	private final EntityGameEventHandler<Vibrations.VibrationListener> gameEventHandler;
+	private Vibrations.ListenerData vibrationListenerData;
+	private final Vibrations.Callback vibrationCallback;
 	private final EntityGameEventHandler<AllayEntity.JukeboxEventListener> jukeboxEventHandler;
 	private final SimpleInventory inventory = new SimpleInventory(1);
 	@Nullable
@@ -118,10 +119,12 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		super(entityType, world);
 		this.moveControl = new FlightMoveControl(this, 20, true);
 		this.setCanPickUpLoot(this.canPickUpLoot());
-		PositionSource positionSource = new EntityPositionSource(this, this.getStandingEyeHeight());
-		this.listenerCallback = new AllayEntity.VibrationListenerCallback();
-		this.gameEventHandler = new EntityGameEventHandler<>(new VibrationListener(positionSource, this.listenerCallback));
-		this.jukeboxEventHandler = new EntityGameEventHandler<>(new AllayEntity.JukeboxEventListener(positionSource, GameEvent.JUKEBOX_PLAY.getRange()));
+		this.vibrationCallback = new AllayEntity.VibrationCallback();
+		this.vibrationListenerData = new Vibrations.ListenerData();
+		this.gameEventHandler = new EntityGameEventHandler<>(new Vibrations.VibrationListener(this));
+		this.jukeboxEventHandler = new EntityGameEventHandler<>(
+			new AllayEntity.JukeboxEventListener(this.vibrationCallback.getPositionSource(), GameEvent.JUKEBOX_PLAY.getRange())
+		);
 	}
 
 	@Override
@@ -283,7 +286,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 				this.field_39474 = 0.0F;
 			}
 		} else {
-			this.gameEventHandler.getListener().tick(this.world);
+			Vibrations.Ticker.tick(this.world, this.vibrationListenerData, this.vibrationCallback);
 			if (this.isPanicking()) {
 				this.setDancing(false);
 			}
@@ -477,8 +480,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 	public void writeCustomDataToNbt(NbtCompound nbt) {
 		super.writeCustomDataToNbt(nbt);
 		this.writeInventory(nbt);
-		VibrationListener.createCodec(this.listenerCallback)
-			.encodeStart(NbtOps.INSTANCE, this.gameEventHandler.getListener())
+		Vibrations.ListenerData.CODEC
+			.encodeStart(NbtOps.INSTANCE, this.vibrationListenerData)
 			.resultOrPartial(LOGGER::error)
 			.ifPresent(nbtElement -> nbt.put("listener", nbtElement));
 		nbt.putLong("DuplicationCooldown", this.duplicationCooldown);
@@ -490,10 +493,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		super.readCustomDataFromNbt(nbt);
 		this.readInventory(nbt);
 		if (nbt.contains("listener", NbtElement.COMPOUND_TYPE)) {
-			VibrationListener.createCodec(this.listenerCallback)
+			Vibrations.ListenerData.CODEC
 				.parse(new Dynamic<>(NbtOps.INSTANCE, nbt.getCompound("listener")))
 				.resultOrPartial(LOGGER::error)
-				.ifPresent(vibrationListener -> this.gameEventHandler.setListener(vibrationListener, this.world));
+				.ifPresent(listenerData -> this.vibrationListenerData = listenerData);
 		}
 
 		this.duplicationCooldown = (long)nbt.getInt("DuplicationCooldown");
@@ -573,6 +576,16 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		this.world.addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
 	}
 
+	@Override
+	public Vibrations.ListenerData getVibrationListenerData() {
+		return this.vibrationListenerData;
+	}
+
+	@Override
+	public Vibrations.Callback getVibrationCallback() {
+		return this.vibrationCallback;
+	}
+
 	class JukeboxEventListener implements GameEventListener {
 		private final PositionSource positionSource;
 		private final int range;
@@ -606,11 +619,22 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		}
 	}
 
-	class VibrationListenerCallback implements VibrationListener.Callback {
+	class VibrationCallback implements Vibrations.Callback {
 		private static final int RANGE = 16;
+		private final PositionSource positionSource = new EntityPositionSource(AllayEntity.this, AllayEntity.this.getStandingEyeHeight());
 
 		@Override
-		public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
+		public int getRange() {
+			return 16;
+		}
+
+		@Override
+		public PositionSource getPositionSource() {
+			return this.positionSource;
+		}
+
+		@Override
+		public boolean accepts(ServerWorld world, BlockPos pos, GameEvent event, GameEvent.Emitter emitter) {
 			if (AllayEntity.this.isAiDisabled()) {
 				return false;
 			} else {
@@ -625,17 +649,10 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner {
 		}
 
 		@Override
-		public void accept(
-			ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity, @Nullable Entity sourceEntity, float distance
-		) {
+		public void accept(ServerWorld world, BlockPos pos, GameEvent event, @Nullable Entity sourceEntity, @Nullable Entity entity, float distance) {
 			if (event == GameEvent.NOTE_BLOCK_PLAY) {
 				AllayBrain.rememberNoteBlock(AllayEntity.this, new BlockPos(pos));
 			}
-		}
-
-		@Override
-		public int getRange() {
-			return 16;
 		}
 
 		@Override

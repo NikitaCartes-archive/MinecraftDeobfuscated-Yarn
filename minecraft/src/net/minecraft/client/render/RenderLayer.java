@@ -698,6 +698,8 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormats.POSITION_COLOR,
 		VertexFormat.DrawMode.TRIANGLE_STRIP,
 		131072,
+		false,
+		true,
 		RenderLayer.MultiPhaseParameters.builder().program(COLOR_PROGRAM).layering(VIEW_OFFSET_Z_LAYERING).transparency(TRANSLUCENT_TRANSPARENCY).build(false)
 	);
 	private static final RenderLayer.MultiPhase DEBUG_QUADS = of(
@@ -705,7 +707,23 @@ public abstract class RenderLayer extends RenderPhase {
 		VertexFormats.POSITION_COLOR,
 		VertexFormat.DrawMode.QUADS,
 		131072,
+		false,
+		true,
 		RenderLayer.MultiPhaseParameters.builder().program(COLOR_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).cull(DISABLE_CULLING).build(false)
+	);
+	private static final RenderLayer.MultiPhase DEBUG_SECTION_QUADS = of(
+		"debug_section_quads",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.QUADS,
+		131072,
+		false,
+		true,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(COLOR_PROGRAM)
+			.layering(VIEW_OFFSET_Z_LAYERING)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.cull(ENABLE_CULLING)
+			.build(false)
 	);
 	private static final ImmutableList<RenderLayer> BLOCK_LAYERS = ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent(), getTripwire());
 	private final VertexFormat vertexFormat;
@@ -979,6 +997,10 @@ public abstract class RenderLayer extends RenderPhase {
 
 	public static RenderLayer getDebugQuads() {
 		return DEBUG_QUADS;
+	}
+
+	public static RenderLayer getDebugSectionQuads() {
+		return DEBUG_SECTION_QUADS;
 	}
 
 	public RenderLayer(

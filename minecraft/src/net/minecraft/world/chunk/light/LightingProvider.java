@@ -104,6 +104,18 @@ public class LightingProvider implements LightingView {
 		return "n/a";
 	}
 
+	public int getDebugLevel(LightType lightType, ChunkSectionPos pos) {
+		if (lightType == LightType.BLOCK) {
+			if (this.blockLightProvider != null) {
+				return this.blockLightProvider.getDebugLevel(pos.asLong());
+			}
+		} else if (this.skyLightProvider != null) {
+			return this.skyLightProvider.getDebugLevel(pos.asLong());
+		}
+
+		return 2;
+	}
+
 	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean nonEdge) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {

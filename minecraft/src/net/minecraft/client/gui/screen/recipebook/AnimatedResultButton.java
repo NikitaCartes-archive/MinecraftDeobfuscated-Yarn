@@ -1,16 +1,15 @@
 package net.minecraft.client.gui.screen.recipebook;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
@@ -58,13 +57,12 @@ public class AnimatedResultButton extends ClickableWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (!Screen.hasControlDown()) {
 			this.time += delta;
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 		int i = 29;
 		if (!this.resultCollection.hasCraftableRecipes()) {
 			i += 25;
@@ -78,26 +76,26 @@ public class AnimatedResultButton extends ClickableWidget {
 		boolean bl = this.bounce > 0.0F;
 		if (bl) {
 			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
-			matrices.push();
-			matrices.translate((float)(this.getX() + 8), (float)(this.getY() + 12), 0.0F);
-			matrices.scale(f, f, 1.0F);
-			matrices.translate((float)(-(this.getX() + 8)), (float)(-(this.getY() + 12)), 0.0F);
+			context.getMatrices().push();
+			context.getMatrices().translate((float)(this.getX() + 8), (float)(this.getY() + 12), 0.0F);
+			context.getMatrices().scale(f, f, 1.0F);
+			context.getMatrices().translate((float)(-(this.getX() + 8)), (float)(-(this.getY() + 12)), 0.0F);
 			this.bounce -= delta;
 		}
 
-		drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
+		context.drawTexture(BACKGROUND_TEXTURE, this.getX(), this.getY(), i, j, this.width, this.height);
 		List<Recipe<?>> list = this.getResults();
 		this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
 		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput(this.resultCollection.getRegistryManager());
 		int k = 4;
 		if (this.resultCollection.hasSingleOutput() && this.getResults().size() > 1) {
-			minecraftClient.getItemRenderer().renderInGuiWithOverrides(matrices, itemStack, this.getX() + k + 1, this.getY() + k + 1, 0, 10);
+			context.drawItem(itemStack, this.getX() + k + 1, this.getY() + k + 1, 0, 10);
 			k--;
 		}
 
-		minecraftClient.getItemRenderer().renderInGui(matrices, itemStack, this.getX() + k, this.getY() + k);
+		context.drawItemWithoutEntity(itemStack, this.getX() + k, this.getY() + k);
 		if (bl) {
-			matrices.pop();
+			context.getMatrices().pop();
 		}
 	}
 
@@ -119,9 +117,9 @@ public class AnimatedResultButton extends ClickableWidget {
 		return (Recipe<?>)list.get(this.currentResultIndex);
 	}
 
-	public List<Text> getTooltip(Screen screen) {
+	public List<Text> getTooltip() {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput(this.resultCollection.getRegistryManager());
-		List<Text> list = Lists.<Text>newArrayList(screen.getTooltipFromItem(itemStack));
+		List<Text> list = Lists.<Text>newArrayList(Screen.getTooltipFromItem(MinecraftClient.getInstance(), itemStack));
 		if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
 			list.add(MORE_RECIPES_TEXT);
 		}

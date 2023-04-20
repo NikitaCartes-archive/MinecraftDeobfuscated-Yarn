@@ -18,6 +18,7 @@ import net.minecraft.entity.attribute.DefaultAttributeRegistry;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.command.CommandManager;
@@ -48,6 +49,7 @@ public class Bootstrap {
 					DispenserBehavior.registerDefaults();
 					CauldronBehavior.registerBehavior();
 					Registries.bootstrap();
+					ItemGroups.collect();
 					setOutputStreams();
 				}
 			}

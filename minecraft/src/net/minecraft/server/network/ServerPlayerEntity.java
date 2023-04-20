@@ -1089,6 +1089,11 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
+	public void unlockCraftedRecipe(Recipe<?> recipe, List<ItemStack> ingredients) {
+		Criteria.RECIPE_CRAFTED.trigger(this, recipe.getId(), ingredients);
+	}
+
+	@Override
 	public void unlockRecipes(Identifier[] ids) {
 		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 
@@ -1718,7 +1723,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Nullable
 	public PublicPlayerSession getSession() {
-		return this.session;
+		return this.session != null && this.session.isKeyExpired() ? null : this.session;
 	}
 
 	@Override

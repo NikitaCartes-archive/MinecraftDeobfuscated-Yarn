@@ -294,65 +294,71 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	private CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> getRegion(ChunkPos centerChunk, int margin, IntFunction<ChunkStatus> distanceToStatus) {
-		List<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> list = new ArrayList();
-		List<ChunkHolder> list2 = new ArrayList();
-		int i = centerChunk.x;
-		int j = centerChunk.z;
+	private CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> getRegion(ChunkHolder centerChunk, int margin, IntFunction<ChunkStatus> distanceToStatus) {
+		if (margin == 0) {
+			ChunkStatus chunkStatus = (ChunkStatus)distanceToStatus.apply(0);
+			return centerChunk.getChunkAt(chunkStatus, this).thenApply(chunk -> chunk.mapLeft(List::of));
+		} else {
+			List<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> list = new ArrayList();
+			List<ChunkHolder> list2 = new ArrayList();
+			ChunkPos chunkPos = centerChunk.getPos();
+			int i = chunkPos.x;
+			int j = chunkPos.z;
 
-		for (int k = -margin; k <= margin; k++) {
-			for (int l = -margin; l <= margin; l++) {
-				int m = Math.max(Math.abs(l), Math.abs(k));
-				final ChunkPos chunkPos = new ChunkPos(i + l, j + k);
-				long n = chunkPos.toLong();
-				ChunkHolder chunkHolder = this.getCurrentChunkHolder(n);
-				if (chunkHolder == null) {
-					return CompletableFuture.completedFuture(Either.right(new ChunkHolder.Unloaded() {
-						public String toString() {
-							return "Unloaded " + chunkPos;
-						}
-					}));
+			for (int k = -margin; k <= margin; k++) {
+				for (int l = -margin; l <= margin; l++) {
+					int m = Math.max(Math.abs(l), Math.abs(k));
+					final ChunkPos chunkPos2 = new ChunkPos(i + l, j + k);
+					long n = chunkPos2.toLong();
+					ChunkHolder chunkHolder = this.getCurrentChunkHolder(n);
+					if (chunkHolder == null) {
+						return CompletableFuture.completedFuture(Either.right(new ChunkHolder.Unloaded() {
+							public String toString() {
+								return "Unloaded " + chunkPos2;
+							}
+						}));
+					}
+
+					ChunkStatus chunkStatus2 = (ChunkStatus)distanceToStatus.apply(m);
+					CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getChunkAt(chunkStatus2, this);
+					list2.add(chunkHolder);
+					list.add(completableFuture);
 				}
-
-				ChunkStatus chunkStatus = (ChunkStatus)distanceToStatus.apply(m);
-				CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getChunkAt(chunkStatus, this);
-				list2.add(chunkHolder);
-				list.add(completableFuture);
-			}
-		}
-
-		CompletableFuture<List<Either<Chunk, ChunkHolder.Unloaded>>> completableFuture2 = Util.combineSafe(list);
-		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture3 = completableFuture2.thenApply(chunks -> {
-			List<Chunk> listx = Lists.<Chunk>newArrayList();
-			int l = 0;
-
-			for (final Either<Chunk, ChunkHolder.Unloaded> either : chunks) {
-				if (either == null) {
-					throw this.crash(new IllegalStateException("At least one of the chunk futures were null"), "n/a");
-				}
-
-				Optional<Chunk> optional = either.left();
-				if (!optional.isPresent()) {
-					final int mx = l;
-					return Either.right(new ChunkHolder.Unloaded() {
-						public String toString() {
-							return "Unloaded " + new ChunkPos(i + mx % (margin * 2 + 1), j + mx / (margin * 2 + 1)) + " " + either.right().get();
-						}
-					});
-				}
-
-				listx.add((Chunk)optional.get());
-				l++;
 			}
 
-			return Either.left(listx);
-		});
+			CompletableFuture<List<Either<Chunk, ChunkHolder.Unloaded>>> completableFuture2 = Util.combineSafe(list);
+			CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture3 = completableFuture2.thenApply(chunks -> {
+				List<Chunk> listx = Lists.<Chunk>newArrayList();
+				int l = 0;
 
-		for (ChunkHolder chunkHolder2 : list2) {
-			chunkHolder2.combineSavingFuture("getChunkRangeFuture " + centerChunk + " " + margin, completableFuture3);
+				for (final Either<Chunk, ChunkHolder.Unloaded> either : chunks) {
+					if (either == null) {
+						throw this.crash(new IllegalStateException("At least one of the chunk futures were null"), "n/a");
+					}
+
+					Optional<Chunk> optional = either.left();
+					if (!optional.isPresent()) {
+						final int mx = l;
+						return Either.right(new ChunkHolder.Unloaded() {
+							public String toString() {
+								return "Unloaded " + new ChunkPos(i + mx % (margin * 2 + 1), j + mx / (margin * 2 + 1)) + " " + either.right().get();
+							}
+						});
+					}
+
+					listx.add((Chunk)optional.get());
+					l++;
+				}
+
+				return Either.left(listx);
+			});
+
+			for (ChunkHolder chunkHolder2 : list2) {
+				chunkHolder2.combineSavingFuture("getChunkRangeFuture " + chunkPos + " " + margin, completableFuture3);
+			}
+
+			return completableFuture3;
 		}
-
-		return completableFuture3;
 	}
 
 	public CrashException crash(IllegalStateException exception, String details) {
@@ -383,8 +389,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return new CrashException(crashReport);
 	}
 
-	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkEntitiesTickable(ChunkPos pos) {
-		return this.getRegion(pos, 2, distance -> ChunkStatus.FULL)
+	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkEntitiesTickable(ChunkHolder chunk) {
+		return this.getRegion(chunk, 2, distance -> ChunkStatus.FULL)
 			.thenApplyAsync(either -> either.mapLeft(chunks -> (WorldChunk)chunks.get(chunks.size() / 2)), this.mainThreadExecutor);
 	}
 
@@ -568,16 +574,18 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.LIGHT), chunkPos);
 			}
 
-			Optional<Chunk> optional = ((Either)holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
-			if (optional.isPresent() && ((Chunk)optional.get()).getStatus().isAtLeast(requiredStatus)) {
-				CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runLoadTask(
-					this.world, this.structureTemplateManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), (Chunk)optional.get()
-				);
-				this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
-				return completableFuture;
-			} else {
-				return this.upgradeChunk(holder, requiredStatus);
+			if (!requiredStatus.shouldAlwaysUpgrade()) {
+				Optional<Chunk> optional = ((Either)holder.getChunkAt(requiredStatus.getPrevious(), this).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
+				if (optional.isPresent() && ((Chunk)optional.get()).getStatus().isAtLeast(requiredStatus)) {
+					CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = requiredStatus.runLoadTask(
+						this.world, this.structureTemplateManager, this.lightingProvider, chunk -> this.convertToFullChunk(holder), (Chunk)optional.get()
+					);
+					this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
+					return completableFuture;
+				}
 			}
+
+			return this.upgradeChunk(holder, requiredStatus);
 		}
 	}
 
@@ -637,7 +645,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> upgradeChunk(ChunkHolder holder, ChunkStatus requiredStatus) {
 		ChunkPos chunkPos = holder.getPos();
 		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(
-			chunkPos, requiredStatus.getTaskMargin(), distance -> this.getRequiredStatusForGeneration(requiredStatus, distance)
+			holder, requiredStatus.getTaskMargin(), distance -> this.getRequiredStatusForGeneration(requiredStatus, distance)
 		);
 		this.world.getProfiler().visit((Supplier<String>)(() -> "chunkGenerate " + requiredStatus.getId()));
 		Executor executor = task -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task));
@@ -645,16 +653,18 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			either -> either.map(
 					chunks -> {
 						try {
-							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = requiredStatus.runGenerationTask(
-								executor,
-								this.world,
-								this.chunkGenerator,
-								this.structureTemplateManager,
-								this.lightingProvider,
-								chunk -> this.convertToFullChunk(holder),
-								chunks,
-								false
-							);
+							Chunk chunk = (Chunk)chunks.get(chunks.size() / 2);
+							CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex;
+							if (chunk.getStatus().isAtLeast(requiredStatus)) {
+								completableFuturex = requiredStatus.runLoadTask(
+									this.world, this.structureTemplateManager, this.lightingProvider, chunkx -> this.convertToFullChunk(holder), chunk
+								);
+							} else {
+								completableFuturex = requiredStatus.runGenerationTask(
+									executor, this.world, this.chunkGenerator, this.structureTemplateManager, this.lightingProvider, chunkx -> this.convertToFullChunk(holder), chunks
+								);
+							}
+
 							this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
 							return completableFuturex;
 						} catch (Exception var9) {
@@ -734,12 +744,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}, task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(task, chunkHolder.getPos().toLong(), chunkHolder::getLevel)));
 	}
 
-	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkTickable(ChunkHolder holder) {
-		ChunkPos chunkPos = holder.getPos();
-		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(chunkPos, 1, i -> ChunkStatus.FULL);
+	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkTickable(ChunkHolder chunkHolder) {
+		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(chunkHolder, 1, i -> ChunkStatus.FULL);
 		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(
 				either -> either.mapLeft(list -> (WorldChunk)list.get(list.size() / 2)),
-				task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task))
+				task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, task))
 			)
 			.thenApplyAsync(either -> either.ifLeft(chunk -> {
 					chunk.runPostProcessing();
@@ -748,13 +757,13 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		completableFuture2.thenAcceptAsync(either -> either.ifLeft(chunk -> {
 				this.totalChunksLoadedCount.getAndIncrement();
 				MutableObject<ChunkDataS2CPacket> mutableObject = new MutableObject<>();
-				this.getPlayersWatchingChunk(chunkPos, false).forEach(player -> this.sendChunkDataPackets(player, mutableObject, chunk));
-			}), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task)));
+				this.getPlayersWatchingChunk(chunkHolder.getPos(), false).forEach(player -> this.sendChunkDataPackets(player, mutableObject, chunk));
+			}), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, task)));
 		return completableFuture2;
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkAccessible(ChunkHolder holder) {
-		return this.getRegion(holder.getPos(), 1, ChunkStatus::byDistanceFromFull)
+		return this.getRegion(holder, 1, ChunkStatus::byDistanceFromFull)
 			.thenApplyAsync(
 				either -> either.mapLeft(chunks -> (WorldChunk)chunks.get(chunks.size() / 2)),
 				task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task))

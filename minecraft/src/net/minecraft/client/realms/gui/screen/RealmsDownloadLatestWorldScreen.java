@@ -11,13 +11,13 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.FileDownload;
 import net.minecraft.client.realms.SizeUnit;
 import net.minecraft.client.realms.dto.WorldDownload;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
@@ -146,46 +146,46 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.downloadTitle, this.width / 2, 20, 16777215);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.status, this.width / 2, 50, 16777215);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.downloadTitle, this.width / 2, 20, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.status, this.width / 2, 50, 16777215);
 		if (this.showDots) {
-			this.drawDots(matrices);
+			this.drawDots(context);
 		}
 
 		if (this.downloadStatus.bytesWritten != 0L && !this.cancelled) {
-			this.drawProgressBar(matrices);
-			this.drawDownloadSpeed(matrices);
+			this.drawProgressBar(context);
+			this.drawDownloadSpeed(context);
 		}
 
 		if (this.downloadError != null) {
-			drawCenteredTextWithShadow(matrices, this.textRenderer, this.downloadError, this.width / 2, 110, 16711680);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.downloadError, this.width / 2, 110, 16711680);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
-	private void drawDots(MatrixStack matrices) {
+	private void drawDots(DrawContext context) {
 		int i = this.textRenderer.getWidth(this.status);
 		if (this.animTick % 10 == 0) {
 			this.dotIndex++;
 		}
 
-		this.textRenderer.draw(matrices, DOTS[this.dotIndex % DOTS.length], (float)(this.width / 2 + i / 2 + 5), 50.0F, 16777215);
+		context.drawText(this.textRenderer, DOTS[this.dotIndex % DOTS.length], this.width / 2 + i / 2 + 5, 50, 16777215, false);
 	}
 
-	private void drawProgressBar(MatrixStack matrices) {
+	private void drawProgressBar(DrawContext context) {
 		double d = Math.min((double)this.downloadStatus.bytesWritten / (double)this.downloadStatus.totalBytes, 1.0);
 		this.progress = String.format(Locale.ROOT, "%.1f", d * 100.0);
 		int i = (this.width - 200) / 2;
 		int j = i + (int)Math.round(200.0 * d);
-		fill(matrices, i - 1, 79, j + 1, 96, -2501934);
-		fill(matrices, i, 80, j, 95, -8355712);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
+		context.fill(i - 1, 79, j + 1, 96, -2501934);
+		context.fill(i, 80, j, 95, -8355712);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
 	}
 
-	private void drawDownloadSpeed(MatrixStack matrices) {
+	private void drawDownloadSpeed(DrawContext context) {
 		if (this.animTick % 20 == 0) {
 			if (this.previousWrittenBytes != null) {
 				long l = Util.getMeasuringTimeMs() - this.previousTimeSnapshot;
@@ -194,21 +194,21 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 				}
 
 				this.bytesPerSecond = 1000L * (this.downloadStatus.bytesWritten - this.previousWrittenBytes) / l;
-				this.drawDownloadSpeed0(matrices, this.bytesPerSecond);
+				this.drawDownloadSpeed0(context, this.bytesPerSecond);
 			}
 
 			this.previousWrittenBytes = this.downloadStatus.bytesWritten;
 			this.previousTimeSnapshot = Util.getMeasuringTimeMs();
 		} else {
-			this.drawDownloadSpeed0(matrices, this.bytesPerSecond);
+			this.drawDownloadSpeed0(context, this.bytesPerSecond);
 		}
 	}
 
-	private void drawDownloadSpeed0(MatrixStack matrices, long bytesPerSecond) {
+	private void drawDownloadSpeed0(DrawContext context, long bytesPerSecond) {
 		if (bytesPerSecond > 0L) {
 			int i = this.textRenderer.getWidth(this.progress);
 			String string = "(" + SizeUnit.getUserFriendlyString(bytesPerSecond) + "/s)";
-			this.textRenderer.draw(matrices, string, (float)(this.width / 2 + i / 2 + 15), 84.0F, 16777215);
+			context.drawText(this.textRenderer, string, this.width / 2 + i / 2 + 15, 84, 16777215, false);
 		}
 	}
 

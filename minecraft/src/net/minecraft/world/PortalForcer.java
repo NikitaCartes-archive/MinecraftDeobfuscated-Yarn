@@ -175,7 +175,7 @@ public class PortalForcer {
 					j,
 					portalDirection.getOffsetZ() * i + direction.getOffsetZ() * distanceOrthogonalToPortal
 				);
-				if (j < 0 && !this.world.getBlockState(temp).getMaterial().isSolid()) {
+				if (j < 0 && !this.world.getBlockState(temp).isSolid()) {
 					return false;
 				}
 

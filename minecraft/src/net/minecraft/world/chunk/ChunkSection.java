@@ -10,7 +10,6 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
 
@@ -19,30 +18,23 @@ public class ChunkSection {
 	public static final int field_31407 = 16;
 	public static final int field_31408 = 4096;
 	public static final int field_34555 = 2;
-	private final int yOffset;
 	private short nonEmptyBlockCount;
 	private short randomTickableBlockCount;
 	private short nonEmptyFluidCount;
 	private final PalettedContainer<BlockState> blockStateContainer;
 	private ReadableContainer<RegistryEntry<Biome>> biomeContainer;
 
-	public ChunkSection(int chunkPos, PalettedContainer<BlockState> blockStateContainer, ReadableContainer<RegistryEntry<Biome>> biomeContainer) {
-		this.yOffset = blockCoordFromChunkCoord(chunkPos);
+	public ChunkSection(PalettedContainer<BlockState> blockStateContainer, ReadableContainer<RegistryEntry<Biome>> biomeContainer) {
 		this.blockStateContainer = blockStateContainer;
 		this.biomeContainer = biomeContainer;
 		this.calculateCounts();
 	}
 
-	public ChunkSection(int chunkPos, Registry<Biome> biomeRegistry) {
-		this.yOffset = blockCoordFromChunkCoord(chunkPos);
+	public ChunkSection(Registry<Biome> biomeRegistry) {
 		this.blockStateContainer = new PalettedContainer<>(Block.STATE_IDS, Blocks.AIR.getDefaultState(), PalettedContainer.PaletteProvider.BLOCK_STATE);
 		this.biomeContainer = new PalettedContainer<>(
 			biomeRegistry.getIndexedEntries(), biomeRegistry.entryOf(BiomeKeys.PLAINS), PalettedContainer.PaletteProvider.BIOME
 		);
-	}
-
-	public static int blockCoordFromChunkCoord(int chunkPos) {
-		return chunkPos << 4;
 	}
 
 	public BlockState getBlockState(int x, int y, int z) {
@@ -116,10 +108,6 @@ public class ChunkSection {
 		return this.nonEmptyFluidCount > 0;
 	}
 
-	public int getYOffset() {
-		return this.yOffset;
-	}
-
 	public void calculateCounts() {
 		class BlockStateCounter implements PalettedContainer.Counter<BlockState> {
 			public int nonEmptyBlockCount;
@@ -191,15 +179,14 @@ public class ChunkSection {
 		return this.biomeContainer.get(x, y, z);
 	}
 
-	public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int z) {
+	public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int i, int j) {
 		PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.slice();
-		int i = BiomeCoords.fromBlock(this.getYOffset());
-		int j = 4;
+		int k = 4;
 
-		for (int k = 0; k < 4; k++) {
-			for (int l = 0; l < 4; l++) {
-				for (int m = 0; m < 4; m++) {
-					palettedContainer.swapUnsafe(k, l, m, biomeSupplier.getBiome(x + k, i + l, z + m, sampler));
+		for (int l = 0; l < 4; l++) {
+			for (int m = 0; m < 4; m++) {
+				for (int n = 0; n < 4; n++) {
+					palettedContainer.swapUnsafe(l, m, n, biomeSupplier.getBiome(x + l, i + m, j + n, sampler));
 				}
 			}
 		}

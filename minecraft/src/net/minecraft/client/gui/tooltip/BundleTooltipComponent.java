@@ -1,14 +1,11 @@
 package net.minecraft.client.gui.tooltip;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.item.BundleTooltipData;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
@@ -40,7 +37,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 	}
 
 	@Override
-	public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack matrices, ItemRenderer itemRenderer) {
+	public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
 		int i = this.getColumns();
 		int j = this.getRows();
 		boolean bl = this.occupancy >= 64;
@@ -50,48 +47,47 @@ public class BundleTooltipComponent implements TooltipComponent {
 			for (int m = 0; m < i; m++) {
 				int n = x + m * 18 + 1;
 				int o = y + l * 20 + 1;
-				this.drawSlot(n, o, k++, bl, textRenderer, matrices, itemRenderer);
+				this.drawSlot(n, o, k++, bl, context, textRenderer);
 			}
 		}
 
-		this.drawOutline(x, y, i, j, matrices);
+		this.drawOutline(x, y, i, j, context);
 	}
 
-	private void drawSlot(int x, int y, int index, boolean shouldBlock, TextRenderer textRenderer, MatrixStack matrices, ItemRenderer itemRenderer) {
+	private void drawSlot(int x, int y, int index, boolean shouldBlock, DrawContext context, TextRenderer textRenderer) {
 		if (index >= this.inventory.size()) {
-			this.draw(matrices, x, y, shouldBlock ? BundleTooltipComponent.Sprite.BLOCKED_SLOT : BundleTooltipComponent.Sprite.SLOT);
+			this.draw(context, x, y, shouldBlock ? BundleTooltipComponent.Sprite.BLOCKED_SLOT : BundleTooltipComponent.Sprite.SLOT);
 		} else {
 			ItemStack itemStack = this.inventory.get(index);
-			this.draw(matrices, x, y, BundleTooltipComponent.Sprite.SLOT);
-			itemRenderer.renderInGuiWithOverrides(matrices, itemStack, x + 1, y + 1, index);
-			itemRenderer.renderGuiItemOverlay(matrices, textRenderer, itemStack, x + 1, y + 1);
+			this.draw(context, x, y, BundleTooltipComponent.Sprite.SLOT);
+			context.drawItem(itemStack, x + 1, y + 1, index);
+			context.drawItemInSlot(textRenderer, itemStack, x + 1, y + 1);
 			if (index == 0) {
-				HandledScreen.drawSlotHighlight(matrices, x + 1, y + 1, 0);
+				HandledScreen.drawSlotHighlight(context, x + 1, y + 1, 0);
 			}
 		}
 	}
 
-	private void drawOutline(int x, int y, int columns, int rows, MatrixStack matrices) {
-		this.draw(matrices, x, y, BundleTooltipComponent.Sprite.BORDER_CORNER_TOP);
-		this.draw(matrices, x + columns * 18 + 1, y, BundleTooltipComponent.Sprite.BORDER_CORNER_TOP);
+	private void drawOutline(int x, int y, int columns, int rows, DrawContext context) {
+		this.draw(context, x, y, BundleTooltipComponent.Sprite.BORDER_CORNER_TOP);
+		this.draw(context, x + columns * 18 + 1, y, BundleTooltipComponent.Sprite.BORDER_CORNER_TOP);
 
 		for (int i = 0; i < columns; i++) {
-			this.draw(matrices, x + 1 + i * 18, y, BundleTooltipComponent.Sprite.BORDER_HORIZONTAL_TOP);
-			this.draw(matrices, x + 1 + i * 18, y + rows * 20, BundleTooltipComponent.Sprite.BORDER_HORIZONTAL_BOTTOM);
+			this.draw(context, x + 1 + i * 18, y, BundleTooltipComponent.Sprite.BORDER_HORIZONTAL_TOP);
+			this.draw(context, x + 1 + i * 18, y + rows * 20, BundleTooltipComponent.Sprite.BORDER_HORIZONTAL_BOTTOM);
 		}
 
 		for (int i = 0; i < rows; i++) {
-			this.draw(matrices, x, y + i * 20 + 1, BundleTooltipComponent.Sprite.BORDER_VERTICAL);
-			this.draw(matrices, x + columns * 18 + 1, y + i * 20 + 1, BundleTooltipComponent.Sprite.BORDER_VERTICAL);
+			this.draw(context, x, y + i * 20 + 1, BundleTooltipComponent.Sprite.BORDER_VERTICAL);
+			this.draw(context, x + columns * 18 + 1, y + i * 20 + 1, BundleTooltipComponent.Sprite.BORDER_VERTICAL);
 		}
 
-		this.draw(matrices, x, y + rows * 20, BundleTooltipComponent.Sprite.BORDER_CORNER_BOTTOM);
-		this.draw(matrices, x + columns * 18 + 1, y + rows * 20, BundleTooltipComponent.Sprite.BORDER_CORNER_BOTTOM);
+		this.draw(context, x, y + rows * 20, BundleTooltipComponent.Sprite.BORDER_CORNER_BOTTOM);
+		this.draw(context, x + columns * 18 + 1, y + rows * 20, BundleTooltipComponent.Sprite.BORDER_CORNER_BOTTOM);
 	}
 
-	private void draw(MatrixStack matrices, int x, int y, BundleTooltipComponent.Sprite sprite) {
-		RenderSystem.setShaderTexture(0, TEXTURE);
-		DrawableHelper.drawTexture(matrices, x, y, 0, (float)sprite.u, (float)sprite.v, sprite.width, sprite.height, 128, 128);
+	private void draw(DrawContext context, int x, int y, BundleTooltipComponent.Sprite sprite) {
+		context.drawTexture(TEXTURE, x, y, 0, (float)sprite.u, (float)sprite.v, sprite.width, sprite.height, 128, 128);
 	}
 
 	private int getColumns() {

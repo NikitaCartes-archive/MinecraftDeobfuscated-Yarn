@@ -42,8 +42,14 @@ public class NoteBlock extends Block {
 	}
 
 	private BlockState getStateWithInstrument(WorldAccess world, BlockPos pos, BlockState state) {
-		BlockState blockState = world.getBlockState(pos.up());
-		return state.with(INSTRUMENT, (Instrument)Instrument.fromAboveState(blockState).orElseGet(() -> Instrument.fromBelowState(world.getBlockState(pos.down()))));
+		Instrument instrument = world.getBlockState(pos.up()).getInstrument();
+		if (instrument.isNotBaseBlock()) {
+			return state.with(INSTRUMENT, instrument);
+		} else {
+			Instrument instrument2 = world.getBlockState(pos.down()).getInstrument();
+			Instrument instrument3 = instrument2.isNotBaseBlock() ? Instrument.HARP : instrument2;
+			return state.with(INSTRUMENT, instrument3);
+		}
 	}
 
 	@Override
@@ -72,7 +78,7 @@ public class NoteBlock extends Block {
 	}
 
 	private void playNote(@Nullable Entity entity, BlockState state, World world, BlockPos pos) {
-		if (!((Instrument)state.get(INSTRUMENT)).shouldRequireAirAbove() || world.getBlockState(pos.up()).isAir()) {
+		if (((Instrument)state.get(INSTRUMENT)).isNotBaseBlock() || world.getBlockState(pos.up()).isAir()) {
 			world.addSyncedBlockEvent(pos, this, 0, 0);
 			world.emitGameEvent(entity, GameEvent.NOTE_BLOCK_PLAY, pos);
 		}

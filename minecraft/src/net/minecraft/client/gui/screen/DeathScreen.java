@@ -1,15 +1,14 @@
 package net.minecraft.client.gui.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
@@ -88,26 +87,27 @@ public class DeathScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		fillGradient(matrices, 0, 0, this.width, this.height, 1615855616, -1602211792);
-		matrices.push();
-		matrices.scale(2.0F, 2.0F, 2.0F);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 16777215);
-		matrices.pop();
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		context.fillGradient(0, 0, this.width, this.height, 1615855616, -1602211792);
+		context.getMatrices().push();
+		context.getMatrices().scale(2.0F, 2.0F, 2.0F);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2 / 2, 30, 16777215);
+		context.getMatrices().pop();
 		if (this.message != null) {
-			drawCenteredTextWithShadow(matrices, this.textRenderer, this.message, this.width / 2, 85, 16777215);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.message, this.width / 2, 85, 16777215);
 		}
 
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.scoreText, this.width / 2, 100, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.scoreText, this.width / 2, 100, 16777215);
 		if (this.message != null && mouseY > 85 && mouseY < 85 + 9) {
 			Style style = this.getTextComponentUnderMouse(mouseX);
-			this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
+			context.drawHoverEvent(this.textRenderer, style, mouseX, mouseY);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 		if (this.titleScreenButton != null && this.client.getAbuseReportContext().hasDraft()) {
-			RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
-			drawTexture(matrices, this.titleScreenButton.getX() + this.titleScreenButton.getWidth() - 17, this.titleScreenButton.getY() + 3, 182, 24, 15, 15);
+			context.drawTexture(
+				ClickableWidget.WIDGETS_TEXTURE, this.titleScreenButton.getX() + this.titleScreenButton.getWidth() - 17, this.titleScreenButton.getY() + 3, 182, 24, 15, 15
+			);
 		}
 	}
 

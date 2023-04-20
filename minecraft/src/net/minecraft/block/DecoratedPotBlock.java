@@ -30,7 +30,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable {
 	private static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
-	public static final Identifier SHARDS_NBT_KEY = new Identifier("shards");
+	public static final Identifier SHERDS_NBT_KEY = new Identifier("sherds");
 	private static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 	private static final BooleanProperty CRACKED = Properties.CRACKED;
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -87,8 +87,8 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
 		BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
-			builder.putDrop(SHARDS_NBT_KEY, (context, consumer) -> {
-				for (Item item : decoratedPotBlockEntity.getShards()) {
+			builder.putDrop(SHERDS_NBT_KEY, (context, consumer) -> {
+				for (Item item : decoratedPotBlockEntity.getSherds()) {
 					consumer.accept(item.getDefaultStack());
 				}
 			});

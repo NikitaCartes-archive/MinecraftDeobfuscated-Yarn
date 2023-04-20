@@ -1,12 +1,11 @@
 package net.minecraft.client.gui.hud.spectator;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -35,11 +34,10 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 	}
 
 	@Override
-	public void renderIcon(MatrixStack matrices, float brightness, int alpha) {
-		RenderSystem.setShaderTexture(0, this.skinId);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, (float)alpha / 255.0F);
-		PlayerSkinDrawer.draw(matrices, 2, 2, 12);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+	public void renderIcon(DrawContext context, float brightness, int alpha) {
+		context.setShaderColor(1.0F, 1.0F, 1.0F, (float)alpha / 255.0F);
+		PlayerSkinDrawer.draw(context, this.skinId, 2, 2, 12);
+		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	@Override

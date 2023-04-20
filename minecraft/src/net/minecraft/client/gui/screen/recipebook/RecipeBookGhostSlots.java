@@ -7,10 +7,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.render.item.ItemRenderer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
@@ -50,7 +48,7 @@ public class RecipeBookGhostSlots {
 		this.recipe = recipe;
 	}
 
-	public void draw(MatrixStack matrices, MinecraftClient client, int x, int y, boolean notInventory, float tickDelta) {
+	public void draw(DrawContext context, MinecraftClient client, int x, int y, boolean notInventory, float tickDelta) {
 		if (!Screen.hasControlDown()) {
 			this.time += tickDelta;
 		}
@@ -60,19 +58,18 @@ public class RecipeBookGhostSlots {
 			int j = ghostInputSlot.getX() + x;
 			int k = ghostInputSlot.getY() + y;
 			if (i == 0 && notInventory) {
-				DrawableHelper.fill(matrices, j - 4, k - 4, j + 20, k + 20, 822018048);
+				context.fill(j - 4, k - 4, j + 20, k + 20, 822018048);
 			} else {
-				DrawableHelper.fill(matrices, j, k, j + 16, k + 16, 822018048);
+				context.fill(j, k, j + 16, k + 16, 822018048);
 			}
 
 			ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
-			ItemRenderer itemRenderer = client.getItemRenderer();
-			itemRenderer.renderInGui(matrices, itemStack, j, k);
+			context.drawItemWithoutEntity(itemStack, j, k);
 			RenderSystem.depthFunc(516);
-			DrawableHelper.fill(matrices, j, k, j + 16, k + 16, 822083583);
+			context.fill(j, k, j + 16, k + 16, 822083583);
 			RenderSystem.depthFunc(515);
 			if (i == 0) {
-				itemRenderer.renderGuiItemOverlay(matrices, client.textRenderer, itemStack, j, k);
+				context.drawItemInSlot(client.textRenderer, itemStack, j, k);
 			}
 		}
 	}

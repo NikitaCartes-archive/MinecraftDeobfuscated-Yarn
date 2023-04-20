@@ -79,6 +79,6 @@ public interface BlockEntityProvider {
 	 */
 	@Nullable
 	default <T extends BlockEntity> GameEventListener getGameEventListener(ServerWorld world, T blockEntity) {
-		return null;
+		return blockEntity instanceof GameEventListener.Holder<?> holder ? holder.getEventListener() : null;
 	}
 }

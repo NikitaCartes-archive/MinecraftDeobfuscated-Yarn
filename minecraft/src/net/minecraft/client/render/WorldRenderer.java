@@ -2692,17 +2692,13 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		ParticleEffect parameters, boolean alwaysSpawn, boolean canSpawnOnMinimal, double x, double y, double z, double velocityX, double velocityY, double velocityZ
 	) {
 		Camera camera = this.client.gameRenderer.getCamera();
-		if (this.client != null && camera.isReady() && this.client.particleManager != null) {
-			ParticlesMode particlesMode = this.getRandomParticleSpawnChance(canSpawnOnMinimal);
-			if (alwaysSpawn) {
-				return this.client.particleManager.addParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
-			} else if (camera.getPos().squaredDistanceTo(x, y, z) > 1024.0) {
-				return null;
-			} else {
-				return particlesMode == ParticlesMode.MINIMAL ? null : this.client.particleManager.addParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
-			}
-		} else {
+		ParticlesMode particlesMode = this.getRandomParticleSpawnChance(canSpawnOnMinimal);
+		if (alwaysSpawn) {
+			return this.client.particleManager.addParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
+		} else if (camera.getPos().squaredDistanceTo(x, y, z) > 1024.0) {
 			return null;
+		} else {
+			return particlesMode == ParticlesMode.MINIMAL ? null : this.client.particleManager.addParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
 		}
 	}
 
@@ -3217,7 +3213,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 				this.world.addBlockBreakParticles(pos, blockState2);
 				break;
 			case 3009:
-				ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.EGG_CRACK, data == 1 ? UniformIntProvider.create(3, 6) : UniformIntProvider.create(1, 3));
+				ParticleUtil.spawnParticle(this.world, pos, ParticleTypes.EGG_CRACK, UniformIntProvider.create(3, 6));
 		}
 	}
 

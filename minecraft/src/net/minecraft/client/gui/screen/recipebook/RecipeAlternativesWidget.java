@@ -9,12 +9,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
@@ -26,7 +25,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class RecipeAlternativesWidget extends DrawableHelper implements Drawable, Element {
+public class RecipeAlternativesWidget implements Drawable, Element {
 	static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
 	private static final int field_32406 = 4;
 	private static final int field_32407 = 5;
@@ -36,7 +35,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 	private boolean visible;
 	private int buttonX;
 	private int buttonY;
-	MinecraftClient client;
+	private MinecraftClient client;
 	private RecipeResultCollection resultCollection;
 	@Nullable
 	private Recipe<?> lastClickedRecipe;
@@ -128,25 +127,24 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			this.time += delta;
 			RenderSystem.enableBlend();
-			RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
-			matrices.push();
-			matrices.translate(0.0F, 0.0F, 170.0F);
+			context.getMatrices().push();
+			context.getMatrices().translate(0.0F, 0.0F, 170.0F);
 			int i = this.alternativeButtons.size() <= 16 ? 4 : 5;
 			int j = Math.min(this.alternativeButtons.size(), i);
 			int k = MathHelper.ceil((float)this.alternativeButtons.size() / (float)i);
 			int l = 4;
-			drawNineSlicedTexture(matrices, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8, 4, 32, 32, 82, 208);
+			context.drawNineSlicedTexture(BACKGROUND_TEXTURE, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8, 4, 32, 32, 82, 208);
 			RenderSystem.disableBlend();
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget alternativeButtonWidget : this.alternativeButtons) {
-				alternativeButtonWidget.render(matrices, mouseX, mouseY, delta);
+				alternativeButtonWidget.render(context, mouseX, mouseY, delta);
 			}
 
-			matrices.pop();
+			context.getMatrices().pop();
 		}
 	}
 
@@ -200,8 +198,7 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		}
 
 		@Override
-		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-			RenderSystem.setShaderTexture(0, RecipeAlternativesWidget.BACKGROUND_TEXTURE);
+		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 			int i = 152;
 			if (!this.craftable) {
 				i += 26;
@@ -212,22 +209,20 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 				j += 26;
 			}
 
-			drawTexture(matrices, this.getX(), this.getY(), i, j, this.width, this.height);
-			matrices.push();
-			matrices.translate((double)(this.getX() + 2), (double)(this.getY() + 2), 150.0);
+			context.drawTexture(RecipeAlternativesWidget.BACKGROUND_TEXTURE, this.getX(), this.getY(), i, j, this.width, this.height);
+			context.getMatrices().push();
+			context.getMatrices().translate((double)(this.getX() + 2), (double)(this.getY() + 2), 150.0);
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget.InputSlot inputSlot : this.slots) {
-				matrices.push();
-				matrices.translate((double)inputSlot.y, (double)inputSlot.x, 0.0);
-				matrices.scale(0.375F, 0.375F, 1.0F);
-				matrices.translate(-8.0, -8.0, 0.0);
-				RecipeAlternativesWidget.this.client
-					.getItemRenderer()
-					.renderInGuiWithOverrides(matrices, inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], 0, 0);
-				matrices.pop();
+				context.getMatrices().push();
+				context.getMatrices().translate((double)inputSlot.y, (double)inputSlot.x, 0.0);
+				context.getMatrices().scale(0.375F, 0.375F, 1.0F);
+				context.getMatrices().translate(-8.0, -8.0, 0.0);
+				context.drawItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], 0, 0);
+				context.getMatrices().pop();
 			}
 
-			matrices.pop();
+			context.getMatrices().pop();
 		}
 
 		@Environment(EnvType.CLIENT)

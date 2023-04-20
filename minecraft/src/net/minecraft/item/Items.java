@@ -9,6 +9,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.trim.ArmorTrimPatterns;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.BannerPatternTags;
 import net.minecraft.registry.tag.InstrumentTags;
 import net.minecraft.sound.SoundEvents;
@@ -1472,32 +1473,32 @@ public class Items {
 		"raiser_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.RAISER)
 	);
 	public static final Item HOST_ARMOR_TRIM_SMITHING_TEMPLATE = register("host_armor_trim_smithing_template", SmithingTemplateItem.of(ArmorTrimPatterns.HOST));
-	public static final Item ANGLER_POTTERY_SHARD = register("angler_pottery_shard", new Item(new Item.Settings()));
-	public static final Item ARCHER_POTTERY_SHARD = register("archer_pottery_shard", new Item(new Item.Settings()));
-	public static final Item ARMS_UP_POTTERY_SHARD = register("arms_up_pottery_shard", new Item(new Item.Settings()));
-	public static final Item BLADE_POTTERY_SHARD = register("blade_pottery_shard", new Item(new Item.Settings()));
-	public static final Item BREWER_POTTERY_SHARD = register("brewer_pottery_shard", new Item(new Item.Settings()));
-	public static final Item BURN_POTTERY_SHARD = register("burn_pottery_shard", new Item(new Item.Settings()));
-	public static final Item DANGER_POTTERY_SHARD = register("danger_pottery_shard", new Item(new Item.Settings()));
-	public static final Item EXPLORER_POTTERY_SHARD = register("explorer_pottery_shard", new Item(new Item.Settings()));
-	public static final Item FRIEND_POTTERY_SHARD = register("friend_pottery_shard", new Item(new Item.Settings()));
-	public static final Item HEART_POTTERY_SHARD = register("heart_pottery_shard", new Item(new Item.Settings()));
-	public static final Item HEARTBREAK_POTTERY_SHARD = register("heartbreak_pottery_shard", new Item(new Item.Settings()));
-	public static final Item HOWL_POTTERY_SHARD = register("howl_pottery_shard", new Item(new Item.Settings()));
-	public static final Item MINER_POTTERY_SHARD = register("miner_pottery_shard", new Item(new Item.Settings()));
-	public static final Item MOURNER_POTTERY_SHARD = register("mourner_pottery_shard", new Item(new Item.Settings()));
-	public static final Item PLENTY_POTTERY_SHARD = register("plenty_pottery_shard", new Item(new Item.Settings()));
-	public static final Item PRIZE_POTTERY_SHARD = register("prize_pottery_shard", new Item(new Item.Settings()));
-	public static final Item SHEAF_POTTERY_SHARD = register("sheaf_pottery_shard", new Item(new Item.Settings()));
-	public static final Item SHELTER_POTTERY_SHARD = register("shelter_pottery_shard", new Item(new Item.Settings()));
-	public static final Item SKULL_POTTERY_SHARD = register("skull_pottery_shard", new Item(new Item.Settings()));
-	public static final Item SNORT_POTTERY_SHARD = register("snort_pottery_shard", new Item(new Item.Settings()));
+	public static final Item ANGLER_POTTERY_SHERD = register("angler_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item ARCHER_POTTERY_SHERD = register("archer_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item ARMS_UP_POTTERY_SHERD = register("arms_up_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item BLADE_POTTERY_SHERD = register("blade_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item BREWER_POTTERY_SHERD = register("brewer_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item BURN_POTTERY_SHERD = register("burn_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item DANGER_POTTERY_SHERD = register("danger_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item EXPLORER_POTTERY_SHERD = register("explorer_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item FRIEND_POTTERY_SHERD = register("friend_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item HEART_POTTERY_SHERD = register("heart_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item HEARTBREAK_POTTERY_SHERD = register("heartbreak_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item HOWL_POTTERY_SHERD = register("howl_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item MINER_POTTERY_SHERD = register("miner_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item MOURNER_POTTERY_SHERD = register("mourner_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item PLENTY_POTTERY_SHERD = register("plenty_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item PRIZE_POTTERY_SHERD = register("prize_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item SHEAF_POTTERY_SHERD = register("sheaf_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item SHELTER_POTTERY_SHERD = register("shelter_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item SKULL_POTTERY_SHERD = register("skull_pottery_sherd", new Item(new Item.Settings()));
+	public static final Item SNORT_POTTERY_SHERD = register("snort_pottery_sherd", new Item(new Item.Settings()));
 
-	private static Item register(Block block) {
+	public static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));
 	}
 
-	private static Item register(Block block, Block... blocks) {
+	public static Item register(Block block, Block... blocks) {
 		BlockItem blockItem = new BlockItem(block, new Item.Settings());
 
 		for (Block block2 : blocks) {
@@ -1507,23 +1508,27 @@ public class Items {
 		return register(blockItem);
 	}
 
-	private static Item register(BlockItem item) {
+	public static Item register(BlockItem item) {
 		return register(item.getBlock(), item);
 	}
 
-	protected static Item register(Block block, Item item) {
+	public static Item register(Block block, Item item) {
 		return register(Registries.BLOCK.getId(block), item);
 	}
 
-	private static Item register(String id, Item item) {
+	public static Item register(String id, Item item) {
 		return register(new Identifier(id), item);
 	}
 
-	private static Item register(Identifier id, Item item) {
+	public static Item register(Identifier id, Item item) {
+		return method_51348(RegistryKey.of(Registries.ITEM.getKey(), id), item);
+	}
+
+	public static Item method_51348(RegistryKey<Item> registryKey, Item item) {
 		if (item instanceof BlockItem) {
 			((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
 		}
 
-		return Registry.register(Registries.ITEM, id, item);
+		return Registry.register(Registries.ITEM, registryKey, item);
 	}
 }

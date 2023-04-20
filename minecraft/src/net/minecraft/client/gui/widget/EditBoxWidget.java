@@ -7,12 +7,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.EditBox;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 /**
@@ -132,13 +131,12 @@ public class EditBoxWidget extends ScrollableWidget {
 	}
 
 	@Override
-	protected void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected void renderContents(DrawContext context, int mouseX, int mouseY, float delta) {
 		String string = this.editBox.getText();
 		if (string.isEmpty() && !this.isFocused()) {
-			this.textRenderer
-				.drawTrimmed(
-					matrices, this.placeholder, this.getX() + this.getPadding(), this.getY() + this.getPadding(), this.width - this.getPaddingDoubled(), -857677600
-				);
+			context.drawTextWrapped(
+				this.textRenderer, this.placeholder, this.getX() + this.getPadding(), this.getY() + this.getPadding(), this.width - this.getPaddingDoubled(), -857677600
+			);
 		} else {
 			int i = this.editBox.getCursor();
 			boolean bl = this.isFocused() && this.tick / 6 % 2 == 0;
@@ -151,15 +149,15 @@ public class EditBoxWidget extends ScrollableWidget {
 				boolean bl3 = this.isVisible(l, l + 9);
 				if (bl && bl2 && i >= substring.beginIndex() && i <= substring.endIndex()) {
 					if (bl3) {
-						j = this.textRenderer.drawWithShadow(matrices, string.substring(substring.beginIndex(), i), (float)(this.getX() + this.getPadding()), (float)l, -2039584)
-							- 1;
-						DrawableHelper.fill(matrices, j, l - 1, j + 1, l + 1 + 9, -3092272);
-						this.textRenderer.drawWithShadow(matrices, string.substring(i, substring.endIndex()), (float)j, (float)l, -2039584);
+						j = context.drawTextWithShadow(this.textRenderer, string.substring(substring.beginIndex(), i), this.getX() + this.getPadding(), l, -2039584) - 1;
+						context.fill(j, l - 1, j + 1, l + 1 + 9, -3092272);
+						context.drawTextWithShadow(this.textRenderer, string.substring(i, substring.endIndex()), j, l, -2039584);
 					}
 				} else {
 					if (bl3) {
-						j = this.textRenderer
-								.drawWithShadow(matrices, string.substring(substring.beginIndex(), substring.endIndex()), (float)(this.getX() + this.getPadding()), (float)l, -2039584)
+						j = context.drawTextWithShadow(
+								this.textRenderer, string.substring(substring.beginIndex(), substring.endIndex()), this.getX() + this.getPadding(), l, -2039584
+							)
 							- 1;
 					}
 
@@ -170,7 +168,7 @@ public class EditBoxWidget extends ScrollableWidget {
 			}
 
 			if (bl && !bl2 && this.isVisible(k, k + 9)) {
-				this.textRenderer.drawWithShadow(matrices, "_", (float)j, (float)k, -3092272);
+				context.drawTextWithShadow(this.textRenderer, "_", j, k, -3092272);
 			}
 
 			if (this.editBox.hasSelection()) {
@@ -195,7 +193,7 @@ public class EditBoxWidget extends ScrollableWidget {
 								o = this.textRenderer.getWidth(string.substring(substring3.beginIndex(), substring2.endIndex()));
 							}
 
-							this.drawSelection(matrices, m + n, l, m + o, l + 9);
+							this.drawSelection(context, m + n, l, m + o, l + 9);
 						}
 
 						l += 9;
@@ -206,12 +204,12 @@ public class EditBoxWidget extends ScrollableWidget {
 	}
 
 	@Override
-	protected void renderOverlay(MatrixStack matrices) {
-		super.renderOverlay(matrices);
+	protected void renderOverlay(DrawContext context) {
+		super.renderOverlay(context);
 		if (this.editBox.hasMaxLength()) {
 			int i = this.editBox.getMaxLength();
 			Text text = Text.translatable("gui.multiLineEditBox.character_limit", this.editBox.getText().length(), i);
-			drawTextWithShadow(matrices, this.textRenderer, text, this.getX() + this.width - this.textRenderer.getWidth(text), this.getY() + this.height + 4, 10526880);
+			context.drawTextWithShadow(this.textRenderer, text, this.getX() + this.width - this.textRenderer.getWidth(text), this.getY() + this.height + 4, 10526880);
 		}
 	}
 
@@ -230,10 +228,10 @@ public class EditBoxWidget extends ScrollableWidget {
 		return 9.0 / 2.0;
 	}
 
-	private void drawSelection(MatrixStack matrices, int left, int top, int right, int bottom) {
+	private void drawSelection(DrawContext context, int left, int top, int right, int bottom) {
 		RenderSystem.enableColorLogicOp();
 		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-		fill(matrices, left, top, right, bottom, -16776961);
+		context.fill(left, top, right, bottom, -16776961);
 		RenderSystem.disableColorLogicOp();
 	}
 

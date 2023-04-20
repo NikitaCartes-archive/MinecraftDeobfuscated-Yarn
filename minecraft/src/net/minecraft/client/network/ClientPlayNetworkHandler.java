@@ -1794,7 +1794,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 				currentEntry.setSession(publicPlayerSession);
 			} catch (PlayerPublicKey.PublicKeyException var6) {
 				LOGGER.error("Failed to validate profile key for player: '{}'", gameProfile.getName(), var6);
-				this.connection.disconnect(var6.getMessageText());
+				currentEntry.resetSession(this.isSecureChatEnforced());
 			}
 		} else {
 			currentEntry.resetSession(this.isSecureChatEnforced());

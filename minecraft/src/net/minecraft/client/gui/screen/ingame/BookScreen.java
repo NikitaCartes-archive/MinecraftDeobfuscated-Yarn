@@ -2,7 +2,6 @@ package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -11,11 +10,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
@@ -161,12 +160,11 @@ public class BookScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		RenderSystem.setShaderTexture(0, BOOK_TEXTURE);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		drawTexture(matrices, i, 2, 0, 0, 192, 192);
+		context.drawTexture(BOOK_TEXTURE, i, 2, 0, 0, 192, 192);
 		if (this.cachedPageIndex != this.pageIndex) {
 			StringVisitable stringVisitable = this.contents.getPage(this.pageIndex);
 			this.cachedPage = this.textRenderer.wrapLines(stringVisitable, 114);
@@ -175,20 +173,20 @@ public class BookScreen extends Screen {
 
 		this.cachedPageIndex = this.pageIndex;
 		int k = this.textRenderer.getWidth(this.pageIndexText);
-		this.textRenderer.draw(matrices, this.pageIndexText, (float)(i - k + 192 - 44), 18.0F, 0);
+		context.drawText(this.textRenderer, this.pageIndexText, i - k + 192 - 44, 18, 0, false);
 		int l = Math.min(128 / 9, this.cachedPage.size());
 
 		for (int m = 0; m < l; m++) {
 			OrderedText orderedText = (OrderedText)this.cachedPage.get(m);
-			this.textRenderer.draw(matrices, orderedText, (float)(i + 36), (float)(32 + m * 9), 0);
+			context.drawText(this.textRenderer, orderedText, i + 36, 32 + m * 9, 0, false);
 		}
 
 		Style style = this.getTextStyleAt((double)mouseX, (double)mouseY);
 		if (style != null) {
-			this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
+			context.drawHoverEvent(this.textRenderer, style, mouseX, mouseY);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override

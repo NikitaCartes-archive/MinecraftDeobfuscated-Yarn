@@ -1,9 +1,8 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ForgingScreenHandler;
@@ -38,24 +37,23 @@ public abstract class ForgingScreen<T extends ForgingScreenHandler> extends Hand
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		super.render(matrices, mouseX, mouseY, delta);
-		this.renderForeground(matrices, mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
+		this.renderForeground(context, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(context, mouseX, mouseY);
 	}
 
-	protected void renderForeground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	protected void renderForeground(DrawContext context, int mouseX, int mouseY, float delta) {
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		RenderSystem.setShaderTexture(0, this.texture);
-		drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		this.drawInvalidRecipeArrow(matrices, this.x, this.y);
+	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+		context.drawTexture(this.texture, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		this.drawInvalidRecipeArrow(context, this.x, this.y);
 	}
 
-	protected abstract void drawInvalidRecipeArrow(MatrixStack matrices, int x, int y);
+	protected abstract void drawInvalidRecipeArrow(DrawContext context, int x, int y);
 
 	@Override
 	public void onPropertyUpdate(ScreenHandler handler, int property, int value) {

@@ -13,12 +13,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.PlayerModelPart;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
@@ -29,6 +28,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Nullables;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameMode;
@@ -42,10 +42,11 @@ import net.minecraft.world.GameMode;
  * MinecraftClient.getInstance().inGameHud.getPlayerListHud()}.
  */
 @Environment(EnvType.CLIENT)
-public class PlayerListHud extends DrawableHelper {
+public class PlayerListHud {
 	private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(entry -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
 		.thenComparing(entry -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
 		.thenComparing(entry -> entry.getProfile().getName(), String::compareToIgnoreCase);
+	private static final Identifier ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
 	public static final int MAX_ROWS = 20;
 	public static final int HEART_OUTLINE_U = 16;
 	public static final int BLINKING_HEART_OUTLINE_U = 25;
@@ -101,7 +102,7 @@ public class PlayerListHud extends DrawableHelper {
 		return this.client.player.networkHandler.getListedPlayerListEntries().stream().sorted(ENTRY_ORDERING).limit(80L).toList();
 	}
 
-	public void render(MatrixStack matrices, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
+	public void render(DrawContext context, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
 		List<PlayerListEntry> list = this.collectPlayerEntries();
 		int i = 0;
 		int j = 0;
@@ -163,18 +164,18 @@ public class PlayerListHud extends DrawableHelper {
 		}
 
 		if (list2 != null) {
-			fill(matrices, scaledWindowWidth / 2 - r / 2 - 1, q - 1, scaledWindowWidth / 2 + r / 2 + 1, q + list2.size() * 9, Integer.MIN_VALUE);
+			context.fill(scaledWindowWidth / 2 - r / 2 - 1, q - 1, scaledWindowWidth / 2 + r / 2 + 1, q + list2.size() * 9, Integer.MIN_VALUE);
 
 			for (OrderedText orderedText2 : list2) {
 				int s = this.client.textRenderer.getWidth(orderedText2);
-				this.client.textRenderer.drawWithShadow(matrices, orderedText2, (float)(scaledWindowWidth / 2 - s / 2), (float)q, -1);
+				context.drawTextWithShadow(this.client.textRenderer, orderedText2, scaledWindowWidth / 2 - s / 2, q, -1);
 				q += 9;
 			}
 
 			q++;
 		}
 
-		fill(matrices, scaledWindowWidth / 2 - r / 2 - 1, q - 1, scaledWindowWidth / 2 + r / 2 + 1, q + m * 9, Integer.MIN_VALUE);
+		context.fill(scaledWindowWidth / 2 - r / 2 - 1, q - 1, scaledWindowWidth / 2 + r / 2 + 1, q + m * 9, Integer.MIN_VALUE);
 		int t = this.client.options.getTextBackgroundColor(553648127);
 
 		for (int u = 0; u < l; u++) {
@@ -182,7 +183,7 @@ public class PlayerListHud extends DrawableHelper {
 			int v = u % m;
 			int w = p + s * o + s * 5;
 			int x = q + v * 9;
-			fill(matrices, w, x, w + o, x + 8, t);
+			context.fill(w, x, w + o, x + 8, t);
 			RenderSystem.enableBlend();
 			if (u < list.size()) {
 				PlayerListEntry playerListEntry2 = (PlayerListEntry)list.get(u);
@@ -191,42 +192,38 @@ public class PlayerListHud extends DrawableHelper {
 					PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
 					boolean bl2 = playerEntity != null && LivingEntityRenderer.shouldFlipUpsideDown(playerEntity);
 					boolean bl3 = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT);
-					RenderSystem.setShaderTexture(0, playerListEntry2.getSkinTexture());
-					PlayerSkinDrawer.draw(matrices, w, x, 8, bl3, bl2);
+					PlayerSkinDrawer.draw(context, playerListEntry2.getSkinTexture(), w, x, 8, bl3, bl2);
 					w += 9;
 				}
 
-				this.client
-					.textRenderer
-					.drawWithShadow(
-						matrices, this.getPlayerName(playerListEntry2), (float)w, (float)x, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1
-					);
+				context.drawTextWithShadow(
+					this.client.textRenderer, this.getPlayerName(playerListEntry2), w, x, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1
+				);
 				if (objective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR) {
 					int y = w + i + 1;
 					int z = y + n;
 					if (z - y > 5) {
-						this.renderScoreboardObjective(objective, x, gameProfile.getName(), y, z, gameProfile.getId(), matrices);
+						this.renderScoreboardObjective(objective, x, gameProfile.getName(), y, z, gameProfile.getId(), context);
 					}
 				}
 
-				this.renderLatencyIcon(matrices, o, w - (bl ? 9 : 0), x, playerListEntry2);
+				this.renderLatencyIcon(context, o, w - (bl ? 9 : 0), x, playerListEntry2);
 			}
 		}
 
 		if (list3 != null) {
 			q += m * 9 + 1;
-			fill(matrices, scaledWindowWidth / 2 - r / 2 - 1, q - 1, scaledWindowWidth / 2 + r / 2 + 1, q + list3.size() * 9, Integer.MIN_VALUE);
+			context.fill(scaledWindowWidth / 2 - r / 2 - 1, q - 1, scaledWindowWidth / 2 + r / 2 + 1, q + list3.size() * 9, Integer.MIN_VALUE);
 
 			for (OrderedText orderedText3 : list3) {
 				int v = this.client.textRenderer.getWidth(orderedText3);
-				this.client.textRenderer.drawWithShadow(matrices, orderedText3, (float)(scaledWindowWidth / 2 - v / 2), (float)q, -1);
+				context.drawTextWithShadow(this.client.textRenderer, orderedText3, scaledWindowWidth / 2 - v / 2, q, -1);
 				q += 9;
 			}
 		}
 	}
 
-	protected void renderLatencyIcon(MatrixStack matrices, int width, int x, int y, PlayerListEntry entry) {
-		RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
+	protected void renderLatencyIcon(DrawContext context, int width, int x, int y, PlayerListEntry entry) {
 		int i = 0;
 		int j;
 		if (entry.getLatency() < 0) {
@@ -243,30 +240,29 @@ public class PlayerListHud extends DrawableHelper {
 			j = 4;
 		}
 
-		matrices.push();
-		matrices.translate(0.0F, 0.0F, 100.0F);
-		drawTexture(matrices, x + width - 11, y, 0, 176 + j * 8, 10, 8);
-		matrices.pop();
+		context.getMatrices().push();
+		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
+		context.drawTexture(ICONS_TEXTURE, x + width - 11, y, 0, 176 + j * 8, 10, 8);
+		context.getMatrices().pop();
 	}
 
-	private void renderScoreboardObjective(ScoreboardObjective objective, int y, String player, int left, int right, UUID uuid, MatrixStack matrices) {
+	private void renderScoreboardObjective(ScoreboardObjective objective, int y, String player, int left, int right, UUID uuid, DrawContext context) {
 		int i = objective.getScoreboard().getPlayerScore(player, objective).getScore();
 		if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
-			this.renderHearts(y, left, right, uuid, matrices, i);
+			this.renderHearts(y, left, right, uuid, context, i);
 		} else {
 			String string = "" + Formatting.YELLOW + i;
-			this.client.textRenderer.drawWithShadow(matrices, string, (float)(right - this.client.textRenderer.getWidth(string)), (float)y, 16777215);
+			context.drawTextWithShadow(this.client.textRenderer, string, right - this.client.textRenderer.getWidth(string), y, 16777215);
 		}
 	}
 
-	private void renderHearts(int y, int left, int right, UUID uuid, MatrixStack matrices, int score) {
+	private void renderHearts(int y, int left, int right, UUID uuid, DrawContext context, int score) {
 		PlayerListHud.Heart heart = (PlayerListHud.Heart)this.hearts.computeIfAbsent(uuid, uuid2 -> new PlayerListHud.Heart(score));
 		heart.tick(score, (long)this.inGameHud.getTicks());
 		int i = MathHelper.ceilDiv(Math.max(score, heart.getPrevScore()), 2);
 		int j = Math.max(score, Math.max(heart.getPrevScore(), 20)) / 2;
 		boolean bl = heart.useHighlighted((long)this.inGameHud.getTicks());
 		if (i > 0) {
-			RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
 			int k = MathHelper.floor(Math.min((float)(right - left - 4) / (float)j, 9.0F));
 			if (k <= 3) {
 				float f = MathHelper.clamp((float)score / 20.0F, 0.0F, 1.0F);
@@ -276,30 +272,30 @@ public class PlayerListHud extends DrawableHelper {
 					string = string + "hp";
 				}
 
-				this.client.textRenderer.drawWithShadow(matrices, string, (float)((right + left - this.client.textRenderer.getWidth(string)) / 2), (float)y, l);
+				context.drawTextWithShadow(this.client.textRenderer, string, (right + left - this.client.textRenderer.getWidth(string)) / 2, y, l);
 			} else {
 				for (int m = i; m < j; m++) {
-					drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+					context.drawTexture(ICONS_TEXTURE, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
 				}
 
 				for (int m = 0; m < i; m++) {
-					drawTexture(matrices, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+					context.drawTexture(ICONS_TEXTURE, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
 					if (bl) {
 						if (m * 2 + 1 < heart.getPrevScore()) {
-							drawTexture(matrices, left + m * k, y, 70, 0, 9, 9);
+							context.drawTexture(ICONS_TEXTURE, left + m * k, y, 70, 0, 9, 9);
 						}
 
 						if (m * 2 + 1 == heart.getPrevScore()) {
-							drawTexture(matrices, left + m * k, y, 79, 0, 9, 9);
+							context.drawTexture(ICONS_TEXTURE, left + m * k, y, 79, 0, 9, 9);
 						}
 					}
 
 					if (m * 2 + 1 < score) {
-						drawTexture(matrices, left + m * k, y, m >= 10 ? 160 : 52, 0, 9, 9);
+						context.drawTexture(ICONS_TEXTURE, left + m * k, y, m >= 10 ? 160 : 52, 0, 9, 9);
 					}
 
 					if (m * 2 + 1 == score) {
-						drawTexture(matrices, left + m * k, y, m >= 10 ? 169 : 61, 0, 9, 9);
+						context.drawTexture(ICONS_TEXTURE, left + m * k, y, m >= 10 ? 169 : 61, 0, 9, 9);
 					}
 				}
 			}

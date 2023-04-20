@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ScreenRect;
 import net.minecraft.client.gui.Selectable;
@@ -23,7 +23,6 @@ import net.minecraft.client.gui.tooltip.TooltipPositioner;
 import net.minecraft.client.gui.tooltip.WidgetTooltipPositioner;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -37,7 +36,7 @@ import net.minecraft.util.math.MathHelper;
  * and narrated when the widget is selected.
  */
 @Environment(EnvType.CLIENT)
-public abstract class ClickableWidget extends DrawableHelper implements Drawable, Element, Widget, Selectable {
+public abstract class ClickableWidget implements Drawable, Element, Widget, Selectable {
 	public static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	public static final Identifier ACCESSIBILITY_TEXTURE = new Identifier("textures/gui/accessibility.png");
 	private static final double field_43055 = 0.5;
@@ -73,10 +72,10 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
 			this.hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
-			this.renderButton(matrices, mouseX, mouseY, delta);
+			this.renderButton(context, mouseX, mouseY, delta);
 			this.applyTooltip();
 		}
 	}
@@ -128,9 +127,9 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		return Text.translatable("gui.narrate.button", message);
 	}
 
-	public abstract void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta);
+	public abstract void renderButton(DrawContext context, int mouseX, int mouseY, float delta);
 
-	protected static void drawScrollableText(MatrixStack matrices, TextRenderer textRenderer, Text text, int left, int top, int right, int bottom, int color) {
+	protected static void drawScrollableText(DrawContext context, TextRenderer textRenderer, Text text, int left, int top, int right, int bottom, int color) {
 		int i = textRenderer.getWidth(text);
 		int j = (top + bottom - 9) / 2 + 1;
 		int k = right - left;
@@ -140,24 +139,23 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 			double e = Math.max((double)l * 0.5, 3.0);
 			double f = Math.sin((Math.PI / 2) * Math.cos((Math.PI * 2) * d / e)) / 2.0 + 0.5;
 			double g = MathHelper.lerp(f, 0.0, (double)l);
-			enableScissor(left, top, right, bottom);
-			drawTextWithShadow(matrices, textRenderer, text, left - (int)g, j, color);
-			disableScissor();
+			context.enableScissor(left, top, right, bottom);
+			context.drawTextWithShadow(textRenderer, text, left - (int)g, j, color);
+			context.disableScissor();
 		} else {
-			drawCenteredTextWithShadow(matrices, textRenderer, text, (left + right) / 2, j, color);
+			context.drawCenteredTextWithShadow(textRenderer, text, (left + right) / 2, j, color);
 		}
 	}
 
-	protected void drawScrollableText(MatrixStack matrices, TextRenderer textRenderer, int xMargin, int color) {
+	protected void drawScrollableText(DrawContext context, TextRenderer textRenderer, int xMargin, int color) {
 		int i = this.getX() + xMargin;
 		int j = this.getX() + this.getWidth() - xMargin;
-		drawScrollableText(matrices, textRenderer, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), color);
+		drawScrollableText(context, textRenderer, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), color);
 	}
 
 	public void drawTexture(
-		MatrixStack matrices, Identifier texture, int x, int y, int u, int v, int hoveredVOffset, int width, int height, int textureWidth, int textureHeight
+		DrawContext context, Identifier texture, int x, int y, int u, int v, int hoveredVOffset, int width, int height, int textureWidth, int textureHeight
 	) {
-		RenderSystem.setShaderTexture(0, texture);
 		int i = v;
 		if (!this.isNarratable()) {
 			i = v + hoveredVOffset * 2;
@@ -166,7 +164,7 @@ public abstract class ClickableWidget extends DrawableHelper implements Drawable
 		}
 
 		RenderSystem.enableDepthTest();
-		drawTexture(matrices, x, y, (float)u, (float)i, width, height, textureWidth, textureHeight);
+		context.drawTexture(texture, x, y, (float)u, (float)i, width, height, textureWidth, textureHeight);
 	}
 
 	public void onClick(double mouseX, double mouseY) {
