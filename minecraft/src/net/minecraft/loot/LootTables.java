@@ -89,7 +89,8 @@ public class LootTables {
 	public static final Identifier PIGLIN_BARTERING_GAMEPLAY = register("gameplay/piglin_bartering");
 	public static final Identifier DESERT_WELL_ARCHAEOLOGY = register("archaeology/desert_well");
 	public static final Identifier DESERT_PYRAMID_ARCHAEOLOGY = register("archaeology/desert_pyramid");
-	public static final Identifier TRAIL_RUINS_ARCHAEOLOGY = register("archaeology/trail_ruins");
+	public static final Identifier TRAIL_RUINS_COMMON_ARCHAEOLOGY = register("archaeology/trail_ruins_common");
+	public static final Identifier TRAIL_RUINS_RARE_ARCHAEOLOGY = register("archaeology/trail_ruins_rare");
 	public static final Identifier OCEAN_RUIN_WARM_ARCHAEOLOGY = register("archaeology/ocean_ruin_warm");
 	public static final Identifier OCEAN_RUIN_COLD_ARCHAEOLOGY = register("archaeology/ocean_ruin_cold");
 

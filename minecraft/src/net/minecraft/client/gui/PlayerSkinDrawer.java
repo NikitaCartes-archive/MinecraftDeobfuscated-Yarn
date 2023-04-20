@@ -3,7 +3,7 @@ package net.minecraft.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
 
 /**
  * Helper class for drawing a player's head on GUI.
@@ -22,36 +22,29 @@ public class PlayerSkinDrawer {
 	public static final int field_39534 = 64;
 
 	/**
-	 * Draws the player's head (including the hat) on GUI. The skin texture must be
-	 * specified prior to calling by using {@link
-	 * com.mojang.blaze3d.systems.RenderSystem#setShaderTexture(int, net.minecraft.util.Identifier)}.
+	 * Draws the player's head (including the hat) on GUI.
 	 */
-	public static void draw(MatrixStack matrices, int x, int y, int size) {
-		draw(matrices, x, y, size, true, false);
+	public static void draw(DrawContext context, Identifier texture, int x, int y, int size) {
+		draw(context, texture, x, y, size, true, false);
 	}
 
 	/**
-	 * Draws the player's head on GUI. The skin texture must be specified prior to
-	 * calling by using {@link
-	 * com.mojang.blaze3d.systems.RenderSystem#setShaderTexture(int, net.minecraft.util.Identifier)}.
-	 * 
-	 * @param hatVisible whether the hat should be drawn
-	 * @param upsideDown whether the head should be upside down, also known as "Dinnerbone"
+	 * Draws the player's head on GUI.
 	 */
-	public static void draw(MatrixStack matrices, int x, int y, int size, boolean hatVisible, boolean upsideDown) {
+	public static void draw(DrawContext context, Identifier texture, int x, int y, int size, boolean hatVisible, boolean upsideDown) {
 		int i = 8 + (upsideDown ? 8 : 0);
 		int j = 8 * (upsideDown ? -1 : 1);
-		DrawableHelper.drawTexture(matrices, x, y, size, size, 8.0F, (float)i, 8, j, 64, 64);
+		context.drawTexture(texture, x, y, size, size, 8.0F, (float)i, 8, j, 64, 64);
 		if (hatVisible) {
-			drawHat(matrices, x, y, size, upsideDown);
+			drawHat(context, texture, x, y, size, upsideDown);
 		}
 	}
 
-	private static void drawHat(MatrixStack matrices, int x, int y, int size, boolean upsideDown) {
+	private static void drawHat(DrawContext context, Identifier texture, int x, int y, int size, boolean upsideDown) {
 		int i = 8 + (upsideDown ? 8 : 0);
 		int j = 8 * (upsideDown ? -1 : 1);
 		RenderSystem.enableBlend();
-		DrawableHelper.drawTexture(matrices, x, y, size, size, 40.0F, (float)i, 8, j, 64, 64);
+		context.drawTexture(texture, x, y, size, size, 40.0F, (float)i, 8, j, 64, 64);
 		RenderSystem.disableBlend();
 	}
 }

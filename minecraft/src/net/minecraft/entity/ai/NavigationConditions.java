@@ -39,6 +39,6 @@ public class NavigationConditions {
 	}
 
 	public static boolean isSolidAt(PathAwareEntity entity, BlockPos pos) {
-		return entity.world.getBlockState(pos).getMaterial().isSolid();
+		return entity.world.getBlockState(pos).isSolid();
 	}
 }

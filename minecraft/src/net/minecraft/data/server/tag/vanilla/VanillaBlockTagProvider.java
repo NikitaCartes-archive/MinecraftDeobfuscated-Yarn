@@ -65,7 +65,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.BAMBOO_BUTTON,
 				Blocks.CHERRY_BUTTON
 			);
-		this.getOrCreateTagBuilder(BlockTags.BUTTONS).addTag(BlockTags.WOODEN_BUTTONS).add(Blocks.STONE_BUTTON).add(Blocks.POLISHED_BLACKSTONE_BUTTON);
+		this.getOrCreateTagBuilder(BlockTags.STONE_BUTTONS).add(Blocks.STONE_BUTTON, Blocks.POLISHED_BLACKSTONE_BUTTON);
+		this.getOrCreateTagBuilder(BlockTags.BUTTONS).addTag(BlockTags.WOODEN_BUTTONS).addTag(BlockTags.STONE_BUTTONS);
 		this.getOrCreateTagBuilder(BlockTags.WOOL_CARPETS)
 			.add(
 				Blocks.WHITE_CARPET,
@@ -1258,7 +1259,6 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.ICE,
 				Blocks.PACKED_ICE,
 				Blocks.BLUE_ICE,
-				Blocks.STONE_BUTTON,
 				Blocks.PISTON,
 				Blocks.STICKY_PISTON,
 				Blocks.PISTON_HEAD,
@@ -1276,6 +1276,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 				Blocks.INFESTED_MOSSY_STONE_BRICKS,
 				Blocks.INFESTED_STONE_BRICKS
 			)
+			.addTag(BlockTags.STONE_BUTTONS)
 			.addTag(BlockTags.WALLS)
 			.addTag(BlockTags.SHULKER_BOXES)
 			.addTag(BlockTags.ANVIL)
@@ -1576,7 +1577,7 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 			.add(Blocks.EMERALD_ORE);
 		this.getOrCreateTagBuilder(BlockTags.INVALID_SPAWN_INSIDE).add(Blocks.END_PORTAL, Blocks.END_GATEWAY);
 		this.getOrCreateTagBuilder(BlockTags.SAND).add(Blocks.SUSPICIOUS_SAND);
-		this.getOrCreateTagBuilder(BlockTags.TRAIL_RUINS_REPLACEABLE).add(Blocks.SAND, Blocks.GRAVEL, Blocks.DIRT, Blocks.COARSE_DIRT);
+		this.getOrCreateTagBuilder(BlockTags.TRAIL_RUINS_REPLACEABLE).add(Blocks.GRAVEL);
 		this.getOrCreateTagBuilder(BlockTags.SNIFFER_DIGGABLE_BLOCK)
 			.add(Blocks.DIRT, Blocks.GRASS_BLOCK, Blocks.PODZOL, Blocks.COARSE_DIRT, Blocks.ROOTED_DIRT, Blocks.MOSS_BLOCK, Blocks.MUD, Blocks.MUDDY_MANGROVE_ROOTS);
 		this.getOrCreateTagBuilder(BlockTags.SNIFFER_EGG_HATCH_BOOST).add(Blocks.MOSS_BLOCK);
@@ -1584,5 +1585,21 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		lookup.getWrapperOrThrow(RegistryKeys.BLOCK).filter(block -> block.getDefaultState().isReplaceable()).streamKeys().forEach(objectBuilder::add);
 		this.getOrCreateTagBuilder(BlockTags.ENCHANTMENT_POWER_PROVIDER).add(Blocks.BOOKSHELF);
 		this.getOrCreateTagBuilder(BlockTags.ENCHANTMENT_POWER_TRANSMITTER).addTag(BlockTags.REPLACEABLE);
+		this.getOrCreateTagBuilder(BlockTags.MAINTAINS_FARMLAND)
+			.add(
+				Blocks.PUMPKIN_STEM,
+				Blocks.PUMPKIN,
+				Blocks.ATTACHED_PUMPKIN_STEM,
+				Blocks.MELON_STEM,
+				Blocks.MELON,
+				Blocks.ATTACHED_MELON_STEM,
+				Blocks.BEETROOTS,
+				Blocks.CARROTS,
+				Blocks.POTATOES,
+				Blocks.TORCHFLOWER_CROP,
+				Blocks.TORCHFLOWER,
+				Blocks.PITCHER_CROP,
+				Blocks.WHEAT
+			);
 	}
 }

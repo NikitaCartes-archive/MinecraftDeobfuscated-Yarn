@@ -18,9 +18,11 @@ public abstract class ChunkToNibbleArrayMap<M extends ChunkToNibbleArrayMap<M>> 
 
 	public abstract M copy();
 
-	public void replaceWithCopy(long pos) {
-		this.arrays.put(pos, this.arrays.get(pos).copy());
+	public ChunkNibbleArray replaceWithCopy(long pos) {
+		ChunkNibbleArray chunkNibbleArray = this.arrays.get(pos).copy();
+		this.arrays.put(pos, chunkNibbleArray);
 		this.clearCache();
+		return chunkNibbleArray;
 	}
 
 	public boolean containsKey(long chunkPos) {

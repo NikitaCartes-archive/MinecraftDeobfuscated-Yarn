@@ -186,7 +186,7 @@ public class ChunkHolder {
 	 * @param y chunk section y coordinate
 	 */
 	public void markForLightUpdate(LightType lightType, int y) {
-		Either<Chunk, ChunkHolder.Unloaded> either = (Either)this.getValidFutureFor(ChunkStatus.FEATURES).getNow(null);
+		Either<Chunk, ChunkHolder.Unloaded> either = (Either)this.getValidFutureFor(ChunkStatus.INITIALIZE_LIGHT).getNow(null);
 		if (either != null) {
 			Chunk chunk = (Chunk)either.left().orElse(null);
 			if (chunk != null) {
@@ -410,7 +410,7 @@ public class ChunkHolder {
 				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException());
 			}
 
-			this.entityTickingFuture = chunkStorage.makeChunkEntitiesTickable(this.pos);
+			this.entityTickingFuture = chunkStorage.makeChunkEntitiesTickable(this);
 			this.method_31409(chunkStorage, this.entityTickingFuture, executor, ChunkHolder.LevelType.ENTITY_TICKING);
 			this.combineSavingFuture(this.entityTickingFuture, "entity ticking");
 		}

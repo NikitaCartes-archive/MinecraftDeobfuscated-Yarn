@@ -1347,11 +1347,11 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 				LootPool.builder()
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
-						((LeafEntry.Builder)((LeafEntry.Builder)DynamicEntry.builder(DecoratedPotBlock.SHARDS_NBT_KEY)
+						((LeafEntry.Builder)((LeafEntry.Builder)DynamicEntry.builder(DecoratedPotBlock.SHERDS_NBT_KEY)
 									.conditionally(MatchToolLootCondition.builder(ItemPredicate.Builder.create().tag(ItemTags.BREAKS_DECORATED_POTS))))
 								.conditionally(WITHOUT_SILK_TOUCH))
 							.alternatively(
-								ItemEntry.builder(block).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("shards", "BlockEntityTag.shards"))
+								ItemEntry.builder(block).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("sherds", "BlockEntityTag.sherds"))
 							)
 					)
 			);

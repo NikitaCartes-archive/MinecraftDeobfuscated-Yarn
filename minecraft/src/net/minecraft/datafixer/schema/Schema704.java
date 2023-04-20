@@ -135,6 +135,7 @@ public class Schema704 extends Schema {
 		map.put("minecraft:bee_nest", "minecraft:beehive");
 		map.put("minecraft:beehive", "minecraft:beehive");
 		map.put("minecraft:sculk_sensor", "minecraft:sculk_sensor");
+		map.put("minecraft:decorated_pot", "minecraft:decorated_pot");
 		return ImmutableMap.copyOf(map);
 	});
 	protected static final HookFunction field_5745 = new HookFunction() {

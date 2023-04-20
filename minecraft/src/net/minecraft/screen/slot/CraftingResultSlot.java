@@ -50,8 +50,9 @@ public class CraftingResultSlot extends Slot {
 			stack.onCraft(this.player.world, this.player, this.amount);
 		}
 
-		if (this.inventory instanceof RecipeUnlocker) {
-			((RecipeUnlocker)this.inventory).unlockLastRecipe(this.player);
+		Inventory var3 = this.inventory;
+		if (var3 instanceof RecipeUnlocker recipeUnlocker) {
+			recipeUnlocker.unlockLastRecipe(this.player, this.input.getInputStacks());
 		}
 
 		this.amount = 0;

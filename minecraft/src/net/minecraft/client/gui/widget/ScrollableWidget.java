@@ -2,9 +2,9 @@ package net.minecraft.client.gui.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
@@ -99,16 +99,16 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.visible) {
-			this.drawBox(matrices);
-			enableScissor(this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1);
-			matrices.push();
-			matrices.translate(0.0, -this.scrollY, 0.0);
-			this.renderContents(matrices, mouseX, mouseY, delta);
-			matrices.pop();
-			disableScissor();
-			this.renderOverlay(matrices);
+			this.drawBox(context);
+			context.enableScissor(this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1);
+			context.getMatrices().push();
+			context.getMatrices().translate(0.0, -this.scrollY, 0.0);
+			this.renderContents(context, mouseX, mouseY, delta);
+			context.getMatrices().pop();
+			context.disableScissor();
+			this.renderOverlay(context);
 		}
 	}
 
@@ -123,9 +123,9 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	 * render other overlays, but {@code super} call is necessary to make sure the scrollbar
 	 * renders when it should.
 	 */
-	protected void renderOverlay(MatrixStack matrices) {
+	protected void renderOverlay(DrawContext context) {
 		if (this.overflows()) {
-			this.drawScrollbar(matrices);
+			this.drawScrollbar(context);
 		}
 	}
 
@@ -156,20 +156,20 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	/**
 	 * Draws the box that the contents are rendered over, including its borders.
 	 */
-	private void drawBox(MatrixStack matrices) {
+	private void drawBox(DrawContext context) {
 		int i = this.isFocused() ? -1 : -6250336;
-		fill(matrices, this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, i);
-		fill(matrices, this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, -16777216);
+		context.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, i);
+		context.fill(this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, -16777216);
 	}
 
-	private void drawScrollbar(MatrixStack matrices) {
+	private void drawScrollbar(DrawContext context) {
 		int i = this.getScrollbarThumbHeight();
 		int j = this.getX() + this.width;
 		int k = this.getX() + this.width + 8;
 		int l = Math.max(this.getY(), (int)this.scrollY * (this.height - i) / this.getMaxScrollY() + this.getY());
 		int m = l + i;
-		fill(matrices, j, l, k, m, -8355712);
-		fill(matrices, j, l, k - 1, m - 1, -4144960);
+		context.fill(j, l, k, m, -8355712);
+		context.fill(j, l, k - 1, m - 1, -4144960);
 	}
 
 	protected boolean isVisible(int top, int bottom) {
@@ -198,7 +198,7 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	/**
 	 * Renders the scrolled contents. Subclasses must override this. The rendered contents
 	 * may overflow; the caller should trim those using {@link
-	 * net.minecraft.client.gui.DrawableHelper#enableScissor}.
+	 * net.minecraft.client.gui.DrawContext#enableScissor}.
 	 */
-	protected abstract void renderContents(MatrixStack matrices, int mouseX, int mouseY, float delta);
+	protected abstract void renderContents(DrawContext context, int mouseX, int mouseY, float delta);
 }

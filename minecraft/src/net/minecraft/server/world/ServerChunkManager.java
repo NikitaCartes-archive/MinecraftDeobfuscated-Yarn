@@ -275,7 +275,7 @@ public class ServerChunkManager extends ChunkManager {
 					return (BlockView)optional.get();
 				}
 
-				if (chunkStatus == ChunkStatus.LIGHT.getPrevious()) {
+				if (chunkStatus == ChunkStatus.INITIALIZE_LIGHT.getPrevious()) {
 					return null;
 				}
 

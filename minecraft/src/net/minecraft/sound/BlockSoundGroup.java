@@ -1,6 +1,15 @@
 package net.minecraft.sound;
 
 public class BlockSoundGroup {
+	public static final BlockSoundGroup field_44608 = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.INTENTIONALLY_EMPTY,
+		SoundEvents.INTENTIONALLY_EMPTY,
+		SoundEvents.INTENTIONALLY_EMPTY,
+		SoundEvents.INTENTIONALLY_EMPTY,
+		SoundEvents.INTENTIONALLY_EMPTY
+	);
 	public static final BlockSoundGroup WOOD = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.BLOCK_WOOD_BREAK, SoundEvents.BLOCK_WOOD_STEP, SoundEvents.BLOCK_WOOD_PLACE, SoundEvents.BLOCK_WOOD_HIT, SoundEvents.BLOCK_WOOD_FALL
 	);

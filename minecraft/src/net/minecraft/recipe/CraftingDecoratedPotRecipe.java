@@ -30,7 +30,7 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 					case 3:
 					case 5:
 					case 7:
-						if (!itemStack.isIn(ItemTags.DECORATED_POT_SHARDS)) {
+						if (!itemStack.isIn(ItemTags.DECORATED_POT_SHERDS)) {
 							return false;
 						}
 						break;
@@ -51,7 +51,7 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
 		ItemStack itemStack = Items.DECORATED_POT.getDefaultStack();
 		NbtCompound nbtCompound = new NbtCompound();
-		DecoratedPotBlockEntity.writeShardsToNbt(
+		DecoratedPotBlockEntity.writeSherdsToNbt(
 			List.of(
 				craftingInventory.getStack(1).getItem(),
 				craftingInventory.getStack(3).getItem(),

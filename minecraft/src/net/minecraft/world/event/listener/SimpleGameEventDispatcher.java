@@ -23,9 +23,13 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 	private final List<GameEventListener> toAdd = Lists.<GameEventListener>newArrayList();
 	private boolean dispatching;
 	private final ServerWorld world;
+	private final int ySectionCoord;
+	private final SimpleGameEventDispatcher.DisposalCallback disposalCallback;
 
-	public SimpleGameEventDispatcher(ServerWorld world) {
+	public SimpleGameEventDispatcher(ServerWorld world, int ySectionCoord, SimpleGameEventDispatcher.DisposalCallback disposalCallback) {
 		this.world = world;
+		this.ySectionCoord = ySectionCoord;
+		this.disposalCallback = disposalCallback;
 	}
 
 	@Override
@@ -50,6 +54,10 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 			this.toRemove.add(listener);
 		} else {
 			this.listeners.remove(listener);
+		}
+
+		if (this.listeners.isEmpty()) {
+			this.disposalCallback.apply(this.ySectionCoord);
 		}
 	}
 
@@ -99,5 +107,10 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 			int i = listener.getRange() * listener.getRange();
 			return d > (double)i ? Optional.empty() : optional;
 		}
+	}
+
+	@FunctionalInterface
+	public interface DisposalCallback {
+		void apply(int ySectionCoord);
 	}
 }

@@ -1,12 +1,11 @@
 package net.minecraft.client.gui.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.MultilineText;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.GameOptions;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -50,22 +49,21 @@ public class DemoScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(MatrixStack matrices) {
-		super.renderBackground(matrices);
-		RenderSystem.setShaderTexture(0, DEMO_BG);
+	public void renderBackground(DrawContext context) {
+		super.renderBackground(context);
 		int i = (this.width - 248) / 2;
 		int j = (this.height - 166) / 2;
-		drawTexture(matrices, i, j, 0, 0, 248, 166);
+		context.drawTexture(DEMO_BG, i, j, 0, 0, 248, 166);
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
 		int i = (this.width - 248) / 2 + 10;
 		int j = (this.height - 166) / 2 + 8;
-		this.textRenderer.draw(matrices, this.title, (float)i, (float)j, 2039583);
-		j = this.movementText.draw(matrices, i, j + 12, 12, 5197647);
-		this.fullWrappedText.draw(matrices, i, j + 20, 9, 2039583);
-		super.render(matrices, mouseX, mouseY, delta);
+		context.drawText(this.textRenderer, this.title, i, j, 2039583, false);
+		j = this.movementText.draw(context, i, j + 12, 12, 5197647);
+		this.fullWrappedText.draw(context, i, j + 20, 9, 2039583);
+		super.render(context, mouseX, mouseY, delta);
 	}
 }

@@ -49,7 +49,7 @@ public class DirtPathBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos.up());
-		return !blockState.getMaterial().isSolid() || blockState.getBlock() instanceof FenceGateBlock;
+		return !blockState.isSolid() || blockState.getBlock() instanceof FenceGateBlock;
 	}
 
 	@Override

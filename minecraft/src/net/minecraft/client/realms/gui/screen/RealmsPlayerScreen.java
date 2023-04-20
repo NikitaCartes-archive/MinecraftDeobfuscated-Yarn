@@ -1,12 +1,12 @@
 package net.minecraft.client.realms.gui.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -19,7 +19,6 @@ import net.minecraft.client.realms.dto.PlayerInfo;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.util.RealmsUtil;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -182,29 +181,28 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		this.invitedObjectSelectionList.render(matrices, mouseX, mouseY, delta);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 17, 16777215);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		this.invitedObjectSelectionList.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, 16777215);
 		int i = row(12) + 20;
-		RenderSystem.setShaderTexture(0, OPTIONS_BACKGROUND);
-		RenderSystem.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
-		drawTexture(matrices, 0, i, 0.0F, 0.0F, this.width, this.height - i, 32, 32);
-		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		context.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
+		context.drawTexture(OPTIONS_BACKGROUND, 0, i, 0.0F, 0.0F, this.width, this.height - i, 32, 32);
+		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.serverData.players != null) {
-			this.textRenderer
-				.draw(
-					matrices,
-					Text.empty().append(INVITED_TEXT).append(" (").append(Integer.toString(this.serverData.players.size())).append(")"),
-					(float)this.column1_x,
-					(float)row(0),
-					10526880
-				);
+			context.drawText(
+				this.textRenderer,
+				Text.empty().append(INVITED_TEXT).append(" (").append(Integer.toString(this.serverData.players.size())).append(")"),
+				this.column1_x,
+				row(0),
+				10526880,
+				false
+			);
 		} else {
-			this.textRenderer.draw(matrices, INVITED_TEXT, (float)this.column1_x, (float)row(0), 10526880);
+			context.drawText(this.textRenderer, INVITED_TEXT, this.column1_x, row(0), 10526880, false);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -246,8 +244,8 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderBackground(MatrixStack matrices) {
-			RealmsPlayerScreen.this.renderBackground(matrices);
+		public void renderBackground(DrawContext context) {
+			RealmsPlayerScreen.this.renderBackground(context);
 		}
 
 		@Override
@@ -309,7 +307,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			int i;
 			if (!this.playerInfo.isAccepted()) {
 				i = 10526880;
@@ -319,11 +317,11 @@ public class RealmsPlayerScreen extends RealmsScreen {
 				i = 16777215;
 			}
 
-			RealmsUtil.drawPlayerHead(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, this.playerInfo.getUuid());
-			RealmsPlayerScreen.this.textRenderer.draw(matrices, this.playerInfo.getName(), (float)(RealmsPlayerScreen.this.column1_x + 3 + 12), (float)(y + 1), i);
+			RealmsUtil.drawPlayerHead(context, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, this.playerInfo.getUuid());
+			context.drawText(RealmsPlayerScreen.this.textRenderer, this.playerInfo.getName(), RealmsPlayerScreen.this.column1_x + 3 + 12, y + 1, i, false);
 			this.buttons.forEach(button -> {
 				button.setY(y + 1);
-				button.render(matrices, mouseX, mouseY, tickDelta);
+				button.render(context, mouseX, mouseY, tickDelta);
 			});
 		}
 

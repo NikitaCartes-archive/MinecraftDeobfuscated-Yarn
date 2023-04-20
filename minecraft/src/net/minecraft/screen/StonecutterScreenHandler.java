@@ -63,7 +63,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 			@Override
 			public void onTakeItem(PlayerEntity player, ItemStack stack) {
 				stack.onCraft(player.world, player, stack.getCount());
-				StonecutterScreenHandler.this.output.unlockLastRecipe(player);
+				StonecutterScreenHandler.this.output.unlockLastRecipe(player, this.getInputStacks());
 				ItemStack itemStack = StonecutterScreenHandler.this.inputSlot.takeStack(1);
 				if (!itemStack.isEmpty()) {
 					StonecutterScreenHandler.this.populateResult();
@@ -77,6 +77,10 @@ public class StonecutterScreenHandler extends ScreenHandler {
 					}
 				});
 				super.onTakeItem(player, stack);
+			}
+
+			private List<ItemStack> getInputStacks() {
+				return List.of(StonecutterScreenHandler.this.inputSlot.getStack());
 			}
 		});
 

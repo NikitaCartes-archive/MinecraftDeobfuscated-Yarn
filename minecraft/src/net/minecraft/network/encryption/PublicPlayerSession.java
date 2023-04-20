@@ -20,6 +20,10 @@ public record PublicPlayerSession(UUID sessionId, PlayerPublicKey publicKeyData)
 		return new PublicPlayerSession.Serialized(this.sessionId, this.publicKeyData.data());
 	}
 
+	public boolean isKeyExpired() {
+		return this.publicKeyData.data().isExpired();
+	}
+
 	public static record Serialized(UUID sessionId, PlayerPublicKey.PublicKeyData publicKeyData) {
 		public static PublicPlayerSession.Serialized fromBuf(PacketByteBuf buf) {
 			return new PublicPlayerSession.Serialized(buf.readUuid(), new PlayerPublicKey.PublicKeyData(buf));

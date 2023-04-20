@@ -371,26 +371,26 @@ public class ItemModelGenerator {
 			}
 		}
 
-		this.register(Items.ANGLER_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.ARCHER_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.ARMS_UP_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.BLADE_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.BREWER_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.BURN_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.DANGER_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.EXPLORER_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.FRIEND_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.HEART_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.HEARTBREAK_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.HOWL_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.MINER_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.MOURNER_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.PLENTY_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.PRIZE_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.SHEAF_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.SHELTER_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.SKULL_POTTERY_SHARD, Models.GENERATED);
-		this.register(Items.SNORT_POTTERY_SHARD, Models.GENERATED);
+		this.register(Items.ANGLER_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.ARCHER_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.ARMS_UP_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.BLADE_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.BREWER_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.BURN_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.DANGER_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.EXPLORER_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.FRIEND_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.HEART_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.HEARTBREAK_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.HOWL_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.MINER_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.MOURNER_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.PLENTY_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.PRIZE_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.SHEAF_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.SHELTER_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.SKULL_POTTERY_SHERD, Models.GENERATED);
+		this.register(Items.SNORT_POTTERY_SHERD, Models.GENERATED);
 	}
 
 	static record TrimMaterial(String name, float itemModelIndex, Map<ArmorMaterial, String> overrideArmorMaterials) {

@@ -125,6 +125,8 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends 
 			int i,
 			float f
 		) {
+			Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
+			matrix4f.rotate((float) Math.PI, 0.0F, 1.0F, 0.0F);
 			this.itemRenderer
 				.renderItem(
 					data.itemStack(),

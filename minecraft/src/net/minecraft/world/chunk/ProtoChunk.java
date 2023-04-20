@@ -145,7 +145,7 @@ public class ProtoChunk extends Chunk {
 
 				ChunkSection chunkSection = this.getSection(l);
 				BlockState blockState = chunkSection.setBlockState(i & 15, j & 15, k & 15, state);
-				if (this.status.isAtLeast(ChunkStatus.FEATURES)
+				if (this.status.isAtLeast(ChunkStatus.INITIALIZE_LIGHT)
 					&& state != blockState
 					&& (
 						state.getOpacity(this, pos) != blockState.getOpacity(this, pos)

@@ -142,17 +142,8 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		);
 	}
 
-	public CompletableFuture<Chunk> retainData(Chunk chunk) {
+	public CompletableFuture<Chunk> initializeLight(Chunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
-		return CompletableFuture.supplyAsync(Util.debugSupplier((Supplier)(() -> {
-			super.setRetainData(chunkPos, true);
-			return chunk;
-		}), () -> "retainData: " + chunkPos), task -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, task));
-	}
-
-	public CompletableFuture<Chunk> light(Chunk chunk, boolean excludeBlocks) {
-		ChunkPos chunkPos = chunk.getPos();
-		chunk.setLightOn(false);
 		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable((Runnable)(() -> {
 			ChunkSection[] chunkSections = chunk.getSectionArray();
 
@@ -163,7 +154,17 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 					super.setSectionStatus(ChunkSectionPos.from(chunkPos, j), false);
 				}
 			}
+		}), (Supplier<String>)(() -> "initializeLight: " + chunkPos)));
+		return CompletableFuture.supplyAsync(() -> {
+			super.setRetainData(chunkPos, false);
+			return chunk;
+		}, task -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.POST_UPDATE, task));
+	}
 
+	public CompletableFuture<Chunk> light(Chunk chunk, boolean excludeBlocks) {
+		ChunkPos chunkPos = chunk.getPos();
+		chunk.setLightOn(false);
+		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable((Runnable)(() -> {
 			super.setColumnEnabled(chunkPos, true);
 			if (!excludeBlocks) {
 				chunk.getLightSourcesStream().forEach(pos -> super.addLightSource(pos, chunk.getLuminance(pos)));
@@ -171,10 +172,9 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		}), (Supplier<String>)(() -> "lightChunk " + chunkPos + " " + excludeBlocks)));
 		return CompletableFuture.supplyAsync(() -> {
 			chunk.setLightOn(true);
-			super.setRetainData(chunkPos, false);
 			this.chunkStorage.releaseLightTicket(chunkPos);
 			return chunk;
-		}, runnable -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.POST_UPDATE, runnable));
+		}, task -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.POST_UPDATE, task));
 	}
 
 	public void tick() {

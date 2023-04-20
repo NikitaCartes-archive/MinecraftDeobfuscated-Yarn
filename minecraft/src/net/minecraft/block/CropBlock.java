@@ -18,7 +18,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class CropBlock extends PlantBlock implements Fertilizable, Crop {
+public class CropBlock extends PlantBlock implements Fertilizable {
 	public static final int MAX_AGE = 7;
 	public static final IntProperty AGE = Properties.AGE_7;
 	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{

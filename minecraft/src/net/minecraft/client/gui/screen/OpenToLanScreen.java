@@ -3,12 +3,12 @@ package net.minecraft.client.gui.screen;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.NetworkUtils;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.server.command.PublishCommand;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -117,11 +117,11 @@ public class OpenToLanScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, OTHER_PLAYERS_TEXT, this.width / 2, 82, 16777215);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, PORT_TEXT, this.width / 2, 142, 16777215);
-		super.render(matrices, mouseX, mouseY, delta);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 50, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, OTHER_PLAYERS_TEXT, this.width / 2, 82, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, PORT_TEXT, this.width / 2, 142, 16777215);
+		super.render(context, mouseX, mouseY, delta);
 	}
 }

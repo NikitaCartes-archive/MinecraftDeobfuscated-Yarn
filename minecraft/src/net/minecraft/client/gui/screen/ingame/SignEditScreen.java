@@ -6,14 +6,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.math.MatrixStack;
 import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
@@ -35,24 +34,24 @@ public class SignEditScreen extends AbstractSignEditScreen {
 	}
 
 	@Override
-	protected void translateForRender(MatrixStack matrices, BlockState state) {
-		super.translateForRender(matrices, state);
+	protected void translateForRender(DrawContext context, BlockState state) {
+		super.translateForRender(context, state);
 		boolean bl = state.getBlock() instanceof SignBlock;
 		if (!bl) {
-			matrices.translate(0.0F, 35.0F, 0.0F);
+			context.getMatrices().translate(0.0F, 35.0F, 0.0F);
 		}
 	}
 
 	@Override
-	protected void renderSignBackground(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, BlockState state) {
+	protected void renderSignBackground(DrawContext context, BlockState state) {
 		if (this.model != null) {
 			boolean bl = state.getBlock() instanceof SignBlock;
-			matrices.translate(0.0F, 31.0F, 0.0F);
-			matrices.scale(62.500004F, 62.500004F, -62.500004F);
+			context.getMatrices().translate(0.0F, 31.0F, 0.0F);
+			context.getMatrices().scale(62.500004F, 62.500004F, -62.500004F);
 			SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.signType);
-			VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumers, this.model::getLayer);
+			VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(context.getVertexConsumers(), this.model::getLayer);
 			this.model.stick.visible = bl;
-			this.model.root.render(matrices, vertexConsumer, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+			this.model.root.render(context.getMatrices(), vertexConsumer, LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
 		}
 	}
 

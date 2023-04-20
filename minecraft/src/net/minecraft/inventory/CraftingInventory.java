@@ -1,5 +1,6 @@
 package net.minecraft.inventory;
 
+import java.util.List;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeInputProvider;
@@ -82,6 +83,10 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 
 	public int getWidth() {
 		return this.width;
+	}
+
+	public List<ItemStack> getInputStacks() {
+		return List.copyOf(this.stacks);
 	}
 
 	@Override

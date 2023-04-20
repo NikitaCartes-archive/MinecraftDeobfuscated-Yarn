@@ -79,8 +79,8 @@ public class SnifferEggBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		boolean bl = isAboveHatchBooster(world, pos);
-		if (!world.isClient()) {
-			world.syncWorldEvent(WorldEvents.SNIFFER_EGG_CRACKS, pos, bl ? 1 : 0);
+		if (!world.isClient() && bl) {
+			world.syncWorldEvent(WorldEvents.SNIFFER_EGG_CRACKS, pos, 0);
 		}
 
 		int i = bl ? 12000 : 24000;

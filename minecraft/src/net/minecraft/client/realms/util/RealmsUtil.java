@@ -5,15 +5,14 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.util.UUIDTypeAdapter;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -62,10 +61,9 @@ public class RealmsUtil {
 		return convertToAgePresentation(System.currentTimeMillis() - date.getTime());
 	}
 
-	public static void drawPlayerHead(MatrixStack matrices, int x, int y, int size, String uuid) {
+	public static void drawPlayerHead(DrawContext context, int x, int y, int size, String uuid) {
 		GameProfile gameProfile = uuidToProfile(uuid);
 		Identifier identifier = MinecraftClient.getInstance().getSkinProvider().loadSkin(gameProfile);
-		RenderSystem.setShaderTexture(0, identifier);
-		PlayerSkinDrawer.draw(matrices, x, y, size);
+		PlayerSkinDrawer.draw(context, identifier, x, y, size);
 	}
 }

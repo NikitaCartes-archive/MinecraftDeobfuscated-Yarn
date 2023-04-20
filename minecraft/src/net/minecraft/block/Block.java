@@ -527,7 +527,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public boolean canMobSpawnInside(BlockState state) {
-		return !this.material.isSolid() && !state.isLiquid();
+		return !state.isSolid() && !state.isLiquid();
 	}
 
 	public MutableText getName() {

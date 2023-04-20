@@ -20,6 +20,7 @@ import net.minecraft.entity.passive.FrogVariant;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Instrument;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.trim.ArmorTrimMaterial;
 import net.minecraft.item.trim.ArmorTrimPattern;
 import net.minecraft.loot.condition.LootConditionType;
@@ -99,6 +100,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<Codec<? extends ChunkGenerator>>> CHUNK_GENERATOR = of("worldgen/chunk_generator");
 	public static final RegistryKey<Registry<ChunkStatus>> CHUNK_STATUS = of("chunk_status");
 	public static final RegistryKey<Registry<ArgumentSerializer<?, ?>>> COMMAND_ARGUMENT_TYPE = of("command_argument_type");
+	public static final RegistryKey<Registry<ItemGroup>> ITEM_GROUP = of("creative_mode_tab");
 	public static final RegistryKey<Registry<Identifier>> CUSTOM_STAT = of("custom_stat");
 	public static final RegistryKey<Registry<DamageType>> DAMAGE_TYPE = of("damage_type");
 	public static final RegistryKey<Registry<Codec<? extends DensityFunction>>> DENSITY_FUNCTION_TYPE = of("worldgen/density_function_type");
@@ -151,7 +153,7 @@ public class RegistryKeys {
 	public static final RegistryKey<Registry<TrunkPlacerType<?>>> TRUNK_PLACER_TYPE = of("worldgen/trunk_placer_type");
 	public static final RegistryKey<Registry<VillagerProfession>> VILLAGER_PROFESSION = of("villager_profession");
 	public static final RegistryKey<Registry<VillagerType>> VILLAGER_TYPE = of("villager_type");
-	public static final RegistryKey<Registry<String>> DECORATED_POT_PATTERNS = of("decorated_pot_patterns");
+	public static final RegistryKey<Registry<String>> DECORATED_POT_PATTERN = of("decorated_pot_patterns");
 	public static final RegistryKey<Registry<Biome>> BIOME = of("worldgen/biome");
 	public static final RegistryKey<Registry<MessageType>> MESSAGE_TYPE = of("chat_type");
 	public static final RegistryKey<Registry<ConfiguredCarver<?>>> CONFIGURED_CARVER = of("worldgen/configured_carver");

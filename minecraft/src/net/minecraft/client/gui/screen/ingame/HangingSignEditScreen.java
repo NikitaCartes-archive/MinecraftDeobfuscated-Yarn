@@ -1,12 +1,10 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.joml.Vector3f;
@@ -24,16 +22,15 @@ public class HangingSignEditScreen extends AbstractSignEditScreen {
 	}
 
 	@Override
-	protected void translateForRender(MatrixStack matrices, BlockState state) {
-		matrices.translate((float)this.width / 2.0F, 125.0F, 50.0F);
+	protected void translateForRender(DrawContext context, BlockState state) {
+		context.getMatrices().translate((float)this.width / 2.0F, 125.0F, 50.0F);
 	}
 
 	@Override
-	protected void renderSignBackground(MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers, BlockState state) {
-		matrices.translate(0.0F, -13.0F, 0.0F);
-		RenderSystem.setShaderTexture(0, this.texture);
-		matrices.scale(4.5F, 4.5F, 1.0F);
-		drawTexture(matrices, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
+	protected void renderSignBackground(DrawContext context, BlockState state) {
+		context.getMatrices().translate(0.0F, -13.0F, 0.0F);
+		context.getMatrices().scale(4.5F, 4.5F, 1.0F);
+		context.drawTexture(this.texture, -8, -8, 0.0F, 0.0F, 16, 16, 16, 16);
 	}
 
 	@Override

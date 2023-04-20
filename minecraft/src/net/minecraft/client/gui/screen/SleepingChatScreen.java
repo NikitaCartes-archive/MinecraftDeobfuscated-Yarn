@@ -2,9 +2,9 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -27,11 +27,11 @@ public class SleepingChatScreen extends ChatScreen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (!this.client.getChatRestriction().allowsChat(this.client.isInSingleplayer())) {
-			this.stopSleepingButton.render(matrices, mouseX, mouseY, delta);
+			this.stopSleepingButton.render(context, mouseX, mouseY, delta);
 		} else {
-			super.render(matrices, mouseX, mouseY, delta);
+			super.render(context, mouseX, mouseY, delta);
 		}
 	}
 

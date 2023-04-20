@@ -5,13 +5,12 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.report.AbuseReportReason;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Nullables;
@@ -70,13 +69,13 @@ public class AbuseReportReasonScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		this.reasonList.render(matrices, mouseX, mouseY, delta);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 16, 16777215);
-		super.render(matrices, mouseX, mouseY, delta);
-		fill(matrices, this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), 2130706432);
-		drawTextWithShadow(matrices, this.textRenderer, DESCRIPTION_TEXT, this.getLeft() + 4, this.getTop() + 4, -8421505);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		this.reasonList.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
+		super.render(context, mouseX, mouseY, delta);
+		context.fill(this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), 2130706432);
+		context.drawTextWithShadow(this.textRenderer, DESCRIPTION_TEXT, this.getLeft() + 4, this.getTop() + 4, -8421505);
 		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = this.reasonList.getSelectedOrNull();
 		if (reasonEntry != null) {
 			int i = this.getLeft() + 4 + 16;
@@ -86,7 +85,7 @@ public class AbuseReportReasonScreen extends Screen {
 			int m = j - i;
 			int n = l - k;
 			int o = this.textRenderer.getWrappedLinesHeight(reasonEntry.reason.getDescription(), m);
-			this.textRenderer.drawTrimmed(matrices, reasonEntry.reason.getDescription(), i, k + (n - o) / 2, m, -1);
+			context.drawTextWrapped(this.textRenderer, reasonEntry.reason.getDescription(), i, k + (n - o) / 2, m, -1);
 		}
 	}
 
@@ -154,10 +153,10 @@ public class AbuseReportReasonScreen extends Screen {
 			}
 
 			@Override
-			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				int i = x + 1;
 				int j = y + (entryHeight - 9) / 2 + 1;
-				DrawableHelper.drawTextWithShadow(matrices, AbuseReportReasonScreen.this.textRenderer, this.reason.getText(), i, j, -1);
+				context.drawTextWithShadow(AbuseReportReasonScreen.this.textRenderer, this.reason.getText(), i, j, -1);
 			}
 
 			@Override

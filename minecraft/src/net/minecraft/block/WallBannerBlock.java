@@ -43,7 +43,7 @@ public class WallBannerBlock extends AbstractBannerBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite())).getMaterial().isSolid();
+		return world.getBlockState(pos.offset(((Direction)state.get(FACING)).getOpposite())).isSolid();
 	}
 
 	@Override

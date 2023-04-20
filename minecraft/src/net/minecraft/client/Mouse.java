@@ -95,7 +95,7 @@ public class Mouse {
 				}
 			}
 
-			if (!bls[0] && (this.client.currentScreen == null || this.client.currentScreen.passEvents) && this.client.getOverlay() == null) {
+			if (!bls[0] && this.client.currentScreen == null && this.client.getOverlay() == null) {
 				if (i == 0) {
 					this.leftButtonClicked = bl;
 				} else if (i == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {

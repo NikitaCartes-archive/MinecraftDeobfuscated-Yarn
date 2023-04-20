@@ -2,11 +2,11 @@ package net.minecraft.client.realms.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.task.WorldCreationTask;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
@@ -106,19 +106,19 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 11, 16777215);
-		this.textRenderer.draw(matrices, WORLD_NAME_TEXT, (float)(this.width / 2 - 100), 52.0F, 10526880);
-		this.textRenderer.draw(matrices, WORLD_DESCRIPTION_TEXT, (float)(this.width / 2 - 100), 102.0F, 10526880);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 11, 16777215);
+		context.drawText(this.textRenderer, WORLD_NAME_TEXT, this.width / 2 - 100, 52, 10526880, false);
+		context.drawText(this.textRenderer, WORLD_DESCRIPTION_TEXT, this.width / 2 - 100, 102, 10526880, false);
 		if (this.nameBox != null) {
-			this.nameBox.render(matrices, mouseX, mouseY, delta);
+			this.nameBox.render(context, mouseX, mouseY, delta);
 		}
 
 		if (this.descriptionBox != null) {
-			this.descriptionBox.render(matrices, mouseX, mouseY, delta);
+			this.descriptionBox.render(context, mouseX, mouseY, delta);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 }

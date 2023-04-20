@@ -68,7 +68,7 @@ public abstract class FlowableFluid extends Fluid {
 				float f = fluidState.getHeight();
 				float g = 0.0F;
 				if (f == 0.0F) {
-					if (!world.getBlockState(mutable).getMaterial().blocksMovement()) {
+					if (!world.getBlockState(mutable).blocksMovement()) {
 						BlockPos blockPos = mutable.down();
 						FluidState fluidState2 = world.getFluidState(blockPos);
 						if (this.isEmptyOrThis(fluidState2)) {
@@ -177,7 +177,7 @@ public abstract class FlowableFluid extends Fluid {
 		if (this.isInfinite(world) && j >= 2) {
 			BlockState blockState2 = world.getBlockState(pos.down());
 			FluidState fluidState2 = blockState2.getFluidState();
-			if (blockState2.getMaterial().isSolid() || this.isMatchingAndStill(fluidState2)) {
+			if (blockState2.isSolid() || this.isMatchingAndStill(fluidState2)) {
 				return this.getStill(false);
 			}
 		}
@@ -395,7 +395,7 @@ public abstract class FlowableFluid extends Fluid {
 			|| state.isOf(Blocks.BUBBLE_COLUMN)) {
 			return false;
 		} else if (!state.isOf(Blocks.NETHER_PORTAL) && !state.isOf(Blocks.END_PORTAL) && !state.isOf(Blocks.END_GATEWAY) && !state.isOf(Blocks.STRUCTURE_VOID)) {
-			return !state.getMaterial().blocksMovement();
+			return !state.blocksMovement();
 		} else {
 			return false;
 		}

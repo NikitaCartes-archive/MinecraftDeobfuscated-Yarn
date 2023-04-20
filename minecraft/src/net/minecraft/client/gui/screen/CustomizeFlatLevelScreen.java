@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
@@ -8,16 +7,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 
@@ -115,18 +114,20 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		this.layers.render(matrices, mouseX, mouseY, delta);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 8, 16777215);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		this.layers.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		int i = this.width / 2 - 92 - 16;
-		drawTextWithShadow(matrices, this.textRenderer, this.tileText, i, 32, 16777215);
-		drawTextWithShadow(matrices, this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getWidth(this.heightText), 32, 16777215);
-		super.render(matrices, mouseX, mouseY, delta);
+		context.drawTextWithShadow(this.textRenderer, this.tileText, i, 32, 16777215);
+		context.drawTextWithShadow(this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getWidth(this.heightText), 32, 16777215);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Environment(EnvType.CLIENT)
 	class SuperflatLayersListWidget extends AlwaysSelectedEntryListWidget<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerEntry> {
+		static final Identifier STATS_ICONS_TEXTURE = new Identifier("textures/gui/container/stats_icons.png");
+
 		public SuperflatLayersListWidget() {
 			super(
 				CustomizeFlatLevelScreen.this.client,
@@ -169,14 +170,14 @@ public class CustomizeFlatLevelScreen extends Screen {
 		@Environment(EnvType.CLIENT)
 		class SuperflatLayerEntry extends AlwaysSelectedEntryListWidget.Entry<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerEntry> {
 			@Override
-			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				FlatChunkGeneratorLayer flatChunkGeneratorLayer = (FlatChunkGeneratorLayer)CustomizeFlatLevelScreen.this.config
 					.getLayers()
 					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - index - 1);
 				BlockState blockState = flatChunkGeneratorLayer.getBlockState();
 				ItemStack itemStack = this.createItemStackFor(blockState);
-				this.renderIcon(matrices, x, y, itemStack);
-				CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, itemStack.getName(), (float)(x + 18 + 5), (float)(y + 3), 16777215);
+				this.renderIcon(context, x, y, itemStack);
+				context.drawText(CustomizeFlatLevelScreen.this.textRenderer, itemStack.getName(), x + 18 + 5, y + 3, 16777215, false);
 				Text text;
 				if (index == 0) {
 					text = Text.translatable("createWorld.customize.flat.layer.top", flatChunkGeneratorLayer.getThickness());
@@ -186,8 +187,9 @@ public class CustomizeFlatLevelScreen extends Screen {
 					text = Text.translatable("createWorld.customize.flat.layer", flatChunkGeneratorLayer.getThickness());
 				}
 
-				CustomizeFlatLevelScreen.this.textRenderer
-					.draw(matrices, text, (float)(x + 2 + 213 - CustomizeFlatLevelScreen.this.textRenderer.getWidth(text)), (float)(y + 3), 16777215);
+				context.drawText(
+					CustomizeFlatLevelScreen.this.textRenderer, text, x + 2 + 213 - CustomizeFlatLevelScreen.this.textRenderer.getWidth(text), y + 3, 16777215, false
+				);
 			}
 
 			private ItemStack createItemStackFor(BlockState state) {
@@ -222,16 +224,15 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 			}
 
-			private void renderIcon(MatrixStack matrices, int x, int y, ItemStack iconItem) {
-				this.renderIconBackgroundTexture(matrices, x + 1, y + 1);
+			private void renderIcon(DrawContext context, int x, int y, ItemStack iconItem) {
+				this.renderIconBackgroundTexture(context, x + 1, y + 1);
 				if (!iconItem.isEmpty()) {
-					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(matrices, iconItem, x + 2, y + 2);
+					context.drawItemWithoutEntity(iconItem, x + 2, y + 2);
 				}
 			}
 
-			private void renderIconBackgroundTexture(MatrixStack matrices, int x, int y) {
-				RenderSystem.setShaderTexture(0, DrawableHelper.STATS_ICON_TEXTURE);
-				DrawableHelper.drawTexture(matrices, x, y, 0, 0.0F, 0.0F, 18, 18, 128, 128);
+			private void renderIconBackgroundTexture(DrawContext context, int x, int y) {
+				context.drawTexture(CustomizeFlatLevelScreen.SuperflatLayersListWidget.STATS_ICONS_TEXTURE, x, y, 0, 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}
 	}

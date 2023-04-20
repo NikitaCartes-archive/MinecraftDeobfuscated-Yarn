@@ -40,7 +40,7 @@ public final class ProjectileUtil {
 			vec3d = hitResult.getPos();
 		}
 
-		HitResult hitResult2 = getEntityCollision(world, entity, pos, vec3d, entity.getBoundingBox().stretch(entity.getVelocity()).expand(1.0), predicate);
+		HitResult hitResult2 = getEntityCollision(world, entity, pos, vec3d, entity.getBoundingBox().stretch(velocity).expand(1.0), predicate);
 		if (hitResult2 != null) {
 			hitResult = hitResult2;
 		}

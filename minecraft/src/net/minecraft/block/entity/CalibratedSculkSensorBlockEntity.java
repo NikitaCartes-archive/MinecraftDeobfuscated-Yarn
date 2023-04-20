@@ -8,8 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.event.listener.GameEventListener;
-import net.minecraft.world.event.listener.VibrationListener;
+import net.minecraft.world.event.Vibrations;
 
 public class CalibratedSculkSensorBlockEntity extends SculkSensorBlockEntity {
 	public CalibratedSculkSensorBlockEntity(BlockPos blockPos, BlockState blockState) {
@@ -17,13 +16,13 @@ public class CalibratedSculkSensorBlockEntity extends SculkSensorBlockEntity {
 	}
 
 	@Override
-	public VibrationListener.Callback createCallback() {
-		return new CalibratedSculkSensorBlockEntity.Callback(this);
+	public Vibrations.Callback createCallback() {
+		return new CalibratedSculkSensorBlockEntity.Callback(this.getPos());
 	}
 
-	public static class Callback extends SculkSensorBlockEntity.Callback {
-		public Callback(SculkSensorBlockEntity sculkSensorBlockEntity) {
-			super(sculkSensorBlockEntity);
+	protected class Callback extends SculkSensorBlockEntity.VibrationCallback {
+		public Callback(BlockPos pos) {
+			super(pos);
 		}
 
 		@Override
@@ -32,10 +31,9 @@ public class CalibratedSculkSensorBlockEntity extends SculkSensorBlockEntity {
 		}
 
 		@Override
-		public boolean accepts(ServerWorld world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
-			BlockPos blockPos = this.blockEntity.getPos();
-			int i = this.getCalibrationFrequency(world, blockPos, this.blockEntity.getCachedState());
-			return i != 0 && VibrationListener.getFrequency(event) != i ? false : super.accepts(world, listener, pos, event, emitter);
+		public boolean accepts(ServerWorld world, BlockPos pos, GameEvent event, @Nullable GameEvent.Emitter emitter) {
+			int i = this.getCalibrationFrequency(world, this.pos, CalibratedSculkSensorBlockEntity.this.getCachedState());
+			return i != 0 && Vibrations.getFrequency(event) != i ? false : super.accepts(world, pos, event, emitter);
 		}
 
 		private int getCalibrationFrequency(World world, BlockPos pos, BlockState state) {

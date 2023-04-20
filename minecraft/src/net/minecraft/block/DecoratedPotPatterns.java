@@ -54,32 +54,32 @@ public class DecoratedPotPatterns {
 	private static final RegistryKey<String> SHELTER_POTTERY_PATTERN_KEY = of("shelter_pottery_pattern");
 	private static final RegistryKey<String> SKULL_POTTERY_PATTERN_KEY = of("skull_pottery_pattern");
 	private static final RegistryKey<String> SNORT_POTTERY_PATTERN_KEY = of("snort_pottery_pattern");
-	private static final Map<Item, RegistryKey<String>> SHARD_TO_PATTERN = Map.ofEntries(
+	private static final Map<Item, RegistryKey<String>> SHERD_TO_PATTERN = Map.ofEntries(
 		Map.entry(Items.BRICK, DECORATED_POT_SIDE_KEY),
-		Map.entry(Items.ANGLER_POTTERY_SHARD, ANGLER_POTTERY_PATTERN_KEY),
-		Map.entry(Items.ARCHER_POTTERY_SHARD, ARCHER_POTTERY_PATTERN_KEY),
-		Map.entry(Items.ARMS_UP_POTTERY_SHARD, ARMS_UP_POTTERY_PATTERN_KEY),
-		Map.entry(Items.BLADE_POTTERY_SHARD, BLADE_POTTERY_PATTERN_KEY),
-		Map.entry(Items.BREWER_POTTERY_SHARD, BREWER_POTTERY_PATTERN_KEY),
-		Map.entry(Items.BURN_POTTERY_SHARD, BURN_POTTERY_PATTERN_KEY),
-		Map.entry(Items.DANGER_POTTERY_SHARD, DANGER_POTTERY_PATTERN_KEY),
-		Map.entry(Items.EXPLORER_POTTERY_SHARD, EXPLORER_POTTERY_PATTERN_KEY),
-		Map.entry(Items.FRIEND_POTTERY_SHARD, FRIEND_POTTERY_PATTERN_KEY),
-		Map.entry(Items.HEART_POTTERY_SHARD, HEART_POTTERY_PATTERN_KEY),
-		Map.entry(Items.HEARTBREAK_POTTERY_SHARD, HEARTBREAK_POTTERY_PATTERN_KEY),
-		Map.entry(Items.HOWL_POTTERY_SHARD, HOWL_POTTERY_PATTERN_KEY),
-		Map.entry(Items.MINER_POTTERY_SHARD, MINER_POTTERY_PATTERN_KEY),
-		Map.entry(Items.MOURNER_POTTERY_SHARD, MOURNER_POTTERY_PATTERN_KEY),
-		Map.entry(Items.PLENTY_POTTERY_SHARD, PLENTY_POTTERY_PATTERN_KEY),
-		Map.entry(Items.PRIZE_POTTERY_SHARD, POTTERY_PATTERN_PRIZE_KEY),
-		Map.entry(Items.SHEAF_POTTERY_SHARD, SHEAF_POTTERY_PATTERN_KEY),
-		Map.entry(Items.SHELTER_POTTERY_SHARD, SHELTER_POTTERY_PATTERN_KEY),
-		Map.entry(Items.SKULL_POTTERY_SHARD, SKULL_POTTERY_PATTERN_KEY),
-		Map.entry(Items.SNORT_POTTERY_SHARD, SNORT_POTTERY_PATTERN_KEY)
+		Map.entry(Items.ANGLER_POTTERY_SHERD, ANGLER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.ARCHER_POTTERY_SHERD, ARCHER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.ARMS_UP_POTTERY_SHERD, ARMS_UP_POTTERY_PATTERN_KEY),
+		Map.entry(Items.BLADE_POTTERY_SHERD, BLADE_POTTERY_PATTERN_KEY),
+		Map.entry(Items.BREWER_POTTERY_SHERD, BREWER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.BURN_POTTERY_SHERD, BURN_POTTERY_PATTERN_KEY),
+		Map.entry(Items.DANGER_POTTERY_SHERD, DANGER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.EXPLORER_POTTERY_SHERD, EXPLORER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.FRIEND_POTTERY_SHERD, FRIEND_POTTERY_PATTERN_KEY),
+		Map.entry(Items.HEART_POTTERY_SHERD, HEART_POTTERY_PATTERN_KEY),
+		Map.entry(Items.HEARTBREAK_POTTERY_SHERD, HEARTBREAK_POTTERY_PATTERN_KEY),
+		Map.entry(Items.HOWL_POTTERY_SHERD, HOWL_POTTERY_PATTERN_KEY),
+		Map.entry(Items.MINER_POTTERY_SHERD, MINER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.MOURNER_POTTERY_SHERD, MOURNER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.PLENTY_POTTERY_SHERD, PLENTY_POTTERY_PATTERN_KEY),
+		Map.entry(Items.PRIZE_POTTERY_SHERD, POTTERY_PATTERN_PRIZE_KEY),
+		Map.entry(Items.SHEAF_POTTERY_SHERD, SHEAF_POTTERY_PATTERN_KEY),
+		Map.entry(Items.SHELTER_POTTERY_SHERD, SHELTER_POTTERY_PATTERN_KEY),
+		Map.entry(Items.SKULL_POTTERY_SHERD, SKULL_POTTERY_PATTERN_KEY),
+		Map.entry(Items.SNORT_POTTERY_SHERD, SNORT_POTTERY_PATTERN_KEY)
 	);
 
 	private static RegistryKey<String> of(String path) {
-		return RegistryKey.of(RegistryKeys.DECORATED_POT_PATTERNS, new Identifier(path));
+		return RegistryKey.of(RegistryKeys.DECORATED_POT_PATTERN, new Identifier(path));
 	}
 
 	public static Identifier getTextureId(RegistryKey<String> key) {
@@ -87,8 +87,8 @@ public class DecoratedPotPatterns {
 	}
 
 	@Nullable
-	public static RegistryKey<String> fromShard(Item shard) {
-		return (RegistryKey<String>)SHARD_TO_PATTERN.get(shard);
+	public static RegistryKey<String> fromSherd(Item sherd) {
+		return (RegistryKey<String>)SHERD_TO_PATTERN.get(sherd);
 	}
 
 	public static String registerAndGetDefault(Registry<String> registry) {

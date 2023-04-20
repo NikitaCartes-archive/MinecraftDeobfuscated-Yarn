@@ -5,13 +5,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateJigsawC2SPacket;
 import net.minecraft.screen.ScreenTexts;
@@ -187,20 +187,20 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.renderBackground(matrices);
-		drawTextWithShadow(matrices, this.textRenderer, POOL_TEXT, this.width / 2 - 153, 10, 10526880);
-		this.poolField.render(matrices, mouseX, mouseY, delta);
-		drawTextWithShadow(matrices, this.textRenderer, NAME_TEXT, this.width / 2 - 153, 45, 10526880);
-		this.nameField.render(matrices, mouseX, mouseY, delta);
-		drawTextWithShadow(matrices, this.textRenderer, TARGET_TEXT, this.width / 2 - 153, 80, 10526880);
-		this.targetField.render(matrices, mouseX, mouseY, delta);
-		drawTextWithShadow(matrices, this.textRenderer, FINAL_STATE_TEXT, this.width / 2 - 153, 115, 10526880);
-		this.finalStateField.render(matrices, mouseX, mouseY, delta);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context);
+		context.drawTextWithShadow(this.textRenderer, POOL_TEXT, this.width / 2 - 153, 10, 10526880);
+		this.poolField.render(context, mouseX, mouseY, delta);
+		context.drawTextWithShadow(this.textRenderer, NAME_TEXT, this.width / 2 - 153, 45, 10526880);
+		this.nameField.render(context, mouseX, mouseY, delta);
+		context.drawTextWithShadow(this.textRenderer, TARGET_TEXT, this.width / 2 - 153, 80, 10526880);
+		this.targetField.render(context, mouseX, mouseY, delta);
+		context.drawTextWithShadow(this.textRenderer, FINAL_STATE_TEXT, this.width / 2 - 153, 115, 10526880);
+		this.finalStateField.render(context, mouseX, mouseY, delta);
 		if (JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical()) {
-			drawTextWithShadow(matrices, this.textRenderer, JOINT_LABEL_TEXT, this.width / 2 - 153, 156, 16777215);
+			context.drawTextWithShadow(this.textRenderer, JOINT_LABEL_TEXT, this.width / 2 - 153, 156, 16777215);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 }

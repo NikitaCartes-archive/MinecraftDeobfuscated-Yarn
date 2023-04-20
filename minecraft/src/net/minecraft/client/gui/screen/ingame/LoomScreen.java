@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -11,10 +10,10 @@ import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.block.entity.BannerPatterns;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.model.ModelLoader;
@@ -73,9 +72,9 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		super.render(matrices, mouseX, mouseY, delta);
-		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
+		this.drawMouseoverTooltip(context, mouseX, mouseY);
 	}
 
 	private int getRows() {
@@ -83,48 +82,53 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		this.renderBackground(matrices);
-		RenderSystem.setShaderTexture(0, TEXTURE);
+	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+		this.renderBackground(context);
 		int i = this.x;
 		int j = this.y;
-		drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
+		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		Slot slot = this.handler.getBannerSlot();
 		Slot slot2 = this.handler.getDyeSlot();
 		Slot slot3 = this.handler.getPatternSlot();
 		Slot slot4 = this.handler.getOutputSlot();
 		if (!slot.hasStack()) {
-			drawTexture(matrices, i + slot.x, j + slot.y, this.backgroundWidth, 0, 16, 16);
+			context.drawTexture(TEXTURE, i + slot.x, j + slot.y, this.backgroundWidth, 0, 16, 16);
 		}
 
 		if (!slot2.hasStack()) {
-			drawTexture(matrices, i + slot2.x, j + slot2.y, this.backgroundWidth + 16, 0, 16, 16);
+			context.drawTexture(TEXTURE, i + slot2.x, j + slot2.y, this.backgroundWidth + 16, 0, 16, 16);
 		}
 
 		if (!slot3.hasStack()) {
-			drawTexture(matrices, i + slot3.x, j + slot3.y, this.backgroundWidth + 32, 0, 16, 16);
+			context.drawTexture(TEXTURE, i + slot3.x, j + slot3.y, this.backgroundWidth + 32, 0, 16, 16);
 		}
 
 		int k = (int)(41.0F * this.scrollPosition);
-		drawTexture(matrices, i + 119, j + 13 + k, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
+		context.drawTexture(TEXTURE, i + 119, j + 13 + k, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
 		DiffuseLighting.disableGuiDepthLighting();
 		if (this.bannerPatterns != null && !this.hasTooManyPatterns) {
-			VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
-			matrices.push();
-			matrices.translate((float)(i + 139), (float)(j + 52), 0.0F);
-			matrices.scale(24.0F, -24.0F, 1.0F);
-			matrices.translate(0.5F, 0.5F, 0.5F);
+			context.getMatrices().push();
+			context.getMatrices().translate((float)(i + 139), (float)(j + 52), 0.0F);
+			context.getMatrices().scale(24.0F, -24.0F, 1.0F);
+			context.getMatrices().translate(0.5F, 0.5F, 0.5F);
 			float f = 0.6666667F;
-			matrices.scale(0.6666667F, -0.6666667F, -0.6666667F);
+			context.getMatrices().scale(0.6666667F, -0.6666667F, -0.6666667F);
 			this.bannerField.pitch = 0.0F;
 			this.bannerField.pivotY = -32.0F;
 			BannerBlockEntityRenderer.renderCanvas(
-				matrices, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, this.bannerPatterns
+				context.getMatrices(),
+				context.getVertexConsumers(),
+				15728880,
+				OverlayTexture.DEFAULT_UV,
+				this.bannerField,
+				ModelLoader.BANNER_BASE,
+				true,
+				this.bannerPatterns
 			);
-			matrices.pop();
-			immediate.draw();
+			context.getMatrices().pop();
+			context.draw();
 		} else if (this.hasTooManyPatterns) {
-			drawTexture(matrices, i + slot4.x - 2, j + slot4.y - 2, this.backgroundWidth, 17, 17, 16);
+			context.drawTexture(TEXTURE, i + slot4.x - 2, j + slot4.y - 2, this.backgroundWidth, 17, 17, 16);
 		}
 
 		if (this.canApplyDyePattern) {
@@ -141,7 +145,6 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 						break label64;
 					}
 
-					RenderSystem.setShaderTexture(0, TEXTURE);
 					int r = l + o * 14;
 					int s = m + n * 14;
 					boolean bl = mouseX >= r && mouseY >= s && mouseX < r + 14 && mouseY < s + 14;
@@ -154,8 +157,8 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 						t = this.backgroundHeight;
 					}
 
-					drawTexture(matrices, r, s, 0, t, 14, 14);
-					this.drawBanner((RegistryEntry<BannerPattern>)list.get(q), r, s);
+					context.drawTexture(TEXTURE, r, s, 0, t, 14, 14);
+					this.drawBanner(context, (RegistryEntry<BannerPattern>)list.get(q), r, s);
 				}
 			}
 		}
@@ -163,9 +166,9 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		DiffuseLighting.enableGuiDepthLighting();
 	}
 
-	private void drawBanner(RegistryEntry<BannerPattern> bannerPattern, int x, int y) {
+	private void drawBanner(DrawContext context, RegistryEntry<BannerPattern> pattern, int x, int y) {
 		NbtCompound nbtCompound = new NbtCompound();
-		NbtList nbtList = new BannerPattern.Patterns().add(BannerPatterns.BASE, DyeColor.GRAY).add(bannerPattern, DyeColor.WHITE).toNbt();
+		NbtList nbtList = new BannerPattern.Patterns().add(BannerPatterns.BASE, DyeColor.GRAY).add(pattern, DyeColor.WHITE).toNbt();
 		nbtCompound.put("Patterns", nbtList);
 		ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
 		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.BANNER, nbtCompound);
@@ -177,13 +180,14 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		matrixStack.translate(0.5F, 0.5F, 0.5F);
 		float f = 0.6666667F;
 		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
-		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
 		this.bannerField.pitch = 0.0F;
 		this.bannerField.pivotY = -32.0F;
 		List<Pair<RegistryEntry<BannerPattern>, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(DyeColor.GRAY, BannerBlockEntity.getPatternListNbt(itemStack));
-		BannerBlockEntityRenderer.renderCanvas(matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
+		BannerBlockEntityRenderer.renderCanvas(
+			matrixStack, context.getVertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list
+		);
 		matrixStack.pop();
-		immediate.draw();
+		context.draw();
 	}
 
 	@Override

@@ -9,6 +9,7 @@ public final class ItemTags {
 	public static final TagKey<Item> PLANKS = of("planks");
 	public static final TagKey<Item> STONE_BRICKS = of("stone_bricks");
 	public static final TagKey<Item> WOODEN_BUTTONS = of("wooden_buttons");
+	public static final TagKey<Item> STONE_BUTTONS = of("stone_buttons");
 	public static final TagKey<Item> BUTTONS = of("buttons");
 	public static final TagKey<Item> WOOL_CARPETS = of("wool_carpets");
 	public static final TagKey<Item> WOODEN_DOORS = of("wooden_doors");
@@ -93,7 +94,7 @@ public final class ItemTags {
 	public static final TagKey<Item> TRIM_MATERIALS = of("trim_materials");
 	public static final TagKey<Item> TRIM_TEMPLATES = of("trim_templates");
 	public static final TagKey<Item> SNIFFER_FOOD = of("sniffer_food");
-	public static final TagKey<Item> DECORATED_POT_SHARDS = of("decorated_pot_shards");
+	public static final TagKey<Item> DECORATED_POT_SHERDS = of("decorated_pot_sherds");
 	public static final TagKey<Item> SWORDS = of("swords");
 	public static final TagKey<Item> AXES = of("axes");
 	public static final TagKey<Item> HOES = of("hoes");
@@ -101,6 +102,7 @@ public final class ItemTags {
 	public static final TagKey<Item> SHOVELS = of("shovels");
 	public static final TagKey<Item> TOOLS = of("tools");
 	public static final TagKey<Item> BREAKS_DECORATED_POTS = of("breaks_decorated_pots");
+	public static final TagKey<Item> VILLAGER_PLANTABLE_SEEDS = of("villager_plantable_seeds");
 
 	private ItemTags() {
 	}

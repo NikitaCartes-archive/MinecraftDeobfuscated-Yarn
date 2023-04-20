@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.function.Predicate;
+import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
@@ -21,7 +22,7 @@ import org.slf4j.Logger;
 public class Heightmap {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
-	static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
+	static final Predicate<BlockState> SUFFOCATES = AbstractBlock.AbstractBlockState::blocksMovement;
 	private final PaletteStorage storage;
 	private final Predicate<BlockState> blockPredicate;
 	private final Chunk chunk;
@@ -143,11 +144,11 @@ public class Heightmap {
 		WORLD_SURFACE("WORLD_SURFACE", Heightmap.Purpose.CLIENT, Heightmap.NOT_AIR),
 		OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.Purpose.WORLDGEN, Heightmap.SUFFOCATES),
 		OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.Purpose.LIVE_WORLD, Heightmap.SUFFOCATES),
-		MOTION_BLOCKING("MOTION_BLOCKING", Heightmap.Purpose.CLIENT, state -> state.getMaterial().blocksMovement() || !state.getFluidState().isEmpty()),
+		MOTION_BLOCKING("MOTION_BLOCKING", Heightmap.Purpose.CLIENT, state -> state.blocksMovement() || !state.getFluidState().isEmpty()),
 		MOTION_BLOCKING_NO_LEAVES(
 			"MOTION_BLOCKING_NO_LEAVES",
 			Heightmap.Purpose.LIVE_WORLD,
-			state -> (state.getMaterial().blocksMovement() || !state.getFluidState().isEmpty()) && !(state.getBlock() instanceof LeavesBlock)
+			state -> (state.blocksMovement() || !state.getFluidState().isEmpty()) && !(state.getBlock() instanceof LeavesBlock)
 		);
 
 		public static final com.mojang.serialization.Codec<Heightmap.Type> CODEC = StringIdentifiable.createCodec(Heightmap.Type::values);

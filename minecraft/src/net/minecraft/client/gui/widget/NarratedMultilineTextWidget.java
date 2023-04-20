@@ -3,10 +3,10 @@ package net.minecraft.client.gui.widget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -30,18 +30,18 @@ public class NarratedMultilineTextWidget extends MultilineTextWidget {
 	}
 
 	@Override
-	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 		int i = this.getX() - 3;
 		int j = this.getY() - 3;
 		int k = this.getX() + this.getWidth() + 3;
 		int l = this.getY() + this.getHeight() + 3;
 		int m = this.isFocused() ? -1 : -6250336;
-		fill(matrices, i - 1, j - 1, i, l + 1, m);
-		fill(matrices, k, j - 1, k + 1, l + 1, m);
-		fill(matrices, i, j, k, j - 1, m);
-		fill(matrices, i, l, k, l + 1, m);
-		fill(matrices, i, j, k, l, 1426063360);
-		super.renderButton(matrices, mouseX, mouseY, delta);
+		context.fill(i - 1, j - 1, i, l + 1, m);
+		context.fill(k, j - 1, k + 1, l + 1, m);
+		context.fill(i, j, k, j - 1, m);
+		context.fill(i, l, k, l + 1, m);
+		context.fill(i, j, k, l, 1426063360);
+		super.renderButton(context, mouseX, mouseY, delta);
 	}
 
 	@Override

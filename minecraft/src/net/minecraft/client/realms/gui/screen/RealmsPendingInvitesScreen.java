@@ -1,6 +1,5 @@
 package net.minecraft.client.realms.gui.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +7,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -17,7 +16,6 @@ import net.minecraft.client.realms.RealmsObjectSelectionList;
 import net.minecraft.client.realms.dto.PendingInvite;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.util.RealmsUtil;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -143,29 +141,29 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.tooltip = null;
-		this.renderBackground(matrices);
-		this.pendingInvitationSelectionList.render(matrices, mouseX, mouseY, delta);
-		drawCenteredTextWithShadow(matrices, this.textRenderer, this.title, this.width / 2, 12, 16777215);
+		this.renderBackground(context);
+		this.pendingInvitationSelectionList.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, 16777215);
 		if (this.tooltip != null) {
-			this.renderMousehoverTooltip(matrices, this.tooltip, mouseX, mouseY);
+			this.renderMousehoverTooltip(context, this.tooltip, mouseX, mouseY);
 		}
 
 		if (this.pendingInvitationSelectionList.getEntryCount() == 0 && this.loaded) {
-			drawCenteredTextWithShadow(matrices, this.textRenderer, NO_PENDING_TEXT, this.width / 2, this.height / 2 - 20, 16777215);
+			context.drawCenteredTextWithShadow(this.textRenderer, NO_PENDING_TEXT, this.width / 2, this.height / 2 - 20, 16777215);
 		}
 
-		super.render(matrices, mouseX, mouseY, delta);
+		super.render(context, mouseX, mouseY, delta);
 	}
 
-	protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text tooltip, int mouseX, int mouseY) {
+	protected void renderMousehoverTooltip(DrawContext context, @Nullable Text tooltip, int mouseX, int mouseY) {
 		if (tooltip != null) {
 			int i = mouseX + 12;
 			int j = mouseY - 12;
 			int k = this.textRenderer.getWidth(tooltip);
-			fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
-			this.textRenderer.drawWithShadow(matrices, tooltip, (float)i, (float)j, 16777215);
+			context.fillGradient(i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
+			context.drawTextWithShadow(this.textRenderer, tooltip, i, j, 16777215);
 		}
 	}
 
@@ -199,8 +197,8 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderBackground(MatrixStack matrices) {
-			RealmsPendingInvitesScreen.this.renderBackground(matrices);
+		public void renderBackground(DrawContext context) {
+			RealmsPendingInvitesScreen.this.renderBackground(context);
 		}
 
 		@Override
@@ -236,8 +234,8 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			this.renderPendingInvitationItem(matrices, this.mPendingInvite, x, y, mouseX, mouseY);
+		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			this.renderPendingInvitationItem(context, this.mPendingInvite, x, y, mouseX, mouseY);
 		}
 
 		@Override
@@ -246,12 +244,12 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			return true;
 		}
 
-		private void renderPendingInvitationItem(MatrixStack matrices, PendingInvite invite, int x, int y, int mouseX, int mouseY) {
-			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, invite.worldName, (float)(x + 38), (float)(y + 1), 16777215);
-			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, invite.worldOwnerName, (float)(x + 38), (float)(y + 12), 7105644);
-			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, RealmsUtil.convertToAgePresentation(invite.date), (float)(x + 38), (float)(y + 24), 7105644);
-			RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, x, y, mouseX, mouseY);
-			RealmsUtil.drawPlayerHead(matrices, x, y, 32, invite.worldOwnerUuid);
+		private void renderPendingInvitationItem(DrawContext context, PendingInvite invite, int x, int y, int mouseX, int mouseY) {
+			context.drawText(RealmsPendingInvitesScreen.this.textRenderer, invite.worldName, x + 38, y + 1, 16777215, false);
+			context.drawText(RealmsPendingInvitesScreen.this.textRenderer, invite.worldOwnerName, x + 38, y + 12, 7105644, false);
+			context.drawText(RealmsPendingInvitesScreen.this.textRenderer, RealmsUtil.convertToAgePresentation(invite.date), x + 38, y + 24, 7105644, false);
+			RealmsAcceptRejectButton.render(context, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, x, y, mouseX, mouseY);
+			RealmsUtil.drawPlayerHead(context, x, y, 32, invite.worldOwnerUuid);
 		}
 
 		@Override
@@ -271,10 +269,9 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			}
 
 			@Override
-			protected void render(MatrixStack matrices, int x, int y, boolean showTooltip) {
-				RenderSystem.setShaderTexture(0, RealmsPendingInvitesScreen.ACCEPT_ICON);
+			protected void render(DrawContext context, int x, int y, boolean showTooltip) {
 				float f = showTooltip ? 19.0F : 0.0F;
-				DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 18, 18, 37, 18);
+				context.drawTexture(RealmsPendingInvitesScreen.ACCEPT_ICON, x, y, f, 0.0F, 18, 18, 37, 18);
 				if (showTooltip) {
 					RealmsPendingInvitesScreen.this.tooltip = RealmsPendingInvitesScreen.ACCEPT_TEXT;
 				}
@@ -293,10 +290,9 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			}
 
 			@Override
-			protected void render(MatrixStack matrices, int x, int y, boolean showTooltip) {
-				RenderSystem.setShaderTexture(0, RealmsPendingInvitesScreen.REJECT_ICON);
+			protected void render(DrawContext context, int x, int y, boolean showTooltip) {
 				float f = showTooltip ? 19.0F : 0.0F;
-				DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 18, 18, 37, 18);
+				context.drawTexture(RealmsPendingInvitesScreen.REJECT_ICON, x, y, f, 0.0F, 18, 18, 37, 18);
 				if (showTooltip) {
 					RealmsPendingInvitesScreen.this.tooltip = RealmsPendingInvitesScreen.REJECT_TEXT;
 				}

@@ -3,8 +3,8 @@ package net.minecraft.client.gui.screen.ingame;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -82,8 +82,8 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	}
 
 	@Override
-	protected void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-		super.drawForeground(matrices, mouseX, mouseY);
+	protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+		super.drawForeground(context, mouseX, mouseY);
 		int i = this.handler.getLevelCost();
 		if (i > 0) {
 			int j = 8453920;
@@ -103,27 +103,27 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 			if (text != null) {
 				int k = this.backgroundWidth - 8 - this.textRenderer.getWidth(text) - 2;
 				int l = 69;
-				fill(matrices, k - 2, 67, this.backgroundWidth - 8, 79, 1325400064);
-				this.textRenderer.drawWithShadow(matrices, text, (float)k, 69.0F, j);
+				context.fill(k - 2, 67, this.backgroundWidth - 8, 79, 1325400064);
+				context.drawTextWithShadow(this.textRenderer, text, k, 69, j);
 			}
 		}
 	}
 
 	@Override
-	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		super.drawBackground(matrices, delta, mouseX, mouseY);
-		drawTexture(matrices, this.x + 59, this.y + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
+	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+		super.drawBackground(context, delta, mouseX, mouseY);
+		context.drawTexture(TEXTURE, this.x + 59, this.y + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
 	}
 
 	@Override
-	public void renderForeground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.nameField.render(matrices, mouseX, mouseY, delta);
+	public void renderForeground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.nameField.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override
-	protected void drawInvalidRecipeArrow(MatrixStack matrices, int x, int y) {
+	protected void drawInvalidRecipeArrow(DrawContext context, int x, int y) {
 		if ((this.handler.getSlot(0).hasStack() || this.handler.getSlot(1).hasStack()) && !this.handler.getSlot(this.handler.getResultSlotIndex()).hasStack()) {
-			drawTexture(matrices, x + 99, y + 45, this.backgroundWidth, 0, 28, 21);
+			context.drawTexture(TEXTURE, x + 99, y + 45, this.backgroundWidth, 0, 28, 21);
 		}
 	}
 

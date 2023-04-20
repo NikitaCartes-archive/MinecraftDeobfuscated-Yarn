@@ -66,7 +66,7 @@ public class RootSystemFeature extends Feature<RootSystemFeatureConfig> {
 			mutablePos.move(Direction.UP);
 			if (config.predicate.test(world, mutablePos) && hasSpaceForTree(world, config, mutablePos)) {
 				BlockPos blockPos = mutablePos.down();
-				if (world.getFluidState(blockPos).isIn(FluidTags.LAVA) || !world.getBlockState(blockPos).getMaterial().isSolid()) {
+				if (world.getFluidState(blockPos).isIn(FluidTags.LAVA) || !world.getBlockState(blockPos).isSolid()) {
 					return false;
 				}
 

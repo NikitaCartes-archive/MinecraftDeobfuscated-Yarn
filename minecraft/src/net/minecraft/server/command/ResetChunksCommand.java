@@ -82,7 +82,7 @@ public class ResetChunksCommand {
 		int p = (radius * 2 + 1) * (radius * 2 + 1);
 
 		for(ChunkStatus chunkStatus : ImmutableList.of(
-			ChunkStatus.BIOMES, ChunkStatus.NOISE, ChunkStatus.SURFACE, ChunkStatus.CARVERS, ChunkStatus.LIQUID_CARVERS, ChunkStatus.FEATURES
+			ChunkStatus.BIOMES, ChunkStatus.NOISE, ChunkStatus.SURFACE, ChunkStatus.CARVERS, ChunkStatus.FEATURES, ChunkStatus.INITIALIZE_LIGHT
 		)) {
 			long q = System.currentTimeMillis();
 			CompletableFuture<Unit> completableFuture = CompletableFuture.supplyAsync(() -> Unit.INSTANCE, taskExecutor::send);
@@ -121,8 +121,7 @@ public class ResetChunksCommand {
 										chunkx -> {
 											throw new UnsupportedOperationException("Not creating full chunks here");
 										},
-										list,
-										true
+										list
 									)
 									.thenApply(either -> {
 										if (chunkStatus == ChunkStatus.NOISE) {

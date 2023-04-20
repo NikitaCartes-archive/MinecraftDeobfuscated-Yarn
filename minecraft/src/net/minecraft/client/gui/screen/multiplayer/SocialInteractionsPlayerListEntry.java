@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.screen.multiplayer;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -10,7 +9,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.Selectable;
@@ -22,7 +21,6 @@ import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.SocialInteractionsManager;
 import net.minecraft.client.report.AbuseReportContext;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -155,47 +153,45 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	}
 
 	@Override
-	public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+	public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 		int i = x + 4;
 		int j = y + (entryHeight - 24) / 2;
 		int k = i + 24 + 4;
 		Text text = this.getStatusText();
 		int l;
 		if (text == ScreenTexts.EMPTY) {
-			DrawableHelper.fill(matrices, x, y, x + entryWidth, y + entryHeight, GRAY_COLOR);
+			context.fill(x, y, x + entryWidth, y + entryHeight, GRAY_COLOR);
 			l = y + (entryHeight - 9) / 2;
 		} else {
-			DrawableHelper.fill(matrices, x, y, x + entryWidth, y + entryHeight, DARK_GRAY_COLOR);
+			context.fill(x, y, x + entryWidth, y + entryHeight, DARK_GRAY_COLOR);
 			l = y + (entryHeight - (9 + 9)) / 2;
-			this.client.textRenderer.draw(matrices, text, (float)k, (float)(l + 12), LIGHT_GRAY_COLOR);
+			context.drawText(this.client.textRenderer, text, k, l + 12, LIGHT_GRAY_COLOR, false);
 		}
 
-		RenderSystem.setShaderTexture(0, (Identifier)this.skinTexture.get());
-		PlayerSkinDrawer.draw(matrices, i, j, 24);
-		this.client.textRenderer.draw(matrices, this.name, (float)k, (float)l, WHITE_COLOR);
+		PlayerSkinDrawer.draw(context, (Identifier)this.skinTexture.get(), i, j, 24);
+		context.drawText(this.client.textRenderer, this.name, k, l, WHITE_COLOR, false);
 		if (this.offline) {
-			DrawableHelper.fill(matrices, i, j, i + 24, j + 24, BLACK_COLOR);
+			context.fill(i, j, i + 24, j + 24, BLACK_COLOR);
 		}
 
 		if (this.hideButton != null && this.showButton != null && this.reportButton != null) {
 			float f = this.timeCounter;
 			this.hideButton.setX(x + (entryWidth - this.hideButton.getWidth() - 4) - 20 - 4);
 			this.hideButton.setY(y + (entryHeight - this.hideButton.getHeight()) / 2);
-			this.hideButton.render(matrices, mouseX, mouseY, tickDelta);
+			this.hideButton.render(context, mouseX, mouseY, tickDelta);
 			this.showButton.setX(x + (entryWidth - this.showButton.getWidth() - 4) - 20 - 4);
 			this.showButton.setY(y + (entryHeight - this.showButton.getHeight()) / 2);
-			this.showButton.render(matrices, mouseX, mouseY, tickDelta);
+			this.showButton.render(context, mouseX, mouseY, tickDelta);
 			this.reportButton.setX(x + (entryWidth - this.showButton.getWidth() - 4));
 			this.reportButton.setY(y + (entryHeight - this.showButton.getHeight()) / 2);
-			this.reportButton.render(matrices, mouseX, mouseY, tickDelta);
+			this.reportButton.render(context, mouseX, mouseY, tickDelta);
 			if (f == this.timeCounter) {
 				this.timeCounter = 0.0F;
 			}
 		}
 
 		if (this.hasDraftReport && this.reportButton != null) {
-			RenderSystem.setShaderTexture(0, ClickableWidget.WIDGETS_TEXTURE);
-			DrawableHelper.drawTexture(matrices, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 182.0F, 24.0F, 15, 15, 256, 256);
+			context.drawTexture(ClickableWidget.WIDGETS_TEXTURE, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 182.0F, 24.0F, 15, 15, 256, 256);
 		}
 	}
 

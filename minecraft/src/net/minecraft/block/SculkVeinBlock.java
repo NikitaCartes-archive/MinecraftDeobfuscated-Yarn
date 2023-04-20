@@ -191,13 +191,10 @@ public class SculkVeinBlock extends MultifaceGrowthBlock implements SculkSpreada
 				FluidState fluidState = state.getFluidState();
 				if (!fluidState.isEmpty() && !fluidState.isOf(Fluids.WATER)) {
 					return false;
+				} else if (state.isIn(BlockTags.FIRE)) {
+					return false;
 				} else {
-					Material material = state.getMaterial();
-					if (state.isIn(BlockTags.FIRE)) {
-						return false;
-					} else {
-						return state.isReplaceable() || super.canGrow(world, pos, growPos, direction, state);
-					}
+					return state.isReplaceable() || super.canGrow(world, pos, growPos, direction, state);
 				}
 			} else {
 				return false;

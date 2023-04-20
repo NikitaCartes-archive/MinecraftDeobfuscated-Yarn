@@ -30,6 +30,10 @@ public interface GameEventListener {
 		return GameEventListener.TriggerOrder.UNSPECIFIED;
 	}
 
+	public interface Holder<T extends GameEventListener> {
+		T getEventListener();
+	}
+
 	public static enum TriggerOrder {
 		UNSPECIFIED,
 		BY_DISTANCE;
