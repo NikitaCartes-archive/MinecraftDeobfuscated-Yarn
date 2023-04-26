@@ -369,7 +369,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onPlayerInput(PlayerInputC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateInput(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
 	}
 
@@ -395,13 +395,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onVehicleMove(VehicleMoveC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (isMovementInvalid(packet.getX(), packet.getY(), packet.getZ(), packet.getYaw(), packet.getPitch())) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.invalid_vehicle_movement"));
 		} else {
 			Entity entity = this.player.getRootVehicle();
 			if (entity != this.player && entity.getControllingPassenger() == this.player && entity == this.topmostRiddenEntity) {
-				ServerWorld serverWorld = this.player.getWorld();
+				ServerWorld serverWorld = this.player.getServerWorld();
 				double d = entity.getX();
 				double e = entity.getY();
 				double f = entity.getZ();
@@ -449,7 +449,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 					return;
 				}
 
-				this.player.getWorld().getChunkManager().updatePosition(this.player);
+				this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 				this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
 				this.vehicleFloating = m >= -0.03125 && !bl2 && !this.server.isFlightEnabled() && !entity.hasNoGravity() && this.isEntityOnAir(entity);
 				this.updatedRiddenX = entity.getX();
@@ -460,12 +460,12 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	}
 
 	private boolean isEntityOnAir(Entity entity) {
-		return entity.world.getStatesInBox(entity.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0)).allMatch(AbstractBlock.AbstractBlockState::isAir);
+		return entity.getWorld().getStatesInBox(entity.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0)).allMatch(AbstractBlock.AbstractBlockState::isAir);
 	}
 
 	@Override
 	public void onTeleportConfirm(TeleportConfirmC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (packet.getTeleportId() == this.requestedTeleportId) {
 			if (this.requestedTeleportPos == null) {
 				this.disconnect(Text.translatable("multiplayer.disconnect.invalid_player_movement"));
@@ -489,19 +489,19 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onRecipeBookData(RecipeBookDataC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.server.getRecipeManager().get(packet.getRecipeId()).ifPresent(this.player.getRecipeBook()::onRecipeDisplayed);
 	}
 
 	@Override
 	public void onRecipeCategoryOptions(RecipeCategoryOptionsC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.getRecipeBook().setCategoryOptions(packet.getCategory(), packet.isGuiOpen(), packet.isFilteringCraftable());
 	}
 
 	@Override
 	public void onAdvancementTab(AdvancementTabC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (packet.getAction() == AdvancementTabC2SPacket.Action.OPENED_TAB) {
 			Identifier identifier = packet.getTabToOpen();
 			Advancement advancement = this.server.getAdvancementLoader().get(identifier);
@@ -513,7 +513,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onRequestCommandCompletions(RequestCommandCompletionsC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		StringReader stringReader = new StringReader(packet.getPartialCommand());
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
@@ -529,7 +529,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onUpdateCommandBlock(UpdateCommandBlockC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
 			this.player.sendMessage(Text.translatable("advMode.notEnabled"));
 		} else if (!this.player.isCreativeLevelTwoOp()) {
@@ -538,7 +538,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			CommandBlockExecutor commandBlockExecutor = null;
 			CommandBlockBlockEntity commandBlockBlockEntity = null;
 			BlockPos blockPos = packet.getBlockPos();
-			BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = this.player.getWorld().getBlockEntity(blockPos);
 			if (blockEntity instanceof CommandBlockBlockEntity) {
 				commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
 				commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
@@ -548,7 +548,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			boolean bl = packet.shouldTrackOutput();
 			if (commandBlockExecutor != null) {
 				CommandBlockBlockEntity.Type type = commandBlockBlockEntity.getCommandBlockType();
-				BlockState blockState = this.player.world.getBlockState(blockPos);
+				BlockState blockState = this.player.getWorld().getBlockState(blockPos);
 				Direction direction = blockState.get(CommandBlock.FACING);
 
 				BlockState blockState3 = (switch (packet.getType()) {
@@ -557,9 +557,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 					default -> Blocks.COMMAND_BLOCK.getDefaultState();
 				}).with(CommandBlock.FACING, direction).with(CommandBlock.CONDITIONAL, Boolean.valueOf(packet.isConditional()));
 				if (blockState3 != blockState) {
-					this.player.world.setBlockState(blockPos, blockState3, Block.NOTIFY_LISTENERS);
+					this.player.getWorld().setBlockState(blockPos, blockState3, Block.NOTIFY_LISTENERS);
 					blockEntity.setCachedState(blockState3);
-					this.player.world.getWorldChunk(blockPos).setBlockEntity(blockEntity);
+					this.player.getWorld().getWorldChunk(blockPos).setBlockEntity(blockEntity);
 				}
 
 				commandBlockExecutor.setCommand(string);
@@ -583,13 +583,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onUpdateCommandBlockMinecart(UpdateCommandBlockMinecartC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (!this.server.areCommandBlocksEnabled()) {
 			this.player.sendMessage(Text.translatable("advMode.notEnabled"));
 		} else if (!this.player.isCreativeLevelTwoOp()) {
 			this.player.sendMessage(Text.translatable("advMode.notAllowed"));
 		} else {
-			CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
+			CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.getWorld());
 			if (commandBlockExecutor != null) {
 				commandBlockExecutor.setCommand(packet.getCommand());
 				commandBlockExecutor.setTrackOutput(packet.shouldTrackOutput());
@@ -605,7 +605,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onPickFromInventory(PickFromInventoryC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.getInventory().swapSlotWithHotbar(packet.getSlot());
 		this.player
 			.networkHandler
@@ -620,7 +620,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onRenameItem(RenameItemC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.currentScreenHandler instanceof AnvilScreenHandler anvilScreenHandler) {
 			if (!anvilScreenHandler.canUse(this.player)) {
 				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, anvilScreenHandler);
@@ -636,7 +636,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onUpdateBeacon(UpdateBeaconC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.currentScreenHandler instanceof BeaconScreenHandler beaconScreenHandler) {
 			if (!this.player.currentScreenHandler.canUse(this.player)) {
 				LOGGER.debug("Player {} interacted with invalid menu {}", this.player, this.player.currentScreenHandler);
@@ -649,11 +649,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onUpdateStructureBlock(UpdateStructureBlockC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.isCreativeLevelTwoOp()) {
 			BlockPos blockPos = packet.getPos();
-			BlockState blockState = this.player.world.getBlockState(blockPos);
-			if (this.player.world.getBlockEntity(blockPos) instanceof StructureBlockBlockEntity structureBlockBlockEntity) {
+			BlockState blockState = this.player.getWorld().getBlockState(blockPos);
+			if (this.player.getWorld().getBlockEntity(blockPos) instanceof StructureBlockBlockEntity structureBlockBlockEntity) {
 				structureBlockBlockEntity.setMode(packet.getMode());
 				structureBlockBlockEntity.setTemplateName(packet.getTemplateName());
 				structureBlockBlockEntity.setOffset(packet.getOffset());
@@ -677,7 +677,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 					} else if (packet.getAction() == StructureBlockBlockEntity.Action.LOAD_AREA) {
 						if (!structureBlockBlockEntity.isStructureAvailable()) {
 							this.player.sendMessage(Text.translatable("structure_block.load_not_found", string), false);
-						} else if (structureBlockBlockEntity.loadStructure(this.player.getWorld())) {
+						} else if (structureBlockBlockEntity.loadStructure(this.player.getServerWorld())) {
 							this.player.sendMessage(Text.translatable("structure_block.load_success", string), false);
 						} else {
 							this.player.sendMessage(Text.translatable("structure_block.load_prepare", string), false);
@@ -694,43 +694,43 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				}
 
 				structureBlockBlockEntity.markDirty();
-				this.player.world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
+				this.player.getWorld().updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 			}
 		}
 	}
 
 	@Override
 	public void onUpdateJigsaw(UpdateJigsawC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.isCreativeLevelTwoOp()) {
 			BlockPos blockPos = packet.getPos();
-			BlockState blockState = this.player.world.getBlockState(blockPos);
-			if (this.player.world.getBlockEntity(blockPos) instanceof JigsawBlockEntity jigsawBlockEntity) {
+			BlockState blockState = this.player.getWorld().getBlockState(blockPos);
+			if (this.player.getWorld().getBlockEntity(blockPos) instanceof JigsawBlockEntity jigsawBlockEntity) {
 				jigsawBlockEntity.setName(packet.getName());
 				jigsawBlockEntity.setTarget(packet.getTarget());
 				jigsawBlockEntity.setPool(RegistryKey.of(RegistryKeys.TEMPLATE_POOL, packet.getPool()));
 				jigsawBlockEntity.setFinalState(packet.getFinalState());
 				jigsawBlockEntity.setJoint(packet.getJointType());
 				jigsawBlockEntity.markDirty();
-				this.player.world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
+				this.player.getWorld().updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 			}
 		}
 	}
 
 	@Override
 	public void onJigsawGenerating(JigsawGeneratingC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.isCreativeLevelTwoOp()) {
 			BlockPos blockPos = packet.getPos();
-			if (this.player.world.getBlockEntity(blockPos) instanceof JigsawBlockEntity jigsawBlockEntity) {
-				jigsawBlockEntity.generate(this.player.getWorld(), packet.getMaxDepth(), packet.shouldKeepJigsaws());
+			if (this.player.getWorld().getBlockEntity(blockPos) instanceof JigsawBlockEntity jigsawBlockEntity) {
+				jigsawBlockEntity.generate(this.player.getServerWorld(), packet.getMaxDepth(), packet.shouldKeepJigsaws());
 			}
 		}
 	}
 
 	@Override
 	public void onSelectMerchantTrade(SelectMerchantTradeC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		int i = packet.getTradeId();
 		if (this.player.currentScreenHandler instanceof MerchantScreenHandler merchantScreenHandler) {
 			if (!merchantScreenHandler.canUse(this.player)) {
@@ -814,7 +814,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onQueryEntityNbt(QueryEntityNbtC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.hasPermissionLevel(2)) {
 			Entity entity = this.player.getWorld().getEntityById(packet.getEntityId());
 			if (entity != null) {
@@ -826,7 +826,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onQueryBlockNbt(QueryBlockNbtC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.hasPermissionLevel(2)) {
 			BlockEntity blockEntity = this.player.getWorld().getBlockEntity(packet.getPos());
 			NbtCompound nbtCompound = blockEntity != null ? blockEntity.createNbt() : null;
@@ -836,11 +836,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onPlayerMove(PlayerMoveC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (isMovementInvalid(packet.getX(0.0), packet.getY(0.0), packet.getZ(0.0), packet.getYaw(0.0F), packet.getPitch(0.0F))) {
 			this.disconnect(Text.translatable("multiplayer.disconnect.invalid_player_movement"));
 		} else {
-			ServerWorld serverWorld = this.player.getWorld();
+			ServerWorld serverWorld = this.player.getServerWorld();
 			if (!this.player.notInAnyWorld) {
 				if (this.ticks == 0) {
 					this.syncWithPlayerPosition();
@@ -860,7 +860,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 					float h = MathHelper.wrapDegrees(packet.getPitch(this.player.getPitch()));
 					if (this.player.hasVehicle()) {
 						this.player.updatePositionAndAngles(this.player.getX(), this.player.getY(), this.player.getZ(), g, h);
-						this.player.getWorld().getChunkManager().updatePosition(this.player);
+						this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 					} else {
 						double i = this.player.getX();
 						double j = this.player.getY();
@@ -935,7 +935,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 									&& !this.player.isFallFlying()
 									&& !this.player.isUsingRiptide()
 									&& this.isEntityOnAir(this.player);
-								this.player.getWorld().getChunkManager().updatePosition(this.player);
+								this.player.getServerWorld().getChunkManager().updatePosition(this.player);
 								this.player.handleFall(this.player.getY() - l, packet.isOnGround());
 								this.player.setOnGround(packet.isOnGround());
 								if (bl) {
@@ -992,7 +992,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onPlayerAction(PlayerActionC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		BlockPos blockPos = packet.getPos();
 		this.player.updateLastActionTime();
 		PlayerActionC2SPacket.Action action = packet.getAction();
@@ -1024,7 +1024,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			case START_DESTROY_BLOCK:
 			case ABORT_DESTROY_BLOCK:
 			case STOP_DESTROY_BLOCK:
-				this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.world.getTopY(), packet.getSequence());
+				this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.getWorld().getTopY(), packet.getSequence());
 				this.player.networkHandler.updateSequence(packet.getSequence());
 				return;
 			default:
@@ -1048,9 +1048,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onPlayerInteractBlock(PlayerInteractBlockC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.networkHandler.updateSequence(packet.getSequence());
-		ServerWorld serverWorld = this.player.getWorld();
+		ServerWorld serverWorld = this.player.getServerWorld();
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		if (itemStack.isItemEnabled(serverWorld.getEnabledFeatures())) {
@@ -1064,7 +1064,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				if (Math.abs(vec3d3.getX()) < 1.0000001 && Math.abs(vec3d3.getY()) < 1.0000001 && Math.abs(vec3d3.getZ()) < 1.0000001) {
 					Direction direction = blockHitResult.getSide();
 					this.player.updateLastActionTime();
-					int i = this.player.world.getTopY();
+					int i = this.player.getWorld().getTopY();
 					if (blockPos.getY() < i) {
 						if (this.requestedTeleportPos == null
 							&& this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0
@@ -1093,9 +1093,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onPlayerInteractItem(PlayerInteractItemC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.updateSequence(packet.getSequence());
-		ServerWorld serverWorld = this.player.getWorld();
+		ServerWorld serverWorld = this.player.getServerWorld();
 		Hand hand = packet.getHand();
 		ItemStack itemStack = this.player.getStackInHand(hand);
 		this.player.updateLastActionTime();
@@ -1109,7 +1109,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onSpectatorTeleport(SpectatorTeleportC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.isSpectator()) {
 			for (ServerWorld serverWorld : this.server.getWorlds()) {
 				Entity entity = packet.getTarget(serverWorld);
@@ -1123,7 +1123,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onResourcePackStatus(ResourcePackStatusC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (packet.getStatus() == ResourcePackStatusC2SPacket.Status.DECLINED && this.server.requireResourcePack()) {
 			LOGGER.info("Disconnecting {} due to resource pack rejection", this.player.getName());
 			this.disconnect(Text.translatable("multiplayer.requiredTexturePrompt.disconnect"));
@@ -1132,7 +1132,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onBoatPaddleState(BoatPaddleStateC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.getControllingVehicle() instanceof BoatEntity boatEntity) {
 			boatEntity.setPaddleMovings(packet.isLeftPaddling(), packet.isRightPaddling());
 		}
@@ -1183,7 +1183,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onUpdateSelectedSlot(UpdateSelectedSlotC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (packet.getSelectedSlot() >= 0 && packet.getSelectedSlot() < PlayerInventory.getHotbarSize()) {
 			if (this.player.getInventory().selectedSlot != packet.getSelectedSlot() && this.player.getActiveHand() == Hand.MAIN_HAND) {
 				this.player.clearActiveItem();
@@ -1397,14 +1397,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onHandSwing(HandSwingC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		this.player.swingHand(packet.getHand());
 	}
 
 	@Override
 	public void onClientCommand(ClientCommandC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		switch (packet.getMode()) {
 			case PRESS_SHIFT_KEY:
@@ -1478,14 +1478,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				message.signedBody().toSerialized(this.signatureStorage),
 				message.unsignedContent(),
 				message.filterMask(),
-				params.toSerialized(this.player.world.getRegistryManager())
+				params.toSerialized(this.player.getWorld().getRegistryManager())
 			)
 		);
 		this.addPendingAcknowledgment(message);
 	}
 
 	public void sendProfilelessChatMessage(Text message, MessageType.Parameters params) {
-		this.sendPacket(new ProfilelessChatMessageS2CPacket(message, params.toSerialized(this.player.world.getRegistryManager())));
+		this.sendPacket(new ProfilelessChatMessageS2CPacket(message, params.toSerialized(this.player.getWorld().getRegistryManager())));
 	}
 
 	public SocketAddress getConnectionAddress() {
@@ -1494,8 +1494,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
-		final ServerWorld serverWorld = this.player.getWorld();
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		final ServerWorld serverWorld = this.player.getServerWorld();
 		final Entity entity = packet.getEntity(serverWorld);
 		this.player.updateLastActionTime();
 		this.player.setSneaking(packet.isPlayerSneaking());
@@ -1555,7 +1555,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onClientStatus(ClientStatusC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		ClientStatusC2SPacket.Mode mode = packet.getMode();
 		switch (mode) {
@@ -1583,13 +1583,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onCloseHandledScreen(CloseHandledScreenC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.onHandledScreenClosed();
 	}
 
 	@Override
 	public void onClickSlot(ClickSlotC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		if (this.player.currentScreenHandler.syncId == packet.getSyncId()) {
 			if (this.player.isSpectator()) {
@@ -1623,7 +1623,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onCraftRequest(CraftRequestC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		if (!this.player.isSpectator()
 			&& this.player.currentScreenHandler.syncId == packet.getSyncId()
@@ -1641,7 +1641,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onButtonClick(ButtonClickC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
 		if (this.player.currentScreenHandler.syncId == packet.getSyncId() && !this.player.isSpectator()) {
 			if (!this.player.currentScreenHandler.canUse(this.player)) {
@@ -1657,7 +1657,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onCreativeInventoryAction(CreativeInventoryActionC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.interactionManager.isCreative()) {
 			boolean bl = packet.getSlot() < 0;
 			ItemStack itemStack = packet.getItemStack();
@@ -1668,8 +1668,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			NbtCompound nbtCompound = BlockItem.getBlockEntityNbt(itemStack);
 			if (!itemStack.isEmpty() && nbtCompound != null && nbtCompound.contains("x") && nbtCompound.contains("y") && nbtCompound.contains("z")) {
 				BlockPos blockPos = BlockEntity.posFromNbt(nbtCompound);
-				if (this.player.world.canSetBlock(blockPos)) {
-					BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
+				if (this.player.getWorld().canSetBlock(blockPos)) {
+					BlockEntity blockEntity = this.player.getWorld().getBlockEntity(blockPos);
 					if (blockEntity != null) {
 						blockEntity.setStackNbt(itemStack);
 					}
@@ -1696,7 +1696,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	private void onSignUpdate(UpdateSignC2SPacket packet, List<FilteredMessage> signText) {
 		this.player.updateLastActionTime();
-		ServerWorld serverWorld = this.player.getWorld();
+		ServerWorld serverWorld = this.player.getServerWorld();
 		BlockPos blockPos = packet.getPos();
 		if (serverWorld.isChunkLoaded(blockPos)) {
 			if (!(serverWorld.getBlockEntity(blockPos) instanceof SignBlockEntity signBlockEntity)) {
@@ -1720,13 +1720,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onUpdatePlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().allowFlying;
 	}
 
 	@Override
 	public void onClientSettings(ClientSettingsC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.setClientSettings(packet);
 	}
 
@@ -1736,7 +1736,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onUpdateDifficulty(UpdateDifficultyC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.hasPermissionLevel(2) || this.isHost()) {
 			this.server.setDifficulty(packet.getDifficulty(), false);
 		}
@@ -1744,7 +1744,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.hasPermissionLevel(2) || this.isHost()) {
 			this.server.setDifficultyLocked(packet.isDifficultyLocked());
 		}
@@ -1752,7 +1752,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public void onPlayerSession(PlayerSessionC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getWorld());
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		PublicPlayerSession.Serialized serialized = packet.chatSession();
 		PlayerPublicKey.PublicKeyData publicKeyData = this.session != null ? this.session.publicKeyData().data() : null;
 		PlayerPublicKey.PublicKeyData publicKeyData2 = serialized.publicKeyData();
@@ -1762,6 +1762,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			} else {
 				try {
 					SignatureVerifier signatureVerifier = this.server.getServicesSignatureVerifier();
+					if (signatureVerifier == null) {
+						LOGGER.warn("Ignoring chat session from {} due to missing Services public key", this.player.getGameProfile().getName());
+						return;
+					}
+
 					this.setSession(serialized.toSession(this.player.getGameProfile(), signatureVerifier, Duration.ZERO));
 				} catch (PlayerPublicKey.PublicKeyException var6) {
 					LOGGER.error("Failed to validate profile key: {}", var6.getMessage());

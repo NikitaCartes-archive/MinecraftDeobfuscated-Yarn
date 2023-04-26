@@ -31,7 +31,7 @@ public class EggEntity extends ThrownItemEntity {
 			double d = 0.08;
 
 			for (int i = 0; i < 8; i++) {
-				this.world
+				this.getWorld()
 					.addParticle(
 						new ItemStackParticleEffect(ParticleTypes.ITEM, this.getStack()),
 						this.getX(),
@@ -54,7 +54,7 @@ public class EggEntity extends ThrownItemEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			if (this.random.nextInt(8) == 0) {
 				int i = 1;
 				if (this.random.nextInt(32) == 0) {
@@ -62,16 +62,16 @@ public class EggEntity extends ThrownItemEntity {
 				}
 
 				for (int j = 0; j < i; j++) {
-					ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.world);
+					ChickenEntity chickenEntity = EntityType.CHICKEN.create(this.getWorld());
 					if (chickenEntity != null) {
 						chickenEntity.setBreedingAge(-24000);
 						chickenEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
-						this.world.spawnEntity(chickenEntity);
+						this.getWorld().spawnEntity(chickenEntity);
 					}
 				}
 			}
 
-			this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
+			this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
 			this.discard();
 		}
 	}

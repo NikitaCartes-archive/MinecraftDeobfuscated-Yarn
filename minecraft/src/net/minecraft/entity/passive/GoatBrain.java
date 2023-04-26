@@ -49,7 +49,7 @@ public class GoatBrain {
 	private static final UniformIntProvider RAM_COOLDOWN_RANGE = UniformIntProvider.create(600, 6000);
 	private static final UniformIntProvider SCREAMING_RAM_COOLDOWN_RANGE = UniformIntProvider.create(100, 300);
 	private static final TargetPredicate RAM_TARGET_PREDICATE = TargetPredicate.createAttackable()
-		.setPredicate(entity -> !entity.getType().equals(EntityType.GOAT) && entity.world.getWorldBorder().contains(entity.getBoundingBox()));
+		.setPredicate(entity -> !entity.getType().equals(EntityType.GOAT) && entity.getWorld().getWorldBorder().contains(entity.getBoundingBox()));
 	private static final float RAM_SPEED = 3.0F;
 	public static final int MIN_RAM_TARGET_DISTANCE = 4;
 	public static final float ADULT_RAM_STRENGTH_MULTIPLIER = 2.5F;

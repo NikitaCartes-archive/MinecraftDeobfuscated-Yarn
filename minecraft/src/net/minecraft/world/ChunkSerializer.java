@@ -48,10 +48,10 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.PalettedContainer;
 import net.minecraft.world.chunk.ProtoChunk;
-import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.ReadableContainer;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.WrapperProtoChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
@@ -136,11 +136,11 @@ public class ChunkSerializer {
 				}
 
 				if (bl4) {
-					lightingProvider.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, k), new ChunkNibbleArray(nbtCompound.getByteArray("BlockLight")), true);
+					lightingProvider.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, k), new ChunkNibbleArray(nbtCompound.getByteArray("BlockLight")));
 				}
 
 				if (bl5) {
-					lightingProvider.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(chunkPos, k), new ChunkNibbleArray(nbtCompound.getByteArray("SkyLight")), true);
+					lightingProvider.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(chunkPos, k), new ChunkNibbleArray(nbtCompound.getByteArray("SkyLight")));
 				}
 			}
 		}
@@ -190,18 +190,6 @@ public class ChunkSerializer {
 			if (chunkStatus.isAtLeast(ChunkStatus.INITIALIZE_LIGHT)) {
 				protoChunk.setLightingProvider(lightingProvider);
 			}
-
-			BelowZeroRetrogen belowZeroRetrogen = protoChunk.getBelowZeroRetrogen();
-			boolean bl6 = chunkStatus.isAtLeast(ChunkStatus.LIGHT) || belowZeroRetrogen != null && belowZeroRetrogen.getTargetStatus().isAtLeast(ChunkStatus.LIGHT);
-			if (!bl && bl6) {
-				for (BlockPos blockPos : BlockPos.iterate(
-					chunkPos.getStartX(), world.getBottomY(), chunkPos.getStartZ(), chunkPos.getEndX(), world.getTopY() - 1, chunkPos.getEndZ()
-				)) {
-					if (chunk.getBlockState(blockPos).getLuminance() != 0) {
-						protoChunk.addLightSource(blockPos);
-					}
-				}
-			}
 		}
 
 		chunk.setLightOn(bl);
@@ -236,7 +224,7 @@ public class ChunkSerializer {
 		}
 
 		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
-			return new ReadOnlyChunk((WorldChunk)chunk, false);
+			return new WrapperProtoChunk((WorldChunk)chunk, false);
 		} else {
 			ProtoChunk protoChunk2 = (ProtoChunk)chunk;
 			NbtList nbtList3 = nbt.getList("entities", NbtElement.COMPOUND_TYPE);
@@ -252,24 +240,11 @@ public class ChunkSerializer {
 				chunk.addPendingBlockEntityNbt(nbtCompound4);
 			}
 
-			NbtList nbtList5 = nbt.getList("Lights", NbtElement.LIST_TYPE);
+			NbtCompound nbtCompound5 = nbt.getCompound("CarvingMasks");
 
-			for (int q = 0; q < nbtList5.size(); q++) {
-				ChunkSection chunkSection2 = chunkSections[q];
-				if (chunkSection2 != null && !chunkSection2.isEmpty()) {
-					NbtList nbtList6 = nbtList5.getList(q);
-
-					for (int r = 0; r < nbtList6.size(); r++) {
-						protoChunk2.addLightSource(nbtList6.getShort(r), q);
-					}
-				}
-			}
-
-			NbtCompound nbtCompound4 = nbt.getCompound("CarvingMasks");
-
-			for (String string2 : nbtCompound4.getKeys()) {
+			for (String string2 : nbtCompound5.getKeys()) {
 				GenerationStep.Carver carver = GenerationStep.Carver.valueOf(string2);
-				protoChunk2.setCarvingMask(carver, new CarvingMask(nbtCompound4.getLongArray(string2), chunk.getBottomY()));
+				protoChunk2.setCarvingMask(carver, new CarvingMask(nbtCompound5.getLongArray(string2), chunk.getBottomY()));
 			}
 
 			return protoChunk2;
@@ -371,7 +346,6 @@ public class ChunkSerializer {
 			NbtList nbtList3 = new NbtList();
 			nbtList3.addAll(protoChunk.getEntities());
 			nbtCompound.put("entities", nbtList3);
-			nbtCompound.put("Lights", toNbt(protoChunk.getLightSourcesBySection()));
 			NbtCompound nbtCompound3 = new NbtCompound();
 
 			for (GenerationStep.Carver carver : GenerationStep.Carver.values()) {

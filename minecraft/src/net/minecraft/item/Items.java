@@ -1340,6 +1340,9 @@ public class Items {
 	public static final Item MUSIC_DISC_OTHERSIDE = register(
 		"music_disc_otherside", new MusicDiscItem(14, SoundEvents.MUSIC_DISC_OTHERSIDE, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 195)
 	);
+	public static final Item MUSIC_DISC_RELIC = register(
+		"music_disc_relic", new MusicDiscItem(14, SoundEvents.MUSIC_DISC_RELIC, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 218)
+	);
 	public static final Item MUSIC_DISC_5 = register(
 		"music_disc_5", new MusicDiscItem(15, SoundEvents.MUSIC_DISC_5, new Item.Settings().maxCount(1).rarity(Rarity.RARE), 178)
 	);
@@ -1521,14 +1524,14 @@ public class Items {
 	}
 
 	public static Item register(Identifier id, Item item) {
-		return method_51348(RegistryKey.of(Registries.ITEM.getKey(), id), item);
+		return register(RegistryKey.of(Registries.ITEM.getKey(), id), item);
 	}
 
-	public static Item method_51348(RegistryKey<Item> registryKey, Item item) {
+	public static Item register(RegistryKey<Item> key, Item item) {
 		if (item instanceof BlockItem) {
 			((BlockItem)item).appendBlocks(Item.BLOCK_ITEMS, item);
 		}
 
-		return Registry.register(Registries.ITEM, registryKey, item);
+		return Registry.register(Registries.ITEM, key, item);
 	}
 }

@@ -413,11 +413,6 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 								blockState = this.getBlockState(chunkNoiseSampler, x, t, aa, blockState);
 								if (blockState != AIR && !SharedConstants.isOutsideGenerationArea(chunk.getPos())) {
-									if (blockState.getLuminance() != 0 && chunk instanceof ProtoChunk) {
-										mutable.set(x, t, aa);
-										((ProtoChunk)chunk).addLightSource(mutable);
-									}
-
 									chunkSection.setBlockState(y, u, ab, blockState, false);
 									heightmap.trackUpdate(y, t, ab, blockState);
 									heightmap2.trackUpdate(y, t, ab, blockState);

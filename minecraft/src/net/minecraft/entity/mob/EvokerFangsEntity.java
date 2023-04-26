@@ -49,8 +49,8 @@ public class EvokerFangsEntity extends Entity implements Ownable {
 
 	@Nullable
 	public LivingEntity getOwner() {
-		if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld) {
-			Entity entity = ((ServerWorld)this.world).getEntity(this.ownerUuid);
+		if (this.owner == null && this.ownerUuid != null && this.getWorld() instanceof ServerWorld) {
+			Entity entity = ((ServerWorld)this.getWorld()).getEntity(this.ownerUuid);
 			if (entity instanceof LivingEntity) {
 				this.owner = (LivingEntity)entity;
 			}
@@ -78,7 +78,7 @@ public class EvokerFangsEntity extends Entity implements Ownable {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			if (this.playingAnimation) {
 				this.ticksLeft--;
 				if (this.ticksLeft == 14) {
@@ -89,19 +89,19 @@ public class EvokerFangsEntity extends Entity implements Ownable {
 						double g = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
 						double h = 0.3 + this.random.nextDouble() * 0.3;
 						double j = (this.random.nextDouble() * 2.0 - 1.0) * 0.3;
-						this.world.addParticle(ParticleTypes.CRIT, d, e + 1.0, f, g, h, j);
+						this.getWorld().addParticle(ParticleTypes.CRIT, d, e + 1.0, f, g, h, j);
 					}
 				}
 			}
 		} else if (--this.warmup < 0) {
 			if (this.warmup == -8) {
-				for (LivingEntity livingEntity : this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
+				for (LivingEntity livingEntity : this.getWorld().getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
 					this.damage(livingEntity);
 				}
 			}
 
 			if (!this.startedAttack) {
-				this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
+				this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 				this.startedAttack = true;
 			}
 
@@ -132,7 +132,7 @@ public class EvokerFangsEntity extends Entity implements Ownable {
 		if (status == EntityStatuses.PLAY_ATTACK_SOUND) {
 			this.playingAnimation = true;
 			if (!this.isSilent()) {
-				this.world
+				this.getWorld()
 					.playSound(
 						this.getX(),
 						this.getY(),

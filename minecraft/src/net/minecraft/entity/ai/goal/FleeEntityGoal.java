@@ -68,10 +68,10 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	@Override
 	public boolean canStart() {
 		this.targetEntity = this.mob
-			.world
+			.getWorld()
 			.getClosestEntity(
 				this.mob
-					.world
+					.getWorld()
 					.getEntitiesByClass(
 						this.classToFleeFrom, this.mob.getBoundingBox().expand((double)this.fleeDistance, 3.0, (double)this.fleeDistance), livingEntity -> true
 					),

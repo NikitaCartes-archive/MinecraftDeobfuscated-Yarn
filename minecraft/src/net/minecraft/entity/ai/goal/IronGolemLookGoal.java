@@ -19,13 +19,13 @@ public class IronGolemLookGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.golem.world.isDay()) {
+		if (!this.golem.getWorld().isDay()) {
 			return false;
 		} else if (this.golem.getRandom().nextInt(8000) != 0) {
 			return false;
 		} else {
 			this.targetVillager = this.golem
-				.world
+				.getWorld()
 				.getClosestEntity(
 					VillagerEntity.class,
 					CLOSE_VILLAGER_PREDICATE,

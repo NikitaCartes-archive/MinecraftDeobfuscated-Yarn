@@ -69,7 +69,7 @@ public class HorseBondWithPlayerGoal extends Goal {
 
 			this.horse.removeAllPassengers();
 			this.horse.playAngrySound();
-			this.horse.world.sendEntityStatus(this.horse, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
+			this.horse.getWorld().sendEntityStatus(this.horse, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
 		}
 	}
 }

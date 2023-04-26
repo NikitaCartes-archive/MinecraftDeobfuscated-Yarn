@@ -13,7 +13,7 @@ public interface Hoglin {
 		float f = (float)attacker.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
 		float g;
 		if (!attacker.isBaby() && (int)f > 0) {
-			g = f / 2.0F + (float)attacker.world.random.nextInt((int)f);
+			g = f / 2.0F + (float)attacker.getWorld().random.nextInt((int)f);
 		} else {
 			g = f;
 		}
@@ -36,10 +36,10 @@ public interface Hoglin {
 		if (!(f <= 0.0)) {
 			double g = target.getX() - attacker.getX();
 			double h = target.getZ() - attacker.getZ();
-			float i = (float)(attacker.world.random.nextInt(21) - 10);
-			double j = f * (double)(attacker.world.random.nextFloat() * 0.5F + 0.2F);
+			float i = (float)(attacker.getWorld().random.nextInt(21) - 10);
+			double j = f * (double)(attacker.getWorld().random.nextFloat() * 0.5F + 0.2F);
 			Vec3d vec3d = new Vec3d(g, 0.0, h).normalize().multiply(j).rotateY(i);
-			double k = f * (double)attacker.world.random.nextFloat() * 0.5;
+			double k = f * (double)attacker.getWorld().random.nextFloat() * 0.5;
 			target.addVelocity(vec3d.x, k, vec3d.z);
 			target.velocityModified = true;
 		}

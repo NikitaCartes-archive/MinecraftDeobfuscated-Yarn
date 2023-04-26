@@ -76,7 +76,7 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	protected void mobTick() {
 		if (!this.isAiDisabled() && NavigationConditions.hasMobNavigation(this)) {
-			boolean bl = ((ServerWorld)this.world).hasRaidAt(this.getBlockPos());
+			boolean bl = ((ServerWorld)this.getWorld()).hasRaidAt(this.getBlockPos());
 			((MobNavigation)this.getNavigation()).setCanPathThroughDoors(bl);
 		}
 

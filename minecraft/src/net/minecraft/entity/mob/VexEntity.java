@@ -310,7 +310,7 @@ public class VexEntity extends HostileEntity implements Ownable {
 
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos2 = blockPos.add(VexEntity.this.random.nextInt(15) - 7, VexEntity.this.random.nextInt(11) - 5, VexEntity.this.random.nextInt(15) - 7);
-				if (VexEntity.this.world.isAir(blockPos2)) {
+				if (VexEntity.this.getWorld().isAir(blockPos2)) {
 					VexEntity.this.moveControl.moveTo((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 0.25);
 					if (VexEntity.this.getTarget() == null) {
 						VexEntity.this.getLookControl().lookAt((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.5, (double)blockPos2.getZ() + 0.5, 180.0F, 20.0F);

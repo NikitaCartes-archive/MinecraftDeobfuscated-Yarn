@@ -3,6 +3,7 @@ package net.minecraft.test;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.yggdrasil.ServicesKeySet;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Lifecycle;
 import java.net.Proxy;
@@ -13,7 +14,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.datafixer.Schemas;
-import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.registry.CombinedDynamicRegistries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKeys;
@@ -51,7 +51,7 @@ import org.slf4j.Logger;
 public class TestServer extends MinecraftServer {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int RESULT_STRING_LOG_INTERVAL = 20;
-	private static final ApiServices NONE_API_SERVICES = new ApiServices(null, SignatureVerifier.NOOP, null, null);
+	private static final ApiServices NONE_API_SERVICES = new ApiServices(null, ServicesKeySet.EMPTY, null, null);
 	private final List<GameTestBatch> batches;
 	private final BlockPos pos;
 	private static final GameRules GAME_RULES = Util.make(new GameRules(), gameRules -> {

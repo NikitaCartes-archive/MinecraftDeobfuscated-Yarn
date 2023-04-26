@@ -180,7 +180,7 @@ public class AxolotlBrain {
 	}
 
 	private static boolean canGoToLookTarget(LivingEntity entity) {
-		World world = entity.world;
+		World world = entity.getWorld();
 		Optional<LookTarget> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.LOOK_TARGET);
 		if (optional.isPresent()) {
 			BlockPos blockPos = ((LookTarget)optional.get()).getBlockPos();

@@ -59,7 +59,7 @@ public abstract class PassiveEntity extends PathAwareEntity {
 	}
 
 	public int getBreedingAge() {
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			return this.dataTracker.get(CHILD) ? -1 : 1;
 		} else {
 			return this.breedingAge;
@@ -126,10 +126,10 @@ public abstract class PassiveEntity extends PathAwareEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			if (this.happyTicksRemaining > 0) {
 				if (this.happyTicksRemaining % 4 == 0) {
-					this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
+					this.getWorld().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
 				}
 
 				this.happyTicksRemaining--;

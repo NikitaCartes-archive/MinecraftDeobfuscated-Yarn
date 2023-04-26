@@ -10,6 +10,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.IntUnaryOperator;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -102,6 +104,10 @@ public class TextureUtil {
 	}
 
 	public static void writeAsPNG(Path directory, String prefix, int textureId, int scales, int width, int height) {
+		writeAsPNG(directory, prefix, textureId, scales, width, height, null);
+	}
+
+	public static void writeAsPNG(Path directory, String prefix, int textureId, int scales, int width, int height, @Nullable IntUnaryOperator operator) {
 		RenderSystem.assertOnRenderThread();
 		bind(textureId);
 
@@ -111,11 +117,15 @@ public class TextureUtil {
 
 			try (NativeImage nativeImage = new NativeImage(j, k, false)) {
 				nativeImage.loadFromTextureImage(i, false);
+				if (operator != null) {
+					nativeImage.apply(operator);
+				}
+
 				Path path = directory.resolve(prefix + "_" + i + ".png");
 				nativeImage.writeTo(path);
 				LOGGER.debug("Exported png to: {}", path.toAbsolutePath());
-			} catch (IOException var14) {
-				LOGGER.debug("Unable to write: ", (Throwable)var14);
+			} catch (IOException var15) {
+				LOGGER.debug("Unable to write: ", (Throwable)var15);
 			}
 		}
 	}

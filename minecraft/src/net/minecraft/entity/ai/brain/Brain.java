@@ -423,7 +423,7 @@ public class Brain<E extends LivingEntity> {
 	}
 
 	public void stopAllTasks(ServerWorld world, E entity) {
-		long l = entity.world.getTime();
+		long l = entity.getWorld().getTime();
 
 		for (Task<? super E> task : this.getRunningTasks()) {
 			task.stop(world, entity, l);

@@ -69,9 +69,9 @@ public class LightningEntity extends Entity {
 
 	private void powerLightningRod() {
 		BlockPos blockPos = this.getAffectedBlockPos();
-		BlockState blockState = this.world.getBlockState(blockPos);
+		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		if (blockState.isOf(Blocks.LIGHTNING_ROD)) {
-			((LightningRodBlock)blockState.getBlock()).setPowered(blockState, this.world, blockPos);
+			((LightningRodBlock)blockState.getBlock()).setPowered(blockState, this.getWorld(), blockPos);
 		}
 	}
 
@@ -79,8 +79,8 @@ public class LightningEntity extends Entity {
 	public void tick() {
 		super.tick();
 		if (this.ambientTick == 2) {
-			if (this.world.isClient()) {
-				this.world
+			if (this.getWorld().isClient()) {
+				this.getWorld()
 					.playSound(
 						this.getX(),
 						this.getY(),
@@ -91,7 +91,7 @@ public class LightningEntity extends Entity {
 						0.8F + this.random.nextFloat() * 0.2F,
 						false
 					);
-				this.world
+				this.getWorld()
 					.playSound(
 						this.getX(),
 						this.getY(),
@@ -103,13 +103,13 @@ public class LightningEntity extends Entity {
 						false
 					);
 			} else {
-				Difficulty difficulty = this.world.getDifficulty();
+				Difficulty difficulty = this.getWorld().getDifficulty();
 				if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
 					this.spawnFire(4);
 				}
 
 				this.powerLightningRod();
-				cleanOxidation(this.world, this.getAffectedBlockPos());
+				cleanOxidation(this.getWorld(), this.getAffectedBlockPos());
 				this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
 			}
 		}
@@ -117,15 +117,16 @@ public class LightningEntity extends Entity {
 		this.ambientTick--;
 		if (this.ambientTick < 0) {
 			if (this.remainingActions == 0) {
-				if (this.world instanceof ServerWorld) {
-					List<Entity> list = this.world
+				if (this.getWorld() instanceof ServerWorld) {
+					List<Entity> list = this.getWorld()
 						.getOtherEntities(
 							this,
 							new Box(this.getX() - 15.0, this.getY() - 15.0, this.getZ() - 15.0, this.getX() + 15.0, this.getY() + 6.0 + 15.0, this.getZ() + 15.0),
 							entityx -> entityx.isAlive() && !this.struckEntities.contains(entityx)
 						);
 
-					for (ServerPlayerEntity serverPlayerEntity : ((ServerWorld)this.world).getPlayers(serverPlayerEntityx -> serverPlayerEntityx.distanceTo(this) < 256.0F)) {
+					for (ServerPlayerEntity serverPlayerEntity : ((ServerWorld)this.getWorld())
+						.getPlayers(serverPlayerEntityx -> serverPlayerEntityx.distanceTo(this) < 256.0F)) {
 						Criteria.LIGHTNING_STRIKE.trigger(serverPlayerEntity, this, list);
 					}
 				}
@@ -140,16 +141,16 @@ public class LightningEntity extends Entity {
 		}
 
 		if (this.ambientTick >= 0) {
-			if (!(this.world instanceof ServerWorld)) {
-				this.world.setLightningTicksLeft(2);
+			if (!(this.getWorld() instanceof ServerWorld)) {
+				this.getWorld().setLightningTicksLeft(2);
 			} else if (!this.cosmetic) {
-				List<Entity> list = this.world
+				List<Entity> list = this.getWorld()
 					.getOtherEntities(
 						this, new Box(this.getX() - 3.0, this.getY() - 3.0, this.getZ() - 3.0, this.getX() + 3.0, this.getY() + 6.0 + 3.0, this.getZ() + 3.0), Entity::isAlive
 					);
 
 				for (Entity entity : list) {
-					entity.onStruckByLightning((ServerWorld)this.world, this);
+					entity.onStruckByLightning((ServerWorld)this.getWorld(), this);
 				}
 
 				this.struckEntities.addAll(list);
@@ -166,19 +167,19 @@ public class LightningEntity extends Entity {
 	}
 
 	private void spawnFire(int spreadAttempts) {
-		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
+		if (!this.cosmetic && !this.getWorld().isClient && this.getWorld().getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
 			BlockPos blockPos = this.getBlockPos();
-			BlockState blockState = AbstractFireBlock.getState(this.world, blockPos);
-			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
-				this.world.setBlockState(blockPos, blockState);
+			BlockState blockState = AbstractFireBlock.getState(this.getWorld(), blockPos);
+			if (this.getWorld().getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.getWorld(), blockPos)) {
+				this.getWorld().setBlockState(blockPos, blockState);
 				this.blocksSetOnFire++;
 			}
 
 			for (int i = 0; i < spreadAttempts; i++) {
 				BlockPos blockPos2 = blockPos.add(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
-				blockState = AbstractFireBlock.getState(this.world, blockPos2);
-				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
-					this.world.setBlockState(blockPos2, blockState);
+				blockState = AbstractFireBlock.getState(this.getWorld(), blockPos2);
+				if (this.getWorld().getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.getWorld(), blockPos2)) {
+					this.getWorld().setBlockState(blockPos2, blockState);
 					this.blocksSetOnFire++;
 				}
 			}

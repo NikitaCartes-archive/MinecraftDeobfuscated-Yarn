@@ -32,7 +32,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -123,6 +122,7 @@ import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.PlayerKeyPair;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.PublicPlayerSession;
+import net.minecraft.network.encryption.SignatureVerifier;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.network.listener.TickablePacketListener;
@@ -686,8 +686,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	@Override
 	public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		int i = Block.NOTIFY_ALL | Block.FORCE_STATE | (packet.shouldSkipLightingUpdates() ? Block.SKIP_LIGHTING_UPDATES : 0);
-		packet.visitUpdates((pos, state) -> this.world.handleBlockUpdate(pos, state, i));
+		packet.visitUpdates((pos, state) -> this.world.handleBlockUpdate(pos, state, 19));
 	}
 
 	@Override
@@ -738,7 +737,6 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		LightingProvider lightingProvider = this.world.getChunkManager().getLightingProvider();
 		ChunkSection[] chunkSections = chunk.getSectionArray();
 		ChunkPos chunkPos = chunk.getPos();
-		lightingProvider.setColumnEnabled(chunkPos, true);
 
 		for (int i = 0; i < chunkSections.length; i++) {
 			ChunkSection chunkSection = chunkSections[i];
@@ -746,8 +744,6 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			lightingProvider.setSectionStatus(ChunkSectionPos.from(chunkPos, j), chunkSection.isEmpty());
 			this.world.scheduleBlockRenders(x, j, z);
 		}
-
-		this.world.markChunkRenderability(x, z);
 	}
 
 	@Override
@@ -763,13 +759,11 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	private void unloadChunk(UnloadChunkS2CPacket packet) {
 		this.world.enqueueChunkUpdate(() -> {
 			LightingProvider lightingProvider = this.world.getLightingProvider();
+			lightingProvider.setColumnEnabled(new ChunkPos(packet.getX(), packet.getZ()), false);
 
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 				lightingProvider.setSectionStatus(ChunkSectionPos.from(packet.getX(), i, packet.getZ()), true);
 			}
-
-			lightingProvider.setColumnEnabled(new ChunkPos(packet.getX(), packet.getZ()), false);
-			this.world.markChunkRenderability(packet.getX(), packet.getZ());
 		});
 	}
 
@@ -1082,7 +1076,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			.entryOf(packet.getDimensionType());
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getId();
-		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
+		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {
 			Scoreboard scoreboard = this.world.getScoreboard();
 			Map<String, MapState> map = this.world.getMapStates();
 			boolean bl = packet.isDebugWorld();
@@ -1120,7 +1114,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			);
 		clientPlayerEntity2.setId(i);
 		this.client.player = clientPlayerEntity2;
-		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
+		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {
 			this.client.getMusicTracker().stop();
 		}
 
@@ -1785,19 +1779,23 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 
 	private void setPublicSession(PlayerListS2CPacket.Entry receivedEntry, PlayerListEntry currentEntry) {
 		GameProfile gameProfile = currentEntry.getProfile();
-		PublicPlayerSession.Serialized serialized = receivedEntry.chatSession();
-		if (serialized != null) {
-			try {
-				PublicPlayerSession publicPlayerSession = serialized.toSession(
-					gameProfile, this.client.getServicesSignatureVerifier(), PlayerPublicKey.EXPIRATION_GRACE_PERIOD
-				);
-				currentEntry.setSession(publicPlayerSession);
-			} catch (PlayerPublicKey.PublicKeyException var6) {
-				LOGGER.error("Failed to validate profile key for player: '{}'", gameProfile.getName(), var6);
+		SignatureVerifier signatureVerifier = this.client.getServicesSignatureVerifier();
+		if (signatureVerifier == null) {
+			LOGGER.warn("Ignoring chat session from {} due to missing Services public key", gameProfile.getName());
+			currentEntry.resetSession(this.isSecureChatEnforced());
+		} else {
+			PublicPlayerSession.Serialized serialized = receivedEntry.chatSession();
+			if (serialized != null) {
+				try {
+					PublicPlayerSession publicPlayerSession = serialized.toSession(gameProfile, signatureVerifier, PlayerPublicKey.EXPIRATION_GRACE_PERIOD);
+					currentEntry.setSession(publicPlayerSession);
+				} catch (PlayerPublicKey.PublicKeyException var7) {
+					LOGGER.error("Failed to validate profile key for player: '{}'", gameProfile.getName(), var7);
+					currentEntry.resetSession(this.isSecureChatEnforced());
+				}
+			} else {
 				currentEntry.resetSession(this.isSecureChatEnforced());
 			}
-		} else {
-			currentEntry.resetSession(this.isSecureChatEnforced());
 		}
 	}
 
@@ -2413,12 +2411,12 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		BitSet bitSet = data.getInitedSky();
 		BitSet bitSet2 = data.getUninitedSky();
 		Iterator<byte[]> iterator = data.getSkyNibbles().iterator();
-		this.updateLighting(x, z, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator, data.isNonEdge());
+		this.updateLighting(x, z, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator);
 		BitSet bitSet3 = data.getInitedBlock();
 		BitSet bitSet4 = data.getUninitedBlock();
 		Iterator<byte[]> iterator2 = data.getBlockNibbles().iterator();
-		this.updateLighting(x, z, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, data.isNonEdge());
-		this.world.markChunkRenderability(x, z);
+		this.updateLighting(x, z, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2);
+		lightingProvider.setColumnEnabled(new ChunkPos(x, z), true);
 	}
 
 	@Override
@@ -2470,16 +2468,14 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		}
 	}
 
-	private void updateLighting(
-		int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet inited, BitSet uninited, Iterator<byte[]> nibbles, boolean nonEdge
-	) {
+	private void updateLighting(int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet inited, BitSet uninited, Iterator<byte[]> nibbles) {
 		for (int i = 0; i < provider.getHeight(); i++) {
 			int j = provider.getBottomY() + i;
 			boolean bl = inited.get(i);
 			boolean bl2 = uninited.get(i);
 			if (bl || bl2) {
 				provider.enqueueSectionData(
-					type, ChunkSectionPos.from(chunkX, j, chunkZ), bl ? new ChunkNibbleArray((byte[])((byte[])nibbles.next()).clone()) : new ChunkNibbleArray(), nonEdge
+					type, ChunkSectionPos.from(chunkX, j, chunkZ), bl ? new ChunkNibbleArray((byte[])((byte[])nibbles.next()).clone()) : new ChunkNibbleArray()
 				);
 				this.world.scheduleBlockRenders(chunkX, j, chunkZ);
 			}

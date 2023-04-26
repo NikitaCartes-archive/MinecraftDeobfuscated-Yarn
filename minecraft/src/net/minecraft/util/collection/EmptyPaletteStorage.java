@@ -57,8 +57,8 @@ public class EmptyPaletteStorage implements PaletteStorage {
 	}
 
 	@Override
-	public void method_39892(int[] is) {
-		Arrays.fill(is, 0, this.size, 0);
+	public void writePaletteIndices(int[] out) {
+		Arrays.fill(out, 0, this.size, 0);
 	}
 
 	@Override

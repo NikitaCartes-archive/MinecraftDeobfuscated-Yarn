@@ -22,7 +22,7 @@ public class ChunkNibbleArray {
 	private static final int NIBBLE_BITS = 4;
 	@Nullable
 	protected byte[] bytes;
-	private final int defaultValue;
+	private int defaultValue;
 
 	public ChunkNibbleArray() {
 		this(0);
@@ -90,6 +90,11 @@ public class ChunkNibbleArray {
 
 	private static int getArrayIndex(int i) {
 		return i >> 1;
+	}
+
+	public void clear(int defaultValue) {
+		this.defaultValue = defaultValue;
+		this.bytes = null;
 	}
 
 	private static byte pack(int value) {

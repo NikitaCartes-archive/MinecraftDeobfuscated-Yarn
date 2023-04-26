@@ -25,12 +25,13 @@ import net.minecraft.world.chunk.light.LightingProvider;
 import org.slf4j.Logger;
 
 public class ServerLightingProvider extends LightingProvider implements AutoCloseable {
+	public static final int field_44692 = 1000;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final TaskExecutor<Runnable> processor;
 	private final ObjectList<Pair<ServerLightingProvider.Stage, Runnable>> pendingTasks = new ObjectArrayList<>();
 	private final ThreadedAnvilChunkStorage chunkStorage;
 	private final MessageListener<ChunkTaskPrioritySystem.Task<Runnable>> executor;
-	private volatile int taskBatchSize = 5;
+	private final int taskBatchSize = 1000;
 	private final AtomicBoolean ticking = new AtomicBoolean();
 
 	public ServerLightingProvider(
@@ -50,12 +51,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public int doLightUpdates(int i, boolean doSkylight, boolean skipEdgeLightPropagation) {
-		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran automatically on a different thread!"));
-	}
-
-	@Override
-	public void addLightSource(BlockPos pos, int level) {
+	public int doLightUpdates() {
 		throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Ran automatically on a different thread!"));
 	}
 
@@ -76,8 +72,8 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			super.setColumnEnabled(pos, false);
 
 			for (int i = this.getBottomY(); i < this.getTopY(); i++) {
-				super.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
-				super.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
+				super.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null);
+				super.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, i), null);
 			}
 
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
@@ -98,6 +94,16 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
+	public void propagateLight(ChunkPos chunkPos) {
+		this.enqueue(
+			chunkPos.x,
+			chunkPos.z,
+			ServerLightingProvider.Stage.PRE_UPDATE,
+			Util.debugRunnable((Runnable)(() -> super.propagateLight(chunkPos)), (Supplier<String>)(() -> "propagateLight " + chunkPos))
+		);
+	}
+
+	@Override
 	public void setColumnEnabled(ChunkPos pos, boolean retainData) {
 		this.enqueue(
 			pos.x,
@@ -108,13 +114,13 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean nonEdge) {
+	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles) {
 		this.enqueue(
 			pos.getSectionX(),
 			pos.getSectionZ(),
 			() -> 0,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable((Runnable)(() -> super.enqueueSectionData(lightType, pos, nibbles, nonEdge)), (Supplier<String>)(() -> "queueData " + pos))
+			Util.debugRunnable((Runnable)(() -> super.enqueueSectionData(lightType, pos, nibbles)), (Supplier<String>)(() -> "queueData " + pos))
 		);
 	}
 
@@ -125,7 +131,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	private void enqueue(int x, int z, IntSupplier completedLevelSupplier, ServerLightingProvider.Stage stage, Runnable task) {
 		this.executor.send(ChunkTaskPrioritySystem.createMessage(() -> {
 			this.pendingTasks.add(Pair.of(stage, task));
-			if (this.pendingTasks.size() >= this.taskBatchSize) {
+			if (this.pendingTasks.size() >= 1000) {
 				this.runTasks();
 			}
 		}, ChunkPos.toLong(x, z), completedLevelSupplier));
@@ -142,7 +148,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		);
 	}
 
-	public CompletableFuture<Chunk> initializeLight(Chunk chunk) {
+	public CompletableFuture<Chunk> initializeLight(Chunk chunk, boolean bl) {
 		ChunkPos chunkPos = chunk.getPos();
 		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable((Runnable)(() -> {
 			ChunkSection[] chunkSections = chunk.getSectionArray();
@@ -156,6 +162,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			}
 		}), (Supplier<String>)(() -> "initializeLight: " + chunkPos)));
 		return CompletableFuture.supplyAsync(() -> {
+			super.setColumnEnabled(chunkPos, bl);
 			super.setRetainData(chunkPos, false);
 			return chunk;
 		}, task -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.POST_UPDATE, task));
@@ -165,9 +172,8 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		ChunkPos chunkPos = chunk.getPos();
 		chunk.setLightOn(false);
 		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable((Runnable)(() -> {
-			super.setColumnEnabled(chunkPos, true);
 			if (!excludeBlocks) {
-				chunk.getLightSourcesStream().forEach(pos -> super.addLightSource(pos, chunk.getLuminance(pos)));
+				super.propagateLight(chunkPos);
 			}
 		}), (Supplier<String>)(() -> "lightChunk " + chunkPos + " " + excludeBlocks)));
 		return CompletableFuture.supplyAsync(() -> {
@@ -187,7 +193,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	private void runTasks() {
-		int i = Math.min(this.pendingTasks.size(), this.taskBatchSize);
+		int i = Math.min(this.pendingTasks.size(), 1000);
 		ObjectListIterator<Pair<ServerLightingProvider.Stage, Runnable>> objectListIterator = this.pendingTasks.iterator();
 
 		int j;
@@ -199,7 +205,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		}
 
 		objectListIterator.back(j);
-		super.doLightUpdates(Integer.MAX_VALUE, true, true);
+		super.doLightUpdates();
 
 		for (int var5 = 0; objectListIterator.hasNext() && var5 < i; var5++) {
 			Pair<ServerLightingProvider.Stage, Runnable> pair = (Pair<ServerLightingProvider.Stage, Runnable>)objectListIterator.next();
@@ -209,10 +215,6 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 			objectListIterator.remove();
 		}
-	}
-
-	public void setTaskBatchSize(int taskBatchSize) {
-		this.taskBatchSize = taskBatchSize;
 	}
 
 	static enum Stage {

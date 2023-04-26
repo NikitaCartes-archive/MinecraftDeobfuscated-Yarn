@@ -12,7 +12,7 @@ public class HuntFinishTask {
 					.apply(context, (attackTarget, huntedRecently) -> (world, entity, time) -> {
 							LivingEntity livingEntity = context.getValue(attackTarget);
 							if (livingEntity.getType() == EntityType.HOGLIN && livingEntity.isDead()) {
-								huntedRecently.remember(true, (long)PiglinBrain.HUNT_MEMORY_DURATION.get(entity.world.random));
+								huntedRecently.remember(true, (long)PiglinBrain.HUNT_MEMORY_DURATION.get(entity.getWorld().random));
 							}
 
 							return true;

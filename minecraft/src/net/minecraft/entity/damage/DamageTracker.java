@@ -43,7 +43,7 @@ public class DamageTracker {
 		this.clearFallDeathSuffix();
 		Optional<BlockPos> optional = this.entity.getClimbingPos();
 		if (optional.isPresent()) {
-			BlockState blockState = this.entity.world.getBlockState((BlockPos)optional.get());
+			BlockState blockState = this.entity.getWorld().getBlockState((BlockPos)optional.get());
 			if (blockState.isOf(Blocks.LADDER) || blockState.isIn(BlockTags.TRAPDOORS)) {
 				this.fallDeathSuffix = "ladder";
 			} else if (blockState.isOf(Blocks.VINE)) {

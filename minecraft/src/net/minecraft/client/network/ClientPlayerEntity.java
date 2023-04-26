@@ -200,10 +200,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void tick() {
-		if (this.world.isPosLoaded(this.getBlockX(), this.getBlockZ())) {
+		if (this.getWorld().isPosLoaded(this.getBlockX(), this.getBlockZ())) {
 			super.tick();
 			if (this.hasVehicle()) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.isOnGround()));
 				this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.sidewaysSpeed, this.forwardSpeed, this.input.jumping, this.input.sneaking));
 				Entity entity = this.getRootVehicle();
 				if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
@@ -254,16 +254,16 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			boolean bl3 = g != 0.0 || h != 0.0;
 			if (this.hasVehicle()) {
 				Vec3d vec3d = this.getVelocity();
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(vec3d.x, -999.0, vec3d.z, this.getYaw(), this.getPitch(), this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(vec3d.x, -999.0, vec3d.z, this.getYaw(), this.getPitch(), this.isOnGround()));
 				bl2 = false;
 			} else if (bl2 && bl3) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch(), this.isOnGround()));
 			} else if (bl2) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(this.getX(), this.getY(), this.getZ(), this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(this.getX(), this.getY(), this.getZ(), this.isOnGround()));
 			} else if (bl3) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.onGround));
-			} else if (this.lastOnGround != this.onGround) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.getYaw(), this.getPitch(), this.isOnGround()));
+			} else if (this.lastOnGround != this.isOnGround()) {
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(this.isOnGround()));
 			}
 
 			if (bl2) {
@@ -278,7 +278,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				this.lastPitch = this.getPitch();
 			}
 
-			this.lastOnGround = this.onGround;
+			this.lastOnGround = this.isOnGround();
 			this.autoJumpEnabled = this.client.options.getAutoJump().getValue();
 		}
 	}
@@ -453,7 +453,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean wouldCollideAt(BlockPos pos) {
 		Box box = this.getBoundingBox();
 		Box box2 = new Box((double)pos.getX(), box.minY, (double)pos.getZ(), (double)pos.getX() + 1.0, box.maxY, (double)pos.getZ() + 1.0).contract(1.0E-7);
-		return this.world.canCollide(this, box2);
+		return this.getWorld().canCollide(this, box2);
 	}
 
 	public void setExperience(float progress, int total, int level) {
@@ -486,12 +486,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public void playSound(SoundEvent sound, float volume, float pitch) {
-		this.world.playSound(this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch, false);
+		this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch, false);
 	}
 
 	@Override
 	public void playSound(SoundEvent event, SoundCategory category, float volume, float pitch) {
-		this.world.playSound(this.getX(), this.getY(), this.getZ(), event, category, volume, pitch, false);
+		this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), event, category, volume, pitch, false);
 	}
 
 	@Override
@@ -641,10 +641,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	public void init() {
 		this.setPose(EntityPose.STANDING);
-		if (this.world != null) {
-			for (double d = this.getY(); d > (double)this.world.getBottomY() && d < (double)this.world.getTopY(); d++) {
+		if (this.getWorld() != null) {
+			for (double d = this.getY(); d > (double)this.getWorld().getBottomY() && d < (double)this.getWorld().getTopY(); d++) {
 				this.setPosition(this.getX(), d, this.getZ());
-				if (this.world.isSpaceEmpty(this)) {
+				if (this.getWorld().isSpaceEmpty(this)) {
 					break;
 				}
 			}
@@ -699,7 +699,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		boolean bl5 = this.canStartSprinting();
-		boolean bl6 = this.hasVehicle() ? this.getVehicle().isOnGround() : this.onGround;
+		boolean bl6 = this.hasVehicle() ? this.getVehicle().isOnGround() : this.isOnGround();
 		boolean bl7 = !bl2 && !bl3;
 		if ((bl6 || this.isSubmergedInWater()) && bl7 && bl5) {
 			if (this.ticksLeftToDoubleTapSprint <= 0 && !this.client.options.sprintKey.isPressed()) {
@@ -717,7 +717,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			boolean bl8 = !this.input.hasForwardMovement() || !this.canSprint();
 			boolean bl9 = bl8 || this.horizontalCollision && !this.collidedSoftly || this.isTouchingWater() && !this.isSubmergedInWater();
 			if (this.isSwimming()) {
-				if (!this.onGround && !this.input.sneaking && bl8 || !this.isTouchingWater()) {
+				if (!this.isOnGround() && !this.input.sneaking && bl8 || !this.isTouchingWater()) {
 					this.setSprinting(false);
 				}
 			} else if (bl9) {
@@ -809,7 +809,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		super.tickMovement();
-		if (this.onGround && this.getAbilities().flying && !this.client.interactionManager.isFlyingLocked()) {
+		if (this.isOnGround() && this.getAbilities().flying && !this.client.interactionManager.isFlyingLocked()) {
 			this.getAbilities().flying = false;
 			this.sendAbilitiesUpdate();
 		}
@@ -929,11 +929,11 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			if (!(j < -0.15F)) {
 				ShapeContext shapeContext = ShapeContext.of(this);
 				BlockPos blockPos = BlockPos.ofFloored(this.getX(), this.getBoundingBox().maxY, this.getZ());
-				BlockState blockState = this.world.getBlockState(blockPos);
-				if (blockState.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
+				BlockState blockState = this.getWorld().getBlockState(blockPos);
+				if (blockState.getCollisionShape(this.getWorld(), blockPos, shapeContext).isEmpty()) {
 					blockPos = blockPos.up();
-					BlockState blockState2 = this.world.getBlockState(blockPos);
-					if (blockState2.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
+					BlockState blockState2 = this.getWorld().getBlockState(blockPos);
+					if (blockState2.getCollisionShape(this.getWorld(), blockPos, shapeContext).isEmpty()) {
 						float m = 7.0F;
 						float n = 1.2F;
 						if (this.hasStatusEffect(StatusEffects.JUMP_BOOST)) {
@@ -953,7 +953,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 						Vec3d vec3d11 = vec3d7.subtract(vec3d9);
 						Vec3d vec3d12 = vec3d6.add(vec3d9);
 						Vec3d vec3d13 = vec3d7.add(vec3d9);
-						Iterable<VoxelShape> iterable = this.world.getCollisions(this, box);
+						Iterable<VoxelShape> iterable = this.getWorld().getCollisions(this, box);
 						Iterator<Box> iterator = StreamSupport.stream(iterable.spliterator(), false).flatMap(shape -> shape.getBoundingBoxes().stream()).iterator();
 						float r = Float.MIN_VALUE;
 
@@ -966,9 +966,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 								for (int s = 1; (float)s < n; s++) {
 									BlockPos blockPos3 = blockPos2.up(s);
-									BlockState blockState3 = this.world.getBlockState(blockPos3);
+									BlockState blockState3 = this.getWorld().getBlockState(blockPos3);
 									VoxelShape voxelShape;
-									if (!(voxelShape = blockState3.getCollisionShape(this.world, blockPos3, shapeContext)).isEmpty()) {
+									if (!(voxelShape = blockState3.getCollisionShape(this.getWorld(), blockPos3, shapeContext)).isEmpty()) {
 										r = (float)voxelShape.getMax(Direction.Axis.Y) + (float)blockPos3.getY();
 										if ((double)r - this.getY() > (double)n) {
 											return;
@@ -977,8 +977,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 									if (s > 1) {
 										blockPos = blockPos.up();
-										BlockState blockState4 = this.world.getBlockState(blockPos);
-										if (!blockState4.getCollisionShape(this.world, blockPos, shapeContext).isEmpty()) {
+										BlockState blockState4 = this.getWorld().getBlockState(blockPos);
+										if (!blockState4.getCollisionShape(this.getWorld(), blockPos, shapeContext).isEmpty()) {
 											return;
 										}
 									}
@@ -1020,7 +1020,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean shouldAutoJump() {
 		return this.isAutoJumpEnabled()
 			&& this.ticksToNextAutojump <= 0
-			&& this.onGround
+			&& this.isOnGround()
 			&& !this.clipAtLedge()
 			&& !this.hasVehicle()
 			&& this.hasMovementInput()
@@ -1091,12 +1091,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			return this.isSubmergedInWater;
 		} else {
 			if (!bl && bl2) {
-				this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.AMBIENT_UNDERWATER_ENTER, SoundCategory.AMBIENT, 1.0F, 1.0F, false);
+				this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.AMBIENT_UNDERWATER_ENTER, SoundCategory.AMBIENT, 1.0F, 1.0F, false);
 				this.client.getSoundManager().play(new AmbientSoundLoops.Underwater(this));
 			}
 
 			if (bl && !bl2) {
-				this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.AMBIENT_UNDERWATER_EXIT, SoundCategory.AMBIENT, 1.0F, 1.0F, false);
+				this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.AMBIENT_UNDERWATER_EXIT, SoundCategory.AMBIENT, 1.0F, 1.0F, false);
 			}
 
 			return this.isSubmergedInWater;

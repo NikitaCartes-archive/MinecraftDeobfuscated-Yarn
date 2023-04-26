@@ -55,12 +55,14 @@ public class LookAtEntityGoal extends Goal {
 			}
 
 			if (this.targetType == PlayerEntity.class) {
-				this.target = this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+				this.target = this.mob.getWorld().getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 			} else {
 				this.target = this.mob
-					.world
+					.getWorld()
 					.getClosestEntity(
-						this.mob.world.getEntitiesByClass(this.targetType, this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), livingEntity -> true),
+						this.mob
+							.getWorld()
+							.getEntitiesByClass(this.targetType, this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), livingEntity -> true),
 						this.targetPredicate,
 						this.mob,
 						this.mob.getX(),

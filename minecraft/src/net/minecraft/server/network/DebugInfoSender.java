@@ -128,7 +128,7 @@ public class DebugInfoSender {
 
 	private static void writeBrain(LivingEntity entity, PacketByteBuf buf) {
 		Brain<?> brain = entity.getBrain();
-		long l = entity.world.getTime();
+		long l = entity.getWorld().getTime();
 		if (entity instanceof InventoryOwner) {
 			Inventory inventory = ((InventoryOwner)entity).getInventory();
 			buf.writeString(inventory.isEmpty() ? "" : inventory.toString());
@@ -211,9 +211,9 @@ public class DebugInfoSender {
 					long l = currentTime - (Long)object;
 					string = l + " ticks ago";
 				} else if (memory.isTimed()) {
-					string = format((ServerWorld)entity.world, object) + " (ttl: " + memory.getExpiry() + ")";
+					string = format((ServerWorld)entity.getWorld(), object) + " (ttl: " + memory.getExpiry() + ")";
 				} else {
-					string = format((ServerWorld)entity.world, object);
+					string = format((ServerWorld)entity.getWorld(), object);
 				}
 			} else {
 				string = "-";

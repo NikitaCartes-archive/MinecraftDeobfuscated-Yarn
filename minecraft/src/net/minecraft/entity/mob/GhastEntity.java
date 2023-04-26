@@ -223,7 +223,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 			for (int i = 1; i < steps; i++) {
 				box = box.offset(direction);
-				if (!this.ghast.world.isSpaceEmpty(this.ghast, box)) {
+				if (!this.ghast.getWorld().isSpaceEmpty(this.ghast, box)) {
 					return false;
 				}
 			}
@@ -303,7 +303,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 			if (livingEntity != null) {
 				double d = 64.0;
 				if (livingEntity.squaredDistanceTo(this.ghast) < 4096.0 && this.ghast.canSee(livingEntity)) {
-					World world = this.ghast.world;
+					World world = this.ghast.getWorld();
 					this.cooldown++;
 					if (this.cooldown == 10 && !this.ghast.isSilent()) {
 						world.syncWorldEvent(null, WorldEvents.GHAST_WARNS, this.ghast.getBlockPos(), 0);

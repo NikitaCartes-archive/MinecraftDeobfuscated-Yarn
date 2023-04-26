@@ -2,7 +2,8 @@ package net.minecraft.world.chunk;
 
 import it.unimi.dsi.fastutil.longs.LongSet;
 import java.util.Map;
-import java.util.stream.Stream;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,6 +22,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.chunk.light.ChunkSkyLight;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.carver.CarvingMask;
 import net.minecraft.world.gen.chunk.BlendingData;
@@ -29,13 +31,14 @@ import net.minecraft.world.tick.BasicTickScheduler;
 import net.minecraft.world.tick.EmptyTickSchedulers;
 
 /**
- * Represents a read only view of a world chunk used in world generation.
+ * Represents a chunk that wraps a world chunk, used in world generation.
+ * This is usually read-only.
  */
-public class ReadOnlyChunk extends ProtoChunk {
+public class WrapperProtoChunk extends ProtoChunk {
 	private final WorldChunk wrapped;
-	private final boolean field_34554;
+	private final boolean propagateToWrapped;
 
-	public ReadOnlyChunk(WorldChunk wrapped, boolean bl) {
+	public WrapperProtoChunk(WorldChunk wrapped, boolean propagateToWrapped) {
 		super(
 			wrapped.getPos(),
 			UpgradeData.NO_UPGRADE_DATA,
@@ -44,7 +47,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 			wrapped.getBlendingData()
 		);
 		this.wrapped = wrapped;
-		this.field_34554 = bl;
+		this.propagateToWrapped = propagateToWrapped;
 	}
 
 	@Nullable
@@ -70,32 +73,32 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public ChunkSection getSection(int yIndex) {
-		return this.field_34554 ? this.wrapped.getSection(yIndex) : super.getSection(yIndex);
+		return this.propagateToWrapped ? this.wrapped.getSection(yIndex) : super.getSection(yIndex);
 	}
 
 	@Nullable
 	@Override
 	public BlockState setBlockState(BlockPos pos, BlockState state, boolean moved) {
-		return this.field_34554 ? this.wrapped.setBlockState(pos, state, moved) : null;
+		return this.propagateToWrapped ? this.wrapped.setBlockState(pos, state, moved) : null;
 	}
 
 	@Override
 	public void setBlockEntity(BlockEntity blockEntity) {
-		if (this.field_34554) {
+		if (this.propagateToWrapped) {
 			this.wrapped.setBlockEntity(blockEntity);
 		}
 	}
 
 	@Override
 	public void addEntity(Entity entity) {
-		if (this.field_34554) {
+		if (this.propagateToWrapped) {
 			this.wrapped.addEntity(entity);
 		}
 	}
 
 	@Override
 	public void setStatus(ChunkStatus status) {
-		if (this.field_34554) {
+		if (this.propagateToWrapped) {
 			super.setStatus(status);
 		}
 	}
@@ -214,18 +217,18 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public Stream<BlockPos> getLightSourcesStream() {
-		return this.wrapped.getLightSourcesStream();
+	public void forEachBlockMatchingPredicate(Predicate<BlockState> predicate, BiConsumer<BlockPos, BlockState> consumer) {
+		this.wrapped.forEachBlockMatchingPredicate(predicate, consumer);
 	}
 
 	@Override
 	public BasicTickScheduler<Block> getBlockTickScheduler() {
-		return this.field_34554 ? this.wrapped.getBlockTickScheduler() : EmptyTickSchedulers.getReadOnlyTickScheduler();
+		return this.propagateToWrapped ? this.wrapped.getBlockTickScheduler() : EmptyTickSchedulers.getReadOnlyTickScheduler();
 	}
 
 	@Override
 	public BasicTickScheduler<Fluid> getFluidTickScheduler() {
-		return this.field_34554 ? this.wrapped.getFluidTickScheduler() : EmptyTickSchedulers.getReadOnlyTickScheduler();
+		return this.propagateToWrapped ? this.wrapped.getFluidTickScheduler() : EmptyTickSchedulers.getReadOnlyTickScheduler();
 	}
 
 	@Override
@@ -246,7 +249,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public CarvingMask getCarvingMask(GenerationStep.Carver step) {
-		if (this.field_34554) {
+		if (this.propagateToWrapped) {
 			return super.getCarvingMask(step);
 		} else {
 			throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
@@ -255,7 +258,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public CarvingMask getOrCreateCarvingMask(GenerationStep.Carver step) {
-		if (this.field_34554) {
+		if (this.propagateToWrapped) {
 			return super.getOrCreateCarvingMask(step);
 		} else {
 			throw (UnsupportedOperationException)Util.throwOrPause(new UnsupportedOperationException("Meaningless in this context"));
@@ -278,8 +281,18 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler) {
-		if (this.field_34554) {
+		if (this.propagateToWrapped) {
 			this.wrapped.populateBiomes(biomeSupplier, sampler);
 		}
+	}
+
+	@Override
+	public void refreshSurfaceY() {
+		this.wrapped.refreshSurfaceY();
+	}
+
+	@Override
+	public ChunkSkyLight getChunkSkyLight() {
+		return this.wrapped.getChunkSkyLight();
 	}
 }

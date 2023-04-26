@@ -40,7 +40,7 @@ public class TemptGoal extends Goal {
 			this.cooldown--;
 			return false;
 		} else {
-			this.closestPlayer = this.mob.world.getClosestPlayer(this.predicate, this.mob);
+			this.closestPlayer = this.mob.getWorld().getClosestPlayer(this.predicate, this.mob);
 			return this.closestPlayer != null;
 		}
 	}

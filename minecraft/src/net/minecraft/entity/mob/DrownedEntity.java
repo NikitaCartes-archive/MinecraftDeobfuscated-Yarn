@@ -73,7 +73,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		this.goalSelector.add(2, new DrownedEntity.TridentAttackGoal(this, 1.0, 40, 10.0F));
 		this.goalSelector.add(2, new DrownedEntity.DrownedAttackGoal(this, 1.0, false));
 		this.goalSelector.add(5, new DrownedEntity.LeaveWaterGoal(this, 1.0));
-		this.goalSelector.add(6, new DrownedEntity.TargetAboveWaterGoal(this, 1.0, this.world.getSeaLevel()));
+		this.goalSelector.add(6, new DrownedEntity.TargetAboveWaterGoal(this, 1.0, this.getWorld().getSeaLevel()));
 		this.goalSelector.add(7, new WanderAroundGoal(this, 1.0));
 		this.targetSelector.add(1, new RevengeGoal(this, DrownedEntity.class).setGroupRevenge(ZombifiedPiglinEntity.class));
 		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, 10, true, false, this::canDrownedAttackTarget));
@@ -183,7 +183,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	public boolean canDrownedAttackTarget(@Nullable LivingEntity target) {
-		return target != null ? !this.world.isDay() || target.isTouchingWater() : false;
+		return target != null ? !this.getWorld().isDay() || target.isTouchingWater() : false;
 	}
 
 	@Override
@@ -213,7 +213,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	@Override
 	public void updateSwimming() {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			if (this.canMoveVoluntarily() && this.isTouchingWater() && this.isTargetingUnderwater()) {
 				this.navigation = this.waterNavigation;
 				this.setSwimming(true);
@@ -246,14 +246,14 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 	@Override
 	public void attack(LivingEntity target, float pullProgress) {
-		TridentEntity tridentEntity = new TridentEntity(this.world, this, new ItemStack(Items.TRIDENT));
+		TridentEntity tridentEntity = new TridentEntity(this.getWorld(), this, new ItemStack(Items.TRIDENT));
 		double d = target.getX() - this.getX();
 		double e = target.getBodyY(0.3333333333333333) - tridentEntity.getY();
 		double f = target.getZ() - this.getZ();
 		double g = Math.sqrt(d * d + f * f);
-		tridentEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+		tridentEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.getWorld().getDifficulty().getId() * 4));
 		this.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		this.world.spawnEntity(tridentEntity);
+		this.getWorld().spawnEntity(tridentEntity);
 	}
 
 	public void setTargetingUnderwater(boolean targetingUnderwater) {
@@ -313,7 +313,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 				this.drowned.setMovementSpeed(j);
 				this.drowned.setVelocity(this.drowned.getVelocity().add((double)j * d * 0.005, (double)j * e * 0.1, (double)j * f * 0.005));
 			} else {
-				if (!this.drowned.onGround) {
+				if (!this.drowned.isOnGround()) {
 					this.drowned.setVelocity(this.drowned.getVelocity().add(0.0, -0.008, 0.0));
 				}
 
@@ -333,9 +333,9 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		@Override
 		public boolean canStart() {
 			return super.canStart()
-				&& !this.drowned.world.isDay()
+				&& !this.drowned.getWorld().isDay()
 				&& this.drowned.isTouchingWater()
-				&& this.drowned.getY() >= (double)(this.drowned.world.getSeaLevel() - 3);
+				&& this.drowned.getY() >= (double)(this.drowned.getWorld().getSeaLevel() - 3);
 		}
 
 		@Override
@@ -376,7 +376,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 
 		@Override
 		public boolean canStart() {
-			return !this.drowned.world.isDay() && this.drowned.isTouchingWater() && this.drowned.getY() < (double)(this.minY - 2);
+			return !this.drowned.getWorld().isDay() && this.drowned.isTouchingWater() && this.drowned.getY() < (double)(this.minY - 2);
 		}
 
 		@Override
@@ -450,7 +450,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		public WanderAroundOnSurfaceGoal(PathAwareEntity mob, double speed) {
 			this.mob = mob;
 			this.speed = speed;
-			this.world = mob.world;
+			this.world = mob.getWorld();
 			this.setControls(EnumSet.of(Goal.Control.MOVE));
 		}
 

@@ -152,31 +152,31 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("camelBrain");
+		this.getWorld().getProfiler().push("camelBrain");
 		Brain<?> brain = this.getBrain();
-		((Brain<CamelEntity>)brain).tick((ServerWorld)this.world, this);
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("camelActivityUpdate");
+		((Brain<CamelEntity>)brain).tick((ServerWorld)this.getWorld(), this);
+		this.getWorld().getProfiler().pop();
+		this.getWorld().getProfiler().push("camelActivityUpdate");
 		CamelBrain.updateActivities(this);
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 		super.mobTick();
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.isDashing() && this.dashCooldown < 50 && (this.onGround || this.isTouchingWater() || this.hasVehicle())) {
+		if (this.isDashing() && this.dashCooldown < 50 && (this.isOnGround() || this.isTouchingWater() || this.hasVehicle())) {
 			this.setDashing(false);
 		}
 
 		if (this.dashCooldown > 0) {
 			this.dashCooldown--;
 			if (this.dashCooldown == 0) {
-				this.world.playSound(null, this.getBlockPos(), SoundEvents.ENTITY_CAMEL_DASH_READY, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+				this.getWorld().playSound(null, this.getBlockPos(), SoundEvents.ENTITY_CAMEL_DASH_READY, SoundCategory.NEUTRAL, 1.0F, 1.0F);
 			}
 		}
 
-		if (this.world.isClient()) {
+		if (this.getWorld().isClient()) {
 			this.updateAnimations();
 		}
 
@@ -358,7 +358,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (player.shouldCancelInteraction() && !this.isBaby()) {
 			this.openInventory(player);
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
 			if (actionResult.isAccepted()) {
@@ -370,7 +370,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 					this.putPlayerOnBack(player);
 				}
 
-				return ActionResult.success(this.world.isClient);
+				return ActionResult.success(this.getWorld().isClient);
 			}
 		}
 	}
@@ -399,8 +399,8 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 			boolean bl3 = this.isBaby();
 			if (bl3) {
-				this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
-				if (!this.world.isClient) {
+				this.getWorld().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
+				if (!this.getWorld().isClient) {
 					this.growUp(10);
 				}
 			}
@@ -411,7 +411,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 				if (!this.isSilent()) {
 					SoundEvent soundEvent = this.getEatSound();
 					if (soundEvent != null) {
-						this.world
+						this.getWorld()
 							.playSound(
 								null,
 								this.getX(),
@@ -603,7 +603,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 		if (!this.isSitting()) {
 			this.playSound(SoundEvents.ENTITY_CAMEL_SIT, 1.0F, 1.0F);
 			this.setPose(EntityPose.SITTING);
-			this.setLastPoseTick(-this.world.getTime());
+			this.setLastPoseTick(-this.getWorld().getTime());
 		}
 	}
 
@@ -611,13 +611,13 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 		if (this.isSitting()) {
 			this.playSound(SoundEvents.ENTITY_CAMEL_STAND, 1.0F, 1.0F);
 			this.setPose(EntityPose.STANDING);
-			this.setLastPoseTick(this.world.getTime());
+			this.setLastPoseTick(this.getWorld().getTime());
 		}
 	}
 
 	public void setStanding() {
 		this.setPose(EntityPose.STANDING);
-		this.initLastPoseTick(this.world.getTime());
+		this.initLastPoseTick(this.getWorld().getTime());
 	}
 
 	@VisibleForTesting
@@ -630,7 +630,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	}
 
 	public long getLastPoseTickDelta() {
-		return this.world.getTime() - Math.abs(this.dataTracker.get(LAST_POSE_TICK));
+		return this.getWorld().getTime() - Math.abs(this.dataTracker.get(LAST_POSE_TICK));
 	}
 
 	@Override
@@ -659,7 +659,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	@Override
 	public void openInventory(PlayerEntity player) {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			player.openHorseInventory(this, this.items);
 		}
 	}

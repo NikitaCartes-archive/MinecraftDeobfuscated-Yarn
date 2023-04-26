@@ -42,12 +42,12 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 
 	private boolean isWater(BlockPos pos, int offsetX, int offsetZ, int multiplier) {
 		BlockPos blockPos = pos.add(offsetX * multiplier, 0, offsetZ * multiplier);
-		return this.dolphin.world.getFluidState(blockPos).isIn(FluidTags.WATER) && !this.dolphin.world.getBlockState(blockPos).blocksMovement();
+		return this.dolphin.getWorld().getFluidState(blockPos).isIn(FluidTags.WATER) && !this.dolphin.getWorld().getBlockState(blockPos).blocksMovement();
 	}
 
 	private boolean isAirAbove(BlockPos pos, int offsetX, int offsetZ, int multiplier) {
-		return this.dolphin.world.getBlockState(pos.add(offsetX * multiplier, 1, offsetZ * multiplier)).isAir()
-			&& this.dolphin.world.getBlockState(pos.add(offsetX * multiplier, 2, offsetZ * multiplier)).isAir();
+		return this.dolphin.getWorld().getBlockState(pos.add(offsetX * multiplier, 1, offsetZ * multiplier)).isAir()
+			&& this.dolphin.getWorld().getBlockState(pos.add(offsetX * multiplier, 2, offsetZ * multiplier)).isAir();
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 	public void tick() {
 		boolean bl = this.inWater;
 		if (!bl) {
-			FluidState fluidState = this.dolphin.world.getFluidState(this.dolphin.getBlockPos());
+			FluidState fluidState = this.dolphin.getWorld().getFluidState(this.dolphin.getBlockPos());
 			this.inWater = fluidState.isIn(FluidTags.WATER);
 		}
 

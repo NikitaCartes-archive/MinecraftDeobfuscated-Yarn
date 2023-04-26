@@ -37,8 +37,8 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.Vibrations;
 
 public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
-	public static final int field_31239 = 40;
-	public static final int field_44607 = 1;
+	public static final int field_31239 = 30;
+	public static final int field_44607 = 10;
 	public static final EnumProperty<SculkSensorPhase> SCULK_SENSOR_PHASE = Properties.SCULK_SENSOR_PHASE;
 	public static final IntProperty POWER = Properties.POWER;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -106,8 +106,6 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 			if ((Integer)state.get(POWER) > 0 && !world.getBlockTickScheduler().isQueued(pos, this)) {
 				world.setBlockState(pos, state.with(POWER, Integer.valueOf(0)), Block.NOTIFY_LISTENERS | Block.FORCE_STATE);
 			}
-
-			world.scheduleBlockTick(new BlockPos(pos), state.getBlock(), 1);
 		}
 	}
 
@@ -192,7 +190,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 
 	public static void setCooldown(World world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, state.with(SCULK_SENSOR_PHASE, SculkSensorPhase.COOLDOWN).with(POWER, Integer.valueOf(0)), Block.NOTIFY_ALL);
-		world.scheduleBlockTick(pos, state.getBlock(), 1);
+		world.scheduleBlockTick(pos, state.getBlock(), 10);
 		if (!(Boolean)state.get(WATERLOGGED)) {
 			world.playSound(null, pos, SoundEvents.BLOCK_SCULK_SENSOR_CLICKING_STOP, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.2F + 0.8F);
 		}
@@ -202,7 +200,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 
 	@VisibleForTesting
 	public int getCooldownTime() {
-		return 40;
+		return 30;
 	}
 
 	public void setActive(@Nullable Entity sourceEntity, World world, BlockPos pos, BlockState state, int power, int frequency) {

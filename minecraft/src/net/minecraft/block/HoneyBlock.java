@@ -76,8 +76,8 @@ public class HoneyBlock extends TransparentBlock {
 	}
 
 	private void triggerAdvancement(Entity entity, BlockPos pos) {
-		if (entity instanceof ServerPlayerEntity && entity.world.getTime() % 20L == 0L) {
-			Criteria.SLIDE_DOWN_BLOCK.trigger((ServerPlayerEntity)entity, entity.world.getBlockState(pos));
+		if (entity instanceof ServerPlayerEntity && entity.getWorld().getTime() % 20L == 0L) {
+			Criteria.SLIDE_DOWN_BLOCK.trigger((ServerPlayerEntity)entity, entity.getWorld().getBlockState(pos));
 		}
 	}
 
@@ -114,11 +114,11 @@ public class HoneyBlock extends TransparentBlock {
 	}
 
 	private static void addParticles(Entity entity, int count) {
-		if (entity.world.isClient) {
+		if (entity.getWorld().isClient) {
 			BlockState blockState = Blocks.HONEY_BLOCK.getDefaultState();
 
 			for (int i = 0; i < count; i++) {
-				entity.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
+				entity.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), entity.getX(), entity.getY(), entity.getZ(), 0.0, 0.0, 0.0);
 			}
 		}
 	}

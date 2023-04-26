@@ -35,7 +35,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.stepAndDestroyMob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+		if (!this.stepAndDestroyMob.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 			return false;
 		} else if (this.cooldown > 0) {
 			this.cooldown--;
@@ -70,7 +70,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	@Override
 	public void tick() {
 		super.tick();
-		World world = this.stepAndDestroyMob.world;
+		World world = this.stepAndDestroyMob.getWorld();
 		BlockPos blockPos = this.stepAndDestroyMob.getBlockPos();
 		BlockPos blockPos2 = this.tweakToProperPos(blockPos, world);
 		Random random = this.stepAndDestroyMob.getRandom();

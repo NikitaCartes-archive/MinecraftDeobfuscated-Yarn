@@ -19,7 +19,7 @@ public class NavigationConditions {
 	}
 
 	public static boolean isHeightInvalid(BlockPos pos, PathAwareEntity entity) {
-		return pos.getY() < entity.world.getBottomY() || pos.getY() > entity.world.getTopY();
+		return pos.getY() < entity.getWorld().getBottomY() || pos.getY() > entity.getWorld().getTopY();
 	}
 
 	public static boolean isPositionTargetOutOfWalkRange(boolean posTargetInRange, PathAwareEntity entity, BlockPos pos) {
@@ -31,14 +31,14 @@ public class NavigationConditions {
 	}
 
 	public static boolean isWaterAt(PathAwareEntity entity, BlockPos pos) {
-		return entity.world.getFluidState(pos).isIn(FluidTags.WATER);
+		return entity.getWorld().getFluidState(pos).isIn(FluidTags.WATER);
 	}
 
 	public static boolean hasPathfindingPenalty(PathAwareEntity entity, BlockPos pos) {
-		return entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(entity.world, pos.mutableCopy())) != 0.0F;
+		return entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(entity.getWorld(), pos.mutableCopy())) != 0.0F;
 	}
 
 	public static boolean isSolidAt(PathAwareEntity entity, BlockPos pos) {
-		return entity.world.getBlockState(pos).isSolid();
+		return entity.getWorld().getBlockState(pos).isSolid();
 	}
 }

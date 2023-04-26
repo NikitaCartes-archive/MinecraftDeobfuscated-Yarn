@@ -86,7 +86,7 @@ public class SpiderEntity extends HostileEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.setClimbingWall(this.horizontalCollision);
 		}
 	}
@@ -160,7 +160,7 @@ public class SpiderEntity extends HostileEntity {
 		entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 		Random random = world.getRandom();
 		if (random.nextInt(100) == 0) {
-			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
+			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.getWorld());
 			if (skeletonEntity != null) {
 				skeletonEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), 0.0F);
 				skeletonEntity.initialize(world, difficulty, spawnReason, null, null);

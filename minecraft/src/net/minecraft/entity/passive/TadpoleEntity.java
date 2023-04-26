@@ -88,12 +88,12 @@ public class TadpoleEntity extends FishEntity {
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("tadpoleBrain");
-		this.getBrain().tick((ServerWorld)this.world, this);
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("tadpoleActivityUpdate");
+		this.getWorld().getProfiler().push("tadpoleBrain");
+		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getWorld().getProfiler().pop();
+		this.getWorld().getProfiler().push("tadpoleActivityUpdate");
 		TadpoleBrain.updateActivities(this);
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 		super.mobTick();
 	}
 
@@ -104,7 +104,7 @@ public class TadpoleEntity extends FishEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.setTadpoleAge(this.tadpoleAge + 1);
 		}
 	}
@@ -144,7 +144,7 @@ public class TadpoleEntity extends FishEntity {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (this.isSlimeBall(itemStack)) {
 			this.eatSlimeBall(player, itemStack);
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			return (ActionResult)Bucketable.tryBucket(player, hand, this).orElse(super.interactMob(player, hand));
 		}
@@ -197,7 +197,7 @@ public class TadpoleEntity extends FishEntity {
 	private void eatSlimeBall(PlayerEntity player, ItemStack stack) {
 		this.decrementItem(player, stack);
 		this.increaseAge(PassiveEntity.toGrowUpAge(this.getTicksUntilGrowth()));
-		this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
+		this.getWorld().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
 	}
 
 	private void decrementItem(PlayerEntity player, ItemStack stack) {
@@ -222,11 +222,11 @@ public class TadpoleEntity extends FishEntity {
 	}
 
 	private void growUp() {
-		if (this.world instanceof ServerWorld serverWorld) {
-			FrogEntity frogEntity = EntityType.FROG.create(this.world);
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
+			FrogEntity frogEntity = EntityType.FROG.create(this.getWorld());
 			if (frogEntity != null) {
 				frogEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
-				frogEntity.initialize(serverWorld, this.world.getLocalDifficulty(frogEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
+				frogEntity.initialize(serverWorld, this.getWorld().getLocalDifficulty(frogEntity.getBlockPos()), SpawnReason.CONVERSION, null, null);
 				frogEntity.setAiDisabled(this.isAiDisabled());
 				if (this.hasCustomName()) {
 					frogEntity.setCustomName(this.getCustomName());

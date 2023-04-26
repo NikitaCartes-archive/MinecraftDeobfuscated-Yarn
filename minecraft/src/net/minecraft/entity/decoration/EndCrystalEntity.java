@@ -53,10 +53,10 @@ public class EndCrystalEntity extends Entity {
 	@Override
 	public void tick() {
 		this.endCrystalAge++;
-		if (this.world instanceof ServerWorld) {
+		if (this.getWorld() instanceof ServerWorld) {
 			BlockPos blockPos = this.getBlockPos();
-			if (((ServerWorld)this.world).getEnderDragonFight() != null && this.world.getBlockState(blockPos).isAir()) {
-				this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
+			if (((ServerWorld)this.getWorld()).getEnderDragonFight() != null && this.getWorld().getBlockState(blockPos).isAir()) {
+				this.getWorld().setBlockState(blockPos, AbstractFireBlock.getState(this.getWorld(), blockPos));
 			}
 		}
 	}
@@ -93,11 +93,11 @@ public class EndCrystalEntity extends Entity {
 		} else if (source.getAttacker() instanceof EnderDragonEntity) {
 			return false;
 		} else {
-			if (!this.isRemoved() && !this.world.isClient) {
+			if (!this.isRemoved() && !this.getWorld().isClient) {
 				this.remove(Entity.RemovalReason.KILLED);
 				if (!source.isIn(DamageTypeTags.IS_EXPLOSION)) {
 					DamageSource damageSource = source.getAttacker() != null ? this.getDamageSources().explosion(this, source.getAttacker()) : null;
-					this.world.createExplosion(this, damageSource, null, this.getX(), this.getY(), this.getZ(), 6.0F, false, World.ExplosionSourceType.BLOCK);
+					this.getWorld().createExplosion(this, damageSource, null, this.getX(), this.getY(), this.getZ(), 6.0F, false, World.ExplosionSourceType.BLOCK);
 				}
 
 				this.crystalDestroyed(source);
@@ -114,8 +114,8 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	private void crystalDestroyed(DamageSource source) {
-		if (this.world instanceof ServerWorld) {
-			EnderDragonFight enderDragonFight = ((ServerWorld)this.world).getEnderDragonFight();
+		if (this.getWorld() instanceof ServerWorld) {
+			EnderDragonFight enderDragonFight = ((ServerWorld)this.getWorld()).getEnderDragonFight();
 			if (enderDragonFight != null) {
 				enderDragonFight.crystalDestroyed(this, source);
 			}

@@ -50,10 +50,10 @@ public class MoveThroughVillageGoal extends Goal {
 			return false;
 		} else {
 			this.forgetOldTarget();
-			if (this.requiresNighttime && this.mob.world.isDay()) {
+			if (this.requiresNighttime && this.mob.getWorld().isDay()) {
 				return false;
 			} else {
-				ServerWorld serverWorld = (ServerWorld)this.mob.world;
+				ServerWorld serverWorld = (ServerWorld)this.mob.getWorld();
 				BlockPos blockPos = this.mob.getBlockPos();
 				if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 					return false;
@@ -109,7 +109,7 @@ public class MoveThroughVillageGoal extends Goal {
 							for (int i = 0; i < this.targetPath.getLength(); i++) {
 								PathNode pathNode = this.targetPath.getNode(i);
 								BlockPos blockPos2 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
-								if (DoorBlock.canOpenByHand(this.mob.world, blockPos2)) {
+								if (DoorBlock.canOpenByHand(this.mob.getWorld(), blockPos2)) {
 									this.targetPath = this.mob.getNavigation().findPathTo((double)pathNode.x, (double)pathNode.y, (double)pathNode.z, 0);
 									break;
 								}

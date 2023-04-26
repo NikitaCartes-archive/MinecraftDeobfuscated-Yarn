@@ -300,7 +300,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	protected static final Direction[] DIRECTIONS = new Direction[]{
 		Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP
 	};
-	protected final Material material;
 	protected final boolean collidable;
 	protected final float resistance;
 	protected final boolean randomTicks;
@@ -315,7 +314,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	protected Identifier lootTableId;
 
 	public AbstractBlock(AbstractBlock.Settings settings) {
-		this.material = settings.material;
 		this.collidable = settings.collidable;
 		this.lootTableId = settings.lootTableId;
 		this.resistance = settings.resistance;
@@ -1111,7 +1109,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		@Deprecated
 		private boolean solid;
 		private final PistonBehavior pistonBehavior;
-		private final Material material;
 		private final MapColor mapColor;
 		private final float hardness;
 		private final boolean toolRequired;
@@ -1139,7 +1136,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.burnable = settings.burnable;
 			this.liquid = settings.liquid;
 			this.pistonBehavior = settings.pistonBehavior;
-			this.material = settings.material;
 			this.mapColor = (MapColor)settings.mapColorProvider.apply(this.asBlockState());
 			this.hardness = settings.hardness;
 			this.toolRequired = settings.toolRequired;
@@ -1189,11 +1185,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		public RegistryEntry<Block> getRegistryEntry() {
 			return this.owner.getRegistryEntry();
-		}
-
-		@Deprecated
-		public Material getMaterial() {
-			return this.material;
 		}
 
 		@Deprecated
@@ -1647,8 +1638,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	}
 
 	public static class Settings {
-		Material material;
-		Function<BlockState, MapColor> mapColorProvider;
+		Function<BlockState, MapColor> mapColorProvider = state -> MapColor.CLEAR;
 		boolean collidable = true;
 		BlockSoundGroup soundGroup = BlockSoundGroup.STONE;
 		ToIntFunction<BlockState> luminance = state -> 0;
@@ -1676,7 +1666,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 					world, pos, Direction.UP
 				)
 				&& state.getLuminance() < 14;
-		AbstractBlock.ContextPredicate solidBlockPredicate = (state, world, pos) -> state.getMaterial().blocksLight() && state.isFullCube(world, pos);
+		AbstractBlock.ContextPredicate solidBlockPredicate = (state, world, pos) -> state.isFullCube(world, pos);
 		AbstractBlock.ContextPredicate suffocationPredicate = (state, world, pos) -> state.blocksMovement() && state.isFullCube(world, pos);
 		AbstractBlock.ContextPredicate blockVisionPredicate = this.suffocationPredicate;
 		AbstractBlock.ContextPredicate postProcessPredicate = (state, world, pos) -> false;
@@ -1685,34 +1675,15 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		FeatureSet requiredFeatures = FeatureFlags.VANILLA_FEATURES;
 		Optional<AbstractBlock.Offsetter> offsetter = Optional.empty();
 
-		private Settings(Material material, MapColor mapColorProvider) {
-			this(material, state -> mapColorProvider);
+		private Settings() {
 		}
 
-		private Settings(Material material, Function<BlockState, MapColor> mapColorProvider) {
-			this.material = material;
-			this.mapColorProvider = mapColorProvider;
-		}
-
-		public static AbstractBlock.Settings of(Material material) {
-			return of(material, material.getColor());
-		}
-
-		public static AbstractBlock.Settings of(Material material, DyeColor color) {
-			return of(material, color.getMapColor());
-		}
-
-		public static AbstractBlock.Settings of(Material material, MapColor color) {
-			return new AbstractBlock.Settings(material, color);
-		}
-
-		public static AbstractBlock.Settings of(Material material, Function<BlockState, MapColor> mapColor) {
-			return new AbstractBlock.Settings(material, mapColor);
+		public static AbstractBlock.Settings of() {
+			return new AbstractBlock.Settings();
 		}
 
 		public static AbstractBlock.Settings copy(AbstractBlock block) {
-			AbstractBlock.Settings settings = new AbstractBlock.Settings(block.material, block.settings.mapColorProvider);
-			settings.material = block.settings.material;
+			AbstractBlock.Settings settings = new AbstractBlock.Settings();
 			settings.hardness = block.settings.hardness;
 			settings.resistance = block.settings.resistance;
 			settings.collidable = block.settings.collidable;
@@ -1738,6 +1709,21 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			settings.instrument = block.settings.instrument;
 			settings.replaceable = block.settings.replaceable;
 			return settings;
+		}
+
+		public AbstractBlock.Settings mapColor(DyeColor color) {
+			this.mapColorProvider = state -> color.getMapColor();
+			return this;
+		}
+
+		public AbstractBlock.Settings mapColor(MapColor color) {
+			this.mapColorProvider = state -> color;
+			return this;
+		}
+
+		public AbstractBlock.Settings mapColor(Function<BlockState, MapColor> mapColorProvider) {
+			this.mapColorProvider = mapColorProvider;
+			return this;
 		}
 
 		/**
@@ -1906,11 +1892,6 @@ public abstract class AbstractBlock implements ToggleableFeature {
 
 		public AbstractBlock.Settings requiresTool() {
 			this.toolRequired = true;
-			return this;
-		}
-
-		public AbstractBlock.Settings mapColor(MapColor color) {
-			this.mapColorProvider = state -> color;
 			return this;
 		}
 

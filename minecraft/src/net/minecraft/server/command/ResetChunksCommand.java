@@ -23,8 +23,8 @@ import net.minecraft.util.thread.TaskExecutor;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
-import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.WrapperProtoChunk;
 import org.slf4j.Logger;
 
 public class ResetChunksCommand {
@@ -97,10 +97,10 @@ public class ResetChunksCommand {
 							for (int v = chunkPos3.x - t; v <= chunkPos3.x + t; v++) {
 								Chunk chunk = serverChunkManager.getChunk(v, u, chunkStatus.getPrevious(), true);
 								Chunk chunk2;
-								if (chunk instanceof ReadOnlyChunk) {
-									chunk2 = new ReadOnlyChunk(((ReadOnlyChunk)chunk).getWrappedChunk(), true);
+								if (chunk instanceof WrapperProtoChunk) {
+									chunk2 = new WrapperProtoChunk(((WrapperProtoChunk)chunk).getWrappedChunk(), true);
 								} else if (chunk instanceof WorldChunk) {
-									chunk2 = new ReadOnlyChunk((WorldChunk)chunk, true);
+									chunk2 = new WrapperProtoChunk((WorldChunk)chunk, true);
 								} else {
 									chunk2 = chunk;
 								}

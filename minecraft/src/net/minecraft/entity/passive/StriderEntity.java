@@ -108,7 +108,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
-		if (BOOST_TIME.equals(data) && this.world.isClient) {
+		if (BOOST_TIME.equals(data) && this.getWorld().isClient) {
 			this.saddledComponent.boost();
 		}
 
@@ -149,7 +149,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	public void saddle(@Nullable SoundCategory sound) {
 		this.saddledComponent.setSaddled(true);
 		if (sound != null) {
-			this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_STRIDER_SADDLE, sound, 0.5F, 1.0F);
+			this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_STRIDER_SADDLE, sound, 0.5F, 1.0F);
 		}
 	}
 
@@ -235,14 +235,14 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		}
 
 		for (BlockPos blockPos : set) {
-			if (!this.world.getFluidState(blockPos).isIn(FluidTags.LAVA)) {
-				double g = this.world.getDismountHeight(blockPos);
+			if (!this.getWorld().getFluidState(blockPos).isIn(FluidTags.LAVA)) {
+				double g = this.getWorld().getDismountHeight(blockPos);
 				if (Dismounting.canDismountInBlock(g)) {
 					Vec3d vec3d2 = Vec3d.ofCenter(blockPos, g);
 
 					for (EntityPose entityPose : passenger.getPoses()) {
 						Box box = passenger.getBoundingBox(entityPose);
-						if (Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d2))) {
+						if (Dismounting.canPlaceEntityAt(this.getWorld(), passenger, box.offset(vec3d2))) {
 							passenger.setPose(entityPose);
 							return vec3d2;
 						}
@@ -313,7 +313,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			boolean bl;
 			boolean var10000;
 			label36: {
-				BlockState blockState = this.world.getBlockState(this.getBlockPos());
+				BlockState blockState = this.getWorld().getBlockState(this.getBlockPos());
 				BlockState blockState2 = this.getLandingBlockState();
 				bl = blockState.isIn(BlockTags.STRIDER_WARM_BLOCKS) || blockState2.isIn(BlockTags.STRIDER_WARM_BLOCKS) || this.getFluidHeight(FluidTags.LAVA) > 0.0;
 				if (this.getVehicle() instanceof StriderEntity striderEntity && striderEntity.isCold()) {
@@ -349,8 +349,9 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	private void updateFloating() {
 		if (this.isInLava()) {
 			ShapeContext shapeContext = ShapeContext.of(this);
-			if (shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true) && !this.world.getFluidState(this.getBlockPos().up()).isIn(FluidTags.LAVA)) {
-				this.onGround = true;
+			if (shapeContext.isAbove(FluidBlock.COLLISION_SHAPE, this.getBlockPos(), true)
+				&& !this.getWorld().getFluidState(this.getBlockPos().up()).isIn(FluidTags.LAVA)) {
+				this.setOnGround(true);
 			} else {
 				this.setVelocity(this.getVelocity().multiply(0.5).add(0.0, 0.05, 0.0));
 			}
@@ -427,11 +428,11 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		boolean bl = this.isBreedingItem(player.getStackInHand(hand));
 		if (!bl && this.isSaddled() && !this.hasPassengers() && !player.shouldCancelInteraction()) {
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				player.startRiding(this);
 			}
 
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (!actionResult.isAccepted()) {
@@ -439,7 +440,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 				return itemStack.isOf(Items.SADDLE) ? itemStack.useOnEntity(player, this, hand) : ActionResult.PASS;
 			} else {
 				if (bl && !this.isSilent()) {
-					this.world
+					this.getWorld()
 						.playSound(
 							null,
 							this.getX(),
@@ -514,7 +515,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 		@Override
 		public boolean shouldContinue() {
-			return !this.strider.isInLava() && this.isTargetPos(this.strider.world, this.targetPos);
+			return !this.strider.isInLava() && this.isTargetPos(this.strider.getWorld(), this.targetPos);
 		}
 
 		@Override

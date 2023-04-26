@@ -188,13 +188,15 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 
 	@Override
 	public void tickMovement() {
-		if (this.songSource == null || !this.songSource.isWithinDistance(this.getPos(), 3.46) || !this.world.getBlockState(this.songSource).isOf(Blocks.JUKEBOX)) {
+		if (this.songSource == null || !this.songSource.isWithinDistance(this.getPos(), 3.46) || !this.getWorld().getBlockState(this.songSource).isOf(Blocks.JUKEBOX)
+			)
+		 {
 			this.songPlaying = false;
 			this.songSource = null;
 		}
 
-		if (this.world.random.nextInt(400) == 0) {
-			imitateNearbyMob(this.world, this);
+		if (this.getWorld().random.nextInt(400) == 0) {
+			imitateNearbyMob(this.getWorld(), this);
 		}
 
 		super.tickMovement();
@@ -214,15 +216,15 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	private void flapWings() {
 		this.prevFlapProgress = this.flapProgress;
 		this.prevMaxWingDeviation = this.maxWingDeviation;
-		this.maxWingDeviation = this.maxWingDeviation + (float)(!this.onGround && !this.hasVehicle() ? 4 : -1) * 0.3F;
+		this.maxWingDeviation = this.maxWingDeviation + (float)(!this.isOnGround() && !this.hasVehicle() ? 4 : -1) * 0.3F;
 		this.maxWingDeviation = MathHelper.clamp(this.maxWingDeviation, 0.0F, 1.0F);
-		if (!this.onGround && this.flapSpeed < 1.0F) {
+		if (!this.isOnGround() && this.flapSpeed < 1.0F) {
 			this.flapSpeed = 1.0F;
 		}
 
 		this.flapSpeed *= 0.9F;
 		Vec3d vec3d = this.getVelocity();
-		if (!this.onGround && vec3d.y < 0.0) {
+		if (!this.isOnGround() && vec3d.y < 0.0) {
 			this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
 		}
 
@@ -256,7 +258,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 			}
 
 			if (!this.isSilent()) {
-				this.world
+				this.getWorld()
 					.playSound(
 						null,
 						this.getX(),
@@ -269,16 +271,16 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 					);
 			}
 
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				if (this.random.nextInt(10) == 0) {
 					this.setOwner(player);
-					this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
+					this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
 				} else {
-					this.world.sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
+					this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
 				}
 			}
 
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else if (itemStack.isOf(COOKIE)) {
 			if (!player.getAbilities().creativeMode) {
 				itemStack.decrement(1);
@@ -289,13 +291,13 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 				this.damage(this.getDamageSources().playerAttack(player), Float.MAX_VALUE);
 			}
 
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else if (!this.isInAir() && this.isTamed() && this.isOwner(player)) {
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				this.setSitting(!this.isSitting());
 			}
 
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -333,7 +335,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	@Nullable
 	@Override
 	public SoundEvent getAmbientSound() {
-		return getRandomSound(this.world, this.world.random);
+		return getRandomSound(this.getWorld(), this.getWorld().random);
 	}
 
 	public static SoundEvent getRandomSound(World world, Random random) {
@@ -406,7 +408,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				this.setSitting(false);
 			}
 
@@ -442,7 +444,7 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 
 	@Override
 	public boolean isInAir() {
-		return !this.onGround;
+		return !this.isOnGround();
 	}
 
 	@Override
@@ -485,9 +487,9 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 				MathHelper.floor(this.mob.getZ() + 3.0)
 			)) {
 				if (!blockPos.equals(blockPos2)) {
-					BlockState blockState = this.mob.world.getBlockState(mutable2.set(blockPos2, Direction.DOWN));
+					BlockState blockState = this.mob.getWorld().getBlockState(mutable2.set(blockPos2, Direction.DOWN));
 					boolean bl = blockState.getBlock() instanceof LeavesBlock || blockState.isIn(BlockTags.LOGS);
-					if (bl && this.mob.world.isAir(blockPos2) && this.mob.world.isAir(mutable.set(blockPos2, Direction.UP))) {
+					if (bl && this.mob.getWorld().isAir(blockPos2) && this.mob.getWorld().isAir(mutable.set(blockPos2, Direction.UP))) {
 						return Vec3d.ofBottomCenter(blockPos2);
 					}
 				}

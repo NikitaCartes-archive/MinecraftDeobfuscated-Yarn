@@ -110,7 +110,7 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 
 	@Override
 	protected void updateSaddle() {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			super.updateSaddle();
 			this.setArmorTypeFromStack(this.items.getStack(1));
 			this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
@@ -119,7 +119,7 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 
 	private void setArmorTypeFromStack(ItemStack stack) {
 		this.equipArmor(stack);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(HORSE_ARMOR_BONUS_ID);
 			if (this.isHorseArmor(stack)) {
 				int i = ((HorseArmorItem)stack.getItem()).getBonus();
@@ -187,7 +187,7 @@ public class HorseEntity extends AbstractHorseEntity implements VariantHolder<Ho
 
 				if (!this.isTame()) {
 					this.playAngrySound();
-					return ActionResult.success(this.world.isClient);
+					return ActionResult.success(this.getWorld().isClient);
 				}
 			}
 

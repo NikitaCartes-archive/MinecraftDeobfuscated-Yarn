@@ -13,7 +13,8 @@ public enum FontType {
 	BITMAP("bitmap", BitmapFont.Loader::fromJson),
 	TTF("ttf", TrueTypeFontLoader::fromJson),
 	SPACE("space", SpaceFont::fromJson),
-	LEGACY_UNICODE("legacy_unicode", UnicodeTextureFont.Loader::fromJson);
+	UNIHEX("unihex", UnihexFont.Loader::fromJson),
+	REFERENCE("reference", ReferenceFont::fromJson);
 
 	private static final Map<String, FontType> REGISTRY = Util.make(Maps.<String, FontType>newHashMap(), map -> {
 		for (FontType fontType : values()) {

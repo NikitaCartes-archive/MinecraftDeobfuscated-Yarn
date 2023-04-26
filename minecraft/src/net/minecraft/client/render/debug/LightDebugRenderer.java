@@ -15,6 +15,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.LightType;
+import net.minecraft.world.chunk.light.LightStorage;
 import net.minecraft.world.chunk.light.LightingProvider;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -186,11 +187,11 @@ public class LightDebugRenderer implements DebugRenderer.Renderer {
 						ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(
 							sectionPos.getSectionX() + l - radius, sectionPos.getSectionY() + k - radius, sectionPos.getSectionZ() + j - radius
 						);
-						int m = lightingProvider.getDebugLevel(lightType, chunkSectionPos);
-						if (m == 0) {
+						LightStorage.Status status = lightingProvider.getStatus(lightType, chunkSectionPos);
+						if (status == LightStorage.Status.LIGHT_AND_DATA) {
 							this.readyShape.set(l, k, j);
 							this.shape.set(l, k, j);
-						} else if (m == 1) {
+						} else if (status == LightStorage.Status.LIGHT_ONLY) {
 							this.shape.set(l, k, j);
 						}
 					}

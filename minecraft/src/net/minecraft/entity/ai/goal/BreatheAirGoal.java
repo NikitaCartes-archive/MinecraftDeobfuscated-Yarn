@@ -51,7 +51,7 @@ public class BreatheAirGoal extends Goal {
 		BlockPos blockPos = null;
 
 		for (BlockPos blockPos2 : iterable) {
-			if (this.isAirPos(this.mob.world, blockPos2)) {
+			if (this.isAirPos(this.mob.getWorld(), blockPos2)) {
 				blockPos = blockPos2;
 				break;
 			}

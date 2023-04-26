@@ -271,7 +271,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		if (!this.isSilent()) {
 			SoundEvent soundEvent = this.getEatSound();
 			if (soundEvent != null) {
-				this.world
+				this.getWorld()
 					.playSound(
 						null, this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
 					);
@@ -330,7 +330,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	protected void updateSaddle() {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.setHorseFlag(SADDLED_FLAG, !this.items.getStack(0).isEmpty());
 		}
 	}
@@ -375,7 +375,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
 		if (!state.isLiquid()) {
-			BlockState blockState = this.world.getBlockState(pos.up());
+			BlockState blockState = this.getWorld().getBlockState(pos.up());
 			BlockSoundGroup blockSoundGroup = state.getSoundGroup();
 			if (blockState.isOf(Blocks.SNOW)) {
 				blockSoundGroup = blockState.getSoundGroup();
@@ -436,7 +436,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	@Override
 	public void openInventory(PlayerEntity player) {
-		if (!this.world.isClient && (!this.hasPassengers() || this.hasPassenger(player)) && this.isTame()) {
+		if (!this.getWorld().isClient && (!this.hasPassengers() || this.hasPassenger(player)) && this.isTame()) {
 			player.openHorseInventory(this, this.items);
 		}
 	}
@@ -447,7 +447,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			stack.decrement(1);
 		}
 
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			return ActionResult.CONSUME;
 		} else {
 			return bl ? ActionResult.SUCCESS : ActionResult.PASS;
@@ -478,7 +478,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			f = 4.0F;
 			i = 60;
 			j = 5;
-			if (!this.world.isClient && this.isTame() && this.getBreedingAge() == 0 && !this.isInLove()) {
+			if (!this.getWorld().isClient && this.isTame() && this.getBreedingAge() == 0 && !this.isInLove()) {
 				bl = true;
 				this.lovePlayer(player);
 			}
@@ -486,7 +486,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			f = 10.0F;
 			i = 240;
 			j = 10;
-			if (!this.world.isClient && this.isTame() && this.getBreedingAge() == 0 && !this.isInLove()) {
+			if (!this.getWorld().isClient && this.isTame() && this.getBreedingAge() == 0 && !this.isInLove()) {
 				bl = true;
 				this.lovePlayer(player);
 			}
@@ -498,8 +498,8 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 
 		if (this.isBaby() && i > 0) {
-			this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
-			if (!this.world.isClient) {
+			this.getWorld().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
+			if (!this.getWorld().isClient) {
 				this.growUp(i);
 			}
 
@@ -508,7 +508,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 		if (j > 0 && (bl || !this.isTame()) && this.getTemper() < this.getMaxTemper()) {
 			bl = true;
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				this.addTemper(j);
 			}
 		}
@@ -524,7 +524,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	protected void putPlayerOnBack(PlayerEntity player) {
 		this.setEatingGrass(false);
 		this.setAngry(false);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			player.setYaw(this.getYaw());
 			player.setPitch(this.getPitch());
 			player.startRiding(this);
@@ -565,7 +565,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 		}
 
 		super.tickMovement();
-		if (!this.world.isClient && this.isAlive()) {
+		if (!this.getWorld().isClient && this.isAlive()) {
 			if (this.random.nextInt(900) == 0 && this.deathTime == 0) {
 				this.heal(1.0F);
 			}
@@ -574,7 +574,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				if (!this.isEatingGrass()
 					&& !this.hasPassengers()
 					&& this.random.nextInt(300) == 0
-					&& this.world.getBlockState(this.getBlockPos().down()).isOf(Blocks.GRASS_BLOCK)) {
+					&& this.getWorld().getBlockState(this.getBlockPos().down()).isOf(Blocks.GRASS_BLOCK)) {
 					this.setEatingGrass(true);
 				}
 
@@ -590,7 +590,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	protected void walkToParent() {
 		if (this.isBred() && this.isBaby() && !this.isEatingGrass()) {
-			LivingEntity livingEntity = this.world
+			LivingEntity livingEntity = this.getWorld()
 				.getClosestEntity(AbstractHorseEntity.class, PARENT_HORSE_PREDICATE, this, this.getX(), this.getY(), this.getZ(), this.getBoundingBox().expand(16.0));
 			if (livingEntity != null && this.squaredDistanceTo(livingEntity) > 4.0) {
 				this.navigation.findPathTo(livingEntity, 0);
@@ -676,7 +676,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			return super.interactMob(player, hand);
 		} else if (this.isTame() && player.shouldCancelInteraction()) {
 			this.openInventory(player);
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			ItemStack itemStack = player.getStackInHand(hand);
 			if (!itemStack.isEmpty()) {
@@ -687,17 +687,17 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 				if (this.hasArmorSlot() && this.isHorseArmor(itemStack) && !this.hasArmorInSlot()) {
 					this.equipHorseArmor(player, itemStack);
-					return ActionResult.success(this.world.isClient);
+					return ActionResult.success(this.getWorld().isClient);
 				}
 			}
 
 			this.putPlayerOnBack(player);
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		}
 	}
 
 	private void setEating() {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.eatingTicks = 1;
 			this.setHorseFlag(EATING_FLAG, true);
 		}
@@ -744,7 +744,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			Criteria.TAME_ANIMAL.trigger((ServerPlayerEntity)player, this);
 		}
 
-		this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
+		this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
 		return true;
 	}
 
@@ -759,7 +759,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				this.soundTicks = 0;
 			}
 
-			if (this.onGround) {
+			if (this.isOnGround()) {
 				this.setInAir(false);
 				if (this.jumpStrength > 0.0F && !this.isInAir()) {
 					this.jump(this.jumpStrength, movementInput);
@@ -776,7 +776,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	@Override
 	protected Vec3d getControlledMovementInput(PlayerEntity controllingPlayer, Vec3d movementInput) {
-		if (this.onGround && this.jumpStrength == 0.0F && this.isAngry() && !this.jumping) {
+		if (this.isOnGround() && this.jumpStrength == 0.0F && this.isAngry() && !this.jumping) {
 			return Vec3d.ZERO;
 		} else {
 			float f = controllingPlayer.sidewaysSpeed * 0.5F;
@@ -959,7 +959,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
-			this.world.addParticle(particleEffect, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
+			this.getWorld().addParticle(particleEffect, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
 		}
 	}
 
@@ -1117,7 +1117,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 			double g = this.getBoundingBox().maxY + 0.75;
 
 			do {
-				double h = this.world.getDismountHeight(mutable);
+				double h = this.getWorld().getDismountHeight(mutable);
 				if ((double)mutable.getY() + h > g) {
 					break;
 				}
@@ -1125,7 +1125,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 				if (Dismounting.canDismountInBlock(h)) {
 					Box box = passenger.getBoundingBox(entityPose);
 					Vec3d vec3d = new Vec3d(d, (double)mutable.getY() + h, f);
-					if (Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d))) {
+					if (Dismounting.canPlaceEntityAt(this.getWorld(), passenger, box.offset(vec3d))) {
 						passenger.setPose(entityPose);
 						return vec3d;
 					}

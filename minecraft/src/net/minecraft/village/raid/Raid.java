@@ -441,7 +441,9 @@ public class Raid {
 
 			for (RaiderEntity raiderEntity : set2) {
 				BlockPos blockPos = raiderEntity.getBlockPos();
-				if (raiderEntity.isRemoved() || raiderEntity.world.getRegistryKey() != this.world.getRegistryKey() || this.center.getSquaredDistance(blockPos) >= 12544.0) {
+				if (raiderEntity.isRemoved()
+					|| raiderEntity.getWorld().getRegistryKey() != this.world.getRegistryKey()
+					|| this.center.getSquaredDistance(blockPos) >= 12544.0) {
 					set.add(raiderEntity);
 				} else if (raiderEntity.age > 600) {
 					if (this.world.getEntity(raiderEntity.getUuid()) == null) {

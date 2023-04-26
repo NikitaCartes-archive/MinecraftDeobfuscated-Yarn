@@ -113,6 +113,7 @@ public class VanillaArchaeologyLootTableGenerator implements LootTableGenerator 
 						.with(ItemEntry.builder(Items.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE))
 						.with(ItemEntry.builder(Items.SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE))
 						.with(ItemEntry.builder(Items.HOST_ARMOR_TRIM_SMITHING_TEMPLATE))
+						.with(ItemEntry.builder(Items.MUSIC_DISC_RELIC))
 				)
 		);
 		exporter.accept(

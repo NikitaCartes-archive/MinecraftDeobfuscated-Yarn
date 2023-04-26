@@ -63,7 +63,7 @@ public class ItemEntity extends Entity implements Ownable {
 	}
 
 	private ItemEntity(ItemEntity entity) {
-		super(entity.getType(), entity.world);
+		super(entity.getType(), entity.getWorld());
 		this.setStack(entity.getStack().copy());
 		this.copyPositionAndRotation(entity);
 		this.itemAge = entity.itemAge;
@@ -78,7 +78,7 @@ public class ItemEntity extends Entity implements Ownable {
 	@Nullable
 	@Override
 	public Entity getOwner() {
-		return this.thrower != null && this.world instanceof ServerWorld serverWorld ? serverWorld.getEntity(this.thrower) : null;
+		return this.thrower != null && this.getWorld() instanceof ServerWorld serverWorld ? serverWorld.getEntity(this.thrower) : null;
 	}
 
 	@Override
@@ -114,24 +114,24 @@ public class ItemEntity extends Entity implements Ownable {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
 
-			if (this.world.isClient) {
+			if (this.getWorld().isClient) {
 				this.noClip = false;
 			} else {
-				this.noClip = !this.world.isSpaceEmpty(this, this.getBoundingBox().contract(1.0E-7));
+				this.noClip = !this.getWorld().isSpaceEmpty(this, this.getBoundingBox().contract(1.0E-7));
 				if (this.noClip) {
 					this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
 				}
 			}
 
-			if (!this.onGround || this.getVelocity().horizontalLengthSquared() > 1.0E-5F || (this.age + this.getId()) % 4 == 0) {
+			if (!this.isOnGround() || this.getVelocity().horizontalLengthSquared() > 1.0E-5F || (this.age + this.getId()) % 4 == 0) {
 				this.move(MovementType.SELF, this.getVelocity());
 				float g = 0.98F;
-				if (this.onGround) {
-					g = this.world.getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
+				if (this.isOnGround()) {
+					g = this.getWorld().getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
 				}
 
 				this.setVelocity(this.getVelocity().multiply((double)g, 0.98, (double)g));
-				if (this.onGround) {
+				if (this.isOnGround()) {
 					Vec3d vec3d2 = this.getVelocity();
 					if (vec3d2.y < 0.0) {
 						this.setVelocity(vec3d2.multiply(1.0, -0.5, 1.0));
@@ -143,7 +143,7 @@ public class ItemEntity extends Entity implements Ownable {
 				|| MathHelper.floor(this.prevY) != MathHelper.floor(this.getY())
 				|| MathHelper.floor(this.prevZ) != MathHelper.floor(this.getZ());
 			int i = bl ? 2 : 40;
-			if (this.age % i == 0 && !this.world.isClient && this.canMerge()) {
+			if (this.age % i == 0 && !this.getWorld().isClient && this.canMerge()) {
 				this.tryMerge();
 			}
 
@@ -152,14 +152,14 @@ public class ItemEntity extends Entity implements Ownable {
 			}
 
 			this.velocityDirty = this.velocityDirty | this.updateWaterState();
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				double d = this.getVelocity().subtract(vec3d).lengthSquared();
 				if (d > 0.01) {
 					this.velocityDirty = true;
 				}
 			}
 
-			if (!this.world.isClient && this.itemAge >= 6000) {
+			if (!this.getWorld().isClient && this.itemAge >= 6000) {
 				this.discard();
 			}
 		}
@@ -177,7 +177,7 @@ public class ItemEntity extends Entity implements Ownable {
 
 	private void tryMerge() {
 		if (this.canMerge()) {
-			for (ItemEntity itemEntity : this.world
+			for (ItemEntity itemEntity : this.getWorld()
 				.getEntitiesByClass(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), otherItemEntity -> otherItemEntity != this && otherItemEntity.canMerge())) {
 				if (itemEntity.canMerge()) {
 					this.tryMerge(itemEntity);
@@ -250,7 +250,7 @@ public class ItemEntity extends Entity implements Ownable {
 			return false;
 		} else if (!this.getStack().getItem().damage(source)) {
 			return false;
-		} else if (this.world.isClient) {
+		} else if (this.getWorld().isClient) {
 			return true;
 		} else {
 			this.scheduleVelocityUpdate();
@@ -308,7 +308,7 @@ public class ItemEntity extends Entity implements Ownable {
 
 	@Override
 	public void onPlayerCollision(PlayerEntity player) {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			ItemStack itemStack = this.getStack();
 			Item item = itemStack.getItem();
 			int i = itemStack.getCount();
@@ -340,7 +340,7 @@ public class ItemEntity extends Entity implements Ownable {
 	@Override
 	public Entity moveToWorld(ServerWorld destination) {
 		Entity entity = super.moveToWorld(destination);
-		if (!this.world.isClient && entity instanceof ItemEntity) {
+		if (!this.getWorld().isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();
 		}
 

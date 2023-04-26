@@ -52,7 +52,7 @@ public interface PaletteStorage {
 	 */
 	void forEach(IntConsumer action);
 
-	void method_39892(int[] is);
+	void writePaletteIndices(int[] out);
 
 	PaletteStorage copy();
 }

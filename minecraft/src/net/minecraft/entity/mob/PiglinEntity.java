@@ -262,7 +262,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 		ActionResult actionResult = super.interactMob(player, hand);
 		if (actionResult.isAccepted()) {
 			return actionResult;
-		} else if (!this.world.isClient) {
+		} else if (!this.getWorld().isClient) {
 			return PiglinBrain.playerInteract(this, player, hand);
 		} else {
 			boolean bl = PiglinBrain.isWillingToTrade(this, player.getStackInHand(hand)) && this.getActivity() != PiglinActivity.ADMIRING_ITEM;
@@ -284,7 +284,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	@Override
 	public void setBaby(boolean baby) {
 		this.getDataTracker().set(BABY, baby);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
 			entityAttributeInstance.removeModifier(BABY_SPEED_BOOST);
 			if (baby) {
@@ -309,9 +309,9 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("piglinBrain");
-		this.getBrain().tick((ServerWorld)this.world, this);
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().push("piglinBrain");
+		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getWorld().getProfiler().pop();
 		PiglinBrain.tickActivities(this);
 		super.mobTick();
 	}
@@ -372,7 +372,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		boolean bl = super.damage(source, amount);
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			return false;
 		} else {
 			if (bl && source.getAttacker() instanceof LivingEntity) {
@@ -413,7 +413,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 
 	@Override
 	public boolean canGather(ItemStack stack) {
-		return this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && this.canPickUpLoot() && PiglinBrain.canGather(this, stack);
+		return this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && this.canPickUpLoot() && PiglinBrain.canGather(this, stack);
 	}
 
 	/**
@@ -471,7 +471,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.world.isClient ? null : (SoundEvent)PiglinBrain.getCurrentActivitySound(this).orElse(null);
+		return this.getWorld().isClient ? null : (SoundEvent)PiglinBrain.getCurrentActivitySound(this).orElse(null);
 	}
 
 	@Override

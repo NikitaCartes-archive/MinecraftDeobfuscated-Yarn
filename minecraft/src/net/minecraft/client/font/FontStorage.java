@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.UnaryOperator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.TextureManager;
@@ -28,8 +27,8 @@ public class FontStorage implements AutoCloseable {
 	private GlyphRenderer blankGlyphRenderer;
 	private GlyphRenderer whiteRectangleGlyphRenderer;
 	private final List<Font> fonts = Lists.<Font>newArrayList();
-	private final Int2ObjectMap<GlyphRenderer> glyphRendererCache = new Int2ObjectOpenHashMap<>();
-	private final Int2ObjectMap<FontStorage.GlyphPair> glyphCache = new Int2ObjectOpenHashMap<>();
+	private final GlyphContainer<GlyphRenderer> glyphRendererCache = new GlyphContainer<>(GlyphRenderer[]::new, GlyphRenderer[][]::new);
+	private final GlyphContainer<FontStorage.GlyphPair> glyphCache = new GlyphContainer<>(FontStorage.GlyphPair[]::new, FontStorage.GlyphPair[][]::new);
 	private final Int2ObjectMap<IntList> charactersByWidth = new Int2ObjectOpenHashMap<>();
 	private final List<GlyphAtlasTexture> glyphAtlases = Lists.<GlyphAtlasTexture>newArrayList();
 
@@ -159,11 +158,12 @@ public class FontStorage implements AutoCloseable {
 			}
 		}
 
-		GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(
-			this.id.withPath((UnaryOperator<String>)(string -> string + "/" + this.glyphAtlases.size())), c.hasColor()
-		);
+		Identifier identifier = this.id.withSuffixedPath("/" + this.glyphAtlases.size());
+		boolean bl = c.hasColor();
+		TextRenderLayerSet textRenderLayerSet = bl ? TextRenderLayerSet.of(identifier) : TextRenderLayerSet.ofIntensity(identifier);
+		GlyphAtlasTexture glyphAtlasTexture2 = new GlyphAtlasTexture(textRenderLayerSet, bl);
 		this.glyphAtlases.add(glyphAtlasTexture2);
-		this.textureManager.registerTexture(glyphAtlasTexture2.getId(), glyphAtlasTexture2);
+		this.textureManager.registerTexture(identifier, glyphAtlasTexture2);
 		GlyphRenderer glyphRenderer2 = glyphAtlasTexture2.getGlyphRenderer(c);
 		return glyphRenderer2 == null ? this.blankGlyphRenderer : glyphRenderer2;
 	}

@@ -270,6 +270,11 @@ public class BlockPos extends Vec3i {
 		);
 	}
 
+	@Deprecated
+	public static Stream<BlockPos> streamSouthEastSquare(BlockPos pos) {
+		return Stream.of(pos, pos.south(), pos.east(), pos.south().east());
+	}
+
 	/**
 	 * Iterates through {@code count} random block positions in the given area.
 	 * 

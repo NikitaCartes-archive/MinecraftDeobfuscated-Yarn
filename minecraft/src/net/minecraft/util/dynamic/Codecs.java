@@ -202,6 +202,10 @@ public class Codecs {
 	public static final Codec<String> NON_EMPTY_STRING = validate(
 		Codec.STRING, string -> string.isEmpty() ? DataResult.error(() -> "Expected non-empty string") : DataResult.success(string)
 	);
+	public static final Codec<Integer> CODEPOINT = Codec.STRING.comapFlatMap(string -> {
+		int[] is = string.codePoints().toArray();
+		return is.length != 1 ? DataResult.error(() -> "Expected one codepoint, got: " + string) : DataResult.success(is[0]);
+	}, Character::toString);
 
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.

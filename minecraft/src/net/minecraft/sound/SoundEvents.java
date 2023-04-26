@@ -803,6 +803,7 @@ public class SoundEvents {
 	public static final SoundEvent MUSIC_DISC_WAIT = register("music_disc.wait");
 	public static final SoundEvent MUSIC_DISC_WARD = register("music_disc.ward");
 	public static final SoundEvent MUSIC_DISC_OTHERSIDE = register("music_disc.otherside");
+	public static final SoundEvent MUSIC_DISC_RELIC = register("music_disc.relic");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_DRAGON = registerReference("music.dragon");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_END = registerReference("music.end");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_GAME = registerReference("music.game");
@@ -815,7 +816,7 @@ public class SoundEvents {
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_JAGGED_PEAKS = registerReference("music.overworld.jagged_peaks");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_LUSH_CAVES = registerReference("music.overworld.lush_caves");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_SWAMP = registerReference("music.overworld.swamp");
-	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_JUNGLE_AND_FOREST = registerReference("music.overworld.jungle_and_forest");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_FOREST = registerReference("music.overworld.forest");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_OLD_GROWTH_TAIGA = registerReference("music.overworld.old_growth_taiga");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_MEADOW = registerReference("music.overworld.meadow");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_CHERRY_GROVE = registerReference("music.overworld.cherry_grove");
@@ -825,6 +826,12 @@ public class SoundEvents {
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_NETHER_SOUL_SAND_VALLEY = registerReference("music.nether.soul_sand_valley");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_STONY_PEAKS = registerReference("music.overworld.stony_peaks");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_NETHER_WARPED_FOREST = registerReference("music.nether.warped_forest");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_FLOWER_FOREST = registerReference("music.overworld.flower_forest");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_DESERT = registerReference("music.overworld.desert");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_BADLANDS = registerReference("music.overworld.badlands");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_JUNGLE = registerReference("music.overworld.jungle");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_SPARSE_JUNGLE = registerReference("music.overworld.sparse_jungle");
+	public static final RegistryEntry.Reference<SoundEvent> MUSIC_OVERWORLD_BAMBOO_JUNGLE = registerReference("music.overworld.bamboo_jungle");
 	public static final RegistryEntry.Reference<SoundEvent> MUSIC_UNDER_WATER = registerReference("music.under_water");
 	public static final SoundEvent BLOCK_NETHER_BRICKS_BREAK = register("block.nether_bricks.break");
 	public static final SoundEvent BLOCK_NETHER_BRICKS_STEP = register("block.nether_bricks.step");

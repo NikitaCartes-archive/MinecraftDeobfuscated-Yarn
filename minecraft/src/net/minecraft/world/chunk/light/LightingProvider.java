@@ -10,7 +10,6 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 
 public class LightingProvider implements LightingView {
-	public static final int field_31713 = 15;
 	public static final int field_31714 = 1;
 	protected final HeightLimitView world;
 	@Nullable
@@ -36,30 +35,22 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Override
-	public void addLightSource(BlockPos pos, int level) {
-		if (this.blockLightProvider != null) {
-			this.blockLightProvider.addLightSource(pos, level);
-		}
-	}
-
-	@Override
 	public boolean hasUpdates() {
 		return this.skyLightProvider != null && this.skyLightProvider.hasUpdates() ? true : this.blockLightProvider != null && this.blockLightProvider.hasUpdates();
 	}
 
 	@Override
-	public int doLightUpdates(int i, boolean doSkylight, boolean skipEdgeLightPropagation) {
-		if (this.blockLightProvider != null && this.skyLightProvider != null) {
-			int j = i / 2;
-			int k = this.blockLightProvider.doLightUpdates(j, doSkylight, skipEdgeLightPropagation);
-			int l = i - j + k;
-			int m = this.skyLightProvider.doLightUpdates(l, doSkylight, skipEdgeLightPropagation);
-			return k == 0 && m > 0 ? this.blockLightProvider.doLightUpdates(m, doSkylight, skipEdgeLightPropagation) : m;
-		} else if (this.blockLightProvider != null) {
-			return this.blockLightProvider.doLightUpdates(i, doSkylight, skipEdgeLightPropagation);
-		} else {
-			return this.skyLightProvider != null ? this.skyLightProvider.doLightUpdates(i, doSkylight, skipEdgeLightPropagation) : i;
+	public int doLightUpdates() {
+		int i = 0;
+		if (this.blockLightProvider != null) {
+			i += this.blockLightProvider.doLightUpdates();
 		}
+
+		if (this.skyLightProvider != null) {
+			i += this.skyLightProvider.doLightUpdates();
+		}
+
+		return i;
 	}
 
 	@Override
@@ -84,6 +75,17 @@ public class LightingProvider implements LightingView {
 		}
 	}
 
+	@Override
+	public void propagateLight(ChunkPos chunkPos) {
+		if (this.blockLightProvider != null) {
+			this.blockLightProvider.propagateLight(chunkPos);
+		}
+
+		if (this.skyLightProvider != null) {
+			this.skyLightProvider.propagateLight(chunkPos);
+		}
+	}
+
 	public ChunkLightingView get(LightType lightType) {
 		if (lightType == LightType.BLOCK) {
 			return (ChunkLightingView)(this.blockLightProvider == null ? ChunkLightingView.Empty.INSTANCE : this.blockLightProvider);
@@ -104,25 +106,25 @@ public class LightingProvider implements LightingView {
 		return "n/a";
 	}
 
-	public int getDebugLevel(LightType lightType, ChunkSectionPos pos) {
+	public LightStorage.Status getStatus(LightType lightType, ChunkSectionPos pos) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
-				return this.blockLightProvider.getDebugLevel(pos.asLong());
+				return this.blockLightProvider.getStatus(pos.asLong());
 			}
 		} else if (this.skyLightProvider != null) {
-			return this.skyLightProvider.getDebugLevel(pos.asLong());
+			return this.skyLightProvider.getStatus(pos.asLong());
 		}
 
-		return 2;
+		return LightStorage.Status.EMPTY;
 	}
 
-	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles, boolean nonEdge) {
+	public void enqueueSectionData(LightType lightType, ChunkSectionPos pos, @Nullable ChunkNibbleArray nibbles) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
-				this.blockLightProvider.enqueueSectionData(pos.asLong(), nibbles, nonEdge);
+				this.blockLightProvider.enqueueSectionData(pos.asLong(), nibbles);
 			}
 		} else if (this.skyLightProvider != null) {
-			this.skyLightProvider.enqueueSectionData(pos.asLong(), nibbles, nonEdge);
+			this.skyLightProvider.enqueueSectionData(pos.asLong(), nibbles);
 		}
 	}
 
@@ -140,6 +142,13 @@ public class LightingProvider implements LightingView {
 		int i = this.skyLightProvider == null ? 0 : this.skyLightProvider.getLightLevel(pos) - ambientDarkness;
 		int j = this.blockLightProvider == null ? 0 : this.blockLightProvider.getLightLevel(pos);
 		return Math.max(j, i);
+	}
+
+	public boolean isLightingEnabled(ChunkSectionPos sectionPos) {
+		long l = sectionPos.asLong();
+		return this.blockLightProvider == null
+			|| this.blockLightProvider.lightStorage.isSectionInEnabledColumn(l)
+				&& (this.skyLightProvider == null || this.skyLightProvider.lightStorage.isSectionInEnabledColumn(l));
 	}
 
 	public int getHeight() {

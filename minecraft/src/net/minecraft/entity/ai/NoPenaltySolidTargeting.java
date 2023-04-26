@@ -35,7 +35,7 @@ public class NoPenaltySolidTargeting {
 		} else {
 			BlockPos blockPos2 = FuzzyPositions.towardTarget(entity, horizontalRange, entity.getRandom(), blockPos);
 			if (!NavigationConditions.isHeightInvalid(blockPos2, entity) && !NavigationConditions.isPositionTargetOutOfWalkRange(posTargetInRange, entity, blockPos2)) {
-				blockPos2 = FuzzyPositions.upWhile(blockPos2, entity.world.getTopY(), pos -> NavigationConditions.isSolidAt(entity, pos));
+				blockPos2 = FuzzyPositions.upWhile(blockPos2, entity.getWorld().getTopY(), pos -> NavigationConditions.isSolidAt(entity, pos));
 				return NavigationConditions.hasPathfindingPenalty(entity, blockPos2) ? null : blockPos2;
 			} else {
 				return null;

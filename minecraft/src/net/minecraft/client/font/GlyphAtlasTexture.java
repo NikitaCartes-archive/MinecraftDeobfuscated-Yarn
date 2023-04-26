@@ -1,33 +1,28 @@
 package net.minecraft.client.font;
 
 import com.mojang.blaze3d.platform.TextureUtil;
+import java.nio.file.Path;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.DynamicTexture;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class GlyphAtlasTexture extends AbstractTexture {
+public class GlyphAtlasTexture extends AbstractTexture implements DynamicTexture {
 	private static final int SLOT_LENGTH = 256;
-	private final Identifier id;
-	private final RenderLayer textLayer;
-	private final RenderLayer seeThroughTextLayer;
-	private final RenderLayer polygonOffsetTextLayer;
+	private final TextRenderLayerSet textRenderLayers;
 	private final boolean hasColor;
 	private final GlyphAtlasTexture.Slot rootSlot;
 
-	public GlyphAtlasTexture(Identifier id, boolean hasColor) {
-		this.id = id;
+	public GlyphAtlasTexture(TextRenderLayerSet textRenderLayers, boolean hasColor) {
 		this.hasColor = hasColor;
 		this.rootSlot = new GlyphAtlasTexture.Slot(0, 0, 256, 256);
 		TextureUtil.prepareImage(hasColor ? NativeImage.InternalFormat.RGBA : NativeImage.InternalFormat.RED, this.getGlId(), 256, 256);
-		this.textLayer = hasColor ? RenderLayer.getText(id) : RenderLayer.getTextIntensity(id);
-		this.seeThroughTextLayer = hasColor ? RenderLayer.getTextSeeThrough(id) : RenderLayer.getTextIntensitySeeThrough(id);
-		this.polygonOffsetTextLayer = hasColor ? RenderLayer.getTextPolygonOffset(id) : RenderLayer.getTextIntensityPolygonOffset(id);
+		this.textRenderLayers = textRenderLayers;
 	}
 
 	@Override
@@ -52,9 +47,7 @@ public class GlyphAtlasTexture extends AbstractTexture {
 				float g = 256.0F;
 				float h = 0.01F;
 				return new GlyphRenderer(
-					this.textLayer,
-					this.seeThroughTextLayer,
-					this.polygonOffsetTextLayer,
+					this.textRenderLayers,
 					((float)slot.x + 0.01F) / 256.0F,
 					((float)slot.x - 0.01F + (float)glyph.getWidth()) / 256.0F,
 					((float)slot.y + 0.01F) / 256.0F,
@@ -70,8 +63,10 @@ public class GlyphAtlasTexture extends AbstractTexture {
 		}
 	}
 
-	public Identifier getId() {
-		return this.id;
+	@Override
+	public void save(Identifier id, Path path) {
+		String string = id.toUnderscoreSeparatedString();
+		TextureUtil.writeAsPNG(path, string, this.getGlId(), 0, 256, 256, color -> (color & 0xFF000000) == 0 ? -16777216 : color);
 	}
 
 	@Environment(EnvType.CLIENT)

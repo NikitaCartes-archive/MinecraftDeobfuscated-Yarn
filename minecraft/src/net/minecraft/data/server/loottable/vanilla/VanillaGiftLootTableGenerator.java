@@ -216,5 +216,15 @@ public class VanillaGiftLootTableGenerator implements LootTableGenerator {
 						.with(ItemEntry.builder(Items.IRON_AXE))
 				)
 		);
+		exporter.accept(
+			LootTables.SNIFFER_DIGGING_GAMEPLAY,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(ItemEntry.builder(Items.TORCHFLOWER_SEEDS))
+						.with(ItemEntry.builder(Items.PITCHER_POD))
+				)
+		);
 	}
 }

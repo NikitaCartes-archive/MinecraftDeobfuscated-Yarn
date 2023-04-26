@@ -40,7 +40,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 		this.updateRotation();
 		float g = 0.99F;
 		float h = 0.06F;
-		if (this.world.getStatesInBox(this.getBoundingBox()).noneMatch(AbstractBlock.AbstractBlockState::isAir)) {
+		if (this.getWorld().getStatesInBox(this.getBoundingBox()).noneMatch(AbstractBlock.AbstractBlockState::isAir)) {
 			this.discard();
 		} else if (this.isInsideWaterOrBubbleColumn()) {
 			this.discard();
@@ -65,7 +65,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 	@Override
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		super.onBlockHit(blockHitResult);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.discard();
 		}
 	}
@@ -83,7 +83,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 
 		for (int i = 0; i < 7; i++) {
 			double g = 0.4 + 0.1 * (double)i;
-			this.world.addParticle(ParticleTypes.SPIT, this.getX(), this.getY(), this.getZ(), d * g, e, f * g);
+			this.getWorld().addParticle(ParticleTypes.SPIT, this.getX(), this.getY(), this.getZ(), d * g, e, f * g);
 		}
 
 		this.setVelocity(d, e, f);

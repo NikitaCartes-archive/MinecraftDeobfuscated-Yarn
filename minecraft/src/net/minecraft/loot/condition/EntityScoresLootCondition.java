@@ -48,7 +48,7 @@ public class EntityScoresLootCondition implements LootCondition {
 		if (entity == null) {
 			return false;
 		} else {
-			Scoreboard scoreboard = entity.world.getScoreboard();
+			Scoreboard scoreboard = entity.getWorld().getScoreboard();
 
 			for (Entry<String, BoundedIntUnaryOperator> entry : this.scores.entrySet()) {
 				if (!this.entityScoreIsInRange(lootContext, entity, scoreboard, (String)entry.getKey(), (BoundedIntUnaryOperator)entry.getValue())) {

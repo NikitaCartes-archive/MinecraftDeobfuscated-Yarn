@@ -52,7 +52,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 	private void tickInRange() {
 		if (this.path != null && this.path.isFinished()) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(EndPortalFeature.ORIGIN));
+			BlockPos blockPos = this.dragon.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(EndPortalFeature.ORIGIN));
 			int i = this.dragon.getFight() == null ? 0 : this.dragon.getFight().getAliveEndCrystals();
 			if (this.dragon.getRandom().nextInt(i + 3) == 0) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.LANDING_APPROACH);
@@ -60,7 +60,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 			}
 
 			PlayerEntity playerEntity = this.dragon
-				.world
+				.getWorld()
 				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, this.dragon, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			double d;
 			if (playerEntity != null) {

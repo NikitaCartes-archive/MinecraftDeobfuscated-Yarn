@@ -236,7 +236,7 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public NativeImage apply(IntUnaryOperator operator) {
+	public NativeImage applyToCopy(IntUnaryOperator operator) {
 		if (this.format != NativeImage.Format.RGBA) {
 			throw new IllegalArgumentException(String.format(Locale.ROOT, "function application only works on RGBA images; have %s", this.format));
 		} else {
@@ -251,6 +251,20 @@ public final class NativeImage implements AutoCloseable {
 			}
 
 			return nativeImage;
+		}
+	}
+
+	public void apply(IntUnaryOperator operator) {
+		if (this.format != NativeImage.Format.RGBA) {
+			throw new IllegalArgumentException(String.format(Locale.ROOT, "function application only works on RGBA images; have %s", this.format));
+		} else {
+			this.checkAllocated();
+			int i = this.width * this.height;
+			IntBuffer intBuffer = MemoryUtil.memIntBuffer(this.pointer, i);
+
+			for (int j = 0; j < i; j++) {
+				intBuffer.put(j, operator.applyAsInt(intBuffer.get(j)));
+			}
 		}
 	}
 

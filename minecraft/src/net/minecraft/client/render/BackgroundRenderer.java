@@ -240,7 +240,7 @@ public class BackgroundRenderer {
 			fogData.fogEnd = 96.0F;
 			if (entity instanceof ClientPlayerEntity clientPlayerEntity) {
 				fogData.fogEnd = fogData.fogEnd * Math.max(0.25F, clientPlayerEntity.getUnderwaterVisibility());
-				RegistryEntry<Biome> registryEntry = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
+				RegistryEntry<Biome> registryEntry = clientPlayerEntity.getWorld().getBiome(clientPlayerEntity.getBlockPos());
 				if (registryEntry.isIn(BiomeTags.HAS_CLOSER_WATER_FOG)) {
 					fogData.fogEnd *= 0.85F;
 				}

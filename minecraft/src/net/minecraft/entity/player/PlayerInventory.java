@@ -262,7 +262,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
 			for (int i = 0; i < defaultedList.size(); i++) {
 				if (!defaultedList.get(i).isEmpty()) {
-					defaultedList.get(i).inventoryTick(this.player.world, this.player, i, this.selectedSlot == i);
+					defaultedList.get(i).inventoryTick(this.player.getWorld(), this.player, i, this.selectedSlot == i);
 				}
 			}
 		}

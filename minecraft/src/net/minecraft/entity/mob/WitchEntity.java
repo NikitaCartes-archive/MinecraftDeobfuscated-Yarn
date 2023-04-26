@@ -107,7 +107,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 
 	@Override
 	public void tickMovement() {
-		if (!this.world.isClient && this.isAlive()) {
+		if (!this.getWorld().isClient && this.isAlive()) {
 			this.raidGoal.decreaseCooldown();
 			if (this.raidGoal.getCooldown() <= 0) {
 				this.attackPlayerGoal.setEnabled(true);
@@ -153,7 +153,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
 					this.setDrinking(true);
 					if (!this.isSilent()) {
-						this.world
+						this.getWorld()
 							.playSound(
 								null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_DRINK, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
 							);
@@ -166,7 +166,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			}
 
 			if (this.random.nextFloat() < 7.5E-4F) {
-				this.world.sendEntityStatus(this, EntityStatuses.ADD_WITCH_PARTICLES);
+				this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_WITCH_PARTICLES);
 			}
 		}
 
@@ -182,7 +182,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	public void handleStatus(byte status) {
 		if (status == EntityStatuses.ADD_WITCH_PARTICLES) {
 			for (int i = 0; i < this.random.nextInt(35) + 10; i++) {
-				this.world
+				this.getWorld()
 					.addParticle(
 						ParticleTypes.WITCH,
 						this.getX() + this.random.nextGaussian() * 0.13F,
@@ -237,18 +237,18 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 				potion = Potions.WEAKNESS;
 			}
 
-			PotionEntity potionEntity = new PotionEntity(this.world, this);
+			PotionEntity potionEntity = new PotionEntity(this.getWorld(), this);
 			potionEntity.setItem(PotionUtil.setPotion(new ItemStack(Items.SPLASH_POTION), potion));
 			potionEntity.setPitch(potionEntity.getPitch() - -20.0F);
 			potionEntity.setVelocity(d, e + g * 0.2, f, 0.75F, 8.0F);
 			if (!this.isSilent()) {
-				this.world
+				this.getWorld()
 					.playSound(
 						null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITCH_THROW, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F
 					);
 			}
 
-			this.world.spawnEntity(potionEntity);
+			this.getWorld().spawnEntity(potionEntity);
 		}
 	}
 

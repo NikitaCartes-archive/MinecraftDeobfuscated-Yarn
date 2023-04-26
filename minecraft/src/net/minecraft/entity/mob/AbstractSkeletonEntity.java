@@ -160,13 +160,13 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	public void updateAttackType() {
-		if (this.world != null && !this.world.isClient) {
+		if (this.getWorld() != null && !this.getWorld().isClient) {
 			this.goalSelector.remove(this.meleeAttackGoal);
 			this.goalSelector.remove(this.bowAttackGoal);
 			ItemStack itemStack = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.BOW));
 			if (itemStack.isOf(Items.BOW)) {
 				int i = 20;
-				if (this.world.getDifficulty() != Difficulty.HARD) {
+				if (this.getWorld().getDifficulty() != Difficulty.HARD) {
 					i = 40;
 				}
 
@@ -186,9 +186,9 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		double e = target.getBodyY(0.3333333333333333) - persistentProjectileEntity.getY();
 		double f = target.getZ() - this.getZ();
 		double g = Math.sqrt(d * d + f * f);
-		persistentProjectileEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+		persistentProjectileEntity.setVelocity(d, e + g * 0.2F, f, 1.6F, (float)(14 - this.getWorld().getDifficulty().getId() * 4));
 		this.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		this.world.spawnEntity(persistentProjectileEntity);
+		this.getWorld().spawnEntity(persistentProjectileEntity);
 	}
 
 	protected PersistentProjectileEntity createArrowProjectile(ItemStack arrow, float damageModifier) {
@@ -209,7 +209,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Override
 	public void equipStack(EquipmentSlot slot, ItemStack stack) {
 		super.equipStack(slot, stack);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.updateAttackType();
 		}
 	}

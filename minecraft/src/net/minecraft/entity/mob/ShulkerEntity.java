@@ -170,7 +170,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient && !this.hasVehicle() && !this.canStay(this.getBlockPos(), this.getAttachedFace())) {
+		if (!this.getWorld().isClient && !this.hasVehicle() && !this.canStay(this.getBlockPos(), this.getAttachedFace())) {
 			this.tryAttachOrTeleport();
 		}
 
@@ -178,7 +178,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 			this.moveEntities();
 		}
 
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			if (this.teleportLerpTimer > 0) {
 				this.teleportLerpTimer--;
 			} else {
@@ -231,7 +231,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 		Direction direction = this.getAttachedFace().getOpposite();
 		float h = f - g;
 		if (!(h <= 0.0F)) {
-			for (Entity entity : this.world
+			for (Entity entity : this.getWorld()
 				.getOtherEntities(
 					this,
 					calculateBoundingBox(direction, g, f).offset(this.getX() - 0.5, this.getY(), this.getZ() - 0.5),
@@ -269,7 +269,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 
 	@Override
 	public boolean startRiding(Entity entity, boolean force) {
-		if (this.world.isClient()) {
+		if (this.getWorld().isClient()) {
 			this.prevAttachedBlock = null;
 			this.teleportLerpTimer = 0;
 		}
@@ -281,7 +281,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	@Override
 	public void stopRiding() {
 		super.stopRiding();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			this.prevAttachedBlock = this.getBlockPos();
 		}
 
@@ -332,7 +332,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 			if (!blockPos2.equals(blockPos)) {
 				this.dataTracker.set(PEEK_AMOUNT, (byte)0);
 				this.velocityDirty = true;
-				if (this.world.isClient && !this.hasVehicle() && !blockPos2.equals(this.prevAttachedBlock)) {
+				if (this.getWorld().isClient && !this.hasVehicle() && !blockPos2.equals(this.prevAttachedBlock)) {
 					this.prevAttachedBlock = blockPos;
 					this.teleportLerpTimer = 6;
 					this.lastRenderX = this.getX();
@@ -359,17 +359,17 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 			return false;
 		} else {
 			Direction direction2 = direction.getOpposite();
-			if (!this.world.isDirectionSolid(pos.offset(direction), this, direction2)) {
+			if (!this.getWorld().isDirectionSolid(pos.offset(direction), this, direction2)) {
 				return false;
 			} else {
 				Box box = calculateBoundingBox(direction2, 1.0F).offset(pos).contract(1.0E-6);
-				return this.world.isSpaceEmpty(this, box);
+				return this.getWorld().isSpaceEmpty(this, box);
 			}
 		}
 	}
 
 	private boolean isInvalidPosition(BlockPos pos) {
-		BlockState blockState = this.world.getBlockState(pos);
+		BlockState blockState = this.getWorld().getBlockState(pos);
 		if (blockState.isAir()) {
 			return false;
 		} else {
@@ -386,17 +386,17 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 				BlockPos blockPos2 = blockPos.add(
 					MathHelper.nextBetween(this.random, -8, 8), MathHelper.nextBetween(this.random, -8, 8), MathHelper.nextBetween(this.random, -8, 8)
 				);
-				if (blockPos2.getY() > this.world.getBottomY()
-					&& this.world.isAir(blockPos2)
-					&& this.world.getWorldBorder().contains(blockPos2)
-					&& this.world.isSpaceEmpty(this, new Box(blockPos2).contract(1.0E-6))) {
+				if (blockPos2.getY() > this.getWorld().getBottomY()
+					&& this.getWorld().isAir(blockPos2)
+					&& this.getWorld().getWorldBorder().contains(blockPos2)
+					&& this.getWorld().isSpaceEmpty(this, new Box(blockPos2).contract(1.0E-6))) {
 					Direction direction = this.findAttachSide(blockPos2);
 					if (direction != null) {
 						this.detach();
 						this.setAttachedFace(direction);
 						this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0F, 1.0F);
 						this.setPosition((double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5);
-						this.world.emitGameEvent(GameEvent.TELEPORT, blockPos, GameEvent.Emitter.of(this));
+						this.getWorld().emitGameEvent(GameEvent.TELEPORT, blockPos, GameEvent.Emitter.of(this));
 						this.dataTracker.set(PEEK_AMOUNT, (byte)0);
 						this.setTarget(null);
 						return true;
@@ -450,14 +450,14 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 		Vec3d vec3d = this.getPos();
 		Box box = this.getBoundingBox();
 		if (!this.isClosed() && this.tryTeleport()) {
-			int i = this.world.getEntitiesByType(EntityType.SHULKER, box.expand(8.0), Entity::isAlive).size();
+			int i = this.getWorld().getEntitiesByType(EntityType.SHULKER, box.expand(8.0), Entity::isAlive).size();
 			float f = (float)(i - 1) / 5.0F;
-			if (!(this.world.random.nextFloat() < f)) {
-				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(this.world);
+			if (!(this.getWorld().random.nextFloat() < f)) {
+				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(this.getWorld());
 				if (shulkerEntity != null) {
 					shulkerEntity.setVariant(this.getVariant());
 					shulkerEntity.refreshPositionAfterTeleport(vec3d);
-					this.world.spawnEntity(shulkerEntity);
+					this.getWorld().spawnEntity(shulkerEntity);
 				}
 			}
 		}
@@ -490,7 +490,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	void setPeekAmount(int peekAmount) {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_BONUS);
 			if (peekAmount == 0) {
 				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
@@ -612,7 +612,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = ShulkerEntity.this.getTarget();
-			return livingEntity != null && livingEntity.isAlive() ? ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL : false;
+			return livingEntity != null && livingEntity.isAlive() ? ShulkerEntity.this.getWorld().getDifficulty() != Difficulty.PEACEFUL : false;
 		}
 
 		@Override
@@ -633,7 +633,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 
 		@Override
 		public void tick() {
-			if (ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL) {
+			if (ShulkerEntity.this.getWorld().getDifficulty() != Difficulty.PEACEFUL) {
 				this.counter--;
 				LivingEntity livingEntity = ShulkerEntity.this.getTarget();
 				if (livingEntity != null) {
@@ -642,8 +642,8 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 					if (d < 400.0) {
 						if (this.counter <= 0) {
 							this.counter = 20 + ShulkerEntity.this.random.nextInt(10) * 20 / 2;
-							ShulkerEntity.this.world
-								.spawnEntity(new ShulkerBulletEntity(ShulkerEntity.this.world, ShulkerEntity.this, livingEntity, ShulkerEntity.this.getAttachedFace().getAxis()));
+							ShulkerEntity.this.getWorld()
+								.spawnEntity(new ShulkerBulletEntity(ShulkerEntity.this.getWorld(), ShulkerEntity.this, livingEntity, ShulkerEntity.this.getAttachedFace().getAxis()));
 							ShulkerEntity.this.playSound(
 								SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (ShulkerEntity.this.random.nextFloat() - ShulkerEntity.this.random.nextFloat()) * 0.2F + 1.0F
 							);
@@ -738,7 +738,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 
 		@Override
 		public boolean canStart() {
-			return ShulkerEntity.this.world.getDifficulty() == Difficulty.PEACEFUL ? false : super.canStart();
+			return ShulkerEntity.this.getWorld().getDifficulty() == Difficulty.PEACEFUL ? false : super.canStart();
 		}
 
 		@Override

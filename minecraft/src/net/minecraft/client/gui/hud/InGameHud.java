@@ -833,7 +833,7 @@ public class InGameHud {
 		boolean blinking
 	) {
 		InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(player);
-		int i = 9 * (player.world.getLevelProperties().isHardcore() ? 5 : 0);
+		int i = 9 * (player.getWorld().getLevelProperties().isHardcore() ? 5 : 0);
 		int j = MathHelper.ceil((double)maxHealth / 2.0);
 		int k = MathHelper.ceil((double)absorption / 2.0);
 		int l = j * 2;
@@ -947,7 +947,7 @@ public class InGameHud {
 	private void updateVignetteDarkness(Entity entity) {
 		if (entity != null) {
 			BlockPos blockPos = BlockPos.ofFloored(entity.getX(), entity.getEyeY(), entity.getZ());
-			float f = LightmapTextureManager.getBrightness(entity.world.getDimension(), entity.world.getLightLevel(blockPos));
+			float f = LightmapTextureManager.getBrightness(entity.getWorld().getDimension(), entity.getWorld().getLightLevel(blockPos));
 			float g = MathHelper.clamp(1.0F - f, 0.0F, 1.0F);
 			this.vignetteDarkness = this.vignetteDarkness + (g - this.vignetteDarkness) * 0.01F;
 		}

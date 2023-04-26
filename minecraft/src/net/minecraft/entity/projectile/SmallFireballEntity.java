@@ -29,7 +29,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			Entity entity = entityHitResult.getEntity();
 			Entity entity2 = this.getOwner();
 			int i = entity.getFireTicks();
@@ -45,12 +45,12 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	@Override
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		super.onBlockHit(blockHitResult);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			Entity entity = this.getOwner();
-			if (!(entity instanceof MobEntity) || this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+			if (!(entity instanceof MobEntity) || this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				BlockPos blockPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-				if (this.world.isAir(blockPos)) {
-					this.world.setBlockState(blockPos, AbstractFireBlock.getState(this.world, blockPos));
+				if (this.getWorld().isAir(blockPos)) {
+					this.getWorld().setBlockState(blockPos, AbstractFireBlock.getState(this.getWorld(), blockPos));
 				}
 			}
 		}
@@ -59,7 +59,7 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.discard();
 		}
 	}

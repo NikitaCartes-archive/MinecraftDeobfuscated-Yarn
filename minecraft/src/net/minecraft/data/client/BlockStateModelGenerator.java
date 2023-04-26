@@ -3074,7 +3074,10 @@ public class BlockStateModelGenerator {
 				VariantsBlockStateSupplier.create(Blocks.SCULK_SENSOR)
 					.coordinate(
 						BlockStateVariantMap.create(Properties.SCULK_SENSOR_PHASE)
-							.register(phase -> BlockStateVariant.create().put(VariantSettings.MODEL, phase == SculkSensorPhase.ACTIVE ? identifier2 : identifier))
+							.register(
+								phase -> BlockStateVariant.create()
+										.put(VariantSettings.MODEL, phase != SculkSensorPhase.ACTIVE && phase != SculkSensorPhase.COOLDOWN ? identifier : identifier2)
+							)
 					)
 			);
 	}
@@ -3088,7 +3091,10 @@ public class BlockStateModelGenerator {
 				VariantsBlockStateSupplier.create(Blocks.CALIBRATED_SCULK_SENSOR)
 					.coordinate(
 						BlockStateVariantMap.create(Properties.SCULK_SENSOR_PHASE)
-							.register(phase -> BlockStateVariant.create().put(VariantSettings.MODEL, phase == SculkSensorPhase.ACTIVE ? identifier2 : identifier))
+							.register(
+								phase -> BlockStateVariant.create()
+										.put(VariantSettings.MODEL, phase != SculkSensorPhase.ACTIVE && phase != SculkSensorPhase.COOLDOWN ? identifier : identifier2)
+							)
 					)
 					.coordinate(createNorthDefaultHorizontalRotationStates())
 			);

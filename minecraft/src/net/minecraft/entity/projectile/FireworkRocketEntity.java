@@ -99,7 +99,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 		if (this.wasShotByEntity()) {
 			if (this.shooter == null) {
 				this.dataTracker.get(SHOOTER_ENTITY_ID).ifPresent(id -> {
-					Entity entity = this.world.getEntityById(id);
+					Entity entity = this.getWorld().getEntityById(id);
 					if (entity instanceof LivingEntity) {
 						this.shooter = (LivingEntity)entity;
 					}
@@ -146,12 +146,12 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 		this.updateRotation();
 		if (this.life == 0 && !this.isSilent()) {
-			this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.AMBIENT, 3.0F, 1.0F);
+			this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.AMBIENT, 3.0F, 1.0F);
 		}
 
 		this.life++;
-		if (this.world.isClient && this.life % 2 < 2) {
-			this.world
+		if (this.getWorld().isClient && this.life % 2 < 2) {
+			this.getWorld()
 				.addParticle(
 					ParticleTypes.FIREWORK,
 					this.getX(),
@@ -163,13 +163,13 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 				);
 		}
 
-		if (!this.world.isClient && this.life > this.lifeTime) {
+		if (!this.getWorld().isClient && this.life > this.lifeTime) {
 			this.explodeAndRemove();
 		}
 	}
 
 	private void explodeAndRemove() {
-		this.world.sendEntityStatus(this, EntityStatuses.EXPLODE_FIREWORK_CLIENT);
+		this.getWorld().sendEntityStatus(this, EntityStatuses.EXPLODE_FIREWORK_CLIENT);
 		this.emitGameEvent(GameEvent.EXPLODE, this.getOwner());
 		this.explode();
 		this.discard();
@@ -178,7 +178,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.explodeAndRemove();
 		}
 	}
@@ -186,8 +186,8 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	@Override
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		BlockPos blockPos = new BlockPos(blockHitResult.getBlockPos());
-		this.world.getBlockState(blockPos).onEntityCollision(this.world, blockPos, this);
-		if (!this.world.isClient() && this.hasExplosionEffects()) {
+		this.getWorld().getBlockState(blockPos).onEntityCollision(this.getWorld(), blockPos, this);
+		if (!this.getWorld().isClient() && this.hasExplosionEffects()) {
 			this.explodeAndRemove();
 		}
 
@@ -218,13 +218,14 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 			double d = 5.0;
 			Vec3d vec3d = this.getPos();
 
-			for (LivingEntity livingEntity : this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(5.0))) {
+			for (LivingEntity livingEntity : this.getWorld().getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox().expand(5.0))) {
 				if (livingEntity != this.shooter && !(this.squaredDistanceTo(livingEntity) > 25.0)) {
 					boolean bl = false;
 
 					for (int i = 0; i < 2; i++) {
 						Vec3d vec3d2 = new Vec3d(livingEntity.getX(), livingEntity.getBodyY(0.5 * (double)i), livingEntity.getZ());
-						HitResult hitResult = this.world.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
+						HitResult hitResult = this.getWorld()
+							.raycast(new RaycastContext(vec3d, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
 						if (hitResult.getType() == HitResult.Type.MISS) {
 							bl = true;
 							break;
@@ -250,17 +251,17 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 	@Override
 	public void handleStatus(byte status) {
-		if (status == EntityStatuses.EXPLODE_FIREWORK_CLIENT && this.world.isClient) {
+		if (status == EntityStatuses.EXPLODE_FIREWORK_CLIENT && this.getWorld().isClient) {
 			if (!this.hasExplosionEffects()) {
 				for (int i = 0; i < this.random.nextInt(3) + 2; i++) {
-					this.world
+					this.getWorld()
 						.addParticle(ParticleTypes.POOF, this.getX(), this.getY(), this.getZ(), this.random.nextGaussian() * 0.05, 0.005, this.random.nextGaussian() * 0.05);
 				}
 			} else {
 				ItemStack itemStack = this.dataTracker.get(ITEM);
 				NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubNbt("Fireworks");
 				Vec3d vec3d = this.getVelocity();
-				this.world.addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, nbtCompound);
+				this.getWorld().addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, nbtCompound);
 			}
 		}
 

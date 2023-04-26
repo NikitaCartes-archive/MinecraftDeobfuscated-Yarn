@@ -1,24 +1,30 @@
 package net.minecraft.block;
 
 import java.util.List;
+import java.util.stream.Stream;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -29,8 +35,8 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable {
-	private static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 	public static final Identifier SHERDS_NBT_KEY = new Identifier("sherds");
+	private static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 	private static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 	private static final BooleanProperty CRACKED = Properties.CRACKED;
 	private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -87,11 +93,7 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
 		BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
-			builder.putDrop(SHERDS_NBT_KEY, (context, consumer) -> {
-				for (Item item : decoratedPotBlockEntity.getSherds()) {
-					consumer.accept(item.getDefaultStack());
-				}
-			});
+			builder.putDrop(SHERDS_NBT_KEY, (context, consumer) -> decoratedPotBlockEntity.getSherds().stream().map(Item::getDefaultStack).forEach(consumer));
 		}
 
 		return super.getDroppedStacks(state, builder);
@@ -117,5 +119,16 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	@Override
 	public BlockSoundGroup getSoundGroup(BlockState state) {
 		return state.get(CRACKED) ? BlockSoundGroup.DECORATED_POT_SHATTER : BlockSoundGroup.DECORATED_POT;
+	}
+
+	@Override
+	public void appendTooltip(ItemStack stack, @Nullable BlockView world, List<Text> tooltip, TooltipContext options) {
+		super.appendTooltip(stack, world, tooltip, options);
+		DecoratedPotBlockEntity.Sherds sherds = DecoratedPotBlockEntity.Sherds.fromNbt(BlockItem.getBlockEntityNbt(stack));
+		if (sherds != DecoratedPotBlockEntity.Sherds.DEFAULT) {
+			tooltip.add(ScreenTexts.EMPTY);
+			Stream.of(sherds.front(), sherds.left(), sherds.right(), sherds.back())
+				.forEach(sherd -> tooltip.add(new ItemStack(sherd, 1).getName().copyContentOnly().formatted(Formatting.GRAY)));
+		}
 	}
 }

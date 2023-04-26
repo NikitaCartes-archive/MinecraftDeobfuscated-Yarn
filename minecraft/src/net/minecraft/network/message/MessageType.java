@@ -122,7 +122,7 @@ public record MessageType(Decoration chat, Decoration narration) {
 	}
 
 	public static MessageType.Parameters params(RegistryKey<MessageType> typeKey, Entity entity) {
-		return params(typeKey, entity.world.getRegistryManager(), entity.getDisplayName());
+		return params(typeKey, entity.getWorld().getRegistryManager(), entity.getDisplayName());
 	}
 
 	public static MessageType.Parameters params(RegistryKey<MessageType> typeKey, ServerCommandSource source) {

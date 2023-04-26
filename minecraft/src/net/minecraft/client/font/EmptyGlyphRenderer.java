@@ -2,7 +2,6 @@ package net.minecraft.client.font;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
@@ -12,19 +11,7 @@ public class EmptyGlyphRenderer extends GlyphRenderer {
 	public static final EmptyGlyphRenderer INSTANCE = new EmptyGlyphRenderer();
 
 	public EmptyGlyphRenderer() {
-		super(
-			RenderLayer.getText(new Identifier("")),
-			RenderLayer.getTextSeeThrough(new Identifier("")),
-			RenderLayer.getTextPolygonOffset(new Identifier("")),
-			0.0F,
-			0.0F,
-			0.0F,
-			0.0F,
-			0.0F,
-			0.0F,
-			0.0F,
-			0.0F
-		);
+		super(TextRenderLayerSet.of(new Identifier("")), 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 	}
 
 	@Override

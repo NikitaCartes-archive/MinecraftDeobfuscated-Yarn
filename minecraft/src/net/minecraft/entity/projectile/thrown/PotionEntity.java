@@ -62,7 +62,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 	@Override
 	protected void onBlockHit(BlockHitResult blockHitResult) {
 		super.onBlockHit(blockHitResult);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			ItemStack itemStack = this.getStack();
 			Potion potion = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
@@ -84,7 +84,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			ItemStack itemStack = this.getStack();
 			Potion potion = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
@@ -100,7 +100,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			}
 
 			int i = potion.hasInstantEffect() ? WorldEvents.INSTANT_SPLASH_POTION_SPLASHED : WorldEvents.SPLASH_POTION_SPLASHED;
-			this.world.syncWorldEvent(i, this.getBlockPos(), PotionUtil.getColor(itemStack));
+			this.getWorld().syncWorldEvent(i, this.getBlockPos(), PotionUtil.getColor(itemStack));
 			this.discard();
 		}
 	}
@@ -108,7 +108,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 	private void applyWater() {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
 
-		for (LivingEntity livingEntity : this.world.getEntitiesByClass(LivingEntity.class, box, AFFECTED_BY_WATER)) {
+		for (LivingEntity livingEntity : this.getWorld().getEntitiesByClass(LivingEntity.class, box, AFFECTED_BY_WATER)) {
 			double d = this.squaredDistanceTo(livingEntity);
 			if (d < 16.0) {
 				if (livingEntity.hurtByWater()) {
@@ -121,14 +121,14 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			}
 		}
 
-		for (AxolotlEntity axolotlEntity : this.world.getNonSpectatingEntities(AxolotlEntity.class, box)) {
+		for (AxolotlEntity axolotlEntity : this.getWorld().getNonSpectatingEntities(AxolotlEntity.class, box)) {
 			axolotlEntity.hydrateFromPotion();
 		}
 	}
 
 	private void applySplashPotion(List<StatusEffectInstance> statusEffects, @Nullable Entity entity) {
 		Box box = this.getBoundingBox().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list = this.world.getNonSpectatingEntities(LivingEntity.class, box);
+		List<LivingEntity> list = this.getWorld().getNonSpectatingEntities(LivingEntity.class, box);
 		if (!list.isEmpty()) {
 			Entity entity2 = this.getEffectCause();
 
@@ -164,7 +164,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 	}
 
 	private void applyLingeringPotion(ItemStack stack, Potion potion) {
-		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
+		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.getWorld(), this.getX(), this.getY(), this.getZ());
 		Entity entity = this.getOwner();
 		if (entity instanceof LivingEntity) {
 			areaEffectCloudEntity.setOwner((LivingEntity)entity);
@@ -185,7 +185,7 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			areaEffectCloudEntity.setColor(nbtCompound.getInt("CustomPotionColor"));
 		}
 
-		this.world.spawnEntity(areaEffectCloudEntity);
+		this.getWorld().spawnEntity(areaEffectCloudEntity);
 	}
 
 	private boolean isLingering() {
@@ -193,15 +193,15 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 	}
 
 	private void extinguishFire(BlockPos pos) {
-		BlockState blockState = this.world.getBlockState(pos);
+		BlockState blockState = this.getWorld().getBlockState(pos);
 		if (blockState.isIn(BlockTags.FIRE)) {
-			this.world.removeBlock(pos, false);
+			this.getWorld().removeBlock(pos, false);
 		} else if (AbstractCandleBlock.isLitCandle(blockState)) {
-			AbstractCandleBlock.extinguish(null, blockState, this.world, pos);
+			AbstractCandleBlock.extinguish(null, blockState, this.getWorld(), pos);
 		} else if (CampfireBlock.isLitCampfire(blockState)) {
-			this.world.syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, pos, 0);
-			CampfireBlock.extinguish(this.getOwner(), this.world, pos, blockState);
-			this.world.setBlockState(pos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
+			this.getWorld().syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, pos, 0);
+			CampfireBlock.extinguish(this.getOwner(), this.getWorld(), pos, blockState);
+			this.getWorld().setBlockState(pos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
 		}
 	}
 }

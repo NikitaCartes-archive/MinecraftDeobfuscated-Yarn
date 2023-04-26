@@ -26,7 +26,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 	public void serverTick() {
 		this.ticks++;
 		LivingEntity livingEntity = this.dragon
-			.world
+			.getWorld()
 			.getClosestPlayer(this.CLOSE_PLAYER_PREDICATE, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 		if (livingEntity != null) {
 			if (this.ticks > 25) {
@@ -57,7 +57,9 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 				}
 			}
 		} else if (this.ticks >= 100) {
-			livingEntity = this.dragon.world.getClosestPlayer(PLAYER_WITHIN_RANGE_PREDICATE, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+			livingEntity = this.dragon
+				.getWorld()
+				.getClosestPlayer(PLAYER_WITHIN_RANGE_PREDICATE, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 			this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
 			if (livingEntity != null) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);

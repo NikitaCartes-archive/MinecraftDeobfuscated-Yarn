@@ -166,12 +166,12 @@ public abstract class RecipeProvider implements DataProvider {
 			.offerTo(exporter, getItemPath(result) + "_smithing");
 	}
 
-	protected static void offerSmithingTrimRecipe(Consumer<RecipeJsonProvider> exporter, Item template) {
+	protected static void offerSmithingTrimRecipe(Consumer<RecipeJsonProvider> exporter, Item template, Identifier recipeId) {
 		SmithingTrimRecipeJsonBuilder.create(
 				Ingredient.ofItems(template), Ingredient.fromTag(ItemTags.TRIMMABLE_ARMOR), Ingredient.fromTag(ItemTags.TRIM_MATERIALS), RecipeCategory.MISC
 			)
 			.criterion("has_smithing_trim_template", conditionsFromItem(template))
-			.offerTo(exporter, getItemPath(template) + "_smithing_trim");
+			.offerTo(exporter, recipeId);
 	}
 
 	protected static void offer2x2CompactingRecipe(Consumer<RecipeJsonProvider> exporter, RecipeCategory category, ItemConvertible output, ItemConvertible input) {

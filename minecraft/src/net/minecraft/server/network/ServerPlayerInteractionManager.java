@@ -44,7 +44,7 @@ public class ServerPlayerInteractionManager {
 
 	public ServerPlayerInteractionManager(ServerPlayerEntity player) {
 		this.player = player;
-		this.world = player.getWorld();
+		this.world = player.getServerWorld();
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class ServerPlayerInteractionManager {
 
 	private float continueMining(BlockState state, BlockPos pos, int failedStartMiningTime) {
 		int i = this.tickCounter - failedStartMiningTime;
-		float f = state.calcBlockBreakingDelta(this.player, this.player.world, pos) * (float)(i + 1);
+		float f = state.calcBlockBreakingDelta(this.player, this.player.getWorld(), pos) * (float)(i + 1);
 		int j = (int)(f * 10.0F);
 		if (j != this.blockBreakingProgress) {
 			this.world.setBlockBreakingInfo(this.player.getId(), pos, j);
@@ -157,7 +157,7 @@ public class ServerPlayerInteractionManager {
 				BlockState blockState = this.world.getBlockState(pos);
 				if (!blockState.isAir()) {
 					blockState.onBlockBreakStart(this.world, pos, this.player);
-					f = blockState.calcBlockBreakingDelta(this.player, this.player.world, pos);
+					f = blockState.calcBlockBreakingDelta(this.player, this.player.getWorld(), pos);
 				}
 
 				if (!blockState.isAir() && f >= 1.0F) {
@@ -180,7 +180,7 @@ public class ServerPlayerInteractionManager {
 					int j = this.tickCounter - this.startMiningTime;
 					BlockState blockStatex = this.world.getBlockState(pos);
 					if (!blockStatex.isAir()) {
-						float g = blockStatex.calcBlockBreakingDelta(this.player, this.player.world, pos) * (float)(j + 1);
+						float g = blockStatex.calcBlockBreakingDelta(this.player, this.player.getWorld(), pos) * (float)(j + 1);
 						if (g >= 0.7F) {
 							this.mining = false;
 							this.world.setBlockBreakingInfo(this.player.getId(), pos, -1);

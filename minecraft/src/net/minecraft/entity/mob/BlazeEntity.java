@@ -90,13 +90,13 @@ public class BlazeEntity extends HostileEntity {
 
 	@Override
 	public void tickMovement() {
-		if (!this.onGround && this.getVelocity().y < 0.0) {
+		if (!this.isOnGround() && this.getVelocity().y < 0.0) {
 			this.setVelocity(this.getVelocity().multiply(1.0, 0.6, 1.0));
 		}
 
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			if (this.random.nextInt(24) == 0 && !this.isSilent()) {
-				this.world
+				this.getWorld()
 					.playSound(
 						this.getX() + 0.5,
 						this.getY() + 0.5,
@@ -110,7 +110,7 @@ public class BlazeEntity extends HostileEntity {
 			}
 
 			for (int i = 0; i < 2; i++) {
-				this.world.addParticle(ParticleTypes.LARGE_SMOKE, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), 0.0, 0.0, 0.0);
+				this.getWorld().addParticle(ParticleTypes.LARGE_SMOKE, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), 0.0, 0.0, 0.0);
 			}
 		}
 
@@ -237,15 +237,15 @@ public class BlazeEntity extends HostileEntity {
 						if (this.fireballsFired > 1) {
 							double h = Math.sqrt(Math.sqrt(d)) * 0.5;
 							if (!this.blaze.isSilent()) {
-								this.blaze.world.syncWorldEvent(null, WorldEvents.BLAZE_SHOOTS, this.blaze.getBlockPos(), 0);
+								this.blaze.getWorld().syncWorldEvent(null, WorldEvents.BLAZE_SHOOTS, this.blaze.getBlockPos(), 0);
 							}
 
 							for (int i = 0; i < 1; i++) {
 								SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
-									this.blaze.world, this.blaze, this.blaze.getRandom().nextTriangular(e, 2.297 * h), f, this.blaze.getRandom().nextTriangular(g, 2.297 * h)
+									this.blaze.getWorld(), this.blaze, this.blaze.getRandom().nextTriangular(e, 2.297 * h), f, this.blaze.getRandom().nextTriangular(g, 2.297 * h)
 								);
 								smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
-								this.blaze.world.spawnEntity(smallFireballEntity);
+								this.blaze.getWorld().spawnEntity(smallFireballEntity);
 							}
 						}
 					}

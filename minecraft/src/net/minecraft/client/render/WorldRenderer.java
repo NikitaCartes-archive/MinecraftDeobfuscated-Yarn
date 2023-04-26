@@ -106,7 +106,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.math.Direction;
@@ -128,6 +127,7 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.border.WorldBorder;
+import net.minecraft.world.chunk.light.LightingProvider;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import org.joml.Vector3d;
@@ -1132,17 +1132,16 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		profiler.swap("light_update_queue");
 		this.world.runQueuedChunkUpdates();
 		profiler.swap("light_updates");
-		boolean bl = this.world.hasNoChunkUpdaters();
-		this.world.getChunkManager().getLightingProvider().doLightUpdates(Integer.MAX_VALUE, bl, true);
+		this.world.getChunkManager().getLightingProvider().doLightUpdates();
 		Vec3d vec3d = camera.getPos();
 		double d = vec3d.getX();
 		double e = vec3d.getY();
 		double f = vec3d.getZ();
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 		profiler.swap("culling");
-		boolean bl2 = this.capturedFrustum != null;
+		boolean bl = this.capturedFrustum != null;
 		Frustum frustum;
-		if (bl2) {
+		if (bl) {
 			frustum = this.capturedFrustum;
 			frustum.setPosition(this.capturedFrustumPosition.x, this.capturedFrustumPosition.y, this.capturedFrustumPosition.z);
 		} else {
@@ -1151,7 +1150,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 		this.client.getProfiler().swap("captureFrustum");
 		if (this.shouldCaptureFrustum) {
-			this.captureFrustum(matrix4f, positionMatrix, vec3d.x, vec3d.y, vec3d.z, bl2 ? new Frustum(matrix4f, positionMatrix) : frustum);
+			this.captureFrustum(matrix4f, positionMatrix, vec3d.x, vec3d.y, vec3d.z, bl ? new Frustum(matrix4f, positionMatrix) : frustum);
 			this.shouldCaptureFrustum = false;
 		}
 
@@ -1160,17 +1159,17 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		BackgroundRenderer.setFogBlack();
 		RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT | GlConst.GL_COLOR_BUFFER_BIT, MinecraftClient.IS_SYSTEM_MAC);
 		float g = gameRenderer.getViewDistance();
-		boolean bl3 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
+		boolean bl2 = this.client.world.getDimensionEffects().useThickFog(MathHelper.floor(d), MathHelper.floor(e))
 			|| this.client.inGameHud.getBossBarHud().shouldThickenFog();
 		profiler.swap("sky");
 		RenderSystem.setShader(GameRenderer::getPositionProgram);
 		this.renderSky(
-			matrices, positionMatrix, tickDelta, camera, bl3, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl3, tickDelta)
+			matrices, positionMatrix, tickDelta, camera, bl2, () -> BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_SKY, g, bl2, tickDelta)
 		);
 		profiler.swap("fog");
-		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g, 32.0F), bl3, tickDelta);
+		BackgroundRenderer.applyFog(camera, BackgroundRenderer.FogType.FOG_TERRAIN, Math.max(g, 32.0F), bl2, tickDelta);
 		profiler.swap("terrain_setup");
-		this.setupTerrain(camera, frustum, bl2, this.client.player.isSpectator());
+		this.setupTerrain(camera, frustum, bl, this.client.player.isSpectator());
 		profiler.swap("compilechunks");
 		this.updateChunks(camera);
 		profiler.swap("terrain");
@@ -1201,7 +1200,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.client.getFramebuffer().beginWrite(false);
 		}
 
-		boolean bl4 = false;
+		boolean bl3 = false;
 		VertexConsumerProvider.Immediate immediate = this.bufferBuilders.getEntityVertexConsumers();
 
 		for (Entity entity : this.world.getEntities()) {
@@ -1223,7 +1222,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 					VertexConsumerProvider vertexConsumerProvider;
 					if (this.canDrawEntityOutlines() && this.client.hasOutline(entity)) {
-						bl4 = true;
+						bl3 = true;
 						OutlineVertexConsumerProvider outlineVertexConsumerProvider = this.bufferBuilders.getOutlineVertexConsumers();
 						vertexConsumerProvider = outlineVertexConsumerProvider;
 						int i = entity.getTeamColorValue();
@@ -1299,7 +1298,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		immediate.draw(TexturedRenderLayers.getHangingSign());
 		immediate.draw(TexturedRenderLayers.getChest());
 		this.bufferBuilders.getOutlineVertexConsumers().draw();
-		if (bl4) {
+		if (bl3) {
 			this.entityOutlinePostProcessor.render(tickDelta);
 			this.client.getFramebuffer().beginWrite(false);
 		}
@@ -2215,14 +2214,15 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 
 	private void updateChunks(Camera camera) {
 		this.client.getProfiler().push("populate_chunks_to_compile");
+		LightingProvider lightingProvider = this.world.getLightingProvider();
 		ChunkRendererRegionBuilder chunkRendererRegionBuilder = new ChunkRendererRegionBuilder();
 		BlockPos blockPos = camera.getBlockPos();
 		List<ChunkBuilder.BuiltChunk> list = Lists.<ChunkBuilder.BuiltChunk>newArrayList();
 
 		for (WorldRenderer.ChunkInfo chunkInfo : this.chunkInfos) {
 			ChunkBuilder.BuiltChunk builtChunk = chunkInfo.chunk;
-			ChunkPos chunkPos = new ChunkPos(builtChunk.getOrigin());
-			if (builtChunk.needsRebuild() && this.world.getChunk(chunkPos.x, chunkPos.z).shouldRenderOnUpdate()) {
+			ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(builtChunk.getOrigin());
+			if (builtChunk.needsRebuild() && lightingProvider.isLightingEnabled(chunkSectionPos)) {
 				boolean bl = false;
 				if (this.client.options.getChunkBuilderMode().getValue() == ChunkBuilderMode.NEARBY) {
 					BlockPos blockPos2 = builtChunk.getOrigin().add(8, 8, 8);

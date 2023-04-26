@@ -31,6 +31,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkStatus;
 
 public class BlendingData {
 	private static final double field_35514 = 0.1;
@@ -102,11 +103,11 @@ public class BlendingData {
 	public static BlendingData getBlendingData(ChunkRegion chunkRegion, int chunkX, int chunkZ) {
 		Chunk chunk = chunkRegion.getChunk(chunkX, chunkZ);
 		BlendingData blendingData = chunk.getBlendingData();
-		if (blendingData == null) {
-			return null;
-		} else {
+		if (blendingData != null && chunk.method_51526().isAtLeast(ChunkStatus.BIOMES)) {
 			blendingData.initChunkBlendingData(chunk, getAdjacentChunksWithNoise(chunkRegion, chunkX, chunkZ, false));
 			return blendingData;
+		} else {
+			return null;
 		}
 	}
 

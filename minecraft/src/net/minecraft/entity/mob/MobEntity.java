@@ -213,6 +213,12 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		this.pathfindingPenalties.put(nodeType, penalty);
 	}
 
+	public void onStartPathfinding() {
+	}
+
+	public void onFinishPathfinding() {
+	}
+
 	protected BodyControl createBodyControl() {
 		return new BodyControl(this);
 	}
@@ -286,13 +292,13 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	@Override
 	public void baseTick() {
 		super.baseTick();
-		this.world.getProfiler().push("mobBaseTick");
+		this.getWorld().getProfiler().push("mobBaseTick");
 		if (this.isAlive() && this.random.nextInt(1000) < this.ambientSoundChance++) {
 			this.resetSoundDelay();
 			this.playAmbientSound();
 		}
 
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 	}
 
 	@Override
@@ -329,16 +335,16 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	public void playSpawnEffects() {
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			for (int i = 0; i < 20; i++) {
 				double d = this.random.nextGaussian() * 0.02;
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
 				double g = 10.0;
-				this.world.addParticle(ParticleTypes.POOF, this.offsetX(1.0) - d * 10.0, this.getRandomBodyY() - e * 10.0, this.getParticleZ(1.0) - f * 10.0, d, e, f);
+				this.getWorld().addParticle(ParticleTypes.POOF, this.offsetX(1.0) - d * 10.0, this.getRandomBodyY() - e * 10.0, this.getParticleZ(1.0) - f * 10.0, d, e, f);
 			}
 		} else {
-			this.world.sendEntityStatus(this, EntityStatuses.PLAY_SPAWN_EFFECTS);
+			this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_SPAWN_EFFECTS);
 		}
 	}
 
@@ -354,7 +360,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.updateLeash();
 			if (this.age % 5 == 0) {
 				this.updateGoalControls();
@@ -548,11 +554,13 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		this.world.getProfiler().push("looting");
-		if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+		this.getWorld().getProfiler().push("looting");
+		if (!this.getWorld().isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+			)
+		 {
 			Vec3i vec3i = this.getItemPickUpRangeExpander();
 
-			for (ItemEntity itemEntity : this.world
+			for (ItemEntity itemEntity : this.getWorld()
 				.getNonSpectatingEntities(ItemEntity.class, this.getBoundingBox().expand((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ()))) {
 				if (!itemEntity.isRemoved() && !itemEntity.getStack().isEmpty() && !itemEntity.cannotPickup() && this.canGather(itemEntity.getStack())) {
 					this.loot(itemEntity);
@@ -560,7 +568,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			}
 		}
 
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 	}
 
 	protected Vec3i getItemPickUpRangeExpander() {
@@ -712,10 +720,10 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 
 	@Override
 	public void checkDespawn() {
-		if (this.world.getDifficulty() == Difficulty.PEACEFUL && this.isDisallowedInPeaceful()) {
+		if (this.getWorld().getDifficulty() == Difficulty.PEACEFUL && this.isDisallowedInPeaceful()) {
 			this.discard();
 		} else if (!this.isPersistent() && !this.cannotDespawn()) {
-			Entity entity = this.world.getClosestPlayer(this, -1.0);
+			Entity entity = this.getWorld().getClosestPlayer(this, -1.0);
 			if (entity != null) {
 				double d = entity.squaredDistanceTo(this);
 				int i = this.getType().getSpawnGroup().getImmediateDespawnRange();
@@ -740,46 +748,46 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	@Override
 	protected final void tickNewAi() {
 		this.despawnCounter++;
-		this.world.getProfiler().push("sensing");
+		this.getWorld().getProfiler().push("sensing");
 		this.visibilityCache.clear();
-		this.world.getProfiler().pop();
-		int i = this.world.getServer().getTicks() + this.getId();
+		this.getWorld().getProfiler().pop();
+		int i = this.getWorld().getServer().getTicks() + this.getId();
 		if (i % 2 != 0 && this.age > 1) {
-			this.world.getProfiler().push("targetSelector");
+			this.getWorld().getProfiler().push("targetSelector");
 			this.targetSelector.tickGoals(false);
-			this.world.getProfiler().pop();
-			this.world.getProfiler().push("goalSelector");
+			this.getWorld().getProfiler().pop();
+			this.getWorld().getProfiler().push("goalSelector");
 			this.goalSelector.tickGoals(false);
-			this.world.getProfiler().pop();
+			this.getWorld().getProfiler().pop();
 		} else {
-			this.world.getProfiler().push("targetSelector");
+			this.getWorld().getProfiler().push("targetSelector");
 			this.targetSelector.tick();
-			this.world.getProfiler().pop();
-			this.world.getProfiler().push("goalSelector");
+			this.getWorld().getProfiler().pop();
+			this.getWorld().getProfiler().push("goalSelector");
 			this.goalSelector.tick();
-			this.world.getProfiler().pop();
+			this.getWorld().getProfiler().pop();
 		}
 
-		this.world.getProfiler().push("navigation");
+		this.getWorld().getProfiler().push("navigation");
 		this.navigation.tick();
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("mob tick");
+		this.getWorld().getProfiler().pop();
+		this.getWorld().getProfiler().push("mob tick");
 		this.mobTick();
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("controls");
-		this.world.getProfiler().push("move");
+		this.getWorld().getProfiler().pop();
+		this.getWorld().getProfiler().push("controls");
+		this.getWorld().getProfiler().push("move");
 		this.moveControl.tick();
-		this.world.getProfiler().swap("look");
+		this.getWorld().getProfiler().swap("look");
 		this.lookControl.tick();
-		this.world.getProfiler().swap("jump");
+		this.getWorld().getProfiler().swap("jump");
 		this.jumpControl.tick();
-		this.world.getProfiler().pop();
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 		this.sendAiDebugData();
 	}
 
 	protected void sendAiDebugData() {
-		DebugInfoSender.sendGoalSelector(this.world, this, this.goalSelector);
+		DebugInfoSender.sendGoalSelector(this.getWorld(), this, this.goalSelector);
 	}
 
 	protected void mobTick() {
@@ -885,7 +893,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			return 3;
 		} else {
 			int i = (int)(this.getHealth() - this.getMaxHealth() * 0.33F);
-			i -= (3 - this.world.getDifficulty().getId()) * 4;
+			i -= (3 - this.getWorld().getDifficulty().getId()) * 4;
 			if (i < 0) {
 				i = 0;
 			}
@@ -961,7 +969,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	protected void initEquipment(Random random, LocalDifficulty localDifficulty) {
 		if (random.nextFloat() < 0.15F * localDifficulty.getClampedLocalDifficulty()) {
 			int i = random.nextInt(2);
-			float f = this.world.getDifficulty() == Difficulty.HARD ? 0.1F : 0.25F;
+			float f = this.getWorld().getDifficulty() == Difficulty.HARD ? 0.1F : 0.25F;
 			if (random.nextFloat() < 0.095F) {
 				i++;
 			}
@@ -1132,7 +1140,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		} else if (this.getHoldingEntity() == player) {
 			this.detachLeash(true, !player.getAbilities().creativeMode);
 			this.emitGameEvent(GameEvent.ENTITY_INTERACT, player);
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			ActionResult actionResult = this.interactWithItem(player, hand);
 			if (actionResult.isAccepted()) {
@@ -1155,7 +1163,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		if (itemStack.isOf(Items.LEAD) && this.canBeLeashedBy(player)) {
 			this.attachLeash(player, true);
 			itemStack.decrement(1);
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			if (itemStack.isOf(Items.NAME_TAG)) {
 				ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
@@ -1165,10 +1173,10 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			}
 
 			if (itemStack.getItem() instanceof SpawnEggItem) {
-				if (this.world instanceof ServerWorld) {
+				if (this.getWorld() instanceof ServerWorld) {
 					SpawnEggItem spawnEggItem = (SpawnEggItem)itemStack.getItem();
 					Optional<MobEntity> optional = spawnEggItem.spawnBaby(
-						player, this, (EntityType<? extends MobEntity>)this.getType(), (ServerWorld)this.world, this.getPos(), itemStack
+						player, this, (EntityType<? extends MobEntity>)this.getType(), (ServerWorld)this.getWorld(), this.getPos(), itemStack
 					);
 					optional.ifPresent(entity -> this.onPlayerSpawnedChild(player, entity));
 					return optional.isPresent() ? ActionResult.SUCCESS : ActionResult.PASS;
@@ -1231,7 +1239,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		if (this.isRemoved()) {
 			return null;
 		} else {
-			T mobEntity = (T)entityType.create(this.world);
+			T mobEntity = (T)entityType.create(this.getWorld());
 			if (mobEntity == null) {
 				return null;
 			} else {
@@ -1260,7 +1268,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 					}
 				}
 
-				this.world.spawnEntity(mobEntity);
+				this.getWorld().spawnEntity(mobEntity);
 				if (this.hasVehicle()) {
 					Entity entity = this.getVehicle();
 					this.stopRiding();
@@ -1289,12 +1297,12 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 		if (this.holdingEntity != null) {
 			this.holdingEntity = null;
 			this.leashNbt = null;
-			if (!this.world.isClient && dropItem) {
+			if (!this.getWorld().isClient && dropItem) {
 				this.dropItem(Items.LEAD);
 			}
 
-			if (!this.world.isClient && sendPacket && this.world instanceof ServerWorld) {
-				((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, null));
+			if (!this.getWorld().isClient && sendPacket && this.getWorld() instanceof ServerWorld) {
+				((ServerWorld)this.getWorld()).getChunkManager().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, null));
 			}
 		}
 	}
@@ -1309,8 +1317,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 
 	@Nullable
 	public Entity getHoldingEntity() {
-		if (this.holdingEntity == null && this.holdingEntityId != 0 && this.world.isClient) {
-			this.holdingEntity = this.world.getEntityById(this.holdingEntityId);
+		if (this.holdingEntity == null && this.holdingEntityId != 0 && this.getWorld().isClient) {
+			this.holdingEntity = this.getWorld().getEntityById(this.holdingEntityId);
 		}
 
 		return this.holdingEntity;
@@ -1319,8 +1327,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	public void attachLeash(Entity entity, boolean sendPacket) {
 		this.holdingEntity = entity;
 		this.leashNbt = null;
-		if (!this.world.isClient && sendPacket && this.world instanceof ServerWorld) {
-			((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
+		if (!this.getWorld().isClient && sendPacket && this.getWorld() instanceof ServerWorld) {
+			((ServerWorld)this.getWorld()).getChunkManager().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
 		}
 
 		if (this.hasVehicle()) {
@@ -1344,10 +1352,10 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	private void readLeashNbt() {
-		if (this.leashNbt != null && this.world instanceof ServerWorld) {
+		if (this.leashNbt != null && this.getWorld() instanceof ServerWorld) {
 			if (this.leashNbt.containsUuid("UUID")) {
 				UUID uUID = this.leashNbt.getUuid("UUID");
-				Entity entity = ((ServerWorld)this.world).getEntity(uUID);
+				Entity entity = ((ServerWorld)this.getWorld()).getEntity(uUID);
 				if (entity != null) {
 					this.attachLeash(entity, true);
 					return;
@@ -1356,7 +1364,7 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 				&& this.leashNbt.contains("Y", NbtElement.NUMBER_TYPE)
 				&& this.leashNbt.contains("Z", NbtElement.NUMBER_TYPE)) {
 				BlockPos blockPos = NbtHelper.toBlockPos(this.leashNbt);
-				this.attachLeash(LeashKnotEntity.getOrCreate(this.world, blockPos), true);
+				this.attachLeash(LeashKnotEntity.getOrCreate(this.getWorld(), blockPos), true);
 				return;
 			}
 
@@ -1462,17 +1470,17 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			float f = 0.25F + (float)EnchantmentHelper.getEfficiency(this) * 0.05F;
 			if (this.random.nextFloat() < f) {
 				player.getItemCooldownManager().set(Items.SHIELD, 100);
-				this.world.sendEntityStatus(player, EntityStatuses.BREAK_SHIELD);
+				this.getWorld().sendEntityStatus(player, EntityStatuses.BREAK_SHIELD);
 			}
 		}
 	}
 
 	protected boolean isAffectedByDaylight() {
-		if (this.world.isDay() && !this.world.isClient) {
+		if (this.getWorld().isDay() && !this.getWorld().isClient) {
 			float f = this.getBrightnessAtEyes();
 			BlockPos blockPos = BlockPos.ofFloored(this.getX(), this.getEyeY(), this.getZ());
 			boolean bl = this.isWet() || this.inPowderSnow || this.wasInPowderSnow;
-			if (f > 0.5F && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && !bl && this.world.isSkyVisible(blockPos)) {
+			if (f > 0.5F && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && !bl && this.getWorld().isSkyVisible(blockPos)) {
 				return true;
 			}
 		}

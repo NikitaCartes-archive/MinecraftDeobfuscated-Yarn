@@ -132,9 +132,9 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			int i = MathHelper.floor(this.getX());
 			int j = MathHelper.floor(this.getY() - 0.2F);
 			int k = MathHelper.floor(this.getZ());
-			BlockState blockState = this.world.getBlockState(new BlockPos(i, j, k));
+			BlockState blockState = this.getWorld().getBlockState(new BlockPos(i, j, k));
 			if (!blockState.isAir()) {
-				this.world
+				this.getWorld()
 					.addParticle(
 						new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState),
 						this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
@@ -147,8 +147,8 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			}
 		}
 
-		if (!this.world.isClient) {
-			this.tickAngerLogic((ServerWorld)this.world, true);
+		if (!this.getWorld().isClient) {
+			this.tickAngerLogic((ServerWorld)this.getWorld(), true);
 		}
 	}
 
@@ -172,7 +172,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.setPlayerCreated(nbt.getBoolean("PlayerCreated"));
-		this.readAngerFromNbt(this.world, nbt);
+		this.readAngerFromNbt(this.getWorld(), nbt);
 	}
 
 	@Override
@@ -208,7 +208,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	@Override
 	public boolean tryAttack(Entity target) {
 		this.attackTicksLeft = 10;
-		this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
+		this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 		float f = this.getAttackDamage();
 		float g = (int)f > 0 ? f / 2.0F + (float)this.random.nextInt((int)f) : f;
 		boolean bl = target.damage(this.getDamageSources().mobAttack(this), g);
@@ -259,10 +259,10 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	public void setLookingAtVillager(boolean lookingAtVillager) {
 		if (lookingAtVillager) {
 			this.lookingAtVillagerTicksLeft = 400;
-			this.world.sendEntityStatus(this, EntityStatuses.LOOK_AT_VILLAGER);
+			this.getWorld().sendEntityStatus(this, EntityStatuses.LOOK_AT_VILLAGER);
 		} else {
 			this.lookingAtVillagerTicksLeft = 0;
-			this.world.sendEntityStatus(this, EntityStatuses.STOP_LOOKING_AT_VILLAGER);
+			this.getWorld().sendEntityStatus(this, EntityStatuses.STOP_LOOKING_AT_VILLAGER);
 		}
 	}
 
@@ -293,7 +293,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 					itemStack.decrement(1);
 				}
 
-				return ActionResult.success(this.world.isClient);
+				return ActionResult.success(this.getWorld().isClient);
 			}
 		}
 	}

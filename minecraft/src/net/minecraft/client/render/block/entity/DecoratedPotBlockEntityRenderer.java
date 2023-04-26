@@ -1,7 +1,6 @@
 package net.minecraft.client.render.block.entity;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -109,11 +108,11 @@ public class DecoratedPotBlockEntityRenderer implements BlockEntityRenderer<Deco
 		this.neck.render(matrixStack, vertexConsumer, i, j);
 		this.top.render(matrixStack, vertexConsumer, i, j);
 		this.bottom.render(matrixStack, vertexConsumer, i, j);
-		List<Item> list = decoratedPotBlockEntity.getSherds();
-		this.renderDecoratedSide(this.front, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd((Item)list.get(3)));
-		this.renderDecoratedSide(this.back, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd((Item)list.get(0)));
-		this.renderDecoratedSide(this.left, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd((Item)list.get(1)));
-		this.renderDecoratedSide(this.right, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd((Item)list.get(2)));
+		DecoratedPotBlockEntity.Sherds sherds = decoratedPotBlockEntity.getSherds();
+		this.renderDecoratedSide(this.front, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd(sherds.front()));
+		this.renderDecoratedSide(this.back, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd(sherds.back()));
+		this.renderDecoratedSide(this.left, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd(sherds.left()));
+		this.renderDecoratedSide(this.right, matrixStack, vertexConsumerProvider, i, j, getTextureIdFromSherd(sherds.right()));
 		matrixStack.pop();
 	}
 

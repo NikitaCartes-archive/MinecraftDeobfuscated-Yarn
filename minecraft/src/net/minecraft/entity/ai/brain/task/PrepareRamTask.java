@@ -176,7 +176,7 @@ public class PrepareRamTask<E extends PathAwareEntity> extends MultiTickTask<E> 
 
 	private boolean canReach(PathAwareEntity entity, BlockPos target) {
 		return entity.getNavigation().isValidPosition(target)
-			&& entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(entity.world, target.mutableCopy())) == 0.0F;
+			&& entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(entity.getWorld(), target.mutableCopy())) == 0.0F;
 	}
 
 	private void findRam(PathAwareEntity entity, LivingEntity target) {

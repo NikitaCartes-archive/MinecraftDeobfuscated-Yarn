@@ -36,7 +36,7 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	public SmithingScreenHandler(int syncId, PlayerInventory playerInventory, ScreenHandlerContext context) {
 		super(ScreenHandlerType.SMITHING, syncId, playerInventory, context);
-		this.world = playerInventory.player.world;
+		this.world = playerInventory.player.getWorld();
 		this.recipes = this.world.getRecipeManager().listAllOfType(RecipeType.SMITHING);
 	}
 
@@ -62,7 +62,7 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	protected void onTakeOutput(PlayerEntity player, ItemStack stack) {
-		stack.onCraft(player.world, player, stack.getCount());
+		stack.onCraft(player.getWorld(), player, stack.getCount());
 		this.output.unlockLastRecipe(player, this.getInputStacks());
 		this.decrementStack(0);
 		this.decrementStack(1);

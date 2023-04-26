@@ -38,7 +38,7 @@ public class CatEntityRenderer extends MobEntityRenderer<CatEntity, CatEntityMod
 			matrixStack.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(MathHelper.lerpAngleDegrees(i, 0.0F, 90.0F)));
 			BlockPos blockPos = catEntity.getBlockPos();
 
-			for (PlayerEntity playerEntity : catEntity.world.getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0))) {
+			for (PlayerEntity playerEntity : catEntity.getWorld().getNonSpectatingEntities(PlayerEntity.class, new Box(blockPos).expand(2.0, 2.0, 2.0))) {
 				if (playerEntity.isSleeping()) {
 					matrixStack.translate(0.15F * i, 0.0F, 0.0F);
 					break;

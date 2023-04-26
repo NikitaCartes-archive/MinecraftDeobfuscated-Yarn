@@ -49,7 +49,7 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	@Override
 	protected void onEntityHit(EntityHitResult entityHitResult) {
 		super.onEntityHit(entityHitResult);
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			Entity entity = entityHitResult.getEntity();
 			boolean bl;
 			if (this.getOwner() instanceof LivingEntity livingEntity) {
@@ -67,9 +67,9 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 
 			if (bl && entity instanceof LivingEntity livingEntityx) {
 				int i = 0;
-				if (this.world.getDifficulty() == Difficulty.NORMAL) {
+				if (this.getWorld().getDifficulty() == Difficulty.NORMAL) {
 					i = 10;
-				} else if (this.world.getDifficulty() == Difficulty.HARD) {
+				} else if (this.getWorld().getDifficulty() == Difficulty.HARD) {
 					i = 40;
 				}
 
@@ -83,8 +83,8 @@ public class WitherSkullEntity extends ExplosiveProjectileEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		super.onCollision(hitResult);
-		if (!this.world.isClient) {
-			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 1.0F, false, World.ExplosionSourceType.MOB);
+		if (!this.getWorld().isClient) {
+			this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), 1.0F, false, World.ExplosionSourceType.MOB);
 			this.discard();
 		}
 	}

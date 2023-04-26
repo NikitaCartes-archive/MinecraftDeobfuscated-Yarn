@@ -251,19 +251,6 @@ public abstract class World implements WorldAccess, AutoCloseable {
 				return false;
 			} else {
 				BlockState blockState2 = this.getBlockState(pos);
-				if ((flags & Block.SKIP_LIGHTING_UPDATES) == 0
-					&& blockState2 != blockState
-					&& (
-						blockState2.getOpacity(this, pos) != blockState.getOpacity(this, pos)
-							|| blockState2.getLuminance() != blockState.getLuminance()
-							|| blockState2.hasSidedTransparency()
-							|| blockState.hasSidedTransparency()
-					)) {
-					this.getProfiler().push("queueCheckLight");
-					this.getChunkManager().getLightingProvider().checkBlock(pos);
-					this.getProfiler().pop();
-				}
-
 				if (blockState2 == state) {
 					if (blockState != blockState2) {
 						this.scheduleBlockRerenderIfNeeded(pos, blockState, blockState2);

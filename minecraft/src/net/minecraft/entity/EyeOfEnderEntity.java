@@ -113,7 +113,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		double g = vec3d.horizontalLength();
 		this.setPitch(ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, g) * 180.0F / (float)Math.PI)));
 		this.setYaw(ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI)));
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			double h = this.targetX - d;
 			double i = this.targetZ - f;
 			float j = (float)Math.sqrt(h * h + i * i);
@@ -133,10 +133,10 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		float o = 0.25F;
 		if (this.isTouchingWater()) {
 			for (int p = 0; p < 4; p++) {
-				this.world.addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+				this.getWorld().addParticle(ParticleTypes.BUBBLE, d - vec3d.x * 0.25, e - vec3d.y * 0.25, f - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 		} else {
-			this.world
+			this.getWorld()
 				.addParticle(
 					ParticleTypes.PORTAL,
 					d - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
@@ -148,16 +148,16 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 				);
 		}
 
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.setPosition(d, e, f);
 			this.lifespan++;
-			if (this.lifespan > 80 && !this.world.isClient) {
+			if (this.lifespan > 80 && !this.getWorld().isClient) {
 				this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0F, 1.0F);
 				this.discard();
 				if (this.dropsItem) {
-					this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getY(), this.getZ(), this.getStack()));
+					this.getWorld().spawnEntity(new ItemEntity(this.getWorld(), this.getX(), this.getY(), this.getZ(), this.getStack()));
 				} else {
-					this.world.syncWorldEvent(WorldEvents.EYE_OF_ENDER_BREAKS, this.getBlockPos(), 0);
+					this.getWorld().syncWorldEvent(WorldEvents.EYE_OF_ENDER_BREAKS, this.getBlockPos(), 0);
 				}
 			}
 		} else {

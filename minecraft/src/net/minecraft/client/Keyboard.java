@@ -147,7 +147,7 @@ public class Keyboard {
 							String.format(
 								Locale.ROOT,
 								"/execute in %s run tp @s %.2f %.2f %.2f %.2f %.2f",
-								this.client.player.world.getRegistryKey().getValue(),
+								this.client.player.getWorld().getRegistryKey().getValue(),
 								this.client.player.getX(),
 								this.client.player.getY(),
 								this.client.player.getZ(),
@@ -254,7 +254,7 @@ public class Keyboard {
 			switch (hitResult.getType()) {
 				case BLOCK:
 					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-					BlockState blockState = this.client.player.world.getBlockState(blockPos);
+					BlockState blockState = this.client.player.getWorld().getBlockState(blockPos);
 					if (hasQueryPermission) {
 						if (queryServer) {
 							this.client.player.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, nbt -> {
@@ -262,7 +262,7 @@ public class Keyboard {
 								this.debugLog("debug.inspect.server.block");
 							});
 						} else {
-							BlockEntity blockEntity = this.client.player.world.getBlockEntity(blockPos);
+							BlockEntity blockEntity = this.client.player.getWorld().getBlockEntity(blockPos);
 							NbtCompound nbtCompound = blockEntity != null ? blockEntity.createNbt() : null;
 							this.copyBlock(blockState, blockPos, nbtCompound);
 							this.debugLog("debug.inspect.client.block");

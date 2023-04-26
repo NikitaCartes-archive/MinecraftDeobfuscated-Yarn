@@ -21,14 +21,14 @@ import net.minecraft.world.World;
 public final class ProjectileUtil {
 	public static HitResult getCollision(Entity entity, Predicate<Entity> predicate) {
 		Vec3d vec3d = entity.getVelocity();
-		World world = entity.world;
+		World world = entity.getWorld();
 		Vec3d vec3d2 = entity.getPos();
 		return getCollision(vec3d2, entity, predicate, vec3d, world);
 	}
 
 	public static HitResult getCollision(Entity entity, Predicate<Entity> predicate, double range) {
 		Vec3d vec3d = entity.getRotationVec(0.0F).multiply(range);
-		World world = entity.world;
+		World world = entity.getWorld();
 		Vec3d vec3d2 = entity.getEyePos();
 		return getCollision(vec3d2, entity, predicate, vec3d, world);
 	}
@@ -50,7 +50,7 @@ public final class ProjectileUtil {
 
 	@Nullable
 	public static EntityHitResult raycast(Entity entity, Vec3d min, Vec3d max, Box box, Predicate<Entity> predicate, double d) {
-		World world = entity.world;
+		World world = entity.getWorld();
 		double e = d;
 		Entity entity2 = null;
 		Vec3d vec3d = null;
@@ -144,7 +144,7 @@ public final class ProjectileUtil {
 
 	public static PersistentProjectileEntity createArrowProjectile(LivingEntity entity, ItemStack stack, float damageModifier) {
 		ArrowItem arrowItem = (ArrowItem)(stack.getItem() instanceof ArrowItem ? stack.getItem() : Items.ARROW);
-		PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(entity.world, stack, entity);
+		PersistentProjectileEntity persistentProjectileEntity = arrowItem.createArrow(entity.getWorld(), stack, entity);
 		persistentProjectileEntity.applyEnchantmentEffects(entity, damageModifier);
 		if (stack.isOf(Items.TIPPED_ARROW) && persistentProjectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)persistentProjectileEntity).initFromStack(stack);

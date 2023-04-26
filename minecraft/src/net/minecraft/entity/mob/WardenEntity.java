@@ -214,7 +214,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 
 	@Override
 	public boolean tryAttack(Entity target) {
-		this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
+		this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 		this.playSound(SoundEvents.ENTITY_WARDEN_ATTACK_IMPACT, 10.0F, this.getSoundPitch());
 		SonicBoomTask.cooldown(this, 40);
 		return super.tryAttack(target);
@@ -236,7 +236,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 
 	@Override
 	public void tick() {
-		if (this.world instanceof ServerWorld serverWorld) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			Vibrations.Ticker.tick(serverWorld, this.vibrationListenerData, this.vibrationCallback);
 			if (this.isPersistent() || this.cannotDespawn()) {
 				WardenBrain.resetDigCooldown(this);
@@ -244,11 +244,11 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 		}
 
 		super.tick();
-		if (this.world.isClient()) {
+		if (this.getWorld().isClient()) {
 			if (this.age % this.getHeartRate() == 0) {
 				this.heartbeatCooldown = 10;
 				if (!this.isSilent()) {
-					this.world
+					this.getWorld()
 						.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WARDEN_HEARTBEAT, this.getSoundCategory(), 5.0F, this.getSoundPitch(), false);
 				}
 			}
@@ -275,10 +275,10 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 
 	@Override
 	protected void mobTick() {
-		ServerWorld serverWorld = (ServerWorld)this.world;
+		ServerWorld serverWorld = (ServerWorld)this.getWorld();
 		serverWorld.getProfiler().push("wardenBrain");
 		this.getBrain().tick(serverWorld, this);
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 		super.mobTick();
 		if ((this.age + this.getId()) % 120 == 0) {
 			addDarknessToClosePlayers(serverWorld, this.getPos(), this, 20);
@@ -328,7 +328,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 					double d = this.getX() + (double)MathHelper.nextBetween(random, -0.7F, 0.7F);
 					double e = this.getY();
 					double f = this.getZ() + (double)MathHelper.nextBetween(random, -0.7F, 0.7F);
-					this.world.addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), d, e, f, 0.0, 0.0, 0.0);
+					this.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), d, e, f, 0.0, 0.0, 0.0);
 				}
 			}
 		}
@@ -378,7 +378,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 
 	@Override
 	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
-		if (this.world instanceof ServerWorld serverWorld) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			callback.accept(this.gameEventHandler, serverWorld);
 		}
 	}
@@ -386,14 +386,14 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	@Contract("null->false")
 	public boolean isValidTarget(@Nullable Entity entity) {
 		if (entity instanceof LivingEntity livingEntity
-			&& this.world == entity.world
+			&& this.getWorld() == entity.getWorld()
 			&& EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(entity)
 			&& !this.isTeammate(entity)
 			&& livingEntity.getType() != EntityType.ARMOR_STAND
 			&& livingEntity.getType() != EntityType.WARDEN
 			&& !livingEntity.isInvulnerable()
 			&& !livingEntity.isDead()
-			&& this.world.getWorldBorder().contains(livingEntity.getBoundingBox())) {
+			&& this.getWorld().getWorldBorder().contains(livingEntity.getBoundingBox())) {
 			return true;
 		}
 
@@ -508,7 +508,7 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		boolean bl = super.damage(source, amount);
-		if (!this.world.isClient && !this.isAiDisabled() && !this.isDiggingOrEmerging()) {
+		if (!this.getWorld().isClient && !this.isAiDisabled() && !this.isDiggingOrEmerging()) {
 			Entity entity = source.getAttacker();
 			this.increaseAngerAt(entity, Angriness.ANGRY.getThreshold() + 20, false);
 			if (this.brain.getOptionalRegisteredMemory(MemoryModuleType.ATTACK_TARGET).isEmpty()

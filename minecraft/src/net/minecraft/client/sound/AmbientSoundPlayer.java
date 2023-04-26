@@ -25,7 +25,7 @@ public class AmbientSoundPlayer implements ClientPlayerTickable {
 	public void tick() {
 		this.ticksUntilPlay--;
 		if (this.ticksUntilPlay <= 0 && this.player.isSubmergedInWater()) {
-			float f = this.player.world.random.nextFloat();
+			float f = this.player.getWorld().random.nextFloat();
 			if (f < 1.0E-4F) {
 				this.ticksUntilPlay = 0;
 				this.soundManager.play(new AmbientSoundLoops.MusicLoop(this.player, SoundEvents.AMBIENT_UNDERWATER_LOOP_ADDITIONS_ULTRA_RARE));

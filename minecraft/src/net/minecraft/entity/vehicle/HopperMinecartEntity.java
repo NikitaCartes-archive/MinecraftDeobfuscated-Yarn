@@ -80,16 +80,17 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient && this.isAlive() && this.isEnabled() && this.canOperate()) {
+		if (!this.getWorld().isClient && this.isAlive() && this.isEnabled() && this.canOperate()) {
 			this.markDirty();
 		}
 	}
 
 	public boolean canOperate() {
-		if (HopperBlockEntity.extract(this.world, this)) {
+		if (HopperBlockEntity.extract(this.getWorld(), this)) {
 			return true;
 		} else {
-			for (ItemEntity itemEntity : this.world.getEntitiesByClass(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY)) {
+			for (ItemEntity itemEntity : this.getWorld()
+				.getEntitiesByClass(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY)) {
 				if (HopperBlockEntity.extract(this, itemEntity)) {
 					return true;
 				}

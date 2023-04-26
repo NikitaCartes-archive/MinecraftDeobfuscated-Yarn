@@ -38,10 +38,6 @@ public class SmithingTrimRecipeJsonBuilder {
 		return this;
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeId) {
-		this.offerTo(exporter, new Identifier(recipeId));
-	}
-
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
 		this.validate(recipeId);
 		this.advancement

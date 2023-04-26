@@ -162,7 +162,7 @@ public abstract class PatrolEntity extends HostileEntity {
 
 		@Override
 		public boolean canStart() {
-			boolean bl = this.entity.world.getTime() < this.nextPatrolSearchTime;
+			boolean bl = this.entity.getWorld().getTime() < this.nextPatrolSearchTime;
 			return this.entity.isRaidCenterSet() && this.entity.getTarget() == null && !this.entity.hasPassengers() && this.entity.hasPatrolTarget() && !bl;
 		}
 
@@ -191,10 +191,10 @@ public abstract class PatrolEntity extends HostileEntity {
 					vec3d = vec3d3.rotateY(90.0F).multiply(0.4).add(vec3d);
 					Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 					BlockPos blockPos = BlockPos.ofFloored(vec3d4);
-					blockPos = this.entity.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
+					blockPos = this.entity.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
 					if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), bl ? this.followSpeed : this.leaderSpeed)) {
 						this.wander();
-						this.nextPatrolSearchTime = this.entity.world.getTime() + 200L;
+						this.nextPatrolSearchTime = this.entity.getWorld().getTime() + 200L;
 					} else if (bl) {
 						for (PatrolEntity patrolEntity : list) {
 							patrolEntity.setPatrolTarget(blockPos);
@@ -206,7 +206,7 @@ public abstract class PatrolEntity extends HostileEntity {
 
 		private List<PatrolEntity> findPatrolTargets() {
 			return this.entity
-				.world
+				.getWorld()
 				.getEntitiesByClass(
 					PatrolEntity.class, this.entity.getBoundingBox().expand(16.0), patrolEntity -> patrolEntity.hasNoRaid() && !patrolEntity.isPartOf(this.entity)
 				);
@@ -215,7 +215,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		private boolean wander() {
 			Random random = this.entity.getRandom();
 			BlockPos blockPos = this.entity
-				.world
+				.getWorld()
 				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, this.entity.getBlockPos().add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
 			return this.entity.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.leaderSpeed);
 		}

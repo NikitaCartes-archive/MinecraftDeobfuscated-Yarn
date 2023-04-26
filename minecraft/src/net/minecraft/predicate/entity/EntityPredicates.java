@@ -72,7 +72,7 @@ public final class EntityPredicates {
 				entityx -> {
 					if (!entityx.isPushable()) {
 						return false;
-					} else if (!entity.world.isClient || entityx instanceof PlayerEntity && ((PlayerEntity)entityx).isMainPlayer()) {
+					} else if (!entity.getWorld().isClient || entityx instanceof PlayerEntity && ((PlayerEntity)entityx).isMainPlayer()) {
 						AbstractTeam abstractTeam2 = entityx.getScoreboardTeam();
 						AbstractTeam.CollisionRule collisionRule2 = abstractTeam2 == null ? AbstractTeam.CollisionRule.ALWAYS : abstractTeam2.getCollisionRule();
 						if (collisionRule2 == AbstractTeam.CollisionRule.NEVER) {

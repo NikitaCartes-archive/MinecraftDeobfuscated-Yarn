@@ -13,10 +13,10 @@ public class LightUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int chunkZ;
 	private final LightData data;
 
-	public LightUpdateS2CPacket(ChunkPos chunkPos, LightingProvider lightProvider, @Nullable BitSet skyBits, @Nullable BitSet blockBits, boolean nonEdge) {
+	public LightUpdateS2CPacket(ChunkPos chunkPos, LightingProvider lightProvider, @Nullable BitSet skyBits, @Nullable BitSet blockBits) {
 		this.chunkX = chunkPos.x;
 		this.chunkZ = chunkPos.z;
-		this.data = new LightData(chunkPos, lightProvider, skyBits, blockBits, nonEdge);
+		this.data = new LightData(chunkPos, lightProvider, skyBits, blockBits);
 	}
 
 	public LightUpdateS2CPacket(PacketByteBuf buf) {

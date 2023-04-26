@@ -260,6 +260,10 @@ public class ChunkSectionPos extends Vec3i {
 		);
 	}
 
+	public static long withZeroY(int x, int z) {
+		return withZeroY(asLong(x, 0, z));
+	}
+
 	/**
 	 * Gets the packed chunk section coordinate at y=0 for the same chunk as
 	 * the given packed chunk section coordinate.

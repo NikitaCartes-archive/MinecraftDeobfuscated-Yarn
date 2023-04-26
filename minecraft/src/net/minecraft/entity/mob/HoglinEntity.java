@@ -107,7 +107,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 			return false;
 		} else {
 			this.movementCooldownTicks = 10;
-			this.world.sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
+			this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_ATTACK_SOUND);
 			this.playSound(SoundEvents.ENTITY_HOGLIN_ATTACK, 1.0F, this.getSoundPitch());
 			HoglinBrain.onAttacking(this, (LivingEntity)target);
 			return Hoglin.tryAttack(this, (LivingEntity)target);
@@ -124,7 +124,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		boolean bl = super.damage(source, amount);
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			return false;
 		} else {
 			if (bl && source.getAttacker() instanceof LivingEntity) {
@@ -152,15 +152,15 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("hoglinBrain");
-		this.getBrain().tick((ServerWorld)this.world, this);
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().push("hoglinBrain");
+		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getWorld().getProfiler().pop();
 		HoglinBrain.refreshActivities(this);
 		if (this.canConvert()) {
 			this.timeInOverworld++;
 			if (this.timeInOverworld > 300) {
 				this.playSound(SoundEvents.ENTITY_HOGLIN_CONVERTED_TO_ZOMBIFIED);
-				this.zombify((ServerWorld)this.world);
+				this.zombify((ServerWorld)this.getWorld());
 			}
 		} else {
 			this.timeInOverworld = 0;
@@ -309,7 +309,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	public boolean canConvert() {
-		return !this.world.getDimension().piglinSafe() && !this.isImmuneToZombification() && !this.isAiDisabled();
+		return !this.getWorld().getDimension().piglinSafe() && !this.isImmuneToZombification() && !this.isAiDisabled();
 	}
 
 	private void setCannotBeHunted(boolean cannotBeHunted) {
@@ -343,7 +343,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.world.isClient ? null : (SoundEvent)HoglinBrain.getSoundEvent(this).orElse(null);
+		return this.getWorld().isClient ? null : (SoundEvent)HoglinBrain.getSoundEvent(this).orElse(null);
 	}
 
 	@Override

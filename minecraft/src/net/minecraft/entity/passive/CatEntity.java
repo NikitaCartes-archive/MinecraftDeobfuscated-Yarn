@@ -375,7 +375,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			if (this.isTamed() && this.isOwner(player)) {
 				return ActionResult.SUCCESS;
 			} else {
@@ -415,9 +415,9 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 				if (this.random.nextInt(3) == 0) {
 					this.setOwner(player);
 					this.setSitting(true);
-					this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
+					this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
 				} else {
-					this.world.sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
+					this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
 				}
 
 				this.setPersistent();
@@ -515,7 +515,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 					}
 
 					BlockPos blockPos = this.owner.getBlockPos();
-					BlockState blockState = this.cat.world.getBlockState(blockPos);
+					BlockState blockState = this.cat.getWorld().getBlockState(blockPos);
 					if (blockState.isIn(BlockTags.BEDS)) {
 						this.bedPos = (BlockPos)blockState.getOrEmpty(BedBlock.FACING)
 							.map(direction -> blockPos.offset(direction.getOpposite()))
@@ -529,7 +529,7 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 		}
 
 		private boolean cannotSleep() {
-			for (CatEntity catEntity : this.cat.world.getNonSpectatingEntities(CatEntity.class, new Box(this.bedPos).expand(2.0))) {
+			for (CatEntity catEntity : this.cat.getWorld().getNonSpectatingEntities(CatEntity.class, new Box(this.bedPos).expand(2.0))) {
 				if (catEntity != this.cat && (catEntity.isInSleepingPose() || catEntity.isHeadDown())) {
 					return true;
 				}
@@ -554,8 +554,8 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 		@Override
 		public void stop() {
 			this.cat.setInSleepingPose(false);
-			float f = this.cat.world.getSkyAngle(1.0F);
-			if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.cat.world.getRandom().nextFloat() < 0.7) {
+			float f = this.cat.getWorld().getSkyAngle(1.0F);
+			if (this.owner.getSleepTimer() >= 100 && (double)f > 0.77 && (double)f < 0.8 && (double)this.cat.getWorld().getRandom().nextFloat() < 0.7) {
 				this.dropMorningGifts();
 			}
 
@@ -576,18 +576,18 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 					false
 				);
 			mutable.set(this.cat.getBlockPos());
-			LootTable lootTable = this.cat.world.getServer().getLootManager().getLootTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
-			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.world)
+			LootTable lootTable = this.cat.getWorld().getServer().getLootManager().getLootTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
+			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.getWorld())
 				.parameter(LootContextParameters.ORIGIN, this.cat.getPos())
 				.parameter(LootContextParameters.THIS_ENTITY, this.cat)
 				.random(random);
 
 			for (ItemStack itemStack : lootTable.generateLoot(builder.build(LootContextTypes.GIFT))) {
 				this.cat
-					.world
+					.getWorld()
 					.spawnEntity(
 						new ItemEntity(
-							this.cat.world,
+							this.cat.getWorld(),
 							(double)mutable.getX() - (double)MathHelper.sin(this.cat.bodyYaw * (float) (Math.PI / 180.0)),
 							(double)mutable.getY(),
 							(double)mutable.getZ() + (double)MathHelper.cos(this.cat.bodyYaw * (float) (Math.PI / 180.0)),

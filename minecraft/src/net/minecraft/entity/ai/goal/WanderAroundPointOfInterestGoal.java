@@ -19,7 +19,7 @@ public class WanderAroundPointOfInterestGoal extends WanderAroundGoal {
 
 	@Override
 	public boolean canStart() {
-		ServerWorld serverWorld = (ServerWorld)this.mob.world;
+		ServerWorld serverWorld = (ServerWorld)this.mob.getWorld();
 		BlockPos blockPos = this.mob.getBlockPos();
 		return serverWorld.isNearOccupiedPointOfInterest(blockPos) ? false : super.canStart();
 	}
@@ -27,7 +27,7 @@ public class WanderAroundPointOfInterestGoal extends WanderAroundGoal {
 	@Nullable
 	@Override
 	protected Vec3d getWanderTarget() {
-		ServerWorld serverWorld = (ServerWorld)this.mob.world;
+		ServerWorld serverWorld = (ServerWorld)this.mob.getWorld();
 		BlockPos blockPos = this.mob.getBlockPos();
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(blockPos);
 		ChunkSectionPos chunkSectionPos2 = LookTargetUtil.getPosClosestToOccupiedPointOfInterest(serverWorld, chunkSectionPos, 2);

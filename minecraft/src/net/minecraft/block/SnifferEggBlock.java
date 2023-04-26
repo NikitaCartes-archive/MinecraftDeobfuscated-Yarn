@@ -3,7 +3,6 @@ package net.minecraft.block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.passive.SnifferEntity;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -19,7 +18,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
 
 public class SnifferEggBlock extends Block {
@@ -51,11 +49,6 @@ public class SnifferEggBlock extends Block {
 
 	private boolean isReadyToHatch(BlockState state) {
 		return this.getHatchStage(state) == 2;
-	}
-
-	@Override
-	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return world.getBlockState(pos).getFluidState().isOf(Fluids.EMPTY);
 	}
 
 	@Override

@@ -172,12 +172,12 @@ public abstract class AbstractMinecartEntity extends Entity {
 				for (int i : DISMOUNT_FREE_Y_SPACES_NEEDED.get(entityPose)) {
 					for (int[] js : is) {
 						mutable.set(blockPos.getX() + js[0], blockPos.getY() + i, blockPos.getZ() + js[1]);
-						double d = this.world
-							.getDismountHeight(Dismounting.getCollisionShape(this.world, mutable), () -> Dismounting.getCollisionShape(this.world, mutable.down()));
+						double d = this.getWorld()
+							.getDismountHeight(Dismounting.getCollisionShape(this.getWorld(), mutable), () -> Dismounting.getCollisionShape(this.getWorld(), mutable.down()));
 						if (Dismounting.canDismountInBlock(d)) {
 							Box box = new Box((double)(-f), 0.0, (double)(-f), (double)f, (double)entityDimensions.height, (double)f);
 							Vec3d vec3d = Vec3d.ofCenter(mutable, d);
-							if (Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d))) {
+							if (Dismounting.canPlaceEntityAt(this.getWorld(), passenger, box.offset(vec3d))) {
 								passenger.setPose(entityPose);
 								return vec3d;
 							}
@@ -192,7 +192,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			for (EntityPose entityPose2 : immutableList) {
 				double g = (double)passenger.getDimensions(entityPose2).height;
 				int j = MathHelper.ceil(e - (double)mutable.getY() + g);
-				double h = Dismounting.getCeilingHeight(mutable, j, pos -> this.world.getBlockState(pos).getCollisionShape(this.world, pos));
+				double h = Dismounting.getCeilingHeight(mutable, j, pos -> this.getWorld().getBlockState(pos).getCollisionShape(this.getWorld(), pos));
 				if (e + g <= h) {
 					passenger.setPose(entityPose2);
 					break;
@@ -205,7 +205,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (this.world.isClient || this.isRemoved()) {
+		if (this.getWorld().isClient || this.isRemoved()) {
 			return true;
 		} else if (this.isInvulnerableTo(source)) {
 			return false;
@@ -231,13 +231,13 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	protected float getVelocityMultiplier() {
-		BlockState blockState = this.world.getBlockState(this.getBlockPos());
+		BlockState blockState = this.getWorld().getBlockState(this.getBlockPos());
 		return blockState.isIn(BlockTags.RAILS) ? 1.0F : super.getVelocityMultiplier();
 	}
 
 	public void dropItems(DamageSource damageSource) {
 		this.kill();
-		if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+		if (this.getWorld().getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 			ItemStack itemStack = new ItemStack(this.getItem());
 			if (this.hasCustomName()) {
 				itemStack.setCustomName(this.getCustomName());
@@ -282,7 +282,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 		this.attemptTickInVoid();
 		this.tickPortal();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			if (this.clientInterpolationSteps > 0) {
 				double d = this.getX() + (this.clientX - this.getX()) / (double)this.clientInterpolationSteps;
 				double e = this.getY() + (this.clientY - this.getY()) / (double)this.clientInterpolationSteps;
@@ -306,12 +306,12 @@ public abstract class AbstractMinecartEntity extends Entity {
 			int i = MathHelper.floor(this.getX());
 			int j = MathHelper.floor(this.getY());
 			int k = MathHelper.floor(this.getZ());
-			if (this.world.getBlockState(new BlockPos(i, j - 1, k)).isIn(BlockTags.RAILS)) {
+			if (this.getWorld().getBlockState(new BlockPos(i, j - 1, k)).isIn(BlockTags.RAILS)) {
 				j--;
 			}
 
 			BlockPos blockPos = new BlockPos(i, j, k);
-			BlockState blockState = this.world.getBlockState(blockPos);
+			BlockState blockState = this.getWorld().getBlockState(blockPos);
 			if (AbstractRailBlock.isRail(blockState)) {
 				this.moveOnRail(blockPos, blockState);
 				if (blockState.isOf(Blocks.ACTIVATOR_RAIL)) {
@@ -340,7 +340,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 			this.setRotation(this.getYaw(), this.getPitch());
 			if (this.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && this.getVelocity().horizontalLengthSquared() > 0.01) {
-				List<Entity> list = this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F), EntityPredicates.canBePushedBy(this));
+				List<Entity> list = this.getWorld().getOtherEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F), EntityPredicates.canBePushedBy(this));
 				if (!list.isEmpty()) {
 					for (int n = 0; n < list.size(); n++) {
 						Entity entity = (Entity)list.get(n);
@@ -356,7 +356,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 					}
 				}
 			} else {
-				for (Entity entity2 : this.world.getOtherEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F))) {
+				for (Entity entity2 : this.getWorld().getOtherEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F))) {
 					if (!this.hasPassenger(entity2) && entity2.isPushable() && entity2 instanceof AbstractMinecartEntity) {
 						entity2.pushAwayFrom(this);
 					}
@@ -384,12 +384,12 @@ public abstract class AbstractMinecartEntity extends Entity {
 		double d = this.getMaxSpeed();
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(MathHelper.clamp(vec3d.x, -d, d), vec3d.y, MathHelper.clamp(vec3d.z, -d, d));
-		if (this.onGround) {
+		if (this.isOnGround()) {
 			this.setVelocity(this.getVelocity().multiply(0.5));
 		}
 
 		this.move(MovementType.SELF, this.getVelocity());
-		if (!this.onGround) {
+		if (!this.isOnGround()) {
 			this.setVelocity(this.getVelocity().multiply(0.95));
 		}
 	}
@@ -554,7 +554,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	private boolean willHitBlockAt(BlockPos pos) {
-		return this.world.getBlockState(pos).isSolidBlock(this.world, pos);
+		return this.getWorld().getBlockState(pos).isSolidBlock(this.getWorld(), pos);
 	}
 
 	protected void applySlowdown() {
@@ -576,11 +576,11 @@ public abstract class AbstractMinecartEntity extends Entity {
 		int i = MathHelper.floor(x);
 		int j = MathHelper.floor(y);
 		int k = MathHelper.floor(z);
-		if (this.world.getBlockState(new BlockPos(i, j - 1, k)).isIn(BlockTags.RAILS)) {
+		if (this.getWorld().getBlockState(new BlockPos(i, j - 1, k)).isIn(BlockTags.RAILS)) {
 			j--;
 		}
 
-		BlockState blockState = this.world.getBlockState(new BlockPos(i, j, k));
+		BlockState blockState = this.getWorld().getBlockState(new BlockPos(i, j, k));
 		if (AbstractRailBlock.isRail(blockState)) {
 			RailShape railShape = blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty());
 			y = (double)j;
@@ -615,11 +615,11 @@ public abstract class AbstractMinecartEntity extends Entity {
 		int i = MathHelper.floor(x);
 		int j = MathHelper.floor(y);
 		int k = MathHelper.floor(z);
-		if (this.world.getBlockState(new BlockPos(i, j - 1, k)).isIn(BlockTags.RAILS)) {
+		if (this.getWorld().getBlockState(new BlockPos(i, j - 1, k)).isIn(BlockTags.RAILS)) {
 			j--;
 		}
 
-		BlockState blockState = this.world.getBlockState(new BlockPos(i, j, k));
+		BlockState blockState = this.getWorld().getBlockState(new BlockPos(i, j, k));
 		if (AbstractRailBlock.isRail(blockState)) {
 			RailShape railShape = blockState.get(((AbstractRailBlock)blockState.getBlock()).getShapeProperty());
 			Pair<Vec3i, Vec3i> pair = getAdjacentRailPositionsByShape(railShape);
@@ -669,7 +669,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	@Override
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
 		if (nbt.getBoolean("CustomDisplayTile")) {
-			this.setCustomBlock(NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("DisplayState")));
+			this.setCustomBlock(NbtHelper.toBlockState(this.getWorld().createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("DisplayState")));
 			this.setCustomBlockOffset(nbt.getInt("DisplayOffset"));
 		}
 	}
@@ -685,7 +685,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	public void pushAwayFrom(Entity entity) {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			if (!entity.noClip && !this.noClip) {
 				if (!this.hasPassenger(entity)) {
 					double d = entity.getX() - this.getX();

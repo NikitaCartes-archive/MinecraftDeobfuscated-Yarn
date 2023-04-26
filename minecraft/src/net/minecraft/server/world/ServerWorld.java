@@ -993,7 +993,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Override
 	public void setBlockBreakingInfo(int entityId, BlockPos pos, int progress) {
 		for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
-			if (serverPlayerEntity != null && serverPlayerEntity.world == this && serverPlayerEntity.getId() != entityId) {
+			if (serverPlayerEntity != null && serverPlayerEntity.getWorld() == this && serverPlayerEntity.getId() != entityId) {
 				double d = (double)pos.getX() - serverPlayerEntity.getX();
 				double e = (double)pos.getY() - serverPlayerEntity.getY();
 				double f = (double)pos.getZ() - serverPlayerEntity.getZ();

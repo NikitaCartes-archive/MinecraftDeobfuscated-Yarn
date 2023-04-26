@@ -141,11 +141,11 @@ public class GuardianEntity extends HostileEntity {
 	public LivingEntity getBeamTarget() {
 		if (!this.hasBeamTarget()) {
 			return null;
-		} else if (this.world.isClient) {
+		} else if (this.getWorld().isClient) {
 			if (this.cachedBeamTarget != null) {
 				return this.cachedBeamTarget;
 			} else {
-				Entity entity = this.world.getEntityById(this.dataTracker.get(BEAM_TARGET_ID));
+				Entity entity = this.getWorld().getEntityById(this.dataTracker.get(BEAM_TARGET_ID));
 				if (entity instanceof LivingEntity) {
 					this.cachedBeamTarget = (LivingEntity)entity;
 					return this.cachedBeamTarget;
@@ -205,16 +205,16 @@ public class GuardianEntity extends HostileEntity {
 	@Override
 	public void tickMovement() {
 		if (this.isAlive()) {
-			if (this.world.isClient) {
+			if (this.getWorld().isClient) {
 				this.prevTailAngle = this.tailAngle;
 				if (!this.isTouchingWater()) {
 					this.spikesExtensionRate = 2.0F;
 					Vec3d vec3d = this.getVelocity();
 					if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
-						this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
+						this.getWorld().playSound(this.getX(), this.getY(), this.getZ(), this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
-					this.flopping = vec3d.y < 0.0 && this.world.isTopSolid(this.getBlockPos().down(), this);
+					this.flopping = vec3d.y < 0.0 && this.getWorld().isTopSolid(this.getBlockPos().down(), this);
 				} else if (this.areSpikesRetracted()) {
 					if (this.spikesExtensionRate < 0.5F) {
 						this.spikesExtensionRate = 4.0F;
@@ -239,7 +239,7 @@ public class GuardianEntity extends HostileEntity {
 					Vec3d vec3d = this.getRotationVec(0.0F);
 
 					for (int i = 0; i < 2; i++) {
-						this.world
+						this.getWorld()
 							.addParticle(
 								ParticleTypes.BUBBLE,
 								this.getParticleX(0.5) - vec3d.x * 1.5,
@@ -273,7 +273,7 @@ public class GuardianEntity extends HostileEntity {
 
 						while (j < h) {
 							j += 1.8 - d + this.random.nextDouble() * (1.7 - d);
-							this.world.addParticle(ParticleTypes.BUBBLE, this.getX() + e * j, this.getEyeY() + f * j, this.getZ() + g * j, 0.0, 0.0, 0.0);
+							this.getWorld().addParticle(ParticleTypes.BUBBLE, this.getX() + e * j, this.getEyeY() + f * j, this.getZ() + g * j, 0.0, 0.0, 0.0);
 						}
 					}
 				}
@@ -281,12 +281,12 @@ public class GuardianEntity extends HostileEntity {
 
 			if (this.isInsideWaterOrBubbleColumn()) {
 				this.setAir(300);
-			} else if (this.onGround) {
+			} else if (this.isOnGround()) {
 				this.setVelocity(
 					this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F), 0.5, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.4F))
 				);
 				this.setYaw(this.random.nextFloat() * 360.0F);
-				this.onGround = false;
+				this.setOnGround(false);
 				this.velocityDirty = true;
 			}
 
@@ -332,7 +332,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			return false;
 		} else {
 			if (!this.areSpikesRetracted()
@@ -428,11 +428,11 @@ public class GuardianEntity extends HostileEntity {
 					if (this.beamTicks == 0) {
 						this.guardian.setBeamTarget(livingEntity.getId());
 						if (!this.guardian.isSilent()) {
-							this.guardian.world.sendEntityStatus(this.guardian, EntityStatuses.PLAY_GUARDIAN_ATTACK_SOUND);
+							this.guardian.getWorld().sendEntityStatus(this.guardian, EntityStatuses.PLAY_GUARDIAN_ATTACK_SOUND);
 						}
 					} else if (this.beamTicks >= this.guardian.getWarmupTime()) {
 						float f = 1.0F;
-						if (this.guardian.world.getDifficulty() == Difficulty.HARD) {
+						if (this.guardian.getWorld().getDifficulty() == Difficulty.HARD) {
 							f += 2.0F;
 						}
 

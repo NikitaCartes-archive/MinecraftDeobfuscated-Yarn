@@ -8,9 +8,7 @@ import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class GlyphRenderer {
-	private final RenderLayer textLayer;
-	private final RenderLayer seeThroughTextLayer;
-	private final RenderLayer polygonOffsetTextLayer;
+	private final TextRenderLayerSet textRenderLayers;
 	private final float minU;
 	private final float maxU;
 	private final float minV;
@@ -20,22 +18,8 @@ public class GlyphRenderer {
 	private final float minY;
 	private final float maxY;
 
-	public GlyphRenderer(
-		RenderLayer textLayer,
-		RenderLayer seeThroughTextLayer,
-		RenderLayer polygonOffsetTextLayer,
-		float minU,
-		float maxU,
-		float minV,
-		float maxV,
-		float minX,
-		float maxX,
-		float minY,
-		float maxY
-	) {
-		this.textLayer = textLayer;
-		this.seeThroughTextLayer = seeThroughTextLayer;
-		this.polygonOffsetTextLayer = polygonOffsetTextLayer;
+	public GlyphRenderer(TextRenderLayerSet textRenderLayers, float minU, float maxU, float minV, float maxV, float minX, float maxX, float minY, float maxY) {
+		this.textRenderLayers = textRenderLayers;
 		this.minU = minU;
 		this.maxU = maxU;
 		this.minV = minV;
@@ -86,11 +70,7 @@ public class GlyphRenderer {
 	}
 
 	public RenderLayer getLayer(TextRenderer.TextLayerType layerType) {
-		return switch (layerType) {
-			case NORMAL -> this.textLayer;
-			case SEE_THROUGH -> this.seeThroughTextLayer;
-			case POLYGON_OFFSET -> this.polygonOffsetTextLayer;
-		};
+		return this.textRenderLayers.getRenderLayer(layerType);
 	}
 
 	@Environment(EnvType.CLIENT)

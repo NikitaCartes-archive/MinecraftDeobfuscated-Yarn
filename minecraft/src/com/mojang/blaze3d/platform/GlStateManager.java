@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.texture.NativeImage;
 import net.minecraft.util.Util;
 import net.minecraft.util.annotation.DeobfuscateClass;
 import org.joml.Matrix4f;
@@ -563,6 +564,23 @@ public class GlStateManager {
 	public static void _texSubImage2D(int target, int level, int offsetX, int offsetY, int width, int height, int format, int type, long pixels) {
 		RenderSystem.assertOnRenderThreadOrInit();
 		GL11.glTexSubImage2D(target, level, offsetX, offsetY, width, height, format, type, pixels);
+	}
+
+	public static void upload(int level, int offsetX, int offsetY, int width, int height, NativeImage.Format format, IntBuffer pixels) {
+		if (!RenderSystem.isOnRenderThreadOrInit()) {
+			RenderSystem.recordRenderCall(() -> _upload(level, offsetX, offsetY, width, height, format, pixels));
+		} else {
+			_upload(level, offsetX, offsetY, width, height, format, pixels);
+		}
+	}
+
+	private static void _upload(int level, int offsetX, int offsetY, int width, int height, NativeImage.Format format, IntBuffer pixels) {
+		RenderSystem.assertOnRenderThreadOrInit();
+		_pixelStore(GlConst.GL_UNPACK_ROW_LENGTH, width);
+		_pixelStore(GlConst.GL_UNPACK_SKIP_PIXELS, 0);
+		_pixelStore(GlConst.GL_UNPACK_SKIP_ROWS, 0);
+		format.setUnpackAlignment();
+		GL11.glTexSubImage2D(3553, level, offsetX, offsetY, width, height, format.toGl(), 5121, pixels);
 	}
 
 	public static void _getTexImage(int target, int level, int format, int type, long pixels) {

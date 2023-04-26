@@ -131,7 +131,7 @@ public class ExecuteCommand {
 					List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 
 					for (Entity entity : EntityArgumentType.getOptionalEntities(context, "targets")) {
-						list.add(context.getSource().withWorld((ServerWorld)entity.world).withPosition(entity.getPos()).withRotation(entity.getRotationClient()));
+						list.add(context.getSource().withWorld((ServerWorld)entity.getWorld()).withPosition(entity.getPos()).withRotation(entity.getRotationClient()));
 					}
 
 					return list;

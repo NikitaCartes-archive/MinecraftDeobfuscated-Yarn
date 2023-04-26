@@ -49,7 +49,7 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 		super.tick();
 		if (this.fuseTicks > 0) {
 			this.fuseTicks--;
-			this.world.addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
+			this.getWorld().addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
 		} else if (this.fuseTicks == 0) {
 			this.explode(this.getVelocity().horizontalLengthSquared());
 		}
@@ -95,13 +95,13 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	protected void explode(@Nullable DamageSource damageSource, double power) {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			double d = Math.sqrt(power);
 			if (d > 5.0) {
 				d = 5.0;
 			}
 
-			this.world
+			this.getWorld()
 				.createExplosion(
 					this, damageSource, null, this.getX(), this.getY(), this.getZ(), (float)(4.0 + this.random.nextDouble() * 1.5 * d), false, World.ExplosionSourceType.TNT
 				);
@@ -137,10 +137,10 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 
 	public void prime() {
 		this.fuseTicks = 80;
-		if (!this.world.isClient) {
-			this.world.sendEntityStatus(this, EntityStatuses.SET_SHEEP_EAT_GRASS_TIMER_OR_PRIME_TNT_MINECART);
+		if (!this.getWorld().isClient) {
+			this.getWorld().sendEntityStatus(this, EntityStatuses.SET_SHEEP_EAT_GRASS_TIMER_OR_PRIME_TNT_MINECART);
 			if (!this.isSilent()) {
-				this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 			}
 		}
 	}

@@ -90,9 +90,9 @@ import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ChunkStatusChangeListener;
 import net.minecraft.world.chunk.ProtoChunk;
-import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.WrapperProtoChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
@@ -457,7 +457,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					} while (completableFuture != chunkHolder.getSavingFuture());
 
 					return (Chunk)completableFuture.join();
-				}).filter(chunk -> chunk instanceof ReadOnlyChunk || chunk instanceof WorldChunk).filter(this::save).forEach(chunk -> mutableBoolean.setTrue());
+				}).filter(chunk -> chunk instanceof WrapperProtoChunk || chunk instanceof WorldChunk).filter(this::save).forEach(chunk -> mutableBoolean.setTrue());
 			} while (mutableBoolean.isTrue());
 
 			this.unloadChunks(() -> true);
@@ -724,11 +724,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				ChunkPos chunkPos = chunkHolder.getPos();
 				ProtoChunk protoChunk2 = (ProtoChunk)protoChunk;
 				WorldChunk worldChunk;
-				if (protoChunk2 instanceof ReadOnlyChunk) {
-					worldChunk = ((ReadOnlyChunk)protoChunk2).getWrappedChunk();
+				if (protoChunk2 instanceof WrapperProtoChunk) {
+					worldChunk = ((WrapperProtoChunk)protoChunk2).getWrappedChunk();
 				} else {
 					worldChunk = new WorldChunk(this.world, protoChunk2, chunk -> addEntitiesFromNbt(this.world, protoChunk2.getEntities()));
-					chunkHolder.setCompletedChunk(new ReadOnlyChunk(worldChunk, false));
+					chunkHolder.setCompletedChunk(new WrapperProtoChunk(worldChunk, false));
 				}
 
 				worldChunk.setLevelTypeProvider(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
@@ -779,7 +779,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			return false;
 		} else {
 			Chunk chunk = (Chunk)chunkHolder.getSavingFuture().getNow(null);
-			if (!(chunk instanceof ReadOnlyChunk) && !(chunk instanceof WorldChunk)) {
+			if (!(chunk instanceof WrapperProtoChunk) && !(chunk instanceof WorldChunk)) {
 				return false;
 			} else {
 				long l = chunk.getPos().toLong();
@@ -878,7 +878,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	protected void sendWatchPackets(
 		ServerPlayerEntity player, ChunkPos pos, MutableObject<ChunkDataS2CPacket> packet, boolean oldWithinViewDistance, boolean newWithinViewDistance
 	) {
-		if (player.world == this.world) {
+		if (player.getWorld() == this.world) {
 			if (newWithinViewDistance && !oldWithinViewDistance) {
 				ChunkHolder chunkHolder = this.getChunkHolder(pos.toLong());
 				if (chunkHolder != null) {
@@ -1285,7 +1285,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	private void sendChunkDataPackets(ServerPlayerEntity player, MutableObject<ChunkDataS2CPacket> cachedDataPacket, WorldChunk chunk) {
 		if (cachedDataPacket.getValue() == null) {
-			cachedDataPacket.setValue(new ChunkDataS2CPacket(chunk, this.lightingProvider, null, null, true));
+			cachedDataPacket.setValue(new ChunkDataS2CPacket(chunk, this.lightingProvider, null, null));
 		}
 
 		player.sendChunkPacket(chunk.getPos(), cachedDataPacket.getValue());

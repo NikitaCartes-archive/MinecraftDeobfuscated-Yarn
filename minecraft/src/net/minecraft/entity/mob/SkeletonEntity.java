@@ -48,7 +48,7 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 
 	@Override
 	public void tick() {
-		if (!this.world.isClient && this.isAlive() && !this.isAiDisabled()) {
+		if (!this.getWorld().isClient && this.isAlive() && !this.isAiDisabled()) {
 			if (this.inPowderSnow) {
 				if (this.isConverting()) {
 					this.conversionTime--;
@@ -95,7 +95,7 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	protected void convertToStray() {
 		this.convertTo(EntityType.STRAY, true);
 		if (!this.isSilent()) {
-			this.world.syncWorldEvent(null, WorldEvents.SKELETON_CONVERTS_TO_STRAY, this.getBlockPos(), 0);
+			this.getWorld().syncWorldEvent(null, WorldEvents.SKELETON_CONVERTS_TO_STRAY, this.getBlockPos(), 0);
 		}
 	}
 

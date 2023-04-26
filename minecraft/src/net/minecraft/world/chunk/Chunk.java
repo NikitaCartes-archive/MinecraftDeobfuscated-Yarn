@@ -13,9 +13,10 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
@@ -45,6 +46,8 @@ import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSupplier;
 import net.minecraft.world.biome.source.util.MultiNoiseUtil;
+import net.minecraft.world.chunk.light.ChunkSkyLight;
+import net.minecraft.world.chunk.light.LightSourceView;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.gen.chunk.BlendingData;
 import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
@@ -56,7 +59,7 @@ import org.slf4j.Logger;
 /**
  * Represents a scoped, modifiable view of biomes, block states, fluid states and block entities.
  */
-public abstract class Chunk implements BlockView, BiomeAccess.Storage, StructureHolder {
+public abstract class Chunk implements BlockView, BiomeAccess.Storage, LightSourceView, StructureHolder {
 	public static final int MISSING_SECTION = -1;
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final LongSet EMPTY_STRUCTURE_REFERENCES = new LongOpenHashSet();
@@ -74,6 +77,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	@Nullable
 	protected BlendingData blendingData;
 	protected final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
+	protected ChunkSkyLight chunkSkyLight;
 	private final Map<Structure, StructureStart> structureStarts = Maps.<Structure, StructureStart>newHashMap();
 	private final Map<Structure, LongSet> structureReferences = Maps.<Structure, LongSet>newHashMap();
 	protected final Map<BlockPos, NbtCompound> blockEntityNbts = Maps.<BlockPos, NbtCompound>newHashMap();
@@ -87,7 +91,7 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		HeightLimitView heightLimitView,
 		Registry<Biome> biomeRegistry,
 		long inhabitedTime,
-		@Nullable ChunkSection[] sectionArrayInitializer,
+		@Nullable ChunkSection[] sectionArray,
 		@Nullable BlendingData blendingData
 	) {
 		this.pos = pos;
@@ -97,11 +101,12 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		this.inhabitedTime = inhabitedTime;
 		this.postProcessingLists = new ShortList[heightLimitView.countVerticalSections()];
 		this.blendingData = blendingData;
-		if (sectionArrayInitializer != null) {
-			if (this.sectionArray.length == sectionArrayInitializer.length) {
-				System.arraycopy(sectionArrayInitializer, 0, this.sectionArray, 0, this.sectionArray.length);
+		this.chunkSkyLight = new ChunkSkyLight(heightLimitView);
+		if (sectionArray != null) {
+			if (this.sectionArray.length == sectionArray.length) {
+				System.arraycopy(sectionArray, 0, this.sectionArray, 0, this.sectionArray.length);
 			} else {
-				LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", sectionArrayInitializer.length, this.sectionArray.length);
+				LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", sectionArray.length, this.sectionArray.length);
 			}
 		}
 
@@ -140,6 +145,9 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 		return -1;
 	}
 
+	@Deprecated(
+		forRemoval = true
+	)
 	public int getHighestNonEmptySectionYOffset() {
 		int i = this.getHighestNonEmptySection();
 		return i == -1 ? this.getBottomY() : ChunkSectionPos.getBlockCoord(this.sectionIndexToCoord(i));
@@ -266,6 +274,17 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	public abstract ChunkStatus getStatus();
 
+	public ChunkStatus method_51526() {
+		ChunkStatus chunkStatus = this.getStatus();
+		BelowZeroRetrogen belowZeroRetrogen = this.getBelowZeroRetrogen();
+		if (belowZeroRetrogen != null) {
+			ChunkStatus chunkStatus2 = belowZeroRetrogen.getTargetStatus();
+			return chunkStatus2.isAtLeast(chunkStatus) ? chunkStatus2 : chunkStatus;
+		} else {
+			return chunkStatus;
+		}
+	}
+
 	public abstract void removeBlockEntity(BlockPos pos);
 
 	public void markBlockForPostProcessing(BlockPos pos) {
@@ -292,7 +311,32 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 	@Nullable
 	public abstract NbtCompound getPackedBlockEntityNbt(BlockPos pos);
 
-	public abstract Stream<BlockPos> getLightSourcesStream();
+	@Override
+	public final void forEachLightSource(BiConsumer<BlockPos, BlockState> callback) {
+		this.forEachBlockMatchingPredicate(blockState -> blockState.getLuminance() != 0, callback);
+	}
+
+	public void forEachBlockMatchingPredicate(Predicate<BlockState> predicate, BiConsumer<BlockPos, BlockState> consumer) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+		for (int i = this.getBottomSectionCoord(); i < this.getTopSectionCoord(); i++) {
+			ChunkSection chunkSection = this.getSection(this.sectionCoordToIndex(i));
+			if (chunkSection.hasAny(predicate)) {
+				BlockPos blockPos = ChunkSectionPos.from(this.pos, i).getMinPos();
+
+				for (int j = 0; j < 16; j++) {
+					for (int k = 0; k < 16; k++) {
+						for (int l = 0; l < 16; l++) {
+							BlockState blockState = chunkSection.getBlockState(l, j, k);
+							if (predicate.test(blockState)) {
+								consumer.accept(mutable.set(blockPos, l, j, k), blockState);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 
 	public abstract BasicTickScheduler<Block> getBlockTickScheduler();
 
@@ -417,6 +461,15 @@ public abstract class Chunk implements BlockView, BiomeAccess.Storage, Structure
 
 	public HeightLimitView getHeightLimitView() {
 		return this;
+	}
+
+	public void refreshSurfaceY() {
+		this.chunkSkyLight.refreshSurfaceY(this);
+	}
+
+	@Override
+	public ChunkSkyLight getChunkSkyLight() {
+		return this.chunkSkyLight;
 	}
 
 	public static record TickSchedulers(SerializableTickScheduler<Block> blocks, SerializableTickScheduler<Fluid> fluids) {

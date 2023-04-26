@@ -92,7 +92,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(1, new PowderSnowJumpGoal(this, this.world));
+		this.goalSelector.add(1, new PowderSnowJumpGoal(this, this.getWorld()));
 		this.goalSelector.add(1, new RabbitEntity.EscapeDangerGoal(this, 2.2));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 0.8));
 		this.goalSelector.add(3, new TemptGoal(this, 1.0, Ingredient.ofItems(Items.CARROT, Items.GOLDEN_CARROT, Blocks.DANDELION), false));
@@ -132,8 +132,8 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 			}
 		}
 
-		if (!this.world.isClient) {
-			this.world.sendEntityStatus(this, EntityStatuses.ADD_SPRINTING_PARTICLES_OR_RESET_SPAWNER_MINECART_SPAWN_DELAY);
+		if (!this.getWorld().isClient) {
+			this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_SPRINTING_PARTICLES_OR_RESET_SPAWNER_MINECART_SPAWN_DELAY);
 		}
 	}
 
@@ -179,7 +179,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 			}
 		}
 
-		if (this.onGround) {
+		if (this.isOnGround()) {
 			if (!this.lastOnGround) {
 				this.setJumping(false);
 				this.scheduleJump();
@@ -212,7 +212,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 			}
 		}
 
-		this.lastOnGround = this.onGround;
+		this.lastOnGround = this.isOnGround();
 	}
 
 	@Override
@@ -424,7 +424,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 		@Override
 		public boolean canStart() {
 			if (this.cooldown <= 0) {
-				if (!this.rabbit.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+				if (!this.rabbit.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 					return false;
 				}
 
@@ -453,7 +453,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 					(float)this.rabbit.getMaxLookPitchChange()
 				);
 			if (this.hasReached()) {
-				World world = this.rabbit.world;
+				World world = this.rabbit.getWorld();
 				BlockPos blockPos = this.targetPos.up();
 				BlockState blockState = world.getBlockState(blockPos);
 				Block block = blockState.getBlock();
@@ -580,7 +580,7 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 
 		@Override
 		public void tick() {
-			if (this.rabbit.onGround && !this.rabbit.jumping && !((RabbitEntity.RabbitJumpControl)this.rabbit.jumpControl).isActive()) {
+			if (this.rabbit.isOnGround() && !this.rabbit.jumping && !((RabbitEntity.RabbitJumpControl)this.rabbit.jumpControl).isActive()) {
 				this.rabbit.setSpeed(0.0);
 			} else if (this.isMoving()) {
 				this.rabbit.setSpeed(this.rabbitSpeed);

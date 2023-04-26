@@ -44,7 +44,6 @@ public interface ModifiableWorld {
 	 * <li>{@link net.minecraft.block.Block#FORCE_STATE Block.FORCE_STATE}</li>
 	 * <li>{@link net.minecraft.block.Block#SKIP_DROPS Block.SKIP_DROPS}</li>
 	 * <li>{@link net.minecraft.block.Block#MOVED Block.MOVED}</li>
-	 * <li>{@link net.minecraft.block.Block#SKIP_LIGHTING_UPDATES Block.SKIP_LIGHTING_UPDATES}</li>
 	 * </ul>
 	 * 
 	 * @see #setBlockState(BlockPos, BlockState, int, int)

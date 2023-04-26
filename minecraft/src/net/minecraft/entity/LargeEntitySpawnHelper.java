@@ -3,6 +3,8 @@ package net.minecraft.entity;
 import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.StainedGlassPaneBlock;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -62,8 +64,14 @@ public class LargeEntitySpawnHelper {
 	}
 
 	public interface Requirements {
-		LargeEntitySpawnHelper.Requirements IRON_GOLEM = (world, pos, state, abovePos, aboveState) -> (aboveState.isAir() || aboveState.isLiquid())
-				&& state.getMaterial().blocksLight();
+		@Deprecated
+		LargeEntitySpawnHelper.Requirements IRON_GOLEM = (world, pos, state, abovePos, aboveState) -> !state.isOf(Blocks.COBWEB)
+					&& !state.isOf(Blocks.CACTUS)
+					&& !state.isOf(Blocks.GLASS_PANE)
+					&& !(state.getBlock() instanceof StainedGlassPaneBlock)
+					&& !state.isOf(Blocks.CONDUIT)
+				? (aboveState.isAir() || aboveState.isLiquid()) && state.isSolid()
+				: false;
 		LargeEntitySpawnHelper.Requirements WARDEN = (world, pos, state, abovePos, aboveState) -> aboveState.getCollisionShape(world, abovePos).isEmpty()
 				&& Block.isFaceFullSquare(state.getCollisionShape(world, pos), Direction.UP);
 

@@ -41,21 +41,21 @@ public class EnderPearlEntity extends ThrownItemEntity {
 		super.onCollision(hitResult);
 
 		for (int i = 0; i < 32; i++) {
-			this.world
+			this.getWorld()
 				.addParticle(
 					ParticleTypes.PORTAL, this.getX(), this.getY() + this.random.nextDouble() * 2.0, this.getZ(), this.random.nextGaussian(), 0.0, this.random.nextGaussian()
 				);
 		}
 
-		if (!this.world.isClient && !this.isRemoved()) {
+		if (!this.getWorld().isClient && !this.isRemoved()) {
 			Entity entity = this.getOwner();
 			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
-				if (serverPlayerEntity.networkHandler.isConnectionOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
-					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
-						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
+				if (serverPlayerEntity.networkHandler.isConnectionOpen() && serverPlayerEntity.getWorld() == this.getWorld() && !serverPlayerEntity.isSleeping()) {
+					if (this.random.nextFloat() < 0.05F && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING)) {
+						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.getWorld());
 						if (endermiteEntity != null) {
 							endermiteEntity.refreshPositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
-							this.world.spawnEntity(endermiteEntity);
+							this.getWorld().spawnEntity(endermiteEntity);
 						}
 					}
 
@@ -91,7 +91,7 @@ public class EnderPearlEntity extends ThrownItemEntity {
 	@Override
 	public Entity moveToWorld(ServerWorld destination) {
 		Entity entity = this.getOwner();
-		if (entity != null && entity.world.getRegistryKey() != destination.getRegistryKey()) {
+		if (entity != null && entity.getWorld().getRegistryKey() != destination.getRegistryKey()) {
 			this.setOwner(null);
 		}
 

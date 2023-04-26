@@ -24,11 +24,11 @@ public class PhaseManager {
 			}
 
 			this.current = this.create((PhaseType<Phase>)type);
-			if (!this.dragon.world.isClient) {
+			if (!this.dragon.getWorld().isClient) {
 				this.dragon.getDataTracker().set(EnderDragonEntity.PHASE_TYPE, type.getTypeId());
 			}
 
-			LOGGER.debug("Dragon is now in phase {} on the {}", type, this.dragon.world.isClient ? "client" : "server");
+			LOGGER.debug("Dragon is now in phase {} on the {}", type, this.dragon.getWorld().isClient ? "client" : "server");
 			this.current.beginPhase();
 		}
 	}

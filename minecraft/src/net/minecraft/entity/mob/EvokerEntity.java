@@ -187,11 +187,11 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 			do {
 				BlockPos blockPos2 = blockPos.down();
-				BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos2);
-				if (blockState.isSideSolidFullSquare(EvokerEntity.this.world, blockPos2, Direction.UP)) {
-					if (!EvokerEntity.this.world.isAir(blockPos)) {
-						BlockState blockState2 = EvokerEntity.this.world.getBlockState(blockPos);
-						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.world, blockPos);
+				BlockState blockState = EvokerEntity.this.getWorld().getBlockState(blockPos2);
+				if (blockState.isSideSolidFullSquare(EvokerEntity.this.getWorld(), blockPos2, Direction.UP)) {
+					if (!EvokerEntity.this.getWorld().isAir(blockPos)) {
+						BlockState blockState2 = EvokerEntity.this.getWorld().getBlockState(blockPos);
+						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.getWorld(), blockPos);
 						if (!voxelShape.isEmpty()) {
 							d = voxelShape.getMax(Direction.Axis.Y);
 						}
@@ -205,7 +205,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			} while (blockPos.getY() >= MathHelper.floor(maxY) - 1);
 
 			if (bl) {
-				EvokerEntity.this.world.spawnEntity(new EvokerFangsEntity(EvokerEntity.this.world, x, (double)blockPos.getY() + d, z, yaw, warmup, EvokerEntity.this));
+				EvokerEntity.this.getWorld()
+					.spawnEntity(new EvokerFangsEntity(EvokerEntity.this.getWorld(), x, (double)blockPos.getY() + d, z, yaw, warmup, EvokerEntity.this));
 			}
 		}
 
@@ -244,7 +245,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			if (!super.canStart()) {
 				return false;
 			} else {
-				int i = EvokerEntity.this.world
+				int i = EvokerEntity.this.getWorld()
 					.getTargets(VexEntity.class, this.closeVexPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0))
 					.size();
 				return EvokerEntity.this.random.nextInt(8) + 1 > i;
@@ -263,14 +264,14 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 		@Override
 		protected void castSpell() {
-			ServerWorld serverWorld = (ServerWorld)EvokerEntity.this.world;
+			ServerWorld serverWorld = (ServerWorld)EvokerEntity.this.getWorld();
 
 			for (int i = 0; i < 3; i++) {
 				BlockPos blockPos = EvokerEntity.this.getBlockPos().add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
-				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
+				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.getWorld());
 				if (vexEntity != null) {
 					vexEntity.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
-					vexEntity.initialize(serverWorld, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
+					vexEntity.initialize(serverWorld, EvokerEntity.this.getWorld().getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null, null);
 					vexEntity.setOwner(EvokerEntity.this);
 					vexEntity.setBounds(blockPos);
 					vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
@@ -303,10 +304,10 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				return false;
 			} else if (EvokerEntity.this.age < this.startTime) {
 				return false;
-			} else if (!EvokerEntity.this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+			} else if (!EvokerEntity.this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				return false;
 			} else {
-				List<SheepEntity> list = EvokerEntity.this.world
+				List<SheepEntity> list = EvokerEntity.this.getWorld()
 					.getTargets(SheepEntity.class, this.convertibleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
 				if (list.isEmpty()) {
 					return false;

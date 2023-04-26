@@ -1,10 +1,7 @@
 package net.minecraft.registry.tag;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -19,12 +16,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.Map.Entry;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
+import net.minecraft.resource.DependencyTracker;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
@@ -87,33 +84,6 @@ public class TagGroupLoader<T> {
 		return map;
 	}
 
-	private static void resolveAll(
-		Map<Identifier, List<TagGroupLoader.TrackedEntry>> tags,
-		Multimap<Identifier, Identifier> referencedTagIdsByTagId,
-		Set<Identifier> alreadyResolved,
-		Identifier tagId,
-		BiConsumer<Identifier, List<TagGroupLoader.TrackedEntry>> resolver
-	) {
-		if (alreadyResolved.add(tagId)) {
-			referencedTagIdsByTagId.get(tagId).forEach(resolvedTagId -> resolveAll(tags, referencedTagIdsByTagId, alreadyResolved, resolvedTagId, resolver));
-			List<TagGroupLoader.TrackedEntry> list = (List<TagGroupLoader.TrackedEntry>)tags.get(tagId);
-			if (list != null) {
-				resolver.accept(tagId, list);
-			}
-		}
-	}
-
-	private static boolean hasCircularDependency(Multimap<Identifier, Identifier> referencedTagIdsByTagId, Identifier tagId, Identifier referencedTagId) {
-		Collection<Identifier> collection = referencedTagIdsByTagId.get(referencedTagId);
-		return collection.contains(tagId) ? true : collection.stream().anyMatch(id -> hasCircularDependency(referencedTagIdsByTagId, tagId, id));
-	}
-
-	private static void addReference(Multimap<Identifier, Identifier> referencedTagIdsByTagId, Identifier tagId, Identifier referencedTagId) {
-		if (!hasCircularDependency(referencedTagIdsByTagId, tagId, referencedTagId)) {
-			referencedTagIdsByTagId.put(tagId, referencedTagId);
-		}
-	}
-
 	private Either<Collection<TagGroupLoader.TrackedEntry>, Collection<T>> resolveAll(
 		TagEntry.ValueGetter<T> valueGetter, List<TagGroupLoader.TrackedEntry> entries
 	) {
@@ -144,37 +114,37 @@ public class TagGroupLoader<T> {
 				return (Collection<T>)map.get(id);
 			}
 		};
-		Multimap<Identifier, Identifier> multimap = HashMultimap.create();
-		tags.forEach(
-			(tagId, entries) -> entries.forEach(entry -> entry.entry.forEachRequiredTagId(referencedTagId -> addReference(multimap, tagId, referencedTagId)))
-		);
-		tags.forEach(
-			(tagId, entries) -> entries.forEach(entry -> entry.entry.forEachOptionalTagId(referencedTagId -> addReference(multimap, tagId, referencedTagId)))
-		);
-		Set<Identifier> set = Sets.<Identifier>newHashSet();
-		tags.keySet()
-			.forEach(
-				tagId -> resolveAll(
-						tags,
-						multimap,
-						set,
-						tagId,
-						(tagId2, entries) -> this.resolveAll(valueGetter, entries)
-								.ifLeft(
-									missingReferences -> LOGGER.error(
-											"Couldn't load tag {} as it is missing following references: {}",
-											tagId2,
-											missingReferences.stream().map(Objects::toString).collect(Collectors.joining(", "))
-										)
-								)
-								.ifRight(resolvedEntries -> map.put(tagId2, resolvedEntries))
+		DependencyTracker<Identifier, TagGroupLoader.TagDependencies> dependencyTracker = new DependencyTracker<>();
+		tags.forEach((id, entries) -> dependencyTracker.add(id, new TagGroupLoader.TagDependencies(entries)));
+		dependencyTracker.traverse(
+			(id, dependencies) -> this.resolveAll(valueGetter, dependencies.entries)
+					.ifLeft(
+						missingReferences -> LOGGER.error(
+								"Couldn't load tag {} as it is missing following references: {}",
+								id,
+								missingReferences.stream().map(Objects::toString).collect(Collectors.joining(", "))
+							)
 					)
-			);
+					.ifRight(resolvedEntries -> map.put(id, resolvedEntries))
+		);
 		return map;
 	}
 
 	public Map<Identifier, Collection<T>> load(ResourceManager manager) {
 		return this.buildGroup(this.loadTags(manager));
+	}
+
+	static record TagDependencies(List<TagGroupLoader.TrackedEntry> entries) implements DependencyTracker.Dependencies<Identifier> {
+
+		@Override
+		public void forDependencies(Consumer<Identifier> callback) {
+			this.entries.forEach(entry -> entry.entry.forEachRequiredTagId(callback));
+		}
+
+		@Override
+		public void forOptionalDependencies(Consumer<Identifier> callback) {
+			this.entries.forEach(entry -> entry.entry.forEachOptionalTagId(callback));
+		}
 	}
 
 	public static record TrackedEntry(TagEntry entry, String source) {

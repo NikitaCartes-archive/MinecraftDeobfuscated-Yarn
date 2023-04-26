@@ -210,7 +210,7 @@ public class FrogBrain {
 	}
 
 	private static <E extends MobEntity> boolean shouldJumpTo(E frog, BlockPos pos) {
-		World world = frog.world;
+		World world = frog.getWorld();
 		BlockPos blockPos = pos.down();
 		if (world.getFluidState(pos).isEmpty() && world.getFluidState(blockPos).isEmpty() && world.getFluidState(pos.up()).isEmpty()) {
 			BlockState blockState = world.getBlockState(pos);

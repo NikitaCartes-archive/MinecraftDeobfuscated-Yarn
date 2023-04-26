@@ -127,7 +127,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 
 	@Override
 	public void tickMovement() {
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			this.eatGrassTimer = Math.max(0, this.eatGrassTimer - 1);
 		}
 
@@ -202,7 +202,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.SHEARS)) {
-			if (!this.world.isClient && this.isShearable()) {
+			if (!this.getWorld().isClient && this.isShearable()) {
 				this.sheared(SoundCategory.PLAYERS);
 				this.emitGameEvent(GameEvent.SHEAR, player);
 				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
@@ -217,7 +217,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 
 	@Override
 	public void sheared(SoundCategory shearedSoundCategory) {
-		this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_SHEEP_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
 		this.setSheared(true);
 		int i = 1 + this.random.nextInt(3);
 
@@ -344,15 +344,15 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		DyeColor dyeColor = ((SheepEntity)firstParent).getColor();
 		DyeColor dyeColor2 = ((SheepEntity)secondParent).getColor();
 		CraftingInventory craftingInventory = createDyeMixingCraftingInventory(dyeColor, dyeColor2);
-		return (DyeColor)this.world
+		return (DyeColor)this.getWorld()
 			.getRecipeManager()
-			.getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world)
-			.map(recipe -> recipe.craft(craftingInventory, this.world.getRegistryManager()))
+			.getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.getWorld())
+			.map(recipe -> recipe.craft(craftingInventory, this.getWorld().getRegistryManager()))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)
 			.map(DyeItem::getColor)
-			.orElseGet(() -> this.world.random.nextBoolean() ? dyeColor : dyeColor2);
+			.orElseGet(() -> this.getWorld().random.nextBoolean() ? dyeColor : dyeColor2);
 	}
 
 	private static CraftingInventory createDyeMixingCraftingInventory(DyeColor firstColor, DyeColor secondColor) {

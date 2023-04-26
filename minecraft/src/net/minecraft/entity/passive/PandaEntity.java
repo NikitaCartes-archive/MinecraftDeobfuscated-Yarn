@@ -322,7 +322,7 @@ public class PandaEntity extends AnimalEntity {
 	public void tick() {
 		super.tick();
 		if (this.isWorried()) {
-			if (this.world.isThundering() && !this.isTouchingWater()) {
+			if (this.getWorld().isThundering() && !this.isTouchingWater()) {
 				this.setSitting(true);
 				this.setEating(false);
 			} else if (!this.isEating()) {
@@ -375,7 +375,7 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	public boolean isScaredByThunderstorm() {
-		return this.isWorried() && this.world.isThundering();
+		return this.isWorried() && this.getWorld().isThundering();
 	}
 
 	private void updateEatingAnimation() {
@@ -391,9 +391,9 @@ public class PandaEntity extends AnimalEntity {
 
 		if (this.isEating()) {
 			this.playEatingAnimation();
-			if (!this.world.isClient && this.getEatingTicks() > 80 && this.random.nextInt(20) == 1) {
+			if (!this.getWorld().isClient && this.getEatingTicks() > 80 && this.random.nextInt(20) == 1) {
 				if (this.getEatingTicks() > 100 && this.canEat(this.getEquippedStack(EquipmentSlot.MAINHAND))) {
-					if (!this.world.isClient) {
+					if (!this.getWorld().isClient) {
 						this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
 						this.emitGameEvent(GameEvent.EAT);
 					}
@@ -421,7 +421,7 @@ public class PandaEntity extends AnimalEntity {
 				Vec3d vec3d2 = new Vec3d(((double)this.random.nextFloat() - 0.5) * 0.8, d, 1.0 + ((double)this.random.nextFloat() - 0.5) * 0.4);
 				vec3d2 = vec3d2.rotateY(-this.bodyYaw * (float) (Math.PI / 180.0));
 				vec3d2 = vec3d2.add(this.getX(), this.getEyeY() + 1.0, this.getZ());
-				this.world
+				this.getWorld()
 					.addParticle(
 						new ItemStackParticleEffect(ParticleTypes.ITEM, this.getEquippedStack(EquipmentSlot.MAINHAND)),
 						vec3d2.x,
@@ -479,7 +479,7 @@ public class PandaEntity extends AnimalEntity {
 		if (this.playingTicks > 32) {
 			this.setPlaying(false);
 		} else {
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				Vec3d vec3d = this.getVelocity();
 				if (this.playingTicks == 1) {
 					float f = this.getYaw() * (float) (Math.PI / 180.0);
@@ -489,7 +489,7 @@ public class PandaEntity extends AnimalEntity {
 				} else if ((float)this.playingTicks != 7.0F && (float)this.playingTicks != 15.0F && (float)this.playingTicks != 23.0F) {
 					this.setVelocity(this.playingJump.x, vec3d.y, this.playingJump.z);
 				} else {
-					this.setVelocity(0.0, this.onGround ? 0.27 : vec3d.y, 0.0);
+					this.setVelocity(0.0, this.isOnGround() ? 0.27 : vec3d.y, 0.0);
 				}
 			}
 		}
@@ -497,7 +497,7 @@ public class PandaEntity extends AnimalEntity {
 
 	private void sneeze() {
 		Vec3d vec3d = this.getVelocity();
-		this.world
+		this.getWorld()
 			.addParticle(
 				ParticleTypes.SNEEZE,
 				this.getX() - (double)(this.getWidth() + 1.0F) * 0.5 * (double)MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0)),
@@ -509,13 +509,13 @@ public class PandaEntity extends AnimalEntity {
 			);
 		this.playSound(SoundEvents.ENTITY_PANDA_SNEEZE, 1.0F, 1.0F);
 
-		for (PandaEntity pandaEntity : this.world.getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
-			if (!pandaEntity.isBaby() && pandaEntity.onGround && !pandaEntity.isTouchingWater() && pandaEntity.isIdle()) {
+		for (PandaEntity pandaEntity : this.getWorld().getNonSpectatingEntities(PandaEntity.class, this.getBoundingBox().expand(10.0))) {
+			if (!pandaEntity.isBaby() && pandaEntity.isOnGround() && !pandaEntity.isTouchingWater() && pandaEntity.isIdle()) {
 				pandaEntity.jump();
 			}
 		}
 
-		if (!this.world.isClient() && this.random.nextInt(700) == 0 && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+		if (!this.getWorld().isClient() && this.random.nextInt(700) == 0 && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 			this.dropItem(Items.SLIME_BALL);
 		}
 	}
@@ -534,7 +534,7 @@ public class PandaEntity extends AnimalEntity {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.setSitting(false);
 		}
 
@@ -612,7 +612,7 @@ public class PandaEntity extends AnimalEntity {
 			return ActionResult.PASS;
 		} else if (this.isLyingOnBack()) {
 			this.setLyingOnBack(false);
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else if (this.isBreedingItem(itemStack)) {
 			if (this.getTarget() != null) {
 				this.shouldGetRevenge = true;
@@ -621,11 +621,11 @@ public class PandaEntity extends AnimalEntity {
 			if (this.isBaby()) {
 				this.eat(player, hand, itemStack);
 				this.growUp((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
-			} else if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
+			} else if (!this.getWorld().isClient && this.getBreedingAge() == 0 && this.canEat()) {
 				this.eat(player, hand, itemStack);
 				this.lovePlayer(player);
 			} else {
-				if (this.world.isClient || this.isSitting() || this.isTouchingWater()) {
+				if (this.getWorld().isClient || this.isSitting() || this.isTouchingWater()) {
 					return ActionResult.PASS;
 				}
 
@@ -828,12 +828,14 @@ public class PandaEntity extends AnimalEntity {
 			} else {
 				if (this.target == null) {
 					if (this.targetType == PlayerEntity.class) {
-						this.target = this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+						this.target = this.mob.getWorld().getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 					} else {
 						this.target = this.mob
-							.world
+							.getWorld()
 							.getClosestEntity(
-								this.mob.world.getEntitiesByClass(this.targetType, this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), livingEntity -> true),
+								this.mob
+									.getWorld()
+									.getEntitiesByClass(this.targetType, this.mob.getBoundingBox().expand((double)this.range, 3.0, (double)this.range), livingEntity -> true),
 								this.targetPredicate,
 								this.mob,
 								this.mob.getX(),
@@ -999,7 +1001,7 @@ public class PandaEntity extends AnimalEntity {
 				&& !PandaEntity.this.isTouchingWater()
 				&& PandaEntity.this.isIdle()
 				&& PandaEntity.this.getAskForBambooTicks() <= 0) {
-				List<ItemEntity> list = PandaEntity.this.world
+				List<ItemEntity> list = PandaEntity.this.getWorld()
 					.getEntitiesByClass(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(6.0, 6.0, 6.0), PandaEntity.IS_FOOD);
 				return !list.isEmpty() || !PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty();
 			} else {
@@ -1023,7 +1025,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public void start() {
-			List<ItemEntity> list = PandaEntity.this.world
+			List<ItemEntity> list = PandaEntity.this.getWorld()
 				.getEntitiesByClass(ItemEntity.class, PandaEntity.this.getBoundingBox().expand(8.0, 8.0, 8.0), PandaEntity.IS_FOOD);
 			if (!list.isEmpty() && PandaEntity.this.getEquippedStack(EquipmentSlot.MAINHAND).isEmpty()) {
 				PandaEntity.this.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
@@ -1058,7 +1060,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			if ((this.panda.isBaby() || this.panda.isPlayful()) && this.panda.onGround) {
+			if ((this.panda.isBaby() || this.panda.isPlayful()) && this.panda.isOnGround()) {
 				if (!this.panda.isIdle()) {
 					return false;
 				} else {
@@ -1067,7 +1069,7 @@ public class PandaEntity extends AnimalEntity {
 					float h = MathHelper.cos(f);
 					int i = (double)Math.abs(g) > 0.5 ? MathHelper.sign((double)g) : 0;
 					int j = (double)Math.abs(h) > 0.5 ? MathHelper.sign((double)h) : 0;
-					if (this.panda.world.getBlockState(this.panda.getBlockPos().add(i, -1, j)).isAir()) {
+					if (this.panda.getWorld().getBlockState(this.panda.getBlockPos().add(i, -1, j)).isAir()) {
 						return true;
 					} else {
 						return this.panda.isPlayful() && this.panda.random.nextInt(toGoalTicks(60)) == 1 ? true : this.panda.random.nextInt(toGoalTicks(500)) == 1;

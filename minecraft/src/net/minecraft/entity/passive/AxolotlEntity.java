@@ -325,12 +325,12 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("axolotlBrain");
-		this.getBrain().tick((ServerWorld)this.world, this);
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("axolotlActivityUpdate");
+		this.getWorld().getProfiler().push("axolotlBrain");
+		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getWorld().getProfiler().pop();
+		this.getWorld().getProfiler().push("axolotlActivityUpdate");
 		AxolotlBrain.updateActivities(this);
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 		if (!this.isAiDisabled()) {
 			Optional<Integer> optional = this.getBrain().getOptionalRegisteredMemory(MemoryModuleType.PLAY_DEAD_TICKS);
 			this.setPlayingDead(optional.isPresent() && (Integer)optional.get() > 0);
@@ -363,10 +363,10 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		float f = this.getHealth();
-		if (!this.world.isClient
+		if (!this.getWorld().isClient
 			&& !this.isAiDisabled()
-			&& this.world.random.nextInt(3) == 0
-			&& ((float)this.world.random.nextInt(3) < amount || f / this.getMaxHealth() < 0.5F)
+			&& this.getWorld().random.nextInt(3) == 0
+			&& ((float)this.getWorld().random.nextInt(3) < amount || f / this.getMaxHealth() < 0.5F)
 			&& amount < f
 			&& this.isTouchingWater()
 			&& (source.getAttacker() != null || source.getSource() != null)
@@ -438,7 +438,7 @@ public class AxolotlEntity extends AnimalEntity implements AngledModelEntity, Va
 	}
 
 	public static void appreciatePlayer(AxolotlEntity axolotl, LivingEntity entity) {
-		World world = axolotl.world;
+		World world = axolotl.getWorld();
 		if (entity.isDead()) {
 			DamageSource damageSource = entity.getRecentDamageSource();
 			if (damageSource != null) {

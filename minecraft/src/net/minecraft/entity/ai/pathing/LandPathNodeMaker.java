@@ -33,19 +33,18 @@ import net.minecraft.world.chunk.ChunkCache;
 public class LandPathNodeMaker extends PathNodeMaker {
 	public static final double Y_OFFSET = 0.5;
 	private static final double MIN_STEP_HEIGHT = 1.125;
-	protected float waterPathNodeTypeWeight;
 	private final Long2ObjectMap<PathNodeType> nodeTypes = new Long2ObjectOpenHashMap<>();
 	private final Object2BooleanMap<Box> collidedBoxes = new Object2BooleanOpenHashMap<>();
 
 	@Override
 	public void init(ChunkCache cachedWorld, MobEntity entity) {
 		super.init(cachedWorld, entity);
-		this.waterPathNodeTypeWeight = entity.getPathfindingPenalty(PathNodeType.WATER);
+		entity.onStartPathfinding();
 	}
 
 	@Override
 	public void clear() {
-		this.entity.setPathfindingPenalty(PathNodeType.WATER, this.waterPathNodeTypeWeight);
+		this.entity.onFinishPathfinding();
 		this.nodeTypes.clear();
 		this.collidedBoxes.clear();
 		super.clear();
@@ -76,7 +75,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 							this.cachedWorld.getBlockState(blockPos).isAir()
 								|| this.cachedWorld.getBlockState(blockPos).canPathfindThrough(this.cachedWorld, blockPos, NavigationType.LAND)
 						)
-						&& blockPos.getY() > this.entity.world.getBottomY()
+						&& blockPos.getY() > this.entity.getWorld().getBottomY()
 				) {
 					blockPos = blockPos.down();
 				}
@@ -284,7 +283,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						return pathNode;
 					}
 
-					while (y > this.entity.world.getBottomY()) {
+					while (y > this.entity.getWorld().getBottomY()) {
 						pathNodeType = this.getNodeType(this.entity, x, --y, z);
 						if (pathNodeType != PathNodeType.WATER) {
 							return pathNode;
@@ -299,7 +298,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					int j = y;
 
 					while (pathNodeType == PathNodeType.OPEN) {
-						if (--y < this.entity.world.getBottomY()) {
+						if (--y < this.entity.getWorld().getBottomY()) {
 							return this.getBlockedNode(x, j, z);
 						}
 

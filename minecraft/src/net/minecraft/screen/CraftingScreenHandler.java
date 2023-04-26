@@ -100,7 +100,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 
 	@Override
 	public boolean matches(Recipe<? super CraftingInventory> recipe) {
-		return recipe.matches(this.input, this.player.world);
+		return recipe.matches(this.input, this.player.getWorld());
 	}
 
 	@Override

@@ -62,7 +62,7 @@ public class StatusEffect {
 		} else if (this == StatusEffects.HUNGER && entity instanceof PlayerEntity) {
 			((PlayerEntity)entity).addExhaustion(0.005F * (float)(amplifier + 1));
 		} else if (this == StatusEffects.SATURATION && entity instanceof PlayerEntity) {
-			if (!entity.world.isClient) {
+			if (!entity.getWorld().isClient) {
 				((PlayerEntity)entity).getHungerManager().add(amplifier + 1, 1.0F);
 			}
 		} else if ((this != StatusEffects.INSTANT_HEALTH || entity.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !entity.isUndead())) {

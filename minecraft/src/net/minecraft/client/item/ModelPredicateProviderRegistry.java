@@ -124,26 +124,26 @@ public class ModelPredicateProviderRegistry {
 			private long lastTick;
 
 			@Override
-			public float unclampedCall(ItemStack itemStack, @Nullable ClientWorld clientWorldx, @Nullable LivingEntity livingEntity, int i) {
+			public float unclampedCall(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity, int i) {
 				Entity entity = (Entity)(livingEntity != null ? livingEntity : itemStack.getHolder());
 				if (entity == null) {
 					return 0.0F;
 				} else {
-					if (clientWorldx == null && entity.world instanceof ClientWorld clientWorldx) {
-						;
+					if (clientWorld == null && entity.getWorld() instanceof ClientWorld) {
+						clientWorld = (ClientWorld)entity.getWorld();
 					}
 
-					if (clientWorldx == null) {
+					if (clientWorld == null) {
 						return 0.0F;
 					} else {
 						double d;
-						if (clientWorldx.getDimension().natural()) {
-							d = (double)clientWorldx.getSkyAngle(1.0F);
+						if (clientWorld.getDimension().natural()) {
+							d = (double)clientWorld.getSkyAngle(1.0F);
 						} else {
 							d = Math.random();
 						}
 
-						d = this.getTime(clientWorldx, d);
+						d = this.getTime(clientWorld, d);
 						return (float)d;
 					}
 				}

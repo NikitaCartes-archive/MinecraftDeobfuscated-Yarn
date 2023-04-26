@@ -75,7 +75,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 	}
 
 	public void setRadius(float radius) {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.getDataTracker().set(RADIUS, MathHelper.clamp(radius, 0.0F, 32.0F));
 		}
 	}
@@ -153,7 +153,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 		super.tick();
 		boolean bl = this.isWaiting();
 		float f = this.getRadius();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			if (bl && this.random.nextBoolean()) {
 				return;
 			}
@@ -193,7 +193,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 					p = (0.5 - this.random.nextDouble()) * 0.15;
 				}
 
-				this.world.addImportantParticle(particleEffect, d, e, l, n, o, p);
+				this.getWorld().addImportantParticle(particleEffect, d, e, l, n, o, p);
 			}
 		} else {
 			if (this.age >= this.waitTime + this.duration) {
@@ -240,7 +240,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 				if (list.isEmpty()) {
 					this.affectedEntities.clear();
 				} else {
-					List<LivingEntity> list2 = this.world.getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox());
+					List<LivingEntity> list2 = this.getWorld().getNonSpectatingEntities(LivingEntity.class, this.getBoundingBox());
 					if (!list2.isEmpty()) {
 						for (LivingEntity livingEntity : list2) {
 							if (!this.affectedEntities.containsKey(livingEntity) && livingEntity.isAffectedBySplashPotions()) {
@@ -323,8 +323,8 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 
 	@Nullable
 	public LivingEntity getOwner() {
-		if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld) {
-			Entity entity = ((ServerWorld)this.world).getEntity(this.ownerUuid);
+		if (this.owner == null && this.ownerUuid != null && this.getWorld() instanceof ServerWorld) {
+			Entity entity = ((ServerWorld)this.getWorld()).getEntity(this.ownerUuid);
 			if (entity instanceof LivingEntity) {
 				this.owner = (LivingEntity)entity;
 			}

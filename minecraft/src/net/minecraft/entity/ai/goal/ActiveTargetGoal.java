@@ -70,9 +70,9 @@ public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 	protected void findClosestTarget() {
 		if (this.targetClass != PlayerEntity.class && this.targetClass != ServerPlayerEntity.class) {
 			this.targetEntity = this.mob
-				.world
+				.getWorld()
 				.getClosestEntity(
-					this.mob.world.getEntitiesByClass(this.targetClass, this.getSearchBox(this.getFollowRange()), livingEntity -> true),
+					this.mob.getWorld().getEntitiesByClass(this.targetClass, this.getSearchBox(this.getFollowRange()), livingEntity -> true),
 					this.targetPredicate,
 					this.mob,
 					this.mob.getX(),
@@ -80,7 +80,7 @@ public class ActiveTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 					this.mob.getZ()
 				);
 		} else {
-			this.targetEntity = this.mob.world.getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
+			this.targetEntity = this.mob.getWorld().getClosestPlayer(this.targetPredicate, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
 		}
 	}
 

@@ -215,8 +215,8 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isIn(ItemTags.CREEPER_IGNITERS)) {
 			SoundEvent soundEvent = itemStack.isOf(Items.FIRE_CHARGE) ? SoundEvents.ITEM_FIRECHARGE_USE : SoundEvents.ITEM_FLINTANDSTEEL_USE;
-			this.world.playSound(player, this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
-			if (!this.world.isClient) {
+			this.getWorld().playSound(player, this.getX(), this.getY(), this.getZ(), soundEvent, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.4F + 0.8F);
+			if (!this.getWorld().isClient) {
 				this.ignite();
 				if (!itemStack.isDamageable()) {
 					itemStack.decrement(1);
@@ -225,17 +225,17 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 				}
 			}
 
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}
 	}
 
 	private void explode() {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			float f = this.shouldRenderOverlay() ? 2.0F : 1.0F;
 			this.dead = true;
-			this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, World.ExplosionSourceType.MOB);
+			this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), (float)this.explosionRadius * f, World.ExplosionSourceType.MOB);
 			this.discard();
 			this.spawnEffectsCloud();
 		}
@@ -244,7 +244,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	private void spawnEffectsCloud() {
 		Collection<StatusEffectInstance> collection = this.getStatusEffects();
 		if (!collection.isEmpty()) {
-			AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.getX(), this.getY(), this.getZ());
+			AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.getWorld(), this.getX(), this.getY(), this.getZ());
 			areaEffectCloudEntity.setRadius(2.5F);
 			areaEffectCloudEntity.setRadiusOnUse(-0.5F);
 			areaEffectCloudEntity.setWaitTime(10);
@@ -255,7 +255,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 				areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
 			}
 
-			this.world.spawnEntity(areaEffectCloudEntity);
+			this.getWorld().spawnEntity(areaEffectCloudEntity);
 		}
 	}
 

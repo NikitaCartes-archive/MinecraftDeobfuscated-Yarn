@@ -165,7 +165,7 @@ public abstract class PlayerManager {
 			serverWorld2 = serverWorld;
 		}
 
-		player.setWorld(serverWorld2);
+		player.setServerWorld(serverWorld2);
 		String string2 = "local";
 		if (connection.getAddress() != null) {
 			string2 = connection.getAddress().toString();
@@ -367,7 +367,7 @@ public abstract class PlayerManager {
 	}
 
 	public void remove(ServerPlayerEntity player) {
-		ServerWorld serverWorld = player.getWorld();
+		ServerWorld serverWorld = player.getServerWorld();
 		player.incrementStat(Stats.LEAVE_GAME);
 		this.savePlayerData(player);
 		if (player.hasVehicle()) {
@@ -445,7 +445,7 @@ public abstract class PlayerManager {
 
 	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
 		this.players.remove(player);
-		player.getWorld().removePlayer(player, Entity.RemovalReason.DISCARDED);
+		player.getServerWorld().removePlayer(player, Entity.RemovalReason.DISCARDED);
 		BlockPos blockPos = player.getSpawnPointPosition();
 		float f = player.getSpawnAngle();
 		boolean bl = player.isSpawnForced();
@@ -494,17 +494,17 @@ public abstract class PlayerManager {
 		}
 
 		byte b = (byte)(alive ? 1 : 0);
-		WorldProperties worldProperties = serverPlayerEntity.world.getLevelProperties();
+		WorldProperties worldProperties = serverPlayerEntity.getWorld().getLevelProperties();
 		serverPlayerEntity.networkHandler
 			.sendPacket(
 				new PlayerRespawnS2CPacket(
-					serverPlayerEntity.world.getDimensionKey(),
-					serverPlayerEntity.world.getRegistryKey(),
-					BiomeAccess.hashSeed(serverPlayerEntity.getWorld().getSeed()),
+					serverPlayerEntity.getWorld().getDimensionKey(),
+					serverPlayerEntity.getWorld().getRegistryKey(),
+					BiomeAccess.hashSeed(serverPlayerEntity.getServerWorld().getSeed()),
 					serverPlayerEntity.interactionManager.getGameMode(),
 					serverPlayerEntity.interactionManager.getPreviousGameMode(),
 					serverPlayerEntity.getWorld().isDebugWorld(),
-					serverPlayerEntity.getWorld().isFlat(),
+					serverPlayerEntity.getServerWorld().isFlat(),
 					b,
 					serverPlayerEntity.getLastDeathPos()
 				)
@@ -562,7 +562,7 @@ public abstract class PlayerManager {
 
 	public void sendToDimension(Packet<?> packet, RegistryKey<World> dimension) {
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			if (serverPlayerEntity.world.getRegistryKey() == dimension) {
+			if (serverPlayerEntity.getWorld().getRegistryKey() == dimension) {
 				serverPlayerEntity.networkHandler.sendPacket(packet);
 			}
 		}
@@ -667,7 +667,7 @@ public abstract class PlayerManager {
 	public void sendToAround(@Nullable PlayerEntity player, double x, double y, double z, double distance, RegistryKey<World> worldKey, Packet<?> packet) {
 		for (int i = 0; i < this.players.size(); i++) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
-			if (serverPlayerEntity != player && serverPlayerEntity.world.getRegistryKey() == worldKey) {
+			if (serverPlayerEntity != player && serverPlayerEntity.getWorld().getRegistryKey() == worldKey) {
 				double d = x - serverPlayerEntity.getX();
 				double e = y - serverPlayerEntity.getY();
 				double f = z - serverPlayerEntity.getZ();

@@ -77,7 +77,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 		for (int k = 0; k < i; k++) {
 			PathNode pathNode3 = successors[k];
-			if (pathNode3.type == PathNodeType.WATER && this.penalizeDeepWater && pathNode3.y < this.entity.world.getSeaLevel() - 10) {
+			if (pathNode3.type == PathNodeType.WATER && this.penalizeDeepWater && pathNode3.y < this.entity.getWorld().getSeaLevel() - 10) {
 				pathNode3.penalty++;
 			}
 		}

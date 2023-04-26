@@ -131,7 +131,16 @@ public class HeldItemRenderer {
 		if (!stack.isEmpty()) {
 			this.itemRenderer
 				.renderItem(
-					entity, stack, renderMode, leftHanded, matrices, vertexConsumers, entity.world, light, OverlayTexture.DEFAULT_UV, entity.getId() + renderMode.ordinal()
+					entity,
+					stack,
+					renderMode,
+					leftHanded,
+					matrices,
+					vertexConsumers,
+					entity.getWorld(),
+					light,
+					OverlayTexture.DEFAULT_UV,
+					entity.getId() + renderMode.ordinal()
 				);
 		}
 	}

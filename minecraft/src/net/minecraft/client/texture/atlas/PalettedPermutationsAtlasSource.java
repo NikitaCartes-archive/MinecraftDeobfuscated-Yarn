@@ -149,7 +149,7 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 		public SpriteContents get() {
 			Object var2;
 			try {
-				NativeImage nativeImage = this.baseImage.read().apply((IntUnaryOperator)this.palette.get());
+				NativeImage nativeImage = this.baseImage.read().applyToCopy((IntUnaryOperator)this.palette.get());
 				return new SpriteContents(
 					this.permutationLocation, new SpriteDimensions(nativeImage.getWidth(), nativeImage.getHeight()), nativeImage, AnimationResourceMetadata.EMPTY
 				);

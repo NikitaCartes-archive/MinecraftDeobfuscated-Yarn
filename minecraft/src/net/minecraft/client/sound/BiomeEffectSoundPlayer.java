@@ -35,7 +35,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 	private Biome activeBiome;
 
 	public BiomeEffectSoundPlayer(ClientPlayerEntity player, SoundManager soundManager, BiomeAccess biomeAccess) {
-		this.random = player.world.getRandom();
+		this.random = player.getWorld().getRandom();
 		this.player = player;
 		this.soundManager = soundManager;
 		this.biomeAccess = biomeAccess;
@@ -73,7 +73,7 @@ public class BiomeEffectSoundPlayer implements ClientPlayerTickable {
 		this.moodSound
 			.ifPresent(
 				sound -> {
-					World world = this.player.world;
+					World world = this.player.getWorld();
 					int i = sound.getSpawnRange() * 2 + 1;
 					BlockPos blockPos = BlockPos.ofFloored(
 						this.player.getX() + (double)this.random.nextInt(i) - (double)sound.getSpawnRange(),

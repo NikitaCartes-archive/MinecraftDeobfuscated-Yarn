@@ -94,7 +94,7 @@ public class PufferfishEntity extends FishEntity {
 
 	@Override
 	public void tick() {
-		if (!this.world.isClient && this.isAlive() && this.canMoveVoluntarily()) {
+		if (!this.getWorld().isClient && this.isAlive() && this.canMoveVoluntarily()) {
 			if (this.inflateTicks > 0) {
 				if (this.getPuffState() == 0) {
 					this.playSound(SoundEvents.ENTITY_PUFFER_FISH_BLOW_UP, this.getSoundVolume(), this.getSoundPitch());
@@ -125,7 +125,7 @@ public class PufferfishEntity extends FishEntity {
 	public void tickMovement() {
 		super.tickMovement();
 		if (this.isAlive() && this.getPuffState() > 0) {
-			for (MobEntity mobEntity : this.world
+			for (MobEntity mobEntity : this.getWorld()
 				.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(0.3), entity -> BLOW_UP_TARGET_PREDICATE.test(this, entity))) {
 				if (mobEntity.isAlive()) {
 					this.sting(mobEntity);
@@ -202,7 +202,7 @@ public class PufferfishEntity extends FishEntity {
 		@Override
 		public boolean canStart() {
 			List<LivingEntity> list = this.pufferfish
-				.world
+				.getWorld()
 				.getEntitiesByClass(
 					LivingEntity.class,
 					this.pufferfish.getBoundingBox().expand(2.0),

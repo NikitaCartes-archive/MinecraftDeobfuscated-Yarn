@@ -41,7 +41,7 @@ public abstract class WaterCreatureEntity extends PathAwareEntity {
 
 	@Override
 	public int getXpToDrop() {
-		return 1 + this.world.random.nextInt(3);
+		return 1 + this.getWorld().random.nextInt(3);
 	}
 
 	protected void tickWaterBreathingAir(int air) {

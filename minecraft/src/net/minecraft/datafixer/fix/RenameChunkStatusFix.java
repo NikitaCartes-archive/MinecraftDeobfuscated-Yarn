@@ -24,7 +24,10 @@ public class RenameChunkStatusFix extends DataFix {
 		return this.fixTypeEverywhereTyped(
 			this.name,
 			this.getInputSchema().getType(TypeReferences.CHUNK),
-			typed -> typed.update(DSL.remainderFinder(), chunk -> chunk.update("Status", this::updateStatus))
+			typed -> typed.update(
+					DSL.remainderFinder(),
+					chunk -> chunk.update("Status", this::updateStatus).update("below_zero_retrogen", dynamic -> dynamic.update("target_status", this::updateStatus))
+				)
 		);
 	}
 

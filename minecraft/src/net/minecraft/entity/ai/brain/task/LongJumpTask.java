@@ -54,7 +54,7 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 	}
 
 	public static <E extends MobEntity> boolean shouldJumpTo(E entity, BlockPos pos) {
-		World world = entity.world;
+		World world = entity.getWorld();
 		BlockPos blockPos = pos.down();
 		return world.getBlockState(blockPos).isOpaqueFullCube(world, blockPos)
 			&& entity.getPathfindingPenalty(LandPathNodeMaker.getLandNodeType(world, pos.mutableCopy())) == 0.0F;
@@ -258,7 +258,7 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 
 		for (int j = 0; j < i; j++) {
 			vec3d5 = j == i - 1 ? vec3d2 : vec3d5.add(vec3d4.multiply(d * 0.9F));
-			if (!entity.world.isSpaceEmpty(entity, dimensions.getBoxAt(vec3d5))) {
+			if (!entity.getWorld().isSpaceEmpty(entity, dimensions.getBoxAt(vec3d5))) {
 				return false;
 			}
 		}

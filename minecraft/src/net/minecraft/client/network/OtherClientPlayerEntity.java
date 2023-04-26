@@ -78,16 +78,16 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.prevStrideDistance = this.strideDistance;
 		this.tickHandSwing();
 		float g;
-		if (this.onGround && !this.isDead()) {
+		if (this.isOnGround() && !this.isDead()) {
 			g = (float)Math.min(0.1, this.getVelocity().horizontalLength());
 		} else {
 			g = 0.0F;
 		}
 
 		this.strideDistance = this.strideDistance + (g - this.strideDistance) * 0.4F;
-		this.world.getProfiler().push("push");
+		this.getWorld().getProfiler().push("push");
 		this.tickCramming();
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 	}
 
 	@Override

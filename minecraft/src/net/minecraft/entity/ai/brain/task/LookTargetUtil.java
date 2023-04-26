@@ -85,13 +85,13 @@ public class LookTargetUtil {
 
 	public static void give(LivingEntity entity, ItemStack stack, Vec3d targetLocation, Vec3d velocityFactor, float yOffset) {
 		double d = entity.getEyeY() - (double)yOffset;
-		ItemEntity itemEntity = new ItemEntity(entity.world, entity.getX(), d, entity.getZ(), stack);
+		ItemEntity itemEntity = new ItemEntity(entity.getWorld(), entity.getX(), d, entity.getZ(), stack);
 		itemEntity.setThrower(entity.getUuid());
 		Vec3d vec3d = targetLocation.subtract(entity.getPos());
 		vec3d = vec3d.normalize().multiply(velocityFactor.x, velocityFactor.y, velocityFactor.z);
 		itemEntity.setVelocity(vec3d);
 		itemEntity.setToDefaultPickupDelay();
-		entity.world.spawnEntity(itemEntity);
+		entity.getWorld().spawnEntity(itemEntity);
 	}
 
 	public static ChunkSectionPos getPosClosestToOccupiedPointOfInterest(ServerWorld world, ChunkSectionPos center, int radius) {
@@ -148,7 +148,8 @@ public class LookTargetUtil {
 
 	public static Optional<LivingEntity> getEntity(LivingEntity entity, MemoryModuleType<UUID> uuidMemoryModule) {
 		Optional<UUID> optional = entity.getBrain().getOptionalRegisteredMemory(uuidMemoryModule);
-		return optional.map(uuid -> ((ServerWorld)entity.world).getEntity(uuid)).map(target -> target instanceof LivingEntity livingEntity ? livingEntity : null);
+		return optional.map(uuid -> ((ServerWorld)entity.getWorld()).getEntity(uuid))
+			.map(target -> target instanceof LivingEntity livingEntity ? livingEntity : null);
 	}
 
 	@Nullable
@@ -158,7 +159,7 @@ public class LookTargetUtil {
 
 		while (
 			vec3d != null
-				&& !entity.world.getBlockState(BlockPos.ofFloored(vec3d)).canPathfindThrough(entity.world, BlockPos.ofFloored(vec3d), NavigationType.WATER)
+				&& !entity.getWorld().getBlockState(BlockPos.ofFloored(vec3d)).canPathfindThrough(entity.getWorld(), BlockPos.ofFloored(vec3d), NavigationType.WATER)
 				&& i++ < 10
 		) {
 			vec3d = NoPenaltyTargeting.find(entity, horizontalRange, verticalRange);

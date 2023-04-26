@@ -125,7 +125,9 @@ public class OverworldBiomeCreator {
 	public static Biome createSparseJungle(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
 		SpawnSettings.Builder builder = new SpawnSettings.Builder();
 		DefaultBiomeFeatures.addJungleMobs(builder);
-		return createJungleFeatures(featureLookup, carverLookup, 0.8F, false, true, false, builder);
+		return createJungleFeatures(
+			featureLookup, carverLookup, 0.8F, false, true, false, builder, MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_SPARSE_JUNGLE)
+		);
 	}
 
 	public static Biome createJungle(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
@@ -134,7 +136,7 @@ public class OverworldBiomeCreator {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, 40, 1, 2))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, 3))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PANDA, 1, 1, 2));
-		return createJungleFeatures(featureLookup, carverLookup, 0.9F, false, false, true, builder);
+		return createJungleFeatures(featureLookup, carverLookup, 0.9F, false, false, true, builder, MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_JUNGLE));
 	}
 
 	public static Biome createNormalBambooJungle(RegistryEntryLookup<PlacedFeature> featureLookup, RegistryEntryLookup<ConfiguredCarver<?>> carverLookup) {
@@ -143,7 +145,9 @@ public class OverworldBiomeCreator {
 		builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PARROT, 40, 1, 2))
 			.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.PANDA, 80, 1, 2))
 			.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.OCELOT, 2, 1, 1));
-		return createJungleFeatures(featureLookup, carverLookup, 0.9F, true, false, true, builder);
+		return createJungleFeatures(
+			featureLookup, carverLookup, 0.9F, true, false, true, builder, MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_BAMBOO_JUNGLE)
+		);
 	}
 
 	private static Biome createJungleFeatures(
@@ -153,7 +157,8 @@ public class OverworldBiomeCreator {
 		boolean bamboo,
 		boolean sparse,
 		boolean unmodified,
-		SpawnSettings.Builder spawnSettings
+		SpawnSettings.Builder spawnSettings,
+		MusicSound music
 	) {
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
 		addBasicFeatures(lookupBackedBuilder);
@@ -184,8 +189,7 @@ public class OverworldBiomeCreator {
 			DefaultBiomeFeatures.addMelons(lookupBackedBuilder);
 		}
 
-		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_JUNGLE_AND_FOREST);
-		return createBiome(true, 0.95F, depth, spawnSettings, lookupBackedBuilder, musicSound);
+		return createBiome(true, 0.95F, depth, spawnSettings, lookupBackedBuilder, music);
 	}
 
 	public static Biome createWindsweptHills(
@@ -228,7 +232,7 @@ public class OverworldBiomeCreator {
 		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDesertVegetation(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDesertFeatures(lookupBackedBuilder);
-		return createBiome(false, 2.0F, 0.0F, builder, lookupBackedBuilder, DEFAULT_MUSIC);
+		return createBiome(false, 2.0F, 0.0F, builder, lookupBackedBuilder, MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_DESERT));
 	}
 
 	public static Biome createPlains(
@@ -349,6 +353,7 @@ public class OverworldBiomeCreator {
 					.foliageColor(10387789)
 					.grassColor(9470285)
 					.moodSound(BiomeMoodSound.CAVE)
+					.music(MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_BADLANDS))
 					.build()
 			)
 			.spawnSettings(builder.build())
@@ -467,9 +472,12 @@ public class OverworldBiomeCreator {
 	) {
 		GenerationSettings.LookupBackedBuilder lookupBackedBuilder = new GenerationSettings.LookupBackedBuilder(featureLookup, carverLookup);
 		addBasicFeatures(lookupBackedBuilder);
+		MusicSound musicSound;
 		if (flower) {
+			musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_FLOWER_FOREST);
 			lookupBackedBuilder.feature(GenerationStep.Feature.VEGETAL_DECORATION, VegetationPlacedFeatures.FLOWER_FOREST_FLOWERS);
 		} else {
+			musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_FOREST);
 			DefaultBiomeFeatures.addForestFlowers(lookupBackedBuilder);
 		}
 
@@ -506,7 +514,6 @@ public class OverworldBiomeCreator {
 		}
 
 		float f = birch ? 0.6F : 0.7F;
-		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_JUNGLE_AND_FOREST);
 		return createBiome(true, f, birch ? 0.6F : 0.8F, builder, lookupBackedBuilder, musicSound);
 	}
 
@@ -550,7 +557,7 @@ public class OverworldBiomeCreator {
 		DefaultBiomeFeatures.addForestGrass(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDefaultMushrooms(lookupBackedBuilder);
 		DefaultBiomeFeatures.addDefaultVegetation(lookupBackedBuilder);
-		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_JUNGLE_AND_FOREST);
+		MusicSound musicSound = MusicType.createIngameMusic(SoundEvents.MUSIC_OVERWORLD_FOREST);
 		return new Biome.Builder()
 			.precipitation(true)
 			.temperature(0.7F)

@@ -1,17 +1,22 @@
 package net.minecraft.data.server.advancement.vanilla;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.ChanneledLightningCriterion;
+import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.ItemCriterion;
 import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
 import net.minecraft.advancement.criterion.LightningStrikeCriterion;
 import net.minecraft.advancement.criterion.OnKilledCriterion;
+import net.minecraft.advancement.criterion.PlayerGeneratesContainerLootCriterion;
 import net.minecraft.advancement.criterion.PlayerHurtEntityCriterion;
+import net.minecraft.advancement.criterion.RecipeCraftedCriterion;
 import net.minecraft.advancement.criterion.ShotCrossbowCriterion;
 import net.minecraft.advancement.criterion.SlideDownBlockCriterion;
 import net.minecraft.advancement.criterion.SummonedEntityCriterion;
@@ -22,10 +27,14 @@ import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.UsingItemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
+import net.minecraft.data.server.recipe.VanillaRecipeProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.loot.LootTables;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.NumberRange;
@@ -38,6 +47,7 @@ import net.minecraft.predicate.entity.LightningBoltPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
+import net.minecraft.recipe.CraftingDecoratedPotRecipe;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
@@ -173,7 +183,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				VillagerTradeCriterion.Conditions.create(EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))))
 			)
 			.build(exporter, "adventure/trade_at_world_height");
-		Advancement advancement4 = this.requireListedMobsKilled(Advancement.Builder.create())
+		Advancement advancement4 = requireListedMobsKilled(Advancement.Builder.create())
 			.parent(advancement)
 			.display(
 				Items.IRON_SWORD,
@@ -187,7 +197,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criteriaMerger(CriterionMerger.OR)
 			.build(exporter, "adventure/kill_a_mob");
-		this.requireListedMobsKilled(Advancement.Builder.create())
+		requireListedMobsKilled(Advancement.Builder.create())
 			.parent(advancement4)
 			.display(
 				Items.DIAMOND_SWORD,
@@ -586,6 +596,116 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion("avoid_vibration", TickCriterion.Conditions.createAvoidVibration())
 			.build(exporter, "adventure/avoid_vibration");
+		Advancement advancement11 = requireSalvagedSherd(Advancement.Builder.create())
+			.parent(advancement)
+			.display(
+				Items.BRUSH,
+				Text.translatable("advancements.adventure.salvage_sherd.title"),
+				Text.translatable("advancements.adventure.salvage_sherd.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.build(exporter, "adventure/salvage_sherd");
+		Advancement.Builder.create()
+			.parent(advancement11)
+			.display(
+				CraftingDecoratedPotRecipe.getPotStackWith(
+					new DecoratedPotBlockEntity.Sherds(Items.BRICK, Items.HEART_POTTERY_SHERD, Items.BRICK, Items.EXPLORER_POTTERY_SHERD)
+				),
+				Text.translatable("advancements.adventure.craft_decorated_pot_using_only_sherds.title"),
+				Text.translatable("advancements.adventure.craft_decorated_pot_using_only_sherds.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criterion(
+				"pot_crafted_using_only_sherds",
+				RecipeCraftedCriterion.Conditions.create(
+					new Identifier("minecraft:decorated_pot"),
+					List.of(
+						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS).build(),
+						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS).build(),
+						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS).build(),
+						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS).build()
+					)
+				)
+			)
+			.build(exporter, "adventure/craft_decorated_pot_using_only_sherds");
+		Advancement advancement12 = requireTrimmedArmor(Advancement.Builder.create())
+			.parent(advancement)
+			.display(
+				new ItemStack(Items.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE),
+				Text.translatable("advancements.adventure.trim_with_any_armor_pattern.title"),
+				Text.translatable("advancements.adventure.trim_with_any_armor_pattern.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.build(exporter, "adventure/trim_with_any_armor_pattern");
+		requireAllExclusiveTrimmedArmor(Advancement.Builder.create())
+			.parent(advancement12)
+			.display(
+				new ItemStack(Items.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE),
+				Text.translatable("advancements.adventure.trim_with_all_exclusive_armor_patterns.title"),
+				Text.translatable("advancements.adventure.trim_with_all_exclusive_armor_patterns.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.build(exporter, "adventure/trim_with_all_exclusive_armor_patterns");
+	}
+
+	private static Advancement.Builder requireAllExclusiveTrimmedArmor(Advancement.Builder builder) {
+		builder.criteriaMerger(CriterionMerger.AND);
+		Map<Item, Identifier> map = VanillaRecipeProvider.getTrimSmithingTemplateMap();
+		Stream.of(
+				Items.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE,
+				Items.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE,
+				Items.RIB_ARMOR_TRIM_SMITHING_TEMPLATE,
+				Items.WARD_ARMOR_TRIM_SMITHING_TEMPLATE,
+				Items.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE,
+				Items.VEX_ARMOR_TRIM_SMITHING_TEMPLATE,
+				Items.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE,
+				Items.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE
+			)
+			.forEach(template -> {
+				Identifier identifier = (Identifier)map.get(template);
+				builder.criterion("armor_trimmed_" + identifier, RecipeCraftedCriterion.Conditions.create(identifier));
+			});
+		return builder;
+	}
+
+	private static Advancement.Builder requireTrimmedArmor(Advancement.Builder builder) {
+		builder.criteriaMerger(CriterionMerger.OR);
+
+		for (Identifier identifier : VanillaRecipeProvider.getTrimSmithingTemplateMap().values()) {
+			builder.criterion("armor_trimmed_" + identifier, RecipeCraftedCriterion.Conditions.create(identifier));
+		}
+
+		return builder;
+	}
+
+	private static Advancement.Builder requireSalvagedSherd(Advancement.Builder builder) {
+		builder.criterion("desert_pyramid", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.DESERT_PYRAMID_ARCHAEOLOGY));
+		builder.criterion("desert_well", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.DESERT_WELL_ARCHAEOLOGY));
+		builder.criterion("ocean_ruin_cold", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.OCEAN_RUIN_COLD_ARCHAEOLOGY));
+		builder.criterion("ocean_ruin_warm", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.OCEAN_RUIN_WARM_ARCHAEOLOGY));
+		builder.criterion("trail_ruins_rare", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.TRAIL_RUINS_RARE_ARCHAEOLOGY));
+		builder.criterion("trail_ruins_common", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY));
+		String[] strings = (String[])builder.getCriteria().keySet().toArray(String[]::new);
+		String string = "has_sherd";
+		builder.criterion("has_sherd", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS).build()));
+		builder.requirements(new String[][]{strings, {"has_sherd"}});
+		return builder;
 	}
 
 	protected static void buildAdventuringTime(Consumer<Advancement> exporter, Advancement parent, MultiNoiseBiomeSourceParameterList.Preset preset) {
@@ -605,7 +725,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.build(exporter, "adventure/adventuring_time");
 	}
 
-	private Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {
+	private static Advancement.Builder requireListedMobsKilled(Advancement.Builder builder) {
 		for (EntityType<?> entityType : MONSTERS) {
 			builder.criterion(
 				Registries.ENTITY_TYPE.getId(entityType).toString(),

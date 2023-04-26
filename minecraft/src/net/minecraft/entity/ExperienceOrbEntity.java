@@ -65,13 +65,13 @@ public class ExperienceOrbEntity extends Entity {
 			this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
 		}
 
-		if (this.world.getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA)) {
+		if (this.getWorld().getFluidState(this.getBlockPos()).isIn(FluidTags.LAVA)) {
 			this.setVelocity(
 				(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
 			);
 		}
 
-		if (!this.world.isSpaceEmpty(this.getBoundingBox())) {
+		if (!this.getWorld().isSpaceEmpty(this.getBoundingBox())) {
 			this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
 		}
 
@@ -96,12 +96,12 @@ public class ExperienceOrbEntity extends Entity {
 
 		this.move(MovementType.SELF, this.getVelocity());
 		float f = 0.98F;
-		if (this.onGround) {
-			f = this.world.getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
+		if (this.isOnGround()) {
+			f = this.getWorld().getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
 		}
 
 		this.setVelocity(this.getVelocity().multiply((double)f, 0.98, (double)f));
-		if (this.onGround) {
+		if (this.isOnGround()) {
 			this.setVelocity(this.getVelocity().multiply(1.0, -0.9, 1.0));
 		}
 
@@ -120,11 +120,11 @@ public class ExperienceOrbEntity extends Entity {
 	 */
 	private void expensiveUpdate() {
 		if (this.target == null || this.target.squaredDistanceTo(this) > 64.0) {
-			this.target = this.world.getClosestPlayer(this, 8.0);
+			this.target = this.getWorld().getClosestPlayer(this, 8.0);
 		}
 
-		if (this.world instanceof ServerWorld) {
-			for (ExperienceOrbEntity experienceOrbEntity : this.world
+		if (this.getWorld() instanceof ServerWorld) {
+			for (ExperienceOrbEntity experienceOrbEntity : this.getWorld()
 				.getEntitiesByType(TypeFilter.instanceOf(ExperienceOrbEntity.class), this.getBoundingBox().expand(0.5), this::isMergeable)) {
 				this.merge(experienceOrbEntity);
 			}
@@ -182,7 +182,7 @@ public class ExperienceOrbEntity extends Entity {
 	public boolean damage(DamageSource source, float amount) {
 		if (this.isInvulnerableTo(source)) {
 			return false;
-		} else if (this.world.isClient) {
+		} else if (this.getWorld().isClient) {
 			return true;
 		} else {
 			this.scheduleVelocityUpdate();
@@ -213,7 +213,7 @@ public class ExperienceOrbEntity extends Entity {
 
 	@Override
 	public void onPlayerCollision(PlayerEntity player) {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			if (player.experiencePickUpDelay == 0) {
 				player.experiencePickUpDelay = 2;
 				player.sendPickup(this, 1);

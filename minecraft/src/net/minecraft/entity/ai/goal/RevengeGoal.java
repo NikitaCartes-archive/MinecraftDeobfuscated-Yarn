@@ -34,7 +34,7 @@ public class RevengeGoal extends TrackTargetGoal {
 		int i = this.mob.getLastAttackedTime();
 		LivingEntity livingEntity = this.mob.getAttacker();
 		if (i != this.lastAttackedTime && livingEntity != null) {
-			if (livingEntity.getType() == EntityType.PLAYER && this.mob.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
+			if (livingEntity.getType() == EntityType.PLAYER && this.mob.getWorld().getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
 				return false;
 			} else {
 				for (Class<?> class_ : this.noRevengeTypes) {
@@ -72,7 +72,7 @@ public class RevengeGoal extends TrackTargetGoal {
 	protected void callSameTypeForRevenge() {
 		double d = this.getFollowRange();
 		Box box = Box.from(this.mob.getPos()).expand(d, 10.0, d);
-		List<? extends MobEntity> list = this.mob.world.getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
+		List<? extends MobEntity> list = this.mob.getWorld().getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
 		Iterator var5 = list.iterator();
 
 		while (true) {

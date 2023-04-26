@@ -80,7 +80,7 @@ public class DrawContext {
 	}
 
 	public int getScaledWindowHeight() {
-		return this.client.getWindow().getScaledWidth();
+		return this.client.getWindow().getScaledHeight();
 	}
 
 	public MatrixStack getMatrices() {
@@ -575,7 +575,7 @@ public class DrawContext {
 	}
 
 	public void drawItem(LivingEntity entity, ItemStack stack, int x, int y, int seed) {
-		this.drawItem(entity, entity.world, stack, x, y, seed);
+		this.drawItem(entity, entity.getWorld(), stack, x, y, seed);
 	}
 
 	private void drawItem(@Nullable LivingEntity entity, @Nullable World world, ItemStack stack, int x, int y, int seed) {

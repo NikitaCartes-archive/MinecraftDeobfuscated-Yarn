@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.chunk.light.LightSourceView;
 import net.minecraft.world.chunk.light.LightingProvider;
 
 public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
@@ -20,7 +20,7 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 
 	@Nullable
 	@Override
-	public BlockView getChunk(int chunkX, int chunkZ) {
+	public LightSourceView getChunk(int chunkX, int chunkZ) {
 		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
 	}
 

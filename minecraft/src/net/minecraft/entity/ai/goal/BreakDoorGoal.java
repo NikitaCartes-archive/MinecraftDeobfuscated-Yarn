@@ -33,9 +33,9 @@ public class BreakDoorGoal extends DoorInteractGoal {
 		if (!super.canStart()) {
 			return false;
 		} else {
-			return !this.mob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+			return !this.mob.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
 				? false
-				: this.isDifficultySufficient(this.mob.world.getDifficulty()) && !this.isDoorOpen();
+				: this.isDifficultySufficient(this.mob.getWorld().getDifficulty()) && !this.isDoorOpen();
 		}
 	}
 
@@ -50,20 +50,20 @@ public class BreakDoorGoal extends DoorInteractGoal {
 		return this.breakProgress <= this.getMaxProgress()
 			&& !this.isDoorOpen()
 			&& this.doorPos.isWithinDistance(this.mob.getPos(), 2.0)
-			&& this.isDifficultySufficient(this.mob.world.getDifficulty());
+			&& this.isDifficultySufficient(this.mob.getWorld().getDifficulty());
 	}
 
 	@Override
 	public void stop() {
 		super.stop();
-		this.mob.world.setBlockBreakingInfo(this.mob.getId(), this.doorPos, -1);
+		this.mob.getWorld().setBlockBreakingInfo(this.mob.getId(), this.doorPos, -1);
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
 		if (this.mob.getRandom().nextInt(20) == 0) {
-			this.mob.world.syncWorldEvent(WorldEvents.ZOMBIE_ATTACKS_WOODEN_DOOR, this.doorPos, 0);
+			this.mob.getWorld().syncWorldEvent(WorldEvents.ZOMBIE_ATTACKS_WOODEN_DOOR, this.doorPos, 0);
 			if (!this.mob.handSwinging) {
 				this.mob.swingHand(this.mob.getActiveHand());
 			}
@@ -72,14 +72,14 @@ public class BreakDoorGoal extends DoorInteractGoal {
 		this.breakProgress++;
 		int i = (int)((float)this.breakProgress / (float)this.getMaxProgress() * 10.0F);
 		if (i != this.prevBreakProgress) {
-			this.mob.world.setBlockBreakingInfo(this.mob.getId(), this.doorPos, i);
+			this.mob.getWorld().setBlockBreakingInfo(this.mob.getId(), this.doorPos, i);
 			this.prevBreakProgress = i;
 		}
 
-		if (this.breakProgress == this.getMaxProgress() && this.isDifficultySufficient(this.mob.world.getDifficulty())) {
-			this.mob.world.removeBlock(this.doorPos, false);
-			this.mob.world.syncWorldEvent(WorldEvents.ZOMBIE_BREAKS_WOODEN_DOOR, this.doorPos, 0);
-			this.mob.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, this.doorPos, Block.getRawIdFromState(this.mob.world.getBlockState(this.doorPos)));
+		if (this.breakProgress == this.getMaxProgress() && this.isDifficultySufficient(this.mob.getWorld().getDifficulty())) {
+			this.mob.getWorld().removeBlock(this.doorPos, false);
+			this.mob.getWorld().syncWorldEvent(WorldEvents.ZOMBIE_BREAKS_WOODEN_DOOR, this.doorPos, 0);
+			this.mob.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, this.doorPos, Block.getRawIdFromState(this.mob.getWorld().getBlockState(this.doorPos)));
 		}
 	}
 

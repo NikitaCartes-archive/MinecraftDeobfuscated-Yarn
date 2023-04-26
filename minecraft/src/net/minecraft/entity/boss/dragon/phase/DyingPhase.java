@@ -24,7 +24,7 @@ public class DyingPhase extends AbstractPhase {
 			float g = (this.dragon.getRandom().nextFloat() - 0.5F) * 4.0F;
 			float h = (this.dragon.getRandom().nextFloat() - 0.5F) * 8.0F;
 			this.dragon
-				.world
+				.getWorld()
 				.addParticle(
 					ParticleTypes.EXPLOSION_EMITTER, this.dragon.getX() + (double)f, this.dragon.getY() + 2.0 + (double)g, this.dragon.getZ() + (double)h, 0.0, 0.0, 0.0
 				);
@@ -35,7 +35,7 @@ public class DyingPhase extends AbstractPhase {
 	public void serverTick() {
 		this.ticks++;
 		if (this.target == null) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
 			this.target = Vec3d.ofBottomCenter(blockPos);
 		}
 

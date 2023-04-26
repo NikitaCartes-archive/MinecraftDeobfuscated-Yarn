@@ -78,20 +78,20 @@ public class ChickenEntity extends AnimalEntity {
 		super.tickMovement();
 		this.prevFlapProgress = this.flapProgress;
 		this.prevMaxWingDeviation = this.maxWingDeviation;
-		this.maxWingDeviation = this.maxWingDeviation + (this.onGround ? -1.0F : 4.0F) * 0.3F;
+		this.maxWingDeviation = this.maxWingDeviation + (this.isOnGround() ? -1.0F : 4.0F) * 0.3F;
 		this.maxWingDeviation = MathHelper.clamp(this.maxWingDeviation, 0.0F, 1.0F);
-		if (!this.onGround && this.flapSpeed < 1.0F) {
+		if (!this.isOnGround() && this.flapSpeed < 1.0F) {
 			this.flapSpeed = 1.0F;
 		}
 
 		this.flapSpeed *= 0.9F;
 		Vec3d vec3d = this.getVelocity();
-		if (!this.onGround && vec3d.y < 0.0) {
+		if (!this.isOnGround() && vec3d.y < 0.0) {
 			this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
 		}
 
 		this.flapProgress = this.flapProgress + this.flapSpeed * 2.0F;
-		if (!this.world.isClient && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
+		if (!this.getWorld().isClient && this.isAlive() && !this.isBaby() && !this.hasJockey() && --this.eggLayTime <= 0) {
 			this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 			this.dropItem(Items.EGG);
 			this.emitGameEvent(GameEvent.ENTITY_PLACE);

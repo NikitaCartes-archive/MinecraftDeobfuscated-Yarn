@@ -134,7 +134,7 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 	}
 
 	public Optional<Entity> getFrogTarget() {
-		return this.dataTracker.get(TARGET).stream().mapToObj(this.world::getEntityById).filter(Objects::nonNull).findFirst();
+		return this.dataTracker.get(TARGET).stream().mapToObj(this.getWorld()::getEntityById).filter(Objects::nonNull).findFirst();
 	}
 
 	public void setFrogTarget(Entity entity) {
@@ -181,18 +181,18 @@ public class FrogEntity extends AnimalEntity implements VariantHolder<FrogVarian
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("frogBrain");
-		this.getBrain().tick((ServerWorld)this.world, this);
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("frogActivityUpdate");
+		this.getWorld().getProfiler().push("frogBrain");
+		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getWorld().getProfiler().pop();
+		this.getWorld().getProfiler().push("frogActivityUpdate");
 		FrogBrain.updateActivities(this);
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 		super.mobTick();
 	}
 
 	@Override
 	public void tick() {
-		if (this.world.isClient()) {
+		if (this.getWorld().isClient()) {
 			this.idlingInWaterAnimationState.setRunning(this.isInsideWaterOrBubbleColumn() && !this.limbAnimator.isLimbMoving(), this.age);
 		}
 

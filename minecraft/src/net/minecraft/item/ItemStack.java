@@ -596,7 +596,7 @@ public final class ItemStack {
 	 * when the item breaks
 	 */
 	public <T extends LivingEntity> void damage(int amount, T entity, Consumer<T> breakCallback) {
-		if (!entity.world.isClient && (!(entity instanceof PlayerEntity) || !((PlayerEntity)entity).getAbilities().creativeMode)) {
+		if (!entity.getWorld().isClient && (!(entity instanceof PlayerEntity) || !((PlayerEntity)entity).getAbilities().creativeMode)) {
 			if (this.isDamageable()) {
 				if (this.damage(amount, entity.getRandom(), entity instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity : null)) {
 					breakCallback.accept(entity);
@@ -1006,12 +1006,12 @@ public final class ItemStack {
 
 		int i = this.getHideFlags();
 		if (isSectionVisible(i, ItemStack.TooltipSection.ADDITIONAL)) {
-			this.getItem().appendTooltip(this, player == null ? null : player.world, list, context);
+			this.getItem().appendTooltip(this, player == null ? null : player.getWorld(), list, context);
 		}
 
 		if (this.hasNbt()) {
 			if (isSectionVisible(i, ItemStack.TooltipSection.UPGRADES) && player != null) {
-				ArmorTrim.appendTooltip(this, player.world.getRegistryManager(), list);
+				ArmorTrim.appendTooltip(this, player.getWorld().getRegistryManager(), list);
 			}
 
 			if (isSectionVisible(i, ItemStack.TooltipSection.ENCHANTMENTS)) {

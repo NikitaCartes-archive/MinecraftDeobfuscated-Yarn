@@ -119,7 +119,7 @@ public class SquidEntity extends WaterCreatureEntity {
 		this.prevTentacleAngle = this.tentacleAngle;
 		this.thrustTimer = this.thrustTimer + this.thrustTimerSpeed;
 		if ((double)this.thrustTimer > Math.PI * 2) {
-			if (this.world.isClient) {
+			if (this.getWorld().isClient) {
 				this.thrustTimer = (float) (Math.PI * 2);
 			} else {
 				this.thrustTimer -= (float) (Math.PI * 2);
@@ -127,7 +127,7 @@ public class SquidEntity extends WaterCreatureEntity {
 					this.thrustTimerSpeed = 1.0F / (this.random.nextFloat() + 1.0F) * 0.2F;
 				}
 
-				this.world.sendEntityStatus(this, EntityStatuses.RESET_SQUID_THRUST_TIMER);
+				this.getWorld().sendEntityStatus(this, EntityStatuses.RESET_SQUID_THRUST_TIMER);
 			}
 		}
 
@@ -147,7 +147,7 @@ public class SquidEntity extends WaterCreatureEntity {
 				this.turningSpeed *= 0.99F;
 			}
 
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				this.setVelocity(
 					(double)(this.swimX * this.swimVelocityScale), (double)(this.swimY * this.swimVelocityScale), (double)(this.swimZ * this.swimVelocityScale)
 				);
@@ -161,7 +161,7 @@ public class SquidEntity extends WaterCreatureEntity {
 			this.tiltAngle = this.tiltAngle + (-((float)MathHelper.atan2(d, vec3d.y)) * (180.0F / (float)Math.PI) - this.tiltAngle) * 0.1F;
 		} else {
 			this.tentacleAngle = MathHelper.abs(MathHelper.sin(this.thrustTimer)) * (float) Math.PI * 0.25F;
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				double e = this.getVelocity().y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
 					e = 0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1);
@@ -179,7 +179,7 @@ public class SquidEntity extends WaterCreatureEntity {
 	@Override
 	public boolean damage(DamageSource source, float amount) {
 		if (super.damage(source, amount) && this.getAttacker() != null) {
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				this.squirt();
 			}
 
@@ -201,7 +201,7 @@ public class SquidEntity extends WaterCreatureEntity {
 		for (int i = 0; i < 30; i++) {
 			Vec3d vec3d2 = this.applyBodyRotations(new Vec3d((double)this.random.nextFloat() * 0.6 - 0.3, -1.0, (double)this.random.nextFloat() * 0.6 - 0.3));
 			Vec3d vec3d3 = vec3d2.multiply(0.3 + (double)(this.random.nextFloat() * 2.0F));
-			((ServerWorld)this.world).spawnParticles(this.getInkParticle(), vec3d.x, vec3d.y + 0.5, vec3d.z, 0, vec3d3.x, vec3d3.y, vec3d3.z, 0.1F);
+			((ServerWorld)this.getWorld()).spawnParticles(this.getInkParticle(), vec3d.x, vec3d.y + 0.5, vec3d.z, 0, vec3d3.x, vec3d3.y, vec3d3.z, 0.1F);
 		}
 	}
 
@@ -266,9 +266,9 @@ public class SquidEntity extends WaterCreatureEntity {
 				Vec3d vec3d = new Vec3d(
 					SquidEntity.this.getX() - livingEntity.getX(), SquidEntity.this.getY() - livingEntity.getY(), SquidEntity.this.getZ() - livingEntity.getZ()
 				);
-				BlockState blockState = SquidEntity.this.world
+				BlockState blockState = SquidEntity.this.getWorld()
 					.getBlockState(BlockPos.ofFloored(SquidEntity.this.getX() + vec3d.x, SquidEntity.this.getY() + vec3d.y, SquidEntity.this.getZ() + vec3d.z));
-				FluidState fluidState = SquidEntity.this.world
+				FluidState fluidState = SquidEntity.this.getWorld()
 					.getFluidState(BlockPos.ofFloored(SquidEntity.this.getX() + vec3d.x, SquidEntity.this.getY() + vec3d.y, SquidEntity.this.getZ() + vec3d.z));
 				if (fluidState.isIn(FluidTags.WATER) || blockState.isAir()) {
 					double d = vec3d.length();
@@ -292,7 +292,7 @@ public class SquidEntity extends WaterCreatureEntity {
 				}
 
 				if (this.timer % 10 == 5) {
-					SquidEntity.this.world.addParticle(ParticleTypes.BUBBLE, SquidEntity.this.getX(), SquidEntity.this.getY(), SquidEntity.this.getZ(), 0.0, 0.0, 0.0);
+					SquidEntity.this.getWorld().addParticle(ParticleTypes.BUBBLE, SquidEntity.this.getX(), SquidEntity.this.getY(), SquidEntity.this.getZ(), 0.0, 0.0, 0.0);
 				}
 			}
 		}

@@ -258,7 +258,6 @@ public class ChunkHeightAndBiomeFix extends DataFix {
 			return fixCarvingMasks(level, 24, 0);
 		} else {
 			level = fixHeightmaps(level);
-			level = fixChunkSectionList(level, "Lights");
 			level = fixChunkSectionList(level, "LiquidsToBeTicked");
 			level = fixChunkSectionList(level, "PostProcessing");
 			level = fixChunkSectionList(level, "ToBeTicked");

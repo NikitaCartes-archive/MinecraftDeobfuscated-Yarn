@@ -84,7 +84,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 	@Override
 	public void onTrackedDataSet(TrackedData<?> data) {
-		if (BOOST_TIME.equals(data) && this.world.isClient) {
+		if (BOOST_TIME.equals(data) && this.getWorld().isClient) {
 			this.saddledComponent.boost();
 		}
 
@@ -134,11 +134,11 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		boolean bl = this.isBreedingItem(player.getStackInHand(hand));
 		if (!bl && this.isSaddled() && !this.hasPassengers() && !player.shouldCancelInteraction()) {
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				player.startRiding(this);
 			}
 
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (!actionResult.isAccepted()) {
@@ -172,7 +172,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	public void saddle(@Nullable SoundCategory sound) {
 		this.saddledComponent.setSaddled(true);
 		if (sound != null) {
-			this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_PIG_SADDLE, sound, 0.5F, 1.0F);
+			this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_PIG_SADDLE, sound, 0.5F, 1.0F);
 		}
 	}
 
@@ -191,10 +191,10 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 
 				for (int[] js : is) {
 					mutable.set(blockPos.getX() + js[0], blockPos.getY(), blockPos.getZ() + js[1]);
-					double d = this.world.getDismountHeight(mutable);
+					double d = this.getWorld().getDismountHeight(mutable);
 					if (Dismounting.canDismountInBlock(d)) {
 						Vec3d vec3d = Vec3d.ofCenter(mutable, d);
-						if (Dismounting.canPlaceEntityAt(this.world, passenger, box.offset(vec3d))) {
+						if (Dismounting.canPlaceEntityAt(this.getWorld(), passenger, box.offset(vec3d))) {
 							passenger.setPose(entityPose);
 							return vec3d;
 						}

@@ -343,7 +343,7 @@ public class PackedIntegerArray implements PaletteStorage {
 	}
 
 	@Override
-	public void method_39892(int[] is) {
+	public void writePaletteIndices(int[] out) {
 		int i = this.data.length;
 		int j = 0;
 
@@ -351,7 +351,7 @@ public class PackedIntegerArray implements PaletteStorage {
 			long l = this.data[k];
 
 			for (int m = 0; m < this.elementsPerLong; m++) {
-				is[j + m] = (int)(l & this.maxValue);
+				out[j + m] = (int)(l & this.maxValue);
 				l >>= this.elementBits;
 			}
 
@@ -363,7 +363,7 @@ public class PackedIntegerArray implements PaletteStorage {
 			long l = this.data[i - 1];
 
 			for (int m = 0; m < k; m++) {
-				is[j + m] = (int)(l & this.maxValue);
+				out[j + m] = (int)(l & this.maxValue);
 				l >>= this.elementBits;
 			}
 		}

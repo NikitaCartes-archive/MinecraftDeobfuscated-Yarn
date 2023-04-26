@@ -246,14 +246,14 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
 		brain.doExclusively(Activity.IDLE);
-		brain.refreshActivities(this.world.getTimeOfDay(), this.world.getTime());
+		brain.refreshActivities(this.getWorld().getTimeOfDay(), this.getWorld().getTime());
 	}
 
 	@Override
 	protected void onGrowUp() {
 		super.onGrowUp();
-		if (this.world instanceof ServerWorld) {
-			this.reinitializeBrain((ServerWorld)this.world);
+		if (this.getWorld() instanceof ServerWorld) {
+			this.reinitializeBrain((ServerWorld)this.getWorld());
 		}
 	}
 
@@ -267,9 +267,9 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("villagerBrain");
-		this.getBrain().tick((ServerWorld)this.world, this);
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().push("villagerBrain");
+		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getWorld().getProfiler().pop();
 		if (this.natural) {
 			this.natural = false;
 		}
@@ -286,16 +286,16 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			}
 		}
 
-		if (this.lastCustomer != null && this.world instanceof ServerWorld) {
-			((ServerWorld)this.world).handleInteraction(EntityInteraction.TRADE, this.lastCustomer, this);
-			this.world.sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
+		if (this.lastCustomer != null && this.getWorld() instanceof ServerWorld) {
+			((ServerWorld)this.getWorld()).handleInteraction(EntityInteraction.TRADE, this.lastCustomer, this);
+			this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_HAPPY_PARTICLES);
 			this.lastCustomer = null;
 		}
 
 		if (!this.isAiDisabled() && this.random.nextInt(100) == 0) {
-			Raid raid = ((ServerWorld)this.world).getRaidAt(this.getBlockPos());
+			Raid raid = ((ServerWorld)this.getWorld()).getRaidAt(this.getBlockPos());
 			if (raid != null && raid.isActive() && !raid.isFinished()) {
-				this.world.sendEntityStatus(this, EntityStatuses.ADD_SPLASH_PARTICLES);
+				this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_SPLASH_PARTICLES);
 			}
 		}
 
@@ -323,11 +323,11 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			return super.interactMob(player, hand);
 		} else if (this.isBaby()) {
 			this.sayNo();
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			boolean bl = this.getOffers().isEmpty();
 			if (hand == Hand.MAIN_HAND) {
-				if (bl && !this.world.isClient) {
+				if (bl && !this.getWorld().isClient) {
 					this.sayNo();
 				}
 
@@ -335,20 +335,20 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			}
 
 			if (bl) {
-				return ActionResult.success(this.world.isClient);
+				return ActionResult.success(this.getWorld().isClient);
 			} else {
-				if (!this.world.isClient && !this.offers.isEmpty()) {
+				if (!this.getWorld().isClient && !this.offers.isEmpty()) {
 					this.beginTradeWith(player);
 				}
 
-				return ActionResult.success(this.world.isClient);
+				return ActionResult.success(this.getWorld().isClient);
 			}
 		}
 	}
 
 	private void sayNo() {
 		this.setHeadRollingTimeLeft(40);
-		if (!this.world.isClient()) {
+		if (!this.getWorld().isClient()) {
 			this.playSound(SoundEvents.ENTITY_VILLAGER_NO, this.getSoundVolume(), this.getSoundPitch());
 		}
 	}
@@ -401,7 +401,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		}
 
 		this.sendOffersToCustomer();
-		this.lastRestockTime = this.world.getTime();
+		this.lastRestockTime = this.getWorld().getTime();
 		this.restocksToday++;
 	}
 
@@ -436,14 +436,14 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	private boolean canRestock() {
-		return this.restocksToday == 0 || this.restocksToday < 2 && this.world.getTime() > this.lastRestockTime + 2400L;
+		return this.restocksToday == 0 || this.restocksToday < 2 && this.getWorld().getTime() > this.lastRestockTime + 2400L;
 	}
 
 	public boolean shouldRestock() {
 		long l = this.lastRestockTime + 12000L;
-		long m = this.world.getTime();
+		long m = this.getWorld().getTime();
 		boolean bl = m > l;
-		long n = this.world.getTimeOfDay();
+		long n = this.getWorld().getTimeOfDay();
 		if (this.lastRestockCheckTime > 0L) {
 			long o = this.lastRestockCheckTime / 24000L;
 			long p = n / 24000L;
@@ -552,8 +552,8 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		this.lastRestockTime = nbt.getLong("LastRestock");
 		this.lastGossipDecayTime = nbt.getLong("LastGossipDecay");
 		this.setCanPickUpLoot(true);
-		if (this.world instanceof ServerWorld) {
-			this.reinitializeBrain((ServerWorld)this.world);
+		if (this.getWorld() instanceof ServerWorld) {
+			this.reinitializeBrain((ServerWorld)this.getWorld());
 		}
 
 		this.restocksToday = nbt.getInt("RestocksToday");
@@ -621,7 +621,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		}
 
 		if (offer.shouldRewardPlayerExperience()) {
-			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY() + 0.5, this.getZ(), i));
+			this.getWorld().spawnEntity(new ExperienceOrbEntity(this.getWorld(), this.getX(), this.getY() + 0.5, this.getZ(), i));
 		}
 	}
 
@@ -635,10 +635,10 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	@Override
 	public void setAttacker(@Nullable LivingEntity attacker) {
-		if (attacker != null && this.world instanceof ServerWorld) {
-			((ServerWorld)this.world).handleInteraction(EntityInteraction.VILLAGER_HURT, attacker, this);
+		if (attacker != null && this.getWorld() instanceof ServerWorld) {
+			((ServerWorld)this.getWorld()).handleInteraction(EntityInteraction.VILLAGER_HURT, attacker, this);
 			if (this.isAlive() && attacker instanceof PlayerEntity) {
-				this.world.sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
+				this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_VILLAGER_ANGRY_PARTICLES);
 			}
 		}
 
@@ -665,7 +665,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	private void notifyDeath(Entity killer) {
-		if (this.world instanceof ServerWorld serverWorld) {
+		if (this.getWorld() instanceof ServerWorld serverWorld) {
 			Optional<LivingTargetCache> optional = this.brain.getOptionalRegisteredMemory(MemoryModuleType.VISIBLE_MOBS);
 			if (!optional.isEmpty()) {
 				((LivingTargetCache)optional.get())
@@ -676,8 +676,8 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	public void releaseTicketFor(MemoryModuleType<GlobalPos> pos) {
-		if (this.world instanceof ServerWorld) {
-			MinecraftServer minecraftServer = ((ServerWorld)this.world).getServer();
+		if (this.getWorld() instanceof ServerWorld) {
+			MinecraftServer minecraftServer = ((ServerWorld)this.getWorld()).getServer();
 			this.brain
 				.getOptionalRegisteredMemory(pos)
 				.ifPresent(
@@ -892,7 +892,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	private void decayGossip() {
-		long l = this.world.getTime();
+		long l = this.getWorld().getTime();
 		if (this.lastGossipDecayTime == 0L) {
 			this.lastGossipDecayTime = l;
 		} else if (l >= this.lastGossipDecayTime + 24000L) {
@@ -918,7 +918,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	public boolean canSummonGolem(long time) {
-		return !this.hasRecentlySlept(this.world.getTime()) ? false : !this.brain.hasMemoryModule(MemoryModuleType.GOLEM_DETECTED_RECENTLY);
+		return !this.hasRecentlySlept(this.getWorld().getTime()) ? false : !this.brain.hasMemoryModule(MemoryModuleType.GOLEM_DETECTED_RECENTLY);
 	}
 
 	@Override
@@ -966,7 +966,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Override
 	public void sleep(BlockPos pos) {
 		super.sleep(pos);
-		this.brain.remember(MemoryModuleType.LAST_SLEPT, this.world.getTime());
+		this.brain.remember(MemoryModuleType.LAST_SLEPT, this.getWorld().getTime());
 		this.brain.forget(MemoryModuleType.WALK_TARGET);
 		this.brain.forget(MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE);
 	}
@@ -974,7 +974,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Override
 	public void wakeUp() {
 		super.wakeUp();
-		this.brain.remember(MemoryModuleType.LAST_WOKEN, this.world.getTime());
+		this.brain.remember(MemoryModuleType.LAST_WOKEN, this.getWorld().getTime());
 	}
 
 	private boolean hasRecentlySlept(long worldTime) {

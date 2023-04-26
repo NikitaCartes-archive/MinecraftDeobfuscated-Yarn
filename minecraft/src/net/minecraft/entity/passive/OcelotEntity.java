@@ -173,18 +173,18 @@ public class OcelotEntity extends AnimalEntity {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if ((this.temptGoal == null || this.temptGoal.isActive()) && !this.isTrusting() && this.isBreedingItem(itemStack) && player.squaredDistanceTo(this) < 9.0) {
 			this.eat(player, hand, itemStack);
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				if (this.random.nextInt(3) == 0) {
 					this.setTrusting(true);
 					this.showEmoteParticle(true);
-					this.world.sendEntityStatus(this, EntityStatuses.TAME_OCELOT_SUCCESS);
+					this.getWorld().sendEntityStatus(this, EntityStatuses.TAME_OCELOT_SUCCESS);
 				} else {
 					this.showEmoteParticle(false);
-					this.world.sendEntityStatus(this, EntityStatuses.TAME_OCELOT_FAILED);
+					this.getWorld().sendEntityStatus(this, EntityStatuses.TAME_OCELOT_FAILED);
 				}
 			}
 
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -211,7 +211,7 @@ public class OcelotEntity extends AnimalEntity {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
-			this.world.addParticle(particleEffect, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
+			this.getWorld().addParticle(particleEffect, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
 		}
 	}
 

@@ -60,7 +60,7 @@ public class SkeletonHorseEntity extends AbstractHorseEntity {
 
 	@Override
 	protected SoundEvent getSwimSound() {
-		if (this.onGround) {
+		if (this.isOnGround()) {
 			if (!this.hasPassengers()) {
 				return SoundEvents.ENTITY_SKELETON_HORSE_STEP_WATER;
 			}
@@ -80,7 +80,7 @@ public class SkeletonHorseEntity extends AbstractHorseEntity {
 
 	@Override
 	protected void playSwimSound(float volume) {
-		if (this.onGround) {
+		if (this.isOnGround()) {
 			super.playSwimSound(0.3F);
 		} else {
 			super.playSwimSound(Math.min(0.1F, volume * 25.0F));

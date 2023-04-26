@@ -220,7 +220,7 @@ public class TurtleEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return !this.isTouchingWater() && this.onGround && !this.isBaby() ? SoundEvents.ENTITY_TURTLE_AMBIENT_LAND : super.getAmbientSound();
+		return !this.isTouchingWater() && this.isOnGround() && !this.isBaby() ? SoundEvents.ENTITY_TURTLE_AMBIENT_LAND : super.getAmbientSound();
 	}
 
 	@Override
@@ -296,8 +296,8 @@ public class TurtleEntity extends AnimalEntity {
 		super.tickMovement();
 		if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0) {
 			BlockPos blockPos = this.getBlockPos();
-			if (TurtleEggBlock.isSandBelow(this.world, blockPos)) {
-				this.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(this.world.getBlockState(blockPos.down())));
+			if (TurtleEggBlock.isSandBelow(this.getWorld(), blockPos)) {
+				this.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(this.getWorld().getBlockState(blockPos.down())));
 			}
 		}
 	}
@@ -305,7 +305,7 @@ public class TurtleEntity extends AnimalEntity {
 	@Override
 	protected void onGrowUp() {
 		super.onGrowUp();
-		if (!this.isBaby() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+		if (!this.isBaby() && this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 			this.dropItem(Items.SCUTE, 1);
 		}
 	}
@@ -389,7 +389,7 @@ public class TurtleEntity extends AnimalEntity {
 					vec3d2 = NoPenaltyTargeting.findTo(this.turtle, 8, 7, vec3d, (float) (Math.PI / 2));
 				}
 
-				if (vec3d2 != null && !bl && !this.turtle.world.getBlockState(BlockPos.ofFloored(vec3d2)).isOf(Blocks.WATER)) {
+				if (vec3d2 != null && !bl && !this.turtle.getWorld().getBlockState(BlockPos.ofFloored(vec3d2)).isOf(Blocks.WATER)) {
 					vec3d2 = NoPenaltyTargeting.findTo(this.turtle, 16, 5, vec3d, (float) (Math.PI / 2));
 				}
 
@@ -429,7 +429,7 @@ public class TurtleEntity extends AnimalEntity {
 				if (this.turtle.sandDiggingCounter < 1) {
 					this.turtle.setDiggingSand(true);
 				} else if (this.turtle.sandDiggingCounter > this.getTickCount(200)) {
-					World world = this.turtle.world;
+					World world = this.turtle.getWorld();
 					world.playSound(null, blockPos, SoundEvents.ENTITY_TURTLE_LAY_EGG, SoundCategory.BLOCKS, 0.3F, 0.9F + world.random.nextFloat() * 0.2F);
 					BlockPos blockPos2 = this.targetPos.up();
 					BlockState blockState = Blocks.TURTLE_EGG.getDefaultState().with(TurtleEggBlock.EGGS, Integer.valueOf(this.turtle.random.nextInt(4) + 1));
@@ -512,7 +512,7 @@ public class TurtleEntity extends AnimalEntity {
 			int k = random.nextInt(1025) - 512;
 			int l = random.nextInt(9) - 4;
 			int m = random.nextInt(1025) - 512;
-			if ((double)l + this.turtle.getY() > (double)(this.turtle.world.getSeaLevel() - 1)) {
+			if ((double)l + this.turtle.getY() > (double)(this.turtle.getWorld().getSeaLevel() - 1)) {
 				l = 0;
 			}
 
@@ -535,7 +535,7 @@ public class TurtleEntity extends AnimalEntity {
 					int i = MathHelper.floor(vec3d2.x);
 					int j = MathHelper.floor(vec3d2.z);
 					int k = 34;
-					if (!this.turtle.world.isRegionLoaded(i - 34, j - 34, i + 34, j + 34)) {
+					if (!this.turtle.getWorld().isRegionLoaded(i - 34, j - 34, i + 34, j + 34)) {
 						vec3d2 = null;
 					}
 				}
@@ -571,7 +571,7 @@ public class TurtleEntity extends AnimalEntity {
 			if (!this.isInDanger()) {
 				return false;
 			} else {
-				BlockPos blockPos = this.locateClosestWater(this.mob.world, this.mob, 7);
+				BlockPos blockPos = this.locateClosestWater(this.mob.getWorld(), this.mob, 7);
 				if (blockPos != null) {
 					this.targetX = (double)blockPos.getX();
 					this.targetY = (double)blockPos.getY();
@@ -602,7 +602,7 @@ public class TurtleEntity extends AnimalEntity {
 				if (this.turtle.isBaby()) {
 					this.turtle.setMovementSpeed(Math.max(this.turtle.getMovementSpeed() / 3.0F, 0.06F));
 				}
-			} else if (this.turtle.onGround) {
+			} else if (this.turtle.isOnGround()) {
 				this.turtle.setMovementSpeed(Math.max(this.turtle.getMovementSpeed() / 2.0F, 0.06F));
 			}
 		}
@@ -659,7 +659,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return !this.turtle.isTouchingWater() && this.tryingTime <= 1200 && this.isTargetPos(this.turtle.world, this.targetPos);
+			return !this.turtle.isTouchingWater() && this.tryingTime <= 1200 && this.isTargetPos(this.turtle.getWorld(), this.targetPos);
 		}
 
 		@Override

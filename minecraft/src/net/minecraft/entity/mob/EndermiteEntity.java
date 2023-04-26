@@ -40,7 +40,7 @@ public class EndermiteEntity extends HostileEntity {
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(1, new PowderSnowJumpGoal(this, this.world));
+		this.goalSelector.add(1, new PowderSnowJumpGoal(this, this.getWorld()));
 		this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0, false));
 		this.goalSelector.add(3, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
@@ -118,9 +118,9 @@ public class EndermiteEntity extends HostileEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			for (int i = 0; i < 2; i++) {
-				this.world
+				this.getWorld()
 					.addParticle(
 						ParticleTypes.PORTAL,
 						this.getParticleX(0.5),

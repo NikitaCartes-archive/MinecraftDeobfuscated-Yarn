@@ -50,7 +50,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.tryingTime >= -this.safeWaitingTime && this.tryingTime <= 1200 && this.isTargetPos(this.mob.world, this.targetPos);
+		return this.tryingTime >= -this.safeWaitingTime && this.tryingTime <= 1200 && this.isTargetPos(this.mob.getWorld(), this.targetPos);
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 				for (int m = 0; m <= l; m = m > 0 ? -m : 1 - m) {
 					for (int n = m < l && m > -l ? l : 0; n <= l; n = n > 0 ? -n : 1 - n) {
 						mutable.set(blockPos, m, k - 1, n);
-						if (this.mob.isInWalkTargetRange(mutable) && this.isTargetPos(this.mob.world, mutable)) {
+						if (this.mob.isInWalkTargetRange(mutable) && this.isTargetPos(this.mob.getWorld(), mutable)) {
 							this.targetPos = mutable;
 							return true;
 						}

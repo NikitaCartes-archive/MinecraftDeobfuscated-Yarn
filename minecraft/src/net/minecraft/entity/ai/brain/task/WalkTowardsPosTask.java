@@ -7,7 +7,7 @@ import net.minecraft.util.math.random.Random;
 
 public class WalkTowardsPosTask {
 	private static BlockPos fuzz(MobEntity mob, BlockPos pos) {
-		Random random = mob.world.random;
+		Random random = mob.getWorld().random;
 		return pos.add(fuzz(random), 0, fuzz(random));
 	}
 

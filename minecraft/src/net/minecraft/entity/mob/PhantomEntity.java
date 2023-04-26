@@ -117,11 +117,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			float f = MathHelper.cos((float)(this.getWingFlapTickOffset() + this.age) * 7.448451F * (float) (Math.PI / 180.0) + (float) Math.PI);
 			float g = MathHelper.cos((float)(this.getWingFlapTickOffset() + this.age + 1) * 7.448451F * (float) (Math.PI / 180.0) + (float) Math.PI);
 			if (f > 0.0F && g <= 0.0F) {
-				this.world
+				this.getWorld()
 					.playSound(
 						this.getX(),
 						this.getY(),
@@ -138,8 +138,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			float h = MathHelper.cos(this.getYaw() * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float j = MathHelper.sin(this.getYaw() * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float k = (0.3F + f * 0.45F) * ((float)i * 0.2F + 1.0F);
-			this.world.addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)h, this.getY() + (double)k, this.getZ() + (double)j, 0.0, 0.0, 0.0);
-			this.world.addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)h, this.getY() + (double)k, this.getZ() - (double)j, 0.0, 0.0, 0.0);
+			this.getWorld().addParticle(ParticleTypes.MYCELIUM, this.getX() + (double)h, this.getY() + (double)k, this.getZ() + (double)j, 0.0, 0.0, 0.0);
+			this.getWorld().addParticle(ParticleTypes.MYCELIUM, this.getX() - (double)h, this.getY() + (double)k, this.getZ() - (double)j, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -280,12 +280,12 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				this.adjustDirection();
 			}
 
-			if (PhantomEntity.this.targetPosition.y < PhantomEntity.this.getY() && !PhantomEntity.this.world.isAir(PhantomEntity.this.getBlockPos().down(1))) {
+			if (PhantomEntity.this.targetPosition.y < PhantomEntity.this.getY() && !PhantomEntity.this.getWorld().isAir(PhantomEntity.this.getBlockPos().down(1))) {
 				this.yOffset = Math.max(1.0F, this.yOffset);
 				this.adjustDirection();
 			}
 
-			if (PhantomEntity.this.targetPosition.y > PhantomEntity.this.getY() && !PhantomEntity.this.world.isAir(PhantomEntity.this.getBlockPos().up(1))) {
+			if (PhantomEntity.this.targetPosition.y > PhantomEntity.this.getY() && !PhantomEntity.this.getWorld().isAir(PhantomEntity.this.getBlockPos().up(1))) {
 				this.yOffset = Math.min(-1.0F, this.yOffset);
 				this.adjustDirection();
 			}
@@ -313,7 +313,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				return false;
 			} else {
 				this.delay = toGoalTicks(60);
-				List<PlayerEntity> list = PhantomEntity.this.world
+				List<PlayerEntity> list = PhantomEntity.this.getWorld()
 					.getPlayers(this.PLAYERS_IN_RANGE_PREDICATE, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
 				if (!list.isEmpty()) {
 					list.sort(Comparator.comparing(Entity::getY).reversed());
@@ -443,7 +443,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public void stop() {
-			PhantomEntity.this.circlingCenter = PhantomEntity.this.world
+			PhantomEntity.this.circlingCenter = PhantomEntity.this.getWorld()
 				.getTopPosition(Heightmap.Type.MOTION_BLOCKING, PhantomEntity.this.circlingCenter)
 				.up(10 + PhantomEntity.this.random.nextInt(20));
 		}
@@ -463,9 +463,9 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		private void startSwoop() {
 			PhantomEntity.this.circlingCenter = PhantomEntity.this.getTarget().getBlockPos().up(20 + PhantomEntity.this.random.nextInt(20));
-			if (PhantomEntity.this.circlingCenter.getY() < PhantomEntity.this.world.getSeaLevel()) {
+			if (PhantomEntity.this.circlingCenter.getY() < PhantomEntity.this.getWorld().getSeaLevel()) {
 				PhantomEntity.this.circlingCenter = new BlockPos(
-					PhantomEntity.this.circlingCenter.getX(), PhantomEntity.this.world.getSeaLevel() + 1, PhantomEntity.this.circlingCenter.getZ()
+					PhantomEntity.this.circlingCenter.getX(), PhantomEntity.this.getWorld().getSeaLevel() + 1, PhantomEntity.this.circlingCenter.getZ()
 				);
 			}
 		}
@@ -498,7 +498,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				} else {
 					if (PhantomEntity.this.age > this.nextCatCheckAge) {
 						this.nextCatCheckAge = PhantomEntity.this.age + 20;
-						List<CatEntity> list = PhantomEntity.this.world
+						List<CatEntity> list = PhantomEntity.this.getWorld()
 							.getEntitiesByClass(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
 
 						for (CatEntity catEntity : list) {
@@ -532,7 +532,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 					PhantomEntity.this.tryAttack(livingEntity);
 					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;
 					if (!PhantomEntity.this.isSilent()) {
-						PhantomEntity.this.world.syncWorldEvent(WorldEvents.PHANTOM_BITES, PhantomEntity.this.getBlockPos(), 0);
+						PhantomEntity.this.getWorld().syncWorldEvent(WorldEvents.PHANTOM_BITES, PhantomEntity.this.getBlockPos(), 0);
 					}
 				} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
 					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.CIRCLE;

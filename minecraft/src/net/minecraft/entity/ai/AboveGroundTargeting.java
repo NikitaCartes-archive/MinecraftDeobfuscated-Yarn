@@ -27,7 +27,7 @@ public class AboveGroundTargeting {
 						blockPos2 = FuzzyPositions.upWhile(
 							blockPos2,
 							entity.getRandom().nextInt(maxAboveSolid - minAboveSolid + 1) + minAboveSolid,
-							entity.world.getTopY(),
+							entity.getWorld().getTopY(),
 							pos -> NavigationConditions.isSolidAt(entity, pos)
 						);
 						return !NavigationConditions.isWaterAt(entity, blockPos2) && !NavigationConditions.hasPathfindingPenalty(entity, blockPos2) ? blockPos2 : null;

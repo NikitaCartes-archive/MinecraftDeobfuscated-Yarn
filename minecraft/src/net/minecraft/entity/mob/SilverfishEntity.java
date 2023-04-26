@@ -45,7 +45,7 @@ public class SilverfishEntity extends HostileEntity {
 	protected void initGoals() {
 		this.callForHelpGoal = new SilverfishEntity.CallForHelpGoal(this);
 		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(1, new PowderSnowJumpGoal(this, this.world));
+		this.goalSelector.add(1, new PowderSnowJumpGoal(this, this.getWorld()));
 		this.goalSelector.add(3, this.callForHelpGoal);
 		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
 		this.goalSelector.add(5, new SilverfishEntity.WanderAndInfestGoal(this));
@@ -162,7 +162,7 @@ public class SilverfishEntity extends HostileEntity {
 		public void tick() {
 			this.delay--;
 			if (this.delay <= 0) {
-				World world = this.silverfish.world;
+				World world = this.silverfish.getWorld();
 				Random random = this.silverfish.getRandom();
 				BlockPos blockPos = this.silverfish.getBlockPos();
 
@@ -208,10 +208,10 @@ public class SilverfishEntity extends HostileEntity {
 				return false;
 			} else {
 				Random random = this.mob.getRandom();
-				if (this.mob.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && random.nextInt(toGoalTicks(10)) == 0) {
+				if (this.mob.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && random.nextInt(toGoalTicks(10)) == 0) {
 					this.direction = Direction.random(random);
 					BlockPos blockPos = BlockPos.ofFloored(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
-					BlockState blockState = this.mob.world.getBlockState(blockPos);
+					BlockState blockState = this.mob.getWorld().getBlockState(blockPos);
 					if (InfestedBlock.isInfestable(blockState)) {
 						this.canInfest = true;
 						return true;
@@ -233,7 +233,7 @@ public class SilverfishEntity extends HostileEntity {
 			if (!this.canInfest) {
 				super.start();
 			} else {
-				WorldAccess worldAccess = this.mob.world;
+				WorldAccess worldAccess = this.mob.getWorld();
 				BlockPos blockPos = BlockPos.ofFloored(this.mob.getX(), this.mob.getY() + 0.5, this.mob.getZ()).offset(this.direction);
 				BlockState blockState = worldAccess.getBlockState(blockPos);
 				if (InfestedBlock.isInfestable(blockState)) {

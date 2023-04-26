@@ -47,8 +47,8 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	public Entity getOwner() {
 		if (this.owner != null && !this.owner.isRemoved()) {
 			return this.owner;
-		} else if (this.ownerUuid != null && this.world instanceof ServerWorld) {
-			this.owner = ((ServerWorld)this.world).getEntity(this.ownerUuid);
+		} else if (this.ownerUuid != null && this.getWorld() instanceof ServerWorld) {
+			this.owner = ((ServerWorld)this.getWorld()).getEntity(this.ownerUuid);
 			return this.owner;
 		} else {
 			return null;
@@ -108,7 +108,7 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	private boolean shouldLeaveOwner() {
 		Entity entity = this.getOwner();
 		if (entity != null) {
-			for (Entity entity2 : this.world
+			for (Entity entity2 : this.getWorld()
 				.getOtherEntities(this, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entityx -> !entityx.isSpectator() && entityx.canHit())) {
 				if (entity2.getRootVehicle() == entity.getRootVehicle()) {
 					return false;
@@ -179,12 +179,12 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 		HitResult.Type type = hitResult.getType();
 		if (type == HitResult.Type.ENTITY) {
 			this.onEntityHit((EntityHitResult)hitResult);
-			this.world.emitGameEvent(GameEvent.PROJECTILE_LAND, hitResult.getPos(), GameEvent.Emitter.of(this, null));
+			this.getWorld().emitGameEvent(GameEvent.PROJECTILE_LAND, hitResult.getPos(), GameEvent.Emitter.of(this, null));
 		} else if (type == HitResult.Type.BLOCK) {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			this.onBlockHit(blockHitResult);
 			BlockPos blockPos = blockHitResult.getBlockPos();
-			this.world.emitGameEvent(GameEvent.PROJECTILE_LAND, blockPos, GameEvent.Emitter.of(this, this.world.getBlockState(blockPos)));
+			this.getWorld().emitGameEvent(GameEvent.PROJECTILE_LAND, blockPos, GameEvent.Emitter.of(this, this.getWorld().getBlockState(blockPos)));
 		}
 	}
 
@@ -192,8 +192,8 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	}
 
 	protected void onBlockHit(BlockHitResult blockHitResult) {
-		BlockState blockState = this.world.getBlockState(blockHitResult.getBlockPos());
-		blockState.onProjectileHit(this.world, blockState, blockHitResult, this);
+		BlockState blockState = this.getWorld().getBlockState(blockHitResult.getBlockPos());
+		blockState.onProjectileHit(this.getWorld(), blockState, blockHitResult, this);
 	}
 
 	@Override
@@ -246,7 +246,7 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	@Override
 	public void onSpawnPacket(EntitySpawnS2CPacket packet) {
 		super.onSpawnPacket(packet);
-		Entity entity = this.world.getEntityById(packet.getEntityData());
+		Entity entity = this.getWorld().getEntityById(packet.getEntityData());
 		if (entity != null) {
 			this.setOwner(entity);
 		}

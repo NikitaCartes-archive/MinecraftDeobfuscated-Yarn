@@ -96,8 +96,8 @@ public class MoveControl implements Control {
 			this.entity.setYaw(this.wrapDegrees(this.entity.getYaw(), n, 90.0F));
 			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
 			BlockPos blockPos = this.entity.getBlockPos();
-			BlockState blockState = this.entity.world.getBlockState(blockPos);
-			VoxelShape voxelShape = blockState.getCollisionShape(this.entity.world, blockPos);
+			BlockState blockState = this.entity.getWorld().getBlockState(blockPos);
+			VoxelShape voxelShape = blockState.getCollisionShape(this.entity.getWorld(), blockPos);
 			if (o > (double)this.entity.getStepHeight() && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())
 				|| !voxelShape.isEmpty()
 					&& this.entity.getY() < voxelShape.getMax(Direction.Axis.Y) + (double)blockPos.getY()
@@ -122,7 +122,7 @@ public class MoveControl implements Control {
 			PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
 			if (pathNodeMaker != null
 				&& pathNodeMaker.getDefaultNodeType(
-						this.entity.world, MathHelper.floor(this.entity.getX() + (double)x), this.entity.getBlockY(), MathHelper.floor(this.entity.getZ() + (double)z)
+						this.entity.getWorld(), MathHelper.floor(this.entity.getX() + (double)x), this.entity.getBlockY(), MathHelper.floor(this.entity.getZ() + (double)z)
 					)
 					!= PathNodeType.WALKABLE) {
 				return false;

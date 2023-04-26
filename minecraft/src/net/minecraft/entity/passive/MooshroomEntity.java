@@ -105,19 +105,19 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 			}
 
 			this.playSound(soundEvent, 1.0F, 1.0F);
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
 			this.sheared(SoundCategory.PLAYERS);
 			this.emitGameEvent(GameEvent.SHEAR, player);
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
 			}
 
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else if (this.getVariant() == MooshroomEntity.Type.BROWN && itemStack.isIn(ItemTags.SMALL_FLOWERS)) {
 			if (this.stewEffect != null) {
 				for (int i = 0; i < 2; i++) {
-					this.world
+					this.getWorld()
 						.addParticle(
 							ParticleTypes.SMOKE,
 							this.getX() + this.random.nextDouble() / 2.0,
@@ -140,7 +140,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 				}
 
 				for (int j = 0; j < 4; j++) {
-					this.world
+					this.getWorld()
 						.addParticle(
 							ParticleTypes.EFFECT,
 							this.getX() + this.random.nextDouble() / 2.0,
@@ -157,7 +157,7 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 				this.playSound(SoundEvents.ENTITY_MOOSHROOM_EAT, 2.0F, 1.0F);
 			}
 
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			return super.interactMob(player, hand);
 		}
@@ -165,11 +165,11 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 
 	@Override
 	public void sheared(SoundCategory shearedSoundCategory) {
-		this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
-		if (!this.world.isClient()) {
-			CowEntity cowEntity = EntityType.COW.create(this.world);
+		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_MOOSHROOM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+		if (!this.getWorld().isClient()) {
+			CowEntity cowEntity = EntityType.COW.create(this.getWorld());
 			if (cowEntity != null) {
-				((ServerWorld)this.world).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
+				((ServerWorld)this.getWorld()).spawnParticles(ParticleTypes.EXPLOSION, this.getX(), this.getBodyY(0.5), this.getZ(), 1, 0.0, 0.0, 0.0, 0.0);
 				this.discard();
 				cowEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
 				cowEntity.setHealth(this.getHealth());
@@ -184,10 +184,11 @@ public class MooshroomEntity extends CowEntity implements Shearable, VariantHold
 				}
 
 				cowEntity.setInvulnerable(this.isInvulnerable());
-				this.world.spawnEntity(cowEntity);
+				this.getWorld().spawnEntity(cowEntity);
 
 				for (int i = 0; i < 5; i++) {
-					this.world.spawnEntity(new ItemEntity(this.world, this.getX(), this.getBodyY(1.0), this.getZ(), new ItemStack(this.getVariant().mushroom.getBlock())));
+					this.getWorld()
+						.spawnEntity(new ItemEntity(this.getWorld(), this.getX(), this.getBodyY(1.0), this.getZ(), new ItemStack(this.getVariant().mushroom.getBlock())));
 				}
 			}
 		}

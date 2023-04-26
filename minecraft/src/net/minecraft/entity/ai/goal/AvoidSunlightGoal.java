@@ -14,7 +14,7 @@ public class AvoidSunlightGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.world.isDay() && this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() && NavigationConditions.hasMobNavigation(this.mob);
+		return this.mob.getWorld().isDay() && this.mob.getEquippedStack(EquipmentSlot.HEAD).isEmpty() && NavigationConditions.hasMobNavigation(this.mob);
 	}
 
 	@Override

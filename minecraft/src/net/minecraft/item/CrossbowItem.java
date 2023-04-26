@@ -104,11 +104,11 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 		}
 	}
 
-	private static boolean loadProjectiles(LivingEntity shooter, ItemStack projectile) {
-		int i = EnchantmentHelper.getLevel(Enchantments.MULTISHOT, projectile);
+	private static boolean loadProjectiles(LivingEntity shooter, ItemStack crossbow) {
+		int i = EnchantmentHelper.getLevel(Enchantments.MULTISHOT, crossbow);
 		int j = i == 0 ? 1 : 3;
 		boolean bl = shooter instanceof PlayerEntity && ((PlayerEntity)shooter).getAbilities().creativeMode;
-		ItemStack itemStack = shooter.getProjectileType(projectile);
+		ItemStack itemStack = shooter.getProjectileType(crossbow);
 		ItemStack itemStack2 = itemStack.copy();
 
 		for (int k = 0; k < j; k++) {
@@ -121,7 +121,7 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 				itemStack2 = itemStack.copy();
 			}
 
-			if (!loadProjectile(shooter, projectile, itemStack, k > 0, bl)) {
+			if (!loadProjectile(shooter, crossbow, itemStack, k > 0, bl)) {
 				return false;
 			}
 		}

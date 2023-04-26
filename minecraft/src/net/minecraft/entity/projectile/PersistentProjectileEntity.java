@@ -137,9 +137,9 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		}
 
 		BlockPos blockPos = this.getBlockPos();
-		BlockState blockState = this.world.getBlockState(blockPos);
+		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		if (!blockState.isAir() && !bl) {
-			VoxelShape voxelShape = blockState.getCollisionShape(this.world, blockPos);
+			VoxelShape voxelShape = blockState.getCollisionShape(this.getWorld(), blockPos);
 			if (!voxelShape.isEmpty()) {
 				Vec3d vec3d2 = this.getPos();
 
@@ -163,7 +163,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		if (this.inGround && !bl) {
 			if (this.inBlockState != blockState && this.shouldFall()) {
 				this.fall();
-			} else if (!this.world.isClient) {
+			} else if (!this.getWorld().isClient) {
 				this.age();
 			}
 
@@ -172,7 +172,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.inGroundTime = 0;
 			Vec3d vec3d3 = this.getPos();
 			Vec3d vec3d2 = vec3d3.add(vec3d);
-			HitResult hitResult = this.world.raycast(new RaycastContext(vec3d3, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
+			HitResult hitResult = this.getWorld()
+				.raycast(new RaycastContext(vec3d3, vec3d2, RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, this));
 			if (hitResult.getType() != HitResult.Type.MISS) {
 				vec3d2 = hitResult.getPos();
 			}
@@ -210,7 +211,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			double g = vec3d.z;
 			if (this.isCritical()) {
 				for (int i = 0; i < 4; i++) {
-					this.world
+					this.getWorld()
 						.addParticle(
 							ParticleTypes.CRIT, this.getX() + e * (double)i / 4.0, this.getY() + f * (double)i / 4.0, this.getZ() + g * (double)i / 4.0, -e, -f + 0.2, -g
 						);
@@ -235,7 +236,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			if (this.isTouchingWater()) {
 				for (int o = 0; o < 4; o++) {
 					float p = 0.25F;
-					this.world.addParticle(ParticleTypes.BUBBLE, h - e * 0.25, j - f * 0.25, k - g * 0.25, e, f, g);
+					this.getWorld().addParticle(ParticleTypes.BUBBLE, h - e * 0.25, j - f * 0.25, k - g * 0.25, e, f, g);
 				}
 
 				m = this.getDragInWater();
@@ -253,7 +254,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	private boolean shouldFall() {
-		return this.inGround && this.world.isSpaceEmpty(new Box(this.getPos(), this.getPos()).expand(0.06));
+		return this.inGround && this.getWorld().isSpaceEmpty(new Box(this.getPos(), this.getPos()).expand(0.06));
 	}
 
 	private void fall() {
@@ -339,7 +340,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			}
 
 			if (entity instanceof LivingEntity livingEntity) {
-				if (!this.world.isClient && this.getPierceLevel() <= 0) {
+				if (!this.getWorld().isClient && this.getPierceLevel() <= 0) {
 					livingEntity.setStuckArrowCount(livingEntity.getStuckArrowCount() + 1);
 				}
 
@@ -351,7 +352,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 					}
 				}
 
-				if (!this.world.isClient && entity2 instanceof LivingEntity) {
+				if (!this.getWorld().isClient && entity2 instanceof LivingEntity) {
 					EnchantmentHelper.onUserDamaged(livingEntity, entity2);
 					EnchantmentHelper.onTargetDamaged((LivingEntity)entity2, livingEntity);
 				}
@@ -367,7 +368,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 					this.piercingKilledEntities.add(livingEntity);
 				}
 
-				if (!this.world.isClient && entity2 instanceof ServerPlayerEntity serverPlayerEntity) {
+				if (!this.getWorld().isClient && entity2 instanceof ServerPlayerEntity serverPlayerEntity) {
 					if (this.piercingKilledEntities != null && this.isShotFromCrossbow()) {
 						Criteria.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, this.piercingKilledEntities);
 					} else if (!entity.isAlive() && this.isShotFromCrossbow()) {
@@ -385,7 +386,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 			this.setVelocity(this.getVelocity().multiply(-0.1));
 			this.setYaw(this.getYaw() + 180.0F);
 			this.prevYaw += 180.0F;
-			if (!this.world.isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
+			if (!this.getWorld().isClient && this.getVelocity().lengthSquared() < 1.0E-7) {
 				if (this.pickupType == PersistentProjectileEntity.PickupPermission.ALLOWED) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
@@ -397,7 +398,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	protected void onBlockHit(BlockHitResult blockHitResult) {
-		this.inBlockState = this.world.getBlockState(blockHitResult.getBlockPos());
+		this.inBlockState = this.getWorld().getBlockState(blockHitResult.getBlockPos());
 		super.onBlockHit(blockHitResult);
 		Vec3d vec3d = blockHitResult.getPos().subtract(this.getX(), this.getY(), this.getZ());
 		this.setVelocity(vec3d);
@@ -427,7 +428,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	@Nullable
 	protected EntityHitResult getEntityCollision(Vec3d currentPosition, Vec3d nextPosition) {
 		return ProjectileUtil.getEntityCollision(
-			this.world, this, currentPosition, nextPosition, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), this::canHit
+			this.getWorld(), this, currentPosition, nextPosition, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), this::canHit
 		);
 	}
 
@@ -459,7 +460,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 		super.readCustomDataFromNbt(nbt);
 		this.life = nbt.getShort("life");
 		if (nbt.contains("inBlockState", NbtElement.COMPOUND_TYPE)) {
-			this.inBlockState = NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("inBlockState"));
+			this.inBlockState = NbtHelper.toBlockState(this.getWorld().createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("inBlockState"));
 		}
 
 		this.shake = nbt.getByte("shake") & 255;
@@ -490,7 +491,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	public void onPlayerCollision(PlayerEntity player) {
-		if (!this.world.isClient && (this.inGround || this.isNoClip()) && this.shake <= 0) {
+		if (!this.getWorld().isClient && (this.inGround || this.isNoClip()) && this.shake <= 0) {
 			if (this.tryPickup(player)) {
 				player.sendPickup(this, 1);
 				this.discard();
@@ -576,7 +577,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	public void applyEnchantmentEffects(LivingEntity entity, float damageModifier) {
 		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.POWER, entity);
 		int j = EnchantmentHelper.getEquipmentLevel(Enchantments.PUNCH, entity);
-		this.setDamage((double)(damageModifier * 2.0F) + this.random.nextTriangular((double)this.world.getDifficulty().getId() * 0.11, 0.57425));
+		this.setDamage((double)(damageModifier * 2.0F) + this.random.nextTriangular((double)this.getWorld().getDifficulty().getId() * 0.11, 0.57425));
 		if (i > 0) {
 			this.setDamage(this.getDamage() + (double)i * 0.5 + 0.5);
 		}
@@ -600,7 +601,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	public boolean isNoClip() {
-		return !this.world.isClient ? this.noClip : (this.dataTracker.get(PROJECTILE_FLAGS) & 2) != 0;
+		return !this.getWorld().isClient ? this.noClip : (this.dataTracker.get(PROJECTILE_FLAGS) & 2) != 0;
 	}
 
 	public void setShotFromCrossbow(boolean shotFromCrossbow) {

@@ -70,8 +70,8 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 		BlockPos blockPos2 = BlockPos.ofFloored(holdingEntity.getCameraPosVec(tickDelta));
 		int q = this.getBlockLight(entity, blockPos);
 		int r = this.dispatcher.getRenderer(holdingEntity).getBlockLight(holdingEntity, blockPos2);
-		int s = entity.world.getLightLevel(LightType.SKY, blockPos);
-		int t = entity.world.getLightLevel(LightType.SKY, blockPos2);
+		int s = entity.getWorld().getLightLevel(LightType.SKY, blockPos);
+		int t = entity.getWorld().getLightLevel(LightType.SKY, blockPos2);
 
 		for (int u = 0; u <= 24; u++) {
 			renderLeashPiece(vertexConsumer, matrix4f, j, k, l, q, r, s, t, 0.025F, 0.025F, o, p, u, false);

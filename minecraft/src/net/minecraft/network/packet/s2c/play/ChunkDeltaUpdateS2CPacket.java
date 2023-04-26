@@ -22,21 +22,19 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 	 */
 	private final short[] positions;
 	private final BlockState[] blockStates;
-	private final boolean noLightingUpdates;
 
 	/**
 	 * @param sectionPos the position of the given chunk section that will be sent to the client
 	 */
-	public ChunkDeltaUpdateS2CPacket(ChunkSectionPos sectionPos, ShortSet positions, ChunkSection section, boolean noLightingUpdates) {
+	public ChunkDeltaUpdateS2CPacket(ChunkSectionPos sectionPos, ShortSet positions, ChunkSection section) {
 		this.sectionPos = sectionPos;
-		this.noLightingUpdates = noLightingUpdates;
 		int i = positions.size();
 		this.positions = new short[i];
 		this.blockStates = new BlockState[i];
 		int j = 0;
 
-		for (ShortIterator var7 = positions.iterator(); var7.hasNext(); j++) {
-			short s = (Short)var7.next();
+		for (ShortIterator var6 = positions.iterator(); var6.hasNext(); j++) {
+			short s = (Short)var6.next();
 			this.positions[j] = s;
 			this.blockStates[j] = section.getBlockState(ChunkSectionPos.unpackLocalX(s), ChunkSectionPos.unpackLocalY(s), ChunkSectionPos.unpackLocalZ(s));
 		}
@@ -44,7 +42,6 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 
 	public ChunkDeltaUpdateS2CPacket(PacketByteBuf buf) {
 		this.sectionPos = ChunkSectionPos.from(buf.readLong());
-		this.noLightingUpdates = buf.readBoolean();
 		int i = buf.readVarInt();
 		this.positions = new short[i];
 		this.blockStates = new BlockState[i];
@@ -59,7 +56,6 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeLong(this.sectionPos.asLong());
-		buf.writeBoolean(this.noLightingUpdates);
 		buf.writeVarInt(this.positions.length);
 
 		for (int i = 0; i < this.positions.length; i++) {
@@ -82,9 +78,5 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 			mutable.set(this.sectionPos.unpackBlockX(s), this.sectionPos.unpackBlockY(s), this.sectionPos.unpackBlockZ(s));
 			visitor.accept(mutable, this.blockStates[i]);
 		}
-	}
-
-	public boolean shouldSkipLightingUpdates() {
-		return this.noLightingUpdates;
 	}
 }

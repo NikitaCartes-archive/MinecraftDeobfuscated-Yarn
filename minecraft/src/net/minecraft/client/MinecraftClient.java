@@ -10,6 +10,7 @@ import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.minecraft.UserApiService.UserFlag;
 import com.mojang.authlib.properties.PropertyMap;
+import com.mojang.authlib.yggdrasil.ServicesKeyType;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.GlDebugInfo;
@@ -370,7 +371,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	);
 	private final YggdrasilAuthenticationService authenticationService;
 	private final MinecraftSessionService sessionService;
-	private final SignatureVerifier servicesSignatureVerifier;
 	private final UserApiService userApiService;
 	private final PlayerSkinProvider skinProvider;
 	private final BakedModelManager bakedModelManager;
@@ -492,7 +492,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.authenticationService = new YggdrasilAuthenticationService(this.networkProxy);
 		this.sessionService = this.authenticationService.createMinecraftSessionService();
 		this.userApiService = this.createUserApiService(this.authenticationService, args);
-		this.servicesSignatureVerifier = SignatureVerifier.create(this.authenticationService.getServicesKey());
 		this.session = args.network.session;
 		LOGGER.info("Setting user: {}", this.session.getUsername());
 		LOGGER.debug("(Session ID is {})", this.session.getSessionId());
@@ -561,7 +560,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.fontManager = new FontManager(this.textureManager);
 		this.textRenderer = this.fontManager.createTextRenderer();
 		this.advanceValidatingTextRenderer = this.fontManager.createAdvanceValidatingTextRenderer();
-		this.resourceManager.registerReloader(this.fontManager.getResourceReloadListener());
+		this.resourceManager.registerReloader(this.fontManager);
 		this.initFont(this.forcesUnicodeFont());
 		this.resourceManager.registerReloader(new GrassColormapResourceSupplier());
 		this.resourceManager.registerReloader(new FoliageColormapResourceSupplier());
@@ -2543,12 +2542,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		if (musicSound != null) {
 			return musicSound;
 		} else if (this.player != null) {
-			if (this.player.world.getRegistryKey() == World.END) {
+			if (this.player.getWorld().getRegistryKey() == World.END) {
 				return this.inGameHud.getBossBarHud().shouldPlayDragonMusic() ? MusicType.DRAGON : MusicType.END;
 			} else {
-				RegistryEntry<Biome> registryEntry = this.player.world.getBiome(this.player.getBlockPos());
+				RegistryEntry<Biome> registryEntry = this.player.getWorld().getBiome(this.player.getBlockPos());
 				if (!this.musicTracker.isPlayingType(MusicType.UNDERWATER) && (!this.player.isSubmergedInWater() || !registryEntry.isIn(BiomeTags.PLAYS_UNDERWATER_MUSIC))) {
-					return this.player.world.getRegistryKey() != World.NETHER && this.player.getAbilities().creativeMode && this.player.getAbilities().allowFlying
+					return this.player.getWorld().getRegistryKey() != World.NETHER && this.player.getAbilities().creativeMode && this.player.getAbilities().allowFlying
 						? MusicType.CREATIVE
 						: (MusicSound)registryEntry.value().getMusic().orElse(MusicType.GAME);
 				} else {
@@ -2881,8 +2880,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.realms32BitWarningChecker;
 	}
 
+	@Nullable
 	public SignatureVerifier getServicesSignatureVerifier() {
-		return this.servicesSignatureVerifier;
+		return SignatureVerifier.create(this.authenticationService.getServicesKeySet(), ServicesKeyType.PROFILE_KEY);
 	}
 
 	public GuiNavigationType getNavigationType() {

@@ -31,17 +31,13 @@ public interface ChunkLightingView extends LightingView {
 		}
 
 		@Override
-		public void addLightSource(BlockPos pos, int level) {
-		}
-
-		@Override
 		public boolean hasUpdates() {
 			return false;
 		}
 
 		@Override
-		public int doLightUpdates(int i, boolean doSkylight, boolean skipEdgeLightPropagation) {
-			return i;
+		public int doLightUpdates() {
+			return 0;
 		}
 
 		@Override
@@ -50,6 +46,10 @@ public interface ChunkLightingView extends LightingView {
 
 		@Override
 		public void setColumnEnabled(ChunkPos pos, boolean retainData) {
+		}
+
+		@Override
+		public void propagateLight(ChunkPos chunkPos) {
 		}
 	}
 }

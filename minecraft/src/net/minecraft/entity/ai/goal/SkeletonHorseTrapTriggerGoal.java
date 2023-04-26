@@ -23,12 +23,12 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.skeletonHorse.world.isPlayerInRange(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ(), 10.0);
+		return this.skeletonHorse.getWorld().isPlayerInRange(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ(), 10.0);
 	}
 
 	@Override
 	public void tick() {
-		ServerWorld serverWorld = (ServerWorld)this.skeletonHorse.world;
+		ServerWorld serverWorld = (ServerWorld)this.skeletonHorse.getWorld();
 		LocalDifficulty localDifficulty = serverWorld.getLocalDifficulty(this.skeletonHorse.getBlockPos());
 		this.skeletonHorse.setTrapped(false);
 		this.skeletonHorse.setTame(true);
@@ -62,9 +62,9 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 
 	@Nullable
 	private AbstractHorseEntity getHorse(LocalDifficulty localDifficulty) {
-		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.world);
+		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.getWorld());
 		if (skeletonHorseEntity != null) {
-			skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
+			skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.getWorld(), localDifficulty, SpawnReason.TRIGGERED, null, null);
 			skeletonHorseEntity.setPosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
 			skeletonHorseEntity.timeUntilRegen = 60;
 			skeletonHorseEntity.setPersistent();
@@ -77,9 +77,9 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 
 	@Nullable
 	private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, AbstractHorseEntity vehicle) {
-		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.world);
+		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.getWorld());
 		if (skeletonEntity != null) {
-			skeletonEntity.initialize((ServerWorld)vehicle.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
+			skeletonEntity.initialize((ServerWorld)vehicle.getWorld(), localDifficulty, SpawnReason.TRIGGERED, null, null);
 			skeletonEntity.setPosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());
 			skeletonEntity.timeUntilRegen = 60;
 			skeletonEntity.setPersistent();

@@ -19,7 +19,7 @@ public abstract class PathAwareEntity extends MobEntity {
 	}
 
 	public float getPathfindingFavor(BlockPos pos) {
-		return this.getPathfindingFavor(pos, this.world);
+		return this.getPathfindingFavor(pos, this.getWorld());
 	}
 
 	public float getPathfindingFavor(BlockPos pos, WorldView world) {
@@ -39,7 +39,7 @@ public abstract class PathAwareEntity extends MobEntity {
 	protected void updateLeash() {
 		super.updateLeash();
 		Entity entity = this.getHoldingEntity();
-		if (entity != null && entity.world == this.world) {
+		if (entity != null && entity.getWorld() == this.getWorld()) {
 			this.setPositionTarget(entity.getBlockPos(), 5);
 			float f = this.distanceTo(entity);
 			if (this instanceof TameableEntity && ((TameableEntity)this).isInSittingPose()) {

@@ -72,6 +72,6 @@ public class CalibratedSculkSensorBlock extends SculkSensorBlock {
 
 	@Override
 	public int getCooldownTime() {
-		return 20;
+		return 10;
 	}
 }

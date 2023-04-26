@@ -35,7 +35,7 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 
 	public void trigger(ServerPlayerEntity player, BlockPos pos, ItemStack stack) {
 		BlockState blockState = player.getWorld().getBlockState(pos);
-		this.trigger(player, conditions -> conditions.test(blockState, player.getWorld(), pos, stack));
+		this.trigger(player, conditions -> conditions.test(blockState, player.getServerWorld(), pos, stack));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

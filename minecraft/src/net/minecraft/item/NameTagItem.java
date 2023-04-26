@@ -14,7 +14,7 @@ public class NameTagItem extends Item {
 	@Override
 	public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
 		if (stack.hasCustomName() && !(entity instanceof PlayerEntity)) {
-			if (!user.world.isClient && entity.isAlive()) {
+			if (!user.getWorld().isClient && entity.isAlive()) {
 				entity.setCustomName(stack.getName());
 				if (entity instanceof MobEntity) {
 					((MobEntity)entity).setPersistent();
@@ -23,7 +23,7 @@ public class NameTagItem extends Item {
 				stack.decrement(1);
 			}
 
-			return ActionResult.success(user.world.isClient);
+			return ActionResult.success(user.getWorld().isClient);
 		} else {
 			return ActionResult.PASS;
 		}

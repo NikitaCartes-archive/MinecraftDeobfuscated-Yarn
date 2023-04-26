@@ -87,12 +87,12 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 	@Override
 	public void tickMovement() {
-		if (this.world instanceof ServerWorld && this.isAlive()) {
+		if (this.getWorld() instanceof ServerWorld && this.isAlive()) {
 			Raid raid = this.getRaid();
 			if (this.canJoinRaid()) {
 				if (raid == null) {
-					if (this.world.getTime() % 20L == 0L) {
-						Raid raid2 = ((ServerWorld)this.world).getRaidAt(this.getBlockPos());
+					if (this.getWorld().getTime() % 20L == 0L) {
+						Raid raid2 = ((ServerWorld)this.getWorld()).getRaidAt(this.getBlockPos());
 						if (raid2 != null && RaidManager.isValidRaiderFor(this, raid2)) {
 							raid2.addRaider(raid2.getGroupsSpawned(), this, null, true);
 						}
@@ -116,7 +116,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		if (this.world instanceof ServerWorld) {
+		if (this.getWorld() instanceof ServerWorld) {
 			Entity entity = damageSource.getAttacker();
 			Raid raid = this.getRaid();
 			if (raid != null) {
@@ -131,7 +131,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				raid.removeFromWave(this, false);
 			}
 
-			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.world).getRaidAt(this.getBlockPos()) == null) {
+			if (this.isPatrolLeader() && raid == null && ((ServerWorld)this.getWorld()).getRaidAt(this.getBlockPos()) == null) {
 				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 				PlayerEntity playerEntity = null;
 				if (entity instanceof PlayerEntity) {
@@ -155,7 +155,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 					i = MathHelper.clamp(i, 0, 4);
 					StatusEffectInstance statusEffectInstance2 = new StatusEffectInstance(StatusEffects.BAD_OMEN, 120000, i, false, false, true);
-					if (!this.world.getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
+					if (!this.getWorld().getGameRules().getBoolean(GameRules.DISABLE_RAIDS)) {
 						playerEntity.addStatusEffect(statusEffectInstance2);
 					}
 				}
@@ -215,8 +215,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 		this.wave = nbt.getInt("Wave");
 		this.ableToJoinRaid = nbt.getBoolean("CanJoinRaid");
 		if (nbt.contains("RaidId", NbtElement.INT_TYPE)) {
-			if (this.world instanceof ServerWorld) {
-				this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(nbt.getInt("RaidId"));
+			if (this.getWorld() instanceof ServerWorld) {
+				this.raid = ((ServerWorld)this.getWorld()).getRaidManager().getRaid(nbt.getInt("RaidId"));
 			}
 
 			if (this.raid != null) {
@@ -315,7 +315,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		}
 
 		private boolean tryFindHome() {
-			ServerWorld serverWorld = (ServerWorld)this.raider.world;
+			ServerWorld serverWorld = (ServerWorld)this.raider.getWorld();
 			BlockPos blockPos = this.raider.getBlockPos();
 			Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
 				.getPosition(
@@ -463,7 +463,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			this.raider.getNavigation().stop();
 
 			for (RaiderEntity raiderEntity : this.raider
-				.world
+				.getWorld()
 				.getTargets(RaiderEntity.class, this.closeRaiderPredicate, this.raider, this.raider.getBoundingBox().expand(8.0, 8.0, 8.0))) {
 				raiderEntity.setTarget(this.raider.getTarget());
 			}
@@ -475,7 +475,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			LivingEntity livingEntity = this.raider.getTarget();
 			if (livingEntity != null) {
 				for (RaiderEntity raiderEntity : this.raider
-					.world
+					.getWorld()
 					.getTargets(RaiderEntity.class, this.closeRaiderPredicate, this.raider, this.raider.getBoundingBox().expand(8.0, 8.0, 8.0))) {
 					raiderEntity.setTarget(livingEntity);
 					raiderEntity.setAttacking(true);
@@ -526,7 +526,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 				RaiderEntity raiderEntity = raid.getCaptain(this.actor.getWave());
 				if (raiderEntity == null || !raiderEntity.isAlive()) {
 					List<ItemEntity> list = this.actor
-						.world
+						.getWorld()
 						.getEntitiesByClass(ItemEntity.class, this.actor.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
 					if (!list.isEmpty()) {
 						return this.actor.getNavigation().startMovingTo((Entity)list.get(0), 1.15F);
@@ -543,7 +543,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		public void tick() {
 			if (this.actor.getNavigation().getTargetPos().isWithinDistance(this.actor.getPos(), 1.414)) {
 				List<ItemEntity> list = this.actor
-					.world
+					.getWorld()
 					.getEntitiesByClass(ItemEntity.class, this.actor.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
 				if (!list.isEmpty()) {
 					this.actor.loot((ItemEntity)list.get(0));

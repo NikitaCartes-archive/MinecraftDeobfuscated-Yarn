@@ -22,7 +22,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		BlockPos blockPos = this.client.player.getBlockPos();
-		WorldView worldView = this.client.player.world;
+		WorldView worldView = this.client.player.getWorld();
 
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
 			FluidState fluidState = worldView.getFluidState(blockPos2);

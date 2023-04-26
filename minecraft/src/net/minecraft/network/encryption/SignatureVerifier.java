@@ -1,10 +1,14 @@
 package net.minecraft.network.encryption;
 
 import com.mojang.authlib.yggdrasil.ServicesKeyInfo;
+import com.mojang.authlib.yggdrasil.ServicesKeySet;
+import com.mojang.authlib.yggdrasil.ServicesKeyType;
 import com.mojang.logging.LogUtils;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.util.Collection;
+import javax.annotation.Nullable;
 import org.slf4j.Logger;
 
 public interface SignatureVerifier {
@@ -35,16 +39,18 @@ public interface SignatureVerifier {
 		};
 	}
 
-	static SignatureVerifier create(ServicesKeyInfo servicesKeyInfo) {
-		return (updatable, signatureData) -> {
-			Signature signature = servicesKeyInfo.signature();
+	@Nullable
+	static SignatureVerifier create(ServicesKeySet servicesKeySet, ServicesKeyType servicesKeyType) {
+		Collection<ServicesKeyInfo> collection = servicesKeySet.keys(servicesKeyType);
+		return collection.isEmpty() ? null : (updatable, signatureData) -> collection.stream().anyMatch(keyInfo -> {
+				Signature signature = keyInfo.signature();
 
-			try {
-				return verify(updatable, signatureData, signature);
-			} catch (SignatureException var5) {
-				LOGGER.error("Failed to verify Services signature", (Throwable)var5);
-				return false;
-			}
-		};
+				try {
+					return verify(updatable, signatureData, signature);
+				} catch (SignatureException var5) {
+					LOGGER.error("Failed to verify Services signature", (Throwable)var5);
+					return false;
+				}
+			});
 	}
 }

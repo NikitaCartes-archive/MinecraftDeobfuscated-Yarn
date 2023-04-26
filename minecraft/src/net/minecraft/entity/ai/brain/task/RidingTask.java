@@ -28,6 +28,6 @@ public class RidingTask {
 	}
 
 	private static boolean canRideTarget(LivingEntity entity, Entity vehicle, int range) {
-		return vehicle.isAlive() && vehicle.isInRange(entity, (double)range) && vehicle.world == entity.world;
+		return vehicle.isAlive() && vehicle.isInRange(entity, (double)range) && vehicle.getWorld() == entity.getWorld();
 	}
 }

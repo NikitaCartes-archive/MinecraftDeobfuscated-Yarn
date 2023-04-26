@@ -26,6 +26,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.random.Random;
+import org.apache.commons.lang3.StringUtils;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
@@ -48,6 +49,7 @@ public class CreditsScreen extends Screen {
 	private final IntSet pressedCtrlKeys = new IntOpenHashSet();
 	private float speed;
 	private final float baseSpeed;
+	private int speedMultiplier;
 	private final LogoDrawer logoDrawer = new LogoDrawer(false);
 
 	public CreditsScreen(boolean endCredits, Runnable finishAction) {
@@ -60,11 +62,14 @@ public class CreditsScreen extends Screen {
 			this.baseSpeed = 0.5F;
 		}
 
+		this.speedMultiplier = 1;
 		this.speed = this.baseSpeed;
 	}
 
 	private float getSpeed() {
-		return this.spaceKeyPressed ? this.baseSpeed * (5.0F + (float)this.pressedCtrlKeys.size() * 15.0F) : this.baseSpeed;
+		return this.spaceKeyPressed
+			? this.baseSpeed * (5.0F + (float)this.pressedCtrlKeys.size() * 15.0F) * (float)this.speedMultiplier
+			: this.baseSpeed * (float)this.speedMultiplier;
 	}
 
 	@Override
@@ -79,7 +84,9 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
+		if (keyCode == GLFW.GLFW_KEY_UP) {
+			this.speedMultiplier = -1;
+		} else if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
 			this.pressedCtrlKeys.add(keyCode);
 		} else if (keyCode == GLFW.GLFW_KEY_SPACE) {
 			this.spaceKeyPressed = true;
@@ -91,6 +98,10 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == GLFW.GLFW_KEY_UP) {
+			this.speedMultiplier = 1;
+		}
+
 		if (keyCode == GLFW.GLFW_KEY_SPACE) {
 			this.spaceKeyPressed = false;
 		} else if (keyCode == GLFW.GLFW_KEY_LEFT_CONTROL || keyCode == GLFW.GLFW_KEY_RIGHT_CONTROL) {
@@ -188,19 +199,29 @@ public class CreditsScreen extends Screen {
 			this.addEmptyLine();
 			this.addEmptyLine();
 
-			for (JsonElement jsonElement2 : jsonObject.getAsJsonArray("titles")) {
+			for (JsonElement jsonElement2 : jsonObject.getAsJsonArray("disciplines")) {
 				JsonObject jsonObject2 = jsonElement2.getAsJsonObject();
-				String string2 = jsonObject2.get("title").getAsString();
-				JsonArray jsonArray3 = jsonObject2.getAsJsonArray("names");
-				this.addText(Text.literal(string2).formatted(Formatting.GRAY), false);
-
-				for (JsonElement jsonElement3 : jsonArray3) {
-					String string3 = jsonElement3.getAsString();
-					this.addText(Text.literal("           ").append(string3).formatted(Formatting.WHITE), false);
+				String string2 = jsonObject2.get("discipline").getAsString();
+				if (StringUtils.isNotEmpty(string2)) {
+					this.addText(Text.literal(string2).formatted(Formatting.YELLOW), true);
+					this.addEmptyLine();
+					this.addEmptyLine();
 				}
 
-				this.addEmptyLine();
-				this.addEmptyLine();
+				for (JsonElement jsonElement3 : jsonObject2.getAsJsonArray("titles")) {
+					JsonObject jsonObject3 = jsonElement3.getAsJsonObject();
+					String string3 = jsonObject3.get("title").getAsString();
+					JsonArray jsonArray4 = jsonObject3.getAsJsonArray("names");
+					this.addText(Text.literal(string3).formatted(Formatting.GRAY), false);
+
+					for (JsonElement jsonElement4 : jsonArray4) {
+						String string4 = jsonElement4.getAsString();
+						this.addText(Text.literal("           ").append(string4).formatted(Formatting.WHITE), false);
+					}
+
+					this.addEmptyLine();
+					this.addEmptyLine();
+				}
 			}
 		}
 	}
@@ -246,7 +267,7 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.time = this.time + delta * this.speed;
+		this.time = Math.max(0.0F, this.time + delta * this.speed);
 		this.renderBackground(context);
 		int i = this.width / 2 - 128;
 		int j = this.height + 50;

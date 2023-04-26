@@ -182,12 +182,12 @@ public class GoatEntity extends AnimalEntity {
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("goatBrain");
-		this.getBrain().tick((ServerWorld)this.world, this);
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("goatActivityUpdate");
+		this.getWorld().getProfiler().push("goatBrain");
+		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getWorld().getProfiler().pop();
+		this.getWorld().getProfiler().push("goatActivityUpdate");
 		GoatBrain.updateActivities(this);
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 		super.mobTick();
 	}
 
@@ -216,11 +216,12 @@ public class GoatEntity extends AnimalEntity {
 			player.playSound(this.getMilkingSound(), 1.0F, 1.0F);
 			ItemStack itemStack2 = ItemUsage.exchangeStack(itemStack, player, Items.MILK_BUCKET.getDefaultStack());
 			player.setStackInHand(hand, itemStack2);
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			ActionResult actionResult = super.interactMob(player, hand);
 			if (actionResult.isAccepted() && this.isBreedingItem(itemStack)) {
-				this.world.playSoundFromEntity(null, this, this.getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0F, MathHelper.nextBetween(this.world.random, 0.8F, 1.2F));
+				this.getWorld()
+					.playSoundFromEntity(null, this, this.getEatSound(itemStack), SoundCategory.NEUTRAL, 1.0F, MathHelper.nextBetween(this.getWorld().random, 0.8F, 1.2F));
 			}
 
 			return actionResult;
@@ -330,8 +331,8 @@ public class GoatEntity extends AnimalEntity {
 			double d = (double)MathHelper.nextBetween(this.random, -0.2F, 0.2F);
 			double e = (double)MathHelper.nextBetween(this.random, 0.3F, 0.7F);
 			double f = (double)MathHelper.nextBetween(this.random, -0.2F, 0.2F);
-			ItemEntity itemEntity = new ItemEntity(this.world, vec3d.getX(), vec3d.getY(), vec3d.getZ(), itemStack, d, e, f);
-			this.world.spawnEntity(itemEntity);
+			ItemEntity itemEntity = new ItemEntity(this.getWorld(), vec3d.getX(), vec3d.getY(), vec3d.getZ(), itemStack, d, e, f);
+			this.getWorld().spawnEntity(itemEntity);
 			return true;
 		}
 	}

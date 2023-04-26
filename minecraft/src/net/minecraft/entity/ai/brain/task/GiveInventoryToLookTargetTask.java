@@ -99,7 +99,7 @@ public class GiveInventoryToLookTargetTask<E extends LivingEntity & InventoryOwn
 	public static void playThrowSound(LivingEntity entity, ItemStack stack, Vec3d target) {
 		Vec3d vec3d = new Vec3d(0.2F, 0.3F, 0.2F);
 		LookTargetUtil.give(entity, stack, target, vec3d, 0.2F);
-		World world = entity.world;
+		World world = entity.getWorld();
 		if (world.getTime() % 7L == 0L && world.random.nextDouble() < 0.9) {
 			float f = Util.<Float>getRandom(AllayEntity.THROW_SOUND_PITCHES, world.getRandom());
 			world.playSoundFromEntity(null, entity, SoundEvents.ENTITY_ALLAY_ITEM_THROWN, SoundCategory.NEUTRAL, 1.0F, f);

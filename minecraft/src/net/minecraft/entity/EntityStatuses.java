@@ -57,5 +57,5 @@ public class EntityStatuses {
 	public static final byte ADD_DEATH_PARTICLES = 60;
 	public static final byte EARS_TWITCH = 61;
 	public static final byte SONIC_BOOM = 62;
-	public static final byte field_42621 = 63;
+	public static final byte START_DIGGING = 63;
 }

@@ -49,6 +49,7 @@ import net.minecraft.datafixer.fix.CauldronRenameFix;
 import net.minecraft.datafixer.fix.ChoiceFix;
 import net.minecraft.datafixer.fix.ChoiceTypesFix;
 import net.minecraft.datafixer.fix.ChunkDeleteIgnoredLightDataFix;
+import net.minecraft.datafixer.fix.ChunkDeleteLightFix;
 import net.minecraft.datafixer.fix.ChunkHeightAndBiomeFix;
 import net.minecraft.datafixer.fix.ChunkLevelTagRenameFix;
 import net.minecraft.datafixer.fix.ChunkLightRemoveFix;
@@ -1090,16 +1091,10 @@ public class Schemas {
 		builder.addFixer(new RemoveFeatureTogglesFix(schema182, "Remove 1.20 feature toggle", Set.of("minecraft:update_1_20")));
 		Schema schema183 = builder.addSchema(3441, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new BlendingDataFix(schema183));
-		Schema schema184 = builder.addSchema(3446, EMPTY_IDENTIFIER_NORMALIZE);
-		builder.addFixer(
-			new RenameChunkStatusFix(
-				schema184, "Remove liquid_carvers and heightmap chunk statuses", replacing(Map.of("liquid_carvers", "carvers", "heightmaps", "spawn"))
-			)
-		);
-		Schema schema185 = builder.addSchema(3447, EMPTY_IDENTIFIER_NORMALIZE);
+		Schema schema184 = builder.addSchema(3447, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			ItemNameFix.create(
-				schema185,
+				schema184,
 				"Pottery shard item renaming to Pottery sherd",
 				replacing(
 					(Map<String, String>)Stream.of(
@@ -1128,8 +1123,16 @@ public class Schemas {
 				)
 			)
 		);
-		Schema schema186 = builder.addSchema(3448, Schema3448::new);
-		builder.addFixer(new DecoratedPotFieldRenameFix(schema186));
+		Schema schema185 = builder.addSchema(3448, Schema3448::new);
+		builder.addFixer(new DecoratedPotFieldRenameFix(schema185));
+		Schema schema186 = builder.addSchema(3450, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(
+			new RenameChunkStatusFix(
+				schema186, "Remove liquid_carvers and heightmap chunk statuses", replacing(Map.of("liquid_carvers", "carvers", "heightmaps", "spawn"))
+			)
+		);
+		Schema schema187 = builder.addSchema(3451, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new ChunkDeleteLightFix(schema187));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

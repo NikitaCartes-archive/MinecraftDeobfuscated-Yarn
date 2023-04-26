@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
@@ -42,6 +40,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.light.ChunkLightProvider;
 import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.SimpleGameEventDispatcher;
@@ -75,7 +74,6 @@ public class WorldChunk extends Chunk {
 	};
 	private final Map<BlockPos, WorldChunk.WrappedBlockEntityTickInvoker> blockEntityTickers = Maps.<BlockPos, WorldChunk.WrappedBlockEntityTickInvoker>newHashMap();
 	private boolean loadedToWorld;
-	private boolean shouldRenderOnUpdate = false;
 	final World world;
 	@Nullable
 	private Supplier<ChunkHolder.LevelType> levelTypeProvider;
@@ -147,6 +145,7 @@ public class WorldChunk extends Chunk {
 			}
 		}
 
+		this.chunkSkyLight = protoChunk.chunkSkyLight;
 		this.setLightOn(protoChunk.isLightOn());
 		this.needsSaving = true;
 	}
@@ -263,6 +262,15 @@ public class WorldChunk extends Chunk {
 				boolean bl2 = chunkSection.isEmpty();
 				if (bl != bl2) {
 					this.world.getChunkManager().getLightingProvider().setSectionStatus(pos, bl2);
+				}
+
+				if (ChunkLightProvider.needsLightUpdate(this, pos, blockState, state)) {
+					Profiler profiler = this.world.getProfiler();
+					profiler.push("updateSkyLightSources");
+					this.chunkSkyLight.isSkyLightAccessible(this, j, i, l);
+					profiler.swap("queueCheckLight");
+					this.world.getChunkManager().getLightingProvider().checkBlock(pos);
+					profiler.pop();
 				}
 
 				boolean bl3 = blockState.hasBlockEntity();
@@ -465,6 +473,7 @@ public class WorldChunk extends Chunk {
 			}
 		}
 
+		this.refreshSurfaceY();
 		consumer.accept((ChunkData.BlockEntityVisitor)(pos, blockEntityType, nbtx) -> {
 			BlockEntity blockEntity = this.getBlockEntity(pos, WorldChunk.CreationType.IMMEDIATE);
 			if (blockEntity != null && nbtx != null && blockEntity.getType() == blockEntityType) {
@@ -489,15 +498,6 @@ public class WorldChunk extends Chunk {
 
 	public Map<BlockPos, BlockEntity> getBlockEntities() {
 		return this.blockEntities;
-	}
-
-	@Override
-	public Stream<BlockPos> getLightSourcesStream() {
-		return StreamSupport.stream(
-				BlockPos.iterate(this.pos.getStartX(), this.getBottomY(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopY() - 1, this.pos.getEndZ()).spliterator(),
-				false
-			)
-			.filter(blockPos -> this.getBlockState(blockPos).getLuminance() != 0);
 	}
 
 	public void runPostProcessing() {
@@ -635,14 +635,6 @@ public class WorldChunk extends Chunk {
 
 	private <T extends BlockEntity> BlockEntityTickInvoker wrapTicker(T blockEntity, BlockEntityTicker<T> blockEntityTicker) {
 		return new WorldChunk.DirectBlockEntityTickInvoker<>(blockEntity, blockEntityTicker);
-	}
-
-	public boolean shouldRenderOnUpdate() {
-		return this.shouldRenderOnUpdate;
-	}
-
-	public void setShouldRenderOnUpdate(boolean shouldRenderOnUpdate) {
-		this.shouldRenderOnUpdate = shouldRenderOnUpdate;
 	}
 
 	public static enum CreationType {
