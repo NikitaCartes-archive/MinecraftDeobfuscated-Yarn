@@ -81,7 +81,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		this.backgroundHeight = 136;
 		this.backgroundWidth = 195;
 		this.operatorTabEnabled = operatorTabEnabled;
-		ItemGroups.updateDisplayContext(enabledFeatures, this.shouldShowOperatorTab(player), player.world.getRegistryManager());
+		ItemGroups.updateDisplayContext(enabledFeatures, this.shouldShowOperatorTab(player), player.getWorld().getRegistryManager());
 	}
 
 	private boolean shouldShowOperatorTab(PlayerEntity player) {
@@ -122,7 +122,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (this.client != null) {
 			if (this.client.player != null) {
 				this.updateDisplayParameters(
-					this.client.player.networkHandler.getEnabledFeatures(), this.shouldShowOperatorTab(this.client.player), this.client.player.world.getRegistryManager()
+					this.client.player.networkHandler.getEnabledFeatures(),
+					this.shouldShowOperatorTab(this.client.player),
+					this.client.player.getWorld().getRegistryManager()
 				);
 			}
 
@@ -765,7 +767,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		if (restore) {
 			for(int i = 0; i < PlayerInventory.getHotbarSize(); ++i) {
 				ItemStack itemStack = hotbarStorageEntry.get(i);
-				ItemStack itemStack2 = itemStack.isItemEnabled(clientPlayerEntity.world.getEnabledFeatures()) ? itemStack.copy() : ItemStack.EMPTY;
+				ItemStack itemStack2 = itemStack.isItemEnabled(clientPlayerEntity.getWorld().getEnabledFeatures()) ? itemStack.copy() : ItemStack.EMPTY;
 				clientPlayerEntity.getInventory().setStack(i, itemStack2);
 				client.interactionManager.clickCreativeStack(itemStack2, 36 + i);
 			}
@@ -967,7 +969,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		public boolean canTakeItems(PlayerEntity playerEntity) {
 			ItemStack itemStack = this.getStack();
 			if (super.canTakeItems(playerEntity) && !itemStack.isEmpty()) {
-				return itemStack.isItemEnabled(playerEntity.world.getEnabledFeatures()) && itemStack.getSubNbt("CustomCreativeLock") == null;
+				return itemStack.isItemEnabled(playerEntity.getWorld().getEnabledFeatures()) && itemStack.getSubNbt("CustomCreativeLock") == null;
 			} else {
 				return itemStack.isEmpty();
 			}

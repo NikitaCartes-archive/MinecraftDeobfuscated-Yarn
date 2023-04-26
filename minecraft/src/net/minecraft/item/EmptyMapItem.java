@@ -23,7 +23,7 @@ public class EmptyMapItem extends NetworkSyncedItem {
 			}
 
 			user.incrementStat(Stats.USED.getOrCreateStat(this));
-			user.world.playSoundFromEntity(null, user, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, user.getSoundCategory(), 1.0F, 1.0F);
+			user.getWorld().playSoundFromEntity(null, user, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, user.getSoundCategory(), 1.0F, 1.0F);
 			ItemStack itemStack2 = FilledMapItem.createMap(world, user.getBlockX(), user.getBlockZ(), (byte)0, true, false);
 			if (itemStack.isEmpty()) {
 				return TypedActionResult.consume(itemStack2);

@@ -110,7 +110,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
 		}
 
-		this.tickAngerLogic((ServerWorld)this.world, true);
+		this.tickAngerLogic((ServerWorld)this.getWorld(), true);
 		if (this.getTarget() != null) {
 			this.tickAngerPassing();
 		}
@@ -146,7 +146,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private void angerNearbyZombifiedPiglins() {
 		double d = this.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
 		Box box = Box.from(this.getPos()).expand(d, 10.0, d);
-		this.world
+		this.getWorld()
 			.getEntitiesByClass(ZombifiedPiglinEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR)
 			.stream()
 			.filter(zombifiedPiglin -> zombifiedPiglin != this)
@@ -196,7 +196,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.readAngerFromNbt(this.world, nbt);
+		this.readAngerFromNbt(this.getWorld(), nbt);
 	}
 
 	@Override

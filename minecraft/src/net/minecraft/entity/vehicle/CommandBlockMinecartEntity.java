@@ -78,7 +78,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public void onActivatorRail(int x, int y, int z, boolean powered) {
 		if (powered && this.age - this.lastExecuted >= 4) {
-			this.getCommandExecutor().execute(this.world);
+			this.getCommandExecutor().execute(this.getWorld());
 			this.lastExecuted = this.age;
 		}
 	}
@@ -109,7 +109,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	public class CommandExecutor extends CommandBlockExecutor {
 		@Override
 		public ServerWorld getWorld() {
-			return (ServerWorld)CommandBlockMinecartEntity.this.world;
+			return (ServerWorld)CommandBlockMinecartEntity.this.getWorld();
 		}
 
 		@Override

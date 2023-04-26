@@ -137,25 +137,25 @@ public class BatEntity extends AmbientEntity {
 		BlockPos blockPos2 = blockPos.up();
 		if (this.isRoosting()) {
 			boolean bl = this.isSilent();
-			if (this.world.getBlockState(blockPos2).isSolidBlock(this.world, blockPos)) {
+			if (this.getWorld().getBlockState(blockPos2).isSolidBlock(this.getWorld(), blockPos)) {
 				if (this.random.nextInt(200) == 0) {
 					this.headYaw = (float)this.random.nextInt(360);
 				}
 
-				if (this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this) != null) {
+				if (this.getWorld().getClosestPlayer(CLOSE_PLAYER_PREDICATE, this) != null) {
 					this.setRoosting(false);
 					if (!bl) {
-						this.world.syncWorldEvent(null, WorldEvents.BAT_TAKES_OFF, blockPos, 0);
+						this.getWorld().syncWorldEvent(null, WorldEvents.BAT_TAKES_OFF, blockPos, 0);
 					}
 				}
 			} else {
 				this.setRoosting(false);
 				if (!bl) {
-					this.world.syncWorldEvent(null, WorldEvents.BAT_TAKES_OFF, blockPos, 0);
+					this.getWorld().syncWorldEvent(null, WorldEvents.BAT_TAKES_OFF, blockPos, 0);
 				}
 			}
 		} else {
-			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() <= this.world.getBottomY())) {
+			if (this.hangingPosition != null && (!this.getWorld().isAir(this.hangingPosition) || this.hangingPosition.getY() <= this.getWorld().getBottomY())) {
 				this.hangingPosition = null;
 			}
 
@@ -177,7 +177,7 @@ public class BatEntity extends AmbientEntity {
 			float h = MathHelper.wrapDegrees(g - this.getYaw());
 			this.forwardSpeed = 0.5F;
 			this.setYaw(this.getYaw() + h);
-			if (this.random.nextInt(100) == 0 && this.world.getBlockState(blockPos2).isSolidBlock(this.world, blockPos2)) {
+			if (this.random.nextInt(100) == 0 && this.getWorld().getBlockState(blockPos2).isSolidBlock(this.getWorld(), blockPos2)) {
 				this.setRoosting(true);
 			}
 		}
@@ -202,7 +202,7 @@ public class BatEntity extends AmbientEntity {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			if (!this.world.isClient && this.isRoosting()) {
+			if (!this.getWorld().isClient && this.isRoosting()) {
 				this.setRoosting(false);
 			}
 

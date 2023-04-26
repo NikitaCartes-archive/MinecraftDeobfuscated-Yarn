@@ -208,8 +208,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 		}
 
 		if (this.isBaby() && i > 0) {
-			this.world.addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
-			if (!this.world.isClient) {
+			this.getWorld().addParticle(ParticleTypes.HAPPY_VILLAGER, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), 0.0, 0.0, 0.0);
+			if (!this.getWorld().isClient) {
 				this.growUp(i);
 			}
 
@@ -218,7 +218,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 		if (j > 0 && (bl || !this.isTame()) && this.getTemper() < this.getMaxTemper()) {
 			bl = true;
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				this.addTemper(j);
 			}
 		}
@@ -226,7 +226,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 		if (bl && !this.isSilent()) {
 			SoundEvent soundEvent = this.getEatSound();
 			if (soundEvent != null) {
-				this.world
+				this.getWorld()
 					.playSound(
 						null,
 						this.getX(),
@@ -345,7 +345,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	@Override
 	protected void updateSaddle() {
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			super.updateSaddle();
 			this.setCarpetColor(getColorFromCarpet(this.items.getStack(1)));
 		}
@@ -397,18 +397,18 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 	@Nullable
 	protected LlamaEntity createChild() {
-		return EntityType.LLAMA.create(this.world);
+		return EntityType.LLAMA.create(this.getWorld());
 	}
 
 	private void spitAt(LivingEntity target) {
-		LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.world, this);
+		LlamaSpitEntity llamaSpitEntity = new LlamaSpitEntity(this.getWorld(), this);
 		double d = target.getX() - this.getX();
 		double e = target.getBodyY(0.3333333333333333) - llamaSpitEntity.getY();
 		double f = target.getZ() - this.getZ();
 		double g = Math.sqrt(d * d + f * f) * 0.2F;
 		llamaSpitEntity.setVelocity(d, e + g, f, 1.5F, 10.0F);
 		if (!this.isSilent()) {
-			this.world
+			this.getWorld()
 				.playSound(
 					null,
 					this.getX(),
@@ -421,7 +421,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 				);
 		}
 
-		this.world.spawnEntity(llamaSpitEntity);
+		this.getWorld().spawnEntity(llamaSpitEntity);
 		this.spit = true;
 	}
 

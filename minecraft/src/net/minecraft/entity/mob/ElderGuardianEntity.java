@@ -69,7 +69,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 		if ((this.age + this.getId()) % 1200 == 0) {
 			StatusEffectInstance statusEffectInstance = new StatusEffectInstance(StatusEffects.MINING_FATIGUE, 6000, 2);
 			List<ServerPlayerEntity> list = StatusEffectUtil.addEffectToPlayersWithinDistance(
-				(ServerWorld)this.world, this, this.getPos(), 50.0, statusEffectInstance, 1200
+				(ServerWorld)this.getWorld(), this, this.getPos(), 50.0, statusEffectInstance, 1200
 			);
 			list.forEach(
 				serverPlayerEntity -> serverPlayerEntity.networkHandler

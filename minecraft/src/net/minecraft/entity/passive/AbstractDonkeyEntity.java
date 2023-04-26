@@ -66,7 +66,7 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	protected void dropInventory() {
 		super.dropInventory();
 		if (this.hasChest()) {
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				this.dropItem(Blocks.CHEST);
 			}
 
@@ -158,12 +158,12 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 
 				if (!this.isTame()) {
 					this.playAngrySound();
-					return ActionResult.success(this.world.isClient);
+					return ActionResult.success(this.getWorld().isClient);
 				}
 
 				if (!this.hasChest() && itemStack.isOf(Items.CHEST)) {
 					this.addChest(player, itemStack);
-					return ActionResult.success(this.world.isClient);
+					return ActionResult.success(this.getWorld().isClient);
 				}
 			}
 

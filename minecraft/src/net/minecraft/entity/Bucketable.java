@@ -93,7 +93,7 @@ public interface Bucketable {
 			entity.copyDataToStack(itemStack2);
 			ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, player, itemStack2, false);
 			player.setStackInHand(hand, itemStack3);
-			World world = entity.world;
+			World world = entity.getWorld();
 			if (!world.isClient) {
 				Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)player, itemStack2);
 			}

@@ -28,7 +28,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.thread.ThreadExecutor;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.PersistentStateManager;
@@ -41,6 +40,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ChunkStatusChangeListener;
 import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.chunk.light.LightSourceView;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.placement.StructurePlacementCalculator;
 import net.minecraft.world.gen.noise.NoiseConfig;
@@ -259,8 +259,9 @@ public class ServerChunkManager extends ChunkManager {
 		return !this.isMissingForLevel(chunkHolder, i);
 	}
 
+	@Nullable
 	@Override
-	public BlockView getChunk(int chunkX, int chunkZ) {
+	public LightSourceView getChunk(int chunkX, int chunkZ) {
 		long l = ChunkPos.toLong(chunkX, chunkZ);
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
 		if (chunkHolder == null) {
@@ -272,7 +273,7 @@ public class ServerChunkManager extends ChunkManager {
 				ChunkStatus chunkStatus = (ChunkStatus)CHUNK_STATUSES.get(i);
 				Optional<Chunk> optional = ((Either)chunkHolder.getFutureFor(chunkStatus).getNow(ChunkHolder.UNLOADED_CHUNK)).left();
 				if (optional.isPresent()) {
-					return (BlockView)optional.get();
+					return (LightSourceView)optional.get();
 				}
 
 				if (chunkStatus == ChunkStatus.INITIALIZE_LIGHT.getPrevious()) {

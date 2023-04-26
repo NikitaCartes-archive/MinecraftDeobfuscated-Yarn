@@ -122,11 +122,11 @@ public abstract class FishEntity extends WaterCreatureEntity implements Bucketab
 
 	@Override
 	public void tickMovement() {
-		if (!this.isTouchingWater() && this.onGround && this.verticalCollision) {
+		if (!this.isTouchingWater() && this.isOnGround() && this.verticalCollision) {
 			this.setVelocity(
 				this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F), 0.4F, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F))
 			);
-			this.onGround = false;
+			this.setOnGround(false);
 			this.velocityDirty = true;
 			this.playSound(this.getFlopSound(), this.getSoundVolume(), this.getSoundPitch());
 		}

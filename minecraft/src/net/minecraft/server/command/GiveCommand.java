@@ -70,7 +70,7 @@ public class GiveCommand {
 							itemEntity.setDespawnImmediately();
 						}
 
-						serverPlayerEntity.world
+						serverPlayerEntity.getWorld()
 							.playSound(
 								null,
 								serverPlayerEntity.getX(),

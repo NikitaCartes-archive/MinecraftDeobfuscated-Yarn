@@ -43,7 +43,7 @@ public class FurnaceOutputSlot extends Slot {
 
 	@Override
 	protected void onCrafted(ItemStack stack) {
-		stack.onCraft(this.player.world, this.player, this.amount);
+		stack.onCraft(this.player.getWorld(), this.player, this.amount);
 		PlayerEntity var4 = this.player;
 		if (var4 instanceof ServerPlayerEntity serverPlayerEntity) {
 			Inventory var5 = this.inventory;

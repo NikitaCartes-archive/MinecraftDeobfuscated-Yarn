@@ -33,7 +33,7 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 
 	public void trigger(ServerPlayerEntity player, Vec3d startPos) {
 		Vec3d vec3d = player.getPos();
-		this.trigger(player, conditions -> conditions.matches(player.getWorld(), startPos, vec3d));
+		this.trigger(player, conditions -> conditions.matches(player.getServerWorld(), startPos, vec3d));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

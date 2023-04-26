@@ -89,7 +89,7 @@ public interface VehicleInventory extends Inventory, NamedScreenHandlerFactory {
 
 	default ActionResult open(PlayerEntity player) {
 		player.openHandledScreen(this);
-		return !player.world.isClient ? ActionResult.CONSUME : ActionResult.SUCCESS;
+		return !player.getWorld().isClient ? ActionResult.CONSUME : ActionResult.SUCCESS;
 	}
 
 	default void generateInventoryLoot(@Nullable PlayerEntity player) {

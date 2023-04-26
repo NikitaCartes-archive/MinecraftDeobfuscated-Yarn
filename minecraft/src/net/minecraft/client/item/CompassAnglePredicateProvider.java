@@ -68,11 +68,11 @@ public class CompassAnglePredicateProvider implements ClampedModelPredicateProvi
 
 	@Nullable
 	private ClientWorld getClientWorld(Entity entity, @Nullable ClientWorld world) {
-		return world == null && entity.world instanceof ClientWorld ? (ClientWorld)entity.world : world;
+		return world == null && entity.getWorld() instanceof ClientWorld ? (ClientWorld)entity.getWorld() : world;
 	}
 
 	private boolean canPointTo(Entity entity, @Nullable GlobalPos pos) {
-		return pos != null && pos.getDimension() == entity.world.getRegistryKey() && !(pos.getPos().getSquaredDistance(entity.getPos()) < 1.0E-5F);
+		return pos != null && pos.getDimension() == entity.getWorld().getRegistryKey() && !(pos.getPos().getSquaredDistance(entity.getPos()) < 1.0E-5F);
 	}
 
 	private double getAngleTo(Entity entity, BlockPos pos) {

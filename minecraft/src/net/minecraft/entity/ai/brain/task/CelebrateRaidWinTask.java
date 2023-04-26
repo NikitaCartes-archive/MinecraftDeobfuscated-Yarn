@@ -52,9 +52,9 @@ public class CelebrateRaidWinTask extends MultiTickTask<VillagerEntity> {
 			int i = random.nextInt(3);
 			ItemStack itemStack = this.createFirework(dyeColor, i);
 			FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(
-				villagerEntity.world, villagerEntity, villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ(), itemStack
+				villagerEntity.getWorld(), villagerEntity, villagerEntity.getX(), villagerEntity.getEyeY(), villagerEntity.getZ(), itemStack
 			);
-			villagerEntity.world.spawnEntity(fireworkRocketEntity);
+			villagerEntity.getWorld().spawnEntity(fireworkRocketEntity);
 		}
 	}
 

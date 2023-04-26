@@ -34,7 +34,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		this.onBroken(damageSource, this.world, this);
+		this.onBroken(damageSource, this.getWorld(), this);
 	}
 
 	@Override
@@ -73,8 +73,8 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Override
 	public void remove(Entity.RemovalReason reason) {
-		if (!this.world.isClient && reason.shouldDestroy()) {
-			ItemScatterer.spawn(this.world, this, this);
+		if (!this.getWorld().isClient && reason.shouldDestroy()) {
+			ItemScatterer.spawn(this.getWorld(), this, this);
 		}
 
 		super.remove(reason);

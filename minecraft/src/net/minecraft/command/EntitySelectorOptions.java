@@ -470,10 +470,10 @@ public class EntitySelectorOptions {
 					Identifier identifier = Identifier.fromCommandInput(reader.getReader());
 					reader.setPredicate(
 						entity -> {
-							if (!(entity.world instanceof ServerWorld)) {
+							if (!(entity.getWorld() instanceof ServerWorld)) {
 								return false;
 							} else {
-								ServerWorld serverWorld = (ServerWorld)entity.world;
+								ServerWorld serverWorld = (ServerWorld)entity.getWorld();
 								LootCondition lootCondition = serverWorld.getServer().getLootManager().getElement(LootDataType.PREDICATES, identifier);
 								if (lootCondition == null) {
 									return false;

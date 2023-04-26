@@ -207,7 +207,7 @@ public class PlayerAdvancementTracker {
 				advancement.getRewards().apply(this.owner);
 				if (advancement.getDisplay() != null
 					&& advancement.getDisplay().shouldAnnounceToChat()
-					&& this.owner.world.getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
+					&& this.owner.getWorld().getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
 					this.playerManager
 						.broadcast(
 							Text.translatable("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.toHoverableText()),

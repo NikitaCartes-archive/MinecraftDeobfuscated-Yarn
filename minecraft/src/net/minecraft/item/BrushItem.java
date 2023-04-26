@@ -17,6 +17,8 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Arm;
+import net.minecraft.util.Hand;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -27,8 +29,8 @@ import net.minecraft.world.World;
 
 public class BrushItem extends Item {
 	public static final int field_43390 = 10;
-	private static final int field_42683 = 200;
-	private static final double field_44603 = Math.sqrt(ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE) - 1.0;
+	private static final int MAX_BRUSH_TIME = 200;
+	private static final double MAX_BRUSH_DISTANCE = Math.sqrt(ServerPlayNetworkHandler.MAX_BREAK_SQUARED_DISTANCE) - 1.0;
 
 	public BrushItem(Item.Settings settings) {
 		super(settings);
@@ -64,7 +66,8 @@ public class BrushItem extends Item {
 				if (bl) {
 					BlockPos blockPos = blockHitResult.getBlockPos();
 					BlockState blockState = world.getBlockState(blockPos);
-					this.addDustParticles(world, blockHitResult, blockState, user.getRotationVec(0.0F), user.getMainHandStack().equals(stack));
+					Arm arm = user.getActiveHand() == Hand.MAIN_HAND ? playerEntity.getMainArm() : playerEntity.getMainArm().getOpposite();
+					this.addDustParticles(world, blockHitResult, blockState, user.getRotationVec(0.0F), arm);
 					Block bl2 = blockState.getBlock();
 					SoundEvent soundEvent;
 					if (bl2 instanceof BrushableBlock brushableBlock) {
@@ -75,8 +78,8 @@ public class BrushItem extends Item {
 
 					world.playSound(playerEntity, blockPos, soundEvent, SoundCategory.BLOCKS);
 					if (!world.isClient()) {
-						BlockEntity var17 = world.getBlockEntity(blockPos);
-						if (var17 instanceof BrushableBlockEntity brushableBlockEntity) {
+						BlockEntity var18 = world.getBlockEntity(blockPos);
+						if (var18 instanceof BrushableBlockEntity brushableBlockEntity) {
 							boolean bl2 = brushableBlockEntity.brush(world.getTime(), playerEntity, blockHitResult.getSide());
 							if (bl2) {
 								EquipmentSlot equipmentSlot = stack.equals(playerEntity.getEquippedStack(EquipmentSlot.OFFHAND)) ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND;
@@ -96,12 +99,12 @@ public class BrushItem extends Item {
 	}
 
 	private HitResult getHitResult(LivingEntity user) {
-		return ProjectileUtil.getCollision(user, entity -> !entity.isSpectator() && entity.canHit(), field_44603);
+		return ProjectileUtil.getCollision(user, entity -> !entity.isSpectator() && entity.canHit(), MAX_BRUSH_DISTANCE);
 	}
 
-	public void addDustParticles(World world, BlockHitResult hitResult, BlockState state, Vec3d userRotation, boolean mainHand) {
+	public void addDustParticles(World world, BlockHitResult hitResult, BlockState state, Vec3d userRotation, Arm arm) {
 		double d = 3.0;
-		int i = mainHand ? 1 : -1;
+		int i = arm == Arm.RIGHT ? 1 : -1;
 		int j = world.getRandom().nextBetweenExclusive(7, 12);
 		BlockStateParticleEffect blockStateParticleEffect = new BlockStateParticleEffect(ParticleTypes.BLOCK, state);
 		Direction direction = hitResult.getSide();

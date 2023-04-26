@@ -105,7 +105,7 @@ public class FuzzyTargeting {
 	 */
 	@Nullable
 	public static BlockPos validate(PathAwareEntity entity, BlockPos pos) {
-		pos = FuzzyPositions.upWhile(pos, entity.world.getTopY(), currentPos -> NavigationConditions.isSolidAt(entity, currentPos));
+		pos = FuzzyPositions.upWhile(pos, entity.getWorld().getTopY(), currentPos -> NavigationConditions.isSolidAt(entity, currentPos));
 		return !NavigationConditions.isWaterAt(entity, pos) && !NavigationConditions.hasPathfindingPenalty(entity, pos) ? pos : null;
 	}
 

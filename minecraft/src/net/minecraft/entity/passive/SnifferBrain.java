@@ -134,7 +134,7 @@ public class SnifferBrain {
 						super.run(serverWorld, animalEntity, l);
 					}
 				}),
-				Pair.of(1, new TemptTask(sniffer -> 1.25F) {
+				Pair.of(1, new TemptTask(sniffer -> 1.25F, 3.5) {
 					@Override
 					protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 						SnifferBrain.stopDiggingOrSniffing((SnifferEntity)pathAwareEntity);

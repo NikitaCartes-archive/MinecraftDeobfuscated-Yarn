@@ -111,7 +111,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.readAngerFromNbt(this.world, nbt);
+		this.readAngerFromNbt(this.getWorld(), nbt);
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			if (this.warningAnimationProgress != this.lastWarningAnimationProgress) {
 				this.calculateDimensions();
 			}
@@ -199,8 +199,8 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 			--this.warningSoundCooldown;
 		}
 
-		if (!this.world.isClient) {
-			this.tickAngerLogic((ServerWorld)this.world, true);
+		if (!this.getWorld().isClient) {
+			this.tickAngerLogic((ServerWorld)this.getWorld(), true);
 		}
 	}
 
@@ -340,7 +340,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 				return false;
 			} else {
 				if (super.canStart()) {
-					for(PolarBearEntity polarBearEntity : PolarBearEntity.this.world
+					for(PolarBearEntity polarBearEntity : PolarBearEntity.this.getWorld()
 						.getNonSpectatingEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
 						if (polarBearEntity.isBaby()) {
 							return true;

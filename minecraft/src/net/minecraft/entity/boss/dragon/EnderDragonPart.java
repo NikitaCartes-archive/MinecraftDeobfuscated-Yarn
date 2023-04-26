@@ -16,7 +16,7 @@ public class EnderDragonPart extends Entity {
 	private final EntityDimensions partDimensions;
 
 	public EnderDragonPart(EnderDragonEntity owner, String name, float width, float height) {
-		super(owner.getType(), owner.world);
+		super(owner.getType(), owner.getWorld());
 		this.partDimensions = EntityDimensions.changing(width, height);
 		this.calculateDimensions();
 		this.owner = owner;

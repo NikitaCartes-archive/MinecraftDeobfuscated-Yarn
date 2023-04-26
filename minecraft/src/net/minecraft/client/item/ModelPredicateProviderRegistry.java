@@ -129,8 +129,8 @@ public class ModelPredicateProviderRegistry {
 				if (entity == null) {
 					return 0.0F;
 				} else {
-					if (clientWorld == null && entity.world instanceof ClientWorld) {
-						clientWorld = (ClientWorld)entity.world;
+					if (clientWorld == null && entity.getWorld() instanceof ClientWorld) {
+						clientWorld = (ClientWorld)entity.getWorld();
 					}
 
 					if (clientWorld == null) {

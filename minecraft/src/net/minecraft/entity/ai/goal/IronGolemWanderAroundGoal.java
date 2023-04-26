@@ -28,8 +28,8 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 	@Nullable
 	@Override
 	protected Vec3d getWanderTarget() {
-		float f = this.mob.world.random.nextFloat();
-		if (this.mob.world.random.nextFloat() < 0.3F) {
+		float f = this.mob.getWorld().random.nextFloat();
+		if (this.mob.getWorld().random.nextFloat() < 0.3F) {
 			return this.findRandomInRange();
 		} else {
 			Vec3d vec3d;
@@ -56,12 +56,12 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 
 	@Nullable
 	private Vec3d findVillagerPos() {
-		ServerWorld serverWorld = (ServerWorld)this.mob.world;
+		ServerWorld serverWorld = (ServerWorld)this.mob.getWorld();
 		List<VillagerEntity> list = serverWorld.getEntitiesByType(EntityType.VILLAGER, this.mob.getBoundingBox().expand(32.0), this::canVillagerSummonGolem);
 		if (list.isEmpty()) {
 			return null;
 		} else {
-			VillagerEntity villagerEntity = (VillagerEntity)list.get(this.mob.world.random.nextInt(list.size()));
+			VillagerEntity villagerEntity = (VillagerEntity)list.get(this.mob.getWorld().random.nextInt(list.size()));
 			Vec3d vec3d = villagerEntity.getPos();
 			return FuzzyTargeting.findTo(this.mob, 10, 7, vec3d);
 		}
@@ -80,7 +80,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 
 	@Nullable
 	private ChunkSectionPos findRandomChunkPos() {
-		ServerWorld serverWorld = (ServerWorld)this.mob.world;
+		ServerWorld serverWorld = (ServerWorld)this.mob.getWorld();
 		List<ChunkSectionPos> list = (List)ChunkSectionPos.stream(ChunkSectionPos.from(this.mob), 2)
 			.filter(sectionPos -> serverWorld.getOccupiedPointOfInterestDistance(sectionPos) == 0)
 			.collect(Collectors.toList());
@@ -89,7 +89,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 
 	@Nullable
 	private BlockPos findRandomPosInChunk(ChunkSectionPos pos) {
-		ServerWorld serverWorld = (ServerWorld)this.mob.world;
+		ServerWorld serverWorld = (ServerWorld)this.mob.getWorld();
 		PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
 		List<BlockPos> list = (List)pointOfInterestStorage.getInCircle(
 				registryEntry -> true, pos.getCenterPos(), 8, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED
@@ -100,6 +100,6 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 	}
 
 	private boolean canVillagerSummonGolem(VillagerEntity villager) {
-		return villager.canSummonGolem(this.mob.world.getTime());
+		return villager.canSummonGolem(this.mob.getWorld().getTime());
 	}
 }

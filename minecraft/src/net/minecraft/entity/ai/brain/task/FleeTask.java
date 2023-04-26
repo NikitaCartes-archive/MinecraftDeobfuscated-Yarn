@@ -14,6 +14,7 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
 
@@ -79,8 +80,17 @@ public class FleeTask extends MultiTickTask<PathAwareEntity> {
 
 	private Optional<BlockPos> findClosestWater(BlockView world, Entity entity) {
 		BlockPos blockPos = entity.getBlockPos();
-		return !world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty()
-			? Optional.empty()
-			: BlockPos.findClosest(blockPos, 5, 1, pos -> world.getFluidState(pos).isIn(FluidTags.WATER));
+		if (!world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty()) {
+			return Optional.empty();
+		} else {
+			Predicate<BlockPos> predicate;
+			if (MathHelper.ceil(entity.getWidth()) == 2) {
+				predicate = pos -> BlockPos.streamSouthEastSquare(pos).allMatch(posx -> world.getFluidState(posx).isIn(FluidTags.WATER));
+			} else {
+				predicate = pos -> world.getFluidState(pos).isIn(FluidTags.WATER);
+			}
+
+			return BlockPos.findClosest(blockPos, 5, 1, predicate);
+		}
 	}
 }

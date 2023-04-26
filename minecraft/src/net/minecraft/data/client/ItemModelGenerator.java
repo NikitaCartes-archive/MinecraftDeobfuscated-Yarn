@@ -266,6 +266,7 @@ public class ItemModelGenerator {
 		this.register(Items.MUSIC_DISC_WAIT, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_WARD, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_OTHERSIDE, Models.TEMPLATE_MUSIC_DISC);
+		this.register(Items.MUSIC_DISC_RELIC, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUSIC_DISC_5, Models.TEMPLATE_MUSIC_DISC);
 		this.register(Items.MUTTON, Models.GENERATED);
 		this.register(Items.NAME_TAG, Models.GENERATED);

@@ -281,7 +281,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected int ridingCooldown;
 	@Nullable
 	private Entity vehicle;
-	public World world;
+	private World world;
 	public double prevX;
 	public double prevY;
 	public double prevZ;
@@ -294,7 +294,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public float prevYaw;
 	public float prevPitch;
 	private Box boundingBox = NULL_BOX;
-	protected boolean onGround;
+	private boolean onGround;
 	public boolean horizontalCollision;
 	public boolean verticalCollision;
 	public boolean field_36331;
@@ -397,7 +397,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * {@return whether the entity collides with the block {@code state} at {@code pos}}
 	 */
 	public boolean collidesWithStateAtPos(BlockPos pos, BlockState state) {
-		VoxelShape voxelShape = state.getCollisionShape(this.world, pos, ShapeContext.of(this));
+		VoxelShape voxelShape = state.getCollisionShape(this.getWorld(), pos, ShapeContext.of(this));
 		VoxelShape voxelShape2 = voxelShape.offset((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 		return VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cuboid(this.getBoundingBox()), BooleanBiFunction.AND);
 	}
@@ -664,7 +664,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void baseTick() {
-		this.world.getProfiler().push("entityBaseTick");
+		this.getWorld().getProfiler().push("entityBaseTick");
 		this.blockStateAtPos = null;
 		if (this.hasVehicle() && this.getVehicle().isRemoved()) {
 			this.stopRiding();
@@ -687,7 +687,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.updateWaterState();
 		this.updateSubmergedInWaterState();
 		this.updateSwimming();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			this.extinguish();
 		} else if (this.fireTicks > 0) {
 			if (this.isFireImmune()) {
@@ -705,7 +705,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 			if (this.getFrozenTicks() > 0) {
 				this.setFrozenTicks(0);
-				this.world.syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, this.blockPos, 1);
+				this.getWorld().syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, this.blockPos, 1);
 			}
 		}
 
@@ -715,12 +715,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 
 		this.attemptTickInVoid();
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.setOnFire(this.fireTicks > 0);
 		}
 
 		this.firstUpdate = false;
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 	}
 
 	public void setOnFire(boolean onFire) {
@@ -731,7 +731,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * Calls {@link #tickInVoid()} when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomY() minimum Y position}.
 	 */
 	public void attemptTickInVoid() {
-		if (this.getY() < (double)(this.world.getBottomY() - 64)) {
+		if (this.getY() < (double)(this.getWorld().getBottomY() - 64)) {
 			this.tickInVoid();
 		}
 	}
@@ -841,7 +841,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	private boolean doesNotCollide(Box box) {
-		return this.world.isSpaceEmpty(this, box) && !this.world.containsFluid(box);
+		return this.getWorld().isSpaceEmpty(this, box) && !this.getWorld().containsFluid(box);
 	}
 
 	public void setOnGround(boolean onGround) {
@@ -867,7 +867,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 			}
 
-			this.world.getProfiler().push("move");
+			this.getWorld().getProfiler().push("move");
 			if (this.movementMultiplier.lengthSquared() > 1.0E-7) {
 				movement = movement.multiply(this.movementMultiplier);
 				this.movementMultiplier = Vec3d.ZERO;
@@ -879,7 +879,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			double d = vec3d.lengthSquared();
 			if (d > 1.0E-7) {
 				if (this.fallDistance != 0.0F && d >= 1.0) {
-					BlockHitResult blockHitResult = this.world
+					BlockHitResult blockHitResult = this.getWorld()
 						.raycast(
 							new RaycastContext(this.getPos(), this.getPos().add(vec3d), RaycastContext.ShapeType.FALLDAMAGE_RESETTING, RaycastContext.FluidHandling.WATER, this)
 						);
@@ -891,8 +891,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
 			}
 
-			this.world.getProfiler().pop();
-			this.world.getProfiler().push("rest");
+			this.getWorld().getProfiler().pop();
+			this.getWorld().getProfiler().push("rest");
 			boolean bl = !MathHelper.approximatelyEquals(movement.x, vec3d.x);
 			boolean bl2 = !MathHelper.approximatelyEquals(movement.z, vec3d.z);
 			this.horizontalCollision = bl || bl2;
@@ -904,12 +904,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.collidedSoftly = false;
 			}
 
-			this.onGround = this.verticalCollision && movement.y < 0.0;
+			this.setOnGround(this.field_36331);
 			BlockPos blockPos = this.getLandingPos();
-			BlockState blockState = this.world.getBlockState(blockPos);
-			this.fall(vec3d.y, this.onGround, blockState, blockPos);
+			BlockState blockState = this.getWorld().getBlockState(blockPos);
+			this.fall(vec3d.y, this.isOnGround(), blockState, blockPos);
 			if (this.isRemoved()) {
-				this.world.getProfiler().pop();
+				this.getWorld().getProfiler().pop();
 			} else {
 				if (this.horizontalCollision) {
 					Vec3d vec3d2 = this.getVelocity();
@@ -918,11 +918,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 				Block block = blockState.getBlock();
 				if (movement.y != vec3d.y) {
-					block.onEntityLand(this.world, this);
+					block.onEntityLand(this.getWorld(), this);
 				}
 
-				if (this.onGround) {
-					block.onSteppedOn(this.world, blockPos, blockState, this);
+				if (this.isOnGround()) {
+					block.onSteppedOn(this.getWorld(), blockPos, blockState, this);
 				}
 
 				Entity.MoveEffect moveEffect = this.getMoveEffect();
@@ -946,7 +946,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 							}
 
 							if (moveEffect.emitsGameEvents()) {
-								this.world.emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
+								this.getWorld().emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
 							}
 						} else if (this.isTouchingWater()) {
 							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
@@ -966,7 +966,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.tryCheckBlockCollision();
 				float h = this.getVelocityMultiplier();
 				this.setVelocity(this.getVelocity().multiply((double)h, 1.0, (double)h));
-				if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))) {
+				if (this.getWorld()
+					.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6))
+					.noneMatch(state -> state.isIn(BlockTags.FIRE) || state.isOf(Blocks.LAVA))) {
 					if (this.fireTicks <= 0) {
 						this.setFireTicks(-this.getBurningDuration());
 					}
@@ -980,7 +982,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					this.setFireTicks(-this.getBurningDuration());
 				}
 
-				this.world.getProfiler().pop();
+				this.getWorld().getProfiler().pop();
 			}
 		}
 	}
@@ -1009,7 +1011,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void extinguishWithSound() {
-		if (!this.world.isClient && this.wasOnFire) {
+		if (!this.getWorld().isClient && this.wasOnFire) {
 			this.playExtinguishSound();
 		}
 
@@ -1066,9 +1068,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		int j = MathHelper.floor(this.pos.y - (double)offset);
 		int k = MathHelper.floor(this.pos.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		if (this.world.getBlockState(blockPos).isAir()) {
+		if (this.getWorld().getBlockState(blockPos).isAir()) {
 			BlockPos blockPos2 = blockPos.down();
-			BlockState blockState = this.world.getBlockState(blockPos2);
+			BlockState blockState = this.getWorld().getBlockState(blockPos2);
 			if (blockState.isIn(BlockTags.FENCES) || blockState.isIn(BlockTags.WALLS) || blockState.getBlock() instanceof FenceGateBlock) {
 				return blockPos2;
 			}
@@ -1078,16 +1080,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	protected float getJumpVelocityMultiplier() {
-		float f = this.world.getBlockState(this.getBlockPos()).getBlock().getJumpVelocityMultiplier();
-		float g = this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getJumpVelocityMultiplier();
+		float f = this.getWorld().getBlockState(this.getBlockPos()).getBlock().getJumpVelocityMultiplier();
+		float g = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getJumpVelocityMultiplier();
 		return (double)f == 1.0 ? g : f;
 	}
 
 	protected float getVelocityMultiplier() {
-		BlockState blockState = this.world.getBlockState(this.getBlockPos());
+		BlockState blockState = this.getWorld().getBlockState(this.getBlockPos());
 		float f = blockState.getBlock().getVelocityMultiplier();
 		if (!blockState.isOf(Blocks.WATER) && !blockState.isOf(Blocks.BUBBLE_COLUMN)) {
-			return (double)f == 1.0 ? this.world.getBlockState(this.getVelocityAffectingPos()).getBlock().getVelocityMultiplier() : f;
+			return (double)f == 1.0 ? this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getVelocityMultiplier() : f;
 		} else {
 			return f;
 		}
@@ -1105,7 +1107,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		if (movement.lengthSquared() <= 1.0E-7) {
 			return movement;
 		} else {
-			long l = this.world.getTime();
+			long l = this.getWorld().getTime();
 			if (l != this.pistonMovementTick) {
 				Arrays.fill(this.pistonMovementDelta, 0.0);
 				this.pistonMovementTick = l;
@@ -1136,26 +1138,26 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	private Vec3d adjustMovementForCollisions(Vec3d movement) {
 		Box box = this.getBoundingBox();
-		List<VoxelShape> list = this.world.getEntityCollisions(this, box.stretch(movement));
-		Vec3d vec3d = movement.lengthSquared() == 0.0 ? movement : adjustMovementForCollisions(this, movement, box, this.world, list);
+		List<VoxelShape> list = this.getWorld().getEntityCollisions(this, box.stretch(movement));
+		Vec3d vec3d = movement.lengthSquared() == 0.0 ? movement : adjustMovementForCollisions(this, movement, box, this.getWorld(), list);
 		boolean bl = movement.x != vec3d.x;
 		boolean bl2 = movement.y != vec3d.y;
 		boolean bl3 = movement.z != vec3d.z;
-		boolean bl4 = this.onGround || bl2 && movement.y < 0.0;
+		boolean bl4 = this.isOnGround() || bl2 && movement.y < 0.0;
 		if (this.getStepHeight() > 0.0F && bl4 && (bl || bl3)) {
-			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.getStepHeight(), movement.z), box, this.world, list);
+			Vec3d vec3d2 = adjustMovementForCollisions(this, new Vec3d(movement.x, (double)this.getStepHeight(), movement.z), box, this.getWorld(), list);
 			Vec3d vec3d3 = adjustMovementForCollisions(
-				this, new Vec3d(0.0, (double)this.getStepHeight(), 0.0), box.stretch(movement.x, 0.0, movement.z), this.world, list
+				this, new Vec3d(0.0, (double)this.getStepHeight(), 0.0), box.stretch(movement.x, 0.0, movement.z), this.getWorld(), list
 			);
 			if (vec3d3.y < (double)this.getStepHeight()) {
-				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.world, list).add(vec3d3);
+				Vec3d vec3d4 = adjustMovementForCollisions(this, new Vec3d(movement.x, 0.0, movement.z), box.offset(vec3d3), this.getWorld(), list).add(vec3d3);
 				if (vec3d4.horizontalLengthSquared() > vec3d2.horizontalLengthSquared()) {
 					vec3d2 = vec3d4;
 				}
 			}
 
 			if (vec3d2.horizontalLengthSquared() > vec3d.horizontalLengthSquared()) {
-				return vec3d2.add(adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.world, list));
+				return vec3d2.add(adjustMovementForCollisions(this, new Vec3d(0.0, -vec3d2.y + movement.y, 0.0), box.offset(vec3d2), this.getWorld(), list));
 			}
 		}
 
@@ -1240,22 +1242,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		Box box = this.getBoundingBox();
 		BlockPos blockPos = BlockPos.ofFloored(box.minX + 1.0E-7, box.minY + 1.0E-7, box.minZ + 1.0E-7);
 		BlockPos blockPos2 = BlockPos.ofFloored(box.maxX - 1.0E-7, box.maxY - 1.0E-7, box.maxZ - 1.0E-7);
-		if (this.world.isRegionLoaded(blockPos, blockPos2)) {
+		if (this.getWorld().isRegionLoaded(blockPos, blockPos2)) {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for(int i = blockPos.getX(); i <= blockPos2.getX(); ++i) {
 				for(int j = blockPos.getY(); j <= blockPos2.getY(); ++j) {
 					for(int k = blockPos.getZ(); k <= blockPos2.getZ(); ++k) {
 						mutable.set(i, j, k);
-						BlockState blockState = this.world.getBlockState(mutable);
+						BlockState blockState = this.getWorld().getBlockState(mutable);
 
 						try {
-							blockState.onEntityCollision(this.world, mutable, this);
+							blockState.onEntityCollision(this.getWorld(), mutable, this);
 							this.onBlockCollision(blockState);
 						} catch (Throwable var12) {
 							CrashReport crashReport = CrashReport.create(var12, "Colliding entity with block");
 							CrashReportSection crashReportSection = crashReport.addElement("Block being collided with");
-							CrashReportSection.addBlockInfo(crashReportSection, this.world, mutable, blockState);
+							CrashReportSection.addBlockInfo(crashReportSection, this.getWorld(), mutable, blockState);
 							throw new CrashException(crashReport);
 						}
 					}
@@ -1283,7 +1285,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @param entity the entity that emitted the game event, or {@code null} if there is none
 	 */
 	public void emitGameEvent(GameEvent event, @Nullable Entity entity) {
-		this.world.emitGameEvent(entity, event, this.pos);
+		this.getWorld().emitGameEvent(entity, event, this.pos);
 	}
 
 	/**
@@ -1312,7 +1314,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	protected BlockPos getStepSoundPos(BlockPos pos) {
 		BlockPos blockPos = pos.up();
-		BlockState blockState = this.world.getBlockState(blockPos);
+		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		return !blockState.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) && !blockState.isIn(BlockTags.COMBINATION_STEP_SOUND_BLOCKS) ? pos : blockPos;
 	}
 
@@ -1378,7 +1380,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	public void playSound(SoundEvent sound, float volume, float pitch) {
 		if (!this.isSilent()) {
-			this.world.playSound(null, this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch);
+			this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), sound, this.getSoundCategory(), volume, pitch);
 		}
 	}
 
@@ -1462,8 +1464,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	protected void fall(double heightDifference, boolean onGround, BlockState state, BlockPos landedPosition) {
 		if (onGround) {
 			if (this.fallDistance > 0.0F) {
-				state.getBlock().onLandedUpon(this.world, state, landedPosition, this, this.fallDistance);
-				this.world.emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
+				state.getBlock().onLandedUpon(this.getWorld(), state, landedPosition, this, this.fallDistance);
+				this.getWorld().emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
 			}
 
 			this.onLanding();
@@ -1508,7 +1510,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public boolean canStep(boolean climbing, Vec3d movement) {
-		return (this.onGround || climbing || this.isInSneakingPose() && movement.y == 0.0) && !this.isSwimming();
+		return (this.isOnGround() || climbing || this.isInSneakingPose() && movement.y == 0.0) && !this.isSwimming();
 	}
 
 	/**
@@ -1523,14 +1525,15 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	private boolean isBeingRainedOn() {
 		BlockPos blockPos = this.getBlockPos();
-		return this.world.hasRain(blockPos) || this.world.hasRain(BlockPos.ofFloored((double)blockPos.getX(), this.getBoundingBox().maxY, (double)blockPos.getZ()));
+		return this.getWorld().hasRain(blockPos)
+			|| this.getWorld().hasRain(BlockPos.ofFloored((double)blockPos.getX(), this.getBoundingBox().maxY, (double)blockPos.getZ()));
 	}
 
 	/**
 	 * {@return whether the block at the entity's position is a bubble column}
 	 */
 	private boolean isInsideBubbleColumn() {
-		return this.world.getBlockState(this.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
+		return this.getWorld().getBlockState(this.getBlockPos()).isOf(Blocks.BUBBLE_COLUMN);
 	}
 
 	/**
@@ -1582,14 +1585,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		if (this.isSwimming()) {
 			this.setSwimming(this.isSprinting() && this.isTouchingWater() && !this.hasVehicle());
 		} else {
-			this.setSwimming(this.isSprinting() && this.isSubmergedInWater() && !this.hasVehicle() && this.world.getFluidState(this.blockPos).isIn(FluidTags.WATER));
+			this.setSwimming(
+				this.isSprinting() && this.isSubmergedInWater() && !this.hasVehicle() && this.getWorld().getFluidState(this.blockPos).isIn(FluidTags.WATER)
+			);
 		}
 	}
 
 	protected boolean updateWaterState() {
 		this.fluidHeight.clear();
 		this.checkWaterState();
-		double d = this.world.getDimension().ultrawarm() ? 0.007 : 0.0023333333333333335;
+		double d = this.getWorld().getDimension().ultrawarm() ? 0.007 : 0.0023333333333333335;
 		boolean bl = this.updateMovementInFluid(FluidTags.LAVA, d);
 		return this.isTouchingWater() || bl;
 	}
@@ -1627,8 +1632,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 
 		BlockPos blockPos = BlockPos.ofFloored(this.getX(), d, this.getZ());
-		FluidState fluidState = this.world.getFluidState(blockPos);
-		double e = (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos));
+		FluidState fluidState = this.getWorld().getFluidState(blockPos);
+		double e = (double)((float)blockPos.getY() + fluidState.getHeight(this.getWorld(), blockPos));
 		if (e > d) {
 			fluidState.streamTags().forEach(this.submergedFluidTag::add);
 		}
@@ -1650,14 +1655,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		for(int i = 0; (float)i < 1.0F + this.dimensions.width * 20.0F; ++i) {
 			double d = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
 			double e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
-			this.world
+			this.getWorld()
 				.addParticle(ParticleTypes.BUBBLE, this.getX() + d, (double)(h + 1.0F), this.getZ() + e, vec3d.x, vec3d.y - this.random.nextDouble() * 0.2F, vec3d.z);
 		}
 
 		for(int i = 0; (float)i < 1.0F + this.dimensions.width * 20.0F; ++i) {
 			double d = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
 			double e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
-			this.world.addParticle(ParticleTypes.SPLASH, this.getX() + d, (double)(h + 1.0F), this.getZ() + e, vec3d.x, vec3d.y, vec3d.z);
+			this.getWorld().addParticle(ParticleTypes.SPLASH, this.getX() + d, (double)(h + 1.0F), this.getZ() + e, vec3d.x, vec3d.y, vec3d.z);
 		}
 
 		this.emitGameEvent(GameEvent.SPLASH);
@@ -1674,7 +1679,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	@Deprecated
 	protected BlockState getLandingBlockState() {
-		return this.world.getBlockState(this.getLandingPos());
+		return this.getWorld().getBlockState(this.getLandingPos());
 	}
 
 	/**
@@ -1687,7 +1692,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #getSteppingPos()
 	 */
 	public BlockState getSteppingBlockState() {
-		return this.world.getBlockState(this.getSteppingPos());
+		return this.getWorld().getBlockState(this.getSteppingPos());
 	}
 
 	public boolean shouldSpawnSprintingParticles() {
@@ -1699,10 +1704,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		int j = MathHelper.floor(this.getY() - 0.2F);
 		int k = MathHelper.floor(this.getZ());
 		BlockPos blockPos = new BlockPos(i, j, k);
-		BlockState blockState = this.world.getBlockState(blockPos);
+		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 			Vec3d vec3d = this.getVelocity();
-			this.world
+			this.getWorld()
 				.addParticle(
 					new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState),
 					this.getX() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width,
@@ -1759,8 +1764,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	@Deprecated
 	public float getBrightnessAtEyes() {
-		return this.world.isPosLoaded(this.getBlockX(), this.getBlockZ())
-			? this.world.getBrightness(BlockPos.ofFloored(this.getX(), this.getEyeY(), this.getZ()))
+		return this.getWorld().isPosLoaded(this.getBlockX(), this.getBlockZ())
+			? this.getWorld().getBrightness(BlockPos.ofFloored(this.getX(), this.getEyeY(), this.getZ()))
 			: 0.0F;
 	}
 
@@ -2007,7 +2012,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		Vec3d vec3d = this.getCameraPosVec(tickDelta);
 		Vec3d vec3d2 = this.getRotationVec(tickDelta);
 		Vec3d vec3d3 = vec3d.add(vec3d2.x * maxDistance, vec3d2.y * maxDistance, vec3d2.z * maxDistance);
-		return this.world
+		return this.getWorld()
 			.raycast(
 				new RaycastContext(
 					vec3d, vec3d3, RaycastContext.ShapeType.OUTLINE, includeFluids ? RaycastContext.FluidHandling.ANY : RaycastContext.FluidHandling.NONE, this
@@ -2091,7 +2096,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			nbt.putFloat("FallDistance", this.fallDistance);
 			nbt.putShort("Fire", (short)this.fireTicks);
 			nbt.putShort("Air", (short)this.getAir());
-			nbt.putBoolean("OnGround", this.onGround);
+			nbt.putBoolean("OnGround", this.isOnGround());
 			nbt.putBoolean("Invulnerable", this.invulnerable);
 			nbt.putInt("PortalCooldown", this.portalCooldown);
 			nbt.putUuid("UUID", this.getUuid());
@@ -2186,7 +2191,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.setAir(nbt.getShort("Air"));
 			}
 
-			this.onGround = nbt.getBoolean("OnGround");
+			this.setOnGround(nbt.getBoolean("OnGround"));
 			this.invulnerable = nbt.getBoolean("Invulnerable");
 			this.portalCooldown = nbt.getInt("PortalCooldown");
 			if (nbt.containsUuid("UUID")) {
@@ -2354,12 +2359,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public ItemEntity dropStack(ItemStack stack, float yOffset) {
 		if (stack.isEmpty()) {
 			return null;
-		} else if (this.world.isClient) {
+		} else if (this.getWorld().isClient) {
 			return null;
 		} else {
-			ItemEntity itemEntity = new ItemEntity(this.world, this.getX(), this.getY() + (double)yOffset, this.getZ(), stack);
+			ItemEntity itemEntity = new ItemEntity(this.getWorld(), this.getX(), this.getY() + (double)yOffset, this.getZ(), stack);
 			itemEntity.setToDefaultPickupDelay();
-			this.world.spawnEntity(itemEntity);
+			this.getWorld().spawnEntity(itemEntity);
 			return itemEntity;
 		}
 	}
@@ -2390,11 +2395,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			return BlockPos.stream(box)
 				.anyMatch(
 					pos -> {
-						BlockState blockState = this.world.getBlockState(pos);
+						BlockState blockState = this.getWorld().getBlockState(pos);
 						return !blockState.isAir()
-							&& blockState.shouldSuffocate(this.world, pos)
+							&& blockState.shouldSuffocate(this.getWorld(), pos)
 							&& VoxelShapes.matchesAnywhere(
-								blockState.getCollisionShape(this.world, pos).offset((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()),
+								blockState.getCollisionShape(this.getWorld(), pos).offset((double)pos.getX(), (double)pos.getY(), (double)pos.getZ()),
 								VoxelShapes.cuboid(box),
 								BooleanBiFunction.AND
 							);
@@ -2573,7 +2578,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * {@code pose}}
 	 */
 	protected boolean wouldPoseNotCollide(EntityPose pose) {
-		return this.world.isSpaceEmpty(this, this.calculateBoundsForPose(pose).contract(1.0E-7));
+		return this.getWorld().isSpaceEmpty(this, this.calculateBoundsForPose(pose).contract(1.0E-7));
 	}
 
 	/**
@@ -2634,7 +2639,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.passengerList = ImmutableList.of(passenger);
 			} else {
 				List<Entity> list = Lists.<Entity>newArrayList(this.passengerList);
-				if (!this.world.isClient && passenger instanceof PlayerEntity && !(this.getFirstPassenger() instanceof PlayerEntity)) {
+				if (!this.getWorld().isClient && passenger instanceof PlayerEntity && !(this.getFirstPassenger() instanceof PlayerEntity)) {
 					list.add(0, passenger);
 				} else {
 					list.add(passenger);
@@ -2752,7 +2757,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		if (this.hasPortalCooldown()) {
 			this.resetPortalCooldown();
 		} else {
-			if (!this.world.isClient && !pos.equals(this.lastNetherPortalPosition)) {
+			if (!this.getWorld().isClient && !pos.equals(this.lastNetherPortalPosition)) {
 				this.lastNetherPortalPosition = pos.toImmutable();
 			}
 
@@ -2761,19 +2766,19 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	protected void tickPortal() {
-		if (this.world instanceof ServerWorld) {
+		if (this.getWorld() instanceof ServerWorld) {
 			int i = this.getMaxNetherPortalTime();
-			ServerWorld serverWorld = (ServerWorld)this.world;
+			ServerWorld serverWorld = (ServerWorld)this.getWorld();
 			if (this.inNetherPortal) {
 				MinecraftServer minecraftServer = serverWorld.getServer();
-				RegistryKey<World> registryKey = this.world.getRegistryKey() == World.NETHER ? World.OVERWORLD : World.NETHER;
+				RegistryKey<World> registryKey = this.getWorld().getRegistryKey() == World.NETHER ? World.OVERWORLD : World.NETHER;
 				ServerWorld serverWorld2 = minecraftServer.getWorld(registryKey);
 				if (serverWorld2 != null && minecraftServer.isNetherAllowed() && !this.hasVehicle() && this.netherPortalTime++ >= i) {
-					this.world.getProfiler().push("portal");
+					this.getWorld().getProfiler().push("portal");
 					this.netherPortalTime = i;
 					this.resetPortalCooldown();
 					this.moveToWorld(serverWorld2);
-					this.world.getProfiler().pop();
+					this.getWorld().getProfiler().pop();
 				}
 
 				this.inNetherPortal = false;
@@ -2875,7 +2880,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #isFireImmune
 	 */
 	public boolean isOnFire() {
-		boolean bl = this.world != null && this.world.isClient;
+		boolean bl = this.getWorld() != null && this.getWorld().isClient;
 		return !this.isFireImmune() && (this.fireTicks > 0 || bl && this.getFlag(ON_FIRE_FLAG_INDEX));
 	}
 
@@ -3098,7 +3103,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #setGlowing
 	 */
 	public boolean isGlowing() {
-		return this.world.isClient() ? this.getFlag(GLOWING_FLAG_INDEX) : this.glowing;
+		return this.getWorld().isClient() ? this.getFlag(GLOWING_FLAG_INDEX) : this.glowing;
 	}
 
 	/**
@@ -3157,7 +3162,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	@Nullable
 	public AbstractTeam getScoreboardTeam() {
-		return this.world.getScoreboard().getPlayerTeam(this.getEntityName());
+		return this.getWorld().getScoreboard().getPlayerTeam(this.getEntityName());
 	}
 
 	/**
@@ -3449,7 +3454,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 		for(Direction direction2 : new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST, Direction.UP}) {
 			mutable.set(blockPos, direction2);
-			if (!this.world.getBlockState(mutable).isFullCube(this.world, mutable)) {
+			if (!this.getWorld().getBlockState(mutable).isFullCube(this.getWorld(), mutable)) {
 				double e = vec3d.getComponentAlongAxis(direction2.getAxis());
 				double f = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - e : e;
 				if (f < d) {
@@ -3576,7 +3581,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public String toString() {
-		String string = this.world == null ? "~NULL~" : this.world.toString();
+		String string = this.getWorld() == null ? "~NULL~" : this.getWorld().toString();
 		return this.removalReason != null
 			? String.format(
 				Locale.ROOT,
@@ -3692,15 +3697,15 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	@Nullable
 	public Entity moveToWorld(ServerWorld destination) {
-		if (this.world instanceof ServerWorld && !this.isRemoved()) {
-			this.world.getProfiler().push("changeDimension");
+		if (this.getWorld() instanceof ServerWorld && !this.isRemoved()) {
+			this.getWorld().getProfiler().push("changeDimension");
 			this.detach();
-			this.world.getProfiler().push("reposition");
+			this.getWorld().getProfiler().push("reposition");
 			TeleportTarget teleportTarget = this.getTeleportTarget(destination);
 			if (teleportTarget == null) {
 				return null;
 			} else {
-				this.world.getProfiler().swap("reloading");
+				this.getWorld().getProfiler().swap("reloading");
 				Entity entity = this.getType().create(destination);
 				if (entity != null) {
 					entity.copyFrom(this);
@@ -3713,10 +3718,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 
 				this.removeFromDimension();
-				this.world.getProfiler().pop();
-				((ServerWorld)this.world).resetIdleTimeout();
+				this.getWorld().getProfiler().pop();
+				((ServerWorld)this.getWorld()).resetIdleTimeout();
 				destination.resetIdleTimeout();
-				this.world.getProfiler().pop();
+				this.getWorld().getProfiler().pop();
 				return entity;
 			}
 		} else {
@@ -3743,26 +3748,26 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	@Nullable
 	protected TeleportTarget getTeleportTarget(ServerWorld destination) {
-		boolean bl = this.world.getRegistryKey() == World.END && destination.getRegistryKey() == World.OVERWORLD;
+		boolean bl = this.getWorld().getRegistryKey() == World.END && destination.getRegistryKey() == World.OVERWORLD;
 		boolean bl2 = destination.getRegistryKey() == World.END;
 		if (!bl && !bl2) {
 			boolean bl3 = destination.getRegistryKey() == World.NETHER;
-			if (this.world.getRegistryKey() != World.NETHER && !bl3) {
+			if (this.getWorld().getRegistryKey() != World.NETHER && !bl3) {
 				return null;
 			} else {
 				WorldBorder worldBorder = destination.getWorldBorder();
-				double d = DimensionType.getCoordinateScaleFactor(this.world.getDimension(), destination.getDimension());
+				double d = DimensionType.getCoordinateScaleFactor(this.getWorld().getDimension(), destination.getDimension());
 				BlockPos blockPos2 = worldBorder.clamp(this.getX() * d, this.getY(), this.getZ() * d);
 				return (TeleportTarget)this.getPortalRect(destination, blockPos2, bl3, worldBorder)
 					.map(
 						rect -> {
-							BlockState blockState = this.world.getBlockState(this.lastNetherPortalPosition);
+							BlockState blockState = this.getWorld().getBlockState(this.lastNetherPortalPosition);
 							Direction.Axis axis;
 							Vec3d vec3d;
 							if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
 								axis = blockState.get(Properties.HORIZONTAL_AXIS);
 								BlockLocating.Rectangle rectangle = BlockLocating.getLargestRectangle(
-									this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, pos -> this.world.getBlockState(pos) == blockState
+									this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, pos -> this.getWorld().getBlockState(pos) == blockState
 								);
 								vec3d = this.positionInPortal(axis, rectangle);
 							} else {
@@ -3871,7 +3876,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		section.add("Entity's Exact location", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", this.getX(), this.getY(), this.getZ()));
 		section.add(
 			"Entity's Block location",
-			CrashReportSection.createPositionString(this.world, MathHelper.floor(this.getX()), MathHelper.floor(this.getY()), MathHelper.floor(this.getZ()))
+			CrashReportSection.createPositionString(this.getWorld(), MathHelper.floor(this.getX()), MathHelper.floor(this.getY()), MathHelper.floor(this.getZ()))
 		);
 		Vec3d vec3d = this.getVelocity();
 		section.add("Entity's Momentum", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", vec3d.x, vec3d.y, vec3d.z));
@@ -4020,10 +4025,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
 	 */
 	public final void teleport(double destX, double destY, double destZ) {
-		if (this.world instanceof ServerWorld) {
+		if (this.getWorld() instanceof ServerWorld) {
 			ChunkPos chunkPos = new ChunkPos(BlockPos.ofFloored(destX, destY, destZ));
-			((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getId());
-			this.world.getChunk(chunkPos.x, chunkPos.z);
+			((ServerWorld)this.getWorld()).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getId());
+			this.getWorld().getChunk(chunkPos.x, chunkPos.z);
 			this.requestTeleport(destX, destY, destZ);
 		}
 	}
@@ -4039,7 +4044,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	public boolean teleport(ServerWorld world, double destX, double destY, double destZ, Set<PositionFlag> flags, float yaw, float pitch) {
 		float f = MathHelper.clamp(pitch, -90.0F, 90.0F);
-		if (world == this.world) {
+		if (world == this.getWorld()) {
 			this.refreshPositionAndAngles(destX, destY, destZ, yaw, f);
 			this.teleportPassengers();
 			this.setHeadYaw(yaw);
@@ -4086,7 +4091,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see #refreshPositionAndAngles(double, double, double, float, float)
 	 */
 	public void requestTeleport(double destX, double destY, double destZ) {
-		if (this.world instanceof ServerWorld) {
+		if (this.getWorld() instanceof ServerWorld) {
 			this.refreshPositionAndAngles(destX, destY, destZ, this.getYaw(), this.getPitch());
 			this.teleportPassengers();
 		}
@@ -4162,7 +4167,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.standingEyeHeight = this.getEyeHeight(entityPose, entityDimensions2);
 		this.refreshPosition();
 		boolean bl = (double)entityDimensions2.width <= 4.0 && (double)entityDimensions2.height <= 4.0;
-		if (!this.world.isClient
+		if (!this.getWorld().isClient
 			&& !this.firstUpdate
 			&& !this.noClip
 			&& bl
@@ -4172,7 +4177,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			double d = (double)Math.max(0.0F, entityDimensions2.width - entityDimensions.width) + 1.0E-6;
 			double e = (double)Math.max(0.0F, entityDimensions2.height - entityDimensions.height) + 1.0E-6;
 			VoxelShape voxelShape = VoxelShapes.cuboid(Box.of(vec3d, d, e, d));
-			this.world
+			this.getWorld()
 				.findClosestCollision(this, voxelShape, vec3d, (double)entityDimensions2.width, (double)entityDimensions2.height, (double)entityDimensions2.width)
 				.ifPresent(pos -> this.setPosition(pos.add(0.0, (double)(-entityDimensions2.height) / 2.0, 0.0)));
 		}
@@ -4279,7 +4284,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public World getEntityWorld() {
-		return this.world;
+		return this.getWorld();
 	}
 
 	/**
@@ -4287,7 +4292,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	@Nullable
 	public MinecraftServer getServer() {
-		return this.world.getServer();
+		return this.getWorld().getServer();
 	}
 
 	/**
@@ -4610,7 +4615,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public boolean canMoveVoluntarily() {
-		return !this.world.isClient;
+		return !this.getWorld().isClient;
 	}
 
 	/**
@@ -4697,11 +4702,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			this,
 			this.getPos(),
 			this.getRotationClient(),
-			this.world instanceof ServerWorld ? (ServerWorld)this.world : null,
+			this.getWorld() instanceof ServerWorld ? (ServerWorld)this.getWorld() : null,
 			this.getPermissionLevel(),
 			this.getName().getString(),
 			this.getDisplayName(),
-			this.world.getServer(),
+			this.getWorld().getServer(),
 			this
 		);
 	}
@@ -4730,7 +4735,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	@Override
 	public boolean shouldReceiveFeedback() {
-		return this.world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK);
+		return this.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK);
 	}
 
 	@Override
@@ -4781,14 +4786,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				for(int q = k; q < l; ++q) {
 					for(int r = m; r < n; ++r) {
 						mutable.set(p, q, r);
-						FluidState fluidState = this.world.getFluidState(mutable);
+						FluidState fluidState = this.getWorld().getFluidState(mutable);
 						if (fluidState.isIn(tag)) {
-							double e = (double)((float)q + fluidState.getHeight(this.world, mutable));
+							double e = (double)((float)q + fluidState.getHeight(this.getWorld(), mutable));
 							if (e >= box.minY) {
 								bl2 = true;
 								d = Math.max(e - box.minY, d);
 								if (bl) {
-									Vec3d vec3d2 = fluidState.getVelocity(this.world, mutable);
+									Vec3d vec3d2 = fluidState.getVelocity(this.getWorld(), mutable);
 									if (d < 0.4) {
 										vec3d2 = vec3d2.multiply(d);
 									}
@@ -4840,7 +4845,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		int j = MathHelper.ceil(box.maxX);
 		int k = MathHelper.floor(box.minZ);
 		int l = MathHelper.ceil(box.maxZ);
-		return !this.world.isRegionLoaded(i, k, j, l);
+		return !this.getWorld().isRegionLoaded(i, k, j, l);
 	}
 
 	/**
@@ -4946,7 +4951,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 */
 	public BlockState getBlockStateAtPos() {
 		if (this.blockStateAtPos == null) {
-			this.blockStateAtPos = this.world.getBlockState(this.getBlockPos());
+			this.blockStateAtPos = this.getWorld().getBlockState(this.getBlockPos());
 		}
 
 		return this.blockStateAtPos;
@@ -5268,8 +5273,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.world;
 	}
 
+	protected void setWorld(World world) {
+		this.world = world;
+	}
+
 	public DamageSources getDamageSources() {
-		return this.world.getDamageSources();
+		return this.getWorld().getDamageSources();
 	}
 
 	/**

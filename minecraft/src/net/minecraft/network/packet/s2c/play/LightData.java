@@ -18,10 +18,8 @@ public class LightData {
 	private final BitSet uninitedBlock;
 	private final List<byte[]> skyNibbles;
 	private final List<byte[]> blockNibbles;
-	private final boolean nonEdge;
 
-	public LightData(ChunkPos pos, LightingProvider lightProvider, @Nullable BitSet skyBits, @Nullable BitSet blockBits, boolean nonEdge) {
-		this.nonEdge = nonEdge;
+	public LightData(ChunkPos pos, LightingProvider lightProvider, @Nullable BitSet skyBits, @Nullable BitSet blockBits) {
 		this.initedSky = new BitSet();
 		this.initedBlock = new BitSet();
 		this.uninitedSky = new BitSet();
@@ -41,7 +39,6 @@ public class LightData {
 	}
 
 	public LightData(PacketByteBuf buf, int x, int y) {
-		this.nonEdge = buf.readBoolean();
 		this.initedSky = buf.readBitSet();
 		this.initedBlock = buf.readBitSet();
 		this.uninitedSky = buf.readBitSet();
@@ -51,7 +48,6 @@ public class LightData {
 	}
 
 	public void write(PacketByteBuf buf) {
-		buf.writeBoolean(this.nonEdge);
 		buf.writeBitSet(this.initedSky);
 		buf.writeBitSet(this.initedBlock);
 		buf.writeBitSet(this.uninitedSky);
@@ -94,9 +90,5 @@ public class LightData {
 
 	public List<byte[]> getBlockNibbles() {
 		return this.blockNibbles;
-	}
-
-	public boolean isNonEdge() {
-		return this.nonEdge;
 	}
 }

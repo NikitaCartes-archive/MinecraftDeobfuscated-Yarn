@@ -28,7 +28,7 @@ public abstract class DoorInteractGoal extends Goal {
 		if (!this.doorValid) {
 			return false;
 		} else {
-			BlockState blockState = this.mob.world.getBlockState(this.doorPos);
+			BlockState blockState = this.mob.getWorld().getBlockState(this.doorPos);
 			if (!(blockState.getBlock() instanceof DoorBlock)) {
 				this.doorValid = false;
 				return false;
@@ -40,9 +40,9 @@ public abstract class DoorInteractGoal extends Goal {
 
 	protected void setDoorOpen(boolean open) {
 		if (this.doorValid) {
-			BlockState blockState = this.mob.world.getBlockState(this.doorPos);
+			BlockState blockState = this.mob.getWorld().getBlockState(this.doorPos);
 			if (blockState.getBlock() instanceof DoorBlock) {
-				((DoorBlock)blockState.getBlock()).setOpen(this.mob, this.mob.world, blockState, this.doorPos, open);
+				((DoorBlock)blockState.getBlock()).setOpen(this.mob, this.mob.getWorld(), blockState, this.doorPos, open);
 			}
 		}
 	}
@@ -61,7 +61,7 @@ public abstract class DoorInteractGoal extends Goal {
 					PathNode pathNode = path.getNode(i);
 					this.doorPos = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
 					if (!(this.mob.squaredDistanceTo((double)this.doorPos.getX(), this.mob.getY(), (double)this.doorPos.getZ()) > 2.25)) {
-						this.doorValid = DoorBlock.canOpenByHand(this.mob.world, this.doorPos);
+						this.doorValid = DoorBlock.canOpenByHand(this.mob.getWorld(), this.doorPos);
 						if (this.doorValid) {
 							return true;
 						}
@@ -69,7 +69,7 @@ public abstract class DoorInteractGoal extends Goal {
 				}
 
 				this.doorPos = this.mob.getBlockPos().up();
-				this.doorValid = DoorBlock.canOpenByHand(this.mob.world, this.doorPos);
+				this.doorValid = DoorBlock.canOpenByHand(this.mob.getWorld(), this.doorPos);
 				return this.doorValid;
 			} else {
 				return false;

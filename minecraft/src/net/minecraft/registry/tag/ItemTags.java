@@ -95,6 +95,7 @@ public final class ItemTags {
 	public static final TagKey<Item> TRIM_TEMPLATES = of("trim_templates");
 	public static final TagKey<Item> SNIFFER_FOOD = of("sniffer_food");
 	public static final TagKey<Item> DECORATED_POT_SHERDS = of("decorated_pot_sherds");
+	public static final TagKey<Item> DECORATED_POT_INGREDIENTS = of("decorated_pot_ingredients");
 	public static final TagKey<Item> SWORDS = of("swords");
 	public static final TagKey<Item> AXES = of("axes");
 	public static final TagKey<Item> HOES = of("hoes");

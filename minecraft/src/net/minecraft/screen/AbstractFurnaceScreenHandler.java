@@ -55,7 +55,7 @@ public abstract class AbstractFurnaceScreenHandler extends AbstractRecipeScreenH
 		checkDataCount(propertyDelegate, 4);
 		this.inventory = inventory;
 		this.propertyDelegate = propertyDelegate;
-		this.world = playerInventory.player.world;
+		this.world = playerInventory.player.getWorld();
 		this.addSlot(new Slot(inventory, 0, 56, 17));
 		this.addSlot(new FurnaceFuelSlot(this, inventory, 1, 56, 53));
 		this.addSlot(new FurnaceOutputSlot(playerInventory.player, inventory, 2, 116, 35));

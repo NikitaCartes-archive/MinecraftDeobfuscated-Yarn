@@ -33,7 +33,7 @@ public class FollowGroupLeaderGoal extends Goal {
 			this.checkSurroundingDelay = this.getSurroundingSearchDelay(this.fish);
 			Predicate<SchoolingFishEntity> predicate = fish -> fish.canHaveMoreFishInGroup() || !fish.hasLeader();
 			List<? extends SchoolingFishEntity> list = this.fish
-				.world
+				.getWorld()
 				.getEntitiesByClass(this.fish.getClass(), this.fish.getBoundingBox().expand(8.0, 8.0, 8.0), predicate);
 			SchoolingFishEntity schoolingFishEntity = DataFixUtils.orElse(list.stream().filter(SchoolingFishEntity::canHaveMoreFishInGroup).findAny(), this.fish);
 			schoolingFishEntity.pullInOtherFish(list.stream().filter(fish -> !fish.hasLeader()));

@@ -5,11 +5,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.TextureUtil;
+import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
@@ -76,14 +76,17 @@ public class TrueTypeFontLoader implements FontLoader {
 		);
 	}
 
-	@Nullable
 	@Override
-	public Font load(ResourceManager manager) {
+	public Either<FontLoader.Loadable, FontLoader.Reference> build() {
+		return Either.left(this::load);
+	}
+
+	private Font load(ResourceManager resourceManager) throws IOException {
 		STBTTFontinfo sTBTTFontinfo = null;
 		ByteBuffer byteBuffer = null;
 
 		try {
-			InputStream inputStream = manager.open(this.filename.withPrefixedPath("font/"));
+			InputStream inputStream = resourceManager.open(this.filename.withPrefixedPath("font/"));
 
 			TrueTypeFont var5;
 			try {
@@ -115,13 +118,12 @@ public class TrueTypeFontLoader implements FontLoader {
 
 			return var5;
 		} catch (Exception var9) {
-			LOGGER.error("Couldn't load truetype font {}", this.filename, var9);
 			if (sTBTTFontinfo != null) {
 				sTBTTFontinfo.free();
 			}
 
 			MemoryUtil.memFree(byteBuffer);
-			return null;
+			throw var9;
 		}
 	}
 }

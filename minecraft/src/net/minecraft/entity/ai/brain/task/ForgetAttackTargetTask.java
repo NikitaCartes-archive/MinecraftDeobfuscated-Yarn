@@ -40,7 +40,7 @@ public class ForgetAttackTargetTask {
 								if (entity.canTarget(livingEntity)
 									&& (!shouldForgetIfTargetUnreachable || !cannotReachTarget(entity, context.getOptionalValue(cantReachWalkTargetSince)))
 									&& livingEntity.isAlive()
-									&& livingEntity.world == entity.world
+									&& livingEntity.getWorld() == entity.getWorld()
 									&& !alternativeCondition.test(livingEntity)) {
 									return true;
 								} else {
@@ -54,6 +54,6 @@ public class ForgetAttackTargetTask {
 	}
 
 	private static boolean cannotReachTarget(LivingEntity livingEntity, Optional<Long> optional) {
-		return optional.isPresent() && livingEntity.world.getTime() - optional.get() > 200L;
+		return optional.isPresent() && livingEntity.getWorld().getTime() - optional.get() > 200L;
 	}
 }

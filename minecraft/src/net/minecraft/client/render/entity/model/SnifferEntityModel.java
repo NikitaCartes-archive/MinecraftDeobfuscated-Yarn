@@ -15,7 +15,7 @@ import net.minecraft.entity.passive.SnifferEntity;
 @Environment(EnvType.CLIENT)
 public class SnifferEntityModel<T extends SnifferEntity> extends SinglePartEntityModelWithChildTransform<T> {
 	private static final float field_43364 = 9.0F;
-	private static final float field_43407 = 75.0F;
+	private static final float field_43407 = 100.0F;
 	private final ModelPart root;
 	private final ModelPart head;
 
@@ -107,9 +107,9 @@ public class SnifferEntityModel<T extends SnifferEntity> extends SinglePartEntit
 		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		if (snifferEntity.isSearching()) {
-			this.animateMovement(SnifferAnimations.SEARCHING, f, g, 9.0F, 75.0F);
+			this.animateMovement(SnifferAnimations.SEARCHING, f, g, 9.0F, 100.0F);
 		} else {
-			this.animateMovement(SnifferAnimations.WALKING, f, g, 9.0F, 75.0F);
+			this.animateMovement(SnifferAnimations.WALKING, f, g, 9.0F, 100.0F);
 		}
 
 		this.updateAnimation(snifferEntity.diggingAnimationState, SnifferAnimations.DIGGING, h);

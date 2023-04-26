@@ -28,15 +28,15 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 			&& !this.actor.hasPassengers()
 			&& this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
-			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(this.actor.getBlockPos());
+			&& !((ServerWorld)this.actor.getWorld()).isNearOccupiedPointOfInterest(this.actor.getBlockPos());
 	}
 
 	@Override
 	public boolean shouldContinue() {
 		return this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
-			&& this.actor.world instanceof ServerWorld
-			&& !((ServerWorld)this.actor.world).isNearOccupiedPointOfInterest(this.actor.getBlockPos());
+			&& this.actor.getWorld() instanceof ServerWorld
+			&& !((ServerWorld)this.actor.getWorld()).isNearOccupiedPointOfInterest(this.actor.getBlockPos());
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 		if (raid.isActive()) {
 			Set<RaiderEntity> set = Sets.<RaiderEntity>newHashSet();
 			List<RaiderEntity> list = this.actor
-				.world
+				.getWorld()
 				.getEntitiesByClass(
 					RaiderEntity.class, this.actor.getBoundingBox().expand(16.0), raider -> !raider.hasActiveRaid() && RaidManager.isValidRaiderFor(raider, raid)
 				);

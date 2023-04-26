@@ -99,7 +99,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 				float h = 0.0078125F;
 				matrixStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
 				matrixStack.translate(-64.0F, -64.0F, 0.0F);
-				MapState mapState = FilledMapItem.getMapState(optionalInt.getAsInt(), itemFrameEntity.world);
+				MapState mapState = FilledMapItem.getMapState(optionalInt.getAsInt(), itemFrameEntity.getWorld());
 				matrixStack.translate(0.0F, 0.0F, -1.0F);
 				if (mapState != null) {
 					int k = this.getLight(itemFrameEntity, LightmapTextureManager.MAX_SKY_LIGHT_COORDINATE | 210, i);
@@ -116,7 +116,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 						OverlayTexture.DEFAULT_UV,
 						matrixStack,
 						vertexConsumerProvider,
-						itemFrameEntity.world,
+						itemFrameEntity.getWorld(),
 						itemFrameEntity.getId()
 					);
 			}

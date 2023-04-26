@@ -136,7 +136,7 @@ public abstract class DisplayEntity extends Entity {
 			this.stopRiding();
 		}
 
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			if (this.startInterpolationSet) {
 				this.startInterpolationSet = false;
 				int i = this.getStartInterpolation();
@@ -553,7 +553,7 @@ public abstract class DisplayEntity extends Entity {
 		@Override
 		protected void readCustomDataFromNbt(NbtCompound nbt) {
 			super.readCustomDataFromNbt(nbt);
-			this.setBlockState(NbtHelper.toBlockState(this.world.createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("block_state")));
+			this.setBlockState(NbtHelper.toBlockState(this.getWorld().createCommandRegistryWrapper(RegistryKeys.BLOCK), nbt.getCompound("block_state")));
 		}
 
 		@Override

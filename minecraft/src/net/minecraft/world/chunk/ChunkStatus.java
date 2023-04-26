@@ -176,9 +176,9 @@ public class ChunkStatus {
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(targetStatus, executor, world, generator, structureTemplateManager, lightingProvider, fullChunkConverter, chunks, chunk) -> getLightingFuture(
-				targetStatus, lightingProvider, chunk
+				lightingProvider, chunk
 			),
-		(targetStatus, world, structureTemplateManager, lightingProvider, fullChunkConverter, chunk) -> getLightingFuture(targetStatus, lightingProvider, chunk)
+		(targetStatus, world, structureTemplateManager, lightingProvider, fullChunkConverter, chunk) -> getLightingFuture(lightingProvider, chunk)
 	);
 	public static final ChunkStatus SPAWN = register(
 		"spawn", LIGHT, 0, POST_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (targetStatus, world, generator, chunks, chunk) -> {
@@ -237,14 +237,14 @@ public class ChunkStatus {
 	private final EnumSet<Heightmap.Type> heightMapTypes;
 
 	private static CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getInitializeLightingFuture(ServerLightingProvider lightingProvider, Chunk chunk) {
+		chunk.refreshSurfaceY();
 		((ProtoChunk)chunk).setLightingProvider(lightingProvider);
-		return lightingProvider.initializeLight(chunk).thenApply(Either::left);
+		boolean bl = shouldExcludeBlockLight(chunk);
+		return lightingProvider.initializeLight(chunk, bl).thenApply(Either::left);
 	}
 
-	private static CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getLightingFuture(
-		ChunkStatus status, ServerLightingProvider lightingProvider, Chunk chunk
-	) {
-		boolean bl = shouldExcludeBlockLight(status, chunk);
+	private static CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getLightingFuture(ServerLightingProvider lightingProvider, Chunk chunk) {
+		boolean bl = shouldExcludeBlockLight(chunk);
 		return lightingProvider.light(chunk, bl).thenApply(Either::left);
 	}
 
@@ -298,8 +298,8 @@ public class ChunkStatus {
 		return list;
 	}
 
-	private static boolean shouldExcludeBlockLight(ChunkStatus status, Chunk chunk) {
-		return chunk.getStatus().isAtLeast(status) && chunk.isLightOn();
+	private static boolean shouldExcludeBlockLight(Chunk chunk) {
+		return chunk.getStatus().isAtLeast(LIGHT) && chunk.isLightOn();
 	}
 
 	public static ChunkStatus byDistanceFromFull(int level) {

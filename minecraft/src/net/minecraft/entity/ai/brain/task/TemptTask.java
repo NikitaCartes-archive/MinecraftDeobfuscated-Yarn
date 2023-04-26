@@ -17,10 +17,15 @@ import net.minecraft.util.Util;
 
 public class TemptTask extends MultiTickTask<PathAwareEntity> {
 	public static final int TEMPTATION_COOLDOWN_TICKS = 100;
-	public static final double field_30116 = 2.5;
+	public static final double DEFAULT_STOP_DISTANCE = 2.5;
 	private final Function<LivingEntity, Float> speed;
+	private final double stopDistance;
 
 	public TemptTask(Function<LivingEntity, Float> speed) {
+		this(speed, 2.5);
+	}
+
+	public TemptTask(Function<LivingEntity, Float> speed, double stopDistance) {
 		super(Util.make(() -> {
 			Builder<MemoryModuleType<?>, MemoryModuleState> builder = ImmutableMap.builder();
 			builder.put(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED);
@@ -33,6 +38,7 @@ public class TemptTask extends MultiTickTask<PathAwareEntity> {
 			return builder.build();
 		}));
 		this.speed = speed;
+		this.stopDistance = stopDistance;
 	}
 
 	protected float getSpeed(PathAwareEntity entity) {
@@ -70,7 +76,7 @@ public class TemptTask extends MultiTickTask<PathAwareEntity> {
 		PlayerEntity playerEntity = (PlayerEntity)this.getTemptingPlayer(pathAwareEntity).get();
 		Brain<?> brain = pathAwareEntity.getBrain();
 		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(playerEntity, true));
-		if (pathAwareEntity.squaredDistanceTo(playerEntity) < 6.25) {
+		if (pathAwareEntity.squaredDistanceTo(playerEntity) < this.stopDistance * this.stopDistance) {
 			brain.forget(MemoryModuleType.WALK_TARGET);
 		} else {
 			brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(playerEntity, false), this.getSpeed(pathAwareEntity), 2));

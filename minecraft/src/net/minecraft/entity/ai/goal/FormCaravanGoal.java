@@ -23,7 +23,7 @@ public class FormCaravanGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		if (!this.llama.isLeashed() && !this.llama.isFollowing()) {
-			List<Entity> list = this.llama.world.getOtherEntities(this.llama, this.llama.getBoundingBox().expand(9.0, 4.0, 9.0), entityx -> {
+			List<Entity> list = this.llama.getWorld().getOtherEntities(this.llama, this.llama.getBoundingBox().expand(9.0, 4.0, 9.0), entityx -> {
 				EntityType<?> entityType = entityx.getType();
 				return entityType == EntityType.LLAMA || entityType == EntityType.TRADER_LLAMA;
 			});

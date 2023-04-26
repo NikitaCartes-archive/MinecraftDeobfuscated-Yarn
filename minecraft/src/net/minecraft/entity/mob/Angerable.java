@@ -83,7 +83,7 @@ public interface Angerable {
 		if (!this.canTarget(entity)) {
 			return false;
 		} else {
-			return entity.getType() == EntityType.PLAYER && this.isUniversallyAngry(entity.world) ? true : entity.getUuid().equals(this.getAngryAt());
+			return entity.getType() == EntityType.PLAYER && this.isUniversallyAngry(entity.getWorld()) ? true : entity.getUuid().equals(this.getAngryAt());
 		}
 	}
 
@@ -96,7 +96,7 @@ public interface Angerable {
 	}
 
 	default void forgive(PlayerEntity player) {
-		if (player.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
+		if (player.getWorld().getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
 			if (player.getUuid().equals(this.getAngryAt())) {
 				this.stopAnger();
 			}

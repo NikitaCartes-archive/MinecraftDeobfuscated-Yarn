@@ -34,6 +34,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.TypeSpecificPredicate;
@@ -44,6 +45,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -172,7 +174,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion("bred", BredAnimalsCriterion.Conditions.any())
 			.build(exporter, "husbandry/breed_an_animal");
 		createBreedAllAnimalsAdvancement(advancement3, exporter, BREEDABLE_ANIMALS.stream(), EGG_LAYING_ANIMALS.stream());
-		this.requireFoodItemsEaten(Advancement.Builder.create())
+		requireFoodItemsEaten(Advancement.Builder.create())
 			.parent(advancement2)
 			.display(
 				Items.APPLE,
@@ -215,7 +217,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion("tamed_animal", TameAnimalCriterion.Conditions.any())
 			.build(exporter, "husbandry/tame_an_animal");
-		Advancement advancement5 = this.requireListedFishCaught(Advancement.Builder.create())
+		Advancement advancement5 = requireListedFishCaught(Advancement.Builder.create())
 			.parent(advancement)
 			.criteriaMerger(CriterionMerger.OR)
 			.display(
@@ -229,7 +231,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				false
 			)
 			.build(exporter, "husbandry/fishy_business");
-		Advancement advancement6 = this.requireListedFishBucketsFilled(Advancement.Builder.create())
+		Advancement advancement6 = requireListedFishBucketsFilled(Advancement.Builder.create())
 			.parent(advancement5)
 			.criteriaMerger(CriterionMerger.OR)
 			.display(
@@ -275,7 +277,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				false
 			)
 			.build(exporter, "husbandry/kill_axolotl_target");
-		this.requireAllCatsTamed(Advancement.Builder.create())
+		requireAllCatsTamed(Advancement.Builder.create())
 			.parent(advancement4)
 			.display(
 				Items.COD,
@@ -366,7 +368,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				false
 			)
 			.build(exporter, "husbandry/tadpole_in_a_bucket");
-		Advancement advancement11 = this.requireAllFrogsOnLeads(Advancement.Builder.create())
+		Advancement advancement11 = requireAllFrogsOnLeads(Advancement.Builder.create())
 			.parent(advancement10)
 			.display(
 				Items.LEAD,
@@ -493,6 +495,58 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				)
 			)
 			.build(exporter, "husbandry/allay_deliver_cake_to_note_block");
+		Advancement advancement13 = Advancement.Builder.create()
+			.parent(advancement)
+			.display(
+				Items.SNIFFER_EGG,
+				Text.translatable("advancements.husbandry.obtain_sniffer_egg.title"),
+				Text.translatable("advancements.husbandry.obtain_sniffer_egg.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				true
+			)
+			.criterion("obtain_sniffer_egg", InventoryChangedCriterion.Conditions.items(Items.SNIFFER_EGG))
+			.build(exporter, "husbandry/obtain_sniffer_egg");
+		Advancement advancement14 = Advancement.Builder.create()
+			.parent(advancement13)
+			.display(
+				Items.TORCHFLOWER_SEEDS,
+				Text.translatable("advancements.husbandry.feed_snifflet.title"),
+				Text.translatable("advancements.husbandry.feed_snifflet.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				true
+			)
+			.criterion(
+				"feed_snifflet",
+				PlayerInteractedWithEntityCriterion.Conditions.create(
+					ItemPredicate.Builder.create().tag(ItemTags.SNIFFER_FOOD),
+					EntityPredicate.Extended.ofLegacy(
+						EntityPredicate.Builder.create().type(EntityType.SNIFFER).flags(EntityFlagsPredicate.Builder.create().isBaby(true).build()).build()
+					)
+				)
+			)
+			.build(exporter, "husbandry/feed_snifflet");
+		Advancement.Builder.create()
+			.parent(advancement14)
+			.display(
+				Items.PITCHER_POD,
+				Text.translatable("advancements.husbandry.plant_any_sniffer_seed.title"),
+				Text.translatable("advancements.husbandry.plant_any_sniffer_seed.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				true
+			)
+			.criteriaMerger(CriterionMerger.OR)
+			.criterion("torchflower", PlacedBlockCriterion.Conditions.block(Blocks.TORCHFLOWER_CROP))
+			.criterion("pitcher_pod", PlacedBlockCriterion.Conditions.block(Blocks.PITCHER_CROP))
+			.build(exporter, "husbandry/plant_any_sniffer_seed");
 	}
 
 	public static Advancement createBreedAllAnimalsAdvancement(
@@ -514,7 +568,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.build(exporter, "husbandry/bred_all_animals");
 	}
 
-	private Advancement.Builder requireAllFrogsOnLeads(Advancement.Builder builder) {
+	private static Advancement.Builder requireAllFrogsOnLeads(Advancement.Builder builder) {
 		Registries.FROG_VARIANT
 			.streamEntries()
 			.forEach(
@@ -531,7 +585,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 		return builder;
 	}
 
-	private Advancement.Builder requireFoodItemsEaten(Advancement.Builder builder) {
+	private static Advancement.Builder requireFoodItemsEaten(Advancement.Builder builder) {
 		for(Item item : FOOD_ITEMS) {
 			builder.criterion(Registries.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
 		}
@@ -556,7 +610,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 		return advancementBuilder;
 	}
 
-	private Advancement.Builder requireListedFishBucketsFilled(Advancement.Builder builder) {
+	private static Advancement.Builder requireListedFishBucketsFilled(Advancement.Builder builder) {
 		for(Item item : FISH_BUCKET_ITEMS) {
 			builder.criterion(Registries.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().items(item).build()));
 		}
@@ -564,7 +618,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 		return builder;
 	}
 
-	private Advancement.Builder requireListedFishCaught(Advancement.Builder builder) {
+	private static Advancement.Builder requireListedFishCaught(Advancement.Builder builder) {
 		for(Item item : FISH_ITEMS) {
 			builder.criterion(
 				Registries.ITEM.getId(item).getPath(),
@@ -575,7 +629,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 		return builder;
 	}
 
-	private Advancement.Builder requireAllCatsTamed(Advancement.Builder builder) {
+	private static Advancement.Builder requireAllCatsTamed(Advancement.Builder builder) {
 		Registries.CAT_VARIANT
 			.getEntrySet()
 			.stream()

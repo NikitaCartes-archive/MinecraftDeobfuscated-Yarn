@@ -23,7 +23,7 @@ public class MinecartEntity extends AbstractMinecartEntity {
 			return ActionResult.PASS;
 		} else if (this.hasPassengers()) {
 			return ActionResult.PASS;
-		} else if (!this.world.isClient) {
+		} else if (!this.getWorld().isClient) {
 			return player.startRiding(this) ? ActionResult.CONSUME : ActionResult.PASS;
 		} else {
 			return ActionResult.SUCCESS;

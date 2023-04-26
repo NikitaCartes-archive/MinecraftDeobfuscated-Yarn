@@ -222,10 +222,10 @@ public class MapState extends PersistentState {
 			MapState.PlayerUpdateTracker playerUpdateTracker2 = (MapState.PlayerUpdateTracker)this.updateTrackers.get(i);
 			String string = playerUpdateTracker2.player.getName().getString();
 			if (!playerUpdateTracker2.player.isRemoved() && (playerUpdateTracker2.player.getInventory().contains(stack) || stack.isInFrame())) {
-				if (!stack.isInFrame() && playerUpdateTracker2.player.world.getRegistryKey() == this.dimension && this.showIcons) {
+				if (!stack.isInFrame() && playerUpdateTracker2.player.getWorld().getRegistryKey() == this.dimension && this.showIcons) {
 					this.addIcon(
 						MapIcon.Type.PLAYER,
-						playerUpdateTracker2.player.world,
+						playerUpdateTracker2.player.getWorld(),
 						string,
 						playerUpdateTracker2.player.getX(),
 						playerUpdateTracker2.player.getZ(),
@@ -251,7 +251,7 @@ public class MapState extends PersistentState {
 			MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, itemFrameEntity.getId());
 			this.addIcon(
 				MapIcon.Type.FRAME,
-				player.world,
+				player.getWorld(),
 				"frame-" + itemFrameEntity.getId(),
 				(double)blockPos.getX(),
 				(double)blockPos.getZ(),
@@ -270,7 +270,7 @@ public class MapState extends PersistentState {
 				if (!this.icons.containsKey(nbtCompound2.getString("id"))) {
 					this.addIcon(
 						MapIcon.Type.byId(nbtCompound2.getByte("type")),
-						player.world,
+						player.getWorld(),
 						nbtCompound2.getString("id"),
 						nbtCompound2.getDouble("x"),
 						nbtCompound2.getDouble("z"),

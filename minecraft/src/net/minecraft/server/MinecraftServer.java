@@ -500,7 +500,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		BlockPos blockPos = serverWorld.getSpawnPos();
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
 		ServerChunkManager serverChunkManager = serverWorld.getChunkManager();
-		serverChunkManager.getLightingProvider().setTaskBatchSize(500);
 		this.timeReference = Util.getMeasuringTimeMs();
 		serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Unit.INSTANCE);
 
@@ -528,7 +527,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.timeReference = Util.getMeasuringTimeMs() + 10L;
 		this.runTasksTillTickEnd();
 		worldGenerationProgressListener.stop();
-		serverChunkManager.getLightingProvider().setTaskBatchSize(5);
 		this.updateMobSpawnOptions();
 	}
 
@@ -1348,6 +1346,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.apiServices.sessionService();
 	}
 
+	@Nullable
 	public SignatureVerifier getServicesSignatureVerifier() {
 		return this.apiServices.serviceSignatureVerifier();
 	}

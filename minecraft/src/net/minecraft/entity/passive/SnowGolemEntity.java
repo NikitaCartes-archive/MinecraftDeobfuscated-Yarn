@@ -90,12 +90,12 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (!this.world.isClient) {
-			if (this.world.getBiome(this.getBlockPos()).isIn(BiomeTags.SNOW_GOLEM_MELTS)) {
+		if (!this.getWorld().isClient) {
+			if (this.getWorld().getBiome(this.getBlockPos()).isIn(BiomeTags.SNOW_GOLEM_MELTS)) {
 				this.damage(this.getDamageSources().onFire(), 1.0F);
 			}
 
-			if (!this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
+			if (!this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				return;
 			}
 
@@ -106,9 +106,9 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 				int k = MathHelper.floor(this.getY());
 				int l = MathHelper.floor(this.getZ() + (double)((float)(i / 2 % 2 * 2 - 1) * 0.25F));
 				BlockPos blockPos = new BlockPos(j, k, l);
-				if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
-					this.world.setBlockState(blockPos, blockState);
-					this.world.emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this, blockState));
+				if (this.getWorld().getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.getWorld(), blockPos)) {
+					this.getWorld().setBlockState(blockPos, blockState);
+					this.getWorld().emitGameEvent(GameEvent.BLOCK_PLACE, blockPos, GameEvent.Emitter.of(this, blockState));
 				}
 			}
 		}
@@ -116,7 +116,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 
 	@Override
 	public void attack(LivingEntity target, float pullProgress) {
-		SnowballEntity snowballEntity = new SnowballEntity(this.world, this);
+		SnowballEntity snowballEntity = new SnowballEntity(this.getWorld(), this);
 		double d = target.getEyeY() - 1.1F;
 		double e = target.getX() - this.getX();
 		double f = d - snowballEntity.getY();
@@ -124,7 +124,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 		double h = Math.sqrt(e * e + g * g) * 0.2F;
 		snowballEntity.setVelocity(e, f + h, g, 1.6F, 12.0F);
 		this.playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 0.4F / (this.getRandom().nextFloat() * 0.4F + 0.8F));
-		this.world.spawnEntity(snowballEntity);
+		this.getWorld().spawnEntity(snowballEntity);
 	}
 
 	@Override
@@ -138,11 +138,11 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 		if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
 			this.sheared(SoundCategory.PLAYERS);
 			this.emitGameEvent(GameEvent.SHEAR, player);
-			if (!this.world.isClient) {
+			if (!this.getWorld().isClient) {
 				itemStack.damage(1, player, playerx -> playerx.sendToolBreakStatus(hand));
 			}
 
-			return ActionResult.success(this.world.isClient);
+			return ActionResult.success(this.getWorld().isClient);
 		} else {
 			return ActionResult.PASS;
 		}
@@ -150,8 +150,8 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 
 	@Override
 	public void sheared(SoundCategory shearedSoundCategory) {
-		this.world.playSoundFromEntity(null, this, SoundEvents.ENTITY_SNOW_GOLEM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
-		if (!this.world.isClient()) {
+		this.getWorld().playSoundFromEntity(null, this, SoundEvents.ENTITY_SNOW_GOLEM_SHEAR, shearedSoundCategory, 1.0F, 1.0F);
+		if (!this.getWorld().isClient()) {
 			this.setHasPumpkin(false);
 			this.dropStack(new ItemStack(Items.CARVED_PUMPKIN), 1.7F);
 		}

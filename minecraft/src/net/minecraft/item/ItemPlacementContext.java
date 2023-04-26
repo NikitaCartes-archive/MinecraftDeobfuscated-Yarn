@@ -14,7 +14,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 	protected boolean canReplaceExisting = true;
 
 	public ItemPlacementContext(PlayerEntity player, Hand hand, ItemStack stack, BlockHitResult hitResult) {
-		this(player.world, player, hand, stack, hitResult);
+		this(player.getWorld(), player, hand, stack, hitResult);
 	}
 
 	public ItemPlacementContext(ItemUsageContext context) {

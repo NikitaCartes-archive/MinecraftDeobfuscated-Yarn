@@ -22,7 +22,7 @@ public class UniversalAngerGoal<T extends MobEntity & Angerable> extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.canStartUniversalAnger();
+		return this.mob.getWorld().getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.canStartUniversalAnger();
 	}
 
 	private boolean canStartUniversalAnger() {
@@ -43,6 +43,6 @@ public class UniversalAngerGoal<T extends MobEntity & Angerable> extends Goal {
 	private List<? extends MobEntity> getOthersInRange() {
 		double d = this.mob.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
 		Box box = Box.from(this.mob.getPos()).expand(d, 10.0, d);
-		return this.mob.world.getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
+		return this.mob.getWorld().getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 }

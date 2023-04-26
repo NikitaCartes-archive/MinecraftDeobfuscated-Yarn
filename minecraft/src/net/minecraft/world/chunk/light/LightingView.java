@@ -7,11 +7,9 @@ import net.minecraft.util.math.ChunkSectionPos;
 public interface LightingView {
 	void checkBlock(BlockPos pos);
 
-	void addLightSource(BlockPos pos, int level);
-
 	boolean hasUpdates();
 
-	int doLightUpdates(int i, boolean doSkylight, boolean skipEdgeLightPropagation);
+	int doLightUpdates();
 
 	default void setSectionStatus(BlockPos pos, boolean notReady) {
 		this.setSectionStatus(ChunkSectionPos.from(pos), notReady);
@@ -20,4 +18,6 @@ public interface LightingView {
 	void setSectionStatus(ChunkSectionPos pos, boolean notReady);
 
 	void setColumnEnabled(ChunkPos pos, boolean retainData);
+
+	void propagateLight(ChunkPos chunkPos);
 }

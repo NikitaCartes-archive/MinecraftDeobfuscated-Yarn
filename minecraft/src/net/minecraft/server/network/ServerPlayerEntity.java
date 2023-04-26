@@ -381,7 +381,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 
 		nbt.put("recipeBook", this.recipeBook.toNbt());
-		nbt.putString("Dimension", this.world.getRegistryKey().getValue().toString());
+		nbt.putString("Dimension", this.getWorld().getRegistryKey().getValue().toString());
 		if (this.spawnPointPosition != null) {
 			nbt.putInt("SpawnX", this.spawnPointPosition.getX());
 			nbt.putInt("SpawnY", this.spawnPointPosition.getY());
@@ -460,7 +460,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 
 		this.currentScreenHandler.sendContentUpdates();
-		if (!this.world.isClient && !this.currentScreenHandler.canUse(this)) {
+		if (!this.getWorld().isClient && !this.currentScreenHandler.canUse(this)) {
 			this.closeHandledScreen();
 			this.currentScreenHandler = this.playerScreenHandler;
 		}
@@ -469,7 +469,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (entity != this) {
 			if (entity.isAlive()) {
 				this.updatePositionAndAngles(entity.getX(), entity.getY(), entity.getZ(), entity.getYaw(), entity.getPitch());
-				this.getWorld().getChunkManager().updatePosition(this);
+				this.getServerWorld().getChunkManager().updatePosition(this);
 				if (this.shouldDismount()) {
 					this.setCameraEntity(this);
 				}
@@ -497,7 +497,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			for(int i = 0; i < this.getInventory().size(); ++i) {
 				ItemStack itemStack = this.getInventory().getStack(i);
 				if (itemStack.getItem().isNetworkSynced()) {
-					Packet<?> packet = ((NetworkSyncedItem)itemStack.getItem()).createSyncPacket(itemStack, this.world, this);
+					Packet<?> packet = ((NetworkSyncedItem)itemStack.getItem()).createSyncPacket(itemStack, this.getWorld(), this);
 					if (packet != null) {
 						this.networkHandler.sendPacket(packet);
 					}
@@ -596,7 +596,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void onDeath(DamageSource damageSource) {
 		this.emitGameEvent(GameEvent.ENTITY_DIE);
-		boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
+		boolean bl = this.getWorld().getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
 		if (bl) {
 			Text text = this.getDamageTracker().getDeathMessage();
 			this.networkHandler
@@ -626,7 +626,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 
 		this.dropShoulderEntities();
-		if (this.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
+		if (this.getWorld().getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
 			this.forgiveMobAnger();
 		}
 
@@ -642,7 +642,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.onKilledBy(livingEntity);
 		}
 
-		this.world.sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
+		this.getWorld().sendEntityStatus(this, EntityStatuses.PLAY_DEATH_SOUND_OR_ADD_PROJECTILE_HIT_PARTICLES);
 		this.incrementStat(Stats.DEATHS);
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
@@ -650,12 +650,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.setFrozenTicks(0);
 		this.setOnFire(false);
 		this.getDamageTracker().update();
-		this.setLastDeathPos(Optional.of(GlobalPos.create(this.world.getRegistryKey(), this.getBlockPos())));
+		this.setLastDeathPos(Optional.of(GlobalPos.create(this.getWorld().getRegistryKey(), this.getBlockPos())));
 	}
 
 	private void forgiveMobAnger() {
 		Box box = new Box(this.getBlockPos()).expand(32.0, 10.0, 32.0);
-		this.world
+		this.getWorld()
 			.getEntitiesByClass(MobEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR)
 			.stream()
 			.filter(entity -> entity instanceof Angerable)
@@ -732,7 +732,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	protected TeleportTarget getTeleportTarget(ServerWorld destination) {
 		TeleportTarget teleportTarget = super.getTeleportTarget(destination);
-		if (teleportTarget != null && this.world.getRegistryKey() == World.OVERWORLD && destination.getRegistryKey() == World.END) {
+		if (teleportTarget != null && this.getWorld().getRegistryKey() == World.OVERWORLD && destination.getRegistryKey() == World.END) {
 			Vec3d vec3d = teleportTarget.position.add(0.0, -1.0, 0.0);
 			return new TeleportTarget(vec3d, Vec3d.ZERO, 90.0F, 0.0F);
 		} else {
@@ -744,11 +744,11 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public Entity moveToWorld(ServerWorld destination) {
 		this.inTeleportationState = true;
-		ServerWorld serverWorld = this.getWorld();
+		ServerWorld serverWorld = this.getServerWorld();
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		if (registryKey == World.END && destination.getRegistryKey() == World.OVERWORLD) {
 			this.detach();
-			this.getWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
+			this.getServerWorld().removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
 			if (!this.notInAnyWorld) {
 				this.notInAnyWorld = true;
 				this.networkHandler
@@ -789,7 +789,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 				serverWorld.getProfiler().pop();
 				serverWorld.getProfiler().push("placing");
-				this.setWorld(destination);
+				this.setServerWorld(destination);
 				this.networkHandler
 					.requestTeleport(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z, teleportTarget.yaw, teleportTarget.pitch);
 				this.networkHandler.syncWithPlayerPosition();
@@ -833,7 +833,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (optional.isPresent()) {
 			return optional;
 		} else {
-			Direction.Axis axis = (Direction.Axis)this.world.getBlockState(this.lastNetherPortalPosition).getOrEmpty(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
+			Direction.Axis axis = (Direction.Axis)this.getWorld()
+				.getBlockState(this.lastNetherPortalPosition)
+				.getOrEmpty(NetherPortalBlock.AXIS)
+				.orElse(Direction.Axis.X);
 			Optional<BlockLocating.Rectangle> optional2 = destWorld.getPortalForcer().createPortal(destPos, axis);
 			if (!optional2.isPresent()) {
 				LOGGER.error("Unable to create a portal, likely target out of worldborder");
@@ -845,7 +848,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	private void worldChanged(ServerWorld origin) {
 		RegistryKey<World> registryKey = origin.getRegistryKey();
-		RegistryKey<World> registryKey2 = this.world.getRegistryKey();
+		RegistryKey<World> registryKey2 = this.getWorld().getRegistryKey();
 		Criteria.CHANGED_DIMENSION.trigger(this, registryKey, registryKey2);
 		if (registryKey == World.NETHER && registryKey2 == World.OVERWORLD && this.enteredNetherPos != null) {
 			Criteria.NETHER_TRAVEL.trigger(this, this.enteredNetherPos);
@@ -873,25 +876,25 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public Either<PlayerEntity.SleepFailureReason, Unit> trySleep(BlockPos pos) {
-		Direction direction = this.world.getBlockState(pos).get(HorizontalFacingBlock.FACING);
+		Direction direction = this.getWorld().getBlockState(pos).get(HorizontalFacingBlock.FACING);
 		if (this.isSleeping() || !this.isAlive()) {
 			return Either.left(PlayerEntity.SleepFailureReason.OTHER_PROBLEM);
-		} else if (!this.world.getDimension().natural()) {
+		} else if (!this.getWorld().getDimension().natural()) {
 			return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_HERE);
 		} else if (!this.isBedTooFarAway(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.TOO_FAR_AWAY);
 		} else if (this.isBedObstructed(pos, direction)) {
 			return Either.left(PlayerEntity.SleepFailureReason.OBSTRUCTED);
 		} else {
-			this.setSpawnPoint(this.world.getRegistryKey(), pos, this.getYaw(), false, true);
-			if (this.world.isDay()) {
+			this.setSpawnPoint(this.getWorld().getRegistryKey(), pos, this.getYaw(), false, true);
+			if (this.getWorld().isDay()) {
 				return Either.left(PlayerEntity.SleepFailureReason.NOT_POSSIBLE_NOW);
 			} else {
 				if (!this.isCreative()) {
 					double d = 8.0;
 					double e = 5.0;
 					Vec3d vec3d = Vec3d.ofBottomCenter(pos);
-					List<HostileEntity> list = this.world
+					List<HostileEntity> list = this.getWorld()
 						.getEntitiesByClass(
 							HostileEntity.class,
 							new Box(vec3d.getX() - 8.0, vec3d.getY() - 5.0, vec3d.getZ() - 8.0, vec3d.getX() + 8.0, vec3d.getY() + 5.0, vec3d.getZ() + 8.0),
@@ -906,11 +909,11 @@ public class ServerPlayerEntity extends PlayerEntity {
 					this.incrementStat(Stats.SLEEP_IN_BED);
 					Criteria.SLEPT_IN_BED.trigger(this);
 				});
-				if (!this.getWorld().isSleepingEnabled()) {
+				if (!this.getServerWorld().isSleepingEnabled()) {
 					this.sendMessage(Text.translatable("sleep.not_possible"), true);
 				}
 
-				((ServerWorld)this.world).updateSleepingPlayers();
+				((ServerWorld)this.getWorld()).updateSleepingPlayers();
 				return either;
 			}
 		}
@@ -939,7 +942,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Override
 	public void wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers) {
 		if (this.isSleeping()) {
-			this.getWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, EntityAnimationS2CPacket.WAKE_UP));
+			this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(this, EntityAnimationS2CPacket.WAKE_UP));
 		}
 
 		super.wakeUp(skipSleepTimer, updateSleepingPlayers);
@@ -973,13 +976,13 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void handleFall(double heightDifference, boolean onGround) {
 		if (!this.isRegionUnloaded()) {
 			BlockPos blockPos = this.getLandingPos();
-			super.fall(heightDifference, onGround, this.world.getBlockState(blockPos), blockPos);
+			super.fall(heightDifference, onGround, this.getWorld().getBlockState(blockPos), blockPos);
 		}
 	}
 
 	@Override
 	public void openEditSignScreen(SignBlockEntity sign, boolean front) {
-		this.networkHandler.sendPacket(new BlockUpdateS2CPacket(this.world, sign.getPos()));
+		this.networkHandler.sendPacket(new BlockUpdateS2CPacket(this.getWorld(), sign.getPos()));
 		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(sign.getPos(), front));
 	}
 
@@ -1174,7 +1177,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.experienceProgress = oldPlayer.experienceProgress;
 			this.setScore(oldPlayer.getScore());
 			this.lastNetherPortalPosition = oldPlayer.lastNetherPortalPosition;
-		} else if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
+		} else if (this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || oldPlayer.isSpectator()) {
 			this.getInventory().clone(oldPlayer.getInventory());
 			this.experienceLevel = oldPlayer.experienceLevel;
 			this.totalExperience = oldPlayer.totalExperience;
@@ -1246,7 +1249,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			this.wakeUp(true, true);
 		}
 
-		if (world == this.world) {
+		if (world == this.getWorld()) {
 			this.networkHandler.requestTeleport(destX, destY, destZ, yaw, pitch, flags);
 		} else {
 			this.teleport(world, destX, destY, destZ, yaw, pitch);
@@ -1264,12 +1267,12 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void addCritParticles(Entity target) {
-		this.getWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, EntityAnimationS2CPacket.CRIT));
+		this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, EntityAnimationS2CPacket.CRIT));
 	}
 
 	@Override
 	public void addEnchantedHitParticles(Entity target) {
-		this.getWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, EntityAnimationS2CPacket.ENCHANTED_HIT));
+		this.getServerWorld().getChunkManager().sendToNearbyPlayers(this, new EntityAnimationS2CPacket(target, EntityAnimationS2CPacket.ENCHANTED_HIT));
 	}
 
 	@Override
@@ -1280,8 +1283,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public ServerWorld getWorld() {
-		return (ServerWorld)this.world;
+	public ServerWorld getServerWorld() {
+		return (ServerWorld)this.getWorld();
 	}
 
 	public boolean changeGameMode(GameMode gameMode) {
@@ -1430,7 +1433,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			}
 
 			if (entity != null) {
-				this.getWorld().getChunkManager().updatePosition(this);
+				this.getServerWorld().getChunkManager().updatePosition(this);
 			}
 
 			this.networkHandler.sendPacket(new SetCameraEntityS2CPacket(this.cameraEntity));
@@ -1484,10 +1487,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 	public void teleport(ServerWorld targetWorld, double x, double y, double z, float yaw, float pitch) {
 		this.setCameraEntity(this);
 		this.stopRiding();
-		if (targetWorld == this.world) {
+		if (targetWorld == this.getWorld()) {
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
 		} else {
-			ServerWorld serverWorld = this.getWorld();
+			ServerWorld serverWorld = this.getServerWorld();
 			WorldProperties worldProperties = targetWorld.getLevelProperties();
 			this.networkHandler
 				.sendPacket(
@@ -1508,7 +1511,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
 			this.unsetRemoved();
 			this.refreshPositionAndAngles(x, y, z, yaw, pitch);
-			this.setWorld(targetWorld);
+			this.setServerWorld(targetWorld);
 			targetWorld.onPlayerTeleport(this);
 			this.worldChanged(serverWorld);
 			this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
@@ -1617,7 +1620,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (itemEntity == null) {
 			return null;
 		} else {
-			this.world.spawnEntity(itemEntity);
+			this.getWorld().spawnEntity(itemEntity);
 			ItemStack itemStack = itemEntity.getStack();
 			if (retainOwnership) {
 				if (!itemStack.isEmpty()) {
@@ -1635,8 +1638,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return this.textStream;
 	}
 
-	public void setWorld(ServerWorld world) {
-		this.world = world;
+	public void setServerWorld(ServerWorld world) {
+		this.setWorld(world);
 		this.interactionManager.setWorld(world);
 	}
 

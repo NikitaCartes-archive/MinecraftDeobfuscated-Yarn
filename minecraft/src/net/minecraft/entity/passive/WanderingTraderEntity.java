@@ -65,7 +65,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 					this,
 					PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.INVISIBILITY),
 					SoundEvents.ENTITY_WANDERING_TRADER_DISAPPEARED,
-					wanderingTrader -> this.world.isNight() && !wanderingTrader.isInvisible()
+					wanderingTrader -> this.getWorld().isNight() && !wanderingTrader.isInvisible()
 				)
 			);
 		this.goalSelector
@@ -75,7 +75,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 					this,
 					new ItemStack(Items.MILK_BUCKET),
 					SoundEvents.ENTITY_WANDERING_TRADER_REAPPEARED,
-					wanderingTrader -> this.world.isDay() && wanderingTrader.isInvisible()
+					wanderingTrader -> this.getWorld().isDay() && wanderingTrader.isInvisible()
 				)
 			);
 		this.goalSelector.add(1, new StopFollowingCustomerGoal(this));
@@ -115,14 +115,14 @@ public class WanderingTraderEntity extends MerchantEntity {
 			}
 
 			if (this.getOffers().isEmpty()) {
-				return ActionResult.success(this.world.isClient);
+				return ActionResult.success(this.getWorld().isClient);
 			} else {
-				if (!this.world.isClient) {
+				if (!this.getWorld().isClient) {
 					this.setCustomer(player);
 					this.sendOffers(player, this.getDisplayName(), 1);
 				}
 
-				return ActionResult.success(this.world.isClient);
+				return ActionResult.success(this.getWorld().isClient);
 			}
 		} else {
 			return super.interactMob(player, hand);
@@ -177,7 +177,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 	protected void afterUsing(TradeOffer offer) {
 		if (offer.shouldRewardPlayerExperience()) {
 			int i = 3 + this.random.nextInt(4);
-			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY() + 0.5, this.getZ(), i));
+			this.getWorld().spawnEntity(new ExperienceOrbEntity(this.getWorld(), this.getX(), this.getY() + 0.5, this.getZ(), i));
 		}
 	}
 
@@ -222,7 +222,7 @@ public class WanderingTraderEntity extends MerchantEntity {
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (!this.world.isClient) {
+		if (!this.getWorld().isClient) {
 			this.tickDespawnDelay();
 		}
 	}

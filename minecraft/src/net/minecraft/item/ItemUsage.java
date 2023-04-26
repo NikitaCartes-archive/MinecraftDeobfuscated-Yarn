@@ -81,7 +81,7 @@ public class ItemUsage {
 	 * @see Item#onItemEntityDestroyed
 	 */
 	public static void spawnItemContents(ItemEntity itemEntity, Stream<ItemStack> contents) {
-		World world = itemEntity.world;
+		World world = itemEntity.getWorld();
 		if (!world.isClient) {
 			contents.forEach(stack -> world.spawnEntity(new ItemEntity(world, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), stack)));
 		}

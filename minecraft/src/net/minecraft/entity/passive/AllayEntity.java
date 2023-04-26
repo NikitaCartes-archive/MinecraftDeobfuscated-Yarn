@@ -236,19 +236,19 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 	@Override
 	protected void mobTick() {
-		this.world.getProfiler().push("allayBrain");
-		this.getBrain().tick((ServerWorld)this.world, this);
-		this.world.getProfiler().pop();
-		this.world.getProfiler().push("allayActivityUpdate");
+		this.getWorld().getProfiler().push("allayBrain");
+		this.getBrain().tick((ServerWorld)this.getWorld(), this);
+		this.getWorld().getProfiler().pop();
+		this.getWorld().getProfiler().push("allayActivityUpdate");
 		AllayBrain.updateActivities(this);
-		this.world.getProfiler().pop();
+		this.getWorld().getProfiler().pop();
 		super.mobTick();
 	}
 
 	@Override
 	public void tickMovement() {
 		super.tickMovement();
-		if (!this.world.isClient && this.isAlive() && this.age % 10 == 0) {
+		if (!this.getWorld().isClient && this.isAlive() && this.age % 10 == 0) {
 			this.heal(1.0F);
 		}
 
@@ -263,7 +263,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.world.isClient) {
+		if (this.getWorld().isClient) {
 			this.field_38936 = this.field_38935;
 			if (this.isHoldingItem()) {
 				this.field_38935 = MathHelper.clamp(this.field_38935 + 1.0F, 0.0F, 5.0F);
@@ -287,7 +287,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 				this.field_39474 = 0.0F;
 			}
 		} else {
-			Vibrations.Ticker.tick(this.world, this.vibrationListenerData, this.vibrationCallback);
+			Vibrations.Ticker.tick(this.getWorld(), this.vibrationListenerData, this.vibrationCallback);
 			if (this.isPanicking()) {
 				this.setDancing(false);
 			}
@@ -318,20 +318,20 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		ItemStack itemStack2 = this.getStackInHand(Hand.MAIN_HAND);
 		if (this.isDancing() && this.matchesDuplicationIngredient(itemStack) && this.canDuplicate()) {
 			this.duplicate();
-			this.world.sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
-			this.world.playSoundFromEntity(player, this, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.NEUTRAL, 2.0F, 1.0F);
+			this.getWorld().sendEntityStatus(this, EntityStatuses.ADD_BREEDING_PARTICLES);
+			this.getWorld().playSoundFromEntity(player, this, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.NEUTRAL, 2.0F, 1.0F);
 			this.decrementStackUnlessInCreative(player, itemStack);
 			return ActionResult.SUCCESS;
 		} else if (itemStack2.isEmpty() && !itemStack.isEmpty()) {
 			ItemStack itemStack3 = itemStack.copyWithCount(1);
 			this.setStackInHand(Hand.MAIN_HAND, itemStack3);
 			this.decrementStackUnlessInCreative(player, itemStack);
-			this.world.playSoundFromEntity(player, this, SoundEvents.ENTITY_ALLAY_ITEM_GIVEN, SoundCategory.NEUTRAL, 2.0F, 1.0F);
+			this.getWorld().playSoundFromEntity(player, this, SoundEvents.ENTITY_ALLAY_ITEM_GIVEN, SoundCategory.NEUTRAL, 2.0F, 1.0F);
 			this.getBrain().remember(MemoryModuleType.LIKED_PLAYER, player.getUuid());
 			return ActionResult.SUCCESS;
 		} else if (!itemStack2.isEmpty() && hand == Hand.MAIN_HAND && itemStack.isEmpty()) {
 			this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
-			this.world.playSoundFromEntity(player, this, SoundEvents.ENTITY_ALLAY_ITEM_TAKEN, SoundCategory.NEUTRAL, 2.0F, 1.0F);
+			this.getWorld().playSoundFromEntity(player, this, SoundEvents.ENTITY_ALLAY_ITEM_TAKEN, SoundCategory.NEUTRAL, 2.0F, 1.0F);
 			this.swingHand(Hand.MAIN_HAND);
 
 			for(ItemStack itemStack4 : this.getInventory().clearToList()) {
@@ -372,7 +372,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	public boolean canGather(ItemStack stack) {
 		ItemStack itemStack = this.getStackInHand(Hand.MAIN_HAND);
 		return !itemStack.isEmpty()
-			&& this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+			&& this.getWorld().getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
 			&& this.inventory.canInsert(stack)
 			&& this.areItemsEqual(itemStack, stack);
 	}
@@ -417,7 +417,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 
 	@Override
 	public void updateEventHandler(BiConsumer<EntityGameEventHandler<?>, ServerWorld> callback) {
-		World var3 = this.world;
+		World var3 = this.getWorld();
 		if (var3 instanceof ServerWorld serverWorld) {
 			callback.accept(this.gameEventHandler, serverWorld);
 			callback.accept(this.jukeboxEventHandler, serverWorld);
@@ -433,7 +433,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	public void setDancing(boolean dancing) {
-		if (!this.world.isClient && this.canMoveVoluntarily() && (!dancing || !this.isPanicking())) {
+		if (!this.getWorld().isClient && this.canMoveVoluntarily() && (!dancing || !this.isPanicking())) {
 			this.dataTracker.set(DANCING, dancing);
 		}
 	}
@@ -441,7 +441,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	private boolean shouldStopDancing() {
 		return this.jukeboxPos == null
 			|| !this.jukeboxPos.isWithinDistance(this.getPos(), (double)GameEvent.JUKEBOX_PLAY.getRange())
-			|| !this.world.getBlockState(this.jukeboxPos).isOf(Blocks.JUKEBOX);
+			|| !this.getWorld().getBlockState(this.jukeboxPos).isOf(Blocks.JUKEBOX);
 	}
 
 	public float method_43397(float f) {
@@ -515,7 +515,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 			--this.duplicationCooldown;
 		}
 
-		if (!this.world.isClient() && this.duplicationCooldown == 0L && !this.canDuplicate()) {
+		if (!this.getWorld().isClient() && this.duplicationCooldown == 0L && !this.canDuplicate()) {
 			this.dataTracker.set(CAN_DUPLICATE, true);
 		}
 	}
@@ -525,13 +525,13 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	private void duplicate() {
-		AllayEntity allayEntity = EntityType.ALLAY.create(this.world);
+		AllayEntity allayEntity = EntityType.ALLAY.create(this.getWorld());
 		if (allayEntity != null) {
 			allayEntity.refreshPositionAfterTeleport(this.getPos());
 			allayEntity.setPersistent();
 			allayEntity.startDuplicationCooldown();
 			this.startDuplicationCooldown();
-			this.world.spawnEntity(allayEntity);
+			this.getWorld().spawnEntity(allayEntity);
 		}
 	}
 
@@ -575,7 +575,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		double d = this.random.nextGaussian() * 0.02;
 		double e = this.random.nextGaussian() * 0.02;
 		double f = this.random.nextGaussian() * 0.02;
-		this.world.addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
+		this.getWorld().addParticle(ParticleTypes.HEART, this.getParticleX(1.0), this.getRandomBodyY() + 0.5, this.getParticleZ(1.0), d, e, f);
 	}
 
 	@Override

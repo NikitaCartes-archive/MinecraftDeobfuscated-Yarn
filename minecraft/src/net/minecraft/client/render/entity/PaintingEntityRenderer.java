@@ -104,7 +104,7 @@ public class PaintingEntityRenderer extends EntityRenderer<PaintingEntity> {
 					ae = MathHelper.floor(entity.getZ() + (double)((y + z) / 2.0F / 16.0F));
 				}
 
-				int af = WorldRenderer.getLightmapCoordinates(entity.world, new BlockPos(ac, ad, ae));
+				int af = WorldRenderer.getLightmapCoordinates(entity.getWorld(), new BlockPos(ac, ad, ae));
 				float ag = paintingSprite.getFrameU(d * (double)(u - w));
 				float ah = paintingSprite.getFrameU(d * (double)(u - (w + 1)));
 				float ai = paintingSprite.getFrameV(e * (double)(v - x));

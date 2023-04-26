@@ -366,7 +366,7 @@ public abstract class EntityNavigation {
 
 	protected static boolean doesNotCollide(MobEntity entity, Vec3d startPos, Vec3d entityPos, boolean includeFluids) {
 		Vec3d vec3d = new Vec3d(entityPos.x, entityPos.y + (double)entity.getHeight() * 0.5, entityPos.z);
-		return entity.world
+		return entity.getWorld()
 				.raycast(
 					new RaycastContext(
 						startPos, vec3d, RaycastContext.ShapeType.COLLIDER, includeFluids ? RaycastContext.FluidHandling.ANY : RaycastContext.FluidHandling.NONE, entity
