@@ -179,7 +179,6 @@ public abstract class LightStorage<M extends ChunkToNibbleArrayMap<M>> {
 				if (this.hasSection(m)) {
 					ChunkNibbleArray chunkNibbleArray2 = (ChunkNibbleArray)entry.getValue();
 					if (this.storage.get(m) != chunkNibbleArray2) {
-						lightProvider.markSectionAsChecked(m);
 						this.storage.put(m, chunkNibbleArray2);
 						this.dirtySections.add(m);
 					}

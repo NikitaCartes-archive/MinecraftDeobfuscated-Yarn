@@ -22,6 +22,7 @@ import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
@@ -144,8 +145,8 @@ public class InGameHud {
 
 	public void render(DrawContext context, float tickDelta) {
 		Window window = this.client.getWindow();
-		this.scaledWidth = window.getScaledWidth();
-		this.scaledHeight = window.getScaledHeight();
+		this.scaledWidth = context.getScaledWindowWidth();
+		this.scaledHeight = context.getScaledWindowHeight();
 		TextRenderer textRenderer = this.getTextRenderer();
 		RenderSystem.enableBlend();
 		if (MinecraftClient.isFancyGraphicsOrBetter()) {
@@ -212,7 +213,6 @@ public class InGameHud {
 
 		if (this.client.player.getSleepTimer() > 0) {
 			this.client.getProfiler().push("sleep");
-			RenderSystem.disableDepthTest();
 			float h = (float)this.client.player.getSleepTimer();
 			float j = h / 100.0F;
 			if (j > 1.0F) {
@@ -220,8 +220,7 @@ public class InGameHud {
 			}
 
 			int k = (int)(220.0F * j) << 24 | 1052704;
-			context.fill(0, 0, this.scaledWidth, this.scaledHeight, k);
-			RenderSystem.enableDepthTest();
+			context.fill(RenderLayer.getGuiOverlay(), 0, 0, this.scaledWidth, this.scaledHeight, k);
 			this.client.getProfiler().pop();
 		}
 
@@ -925,8 +924,6 @@ public class InGameHud {
 	}
 
 	private void renderSpyglassOverlay(DrawContext context, float scale) {
-		RenderSystem.disableDepthTest();
-		RenderSystem.depthMask(false);
 		float f = (float)Math.min(this.scaledWidth, this.scaledHeight);
 		float h = Math.min((float)this.scaledWidth / f, (float)this.scaledHeight / f) * scale;
 		int i = MathHelper.floor(f * h);
@@ -936,12 +933,10 @@ public class InGameHud {
 		int m = k + i;
 		int n = l + j;
 		context.drawTexture(SPYGLASS_SCOPE, k, l, -90, 0.0F, 0.0F, i, j, i, j);
-		context.fill(0, n, this.scaledWidth, this.scaledHeight, -90, -16777216);
-		context.fill(0, 0, this.scaledWidth, l, -90, -16777216);
-		context.fill(0, l, k, n, -90, -16777216);
-		context.fill(m, l, this.scaledWidth, n, -90, -16777216);
-		RenderSystem.depthMask(true);
-		RenderSystem.enableDepthTest();
+		context.fill(RenderLayer.getGuiOverlay(), 0, n, this.scaledWidth, this.scaledHeight, -90, -16777216);
+		context.fill(RenderLayer.getGuiOverlay(), 0, 0, this.scaledWidth, l, -90, -16777216);
+		context.fill(RenderLayer.getGuiOverlay(), 0, l, k, n, -90, -16777216);
+		context.fill(RenderLayer.getGuiOverlay(), m, l, this.scaledWidth, n, -90, -16777216);
 	}
 
 	private void updateVignetteDarkness(Entity entity) {

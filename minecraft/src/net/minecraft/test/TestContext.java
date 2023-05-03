@@ -192,6 +192,11 @@ public class TestContext {
 		};
 	}
 
+	public LivingEntity setHealthLow(LivingEntity entity) {
+		entity.setHealth(0.25F);
+		return entity;
+	}
+
 	public PlayerEntity createMockCreativePlayer() {
 		return new PlayerEntity(this.getWorld(), BlockPos.ORIGIN, 0.0F, new GameProfile(UUID.randomUUID(), "test-mock-player")) {
 			@Override

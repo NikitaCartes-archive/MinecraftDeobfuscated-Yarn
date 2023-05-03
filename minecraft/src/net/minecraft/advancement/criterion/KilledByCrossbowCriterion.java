@@ -14,6 +14,7 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -26,11 +27,11 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 	}
 
 	public KilledByCrossbowCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		EntityPredicate.Extended[] extendeds = EntityPredicate.Extended.requireInJson(jsonObject, "victims", advancementEntityPredicateDeserializer);
+		LootContextPredicate[] lootContextPredicates = EntityPredicate.contextPredicateArrayFromJson(jsonObject, "victims", advancementEntityPredicateDeserializer);
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("unique_entity_types"));
-		return new KilledByCrossbowCriterion.Conditions(extended, extendeds, intRange);
+		return new KilledByCrossbowCriterion.Conditions(lootContextPredicate, lootContextPredicates, intRange);
 	}
 
 	public void trigger(ServerPlayerEntity player, Collection<Entity> piercingKilledEntities) {
@@ -46,42 +47,42 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityPredicate.Extended[] victims;
+		private final LootContextPredicate[] victims;
 		private final NumberRange.IntRange uniqueEntityTypes;
 
-		public Conditions(EntityPredicate.Extended player, EntityPredicate.Extended[] victims, NumberRange.IntRange uniqueEntityTypes) {
+		public Conditions(LootContextPredicate player, LootContextPredicate[] victims, NumberRange.IntRange uniqueEntityTypes) {
 			super(KilledByCrossbowCriterion.ID, player);
 			this.victims = victims;
 			this.uniqueEntityTypes = uniqueEntityTypes;
 		}
 
 		public static KilledByCrossbowCriterion.Conditions create(EntityPredicate.Builder... victimPredicates) {
-			EntityPredicate.Extended[] extendeds = new EntityPredicate.Extended[victimPredicates.length];
+			LootContextPredicate[] lootContextPredicates = new LootContextPredicate[victimPredicates.length];
 
 			for (int i = 0; i < victimPredicates.length; i++) {
 				EntityPredicate.Builder builder = victimPredicates[i];
-				extendeds[i] = EntityPredicate.Extended.ofLegacy(builder.build());
+				lootContextPredicates[i] = EntityPredicate.asLootContextPredicate(builder.build());
 			}
 
-			return new KilledByCrossbowCriterion.Conditions(EntityPredicate.Extended.EMPTY, extendeds, NumberRange.IntRange.ANY);
+			return new KilledByCrossbowCriterion.Conditions(LootContextPredicate.EMPTY, lootContextPredicates, NumberRange.IntRange.ANY);
 		}
 
 		public static KilledByCrossbowCriterion.Conditions create(NumberRange.IntRange uniqueEntityTypes) {
-			EntityPredicate.Extended[] extendeds = new EntityPredicate.Extended[0];
-			return new KilledByCrossbowCriterion.Conditions(EntityPredicate.Extended.EMPTY, extendeds, uniqueEntityTypes);
+			LootContextPredicate[] lootContextPredicates = new LootContextPredicate[0];
+			return new KilledByCrossbowCriterion.Conditions(LootContextPredicate.EMPTY, lootContextPredicates, uniqueEntityTypes);
 		}
 
 		public boolean matches(Collection<LootContext> victimContexts, int uniqueEntityTypeCount) {
 			if (this.victims.length > 0) {
 				List<LootContext> list = Lists.<LootContext>newArrayList(victimContexts);
 
-				for (EntityPredicate.Extended extended : this.victims) {
+				for (LootContextPredicate lootContextPredicate : this.victims) {
 					boolean bl = false;
 					Iterator<LootContext> iterator = list.iterator();
 
 					while (iterator.hasNext()) {
 						LootContext lootContext = (LootContext)iterator.next();
-						if (extended.test(lootContext)) {
+						if (lootContextPredicate.test(lootContext)) {
 							iterator.remove();
 							bl = true;
 							break;
@@ -100,7 +101,7 @@ public class KilledByCrossbowCriterion extends AbstractCriterion<KilledByCrossbo
 		@Override
 		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
 			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("victims", EntityPredicate.Extended.toPredicatesJsonArray(this.victims, predicateSerializer));
+			jsonObject.add("victims", LootContextPredicate.toPredicatesJsonArray(this.victims, predicateSerializer));
 			jsonObject.add("unique_entity_types", this.uniqueEntityTypes.toJson());
 			return jsonObject;
 		}

@@ -5,7 +5,10 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.advancement.Advancement;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class WorldSession {
@@ -16,8 +19,8 @@ public class WorldSession {
 	private final PerformanceMetricsEvent performanceMetricsEvent;
 	private final WorldLoadTimesEvent worldLoadTimesEvent;
 
-	public WorldSession(TelemetrySender sender, boolean newWorld, @Nullable Duration worldLoadTime) {
-		this.worldLoadedEvent = new WorldLoadedEvent();
+	public WorldSession(TelemetrySender sender, boolean newWorld, @Nullable Duration worldLoadTime, @Nullable String minigameName) {
+		this.worldLoadedEvent = new WorldLoadedEvent(minigameName);
 		this.performanceMetricsEvent = new PerformanceMetricsEvent();
 		this.worldLoadTimesEvent = new WorldLoadTimesEvent(newWorld, worldLoadTime);
 		this.sender = sender.decorate(builder -> {
@@ -56,5 +59,16 @@ public class WorldSession {
 		this.worldLoadedEvent.send(this.sender);
 		this.performanceMetricsEvent.disableSampling();
 		this.worldUnloadedEvent.send(this.sender);
+	}
+
+	public void onAdvancementMade(World world, Advancement advancement) {
+		Identifier identifier = advancement.getId();
+		if (advancement.sendsTelemetryEvent() && "minecraft".equals(identifier.getNamespace())) {
+			long l = world.getTime();
+			this.sender.send(TelemetryEventType.ADVANCEMENT_MADE, properties -> {
+				properties.put(TelemetryEventProperty.ADVANCEMENT_ID, identifier.toString());
+				properties.put(TelemetryEventProperty.ADVANCEMENT_GAME_TIME, l);
+			});
+		}
 	}
 }

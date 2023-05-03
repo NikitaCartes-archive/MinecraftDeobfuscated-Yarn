@@ -3,7 +3,7 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonObject;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -17,10 +17,10 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 	}
 
 	protected PlayerGeneratesContainerLootCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "loot_table"));
-		return new PlayerGeneratesContainerLootCriterion.Conditions(extended, identifier);
+		return new PlayerGeneratesContainerLootCriterion.Conditions(lootContextPredicate, identifier);
 	}
 
 	public void trigger(ServerPlayerEntity player, Identifier id) {
@@ -30,13 +30,13 @@ public class PlayerGeneratesContainerLootCriterion extends AbstractCriterion<Pla
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Identifier lootTable;
 
-		public Conditions(EntityPredicate.Extended entity, Identifier lootTable) {
+		public Conditions(LootContextPredicate entity, Identifier lootTable) {
 			super(PlayerGeneratesContainerLootCriterion.ID, entity);
 			this.lootTable = lootTable;
 		}
 
 		public static PlayerGeneratesContainerLootCriterion.Conditions create(Identifier lootTable) {
-			return new PlayerGeneratesContainerLootCriterion.Conditions(EntityPredicate.Extended.EMPTY, lootTable);
+			return new PlayerGeneratesContainerLootCriterion.Conditions(LootContextPredicate.EMPTY, lootTable);
 		}
 
 		public boolean test(Identifier lootTable) {

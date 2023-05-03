@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -18,10 +18,10 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 	}
 
 	public FilledBucketCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new FilledBucketCriterion.Conditions(extended, itemPredicate);
+		return new FilledBucketCriterion.Conditions(lootContextPredicate, itemPredicate);
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
@@ -31,13 +31,13 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate item;
 
-		public Conditions(EntityPredicate.Extended player, ItemPredicate item) {
+		public Conditions(LootContextPredicate player, ItemPredicate item) {
 			super(FilledBucketCriterion.ID, player);
 			this.item = item;
 		}
 
 		public static FilledBucketCriterion.Conditions create(ItemPredicate item) {
-			return new FilledBucketCriterion.Conditions(EntityPredicate.Extended.EMPTY, item);
+			return new FilledBucketCriterion.Conditions(LootContextPredicate.EMPTY, item);
 		}
 
 		public boolean matches(ItemStack stack) {

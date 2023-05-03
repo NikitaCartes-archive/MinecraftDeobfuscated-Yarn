@@ -135,7 +135,7 @@ public class LongJumpTask<E extends MobEntity> extends MultiTickTask<E> {
 				mobEntity.setYaw(mobEntity.bodyYaw);
 				mobEntity.setNoDrag(true);
 				double d = this.lastTarget.length();
-				double e = d + mobEntity.getJumpBoostVelocityModifier();
+				double e = d + (double)mobEntity.getJumpBoostVelocityModifier();
 				mobEntity.setVelocity(this.lastTarget.multiply(e / d));
 				mobEntity.getBrain().remember(MemoryModuleType.LONG_JUMP_MID_JUMP, true);
 				serverWorld.playSoundFromEntity(null, mobEntity, (SoundEvent)this.entityToSound.apply(mobEntity), SoundCategory.NEUTRAL, 1.0F, 1.0F);

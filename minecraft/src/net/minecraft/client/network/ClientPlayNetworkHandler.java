@@ -367,7 +367,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		this.connection = connection;
 		this.serverInfo = serverInfo;
 		this.profile = profile;
-		this.advancementHandler = new ClientAdvancementManager(client);
+		this.advancementHandler = new ClientAdvancementManager(client, worldSession);
 		this.commandSource = new ClientCommandSource(this, client);
 		this.worldSession = worldSession;
 	}
@@ -692,8 +692,17 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	@Override
 	public void onChunkData(ChunkDataS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.loadChunk(packet.getX(), packet.getZ(), packet.getChunkData());
-		this.updateChunk(packet.getX(), packet.getZ(), packet.getLightData());
+		int i = packet.getX();
+		int j = packet.getZ();
+		this.loadChunk(i, j, packet.getChunkData());
+		LightData lightData = packet.getLightData();
+		this.world.enqueueChunkUpdate(() -> {
+			this.readLightData(i, j, lightData);
+			WorldChunk worldChunk = this.world.getChunkManager().getWorldChunk(i, j, false);
+			if (worldChunk != null) {
+				this.scheduleRenderChunk(worldChunk, i, j);
+			}
+		});
 	}
 
 	@Override
@@ -723,16 +732,6 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		this.world.getChunkManager().loadChunkFromPacket(x, z, chunkData.getSectionsDataBuf(), chunkData.getHeightmap(), chunkData.getBlockEntities(x, z));
 	}
 
-	private void updateChunk(int x, int z, LightData lightData) {
-		this.world.enqueueChunkUpdate(() -> {
-			this.readLightData(x, z, lightData);
-			WorldChunk worldChunk = this.world.getChunkManager().getWorldChunk(x, z, false);
-			if (worldChunk != null) {
-				this.scheduleRenderChunk(worldChunk, x, z);
-			}
-		});
-	}
-
 	private void scheduleRenderChunk(WorldChunk chunk, int x, int z) {
 		LightingProvider lightingProvider = this.world.getChunkManager().getLightingProvider();
 		ChunkSection[] chunkSections = chunk.getSectionArray();
@@ -757,12 +756,19 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 	}
 
 	private void unloadChunk(UnloadChunkS2CPacket packet) {
+		ChunkPos chunkPos = new ChunkPos(packet.getX(), packet.getZ());
 		this.world.enqueueChunkUpdate(() -> {
 			LightingProvider lightingProvider = this.world.getLightingProvider();
-			lightingProvider.setColumnEnabled(new ChunkPos(packet.getX(), packet.getZ()), false);
+			lightingProvider.setColumnEnabled(chunkPos, false);
+
+			for (int i = lightingProvider.getBottomY(); i < lightingProvider.getTopY(); i++) {
+				ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, i);
+				lightingProvider.enqueueSectionData(LightType.BLOCK, chunkSectionPos, null);
+				lightingProvider.enqueueSectionData(LightType.SKY, chunkSectionPos, null);
+			}
 
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
-				lightingProvider.setSectionStatus(ChunkSectionPos.from(packet.getX(), i, packet.getZ()), true);
+				lightingProvider.setSectionStatus(ChunkSectionPos.from(chunkPos, i), true);
 			}
 		});
 	}

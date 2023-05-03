@@ -3,7 +3,6 @@ package net.minecraft.client.gui.hud;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlDebugInfo;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.DataFixUtils;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
@@ -31,6 +30,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.fluid.FluidState;
@@ -109,21 +109,22 @@ public class DebugHud {
 		Entity entity = this.client.getCameraEntity();
 		this.blockHit = entity.raycast(20.0, 0.0F, false);
 		this.fluidHit = entity.raycast(20.0, 0.0F, true);
-		this.renderLeftText(context);
-		this.renderRightText(context);
-		if (this.client.options.debugTpsEnabled) {
-			int i = this.client.getWindow().getScaledWidth();
-			this.drawMetricsData(context, this.client.getMetricsData(), 0, i / 2, true);
-			IntegratedServer integratedServer = this.client.getServer();
-			if (integratedServer != null) {
-				this.drawMetricsData(context, integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
+		context.draw(() -> {
+			this.drawLeftText(context);
+			this.drawRightText(context);
+			if (this.client.options.debugTpsEnabled) {
+				int i = context.getScaledWindowWidth();
+				this.drawMetricsData(context, this.client.getMetricsData(), 0, i / 2, true);
+				IntegratedServer integratedServer = this.client.getServer();
+				if (integratedServer != null) {
+					this.drawMetricsData(context, integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
+				}
 			}
-		}
-
+		});
 		this.client.getProfiler().pop();
 	}
 
-	protected void renderLeftText(DrawContext context) {
+	protected void drawLeftText(DrawContext context) {
 		List<String> list = this.getLeftText();
 		list.add("");
 		boolean bl = this.client.getServer() != null;
@@ -135,31 +136,33 @@ public class DebugHud {
 				+ (this.client.options.debugTpsEnabled ? "visible" : "hidden")
 		);
 		list.add("For help: press F3 + Q");
-
-		for (int i = 0; i < list.size(); i++) {
-			String string = (String)list.get(i);
-			if (!Strings.isNullOrEmpty(string)) {
-				int j = 9;
-				int k = this.textRenderer.getWidth(string);
-				int l = 2;
-				int m = 2 + j * i;
-				context.fill(1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
-				context.drawText(this.textRenderer, string, 2, m, 14737632, false);
-			}
-		}
+		this.drawText(context, list, true);
 	}
 
-	protected void renderRightText(DrawContext context) {
+	protected void drawRightText(DrawContext context) {
 		List<String> list = this.getRightText();
+		this.drawText(context, list, false);
+	}
 
-		for (int i = 0; i < list.size(); i++) {
-			String string = (String)list.get(i);
+	private void drawText(DrawContext context, List<String> text, boolean left) {
+		int i = 9;
+
+		for (int j = 0; j < text.size(); j++) {
+			String string = (String)text.get(j);
 			if (!Strings.isNullOrEmpty(string)) {
-				int j = 9;
 				int k = this.textRenderer.getWidth(string);
-				int l = this.client.getWindow().getScaledWidth() - 2 - k;
-				int m = 2 + j * i;
-				context.fill(l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
+				int l = left ? 2 : context.getScaledWindowWidth() - 2 - k;
+				int m = 2 + i * j;
+				context.fill(l - 1, m - 1, l + k + 1, m + i - 1, -1873784752);
+			}
+		}
+
+		for (int jx = 0; jx < text.size(); jx++) {
+			String string = (String)text.get(jx);
+			if (!Strings.isNullOrEmpty(string)) {
+				int k = this.textRenderer.getWidth(string);
+				int l = left ? 2 : context.getScaledWindowWidth() - 2 - k;
+				int m = 2 + i * jx;
 				context.drawText(this.textRenderer, string, l, m, 14737632, false);
 			}
 		}
@@ -494,7 +497,6 @@ public class DebugHud {
 	}
 
 	private void drawMetricsData(DrawContext context, MetricsData metricsData, int x, int width, boolean showFps) {
-		RenderSystem.disableDepthTest();
 		int i = metricsData.getStartIndex();
 		int j = metricsData.getCurrentIndex();
 		long[] ls = metricsData.getSamples();
@@ -513,37 +515,37 @@ public class DebugHud {
 			o += (long)s;
 		}
 
-		int r = this.client.getWindow().getScaledHeight();
-		context.fill(x, r - 60, x + n, r, -1873784752);
+		int r = context.getScaledWindowHeight();
+		context.fill(RenderLayer.getGuiOverlay(), x, r - 60, x + n, r, -1873784752);
 
 		while (k != j) {
 			int s = metricsData.scaleSample(ls[k], showFps ? 30 : 60, showFps ? 60 : 20);
 			int t = showFps ? 100 : 60;
 			int u = this.getMetricsLineColor(MathHelper.clamp(s, 0, t), 0, t / 2, t);
-			context.fill(l, r - s, l + 1, r, u);
+			context.fill(RenderLayer.getGuiOverlay(), l, r - s, l + 1, r, u);
 			l++;
 			k = metricsData.wrapIndex(k + 1);
 		}
 
 		if (showFps) {
-			context.fill(x + 1, r - 30 + 1, x + 14, r - 30 + 10, -1873784752);
+			context.fill(RenderLayer.getGuiOverlay(), x + 1, r - 30 + 1, x + 14, r - 30 + 10, -1873784752);
 			context.drawText(this.textRenderer, "60 FPS", x + 2, r - 30 + 2, 14737632, false);
-			context.drawHorizontalLine(x, x + n - 1, r - 30, -1);
-			context.fill(x + 1, r - 60 + 1, x + 14, r - 60 + 10, -1873784752);
+			context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + n - 1, r - 30, -1);
+			context.fill(RenderLayer.getGuiOverlay(), x + 1, r - 60 + 1, x + 14, r - 60 + 10, -1873784752);
 			context.drawText(this.textRenderer, "30 FPS", x + 2, r - 60 + 2, 14737632, false);
-			context.drawHorizontalLine(x, x + n - 1, r - 60, -1);
+			context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + n - 1, r - 60, -1);
 		} else {
-			context.fill(x + 1, r - 60 + 1, x + 14, r - 60 + 10, -1873784752);
+			context.fill(RenderLayer.getGuiOverlay(), x + 1, r - 60 + 1, x + 14, r - 60 + 10, -1873784752);
 			context.drawText(this.textRenderer, "20 TPS", x + 2, r - 60 + 2, 14737632, false);
-			context.drawHorizontalLine(x, x + n - 1, r - 60, -1);
+			context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + n - 1, r - 60, -1);
 		}
 
-		context.drawHorizontalLine(x, x + n - 1, r - 1, -1);
-		context.drawVerticalLine(x, r - 60, r, -1);
-		context.drawVerticalLine(x + n - 1, r - 60, r, -1);
+		context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + n - 1, r - 1, -1);
+		context.drawVerticalLine(RenderLayer.getGuiOverlay(), x, r - 60, r, -1);
+		context.drawVerticalLine(RenderLayer.getGuiOverlay(), x + n - 1, r - 60, r, -1);
 		int s = this.client.options.getMaxFps().getValue();
 		if (showFps && s > 0 && s <= 250) {
-			context.drawHorizontalLine(x, x + n - 1, r - 1 - (int)(1800.0 / (double)s), -16711681);
+			context.drawHorizontalLine(RenderLayer.getGuiOverlay(), x, x + n - 1, r - 1 - (int)(1800.0 / (double)s), -16711681);
 		}
 
 		String string = p + " ms min";

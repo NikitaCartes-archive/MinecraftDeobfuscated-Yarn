@@ -62,6 +62,8 @@ public class SnifferEntity extends AnimalEntity {
 	private static final int field_42658 = 30;
 	private static final int field_42659 = 120;
 	private static final int field_42661 = 48000;
+	private static final float field_44785 = 0.4F;
+	private static final EntityDimensions field_44786 = EntityDimensions.changing(EntityType.SNIFFER.getWidth(), EntityType.SNIFFER.getHeight() - 0.4F);
 	private static final TrackedData<SnifferEntity.State> STATE = DataTracker.registerData(SnifferEntity.class, TrackedDataHandlerRegistry.SNIFFER_STATE);
 	private static final TrackedData<Integer> FINISH_DIG_TIME = DataTracker.registerData(SnifferEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	public final AnimationState feelingHappyAnimationState = new AnimationState();
@@ -101,6 +103,13 @@ public class SnifferEntity extends AnimalEntity {
 	@Override
 	public void onFinishPathfinding() {
 		this.setPathfindingPenalty(PathNodeType.WATER, -1.0F);
+	}
+
+	@Override
+	public EntityDimensions getDimensions(EntityPose pose) {
+		return this.dataTracker.containsKey(STATE) && this.getState() == SnifferEntity.State.DIGGING
+			? field_44786.scaled(this.getScaleFactor())
+			: super.getDimensions(pose);
 	}
 
 	public boolean isPanicking() {
@@ -162,6 +171,8 @@ public class SnifferEntity extends AnimalEntity {
 				case FEELING_HAPPY:
 					this.feelingHappyAnimationState.startIfNotRunning(this.age);
 			}
+
+			this.calculateDimensions();
 		}
 
 		super.onTrackedDataSet(data);
@@ -275,8 +286,8 @@ public class SnifferEntity extends AnimalEntity {
 	private SnifferEntity spawnDiggingParticles(AnimationState diggingAnimationState) {
 		boolean bl = diggingAnimationState.getTimeRunning() > 1700L && diggingAnimationState.getTimeRunning() < 6000L;
 		if (bl) {
-			BlockState blockState = this.getSteppingBlockState();
 			BlockPos blockPos = this.getDigPos();
+			BlockState blockState = this.getWorld().getBlockState(blockPos.down());
 			if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 				for (int i = 0; i < 30; i++) {
 					Vec3d vec3d = Vec3d.ofCenter(blockPos).add(0.0, -0.65F, 0.0);

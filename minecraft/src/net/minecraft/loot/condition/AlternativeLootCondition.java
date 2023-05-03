@@ -1,9 +1,9 @@
 package net.minecraft.loot.condition;
 
-import com.google.common.collect.Lists;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.loot.LootTableReporter;
@@ -11,18 +11,13 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
-public class AlternativeLootCondition implements LootCondition {
+public abstract class AlternativeLootCondition implements LootCondition {
 	final LootCondition[] terms;
 	private final Predicate<LootContext> predicate;
 
-	AlternativeLootCondition(LootCondition[] terms) {
+	protected AlternativeLootCondition(LootCondition[] terms, Predicate<LootContext> predicate) {
 		this.terms = terms;
-		this.predicate = LootConditionTypes.joinOr(terms);
-	}
-
-	@Override
-	public LootConditionType getType() {
-		return LootConditionTypes.ALTERNATIVE;
+		this.predicate = predicate;
 	}
 
 	public final boolean test(LootContext lootContext) {
@@ -38,12 +33,8 @@ public class AlternativeLootCondition implements LootCondition {
 		}
 	}
 
-	public static AlternativeLootCondition.Builder builder(LootCondition.Builder... terms) {
-		return new AlternativeLootCondition.Builder(terms);
-	}
-
-	public static class Builder implements LootCondition.Builder {
-		private final List<LootCondition> terms = Lists.<LootCondition>newArrayList();
+	public abstract static class Builder implements LootCondition.Builder {
+		private final List<LootCondition> terms = new ArrayList();
 
 		public Builder(LootCondition.Builder... terms) {
 			for (LootCondition.Builder builder : terms) {
@@ -51,26 +42,29 @@ public class AlternativeLootCondition implements LootCondition {
 			}
 		}
 
-		@Override
-		public AlternativeLootCondition.Builder or(LootCondition.Builder builder) {
+		public void add(LootCondition.Builder builder) {
 			this.terms.add(builder.build());
-			return this;
 		}
 
 		@Override
 		public LootCondition build() {
-			return new AlternativeLootCondition((LootCondition[])this.terms.toArray(new LootCondition[0]));
+			LootCondition[] lootConditions = (LootCondition[])this.terms.toArray(LootCondition[]::new);
+			return this.build(lootConditions);
 		}
+
+		protected abstract LootCondition build(LootCondition[] terms);
 	}
 
-	public static class Serializer implements JsonSerializer<AlternativeLootCondition> {
+	public abstract static class Serializer<T extends AlternativeLootCondition> implements JsonSerializer<T> {
 		public void toJson(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
 			jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.terms));
 		}
 
-		public AlternativeLootCondition fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			LootCondition[] lootConditions = JsonHelper.deserialize(jsonObject, "terms", jsonDeserializationContext, LootCondition[].class);
-			return new AlternativeLootCondition(lootConditions);
+			return this.fromTerms(lootConditions);
 		}
+
+		protected abstract T fromTerms(LootCondition[] terms);
 	}
 }

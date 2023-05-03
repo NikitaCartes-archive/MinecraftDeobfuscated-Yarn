@@ -9,7 +9,8 @@ import net.minecraft.util.JsonSerializing;
 
 public class LootConditionTypes {
 	public static final LootConditionType INVERTED = register("inverted", new InvertedLootCondition.Serializer());
-	public static final LootConditionType ALTERNATIVE = register("alternative", new AlternativeLootCondition.Serializer());
+	public static final LootConditionType ANY_OF = register("any_of", new AnyOfLootCondition.Serializer());
+	public static final LootConditionType ALL_OF = register("all_of", new AllOfLootCondition.Serializer());
 	public static final LootConditionType RANDOM_CHANCE = register("random_chance", new RandomChanceLootCondition.Serializer());
 	public static final LootConditionType RANDOM_CHANCE_WITH_LOOTING = register(
 		"random_chance_with_looting", new RandomChanceWithLootingLootCondition.Serializer()
@@ -39,45 +40,45 @@ public class LootConditionTypes {
 			.build();
 	}
 
-	public static <T> Predicate<T> joinAnd(Predicate<T>[] predicates) {
-		switch (predicates.length) {
-			case 0:
-				return predicatesx -> true;
-			case 1:
-				return predicates[0];
-			case 2:
-				return predicates[0].and(predicates[1]);
-			default:
-				return operand -> {
-					for (Predicate<T> predicate : predicates) {
-						if (!predicate.test(operand)) {
-							return false;
-						}
-					}
+	/**
+	 * Returns a predicate that returns true only if all its element predicates
+	 * return true, as if applied by logical and.
+	 */
+	public static <T> Predicate<T> matchingAll(Predicate<T>[] predicates) {
+		return switch (predicates.length) {
+			case 0 -> predicatesx -> true;
+			case 1 -> predicates[0];
+			case 2 -> predicates[0].and(predicates[1]);
+			default -> operand -> {
+			for (Predicate<T> predicate : predicates) {
+				if (!predicate.test(operand)) {
+					return false;
+				}
+			}
 
-					return true;
-				};
-		}
+			return true;
+		};
+		};
 	}
 
-	public static <T> Predicate<T> joinOr(Predicate<T>[] predicates) {
-		switch (predicates.length) {
-			case 0:
-				return predicatesx -> false;
-			case 1:
-				return predicates[0];
-			case 2:
-				return predicates[0].or(predicates[1]);
-			default:
-				return operand -> {
-					for (Predicate<T> predicate : predicates) {
-						if (predicate.test(operand)) {
-							return true;
-						}
-					}
+	/**
+	 * Returns a predicate that returns true if any its element predicates
+	 * return true, as if applied by logical or.
+	 */
+	public static <T> Predicate<T> matchingAny(Predicate<T>[] predicates) {
+		return switch (predicates.length) {
+			case 0 -> predicatesx -> false;
+			case 1 -> predicates[0];
+			case 2 -> predicates[0].or(predicates[1]);
+			default -> operand -> {
+			for (Predicate<T> predicate : predicates) {
+				if (predicate.test(operand)) {
+					return true;
+				}
+			}
 
-					return false;
-				};
-		}
+			return false;
+		};
+		};
 	}
 }

@@ -28,7 +28,7 @@ import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.StatePredicate;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.Ingredient;
@@ -675,7 +675,7 @@ public abstract class RecipeProvider implements DataProvider {
 	}
 
 	private static EnterBlockCriterion.Conditions requireEnteringFluid(Block block) {
-		return new EnterBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, StatePredicate.ANY);
+		return new EnterBlockCriterion.Conditions(LootContextPredicate.EMPTY, block, StatePredicate.ANY);
 	}
 
 	private static InventoryChangedCriterion.Conditions conditionsFromItem(NumberRange.IntRange count, ItemConvertible item) {
@@ -692,7 +692,7 @@ public abstract class RecipeProvider implements DataProvider {
 
 	private static InventoryChangedCriterion.Conditions conditionsFromItemPredicates(ItemPredicate... predicates) {
 		return new InventoryChangedCriterion.Conditions(
-			EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, predicates
+			LootContextPredicate.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, predicates
 		);
 	}
 

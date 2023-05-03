@@ -12,6 +12,7 @@ import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public abstract class AbstractCriterion<T extends AbstractCriterionConditions> implements Criterion<T> {
@@ -38,11 +39,11 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 		this.progressions.remove(tracker);
 	}
 
-	protected abstract T conditionsFromJson(JsonObject obj, EntityPredicate.Extended playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer);
+	protected abstract T conditionsFromJson(JsonObject obj, LootContextPredicate playerPredicate, AdvancementEntityPredicateDeserializer predicateDeserializer);
 
 	public final T conditionsFromJson(JsonObject jsonObject, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer) {
-		EntityPredicate.Extended extended = EntityPredicate.Extended.getInJson(jsonObject, "player", advancementEntityPredicateDeserializer);
-		return this.conditionsFromJson(jsonObject, extended, advancementEntityPredicateDeserializer);
+		LootContextPredicate lootContextPredicate = EntityPredicate.contextPredicateFromJson(jsonObject, "player", advancementEntityPredicateDeserializer);
+		return this.conditionsFromJson(jsonObject, lootContextPredicate, advancementEntityPredicateDeserializer);
 	}
 
 	protected void trigger(ServerPlayerEntity player, Predicate<T> predicate) {

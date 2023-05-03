@@ -122,7 +122,7 @@ public class VertexFormat {
 	public VertexBuffer getBuffer() {
 		VertexBuffer vertexBuffer = this.buffer;
 		if (vertexBuffer == null) {
-			this.buffer = vertexBuffer = new VertexBuffer();
+			this.buffer = vertexBuffer = new VertexBuffer(VertexBuffer.Usage.DYNAMIC);
 		}
 
 		return vertexBuffer;

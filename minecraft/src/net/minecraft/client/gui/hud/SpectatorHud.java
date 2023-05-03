@@ -50,10 +50,10 @@ public class SpectatorHud implements SpectatorMenuCloseCallback {
 			if (f <= 0.0F) {
 				this.spectatorMenu.close();
 			} else {
-				int i = this.client.getWindow().getScaledWidth() / 2;
+				int i = context.getScaledWindowWidth() / 2;
 				context.getMatrices().push();
 				context.getMatrices().translate(0.0F, 0.0F, -90.0F);
-				int j = MathHelper.floor((float)this.client.getWindow().getScaledHeight() - 22.0F * f);
+				int j = MathHelper.floor((float)context.getScaledWindowHeight() - 22.0F * f);
 				SpectatorMenuState spectatorMenuState = this.spectatorMenu.getCurrentState();
 				this.renderSpectatorMenu(context, f, i, j, spectatorMenuState);
 				context.getMatrices().pop();
@@ -72,7 +72,7 @@ public class SpectatorHud implements SpectatorMenuCloseCallback {
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
 		for (int i = 0; i < 9; i++) {
-			this.renderSpectatorCommand(context, i, this.client.getWindow().getScaledWidth() / 2 - 90 + i * 20 + 2, (float)(y + 3), height, state.getCommand(i));
+			this.renderSpectatorCommand(context, i, context.getScaledWindowWidth() / 2 - 90 + i * 20 + 2, (float)(y + 3), height, state.getCommand(i));
 		}
 
 		RenderSystem.disableBlend();
@@ -101,8 +101,8 @@ public class SpectatorHud implements SpectatorMenuCloseCallback {
 			SpectatorMenuCommand spectatorMenuCommand = this.spectatorMenu.getSelectedCommand();
 			Text text = spectatorMenuCommand == SpectatorMenu.BLANK_COMMAND ? this.spectatorMenu.getCurrentGroup().getPrompt() : spectatorMenuCommand.getName();
 			if (text != null) {
-				int j = (this.client.getWindow().getScaledWidth() - this.client.textRenderer.getWidth(text)) / 2;
-				int k = this.client.getWindow().getScaledHeight() - 35;
+				int j = (context.getScaledWindowWidth() - this.client.textRenderer.getWidth(text)) / 2;
+				int k = context.getScaledWindowHeight() - 35;
 				context.drawTextWithShadow(this.client.textRenderer, text, j, k, 16777215 + (i << 24));
 			}
 		}

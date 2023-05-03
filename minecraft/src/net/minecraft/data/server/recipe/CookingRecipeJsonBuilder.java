@@ -26,7 +26,7 @@ public class CookingRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private final Ingredient input;
 	private final float experience;
 	private final int cookingTime;
-	private final Advancement.Builder advancementBuilder = Advancement.Builder.create();
+	private final Advancement.Builder advancementBuilder = Advancement.Builder.createUntelemetered();
 	@Nullable
 	private String group;
 	private final RecipeSerializer<? extends AbstractCookingRecipe> serializer;

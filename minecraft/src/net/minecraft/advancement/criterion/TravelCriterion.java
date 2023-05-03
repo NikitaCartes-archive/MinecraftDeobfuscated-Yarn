@@ -6,6 +6,7 @@ import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.DistancePredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -24,11 +25,11 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 	}
 
 	public TravelCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		LocationPredicate locationPredicate = LocationPredicate.fromJson(jsonObject.get("start_position"));
 		DistancePredicate distancePredicate = DistancePredicate.fromJson(jsonObject.get("distance"));
-		return new TravelCriterion.Conditions(this.id, extended, locationPredicate, distancePredicate);
+		return new TravelCriterion.Conditions(this.id, lootContextPredicate, locationPredicate, distancePredicate);
 	}
 
 	public void trigger(ServerPlayerEntity player, Vec3d startPos) {
@@ -40,22 +41,24 @@ public class TravelCriterion extends AbstractCriterion<TravelCriterion.Condition
 		private final LocationPredicate startPos;
 		private final DistancePredicate distance;
 
-		public Conditions(Identifier id, EntityPredicate.Extended entity, LocationPredicate startPos, DistancePredicate distance) {
+		public Conditions(Identifier id, LootContextPredicate entity, LocationPredicate startPos, DistancePredicate distance) {
 			super(id, entity);
 			this.startPos = startPos;
 			this.distance = distance;
 		}
 
 		public static TravelCriterion.Conditions fallFromHeight(EntityPredicate.Builder entity, DistancePredicate distance, LocationPredicate startPos) {
-			return new TravelCriterion.Conditions(Criteria.FALL_FROM_HEIGHT.id, EntityPredicate.Extended.ofLegacy(entity.build()), startPos, distance);
+			return new TravelCriterion.Conditions(Criteria.FALL_FROM_HEIGHT.id, EntityPredicate.asLootContextPredicate(entity.build()), startPos, distance);
 		}
 
 		public static TravelCriterion.Conditions rideEntityInLava(EntityPredicate.Builder entity, DistancePredicate distance) {
-			return new TravelCriterion.Conditions(Criteria.RIDE_ENTITY_IN_LAVA.id, EntityPredicate.Extended.ofLegacy(entity.build()), LocationPredicate.ANY, distance);
+			return new TravelCriterion.Conditions(
+				Criteria.RIDE_ENTITY_IN_LAVA.id, EntityPredicate.asLootContextPredicate(entity.build()), LocationPredicate.ANY, distance
+			);
 		}
 
 		public static TravelCriterion.Conditions netherTravel(DistancePredicate distance) {
-			return new TravelCriterion.Conditions(Criteria.NETHER_TRAVEL.id, EntityPredicate.Extended.EMPTY, LocationPredicate.ANY, distance);
+			return new TravelCriterion.Conditions(Criteria.NETHER_TRAVEL.id, LootContextPredicate.EMPTY, LocationPredicate.ANY, distance);
 		}
 
 		@Override

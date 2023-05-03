@@ -1,33 +1,26 @@
 package net.minecraft.client.font;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
-import it.unimi.dsi.fastutil.ints.Int2FloatMap;
-import it.unimi.dsi.fastutil.ints.Int2FloatMaps;
-import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
-import java.util.Arrays;
-import java.util.Map.Entry;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 
 @Environment(EnvType.CLIENT)
 public class SpaceFont implements Font {
 	private final Int2ObjectMap<Glyph.EmptyGlyph> codePointsToGlyphs;
 
-	public SpaceFont(Int2FloatMap codePointsToAdvances) {
+	public SpaceFont(Map<Integer, Float> codePointsToAdvances) {
 		this.codePointsToGlyphs = new Int2ObjectOpenHashMap<>(codePointsToAdvances.size());
-		Int2FloatMaps.fastForEach(codePointsToAdvances, entry -> {
-			float f = entry.getFloatValue();
-			this.codePointsToGlyphs.put(entry.getIntKey(), () -> f);
-		});
+		codePointsToAdvances.forEach((codePoint, glyph) -> this.codePointsToGlyphs.put(codePoint.intValue(), () -> glyph));
 	}
 
 	@Nullable
@@ -41,21 +34,22 @@ public class SpaceFont implements Font {
 		return IntSets.unmodifiable(this.codePointsToGlyphs.keySet());
 	}
 
-	public static FontLoader fromJson(JsonObject json) {
-		Int2FloatMap int2FloatMap = new Int2FloatOpenHashMap();
-		JsonObject jsonObject = JsonHelper.getObject(json, "advances");
+	@Environment(EnvType.CLIENT)
+	public static record Loader(Map<Integer, Float> advances) implements FontLoader {
+		public static final MapCodec<SpaceFont.Loader> CODEC = RecordCodecBuilder.mapCodec(
+			instance -> instance.group(Codec.unboundedMap(Codecs.CODEPOINT, Codec.FLOAT).fieldOf("advances").forGetter(SpaceFont.Loader::advances))
+					.apply(instance, SpaceFont.Loader::new)
+		);
 
-		for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-			int[] is = ((String)entry.getKey()).codePoints().toArray();
-			if (is.length != 1) {
-				throw new JsonParseException("Expected single codepoint, got " + Arrays.toString(is));
-			}
-
-			float f = JsonHelper.asFloat((JsonElement)entry.getValue(), "advance");
-			int2FloatMap.put(is[0], f);
+		@Override
+		public FontType getType() {
+			return FontType.SPACE;
 		}
 
-		FontLoader.Loadable loadable = resourceManager -> new SpaceFont(int2FloatMap);
-		return () -> Either.left(loadable);
+		@Override
+		public Either<FontLoader.Loadable, FontLoader.Reference> build() {
+			FontLoader.Loadable loadable = resourceManager -> new SpaceFont(this.advances);
+			return Either.left(loadable);
+		}
 	}
 }

@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.screen.recipebook;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -9,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
@@ -65,9 +65,7 @@ public class RecipeBookGhostSlots {
 
 			ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
 			context.drawItemWithoutEntity(itemStack, j, k);
-			RenderSystem.depthFunc(516);
-			context.fill(j, k, j + 16, k + 16, 822083583);
-			RenderSystem.depthFunc(515);
+			context.fill(RenderLayer.getGuiGhostRecipeOverlay(), j, k, j + 16, k + 16, 822083583);
 			if (i == 0) {
 				context.drawItemInSlot(client.textRenderer, itemStack, j, k);
 			}

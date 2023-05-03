@@ -296,7 +296,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	private boolean onGround;
 	public boolean horizontalCollision;
 	public boolean verticalCollision;
-	public boolean field_36331;
+	public boolean groundCollision;
 	public boolean collidedSoftly;
 	public boolean velocityModified;
 	protected Vec3d movementMultiplier = Vec3d.ZERO;
@@ -365,6 +365,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public boolean inPowderSnow;
 	public boolean wasInPowderSnow;
 	public boolean wasOnFire;
+	public Optional<BlockPos> supportingBlockPos = Optional.empty();
 	private float lastChimeIntensity;
 	private int lastChimeAge;
 	private boolean hasVisualFire;
@@ -841,6 +842,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void setOnGround(boolean onGround) {
 		this.onGround = onGround;
+		this.updateSupportingBlockPos(onGround);
+	}
+
+	protected void updateSupportingBlockPos(boolean onGround) {
+		if (onGround) {
+			Box box = this.getBoundingBox();
+			Box box2 = new Box(box.minX, box.minY - 1.0E-6, box.minZ, box.maxX, box.minY, box.maxZ);
+			this.supportingBlockPos = this.world.findSupportingBlockPos(this, box2);
+		} else if (this.supportingBlockPos.isPresent()) {
+			this.supportingBlockPos = Optional.empty();
+		}
 	}
 
 	/**
@@ -892,14 +904,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			boolean bl2 = !MathHelper.approximatelyEquals(movement.z, vec3d.z);
 			this.horizontalCollision = bl || bl2;
 			this.verticalCollision = movement.y != vec3d.y;
-			this.field_36331 = this.verticalCollision && movement.y < 0.0;
+			this.groundCollision = this.verticalCollision && movement.y < 0.0;
 			if (this.horizontalCollision) {
 				this.collidedSoftly = this.hasCollidedSoftly(vec3d);
 			} else {
 				this.collidedSoftly = false;
 			}
 
-			this.setOnGround(this.field_36331);
+			this.setOnGround(this.groundCollision);
 			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
 			this.fall(vec3d.y, this.isOnGround(), blockState, blockPos);
@@ -926,23 +938,24 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					double f = vec3d.y;
 					double g = vec3d.z;
 					this.speed = this.speed + (float)(vec3d.length() * 0.6);
-					boolean bl3 = blockState.isIn(BlockTags.CLIMBABLE) || blockState.isOf(Blocks.POWDER_SNOW);
+					BlockPos blockPos2 = this.getSteppingPos();
+					BlockState blockState2 = this.getWorld().getBlockState(blockPos2);
+					boolean bl3 = this.canClimb(blockState2);
 					if (!bl3) {
 						f = 0.0;
 					}
 
 					this.horizontalSpeed = this.horizontalSpeed + (float)vec3d.horizontalLength() * 0.6F;
 					this.distanceTraveled = this.distanceTraveled + (float)Math.sqrt(e * e + f * f + g * g) * 0.6F;
-					if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
-						if (this.canStep(bl3, movement)) {
-							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
-							if (moveEffect.playsSounds()) {
-								this.playStepSounds(blockPos, blockState);
-							}
+					if (this.distanceTraveled > this.nextStepSoundDistance && !blockState2.isAir()) {
+						boolean bl4 = blockPos2.equals(blockPos);
+						boolean bl5 = this.stepOnBlock(blockPos, blockState, moveEffect.playsSounds(), bl4, movement);
+						if (!bl4) {
+							bl5 |= this.stepOnBlock(blockPos2, blockState2, false, moveEffect.emitsGameEvents(), movement);
+						}
 
-							if (moveEffect.emitsGameEvents()) {
-								this.getWorld().emitGameEvent(GameEvent.STEP, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
-							}
+						if (bl5) {
+							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
 						} else if (this.isTouchingWater()) {
 							this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
 							if (moveEffect.playsSounds()) {
@@ -953,7 +966,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 								this.emitGameEvent(GameEvent.SWIM);
 							}
 						}
-					} else if (blockState.isAir()) {
+					} else if (blockState2.isAir()) {
 						this.addAirTravelEffects();
 					}
 				}
@@ -978,6 +991,31 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				}
 
 				this.getWorld().getProfiler().pop();
+			}
+		}
+	}
+
+	private boolean canClimb(BlockState state) {
+		return state.isIn(BlockTags.CLIMBABLE) || state.isOf(Blocks.POWDER_SNOW);
+	}
+
+	private boolean stepOnBlock(BlockPos pos, BlockState state, boolean playSound, boolean emitEvent, Vec3d movement) {
+		if (state.isAir()) {
+			return false;
+		} else {
+			boolean bl = this.canClimb(state);
+			if ((this.isOnGround() || bl || this.isInSneakingPose() && movement.y == 0.0) && !this.isSwimming()) {
+				if (playSound) {
+					this.playStepSounds(pos, state);
+				}
+
+				if (emitEvent) {
+					this.getWorld().emitGameEvent(GameEvent.STEP, this.getPos(), GameEvent.Emitter.of(this, state));
+				}
+
+				return true;
+			} else {
+				return false;
 			}
 		}
 	}
@@ -1059,19 +1097,24 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	private BlockPos getPosWithYOffset(float offset) {
-		int i = MathHelper.floor(this.pos.x);
-		int j = MathHelper.floor(this.pos.y - (double)offset);
-		int k = MathHelper.floor(this.pos.z);
-		BlockPos blockPos = new BlockPos(i, j, k);
-		if (this.getWorld().getBlockState(blockPos).isAir()) {
-			BlockPos blockPos2 = blockPos.down();
-			BlockState blockState = this.getWorld().getBlockState(blockPos2);
-			if (blockState.isIn(BlockTags.FENCES) || blockState.isIn(BlockTags.WALLS) || blockState.getBlock() instanceof FenceGateBlock) {
-				return blockPos2;
+		if (this.supportingBlockPos.isPresent()) {
+			BlockPos blockPos = (BlockPos)this.supportingBlockPos.get();
+			if (!(offset > 1.0E-5F)) {
+				return blockPos;
+			} else {
+				BlockState blockState = this.getWorld().getBlockState(blockPos);
+				return (!((double)offset <= 0.5) || !blockState.isIn(BlockTags.FENCES))
+						&& !blockState.isIn(BlockTags.WALLS)
+						&& !(blockState.getBlock() instanceof FenceGateBlock)
+					? blockPos.withY(MathHelper.floor(this.pos.y - (double)offset))
+					: blockPos;
 			}
+		} else {
+			int i = MathHelper.floor(this.pos.x);
+			int j = MathHelper.floor(this.pos.y - (double)offset);
+			int k = MathHelper.floor(this.pos.z);
+			return new BlockPos(i, j, k);
 		}
-
-		return blockPos;
 	}
 
 	protected float getJumpVelocityMultiplier() {
@@ -1091,7 +1134,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	protected BlockPos getVelocityAffectingPos() {
-		return BlockPos.ofFloored(this.pos.x, this.getBoundingBox().minY - 0.5000001, this.pos.z);
+		return this.getPosWithYOffset(0.5000001F);
 	}
 
 	protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type) {
@@ -1460,7 +1503,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		if (onGround) {
 			if (this.fallDistance > 0.0F) {
 				state.getBlock().onLandedUpon(this.getWorld(), state, landedPosition, this, this.fallDistance);
-				this.getWorld().emitGameEvent(GameEvent.HIT_GROUND, this.pos, GameEvent.Emitter.of(this, this.getSteppingBlockState()));
+				this.getWorld()
+					.emitGameEvent(
+						GameEvent.HIT_GROUND,
+						this.pos,
+						GameEvent.Emitter.of(this, (BlockState)this.supportingBlockPos.map(blockPos -> this.getWorld().getBlockState(blockPos)).orElse(state))
+					);
 			}
 
 			this.onLanding();
@@ -1502,10 +1550,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 			return false;
 		}
-	}
-
-	public boolean canStep(boolean climbing, Vec3d movement) {
-		return (this.isOnGround() || climbing || this.isInSneakingPose() && movement.y == 0.0) && !this.isSwimming();
 	}
 
 	/**

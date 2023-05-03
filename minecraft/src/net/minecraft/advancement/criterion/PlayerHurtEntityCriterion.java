@@ -8,6 +8,7 @@ import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -20,11 +21,11 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 	}
 
 	public PlayerHurtEntityCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		DamagePredicate damagePredicate = DamagePredicate.fromJson(jsonObject.get("damage"));
-		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new PlayerHurtEntityCriterion.Conditions(extended, damagePredicate, extended2);
+		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
+		return new PlayerHurtEntityCriterion.Conditions(lootContextPredicate, damagePredicate, lootContextPredicate2);
 	}
 
 	public void trigger(ServerPlayerEntity player, Entity entity, DamageSource damage, float dealt, float taken, boolean blocked) {
@@ -34,37 +35,37 @@ public class PlayerHurtEntityCriterion extends AbstractCriterion<PlayerHurtEntit
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final DamagePredicate damage;
-		private final EntityPredicate.Extended entity;
+		private final LootContextPredicate entity;
 
-		public Conditions(EntityPredicate.Extended player, DamagePredicate damage, EntityPredicate.Extended entity) {
+		public Conditions(LootContextPredicate player, DamagePredicate damage, LootContextPredicate entity) {
 			super(PlayerHurtEntityCriterion.ID, player);
 			this.damage = damage;
 			this.entity = entity;
 		}
 
 		public static PlayerHurtEntityCriterion.Conditions create() {
-			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, DamagePredicate.ANY, EntityPredicate.Extended.EMPTY);
+			return new PlayerHurtEntityCriterion.Conditions(LootContextPredicate.EMPTY, DamagePredicate.ANY, LootContextPredicate.EMPTY);
 		}
 
 		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate damagePredicate) {
-			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, damagePredicate, EntityPredicate.Extended.EMPTY);
+			return new PlayerHurtEntityCriterion.Conditions(LootContextPredicate.EMPTY, damagePredicate, LootContextPredicate.EMPTY);
 		}
 
 		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder damagePredicateBuilder) {
-			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, damagePredicateBuilder.build(), EntityPredicate.Extended.EMPTY);
+			return new PlayerHurtEntityCriterion.Conditions(LootContextPredicate.EMPTY, damagePredicateBuilder.build(), LootContextPredicate.EMPTY);
 		}
 
 		public static PlayerHurtEntityCriterion.Conditions create(EntityPredicate hurtEntityPredicate) {
-			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, DamagePredicate.ANY, EntityPredicate.Extended.ofLegacy(hurtEntityPredicate));
+			return new PlayerHurtEntityCriterion.Conditions(LootContextPredicate.EMPTY, DamagePredicate.ANY, EntityPredicate.asLootContextPredicate(hurtEntityPredicate));
 		}
 
 		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate damagePredicate, EntityPredicate hurtEntityPredicate) {
-			return new PlayerHurtEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, damagePredicate, EntityPredicate.Extended.ofLegacy(hurtEntityPredicate));
+			return new PlayerHurtEntityCriterion.Conditions(LootContextPredicate.EMPTY, damagePredicate, EntityPredicate.asLootContextPredicate(hurtEntityPredicate));
 		}
 
 		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder damagePredicateBuilder, EntityPredicate hurtEntityPredicate) {
 			return new PlayerHurtEntityCriterion.Conditions(
-				EntityPredicate.Extended.EMPTY, damagePredicateBuilder.build(), EntityPredicate.Extended.ofLegacy(hurtEntityPredicate)
+				LootContextPredicate.EMPTY, damagePredicateBuilder.build(), EntityPredicate.asLootContextPredicate(hurtEntityPredicate)
 			);
 		}
 

@@ -6,6 +6,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -18,10 +19,10 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 	}
 
 	public SummonedEntityCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new SummonedEntityCriterion.Conditions(extended, extended2);
+		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
+		return new SummonedEntityCriterion.Conditions(lootContextPredicate, lootContextPredicate2);
 	}
 
 	public void trigger(ServerPlayerEntity player, Entity entity) {
@@ -30,15 +31,15 @@ public class SummonedEntityCriterion extends AbstractCriterion<SummonedEntityCri
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityPredicate.Extended entity;
+		private final LootContextPredicate entity;
 
-		public Conditions(EntityPredicate.Extended player, EntityPredicate.Extended entity) {
+		public Conditions(LootContextPredicate player, LootContextPredicate entity) {
 			super(SummonedEntityCriterion.ID, player);
 			this.entity = entity;
 		}
 
 		public static SummonedEntityCriterion.Conditions create(EntityPredicate.Builder summonedEntityPredicateBuilder) {
-			return new SummonedEntityCriterion.Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(summonedEntityPredicateBuilder.build()));
+			return new SummonedEntityCriterion.Conditions(LootContextPredicate.EMPTY, EntityPredicate.asLootContextPredicate(summonedEntityPredicateBuilder.build()));
 		}
 
 		public boolean matches(LootContext summonedEntityContext) {

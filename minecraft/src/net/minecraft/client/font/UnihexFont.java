@@ -1,13 +1,11 @@
 package net.minecraft.client.font;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
-import com.mojang.serialization.JsonOps;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
@@ -355,7 +353,7 @@ public class UnihexFont implements Font {
 
 	@Environment(EnvType.CLIENT)
 	public static class Loader implements FontLoader {
-		public static final Codec<UnihexFont.Loader> CODEC = RecordCodecBuilder.create(
+		public static final MapCodec<UnihexFont.Loader> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 						Identifier.CODEC.fieldOf("hex_file").forGetter(loader -> loader.sizes),
 						UnihexFont.DimensionOverride.CODEC.listOf().fieldOf("size_overrides").forGetter(loader -> loader.overrides)
@@ -368,6 +366,11 @@ public class UnihexFont implements Font {
 		private Loader(Identifier sizes, List<UnihexFont.DimensionOverride> overrides) {
 			this.sizes = sizes;
 			this.overrides = overrides;
+		}
+
+		@Override
+		public FontType getType() {
+			return FontType.UNIHEX;
 		}
 
 		@Override
@@ -452,11 +455,6 @@ public class UnihexFont implements Font {
 
 			zipInputStream.close();
 			return var17;
-		}
-
-		public static FontLoader fromJson(JsonObject json) {
-			return CODEC.parse(JsonOps.INSTANCE, json).getOrThrow(false, string -> {
-			});
 		}
 	}
 

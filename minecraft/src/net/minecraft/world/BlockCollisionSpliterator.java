@@ -1,6 +1,7 @@
 package net.minecraft.world;
 
 import com.google.common.collect.AbstractIterator;
+import java.util.function.BiFunction;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,7 +17,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
-public class BlockCollisionSpliterator extends AbstractIterator<VoxelShape> {
+public class BlockCollisionSpliterator<T> extends AbstractIterator<T> {
 	private final Box box;
 	private final ShapeContext context;
 	private final CuboidBlockIterator blockIterator;
@@ -27,18 +28,18 @@ public class BlockCollisionSpliterator extends AbstractIterator<VoxelShape> {
 	@Nullable
 	private BlockView chunk;
 	private long chunkPos;
+	private final BiFunction<BlockPos.Mutable, VoxelShape, T> resultFunction;
 
-	public BlockCollisionSpliterator(CollisionView world, @Nullable Entity entity, Box box) {
-		this(world, entity, box, false);
-	}
-
-	public BlockCollisionSpliterator(CollisionView world, @Nullable Entity entity, Box box, boolean forEntity) {
+	public BlockCollisionSpliterator(
+		CollisionView world, @Nullable Entity entity, Box box, boolean forEntity, BiFunction<BlockPos.Mutable, VoxelShape, T> resultFunction
+	) {
 		this.context = entity == null ? ShapeContext.absent() : ShapeContext.of(entity);
 		this.pos = new BlockPos.Mutable();
 		this.boxShape = VoxelShapes.cuboid(box);
 		this.world = world;
 		this.box = box;
 		this.forEntity = forEntity;
+		this.resultFunction = resultFunction;
 		int i = MathHelper.floor(box.minX - 1.0E-7) - 1;
 		int j = MathHelper.floor(box.maxX + 1.0E-7) + 1;
 		int k = MathHelper.floor(box.minY - 1.0E-7) - 1;
@@ -63,7 +64,8 @@ public class BlockCollisionSpliterator extends AbstractIterator<VoxelShape> {
 		}
 	}
 
-	protected VoxelShape computeNext() {
+	@Override
+	protected T computeNext() {
 		while (this.blockIterator.step()) {
 			int i = this.blockIterator.getX();
 			int j = this.blockIterator.getY();
@@ -80,12 +82,12 @@ public class BlockCollisionSpliterator extends AbstractIterator<VoxelShape> {
 						VoxelShape voxelShape = blockState.getCollisionShape(this.world, this.pos, this.context);
 						if (voxelShape == VoxelShapes.fullCube()) {
 							if (this.box.intersects((double)i, (double)j, (double)k, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)) {
-								return voxelShape.offset((double)i, (double)j, (double)k);
+								return (T)this.resultFunction.apply(this.pos, voxelShape.offset((double)i, (double)j, (double)k));
 							}
 						} else {
 							VoxelShape voxelShape2 = voxelShape.offset((double)i, (double)j, (double)k);
-							if (VoxelShapes.matchesAnywhere(voxelShape2, this.boxShape, BooleanBiFunction.AND)) {
-								return voxelShape2;
+							if (!voxelShape2.isEmpty() && VoxelShapes.matchesAnywhere(voxelShape2, this.boxShape, BooleanBiFunction.AND)) {
+								return (T)this.resultFunction.apply(this.pos, voxelShape2);
 							}
 						}
 					}

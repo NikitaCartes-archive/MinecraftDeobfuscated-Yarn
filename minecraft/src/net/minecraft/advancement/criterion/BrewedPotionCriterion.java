@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 import net.minecraft.potion.Potion;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -21,7 +21,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 	}
 
 	public BrewedPotionCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Potion potion = null;
 		if (jsonObject.has("potion")) {
@@ -29,7 +29,7 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 			potion = (Potion)Registries.POTION.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier + "'"));
 		}
 
-		return new BrewedPotionCriterion.Conditions(extended, potion);
+		return new BrewedPotionCriterion.Conditions(lootContextPredicate, potion);
 	}
 
 	public void trigger(ServerPlayerEntity player, Potion potion) {
@@ -40,13 +40,13 @@ public class BrewedPotionCriterion extends AbstractCriterion<BrewedPotionCriteri
 		@Nullable
 		private final Potion potion;
 
-		public Conditions(EntityPredicate.Extended player, @Nullable Potion potion) {
+		public Conditions(LootContextPredicate player, @Nullable Potion potion) {
 			super(BrewedPotionCriterion.ID, player);
 			this.potion = potion;
 		}
 
 		public static BrewedPotionCriterion.Conditions any() {
-			return new BrewedPotionCriterion.Conditions(EntityPredicate.Extended.EMPTY, null);
+			return new BrewedPotionCriterion.Conditions(LootContextPredicate.EMPTY, null);
 		}
 
 		public boolean matches(Potion potion) {

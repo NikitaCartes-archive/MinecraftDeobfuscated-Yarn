@@ -1,8 +1,6 @@
 package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Arrays;
@@ -19,6 +17,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.PageTurnWidget;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.Rect2i;
@@ -426,18 +425,13 @@ public class BookEditScreen extends Screen {
 	}
 
 	private void drawSelection(DrawContext context, Rect2i[] selectionRectangles) {
-		RenderSystem.enableColorLogicOp();
-		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-
 		for (Rect2i rect2i : selectionRectangles) {
 			int i = rect2i.getX();
 			int j = rect2i.getY();
 			int k = i + rect2i.getWidth();
 			int l = j + rect2i.getHeight();
-			context.fill(i, j, k, l, -16776961);
+			context.fill(RenderLayer.getGuiTextHighlight(), i, j, k, l, -16776961);
 		}
-
-		RenderSystem.disableColorLogicOp();
 	}
 
 	private BookEditScreen.Position screenPositionToAbsolutePosition(BookEditScreen.Position position) {

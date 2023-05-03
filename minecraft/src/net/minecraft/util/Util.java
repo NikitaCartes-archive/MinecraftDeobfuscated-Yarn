@@ -826,7 +826,7 @@ public class Util {
 		return string -> consumer.accept(prefix + string);
 	}
 
-	public static DataResult<int[]> toArray(IntStream stream, int length) {
+	public static DataResult<int[]> decodeFixedLengthArray(IntStream stream, int length) {
 		int[] is = stream.limit((long)(length + 1)).toArray();
 		if (is.length != length) {
 			Supplier<String> supplier = () -> "Input is not a list of " + length + " ints";
@@ -836,7 +836,7 @@ public class Util {
 		}
 	}
 
-	public static <T> DataResult<List<T>> toArray(List<T> list, int length) {
+	public static <T> DataResult<List<T>> decodeFixedLengthList(List<T> list, int length) {
 		if (list.size() != length) {
 			Supplier<String> supplier = () -> "Input is not a list of " + length + " elements";
 			return list.size() >= length ? DataResult.error(supplier, list.subList(0, length)) : DataResult.error(supplier);

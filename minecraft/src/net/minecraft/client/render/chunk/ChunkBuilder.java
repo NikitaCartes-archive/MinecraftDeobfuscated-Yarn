@@ -273,7 +273,7 @@ public class ChunkBuilder {
 		private final Set<BlockEntity> blockEntities = Sets.<BlockEntity>newHashSet();
 		private final Map<RenderLayer, VertexBuffer> buffers = (Map<RenderLayer, VertexBuffer>)RenderLayer.getBlockLayers()
 			.stream()
-			.collect(Collectors.toMap(renderLayer -> renderLayer, renderLayer -> new VertexBuffer()));
+			.collect(Collectors.toMap(renderLayer -> renderLayer, renderLayer -> new VertexBuffer(VertexBuffer.Usage.STATIC)));
 		private Box boundingBox;
 		private boolean needsRebuild = true;
 		final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);

@@ -1,16 +1,13 @@
 package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -28,7 +25,9 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -64,6 +63,7 @@ public class DrawContext {
 	private final MatrixStack matrices;
 	private final VertexConsumerProvider.Immediate vertexConsumers;
 	private final DrawContext.ScissorStack scissorStack = new DrawContext.ScissorStack();
+	private boolean runningDrawCallback;
 
 	private DrawContext(MinecraftClient client, MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers) {
 		this.client = client;
@@ -73,6 +73,22 @@ public class DrawContext {
 
 	public DrawContext(MinecraftClient client, VertexConsumerProvider.Immediate vertexConsumers) {
 		this(client, new MatrixStack(), vertexConsumers);
+	}
+
+	@Deprecated
+	public void draw(Runnable drawCallback) {
+		this.draw();
+		this.runningDrawCallback = true;
+		drawCallback.run();
+		this.runningDrawCallback = false;
+		this.draw();
+	}
+
+	@Deprecated
+	private void tryDraw() {
+		if (!this.runningDrawCallback) {
+			this.draw();
+		}
 	}
 
 	public int getScaledWindowWidth() {
@@ -92,38 +108,49 @@ public class DrawContext {
 	}
 
 	public void draw() {
+		RenderSystem.disableDepthTest();
 		this.vertexConsumers.draw();
+		RenderSystem.enableDepthTest();
 	}
 
 	public void drawHorizontalLine(int x1, int x2, int y, int color) {
+		this.drawHorizontalLine(RenderLayer.getGui(), x1, x2, y, color);
+	}
+
+	public void drawHorizontalLine(RenderLayer layer, int x1, int x2, int y, int color) {
 		if (x2 < x1) {
 			int i = x1;
 			x1 = x2;
 			x2 = i;
 		}
 
-		this.fill(x1, y, x2 + 1, y + 1, color);
+		this.fill(layer, x1, y, x2 + 1, y + 1, color);
 	}
 
 	public void drawVerticalLine(int x, int y1, int y2, int color) {
+		this.drawVerticalLine(RenderLayer.getGui(), x, y1, y2, color);
+	}
+
+	public void drawVerticalLine(RenderLayer layer, int x, int y1, int y2, int color) {
 		if (y2 < y1) {
 			int i = y1;
 			y1 = y2;
 			y2 = i;
 		}
 
-		this.fill(x, y1 + 1, x + 1, y2, color);
+		this.fill(layer, x, y1 + 1, x + 1, y2, color);
 	}
 
 	public void enableScissor(int x1, int y1, int x2, int y2) {
-		setScissor(this.scissorStack.push(new ScreenRect(x1, y1, x2 - x1, y2 - y1)));
+		this.setScissor(this.scissorStack.push(new ScreenRect(x1, y1, x2 - x1, y2 - y1)));
 	}
 
 	public void disableScissor() {
-		setScissor(this.scissorStack.pop());
+		this.setScissor(this.scissorStack.pop());
 	}
 
-	private static void setScissor(@Nullable ScreenRect rect) {
+	private void setScissor(@Nullable ScreenRect rect) {
+		this.draw();
 		if (rect != null) {
 			Window window = MinecraftClient.getInstance().getWindow();
 			int i = window.getFramebufferHeight();
@@ -139,6 +166,7 @@ public class DrawContext {
 	}
 
 	public void setShaderColor(float red, float green, float blue, float alpha) {
+		this.draw();
 		RenderSystem.setShaderColor(red, green, blue, alpha);
 	}
 
@@ -147,16 +175,24 @@ public class DrawContext {
 	}
 
 	public void fill(int x1, int y1, int x2, int y2, int z, int color) {
+		this.fill(RenderLayer.getGui(), x1, y1, x2, y2, z, color);
+	}
+
+	public void fill(RenderLayer layer, int x1, int x2, int y1, int y2, int color) {
+		this.fill(layer, x1, x2, y1, y2, 0, color);
+	}
+
+	public void fill(RenderLayer layer, int x1, int x2, int y1, int y2, int z, int color) {
 		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
-		if (x1 < x2) {
+		if (x1 < y1) {
 			int i = x1;
-			x1 = x2;
-			x2 = i;
+			x1 = y1;
+			y1 = i;
 		}
 
-		if (y1 < y2) {
-			int i = y1;
-			y1 = y2;
+		if (x2 < y2) {
+			int i = x2;
+			x2 = y2;
 			y2 = i;
 		}
 
@@ -164,16 +200,12 @@ public class DrawContext {
 		float g = (float)ColorHelper.Argb.getRed(color) / 255.0F;
 		float h = (float)ColorHelper.Argb.getGreen(color) / 255.0F;
 		float j = (float)ColorHelper.Argb.getBlue(color) / 255.0F;
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-		RenderSystem.enableBlend();
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).color(g, h, j, f).next();
-		bufferBuilder.vertex(matrix4f, (float)x1, (float)y2, (float)z).color(g, h, j, f).next();
-		bufferBuilder.vertex(matrix4f, (float)x2, (float)y2, (float)z).color(g, h, j, f).next();
-		bufferBuilder.vertex(matrix4f, (float)x2, (float)y1, (float)z).color(g, h, j, f).next();
-		BufferRenderer.drawWithGlobalProgram(bufferBuilder.end());
-		RenderSystem.disableBlend();
+		VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(layer);
+		vertexConsumer.vertex(matrix4f, (float)x1, (float)x2, (float)z).color(g, h, j, f).next();
+		vertexConsumer.vertex(matrix4f, (float)x1, (float)y2, (float)z).color(g, h, j, f).next();
+		vertexConsumer.vertex(matrix4f, (float)y1, (float)y2, (float)z).color(g, h, j, f).next();
+		vertexConsumer.vertex(matrix4f, (float)y1, (float)x2, (float)z).color(g, h, j, f).next();
+		this.tryDraw();
 	}
 
 	public void fillGradient(int startX, int startY, int endX, int endY, int colorStart, int colorEnd) {
@@ -181,17 +213,16 @@ public class DrawContext {
 	}
 
 	public void fillGradient(int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd) {
-		RenderSystem.enableBlend();
-		RenderSystem.setShader(GameRenderer::getPositionColorProgram);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		this.fillGradient(bufferBuilder, startX, startY, endX, endY, z, colorStart, colorEnd);
-		tessellator.draw();
-		RenderSystem.disableBlend();
+		this.fillGradient(RenderLayer.getGui(), startX, startY, endX, endY, colorStart, colorEnd, z);
 	}
 
-	void fillGradient(BufferBuilder bufferBuilder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd) {
+	public void fillGradient(RenderLayer layer, int startX, int startY, int endX, int endY, int colorStart, int colorEnd, int z) {
+		VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(layer);
+		this.fillGradient(vertexConsumer, startX, startY, endX, endY, z, colorStart, colorEnd);
+		this.tryDraw();
+	}
+
+	private void fillGradient(VertexConsumer vertexConsumer, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd) {
 		float f = (float)ColorHelper.Argb.getAlpha(colorStart) / 255.0F;
 		float g = (float)ColorHelper.Argb.getRed(colorStart) / 255.0F;
 		float h = (float)ColorHelper.Argb.getGreen(colorStart) / 255.0F;
@@ -201,10 +232,10 @@ public class DrawContext {
 		float l = (float)ColorHelper.Argb.getGreen(colorEnd) / 255.0F;
 		float m = (float)ColorHelper.Argb.getBlue(colorEnd) / 255.0F;
 		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
-		bufferBuilder.vertex(matrix4f, (float)startX, (float)startY, (float)z).color(g, h, i, f).next();
-		bufferBuilder.vertex(matrix4f, (float)startX, (float)endY, (float)z).color(k, l, m, j).next();
-		bufferBuilder.vertex(matrix4f, (float)endX, (float)endY, (float)z).color(k, l, m, j).next();
-		bufferBuilder.vertex(matrix4f, (float)endX, (float)startY, (float)z).color(g, h, i, f).next();
+		vertexConsumer.vertex(matrix4f, (float)startX, (float)startY, (float)z).color(g, h, i, f).next();
+		vertexConsumer.vertex(matrix4f, (float)startX, (float)endY, (float)z).color(k, l, m, j).next();
+		vertexConsumer.vertex(matrix4f, (float)endX, (float)endY, (float)z).color(k, l, m, j).next();
+		vertexConsumer.vertex(matrix4f, (float)endX, (float)startY, (float)z).color(g, h, i, f).next();
 	}
 
 	public void drawCenteredTextWithShadow(TextRenderer textRenderer, String text, int centerX, int y, int color) {
@@ -241,7 +272,7 @@ public class DrawContext {
 				15728880,
 				textRenderer.isRightToLeft()
 			);
-			this.draw();
+			this.tryDraw();
 			return i;
 		}
 	}
@@ -254,7 +285,7 @@ public class DrawContext {
 		int i = textRenderer.draw(
 			text, (float)x, (float)y, color, shadow, this.matrices.peek().getPositionMatrix(), this.vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, 15728880
 		);
-		this.draw();
+		this.tryDraw();
 		return i;
 	}
 
@@ -271,24 +302,6 @@ public class DrawContext {
 			this.drawText(textRenderer, orderedText, x, y, color, false);
 			y += 9;
 		}
-	}
-
-	/**
-	 * @param renderAction the action to render both the content and the outline, taking x and y positions as input
-	 */
-	public void drawWithOutline(int x, int y, BiConsumer<Integer, Integer> renderAction) {
-		RenderSystem.blendFuncSeparate(
-			GlStateManager.SrcFactor.ZERO,
-			GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA,
-			GlStateManager.SrcFactor.SRC_ALPHA,
-			GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA
-		);
-		renderAction.accept(x + 1, y);
-		renderAction.accept(x - 1, y);
-		renderAction.accept(x, y + 1);
-		renderAction.accept(x, y - 1);
-		RenderSystem.defaultBlendFunc();
-		renderAction.accept(x, y);
 	}
 
 	public void drawSprite(int x, int y, int z, int width, int height, Sprite sprite) {
@@ -600,7 +613,6 @@ public class DrawContext {
 					.getItemRenderer()
 					.renderItem(stack, ModelTransformationMode.GUI, false, this.matrices, this.getVertexConsumers(), 15728880, OverlayTexture.DEFAULT_UV, bakedModel);
 				this.draw();
-				RenderSystem.enableDepthTest();
 				if (bl) {
 					DiffuseLighting.enableGuiDepthLighting();
 				}
@@ -632,24 +644,20 @@ public class DrawContext {
 			}
 
 			if (stack.isItemBarVisible()) {
-				RenderSystem.disableDepthTest();
 				int i = stack.getItemBarStep();
 				int j = stack.getItemBarColor();
 				int k = x + 2;
 				int l = y + 13;
-				this.fill(k, l, k + 13, l + 2, -16777216);
-				this.fill(k, l, k + i, l + 1, j | 0xFF000000);
-				RenderSystem.enableDepthTest();
+				this.fill(RenderLayer.getGuiOverlay(), k, l, k + 13, l + 2, -16777216);
+				this.fill(RenderLayer.getGuiOverlay(), k, l, k + i, l + 1, j | 0xFF000000);
 			}
 
 			ClientPlayerEntity clientPlayerEntity = this.client.player;
 			float f = clientPlayerEntity == null ? 0.0F : clientPlayerEntity.getItemCooldownManager().getCooldownProgress(stack.getItem(), this.client.getTickDelta());
 			if (f > 0.0F) {
-				RenderSystem.disableDepthTest();
 				int k = y + MathHelper.floor(16.0F * (1.0F - f));
 				int l = k + MathHelper.ceil(16.0F * f);
-				this.fill(x, k, x + 16, l, Integer.MAX_VALUE);
-				RenderSystem.enableDepthTest();
+				this.fill(RenderLayer.getGuiOverlay(), x, k, x + 16, l, Integer.MAX_VALUE);
 			}
 
 			this.matrices.pop();
@@ -667,7 +675,7 @@ public class DrawContext {
 	}
 
 	public void drawTooltip(TextRenderer textRenderer, Text text, int x, int y) {
-		this.drawOrderedTooltip(textRenderer, Arrays.asList(text.asOrderedText()), x, y);
+		this.drawOrderedTooltip(textRenderer, List.of(text.asOrderedText()), x, y);
 	}
 
 	public void drawTooltip(TextRenderer textRenderer, List<Text> text, int x, int y) {
@@ -698,12 +706,14 @@ public class DrawContext {
 				j += tooltipComponent.getHeight();
 			}
 
-			Vector2ic vector2ic = positioner.getPosition(this.getScaledWindowWidth(), this.getScaledWindowHeight(), x, y, i, j);
+			int l = i;
+			int m = j;
+			Vector2ic vector2ic = positioner.getPosition(this.getScaledWindowWidth(), this.getScaledWindowHeight(), x, y, l, m);
 			int n = vector2ic.x();
 			int o = vector2ic.y();
 			this.matrices.push();
 			int p = 400;
-			TooltipBackgroundRenderer.render(this, n, o, i, j, 400);
+			this.draw(() -> TooltipBackgroundRenderer.render(this, n, o, l, m, 400));
 			this.matrices.translate(0.0F, 0.0F, 400.0F);
 			int q = o;
 
@@ -717,7 +727,7 @@ public class DrawContext {
 
 			for (int r = 0; r < components.size(); r++) {
 				TooltipComponent tooltipComponent2 = (TooltipComponent)components.get(r);
-				tooltipComponent2.drawText(textRenderer, n, q, this.matrices.peek().getPositionMatrix(), this.vertexConsumers);
+				tooltipComponent2.drawItems(textRenderer, n, q, this);
 				q += tooltipComponent2.getHeight() + (r == 0 ? 2 : 0);
 			}
 

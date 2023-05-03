@@ -9,6 +9,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -21,11 +22,11 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 	}
 
 	public LightningStrikeCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "lightning", advancementEntityPredicateDeserializer);
-		EntityPredicate.Extended extended3 = EntityPredicate.Extended.getInJson(jsonObject, "bystander", advancementEntityPredicateDeserializer);
-		return new LightningStrikeCriterion.Conditions(extended, extended2, extended3);
+		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "lightning", advancementEntityPredicateDeserializer);
+		LootContextPredicate lootContextPredicate3 = EntityPredicate.contextPredicateFromJson(jsonObject, "bystander", advancementEntityPredicateDeserializer);
+		return new LightningStrikeCriterion.Conditions(lootContextPredicate, lootContextPredicate2, lootContextPredicate3);
 	}
 
 	public void trigger(ServerPlayerEntity player, LightningEntity lightning, List<Entity> bystanders) {
@@ -37,10 +38,10 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityPredicate.Extended lightning;
-		private final EntityPredicate.Extended bystander;
+		private final LootContextPredicate lightning;
+		private final LootContextPredicate bystander;
 
-		public Conditions(EntityPredicate.Extended player, EntityPredicate.Extended lightning, EntityPredicate.Extended bystander) {
+		public Conditions(LootContextPredicate player, LootContextPredicate lightning, LootContextPredicate bystander) {
 			super(LightningStrikeCriterion.ID, player);
 			this.lightning = lightning;
 			this.bystander = bystander;
@@ -48,12 +49,12 @@ public class LightningStrikeCriterion extends AbstractCriterion<LightningStrikeC
 
 		public static LightningStrikeCriterion.Conditions create(EntityPredicate lightning, EntityPredicate bystander) {
 			return new LightningStrikeCriterion.Conditions(
-				EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(lightning), EntityPredicate.Extended.ofLegacy(bystander)
+				LootContextPredicate.EMPTY, EntityPredicate.asLootContextPredicate(lightning), EntityPredicate.asLootContextPredicate(bystander)
 			);
 		}
 
 		public boolean test(LootContext lightning, List<LootContext> bystanders) {
-			return !this.lightning.test(lightning) ? false : this.bystander == EntityPredicate.Extended.EMPTY || !bystanders.stream().noneMatch(this.bystander::test);
+			return !this.lightning.test(lightning) ? false : this.bystander == LootContextPredicate.EMPTY || !bystanders.stream().noneMatch(this.bystander::test);
 		}
 
 		@Override

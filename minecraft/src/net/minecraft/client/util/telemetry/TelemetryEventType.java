@@ -29,6 +29,7 @@ public class TelemetryEventType {
 		TelemetryEventProperty.OPERATING_SYSTEM,
 		TelemetryEventProperty.PLATFORM,
 		TelemetryEventProperty.CLIENT_MODDED,
+		TelemetryEventProperty.LAUNCHER_NAME,
 		TelemetryEventProperty.EVENT_TIMESTAMP_UTC,
 		TelemetryEventProperty.OPT_IN
 	);
@@ -39,6 +40,7 @@ public class TelemetryEventType {
 	public static final TelemetryEventType WORLD_LOADED = builder("world_loaded", "WorldLoaded")
 		.properties(REQUIRED_PROPERTIES)
 		.properties(TelemetryEventProperty.GAME_MODE)
+		.properties(TelemetryEventProperty.REALMS_MAP_CONTENT)
 		.build();
 	public static final TelemetryEventType PERFORMANCE_METRICS = builder("performance_metrics", "PerformanceMetrics")
 		.properties(REQUIRED_PROPERTIES)
@@ -60,6 +62,20 @@ public class TelemetryEventType {
 		.properties(REQUIRED_PROPERTIES)
 		.properties(TelemetryEventProperty.SECONDS_SINCE_LOAD)
 		.properties(TelemetryEventProperty.TICKS_SINCE_LOAD)
+		.build();
+	public static final TelemetryEventType ADVANCEMENT_MADE = builder("advancement_made", "AdvancementMade")
+		.properties(REQUIRED_PROPERTIES)
+		.properties(TelemetryEventProperty.ADVANCEMENT_ID)
+		.properties(TelemetryEventProperty.ADVANCEMENT_GAME_TIME)
+		.optional()
+		.build();
+	public static final TelemetryEventType GAME_LOAD_TIMES = builder("game_load_times", "GameLoadTimes")
+		.properties(BASIC_PROPERTIES)
+		.properties(TelemetryEventProperty.LOAD_TIME_TOTAL_TIME_MS)
+		.properties(TelemetryEventProperty.LOAD_TIME_PRE_WINDOW_MS)
+		.properties(TelemetryEventProperty.LOAD_TIME_BOOTSTRAP_MS)
+		.properties(TelemetryEventProperty.LOAD_TIME_LOADING_OVERLAY_MS)
+		.optional()
 		.build();
 	private final String id;
 	private final String exportKey;

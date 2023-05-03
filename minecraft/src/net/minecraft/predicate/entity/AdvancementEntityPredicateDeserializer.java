@@ -14,17 +14,17 @@ import org.slf4j.Logger;
 public class AdvancementEntityPredicateDeserializer {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Identifier advancementId;
-	private final LootManager field_44474;
+	private final LootManager lootManager;
 	private final Gson gson = LootGsons.getConditionGsonBuilder().create();
 
-	public AdvancementEntityPredicateDeserializer(Identifier advancementId, LootManager conditionManager) {
+	public AdvancementEntityPredicateDeserializer(Identifier advancementId, LootManager lootManager) {
 		this.advancementId = advancementId;
-		this.field_44474 = conditionManager;
+		this.lootManager = lootManager;
 	}
 
 	public final LootCondition[] loadConditions(JsonArray array, String key, LootContextType contextType) {
 		LootCondition[] lootConditions = this.gson.fromJson(array, LootCondition[].class);
-		LootTableReporter lootTableReporter = new LootTableReporter(contextType, this.field_44474);
+		LootTableReporter lootTableReporter = new LootTableReporter(contextType, this.lootManager);
 
 		for (LootCondition lootCondition : lootConditions) {
 			lootCondition.validate(lootTableReporter);

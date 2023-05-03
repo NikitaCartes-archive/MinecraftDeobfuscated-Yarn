@@ -31,7 +31,7 @@ public class BlockBox {
 	 */
 	public static final Codec<BlockBox> CODEC = Codec.INT_STREAM
 		.<BlockBox>comapFlatMap(
-			values -> Util.toArray(values, 6).map(array -> new BlockBox(array[0], array[1], array[2], array[3], array[4], array[5])),
+			values -> Util.decodeFixedLengthArray(values, 6).map(array -> new BlockBox(array[0], array[1], array[2], array[3], array[4], array[5])),
 			box -> IntStream.of(new int[]{box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ})
 		)
 		.stable();

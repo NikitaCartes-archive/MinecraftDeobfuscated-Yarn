@@ -587,7 +587,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.darkSkyBuffer.close();
 		}
 
-		this.darkSkyBuffer = new VertexBuffer();
+		this.darkSkyBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
 		BufferBuilder.BuiltBuffer builtBuffer = renderSky(bufferBuilder, -16.0F);
 		this.darkSkyBuffer.bind();
 		this.darkSkyBuffer.upload(builtBuffer);
@@ -601,7 +601,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.lightSkyBuffer.close();
 		}
 
-		this.lightSkyBuffer = new VertexBuffer();
+		this.lightSkyBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
 		BufferBuilder.BuiltBuffer builtBuffer = renderSky(bufferBuilder, 16.0F);
 		this.lightSkyBuffer.bind();
 		this.lightSkyBuffer.upload(builtBuffer);
@@ -633,7 +633,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 			this.starsBuffer.close();
 		}
 
-		this.starsBuffer = new VertexBuffer();
+		this.starsBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
 		BufferBuilder.BuiltBuffer builtBuffer = this.renderStars(bufferBuilder);
 		this.starsBuffer.bind();
 		this.starsBuffer.upload(builtBuffer);
@@ -1080,7 +1080,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		BlockPos blockPos = chunk.getOrigin();
 		int k = ChunkSectionPos.getSectionCoord(blockPos.getX());
 		int l = ChunkSectionPos.getSectionCoord(blockPos.getZ());
-		return !ThreadedAnvilChunkStorage.isWithinDistance(k, l, i, j, this.viewDistance - 2);
+		return !ThreadedAnvilChunkStorage.isWithinDistance(k, l, i, j, this.viewDistance - 3);
 	}
 
 	private void captureFrustum(Matrix4f positionMatrix, Matrix4f matrix4f, double x, double y, double z, Frustum frustum) {
@@ -1966,7 +1966,7 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 					this.cloudsBuffer.close();
 				}
 
-				this.cloudsBuffer = new VertexBuffer();
+				this.cloudsBuffer = new VertexBuffer(VertexBuffer.Usage.STATIC);
 				BufferBuilder.BuiltBuffer builtBuffer = this.renderClouds(bufferBuilder, l, m, n, vec3d);
 				this.cloudsBuffer.bind();
 				this.cloudsBuffer.upload(builtBuffer);
@@ -2381,6 +2381,31 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		);
 	}
 
+	private static Vec3d method_51778(float f) {
+		float g = 5.99999F;
+		int i = (int)(MathHelper.clamp(f, 0.0F, 1.0F) * 5.99999F);
+		float h = f * 5.99999F - (float)i;
+
+		return switch (i) {
+			case 0 -> new Vec3d(1.0, (double)h, 0.0);
+			case 1 -> new Vec3d((double)(1.0F - h), 1.0, 0.0);
+			case 2 -> new Vec3d(0.0, 1.0, (double)h);
+			case 3 -> new Vec3d(0.0, 1.0 - (double)h, 1.0);
+			case 4 -> new Vec3d((double)h, 0.0, 1.0);
+			case 5 -> new Vec3d(1.0, 0.0, 1.0 - (double)h);
+			default -> throw new IllegalStateException("Unexpected value: " + i);
+		};
+	}
+
+	private static Vec3d method_51779(float f, float g, float h, float i) {
+		Vec3d vec3d = method_51778(i).multiply((double)f);
+		Vec3d vec3d2 = method_51778((i + 0.33333334F) % 1.0F).multiply((double)g);
+		Vec3d vec3d3 = method_51778((i + 0.6666667F) % 1.0F).multiply((double)h);
+		Vec3d vec3d4 = vec3d.add(vec3d2).add(vec3d3);
+		double d = Math.max(Math.max(1.0, vec3d4.x), Math.max(vec3d4.y, vec3d4.z));
+		return new Vec3d(vec3d4.x / d, vec3d4.y / d, vec3d4.z / d);
+	}
+
 	public static void drawShapeOutline(
 		MatrixStack matrices,
 		VertexConsumer vertexConsumer,
@@ -2391,19 +2416,20 @@ public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable
 		float red,
 		float green,
 		float blue,
-		float alpha
+		float alpha,
+		boolean bl
 	) {
 		List<Box> list = shape.getBoundingBoxes();
-		int i = MathHelper.ceil((double)list.size() / 3.0);
+		if (!list.isEmpty()) {
+			int i = bl ? list.size() : list.size() * 8;
+			drawCuboidShapeOutline(matrices, vertexConsumer, VoxelShapes.cuboid((Box)list.get(0)), offsetX, offsetY, offsetZ, red, green, blue, alpha);
 
-		for (int j = 0; j < list.size(); j++) {
-			Box box = (Box)list.get(j);
-			float f = ((float)j % (float)i + 1.0F) / (float)i;
-			float g = (float)(j / i);
-			float h = f * (float)(g == 0.0F ? 1 : 0);
-			float k = f * (float)(g == 1.0F ? 1 : 0);
-			float l = f * (float)(g == 2.0F ? 1 : 0);
-			drawCuboidShapeOutline(matrices, vertexConsumer, VoxelShapes.cuboid(box.offset(0.0, 0.0, 0.0)), offsetX, offsetY, offsetZ, h, k, l, 1.0F);
+			for (int j = 1; j < list.size(); j++) {
+				Box box = (Box)list.get(j);
+				float f = (float)j / (float)i;
+				Vec3d vec3d = method_51779(red, green, blue, f);
+				drawCuboidShapeOutline(matrices, vertexConsumer, VoxelShapes.cuboid(box), offsetX, offsetY, offsetZ, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z, alpha);
+			}
 		}
 	}
 

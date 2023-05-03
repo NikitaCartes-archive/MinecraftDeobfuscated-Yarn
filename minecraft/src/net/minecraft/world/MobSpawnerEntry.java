@@ -2,11 +2,13 @@ package net.minecraft.world;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DataPool;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.dynamic.Range;
 
 public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.CustomSpawnRules> customSpawnRules) {
@@ -50,20 +52,18 @@ public record MobSpawnerEntry(NbtCompound entity, Optional<MobSpawnerEntry.Custo
 		private static final Range<Integer> DEFAULT = new Range(0, 15);
 		public static final Codec<MobSpawnerEntry.CustomSpawnRules> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Range.CODEC
-							.optionalFieldOf("block_light_limit", DEFAULT)
-							.flatXmap(MobSpawnerEntry.CustomSpawnRules::validate, MobSpawnerEntry.CustomSpawnRules::validate)
-							.forGetter(rules -> rules.blockLightLimit),
-						Range.CODEC
-							.optionalFieldOf("sky_light_limit", DEFAULT)
-							.flatXmap(MobSpawnerEntry.CustomSpawnRules::validate, MobSpawnerEntry.CustomSpawnRules::validate)
-							.forGetter(rules -> rules.skyLightLimit)
+						createLightLimitCodec("block_light_limit").forGetter(rules -> rules.blockLightLimit),
+						createLightLimitCodec("sky_light_limit").forGetter(rules -> rules.skyLightLimit)
 					)
 					.apply(instance, MobSpawnerEntry.CustomSpawnRules::new)
 		);
 
 		private static DataResult<Range<Integer>> validate(Range<Integer> provider) {
 			return !DEFAULT.contains(provider) ? DataResult.error(() -> "Light values must be withing range " + DEFAULT) : DataResult.success(provider);
+		}
+
+		private static MapCodec<Range<Integer>> createLightLimitCodec(String name) {
+			return Codecs.validate(Range.CODEC.optionalFieldOf(name, DEFAULT), MobSpawnerEntry.CustomSpawnRules::validate);
 		}
 	}
 }

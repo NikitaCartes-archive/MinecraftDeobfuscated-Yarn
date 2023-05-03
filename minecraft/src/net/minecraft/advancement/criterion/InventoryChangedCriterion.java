@@ -12,7 +12,7 @@ import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -28,14 +28,14 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 	}
 
 	public InventoryChangedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "slots", new JsonObject());
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject2.get("occupied"));
 		NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject2.get("full"));
 		NumberRange.IntRange intRange3 = NumberRange.IntRange.fromJson(jsonObject2.get("empty"));
 		ItemPredicate[] itemPredicates = ItemPredicate.deserializeAll(jsonObject.get("items"));
-		return new InventoryChangedCriterion.Conditions(extended, intRange, intRange2, intRange3, itemPredicates);
+		return new InventoryChangedCriterion.Conditions(lootContextPredicate, intRange, intRange2, intRange3, itemPredicates);
 	}
 
 	public void trigger(ServerPlayerEntity player, PlayerInventory inventory, ItemStack stack) {
@@ -68,9 +68,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 		private final NumberRange.IntRange empty;
 		private final ItemPredicate[] items;
 
-		public Conditions(
-			EntityPredicate.Extended player, NumberRange.IntRange occupied, NumberRange.IntRange full, NumberRange.IntRange empty, ItemPredicate[] items
-		) {
+		public Conditions(LootContextPredicate player, NumberRange.IntRange occupied, NumberRange.IntRange full, NumberRange.IntRange empty, ItemPredicate[] items) {
 			super(InventoryChangedCriterion.ID, player);
 			this.occupied = occupied;
 			this.full = full;
@@ -80,7 +78,7 @@ public class InventoryChangedCriterion extends AbstractCriterion<InventoryChange
 
 		public static InventoryChangedCriterion.Conditions items(ItemPredicate... items) {
 			return new InventoryChangedCriterion.Conditions(
-				EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, items
+				LootContextPredicate.EMPTY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, items
 			);
 		}
 

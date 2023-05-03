@@ -61,7 +61,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		this.enqueue(
 			ChunkSectionPos.getSectionCoord(pos.getX()),
 			ChunkSectionPos.getSectionCoord(pos.getZ()),
-			ServerLightingProvider.Stage.POST_UPDATE,
+			ServerLightingProvider.Stage.PRE_UPDATE,
 			Util.debugRunnable((Runnable)(() -> super.checkBlock(blockPos)), (Supplier<String>)(() -> "checkBlock " + blockPos))
 		);
 	}

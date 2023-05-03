@@ -1,15 +1,16 @@
 package net.minecraft.client.font;
 
-import com.google.common.collect.Lists;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -18,7 +19,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
+import net.minecraft.util.dynamic.Codecs;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -96,47 +97,71 @@ public class BitmapFont implements Font {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Loader implements FontLoader {
-		private final Identifier filename;
-		private final List<int[]> chars;
-		private final int height;
-		private final int ascent;
+	public static record Loader(Identifier file, int height, int ascent, int[][] codepointGrid) implements FontLoader {
+		private static final Codec<int[][]> CODE_POINT_GRID_CODEC = Codecs.validate(Codec.STRING.listOf().xmap(strings -> {
+			int i = strings.size();
+			int[][] is = new int[i][];
 
-		public Loader(Identifier id, int height, int ascent, List<int[]> chars) {
-			this.filename = id.withPrefixedPath("textures/");
-			this.chars = chars;
-			this.height = height;
-			this.ascent = ascent;
-		}
+			for (int j = 0; j < i; j++) {
+				is[j] = ((String)strings.get(j)).codePoints().toArray();
+			}
 
-		public static BitmapFont.Loader fromJson(JsonObject json) {
-			int i = JsonHelper.getInt(json, "height", 8);
-			int j = JsonHelper.getInt(json, "ascent");
-			if (j > i) {
-				throw new JsonParseException("Ascent " + j + " higher than height " + i);
+			return is;
+		}, codePointGrid -> {
+			List<String> list = new ArrayList(codePointGrid.length);
+
+			for (int[] is : codePointGrid) {
+				list.add(new String(is, 0, is.length));
+			}
+
+			return list;
+		}), BitmapFont.Loader::validateCodePointGrid);
+		public static final MapCodec<BitmapFont.Loader> CODEC = Codecs.validate(
+			RecordCodecBuilder.mapCodec(
+				instance -> instance.group(
+							Identifier.CODEC.fieldOf("file").forGetter(BitmapFont.Loader::file),
+							Codec.INT.optionalFieldOf("height", Integer.valueOf(8)).forGetter(BitmapFont.Loader::height),
+							Codec.INT.fieldOf("ascent").forGetter(BitmapFont.Loader::ascent),
+							CODE_POINT_GRID_CODEC.fieldOf("chars").forGetter(BitmapFont.Loader::codepointGrid)
+						)
+						.apply(instance, BitmapFont.Loader::new)
+			),
+			BitmapFont.Loader::validate
+		);
+
+		private static DataResult<int[][]> validateCodePointGrid(int[][] codePointGrid) {
+			int i = codePointGrid.length;
+			if (i == 0) {
+				return DataResult.error(() -> "Expected to find data in codepoint grid");
 			} else {
-				List<int[]> list = Lists.<int[]>newArrayList();
-				JsonArray jsonArray = JsonHelper.getArray(json, "chars");
-
-				for (int k = 0; k < jsonArray.size(); k++) {
-					String string = JsonHelper.asString(jsonArray.get(k), "chars[" + k + "]");
-					int[] is = string.codePoints().toArray();
-					if (k > 0) {
-						int l = ((int[])list.get(0)).length;
-						if (is.length != l) {
-							throw new JsonParseException("Elements of chars have to be the same length (found: " + is.length + ", expected: " + l + "), pad with \\u0000");
+				int[] is = codePointGrid[0];
+				int j = is.length;
+				if (j == 0) {
+					return DataResult.error(() -> "Expected to find data in codepoint grid");
+				} else {
+					for (int k = 1; k < i; k++) {
+						int[] js = codePointGrid[k];
+						if (js.length != j) {
+							return DataResult.error(
+								() -> "Lines in codepoint grid have to be the same length (found: " + js.length + " codepoints, expected: " + j + "), pad with \\u0000"
+							);
 						}
 					}
 
-					list.add(is);
-				}
-
-				if (!list.isEmpty() && ((int[])list.get(0)).length != 0) {
-					return new BitmapFont.Loader(new Identifier(JsonHelper.getString(json, "file")), i, j, list);
-				} else {
-					throw new JsonParseException("Expected to find data in chars, found none.");
+					return DataResult.success(codePointGrid);
 				}
 			}
+		}
+
+		private static DataResult<BitmapFont.Loader> validate(BitmapFont.Loader fontLoader) {
+			return fontLoader.ascent > fontLoader.height
+				? DataResult.error(() -> "Ascent " + fontLoader.ascent + " higher than height " + fontLoader.height)
+				: DataResult.success(fontLoader);
+		}
+
+		@Override
+		public FontType getType() {
+			return FontType.BITMAP;
 		}
 
 		@Override
@@ -145,22 +170,23 @@ public class BitmapFont implements Font {
 		}
 
 		private Font load(ResourceManager resourceManager) throws IOException {
-			InputStream inputStream = resourceManager.open(this.filename);
+			Identifier identifier = this.file.withPrefixedPath("textures/");
+			InputStream inputStream = resourceManager.open(identifier);
 
-			BitmapFont var21;
+			BitmapFont var22;
 			try {
 				NativeImage nativeImage = NativeImage.read(NativeImage.Format.RGBA, inputStream);
 				int i = nativeImage.getWidth();
 				int j = nativeImage.getHeight();
-				int k = i / ((int[])this.chars.get(0)).length;
-				int l = j / this.chars.size();
+				int k = i / this.codepointGrid[0].length;
+				int l = j / this.codepointGrid.length;
 				float f = (float)this.height / (float)l;
 				GlyphContainer<BitmapFont.BitmapFontGlyph> glyphContainer = new GlyphContainer<>(BitmapFont.BitmapFontGlyph[]::new, BitmapFont.BitmapFontGlyph[][]::new);
 
-				for (int m = 0; m < this.chars.size(); m++) {
+				for (int m = 0; m < this.codepointGrid.length; m++) {
 					int n = 0;
 
-					for (int o : (int[])this.chars.get(m)) {
+					for (int o : this.codepointGrid[m]) {
 						int p = n++;
 						if (o != 0) {
 							int q = this.findCharacterStartX(nativeImage, k, l, p, m);
@@ -168,30 +194,30 @@ public class BitmapFont implements Font {
 								o, new BitmapFont.BitmapFontGlyph(f, nativeImage, p * k, m * l, k, l, (int)(0.5 + (double)((float)q * f)) + 1, this.ascent)
 							);
 							if (bitmapFontGlyph != null) {
-								BitmapFont.LOGGER.warn("Codepoint '{}' declared multiple times in {}", Integer.toHexString(o), this.filename);
+								BitmapFont.LOGGER.warn("Codepoint '{}' declared multiple times in {}", Integer.toHexString(o), identifier);
 							}
 						}
 					}
 				}
 
-				var21 = new BitmapFont(nativeImage, glyphContainer);
-			} catch (Throwable var20) {
+				var22 = new BitmapFont(nativeImage, glyphContainer);
+			} catch (Throwable var21) {
 				if (inputStream != null) {
 					try {
 						inputStream.close();
-					} catch (Throwable var19) {
-						var20.addSuppressed(var19);
+					} catch (Throwable var20) {
+						var21.addSuppressed(var20);
 					}
 				}
 
-				throw var20;
+				throw var21;
 			}
 
 			if (inputStream != null) {
 				inputStream.close();
 			}
 
-			return var21;
+			return var22;
 		}
 
 		private int findCharacterStartX(NativeImage image, int characterWidth, int characterHeight, int charPosX, int charPosY) {

@@ -4,11 +4,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
-import java.util.function.Function;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.structure.pool.StructurePool;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
@@ -17,20 +17,22 @@ import net.minecraft.world.gen.heightprovider.HeightProvider;
 
 public final class JigsawStructure extends Structure {
 	public static final int MAX_SIZE = 128;
-	public static final Codec<JigsawStructure> CODEC = RecordCodecBuilder.mapCodec(
-			instance -> instance.group(
-						configCodecBuilder(instance),
-						StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
-						Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
-						Codec.intRange(0, 7).fieldOf("size").forGetter(structure -> structure.size),
-						HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
-						Codec.BOOL.fieldOf("use_expansion_hack").forGetter(structure -> structure.useExpansionHack),
-						Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
-						Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
-					)
-					.apply(instance, JigsawStructure::new)
+	public static final Codec<JigsawStructure> CODEC = Codecs.validate(
+			RecordCodecBuilder.mapCodec(
+				instance -> instance.group(
+							configCodecBuilder(instance),
+							StructurePool.REGISTRY_CODEC.fieldOf("start_pool").forGetter(structure -> structure.startPool),
+							Identifier.CODEC.optionalFieldOf("start_jigsaw_name").forGetter(structure -> structure.startJigsawName),
+							Codec.intRange(0, 7).fieldOf("size").forGetter(structure -> structure.size),
+							HeightProvider.CODEC.fieldOf("start_height").forGetter(structure -> structure.startHeight),
+							Codec.BOOL.fieldOf("use_expansion_hack").forGetter(structure -> structure.useExpansionHack),
+							Heightmap.Type.CODEC.optionalFieldOf("project_start_to_heightmap").forGetter(structure -> structure.projectStartToHeightmap),
+							Codec.intRange(1, 128).fieldOf("max_distance_from_center").forGetter(structure -> structure.maxDistanceFromCenter)
+						)
+						.apply(instance, JigsawStructure::new)
+			),
+			JigsawStructure::validate
 		)
-		.<JigsawStructure>flatXmap(createValidator(), createValidator())
 		.codec();
 	private final RegistryEntry<StructurePool> startPool;
 	private final Optional<Identifier> startJigsawName;
@@ -40,16 +42,14 @@ public final class JigsawStructure extends Structure {
 	private final Optional<Heightmap.Type> projectStartToHeightmap;
 	private final int maxDistanceFromCenter;
 
-	private static Function<JigsawStructure, DataResult<JigsawStructure>> createValidator() {
-		return feature -> {
-			int i = switch (feature.getTerrainAdaptation()) {
-				case NONE -> 0;
-				case BURY, BEARD_THIN, BEARD_BOX -> 12;
-			};
-			return feature.maxDistanceFromCenter + i > 128
-				? DataResult.error(() -> "Structure size including terrain adaptation must not exceed 128")
-				: DataResult.success(feature);
+	private static DataResult<JigsawStructure> validate(JigsawStructure structure) {
+		int i = switch (structure.getTerrainAdaptation()) {
+			case NONE -> 0;
+			case BURY, BEARD_THIN, BEARD_BOX -> 12;
 		};
+		return structure.maxDistanceFromCenter + i > 128
+			? DataResult.error(() -> "Structure size including terrain adaptation must not exceed 128")
+			: DataResult.success(structure);
 	}
 
 	public JigsawStructure(

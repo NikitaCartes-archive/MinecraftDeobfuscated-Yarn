@@ -92,6 +92,10 @@ public class DataTracker {
 		this.lock.writeLock().unlock();
 	}
 
+	public <T> boolean containsKey(TrackedData<T> key) {
+		return this.entries.containsKey(key.getId());
+	}
+
 	private <T> DataTracker.Entry<T> getEntry(TrackedData<T> key) {
 		this.lock.readLock().lock();
 

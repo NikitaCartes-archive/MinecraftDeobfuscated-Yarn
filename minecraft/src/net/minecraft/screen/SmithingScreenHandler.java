@@ -44,8 +44,8 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	protected ForgingSlotsManager getForgingSlotsManager() {
 		return ForgingSlotsManager.create()
 			.input(0, 8, 48, stack -> this.recipes.stream().anyMatch(recipe -> recipe.testTemplate(stack)))
-			.input(1, 26, 48, stack -> this.recipes.stream().anyMatch(recipe -> recipe.testBase(stack) && recipe.testTemplate(this.slots.get(0).getStack())))
-			.input(2, 44, 48, stack -> this.recipes.stream().anyMatch(recipe -> recipe.testAddition(stack) && recipe.testTemplate(this.slots.get(0).getStack())))
+			.input(1, 26, 48, stack -> this.recipes.stream().anyMatch(smithingRecipe -> smithingRecipe.testBase(stack)))
+			.input(2, 44, 48, stack -> this.recipes.stream().anyMatch(smithingRecipe -> smithingRecipe.testAddition(stack)))
 			.output(3, 98, 48)
 			.build();
 	}

@@ -78,8 +78,6 @@ public abstract class RenderPhase {
 		}
 	);
 	protected static final RenderPhase.ShaderProgram NO_PROGRAM = new RenderPhase.ShaderProgram();
-	protected static final RenderPhase.ShaderProgram BLOCK_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getBlockProgram);
-	protected static final RenderPhase.ShaderProgram NEW_ENTITY_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getNewEntityProgram);
 	protected static final RenderPhase.ShaderProgram POSITION_COLOR_LIGHTMAP_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionColorLightmapProgram);
 	protected static final RenderPhase.ShaderProgram POSITION_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionProgram);
 	protected static final RenderPhase.ShaderProgram POSITION_COLOR_TEXTURE_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getPositionColorTexProgram);
@@ -159,6 +157,12 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.ShaderProgram END_PORTAL_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeEndPortalProgram);
 	protected static final RenderPhase.ShaderProgram END_GATEWAY_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeEndGatewayProgram);
 	protected static final RenderPhase.ShaderProgram LINES_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeLinesProgram);
+	protected static final RenderPhase.ShaderProgram GUI_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeGuiProgram);
+	protected static final RenderPhase.ShaderProgram GUI_OVERLAY_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeGuiOverlayProgram);
+	protected static final RenderPhase.ShaderProgram GUI_TEXT_HIGHLIGHT_PROGRAM = new RenderPhase.ShaderProgram(GameRenderer::getRenderTypeGuiTextHighlightProgram);
+	protected static final RenderPhase.ShaderProgram GUI_GHOST_RECIPE_OVERLAY_PROGRAM = new RenderPhase.ShaderProgram(
+		GameRenderer::getRenderTypeGuiGhostRecipeOverlayProgram
+	);
 	protected static final RenderPhase.Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, true);
 	protected static final RenderPhase.Texture BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false);
 	protected static final RenderPhase.TextureBase NO_TEXTURE = new RenderPhase.TextureBase();
@@ -180,6 +184,7 @@ public abstract class RenderPhase {
 	protected static final RenderPhase.DepthTest ALWAYS_DEPTH_TEST = new RenderPhase.DepthTest("always", 519);
 	protected static final RenderPhase.DepthTest EQUAL_DEPTH_TEST = new RenderPhase.DepthTest("==", 514);
 	protected static final RenderPhase.DepthTest LEQUAL_DEPTH_TEST = new RenderPhase.DepthTest("<=", 515);
+	protected static final RenderPhase.DepthTest BIGGER_DEPTH_TEST = new RenderPhase.DepthTest(">", 516);
 	protected static final RenderPhase.WriteMaskState ALL_MASK = new RenderPhase.WriteMaskState(true, true);
 	protected static final RenderPhase.WriteMaskState COLOR_MASK = new RenderPhase.WriteMaskState(true, false);
 	protected static final RenderPhase.WriteMaskState DEPTH_MASK = new RenderPhase.WriteMaskState(false, true);
@@ -247,7 +252,7 @@ public abstract class RenderPhase {
 			MinecraftClient.getInstance().getFramebuffer().beginWrite(false);
 		}
 	});
-	protected static final RenderPhase.Target ITEM_TARGET = new RenderPhase.Target("item_entity_target", () -> {
+	protected static final RenderPhase.Target ITEM_ENTITY_TARGET = new RenderPhase.Target("item_entity_target", () -> {
 		if (MinecraftClient.isFabulousGraphicsOrBetter()) {
 			MinecraftClient.getInstance().worldRenderer.getEntityFramebuffer().beginWrite(false);
 		}
@@ -257,6 +262,12 @@ public abstract class RenderPhase {
 		}
 	});
 	protected static final RenderPhase.LineWidth FULL_LINE_WIDTH = new RenderPhase.LineWidth(OptionalDouble.of(1.0));
+	protected static final RenderPhase.ColorLogic NO_COLOR_LOGIC = new RenderPhase.ColorLogic("no_color_logic", () -> RenderSystem.disableColorLogicOp(), () -> {
+	});
+	protected static final RenderPhase.ColorLogic OR_REVERSE = new RenderPhase.ColorLogic("or_reverse", () -> {
+		RenderSystem.enableColorLogicOp();
+		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
+	}, () -> RenderSystem.disableColorLogicOp());
 
 	public RenderPhase(String name, Runnable beginAction, Runnable endAction) {
 		this.name = name;
@@ -283,6 +294,13 @@ public abstract class RenderPhase {
 		Matrix4f matrix4f = new Matrix4f().translation(-f, g, 0.0F);
 		matrix4f.rotateZ((float) (Math.PI / 18)).scale(scale);
 		RenderSystem.setTextureMatrix(matrix4f);
+	}
+
+	@Environment(EnvType.CLIENT)
+	protected static class ColorLogic extends RenderPhase {
+		public ColorLogic(String string, Runnable runnable, Runnable runnable2) {
+			super(string, runnable, runnable2);
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -1,44 +1,33 @@
 package net.minecraft.client.font;
 
-import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
-import java.util.Map;
-import java.util.function.Function;
+import com.mojang.serialization.MapCodec;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.util.Util;
+import net.minecraft.util.StringIdentifiable;
 
 @Environment(EnvType.CLIENT)
-public enum FontType {
-	BITMAP("bitmap", BitmapFont.Loader::fromJson),
-	TTF("ttf", TrueTypeFontLoader::fromJson),
-	SPACE("space", SpaceFont::fromJson),
-	UNIHEX("unihex", UnihexFont.Loader::fromJson),
-	REFERENCE("reference", ReferenceFont::fromJson);
+public enum FontType implements StringIdentifiable {
+	BITMAP("bitmap", BitmapFont.Loader.CODEC),
+	TTF("ttf", TrueTypeFontLoader.CODEC),
+	SPACE("space", SpaceFont.Loader.CODEC),
+	UNIHEX("unihex", UnihexFont.Loader.CODEC),
+	REFERENCE("reference", ReferenceFont.CODEC);
 
-	private static final Map<String, FontType> REGISTRY = Util.make(Maps.<String, FontType>newHashMap(), map -> {
-		for (FontType fontType : values()) {
-			map.put(fontType.id, fontType);
-		}
-	});
+	public static final com.mojang.serialization.Codec<FontType> CODEC = StringIdentifiable.createCodec(FontType::values);
 	private final String id;
-	private final Function<JsonObject, FontLoader> loaderFactory;
+	private final MapCodec<? extends FontLoader> loaderCodec;
 
-	private FontType(String id, Function<JsonObject, FontLoader> factory) {
+	private FontType(String id, MapCodec<? extends FontLoader> loaderCodec) {
 		this.id = id;
-		this.loaderFactory = factory;
+		this.loaderCodec = loaderCodec;
 	}
 
-	public static FontType byId(String id) {
-		FontType fontType = (FontType)REGISTRY.get(id);
-		if (fontType == null) {
-			throw new IllegalArgumentException("Invalid type: " + id);
-		} else {
-			return fontType;
-		}
+	@Override
+	public String asString() {
+		return this.id;
 	}
 
-	public FontLoader createLoader(JsonObject json) {
-		return (FontLoader)this.loaderFactory.apply(json);
+	public MapCodec<? extends FontLoader> getLoaderCodec() {
+		return this.loaderCodec;
 	}
 }

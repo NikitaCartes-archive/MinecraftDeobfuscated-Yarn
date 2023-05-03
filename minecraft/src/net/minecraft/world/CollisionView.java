@@ -75,7 +75,7 @@ public interface CollisionView extends BlockView {
 	}
 
 	default Iterable<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box) {
-		return () -> new BlockCollisionSpliterator(this, entity, box);
+		return () -> new BlockCollisionSpliterator(this, entity, box, false, (pos, voxelShape) -> voxelShape);
 	}
 
 	@Nullable
@@ -85,7 +85,7 @@ public interface CollisionView extends BlockView {
 	}
 
 	default boolean canCollide(@Nullable Entity entity, Box box) {
-		BlockCollisionSpliterator blockCollisionSpliterator = new BlockCollisionSpliterator(this, entity, box, true);
+		BlockCollisionSpliterator<VoxelShape> blockCollisionSpliterator = new BlockCollisionSpliterator<>(this, entity, box, true, (pos, voxelShape) -> voxelShape);
 
 		while (blockCollisionSpliterator.hasNext()) {
 			if (!blockCollisionSpliterator.next().isEmpty()) {
@@ -94,6 +94,23 @@ public interface CollisionView extends BlockView {
 		}
 
 		return false;
+	}
+
+	default Optional<BlockPos> findSupportingBlockPos(Entity entity, Box box) {
+		BlockPos blockPos = null;
+		double d = Double.MAX_VALUE;
+		BlockCollisionSpliterator<BlockPos> blockCollisionSpliterator = new BlockCollisionSpliterator<>(this, entity, box, false, (pos, voxelShape) -> pos);
+
+		while (blockCollisionSpliterator.hasNext()) {
+			BlockPos blockPos2 = blockCollisionSpliterator.next();
+			double e = blockPos2.getSquaredDistance(entity.getPos());
+			if (e < d || e == d && (blockPos == null || blockPos.compareTo(blockPos2) < 0)) {
+				blockPos = blockPos2.toImmutable();
+				d = e;
+			}
+		}
+
+		return Optional.ofNullable(blockPos);
 	}
 
 	default Optional<Vec3d> findClosestCollision(@Nullable Entity entity, VoxelShape shape, Vec3d target, double x, double y, double z) {

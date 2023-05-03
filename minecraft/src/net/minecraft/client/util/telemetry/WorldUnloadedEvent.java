@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class WorldUnloadedEvent {
-	private static final int field_41712 = -1;
+	private static final int ABSENT_LAST_TICK = -1;
 	private Optional<Instant> startTime = Optional.empty();
 	private long ticksSinceLoad;
 	private long lastTick;

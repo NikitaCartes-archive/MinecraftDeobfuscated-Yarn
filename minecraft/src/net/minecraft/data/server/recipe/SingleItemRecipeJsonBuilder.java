@@ -21,7 +21,7 @@ public class SingleItemRecipeJsonBuilder implements CraftingRecipeJsonBuilder {
 	private final Item output;
 	private final Ingredient input;
 	private final int count;
-	private final Advancement.Builder advancementBuilder = Advancement.Builder.create();
+	private final Advancement.Builder advancementBuilder = Advancement.Builder.createUntelemetered();
 	@Nullable
 	private String group;
 	private final RecipeSerializer<?> serializer;

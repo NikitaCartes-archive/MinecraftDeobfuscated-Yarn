@@ -4,31 +4,37 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Optional;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.random.CheckedRandom;
 import net.minecraft.util.math.random.ChunkRandom;
 
 public class RandomSpreadStructurePlacement extends StructurePlacement {
-	public static final Codec<RandomSpreadStructurePlacement> CODEC = RecordCodecBuilder.mapCodec(
-			instance -> buildCodec(instance)
-					.<int, int, SpreadType>and(
-						instance.group(
-							Codec.intRange(0, 4096).fieldOf("spacing").forGetter(RandomSpreadStructurePlacement::getSpacing),
-							Codec.intRange(0, 4096).fieldOf("separation").forGetter(RandomSpreadStructurePlacement::getSeparation),
-							SpreadType.CODEC.optionalFieldOf("spread_type", SpreadType.LINEAR).forGetter(RandomSpreadStructurePlacement::getSpreadType)
+	public static final Codec<RandomSpreadStructurePlacement> CODEC = Codecs.validate(
+			RecordCodecBuilder.mapCodec(
+				instance -> buildCodec(instance)
+						.<int, int, SpreadType>and(
+							instance.group(
+								Codec.intRange(0, 4096).fieldOf("spacing").forGetter(RandomSpreadStructurePlacement::getSpacing),
+								Codec.intRange(0, 4096).fieldOf("separation").forGetter(RandomSpreadStructurePlacement::getSeparation),
+								SpreadType.CODEC.optionalFieldOf("spread_type", SpreadType.LINEAR).forGetter(RandomSpreadStructurePlacement::getSpreadType)
+							)
 						)
-					)
-					.apply(instance, RandomSpreadStructurePlacement::new)
-		)
-		.<RandomSpreadStructurePlacement>flatXmap(
-			placement -> placement.spacing <= placement.separation ? DataResult.error(() -> "Spacing has to be larger than separation") : DataResult.success(placement),
-			DataResult::success
+						.apply(instance, RandomSpreadStructurePlacement::new)
+			),
+			RandomSpreadStructurePlacement::validate
 		)
 		.codec();
 	private final int spacing;
 	private final int separation;
 	private final SpreadType spreadType;
+
+	private static DataResult<RandomSpreadStructurePlacement> validate(RandomSpreadStructurePlacement structurePlacement) {
+		return structurePlacement.spacing <= structurePlacement.separation
+			? DataResult.error(() -> "Spacing has to be larger than separation")
+			: DataResult.success(structurePlacement);
+	}
 
 	public RandomSpreadStructurePlacement(
 		Vec3i locateOffset,

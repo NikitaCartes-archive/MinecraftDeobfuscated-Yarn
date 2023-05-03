@@ -49,7 +49,7 @@ public class ExperimentsScreen extends Screen {
 	@Override
 	protected void init() {
 		this.experimentToggleList.addHeader(new TextWidget(Text.translatable("selectWorld.experiments"), this.textRenderer));
-		GridWidget.Adder adder = this.experimentToggleList.addFooter(new GridWidget()).createAdder(1);
+		GridWidget.Adder adder = this.experimentToggleList.addBody(new GridWidget()).createAdder(1);
 		adder.add(
 			new MultilineTextWidget(Text.translatable("selectWorld.experiments.info").formatted(Formatting.RED), this.textRenderer).setMaxWidth(310),
 			adder.copyPositioner().marginBottom(15)
@@ -63,7 +63,7 @@ public class ExperimentsScreen extends Screen {
 						.tooltip(pack.getDescription())
 			);
 		builder.build(adder::add);
-		GridWidget.Adder adder2 = this.experimentToggleList.addBody(new GridWidget().setColumnSpacing(10)).createAdder(2);
+		GridWidget.Adder adder2 = this.experimentToggleList.addFooter(new GridWidget().setColumnSpacing(10)).createAdder(2);
 		adder2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.applyAndClose()).build());
 		adder2.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
 		this.experimentToggleList.forEachChild(widget -> {

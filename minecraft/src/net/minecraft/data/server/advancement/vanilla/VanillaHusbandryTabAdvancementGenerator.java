@@ -18,7 +18,6 @@ import net.minecraft.advancement.criterion.FilledBucketCriterion;
 import net.minecraft.advancement.criterion.FishingRodHookedCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.ItemCriterion;
-import net.minecraft.advancement.criterion.PlacedBlockCriterion;
 import net.minecraft.advancement.criterion.PlayerInteractedWithEntityCriterion;
 import net.minecraft.advancement.criterion.StartedRidingCriterion;
 import net.minecraft.advancement.criterion.TameAnimalCriterion;
@@ -37,6 +36,7 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.entity.TypeSpecificPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
@@ -149,13 +149,13 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				false
 			)
 			.criteriaMerger(CriterionMerger.OR)
-			.criterion("wheat", PlacedBlockCriterion.Conditions.block(Blocks.WHEAT))
-			.criterion("pumpkin_stem", PlacedBlockCriterion.Conditions.block(Blocks.PUMPKIN_STEM))
-			.criterion("melon_stem", PlacedBlockCriterion.Conditions.block(Blocks.MELON_STEM))
-			.criterion("beetroots", PlacedBlockCriterion.Conditions.block(Blocks.BEETROOTS))
-			.criterion("nether_wart", PlacedBlockCriterion.Conditions.block(Blocks.NETHER_WART))
-			.criterion("torchflower", PlacedBlockCriterion.Conditions.block(Blocks.TORCHFLOWER_CROP))
-			.criterion("pitcher_pod", PlacedBlockCriterion.Conditions.block(Blocks.PITCHER_CROP))
+			.criterion("wheat", ItemCriterion.Conditions.createPlacedBlock(Blocks.WHEAT))
+			.criterion("pumpkin_stem", ItemCriterion.Conditions.createPlacedBlock(Blocks.PUMPKIN_STEM))
+			.criterion("melon_stem", ItemCriterion.Conditions.createPlacedBlock(Blocks.MELON_STEM))
+			.criterion("beetroots", ItemCriterion.Conditions.createPlacedBlock(Blocks.BEETROOTS))
+			.criterion("nether_wart", ItemCriterion.Conditions.createPlacedBlock(Blocks.NETHER_WART))
+			.criterion("torchflower", ItemCriterion.Conditions.createPlacedBlock(Blocks.TORCHFLOWER_CROP))
+			.criterion("pitcher_pod", ItemCriterion.Conditions.createPlacedBlock(Blocks.PITCHER_CROP))
 			.build(exporter, "husbandry/plant_seed");
 		Advancement advancement3 = Advancement.Builder.create()
 			.parent(advancement)
@@ -294,7 +294,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.parent(advancement)
 			.criterion(
 				"safely_harvest_honey",
-				ItemCriterion.Conditions.create(
+				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.BEEHIVES).build()).smokey(true),
 					ItemPredicate.Builder.create().items(Items.GLASS_BOTTLE)
 				)
@@ -324,7 +324,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion(
 				"wax_on",
-				ItemCriterion.Conditions.create(
+				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(((BiMap)HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get()).keySet()).build()),
 					ItemPredicate.Builder.create().items(Items.HONEYCOMB)
 				)
@@ -344,7 +344,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion(
 				"wax_off",
-				ItemCriterion.Conditions.create(
+				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(((BiMap)HoneycombItem.WAXED_TO_UNWAXED_BLOCKS.get()).keySet()).build()),
 					ItemPredicate.Builder.create().items(AXE_ITEMS)
 				)
@@ -449,7 +449,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion(
 				"make_a_sign_glow",
-				ItemCriterion.Conditions.create(
+				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.ALL_SIGNS).build()),
 					ItemPredicate.Builder.create().items(Items.GLOW_INK_SAC)
 				)
@@ -470,7 +470,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"allay_deliver_item_to_player",
 				ThrownItemPickedUpByEntityCriterion.Conditions.createThrownItemPickedUpByPlayer(
-					EntityPredicate.Extended.EMPTY, ItemPredicate.ANY, EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().type(EntityType.ALLAY).build())
+					LootContextPredicate.EMPTY, ItemPredicate.ANY, EntityPredicate.asLootContextPredicate(EntityPredicate.Builder.create().type(EntityType.ALLAY).build())
 				)
 			)
 			.build(exporter, "husbandry/allay_deliver_item_to_player");
@@ -524,7 +524,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				"feed_snifflet",
 				PlayerInteractedWithEntityCriterion.Conditions.create(
 					ItemPredicate.Builder.create().tag(ItemTags.SNIFFER_FOOD),
-					EntityPredicate.Extended.ofLegacy(
+					EntityPredicate.asLootContextPredicate(
 						EntityPredicate.Builder.create().type(EntityType.SNIFFER).flags(EntityFlagsPredicate.Builder.create().isBaby(true).build()).build()
 					)
 				)
@@ -543,8 +543,8 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 				true
 			)
 			.criteriaMerger(CriterionMerger.OR)
-			.criterion("torchflower", PlacedBlockCriterion.Conditions.block(Blocks.TORCHFLOWER_CROP))
-			.criterion("pitcher_pod", PlacedBlockCriterion.Conditions.block(Blocks.PITCHER_CROP))
+			.criterion("torchflower", ItemCriterion.Conditions.createPlacedBlock(Blocks.TORCHFLOWER_CROP))
+			.criterion("pitcher_pod", ItemCriterion.Conditions.createPlacedBlock(Blocks.PITCHER_CROP))
 			.build(exporter, "husbandry/plant_any_sniffer_seed");
 	}
 
@@ -575,7 +575,7 @@ public class VanillaHusbandryTabAdvancementGenerator implements AdvancementTabGe
 						variant.registryKey().getValue().toString(),
 						PlayerInteractedWithEntityCriterion.Conditions.create(
 							ItemPredicate.Builder.create().items(Items.LEAD),
-							EntityPredicate.Extended.ofLegacy(
+							EntityPredicate.asLootContextPredicate(
 								EntityPredicate.Builder.create().type(EntityType.FROG).typeSpecific(TypeSpecificPredicate.frog((FrogVariant)variant.value())).build()
 							)
 						)

@@ -8,6 +8,7 @@ import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -25,9 +26,9 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 	}
 
 	public TickCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		return new TickCriterion.Conditions(this.id, extended);
+		return new TickCriterion.Conditions(this.id, lootContextPredicate);
 	}
 
 	public void trigger(ServerPlayerEntity player) {
@@ -35,32 +36,34 @@ public class TickCriterion extends AbstractCriterion<TickCriterion.Conditions> {
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		public Conditions(Identifier identifier, EntityPredicate.Extended extended) {
-			super(identifier, extended);
+		public Conditions(Identifier identifier, LootContextPredicate lootContextPredicate) {
+			super(identifier, lootContextPredicate);
 		}
 
 		public static TickCriterion.Conditions createLocation(LocationPredicate location) {
-			return new TickCriterion.Conditions(Criteria.LOCATION.id, EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().location(location).build()));
+			return new TickCriterion.Conditions(
+				Criteria.LOCATION.id, EntityPredicate.asLootContextPredicate(EntityPredicate.Builder.create().location(location).build())
+			);
 		}
 
 		public static TickCriterion.Conditions createLocation(EntityPredicate entity) {
-			return new TickCriterion.Conditions(Criteria.LOCATION.id, EntityPredicate.Extended.ofLegacy(entity));
+			return new TickCriterion.Conditions(Criteria.LOCATION.id, EntityPredicate.asLootContextPredicate(entity));
 		}
 
 		public static TickCriterion.Conditions createSleptInBed() {
-			return new TickCriterion.Conditions(Criteria.SLEPT_IN_BED.id, EntityPredicate.Extended.EMPTY);
+			return new TickCriterion.Conditions(Criteria.SLEPT_IN_BED.id, LootContextPredicate.EMPTY);
 		}
 
 		public static TickCriterion.Conditions createHeroOfTheVillage() {
-			return new TickCriterion.Conditions(Criteria.HERO_OF_THE_VILLAGE.id, EntityPredicate.Extended.EMPTY);
+			return new TickCriterion.Conditions(Criteria.HERO_OF_THE_VILLAGE.id, LootContextPredicate.EMPTY);
 		}
 
 		public static TickCriterion.Conditions createAvoidVibration() {
-			return new TickCriterion.Conditions(Criteria.AVOID_VIBRATION.id, EntityPredicate.Extended.EMPTY);
+			return new TickCriterion.Conditions(Criteria.AVOID_VIBRATION.id, LootContextPredicate.EMPTY);
 		}
 
 		public static TickCriterion.Conditions createTick() {
-			return new TickCriterion.Conditions(Criteria.TICK.id, EntityPredicate.Extended.EMPTY);
+			return new TickCriterion.Conditions(Criteria.TICK.id, LootContextPredicate.EMPTY);
 		}
 
 		public static TickCriterion.Conditions createLocation(Block block, Item item) {

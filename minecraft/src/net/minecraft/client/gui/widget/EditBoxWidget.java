@@ -1,7 +1,5 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,6 +10,7 @@ import net.minecraft.client.gui.EditBox;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 
 /**
@@ -229,10 +228,7 @@ public class EditBoxWidget extends ScrollableWidget {
 	}
 
 	private void drawSelection(DrawContext context, int left, int top, int right, int bottom) {
-		RenderSystem.enableColorLogicOp();
-		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-		context.fill(left, top, right, bottom, -16776961);
-		RenderSystem.disableColorLogicOp();
+		context.fill(RenderLayer.getGuiTextHighlight(), left, top, right, bottom, -16776961);
 	}
 
 	private void onCursorChange() {

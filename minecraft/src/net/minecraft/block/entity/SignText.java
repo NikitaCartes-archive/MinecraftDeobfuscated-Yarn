@@ -21,7 +21,7 @@ public class SignText {
 	private static final Codec<Text[]> MESSAGES_CODEC = Codecs.STRINGIFIED_TEXT
 		.listOf()
 		.comapFlatMap(
-			messages -> Util.toArray(messages, 4).map(list -> new Text[]{(Text)list.get(0), (Text)list.get(1), (Text)list.get(2), (Text)list.get(3)}),
+			messages -> Util.decodeFixedLengthList(messages, 4).map(list -> new Text[]{(Text)list.get(0), (Text)list.get(1), (Text)list.get(2), (Text)list.get(3)}),
 			messages -> List.of(messages[0], messages[1], messages[2], messages[3])
 		);
 	public static final Codec<SignText> CODEC = RecordCodecBuilder.create(

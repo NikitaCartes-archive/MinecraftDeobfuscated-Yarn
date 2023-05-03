@@ -164,6 +164,8 @@ import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.telemetry.GameLoadTimeEvent;
+import net.minecraft.client.util.telemetry.TelemetryEventProperty;
 import net.minecraft.client.util.telemetry.TelemetryManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.datafixer.Schemas;
@@ -527,6 +529,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.windowProvider = new WindowProvider(this);
 		this.window = this.windowProvider.createWindow(windowSettings, this.options.fullscreenResolution, this.getWindowTitle());
 		this.onWindowFocusChanged(true);
+		GameLoadTimeEvent.INSTANCE.stopTimer(TelemetryEventProperty.LOAD_TIME_PRE_WINDOW_MS);
 
 		try {
 			this.window.setIcon(this.defaultResourcePack, SharedConstants.getGameVersion().isStable() ? Icons.RELEASE : Icons.SNAPSHOT);
@@ -644,12 +647,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.resourceReloadLogger.reload(ResourceReloadLogger.ReloadReason.INITIAL, list);
 		ResourceReload resourceReload = this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list);
+		GameLoadTimeEvent.INSTANCE.startTimer(TelemetryEventProperty.LOAD_TIME_LOADING_OVERLAY_MS);
 		this.setOverlay(new SplashOverlay(this, resourceReload, throwable -> Util.ifPresentOrElse(throwable, this::handleResourceReloadException, () -> {
 				if (SharedConstants.isDevelopment) {
 					this.checkGameData();
 				}
 
 				this.resourceReloadLogger.finish();
+				this.collectLoadTimes();
 			}), false));
 		this.quickPlayLogger = QuickPlayLogger.create(args.quickPlay.path());
 		if (this.isMultiplayerBanned()) {
@@ -663,6 +668,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		} else {
 			this.onInitFinished(realmsClient, resourceReload, args.quickPlay);
 		}
+	}
+
+	private void collectLoadTimes() {
+		GameLoadTimeEvent.INSTANCE.stopTimer(TelemetryEventProperty.LOAD_TIME_LOADING_OVERLAY_MS);
+		GameLoadTimeEvent.INSTANCE.stopTimer(TelemetryEventProperty.LOAD_TIME_TOTAL_TIME_MS);
+		GameLoadTimeEvent.INSTANCE.send(this.telemetryManager.getSender());
 	}
 
 	private void onInitFinished(RealmsClient realms, ResourceReload reload, RunArgs.QuickPlay quickPlay) {

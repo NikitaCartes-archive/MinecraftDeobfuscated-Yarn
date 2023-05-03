@@ -57,13 +57,15 @@ public class RealmsConnection {
 							return;
 						}
 
-						RealmsConnection.this.connection
-							.setPacketListener(
-								new ClientLoginNetworkHandler(
-									RealmsConnection.this.connection, minecraftClient, server.createServerInfo(string), RealmsConnection.this.onlineScreen, false, null, status -> {
-									}
-								)
-							);
+						ClientLoginNetworkHandler clientLoginNetworkHandler = new ClientLoginNetworkHandler(
+							RealmsConnection.this.connection, minecraftClient, server.createServerInfo(string), RealmsConnection.this.onlineScreen, false, null, status -> {
+							}
+						);
+						if (server.worldType == RealmsServer.WorldType.MINIGAME) {
+							clientLoginNetworkHandler.setMinigameName(server.minigameName);
+						}
+
+						RealmsConnection.this.connection.setPacketListener(clientLoginNetworkHandler);
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
@@ -85,14 +87,14 @@ public class RealmsConnection {
 						}
 
 						RealmsConnection.LOGGER.error("Couldn't connect to world", (Throwable)var5);
-						String string2 = var5.toString();
+						String string = var5.toString();
 						if (inetSocketAddress != null) {
-							String string3 = inetSocketAddress + ":" + i;
-							string2 = string2.replaceAll(string3, "");
+							String string2 = inetSocketAddress + ":" + i;
+							string = string.replaceAll(string2, "");
 						}
 
 						DisconnectedRealmsScreen disconnectedRealmsScreen = new DisconnectedRealmsScreen(
-							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string2)
+							RealmsConnection.this.onlineScreen, ScreenTexts.CONNECT_FAILED, Text.translatable("disconnect.genericReason", string)
 						);
 						minecraftClient.execute(() -> minecraftClient.setScreen(disconnectedRealmsScreen));
 					}

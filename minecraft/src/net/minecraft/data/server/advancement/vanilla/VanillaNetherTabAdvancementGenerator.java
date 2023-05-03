@@ -39,6 +39,7 @@ import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityFlagsPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -50,7 +51,7 @@ import net.minecraft.world.biome.source.MultiNoiseBiomeSourceParameterList;
 import net.minecraft.world.gen.structure.StructureKeys;
 
 public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGenerator {
-	private static final EntityPredicate.Extended PIGLIN_DISTRACTION_PREDICATE = EntityPredicate.Extended.create(
+	private static final LootContextPredicate PIGLIN_DISTRACTION_PREDICATE = LootContextPredicate.create(
 		EntityPropertiesLootCondition.builder(
 				LootContext.EntityTarget.THIS,
 				EntityPredicate.Builder.create()
@@ -378,7 +379,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.criterion(
 				"use_lodestone",
-				ItemCriterion.Conditions.create(
+				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(Blocks.LODESTONE).build()),
 					ItemPredicate.Builder.create().items(Items.COMPASS)
 				)
@@ -412,7 +413,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			)
 			.criterion(
 				"charge_respawn_anchor",
-				ItemCriterion.Conditions.create(
+				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create()
 						.block(
 							BlockPredicate.Builder.create()
@@ -439,7 +440,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 			.criterion(
 				"used_warped_fungus_on_a_stick",
 				ItemDurabilityChangedCriterion.Conditions.create(
-					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER).build()).build()),
+					EntityPredicate.asLootContextPredicate(EntityPredicate.Builder.create().vehicle(EntityPredicate.Builder.create().type(EntityType.STRIDER).build()).build()),
 					ItemPredicate.Builder.create().items(Items.WARPED_FUNGUS_ON_A_STICK).build(),
 					NumberRange.IntRange.ANY
 				)
@@ -533,7 +534,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				ThrownItemPickedUpByEntityCriterion.Conditions.createThrownItemPickedUpByEntity(
 					PIGLIN_DISTRACTION_PREDICATE,
 					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED).build(),
-					EntityPredicate.Extended.ofLegacy(
+					EntityPredicate.asLootContextPredicate(
 						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false).build()).build()
 					)
 				)
@@ -543,7 +544,7 @@ public class VanillaNetherTabAdvancementGenerator implements AdvancementTabGener
 				PlayerInteractedWithEntityCriterion.Conditions.create(
 					PIGLIN_DISTRACTION_PREDICATE,
 					ItemPredicate.Builder.create().items(PiglinBrain.BARTERING_ITEM),
-					EntityPredicate.Extended.ofLegacy(
+					EntityPredicate.asLootContextPredicate(
 						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false).build()).build()
 					)
 				)

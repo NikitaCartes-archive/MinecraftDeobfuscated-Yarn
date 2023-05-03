@@ -4,11 +4,14 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import java.io.Reader;
@@ -37,7 +40,6 @@ import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiler.Profiler;
 import org.slf4j.Logger;
@@ -190,32 +192,31 @@ public class FontManager implements ResourceReloader, AutoCloseable {
 				Reader reader = resource.getReader();
 
 				try {
-					JsonArray jsonArray = JsonHelper.getArray(JsonHelper.deserialize(GSON, reader, JsonObject.class), "providers");
+					JsonElement jsonElement = GSON.fromJson(reader, JsonElement.class);
+					FontManager.Providers providers = Util.getResult(FontManager.Providers.CODEC.parse(JsonOps.INSTANCE, jsonElement), JsonParseException::new);
+					List<FontLoader> list2 = providers.providers;
 
-					for (int i = jsonArray.size() - 1; i >= 0; i--) {
-						JsonObject jsonObject = JsonHelper.asObject(jsonArray.get(i), "providers[" + i + "]");
-						String string = JsonHelper.getString(jsonObject, "type");
-						FontType fontType = FontType.byId(string);
+					for (int i = list2.size() - 1; i >= 0; i--) {
 						FontManager.FontKey fontKey = new FontManager.FontKey(id, resource.getResourcePackName(), i);
-						list.add(Pair.of(fontKey, fontType.createLoader(jsonObject)));
+						list.add(Pair.of(fontKey, (FontLoader)list2.get(i)));
 					}
-				} catch (Throwable var13) {
+				} catch (Throwable var12) {
 					if (reader != null) {
 						try {
 							reader.close();
-						} catch (Throwable var12) {
-							var13.addSuppressed(var12);
+						} catch (Throwable var11) {
+							var12.addSuppressed(var11);
 						}
 					}
 
-					throw var13;
+					throw var12;
 				}
 
 				if (reader != null) {
 					reader.close();
 				}
-			} catch (Exception var14) {
-				LOGGER.warn("Unable to load font '{}' in {} in resourcepack: '{}'", id, "fonts.json", resource.getResourcePackName(), var14);
+			} catch (Exception var13) {
+				LOGGER.warn("Unable to load font '{}' in {} in resourcepack: '{}'", id, "fonts.json", resource.getResourcePackName(), var13);
 			}
 		}
 
@@ -320,5 +321,13 @@ public class FontManager implements ResourceReloader, AutoCloseable {
 
 	@Environment(EnvType.CLIENT)
 	static record ProviderIndex(Map<Identifier, List<Font>> providers, List<Font> allProviders) {
+	}
+
+	@Environment(EnvType.CLIENT)
+	static record Providers(List<FontLoader> providers) {
+		public static final Codec<FontManager.Providers> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(FontLoader.CODEC.listOf().fieldOf("providers").forGetter(FontManager.Providers::providers))
+					.apply(instance, FontManager.Providers::new)
+		);
 	}
 }

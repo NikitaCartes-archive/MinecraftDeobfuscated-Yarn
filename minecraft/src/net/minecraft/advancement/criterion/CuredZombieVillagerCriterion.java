@@ -7,6 +7,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -19,11 +20,11 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 	}
 
 	public CuredZombieVillagerCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "zombie", advancementEntityPredicateDeserializer);
-		EntityPredicate.Extended extended3 = EntityPredicate.Extended.getInJson(jsonObject, "villager", advancementEntityPredicateDeserializer);
-		return new CuredZombieVillagerCriterion.Conditions(extended, extended2, extended3);
+		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "zombie", advancementEntityPredicateDeserializer);
+		LootContextPredicate lootContextPredicate3 = EntityPredicate.contextPredicateFromJson(jsonObject, "villager", advancementEntityPredicateDeserializer);
+		return new CuredZombieVillagerCriterion.Conditions(lootContextPredicate, lootContextPredicate2, lootContextPredicate3);
 	}
 
 	public void trigger(ServerPlayerEntity player, ZombieEntity zombie, VillagerEntity villager) {
@@ -33,17 +34,17 @@ public class CuredZombieVillagerCriterion extends AbstractCriterion<CuredZombieV
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityPredicate.Extended zombie;
-		private final EntityPredicate.Extended villager;
+		private final LootContextPredicate zombie;
+		private final LootContextPredicate villager;
 
-		public Conditions(EntityPredicate.Extended player, EntityPredicate.Extended zombie, EntityPredicate.Extended villager) {
+		public Conditions(LootContextPredicate player, LootContextPredicate zombie, LootContextPredicate villager) {
 			super(CuredZombieVillagerCriterion.ID, player);
 			this.zombie = zombie;
 			this.villager = villager;
 		}
 
 		public static CuredZombieVillagerCriterion.Conditions any() {
-			return new CuredZombieVillagerCriterion.Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY);
+			return new CuredZombieVillagerCriterion.Conditions(LootContextPredicate.EMPTY, LootContextPredicate.EMPTY, LootContextPredicate.EMPTY);
 		}
 
 		public boolean matches(LootContext zombieContext, LootContext villagerContext) {

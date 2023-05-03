@@ -1527,7 +1527,7 @@ public class StrongholdGenerator {
 						this.addBlock(world, Blocks.COBBLESTONE.getDefaultState(), 6, i, 6, chunkBox);
 					}
 
-					this.addBlock(world, Blocks.TORCH.getDefaultState(), 5, 3, 5, chunkBox);
+					this.addBlock(world, Blocks.WALL_TORCH.getDefaultState(), 5, 3, 5, chunkBox);
 
 					for (int i = 2; i <= 8; i++) {
 						this.addBlock(world, Blocks.OAK_PLANKS.getDefaultState(), 2, 3, i, chunkBox);

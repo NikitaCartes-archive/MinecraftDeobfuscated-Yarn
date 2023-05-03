@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -19,12 +19,12 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 	}
 
 	public ItemDurabilityChangedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("durability"));
 		NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("delta"));
-		return new ItemDurabilityChangedCriterion.Conditions(extended, itemPredicate, intRange, intRange2);
+		return new ItemDurabilityChangedCriterion.Conditions(lootContextPredicate, itemPredicate, intRange, intRange2);
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack, int durability) {
@@ -36,7 +36,7 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 		private final NumberRange.IntRange durability;
 		private final NumberRange.IntRange delta;
 
-		public Conditions(EntityPredicate.Extended player, ItemPredicate item, NumberRange.IntRange durability, NumberRange.IntRange delta) {
+		public Conditions(LootContextPredicate player, ItemPredicate item, NumberRange.IntRange durability, NumberRange.IntRange delta) {
 			super(ItemDurabilityChangedCriterion.ID, player);
 			this.item = item;
 			this.durability = durability;
@@ -44,10 +44,10 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 		}
 
 		public static ItemDurabilityChangedCriterion.Conditions create(ItemPredicate item, NumberRange.IntRange durability) {
-			return create(EntityPredicate.Extended.EMPTY, item, durability);
+			return create(LootContextPredicate.EMPTY, item, durability);
 		}
 
-		public static ItemDurabilityChangedCriterion.Conditions create(EntityPredicate.Extended player, ItemPredicate item, NumberRange.IntRange durability) {
+		public static ItemDurabilityChangedCriterion.Conditions create(LootContextPredicate player, ItemPredicate item, NumberRange.IntRange durability) {
 			return new ItemDurabilityChangedCriterion.Conditions(player, item, durability, NumberRange.IntRange.ANY);
 		}
 

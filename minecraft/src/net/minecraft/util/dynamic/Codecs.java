@@ -93,13 +93,14 @@ public class Codecs {
 	public static final Codec<Vector3f> VECTOR_3F = Codec.FLOAT
 		.listOf()
 		.comapFlatMap(
-			list -> Util.toArray(list, 3).map(listx -> new Vector3f((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2))),
+			list -> Util.decodeFixedLengthList(list, 3).map(listx -> new Vector3f((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2))),
 			vec3f -> List.of(vec3f.x(), vec3f.y(), vec3f.z())
 		);
 	public static final Codec<Quaternionf> QUATERNIONF = Codec.FLOAT
 		.listOf()
 		.comapFlatMap(
-			list -> Util.toArray(list, 4).map(listx -> new Quaternionf((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2), (Float)listx.get(3))),
+			list -> Util.decodeFixedLengthList(list, 4)
+					.map(listx -> new Quaternionf((Float)listx.get(0), (Float)listx.get(1), (Float)listx.get(2), (Float)listx.get(3))),
 			quaternion -> List.of(quaternion.x, quaternion.y, quaternion.z, quaternion.w)
 		);
 	public static final Codec<AxisAngle4f> AXIS_ANGLE4F = RecordCodecBuilder.create(
@@ -111,7 +112,7 @@ public class Codecs {
 	);
 	public static final Codec<Quaternionf> ROTATION = Codec.either(QUATERNIONF, AXIS_ANGLE4F.xmap(Quaternionf::new, AxisAngle4f::new))
 		.xmap(either -> either.map(quaternion -> quaternion, quaternion -> quaternion), com.mojang.datafixers.util.Either::left);
-	public static Codec<Matrix4f> MATRIX4F = Codec.FLOAT.listOf().comapFlatMap(list -> Util.toArray(list, 16).map(listx -> {
+	public static Codec<Matrix4f> MATRIX4F = Codec.FLOAT.listOf().comapFlatMap(list -> Util.decodeFixedLengthList(list, 16).map(listx -> {
 			Matrix4f matrix4f = new Matrix4f();
 
 			for (int i = 0; i < listx.size(); i++) {
@@ -237,7 +238,7 @@ public class Codecs {
 		Function<I, P> leftFunction,
 		Function<I, P> rightFunction
 	) {
-		Codec<I> codec2 = Codec.list(codec).comapFlatMap(list -> Util.toArray(list, 2).flatMap(listx -> {
+		Codec<I> codec2 = Codec.list(codec).comapFlatMap(list -> Util.decodeFixedLengthList(list, 2).flatMap(listx -> {
 				P object = (P)listx.get(0);
 				P object2 = (P)listx.get(1);
 				return (DataResult)combineFunction.apply(object, object2);
@@ -338,6 +339,10 @@ public class Codecs {
 	}
 
 	public static <T> Codec<T> validate(Codec<T> codec, Function<T, DataResult<T>> validator) {
+		return codec.flatXmap(validator, validator);
+	}
+
+	public static <T> MapCodec<T> validate(MapCodec<T> codec, Function<T, DataResult<T>> validator) {
 		return codec.flatXmap(validator, validator);
 	}
 

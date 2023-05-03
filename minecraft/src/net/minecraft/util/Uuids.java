@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public final class Uuids {
 	public static final Codec<UUID> INT_STREAM_CODEC = Codec.INT_STREAM
-		.comapFlatMap(uuidStream -> Util.toArray(uuidStream, 4).map(Uuids::toUuid), uuid -> Arrays.stream(toIntArray(uuid)));
+		.comapFlatMap(uuidStream -> Util.decodeFixedLengthArray(uuidStream, 4).map(Uuids::toUuid), uuid -> Arrays.stream(toIntArray(uuid)));
 	public static final Codec<UUID> STRING_CODEC = Codec.STRING.comapFlatMap(string -> {
 		try {
 			return DataResult.success(UUID.fromString(string), Lifecycle.stable());

@@ -9,6 +9,7 @@ import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.ChanneledLightningCriterion;
+import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.ItemCriterion;
 import net.minecraft.advancement.criterion.KilledByCrossbowCriterion;
@@ -26,7 +27,9 @@ import net.minecraft.advancement.criterion.TravelCriterion;
 import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.UsingItemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.data.server.advancement.AdvancementTabGenerator;
 import net.minecraft.data.server.recipe.VanillaRecipeProvider;
@@ -35,9 +38,15 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
+import net.minecraft.loot.condition.AllOfLootCondition;
+import net.minecraft.loot.condition.AnyOfLootCondition;
+import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
+import net.minecraft.loot.condition.LocationCheckLootCondition;
+import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.predicate.BlockPredicate;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.NumberRange;
+import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.TagPredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
@@ -56,6 +65,7 @@ import net.minecraft.registry.tag.EntityTypeTags;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -450,7 +460,9 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				"bullseye",
 				TargetHitCriterion.Conditions.create(
 					NumberRange.IntRange.exactly(15),
-					EntityPredicate.Extended.ofLegacy(EntityPredicate.Builder.create().distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(30.0))).build())
+					EntityPredicate.asLootContextPredicate(
+						EntityPredicate.Builder.create().distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(30.0))).build()
+					)
 				)
 			)
 			.build(exporter, "adventure/bullseye");
@@ -527,7 +539,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion(
 				"play_jukebox_in_meadows",
-				ItemCriterion.Conditions.create(
+				ItemCriterion.Conditions.createItemUsedOnBlock(
 					LocationPredicate.Builder.create().biome(BiomeKeys.MEADOW).block(BlockPredicate.Builder.create().blocks(Blocks.JUKEBOX).build()),
 					ItemPredicate.Builder.create().tag(ItemTags.MUSIC_DISCS)
 				)
@@ -662,6 +674,49 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				false
 			)
 			.build(exporter, "adventure/trim_with_all_exclusive_armor_patterns");
+		Advancement.Builder.create()
+			.parent(advancement)
+			.display(
+				Items.CHISELED_BOOKSHELF,
+				Text.translatable("advancements.adventure.read_power_from_chiseled_bookshelf.title"),
+				Text.translatable("advancements.adventure.read_power_from_chiseled_bookshelf.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				false
+			)
+			.criteriaMerger(CriterionMerger.OR)
+			.criterion("chiseled_bookshelf", requirePlacedBlockReadByComparator(Blocks.CHISELED_BOOKSHELF))
+			.criterion("comparator", requirePlacedComparatorReadingBlock(Blocks.CHISELED_BOOKSHELF))
+			.build(exporter, "adventure/read_power_of_chiseled_bookshelf");
+	}
+
+	private static CriterionConditions requirePlacedBlockReadByComparator(Block block) {
+		LootCondition.Builder[] builders = (LootCondition.Builder[])ComparatorBlock.FACING.getValues().stream().map(facing -> {
+			StatePredicate statePredicate = StatePredicate.Builder.create().exactMatch(ComparatorBlock.FACING, facing).build();
+			BlockPredicate blockPredicate = BlockPredicate.Builder.create().blocks(Blocks.COMPARATOR).state(statePredicate).build();
+			return LocationCheckLootCondition.builder(LocationPredicate.Builder.create().block(blockPredicate), new BlockPos(facing.getOpposite().getVector()));
+		}).toArray(LootCondition.Builder[]::new);
+		return ItemCriterion.Conditions.createPlacedBlock(BlockStatePropertyLootCondition.builder(block), AnyOfLootCondition.builder(builders));
+	}
+
+	private static CriterionConditions requirePlacedComparatorReadingBlock(Block block) {
+		LootCondition.Builder[] builders = (LootCondition.Builder[])ComparatorBlock.FACING
+			.getValues()
+			.stream()
+			.map(
+				facing -> {
+					StatePredicate.Builder builder = StatePredicate.Builder.create().exactMatch(ComparatorBlock.FACING, facing);
+					BlockStatePropertyLootCondition.Builder builder2 = new BlockStatePropertyLootCondition.Builder(Blocks.COMPARATOR).properties(builder);
+					LootCondition.Builder builder3 = LocationCheckLootCondition.builder(
+						LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block).build()), new BlockPos(facing.getVector())
+					);
+					return AllOfLootCondition.builder(builder2, builder3);
+				}
+			)
+			.toArray(LootCondition.Builder[]::new);
+		return ItemCriterion.Conditions.createPlacedBlock(AnyOfLootCondition.builder(builders));
 	}
 
 	private static Advancement.Builder requireAllExclusiveTrimmedArmor(Advancement.Builder builder) {

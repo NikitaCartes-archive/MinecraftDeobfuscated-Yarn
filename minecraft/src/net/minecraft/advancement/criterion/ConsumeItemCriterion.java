@@ -8,7 +8,7 @@ import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,9 +23,9 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 	}
 
 	public ConsumeItemCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		return new ConsumeItemCriterion.Conditions(extended, ItemPredicate.fromJson(jsonObject.get("item")));
+		return new ConsumeItemCriterion.Conditions(lootContextPredicate, ItemPredicate.fromJson(jsonObject.get("item")));
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
@@ -35,22 +35,22 @@ public class ConsumeItemCriterion extends AbstractCriterion<ConsumeItemCriterion
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate item;
 
-		public Conditions(EntityPredicate.Extended player, ItemPredicate item) {
+		public Conditions(LootContextPredicate player, ItemPredicate item) {
 			super(ConsumeItemCriterion.ID, player);
 			this.item = item;
 		}
 
 		public static ConsumeItemCriterion.Conditions any() {
-			return new ConsumeItemCriterion.Conditions(EntityPredicate.Extended.EMPTY, ItemPredicate.ANY);
+			return new ConsumeItemCriterion.Conditions(LootContextPredicate.EMPTY, ItemPredicate.ANY);
 		}
 
 		public static ConsumeItemCriterion.Conditions predicate(ItemPredicate predicate) {
-			return new ConsumeItemCriterion.Conditions(EntityPredicate.Extended.EMPTY, predicate);
+			return new ConsumeItemCriterion.Conditions(LootContextPredicate.EMPTY, predicate);
 		}
 
 		public static ConsumeItemCriterion.Conditions item(ItemConvertible item) {
 			return new ConsumeItemCriterion.Conditions(
-				EntityPredicate.Extended.EMPTY,
+				LootContextPredicate.EMPTY,
 				new ItemPredicate(
 					null,
 					ImmutableSet.of(item.asItem()),

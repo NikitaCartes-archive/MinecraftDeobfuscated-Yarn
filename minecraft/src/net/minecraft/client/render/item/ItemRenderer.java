@@ -130,7 +130,7 @@ public class ItemRenderer implements SynchronousResourceReloader {
 
 				RenderLayer renderLayer = RenderLayers.getItemLayer(stack, bl2);
 				VertexConsumer vertexConsumer;
-				if (stack.isIn(ItemTags.COMPASSES) && stack.hasGlint()) {
+				if (usesDynamicDisplay(stack) && stack.hasGlint()) {
 					matrices.push();
 					MatrixStack.Entry entry = matrices.peek();
 					if (renderMode == ModelTransformationMode.GUI) {
@@ -140,9 +140,9 @@ public class ItemRenderer implements SynchronousResourceReloader {
 					}
 
 					if (bl2) {
-						vertexConsumer = getDirectCompassGlintConsumer(vertexConsumers, renderLayer, entry);
+						vertexConsumer = getDirectDynamicDisplayGlintConsumer(vertexConsumers, renderLayer, entry);
 					} else {
-						vertexConsumer = getCompassGlintConsumer(vertexConsumers, renderLayer, entry);
+						vertexConsumer = getDynamicDisplayGlintConsumer(vertexConsumers, renderLayer, entry);
 					}
 
 					matrices.pop();
@@ -161,20 +161,24 @@ public class ItemRenderer implements SynchronousResourceReloader {
 		}
 	}
 
+	private static boolean usesDynamicDisplay(ItemStack stack) {
+		return stack.isIn(ItemTags.COMPASSES) || stack.isOf(Items.CLOCK);
+	}
+
 	public static VertexConsumer getArmorGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, boolean solid, boolean glint) {
 		return glint
 			? VertexConsumers.union(provider.getBuffer(solid ? RenderLayer.getArmorGlint() : RenderLayer.getArmorEntityGlint()), provider.getBuffer(layer))
 			: provider.getBuffer(layer);
 	}
 
-	public static VertexConsumer getCompassGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
+	public static VertexConsumer getDynamicDisplayGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
 		return VertexConsumers.union(
 			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getGlint()), entry.getPositionMatrix(), entry.getNormalMatrix(), 0.0078125F),
 			provider.getBuffer(layer)
 		);
 	}
 
-	public static VertexConsumer getDirectCompassGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
+	public static VertexConsumer getDirectDynamicDisplayGlintConsumer(VertexConsumerProvider provider, RenderLayer layer, MatrixStack.Entry entry) {
 		return VertexConsumers.union(
 			new OverlayVertexConsumer(provider.getBuffer(RenderLayer.getDirectGlint()), entry.getPositionMatrix(), entry.getNormalMatrix(), 0.0078125F),
 			provider.getBuffer(layer)

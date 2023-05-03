@@ -425,7 +425,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				l = g - this.updatedRiddenX;
 				m = h - this.updatedRiddenY - 1.0E-6;
 				n = i - this.updatedRiddenZ;
-				boolean bl2 = entity.field_36331;
+				boolean bl2 = entity.groundCollision;
 				entity.move(MovementType.PLAYER, new Vec3d(l, m, n));
 				l = g - entity.getX();
 				m = h - entity.getY();
@@ -902,7 +902,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 								this.player.jump();
 							}
 
-							boolean bl2 = this.player.field_36331;
+							boolean bl2 = this.player.groundCollision;
 							this.player.move(MovementType.PLAYER, new Vec3d(m, n, o));
 							m = d - this.player.getX();
 							n = e - this.player.getY();
