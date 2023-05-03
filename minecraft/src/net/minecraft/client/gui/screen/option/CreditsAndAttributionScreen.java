@@ -32,13 +32,13 @@ public class CreditsAndAttributionScreen extends Screen {
 	@Override
 	protected void init() {
 		this.layout.addHeader(new TextWidget(this.getTitle(), this.textRenderer));
-		GridWidget gridWidget = this.layout.addFooter(new GridWidget()).setSpacing(8);
+		GridWidget gridWidget = this.layout.addBody(new GridWidget()).setSpacing(8);
 		gridWidget.getMainPositioner().alignHorizontalCenter();
 		GridWidget.Adder adder = gridWidget.createAdder(1);
 		adder.add(ButtonWidget.builder(CREDITS_TEXT, button -> this.openCredits()).width(210).build());
 		adder.add(ButtonWidget.builder(ATTRIBUTION_TEXT, ConfirmLinkScreen.opening("https://aka.ms/MinecraftJavaAttribution", this, true)).width(210).build());
 		adder.add(ButtonWidget.builder(LICENSE_TEXT, ConfirmLinkScreen.opening("https://aka.ms/MinecraftJavaLicenses", this, true)).width(210).build());
-		this.layout.addBody(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).build());
+		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).build());
 		this.layout.refreshPositions();
 		this.layout.forEachChild(this::addDrawableChild);
 	}

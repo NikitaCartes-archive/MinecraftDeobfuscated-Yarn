@@ -5,7 +5,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -18,10 +18,10 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 	}
 
 	public EntityHurtPlayerCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		DamagePredicate damagePredicate = DamagePredicate.fromJson(jsonObject.get("damage"));
-		return new EntityHurtPlayerCriterion.Conditions(extended, damagePredicate);
+		return new EntityHurtPlayerCriterion.Conditions(lootContextPredicate, damagePredicate);
 	}
 
 	public void trigger(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {
@@ -31,21 +31,21 @@ public class EntityHurtPlayerCriterion extends AbstractCriterion<EntityHurtPlaye
 	public static class Conditions extends AbstractCriterionConditions {
 		private final DamagePredicate damage;
 
-		public Conditions(EntityPredicate.Extended player, DamagePredicate damage) {
+		public Conditions(LootContextPredicate player, DamagePredicate damage) {
 			super(EntityHurtPlayerCriterion.ID, player);
 			this.damage = damage;
 		}
 
 		public static EntityHurtPlayerCriterion.Conditions create() {
-			return new EntityHurtPlayerCriterion.Conditions(EntityPredicate.Extended.EMPTY, DamagePredicate.ANY);
+			return new EntityHurtPlayerCriterion.Conditions(LootContextPredicate.EMPTY, DamagePredicate.ANY);
 		}
 
 		public static EntityHurtPlayerCriterion.Conditions create(DamagePredicate predicate) {
-			return new EntityHurtPlayerCriterion.Conditions(EntityPredicate.Extended.EMPTY, predicate);
+			return new EntityHurtPlayerCriterion.Conditions(LootContextPredicate.EMPTY, predicate);
 		}
 
 		public static EntityHurtPlayerCriterion.Conditions create(DamagePredicate.Builder damageBuilder) {
-			return new EntityHurtPlayerCriterion.Conditions(EntityPredicate.Extended.EMPTY, damageBuilder.build());
+			return new EntityHurtPlayerCriterion.Conditions(LootContextPredicate.EMPTY, damageBuilder.build());
 		}
 
 		public boolean matches(ServerPlayerEntity player, DamageSource source, float dealt, float taken, boolean blocked) {

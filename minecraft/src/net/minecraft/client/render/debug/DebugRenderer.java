@@ -29,6 +29,7 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer chunkBorderDebugRenderer;
 	public final DebugRenderer.Renderer heightmapDebugRenderer;
 	public final DebugRenderer.Renderer collisionDebugRenderer;
+	public final DebugRenderer.Renderer supportingBlockDebugRenderer;
 	public final DebugRenderer.Renderer neighborUpdateDebugRenderer;
 	public final StructureDebugRenderer structureDebugRenderer;
 	public final DebugRenderer.Renderer skyLightDebugRenderer;
@@ -50,6 +51,7 @@ public class DebugRenderer {
 		this.chunkBorderDebugRenderer = new ChunkBorderDebugRenderer(client);
 		this.heightmapDebugRenderer = new HeightmapDebugRenderer(client);
 		this.collisionDebugRenderer = new CollisionDebugRenderer(client);
+		this.supportingBlockDebugRenderer = new SupportingBlockDebugRenderer(client);
 		this.neighborUpdateDebugRenderer = new NeighborUpdateDebugRenderer(client);
 		this.structureDebugRenderer = new StructureDebugRenderer(client);
 		this.skyLightDebugRenderer = new SkyLightDebugRenderer(client);
@@ -72,6 +74,7 @@ public class DebugRenderer {
 		this.chunkBorderDebugRenderer.clear();
 		this.heightmapDebugRenderer.clear();
 		this.collisionDebugRenderer.clear();
+		this.supportingBlockDebugRenderer.clear();
 		this.neighborUpdateDebugRenderer.clear();
 		this.structureDebugRenderer.clear();
 		this.skyLightDebugRenderer.clear();

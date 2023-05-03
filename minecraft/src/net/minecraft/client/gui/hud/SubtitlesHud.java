@@ -80,9 +80,7 @@ public class SubtitlesHud implements SoundInstanceListener {
 				context.getMatrices().push();
 				context.getMatrices()
 					.translate(
-						(float)this.client.getWindow().getScaledWidth() - (float)l * 1.0F - 2.0F,
-						(float)(this.client.getWindow().getScaledHeight() - 35) - (float)(i * (m + 1)) * 1.0F,
-						0.0F
+						(float)context.getScaledWindowWidth() - (float)l * 1.0F - 2.0F, (float)(context.getScaledWindowHeight() - 35) - (float)(i * (m + 1)) * 1.0F, 0.0F
 					);
 				context.getMatrices().scale(1.0F, 1.0F, 1.0F);
 				context.fill(-l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8F));

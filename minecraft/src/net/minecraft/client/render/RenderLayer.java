@@ -161,7 +161,7 @@ public abstract class RenderLayer extends RenderPhase {
 				.program(ITEM_ENTITY_TRANSLUCENT_CULL_PROGRAM)
 				.texture(new RenderPhase.Texture(texture, false, false))
 				.transparency(TRANSLUCENT_TRANSPARENCY)
-				.target(ITEM_TARGET)
+				.target(ITEM_ENTITY_TARGET)
 				.lightmap(ENABLE_LIGHTMAP)
 				.overlay(ENABLE_OVERLAY_COLOR)
 				.writeMaskState(RenderPhase.ALL_MASK)
@@ -382,7 +382,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
 			.texturing(GLINT_TEXTURING)
-			.target(ITEM_TARGET)
+			.target(ITEM_ENTITY_TARGET)
 			.build(false)
 	);
 	private static final RenderLayer GLINT = of(
@@ -427,7 +427,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(DISABLE_CULLING)
 			.depthTest(EQUAL_DEPTH_TEST)
 			.transparency(GLINT_TRANSPARENCY)
-			.target(ITEM_TARGET)
+			.target(ITEM_ENTITY_TARGET)
 			.texturing(ENTITY_GLINT_TEXTURING)
 			.build(false)
 	);
@@ -659,7 +659,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty()))
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
-			.target(ITEM_TARGET)
+			.target(ITEM_ENTITY_TARGET)
 			.writeMaskState(ALL_MASK)
 			.cull(DISABLE_CULLING)
 			.build(false)
@@ -674,7 +674,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.lineWidth(new RenderPhase.LineWidth(OptionalDouble.empty()))
 			.layering(VIEW_OFFSET_Z_LAYERING)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
-			.target(ITEM_TARGET)
+			.target(ITEM_ENTITY_TARGET)
 			.writeMaskState(ALL_MASK)
 			.cull(DISABLE_CULLING)
 			.build(false)
@@ -725,6 +725,49 @@ public abstract class RenderLayer extends RenderPhase {
 			.cull(ENABLE_CULLING)
 			.build(false)
 	);
+	private static final RenderLayer.MultiPhase GUI = of(
+		"gui",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.QUADS,
+		256,
+		RenderLayer.MultiPhaseParameters.builder().program(GUI_PROGRAM).transparency(TRANSLUCENT_TRANSPARENCY).depthTest(LEQUAL_DEPTH_TEST).build(false)
+	);
+	private static final RenderLayer.MultiPhase GUI_OVERLAY = of(
+		"gui_overlay",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.QUADS,
+		256,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(GUI_OVERLAY_PROGRAM)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.depthTest(ALWAYS_DEPTH_TEST)
+			.writeMaskState(COLOR_MASK)
+			.build(false)
+	);
+	private static final RenderLayer.MultiPhase GUI_TEXT_HIGHLIGHT = of(
+		"gui_text_highlight",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.QUADS,
+		256,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(GUI_TEXT_HIGHLIGHT_PROGRAM)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.depthTest(ALWAYS_DEPTH_TEST)
+			.colorLogic(OR_REVERSE)
+			.build(false)
+	);
+	private static final RenderLayer.MultiPhase GUI_GHOST_RECIPE_OVERLAY = of(
+		"gui_ghost_recipe_overlay",
+		VertexFormats.POSITION_COLOR,
+		VertexFormat.DrawMode.QUADS,
+		256,
+		RenderLayer.MultiPhaseParameters.builder()
+			.program(GUI_GHOST_RECIPE_OVERLAY_PROGRAM)
+			.transparency(TRANSLUCENT_TRANSPARENCY)
+			.depthTest(BIGGER_DEPTH_TEST)
+			.writeMaskState(COLOR_MASK)
+			.build(false)
+	);
 	private static final ImmutableList<RenderLayer> BLOCK_LAYERS = ImmutableList.of(getSolid(), getCutoutMipped(), getCutout(), getTranslucent(), getTripwire());
 	private final VertexFormat vertexFormat;
 	private final VertexFormat.DrawMode drawMode;
@@ -765,7 +808,7 @@ public abstract class RenderLayer extends RenderPhase {
 			.program(TRANSLUCENT_MOVING_BLOCK_PROGRAM)
 			.texture(MIPMAP_BLOCK_ATLAS_TEXTURE)
 			.transparency(TRANSLUCENT_TRANSPARENCY)
-			.target(ITEM_TARGET)
+			.target(ITEM_ENTITY_TARGET)
 			.build(true);
 	}
 
@@ -1003,6 +1046,22 @@ public abstract class RenderLayer extends RenderPhase {
 		return DEBUG_SECTION_QUADS;
 	}
 
+	public static RenderLayer getGui() {
+		return GUI;
+	}
+
+	public static RenderLayer getGuiOverlay() {
+		return GUI_OVERLAY;
+	}
+
+	public static RenderLayer getGuiTextHighlight() {
+		return GUI_TEXT_HIGHLIGHT;
+	}
+
+	public static RenderLayer getGuiGhostRecipeOverlay() {
+		return GUI_GHOST_RECIPE_OVERLAY;
+	}
+
 	public RenderLayer(
 		String name,
 		VertexFormat vertexFormat,
@@ -1175,6 +1234,7 @@ public abstract class RenderLayer extends RenderPhase {
 		private final RenderPhase.Texturing texturing;
 		private final RenderPhase.WriteMaskState writeMaskState;
 		private final RenderPhase.LineWidth lineWidth;
+		private final RenderPhase.ColorLogic colorLogic;
 		final RenderLayer.OutlineMode outlineMode;
 		final ImmutableList<RenderPhase> phases;
 
@@ -1191,6 +1251,7 @@ public abstract class RenderLayer extends RenderPhase {
 			RenderPhase.Texturing texturing,
 			RenderPhase.WriteMaskState writeMaskState,
 			RenderPhase.LineWidth lineWidth,
+			RenderPhase.ColorLogic colorLogic,
 			RenderLayer.OutlineMode outlineMode
 		) {
 			this.texture = texture;
@@ -1205,6 +1266,7 @@ public abstract class RenderLayer extends RenderPhase {
 			this.texturing = texturing;
 			this.writeMaskState = writeMaskState;
 			this.lineWidth = lineWidth;
+			this.colorLogic = colorLogic;
 			this.outlineMode = outlineMode;
 			this.phases = ImmutableList.of(
 				this.texture,
@@ -1218,6 +1280,7 @@ public abstract class RenderLayer extends RenderPhase {
 				this.target,
 				this.texturing,
 				this.writeMaskState,
+				this.colorLogic,
 				this.lineWidth
 			);
 		}
@@ -1244,6 +1307,7 @@ public abstract class RenderLayer extends RenderPhase {
 			private RenderPhase.Texturing texturing = RenderPhase.DEFAULT_TEXTURING;
 			private RenderPhase.WriteMaskState writeMaskState = RenderPhase.ALL_MASK;
 			private RenderPhase.LineWidth lineWidth = RenderPhase.FULL_LINE_WIDTH;
+			private RenderPhase.ColorLogic colorLogic = RenderPhase.NO_COLOR_LOGIC;
 
 			Builder() {
 			}
@@ -1308,6 +1372,11 @@ public abstract class RenderLayer extends RenderPhase {
 				return this;
 			}
 
+			public RenderLayer.MultiPhaseParameters.Builder colorLogic(RenderPhase.ColorLogic colorLogic) {
+				this.colorLogic = colorLogic;
+				return this;
+			}
+
 			public RenderLayer.MultiPhaseParameters build(boolean affectsOutline) {
 				return this.build(affectsOutline ? RenderLayer.OutlineMode.AFFECTS_OUTLINE : RenderLayer.OutlineMode.NONE);
 			}
@@ -1326,6 +1395,7 @@ public abstract class RenderLayer extends RenderPhase {
 					this.texturing,
 					this.writeMaskState,
 					this.lineWidth,
+					this.colorLogic,
 					outlineMode
 				);
 			}

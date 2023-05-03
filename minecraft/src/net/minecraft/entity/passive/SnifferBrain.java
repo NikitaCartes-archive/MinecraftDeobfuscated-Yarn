@@ -188,7 +188,9 @@ public class SnifferBrain {
 		}
 
 		protected boolean shouldKeepRunning(ServerWorld serverWorld, SnifferEntity snifferEntity, long l) {
-			return snifferEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.SNIFFER_DIGGING).isPresent() && snifferEntity.canTryToDig();
+			return snifferEntity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.SNIFFER_DIGGING).isPresent()
+				&& snifferEntity.canDig()
+				&& !snifferEntity.isInLove();
 		}
 
 		protected void run(ServerWorld serverWorld, SnifferEntity snifferEntity, long l) {

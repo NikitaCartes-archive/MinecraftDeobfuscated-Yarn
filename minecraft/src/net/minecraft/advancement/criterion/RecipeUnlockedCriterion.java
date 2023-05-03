@@ -3,7 +3,7 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonObject;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -18,10 +18,10 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 	}
 
 	public RecipeUnlockedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe"));
-		return new RecipeUnlockedCriterion.Conditions(extended, identifier);
+		return new RecipeUnlockedCriterion.Conditions(lootContextPredicate, identifier);
 	}
 
 	public void trigger(ServerPlayerEntity player, Recipe<?> recipe) {
@@ -29,13 +29,13 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 	}
 
 	public static RecipeUnlockedCriterion.Conditions create(Identifier id) {
-		return new RecipeUnlockedCriterion.Conditions(EntityPredicate.Extended.EMPTY, id);
+		return new RecipeUnlockedCriterion.Conditions(LootContextPredicate.EMPTY, id);
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Identifier recipe;
 
-		public Conditions(EntityPredicate.Extended player, Identifier recipe) {
+		public Conditions(LootContextPredicate player, Identifier recipe) {
 			super(RecipeUnlockedCriterion.ID, player);
 			this.recipe = recipe;
 		}

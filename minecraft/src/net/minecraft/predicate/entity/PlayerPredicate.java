@@ -37,7 +37,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 
 public class PlayerPredicate implements TypeSpecificPredicate {
-	public static final int field_33928 = 100;
+	public static final int LOOKING_AT_DISTANCE = 100;
 	private final NumberRange.IntRange experienceLevel;
 	@Nullable
 	private final GameMode gameMode;

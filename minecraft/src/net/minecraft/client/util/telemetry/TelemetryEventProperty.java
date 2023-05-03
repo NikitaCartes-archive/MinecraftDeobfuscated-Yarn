@@ -29,6 +29,7 @@ public record TelemetryEventProperty<T>(String id, String exportKey, Codec<T> co
 	public static final TelemetryEventProperty<String> OPERATING_SYSTEM = ofString("operating_system", "buildPlatform");
 	public static final TelemetryEventProperty<String> PLATFORM = ofString("platform", "platform");
 	public static final TelemetryEventProperty<Boolean> CLIENT_MODDED = ofBoolean("client_modded", "clientModded");
+	public static final TelemetryEventProperty<String> LAUNCHER_NAME = ofString("launcher_name", "launcherName");
 	public static final TelemetryEventProperty<UUID> WORLD_SESSION_ID = ofUuid("world_session_id", "worldSessionId");
 	public static final TelemetryEventProperty<Boolean> SERVER_MODDED = ofBoolean("server_modded", "serverModded");
 	public static final TelemetryEventProperty<TelemetryEventProperty.ServerType> SERVER_TYPE = of(
@@ -44,6 +45,7 @@ public record TelemetryEventProperty<T>(String id, String exportKey, Codec<T> co
 	public static final TelemetryEventProperty<TelemetryEventProperty.GameMode> GAME_MODE = of(
 		"game_mode", "playerGameMode", TelemetryEventProperty.GameMode.CODEC, (container, exportKey, value) -> container.addProperty(exportKey, value.getRawId())
 	);
+	public static final TelemetryEventProperty<String> REALMS_MAP_CONTENT = ofString("realms_map_content", "realmsMapContent");
 	public static final TelemetryEventProperty<Integer> SECONDS_SINCE_LOAD = ofInteger("seconds_since_load", "secondsSinceLoad");
 	public static final TelemetryEventProperty<Integer> TICKS_SINCE_LOAD = ofInteger("ticks_since_load", "ticksSinceLoad");
 	public static final TelemetryEventProperty<LongList> FRAME_RATE_SAMPLES = ofLongList("frame_rate_samples", "serializedFpsSamples");
@@ -54,6 +56,20 @@ public record TelemetryEventProperty<T>(String id, String exportKey, Codec<T> co
 	public static final TelemetryEventProperty<Integer> DEDICATED_MEMORY_KB = ofInteger("dedicated_memory_kb", "dedicatedMemoryKb");
 	public static final TelemetryEventProperty<Integer> WORLD_LOAD_TIME_MS = ofInteger("world_load_time_ms", "worldLoadTimeMs");
 	public static final TelemetryEventProperty<Boolean> NEW_WORLD = ofBoolean("new_world", "newWorld");
+	public static final TelemetryEventProperty<GameLoadTimeEvent.Measurement> LOAD_TIME_TOTAL_TIME_MS = ofTimeMeasurement(
+		"load_time_total_time_ms", "loadTimeTotalTimeMs"
+	);
+	public static final TelemetryEventProperty<GameLoadTimeEvent.Measurement> LOAD_TIME_PRE_WINDOW_MS = ofTimeMeasurement(
+		"load_time_pre_window_ms", "loadTimePreWindowMs"
+	);
+	public static final TelemetryEventProperty<GameLoadTimeEvent.Measurement> LOAD_TIME_BOOTSTRAP_MS = ofTimeMeasurement(
+		"load_time_bootstrap_ms", "loadTimeBootstrapMs"
+	);
+	public static final TelemetryEventProperty<GameLoadTimeEvent.Measurement> LOAD_TIME_LOADING_OVERLAY_MS = ofTimeMeasurement(
+		"load_time_loading_overlay_ms", "loadTimeLoadingOverlayMs"
+	);
+	public static final TelemetryEventProperty<String> ADVANCEMENT_ID = ofString("advancement_id", "advancementId");
+	public static final TelemetryEventProperty<Long> ADVANCEMENT_GAME_TIME = ofLong("advancement_game_time", "advancementGameTime");
 
 	public static <T> TelemetryEventProperty<T> of(String id, String exportKey, Codec<T> codec, TelemetryEventProperty.PropertyExporter<T> exporter) {
 		return new TelemetryEventProperty<>(id, exportKey, codec, exporter);
@@ -71,8 +87,16 @@ public record TelemetryEventProperty<T>(String id, String exportKey, Codec<T> co
 		return of(id, exportKey, Codec.INT, TelemetryPropertyContainer::addProperty);
 	}
 
+	public static TelemetryEventProperty<Long> ofLong(String id, String exportKey) {
+		return of(id, exportKey, Codec.LONG, TelemetryPropertyContainer::addProperty);
+	}
+
 	public static TelemetryEventProperty<UUID> ofUuid(String id, String exportKey) {
-		return of(id, exportKey, Uuids.STRING_CODEC, (container, exportKeyx, value) -> container.addProperty(exportKeyx, value.toString()));
+		return of(id, exportKey, Uuids.STRING_CODEC, (container, key, value) -> container.addProperty(key, value.toString()));
+	}
+
+	public static TelemetryEventProperty<GameLoadTimeEvent.Measurement> ofTimeMeasurement(String id, String exportKey) {
+		return of(id, exportKey, GameLoadTimeEvent.Measurement.CODEC, (container, key, value) -> container.addProperty(key, value.millis()));
 	}
 
 	public static TelemetryEventProperty<LongList> ofLongList(String id, String exportKey) {
@@ -80,7 +104,7 @@ public record TelemetryEventProperty<T>(String id, String exportKey, Codec<T> co
 			id,
 			exportKey,
 			Codec.LONG.listOf().xmap(LongArrayList::new, Function.identity()),
-			(container, exportKeyx, value) -> container.addProperty(exportKeyx, (String)value.longStream().mapToObj(String::valueOf).collect(Collectors.joining(";")))
+			(container, key, value) -> container.addProperty(key, (String)value.longStream().mapToObj(String::valueOf).collect(Collectors.joining(";")))
 		);
 	}
 

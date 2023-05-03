@@ -21,7 +21,7 @@ public abstract class LootPoolEntry implements EntryCombiner {
 
 	protected LootPoolEntry(LootCondition[] conditions) {
 		this.conditions = conditions;
-		this.conditionPredicate = LootConditionTypes.joinAnd(conditions);
+		this.conditionPredicate = LootConditionTypes.matchingAll(conditions);
 	}
 
 	public void validate(LootTableReporter reporter) {

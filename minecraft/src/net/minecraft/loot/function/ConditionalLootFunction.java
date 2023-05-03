@@ -23,7 +23,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 
 	protected ConditionalLootFunction(LootCondition[] conditions) {
 		this.conditions = conditions;
-		this.predicate = LootConditionTypes.joinAnd(conditions);
+		this.predicate = LootConditionTypes.matchingAll(conditions);
 	}
 
 	public final ItemStack apply(ItemStack itemStack, LootContext lootContext) {

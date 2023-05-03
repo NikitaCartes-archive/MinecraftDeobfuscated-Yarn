@@ -10,9 +10,15 @@ import net.minecraft.world.GameMode;
 public class WorldLoadedEvent {
 	private boolean sent;
 	@Nullable
-	private TelemetryEventProperty.GameMode gameMode = null;
+	private TelemetryEventProperty.GameMode gameMode;
 	@Nullable
 	private String brand;
+	@Nullable
+	private final String minigameName;
+
+	public WorldLoadedEvent(@Nullable String minigameName) {
+		this.minigameName = minigameName;
+	}
 
 	public void putServerType(PropertyMap.Builder builder) {
 		if (this.brand != null) {
@@ -33,7 +39,12 @@ public class WorldLoadedEvent {
 	public boolean send(TelemetrySender sender) {
 		if (!this.sent && this.gameMode != null && this.brand != null) {
 			this.sent = true;
-			sender.send(TelemetryEventType.WORLD_LOADED, builder -> builder.put(TelemetryEventProperty.GAME_MODE, this.gameMode));
+			sender.send(TelemetryEventType.WORLD_LOADED, adder -> {
+				adder.put(TelemetryEventProperty.GAME_MODE, this.gameMode);
+				if (this.minigameName != null) {
+					adder.put(TelemetryEventProperty.REALMS_MAP_CONTENT, this.minigameName);
+				}
+			});
 			return true;
 		} else {
 			return false;

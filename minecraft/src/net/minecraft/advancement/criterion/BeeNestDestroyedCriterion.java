@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,12 +25,12 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 	}
 
 	public BeeNestDestroyedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Block block = getBlock(jsonObject);
 		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("num_bees_inside"));
-		return new BeeNestDestroyedCriterion.Conditions(extended, block, itemPredicate, intRange);
+		return new BeeNestDestroyedCriterion.Conditions(lootContextPredicate, block, itemPredicate, intRange);
 	}
 
 	@Nullable
@@ -53,7 +53,7 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		private final ItemPredicate item;
 		private final NumberRange.IntRange beeCount;
 
-		public Conditions(EntityPredicate.Extended player, @Nullable Block block, ItemPredicate item, NumberRange.IntRange beeCount) {
+		public Conditions(LootContextPredicate player, @Nullable Block block, ItemPredicate item, NumberRange.IntRange beeCount) {
 			super(BeeNestDestroyedCriterion.ID, player);
 			this.block = block;
 			this.item = item;
@@ -61,7 +61,7 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		}
 
 		public static BeeNestDestroyedCriterion.Conditions create(Block block, ItemPredicate.Builder itemPredicateBuilder, NumberRange.IntRange beeCountRange) {
-			return new BeeNestDestroyedCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, itemPredicateBuilder.build(), beeCountRange);
+			return new BeeNestDestroyedCriterion.Conditions(LootContextPredicate.EMPTY, block, itemPredicateBuilder.build(), beeCountRange);
 		}
 
 		public boolean test(BlockState state, ItemStack stack, int count) {

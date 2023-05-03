@@ -7,6 +7,7 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
@@ -20,11 +21,11 @@ public class TargetHitCriterion extends AbstractCriterion<TargetHitCriterion.Con
 	}
 
 	public TargetHitCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("signal_strength"));
-		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "projectile", advancementEntityPredicateDeserializer);
-		return new TargetHitCriterion.Conditions(extended, intRange, extended2);
+		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "projectile", advancementEntityPredicateDeserializer);
+		return new TargetHitCriterion.Conditions(lootContextPredicate, intRange, lootContextPredicate2);
 	}
 
 	public void trigger(ServerPlayerEntity player, Entity projectile, Vec3d hitPos, int signalStrength) {
@@ -34,16 +35,16 @@ public class TargetHitCriterion extends AbstractCriterion<TargetHitCriterion.Con
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final NumberRange.IntRange signalStrength;
-		private final EntityPredicate.Extended projectile;
+		private final LootContextPredicate projectile;
 
-		public Conditions(EntityPredicate.Extended player, NumberRange.IntRange signalStrength, EntityPredicate.Extended projectile) {
+		public Conditions(LootContextPredicate player, NumberRange.IntRange signalStrength, LootContextPredicate projectile) {
 			super(TargetHitCriterion.ID, player);
 			this.signalStrength = signalStrength;
 			this.projectile = projectile;
 		}
 
-		public static TargetHitCriterion.Conditions create(NumberRange.IntRange signalStrength, EntityPredicate.Extended projectile) {
-			return new TargetHitCriterion.Conditions(EntityPredicate.Extended.EMPTY, signalStrength, projectile);
+		public static TargetHitCriterion.Conditions create(NumberRange.IntRange signalStrength, LootContextPredicate projectile) {
+			return new TargetHitCriterion.Conditions(LootContextPredicate.EMPTY, signalStrength, projectile);
 		}
 
 		@Override

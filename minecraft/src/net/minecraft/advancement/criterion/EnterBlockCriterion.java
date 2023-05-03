@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -23,7 +23,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 	}
 
 	public EnterBlockCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
@@ -33,7 +33,7 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 			});
 		}
 
-		return new EnterBlockCriterion.Conditions(extended, block, statePredicate);
+		return new EnterBlockCriterion.Conditions(lootContextPredicate, block, statePredicate);
 	}
 
 	@Nullable
@@ -55,14 +55,14 @@ public class EnterBlockCriterion extends AbstractCriterion<EnterBlockCriterion.C
 		private final Block block;
 		private final StatePredicate state;
 
-		public Conditions(EntityPredicate.Extended player, @Nullable Block block, StatePredicate state) {
+		public Conditions(LootContextPredicate player, @Nullable Block block, StatePredicate state) {
 			super(EnterBlockCriterion.ID, player);
 			this.block = block;
 			this.state = state;
 		}
 
 		public static EnterBlockCriterion.Conditions block(Block block) {
-			return new EnterBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, StatePredicate.ANY);
+			return new EnterBlockCriterion.Conditions(LootContextPredicate.EMPTY, block, StatePredicate.ANY);
 		}
 
 		@Override

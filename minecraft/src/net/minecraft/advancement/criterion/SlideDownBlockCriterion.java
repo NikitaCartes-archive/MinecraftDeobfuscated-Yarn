@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.predicate.StatePredicate;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -23,7 +23,7 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 	}
 
 	public SlideDownBlockCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Block block = getBlock(jsonObject);
 		StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
@@ -33,7 +33,7 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 			});
 		}
 
-		return new SlideDownBlockCriterion.Conditions(extended, block, statePredicate);
+		return new SlideDownBlockCriterion.Conditions(lootContextPredicate, block, statePredicate);
 	}
 
 	@Nullable
@@ -55,14 +55,14 @@ public class SlideDownBlockCriterion extends AbstractCriterion<SlideDownBlockCri
 		private final Block block;
 		private final StatePredicate state;
 
-		public Conditions(EntityPredicate.Extended player, @Nullable Block block, StatePredicate state) {
+		public Conditions(LootContextPredicate player, @Nullable Block block, StatePredicate state) {
 			super(SlideDownBlockCriterion.ID, player);
 			this.block = block;
 			this.state = state;
 		}
 
 		public static SlideDownBlockCriterion.Conditions create(Block block) {
-			return new SlideDownBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, StatePredicate.ANY);
+			return new SlideDownBlockCriterion.Conditions(LootContextPredicate.EMPTY, block, StatePredicate.ANY);
 		}
 
 		@Override

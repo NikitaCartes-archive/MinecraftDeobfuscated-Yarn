@@ -28,7 +28,7 @@ public class ToastManager {
 
 	public void draw(DrawContext context) {
 		if (!this.client.options.hudHidden) {
-			int i = this.client.getWindow().getScaledWidth();
+			int i = context.getScaledWindowWidth();
 			this.visibleEntries.removeIf(visibleEntry -> {
 				if (visibleEntry != null && visibleEntry.draw(i, context)) {
 					this.occupiedSpaces.clear(visibleEntry.topIndex, visibleEntry.topIndex + visibleEntry.requiredSpaceCount);

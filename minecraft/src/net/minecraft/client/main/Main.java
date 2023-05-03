@@ -1,5 +1,7 @@
 package net.minecraft.client.main;
 
+import com.google.common.base.Stopwatch;
+import com.google.common.base.Ticker;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.authlib.properties.PropertyMap;
@@ -30,6 +32,8 @@ import net.minecraft.client.WindowSettings;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.util.GlException;
 import net.minecraft.client.util.Session;
+import net.minecraft.client.util.telemetry.GameLoadTimeEvent;
+import net.minecraft.client.util.telemetry.TelemetryEventProperty;
 import net.minecraft.obfuscate.DontObfuscate;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.util.JsonHelper;
@@ -49,6 +53,10 @@ public class Main {
 
 	@DontObfuscate
 	public static void main(String[] args) {
+		Stopwatch stopwatch = Stopwatch.createStarted(Ticker.systemTicker());
+		Stopwatch stopwatch2 = Stopwatch.createStarted(Ticker.systemTicker());
+		GameLoadTimeEvent.INSTANCE.addTimer(TelemetryEventProperty.LOAD_TIME_TOTAL_TIME_MS, stopwatch);
+		GameLoadTimeEvent.INSTANCE.addTimer(TelemetryEventProperty.LOAD_TIME_PRE_WINDOW_MS, stopwatch2);
 		SharedConstants.createGameVersion();
 		SharedConstants.enableDataFixerOptimization();
 		OptionParser optionParser = new OptionParser();
@@ -97,7 +105,7 @@ public class Main {
 		if (string != null) {
 			try {
 				proxy = new Proxy(Type.SOCKS, new InetSocketAddress(string, getOption(optionSet, optionSpec10)));
-			} catch (Exception var81) {
+			} catch (Exception var83) {
 			}
 		}
 
@@ -143,6 +151,7 @@ public class Main {
 
 		CrashReport.initCrashReport();
 		Bootstrap.initialize();
+		GameLoadTimeEvent.INSTANCE.setBootstrapTime(Bootstrap.LOAD_TIME.get());
 		Bootstrap.logMissing();
 		Util.startTimerHack();
 		String string14 = (String)optionSpec26.value(optionSet);
@@ -182,11 +191,11 @@ public class Main {
 			RenderSystem.beginInitialization();
 			minecraftClient = new MinecraftClient(runArgs);
 			RenderSystem.finishInitialization();
-		} catch (GlException var79) {
-			LOGGER.warn("Failed to create window: ", var79);
+		} catch (GlException var81) {
+			LOGGER.warn("Failed to create window: ", var81);
 			return;
-		} catch (Throwable var80) {
-			CrashReport crashReport = CrashReport.create(var80, "Initializing game");
+		} catch (Throwable var82) {
+			CrashReport crashReport = CrashReport.create(var82, "Initializing game");
 			CrashReportSection crashReportSection = crashReport.addElement("Initialization");
 			WinNativeModuleUtil.addDetailTo(crashReportSection);
 			MinecraftClient.addSystemDetailsToCrashReport(null, null, runArgs.game.version, null, crashReport);
@@ -216,8 +225,8 @@ public class Main {
 			try {
 				RenderSystem.initGameThread(false);
 				minecraftClient.run();
-			} catch (Throwable var78) {
-				LOGGER.error("Unhandled game exception", var78);
+			} catch (Throwable var80) {
+				LOGGER.error("Unhandled game exception", var80);
 			}
 		}
 
@@ -228,8 +237,8 @@ public class Main {
 			if (thread2 != null) {
 				thread2.join();
 			}
-		} catch (InterruptedException var76) {
-			LOGGER.error("Exception during client thread shutdown", var76);
+		} catch (InterruptedException var78) {
+			LOGGER.error("Exception during client thread shutdown", var78);
 		} finally {
 			minecraftClient.stop();
 		}

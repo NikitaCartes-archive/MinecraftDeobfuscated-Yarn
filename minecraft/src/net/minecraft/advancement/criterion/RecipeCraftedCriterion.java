@@ -8,7 +8,7 @@ import java.util.List;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
@@ -23,11 +23,11 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 	}
 
 	protected RecipeCraftedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe_id"));
 		ItemPredicate[] itemPredicates = ItemPredicate.deserializeAll(jsonObject.get("ingredients"));
-		return new RecipeCraftedCriterion.Conditions(extended, identifier, List.of(itemPredicates));
+		return new RecipeCraftedCriterion.Conditions(lootContextPredicate, identifier, List.of(itemPredicates));
 	}
 
 	public void trigger(ServerPlayerEntity player, Identifier recipeId, List<ItemStack> ingredients) {
@@ -38,18 +38,18 @@ public class RecipeCraftedCriterion extends AbstractCriterion<RecipeCraftedCrite
 		private final Identifier recipeId;
 		private final List<ItemPredicate> ingredients;
 
-		public Conditions(EntityPredicate.Extended player, Identifier recipeId, List<ItemPredicate> ingredients) {
+		public Conditions(LootContextPredicate player, Identifier recipeId, List<ItemPredicate> ingredients) {
 			super(RecipeCraftedCriterion.ID, player);
 			this.recipeId = recipeId;
 			this.ingredients = ingredients;
 		}
 
 		public static RecipeCraftedCriterion.Conditions create(Identifier recipeId, List<ItemPredicate> ingredients) {
-			return new RecipeCraftedCriterion.Conditions(EntityPredicate.Extended.EMPTY, recipeId, ingredients);
+			return new RecipeCraftedCriterion.Conditions(LootContextPredicate.EMPTY, recipeId, ingredients);
 		}
 
 		public static RecipeCraftedCriterion.Conditions create(Identifier recipeId) {
-			return new RecipeCraftedCriterion.Conditions(EntityPredicate.Extended.EMPTY, recipeId, List.of());
+			return new RecipeCraftedCriterion.Conditions(LootContextPredicate.EMPTY, recipeId, List.of());
 		}
 
 		boolean matches(Identifier recipeId, List<ItemStack> ingredients) {

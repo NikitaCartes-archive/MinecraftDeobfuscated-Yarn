@@ -119,7 +119,7 @@ public class LootManager implements ResourceReloader, LootDataLookup {
 
 		AndCondition(LootCondition[] terms) {
 			this.terms = terms;
-			this.predicate = LootConditionTypes.joinAnd(terms);
+			this.predicate = LootConditionTypes.matchingAll(terms);
 		}
 
 		public final boolean test(LootContext lootContext) {

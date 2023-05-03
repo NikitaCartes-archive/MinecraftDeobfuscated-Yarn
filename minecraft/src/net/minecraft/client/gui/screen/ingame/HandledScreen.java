@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerInventory;
@@ -151,11 +152,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	}
 
 	public static void drawSlotHighlight(DrawContext context, int x, int y, int z) {
-		RenderSystem.disableDepthTest();
-		RenderSystem.colorMask(true, true, true, false);
-		context.fillGradient(x, y, x + 16, y + 16, z, -2130706433, -2130706433);
-		RenderSystem.colorMask(true, true, true, true);
-		RenderSystem.enableDepthTest();
+		context.fillGradient(RenderLayer.getGuiOverlay(), x, y, x + 16, y + 16, -2130706433, -2130706433, z);
 	}
 
 	protected void drawMouseoverTooltip(DrawContext context, int x, int y) {

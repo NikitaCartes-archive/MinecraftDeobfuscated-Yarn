@@ -32,7 +32,7 @@ public class ShapedRecipeJsonBuilder extends RecipeJsonBuilder implements Crafti
 	private final int count;
 	private final List<String> pattern = Lists.newArrayList();
 	private final Map<Character, Ingredient> inputs = Maps.newLinkedHashMap();
-	private final Advancement.Builder advancementBuilder = Advancement.Builder.create();
+	private final Advancement.Builder advancementBuilder = Advancement.Builder.createUntelemetered();
 	@Nullable
 	private String group;
 	private boolean showNotification = true;

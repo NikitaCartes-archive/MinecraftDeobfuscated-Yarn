@@ -6,6 +6,7 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -18,10 +19,10 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 	}
 
 	public TameAnimalCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		EntityPredicate.Extended extended2 = EntityPredicate.Extended.getInJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new TameAnimalCriterion.Conditions(extended, extended2);
+		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
+		return new TameAnimalCriterion.Conditions(lootContextPredicate, lootContextPredicate2);
 	}
 
 	public void trigger(ServerPlayerEntity player, AnimalEntity entity) {
@@ -30,19 +31,19 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityPredicate.Extended entity;
+		private final LootContextPredicate entity;
 
-		public Conditions(EntityPredicate.Extended player, EntityPredicate.Extended entity) {
+		public Conditions(LootContextPredicate player, LootContextPredicate entity) {
 			super(TameAnimalCriterion.ID, player);
 			this.entity = entity;
 		}
 
 		public static TameAnimalCriterion.Conditions any() {
-			return new TameAnimalCriterion.Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY);
+			return new TameAnimalCriterion.Conditions(LootContextPredicate.EMPTY, LootContextPredicate.EMPTY);
 		}
 
 		public static TameAnimalCriterion.Conditions create(EntityPredicate entity) {
-			return new TameAnimalCriterion.Conditions(EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(entity));
+			return new TameAnimalCriterion.Conditions(LootContextPredicate.EMPTY, EntityPredicate.asLootContextPredicate(entity));
 		}
 
 		public boolean matches(LootContext tamedEntityContext) {

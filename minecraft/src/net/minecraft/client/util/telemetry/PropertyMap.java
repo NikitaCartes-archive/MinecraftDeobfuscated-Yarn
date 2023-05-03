@@ -100,6 +100,14 @@ public class PropertyMap {
 			return this;
 		}
 
+		public <T> PropertyMap.Builder putIfNonNull(TelemetryEventProperty<T> property, @Nullable T value) {
+			if (value != null) {
+				this.backingMap.put(property, value);
+			}
+
+			return this;
+		}
+
 		public PropertyMap.Builder putAll(PropertyMap map) {
 			this.backingMap.putAll(map.backingMap);
 			return this;

@@ -42,7 +42,7 @@ public class LootPool {
 	LootPool(LootPoolEntry[] entries, LootCondition[] conditions, LootFunction[] functions, LootNumberProvider rolls, LootNumberProvider bonusRolls) {
 		this.entries = entries;
 		this.conditions = conditions;
-		this.predicate = LootConditionTypes.joinAnd(conditions);
+		this.predicate = LootConditionTypes.matchingAll(conditions);
 		this.functions = functions;
 		this.javaFunctions = LootFunctionTypes.join(functions);
 		this.rolls = rolls;

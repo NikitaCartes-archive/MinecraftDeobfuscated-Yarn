@@ -2,14 +2,14 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.util.Identifier;
 
 public abstract class AbstractCriterionConditions implements CriterionConditions {
 	private final Identifier id;
-	private final EntityPredicate.Extended playerPredicate;
+	private final LootContextPredicate playerPredicate;
 
-	public AbstractCriterionConditions(Identifier id, EntityPredicate.Extended entity) {
+	public AbstractCriterionConditions(Identifier id, LootContextPredicate entity) {
 		this.id = id;
 		this.playerPredicate = entity;
 	}
@@ -19,7 +19,7 @@ public abstract class AbstractCriterionConditions implements CriterionConditions
 		return this.id;
 	}
 
-	protected EntityPredicate.Extended getPlayerPredicate() {
+	protected LootContextPredicate getPlayerPredicate() {
 		return this.playerPredicate;
 	}
 

@@ -53,6 +53,8 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private final boolean newWorld;
 	@Nullable
 	private final Duration worldLoadTime;
+	@Nullable
+	private String minigameName;
 
 	public ClientLoginNetworkHandler(
 		ClientConnection connection,
@@ -142,7 +144,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 					this.connection,
 					this.serverInfo,
 					this.profile,
-					this.client.getTelemetryManager().createWorldSession(this.newWorld, this.worldLoadTime)
+					this.client.getTelemetryManager().createWorldSession(this.newWorld, this.worldLoadTime, this.minigameName)
 				)
 			);
 	}
@@ -177,5 +179,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	public void onQueryRequest(LoginQueryRequestS2CPacket packet) {
 		this.statusConsumer.accept(Text.translatable("connect.negotiating"));
 		this.connection.send(new LoginQueryResponseC2SPacket(packet.getQueryId(), null));
+	}
+
+	public void setMinigameName(String minigameName) {
+		this.minigameName = minigameName;
 	}
 }

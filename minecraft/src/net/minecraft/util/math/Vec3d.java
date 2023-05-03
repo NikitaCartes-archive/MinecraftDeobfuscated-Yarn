@@ -23,7 +23,7 @@ public class Vec3d implements Position {
 	public static final Codec<Vec3d> CODEC = Codec.DOUBLE
 		.listOf()
 		.comapFlatMap(
-			coordinates -> Util.toArray(coordinates, 3).map(coords -> new Vec3d(coords.get(0), coords.get(1), coords.get(2))),
+			coordinates -> Util.decodeFixedLengthList(coordinates, 3).map(coords -> new Vec3d(coords.get(0), coords.get(1), coords.get(2))),
 			vec -> List.of(vec.getX(), vec.getY(), vec.getZ())
 		);
 	/**

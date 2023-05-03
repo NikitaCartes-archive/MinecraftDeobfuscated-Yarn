@@ -18,7 +18,7 @@ public class SmithingTrimRecipeJsonBuilder {
 	private final Ingredient template;
 	private final Ingredient base;
 	private final Ingredient addition;
-	private final Advancement.Builder advancement = Advancement.Builder.create();
+	private final Advancement.Builder advancement = Advancement.Builder.createUntelemetered();
 	private final RecipeSerializer<?> serializer;
 
 	public SmithingTrimRecipeJsonBuilder(RecipeSerializer<?> serializer, RecipeCategory category, Ingredient template, Ingredient base, Ingredient addition) {

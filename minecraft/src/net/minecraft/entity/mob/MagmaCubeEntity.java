@@ -72,7 +72,8 @@ public class MagmaCubeEntity extends SlimeEntity {
 	@Override
 	protected void jump() {
 		Vec3d vec3d = this.getVelocity();
-		this.setVelocity(vec3d.x, (double)(this.getJumpVelocity() + (float)this.getSize() * 0.1F), vec3d.z);
+		float f = (float)this.getSize() * 0.1F;
+		this.setVelocity(vec3d.x, (double)(this.getJumpVelocity() + f), vec3d.z);
 		this.velocityDirty = true;
 	}
 

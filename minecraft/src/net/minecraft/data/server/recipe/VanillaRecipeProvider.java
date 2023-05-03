@@ -18,7 +18,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.RecipeSerializer;
@@ -49,7 +49,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		return CompletableFuture.allOf(
 			super.run(writer),
 			this.saveRecipeAdvancement(
-				writer, CraftingRecipeJsonBuilder.ROOT, Advancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions())
+				writer, CraftingRecipeJsonBuilder.ROOT, Advancement.Builder.createUntelemetered().criterion("impossible", new ImpossibleCriterion.Conditions())
 			)
 		);
 	}
@@ -515,7 +515,7 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			.criterion(
 				"has_lots_of_items",
 				new InventoryChangedCriterion.Conditions(
-					EntityPredicate.Extended.EMPTY, NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new ItemPredicate[0]
+					LootContextPredicate.EMPTY, NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new ItemPredicate[0]
 				)
 			)
 			.offerTo(exporter);

@@ -28,7 +28,7 @@ import net.minecraft.util.dynamic.Codecs;
 public class Vec3i implements Comparable<Vec3i> {
 	public static final Codec<Vec3i> CODEC = Codec.INT_STREAM
 		.comapFlatMap(
-			stream -> Util.toArray(stream, 3).map(coordinates -> new Vec3i(coordinates[0], coordinates[1], coordinates[2])),
+			stream -> Util.decodeFixedLengthArray(stream, 3).map(coordinates -> new Vec3i(coordinates[0], coordinates[1], coordinates[2])),
 			vec -> IntStream.of(new int[]{vec.getX(), vec.getY(), vec.getZ()})
 		);
 	public static final Vec3i ZERO = new Vec3i(0, 0, 0);

@@ -1,7 +1,5 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -19,6 +17,7 @@ import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -449,10 +448,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 			x1 = this.getX() + this.width;
 		}
 
-		RenderSystem.enableColorLogicOp();
-		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-		context.fill(x1, y1, x2, y2, -16776961);
-		RenderSystem.disableColorLogicOp();
+		context.fill(RenderLayer.getGuiTextHighlight(), x1, y1, x2, y2, -16776961);
 	}
 
 	public void setMaxLength(int maxLength) {

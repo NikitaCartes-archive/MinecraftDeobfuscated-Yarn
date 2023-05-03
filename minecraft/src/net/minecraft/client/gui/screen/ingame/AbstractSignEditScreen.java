@@ -1,7 +1,5 @@
 package net.minecraft.client.gui.screen.ingame;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -16,6 +14,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.screen.ScreenTexts;
@@ -193,10 +192,7 @@ public abstract class AbstractSignEditScreen extends Screen {
 					int t = this.textRenderer.getWidth(string.substring(0, r)) - this.textRenderer.getWidth(string) / 2;
 					int u = Math.min(s, t);
 					int v = Math.max(s, t);
-					RenderSystem.enableColorLogicOp();
-					RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
-					context.fill(u, m, v, m + this.blockEntity.getTextLineHeight(), -16776961);
-					RenderSystem.disableColorLogicOp();
+					context.fill(RenderLayer.getGuiTextHighlight(), u, m, v, m + this.blockEntity.getTextLineHeight(), -16776961);
 				}
 			}
 		}

@@ -3,6 +3,7 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonObject;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -15,9 +16,9 @@ public class StartedRidingCriterion extends AbstractCriterion<StartedRidingCrite
 	}
 
 	public StartedRidingCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		return new StartedRidingCriterion.Conditions(extended);
+		return new StartedRidingCriterion.Conditions(lootContextPredicate);
 	}
 
 	public void trigger(ServerPlayerEntity player) {
@@ -25,12 +26,12 @@ public class StartedRidingCriterion extends AbstractCriterion<StartedRidingCrite
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		public Conditions(EntityPredicate.Extended player) {
+		public Conditions(LootContextPredicate player) {
 			super(StartedRidingCriterion.ID, player);
 		}
 
 		public static StartedRidingCriterion.Conditions create(EntityPredicate.Builder player) {
-			return new StartedRidingCriterion.Conditions(EntityPredicate.Extended.ofLegacy(player.build()));
+			return new StartedRidingCriterion.Conditions(EntityPredicate.asLootContextPredicate(player.build()));
 		}
 	}
 }

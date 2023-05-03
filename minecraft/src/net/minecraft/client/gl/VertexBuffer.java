@@ -27,6 +27,7 @@ import org.joml.Matrix4f;
  */
 @Environment(EnvType.CLIENT)
 public class VertexBuffer implements AutoCloseable {
+	private final VertexBuffer.Usage usage;
 	private int vertexBufferId;
 	private int indexBufferId;
 	private int vertexArrayId;
@@ -38,7 +39,8 @@ public class VertexBuffer implements AutoCloseable {
 	private int indexCount;
 	private VertexFormat.DrawMode drawMode;
 
-	public VertexBuffer() {
+	public VertexBuffer(VertexBuffer.Usage usage) {
+		this.usage = usage;
 		RenderSystem.assertOnRenderThread();
 		this.vertexBufferId = GlStateManager._glGenBuffers();
 		this.indexBufferId = GlStateManager._glGenBuffers();
@@ -86,7 +88,7 @@ public class VertexBuffer implements AutoCloseable {
 				GlStateManager._glBindBuffer(GlConst.GL_ARRAY_BUFFER, this.vertexBufferId);
 			}
 
-			RenderSystem.glBufferData(GlConst.GL_ARRAY_BUFFER, vertexBuffer, GlConst.GL_STATIC_DRAW);
+			RenderSystem.glBufferData(GlConst.GL_ARRAY_BUFFER, vertexBuffer, this.usage.id);
 		}
 
 		return parameters.format();
@@ -96,7 +98,7 @@ public class VertexBuffer implements AutoCloseable {
 	private RenderSystem.ShapeIndexBuffer uploadIndexBuffer(BufferBuilder.DrawParameters parameters, ByteBuffer indexBuffer) {
 		if (!parameters.sequentialIndex()) {
 			GlStateManager._glBindBuffer(GlConst.GL_ELEMENT_ARRAY_BUFFER, this.indexBufferId);
-			RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GlConst.GL_STATIC_DRAW);
+			RenderSystem.glBufferData(GlConst.GL_ELEMENT_ARRAY_BUFFER, indexBuffer, this.usage.id);
 			return null;
 		} else {
 			RenderSystem.ShapeIndexBuffer shapeIndexBuffer = RenderSystem.getSequentialBuffer(parameters.mode());
@@ -244,5 +246,17 @@ public class VertexBuffer implements AutoCloseable {
 
 	public boolean isClosed() {
 		return this.vertexArrayId == -1;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum Usage {
+		STATIC(35044),
+		DYNAMIC(35048);
+
+		final int id;
+
+		private Usage(int id) {
+			this.id = id;
+		}
 	}
 }

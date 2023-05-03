@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
@@ -17,10 +17,10 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 	}
 
 	public ConstructBeaconCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("level"));
-		return new ConstructBeaconCriterion.Conditions(extended, intRange);
+		return new ConstructBeaconCriterion.Conditions(lootContextPredicate, intRange);
 	}
 
 	public void trigger(ServerPlayerEntity player, int level) {
@@ -30,17 +30,17 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 	public static class Conditions extends AbstractCriterionConditions {
 		private final NumberRange.IntRange level;
 
-		public Conditions(EntityPredicate.Extended player, NumberRange.IntRange level) {
+		public Conditions(LootContextPredicate player, NumberRange.IntRange level) {
 			super(ConstructBeaconCriterion.ID, player);
 			this.level = level;
 		}
 
 		public static ConstructBeaconCriterion.Conditions create() {
-			return new ConstructBeaconCriterion.Conditions(EntityPredicate.Extended.EMPTY, NumberRange.IntRange.ANY);
+			return new ConstructBeaconCriterion.Conditions(LootContextPredicate.EMPTY, NumberRange.IntRange.ANY);
 		}
 
 		public static ConstructBeaconCriterion.Conditions level(NumberRange.IntRange level) {
-			return new ConstructBeaconCriterion.Conditions(EntityPredicate.Extended.EMPTY, level);
+			return new ConstructBeaconCriterion.Conditions(LootContextPredicate.EMPTY, level);
 		}
 
 		public boolean matches(int level) {

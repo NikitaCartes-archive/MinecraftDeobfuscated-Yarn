@@ -26,7 +26,7 @@ public class ShapelessRecipeJsonBuilder extends RecipeJsonBuilder implements Cra
 	private final Item output;
 	private final int count;
 	private final List<Ingredient> inputs = Lists.<Ingredient>newArrayList();
-	private final Advancement.Builder advancementBuilder = Advancement.Builder.create();
+	private final Advancement.Builder advancementBuilder = Advancement.Builder.createUntelemetered();
 	@Nullable
 	private String group;
 

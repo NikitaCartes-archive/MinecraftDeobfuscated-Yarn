@@ -64,8 +64,8 @@ public class SplashOverlay extends Overlay {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		int i = this.client.getWindow().getScaledWidth();
-		int j = this.client.getWindow().getScaledHeight();
+		int i = context.getScaledWindowWidth();
+		int j = context.getScaledWindowHeight();
 		long l = Util.getMeasuringTimeMs();
 		if (this.reloading && this.reloadStartTime == -1L) {
 			this.reloadStartTime = l;
@@ -100,9 +100,9 @@ public class SplashOverlay extends Overlay {
 			h = 1.0F;
 		}
 
-		int k = (int)((double)this.client.getWindow().getScaledWidth() * 0.5);
-		int p = (int)((double)this.client.getWindow().getScaledHeight() * 0.5);
-		double d = Math.min((double)this.client.getWindow().getScaledWidth() * 0.75, (double)this.client.getWindow().getScaledHeight()) * 0.25;
+		int k = (int)((double)context.getScaledWindowWidth() * 0.5);
+		int p = (int)((double)context.getScaledWindowHeight() * 0.5);
+		double d = Math.min((double)context.getScaledWindowWidth() * 0.75, (double)context.getScaledWindowHeight()) * 0.25;
 		int q = (int)(d * 0.5);
 		double e = d * 4.0;
 		int r = (int)(e * 0.5);
@@ -114,7 +114,7 @@ public class SplashOverlay extends Overlay {
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableBlend();
-		int s = (int)((double)this.client.getWindow().getScaledHeight() * 0.8325);
+		int s = (int)((double)context.getScaledWindowHeight() * 0.8325);
 		float t = this.reload.getProgress();
 		this.progress = MathHelper.clamp(this.progress * 0.95F + t * 0.050000012F, 0.0F, 1.0F);
 		if (f < 1.0F) {
@@ -135,7 +135,7 @@ public class SplashOverlay extends Overlay {
 
 			this.reloadCompleteTime = Util.getMeasuringTimeMs();
 			if (this.client.currentScreen != null) {
-				this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
+				this.client.currentScreen.init(this.client, context.getScaledWindowWidth(), context.getScaledWindowHeight());
 			}
 		}
 	}

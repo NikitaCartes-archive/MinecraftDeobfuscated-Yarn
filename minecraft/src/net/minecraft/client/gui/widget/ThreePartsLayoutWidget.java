@@ -10,8 +10,8 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 	private static final int DEFAULT_HEADER_FOOTER_HEIGHT = 36;
 	private static final int FOOTER_MARGIN_TOP = 30;
 	private final SimplePositioningWidget header = new SimplePositioningWidget();
-	private final SimplePositioningWidget body = new SimplePositioningWidget();
 	private final SimplePositioningWidget footer = new SimplePositioningWidget();
+	private final SimplePositioningWidget body = new SimplePositioningWidget();
 	private final Screen screen;
 	private int headerHeight;
 	private int footerHeight;
@@ -29,8 +29,8 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 		this.headerHeight = headerHeight;
 		this.footerHeight = footerHeight;
 		this.header.getMainPositioner().relative(0.5F, 0.5F);
-		this.body.getMainPositioner().relative(0.5F, 0.5F);
-		this.footer.getMainPositioner().relative(0.5F, 0.0F).marginTop(30);
+		this.footer.getMainPositioner().relative(0.5F, 0.5F);
+		this.body.getMainPositioner().relative(0.5F, 0.0F).marginTop(30);
 	}
 
 	@Override
@@ -80,8 +80,8 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 	@Override
 	public void forEachElement(Consumer<Widget> consumer) {
 		this.header.forEachElement(consumer);
-		this.footer.forEachElement(consumer);
 		this.body.forEachElement(consumer);
+		this.footer.forEachElement(consumer);
 	}
 
 	@Override
@@ -92,14 +92,14 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 		this.header.setMinHeight(i);
 		this.header.setPosition(0, 0);
 		this.header.refreshPositions();
-		this.body.setMinWidth(this.screen.width);
-		this.body.setMinHeight(j);
-		this.body.refreshPositions();
-		this.body.setY(this.screen.height - j);
 		this.footer.setMinWidth(this.screen.width);
-		this.footer.setMinHeight(this.screen.height - i - j);
-		this.footer.setPosition(0, i);
+		this.footer.setMinHeight(j);
 		this.footer.refreshPositions();
+		this.footer.setY(this.screen.height - j);
+		this.body.setMinWidth(this.screen.width);
+		this.body.setMinHeight(this.screen.height - i - j);
+		this.body.setPosition(0, i);
+		this.body.refreshPositions();
 	}
 
 	public <T extends Widget> T addHeader(T widget) {
@@ -110,14 +110,6 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 		return this.header.add(widget, positioner);
 	}
 
-	public <T extends Widget> T addBody(T widget) {
-		return this.body.add(widget);
-	}
-
-	public <T extends Widget> T addBody(T widget, Positioner positioner) {
-		return this.body.add(widget, positioner);
-	}
-
 	public <T extends Widget> T addFooter(T widget) {
 		return this.footer.add(widget);
 	}
@@ -126,15 +118,23 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 		return this.footer.add(widget, positioner);
 	}
 
+	public <T extends Widget> T addBody(T widget) {
+		return this.body.add(widget);
+	}
+
+	public <T extends Widget> T addBody(T widget, Positioner positioner) {
+		return this.body.add(widget, positioner);
+	}
+
 	public Positioner copyHeaderPositioner() {
 		return this.header.copyPositioner();
 	}
 
-	public Positioner copyFooterPositioner() {
-		return this.footer.copyPositioner();
-	}
-
 	public Positioner copyBodyPositioner() {
 		return this.body.copyPositioner();
+	}
+
+	public Positioner copyFooterPositioner() {
+		return this.footer.copyPositioner();
 	}
 }

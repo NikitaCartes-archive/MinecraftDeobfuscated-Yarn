@@ -12,6 +12,7 @@ import net.minecraft.advancement.AdvancementManager;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.AdvancementToast;
+import net.minecraft.client.util.telemetry.WorldSession;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.util.Identifier;
@@ -21,6 +22,7 @@ import org.slf4j.Logger;
 public class ClientAdvancementManager {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final MinecraftClient client;
+	private final WorldSession worldSession;
 	private final AdvancementManager manager = new AdvancementManager();
 	private final Map<Advancement, AdvancementProgress> advancementProgresses = Maps.<Advancement, AdvancementProgress>newHashMap();
 	@Nullable
@@ -28,8 +30,9 @@ public class ClientAdvancementManager {
 	@Nullable
 	private Advancement selectedTab;
 
-	public ClientAdvancementManager(MinecraftClient client) {
+	public ClientAdvancementManager(MinecraftClient client, WorldSession worldSession) {
 		this.client = client;
+		this.worldSession = worldSession;
 	}
 
 	public void onAdvancements(AdvancementUpdateS2CPacket packet) {
@@ -51,8 +54,14 @@ public class ClientAdvancementManager {
 					this.listener.setProgress(advancement, advancementProgress);
 				}
 
-				if (!packet.shouldClearCurrent() && advancementProgress.isDone() && advancement.getDisplay() != null && advancement.getDisplay().shouldShowToast()) {
-					this.client.getToastManager().add(new AdvancementToast(advancement));
+				if (!packet.shouldClearCurrent() && advancementProgress.isDone()) {
+					if (this.client.world != null) {
+						this.worldSession.onAdvancementMade(this.client.world, advancement);
+					}
+
+					if (advancement.getDisplay() != null && advancement.getDisplay().shouldShowToast()) {
+						this.client.getToastManager().add(new AdvancementToast(advancement));
+					}
 				}
 			} else {
 				LOGGER.warn("Server informed client about progress for unknown advancement {}", entry.getKey());

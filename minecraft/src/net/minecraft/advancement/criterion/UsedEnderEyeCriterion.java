@@ -3,7 +3,7 @@ package net.minecraft.advancement.criterion;
 import com.google.gson.JsonObject;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.EntityPredicate;
+import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -17,10 +17,10 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 	}
 
 	public UsedEnderEyeCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, EntityPredicate.Extended extended, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("distance"));
-		return new UsedEnderEyeCriterion.Conditions(extended, floatRange);
+		return new UsedEnderEyeCriterion.Conditions(lootContextPredicate, floatRange);
 	}
 
 	public void trigger(ServerPlayerEntity player, BlockPos strongholdPos) {
@@ -33,7 +33,7 @@ public class UsedEnderEyeCriterion extends AbstractCriterion<UsedEnderEyeCriteri
 	public static class Conditions extends AbstractCriterionConditions {
 		private final NumberRange.FloatRange distance;
 
-		public Conditions(EntityPredicate.Extended player, NumberRange.FloatRange distance) {
+		public Conditions(LootContextPredicate player, NumberRange.FloatRange distance) {
 			super(UsedEnderEyeCriterion.ID, player);
 			this.distance = distance;
 		}
