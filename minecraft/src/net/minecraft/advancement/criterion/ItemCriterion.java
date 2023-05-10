@@ -6,11 +6,13 @@ import java.util.Arrays;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.condition.LocationCheckLootCondition;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.condition.MatchToolLootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
@@ -51,12 +53,13 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 	public void trigger(ServerPlayerEntity player, BlockPos pos, ItemStack stack) {
 		ServerWorld serverWorld = player.getServerWorld();
 		BlockState blockState = serverWorld.getBlockState(pos);
-		LootContext lootContext = new LootContext.Builder(serverWorld)
-			.parameter(LootContextParameters.ORIGIN, pos.toCenterPos())
-			.parameter(LootContextParameters.THIS_ENTITY, player)
-			.parameter(LootContextParameters.BLOCK_STATE, blockState)
-			.parameter(LootContextParameters.TOOL, stack)
+		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+			.add(LootContextParameters.ORIGIN, pos.toCenterPos())
+			.add(LootContextParameters.THIS_ENTITY, player)
+			.add(LootContextParameters.BLOCK_STATE, blockState)
+			.add(LootContextParameters.TOOL, stack)
 			.build(LootContextTypes.ADVANCEMENT_LOCATION);
+		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(LootTable.DEFAULT_ID);
 		this.trigger(player, conditions -> conditions.test(lootContext));
 	}
 

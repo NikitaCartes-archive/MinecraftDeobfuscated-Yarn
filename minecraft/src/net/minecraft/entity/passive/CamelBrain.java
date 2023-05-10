@@ -35,11 +35,11 @@ import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 
 public class CamelBrain {
-	private static final float field_40152 = 4.0F;
+	private static final float WALK_SPEED = 4.0F;
 	private static final float field_40153 = 2.0F;
 	private static final float field_40154 = 2.5F;
 	private static final float field_40155 = 2.5F;
-	private static final float field_40156 = 1.0F;
+	private static final float BREED_SPEED = 1.0F;
 	private static final UniformIntProvider WALK_TOWARD_ADULT_RANGE = UniformIntProvider.create(5, 16);
 	private static final ImmutableList<SensorType<? extends Sensor<? super CamelEntity>>> SENSORS = ImmutableList.of(
 		SensorType.NEAREST_LIVING_ENTITIES, SensorType.HURT_BY, SensorType.CAMEL_TEMPTATIONS, SensorType.NEAREST_ADULT

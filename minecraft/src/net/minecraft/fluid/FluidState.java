@@ -58,7 +58,7 @@ public final class FluidState extends State<Fluid, FluidState> {
 		return this.getFluid().getLevel(this);
 	}
 
-	public boolean method_15756(BlockView world, BlockPos pos) {
+	public boolean canFlowTo(BlockView world, BlockPos pos) {
 		for (int i = -1; i <= 1; i++) {
 			for (int j = -1; j <= 1; j++) {
 				BlockPos blockPos = pos.add(i, 0, j);

@@ -42,28 +42,28 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	}
 
 	@Override
-	protected void method_51531(long blockPos, long l, int i) {
+	protected void method_51531(long blockPos, long l, int lightLevel) {
 		BlockState blockState = null;
 
 		for (Direction direction : DIRECTIONS) {
 			if (ChunkLightProvider.class_8531.isDirectionBitSet(l, direction)) {
 				long m = BlockPos.offset(blockPos, direction);
 				if (this.lightStorage.hasSection(ChunkSectionPos.fromBlockPos(m))) {
-					int j = this.lightStorage.get(m);
-					int k = i - 1;
-					if (k > j) {
+					int i = this.lightStorage.get(m);
+					int j = lightLevel - 1;
+					if (j > i) {
 						this.mutablePos.set(m);
 						BlockState blockState2 = this.getStateForLighting(this.mutablePos);
-						int n = i - this.getOpacity(blockState2, this.mutablePos);
-						if (n > j) {
+						int k = lightLevel - this.getOpacity(blockState2, this.mutablePos);
+						if (k > i) {
 							if (blockState == null) {
 								blockState = ChunkLightProvider.class_8531.isTrivial(l) ? Blocks.AIR.getDefaultState() : this.getStateForLighting(this.mutablePos.set(blockPos));
 							}
 
 							if (!this.shapesCoverFullCube(blockPos, blockState, m, blockState2, direction)) {
-								this.lightStorage.set(m, n);
-								if (n > 1) {
-									this.method_51566(m, ChunkLightProvider.class_8531.method_51574(n, isTrivialForLighting(blockState2), direction.getOpposite()));
+								this.lightStorage.set(m, k);
+								if (k > 1) {
+									this.method_51566(m, ChunkLightProvider.class_8531.method_51574(k, isTrivialForLighting(blockState2), direction.getOpposite()));
 								}
 							}
 						}

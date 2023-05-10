@@ -33,8 +33,8 @@ public abstract class SinglePreparationResourceReloader<T> implements ResourceRe
 	 * 
 	 * @return the prepared object
 	 * 
-	 * @param manager the resource manager
 	 * @param profiler the prepare profiler
+	 * @param manager the resource manager
 	 */
 	protected abstract T prepare(ResourceManager manager, Profiler profiler);
 
@@ -44,9 +44,9 @@ public abstract class SinglePreparationResourceReloader<T> implements ResourceRe
 	 * <p>This method is called in the apply executor, or the game engine, in a
 	 * reload.
 	 * 
-	 * @param prepared the prepared object
 	 * @param manager the resource manager
 	 * @param profiler the apply profiler
+	 * @param prepared the prepared object
 	 */
 	protected abstract void apply(T prepared, ResourceManager manager, Profiler profiler);
 }

@@ -11,7 +11,7 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class RecipeToast implements Toast {
-	private static final long DURATION = 5000L;
+	private static final long DEFAULT_DURATION_MS = 5000L;
 	private static final Text TITLE = Text.translatable("recipe.toast.title");
 	private static final Text DESCRIPTION = Text.translatable("recipe.toast.description");
 	private final List<Recipe<?>> recipes = Lists.<Recipe<?>>newArrayList();

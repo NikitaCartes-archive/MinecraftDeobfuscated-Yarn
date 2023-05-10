@@ -87,8 +87,8 @@ public class TutorialManager {
 	 * Adds an active tutorial entry to this manager and the corresponding toast
 	 * to the client's toast manager.
 	 * 
-	 * @param toast the tutorial toast
 	 * @param ticks the time the toast will last, in client ticks
+	 * @param toast the tutorial toast
 	 */
 	public void add(TutorialToast toast, int ticks) {
 		this.entries.add(new TutorialManager.Entry(toast, ticks));

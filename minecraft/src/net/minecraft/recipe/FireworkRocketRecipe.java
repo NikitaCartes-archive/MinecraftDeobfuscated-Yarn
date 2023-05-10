@@ -1,6 +1,6 @@
 package net.minecraft.recipe;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -19,12 +19,12 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		boolean bl = false;
 		int i = 0;
 
-		for (int j = 0; j < craftingInventory.size(); j++) {
-			ItemStack itemStack = craftingInventory.getStack(j);
+		for (int j = 0; j < recipeInputInventory.size(); j++) {
+			ItemStack itemStack = recipeInputInventory.getStack(j);
 			if (!itemStack.isEmpty()) {
 				if (PAPER.test(itemStack)) {
 					if (bl) {
@@ -45,14 +45,14 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		return bl && i >= 1;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_ROCKET, 3);
 		NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("Fireworks");
 		NbtList nbtList = new NbtList();
 		int i = 0;
 
-		for (int j = 0; j < craftingInventory.size(); j++) {
-			ItemStack itemStack2 = craftingInventory.getStack(j);
+		for (int j = 0; j < recipeInputInventory.size(); j++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (DURATION_MODIFIER.test(itemStack2)) {
 					i++;

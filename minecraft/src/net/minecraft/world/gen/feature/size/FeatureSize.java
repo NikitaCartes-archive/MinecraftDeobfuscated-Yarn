@@ -18,8 +18,8 @@ public abstract class FeatureSize {
 		return Codec.intRange(0, 80)
 			.optionalFieldOf("min_clipped_height")
 			.<OptionalInt>xmap(
-				optional -> (OptionalInt)optional.map(OptionalInt::of).orElse(OptionalInt.empty()),
-				optionalInt -> optionalInt.isPresent() ? Optional.of(optionalInt.getAsInt()) : Optional.empty()
+				minClippedHeight -> (OptionalInt)minClippedHeight.map(OptionalInt::of).orElse(OptionalInt.empty()),
+				minClippedHeight -> minClippedHeight.isPresent() ? Optional.of(minClippedHeight.getAsInt()) : Optional.empty()
 			)
 			.forGetter(featureSize -> featureSize.minClippedHeight);
 	}

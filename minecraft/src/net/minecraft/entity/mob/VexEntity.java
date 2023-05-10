@@ -45,7 +45,7 @@ public class VexEntity extends HostileEntity implements Ownable {
 	public static final int field_28645 = MathHelper.ceil((float) (Math.PI * 5.0 / 4.0));
 	protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(VexEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int CHARGING_FLAG = 1;
-	private static final double field_41597 = 0.4;
+	private static final double HEIGHT_OFFSET = 0.4;
 	@Nullable
 	MobEntity owner;
 	@Nullable

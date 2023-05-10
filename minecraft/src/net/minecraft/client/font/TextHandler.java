@@ -68,9 +68,9 @@ public class TextHandler {
 	 * {@return the length of a string when it is trimmed to be at most {@code
 	 * maxWidth} wide}
 	 * 
-	 * @param text the string to trim
 	 * @param maxWidth the max width of the trimmed string
 	 * @param style the style of the trimmed string
+	 * @param text the string to trim
 	 */
 	public int getTrimmedLength(String text, int maxWidth, Style style) {
 		TextHandler.WidthLimitingVisitor widthLimitingVisitor = new TextHandler.WidthLimitingVisitor((float)maxWidth);
@@ -459,9 +459,9 @@ public class TextHandler {
 		/**
 		 * Accepts the information on a line-wrap segment.
 		 * 
-		 * @param style the style of this line segment
 		 * @param start the start index of this segment in the original string, inclusive
 		 * @param end the end index of this segment in the original string, exclusive
+		 * @param style the style of this line segment
 		 */
 		void accept(Style style, int start, int end);
 	}

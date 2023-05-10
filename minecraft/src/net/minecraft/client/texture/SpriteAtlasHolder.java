@@ -12,10 +12,10 @@ import net.minecraft.util.profiler.Profiler;
 @Environment(EnvType.CLIENT)
 public abstract class SpriteAtlasHolder implements ResourceReloader, AutoCloseable {
 	private final SpriteAtlasTexture atlas;
-	private final Identifier field_41425;
+	private final Identifier sourcePath;
 
-	public SpriteAtlasHolder(TextureManager textureManager, Identifier atlasId, Identifier identifier) {
-		this.field_41425 = identifier;
+	public SpriteAtlasHolder(TextureManager textureManager, Identifier atlasId, Identifier sourcePath) {
+		this.sourcePath = sourcePath;
 		this.atlas = new SpriteAtlasTexture(atlasId);
 		textureManager.registerTexture(this.atlas.getId(), this.atlas);
 	}
@@ -34,7 +34,7 @@ public abstract class SpriteAtlasHolder implements ResourceReloader, AutoCloseab
 		Executor applyExecutor
 	) {
 		return SpriteLoader.fromAtlas(this.atlas)
-			.load(manager, this.field_41425, 0, prepareExecutor)
+			.load(manager, this.sourcePath, 0, prepareExecutor)
 			.thenCompose(SpriteLoader.StitchResult::whenComplete)
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(stitchResult -> this.afterReload(stitchResult, applyProfiler), applyExecutor);

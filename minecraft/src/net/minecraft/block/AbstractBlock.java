@@ -30,7 +30,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.Registries;
@@ -406,12 +406,12 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see #canPlaceAt
 	 * @see Block#FORCE_STATE
 	 * 
-	 * @param state the state of this block
-	 * @param direction the direction from this block to the neighbor
 	 * @param neighborState the state of the updated neighbor block
-	 * @param world the world
-	 * @param pos the position of this block
+	 * @param direction the direction from this block to the neighbor
+	 * @param state the state of this block
 	 * @param neighborPos the position of the neighbor block
+	 * @param pos the position of this block
+	 * @param world the world
 	 */
 	@Deprecated
 	public BlockState getStateForNeighborUpdate(
@@ -690,15 +690,15 @@ public abstract class AbstractBlock implements ToggleableFeature {
 	 * @see net.minecraft.loot.context.LootContextParameters
 	 */
 	@Deprecated
-	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
+	public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
 		Identifier identifier = this.getLootTableId();
 		if (identifier == LootTables.EMPTY) {
 			return Collections.emptyList();
 		} else {
-			LootContext lootContext = builder.parameter(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
-			ServerWorld serverWorld = lootContext.getWorld();
+			LootContextParameterSet lootContextParameterSet = builder.add(LootContextParameters.BLOCK_STATE, state).build(LootContextTypes.BLOCK);
+			ServerWorld serverWorld = lootContextParameterSet.getWorld();
 			LootTable lootTable = serverWorld.getServer().getLootManager().getLootTable(identifier);
-			return lootTable.generateLoot(lootContext);
+			return lootTable.generateLoot(lootContextParameterSet);
 		}
 	}
 
@@ -1423,7 +1423,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 			this.getBlock().onStacksDropped(this.asBlockState(), world, pos, tool, dropExperience);
 		}
 
-		public List<ItemStack> getDroppedStacks(LootContext.Builder builder) {
+		public List<ItemStack> getDroppedStacks(LootContextParameterSet.Builder builder) {
 			return this.getBlock().getDroppedStacks(this.asBlockState(), builder);
 		}
 
@@ -1448,11 +1448,11 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		 * 
 		 * @return the new state of this block
 		 * 
-		 * @param direction the direction from this block to the neighbor
-		 * @param neighborState the state of the updated neighbor block
-		 * @param world the world
-		 * @param pos the position of this block
 		 * @param neighborPos the position of the neighbor block
+		 * @param neighborState the state of the updated neighbor block
+		 * @param direction the direction from this block to the neighbor
+		 * @param pos the position of this block
+		 * @param world the world
 		 */
 		public BlockState getStateForNeighborUpdate(Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
 			return this.getBlock().getStateForNeighborUpdate(this.asBlockState(), direction, neighborState, world, pos, neighborPos);
@@ -1678,7 +1678,7 @@ public abstract class AbstractBlock implements ToggleableFeature {
 		private Settings() {
 		}
 
-		public static AbstractBlock.Settings of() {
+		public static AbstractBlock.Settings create() {
 			return new AbstractBlock.Settings();
 		}
 

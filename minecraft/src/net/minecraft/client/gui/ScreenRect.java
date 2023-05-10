@@ -27,10 +27,10 @@ public record ScreenRect(ScreenPos position, int width, int height) {
 	/**
 	 * {@return a new rect}
 	 * 
-	 * @param sameAxisCoord the coordinate of the {@code axis} axis
 	 * @param otherAxisCoord the coordinate of the {@code axis}'s other axis
-	 * @param sameAxisLength the length of the edge whose axis is the same as {@code axis}
+	 * @param sameAxisCoord the coordinate of the {@code axis} axis
 	 * @param otherAxisLength the length of the edge whose axis is different from {@code axis}
+	 * @param sameAxisLength the length of the edge whose axis is the same as {@code axis}
 	 */
 	public static ScreenRect of(NavigationAxis axis, int sameAxisCoord, int otherAxisCoord, int sameAxisLength, int otherAxisLength) {
 		return switch (axis) {

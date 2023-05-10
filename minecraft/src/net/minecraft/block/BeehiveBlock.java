@@ -24,7 +24,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
@@ -276,14 +276,14 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
-		Entity entity = builder.getNullable(LootContextParameters.THIS_ENTITY);
+	public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+		Entity entity = builder.getOptional(LootContextParameters.THIS_ENTITY);
 		if (entity instanceof TntEntity
 			|| entity instanceof CreeperEntity
 			|| entity instanceof WitherSkullEntity
 			|| entity instanceof WitherEntity
 			|| entity instanceof TntMinecartEntity) {
-			BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
+			BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
 			if (blockEntity instanceof BeehiveBlockEntity beehiveBlockEntity) {
 				beehiveBlockEntity.angerBees(null, state, BeehiveBlockEntity.BeeState.EMERGENCY);
 			}

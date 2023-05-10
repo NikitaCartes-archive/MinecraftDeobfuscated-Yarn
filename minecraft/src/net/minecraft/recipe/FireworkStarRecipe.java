@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.FireworkRocketItem;
 import net.minecraft.item.Item;
@@ -50,15 +50,15 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		boolean bl = false;
 		boolean bl2 = false;
 		boolean bl3 = false;
 		boolean bl4 = false;
 		boolean bl5 = false;
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack = recipeInputInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				if (TYPE_MODIFIER.test(itemStack)) {
 					if (bl3) {
@@ -97,14 +97,14 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		return bl && bl2;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		ItemStack itemStack = new ItemStack(Items.FIREWORK_STAR);
 		NbtCompound nbtCompound = itemStack.getOrCreateSubNbt("Explosion");
 		FireworkRocketItem.Type type = FireworkRocketItem.Type.SMALL_BALL;
 		List<Integer> list = Lists.<Integer>newArrayList();
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack2 = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(i);
 			if (!itemStack2.isEmpty()) {
 				if (TYPE_MODIFIER.test(itemStack2)) {
 					type = (FireworkRocketItem.Type)TYPE_MODIFIER_MAP.get(itemStack2.getItem());

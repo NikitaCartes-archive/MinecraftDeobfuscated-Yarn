@@ -1294,9 +1294,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 * 
 	 * @return whether the server was successfully opened to LAN
 	 * 
+	 * @param port the port to open up to LAN connections
 	 * @param gameMode the game mode connecting players will have set by default
 	 * @param cheatsAllowed whether players on the server have operator permissions
-	 * @param port the port to open up to LAN connections
 	 */
 	public boolean openToLan(@Nullable GameMode gameMode, boolean cheatsAllowed, int port) {
 		return false;
@@ -1350,6 +1350,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.apiServices.profileRepository();
 	}
 
+	@Nullable
 	public UserCache getUserCache() {
 		return this.apiServices.userCache();
 	}

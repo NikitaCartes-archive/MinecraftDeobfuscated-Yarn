@@ -27,8 +27,8 @@ import net.minecraft.world.WorldAccess;
 public class NetherPortal {
 	private static final int MIN_WIDTH = 2;
 	public static final int MAX_WIDTH = 21;
-	private static final int field_31826 = 3;
-	public static final int field_31824 = 21;
+	private static final int MIN_HEIGHT = 3;
+	public static final int MAX_HEIGHT = 21;
 	private static final AbstractBlock.ContextPredicate IS_VALID_FRAME_BLOCK = (state, world, pos) -> state.isOf(Blocks.OBSIDIAN);
 	private static final float FALLBACK_THRESHOLD = 4.0F;
 	private static final double HEIGHT_STRETCH = 1.0;

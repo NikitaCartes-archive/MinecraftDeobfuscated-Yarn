@@ -451,6 +451,7 @@ public class GameRenderer implements AutoCloseable {
 			}
 
 			renderTypeGuiProgram = this.preloadProgram(factory, "rendertype_gui", VertexFormats.POSITION_COLOR);
+			renderTypeGuiOverlayProgram = this.preloadProgram(factory, "rendertype_gui_overlay", VertexFormats.POSITION_COLOR);
 			positionProgram = this.preloadProgram(factory, "position", VertexFormats.POSITION);
 			positionColorProgram = this.preloadProgram(factory, "position_color", VertexFormats.POSITION_COLOR);
 			positionColorTexProgram = this.preloadProgram(factory, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
@@ -1037,7 +1038,7 @@ public class GameRenderer implements AutoCloseable {
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (this.client.player != null) {
-					float f = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
+					float f = MathHelper.lerp(tickDelta, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity);
 					float g = this.client.options.getDistortionEffectScale().getValue().floatValue();
 					if (f > 0.0F && this.client.player.hasStatusEffect(StatusEffects.NAUSEA) && g < 1.0F) {
 						this.renderNausea(drawContext, f * (1.0F - g));
@@ -1203,7 +1204,7 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		float f = this.client.options.getDistortionEffectScale().getValue().floatValue();
-		float g = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength) * f * f;
+		float g = MathHelper.lerp(tickDelta, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity) * f * f;
 		if (g > 0.0F) {
 			int i = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
 			float h = 5.0F / (g * g + 5.0F) - g * 0.04F;

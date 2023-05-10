@@ -4,7 +4,6 @@ import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
@@ -18,13 +17,13 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBackupInfoScreen extends RealmsScreen {
-	private static final Text UNKNOWN = Text.literal("UNKNOWN");
+	private static final Text UNKNOWN = Text.translatable("mco.backup.unknown");
 	private final Screen parent;
 	final Backup backup;
 	private RealmsBackupInfoScreen.BackupInfoList backupInfoList;
 
 	public RealmsBackupInfoScreen(Screen parent, Backup backup) {
-		super(Text.literal("Changes from last backup"));
+		super(Text.translatable("mco.backup.info.title"));
 		this.parent = parent;
 		this.backup = backup;
 	}
@@ -101,6 +100,17 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 	@Environment(EnvType.CLIENT)
 	class BackupInfoListEntry extends AlwaysSelectedEntryListWidget.Entry<RealmsBackupInfoScreen.BackupInfoListEntry> {
+		private static final Text TEMPLATE_NAME_TEXT = Text.translatable("mco.backup.entry.templateName");
+		private static final Text GAME_DIFFICULTY_TEXT = Text.translatable("mco.backup.entry.gameDifficulty");
+		private static final Text NAME_TEXT = Text.translatable("mco.backup.entry.name");
+		private static final Text GAME_SERVER_VERSION_TEXT = Text.translatable("mco.backup.entry.gameServerVersion");
+		private static final Text UPLOADED_TEXT = Text.translatable("mco.backup.entry.uploaded");
+		private static final Text ENABLED_PACK_TEXT = Text.translatable("mco.backup.entry.enabledPack");
+		private static final Text DESCRIPTION_TEXT = Text.translatable("mco.backup.entry.description");
+		private static final Text GAME_MODE_TEXT = Text.translatable("mco.backup.entry.gameMode");
+		private static final Text SEED_TEXT = Text.translatable("mco.backup.entry.seed");
+		private static final Text WORLD_TYPE_TEXT = Text.translatable("mco.backup.entry.worldType");
+		private static final Text UNDEFINED_TEXT = Text.translatable("mco.backup.entry.undefined");
 		private final String key;
 		private final String value;
 
@@ -111,9 +121,26 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			TextRenderer textRenderer = RealmsBackupInfoScreen.this.client.textRenderer;
-			context.drawTextWithShadow(textRenderer, this.key, x, y, 10526880);
-			context.drawTextWithShadow(textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.key, this.value), x, y + 12, 16777215);
+			context.drawTextWithShadow(RealmsBackupInfoScreen.this.textRenderer, this.getTextFromKey(this.key), x, y, 10526880);
+			context.drawTextWithShadow(
+				RealmsBackupInfoScreen.this.textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.key, this.value), x, y + 12, 16777215
+			);
+		}
+
+		private Text getTextFromKey(String key) {
+			return switch (key) {
+				case "template_name" -> TEMPLATE_NAME_TEXT;
+				case "game_difficulty" -> GAME_DIFFICULTY_TEXT;
+				case "name" -> NAME_TEXT;
+				case "game_server_version" -> GAME_SERVER_VERSION_TEXT;
+				case "uploaded" -> UPLOADED_TEXT;
+				case "enabled_pack" -> ENABLED_PACK_TEXT;
+				case "description" -> DESCRIPTION_TEXT;
+				case "game_mode" -> GAME_MODE_TEXT;
+				case "seed" -> SEED_TEXT;
+				case "world_type" -> WORLD_TYPE_TEXT;
+				default -> UNDEFINED_TEXT;
+			};
 		}
 
 		@Override

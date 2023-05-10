@@ -179,14 +179,14 @@ public class ChunkSection {
 		return this.biomeContainer.get(x, y, z);
 	}
 
-	public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int i, int j) {
+	public void populateBiomes(BiomeSupplier biomeSupplier, MultiNoiseUtil.MultiNoiseSampler sampler, int x, int y, int z) {
 		PalettedContainer<RegistryEntry<Biome>> palettedContainer = this.biomeContainer.slice();
-		int k = 4;
+		int i = 4;
 
-		for (int l = 0; l < 4; l++) {
-			for (int m = 0; m < 4; m++) {
-				for (int n = 0; n < 4; n++) {
-					palettedContainer.swapUnsafe(l, m, n, biomeSupplier.getBiome(x + l, i + m, j + n, sampler));
+		for (int j = 0; j < 4; j++) {
+			for (int k = 0; k < 4; k++) {
+				for (int l = 0; l < 4; l++) {
+					palettedContainer.swapUnsafe(j, k, l, biomeSupplier.getBiome(x + j, y + k, z + l, sampler));
 				}
 			}
 		}

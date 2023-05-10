@@ -158,9 +158,9 @@ public class BlockLocating {
 	 * 
 	 * @param world the world the column is in
 	 * @param pos the starting position of the column
+	 * @param endBlock the ending block of the column
 	 * @param intermediateBlock the blocks that the column must be of, excluding the end
 	 * @param direction the direction which the column extends to
-	 * @param endBlock the ending block of the column
 	 */
 	public static Optional<BlockPos> findColumnEnd(BlockView world, BlockPos pos, Block intermediateBlock, Direction direction, Block endBlock) {
 		BlockPos.Mutable mutable = pos.mutableCopy();

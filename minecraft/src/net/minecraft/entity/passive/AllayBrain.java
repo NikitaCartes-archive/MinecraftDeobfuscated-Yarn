@@ -37,16 +37,16 @@ import net.minecraft.world.World;
 public class AllayBrain {
 	private static final float field_38406 = 1.0F;
 	private static final float field_38407 = 2.25F;
-	private static final float field_38408 = 1.75F;
-	private static final float field_39113 = 2.5F;
+	private static final float WALK_TO_ITEM_SPEED = 1.75F;
+	private static final float FLEE_SPEED = 2.5F;
 	private static final int field_38938 = 4;
 	private static final int field_38939 = 16;
 	private static final int field_38410 = 6;
 	private static final int field_38411 = 30;
 	private static final int field_38412 = 60;
-	private static final int field_38413 = 600;
-	private static final int field_38940 = 32;
-	private static final int field_40130 = 20;
+	private static final int LIKED_NOTEBLOCK_COOLDOWN_TICKS_EXPIRY = 600;
+	private static final int WALK_TO_ITEM_RADIUS = 32;
+	private static final int GIVE_INVENTORY_RUN_TIME = 20;
 
 	protected static Brain<?> create(Brain<AllayEntity> brain) {
 		addCoreActivities(brain);

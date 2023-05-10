@@ -3,19 +3,22 @@ package net.minecraft.inventory;
 import java.util.List;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.util.collection.DefaultedList;
 
-public class CraftingInventory implements Inventory, RecipeInputProvider {
+public class CraftingInventory implements RecipeInputInventory {
 	private final DefaultedList<ItemStack> stacks;
 	private final int width;
 	private final int height;
 	private final ScreenHandler handler;
 
 	public CraftingInventory(ScreenHandler handler, int width, int height) {
-		this.stacks = DefaultedList.ofSize(width * height, ItemStack.EMPTY);
+		this(handler, width, height, DefaultedList.ofSize(width * height, ItemStack.EMPTY));
+	}
+
+	public CraftingInventory(ScreenHandler handler, int width, int height, DefaultedList<ItemStack> stacks) {
+		this.stacks = stacks;
 		this.handler = handler;
 		this.width = width;
 		this.height = height;
@@ -77,14 +80,17 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 		this.stacks.clear();
 	}
 
+	@Override
 	public int getHeight() {
 		return this.height;
 	}
 
+	@Override
 	public int getWidth() {
 		return this.width;
 	}
 
+	@Override
 	public List<ItemStack> getInputStacks() {
 		return List.copyOf(this.stacks);
 	}

@@ -132,10 +132,10 @@ public abstract class AbstractCauldronBlock extends Block {
 	/**
 	 * Fills a cauldron with one level of the specified fluid if possible.
 	 * 
-	 * @param state the current cauldron state
-	 * @param world the world where the cauldron is located
 	 * @param pos the cauldron's position
+	 * @param world the world where the cauldron is located
 	 * @param fluid the fluid to fill the cauldron with
+	 * @param state the current cauldron state
 	 */
 	protected void fillFromDripstone(BlockState state, World world, BlockPos pos, Fluid fluid) {
 	}

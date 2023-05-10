@@ -113,13 +113,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private static final int field_29674 = 200;
 	private static final int field_36291 = 20;
 	private static final int field_36384 = 10000;
-	private static final int field_29675 = 3;
-	public static final int field_29669 = 33;
-	/**
-	 * Specifies the maximum ticket level a chunk can be before a chunk's {@link net.minecraft.server.world.ChunkHolder.LevelType} is {@link net.minecraft.server.world.ChunkHolder.LevelType#BORDER}.
-	 */
-	public static final int MAX_LEVEL = 33 + ChunkStatus.getMaxDistanceFromFull();
-	public static final int field_29670 = 31;
+	private static final int field_29675 = 2;
+	public static final int field_29669 = 32;
+	public static final int field_29670 = ChunkLevels.getLevelFromType(ChunkLevelType.ENTITY_TICKING);
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> currentChunkHolders = new Long2ObjectLinkedOpenHashMap<>();
 	private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> chunkHolders = this.currentChunkHolders.clone();
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> chunksToUnload = new Long2ObjectLinkedOpenHashMap<>();
@@ -284,8 +280,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				string = string + "Ch: §" + chunk.getStatus().getIndex() + chunk.getStatus() + "§r\n";
 			}
 
-			ChunkHolder.LevelType levelType = chunkHolder.getLevelType();
-			string = string + "§" + levelType.ordinal() + levelType;
+			ChunkLevelType chunkLevelType = chunkHolder.getLevelType();
+			string = string + "§" + chunkLevelType.ordinal() + chunkLevelType;
 			return string + "§r";
 		}
 	}
@@ -392,7 +388,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	@Nullable
 	ChunkHolder setLevel(long pos, int level, @Nullable ChunkHolder holder, int i) {
-		if (i > MAX_LEVEL && level > MAX_LEVEL) {
+		if (!ChunkLevels.isAccessible(i) && !ChunkLevels.isAccessible(level)) {
 			return holder;
 		} else {
 			if (holder != null) {
@@ -400,14 +396,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 
 			if (holder != null) {
-				if (level > MAX_LEVEL) {
+				if (!ChunkLevels.isAccessible(level)) {
 					this.unloadedChunks.add(pos);
 				} else {
 					this.unloadedChunks.remove(pos);
 				}
 			}
 
-			if (level <= MAX_LEVEL && holder == null) {
+			if (ChunkLevels.isAccessible(level) && holder == null) {
 				holder = this.chunksToUnload.remove(pos);
 				if (holder != null) {
 					holder.setLevel(level);
@@ -567,7 +563,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			return this.loadChunk(chunkPos);
 		} else {
 			if (requiredStatus == ChunkStatus.LIGHT) {
-				this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.LIGHT), chunkPos);
+				this.ticketManager.addTicketWithLevel(ChunkTicketType.LIGHT, chunkPos, ChunkLevels.getLevelFromStatus(ChunkStatus.LIGHT), chunkPos);
 			}
 
 			if (!requiredStatus.shouldAlwaysUpgrade()) {
@@ -689,7 +685,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.mainThreadExecutor
 			.send(
 				Util.debugRunnable(
-					(Runnable)(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, pos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.LIGHT), pos)),
+					(Runnable)(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, pos, ChunkLevels.getLevelFromStatus(ChunkStatus.LIGHT), pos)),
 					(Supplier<String>)(() -> "release light ticket " + pos)
 				)
 			);
@@ -715,7 +711,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> convertToFullChunk(ChunkHolder chunkHolder) {
 		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getFutureFor(ChunkStatus.FULL.getPrevious());
 		return completableFuture.thenApplyAsync(either -> {
-			ChunkStatus chunkStatus = ChunkHolder.getTargetStatusForLevel(chunkHolder.getLevel());
+			ChunkStatus chunkStatus = ChunkLevels.getStatus(chunkHolder.getLevel());
 			return !chunkStatus.isAtLeast(ChunkStatus.FULL) ? ChunkHolder.UNLOADED_CHUNK : either.mapLeft(protoChunk -> {
 				ChunkPos chunkPos = chunkHolder.getPos();
 				ProtoChunk protoChunk2 = (ProtoChunk)protoChunk;
@@ -727,7 +723,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 					chunkHolder.setCompletedChunk(new WrapperProtoChunk(worldChunk, false));
 				}
 
-				worldChunk.setLevelTypeProvider(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
+				worldChunk.setLevelTypeProvider(() -> ChunkLevels.getType(chunkHolder.getLevel()));
 				worldChunk.loadEntities();
 				if (this.loadedChunks.add(chunkPos.toLong())) {
 					worldChunk.setLoadedToWorld(true);
@@ -740,21 +736,23 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}, task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(task, chunkHolder.getPos().toLong(), chunkHolder::getLevel)));
 	}
 
-	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkTickable(ChunkHolder chunkHolder) {
-		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(chunkHolder, 1, i -> ChunkStatus.FULL);
+	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> makeChunkTickable(ChunkHolder holder) {
+		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(holder, 1, distance -> ChunkStatus.FULL);
 		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = completableFuture.thenApplyAsync(
-				either -> either.mapLeft(list -> (WorldChunk)list.get(list.size() / 2)),
-				task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, task))
+				chunks -> chunks.mapLeft(cs -> (WorldChunk)cs.get(cs.size() / 2)), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task))
 			)
 			.thenApplyAsync(either -> either.ifLeft(chunk -> {
 					chunk.runPostProcessing();
 					this.world.disableTickSchedulers(chunk);
 				}), this.mainThreadExecutor);
+		completableFuture2.handle((chunk, throwable) -> {
+			this.totalChunksLoadedCount.getAndIncrement();
+			return null;
+		});
 		completableFuture2.thenAcceptAsync(either -> either.ifLeft(chunk -> {
-				this.totalChunksLoadedCount.getAndIncrement();
 				MutableObject<ChunkDataS2CPacket> mutableObject = new MutableObject<>();
-				this.getPlayersWatchingChunk(chunkHolder.getPos(), false).forEach(player -> this.sendChunkDataPackets(player, mutableObject, chunk));
-			}), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(chunkHolder, task)));
+				this.getPlayersWatchingChunk(holder.getPos(), false).forEach(player -> this.sendChunkDataPackets(player, mutableObject, chunk));
+			}), task -> this.mainExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task)));
 		return completableFuture2;
 	}
 
@@ -856,7 +854,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		if (i != this.watchDistance) {
 			int j = this.watchDistance;
 			this.watchDistance = i;
-			this.ticketManager.setWatchDistance(this.watchDistance + 2);
+			this.ticketManager.setWatchDistance(this.watchDistance);
 
 			for (ChunkHolder chunkHolder : this.currentChunkHolders.values()) {
 				ChunkPos chunkPos = chunkHolder.getPos();
@@ -1325,7 +1323,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return this.saveDir;
 	}
 
-	void onChunkStatusChange(ChunkPos chunkPos, ChunkHolder.LevelType levelType) {
+	void onChunkStatusChange(ChunkPos chunkPos, ChunkLevelType levelType) {
 		this.chunkStatusChangeListener.onChunkStatusChange(chunkPos, levelType);
 	}
 

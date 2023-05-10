@@ -10,10 +10,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TutorialToast implements Toast {
-	public static final int field_32222 = 154;
-	public static final int field_32223 = 1;
-	public static final int field_32224 = 3;
-	public static final int field_32225 = 28;
+	public static final int PROGRESS_BAR_WIDTH = 154;
+	public static final int PROGRESS_BAR_HEIGHT = 1;
+	public static final int PROGRESS_BAR_X = 3;
+	public static final int PROGRESS_BAR_Y = 28;
 	private final TutorialToast.Type type;
 	private final Text title;
 	@Nullable

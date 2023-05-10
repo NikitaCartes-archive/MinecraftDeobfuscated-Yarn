@@ -1,6 +1,6 @@
 package net.minecraft.world.entity;
 
-import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.ChunkLevelType;
 
 /**
  * The status of entity tracking sections within entity managers.
@@ -28,11 +28,11 @@ public enum EntityTrackingStatus {
 		return this.tracked;
 	}
 
-	public static EntityTrackingStatus fromLevelType(ChunkHolder.LevelType levelType) {
-		if (levelType.isAfter(ChunkHolder.LevelType.ENTITY_TICKING)) {
+	public static EntityTrackingStatus fromLevelType(ChunkLevelType levelType) {
+		if (levelType.isAfter(ChunkLevelType.ENTITY_TICKING)) {
 			return TICKING;
 		} else {
-			return levelType.isAfter(ChunkHolder.LevelType.BORDER) ? TRACKED : HIDDEN;
+			return levelType.isAfter(ChunkLevelType.FULL) ? TRACKED : HIDDEN;
 		}
 	}
 }

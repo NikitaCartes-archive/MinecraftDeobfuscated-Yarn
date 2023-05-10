@@ -1588,10 +1588,8 @@ public class VanillaBlockTagProvider extends ValueLookupTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.MAINTAINS_FARMLAND)
 			.add(
 				Blocks.PUMPKIN_STEM,
-				Blocks.PUMPKIN,
 				Blocks.ATTACHED_PUMPKIN_STEM,
 				Blocks.MELON_STEM,
-				Blocks.MELON,
 				Blocks.ATTACHED_MELON_STEM,
 				Blocks.BEETROOTS,
 				Blocks.CARROTS,

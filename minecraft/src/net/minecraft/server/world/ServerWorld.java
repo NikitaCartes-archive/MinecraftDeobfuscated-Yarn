@@ -91,6 +91,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureTemplateManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.CsvWriter;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Unit;
@@ -108,6 +109,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.IntProvider;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -187,11 +190,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private boolean inBlockTick;
 	private final List<Spawner> spawners;
 	@Nullable
-	private final EnderDragonFight enderDragonFight;
+	private EnderDragonFight enderDragonFight;
 	final Int2ObjectMap<EnderDragonPart> dragonParts = new Int2ObjectOpenHashMap<>();
 	private final StructureAccessor structureAccessor;
 	private final StructureLocator structureLocator;
 	private final boolean shouldTickTime;
+	private final RandomSequencesState randomSequences;
 
 	public ServerWorld(
 		MinecraftServer server,
@@ -273,6 +277,14 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		this.sleepManager = new SleepManager();
 		this.gameEventDispatchManager = new GameEventDispatchManager(this);
+		this.randomSequences = this.getPersistentStateManager()
+			.getOrCreate(nbt -> RandomSequencesState.fromNbt(l, nbt), () -> new RandomSequencesState(l), "random_sequences");
+	}
+
+	@Deprecated
+	@VisibleForTesting
+	public void setEnderDragonFight(@Nullable EnderDragonFight enderDragonFight) {
+		this.enderDragonFight = enderDragonFight;
 	}
 
 	/**
@@ -284,10 +296,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * @see ServerWorldProperties#setRaining
 	 * @see ServerWorldProperties#setThundering
 	 * 
-	 * @param clearDuration how long the clear weather should last, in seconds
-	 * @param rainDuration how long the rain or the thunderstorm should last, in seconds
-	 * @param raining whether a rain is ongoing
 	 * @param thundering whether a thunderstorm is ongoing
+	 * @param clearDuration how long the clear weather should last, in seconds
+	 * @param raining whether a rain is ongoing
+	 * @param rainDuration how long the rain or the thunderstorm should last, in seconds
 	 */
 	public void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering) {
 		this.worldProperties.setClearWeatherTime(clearDuration);
@@ -769,8 +781,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	/**
 	 * Saves the world.
 	 * 
-	 * @param progressListener the listener for the saving process, or {@code null} to specify none
 	 * @param flush if it should immediately write all data to storage device
+	 * @param progressListener the listener for the saving process, or {@code null} to specify none
 	 * @param savingDisabled whether to return early without doing anything
 	 */
 	public void save(@Nullable ProgressListener progressListener, boolean flush, boolean savingDisabled) {
@@ -1313,9 +1325,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * @see net.minecraft.world.gen.chunk.ChunkGenerator#locateStructure(ServerWorld, RegistryEntryList, BlockPos, int, boolean)
 	 * 
 	 * @param pos the position to start the searching at
-	 * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
 	 * @param skipReferencedStructures whether to exclude structures that were previously located (has positive
 	 * {@link net.minecraft.structure.StructureStart#references})
+	 * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
 	 */
 	@Nullable
 	public BlockPos locateStructure(TagKey<Structure> structureTag, BlockPos pos, int radius, boolean skipReferencedStructures) {
@@ -1383,8 +1395,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	/**
 	 * Sets the world spawn point.
 	 * 
-	 * @param pos the position of the spawn point
 	 * @param angle the angle of the spawned entity
+	 * @param pos the position of the spawn point
 	 */
 	public void setSpawnPos(BlockPos pos, float angle) {
 		ChunkPos chunkPos = new ChunkPos(new BlockPos(this.properties.getSpawnX(), 0, this.properties.getSpawnZ()));
@@ -1408,9 +1420,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * <p>Forced chunks are created in-game using the
 	 * {@linkplain net.minecraft.server.command.ForceLoadCommand {@code /forceload} command}.
 	 * 
-	 * @param x the chunk's X coordinate
-	 * @param z the chunk's Z coordinate
 	 * @param forced whether to mark the chunk as forced
+	 * @param z the chunk's Z coordinate
+	 * @param x the chunk's X coordinate
 	 */
 	public boolean setChunkForced(int x, int z, boolean forced) {
 		ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::fromNbt, ForcedChunkState::new, "chunks");
@@ -1835,6 +1847,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Override
 	public FeatureSet getEnabledFeatures() {
 		return this.server.getSaveProperties().getEnabledFeatures();
+	}
+
+	public Random getOrCreateRandom(Identifier id) {
+		return this.randomSequences.getOrCreate(id);
 	}
 
 	final class ServerEntityHandler implements EntityHandler<Entity> {

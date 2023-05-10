@@ -47,7 +47,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 
 public class FrogBrain {
-	private static final float field_37469 = 2.0F;
+	private static final float FLEE_SPEED = 2.0F;
 	private static final float field_37470 = 1.0F;
 	private static final float field_37471 = 1.0F;
 	private static final float field_37472 = 1.0F;
@@ -56,7 +56,7 @@ public class FrogBrain {
 	private static final int field_37475 = 2;
 	private static final int field_37476 = 4;
 	private static final float field_37477 = 1.5F;
-	private static final float field_37478 = 1.25F;
+	private static final float TEMPT_SPEED = 1.25F;
 
 	protected static void coolDownLongJump(FrogEntity frog, Random random) {
 		frog.getBrain().remember(MemoryModuleType.LONG_JUMP_COOLING_DOWN, longJumpCooldownRange.get(random));

@@ -2,7 +2,7 @@ package net.minecraft.recipe;
 
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -18,12 +18,12 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
-		if (!this.fits(craftingInventory.getWidth(), craftingInventory.getHeight())) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
+		if (!this.fits(recipeInputInventory.getWidth(), recipeInputInventory.getHeight())) {
 			return false;
 		} else {
-			for (int i = 0; i < craftingInventory.size(); i++) {
-				ItemStack itemStack = craftingInventory.getStack(i);
+			for (int i = 0; i < recipeInputInventory.size(); i++) {
+				ItemStack itemStack = recipeInputInventory.getStack(i);
 				switch (i) {
 					case 1:
 					case 3:
@@ -47,12 +47,12 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		DecoratedPotBlockEntity.Sherds sherds = new DecoratedPotBlockEntity.Sherds(
-			craftingInventory.getStack(1).getItem(),
-			craftingInventory.getStack(3).getItem(),
-			craftingInventory.getStack(5).getItem(),
-			craftingInventory.getStack(7).getItem()
+			recipeInputInventory.getStack(1).getItem(),
+			recipeInputInventory.getStack(3).getItem(),
+			recipeInputInventory.getStack(5).getItem(),
+			recipeInputInventory.getStack(7).getItem()
 		);
 		return getPotStackWith(sherds);
 	}

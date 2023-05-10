@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -566,21 +567,27 @@ public class GlStateManager {
 		GL11.glTexSubImage2D(target, level, offsetX, offsetY, width, height, format, type, pixels);
 	}
 
-	public static void upload(int level, int offsetX, int offsetY, int width, int height, NativeImage.Format format, IntBuffer pixels) {
+	public static void upload(int level, int offsetX, int offsetY, int width, int height, NativeImage.Format format, IntBuffer pixels, Consumer<IntBuffer> closer) {
 		if (!RenderSystem.isOnRenderThreadOrInit()) {
-			RenderSystem.recordRenderCall(() -> _upload(level, offsetX, offsetY, width, height, format, pixels));
+			RenderSystem.recordRenderCall(() -> _upload(level, offsetX, offsetY, width, height, format, pixels, closer));
 		} else {
-			_upload(level, offsetX, offsetY, width, height, format, pixels);
+			_upload(level, offsetX, offsetY, width, height, format, pixels, closer);
 		}
 	}
 
-	private static void _upload(int level, int offsetX, int offsetY, int width, int height, NativeImage.Format format, IntBuffer pixels) {
-		RenderSystem.assertOnRenderThreadOrInit();
-		_pixelStore(GlConst.GL_UNPACK_ROW_LENGTH, width);
-		_pixelStore(GlConst.GL_UNPACK_SKIP_PIXELS, 0);
-		_pixelStore(GlConst.GL_UNPACK_SKIP_ROWS, 0);
-		format.setUnpackAlignment();
-		GL11.glTexSubImage2D(3553, level, offsetX, offsetY, width, height, format.toGl(), 5121, pixels);
+	private static void _upload(
+		int level, int offsetX, int offsetY, int width, int height, NativeImage.Format format, IntBuffer pixels, Consumer<IntBuffer> closer
+	) {
+		try {
+			RenderSystem.assertOnRenderThreadOrInit();
+			_pixelStore(GlConst.GL_UNPACK_ROW_LENGTH, width);
+			_pixelStore(GlConst.GL_UNPACK_SKIP_PIXELS, 0);
+			_pixelStore(GlConst.GL_UNPACK_SKIP_ROWS, 0);
+			format.setUnpackAlignment();
+			GL11.glTexSubImage2D(3553, level, offsetX, offsetY, width, height, format.toGl(), 5121, pixels);
+		} finally {
+			closer.accept(pixels);
+		}
 	}
 
 	public static void _getTexImage(int target, int level, int format, int type, long pixels) {

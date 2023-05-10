@@ -1,6 +1,6 @@
 package net.minecraft.recipe;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
@@ -14,11 +14,11 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
-		if (craftingInventory.getWidth() == 3 && craftingInventory.getHeight() == 3) {
-			for (int i = 0; i < craftingInventory.getWidth(); i++) {
-				for (int j = 0; j < craftingInventory.getHeight(); j++) {
-					ItemStack itemStack = craftingInventory.getStack(i + j * craftingInventory.getWidth());
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
+		if (recipeInputInventory.getWidth() == 3 && recipeInputInventory.getHeight() == 3) {
+			for (int i = 0; i < recipeInputInventory.getWidth(); i++) {
+				for (int j = 0; j < recipeInputInventory.getHeight(); j++) {
+					ItemStack itemStack = recipeInputInventory.getStack(i + j * recipeInputInventory.getWidth());
 					if (itemStack.isEmpty()) {
 						return false;
 					}
@@ -39,8 +39,8 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
-		ItemStack itemStack = craftingInventory.getStack(1 + craftingInventory.getWidth());
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+		ItemStack itemStack = recipeInputInventory.getStack(1 + recipeInputInventory.getWidth());
 		if (!itemStack.isOf(Items.LINGERING_POTION)) {
 			return ItemStack.EMPTY;
 		} else {

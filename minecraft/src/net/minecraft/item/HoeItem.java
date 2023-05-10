@@ -89,8 +89,8 @@ public class HoeItem extends MiningToolItem {
 	/**
 	 * {@return a tilling action that sets a block state and drops an item}
 	 * 
-	 * @param result the tilled block state
 	 * @param droppedItem the item to drop
+	 * @param result the tilled block state
 	 */
 	public static Consumer<ItemUsageContext> createTillAndDropAction(BlockState result, ItemConvertible droppedItem) {
 		return context -> {

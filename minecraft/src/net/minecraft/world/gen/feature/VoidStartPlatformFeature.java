@@ -11,7 +11,7 @@ import net.minecraft.world.gen.feature.util.FeatureContext;
 public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	private static final BlockPos START_BLOCK = new BlockPos(8, 3, 8);
 	private static final ChunkPos START_CHUNK = new ChunkPos(START_BLOCK);
-	private static final int field_31520 = 16;
+	private static final int MAX_RADIUS = 16;
 	private static final int field_31521 = 1;
 
 	public VoidStartPlatformFeature(Codec<DefaultFeatureConfig> codec) {

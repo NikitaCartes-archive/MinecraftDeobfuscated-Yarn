@@ -28,6 +28,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 	private static final Text ACTIVE_TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip.active");
 	private static final Text MINIGAME_TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip.minigame");
 	private static final Text TOOLTIP = Text.translatable("mco.configure.world.slot.tooltip");
+	private static final Text MINIGAME_SLOT_NAME = Text.translatable("mco.worldSlot.minigame");
 	private final Supplier<RealmsServer> serverDataProvider;
 	private final Consumer<Text> tooltipSetter;
 	private final int slotIndex;
@@ -60,7 +61,7 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 			boolean bl3;
 			if (bl) {
 				bl2 = realmsServer.worldType == RealmsServer.WorldType.MINIGAME;
-				string = "Minigame";
+				string = MINIGAME_SLOT_NAME.getString();
 				l = (long)realmsServer.minigameId;
 				string2 = realmsServer.minigameImage;
 				bl3 = realmsServer.minigameId == -1;

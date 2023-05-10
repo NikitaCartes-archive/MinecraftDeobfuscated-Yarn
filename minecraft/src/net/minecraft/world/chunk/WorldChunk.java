@@ -28,7 +28,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ChunkData;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.ChunkLevelType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -76,7 +76,7 @@ public class WorldChunk extends Chunk {
 	private boolean loadedToWorld;
 	final World world;
 	@Nullable
-	private Supplier<ChunkHolder.LevelType> levelTypeProvider;
+	private Supplier<ChunkLevelType> levelTypeProvider;
 	@Nullable
 	private WorldChunk.EntityLoader entityLoader;
 	private final Int2ObjectMap<GameEventDispatcher> gameEventDispatchers;
@@ -373,7 +373,7 @@ public class WorldChunk extends Chunk {
 		} else {
 			return !(this.world instanceof ServerWorld serverWorld)
 				? true
-				: this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING) && serverWorld.isChunkLoaded(ChunkPos.toLong(pos));
+				: this.getLevelType().isAfter(ChunkLevelType.BLOCK_TICKING) && serverWorld.isChunkLoaded(ChunkPos.toLong(pos));
 		}
 	}
 
@@ -576,11 +576,11 @@ public class WorldChunk extends Chunk {
 		return ChunkStatus.FULL;
 	}
 
-	public ChunkHolder.LevelType getLevelType() {
-		return this.levelTypeProvider == null ? ChunkHolder.LevelType.BORDER : (ChunkHolder.LevelType)this.levelTypeProvider.get();
+	public ChunkLevelType getLevelType() {
+		return this.levelTypeProvider == null ? ChunkLevelType.FULL : (ChunkLevelType)this.levelTypeProvider.get();
 	}
 
-	public void setLevelTypeProvider(Supplier<ChunkHolder.LevelType> levelTypeProvider) {
+	public void setLevelTypeProvider(Supplier<ChunkLevelType> levelTypeProvider) {
 		this.levelTypeProvider = levelTypeProvider;
 	}
 

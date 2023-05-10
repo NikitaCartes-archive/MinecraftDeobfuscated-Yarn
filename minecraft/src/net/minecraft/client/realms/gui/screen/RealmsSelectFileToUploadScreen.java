@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
+	private static final Text LOADING_ERROR_TEXT = Text.translatable("selectWorld.unable_to_load");
 	static final Text WORLD_LANG = Text.translatable("selectWorld.world");
 	static final Text HARDCORE_TEXT = Text.translatable("mco.upload.hardcore").styled(style -> style.withColor(-65536));
 	static final Text CHEATS_TEXT = Text.translatable("selectWorld.cheats");
@@ -66,7 +67,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			this.loadLevelList();
 		} catch (Exception var2) {
 			LOGGER.error("Couldn't load level list", (Throwable)var2);
-			this.client.setScreen(new RealmsGenericErrorScreen(Text.literal("Unable to load worlds"), Text.of(var2.getMessage()), this.parent));
+			this.client.setScreen(new RealmsGenericErrorScreen(LOADING_ERROR_TEXT, Text.of(var2.getMessage()), this.parent));
 			return;
 		}
 
@@ -128,13 +129,13 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 	class WorldListEntry extends AlwaysSelectedEntryListWidget.Entry<RealmsSelectFileToUploadScreen.WorldListEntry> {
 		private final LevelSummary summary;
 		private final String displayName;
-		private final String nameAndLastPlayed;
+		private final Text nameAndLastPlayed;
 		private final Text details;
 
 		public WorldListEntry(LevelSummary summary) {
 			this.summary = summary;
 			this.displayName = summary.getDisplayName();
-			this.nameAndLastPlayed = summary.getName() + " (" + RealmsSelectFileToUploadScreen.getLastPlayed(summary) + ")";
+			this.nameAndLastPlayed = Text.translatable("mco.upload.entry.id", summary.getName(), RealmsSelectFileToUploadScreen.getLastPlayed(summary));
 			Text text;
 			if (summary.isHardcore()) {
 				text = RealmsSelectFileToUploadScreen.HARDCORE_TEXT;
@@ -143,7 +144,7 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			}
 
 			if (summary.hasCheats()) {
-				text = text.copy().append(", ").append(RealmsSelectFileToUploadScreen.CHEATS_TEXT);
+				text = Text.translatable("mco.upload.entry.cheats", text.getString(), RealmsSelectFileToUploadScreen.CHEATS_TEXT);
 			}
 
 			this.details = text;

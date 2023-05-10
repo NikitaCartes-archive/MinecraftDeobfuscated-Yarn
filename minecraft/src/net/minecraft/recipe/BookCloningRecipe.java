@@ -1,6 +1,6 @@
 package net.minecraft.recipe;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
@@ -16,12 +16,12 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int j = 0; j < craftingInventory.size(); j++) {
-			ItemStack itemStack2 = craftingInventory.getStack(j);
+		for (int j = 0; j < recipeInputInventory.size(); j++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.isOf(Items.WRITTEN_BOOK)) {
 					if (!itemStack.isEmpty()) {
@@ -42,12 +42,12 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && itemStack.hasNbt() && i > 0;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int j = 0; j < craftingInventory.size(); j++) {
-			ItemStack itemStack2 = craftingInventory.getStack(j);
+		for (int j = 0; j < recipeInputInventory.size(); j++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.isOf(Items.WRITTEN_BOOK)) {
 					if (!itemStack.isEmpty()) {
@@ -76,11 +76,11 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		}
 	}
 
-	public DefaultedList<ItemStack> getRemainder(CraftingInventory craftingInventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
+	public DefaultedList<ItemStack> getRemainder(RecipeInputInventory recipeInputInventory) {
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(recipeInputInventory.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = craftingInventory.getStack(i);
+			ItemStack itemStack = recipeInputInventory.getStack(i);
 			if (itemStack.getItem().hasRecipeRemainder()) {
 				defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
 			} else if (itemStack.getItem() instanceof WrittenBookItem) {

@@ -88,13 +88,7 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 	}
 
 	private boolean makeOrCheckBranch(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
-		Random random,
-		BlockPos startPos,
-		BlockPos branchPos,
-		boolean make,
-		TreeFeatureConfig config
+		TestableWorld world, BiConsumer<BlockPos, BlockState> replacer, Random random, BlockPos startPos, BlockPos branchPos, boolean make, TreeFeatureConfig config
 	) {
 		if (!make && Objects.equals(startPos, branchPos)) {
 			return true;
@@ -108,10 +102,8 @@ public class LargeOakTrunkPlacer extends TrunkPlacer {
 			for (int j = 0; j <= i; j++) {
 				BlockPos blockPos2 = startPos.add(MathHelper.floor(0.5F + (float)j * f), MathHelper.floor(0.5F + (float)j * g), MathHelper.floor(0.5F + (float)j * h));
 				if (make) {
-					this.getAndSetState(
-						testableWorld, biConsumer, random, blockPos2, config, state -> state.withIfExists(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2))
-					);
-				} else if (!this.canReplaceOrIsLog(testableWorld, blockPos2)) {
+					this.getAndSetState(world, replacer, random, blockPos2, config, state -> state.withIfExists(PillarBlock.AXIS, this.getLogAxis(startPos, blockPos2)));
+				} else if (!this.canReplaceOrIsLog(world, blockPos2)) {
 					return false;
 				}
 			}

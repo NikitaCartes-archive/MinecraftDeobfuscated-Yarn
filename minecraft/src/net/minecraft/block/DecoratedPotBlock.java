@@ -14,7 +14,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.tag.ItemTags;
 import net.minecraft.screen.ScreenTexts;
@@ -35,7 +35,7 @@ import net.minecraft.world.WorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable {
-	public static final Identifier SHERDS_NBT_KEY = new Identifier("sherds");
+	public static final Identifier SHERDS_DYNAMIC_DROP_ID = new Identifier("sherds");
 	private static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 16.0, 15.0);
 	private static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
 	private static final BooleanProperty CRACKED = Properties.CRACKED;
@@ -90,10 +90,10 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 	}
 
 	@Override
-	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
-		BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
+	public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+		BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof DecoratedPotBlockEntity decoratedPotBlockEntity) {
-			builder.putDrop(SHERDS_NBT_KEY, (context, consumer) -> decoratedPotBlockEntity.getSherds().stream().map(Item::getDefaultStack).forEach(consumer));
+			builder.addDynamicDrop(SHERDS_DYNAMIC_DROP_ID, lootConsumer -> decoratedPotBlockEntity.getSherds().stream().map(Item::getDefaultStack).forEach(lootConsumer));
 		}
 
 		return super.getDroppedStacks(state, builder);

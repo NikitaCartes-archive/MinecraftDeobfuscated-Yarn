@@ -250,8 +250,8 @@ public abstract class Particle {
 	/**
 	 * Updates the position and bounding box of this particle to the target {@code x}, {@code y}, {@code z} position.
 	 * 
-	 * @param x the x position to move this particle to
 	 * @param y the y position to move this particle to
+	 * @param x the x position to move this particle to
 	 * @param z the z position to move this particle to
 	 */
 	public void setPos(double x, double y, double z) {
@@ -267,8 +267,8 @@ public abstract class Particle {
 	 * Moves this particle by the specified delta amounts, re-positioning bounding boxes and adjusting movement for collision with the world.
 	 * 
 	 * @param dx the delta x to move this particle by
-	 * @param dy the delta y to move this particle by
 	 * @param dz the delta z to move this particle by
+	 * @param dy the delta y to move this particle by
 	 */
 	public void move(double dx, double dy, double dz) {
 		if (!this.field_21507) {

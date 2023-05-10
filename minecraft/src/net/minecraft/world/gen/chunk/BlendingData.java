@@ -390,8 +390,8 @@ public class BlendingData {
 	 * 
 	 * @return the south east index
 	 * 
-	 * @param chunkBiomeX the chunk-local biome X coordinate
 	 * @param chunkBiomeZ the chunk-local biome Z coordinate
+	 * @param chunkBiomeX the chunk-local biome X coordinate
 	 */
 	private static int getSouthEastIndex(int chunkBiomeX, int chunkBiomeZ) {
 		return NORTH_WEST_END_INDEX + chunkBiomeX + CHUNK_BIOME_END_INDEX - chunkBiomeZ;

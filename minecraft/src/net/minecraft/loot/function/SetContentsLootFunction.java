@@ -44,7 +44,8 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			return stack;
 		} else {
 			DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-			this.entries.forEach(entry -> entry.expand(context, choice -> choice.generateLoot(LootTable.processStacks(context, defaultedList::add), context)));
+			this.entries
+				.forEach(entry -> entry.expand(context, choice -> choice.generateLoot(LootTable.processStacks(context.getWorld(), defaultedList::add), context)));
 			NbtCompound nbtCompound = new NbtCompound();
 			Inventories.writeNbt(nbtCompound, defaultedList);
 			NbtCompound nbtCompound2 = BlockItem.getBlockEntityNbt(stack);

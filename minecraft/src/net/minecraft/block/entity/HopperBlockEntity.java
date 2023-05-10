@@ -357,13 +357,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	private static boolean canMergeItems(ItemStack first, ItemStack second) {
-		if (!first.isOf(second.getItem())) {
-			return false;
-		} else if (first.getDamage() != second.getDamage()) {
-			return false;
-		} else {
-			return first.getCount() > first.getMaxCount() ? false : ItemStack.areNbtEqual(first, second);
-		}
+		return first.getCount() <= first.getMaxCount() && ItemStack.canCombine(first, second);
 	}
 
 	@Override

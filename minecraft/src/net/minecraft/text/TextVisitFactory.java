@@ -22,8 +22,8 @@ public class TextVisitFactory {
 	 * @return {@code true} if the full string was visited, or {@code false} indicating
 	 * the {@code visitor} terminated half-way
 	 * 
-	 * @param text the string
 	 * @param style the style of the string
+	 * @param text the string
 	 * @param visitor the visitor of characters
 	 */
 	public static boolean visitForwards(String text, Style style, CharacterVisitor visitor) {
@@ -63,8 +63,8 @@ public class TextVisitFactory {
 	 * @return {@code true} if the full string was visited, or {@code false} indicating
 	 * the {@code visitor} terminated half-way
 	 * 
-	 * @param text the string
 	 * @param style the style of the string
+	 * @param text the string
 	 * @param visitor the visitor
 	 */
 	public static boolean visitBackwards(String text, Style style, CharacterVisitor visitor) {
@@ -105,8 +105,8 @@ public class TextVisitFactory {
 	 * the {@code visitor} terminated half-way
 	 * 
 	 * @param text the string visited
-	 * @param style the style of the string
 	 * @param visitor the visitor
+	 * @param style the style of the string
 	 */
 	public static boolean visitFormatted(String text, Style style, CharacterVisitor visitor) {
 		return visitFormatted(text, 0, style, visitor);
@@ -120,9 +120,9 @@ public class TextVisitFactory {
 	 * @return {@code true} if the full string was visited, or {@code false} indicating
 	 * the {@code visitor} terminated half-way
 	 * 
-	 * @param text the string visited
-	 * @param startIndex the starting index of the visit
 	 * @param style the style of the string
+	 * @param startIndex the starting index of the visit
+	 * @param text the string visited
 	 */
 	public static boolean visitFormatted(String text, int startIndex, Style style, CharacterVisitor visitor) {
 		return visitFormatted(text, startIndex, style, style, visitor);

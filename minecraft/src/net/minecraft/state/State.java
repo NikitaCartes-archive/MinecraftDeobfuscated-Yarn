@@ -104,7 +104,7 @@ public abstract class State<O, S> {
 		Comparable<?> comparable = this.entries.get(property);
 		if (comparable == null) {
 			throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + this.owner);
-		} else if (comparable == value) {
+		} else if (comparable.equals(value)) {
 			return (S)this;
 		} else {
 			S object = this.withTable.get(property, value);
@@ -118,7 +118,7 @@ public abstract class State<O, S> {
 
 	public <T extends Comparable<T>, V extends T> S withIfExists(Property<T> property, V value) {
 		Comparable<?> comparable = this.entries.get(property);
-		if (comparable != null && comparable != value) {
+		if (comparable != null && !comparable.equals(value)) {
 			S object = this.withTable.get(property, value);
 			if (object == null) {
 				throw new IllegalArgumentException("Cannot set property " + property + " to " + value + " on " + this.owner + ", it is not an allowed value");
@@ -140,7 +140,7 @@ public abstract class State<O, S> {
 				Property<?> property = (Property<?>)entry.getKey();
 
 				for (Comparable<?> comparable : property.getValues()) {
-					if (comparable != entry.getValue()) {
+					if (!comparable.equals(entry.getValue())) {
 						table.put(property, comparable, (S)states.get(this.toMapWith(property, comparable)));
 					}
 				}

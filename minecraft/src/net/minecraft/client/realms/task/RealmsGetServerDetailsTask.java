@@ -115,7 +115,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					this.downloadResourcePack(address).thenRun(() -> setScreen((Screen)connectingScreenCreator.apply(address))).exceptionally(throwable -> {
 						MinecraftClient.getInstance().getServerResourcePackProvider().clear();
 						LOGGER.error("Failed to download resource pack from {}", address, throwable);
-						setScreen(new RealmsGenericErrorScreen(Text.literal("Failed to download resource pack!"), this.lastScreen));
+						setScreen(new RealmsGenericErrorScreen(Text.translatable("mco.download.resourcePack.fail"), this.lastScreen));
 						return null;
 					});
 					return;

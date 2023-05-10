@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
@@ -18,7 +19,7 @@ import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Identifier;
 
-public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInventory> {
+public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInputInventory> {
 	public static final int field_30802 = 0;
 	public static final int field_30803 = 0;
 	public static final int field_30804 = 1;
@@ -42,7 +43,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 	private static final EquipmentSlot[] EQUIPMENT_SLOT_ORDER = new EquipmentSlot[]{
 		EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
 	};
-	private final CraftingInventory craftingInput = new CraftingInventory(this, 2, 2);
+	private final RecipeInputInventory craftingInput = new CraftingInventory(this, 2, 2);
 	private final CraftingResultInventory craftingResult = new CraftingResultInventory();
 	public final boolean onServer;
 	private final PlayerEntity owner;
@@ -138,7 +139,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 	}
 
 	@Override
-	public boolean matches(Recipe<? super CraftingInventory> recipe) {
+	public boolean matches(Recipe<? super RecipeInputInventory> recipe) {
 		return recipe.matches(this.craftingInput, this.owner.getWorld());
 	}
 
@@ -248,7 +249,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 		return 5;
 	}
 
-	public CraftingInventory getCraftingInput() {
+	public RecipeInputInventory getCraftingInput() {
 		return this.craftingInput;
 	}
 

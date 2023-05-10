@@ -147,9 +147,15 @@ public abstract class PlayerManager {
 	public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player) {
 		GameProfile gameProfile = player.getGameProfile();
 		UserCache userCache = this.server.getUserCache();
-		Optional<GameProfile> optional = userCache.getByUuid(gameProfile.getId());
-		String string = (String)optional.map(GameProfile::getName).orElse(gameProfile.getName());
-		userCache.add(gameProfile);
+		String string;
+		if (userCache != null) {
+			Optional<GameProfile> optional = userCache.getByUuid(gameProfile.getId());
+			string = (String)optional.map(GameProfile::getName).orElse(gameProfile.getName());
+			userCache.add(gameProfile);
+		} else {
+			string = gameProfile.getName();
+		}
+
 		NbtCompound nbtCompound = this.loadPlayerData(player);
 		RegistryKey<World> registryKey = nbtCompound != null
 			? (RegistryKey)DimensionType.worldFromDimensionNbt(new Dynamic<>(NbtOps.INSTANCE, nbtCompound.get("Dimension")))
@@ -198,7 +204,8 @@ public abstract class PlayerManager {
 				!bl,
 				serverWorld2.isDebugWorld(),
 				serverWorld2.isFlat(),
-				player.getLastDeathPos()
+				player.getLastDeathPos(),
+				player.getPortalCooldown()
 			)
 		);
 		serverPlayNetworkHandler.sendPacket(new FeaturesS2CPacket(FeatureFlags.FEATURE_MANAGER.toId(serverWorld2.getEnabledFeatures())));
@@ -506,7 +513,8 @@ public abstract class PlayerManager {
 					serverPlayerEntity.getWorld().isDebugWorld(),
 					serverPlayerEntity.getServerWorld().isFlat(),
 					b,
-					serverPlayerEntity.getLastDeathPos()
+					serverPlayerEntity.getLastDeathPos(),
+					serverPlayerEntity.getPortalCooldown()
 				)
 			);
 		serverPlayerEntity.networkHandler

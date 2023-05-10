@@ -2,7 +2,7 @@ package net.minecraft.recipe;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.ShulkerBoxBlock;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,12 +17,12 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		int i = 0;
 		int j = 0;
 
-		for (int k = 0; k < craftingInventory.size(); k++) {
-			ItemStack itemStack = craftingInventory.getStack(k);
+		for (int k = 0; k < recipeInputInventory.size(); k++) {
+			ItemStack itemStack = recipeInputInventory.getStack(k);
 			if (!itemStack.isEmpty()) {
 				if (Block.getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock) {
 					i++;
@@ -43,12 +43,12 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 		return i == 1 && j == 1;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		DyeItem dyeItem = (DyeItem)Items.WHITE_DYE;
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack2 = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(i);
 			if (!itemStack2.isEmpty()) {
 				Item item = itemStack2.getItem();
 				if (Block.getBlockFromItem(item) instanceof ShulkerBoxBlock) {

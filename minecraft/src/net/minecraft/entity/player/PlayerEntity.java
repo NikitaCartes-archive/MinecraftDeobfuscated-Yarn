@@ -1367,9 +1367,9 @@ public abstract class PlayerEntity extends LivingEntity {
 	 * 
 	 * @implNote This is used by the client player to trigger bundle tutorials.
 	 * 
-	 * @param cursorStack the item stack on the player's cursor
-	 * @param slotStack the item stack in the clicked slot
 	 * @param clickType the click type (mouse button used)
+	 * @param slotStack the item stack in the clicked slot
+	 * @param cursorStack the item stack on the player's cursor
 	 */
 	public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
 	}
@@ -1396,8 +1396,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	/**
 	 * Wakes this player up.
 	 * 
-	 * @param skipSleepTimer if {@code true}, the {@linkplain #sleepTimer sleep timer} will be set straight to 0 instead of 100
 	 * @param updateSleepingPlayers if {@code true} and called on the logical server, sends sleeping status updates to all players
+	 * @param skipSleepTimer if {@code true}, the {@linkplain #sleepTimer sleep timer} will be set straight to 0 instead of 100
 	 */
 	public void wakeUp(boolean skipSleepTimer, boolean updateSleepingPlayers) {
 		super.wakeUp();
@@ -1422,10 +1422,10 @@ public abstract class PlayerEntity extends LivingEntity {
 	 * respawn anchors and beds. If it's {@code true}, a respawn point can be anywhere
 	 * as long as the player can spawn inside the necessary blocks.
 	 * 
-	 * @param world the world where the spawn point is located
-	 * @param pos the spawn point as a {@link BlockPos}
-	 * @param forced {@code true} if the spawn point is forced, {@code false} otherwise
 	 * @param alive if {@code true}, the player is alive, otherwise respawning after a death
+	 * @param forced {@code true} if the spawn point is forced, {@code false} otherwise
+	 * @param pos the spawn point as a {@link BlockPos}
+	 * @param world the world where the spawn point is located
 	 */
 	public static Optional<Vec3d> findRespawnPosition(ServerWorld world, BlockPos pos, float angle, boolean forced, boolean alive) {
 		BlockState blockState = world.getBlockState(pos);

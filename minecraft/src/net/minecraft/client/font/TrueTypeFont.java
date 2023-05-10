@@ -19,8 +19,10 @@ import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public class TrueTypeFont implements Font {
-	private final ByteBuffer buffer;
-	final STBTTFontinfo info;
+	@Nullable
+	private ByteBuffer buffer;
+	@Nullable
+	private STBTTFontinfo info;
 	final float oversample;
 	private final IntSet excludedCharacters = new IntArraySet();
 	final float shiftX;
@@ -49,12 +51,13 @@ public class TrueTypeFont implements Font {
 	@Nullable
 	@Override
 	public Glyph getGlyph(int codePoint) {
+		STBTTFontinfo sTBTTFontinfo = this.getInfo();
 		if (this.excludedCharacters.contains(codePoint)) {
 			return null;
 		} else {
-			Glyph.EmptyGlyph var13;
+			Glyph.EmptyGlyph var14;
 			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-				int i = STBTruetype.stbtt_FindGlyphIndex(this.info, codePoint);
+				int i = STBTruetype.stbtt_FindGlyphIndex(sTBTTFontinfo, codePoint);
 				if (i == 0) {
 					return null;
 				}
@@ -65,9 +68,9 @@ public class TrueTypeFont implements Font {
 				IntBuffer intBuffer4 = memoryStack.mallocInt(1);
 				IntBuffer intBuffer5 = memoryStack.mallocInt(1);
 				IntBuffer intBuffer6 = memoryStack.mallocInt(1);
-				STBTruetype.stbtt_GetGlyphHMetrics(this.info, i, intBuffer5, intBuffer6);
+				STBTruetype.stbtt_GetGlyphHMetrics(sTBTTFontinfo, i, intBuffer5, intBuffer6);
 				STBTruetype.stbtt_GetGlyphBitmapBoxSubpixel(
-					this.info, i, this.scaleFactor, this.scaleFactor, this.shiftX, this.shiftY, intBuffer, intBuffer2, intBuffer3, intBuffer4
+					sTBTTFontinfo, i, this.scaleFactor, this.scaleFactor, this.shiftX, this.shiftY, intBuffer, intBuffer2, intBuffer3, intBuffer4
 				);
 				float f = (float)intBuffer5.get(0) * this.scaleFactor;
 				int j = intBuffer3.get(0) - intBuffer.get(0);
@@ -78,17 +81,30 @@ public class TrueTypeFont implements Font {
 					);
 				}
 
-				var13 = () -> f / this.oversample;
+				var14 = () -> f / this.oversample;
 			}
 
-			return var13;
+			return var14;
+		}
+	}
+
+	STBTTFontinfo getInfo() {
+		if (this.buffer != null && this.info != null) {
+			return this.info;
+		} else {
+			throw new IllegalArgumentException("Provider already closed");
 		}
 	}
 
 	@Override
 	public void close() {
-		this.info.free();
+		if (this.info != null) {
+			this.info.free();
+			this.info = null;
+		}
+
 		MemoryUtil.memFree(this.buffer);
+		this.buffer = null;
 	}
 
 	@Override
@@ -107,11 +123,11 @@ public class TrueTypeFont implements Font {
 		private final float advance;
 		final int glyphIndex;
 
-		TtfGlyph(int x1, int x2, int y2, int y1, float f, float g, int glyphIndex) {
+		TtfGlyph(int x1, int x2, int y2, int y1, float advance, float bearingX, int glyphIndex) {
 			this.width = x2 - x1;
 			this.height = y2 - y1;
-			this.advance = f / TrueTypeFont.this.oversample;
-			this.bearingX = (g + (float)x1 + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
+			this.advance = advance / TrueTypeFont.this.oversample;
+			this.bearingX = (bearingX + (float)x1 + TrueTypeFont.this.shiftX) / TrueTypeFont.this.oversample;
 			this.ascent = (TrueTypeFont.this.ascent - (float)y2 + TrueTypeFont.this.shiftY) / TrueTypeFont.this.oversample;
 			this.glyphIndex = glyphIndex;
 		}
@@ -152,9 +168,10 @@ public class TrueTypeFont implements Font {
 
 					@Override
 					public void upload(int x, int y) {
+						STBTTFontinfo sTBTTFontinfo = TrueTypeFont.this.getInfo();
 						NativeImage nativeImage = new NativeImage(NativeImage.Format.LUMINANCE, TtfGlyph.this.width, TtfGlyph.this.height, false);
 						nativeImage.makeGlyphBitmapSubpixel(
-							TrueTypeFont.this.info,
+							sTBTTFontinfo,
 							TtfGlyph.this.glyphIndex,
 							TtfGlyph.this.width,
 							TtfGlyph.this.height,

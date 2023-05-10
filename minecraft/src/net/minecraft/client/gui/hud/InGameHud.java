@@ -173,7 +173,7 @@ public class InGameHud {
 			this.renderOverlay(context, POWDER_SNOW_OUTLINE, this.client.player.getFreezingScale());
 		}
 
-		float g = MathHelper.lerp(tickDelta, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
+		float g = MathHelper.lerp(tickDelta, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity);
 		if (g > 0.0F && !this.client.player.hasStatusEffect(StatusEffects.NAUSEA)) {
 			this.renderPortalOverlay(context, g);
 		}

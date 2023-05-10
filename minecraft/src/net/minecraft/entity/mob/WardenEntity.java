@@ -82,11 +82,11 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 	private static final int ATTACK_DAMAGE = 30;
 	private static final TrackedData<Integer> ANGER = DataTracker.registerData(WardenEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final int field_38149 = 200;
-	private static final int field_38150 = 260;
+	private static final int DARKNESS_EFFECT_DURATION = 260;
 	private static final int field_38151 = 20;
 	private static final int field_38152 = 120;
 	private static final int field_38153 = 20;
-	private static final int field_38155 = 35;
+	private static final int ANGRINESS_AMOUNT = 35;
 	private static final int field_38156 = 10;
 	private static final int field_39117 = 20;
 	private static final int field_38157 = 100;

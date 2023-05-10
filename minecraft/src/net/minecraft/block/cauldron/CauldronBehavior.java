@@ -210,10 +210,10 @@ public interface CauldronBehavior {
 	 * {@link ActionResult#PASS} otherwise
 	 * 
 	 * @param state the current cauldron block state
-	 * @param world the world where the cauldron is located
-	 * @param pos the cauldron's position
 	 * @param player the interacting player
 	 * @param hand the hand interacting with the cauldron
+	 * @param world the world where the cauldron is located
+	 * @param pos the cauldron's position
 	 * @param stack the stack in the player's hand
 	 */
 	ActionResult interact(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack);
@@ -359,15 +359,15 @@ public interface CauldronBehavior {
 	 * 
 	 * @return a {@linkplain ActionResult#isAccepted successful} action result if emptied, {@link ActionResult#PASS} otherwise
 	 * 
-	 * @param state the cauldron block state
-	 * @param world the world where the cauldron is located
-	 * @param pos the cauldron's position
-	 * @param player the interacting player
-	 * @param hand the hand interacting with the cauldron
-	 * @param stack the stack in the player's hand
-	 * @param output the item stack that replaces the interaction stack when the cauldron is emptied
-	 * @param fullPredicate a predicate used to check if the cauldron can be emptied into the output stack
 	 * @param soundEvent the sound produced by emptying
+	 * @param fullPredicate a predicate used to check if the cauldron can be emptied into the output stack
+	 * @param output the item stack that replaces the interaction stack when the cauldron is emptied
+	 * @param stack the stack in the player's hand
+	 * @param hand the hand interacting with the cauldron
+	 * @param player the interacting player
+	 * @param pos the cauldron's position
+	 * @param world the world where the cauldron is located
+	 * @param state the cauldron block state
 	 */
 	static ActionResult emptyCauldron(
 		BlockState state,
@@ -405,13 +405,13 @@ public interface CauldronBehavior {
 	 * 
 	 * @return a {@linkplain ActionResult#isAccepted successful} action result
 	 * 
-	 * @param world the world where the cauldron is located
 	 * @param pos the cauldron's position
-	 * @param player the interacting player
-	 * @param hand the hand interacting with the cauldron
-	 * @param stack the filled bucket stack in the player's hand
-	 * @param state the filled cauldron state
+	 * @param world the world where the cauldron is located
 	 * @param soundEvent the sound produced by filling
+	 * @param hand the hand interacting with the cauldron
+	 * @param player the interacting player
+	 * @param state the filled cauldron state
+	 * @param stack the filled bucket stack in the player's hand
 	 */
 	static ActionResult fillCauldron(World world, BlockPos pos, PlayerEntity player, Hand hand, ItemStack stack, BlockState state, SoundEvent soundEvent) {
 		if (!world.isClient) {

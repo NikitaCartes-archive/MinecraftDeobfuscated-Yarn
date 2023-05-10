@@ -35,7 +35,7 @@ public class DyingPhase extends AbstractPhase {
 	public void serverTick() {
 		this.ticks++;
 		if (this.target == null) {
-			BlockPos blockPos = this.dragon.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()));
 			this.target = Vec3d.ofBottomCenter(blockPos);
 		}
 

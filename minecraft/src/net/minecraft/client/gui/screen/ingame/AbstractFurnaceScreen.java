@@ -36,7 +36,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		this.addDrawableChild(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
 			this.recipeBook.toggleOpen();
 			this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
-			((TexturedButtonWidget)button).setPosition(this.x + 20, this.height / 2 - 49);
+			button.setPosition(this.x + 20, this.height / 2 - 49);
 		}));
 		this.titleX = (this.backgroundWidth - this.textRenderer.getWidth(this.title)) / 2;
 	}

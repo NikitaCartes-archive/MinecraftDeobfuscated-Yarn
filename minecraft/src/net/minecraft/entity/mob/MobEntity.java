@@ -50,7 +50,6 @@ import net.minecraft.item.MiningToolItem;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.SwordItem;
-import net.minecraft.loot.context.LootContext;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtFloat;
@@ -514,14 +513,9 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	}
 
 	@Override
-	protected void dropLoot(DamageSource source, boolean causedByPlayer) {
-		super.dropLoot(source, causedByPlayer);
+	protected void dropLoot(DamageSource damageSource, boolean causedByPlayer) {
+		super.dropLoot(damageSource, causedByPlayer);
 		this.lootTable = null;
-	}
-
-	@Override
-	protected LootContext.Builder getLootContextBuilder(boolean causedByPlayer, DamageSource source) {
-		return super.getLootContextBuilder(causedByPlayer, source).random(this.lootTableSeed, this.random);
 	}
 
 	@Override
@@ -531,6 +525,11 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 
 	protected Identifier getLootTableId() {
 		return super.getLootTable();
+	}
+
+	@Override
+	public long getLootTableSeed() {
+		return this.lootTableSeed;
 	}
 
 	public void setForwardSpeed(float forwardSpeed) {
@@ -1231,8 +1230,8 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	 * including its vehicle, its name and whether it is persistent or not.
 	 * <p>If {@code keepEquipment} is {@code true}, it will also keep its equipment.
 	 * 
-	 * @param entityType the entity type to convert to
 	 * @param keepEquipment whether the equipment of this entity should be kept
+	 * @param entityType the entity type to convert to
 	 */
 	@Nullable
 	public <T extends MobEntity> T convertTo(EntityType<T> entityType, boolean keepEquipment) {

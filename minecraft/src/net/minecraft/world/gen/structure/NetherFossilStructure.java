@@ -50,9 +50,7 @@ public class NetherFossilStructure extends Structure {
 		} else {
 			BlockPos blockPos = new BlockPos(i, l, j);
 			return Optional.of(
-				new Structure.StructurePosition(
-					blockPos, structurePiecesCollector -> NetherFossilGenerator.addPieces(context.structureTemplateManager(), structurePiecesCollector, chunkRandom, blockPos)
-				)
+				new Structure.StructurePosition(blockPos, holder -> NetherFossilGenerator.addPieces(context.structureTemplateManager(), holder, chunkRandom, blockPos))
 			);
 		}
 	}

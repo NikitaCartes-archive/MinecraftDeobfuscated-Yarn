@@ -34,7 +34,7 @@ public class BlockColumnFeature extends Feature<BlockColumnFeatureConfig> {
 
 			for (int l = 0; l < j; l++) {
 				if (!blockColumnFeatureConfig.allowedPlacement().test(structureWorldAccess, mutable2)) {
-					method_38906(is, j, l, blockColumnFeatureConfig.prioritizeTip());
+					adjustLayerHeights(is, j, l, blockColumnFeatureConfig.prioritizeTip());
 					break;
 				}
 
@@ -57,17 +57,17 @@ public class BlockColumnFeature extends Feature<BlockColumnFeatureConfig> {
 		}
 	}
 
-	private static void method_38906(int[] is, int i, int j, boolean bl) {
-		int k = i - j;
-		int l = bl ? 1 : -1;
-		int m = bl ? 0 : is.length - 1;
-		int n = bl ? is.length : -1;
+	private static void adjustLayerHeights(int[] layerHeights, int expectedHeight, int actualHeight, boolean prioritizeTip) {
+		int i = expectedHeight - actualHeight;
+		int j = prioritizeTip ? 1 : -1;
+		int k = prioritizeTip ? 0 : layerHeights.length - 1;
+		int l = prioritizeTip ? layerHeights.length : -1;
 
-		for (int o = m; o != n && k > 0; o += l) {
-			int p = is[o];
-			int q = Math.min(p, k);
-			k -= q;
-			is[o] -= q;
+		for (int m = k; m != l && i > 0; m += j) {
+			int n = layerHeights[m];
+			int o = Math.min(n, i);
+			i -= o;
+			layerHeights[m] -= o;
 		}
 	}
 }

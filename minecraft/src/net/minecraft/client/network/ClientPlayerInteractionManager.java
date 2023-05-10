@@ -164,7 +164,7 @@ public class ClientPlayerInteractionManager {
 						this.selectedStack = this.client.player.getMainHandStack();
 						this.currentBreakingProgress = 0.0F;
 						this.blockBreakingSoundCooldown = 0.0F;
-						this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
+						this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, this.getBlockBreakingProgress());
 					}
 
 					return new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction, sequence);
@@ -237,7 +237,7 @@ public class ClientPlayerInteractionManager {
 					this.blockBreakingCooldown = 5;
 				}
 
-				this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
+				this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, this.getBlockBreakingProgress());
 				return true;
 			}
 		} else {
@@ -268,14 +268,7 @@ public class ClientPlayerInteractionManager {
 
 	private boolean isCurrentlyBreaking(BlockPos pos) {
 		ItemStack itemStack = this.client.player.getMainHandStack();
-		boolean bl = this.selectedStack.isEmpty() && itemStack.isEmpty();
-		if (!this.selectedStack.isEmpty() && !itemStack.isEmpty()) {
-			bl = itemStack.isOf(this.selectedStack.getItem())
-				&& ItemStack.areNbtEqual(itemStack, this.selectedStack)
-				&& (itemStack.isDamageable() || itemStack.getDamage() == this.selectedStack.getDamage());
-		}
-
-		return pos.equals(this.currentBreakingPos) && bl;
+		return pos.equals(this.currentBreakingPos) && ItemStack.canCombine(itemStack, this.selectedStack);
 	}
 
 	private void syncSelectedSlot() {
@@ -490,6 +483,10 @@ public class ClientPlayerInteractionManager {
 
 	public boolean isBreakingBlock() {
 		return this.breakingBlock;
+	}
+
+	public int getBlockBreakingProgress() {
+		return (int)(this.currentBreakingProgress * 10.0F);
 	}
 
 	public void pickFromInventory(int slot) {

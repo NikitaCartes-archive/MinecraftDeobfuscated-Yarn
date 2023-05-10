@@ -32,8 +32,8 @@ public abstract class MobSpawnerLogic {
 	private DataPool<MobSpawnerEntry> spawnPotentials = DataPool.empty();
 	@Nullable
 	private MobSpawnerEntry spawnEntry;
-	private double field_9161;
-	private double field_9159;
+	private double rotation;
+	private double lastRotation;
 	private int minSpawnDelay = 200;
 	private int maxSpawnDelay = 800;
 	private int spawnCount = 4;
@@ -53,7 +53,7 @@ public abstract class MobSpawnerLogic {
 
 	public void clientTick(World world, BlockPos pos) {
 		if (!this.isPlayerInRange(world, pos)) {
-			this.field_9159 = this.field_9161;
+			this.lastRotation = this.rotation;
 		} else if (this.renderedEntity != null) {
 			Random random = world.getRandom();
 			double d = (double)pos.getX() + random.nextDouble();
@@ -65,8 +65,8 @@ public abstract class MobSpawnerLogic {
 				this.spawnDelay--;
 			}
 
-			this.field_9159 = this.field_9161;
-			this.field_9161 = (this.field_9161 + (double)(1000.0F / ((float)this.spawnDelay + 200.0F))) % 360.0;
+			this.lastRotation = this.rotation;
+			this.rotation = (this.rotation + (double)(1000.0F / ((float)this.spawnDelay + 200.0F))) % 360.0;
 		}
 	}
 
@@ -279,11 +279,11 @@ public abstract class MobSpawnerLogic {
 
 	public abstract void sendStatus(World world, BlockPos pos, int status);
 
-	public double method_8278() {
-		return this.field_9161;
+	public double getRotation() {
+		return this.rotation;
 	}
 
-	public double method_8279() {
-		return this.field_9159;
+	public double getLastRotation() {
+		return this.lastRotation;
 	}
 }

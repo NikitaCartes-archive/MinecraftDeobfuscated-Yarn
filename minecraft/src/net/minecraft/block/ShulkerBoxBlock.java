@@ -20,7 +20,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -65,7 +65,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		map.put(Direction.DOWN, DOWN_SHAPE);
 	});
 	public static final EnumProperty<Direction> FACING = FacingBlock.FACING;
-	public static final Identifier CONTENTS = new Identifier("contents");
+	public static final Identifier CONTENTS_DYNAMIC_DROP_ID = new Identifier("contents");
 	@Nullable
 	private final DyeColor color;
 
@@ -152,12 +152,12 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public List<ItemStack> getDroppedStacks(BlockState state, LootContext.Builder builder) {
-		BlockEntity blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY);
+	public List<ItemStack> getDroppedStacks(BlockState state, LootContextParameterSet.Builder builder) {
+		BlockEntity blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY);
 		if (blockEntity instanceof ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
-			builder = builder.putDrop(CONTENTS, (context, consumer) -> {
+			builder = builder.addDynamicDrop(CONTENTS_DYNAMIC_DROP_ID, lootConsumer -> {
 				for (int i = 0; i < shulkerBoxBlockEntity.size(); i++) {
-					consumer.accept(shulkerBoxBlockEntity.getStack(i));
+					lootConsumer.accept(shulkerBoxBlockEntity.getStack(i));
 				}
 			});
 		}

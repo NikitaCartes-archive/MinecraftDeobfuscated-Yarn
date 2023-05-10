@@ -19,10 +19,10 @@ public interface ModifiableWorld {
 	 * 
 	 * <p>See {@link #setBlockState(BlockPos, BlockState, int)} for a list of accepted flags.
 	 * 
-	 * @param pos the target position
-	 * @param state the block state to set
-	 * @param flags the bitwise flag combination, as described above
 	 * @param maxUpdateDepth the limit for the cascading block updates
+	 * @param flags the bitwise flag combination, as described above
+	 * @param state the block state to set
+	 * @param pos the target position
 	 */
 	boolean setBlockState(BlockPos pos, BlockState state, int flags, int maxUpdateDepth);
 
@@ -49,8 +49,8 @@ public interface ModifiableWorld {
 	 * @see #setBlockState(BlockPos, BlockState, int, int)
 	 * 
 	 * @param pos the target position
-	 * @param state the block state to set
 	 * @param flags the bitwise flag combination, as described above
+	 * @param state the block state to set
 	 */
 	default boolean setBlockState(BlockPos pos, BlockState state, int flags) {
 		return this.setBlockState(pos, state, flags, 512);

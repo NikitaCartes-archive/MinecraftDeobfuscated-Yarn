@@ -91,6 +91,13 @@ public class DrawContext {
 		}
 	}
 
+	@Deprecated
+	private void drawIfRunning() {
+		if (this.runningDrawCallback) {
+			this.draw();
+		}
+	}
+
 	public int getScaledWindowWidth() {
 		return this.client.getWindow().getScaledWidth();
 	}
@@ -150,7 +157,7 @@ public class DrawContext {
 	}
 
 	private void setScissor(@Nullable ScreenRect rect) {
-		this.draw();
+		this.drawIfRunning();
 		if (rect != null) {
 			Window window = MinecraftClient.getInstance().getWindow();
 			int i = window.getFramebufferHeight();
@@ -166,7 +173,7 @@ public class DrawContext {
 	}
 
 	public void setShaderColor(float red, float green, float blue, float alpha) {
-		this.draw();
+		this.drawIfRunning();
 		RenderSystem.setShaderColor(red, green, blue, alpha);
 	}
 

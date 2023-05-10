@@ -441,6 +441,7 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		this.client.player.setReducedDebugInfo(packet.reducedDebugInfo());
 		this.client.player.setShowsDeathScreen(packet.showDeathScreen());
 		this.client.player.setLastDeathPos(packet.lastDeathLocation());
+		this.client.player.setPortalCooldown(packet.portalCooldown());
 		this.client.interactionManager.setGameModes(packet.gameMode(), packet.previousGameMode());
 		this.client.options.setServerViewDistance(packet.viewDistance());
 		this.client.options.sendClientSettings();
@@ -1145,6 +1146,9 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 		clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.hasReducedDebugInfo());
 		clientPlayerEntity2.setShowsDeathScreen(clientPlayerEntity.showsDeathScreen());
 		clientPlayerEntity2.setLastDeathPos(packet.getLastDeathPos());
+		clientPlayerEntity2.setPortalCooldown(packet.getPortalCooldown());
+		clientPlayerEntity2.nauseaIntensity = clientPlayerEntity.nauseaIntensity;
+		clientPlayerEntity2.prevNauseaIntensity = clientPlayerEntity.prevNauseaIntensity;
 		if (this.client.currentScreen instanceof DeathScreen || this.client.currentScreen instanceof DeathScreen.TitleScreenConfirmScreen) {
 			this.client.setScreen(null);
 		}
@@ -1766,6 +1770,10 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 				this.setPublicSession(receivedEntry, currentEntry);
 				break;
 			case UPDATE_GAME_MODE:
+				if (currentEntry.getGameMode() != receivedEntry.gameMode() && this.client.player != null && this.client.player.getUuid().equals(receivedEntry.profileId())) {
+					this.client.player.onGameModeChanged(receivedEntry.gameMode());
+				}
+
 				currentEntry.setGameMode(receivedEntry.gameMode());
 				break;
 			case UPDATE_LISTED:

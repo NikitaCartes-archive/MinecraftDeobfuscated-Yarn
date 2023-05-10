@@ -119,8 +119,8 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 	 * This may return a new data object or return {@code previousData} if it
 	 * can be reused.
 	 * 
-	 * @param previousData the previous data, may be reused if suitable
 	 * @param bits the number of bits each entry uses
+	 * @param previousData the previous data, may be reused if suitable
 	 */
 	private PalettedContainer.Data<T> getCompatibleData(@Nullable PalettedContainer.Data<T> previousData, int bits) {
 		PalettedContainer.DataProvider<T> dataProvider = this.paletteProvider.createDataProvider(this.idList, bits);
@@ -349,8 +349,8 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 	@FunctionalInterface
 	public interface Counter<T> {
 		/**
-		 * @param object the palette entry
 		 * @param count the entry's number of occurrence
+		 * @param object the palette entry
 		 */
 		void accept(T object, int count);
 	}
@@ -458,9 +458,9 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 		/**
 		 * {@return the index of an object in the storage given its x, y, z coordinates}
 		 * 
+		 * @param z the z coordinate
 		 * @param x the x coordinate
 		 * @param y the y coordinate
-		 * @param z the z coordinate
 		 */
 		public int computeIndex(int x, int y, int z) {
 			return (y << this.edgeBits | z) << this.edgeBits | x;

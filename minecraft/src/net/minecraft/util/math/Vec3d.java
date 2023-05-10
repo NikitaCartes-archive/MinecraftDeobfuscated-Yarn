@@ -371,8 +371,8 @@ public class Vec3d implements Position {
 	/**
 	 * Performs linear interpolation from this vector to the given vector.
 	 * 
-	 * @param to the vector to interpolate to
 	 * @param delta the interpolation coefficient in the range between 0 and 1
+	 * @param to the vector to interpolate to
 	 */
 	public Vec3d lerp(Vec3d to, double delta) {
 		return new Vec3d(MathHelper.lerp(delta, this.x, to.x), MathHelper.lerp(delta, this.y, to.y), MathHelper.lerp(delta, this.z, to.z));

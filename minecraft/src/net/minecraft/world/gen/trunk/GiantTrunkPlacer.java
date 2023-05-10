@@ -50,17 +50,17 @@ public class GiantTrunkPlacer extends TrunkPlacer {
 	}
 
 	private void setLog(
-		TestableWorld testableWorld,
-		BiConsumer<BlockPos, BlockState> biConsumer,
+		TestableWorld world,
+		BiConsumer<BlockPos, BlockState> replacer,
 		Random random,
-		BlockPos.Mutable mutable,
-		TreeFeatureConfig treeFeatureConfig,
-		BlockPos blockPos,
-		int i,
-		int j,
-		int k
+		BlockPos.Mutable tmpPos,
+		TreeFeatureConfig config,
+		BlockPos startPos,
+		int dx,
+		int dy,
+		int dz
 	) {
-		mutable.set(blockPos, i, j, k);
-		this.trySetState(testableWorld, biConsumer, random, mutable, treeFeatureConfig);
+		tmpPos.set(startPos, dx, dy, dz);
+		this.trySetState(world, replacer, random, tmpPos, config);
 	}
 }

@@ -54,9 +54,9 @@ public class PlacedFeatureIndexer {
 	 * 
 	 * @apiNote Check the class documentation for what feature order cycle means.
 	 * 
+	 * @param listInvolvedBiomesOnFailure whether to include involved biomes in the thrown exception
 	 * @param biomesToPlacedFeaturesList a function that, given a biome, returns a list of placed features grouped
 	 * by their generation steps
-	 * @param listInvolvedBiomesOnFailure whether to include involved biomes in the thrown exception
 	 */
 	public static <T> List<PlacedFeatureIndexer.IndexedFeatures> collectIndexedFeatures(
 		List<T> biomes, Function<T, List<RegistryEntryList<PlacedFeature>>> biomesToPlacedFeaturesList, boolean listInvolvedBiomesOnFailure

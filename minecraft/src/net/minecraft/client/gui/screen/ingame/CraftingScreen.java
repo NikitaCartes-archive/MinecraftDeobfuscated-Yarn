@@ -33,7 +33,7 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 		this.addDrawableChild(new TexturedButtonWidget(this.x + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
 			this.recipeBook.toggleOpen();
 			this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
-			((TexturedButtonWidget)button).setPosition(this.x + 5, this.height / 2 - 49);
+			button.setPosition(this.x + 5, this.height / 2 - 49);
 		}));
 		this.addSelectableChild(this.recipeBook);
 		this.setInitialFocus(this.recipeBook);

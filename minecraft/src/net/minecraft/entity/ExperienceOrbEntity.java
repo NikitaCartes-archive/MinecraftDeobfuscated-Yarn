@@ -97,7 +97,7 @@ public class ExperienceOrbEntity extends Entity {
 		this.move(MovementType.SELF, this.getVelocity());
 		float f = 0.98F;
 		if (this.isOnGround()) {
-			f = this.getWorld().getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
+			f = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getSlipperiness() * 0.98F;
 		}
 
 		this.setVelocity(this.getVelocity().multiply((double)f, 0.98, (double)f));
@@ -109,6 +109,11 @@ public class ExperienceOrbEntity extends Entity {
 		if (this.orbAge >= 6000) {
 			this.discard();
 		}
+	}
+
+	@Override
+	protected BlockPos getVelocityAffectingPos() {
+		return this.getPosWithYOffset(0.999999F);
 	}
 
 	/**

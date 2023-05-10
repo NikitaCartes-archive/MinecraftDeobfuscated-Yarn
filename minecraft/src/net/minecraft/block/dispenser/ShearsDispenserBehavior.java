@@ -15,17 +15,16 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class ShearsDispenserBehavior extends FallibleItemDispenserBehavior {
 	@Override
 	protected ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
-		World world = pointer.getWorld();
-		if (!world.isClient()) {
+		ServerWorld serverWorld = pointer.getWorld();
+		if (!serverWorld.isClient()) {
 			BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
-			this.setSuccess(tryShearBlock((ServerWorld)world, blockPos) || tryShearEntity((ServerWorld)world, blockPos));
-			if (this.isSuccess() && stack.damage(1, world.getRandom(), null)) {
+			this.setSuccess(tryShearBlock(serverWorld, blockPos) || tryShearEntity(serverWorld, blockPos));
+			if (this.isSuccess() && stack.damage(1, serverWorld.getRandom(), null)) {
 				stack.setCount(0);
 			}
 		}

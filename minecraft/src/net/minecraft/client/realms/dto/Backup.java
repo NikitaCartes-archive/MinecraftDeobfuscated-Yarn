@@ -35,7 +35,7 @@ public class Backup extends ValueObject {
 
 				for (Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
 					if (!((JsonElement)entry.getValue()).isJsonNull()) {
-						backup.metadata.put(format((String)entry.getKey()), ((JsonElement)entry.getValue()).getAsString());
+						backup.metadata.put((String)entry.getKey(), ((JsonElement)entry.getValue()).getAsString());
 					}
 				}
 			}
@@ -44,24 +44,6 @@ public class Backup extends ValueObject {
 		}
 
 		return backup;
-	}
-
-	private static String format(String key) {
-		String[] strings = key.split("_");
-		StringBuilder stringBuilder = new StringBuilder();
-
-		for (String string : strings) {
-			if (string != null && string.length() >= 1) {
-				if ("of".equals(string)) {
-					stringBuilder.append(string).append(" ");
-				} else {
-					char c = Character.toUpperCase(string.charAt(0));
-					stringBuilder.append(c).append(string.substring(1)).append(" ");
-				}
-			}
-		}
-
-		return stringBuilder.toString();
 	}
 
 	public boolean isUploadedVersion() {

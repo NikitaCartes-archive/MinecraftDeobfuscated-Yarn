@@ -21,8 +21,8 @@ public class Tasks {
 	/**
 	 * {@return a task that runs task(s) from {@code weightedTasks}}
 	 * 
-	 * @param weightedTasks the list of pairs of the task function and its weight
 	 * @param order whether to sort or shuffle the task list
+	 * @param weightedTasks the list of pairs of the task function and its weight
 	 * @param runMode whether to run all or just one of the tasks
 	 */
 	public static <E extends LivingEntity> SingleTickTask<E> weighted(

@@ -32,10 +32,10 @@ public class RealmsPlayerScreen extends RealmsScreen {
 	static final Identifier USER_ICON = new Identifier("realms", "textures/gui/realms/user_icon.png");
 	static final Identifier CROSS_PLAYER_ICON = new Identifier("realms", "textures/gui/realms/cross_player_icon.png");
 	private static final Identifier OPTIONS_BACKGROUND = new Identifier("minecraft", "textures/gui/options_background.png");
+	private static final Text QUESTION_TEXT = Text.translatable("mco.question");
 	static final Text NORMAL_TOOLTIP = Text.translatable("mco.configure.world.invites.normal.tooltip");
 	static final Text OPERATOR_TOOLTIP = Text.translatable("mco.configure.world.invites.ops.tooltip");
 	static final Text REMOVE_TOOLTIP = Text.translatable("mco.configure.world.invites.remove.tooltip");
-	private static final Text INVITED_TEXT = Text.translatable("mco.configure.world.invited");
 	private static final int field_44530 = -1;
 	private final RealmsConfigureWorldScreen parent;
 	final RealmsServer serverData;
@@ -175,7 +175,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 				this.stateChanged = true;
 				this.client.setScreen(this);
-			}, Text.literal("Question"), Text.translatable("mco.configure.world.uninvite.question").append(" '").append(playerInfo.getName()).append("' ?"));
+			}, QUESTION_TEXT, Text.translatable("mco.configure.world.uninvite.player", playerInfo.getName()));
 			this.client.setScreen(realmsConfirmScreen);
 		}
 	}
@@ -189,19 +189,8 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		context.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
 		context.drawTexture(OPTIONS_BACKGROUND, 0, i, 0.0F, 0.0F, this.width, this.height - i, 32, 32);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		if (this.serverData.players != null) {
-			context.drawText(
-				this.textRenderer,
-				Text.empty().append(INVITED_TEXT).append(" (").append(Integer.toString(this.serverData.players.size())).append(")"),
-				this.column1_x,
-				row(0),
-				10526880,
-				false
-			);
-		} else {
-			context.drawText(this.textRenderer, INVITED_TEXT, this.column1_x, row(0), 10526880, false);
-		}
-
+		String string = this.serverData.players != null ? Integer.toString(this.serverData.players.size()) : "0";
+		context.drawText(this.textRenderer, Text.translatable("mco.configure.world.invited.number", string), this.column1_x, row(0), 10526880, false);
 		super.render(context, mouseX, mouseY, delta);
 	}
 

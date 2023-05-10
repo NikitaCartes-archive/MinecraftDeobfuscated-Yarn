@@ -14,6 +14,7 @@ import net.minecraft.util.collection.SortedArraySet;
 import net.minecraft.util.math.ChunkPos;
 
 public class SimulationDistanceLevelPropagator extends ChunkPosDistanceLevelPropagator {
+	public static final int field_44858 = 33;
 	private static final int field_34889 = 4;
 	protected final Long2ByteMap levels = new Long2ByteOpenHashMap();
 	private final Long2ObjectOpenHashMap<SortedArraySet<ChunkTicket<?>>> tickets = new Long2ObjectOpenHashMap<>();

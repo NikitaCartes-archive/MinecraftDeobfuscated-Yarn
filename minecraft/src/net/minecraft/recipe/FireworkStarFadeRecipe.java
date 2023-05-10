@@ -2,7 +2,7 @@ package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -19,12 +19,12 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		boolean bl = false;
 		boolean bl2 = false;
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack = recipeInputInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem() instanceof DyeItem) {
 					bl = true;
@@ -45,12 +45,12 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		return bl2 && bl;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		List<Integer> list = Lists.<Integer>newArrayList();
 		ItemStack itemStack = null;
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack2 = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(i);
 			Item item = itemStack2.getItem();
 			if (item instanceof DyeItem) {
 				list.add(((DyeItem)item).getColor().getFireworkColor());

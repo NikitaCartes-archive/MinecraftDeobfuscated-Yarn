@@ -64,6 +64,7 @@ import java.util.function.ToIntFunction;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.Bootstrap;
@@ -836,6 +837,16 @@ public class Util {
 		}
 	}
 
+	public static DataResult<long[]> decodeFixedLengthArray(LongStream stream, int length) {
+		long[] ls = stream.limit((long)(length + 1)).toArray();
+		if (ls.length != length) {
+			Supplier<String> supplier = () -> "Input is not a list of " + length + " longs";
+			return ls.length >= length ? DataResult.error(supplier, Arrays.copyOf(ls, length)) : DataResult.error(supplier);
+		} else {
+			return DataResult.success(ls);
+		}
+	}
+
 	public static <T> DataResult<List<T>> decodeFixedLengthList(List<T> list, int length) {
 		if (list.size() != length) {
 			Supplier<String> supplier = () -> "Input is not a list of " + length + " elements";
@@ -987,8 +998,8 @@ public class Util {
 	 * apply stage. Inside the function, callers should run the preparation,
 	 * and use the passed executor for applying.
 	 * 
-	 * @param resultFactory a function that takes the apply-stage executor and returns the preliminary result
 	 * @param donePredicate a predicate that, given the result, checks whether applying has finished
+	 * @param resultFactory a function that takes the apply-stage executor and returns the preliminary result
 	 */
 	public static <T> T waitAndApply(Function<Executor, T> resultFactory, Predicate<T> donePredicate) {
 		BlockingQueue<Runnable> blockingQueue = new LinkedBlockingQueue();

@@ -39,15 +39,11 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 		super.init();
 		this.modeButton = this.addDrawableChild(
 			CyclingButtonWidget.<CommandBlockBlockEntity.Type>builder(value -> {
-					switch (value) {
-						case SEQUENCE:
-							return Text.translatable("advMode.mode.sequence");
-						case AUTO:
-							return Text.translatable("advMode.mode.auto");
-						case REDSTONE:
-						default:
-							return Text.translatable("advMode.mode.redstone");
-					}
+					return switch (value) {
+						case SEQUENCE -> Text.translatable("advMode.mode.sequence");
+						case AUTO -> Text.translatable("advMode.mode.auto");
+						case REDSTONE -> Text.translatable("advMode.mode.redstone");
+					};
 				})
 				.values(CommandBlockBlockEntity.Type.values())
 				.omitKeyText()

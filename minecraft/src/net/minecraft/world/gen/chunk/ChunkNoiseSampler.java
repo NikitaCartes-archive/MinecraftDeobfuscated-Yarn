@@ -248,8 +248,8 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 	 * Samples the density values for all cells in the chunk with the given X coordinate.
 	 * This is done for every {@code interpolated} function.
 	 * 
-	 * @param start whether to store the results in the start or end density buffer
 	 * @param cellX the current cell X coordinate
+	 * @param start whether to store the results in the start or end density buffer
 	 */
 	private void sampleDensity(boolean start, int cellX) {
 		this.startBlockX = cellX * this.horizontalCellBlockCount;
@@ -336,8 +336,8 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 	 * @implNote For filling the cell caches, {@code this} is used as the
 	 * {@link net.minecraft.world.gen.densityfunction.DensityFunction.EachApplier EachApplier}.
 	 * 
-	 * @param cellY the chunk-local cell Y coordinate
 	 * @param cellZ the chunk-local cell Z coordinate
+	 * @param cellY the chunk-local cell Y coordinate
 	 */
 	public void onSampledCellCorners(int cellY, int cellZ) {
 		this.interpolators.forEach(interpolator -> interpolator.onSampledCellCorners(cellY, cellZ));
@@ -368,8 +368,8 @@ public class ChunkNoiseSampler implements DensityFunction.EachApplier, DensityFu
 	/**
 	 * Interpolates density values on the X axis for every interpolator.
 	 * 
-	 * @param blockX the absolute block X coordinate
 	 * @param deltaX the cell-local block X coordinate divided by the number of blocks in a cell horizontally
+	 * @param blockX the absolute block X coordinate
 	 */
 	public void interpolateX(int blockX, double deltaX) {
 		this.cellBlockX = blockX - this.startBlockX;

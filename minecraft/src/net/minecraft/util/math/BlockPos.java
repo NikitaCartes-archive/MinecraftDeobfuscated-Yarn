@@ -260,9 +260,9 @@ public class BlockPos extends Vec3i {
 	 * <p>The iterator yields positions in no specific order. The same position
 	 * may be returned multiple times by the iterator.
 	 * 
-	 * @param count the number of positions to iterate
-	 * @param around the {@link BlockPos} to iterate around
 	 * @param range the maximum distance from the given pos in any axis
+	 * @param around the {@link BlockPos} to iterate around
+	 * @param count the number of positions to iterate
 	 */
 	public static Iterable<BlockPos> iterateRandomly(Random random, int count, BlockPos around, int range) {
 		return iterateRandomly(
@@ -321,10 +321,10 @@ public class BlockPos extends Vec3i {
 	 * the one with a positive z offset is visited first before the one with a
 	 * negative z offset.
 	 * 
-	 * @param center the center of iteration
-	 * @param rangeX the maximum x difference from the center
 	 * @param rangeY the maximum y difference from the center
 	 * @param rangeZ the maximum z difference from the center
+	 * @param center the center of iteration
+	 * @param rangeX the maximum x difference from the center
 	 */
 	public static Iterable<BlockPos> iterateOutwards(BlockPos center, int rangeX, int rangeY, int rangeZ) {
 		int i = rangeX + rangeY + rangeZ;
@@ -469,10 +469,10 @@ public class BlockPos extends Vec3i {
 	 * 
 	 * @throws IllegalStateException when the 2 directions lie on the same axis
 	 * 
-	 * @param center the center of iteration
-	 * @param radius the maximum chebychev distance
 	 * @param firstDirection the direction the iterator moves first
 	 * @param secondDirection the direction the iterator moves after the first
+	 * @param center the center of iteration
+	 * @param radius the maximum chebychev distance
 	 */
 	public static Iterable<BlockPos.Mutable> iterateInSquare(BlockPos center, int radius, Direction firstDirection, Direction secondDirection) {
 		Validate.validState(firstDirection.getAxis() != secondDirection.getAxis(), "The two directions cannot be on the same axis");
@@ -516,10 +516,10 @@ public class BlockPos extends Vec3i {
 	 * 
 	 * @return the total number of iterations
 	 * 
+	 * @param nextQueuer a function that enqueues the next positions
 	 * @param pos the starting position
 	 * @param maxDepth the maximum depth of iteration
 	 * @param maxIterations the maximum number of total iterations
-	 * @param nextQueuer a function that enqueues the next positions
 	 */
 	public static int iterateRecursively(
 		BlockPos pos, int maxDepth, int maxIterations, BiConsumer<BlockPos, Consumer<BlockPos>> nextQueuer, Predicate<BlockPos> callback

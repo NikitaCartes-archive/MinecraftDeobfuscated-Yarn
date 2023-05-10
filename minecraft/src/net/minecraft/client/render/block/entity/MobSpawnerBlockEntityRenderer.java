@@ -35,7 +35,7 @@ public class MobSpawnerBlockEntityRenderer implements BlockEntityRenderer<MobSpa
 
 			matrixStack.translate(0.0F, 0.4F, 0.0F);
 			matrixStack.multiply(
-				RotationAxis.POSITIVE_Y.rotationDegrees((float)MathHelper.lerp((double)f, mobSpawnerLogic.method_8279(), mobSpawnerLogic.method_8278()) * 10.0F)
+				RotationAxis.POSITIVE_Y.rotationDegrees((float)MathHelper.lerp((double)f, mobSpawnerLogic.getLastRotation(), mobSpawnerLogic.getRotation()) * 10.0F)
 			);
 			matrixStack.translate(0.0F, -0.2F, 0.0F);
 			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-30.0F));

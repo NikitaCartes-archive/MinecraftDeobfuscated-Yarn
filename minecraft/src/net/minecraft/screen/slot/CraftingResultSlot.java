@@ -1,19 +1,19 @@
 package net.minecraft.screen.slot;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.util.collection.DefaultedList;
 
 public class CraftingResultSlot extends Slot {
-	private final CraftingInventory input;
+	private final RecipeInputInventory input;
 	private final PlayerEntity player;
 	private int amount;
 
-	public CraftingResultSlot(PlayerEntity player, CraftingInventory input, Inventory inventory, int index, int x, int y) {
+	public CraftingResultSlot(PlayerEntity player, RecipeInputInventory input, Inventory inventory, int index, int x, int y) {
 		super(inventory, index, x, y);
 		this.player = player;
 		this.input = input;
@@ -73,7 +73,7 @@ public class CraftingResultSlot extends Slot {
 			if (!itemStack2.isEmpty()) {
 				if (itemStack.isEmpty()) {
 					this.input.setStack(i, itemStack2);
-				} else if (ItemStack.areItemsEqual(itemStack, itemStack2) && ItemStack.areNbtEqual(itemStack, itemStack2)) {
+				} else if (ItemStack.canCombine(itemStack, itemStack2)) {
 					itemStack2.increment(itemStack.getCount());
 					this.input.setStack(i, itemStack2);
 				} else if (!this.player.getInventory().insertStack(itemStack2)) {

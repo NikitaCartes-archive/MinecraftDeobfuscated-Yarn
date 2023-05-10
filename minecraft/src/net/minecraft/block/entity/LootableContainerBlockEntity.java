@@ -9,7 +9,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -73,14 +73,13 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 			}
 
 			this.lootTableId = null;
-			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.pos))
-				.random(this.lootTableSeed);
+			LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.world)
+				.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(this.pos));
 			if (player != null) {
-				builder.luck(player.getLuck()).parameter(LootContextParameters.THIS_ENTITY, player);
+				builder.luck(player.getLuck()).add(LootContextParameters.THIS_ENTITY, player);
 			}
 
-			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST));
+			lootTable.supplyInventory(this, builder.build(LootContextTypes.CHEST), this.lootTableSeed);
 		}
 	}
 

@@ -566,10 +566,10 @@ public class Box {
 	}
 
 	/**
-	 * Checks if any of the coordinates of this box is {@linkplain
+	 * Checks if any of the coordinates of this box are {@linkplain
 	 * Double#isNaN(double) not a number}.
 	 */
-	public boolean isValid() {
+	public boolean isNaN() {
 		return Double.isNaN(this.minX)
 			|| Double.isNaN(this.minY)
 			|| Double.isNaN(this.minZ)

@@ -22,7 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -429,14 +429,14 @@ public class FishingBobberEntity extends ProjectileEntity {
 				this.getWorld().sendEntityStatus(this, EntityStatuses.PULL_HOOKED_ENTITY);
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.hookCountdown > 0) {
-				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.getWorld())
-					.parameter(LootContextParameters.ORIGIN, this.getPos())
-					.parameter(LootContextParameters.TOOL, usedItem)
-					.parameter(LootContextParameters.THIS_ENTITY, this)
-					.random(this.random)
-					.luck((float)this.luckOfTheSeaLevel + playerEntity.getLuck());
+				LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
+					.add(LootContextParameters.ORIGIN, this.getPos())
+					.add(LootContextParameters.TOOL, usedItem)
+					.add(LootContextParameters.THIS_ENTITY, this)
+					.luck((float)this.luckOfTheSeaLevel + playerEntity.getLuck())
+					.build(LootContextTypes.FISHING);
 				LootTable lootTable = this.getWorld().getServer().getLootManager().getLootTable(LootTables.FISHING_GAMEPLAY);
-				List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.FISHING));
+				List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
 				Criteria.FISHING_ROD_HOOKED.trigger((ServerPlayerEntity)playerEntity, usedItem, this, list);
 
 				for (ItemStack itemStack : list) {

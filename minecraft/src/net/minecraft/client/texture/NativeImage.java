@@ -144,7 +144,11 @@ public final class NativeImage implements AutoCloseable {
 				}
 
 				var7 = new NativeImage(
-					format == null ? NativeImage.Format.fromGl(intBuffer3.get(0)) : format, intBuffer.get(0), intBuffer2.get(0), true, MemoryUtil.memAddress(byteBuffer)
+					format == null ? NativeImage.Format.fromChannelCount(intBuffer3.get(0)) : format,
+					intBuffer.get(0),
+					intBuffer2.get(0),
+					true,
+					MemoryUtil.memAddress(byteBuffer)
 				);
 			}
 
@@ -445,26 +449,28 @@ public final class NativeImage implements AutoCloseable {
 		boolean mipmap,
 		boolean close
 	) {
-		RenderSystem.assertOnRenderThreadOrInit();
-		this.checkAllocated();
-		setTextureFilter(blur, mipmap);
-		if (width == this.getWidth()) {
-			GlStateManager._pixelStore(GlConst.GL_UNPACK_ROW_LENGTH, 0);
-		} else {
-			GlStateManager._pixelStore(GlConst.GL_UNPACK_ROW_LENGTH, this.getWidth());
-		}
+		try {
+			RenderSystem.assertOnRenderThreadOrInit();
+			this.checkAllocated();
+			setTextureFilter(blur, mipmap);
+			if (width == this.getWidth()) {
+				GlStateManager._pixelStore(GlConst.GL_UNPACK_ROW_LENGTH, 0);
+			} else {
+				GlStateManager._pixelStore(GlConst.GL_UNPACK_ROW_LENGTH, this.getWidth());
+			}
 
-		GlStateManager._pixelStore(GlConst.GL_UNPACK_SKIP_PIXELS, unpackSkipPixels);
-		GlStateManager._pixelStore(GlConst.GL_UNPACK_SKIP_ROWS, unpackSkipRows);
-		this.format.setUnpackAlignment();
-		GlStateManager._texSubImage2D(GlConst.GL_TEXTURE_2D, level, offsetX, offsetY, width, height, this.format.toGl(), GlConst.GL_UNSIGNED_BYTE, this.pointer);
-		if (clamp) {
-			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_S, GlConst.GL_CLAMP_TO_EDGE);
-			GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_T, GlConst.GL_CLAMP_TO_EDGE);
-		}
-
-		if (close) {
-			this.close();
+			GlStateManager._pixelStore(GlConst.GL_UNPACK_SKIP_PIXELS, unpackSkipPixels);
+			GlStateManager._pixelStore(GlConst.GL_UNPACK_SKIP_ROWS, unpackSkipRows);
+			this.format.setUnpackAlignment();
+			GlStateManager._texSubImage2D(GlConst.GL_TEXTURE_2D, level, offsetX, offsetY, width, height, this.format.toGl(), GlConst.GL_UNSIGNED_BYTE, this.pointer);
+			if (clamp) {
+				GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_S, GlConst.GL_CLAMP_TO_EDGE);
+				GlStateManager._texParameter(GlConst.GL_TEXTURE_2D, GlConst.GL_TEXTURE_WRAP_T, GlConst.GL_CLAMP_TO_EDGE);
+			}
+		} finally {
+			if (close) {
+				this.close();
+			}
 		}
 	}
 
@@ -874,7 +880,7 @@ public final class NativeImage implements AutoCloseable {
 			return this.writeable;
 		}
 
-		static NativeImage.Format fromGl(int glFormat) {
+		static NativeImage.Format fromChannelCount(int glFormat) {
 			switch (glFormat) {
 				case 1:
 					return LUMINANCE;

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
@@ -20,11 +20,11 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack = recipeInputInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				list.add(itemStack);
 				if (list.size() > 1) {
@@ -39,11 +39,11 @@ public class RepairItemRecipe extends SpecialCraftingRecipe {
 		return list.size() == 2;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack = recipeInputInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				list.add(itemStack);
 				if (list.size() > 1) {

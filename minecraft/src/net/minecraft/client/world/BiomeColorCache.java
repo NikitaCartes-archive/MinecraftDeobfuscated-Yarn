@@ -70,6 +70,7 @@ public class BiomeColorCache {
 	public void reset() {
 		try {
 			this.lock.writeLock().lock();
+			this.colors.values().forEach(BiomeColorCache.Colors::setNeedsCacheRefresh);
 			this.colors.clear();
 		} finally {
 			this.lock.writeLock().unlock();
@@ -97,7 +98,10 @@ public class BiomeColorCache {
 			if (colors == null) {
 				colors2 = new BiomeColorCache.Colors();
 				if (this.colors.size() >= 256) {
-					this.colors.removeFirst();
+					BiomeColorCache.Colors colors3 = this.colors.removeFirst();
+					if (colors3 != null) {
+						colors3.setNeedsCacheRefresh();
+					}
 				}
 
 				this.colors.put(l, colors2);

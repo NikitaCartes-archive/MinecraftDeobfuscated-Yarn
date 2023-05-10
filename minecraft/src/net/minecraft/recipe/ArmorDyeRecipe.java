@@ -2,7 +2,7 @@ package net.minecraft.recipe;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
@@ -17,12 +17,12 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack2 = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(i);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.getItem() instanceof DyeableItem) {
 					if (!itemStack.isEmpty()) {
@@ -43,12 +43,12 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && !list.isEmpty();
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		List<DyeItem> list = Lists.<DyeItem>newArrayList();
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack2 = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(i);
 			if (!itemStack2.isEmpty()) {
 				Item item = itemStack2.getItem();
 				if (item instanceof DyeableItem) {

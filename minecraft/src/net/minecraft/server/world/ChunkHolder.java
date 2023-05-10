@@ -25,7 +25,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.thread.AtomicStack;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.LightType;
@@ -47,7 +46,6 @@ public class ChunkHolder {
 		UNLOADED_WORLD_CHUNK
 	);
 	private static final List<ChunkStatus> CHUNK_STATUSES = ChunkStatus.createOrderedList();
-	private static final ChunkHolder.LevelType[] LEVEL_TYPES = ChunkHolder.LevelType.values();
 	private final AtomicReferenceArray<CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> futuresByStatus = new AtomicReferenceArray(CHUNK_STATUSES.size());
 	private final HeightLimitView world;
 	private volatile CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> accessibleFuture = UNLOADED_WORLD_CHUNK_FUTURE;
@@ -92,7 +90,7 @@ public class ChunkHolder {
 		this.lightingProvider = lightingProvider;
 		this.levelUpdateListener = levelUpdateListener;
 		this.playersWatchingChunkProvider = playersWatchingChunkProvider;
-		this.lastTickLevel = ThreadedAnvilChunkStorage.MAX_LEVEL + 1;
+		this.lastTickLevel = ChunkLevels.INACCESSIBLE + 1;
 		this.level = this.lastTickLevel;
 		this.completedLevel = this.lastTickLevel;
 		this.setLevel(level);
@@ -106,7 +104,7 @@ public class ChunkHolder {
 	}
 
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getValidFutureFor(ChunkStatus leastStatus) {
-		return getTargetStatusForLevel(this.level).isAtLeast(leastStatus) ? this.getFutureFor(leastStatus) : UNLOADED_CHUNK_FUTURE;
+		return ChunkLevels.getStatus(this.level).isAtLeast(leastStatus) ? this.getFutureFor(leastStatus) : UNLOADED_CHUNK_FUTURE;
 	}
 
 	public CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> getTickingFuture() {
@@ -277,7 +275,7 @@ public class ChunkHolder {
 			}
 		}
 
-		if (getTargetStatusForLevel(this.level).isAtLeast(targetStatus)) {
+		if (ChunkLevels.getStatus(this.level).isAtLeast(targetStatus)) {
 			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture2 = chunkStorage.getChunk(this, targetStatus);
 			this.combineSavingFuture(completableFuture2, "schedule " + targetStatus);
 			this.futuresByStatus.set(i, completableFuture2);
@@ -303,8 +301,8 @@ public class ChunkHolder {
 		this.savingFuture = this.savingFuture.thenCombine(then, (chunk, either) -> either.map(chunkx -> chunkx, unloaded -> chunk));
 	}
 
-	public ChunkHolder.LevelType getLevelType() {
-		return getLevelType(this.level);
+	public ChunkLevelType getLevelType() {
+		return ChunkLevels.getType(this.level);
 	}
 
 	public ChunkPos getPos() {
@@ -331,27 +329,27 @@ public class ChunkHolder {
 		ThreadedAnvilChunkStorage threadedAnvilChunkStorage,
 		CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture,
 		Executor executor,
-		ChunkHolder.LevelType levelType
+		ChunkLevelType chunkLevelType
 	) {
 		this.field_26930.cancel(false);
 		CompletableFuture<Void> completableFuture2 = new CompletableFuture();
-		completableFuture2.thenRunAsync(() -> threadedAnvilChunkStorage.onChunkStatusChange(this.pos, levelType), executor);
+		completableFuture2.thenRunAsync(() -> threadedAnvilChunkStorage.onChunkStatusChange(this.pos, chunkLevelType), executor);
 		this.field_26930 = completableFuture2;
 		completableFuture.thenAccept(either -> either.ifLeft(worldChunk -> completableFuture2.complete(null)));
 	}
 
-	private void method_31408(ThreadedAnvilChunkStorage threadedAnvilChunkStorage, ChunkHolder.LevelType levelType) {
+	private void method_31408(ThreadedAnvilChunkStorage threadedAnvilChunkStorage, ChunkLevelType chunkLevelType) {
 		this.field_26930.cancel(false);
-		threadedAnvilChunkStorage.onChunkStatusChange(this.pos, levelType);
+		threadedAnvilChunkStorage.onChunkStatusChange(this.pos, chunkLevelType);
 	}
 
 	protected void tick(ThreadedAnvilChunkStorage chunkStorage, Executor executor) {
-		ChunkStatus chunkStatus = getTargetStatusForLevel(this.lastTickLevel);
-		ChunkStatus chunkStatus2 = getTargetStatusForLevel(this.level);
-		boolean bl = this.lastTickLevel <= ThreadedAnvilChunkStorage.MAX_LEVEL;
-		boolean bl2 = this.level <= ThreadedAnvilChunkStorage.MAX_LEVEL;
-		ChunkHolder.LevelType levelType = getLevelType(this.lastTickLevel);
-		ChunkHolder.LevelType levelType2 = getLevelType(this.level);
+		ChunkStatus chunkStatus = ChunkLevels.getStatus(this.lastTickLevel);
+		ChunkStatus chunkStatus2 = ChunkLevels.getStatus(this.level);
+		boolean bl = ChunkLevels.isAccessible(this.lastTickLevel);
+		boolean bl2 = ChunkLevels.isAccessible(this.level);
+		ChunkLevelType chunkLevelType = ChunkLevels.getType(this.lastTickLevel);
+		ChunkLevelType chunkLevelType2 = ChunkLevels.getType(this.level);
 		if (bl) {
 			Either<Chunk, ChunkHolder.Unloaded> either = Either.right(new ChunkHolder.Unloaded() {
 				public String toString() {
@@ -368,12 +366,12 @@ public class ChunkHolder {
 			}
 		}
 
-		boolean bl3 = levelType.isAfter(ChunkHolder.LevelType.BORDER);
-		boolean bl4 = levelType2.isAfter(ChunkHolder.LevelType.BORDER);
+		boolean bl3 = chunkLevelType.isAfter(ChunkLevelType.FULL);
+		boolean bl4 = chunkLevelType2.isAfter(ChunkLevelType.FULL);
 		this.accessible |= bl4;
 		if (!bl3 && bl4) {
 			this.accessibleFuture = chunkStorage.makeChunkAccessible(this);
-			this.method_31409(chunkStorage, this.accessibleFuture, executor, ChunkHolder.LevelType.BORDER);
+			this.method_31409(chunkStorage, this.accessibleFuture, executor, ChunkLevelType.FULL);
 			this.combineSavingFuture(this.accessibleFuture, "full");
 		}
 
@@ -382,11 +380,11 @@ public class ChunkHolder {
 			this.accessibleFuture = UNLOADED_WORLD_CHUNK_FUTURE;
 		}
 
-		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.TICKING);
-		boolean bl6 = levelType2.isAfter(ChunkHolder.LevelType.TICKING);
+		boolean bl5 = chunkLevelType.isAfter(ChunkLevelType.BLOCK_TICKING);
+		boolean bl6 = chunkLevelType2.isAfter(ChunkLevelType.BLOCK_TICKING);
 		if (!bl5 && bl6) {
 			this.tickingFuture = chunkStorage.makeChunkTickable(this);
-			this.method_31409(chunkStorage, this.tickingFuture, executor, ChunkHolder.LevelType.TICKING);
+			this.method_31409(chunkStorage, this.tickingFuture, executor, ChunkLevelType.BLOCK_TICKING);
 			this.combineSavingFuture(this.tickingFuture, "ticking");
 		}
 
@@ -395,15 +393,15 @@ public class ChunkHolder {
 			this.tickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
 		}
 
-		boolean bl7 = levelType.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
-		boolean bl8 = levelType2.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
+		boolean bl7 = chunkLevelType.isAfter(ChunkLevelType.ENTITY_TICKING);
+		boolean bl8 = chunkLevelType2.isAfter(ChunkLevelType.ENTITY_TICKING);
 		if (!bl7 && bl8) {
 			if (this.entityTickingFuture != UNLOADED_WORLD_CHUNK_FUTURE) {
 				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException());
 			}
 
 			this.entityTickingFuture = chunkStorage.makeChunkEntitiesTickable(this);
-			this.method_31409(chunkStorage, this.entityTickingFuture, executor, ChunkHolder.LevelType.ENTITY_TICKING);
+			this.method_31409(chunkStorage, this.entityTickingFuture, executor, ChunkLevelType.ENTITY_TICKING);
 			this.combineSavingFuture(this.entityTickingFuture, "entity ticking");
 		}
 
@@ -412,20 +410,12 @@ public class ChunkHolder {
 			this.entityTickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
 		}
 
-		if (!levelType2.isAfter(levelType)) {
-			this.method_31408(chunkStorage, levelType2);
+		if (!chunkLevelType2.isAfter(chunkLevelType)) {
+			this.method_31408(chunkStorage, chunkLevelType2);
 		}
 
 		this.levelUpdateListener.updateLevel(this.pos, this::getCompletedLevel, this.level, this::setCompletedLevel);
 		this.lastTickLevel = this.level;
-	}
-
-	public static ChunkStatus getTargetStatusForLevel(int level) {
-		return level < 33 ? ChunkStatus.FULL : ChunkStatus.byDistanceFromFull(level - 33);
-	}
-
-	public static ChunkHolder.LevelType getLevelType(int distance) {
-		return LEVEL_TYPES[MathHelper.clamp(33 - distance + 1, 0, LEVEL_TYPES.length - 1)];
 	}
 
 	public boolean isAccessible() {
@@ -433,7 +423,7 @@ public class ChunkHolder {
 	}
 
 	public void updateAccessibleStatus() {
-		this.accessible = getLevelType(this.level).isAfter(ChunkHolder.LevelType.BORDER);
+		this.accessible = ChunkLevels.getType(this.level).isAfter(ChunkLevelType.FULL);
 	}
 
 	public void setCompletedChunk(WrapperProtoChunk chunk) {
@@ -459,17 +449,6 @@ public class ChunkHolder {
 		}
 
 		return list;
-	}
-
-	public static enum LevelType {
-		INACCESSIBLE,
-		BORDER,
-		TICKING,
-		ENTITY_TICKING;
-
-		public boolean isAfter(ChunkHolder.LevelType levelType) {
-			return this.ordinal() >= levelType.ordinal();
-		}
 	}
 
 	@FunctionalInterface

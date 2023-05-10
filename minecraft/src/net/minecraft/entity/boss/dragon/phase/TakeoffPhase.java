@@ -23,7 +23,9 @@ public class TakeoffPhase extends AbstractPhase {
 	@Override
 	public void serverTick() {
 		if (!this.shouldFindNewPath && this.path != null) {
-			BlockPos blockPos = this.dragon.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon
+				.getWorld()
+				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()));
 			if (!blockPos.isWithinDistance(this.dragon.getPos(), 10.0)) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 			}

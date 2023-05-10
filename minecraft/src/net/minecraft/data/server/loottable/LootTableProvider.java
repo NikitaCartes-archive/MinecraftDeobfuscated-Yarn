@@ -40,6 +40,7 @@ public class LootTableProvider implements DataProvider {
 	public CompletableFuture<?> run(DataWriter writer) {
 		final Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
 		this.lootTypeGenerators.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().get()).accept((id, builder) -> {
+				builder.randomSequenceId(id);
 				if (map.put(id, builder.type(lootTypeGenerator.paramSet).build()) != null) {
 					throw new IllegalStateException("Duplicate loot table " + id);
 				}

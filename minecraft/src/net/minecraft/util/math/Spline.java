@@ -169,7 +169,7 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 	) implements Spline<C, I> {
 
 		public Implementation(I locationFunction, float[] locations, List<Spline<C, I>> values, float[] derivatives, float min, float max) {
-			method_41301(locations, values, derivatives);
+			assertParametersValid(locations, values, derivatives);
 			this.locationFunction = locationFunction;
 			this.locations = locations;
 			this.values = values;
@@ -181,22 +181,22 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 		static <C, I extends ToFloatFunction<C>> Spline.Implementation<C, I> build(
 			I locationFunction, float[] locations, List<Spline<C, I>> values, float[] derivatives
 		) {
-			method_41301(locations, values, derivatives);
+			assertParametersValid(locations, values, derivatives);
 			int i = locations.length - 1;
 			float f = Float.POSITIVE_INFINITY;
 			float g = Float.NEGATIVE_INFINITY;
 			float h = locationFunction.min();
 			float j = locationFunction.max();
 			if (h < locations[0]) {
-				float k = method_41297(h, locations, ((Spline)values.get(0)).min(), derivatives, 0);
-				float l = method_41297(h, locations, ((Spline)values.get(0)).max(), derivatives, 0);
+				float k = sampleOutsideRange(h, locations, ((Spline)values.get(0)).min(), derivatives, 0);
+				float l = sampleOutsideRange(h, locations, ((Spline)values.get(0)).max(), derivatives, 0);
 				f = Math.min(f, Math.min(k, l));
 				g = Math.max(g, Math.max(k, l));
 			}
 
 			if (j > locations[i]) {
-				float k = method_41297(j, locations, ((Spline)values.get(i)).min(), derivatives, i);
-				float l = method_41297(j, locations, ((Spline)values.get(i)).max(), derivatives, i);
+				float k = sampleOutsideRange(j, locations, ((Spline)values.get(i)).min(), derivatives, i);
+				float l = sampleOutsideRange(j, locations, ((Spline)values.get(i)).max(), derivatives, i);
 				f = Math.min(f, Math.min(k, l));
 				g = Math.max(g, Math.max(k, l));
 			}
@@ -237,15 +237,15 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 			return new Spline.Implementation<>(locationFunction, locations, values, derivatives, f, g);
 		}
 
-		private static float method_41297(float f, float[] fs, float g, float[] gs, int i) {
-			float h = gs[i];
-			return h == 0.0F ? g : g + h * (f - fs[i]);
+		private static float sampleOutsideRange(float point, float[] locations, float value, float[] derivatives, int i) {
+			float f = derivatives[i];
+			return f == 0.0F ? value : value + f * (point - locations[i]);
 		}
 
-		private static <C, I extends ToFloatFunction<C>> void method_41301(float[] fs, List<Spline<C, I>> list, float[] gs) {
-			if (fs.length != list.size() || fs.length != gs.length) {
-				throw new IllegalArgumentException("All lengths must be equal, got: " + fs.length + " " + list.size() + " " + gs.length);
-			} else if (fs.length == 0) {
+		private static <C, I extends ToFloatFunction<C>> void assertParametersValid(float[] locations, List<Spline<C, I>> values, float[] derivatives) {
+			if (locations.length != values.size() || locations.length != derivatives.length) {
+				throw new IllegalArgumentException("All lengths must be equal, got: " + locations.length + " " + values.size() + " " + derivatives.length);
+			} else if (locations.length == 0) {
 				throw new IllegalArgumentException("Cannot create a multipoint spline with no points");
 			}
 		}
@@ -253,12 +253,12 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 		@Override
 		public float apply(C x) {
 			float f = this.locationFunction.apply(x);
-			int i = method_41300(this.locations, f);
+			int i = findRangeForLocation(this.locations, f);
 			int j = this.locations.length - 1;
 			if (i < 0) {
-				return method_41297(f, this.locations, ((Spline)this.values.get(0)).apply(x), this.derivatives, 0);
+				return sampleOutsideRange(f, this.locations, ((Spline)this.values.get(0)).apply(x), this.derivatives, 0);
 			} else if (i == j) {
-				return method_41297(f, this.locations, ((Spline)this.values.get(j)).apply(x), this.derivatives, j);
+				return sampleOutsideRange(f, this.locations, ((Spline)this.values.get(j)).apply(x), this.derivatives, j);
 			} else {
 				float g = this.locations[i];
 				float h = this.locations[i + 1];
@@ -275,8 +275,8 @@ public interface Spline<C, I extends ToFloatFunction<C>> extends ToFloatFunction
 			}
 		}
 
-		private static int method_41300(float[] fs, float f) {
-			return MathHelper.binarySearch(0, fs.length, i -> f < fs[i]) - 1;
+		private static int findRangeForLocation(float[] locations, float x) {
+			return MathHelper.binarySearch(0, locations.length, i -> x < locations[i]) - 1;
 		}
 
 		@VisibleForTesting

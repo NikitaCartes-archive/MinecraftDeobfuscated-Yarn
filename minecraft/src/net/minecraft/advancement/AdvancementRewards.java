@@ -11,7 +11,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.MinecraftServer;
@@ -42,15 +42,14 @@ public class AdvancementRewards {
 
 	public void apply(ServerPlayerEntity player) {
 		player.addExperience(this.experience);
-		LootContext lootContext = new LootContext.Builder(player.getServerWorld())
-			.parameter(LootContextParameters.THIS_ENTITY, player)
-			.parameter(LootContextParameters.ORIGIN, player.getPos())
-			.random(player.getRandom())
+		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(player.getServerWorld())
+			.add(LootContextParameters.THIS_ENTITY, player)
+			.add(LootContextParameters.ORIGIN, player.getPos())
 			.build(LootContextTypes.ADVANCEMENT_REWARD);
 		boolean bl = false;
 
 		for (Identifier identifier : this.loot) {
-			for (ItemStack itemStack : player.server.getLootManager().getLootTable(identifier).generateLoot(lootContext)) {
+			for (ItemStack itemStack : player.server.getLootManager().getLootTable(identifier).generateLoot(lootContextParameterSet)) {
 				if (player.giveItemStack(itemStack)) {
 					player.getWorld()
 						.playSound(

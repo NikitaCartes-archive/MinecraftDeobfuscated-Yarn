@@ -233,10 +233,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	 * @see Entity#readNbt
 	 */
 	public static final int MAX_COMMAND_TAGS = 1024;
-	/**
-	 * @see Entity#getVelocityAffectingPos
-	 */
-	public static final double VELOCITY_AFFECTING_POS_Y_OFFSET = 0.5000001;
+	public static final float field_44870 = 0.2F;
+	public static final double field_44871 = 0.500001;
+	public static final double field_44872 = 0.999999;
 	public static final float field_29991 = 0.11111111F;
 	/**
 	 * @see Entity#getMinFreezeDamageTicks
@@ -366,6 +365,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	public boolean wasInPowderSnow;
 	public boolean wasOnFire;
 	public Optional<BlockPos> supportingBlockPos = Optional.empty();
+	private boolean forceUpdateSupportingBlockPos = false;
 	private float lastChimeIntensity;
 	private int lastChimeAge;
 	private boolean hasVisualFire;
@@ -741,6 +741,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.portalCooldown = this.getDefaultPortalCooldown();
 	}
 
+	public void setPortalCooldown(int portalCooldown) {
+		this.portalCooldown = portalCooldown;
+	}
+
+	public int getPortalCooldown() {
+		return this.portalCooldown;
+	}
+
 	/**
 	 * {@return whether the entity's portal cooldown is in effect}
 	 */
@@ -845,13 +853,25 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.updateSupportingBlockPos(onGround);
 	}
 
+	public boolean isSupportedBy(BlockPos pos) {
+		return this.supportingBlockPos.isPresent() && ((BlockPos)this.supportingBlockPos.get()).equals(pos);
+	}
+
 	protected void updateSupportingBlockPos(boolean onGround) {
 		if (onGround) {
 			Box box = this.getBoundingBox();
 			Box box2 = new Box(box.minX, box.minY - 1.0E-6, box.minZ, box.maxX, box.minY, box.maxZ);
-			this.supportingBlockPos = this.world.findSupportingBlockPos(this, box2);
-		} else if (this.supportingBlockPos.isPresent()) {
-			this.supportingBlockPos = Optional.empty();
+			Optional<BlockPos> optional = this.world.findSupportingBlockPos(this, box2);
+			if (optional.isPresent() || this.forceUpdateSupportingBlockPos) {
+				this.supportingBlockPos = optional;
+			}
+
+			this.forceUpdateSupportingBlockPos = optional.isEmpty();
+		} else {
+			this.forceUpdateSupportingBlockPos = false;
+			if (this.supportingBlockPos.isPresent()) {
+				this.supportingBlockPos = Optional.empty();
+			}
 		}
 	}
 
@@ -1082,6 +1102,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.getPosWithYOffset(0.2F);
 	}
 
+	protected BlockPos getVelocityAffectingPos() {
+		return this.getPosWithYOffset(0.500001F);
+	}
+
 	/**
 	 * {@return the stepping position}
 	 * 
@@ -1096,7 +1120,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.getPosWithYOffset(1.0E-5F);
 	}
 
-	private BlockPos getPosWithYOffset(float offset) {
+	protected BlockPos getPosWithYOffset(float offset) {
 		if (this.supportingBlockPos.isPresent()) {
 			BlockPos blockPos = (BlockPos)this.supportingBlockPos.get();
 			if (!(offset > 1.0E-5F)) {
@@ -1131,10 +1155,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		} else {
 			return f;
 		}
-	}
-
-	protected BlockPos getVelocityAffectingPos() {
-		return this.getPosWithYOffset(0.5000001F);
 	}
 
 	protected Vec3d adjustMovementForSneaking(Vec3d movement, MovementType type) {
@@ -1735,23 +1755,22 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	protected void spawnSprintingParticles() {
-		int i = MathHelper.floor(this.getX());
-		int j = MathHelper.floor(this.getY() - 0.2F);
-		int k = MathHelper.floor(this.getZ());
-		BlockPos blockPos = new BlockPos(i, j, k);
+		BlockPos blockPos = this.getLandingPos();
 		BlockState blockState = this.getWorld().getBlockState(blockPos);
 		if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
 			Vec3d vec3d = this.getVelocity();
-			this.getWorld()
-				.addParticle(
-					new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState),
-					this.getX() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width,
-					this.getY() + 0.1,
-					this.getZ() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width,
-					vec3d.x * -4.0,
-					1.5,
-					vec3d.z * -4.0
-				);
+			BlockPos blockPos2 = this.getBlockPos();
+			double d = this.getX() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width;
+			double e = this.getZ() + (this.random.nextDouble() - 0.5) * (double)this.dimensions.width;
+			if (blockPos2.getX() != blockPos.getX()) {
+				d = MathHelper.clamp(d, (double)blockPos.getX(), (double)blockPos.getX() + 1.0);
+			}
+
+			if (blockPos2.getZ() != blockPos.getZ()) {
+				e = MathHelper.clamp(e, (double)blockPos.getZ(), (double)blockPos.getZ() + 1.0);
+			}
+
+			this.getWorld().addParticle(new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState), d, this.getY() + 0.1, e, vec3d.x * -4.0, 1.5, vec3d.z * -4.0);
 		}
 	}
 
@@ -2226,7 +2245,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.setAir(nbt.getShort("Air"));
 			}
 
-			this.setOnGround(nbt.getBoolean("OnGround"));
+			this.onGround = nbt.getBoolean("OnGround");
 			this.invulnerable = nbt.getBoolean("Invulnerable");
 			this.portalCooldown = nbt.getInt("PortalCooldown");
 			if (nbt.containsUuid("UUID")) {
@@ -2446,8 +2465,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	/**
 	 * Called when a player interacts with this entity.
 	 * 
-	 * @param player the player
 	 * @param hand the hand the player used to interact with this entity
+	 * @param player the player
 	 */
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		return ActionResult.PASS;

@@ -26,7 +26,7 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.FixedBufferInputStream;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
-import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
@@ -500,12 +500,10 @@ public class UnihexFont implements Font {
 
 				@Override
 				public void upload(int x, int y) {
-					try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-						IntBuffer intBuffer = memoryStack.mallocInt(UnicodeTextureGlyph.this.width() * 16);
-						UnihexFont.addGlyphPixels(intBuffer, UnicodeTextureGlyph.this.contents, UnicodeTextureGlyph.this.left, UnicodeTextureGlyph.this.right);
-						intBuffer.rewind();
-						GlStateManager.upload(0, x, y, UnicodeTextureGlyph.this.width(), 16, NativeImage.Format.RGBA, intBuffer);
-					}
+					IntBuffer intBuffer = MemoryUtil.memAllocInt(UnicodeTextureGlyph.this.width() * 16);
+					UnihexFont.addGlyphPixels(intBuffer, UnicodeTextureGlyph.this.contents, UnicodeTextureGlyph.this.left, UnicodeTextureGlyph.this.right);
+					intBuffer.rewind();
+					GlStateManager.upload(0, x, y, UnicodeTextureGlyph.this.width(), 16, NativeImage.Format.RGBA, intBuffer, MemoryUtil::memFree);
 				}
 
 				@Override

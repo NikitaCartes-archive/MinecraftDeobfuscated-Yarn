@@ -26,31 +26,31 @@ public class AffineTransformations {
 		}
 	});
 
-	public static AffineTransformation setupUvLock(AffineTransformation affineTransformation) {
+	public static AffineTransformation setupUvLock(AffineTransformation transformation) {
 		Matrix4f matrix4f = new Matrix4f().translation(0.5F, 0.5F, 0.5F);
-		matrix4f.mul(affineTransformation.getMatrix());
+		matrix4f.mul(transformation.getMatrix());
 		matrix4f.translate(-0.5F, -0.5F, -0.5F);
 		return new AffineTransformation(matrix4f);
 	}
 
-	public static AffineTransformation method_35829(AffineTransformation affineTransformation) {
+	public static AffineTransformation method_35829(AffineTransformation transformation) {
 		Matrix4f matrix4f = new Matrix4f().translation(-0.5F, -0.5F, -0.5F);
-		matrix4f.mul(affineTransformation.getMatrix());
+		matrix4f.mul(transformation.getMatrix());
 		matrix4f.translate(0.5F, 0.5F, 0.5F);
 		return new AffineTransformation(matrix4f);
 	}
 
-	public static AffineTransformation uvLock(AffineTransformation affineTransformation, Direction direction, Supplier<String> supplier) {
-		Direction direction2 = Direction.transform(affineTransformation.getMatrix(), direction);
-		AffineTransformation affineTransformation2 = affineTransformation.invert();
-		if (affineTransformation2 == null) {
-			LOGGER.warn((String)supplier.get());
+	public static AffineTransformation uvLock(AffineTransformation transformation, Direction dir, Supplier<String> warning) {
+		Direction direction = Direction.transform(transformation.getMatrix(), dir);
+		AffineTransformation affineTransformation = transformation.invert();
+		if (affineTransformation == null) {
+			LOGGER.warn((String)warning.get());
 			return new AffineTransformation(null, null, new Vector3f(0.0F, 0.0F, 0.0F), null);
 		} else {
-			AffineTransformation affineTransformation3 = ((AffineTransformation)INVERTED_DIRECTION_ROTATIONS.get(direction))
-				.multiply(affineTransformation2)
-				.multiply((AffineTransformation)DIRECTION_ROTATIONS.get(direction2));
-			return setupUvLock(affineTransformation3);
+			AffineTransformation affineTransformation2 = ((AffineTransformation)INVERTED_DIRECTION_ROTATIONS.get(dir))
+				.multiply(affineTransformation)
+				.multiply((AffineTransformation)DIRECTION_ROTATIONS.get(direction));
+			return setupUvLock(affineTransformation2);
 		}
 	}
 }

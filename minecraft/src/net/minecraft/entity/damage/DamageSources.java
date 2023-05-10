@@ -38,6 +38,8 @@ public class DamageSources {
 	private final DamageSource sweetBerryBush;
 	private final DamageSource freeze;
 	private final DamageSource stalagmite;
+	private final DamageSource outsideBorder;
+	private final DamageSource genericKill;
 
 	public DamageSources(DynamicRegistryManager registryManager) {
 		this.registry = registryManager.get(RegistryKeys.DAMAGE_TYPE);
@@ -62,6 +64,8 @@ public class DamageSources {
 		this.sweetBerryBush = this.create(DamageTypes.SWEET_BERRY_BUSH);
 		this.freeze = this.create(DamageTypes.FREEZE);
 		this.stalagmite = this.create(DamageTypes.STALAGMITE);
+		this.outsideBorder = this.create(DamageTypes.OUTSIDE_BORDER);
+		this.genericKill = this.create(DamageTypes.GENERIC_KILL);
 	}
 
 	private DamageSource create(RegistryKey<DamageType> key) {
@@ -238,5 +242,13 @@ public class DamageSources {
 
 	public DamageSource badRespawnPoint(Vec3d position) {
 		return new DamageSource(this.registry.entryOf(DamageTypes.BAD_RESPAWN_POINT), position);
+	}
+
+	public DamageSource outsideBorder() {
+		return this.outsideBorder;
+	}
+
+	public DamageSource genericKill() {
+		return this.genericKill;
 	}
 }

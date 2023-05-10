@@ -9,7 +9,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class ScatteredOreFeature extends Feature<OreFeatureConfig> {
-	private static final int field_31515 = 7;
+	private static final int MAX_SPREAD = 7;
 
 	ScatteredOreFeature(Codec<OreFeatureConfig> codec) {
 		super(codec);

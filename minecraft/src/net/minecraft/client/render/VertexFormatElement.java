@@ -215,12 +215,12 @@ public class VertexFormatElement {
 			 * Specifies for OpenGL how the vertex data corresponding to the element
 			 * should be interpreted.
 			 * 
-			 * @param componentCount the number of components in the element
 			 * @param componentType the GL type of components in the element
-			 * @param stride the distance between consecutive instances of the element in the buffer
+			 * @param componentCount the number of components in the element
 			 * @param offset the distance between the start of the buffer and the first instance of
 			 * the element in the buffer; be aware that {@code pointer} is a legacy
 			 * name from OpenGL 2
+			 * @param stride the distance between consecutive instances of the element in the buffer
 			 * @param elementIndex the index of the element in a vertex format
 			 */
 			void setupBufferState(int componentCount, int componentType, int stride, long offset, int uvIndex, int elementIndex);

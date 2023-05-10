@@ -206,7 +206,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private float spawnAngle;
 	private final TextStream textStream;
 	private boolean filterText;
-	private boolean allowServerListing = true;
+	private boolean allowServerListing;
 	private SculkShriekerWarningManager sculkShriekerWarningManager = new SculkShriekerWarningManager(0, 0, 0);
 	private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler() {
 		@Override
@@ -767,7 +767,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 						destination.isDebugWorld(),
 						destination.isFlat(),
 						(byte)3,
-						this.getLastDeathPos()
+						this.getLastDeathPos(),
+						this.getPortalCooldown()
 					)
 				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
@@ -1500,7 +1501,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 						targetWorld.isDebugWorld(),
 						targetWorld.isFlat(),
 						(byte)3,
-						this.getLastDeathPos()
+						this.getLastDeathPos(),
+						this.getPortalCooldown()
 					)
 				);
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
@@ -1537,10 +1539,10 @@ public class ServerPlayerEntity extends PlayerEntity {
 	/**
 	 * Sets the player's spawn point.
 	 * 
-	 * @param dimension the new spawn dimension
-	 * @param pos the new spawn point, or {@code null} if resetting to the world spawn
-	 * @param forced whether the new spawn point is {@linkplain #isSpawnForced() forced}
 	 * @param sendMessage if {@code true}, a game message about the spawn point change will be sent
+	 * @param forced whether the new spawn point is {@linkplain #isSpawnForced() forced}
+	 * @param pos the new spawn point, or {@code null} if resetting to the world spawn
+	 * @param dimension the new spawn dimension
 	 */
 	public void setSpawnPoint(RegistryKey<World> dimension, @Nullable BlockPos pos, float angle, boolean forced, boolean sendMessage) {
 		if (pos != null) {

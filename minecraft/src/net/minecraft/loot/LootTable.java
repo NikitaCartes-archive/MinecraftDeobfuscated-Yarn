@@ -18,11 +18,13 @@ import java.util.function.Consumer;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionConsumingBuilder;
 import net.minecraft.loot.function.LootFunctionTypes;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
@@ -33,23 +35,26 @@ import org.slf4j.Logger;
 
 public class LootTable {
 	static final Logger LOGGER = LogUtils.getLogger();
-	public static final LootTable EMPTY = new LootTable(LootContextTypes.EMPTY, new LootPool[0], new LootFunction[0]);
+	public static final Identifier DEFAULT_ID = new Identifier("default");
+	public static final LootTable EMPTY = new LootTable(LootContextTypes.EMPTY, DEFAULT_ID, new LootPool[0], new LootFunction[0]);
 	public static final LootContextType GENERIC = LootContextTypes.GENERIC;
 	final LootContextType type;
+	final Identifier randomSequenceId;
 	final LootPool[] pools;
 	final LootFunction[] functions;
 	private final BiFunction<ItemStack, LootContext, ItemStack> combinedFunction;
 
-	LootTable(LootContextType type, LootPool[] pools, LootFunction[] functions) {
+	LootTable(LootContextType type, Identifier randomSequenceId, LootPool[] pools, LootFunction[] functions) {
 		this.type = type;
+		this.randomSequenceId = randomSequenceId;
 		this.pools = pools;
 		this.functions = functions;
 		this.combinedFunction = LootFunctionTypes.join(functions);
 	}
 
-	public static Consumer<ItemStack> processStacks(LootContext context, Consumer<ItemStack> consumer) {
+	public static Consumer<ItemStack> processStacks(ServerWorld world, Consumer<ItemStack> consumer) {
 		return stack -> {
-			if (stack.isItemEnabled(context.getWorld().getEnabledFeatures())) {
+			if (stack.isItemEnabled(world.getEnabledFeatures())) {
 				if (stack.getCount() < stack.getMaxCount()) {
 					consumer.accept(stack);
 				} else {
@@ -63,6 +68,10 @@ public class LootTable {
 				}
 			}
 		};
+	}
+
+	public void generateUnprocessedLoot(LootContextParameterSet parameters, Consumer<ItemStack> lootConsumer) {
+		this.generateUnprocessedLoot(new LootContext.Builder(parameters).build(this.randomSequenceId), lootConsumer);
 	}
 
 	public void generateUnprocessedLoot(LootContext context, Consumer<ItemStack> lootConsumer) {
@@ -80,11 +89,29 @@ public class LootTable {
 		}
 	}
 
-	public void generateLoot(LootContext context, Consumer<ItemStack> lootConsumer) {
-		this.generateUnprocessedLoot(context, processStacks(context, lootConsumer));
+	public void generateLoot(LootContextParameterSet parameters, long seed, Consumer<ItemStack> lootConsumer) {
+		this.generateUnprocessedLoot(
+			new LootContext.Builder(parameters).random(seed).build(this.randomSequenceId), processStacks(parameters.getWorld(), lootConsumer)
+		);
 	}
 
-	public ObjectArrayList<ItemStack> generateLoot(LootContext context) {
+	public void generateLoot(LootContextParameterSet parameters, Consumer<ItemStack> lootConsumer) {
+		this.generateUnprocessedLoot(parameters, processStacks(parameters.getWorld(), lootConsumer));
+	}
+
+	public void generateLoot(LootContext context, Consumer<ItemStack> lootConsumer) {
+		this.generateUnprocessedLoot(context, processStacks(context.getWorld(), lootConsumer));
+	}
+
+	public ObjectArrayList<ItemStack> generateLoot(LootContextParameterSet parameters, long seed) {
+		return this.generateLoot(new LootContext.Builder(parameters).random(seed).build(this.randomSequenceId));
+	}
+
+	public ObjectArrayList<ItemStack> generateLoot(LootContextParameterSet parameters) {
+		return this.generateLoot(new LootContext.Builder(parameters).build(this.randomSequenceId));
+	}
+
+	private ObjectArrayList<ItemStack> generateLoot(LootContext context) {
 		ObjectArrayList<ItemStack> objectArrayList = new ObjectArrayList<>();
 		this.generateLoot(context, objectArrayList::add);
 		return objectArrayList;
@@ -104,9 +131,10 @@ public class LootTable {
 		}
 	}
 
-	public void supplyInventory(Inventory inventory, LootContext context) {
-		ObjectArrayList<ItemStack> objectArrayList = this.generateLoot(context);
-		Random random = context.getRandom();
+	public void supplyInventory(Inventory inventory, LootContextParameterSet parameters, long seed) {
+		LootContext lootContext = new LootContext.Builder(parameters).random(seed).build(this.randomSequenceId);
+		ObjectArrayList<ItemStack> objectArrayList = this.generateLoot(lootContext);
+		Random random = lootContext.getRandom();
 		List<Integer> list = this.getFreeSlots(inventory, random);
 		this.shuffle(objectArrayList, list.size(), random);
 
@@ -180,6 +208,7 @@ public class LootTable {
 		private final List<LootPool> pools = Lists.<LootPool>newArrayList();
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
 		private LootContextType type = LootTable.GENERIC;
+		private Identifier randomSequenceId = LootTable.DEFAULT_ID;
 
 		public LootTable.Builder pool(LootPool.Builder poolBuilder) {
 			this.pools.add(poolBuilder.build());
@@ -188,6 +217,11 @@ public class LootTable {
 
 		public LootTable.Builder type(LootContextType context) {
 			this.type = context;
+			return this;
+		}
+
+		public LootTable.Builder randomSequenceId(Identifier randomSequenceId) {
+			this.randomSequenceId = randomSequenceId;
 			return this;
 		}
 
@@ -201,7 +235,9 @@ public class LootTable {
 		}
 
 		public LootTable build() {
-			return new LootTable(this.type, (LootPool[])this.pools.toArray(new LootPool[0]), (LootFunction[])this.functions.toArray(new LootFunction[0]));
+			return new LootTable(
+				this.type, this.randomSequenceId, (LootPool[])this.pools.toArray(new LootPool[0]), (LootFunction[])this.functions.toArray(new LootFunction[0])
+			);
 		}
 	}
 
@@ -215,8 +251,16 @@ public class LootTable {
 				lootContextType = LootContextTypes.get(new Identifier(string));
 			}
 
+			Identifier identifier;
+			if (jsonObject.has("random_sequence")) {
+				String string2 = JsonHelper.getString(jsonObject, "random_sequence");
+				identifier = new Identifier(string2);
+			} else {
+				identifier = LootTable.DEFAULT_ID;
+			}
+
 			LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
-			return new LootTable(lootContextType != null ? lootContextType : LootContextTypes.GENERIC, lootPools, lootFunctions);
+			return new LootTable(lootContextType != null ? lootContextType : LootContextTypes.GENERIC, identifier, lootPools, lootFunctions);
 		}
 
 		public JsonElement serialize(LootTable lootTable, Type type, JsonSerializationContext jsonSerializationContext) {
@@ -230,6 +274,7 @@ public class LootTable {
 				}
 			}
 
+			jsonObject.addProperty("random_sequence", lootTable.randomSequenceId.toString());
 			if (lootTable.pools.length > 0) {
 				jsonObject.add("pools", jsonSerializationContext.serialize(lootTable.pools));
 			}

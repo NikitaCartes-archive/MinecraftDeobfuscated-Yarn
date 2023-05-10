@@ -1,6 +1,6 @@
 package net.minecraft.recipe;
 
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
@@ -13,12 +13,12 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int j = 0; j < craftingInventory.size(); j++) {
-			ItemStack itemStack2 = craftingInventory.getStack(j);
+		for (int j = 0; j < recipeInputInventory.size(); j++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.isOf(Items.FILLED_MAP)) {
 					if (!itemStack.isEmpty()) {
@@ -39,12 +39,12 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		return !itemStack.isEmpty() && i > 0;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		int i = 0;
 		ItemStack itemStack = ItemStack.EMPTY;
 
-		for (int j = 0; j < craftingInventory.size(); j++) {
-			ItemStack itemStack2 = craftingInventory.getStack(j);
+		for (int j = 0; j < recipeInputInventory.size(); j++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.isOf(Items.FILLED_MAP)) {
 					if (!itemStack.isEmpty()) {

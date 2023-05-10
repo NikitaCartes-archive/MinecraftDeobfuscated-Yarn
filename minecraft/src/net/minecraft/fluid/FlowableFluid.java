@@ -254,46 +254,46 @@ public abstract class FlowableFluid extends Fluid {
 
 	protected abstract void beforeBreakingBlock(WorldAccess world, BlockPos pos, BlockState state);
 
-	private static short method_15747(BlockPos blockPos, BlockPos blockPos2) {
-		int i = blockPos2.getX() - blockPos.getX();
-		int j = blockPos2.getZ() - blockPos.getZ();
+	private static short packXZOffset(BlockPos from, BlockPos to) {
+		int i = to.getX() - from.getX();
+		int j = to.getZ() - from.getZ();
 		return (short)((i + 128 & 0xFF) << 8 | j + 128 & 0xFF);
 	}
 
 	protected int getFlowSpeedBetween(
 		WorldView world,
-		BlockPos blockPos,
+		BlockPos pos,
 		int i,
 		Direction direction,
-		BlockState blockState,
-		BlockPos blockPos2,
-		Short2ObjectMap<Pair<BlockState, FluidState>> short2ObjectMap,
-		Short2BooleanMap short2BooleanMap
+		BlockState state,
+		BlockPos fromPos,
+		Short2ObjectMap<Pair<BlockState, FluidState>> stateCache,
+		Short2BooleanMap flowDownCache
 	) {
 		int j = 1000;
 
 		for (Direction direction2 : Direction.Type.HORIZONTAL) {
 			if (direction2 != direction) {
-				BlockPos blockPos3 = blockPos.offset(direction2);
-				short s = method_15747(blockPos2, blockPos3);
-				Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, (Short2ObjectFunction<? extends Pair<BlockState, FluidState>>)(sx -> {
-					BlockState blockStatex = world.getBlockState(blockPos3);
+				BlockPos blockPos = pos.offset(direction2);
+				short s = packXZOffset(fromPos, blockPos);
+				Pair<BlockState, FluidState> pair = stateCache.computeIfAbsent(s, (Short2ObjectFunction<? extends Pair<BlockState, FluidState>>)(sx -> {
+					BlockState blockStatex = world.getBlockState(blockPos);
 					return Pair.of(blockStatex, blockStatex.getFluidState());
 				}));
-				BlockState blockState2 = pair.getFirst();
+				BlockState blockState = pair.getFirst();
 				FluidState fluidState = pair.getSecond();
-				if (this.canFlowThrough(world, this.getFlowing(), blockPos, blockState, direction2, blockPos3, blockState2, fluidState)) {
-					boolean bl = short2BooleanMap.computeIfAbsent(s, (Short2BooleanFunction)(sx -> {
-						BlockPos blockPos2x = blockPos3.down();
-						BlockState blockState2x = world.getBlockState(blockPos2x);
-						return this.canFlowDownTo(world, this.getFlowing(), blockPos3, blockState2, blockPos2x, blockState2x);
+				if (this.canFlowThrough(world, this.getFlowing(), pos, state, direction2, blockPos, blockState, fluidState)) {
+					boolean bl = flowDownCache.computeIfAbsent(s, (Short2BooleanFunction)(sx -> {
+						BlockPos blockPos2 = blockPos.down();
+						BlockState blockState2 = world.getBlockState(blockPos2);
+						return this.canFlowDownTo(world, this.getFlowing(), blockPos, blockState, blockPos2, blockState2);
 					}));
 					if (bl) {
 						return i;
 					}
 
 					if (i < this.getFlowSpeed(world)) {
-						int k = this.getFlowSpeedBetween(world, blockPos3, i + 1, direction2.getOpposite(), blockState2, blockPos2, short2ObjectMap, short2BooleanMap);
+						int k = this.getFlowSpeedBetween(world, blockPos, i + 1, direction2.getOpposite(), blockState, fromPos, stateCache, flowDownCache);
 						if (k < j) {
 							j = k;
 						}
@@ -349,7 +349,7 @@ public abstract class FlowableFluid extends Fluid {
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockPos blockPos = pos.offset(direction);
-			short s = method_15747(pos, blockPos);
+			short s = packXZOffset(pos, blockPos);
 			Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, (Short2ObjectFunction<? extends Pair<BlockState, FluidState>>)(sx -> {
 				BlockState blockStatex = world.getBlockState(blockPos);
 				return Pair.of(blockStatex, blockStatex.getFluidState());

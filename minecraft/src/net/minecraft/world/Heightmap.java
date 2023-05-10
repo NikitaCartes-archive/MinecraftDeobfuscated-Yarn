@@ -103,8 +103,8 @@ public class Heightmap {
 		return this.get(toIndex(x, z));
 	}
 
-	public int method_35334(int i, int j) {
-		return this.get(toIndex(i, j)) - 1;
+	public int method_35334(int x, int z) {
+		return this.get(toIndex(x, z)) - 1;
 	}
 
 	private int get(int index) {

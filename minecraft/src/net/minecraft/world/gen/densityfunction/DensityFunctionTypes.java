@@ -237,8 +237,8 @@ public final class DensityFunctionTypes {
 	 * 
 	 * @return the created density function
 	 * 
-	 * @param min the new minimum value
 	 * @param max the new maximum value
+	 * @param min the new minimum value
 	 */
 	private static DensityFunction mapRange(DensityFunction function, double min, double max) {
 		double d = (min + max) * 0.5;
@@ -280,8 +280,8 @@ public final class DensityFunctionTypes {
 	 * 
 	 * @return the created density function
 	 * 
-	 * @param start the start value, for the {@code delta} value {@code 0.0}
 	 * @param end the function used for the end value, for the {@code delta} value {@code 1.0}
+	 * @param start the start value, for the {@code delta} value {@code 0.0}
 	 */
 	public static DensityFunction lerp(DensityFunction delta, double start, DensityFunction end) {
 		return add(mul(delta, add(end, constant(-start))), constant(start));

@@ -119,9 +119,9 @@ public class Mouse {
 	/**
 	 * Called when a mouse is used to scroll.
 	 * 
-	 * @param window the window handle
-	 * @param horizontal the horizontal scroll distance
 	 * @param vertical the vertical scroll distance
+	 * @param horizontal the horizontal scroll distance
+	 * @param window the window handle
 	 */
 	private void onMouseScroll(long window, double horizontal, double vertical) {
 		if (window == MinecraftClient.getInstance().getWindow().getHandle()) {

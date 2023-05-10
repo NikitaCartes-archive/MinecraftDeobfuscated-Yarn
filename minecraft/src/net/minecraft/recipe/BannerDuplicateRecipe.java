@@ -1,7 +1,7 @@
 package net.minecraft.recipe;
 
 import net.minecraft.block.entity.BannerBlockEntity;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -17,13 +17,13 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		DyeColor dyeColor = null;
 		ItemStack itemStack = null;
 		ItemStack itemStack2 = null;
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack3 = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack3 = recipeInputInventory.getStack(i);
 			if (!itemStack3.isEmpty()) {
 				Item item = itemStack3.getItem();
 				if (!(item instanceof BannerItem)) {
@@ -61,9 +61,9 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		return itemStack != null && itemStack2 != null;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack = craftingInventory.getStack(i);
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack = recipeInputInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				int j = BannerBlockEntity.getPatternCount(itemStack);
 				if (j > 0 && j <= 6) {
@@ -75,11 +75,11 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		return ItemStack.EMPTY;
 	}
 
-	public DefaultedList<ItemStack> getRemainder(CraftingInventory craftingInventory) {
-		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
+	public DefaultedList<ItemStack> getRemainder(RecipeInputInventory recipeInputInventory) {
+		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(recipeInputInventory.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = craftingInventory.getStack(i);
+			ItemStack itemStack = recipeInputInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem().hasRecipeRemainder()) {
 					defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));

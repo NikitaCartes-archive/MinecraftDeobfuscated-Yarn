@@ -5,7 +5,6 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.PhantomEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -39,13 +38,13 @@ public class PhantomSpawner implements Spawner {
 				} else {
 					int i = 0;
 
-					for (PlayerEntity playerEntity : world.getPlayers()) {
-						if (!playerEntity.isSpectator()) {
-							BlockPos blockPos = playerEntity.getBlockPos();
+					for (ServerPlayerEntity serverPlayerEntity : world.getPlayers()) {
+						if (!serverPlayerEntity.isSpectator()) {
+							BlockPos blockPos = serverPlayerEntity.getBlockPos();
 							if (!world.getDimension().hasSkyLight() || blockPos.getY() >= world.getSeaLevel() && world.isSkyVisible(blockPos)) {
 								LocalDifficulty localDifficulty = world.getLocalDifficulty(blockPos);
 								if (localDifficulty.isHarderThan(random.nextFloat() * 3.0F)) {
-									ServerStatHandler serverStatHandler = ((ServerPlayerEntity)playerEntity).getStatHandler();
+									ServerStatHandler serverStatHandler = serverPlayerEntity.getStatHandler();
 									int j = MathHelper.clamp(serverStatHandler.getStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST)), 1, Integer.MAX_VALUE);
 									int k = 24000;
 									if (random.nextInt(j) >= 72000) {

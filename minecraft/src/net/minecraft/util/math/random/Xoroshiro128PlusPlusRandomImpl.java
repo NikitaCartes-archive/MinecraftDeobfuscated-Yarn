@@ -1,5 +1,9 @@
 package net.minecraft.util.math.random;
 
+import com.mojang.serialization.Codec;
+import java.util.stream.LongStream;
+import net.minecraft.util.Util;
+
 /**
  * Implementation of Xoroshiro128++ pseudo-random number generator.
  * 
@@ -11,6 +15,11 @@ package net.minecraft.util.math.random;
 public class Xoroshiro128PlusPlusRandomImpl {
 	private long seedLo;
 	private long seedHi;
+	public static final Codec<Xoroshiro128PlusPlusRandomImpl> CODEC = Codec.LONG_STREAM
+		.comapFlatMap(
+			stream -> Util.decodeFixedLengthArray(stream, 2).map(seeds -> new Xoroshiro128PlusPlusRandomImpl(seeds[0], seeds[1])),
+			random -> LongStream.of(new long[]{random.seedLo, random.seedHi})
+		);
 
 	public Xoroshiro128PlusPlusRandomImpl(RandomSeed.XoroshiroSeed seed) {
 		this(seed.seedLo(), seed.seedHi());

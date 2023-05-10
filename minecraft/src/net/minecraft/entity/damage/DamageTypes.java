@@ -48,6 +48,8 @@ public interface DamageTypes {
 	RegistryKey<DamageType> PLAYER_EXPLOSION = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("player_explosion"));
 	RegistryKey<DamageType> SONIC_BOOM = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("sonic_boom"));
 	RegistryKey<DamageType> BAD_RESPAWN_POINT = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("bad_respawn_point"));
+	RegistryKey<DamageType> OUTSIDE_BORDER = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("outside_border"));
+	RegistryKey<DamageType> GENERIC_KILL = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("generic_kill"));
 
 	static void bootstrap(Registerable<DamageType> damageTypeRegisterable) {
 		damageTypeRegisterable.register(IN_FIRE, new DamageType("inFire", 0.1F, DamageEffects.BURNING));
@@ -96,5 +98,7 @@ public interface DamageTypes {
 		damageTypeRegisterable.register(
 			BAD_RESPAWN_POINT, new DamageType("badRespawnPoint", DamageScaling.ALWAYS, 0.1F, DamageEffects.HURT, DeathMessageType.INTENTIONAL_GAME_DESIGN)
 		);
+		damageTypeRegisterable.register(OUTSIDE_BORDER, new DamageType("outsideBorder", 0.0F));
+		damageTypeRegisterable.register(GENERIC_KILL, new DamageType("genericKill", 0.0F));
 	}
 }

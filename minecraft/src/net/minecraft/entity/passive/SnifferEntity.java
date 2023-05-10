@@ -34,7 +34,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -266,11 +266,11 @@ public class SnifferEntity extends AnimalEntity {
 		if (!this.getWorld().isClient() && this.dataTracker.get(FINISH_DIG_TIME) == this.age) {
 			ServerWorld serverWorld = (ServerWorld)this.getWorld();
 			LootTable lootTable = serverWorld.getServer().getLootManager().getLootTable(LootTables.SNIFFER_DIGGING_GAMEPLAY);
-			LootContext.Builder builder = new LootContext.Builder(serverWorld)
-				.parameter(LootContextParameters.ORIGIN, this.getDigLocation())
-				.parameter(LootContextParameters.THIS_ENTITY, this)
-				.random(this.random);
-			List<ItemStack> list = lootTable.generateLoot(builder.build(LootContextTypes.GIFT));
+			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+				.add(LootContextParameters.ORIGIN, this.getDigLocation())
+				.add(LootContextParameters.THIS_ENTITY, this)
+				.build(LootContextTypes.GIFT);
+			List<ItemStack> list = lootTable.generateLoot(lootContextParameterSet);
 			BlockPos blockPos = this.getDigPos();
 
 			for (ItemStack itemStack : list) {

@@ -377,7 +377,7 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	private boolean areItemsEqual(ItemStack stack, ItemStack stack2) {
-		return stack.isItemEqual(stack2) && !this.areDifferentPotions(stack, stack2);
+		return ItemStack.areItemsEqual(stack, stack2) && !this.areDifferentPotions(stack, stack2);
 	}
 
 	private boolean areDifferentPotions(ItemStack stack, ItemStack stack2) {

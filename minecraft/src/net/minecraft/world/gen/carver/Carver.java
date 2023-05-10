@@ -62,47 +62,47 @@ public abstract class Carver<C extends CarverConfig> {
 		Chunk chunk,
 		Function<BlockPos, RegistryEntry<Biome>> posToBiome,
 		AquiferSampler aquiferSampler,
-		double d,
-		double e,
-		double f,
-		double g,
-		double h,
+		double x,
+		double y,
+		double z,
+		double width,
+		double height,
 		CarvingMask mask,
 		Carver.SkipPredicate skipPredicate
 	) {
 		ChunkPos chunkPos = chunk.getPos();
-		double i = (double)chunkPos.getCenterX();
-		double j = (double)chunkPos.getCenterZ();
-		double k = 16.0 + g * 2.0;
-		if (!(Math.abs(d - i) > k) && !(Math.abs(f - j) > k)) {
-			int l = chunkPos.getStartX();
-			int m = chunkPos.getStartZ();
-			int n = Math.max(MathHelper.floor(d - g) - l - 1, 0);
-			int o = Math.min(MathHelper.floor(d + g) - l, 15);
-			int p = Math.max(MathHelper.floor(e - h) - 1, context.getMinY() + 1);
-			int q = chunk.hasBelowZeroRetrogen() ? 0 : 7;
-			int r = Math.min(MathHelper.floor(e + h) + 1, context.getMinY() + context.getHeight() - 1 - q);
-			int s = Math.max(MathHelper.floor(f - g) - m - 1, 0);
-			int t = Math.min(MathHelper.floor(f + g) - m, 15);
+		double d = (double)chunkPos.getCenterX();
+		double e = (double)chunkPos.getCenterZ();
+		double f = 16.0 + width * 2.0;
+		if (!(Math.abs(x - d) > f) && !(Math.abs(z - e) > f)) {
+			int i = chunkPos.getStartX();
+			int j = chunkPos.getStartZ();
+			int k = Math.max(MathHelper.floor(x - width) - i - 1, 0);
+			int l = Math.min(MathHelper.floor(x + width) - i, 15);
+			int m = Math.max(MathHelper.floor(y - height) - 1, context.getMinY() + 1);
+			int n = chunk.hasBelowZeroRetrogen() ? 0 : 7;
+			int o = Math.min(MathHelper.floor(y + height) + 1, context.getMinY() + context.getHeight() - 1 - n);
+			int p = Math.max(MathHelper.floor(z - width) - j - 1, 0);
+			int q = Math.min(MathHelper.floor(z + width) - j, 15);
 			boolean bl = false;
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
-			for (int u = n; u <= o; u++) {
-				int v = chunkPos.getOffsetX(u);
-				double w = ((double)v + 0.5 - d) / g;
+			for (int r = k; r <= l; r++) {
+				int s = chunkPos.getOffsetX(r);
+				double g = ((double)s + 0.5 - x) / width;
 
-				for (int x = s; x <= t; x++) {
-					int y = chunkPos.getOffsetZ(x);
-					double z = ((double)y + 0.5 - f) / g;
-					if (!(w * w + z * z >= 1.0)) {
+				for (int t = p; t <= q; t++) {
+					int u = chunkPos.getOffsetZ(t);
+					double h = ((double)u + 0.5 - z) / width;
+					if (!(g * g + h * h >= 1.0)) {
 						MutableBoolean mutableBoolean = new MutableBoolean(false);
 
-						for (int aa = r; aa > p; aa--) {
-							double ab = ((double)aa - 0.5 - e) / h;
-							if (!skipPredicate.shouldSkip(context, w, ab, z, aa) && (!mask.get(u, aa, x) || isDebug(config))) {
-								mask.set(u, aa, x);
-								mutable.set(v, aa, y);
+						for (int v = o; v > m; v--) {
+							double w = ((double)v - 0.5 - y) / height;
+							if (!skipPredicate.shouldSkip(context, g, w, h, v) && (!mask.get(r, v, t) || isDebug(config))) {
+								mask.set(r, v, t);
+								mutable.set(s, v, u);
 								bl |= this.carveAtPoint(context, config, chunk, posToBiome, mask, mutable, mutable2, aquiferSampler, mutableBoolean);
 							}
 						}
@@ -122,35 +122,35 @@ public abstract class Carver<C extends CarverConfig> {
 		Chunk chunk,
 		Function<BlockPos, RegistryEntry<Biome>> posToBiome,
 		CarvingMask mask,
-		BlockPos.Mutable mutable,
-		BlockPos.Mutable mutable2,
+		BlockPos.Mutable pos,
+		BlockPos.Mutable tmp,
 		AquiferSampler aquiferSampler,
-		MutableBoolean mutableBoolean
+		MutableBoolean replacedGrassy
 	) {
-		BlockState blockState = chunk.getBlockState(mutable);
+		BlockState blockState = chunk.getBlockState(pos);
 		if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
-			mutableBoolean.setTrue();
+			replacedGrassy.setTrue();
 		}
 
 		if (!this.canAlwaysCarveBlock(config, blockState) && !isDebug(config)) {
 			return false;
 		} else {
-			BlockState blockState2 = this.getState(context, config, mutable, aquiferSampler);
+			BlockState blockState2 = this.getState(context, config, pos, aquiferSampler);
 			if (blockState2 == null) {
 				return false;
 			} else {
-				chunk.setBlockState(mutable, blockState2, false);
+				chunk.setBlockState(pos, blockState2, false);
 				if (aquiferSampler.needsFluidTick() && !blockState2.getFluidState().isEmpty()) {
-					chunk.markBlockForPostProcessing(mutable);
+					chunk.markBlockForPostProcessing(pos);
 				}
 
-				if (mutableBoolean.isTrue()) {
-					mutable2.set(mutable, Direction.DOWN);
-					if (chunk.getBlockState(mutable2).isOf(Blocks.DIRT)) {
-						context.applyMaterialRule(posToBiome, chunk, mutable2, !blockState2.getFluidState().isEmpty()).ifPresent(state -> {
-							chunk.setBlockState(mutable2, state, false);
+				if (replacedGrassy.isTrue()) {
+					tmp.set(pos, Direction.DOWN);
+					if (chunk.getBlockState(tmp).isOf(Blocks.DIRT)) {
+						context.applyMaterialRule(posToBiome, chunk, tmp, !blockState2.getFluidState().isEmpty()).ifPresent(state -> {
+							chunk.setBlockState(tmp, state, false);
 							if (!state.getFluidState().isEmpty()) {
-								chunk.markBlockForPostProcessing(mutable2);
+								chunk.markBlockForPostProcessing(tmp);
 							}
 						});
 					}

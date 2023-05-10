@@ -77,8 +77,8 @@ public class ZipCompressor implements Closeable {
 	 * copied. The {@code target} should be a relative path, as it will be resolved
 	 * against the root of the ZIP.
 	 * 
-	 * @param target the target path in the ZIP
 	 * @param source the source file to copy
+	 * @param target the target path in the ZIP
 	 */
 	public void copy(Path target, File source) {
 		try {

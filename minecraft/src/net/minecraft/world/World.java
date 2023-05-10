@@ -35,7 +35,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.ChunkLevelType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
@@ -258,7 +258,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 					if ((flags & Block.NOTIFY_LISTENERS) != 0
 						&& (!this.isClient || (flags & Block.NO_REDRAW) == 0)
-						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkHolder.LevelType.TICKING))) {
+						&& (this.isClient || worldChunk.getLevelType() != null && worldChunk.getLevelType().isAfter(ChunkLevelType.BLOCK_TICKING))) {
 						this.updateListeners(pos, blockState, state, flags);
 					}
 
@@ -577,10 +577,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	/**
 	 * Creates an explosion.
 	 * 
-	 * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
+	 * @param behavior the explosion behavior, or {@code null} to use the default
 	 * @param damageSource the custom damage source, or {@code null} to use the default
 	 * ({@link net.minecraft.entity.damage.DamageSources#explosion(Explosion)})
-	 * @param behavior the explosion behavior, or {@code null} to use the default
+	 * @param entity the entity that exploded (like TNT) or {@code null} to indicate no entity exploded
 	 * @param createFire whether the explosion should create fire
 	 */
 	public Explosion createExplosion(

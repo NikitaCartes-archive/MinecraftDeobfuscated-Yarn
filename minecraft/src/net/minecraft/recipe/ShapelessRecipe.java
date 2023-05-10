@@ -3,7 +3,7 @@ package net.minecraft.recipe;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
@@ -58,12 +58,12 @@ public class ShapelessRecipe implements CraftingRecipe {
 		return this.input;
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		RecipeMatcher recipeMatcher = new RecipeMatcher();
 		int i = 0;
 
-		for (int j = 0; j < craftingInventory.size(); j++) {
-			ItemStack itemStack = craftingInventory.getStack(j);
+		for (int j = 0; j < recipeInputInventory.size(); j++) {
+			ItemStack itemStack = recipeInputInventory.getStack(j);
 			if (!itemStack.isEmpty()) {
 				i++;
 				recipeMatcher.addInput(itemStack, 1);
@@ -73,7 +73,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 		return i == this.input.size() && recipeMatcher.match(this, null);
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		return this.output.copy();
 	}
 

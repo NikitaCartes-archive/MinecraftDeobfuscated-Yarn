@@ -30,13 +30,13 @@ public abstract class FlyingEntity extends MobEntity {
 			} else {
 				float f = 0.91F;
 				if (this.isOnGround()) {
-					f = this.getWorld().getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91F;
+					f = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getSlipperiness() * 0.91F;
 				}
 
 				float g = 0.16277137F / (f * f * f);
 				f = 0.91F;
 				if (this.isOnGround()) {
-					f = this.getWorld().getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.91F;
+					f = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getSlipperiness() * 0.91F;
 				}
 
 				this.updateVelocity(this.isOnGround() ? 0.1F * g : 0.02F, movementInput);

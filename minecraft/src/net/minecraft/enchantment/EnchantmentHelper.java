@@ -200,8 +200,8 @@ public class EnchantmentHelper {
 	 * {@return the highest level of the passed enchantment in the enchantment's
 	 * applicable equipment slots' item stacks}
 	 * 
-	 * @param enchantment the enchantment
 	 * @param entity the entity whose equipment slots are checked
+	 * @param enchantment the enchantment
 	 */
 	public static int getEquipmentLevel(Enchantment enchantment, LivingEntity entity) {
 		Iterable<ItemStack> iterable = enchantment.getEquipment(entity).values();
@@ -316,9 +316,9 @@ public class EnchantmentHelper {
 	 * <p>If multiple equipment slots' item stacks are valid, a random pair is
 	 * returned.
 	 * 
+	 * @param condition extra conditions for the item stack to pass for selection
 	 * @param enchantment the enchantment the equipped item stack must have
 	 * @param entity the entity to choose equipments from
-	 * @param condition extra conditions for the item stack to pass for selection
 	 */
 	@Nullable
 	public static Entry<EquipmentSlot, ItemStack> chooseEquipmentWith(Enchantment enchantment, LivingEntity entity, Predicate<ItemStack> condition) {
@@ -343,10 +343,10 @@ public class EnchantmentHelper {
 	 * {@return the required experience level for an enchanting option in the
 	 * enchanting table's screen, or the enchantment screen}
 	 * 
-	 * @param random the random, which guarantees consistent results with the same seed
-	 * @param slotIndex the index of the enchanting option
 	 * @param bookshelfCount the number of bookshelves
 	 * @param stack the item stack to enchant
+	 * @param random the random, which guarantees consistent results with the same seed
+	 * @param slotIndex the index of the enchanting option
 	 */
 	public static int calculateRequiredExperienceLevel(Random random, int slotIndex, int bookshelfCount, ItemStack stack) {
 		Item item = stack.getItem();
@@ -370,9 +370,9 @@ public class EnchantmentHelper {
 	/**
 	 * Enchants the {@code target} item stack and returns it.
 	 * 
-	 * @param target the item stack to enchant
-	 * @param level the experience level
 	 * @param treasureAllowed whether treasure enchantments may appear
+	 * @param level the experience level
+	 * @param target the item stack to enchant
 	 */
 	public static ItemStack enchant(Random random, ItemStack target, int level, boolean treasureAllowed) {
 		List<EnchantmentLevelEntry> list = generateEnchantments(random, target, level, treasureAllowed);

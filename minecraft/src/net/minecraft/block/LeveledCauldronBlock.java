@@ -46,8 +46,8 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 	 * @apiNote The precipitation predicates are compared using identity comparisons in some cases,
 	 * so callers should typically use {@link #RAIN_PREDICATE} and {@link #SNOW_PREDICATE} if applicable.
 	 * 
-	 * @param precipitationPredicate a predicate that checks what type of precipitation can fill this cauldron
 	 * @param behaviorMap the map containing cauldron behaviors for each item
+	 * @param precipitationPredicate a predicate that checks what type of precipitation can fill this cauldron
 	 */
 	public LeveledCauldronBlock(AbstractBlock.Settings settings, Predicate<Biome.Precipitation> precipitationPredicate, Map<Item, CauldronBehavior> behaviorMap) {
 		super(settings, behaviorMap);

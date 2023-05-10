@@ -2,7 +2,7 @@ package net.minecraft.recipe;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SuspiciousStewIngredient;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
@@ -17,14 +17,14 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		super(identifier, craftingRecipeCategory);
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
 		boolean bl = false;
 		boolean bl2 = false;
 		boolean bl3 = false;
 		boolean bl4 = false;
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack = recipeInputInventory.getStack(i);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.isOf(Blocks.BROWN_MUSHROOM.asItem()) && !bl3) {
 					bl3 = true;
@@ -45,11 +45,11 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		return bl && bl3 && bl2 && bl4;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW, 1);
 
-		for (int i = 0; i < craftingInventory.size(); i++) {
-			ItemStack itemStack2 = craftingInventory.getStack(i);
+		for (int i = 0; i < recipeInputInventory.size(); i++) {
+			ItemStack itemStack2 = recipeInputInventory.getStack(i);
 			if (!itemStack2.isEmpty()) {
 				SuspiciousStewIngredient suspiciousStewIngredient = SuspiciousStewIngredient.of(itemStack2.getItem());
 				if (suspiciousStewIngredient != null) {

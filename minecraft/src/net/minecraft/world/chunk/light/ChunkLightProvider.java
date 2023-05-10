@@ -226,7 +226,7 @@ public abstract class ChunkLightProvider<M extends ChunkToNibbleArrayMap<M>, S e
 
 	protected abstract void method_51529(long blockPos);
 
-	protected abstract void method_51531(long blockPos, long l, int i);
+	protected abstract void method_51531(long blockPos, long l, int lightLevel);
 
 	protected abstract void method_51530(long blockPos, long l);
 

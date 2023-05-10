@@ -51,7 +51,9 @@ public class LandingApproachPhase extends AbstractPhase {
 	private void updatePath() {
 		if (this.path == null || this.path.isFinished()) {
 			int i = this.dragon.getNearestPathNodeIndex();
-			BlockPos blockPos = this.dragon.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon
+				.getWorld()
+				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()));
 			PlayerEntity playerEntity = this.dragon
 				.getWorld()
 				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, this.dragon, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());

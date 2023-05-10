@@ -110,8 +110,8 @@ public class DataCommand {
 												.then(modifier.create((context, sourceNbt, path, elements) -> path.insert(IntegerArgumentType.getInteger(context, "index"), sourceNbt, elements)))
 										)
 								)
-								.then(CommandManager.literal("prepend").then(modifier.create((context, nbtCompound, path, elements) -> path.insert(0, nbtCompound, elements))))
-								.then(CommandManager.literal("append").then(modifier.create((context, nbtCompound, path, elements) -> path.insert(-1, nbtCompound, elements))))
+								.then(CommandManager.literal("prepend").then(modifier.create((context, sourceNbt, path, elements) -> path.insert(0, sourceNbt, elements))))
+								.then(CommandManager.literal("append").then(modifier.create((context, sourceNbt, path, elements) -> path.insert(-1, sourceNbt, elements))))
 								.then(CommandManager.literal("set").then(modifier.create((context, sourceNbt, path, elements) -> path.put(sourceNbt, Iterables.getLast(elements)))))
 								.then(CommandManager.literal("merge").then(modifier.create((context, element, path, elements) -> {
 									NbtCompound nbtCompound = new NbtCompound();
@@ -201,17 +201,17 @@ public class DataCommand {
 												CommandManager.argument("sourcePath", NbtPathArgumentType.nbtPath())
 													.executes(context -> executeModify(context, objectType, operation, mapValues(getValuesByPath(context, objectType2), value -> value)))
 													.then(
-														CommandManager.argument("start", IntegerArgumentType.integer(0))
+														CommandManager.argument("start", IntegerArgumentType.integer())
 															.executes(
 																context -> executeModify(
 																		context,
 																		objectType,
 																		operation,
-																		mapValues(getValuesByPath(context, objectType2), value -> value.substring(IntegerArgumentType.getInteger(context, "start")))
+																		mapValues(getValuesByPath(context, objectType2), value -> substring(value, IntegerArgumentType.getInteger(context, "start")))
 																	)
 															)
 															.then(
-																CommandManager.argument("end", IntegerArgumentType.integer(0))
+																CommandManager.argument("end", IntegerArgumentType.integer())
 																	.executes(
 																		context -> executeModify(
 																				context,
@@ -219,7 +219,7 @@ public class DataCommand {
 																				operation,
 																				mapValues(
 																					getValuesByPath(context, objectType2),
-																					value -> value.substring(IntegerArgumentType.getInteger(context, "start"), IntegerArgumentType.getInteger(context, "end"))
+																					value -> substring(value, IntegerArgumentType.getInteger(context, "start"), IntegerArgumentType.getInteger(context, "end"))
 																				)
 																			)
 																	)
@@ -244,6 +244,19 @@ public class DataCommand {
 		}
 
 		return literalArgumentBuilder;
+	}
+
+	private static String substring(String string, int startIndex, int endIndex) {
+		int i = string.length();
+		return string.substring(getSubstringIndex(startIndex, i), getSubstringIndex(endIndex, i));
+	}
+
+	private static String substring(String string, int startIndex) {
+		return string.substring(getSubstringIndex(startIndex, string.length()));
+	}
+
+	private static int getSubstringIndex(int index, int length) {
+		return index >= 0 ? index : length + index;
 	}
 
 	private static List<NbtElement> getValues(CommandContext<ServerCommandSource> context, DataCommand.ObjectType objectType) throws CommandSyntaxException {

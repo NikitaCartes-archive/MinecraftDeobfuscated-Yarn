@@ -34,14 +34,16 @@ public class VanillaDamageTypeTagProvider extends TagProvider<DamageType> {
 				DamageTypes.MAGIC,
 				DamageTypes.INDIRECT_MAGIC,
 				DamageTypes.OUT_OF_WORLD,
-				DamageTypes.SONIC_BOOM
+				DamageTypes.GENERIC_KILL,
+				DamageTypes.SONIC_BOOM,
+				DamageTypes.OUTSIDE_BORDER
 			);
 		this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_SHIELD)
 			.addTag(DamageTypeTags.BYPASSES_ARMOR)
 			.add(DamageTypes.FALLING_ANVIL, DamageTypes.FALLING_STALACTITE);
-		this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_INVULNERABILITY).add(DamageTypes.OUT_OF_WORLD);
+		this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_INVULNERABILITY).add(DamageTypes.OUT_OF_WORLD, DamageTypes.GENERIC_KILL);
 		this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_EFFECTS).add(DamageTypes.STARVE);
-		this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_RESISTANCE).add(DamageTypes.OUT_OF_WORLD);
+		this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_RESISTANCE).add(DamageTypes.OUT_OF_WORLD, DamageTypes.GENERIC_KILL);
 		this.getOrCreateTagBuilder(DamageTypeTags.BYPASSES_ENCHANTMENTS).add(DamageTypes.SONIC_BOOM);
 		this.getOrCreateTagBuilder(DamageTypeTags.IS_FIRE)
 			.add(DamageTypes.IN_FIRE, DamageTypes.ON_FIRE, DamageTypes.LAVA, DamageTypes.HOT_FLOOR, DamageTypes.UNATTRIBUTED_FIREBALL, DamageTypes.FIREBALL);

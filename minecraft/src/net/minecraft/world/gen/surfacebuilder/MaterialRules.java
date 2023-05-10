@@ -417,14 +417,14 @@ public class MaterialRules {
 		private final ChunkNoiseSampler chunkNoiseSampler;
 		private final Function<BlockPos, RegistryEntry<Biome>> posToBiome;
 		final HeightContext heightContext;
-		private long field_36278 = Long.MAX_VALUE;
-		private final int[] field_36279 = new int[4];
+		private long packedChunkPos = Long.MAX_VALUE;
+		private final int[] estimatedSurfaceHeights = new int[4];
 		long uniqueHorizontalPosValue = -9223372036854775807L;
 		int blockX;
 		int blockZ;
 		int runDepth;
 		private long field_35677 = this.uniqueHorizontalPosValue - 1L;
-		private double field_35678;
+		private double secondaryDepth;
 		private long field_35679 = this.uniqueHorizontalPosValue - 1L;
 		private int surfaceMinY;
 		long uniquePosValue = -9223372036854775807L;
@@ -457,7 +457,7 @@ public class MaterialRules {
 			this.uniquePosValue++;
 			this.blockX = blockX;
 			this.blockZ = blockZ;
-			this.runDepth = this.surfaceBuilder.method_39552(blockX, blockZ);
+			this.runDepth = this.surfaceBuilder.sampleRunDepth(blockX, blockZ);
 		}
 
 		protected void initVerticalContext(int stoneDepthAbove, int stoneDepthBelow, int fluidHeight, int blockX, int blockY, int blockZ) {
@@ -469,45 +469,45 @@ public class MaterialRules {
 			this.stoneDepthAbove = stoneDepthAbove;
 		}
 
-		protected double method_39550() {
+		protected double getSecondaryDepth() {
 			if (this.field_35677 != this.uniqueHorizontalPosValue) {
 				this.field_35677 = this.uniqueHorizontalPosValue;
-				this.field_35678 = this.surfaceBuilder.method_39555(this.blockX, this.blockZ);
+				this.secondaryDepth = this.surfaceBuilder.sampleSecondaryDepth(this.blockX, this.blockZ);
 			}
 
-			return this.field_35678;
+			return this.secondaryDepth;
 		}
 
-		private static int method_39903(int i) {
-			return i >> 4;
+		private static int blockToChunkCoord(int blockCoord) {
+			return blockCoord >> 4;
 		}
 
-		private static int method_39904(int i) {
-			return i << 4;
+		private static int chunkToBlockCoord(int chunkCoord) {
+			return chunkCoord << 4;
 		}
 
-		protected int method_39551() {
+		protected int estimateSurfaceHeight() {
 			if (this.field_35679 != this.uniqueHorizontalPosValue) {
 				this.field_35679 = this.uniqueHorizontalPosValue;
-				int i = method_39903(this.blockX);
-				int j = method_39903(this.blockZ);
+				int i = blockToChunkCoord(this.blockX);
+				int j = blockToChunkCoord(this.blockZ);
 				long l = ChunkPos.toLong(i, j);
-				if (this.field_36278 != l) {
-					this.field_36278 = l;
-					this.field_36279[0] = this.chunkNoiseSampler.estimateSurfaceHeight(method_39904(i), method_39904(j));
-					this.field_36279[1] = this.chunkNoiseSampler.estimateSurfaceHeight(method_39904(i + 1), method_39904(j));
-					this.field_36279[2] = this.chunkNoiseSampler.estimateSurfaceHeight(method_39904(i), method_39904(j + 1));
-					this.field_36279[3] = this.chunkNoiseSampler.estimateSurfaceHeight(method_39904(i + 1), method_39904(j + 1));
+				if (this.packedChunkPos != l) {
+					this.packedChunkPos = l;
+					this.estimatedSurfaceHeights[0] = this.chunkNoiseSampler.estimateSurfaceHeight(chunkToBlockCoord(i), chunkToBlockCoord(j));
+					this.estimatedSurfaceHeights[1] = this.chunkNoiseSampler.estimateSurfaceHeight(chunkToBlockCoord(i + 1), chunkToBlockCoord(j));
+					this.estimatedSurfaceHeights[2] = this.chunkNoiseSampler.estimateSurfaceHeight(chunkToBlockCoord(i), chunkToBlockCoord(j + 1));
+					this.estimatedSurfaceHeights[3] = this.chunkNoiseSampler.estimateSurfaceHeight(chunkToBlockCoord(i + 1), chunkToBlockCoord(j + 1));
 				}
 
 				int k = MathHelper.floor(
 					MathHelper.lerp2(
 						(double)((float)(this.blockX & 15) / 16.0F),
 						(double)((float)(this.blockZ & 15) / 16.0F),
-						(double)this.field_36279[0],
-						(double)this.field_36279[1],
-						(double)this.field_36279[2],
-						(double)this.field_36279[3]
+						(double)this.estimatedSurfaceHeights[0],
+						(double)this.estimatedSurfaceHeights[1],
+						(double)this.estimatedSurfaceHeights[2],
+						(double)this.estimatedSurfaceHeights[3]
 					)
 				);
 				this.surfaceMinY = k + this.runDepth - 8;
@@ -568,7 +568,7 @@ public class MaterialRules {
 		final class SurfacePredicate implements MaterialRules.BooleanSupplier {
 			@Override
 			public boolean get() {
-				return MaterialRuleContext.this.blockY >= MaterialRuleContext.this.method_39551();
+				return MaterialRuleContext.this.blockY >= MaterialRuleContext.this.estimateSurfaceHeight();
 			}
 		}
 	}
@@ -732,7 +732,7 @@ public class MaterialRules {
 					int j = StoneDepthMaterialCondition.this.addSurfaceDepth ? this.context.runDepth : 0;
 					int k = StoneDepthMaterialCondition.this.secondaryDepthRange == 0
 						? 0
-						: (int)MathHelper.map(this.context.method_39550(), -1.0, 1.0, 0.0, (double)StoneDepthMaterialCondition.this.secondaryDepthRange);
+						: (int)MathHelper.map(this.context.getSecondaryDepth(), -1.0, 1.0, 0.0, (double)StoneDepthMaterialCondition.this.secondaryDepthRange);
 					return i <= 1 + StoneDepthMaterialCondition.this.offset + j + k;
 				}
 			}

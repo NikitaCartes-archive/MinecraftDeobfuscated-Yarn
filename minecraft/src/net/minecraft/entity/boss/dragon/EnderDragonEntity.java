@@ -84,7 +84,8 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	@Nullable
 	public EndCrystalEntity connectedCrystal;
 	@Nullable
-	private final EnderDragonFight fight;
+	private EnderDragonFight fight;
+	private BlockPos fightOrigin = BlockPos.ORIGIN;
 	private final PhaseManager phaseManager;
 	private int ticksUntilNextGrowl = 100;
 	private float damageDuringSitting;
@@ -113,13 +114,19 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		this.setHealth(this.getMaxHealth());
 		this.noClip = true;
 		this.ignoreCameraFrustum = true;
-		if (world instanceof ServerWorld) {
-			this.fight = ((ServerWorld)world).getEnderDragonFight();
-		} else {
-			this.fight = null;
-		}
-
 		this.phaseManager = new PhaseManager(this);
+	}
+
+	public void setFight(EnderDragonFight fight) {
+		this.fight = fight;
+	}
+
+	public void setFightOrigin(BlockPos fightOrigin) {
+		this.fightOrigin = fightOrigin;
+	}
+
+	public BlockPos getFightOrigin() {
+		return this.fightOrigin;
 	}
 
 	public static DefaultAttributeContainer.Builder createEnderDragonAttributes() {
@@ -805,7 +812,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		PhaseType<? extends Phase> phaseType = phase.getType();
 		double e;
 		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
-			BlockPos blockPos = this.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.fightOrigin));
 			double d = Math.max(Math.sqrt(blockPos.getSquaredDistance(this.getPos())) / 4.0, 1.0);
 			e = (double)segmentOffset / d;
 		} else if (phase.isSittingOrHovering()) {
@@ -824,7 +831,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		PhaseType<? extends Phase> phaseType = phase.getType();
 		Vec3d vec3d;
 		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
-			BlockPos blockPos = this.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.fightOrigin));
 			float f = Math.max((float)Math.sqrt(blockPos.getSquaredDistance(this.getPos())) / 4.0F, 1.0F);
 			float g = 6.0F / f;
 			float h = this.getPitch();

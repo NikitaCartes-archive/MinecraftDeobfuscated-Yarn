@@ -41,7 +41,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -577,12 +577,12 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 				);
 			mutable.set(this.cat.getBlockPos());
 			LootTable lootTable = this.cat.getWorld().getServer().getLootManager().getLootTable(LootTables.CAT_MORNING_GIFT_GAMEPLAY);
-			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.cat.getWorld())
-				.parameter(LootContextParameters.ORIGIN, this.cat.getPos())
-				.parameter(LootContextParameters.THIS_ENTITY, this.cat)
-				.random(random);
+			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder((ServerWorld)this.cat.getWorld())
+				.add(LootContextParameters.ORIGIN, this.cat.getPos())
+				.add(LootContextParameters.THIS_ENTITY, this.cat)
+				.build(LootContextTypes.GIFT);
 
-			for (ItemStack itemStack : lootTable.generateLoot(builder.build(LootContextTypes.GIFT))) {
+			for (ItemStack itemStack : lootTable.generateLoot(lootContextParameterSet)) {
 				this.cat
 					.getWorld()
 					.spawnEntity(

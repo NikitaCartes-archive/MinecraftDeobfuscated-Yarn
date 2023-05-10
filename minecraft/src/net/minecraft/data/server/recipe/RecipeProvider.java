@@ -302,13 +302,22 @@ public abstract class RecipeProvider implements DataProvider {
 			.offerTo(exporter);
 	}
 
-	protected static void offerWoolDyeingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
-		ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, output)
-			.input(input)
-			.input(Blocks.WHITE_WOOL)
-			.group("wool")
-			.criterion("has_white_wool", conditionsFromItem(Blocks.WHITE_WOOL))
-			.offerTo(exporter);
+	protected static void offerDyeableRecipes(Consumer<RecipeJsonProvider> exporter, List<Item> dyes, List<Item> dyeables) {
+		for (int i = 0; i < dyes.size(); i++) {
+			for (int j = 0; j != dyeables.size(); j++) {
+				if (i != j) {
+					Item item = (Item)dyes.get(i);
+					Item item2 = (Item)dyeables.get(i);
+					Item item3 = (Item)dyeables.get(j);
+					ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, item2)
+						.input(item)
+						.input(item3)
+						.group(Registries.ITEM.getId(item2).getPath())
+						.criterion("has_needed_dye", conditionsFromItem(item))
+						.offerTo(exporter, convertBetween(item2, item3));
+				}
+			}
+		}
 	}
 
 	protected static void offerCarpetRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
@@ -320,19 +329,6 @@ public abstract class RecipeProvider implements DataProvider {
 			.offerTo(exporter);
 	}
 
-	protected static void offerCarpetDyeingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
-		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output, 8)
-			.input('#', Blocks.WHITE_CARPET)
-			.input('$', input)
-			.pattern("###")
-			.pattern("#$#")
-			.pattern("###")
-			.group("carpet")
-			.criterion("has_white_carpet", conditionsFromItem(Blocks.WHITE_CARPET))
-			.criterion(hasItem(input), conditionsFromItem(input))
-			.offerTo(exporter, convertBetween(output, Blocks.WHITE_CARPET));
-	}
-
 	protected static void offerBedRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
 		ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output)
 			.input('#', input)
@@ -342,15 +338,6 @@ public abstract class RecipeProvider implements DataProvider {
 			.group("bed")
 			.criterion(hasItem(input), conditionsFromItem(input))
 			.offerTo(exporter);
-	}
-
-	protected static void offerBedDyeingRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {
-		ShapelessRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, output)
-			.input(Items.WHITE_BED)
-			.input(input)
-			.group("dyed_bed")
-			.criterion("has_bed", conditionsFromItem(Items.WHITE_BED))
-			.offerTo(exporter, convertBetween(output, Items.WHITE_BED));
 	}
 
 	protected static void offerBannerRecipe(Consumer<RecipeJsonProvider> exporter, ItemConvertible output, ItemConvertible input) {

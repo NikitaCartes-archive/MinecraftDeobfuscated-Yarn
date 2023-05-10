@@ -19,8 +19,8 @@ import net.minecraft.world.gen.densityfunction.DensityFunctionTypes;
  * Applies weights to noise values if they are near structures, placing terrain under them and hollowing out the space above them.
  */
 public class StructureWeightSampler implements DensityFunctionTypes.Beardifying {
-	public static final int field_31461 = 12;
-	private static final int field_31462 = 24;
+	public static final int INDEX_OFFSET = 12;
+	private static final int EDGE_LENGTH = 24;
 	private static final float[] STRUCTURE_WEIGHT_TABLE = Util.make(new float[13824], array -> {
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 24; j++) {
@@ -138,21 +138,21 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 	/**
 	 * Gets the structure weight from the array from the given position, or 0 if the position is out of bounds.
 	 */
-	private static double getStructureWeight(int x, int y, int z, int i) {
-		int j = x + 12;
-		int k = y + 12;
-		int l = z + 12;
-		if (method_42692(j) && method_42692(k) && method_42692(l)) {
-			double d = (double)i + 0.5;
+	private static double getStructureWeight(int x, int y, int z, int yy) {
+		int i = x + 12;
+		int j = y + 12;
+		int k = z + 12;
+		if (indexInBounds(i) && indexInBounds(j) && indexInBounds(k)) {
+			double d = (double)yy + 0.5;
 			double e = MathHelper.squaredMagnitude((double)x, d, (double)z);
 			double f = -d * MathHelper.fastInverseSqrt(e / 2.0) / 2.0;
-			return f * (double)STRUCTURE_WEIGHT_TABLE[l * 24 * 24 + j * 24 + k];
+			return f * (double)STRUCTURE_WEIGHT_TABLE[k * 24 * 24 + i * 24 + j];
 		} else {
 			return 0.0;
 		}
 	}
 
-	private static boolean method_42692(int i) {
+	private static boolean indexInBounds(int i) {
 		return i >= 0 && i < 24;
 	}
 
@@ -161,12 +161,12 @@ public class StructureWeightSampler implements DensityFunctionTypes.Beardifying 
 	 * <p>The weight increases as x and z approach {@code (0, 0)}, and positive y values make the weight negative while negative y values make the weight positive.
 	 */
 	private static double calculateStructureWeight(int x, int y, int z) {
-		return method_42693(x, (double)y + 0.5, z);
+		return structureWeight(x, (double)y + 0.5, z);
 	}
 
-	private static double method_42693(int i, double d, int j) {
-		double e = MathHelper.squaredMagnitude((double)i, d, (double)j);
-		return Math.pow(Math.E, -e / 16.0);
+	private static double structureWeight(int x, double y, int z) {
+		double d = MathHelper.squaredMagnitude((double)x, y, (double)z);
+		return Math.pow(Math.E, -d / 16.0);
 	}
 
 	@VisibleForTesting

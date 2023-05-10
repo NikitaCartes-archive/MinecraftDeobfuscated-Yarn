@@ -40,12 +40,48 @@ public class MathHelper {
 	private static final int[] MULTIPLY_DE_BRUIJN_BIT_POSITION = new int[]{
 		0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
 	};
-	private static final double field_29857 = 0.16666666666666666;
+	/**
+	 * Used for the third-order Maclaurin series approximation of the arcsin function,
+	 * x + x^3/6.
+	 */
+	private static final double ARCSINE_MACLAURIN_3 = 0.16666666666666666;
 	private static final int field_29858 = 8;
-	private static final int field_29859 = 257;
-	private static final double SMALLEST_FRACTION_FREE_DOUBLE = Double.longBitsToDouble(4805340802404319232L);
+	/**
+	 * The total number of entries in {@link MathHelper#ARCSINE_TABLE} and
+	 * {@link MathHelper#COSINE_OF_ARCSINE_TABLE}.
+	 * 
+	 * <p>These tables have 257 elements because they store values for multiples of
+	 * 1/256 from 0 to 1, inclusive.
+	 */
+	private static final int ARCSINE_TABLE_LENGTH = 257;
+	/**
+	 * A constant for rounding a double to the nearest multiple of 1/256.
+	 * 
+	 * <p>When this constant is added to a double that is not too large, then the
+	 * bits of the result's mantissa reflect the original number times 256.
+	 * Consequently, adding this constant and then subtracting it rounds such
+	 * doubles to the nearest multiple of 1/256.
+	 * 
+	 * <p>This is used by {@link MathHelper#atan2} to produce an index into
+	 * {@link MathHelper#ARCSINE_TABLE} and {@link MathHelper#COSINE_OF_ARCSINE_TABLE}.
+	 */
+	private static final double ROUNDER_256THS = Double.longBitsToDouble(4805340802404319232L);
+	/**
+	 * Holds values of arcsin(x): {@code ARCSINE_TABLE[i]} is equal to
+	 * {@code Math.arcsin(i / 256.0)}.
+	 * 
+	 * <p>This is used by {@link MathHelper#atan2} to approximate the inverse
+	 * tangent function.
+	 */
 	private static final double[] ARCSINE_TABLE = new double[257];
-	private static final double[] COSINE_TABLE = new double[257];
+	/**
+	 * Holds values of cos(arcsin(x)): {@code COSINE_OF_ARCSINE_TABLE[i]} is equal to
+	 * {@code Math.cos(Math.arcsin(i / 256.0))}.
+	 * 
+	 * <p>This is used by {@link MathHelper#atan2} to approximate the inverse
+	 * tangent function.
+	 */
+	private static final double[] COSINE_OF_ARCSINE_TABLE = new double[257];
 
 	public static float sin(float value) {
 		return SINE_TABLE[(int)(value * 10430.378F) & 65535];
@@ -141,8 +177,8 @@ public class MathHelper {
 	 * [min, max]}} If the range is empty (i.e. {@code max < min}), it
 	 * returns {@code min}.
 	 * 
-	 * @param min the minimum value, inclusive
 	 * @param max the maximum value, inclusive
+	 * @param min the minimum value, inclusive
 	 */
 	public static int nextInt(Random random, int min, int max) {
 		return min >= max ? min : random.nextInt(max - min + 1) + min;
@@ -242,9 +278,9 @@ public class MathHelper {
 	 * 
 	 * @return the clamped {@code value}
 	 * 
-	 * @param value the value to clamp
-	 * @param mean the mean value of the clamp angle range
 	 * @param delta the maximum difference allowed from the mean, must not be negative
+	 * @param mean the mean value of the clamp angle range
+	 * @param value the value to clamp
 	 */
 	public static float clampAngle(float value, float mean, float delta) {
 		float f = subtractAngles(value, mean);
@@ -353,8 +389,8 @@ public class MathHelper {
 	 * In other words, {@code getLerpProgress(lerp(delta, start, end), start, end) == delta}.
 	 * 
 	 * @param value the result of the lerp function
-	 * @param start the value interpolated from
 	 * @param end the value interpolated to
+	 * @param start the value interpolated from
 	 */
 	public static double getLerpProgress(double value, double start, double end) {
 		return (value - start) / (end - start);
@@ -364,37 +400,37 @@ public class MathHelper {
 		return (value - start) / (end - start);
 	}
 
-	public static boolean method_34945(Vec3d vec3d, Vec3d vec3d2, Box box) {
+	public static boolean method_34945(Vec3d origin, Vec3d direction, Box box) {
 		double d = (box.minX + box.maxX) * 0.5;
 		double e = (box.maxX - box.minX) * 0.5;
-		double f = vec3d.x - d;
-		if (Math.abs(f) > e && f * vec3d2.x >= 0.0) {
+		double f = origin.x - d;
+		if (Math.abs(f) > e && f * direction.x >= 0.0) {
 			return false;
 		} else {
 			double g = (box.minY + box.maxY) * 0.5;
 			double h = (box.maxY - box.minY) * 0.5;
-			double i = vec3d.y - g;
-			if (Math.abs(i) > h && i * vec3d2.y >= 0.0) {
+			double i = origin.y - g;
+			if (Math.abs(i) > h && i * direction.y >= 0.0) {
 				return false;
 			} else {
 				double j = (box.minZ + box.maxZ) * 0.5;
 				double k = (box.maxZ - box.minZ) * 0.5;
-				double l = vec3d.z - j;
-				if (Math.abs(l) > k && l * vec3d2.z >= 0.0) {
+				double l = origin.z - j;
+				if (Math.abs(l) > k && l * direction.z >= 0.0) {
 					return false;
 				} else {
-					double m = Math.abs(vec3d2.x);
-					double n = Math.abs(vec3d2.y);
-					double o = Math.abs(vec3d2.z);
-					double p = vec3d2.y * l - vec3d2.z * i;
+					double m = Math.abs(direction.x);
+					double n = Math.abs(direction.y);
+					double o = Math.abs(direction.z);
+					double p = direction.y * l - direction.z * i;
 					if (Math.abs(p) > h * o + k * n) {
 						return false;
 					} else {
-						p = vec3d2.z * f - vec3d2.x * l;
+						p = direction.z * f - direction.x * l;
 						if (Math.abs(p) > e * o + k * m) {
 							return false;
 						} else {
-							p = vec3d2.x * i - vec3d2.y * f;
+							p = direction.x * i - direction.y * f;
 							return Math.abs(p) < e * n + h * m;
 						}
 					}
@@ -403,6 +439,20 @@ public class MathHelper {
 		}
 	}
 
+	/**
+	 * {@return an approximation of {@code Math.atan2(y, x)}}
+	 * 
+	 * @implNote This implementation transforms the arguments such that they
+	 * lie in the first quadrant. If {@code y > x}, then {@code x} and {@code y}
+	 * are swapped to minimize the error of the initial approximation.
+	 * {@code x} and {@code y} are normalized, and an initial approximation
+	 * of the result and the sine of the deviation from the true value are
+	 * obtained using the {@link MathHelper#ARCSINE_TABLE} and
+	 * {@link MathHelper#COSINE_OF_ARCSINE_TABLE} lookup tables. The error
+	 * itself is approximated using the third-order Maclaurin series polynomial
+	 * for arcsin. Finally, the implementation undoes any transformations that
+	 * were performed initially.
+	 */
 	public static double atan2(double y, double x) {
 		double d = x * x + y * y;
 		if (Double.isNaN(d)) {
@@ -428,11 +478,11 @@ public class MathHelper {
 			double e = fastInverseSqrt(d);
 			x *= e;
 			y *= e;
-			double f = SMALLEST_FRACTION_FREE_DOUBLE + y;
+			double f = ROUNDER_256THS + y;
 			int i = (int)Double.doubleToRawLongBits(f);
 			double g = ARCSINE_TABLE[i];
-			double h = COSINE_TABLE[i];
-			double j = f - SMALLEST_FRACTION_FREE_DOUBLE;
+			double h = COSINE_OF_ARCSINE_TABLE[i];
+			double j = f - ROUNDER_256THS;
 			double k = y * h - x * j;
 			double l = (6.0 + k * k) * k * 0.16666666666666666;
 			double m = g + l;
@@ -555,8 +605,8 @@ public class MathHelper {
 	 * 
 	 * @return the minimum value if such value is found, otherwise {@code max}
 	 * 
-	 * @param min the minimum value (inclusive) to be tested
 	 * @param max the maximum value (exclusive) to be tested
+	 * @param min the minimum value (inclusive) to be tested
 	 * @param predicate the predicate that returns {@code true} for integers greater than or
 	 * equal to the value to be searched for
 	 */
@@ -592,12 +642,12 @@ public class MathHelper {
 	/**
 	 * A two-dimensional lerp between values on the 4 corners of the unit square. Arbitrary values are specified for the corners and the output is interpolated between them.
 	 * 
+	 * @param x1y1 the output if {@code deltaX} is 1 and {@code deltaY} is 1
 	 * @param deltaX the x-coordinate on the unit square
 	 * @param deltaY the y-coordinate on the unit square
 	 * @param x0y0 the output if {@code deltaX} is 0 and {@code deltaY} is 0
 	 * @param x1y0 the output if {@code deltaX} is 1 and {@code deltaY} is 0
 	 * @param x0y1 the output if {@code deltaX} is 0 and {@code deltaY} is 1
-	 * @param x1y1 the output if {@code deltaX} is 1 and {@code deltaY} is 1
 	 */
 	public static double lerp2(double deltaX, double deltaY, double x0y0, double x1y0, double x0y1, double x1y1) {
 		return lerp(deltaY, lerp(deltaX, x0y0, x1y0), lerp(deltaX, x0y1, x1y1));
@@ -606,17 +656,17 @@ public class MathHelper {
 	/**
 	 * A three-dimensional lerp between values on the 8 corners of the unit cube. Arbitrary values are specified for the corners and the output is interpolated between them.
 	 * 
-	 * @param deltaX the x-coordinate on the unit cube
-	 * @param deltaY the y-coordinate on the unit cube
-	 * @param deltaZ the z-coordinate on the unit cube
-	 * @param x0y0z0 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
-	 * @param x1y0z0 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
-	 * @param x0y1z0 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
 	 * @param x1y1z0 the output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 0
-	 * @param x0y0z1 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
-	 * @param x1y0z1 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
-	 * @param x0y1z1 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
+	 * @param x0y1z0 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
+	 * @param x1y0z0 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
+	 * @param x0y0z0 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
+	 * @param deltaZ the z-coordinate on the unit cube
 	 * @param x1y1z1 the output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 1
+	 * @param deltaY the y-coordinate on the unit cube
+	 * @param x0y1z1 the output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
+	 * @param deltaX the x-coordinate on the unit cube
+	 * @param x1y0z1 the output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
+	 * @param x0y0z1 the output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
 	 */
 	public static double lerp3(
 		double deltaX,
@@ -702,11 +752,11 @@ public class MathHelper {
 	 * @return the mapped value, clamped between {@code newStart} and {@code newEnd}
 	 * @see #map(double, double, double, double, double) the unclamped variant
 	 * 
-	 * @param value the input value
 	 * @param oldStart the starting value of the original range
 	 * @param oldEnd the end value of the original range
 	 * @param newStart the starting value of the new range
 	 * @param newEnd the end value of the new range
+	 * @param value the input value
 	 */
 	public static double clampedMap(double value, double oldStart, double oldEnd, double newStart, double newEnd) {
 		return clampedLerp(newStart, newEnd, getLerpProgress(value, oldStart, oldEnd));
@@ -721,9 +771,9 @@ public class MathHelper {
 	 * 
 	 * @param value the input value
 	 * @param oldStart the starting value of the original range
+	 * @param newEnd the end value of the new range
 	 * @param oldEnd the end value of the original range
 	 * @param newStart the starting value of the new range
-	 * @param newEnd the end value of the new range
 	 */
 	public static float clampedMap(float value, float oldStart, float oldEnd, float newStart, float newEnd) {
 		return clampedLerp(newStart, newEnd, getLerpProgress(value, oldStart, oldEnd));
@@ -738,11 +788,11 @@ public class MathHelper {
 	 * 
 	 * @return the mapped value
 	 * 
-	 * @param value the input value
-	 * @param oldStart the starting value of the original range
-	 * @param oldEnd the end value of the original range
-	 * @param newStart the starting value of the new range
 	 * @param newEnd the end value of the new range
+	 * @param newStart the starting value of the new range
+	 * @param oldEnd the end value of the original range
+	 * @param oldStart the starting value of the original range
+	 * @param value the input value
 	 */
 	public static double map(double value, double oldStart, double oldEnd, double newStart, double newEnd) {
 		return lerp(getLerpProgress(value, oldStart, oldEnd), newStart, newEnd);
@@ -758,10 +808,10 @@ public class MathHelper {
 	 * @return the mapped value
 	 * 
 	 * @param value the input value
-	 * @param oldStart the starting value of the original range
-	 * @param oldEnd the end value of the original range
 	 * @param newStart the starting value of the new range
 	 * @param newEnd the end value of the new range
+	 * @param oldStart the starting value of the original range
+	 * @param oldEnd the end value of the original range
 	 */
 	public static float map(float value, float oldStart, float oldEnd, float newStart, float newEnd) {
 		return lerp(getLerpProgress(value, oldStart, oldEnd), newStart, newEnd);
@@ -790,8 +840,8 @@ public class MathHelper {
 	 * @throws IllegalArgumentException if the range is empty (i.e. {@code
 	 * max < min})
 	 * 
-	 * @param min the minimum value, inclusive
 	 * @param max the maximum value, inclusive
+	 * @param min the minimum value, inclusive
 	 */
 	public static int nextBetween(Random random, int min, int max) {
 		return random.nextInt(max - min + 1) + min;
@@ -861,7 +911,7 @@ public class MathHelper {
 		for (int i = 0; i < 257; i++) {
 			double d = (double)i / 256.0;
 			double e = Math.asin(d);
-			COSINE_TABLE[i] = Math.cos(e);
+			COSINE_OF_ARCSINE_TABLE[i] = Math.cos(e);
 			ARCSINE_TABLE[i] = e;
 		}
 	}

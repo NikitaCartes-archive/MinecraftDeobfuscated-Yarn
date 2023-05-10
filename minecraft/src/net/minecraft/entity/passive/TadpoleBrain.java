@@ -23,9 +23,9 @@ import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 
 public class TadpoleBrain {
-	private static final float field_37500 = 2.0F;
+	private static final float FLEE_SPEED = 2.0F;
 	private static final float field_37502 = 0.5F;
-	private static final float field_39409 = 1.25F;
+	private static final float TEMPT_SPEED = 1.25F;
 
 	protected static Brain<?> create(Brain<TadpoleEntity> brain) {
 		addCoreActivities(brain);

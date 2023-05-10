@@ -177,8 +177,8 @@ public class LinkedBlockPosHashSet extends LongLinkedOpenHashSet {
 		 * @return {@code true} if the map already contained set bits for the indicated mask
 		 *            (i.e. an overlap occurred)
 		 * 
-		 * @param index zero-based index of a 2x cubed area
 		 * @param mask mask of bits to set
+		 * @param index zero-based index of a 2x cubed area
 		 */
 		private boolean setBits(int index, long mask) {
 			boolean bl = (this.value[index] & mask) != 0L;

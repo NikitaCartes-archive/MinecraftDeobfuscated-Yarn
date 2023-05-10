@@ -171,9 +171,9 @@ public final class NbtHelper {
 	 * <li>Otherwise, return {@code standard.equals(subject)}.</li>
 	 * </ol>
 	 * 
-	 * @param standard the standard (also called as "template" or "schema") element
-	 * @param subject the element to test
 	 * @param ignoreListOrder whether to ignore ordering for {@link NbtList}
+	 * @param subject the element to test
+	 * @param standard the standard (also called as "template" or "schema") element
 	 */
 	@VisibleForTesting
 	public static boolean matches(@Nullable NbtElement standard, @Nullable NbtElement subject, boolean ignoreListOrder) {

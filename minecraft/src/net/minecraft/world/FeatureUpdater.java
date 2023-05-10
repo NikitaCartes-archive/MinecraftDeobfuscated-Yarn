@@ -39,7 +39,7 @@ public class FeatureUpdater {
 		map.put("TeJP", "Jungle_Pyramid");
 		map.put("TeSH", "Swamp_Hut");
 	});
-	private static final Set<String> field_37194 = Set.of(
+	private static final Set<String> NEW_STRUCTURE_NAMES = Set.of(
 		"pillager_outpost",
 		"mineshaft",
 		"mansion",
@@ -62,27 +62,27 @@ public class FeatureUpdater {
 	private final boolean needsUpdate;
 	private final Map<String, Long2ObjectMap<NbtCompound>> featureIdToChunkNbt = Maps.<String, Long2ObjectMap<NbtCompound>>newHashMap();
 	private final Map<String, ChunkUpdateState> updateStates = Maps.<String, ChunkUpdateState>newHashMap();
-	private final List<String> field_17658;
-	private final List<String> field_17659;
+	private final List<String> oldNames;
+	private final List<String> newNames;
 
-	public FeatureUpdater(@Nullable PersistentStateManager persistentStateManager, List<String> list, List<String> list2) {
-		this.field_17658 = list;
-		this.field_17659 = list2;
+	public FeatureUpdater(@Nullable PersistentStateManager persistentStateManager, List<String> oldNames, List<String> newNames) {
+		this.oldNames = oldNames;
+		this.newNames = newNames;
 		this.init(persistentStateManager);
 		boolean bl = false;
 
-		for (String string : this.field_17659) {
+		for (String string : this.newNames) {
 			bl |= this.featureIdToChunkNbt.get(string) != null;
 		}
 
 		this.needsUpdate = bl;
 	}
 
-	public void markResolved(long l) {
-		for (String string : this.field_17658) {
+	public void markResolved(long chunkPos) {
+		for (String string : this.oldNames) {
 			ChunkUpdateState chunkUpdateState = (ChunkUpdateState)this.updateStates.get(string);
-			if (chunkUpdateState != null && chunkUpdateState.isRemaining(l)) {
-				chunkUpdateState.markResolved(l);
+			if (chunkUpdateState != null && chunkUpdateState.isRemaining(chunkPos)) {
+				chunkUpdateState.markResolved(chunkPos);
 				chunkUpdateState.markDirty();
 			}
 		}
@@ -98,8 +98,8 @@ public class FeatureUpdater {
 		NbtCompound nbtCompound2 = nbtCompound.getCompound("Structures");
 		NbtCompound nbtCompound3 = nbtCompound2.getCompound("References");
 
-		for (String string : this.field_17659) {
-			boolean bl = field_37194.contains(string.toLowerCase(Locale.ROOT));
+		for (String string : this.newNames) {
+			boolean bl = NEW_STRUCTURE_NAMES.contains(string.toLowerCase(Locale.ROOT));
 			if (!nbtCompound3.contains(string, NbtElement.LONG_ARRAY_TYPE) && bl) {
 				int i = 8;
 				LongList longList = new LongArrayList();
@@ -132,7 +132,7 @@ public class FeatureUpdater {
 		if (!this.needsUpdate) {
 			return false;
 		} else {
-			for (String string : this.field_17659) {
+			for (String string : this.newNames) {
 				if (this.featureIdToChunkNbt.get(string) != null
 					&& ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaining(ChunkPos.toLong(chunkX, chunkZ))) {
 					return true;
@@ -148,7 +148,7 @@ public class FeatureUpdater {
 		NbtCompound nbtCompound2 = nbtCompound.getCompound("Structures");
 		NbtCompound nbtCompound3 = nbtCompound2.getCompound("Starts");
 
-		for (String string : this.field_17659) {
+		for (String string : this.newNames) {
 			Long2ObjectMap<NbtCompound> long2ObjectMap = (Long2ObjectMap<NbtCompound>)this.featureIdToChunkNbt.get(string);
 			if (long2ObjectMap != null) {
 				long l = pos.toLong();
@@ -169,7 +169,7 @@ public class FeatureUpdater {
 
 	private void init(@Nullable PersistentStateManager persistentStateManager) {
 		if (persistentStateManager != null) {
-			for (String string : this.field_17658) {
+			for (String string : this.oldNames) {
 				NbtCompound nbtCompound = new NbtCompound();
 
 				try {

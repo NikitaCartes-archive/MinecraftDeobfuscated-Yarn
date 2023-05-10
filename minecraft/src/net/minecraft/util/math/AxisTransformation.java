@@ -14,7 +14,7 @@ public enum AxisTransformation {
 
 	private final int[] mappings;
 	private final Matrix3f matrix;
-	private static final int field_33113 = 3;
+	private static final int NUM_AXES = 3;
 	private static final AxisTransformation[][] COMBINATIONS = Util.make(
 		new AxisTransformation[values().length][values().length],
 		axisTransformations -> {

@@ -13,9 +13,9 @@ public interface CharacterVisitor {
 	 * 
 	 * @return {@code true} to continue visiting other characters, or {@code false} to terminate the visit
 	 * 
-	 * @param index the current index of the character
 	 * @param style the style of the character, containing formatting and font information
 	 * @param codePoint the code point of the character
+	 * @param index the current index of the character
 	 */
 	boolean accept(int index, Style style, int codePoint);
 }

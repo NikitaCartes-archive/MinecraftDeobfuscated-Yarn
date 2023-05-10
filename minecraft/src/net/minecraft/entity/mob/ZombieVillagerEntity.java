@@ -52,7 +52,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
-	private static final int field_30523 = 3600;
+	private static final int BASE_CONVERTION_DELAY = 3600;
 	private static final int field_30520 = 6000;
 	private static final int field_30521 = 14;
 	private static final int field_30522 = 4;

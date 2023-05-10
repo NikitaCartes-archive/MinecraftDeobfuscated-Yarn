@@ -981,7 +981,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		protected void setMobEntityTarget(MobEntity mob, LivingEntity target) {
-			if (mob instanceof PandaEntity && ((PandaEntity)mob).isAttacking()) {
+			if (mob instanceof PandaEntity && mob.isAttacking()) {
 				mob.setTarget(target);
 			}
 		}

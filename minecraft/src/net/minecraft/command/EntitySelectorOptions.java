@@ -20,8 +20,10 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootDataType;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -459,10 +461,11 @@ public class EntitySelectorOptions {
 								if (lootCondition == null) {
 									return false;
 								} else {
-									LootContext lootContext = new LootContext.Builder(serverWorld)
-										.parameter(LootContextParameters.THIS_ENTITY, entity)
-										.parameter(LootContextParameters.ORIGIN, entity.getPos())
+									LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+										.add(LootContextParameters.THIS_ENTITY, entity)
+										.add(LootContextParameters.ORIGIN, entity.getPos())
 										.build(LootContextTypes.SELECTOR);
+									LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(LootTable.DEFAULT_ID);
 									lootContext.markActive(LootContext.predicate(lootCondition));
 									return bl ^ lootCondition.test(lootContext);
 								}

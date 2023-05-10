@@ -28,8 +28,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.network.NetworkSide;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Property;
 import net.minecraft.structure.StructureTemplate;
@@ -216,6 +219,24 @@ public class TestContext {
 		};
 	}
 
+	public ServerPlayerEntity createMockCreativeServerPlayerInWorld() {
+		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(
+			this.getWorld().getServer(), this.getWorld(), new GameProfile(UUID.randomUUID(), "test-mock-player")
+		) {
+			@Override
+			public boolean isSpectator() {
+				return false;
+			}
+
+			@Override
+			public boolean isCreative() {
+				return true;
+			}
+		};
+		this.getWorld().getServer().getPlayerManager().onPlayerConnect(new ClientConnection(NetworkSide.SERVERBOUND), serverPlayerEntity);
+		return serverPlayerEntity;
+	}
+
 	public void toggleLever(int x, int y, int z) {
 		this.toggleLever(new BlockPos(x, y, z));
 	}
@@ -394,10 +415,10 @@ public class TestContext {
 		List<ItemEntity> list = this.getWorld().getEntitiesByType(EntityType.ITEM, new Box(blockPos).expand(radius), Entity::isAlive);
 		int i = 0;
 
-		for (Entity entity : list) {
-			ItemEntity itemEntity = (ItemEntity)entity;
-			if (itemEntity.getStack().getItem().equals(item)) {
-				i += itemEntity.getStack().getCount();
+		for (ItemEntity itemEntity : list) {
+			ItemStack itemStack = itemEntity.getStack();
+			if (itemStack.isOf(item)) {
+				i += itemStack.getCount();
 			}
 		}
 

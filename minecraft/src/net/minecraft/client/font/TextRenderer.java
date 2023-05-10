@@ -143,8 +143,8 @@ public class TextRenderer {
 	}
 
 	/**
-	 * @param color the text color in 0xAARRGGBB
 	 * @param outlineColor the outline color in 0xAARRGGBB
+	 * @param color the text color in 0xAARRGGBB
 	 */
 	public void drawWithOutline(
 		OrderedText text, float x, float y, int color, int outlineColor, Matrix4f matrix, VertexConsumerProvider vertexConsumers, int light

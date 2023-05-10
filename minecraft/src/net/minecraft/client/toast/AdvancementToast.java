@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AdvancementToast implements Toast {
-	public static final int field_41812 = 5000;
+	public static final int DEFAULT_DURATION_MS = 5000;
 	private final Advancement advancement;
 	private boolean soundPlayed;
 

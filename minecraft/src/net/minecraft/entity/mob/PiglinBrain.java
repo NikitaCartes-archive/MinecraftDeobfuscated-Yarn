@@ -62,7 +62,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.registry.tag.ItemTags;
@@ -89,8 +89,8 @@ public class PiglinBrain {
 	private static final int field_30572 = 200;
 	private static final int field_30573 = 300;
 	public static final UniformIntProvider HUNT_MEMORY_DURATION = TimeHelper.betweenSeconds(30, 120);
-	private static final int field_30574 = 100;
-	private static final int field_30575 = 400;
+	private static final int AVOID_TARGET_EXPIRY = 100;
+	private static final int ADMIRING_DISABLED_EXPIRY = 400;
 	private static final int field_30576 = 8;
 	private static final UniformIntProvider MEMORY_TRANSFER_TASK_DURATION = TimeHelper.betweenSeconds(10, 40);
 	private static final UniformIntProvider RIDE_TARGET_MEMORY_DURATION = TimeHelper.betweenSeconds(10, 30);
@@ -102,14 +102,14 @@ public class PiglinBrain {
 	private static final int field_30581 = 14;
 	private static final int field_30582 = 8;
 	private static final int field_30583 = 5;
-	private static final float field_30584 = 0.75F;
+	private static final float CROSSBOW_ATTACK_FORWARD_MOVEMENT = 0.75F;
 	private static final int field_30585 = 6;
 	private static final UniformIntProvider GO_TO_ZOMBIFIED_MEMORY_DURATION = TimeHelper.betweenSeconds(5, 7);
 	private static final UniformIntProvider GO_TO_NEMESIS_MEMORY_DURATION = TimeHelper.betweenSeconds(5, 7);
 	private static final float field_30557 = 0.1F;
 	private static final float field_30558 = 1.0F;
 	private static final float field_30559 = 1.0F;
-	private static final float field_30560 = 0.8F;
+	private static final float START_RIDING_SPEED = 0.8F;
 	private static final float field_30561 = 1.0F;
 	private static final float field_30562 = 1.0F;
 	private static final float field_30563 = 0.6F;
@@ -436,10 +436,7 @@ public class PiglinBrain {
 	private static List<ItemStack> getBarteredItem(PiglinEntity piglin) {
 		LootTable lootTable = piglin.getWorld().getServer().getLootManager().getLootTable(LootTables.PIGLIN_BARTERING_GAMEPLAY);
 		List<ItemStack> list = lootTable.generateLoot(
-			new LootContext.Builder((ServerWorld)piglin.getWorld())
-				.parameter(LootContextParameters.THIS_ENTITY, piglin)
-				.random(piglin.getWorld().random)
-				.build(LootContextTypes.BARTER)
+			new LootContextParameterSet.Builder((ServerWorld)piglin.getWorld()).add(LootContextParameters.THIS_ENTITY, piglin).build(LootContextTypes.BARTER)
 		);
 		return list;
 	}

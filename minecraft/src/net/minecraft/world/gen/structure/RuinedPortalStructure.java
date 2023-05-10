@@ -44,8 +44,8 @@ public class RuinedPortalStructure extends Structure {
 	private static final String[] RARE_PORTAL_STRUCTURE_IDS = new String[]{
 		"ruined_portal/giant_portal_1", "ruined_portal/giant_portal_2", "ruined_portal/giant_portal_3"
 	};
-	private static final float field_31512 = 0.05F;
-	private static final int field_31511 = 15;
+	private static final float RARE_PORTAL_CHANCE = 0.05F;
+	private static final int MIN_BLOCKS_ABOVE_WORLD_BOTTOM = 15;
 	private final List<RuinedPortalStructure.Setup> setups;
 	public static final Codec<RuinedPortalStructure> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(

@@ -66,7 +66,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
@@ -145,6 +145,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	private static final int field_30080 = 10;
 	private static final int field_30081 = 2;
 	public static final int field_30063 = 4;
+	private static final float field_44874 = 0.42F;
 	private static final double MAX_ENTITY_VIEWING_DISTANCE = 128.0;
 	protected static final int USING_ITEM_FLAG = 1;
 	protected static final int OFF_HAND_ACTIVE_FLAG = 2;
@@ -263,7 +264,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Override
 	public void kill() {
-		this.damage(this.getDamageSources().outOfWorld(), Float.MAX_VALUE);
+		this.damage(this.getDamageSources().genericKill(), Float.MAX_VALUE);
 	}
 
 	public boolean canTarget(EntityType<?> type) {
@@ -358,7 +359,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					if (d < 0.0) {
 						double e = this.getWorld().getWorldBorder().getDamagePerBlock();
 						if (e > 0.0) {
-							this.damage(this.getDamageSources().inWall(), (float)Math.max(1, MathHelper.floor(-d * e)));
+							this.damage(this.getDamageSources().outsideBorder(), (float)Math.max(1, MathHelper.floor(-d * e)));
 						}
 					}
 				}
@@ -1029,8 +1030,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	 * net.minecraft.client.network.ClientPlayNetworkHandler#onEntityStatusEffect
 	 * reception} of the status effect packet.
 	 * 
-	 * @param effect the effect to set
 	 * @param source the source entity or {@code null} for non-entity sources
+	 * @param effect the effect to set
 	 */
 	public void setStatusEffect(StatusEffectInstance effect, @Nullable Entity source) {
 		if (this.canHaveStatusEffect(effect)) {
@@ -1467,26 +1468,25 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.getType().getLootTableId();
 	}
 
-	protected void dropLoot(DamageSource source, boolean causedByPlayer) {
-		Identifier identifier = this.getLootTable();
-		LootTable lootTable = this.getWorld().getServer().getLootManager().getLootTable(identifier);
-		LootContext.Builder builder = this.getLootContextBuilder(causedByPlayer, source);
-		lootTable.generateLoot(builder.build(LootContextTypes.ENTITY), this::dropStack);
+	public long getLootTableSeed() {
+		return 0L;
 	}
 
-	protected LootContext.Builder getLootContextBuilder(boolean causedByPlayer, DamageSource source) {
-		LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.getWorld())
-			.random(this.random)
-			.parameter(LootContextParameters.THIS_ENTITY, this)
-			.parameter(LootContextParameters.ORIGIN, this.getPos())
-			.parameter(LootContextParameters.DAMAGE_SOURCE, source)
-			.optionalParameter(LootContextParameters.KILLER_ENTITY, source.getAttacker())
-			.optionalParameter(LootContextParameters.DIRECT_KILLER_ENTITY, source.getSource());
+	protected void dropLoot(DamageSource damageSource, boolean causedByPlayer) {
+		Identifier identifier = this.getLootTable();
+		LootTable lootTable = this.getWorld().getServer().getLootManager().getLootTable(identifier);
+		LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder((ServerWorld)this.getWorld())
+			.add(LootContextParameters.THIS_ENTITY, this)
+			.add(LootContextParameters.ORIGIN, this.getPos())
+			.add(LootContextParameters.DAMAGE_SOURCE, damageSource)
+			.addOptional(LootContextParameters.KILLER_ENTITY, damageSource.getAttacker())
+			.addOptional(LootContextParameters.DIRECT_KILLER_ENTITY, damageSource.getSource());
 		if (causedByPlayer && this.attackingPlayer != null) {
-			builder = builder.parameter(LootContextParameters.LAST_DAMAGE_PLAYER, this.attackingPlayer).luck(this.attackingPlayer.getLuck());
+			builder = builder.add(LootContextParameters.LAST_DAMAGE_PLAYER, this.attackingPlayer).luck(this.attackingPlayer.getLuck());
 		}
 
-		return builder;
+		LootContextParameterSet lootContextParameterSet = builder.build(LootContextTypes.ENTITY);
+		lootTable.generateLoot(lootContextParameterSet, this.getLootTableSeed(), this::dropStack);
 	}
 
 	public void takeKnockback(double strength, double x, double z) {
@@ -2074,12 +2074,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	protected float getJumpVelocity() {
-		float f = 0.42F * this.getJumpVelocityMultiplier();
-		return f + this.getJumpBoostVelocityModifier();
+		return 0.42F * this.getJumpVelocityMultiplier() + this.getJumpBoostVelocityModifier();
 	}
 
 	public float getJumpBoostVelocityModifier() {
-		return this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? 0.1F * (float)(this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1) : 0.0F;
+		return this.hasStatusEffect(StatusEffects.JUMP_BOOST) ? 0.1F * ((float)this.getStatusEffect(StatusEffects.JUMP_BOOST).getAmplifier() + 1.0F) : 0.0F;
 	}
 
 	protected void jump() {

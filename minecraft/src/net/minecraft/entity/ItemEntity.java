@@ -127,7 +127,7 @@ public class ItemEntity extends Entity implements Ownable {
 				this.move(MovementType.SELF, this.getVelocity());
 				float g = 0.98F;
 				if (this.isOnGround()) {
-					g = this.getWorld().getBlockState(BlockPos.ofFloored(this.getX(), this.getY() - 1.0, this.getZ())).getBlock().getSlipperiness() * 0.98F;
+					g = this.getWorld().getBlockState(this.getVelocityAffectingPos()).getBlock().getSlipperiness() * 0.98F;
 				}
 
 				this.setVelocity(this.getVelocity().multiply((double)g, 0.98, (double)g));
@@ -163,6 +163,11 @@ public class ItemEntity extends Entity implements Ownable {
 				this.discard();
 			}
 		}
+	}
+
+	@Override
+	protected BlockPos getVelocityAffectingPos() {
+		return this.getPosWithYOffset(0.999999F);
 	}
 
 	private void applyWaterBuoyancy() {

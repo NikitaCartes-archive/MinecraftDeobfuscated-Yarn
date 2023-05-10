@@ -84,6 +84,7 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.CommandBlockExecutor;
+import net.minecraft.world.GameMode;
 import org.slf4j.Logger;
 
 /**
@@ -126,8 +127,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public float lastRenderPitch;
 	private int field_3938;
 	private float mountJumpStrength;
-	public float nextNauseaStrength;
-	public float lastNauseaStrength;
+	public float nauseaIntensity;
+	public float prevNauseaIntensity;
 	private boolean usingItem;
 	@Nullable
 	private Hand activeHand;
@@ -663,7 +664,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.ticksLeftToDoubleTapSprint--;
 		}
 
-		this.updateNausea();
+		if (!(this.client.currentScreen instanceof DownloadingTerrainScreen)) {
+			this.updateNausea();
+		}
+
 		boolean bl = this.input.jumping;
 		boolean bl2 = this.input.sneaking;
 		boolean bl3 = this.isWalking();
@@ -824,12 +828,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	private void updateNausea() {
-		this.lastNauseaStrength = this.nextNauseaStrength;
+		this.prevNauseaIntensity = this.nauseaIntensity;
+		float f = 0.0F;
 		if (this.inNetherPortal) {
-			if (this.client.currentScreen != null
-				&& !this.client.currentScreen.shouldPause()
-				&& !(this.client.currentScreen instanceof DeathScreen)
-				&& !(this.client.currentScreen instanceof DownloadingTerrainScreen)) {
+			if (this.client.currentScreen != null && !this.client.currentScreen.shouldPause() && !(this.client.currentScreen instanceof DeathScreen)) {
 				if (this.client.currentScreen instanceof HandledScreen) {
 					this.closeHandledScreen();
 				}
@@ -837,31 +839,19 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				this.client.setScreen(null);
 			}
 
-			if (this.nextNauseaStrength == 0.0F) {
+			if (this.nauseaIntensity == 0.0F) {
 				this.client.getSoundManager().play(PositionedSoundInstance.ambient(SoundEvents.BLOCK_PORTAL_TRIGGER, this.random.nextFloat() * 0.4F + 0.8F, 0.25F));
 			}
 
-			this.nextNauseaStrength += 0.0125F;
-			if (this.nextNauseaStrength >= 1.0F) {
-				this.nextNauseaStrength = 1.0F;
-			}
-
+			f = 0.0125F;
 			this.inNetherPortal = false;
 		} else if (this.hasStatusEffect(StatusEffects.NAUSEA) && !this.getStatusEffect(StatusEffects.NAUSEA).isDurationBelow(60)) {
-			this.nextNauseaStrength += 0.006666667F;
-			if (this.nextNauseaStrength > 1.0F) {
-				this.nextNauseaStrength = 1.0F;
-			}
-		} else {
-			if (this.nextNauseaStrength > 0.0F) {
-				this.nextNauseaStrength -= 0.05F;
-			}
-
-			if (this.nextNauseaStrength < 0.0F) {
-				this.nextNauseaStrength = 0.0F;
-			}
+			f = 0.006666667F;
+		} else if (this.nauseaIntensity > 0.0F) {
+			f = -0.05F;
 		}
 
+		this.nauseaIntensity = MathHelper.clamp(this.nauseaIntensity + f, 0.0F, 1.0F);
 		this.tickPortalCooldown();
 	}
 
@@ -883,8 +873,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public StatusEffectInstance removeStatusEffectInternal(@Nullable StatusEffect type) {
 		if (type == StatusEffects.NAUSEA) {
-			this.lastNauseaStrength = 0.0F;
-			this.nextNauseaStrength = 0.0F;
+			this.prevNauseaIntensity = 0.0F;
+			this.nauseaIntensity = 0.0F;
 		}
 
 		return super.removeStatusEffectInternal(type);
@@ -1075,6 +1065,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				float i = (float)this.underwaterVisibilityTicks < 100.0F ? 0.0F : MathHelper.clamp(((float)this.underwaterVisibilityTicks - 100.0F) / 500.0F, 0.0F, 1.0F);
 				return h * 0.6F + i * 0.39999998F;
 			}
+		}
+	}
+
+	public void onGameModeChanged(GameMode gameMode) {
+		if (gameMode == GameMode.SPECTATOR) {
+			this.setVelocity(this.getVelocity().withAxis(Direction.Axis.Y, 0.0));
 		}
 	}
 

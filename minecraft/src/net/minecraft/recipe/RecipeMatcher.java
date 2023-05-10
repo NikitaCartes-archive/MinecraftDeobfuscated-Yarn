@@ -106,9 +106,9 @@ public class RecipeMatcher {
 	 * Attempts to match the recipe against the collected inputs. Will only succeed if there has been enough
 	 * resources gathered to produce the requested number of outputs.
 	 * 
-	 * @param recipe the recipe to match against
-	 * @param output optional output list of item ids that were matched whilst evaluating the recipe conditions
 	 * @param multiplier the number of expected outputs
+	 * @param output optional output list of item ids that were matched whilst evaluating the recipe conditions
+	 * @param recipe the recipe to match against
 	 */
 	public boolean match(Recipe<?> recipe, @Nullable IntList output, int multiplier) {
 		return new RecipeMatcher.Matcher(recipe).match(multiplier, output);

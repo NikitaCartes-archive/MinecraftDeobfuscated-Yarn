@@ -1361,7 +1361,7 @@ public class VanillaBlockLootTableGenerator extends BlockLootTableGenerator {
 				LootPool.builder()
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
-						DynamicEntry.builder(DecoratedPotBlock.SHERDS_NBT_KEY)
+						DynamicEntry.builder(DecoratedPotBlock.SHERDS_DYNAMIC_DROP_ID)
 							.conditionally(MatchToolLootCondition.builder(ItemPredicate.Builder.create().tag(ItemTags.BREAKS_DECORATED_POTS)))
 							.conditionally(WITHOUT_SILK_TOUCH)
 							.alternatively(

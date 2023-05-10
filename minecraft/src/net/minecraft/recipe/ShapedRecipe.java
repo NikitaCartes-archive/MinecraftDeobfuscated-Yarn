@@ -11,7 +11,7 @@ import com.google.gson.JsonSyntaxException;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -98,14 +98,14 @@ public class ShapedRecipe implements CraftingRecipe {
 		return width >= this.width && height >= this.height;
 	}
 
-	public boolean matches(CraftingInventory craftingInventory, World world) {
-		for (int i = 0; i <= craftingInventory.getWidth() - this.width; i++) {
-			for (int j = 0; j <= craftingInventory.getHeight() - this.height; j++) {
-				if (this.matchesPattern(craftingInventory, i, j, true)) {
+	public boolean matches(RecipeInputInventory recipeInputInventory, World world) {
+		for (int i = 0; i <= recipeInputInventory.getWidth() - this.width; i++) {
+			for (int j = 0; j <= recipeInputInventory.getHeight() - this.height; j++) {
+				if (this.matchesPattern(recipeInputInventory, i, j, true)) {
 					return true;
 				}
 
-				if (this.matchesPattern(craftingInventory, i, j, false)) {
+				if (this.matchesPattern(recipeInputInventory, i, j, false)) {
 					return true;
 				}
 			}
@@ -114,7 +114,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		return false;
 	}
 
-	private boolean matchesPattern(CraftingInventory inv, int offsetX, int offsetY, boolean flipped) {
+	private boolean matchesPattern(RecipeInputInventory inv, int offsetX, int offsetY, boolean flipped) {
 		for (int i = 0; i < inv.getWidth(); i++) {
 			for (int j = 0; j < inv.getHeight(); j++) {
 				int k = i - offsetX;
@@ -137,7 +137,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		return true;
 	}
 
-	public ItemStack craft(CraftingInventory craftingInventory, DynamicRegistryManager dynamicRegistryManager) {
+	public ItemStack craft(RecipeInputInventory recipeInputInventory, DynamicRegistryManager dynamicRegistryManager) {
 		return this.getOutput(dynamicRegistryManager).copy();
 	}
 

@@ -28,8 +28,8 @@ public class BiasedToBottomIntProvider extends IntProvider {
 	}
 
 	/**
-	 * @param min the minimum value, inclusive
 	 * @param max the maximum value, inclusive
+	 * @param min the minimum value, inclusive
 	 */
 	public static BiasedToBottomIntProvider create(int min, int max) {
 		return new BiasedToBottomIntProvider(min, max);

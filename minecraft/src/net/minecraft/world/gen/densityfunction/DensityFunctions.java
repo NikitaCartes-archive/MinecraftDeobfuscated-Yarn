@@ -532,8 +532,8 @@ public class DensityFunctions {
 	 * 
 	 * @return the created density function
 	 * 
-	 * @param amplified whether the amplified world type is used
 	 * @param density the base density function
+	 * @param amplified whether the amplified world type is used
 	 */
 	private static DensityFunction applySurfaceSlides(boolean amplified, DensityFunction density) {
 		return applySlides(density, -64, 384, amplified ? 16 : 80, amplified ? 0 : 64, -0.078125, 0, 24, amplified ? 0.4 : 0.1171875);
@@ -544,8 +544,8 @@ public class DensityFunctions {
 	 * 
 	 * @return the created density function
 	 * 
-	 * @param minY the minimum block Y coordinate of the world
 	 * @param maxY the maximum block Y coordinate of the world
+	 * @param minY the minimum block Y coordinate of the world
 	 */
 	private static DensityFunction applyCavesSlides(RegistryEntryLookup<DensityFunction> densityFunctionLookup, int minY, int maxY) {
 		return applySlides(entryHolder(densityFunctionLookup, BASE_3D_NOISE_NETHER), minY, maxY, 24, 0, 0.9375, -8, 24, 2.5);
@@ -556,8 +556,8 @@ public class DensityFunctions {
 	 * 
 	 * @return the created density function
 	 * 
-	 * @param minY the minimum block Y coordinate of the world
 	 * @param maxY the maximum block Y coordinate of the world
+	 * @param minY the minimum block Y coordinate of the world
 	 */
 	private static DensityFunction applyFloatingIslandsSlides(DensityFunction function, int minY, int maxY) {
 		return applySlides(function, minY, maxY, 72, -184, -23.4375, 4, 32, -0.234375);
@@ -677,15 +677,15 @@ public class DensityFunctions {
 	 * 
 	 * @return the created density function
 	 * 
+	 * @param bottomRelativeMinY the minimum block Y of the bottom slide, added to the bottom height
+	 * @param bottomRelativeMaxY the maximum block Y of the bottom slide, added to the bottom height
+	 * @param bottomDensity the density at the bottom of the world. For height levels between the bottom-relative minimum and maximum heights, this is interpolated with the actual density
 	 * @param density the base density function
 	 * @param minY the minimum block Y coordinate of the world
 	 * @param maxY the maximum block Y coordinate of the world
 	 * @param topRelativeMinY the minimum block Y of the top slide, subtracted from the top height
 	 * @param topRelativeMaxY the maximum block Y of the top slide, subtracted from the top height
 	 * @param topDensity the density at the top of the world. For height levels between the top-relative minimum and maximum heights, this is interpolated with the actual density
-	 * @param bottomRelativeMinY the minimum block Y of the bottom slide, added to the bottom height
-	 * @param bottomRelativeMaxY the maximum block Y of the bottom slide, added to the bottom height
-	 * @param bottomDensity the density at the bottom of the world. For height levels between the bottom-relative minimum and maximum heights, this is interpolated with the actual density
 	 */
 	private static DensityFunction applySlides(
 		DensityFunction density,

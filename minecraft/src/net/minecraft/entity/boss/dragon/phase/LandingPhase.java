@@ -40,7 +40,9 @@ public class LandingPhase extends AbstractPhase {
 	@Override
 	public void serverTick() {
 		if (this.target == null) {
-			this.target = Vec3d.ofBottomCenter(this.dragon.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN));
+			this.target = Vec3d.ofBottomCenter(
+				this.dragon.getWorld().getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.offsetOrigin(this.dragon.getFightOrigin()))
+			);
 		}
 
 		if (this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ()) < 1.0) {

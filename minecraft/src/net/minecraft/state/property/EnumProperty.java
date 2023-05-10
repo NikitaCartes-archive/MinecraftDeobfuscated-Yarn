@@ -87,9 +87,9 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Proper
 	 * 
 	 * @throws IllegalArgumentException if multiple values have the same name
 	 * 
+	 * @param type the type of the values the property contains
 	 * @param name the name of the property; see {@linkplain Property#name the note on the
 	 * name}
-	 * @param type the type of the values the property contains
 	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type) {
 		return of(name, type, (Predicate<T>)(enum_ -> true));
@@ -141,9 +141,9 @@ public class EnumProperty<T extends Enum<T> & StringIdentifiable> extends Proper
 	 * 
 	 * @see #of(String, Class)
 	 * 
+	 * @param type the type of the values the property contains
 	 * @param name the name of the property; see {@linkplain Property#name the note on the
 	 * name}
-	 * @param type the type of the values the property contains
 	 * @param values the values the property contains; required to have 2 or more values
 	 */
 	public static <T extends Enum<T> & StringIdentifiable> EnumProperty<T> of(String name, Class<T> type, Collection<T> values) {

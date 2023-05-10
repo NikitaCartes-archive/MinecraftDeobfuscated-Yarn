@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTables;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -122,11 +122,11 @@ public class GiveGiftsToHeroTask extends MultiTickTask<VillagerEntity> {
 			VillagerProfession villagerProfession = villager.getVillagerData().getProfession();
 			if (GIFTS.containsKey(villagerProfession)) {
 				LootTable lootTable = villager.getWorld().getServer().getLootManager().getLootTable((Identifier)GIFTS.get(villagerProfession));
-				LootContext.Builder builder = new LootContext.Builder((ServerWorld)villager.getWorld())
-					.parameter(LootContextParameters.ORIGIN, villager.getPos())
-					.parameter(LootContextParameters.THIS_ENTITY, villager)
-					.random(villager.getRandom());
-				return lootTable.generateLoot(builder.build(LootContextTypes.GIFT));
+				LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder((ServerWorld)villager.getWorld())
+					.add(LootContextParameters.ORIGIN, villager.getPos())
+					.add(LootContextParameters.THIS_ENTITY, villager)
+					.build(LootContextTypes.GIFT);
+				return lootTable.generateLoot(lootContextParameterSet);
 			} else {
 				return ImmutableList.of(new ItemStack(Items.WHEAT_SEEDS));
 			}

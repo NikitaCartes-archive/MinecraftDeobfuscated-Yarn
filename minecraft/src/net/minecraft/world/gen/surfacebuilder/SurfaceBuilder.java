@@ -163,19 +163,19 @@ public class SurfaceBuilder {
 				}
 
 				if (registryEntry.matchesKey(BiomeKeys.FROZEN_OCEAN) || registryEntry.matchesKey(BiomeKeys.DEEP_FROZEN_OCEAN)) {
-					this.placeIceberg(materialRuleContext.method_39551(), registryEntry.value(), blockColumn, mutable2, m, n, o);
+					this.placeIceberg(materialRuleContext.estimateSurfaceHeight(), registryEntry.value(), blockColumn, mutable2, m, n, o);
 				}
 			}
 		}
 	}
 
-	protected int method_39552(int i, int j) {
-		double d = this.surfaceNoise.sample((double)i, 0.0, (double)j);
-		return (int)(d * 2.75 + 3.0 + this.randomDeriver.split(i, 0, j).nextDouble() * 0.25);
+	protected int sampleRunDepth(int blockX, int blockZ) {
+		double d = this.surfaceNoise.sample((double)blockX, 0.0, (double)blockZ);
+		return (int)(d * 2.75 + 3.0 + this.randomDeriver.split(blockX, 0, blockZ).nextDouble() * 0.25);
 	}
 
-	protected double method_39555(int i, int j) {
-		return this.surfaceSecondaryNoise.sample((double)i, 0.0, (double)j);
+	protected double sampleSecondaryDepth(int blockX, int blockZ) {
+		return this.surfaceSecondaryNoise.sample((double)blockX, 0.0, (double)blockZ);
 	}
 
 	private boolean isDefaultBlock(BlockState state) {

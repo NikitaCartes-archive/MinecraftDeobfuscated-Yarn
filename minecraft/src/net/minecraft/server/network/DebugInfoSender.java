@@ -34,7 +34,6 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WardenEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.Packet;
@@ -263,8 +262,8 @@ public class DebugInfoSender {
 	private static void sendToAll(ServerWorld world, PacketByteBuf buf, Identifier channel) {
 		Packet<?> packet = new CustomPayloadS2CPacket(channel, buf);
 
-		for (PlayerEntity playerEntity : world.getPlayers()) {
-			((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(packet);
+		for (ServerPlayerEntity serverPlayerEntity : world.getPlayers()) {
+			serverPlayerEntity.networkHandler.sendPacket(packet);
 		}
 	}
 }

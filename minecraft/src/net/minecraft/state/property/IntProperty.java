@@ -66,10 +66,10 @@ public class IntProperty extends Property<Integer> {
 	 * @throws IllegalArgumentException if {@code 0 <= min < max} is not
 	 * satisfied
 	 * 
+	 * @param max the maximum value the property contains
 	 * @param name the name of the property; see {@linkplain Property#name the note on the
 	 * name}
 	 * @param min the minimum value the property contains
-	 * @param max the maximum value the property contains
 	 */
 	public static IntProperty of(String name, int min, int max) {
 		return new IntProperty(name, min, max);

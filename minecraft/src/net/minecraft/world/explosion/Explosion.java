@@ -24,7 +24,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -287,14 +287,13 @@ public class Explosion {
 						if (blockEntity instanceof ServerWorld) {
 							ServerWorld serverWorld = (ServerWorld)blockEntity;
 							BlockEntity blockEntityx = blockState.hasBlockEntity() ? this.world.getBlockEntity(blockPos) : null;
-							LootContext.Builder builder = new LootContext.Builder(serverWorld)
-								.random(this.world.random)
-								.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos))
-								.parameter(LootContextParameters.TOOL, ItemStack.EMPTY)
-								.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntityx)
-								.optionalParameter(LootContextParameters.THIS_ENTITY, this.entity);
+							LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(serverWorld)
+								.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(blockPos))
+								.add(LootContextParameters.TOOL, ItemStack.EMPTY)
+								.addOptional(LootContextParameters.BLOCK_ENTITY, blockEntityx)
+								.addOptional(LootContextParameters.THIS_ENTITY, this.entity);
 							if (this.destructionType == Explosion.DestructionType.DESTROY_WITH_DECAY) {
-								builder.parameter(LootContextParameters.EXPLOSION_RADIUS, this.power);
+								builder.add(LootContextParameters.EXPLOSION_RADIUS, this.power);
 							}
 
 							blockState.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY, bl2);

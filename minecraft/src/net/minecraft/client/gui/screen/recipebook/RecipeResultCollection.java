@@ -38,7 +38,7 @@ public class RecipeResultCollection {
 
 		for (int j = 1; j < i; j++) {
 			ItemStack itemStack2 = ((Recipe)recipes.get(j)).getOutput(registryManager);
-			if (!ItemStack.areItemsEqual(itemStack, itemStack2) || !ItemStack.areNbtEqual(itemStack, itemStack2)) {
+			if (!ItemStack.canCombine(itemStack, itemStack2)) {
 				return false;
 			}
 		}
