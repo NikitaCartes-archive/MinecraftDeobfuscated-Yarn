@@ -37,7 +37,8 @@ public record GameJoinS2CPacket(
 	boolean showDeathScreen,
 	boolean debugWorld,
 	boolean flatWorld,
-	Optional<GlobalPos> lastDeathLocation
+	Optional<GlobalPos> lastDeathLocation,
+	int portalCooldown
 ) implements Packet<ClientPlayPacketListener> {
 	private static final RegistryOps<NbtElement> REGISTRY_OPS = RegistryOps.of(NbtOps.INSTANCE, DynamicRegistryManager.of(Registries.REGISTRIES));
 
@@ -59,7 +60,8 @@ public record GameJoinS2CPacket(
 			buf.readBoolean(),
 			buf.readBoolean(),
 			buf.readBoolean(),
-			buf.readOptional(PacketByteBuf::readGlobalPos)
+			buf.readOptional(PacketByteBuf::readGlobalPos),
+			buf.readVarInt()
 		);
 	}
 
@@ -82,6 +84,7 @@ public record GameJoinS2CPacket(
 		buf.writeBoolean(this.debugWorld);
 		buf.writeBoolean(this.flatWorld);
 		buf.writeOptional(this.lastDeathLocation, PacketByteBuf::writeGlobalPos);
+		buf.writeVarInt(this.portalCooldown);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

@@ -62,8 +62,10 @@ import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootManager;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtByte;
@@ -80,7 +82,7 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
-import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.ChunkLevelType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockBox;
@@ -443,7 +445,7 @@ public class ExecuteCommand {
 		int j = ChunkSectionPos.getSectionCoord(pos.getZ());
 		WorldChunk worldChunk = world.getChunkManager().getWorldChunk(i, j);
 		if (worldChunk != null) {
-			return worldChunk.getLevelType() == ChunkHolder.LevelType.ENTITY_TICKING;
+			return worldChunk.getLevelType() == ChunkLevelType.ENTITY_TICKING;
 		} else {
 			return false;
 		}
@@ -710,10 +712,11 @@ public class ExecuteCommand {
 
 	private static boolean testLootCondition(ServerCommandSource source, LootCondition condition) {
 		ServerWorld serverWorld = source.getWorld();
-		LootContext lootContext = new LootContext.Builder(serverWorld)
-			.parameter(LootContextParameters.ORIGIN, source.getPosition())
-			.optionalParameter(LootContextParameters.THIS_ENTITY, source.getEntity())
+		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(serverWorld)
+			.add(LootContextParameters.ORIGIN, source.getPosition())
+			.addOptional(LootContextParameters.THIS_ENTITY, source.getEntity())
 			.build(LootContextTypes.COMMAND);
+		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(LootTable.DEFAULT_ID);
 		lootContext.markActive(LootContext.predicate(condition));
 		return condition.test(lootContext);
 	}

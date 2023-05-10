@@ -10,6 +10,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
@@ -38,18 +39,18 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 
 	private static Pair<Text, Text> getErrorMessages(RealmsServiceException exception) {
 		if (exception.error == null) {
-			return Pair.of(Text.literal("An error occurred (" + exception.httpResultCode + "):"), Text.literal(exception.httpResponseText));
+			return Pair.of(Text.translatable("mco.errorMessage.realmsService", exception.httpResultCode), Text.literal(exception.httpResponseText));
 		} else {
 			String string = "mco.errorMessage." + exception.error.getErrorCode();
 			return Pair.of(
-				Text.literal("Realms (" + exception.error + "):"),
+				Text.translatable("mco.errorMessage.realmsService.realmsError", exception.error),
 				(Text)(I18n.hasTranslation(string) ? Text.translatable(string) : Text.of(exception.error.getErrorMessage()))
 			);
 		}
 	}
 
 	private static Pair<Text, Text> getErrorMessages(Text description) {
-		return Pair.of(Text.literal("An error occurred: "), description);
+		return Pair.of(Text.translatable("mco.errorMessage.generic"), description);
 	}
 
 	private static Pair<Text, Text> getErrorMessages(Text title, Text description) {
@@ -59,7 +60,7 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 	@Override
 	public void init() {
 		this.addDrawableChild(
-			ButtonWidget.builder(Text.literal("Ok"), button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, this.height - 52, 200, 20).build()
+			ButtonWidget.builder(ScreenTexts.OK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, this.height - 52, 200, 20).build()
 		);
 		this.description = MultilineText.create(this.textRenderer, this.errorMessages.getSecond(), this.width * 3 / 4);
 	}

@@ -69,8 +69,8 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 	public static final double field_30356 = 0.6;
 	public static final double field_30357 = 0.8;
 	public static final double field_30358 = 1.0;
-	public static final double ESCAPE_SPEED = 2.2;
-	public static final double field_30360 = 1.4;
+	public static final double ESCAPE_DANGER_SPEED = 2.2;
+	public static final double MELEE_ATTACK_SPEED = 1.4;
 	private static final TrackedData<Integer> RABBIT_TYPE = DataTracker.registerData(RabbitEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final Identifier KILLER_BUNNY = new Identifier("killer_bunny");
 	public static final int field_30368 = 8;
@@ -106,19 +106,24 @@ public class RabbitEntity extends AnimalEntity implements VariantHolder<RabbitEn
 
 	@Override
 	protected float getJumpVelocity() {
-		if (!this.horizontalCollision && (!this.moveControl.isMoving() || !(this.moveControl.getTargetY() > this.getY() + 0.5))) {
-			Path path = this.navigation.getCurrentPath();
-			if (path != null && !path.isFinished()) {
-				Vec3d vec3d = path.getNodePosition(this);
-				if (vec3d.y > this.getY() + 0.5) {
-					return 0.5F;
-				}
-			}
-
-			return this.moveControl.getSpeed() <= 0.6 ? 0.2F : 0.3F;
-		} else {
-			return 0.5F;
+		float f = 0.3F;
+		if (this.horizontalCollision || this.moveControl.isMoving() && this.moveControl.getTargetY() > this.getY() + 0.5) {
+			f = 0.5F;
 		}
+
+		Path path = this.navigation.getCurrentPath();
+		if (path != null && !path.isFinished()) {
+			Vec3d vec3d = path.getNodePosition(this);
+			if (vec3d.y > this.getY() + 0.5) {
+				f = 0.5F;
+			}
+		}
+
+		if (this.moveControl.getSpeed() <= 0.6) {
+			f = 0.2F;
+		}
+
+		return f + this.getJumpBoostVelocityModifier();
 	}
 
 	@Override

@@ -399,7 +399,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	public void disableAutoRead() {
-		this.channel.config().setAutoRead(false);
+		if (this.channel != null) {
+			this.channel.config().setAutoRead(false);
+		}
 	}
 
 	/**

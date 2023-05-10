@@ -79,11 +79,11 @@ public interface Palette<T> {
 		 * 
 		 * @return the created new palette
 		 * 
-		 * @param bits the number of bits each entry uses in the storage
-		 * @param idList the indices of possible palette entries and their full integer IDs;
-		 * useful for palette serialization
 		 * @param listener the resize listener, called when this palette runs out of capacity when
 		 * assigning index to new entries
+		 * @param idList the indices of possible palette entries and their full integer IDs;
+		 * useful for palette serialization
+		 * @param bits the number of bits each entry uses in the storage
 		 */
 		<A> Palette<A> create(int bits, IndexedIterable<A> idList, PaletteResizeListener<A> listener, List<A> list);
 	}

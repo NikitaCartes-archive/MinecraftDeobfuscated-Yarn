@@ -55,8 +55,8 @@ public record PlacedFeature(RegistryEntry<ConfiguredFeature<?, ?>> feature, List
 
 		ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature)this.feature.value();
 		MutableBoolean mutableBoolean = new MutableBoolean();
-		stream.forEach(blockPos -> {
-			if (configuredFeature.generate(context.getWorld(), context.getChunkGenerator(), random, blockPos)) {
+		stream.forEach(placedPos -> {
+			if (configuredFeature.generate(context.getWorld(), context.getChunkGenerator(), random, placedPos)) {
 				mutableBoolean.setTrue();
 			}
 		});

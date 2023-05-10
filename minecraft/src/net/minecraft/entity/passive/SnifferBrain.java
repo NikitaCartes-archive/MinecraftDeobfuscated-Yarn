@@ -62,9 +62,9 @@ public class SnifferBrain {
 		MemoryModuleType.TEMPTATION_COOLDOWN_TICKS,
 		MemoryModuleType.IS_TEMPTED
 	);
-	private static final int field_42677 = 9600;
+	private static final int SNIFF_COOLDOWN_EXPIRY = 9600;
 	private static final float field_42678 = 1.0F;
-	private static final float field_42679 = 2.0F;
+	private static final float FLEE_SPEED = 2.0F;
 	private static final float field_42680 = 1.25F;
 	private static final float field_44476 = 1.25F;
 

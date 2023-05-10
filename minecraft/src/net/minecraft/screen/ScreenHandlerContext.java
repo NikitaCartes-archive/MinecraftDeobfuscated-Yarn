@@ -57,8 +57,8 @@ public interface ScreenHandlerContext {
 	 * @return the getter's return value if this context is active,
 	 *         the default value otherwise
 	 * 
-	 * @param getter a function that gets a non-null value from this context's world and position
 	 * @param defaultValue a fallback default value, used if this context is empty
+	 * @param getter a function that gets a non-null value from this context's world and position
 	 */
 	default <T> T get(BiFunction<World, BlockPos, T> getter, T defaultValue) {
 		return (T)this.get(getter).orElse(defaultValue);

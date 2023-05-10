@@ -14,6 +14,7 @@ public class ScreenTexts {
 	public static final Text CANCEL = Text.translatable("gui.cancel");
 	public static final Text YES = Text.translatable("gui.yes");
 	public static final Text NO = Text.translatable("gui.no");
+	public static final Text OK = Text.translatable("gui.ok");
 	public static final Text PROCEED = Text.translatable("gui.proceed");
 	public static final Text CONTINUE = Text.translatable("gui.continue");
 	public static final Text BACK = Text.translatable("gui.back");

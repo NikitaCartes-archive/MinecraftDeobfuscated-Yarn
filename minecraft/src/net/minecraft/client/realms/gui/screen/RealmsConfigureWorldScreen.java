@@ -34,7 +34,6 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	private static final Identifier EXPIRES_SOON_ICON = new Identifier("realms", "textures/gui/realms/expires_soon_icon.png");
 	private static final Text WORLDS_TITLE = Text.translatable("mco.configure.worlds.title");
 	private static final Text CONFIGURE_REALM_TITLE = Text.translatable("mco.configure.world.title");
-	private static final Text CURRENT_MINIGAME_TEXT = Text.translatable("mco.configure.current.minigame").append(": ");
 	private static final Text EXPIRED_TEXT = Text.translatable("mco.selectServer.expired");
 	private static final Text EXPIRES_SOON_TEXT = Text.translatable("mco.selectServer.expires.soon");
 	private static final Text EXPIRES_IN_A_DAY_TEXT = Text.translatable("mco.selectServer.expires.day");
@@ -238,7 +237,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			this.drawServerStatus(context, l, 7, mouseX, mouseY);
 			if (this.isMinigame()) {
 				context.drawText(
-					this.textRenderer, CURRENT_MINIGAME_TEXT.copy().append(this.server.getMinigameName()), this.left_x + 80 + 20 + 10, row(13), 16777215, false
+					this.textRenderer, Text.translatable("mco.configure.world.minigame", this.server.getMinigameName()), this.left_x + 80 + 20 + 10, row(13), 16777215, false
 				);
 			}
 

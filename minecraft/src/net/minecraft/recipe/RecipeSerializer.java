@@ -66,8 +66,8 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	 * @throws com.google.gson.JsonParseException if the recipe JSON is incorrect
 	 * @return the read recipe
 	 * 
-	 * @param id the recipe's ID
 	 * @param json the recipe JSON
+	 * @param id the recipe's ID
 	 */
 	T read(Identifier id, JsonObject json);
 
@@ -79,8 +79,8 @@ public interface RecipeSerializer<T extends Recipe<?>> {
 	 * 
 	 * @return the read recipe
 	 * 
-	 * @param id the recipe's ID
 	 * @param buf the recipe buf
+	 * @param id the recipe's ID
 	 */
 	T read(Identifier id, PacketByteBuf buf);
 

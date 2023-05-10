@@ -1,6 +1,7 @@
 package net.minecraft.data.server.recipe;
 
 import com.google.common.collect.ImmutableList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -91,98 +92,128 @@ public class VanillaRecipeProvider extends RecipeProvider {
 		offerBoatRecipe(exporter, Items.OAK_BOAT, Blocks.OAK_PLANKS);
 		offerBoatRecipe(exporter, Items.SPRUCE_BOAT, Blocks.SPRUCE_PLANKS);
 		offerBoatRecipe(exporter, Items.MANGROVE_BOAT, Blocks.MANGROVE_PLANKS);
-		offerWoolDyeingRecipe(exporter, Blocks.BLACK_WOOL, Items.BLACK_DYE);
+		List<Item> list = List.of(
+			Items.BLACK_DYE,
+			Items.BLUE_DYE,
+			Items.BROWN_DYE,
+			Items.CYAN_DYE,
+			Items.GRAY_DYE,
+			Items.GREEN_DYE,
+			Items.LIGHT_BLUE_DYE,
+			Items.LIGHT_GRAY_DYE,
+			Items.LIME_DYE,
+			Items.MAGENTA_DYE,
+			Items.ORANGE_DYE,
+			Items.PINK_DYE,
+			Items.PURPLE_DYE,
+			Items.RED_DYE,
+			Items.YELLOW_DYE,
+			Items.WHITE_DYE
+		);
+		List<Item> list2 = List.of(
+			Items.BLACK_WOOL,
+			Items.BLUE_WOOL,
+			Items.BROWN_WOOL,
+			Items.CYAN_WOOL,
+			Items.GRAY_WOOL,
+			Items.GREEN_WOOL,
+			Items.LIGHT_BLUE_WOOL,
+			Items.LIGHT_GRAY_WOOL,
+			Items.LIME_WOOL,
+			Items.MAGENTA_WOOL,
+			Items.ORANGE_WOOL,
+			Items.PINK_WOOL,
+			Items.PURPLE_WOOL,
+			Items.RED_WOOL,
+			Items.YELLOW_WOOL,
+			Items.WHITE_WOOL
+		);
+		List<Item> list3 = List.of(
+			Items.BLACK_BED,
+			Items.BLUE_BED,
+			Items.BROWN_BED,
+			Items.CYAN_BED,
+			Items.GRAY_BED,
+			Items.GREEN_BED,
+			Items.LIGHT_BLUE_BED,
+			Items.LIGHT_GRAY_BED,
+			Items.LIME_BED,
+			Items.MAGENTA_BED,
+			Items.ORANGE_BED,
+			Items.PINK_BED,
+			Items.PURPLE_BED,
+			Items.RED_BED,
+			Items.YELLOW_BED,
+			Items.WHITE_BED
+		);
+		List<Item> list4 = List.of(
+			Items.BLACK_CARPET,
+			Items.BLUE_CARPET,
+			Items.BROWN_CARPET,
+			Items.CYAN_CARPET,
+			Items.GRAY_CARPET,
+			Items.GREEN_CARPET,
+			Items.LIGHT_BLUE_CARPET,
+			Items.LIGHT_GRAY_CARPET,
+			Items.LIME_CARPET,
+			Items.MAGENTA_CARPET,
+			Items.ORANGE_CARPET,
+			Items.PINK_CARPET,
+			Items.PURPLE_CARPET,
+			Items.RED_CARPET,
+			Items.YELLOW_CARPET,
+			Items.WHITE_CARPET
+		);
+		offerDyeableRecipes(exporter, list, list2);
+		offerDyeableRecipes(exporter, list, list3);
+		offerDyeableRecipes(exporter, list, list4);
 		offerCarpetRecipe(exporter, Blocks.BLACK_CARPET, Blocks.BLACK_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.BLACK_CARPET, Items.BLACK_DYE);
 		offerBedRecipe(exporter, Items.BLACK_BED, Blocks.BLACK_WOOL);
-		offerBedDyeingRecipe(exporter, Items.BLACK_BED, Items.BLACK_DYE);
 		offerBannerRecipe(exporter, Items.BLACK_BANNER, Blocks.BLACK_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.BLUE_WOOL, Items.BLUE_DYE);
 		offerCarpetRecipe(exporter, Blocks.BLUE_CARPET, Blocks.BLUE_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.BLUE_CARPET, Items.BLUE_DYE);
 		offerBedRecipe(exporter, Items.BLUE_BED, Blocks.BLUE_WOOL);
-		offerBedDyeingRecipe(exporter, Items.BLUE_BED, Items.BLUE_DYE);
 		offerBannerRecipe(exporter, Items.BLUE_BANNER, Blocks.BLUE_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.BROWN_WOOL, Items.BROWN_DYE);
 		offerCarpetRecipe(exporter, Blocks.BROWN_CARPET, Blocks.BROWN_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.BROWN_CARPET, Items.BROWN_DYE);
 		offerBedRecipe(exporter, Items.BROWN_BED, Blocks.BROWN_WOOL);
-		offerBedDyeingRecipe(exporter, Items.BROWN_BED, Items.BROWN_DYE);
 		offerBannerRecipe(exporter, Items.BROWN_BANNER, Blocks.BROWN_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.CYAN_WOOL, Items.CYAN_DYE);
 		offerCarpetRecipe(exporter, Blocks.CYAN_CARPET, Blocks.CYAN_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.CYAN_CARPET, Items.CYAN_DYE);
 		offerBedRecipe(exporter, Items.CYAN_BED, Blocks.CYAN_WOOL);
-		offerBedDyeingRecipe(exporter, Items.CYAN_BED, Items.CYAN_DYE);
 		offerBannerRecipe(exporter, Items.CYAN_BANNER, Blocks.CYAN_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.GRAY_WOOL, Items.GRAY_DYE);
 		offerCarpetRecipe(exporter, Blocks.GRAY_CARPET, Blocks.GRAY_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.GRAY_CARPET, Items.GRAY_DYE);
 		offerBedRecipe(exporter, Items.GRAY_BED, Blocks.GRAY_WOOL);
-		offerBedDyeingRecipe(exporter, Items.GRAY_BED, Items.GRAY_DYE);
 		offerBannerRecipe(exporter, Items.GRAY_BANNER, Blocks.GRAY_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.GREEN_WOOL, Items.GREEN_DYE);
 		offerCarpetRecipe(exporter, Blocks.GREEN_CARPET, Blocks.GREEN_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.GREEN_CARPET, Items.GREEN_DYE);
 		offerBedRecipe(exporter, Items.GREEN_BED, Blocks.GREEN_WOOL);
-		offerBedDyeingRecipe(exporter, Items.GREEN_BED, Items.GREEN_DYE);
 		offerBannerRecipe(exporter, Items.GREEN_BANNER, Blocks.GREEN_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.LIGHT_BLUE_WOOL, Items.LIGHT_BLUE_DYE);
 		offerCarpetRecipe(exporter, Blocks.LIGHT_BLUE_CARPET, Blocks.LIGHT_BLUE_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.LIGHT_BLUE_CARPET, Items.LIGHT_BLUE_DYE);
 		offerBedRecipe(exporter, Items.LIGHT_BLUE_BED, Blocks.LIGHT_BLUE_WOOL);
-		offerBedDyeingRecipe(exporter, Items.LIGHT_BLUE_BED, Items.LIGHT_BLUE_DYE);
 		offerBannerRecipe(exporter, Items.LIGHT_BLUE_BANNER, Blocks.LIGHT_BLUE_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.LIGHT_GRAY_WOOL, Items.LIGHT_GRAY_DYE);
 		offerCarpetRecipe(exporter, Blocks.LIGHT_GRAY_CARPET, Blocks.LIGHT_GRAY_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.LIGHT_GRAY_CARPET, Items.LIGHT_GRAY_DYE);
 		offerBedRecipe(exporter, Items.LIGHT_GRAY_BED, Blocks.LIGHT_GRAY_WOOL);
-		offerBedDyeingRecipe(exporter, Items.LIGHT_GRAY_BED, Items.LIGHT_GRAY_DYE);
 		offerBannerRecipe(exporter, Items.LIGHT_GRAY_BANNER, Blocks.LIGHT_GRAY_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.LIME_WOOL, Items.LIME_DYE);
 		offerCarpetRecipe(exporter, Blocks.LIME_CARPET, Blocks.LIME_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.LIME_CARPET, Items.LIME_DYE);
 		offerBedRecipe(exporter, Items.LIME_BED, Blocks.LIME_WOOL);
-		offerBedDyeingRecipe(exporter, Items.LIME_BED, Items.LIME_DYE);
 		offerBannerRecipe(exporter, Items.LIME_BANNER, Blocks.LIME_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.MAGENTA_WOOL, Items.MAGENTA_DYE);
 		offerCarpetRecipe(exporter, Blocks.MAGENTA_CARPET, Blocks.MAGENTA_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.MAGENTA_CARPET, Items.MAGENTA_DYE);
 		offerBedRecipe(exporter, Items.MAGENTA_BED, Blocks.MAGENTA_WOOL);
-		offerBedDyeingRecipe(exporter, Items.MAGENTA_BED, Items.MAGENTA_DYE);
 		offerBannerRecipe(exporter, Items.MAGENTA_BANNER, Blocks.MAGENTA_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.ORANGE_WOOL, Items.ORANGE_DYE);
 		offerCarpetRecipe(exporter, Blocks.ORANGE_CARPET, Blocks.ORANGE_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.ORANGE_CARPET, Items.ORANGE_DYE);
 		offerBedRecipe(exporter, Items.ORANGE_BED, Blocks.ORANGE_WOOL);
-		offerBedDyeingRecipe(exporter, Items.ORANGE_BED, Items.ORANGE_DYE);
 		offerBannerRecipe(exporter, Items.ORANGE_BANNER, Blocks.ORANGE_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.PINK_WOOL, Items.PINK_DYE);
 		offerCarpetRecipe(exporter, Blocks.PINK_CARPET, Blocks.PINK_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.PINK_CARPET, Items.PINK_DYE);
 		offerBedRecipe(exporter, Items.PINK_BED, Blocks.PINK_WOOL);
-		offerBedDyeingRecipe(exporter, Items.PINK_BED, Items.PINK_DYE);
 		offerBannerRecipe(exporter, Items.PINK_BANNER, Blocks.PINK_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.PURPLE_WOOL, Items.PURPLE_DYE);
 		offerCarpetRecipe(exporter, Blocks.PURPLE_CARPET, Blocks.PURPLE_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.PURPLE_CARPET, Items.PURPLE_DYE);
 		offerBedRecipe(exporter, Items.PURPLE_BED, Blocks.PURPLE_WOOL);
-		offerBedDyeingRecipe(exporter, Items.PURPLE_BED, Items.PURPLE_DYE);
 		offerBannerRecipe(exporter, Items.PURPLE_BANNER, Blocks.PURPLE_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.RED_WOOL, Items.RED_DYE);
 		offerCarpetRecipe(exporter, Blocks.RED_CARPET, Blocks.RED_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.RED_CARPET, Items.RED_DYE);
 		offerBedRecipe(exporter, Items.RED_BED, Blocks.RED_WOOL);
-		offerBedDyeingRecipe(exporter, Items.RED_BED, Items.RED_DYE);
 		offerBannerRecipe(exporter, Items.RED_BANNER, Blocks.RED_WOOL);
 		offerCarpetRecipe(exporter, Blocks.WHITE_CARPET, Blocks.WHITE_WOOL);
 		offerBedRecipe(exporter, Items.WHITE_BED, Blocks.WHITE_WOOL);
 		offerBannerRecipe(exporter, Items.WHITE_BANNER, Blocks.WHITE_WOOL);
-		offerWoolDyeingRecipe(exporter, Blocks.YELLOW_WOOL, Items.YELLOW_DYE);
 		offerCarpetRecipe(exporter, Blocks.YELLOW_CARPET, Blocks.YELLOW_WOOL);
-		offerCarpetDyeingRecipe(exporter, Blocks.YELLOW_CARPET, Items.YELLOW_DYE);
 		offerBedRecipe(exporter, Items.YELLOW_BED, Blocks.YELLOW_WOOL);
-		offerBedDyeingRecipe(exporter, Items.YELLOW_BED, Items.YELLOW_DYE);
 		offerBannerRecipe(exporter, Items.YELLOW_BANNER, Blocks.YELLOW_WOOL);
 		offerCarpetRecipe(exporter, Blocks.MOSS_CARPET, Blocks.MOSS_BLOCK);
 		offerStainedGlassDyeingRecipe(exporter, Blocks.BLACK_STAINED_GLASS, Items.BLACK_DYE);

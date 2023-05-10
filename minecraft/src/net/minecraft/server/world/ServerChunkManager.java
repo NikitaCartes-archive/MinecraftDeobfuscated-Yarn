@@ -229,7 +229,7 @@ public class ServerChunkManager extends ChunkManager {
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunkFuture(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
 		ChunkPos chunkPos = new ChunkPos(chunkX, chunkZ);
 		long l = chunkPos.toLong();
-		int i = 33 + ChunkStatus.getDistanceFromFull(leastStatus);
+		int i = ChunkLevels.getLevelFromStatus(leastStatus);
 		ChunkHolder chunkHolder = this.getChunkHolder(l);
 		if (create) {
 			this.ticketManager.addTicketWithLevel(ChunkTicketType.UNKNOWN, chunkPos, i, chunkPos);
@@ -255,7 +255,7 @@ public class ServerChunkManager extends ChunkManager {
 	@Override
 	public boolean isChunkLoaded(int x, int z) {
 		ChunkHolder chunkHolder = this.getChunkHolder(new ChunkPos(x, z).toLong());
-		int i = 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FULL);
+		int i = ChunkLevels.getLevelFromStatus(ChunkStatus.FULL);
 		return !this.isMissingForLevel(chunkHolder, i);
 	}
 

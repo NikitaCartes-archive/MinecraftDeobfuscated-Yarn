@@ -14,8 +14,8 @@ public class WordPackedArray {
 	private final int length;
 
 	/**
-	 * @param unitSize the max number of bits a value can use
 	 * @param length the length of values
+	 * @param unitSize the max number of bits a value can use
 	 */
 	public WordPackedArray(int unitSize, int length) {
 		this(unitSize, length, new long[MathHelper.roundUpToMultiple(length * unitSize, 64) / 64]);

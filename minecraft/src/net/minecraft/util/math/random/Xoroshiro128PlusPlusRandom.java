@@ -5,6 +5,7 @@ import com.google.common.base.Charsets;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import com.google.common.primitives.Longs;
+import com.mojang.serialization.Codec;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -15,6 +16,8 @@ import net.minecraft.util.math.MathHelper;
 public class Xoroshiro128PlusPlusRandom implements Random {
 	private static final float FLOAT_MULTIPLIER = 5.9604645E-8F;
 	private static final double DOUBLE_MULTIPLIER = 1.110223E-16F;
+	public static final Codec<Xoroshiro128PlusPlusRandom> CODEC = Xoroshiro128PlusPlusRandomImpl.CODEC
+		.xmap(implementation -> new Xoroshiro128PlusPlusRandom(implementation), random -> random.implementation);
 	private Xoroshiro128PlusPlusRandomImpl implementation;
 	private final GaussianGenerator gaussianGenerator = new GaussianGenerator(this);
 
@@ -24,6 +27,10 @@ public class Xoroshiro128PlusPlusRandom implements Random {
 
 	public Xoroshiro128PlusPlusRandom(long seedLo, long seedHi) {
 		this.implementation = new Xoroshiro128PlusPlusRandomImpl(seedLo, seedHi);
+	}
+
+	private Xoroshiro128PlusPlusRandom(Xoroshiro128PlusPlusRandomImpl implementation) {
+		this.implementation = implementation;
 	}
 
 	@Override

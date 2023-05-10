@@ -128,13 +128,13 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	 * {@code (x, y, z)}, a random vector is added, then multiplied by the
 	 * {@code speed}.
 	 * 
-	 * @param x the X component of the direction vector
-	 * @param y the Y component of the direction vector
 	 * @param z the Z component of the direction vector
-	 * @param speed the speed
 	 * @param divergence the fuzziness added to the direction; player usages have 1.0 and other
 	 * mobs/tools have higher values; some mobs have difficulty-adjusted
 	 * values
+	 * @param speed the speed
+	 * @param x the X component of the direction vector
+	 * @param y the Y component of the direction vector
 	 */
 	public void setVelocity(double x, double y, double z, float speed, float divergence) {
 		Vec3d vec3d = new Vec3d(x, y, z)
@@ -156,15 +156,15 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	/**
 	 * Sets velocity and updates rotation accordingly.
 	 * 
-	 * @param shooter the entity who shot this projectile; used to add the shooter's velocity
-	 * to this projectile
-	 * @param pitch the pitch
-	 * @param yaw the yaw
-	 * @param roll the roll
-	 * @param speed the speed
 	 * @param divergence the fuzziness added to the direction; player usages have 1.0 and other
 	 * mobs/tools have higher values; some mobs have difficulty-adjusted
 	 * values
+	 * @param speed the speed
+	 * @param pitch the pitch
+	 * @param shooter the entity who shot this projectile; used to add the shooter's velocity
+	 * to this projectile
+	 * @param roll the roll
+	 * @param yaw the yaw
 	 */
 	public void setVelocity(Entity shooter, float pitch, float yaw, float roll, float speed, float divergence) {
 		float f = -MathHelper.sin(yaw * (float) (Math.PI / 180.0)) * MathHelper.cos(pitch * (float) (Math.PI / 180.0));

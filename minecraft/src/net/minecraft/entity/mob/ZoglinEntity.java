@@ -50,13 +50,13 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZoglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final int field_30514 = 40;
 	private static final int field_30505 = 1;
-	private static final float field_30506 = 0.6F;
-	private static final int field_30507 = 6;
-	private static final float field_30508 = 0.5F;
-	private static final int field_30509 = 40;
-	private static final int field_30510 = 15;
+	private static final float DEFAULT_KNOCKBACK_RESISTANCE = 0.6F;
+	private static final int DEFAULT_ATTACK_DAMAGE = 6;
+	private static final float BABY_ATTACK_DAMAGE = 0.5F;
+	private static final int ADULT_MELEE_ATTACK_COOLDOWN = 40;
+	private static final int BABY_MELEE_ATTACK_COOLDOWN = 15;
 	private static final int ATTACK_TARGET_DURATION = 200;
-	private static final float field_30512 = 0.3F;
+	private static final float DEFAULT_MOVEMENT_SPEED = 0.3F;
 	private static final float field_30513 = 0.4F;
 	private int movementCooldownTicks;
 	protected static final ImmutableList<? extends SensorType<? extends Sensor<? super ZoglinEntity>>> USED_SENSORS = ImmutableList.of(

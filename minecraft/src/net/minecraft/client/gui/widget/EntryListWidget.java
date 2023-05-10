@@ -566,14 +566,14 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		/**
 		 * Renders an entry in a list.
 		 * 
-		 * @param index the index of the entry
-		 * @param y the Y coordinate of the entry
 		 * @param x the X coordinate of the entry
-		 * @param entryWidth the width of the entry
-		 * @param entryHeight the height of the entry
-		 * @param mouseX the X coordinate of the mouse
-		 * @param mouseY the Y coordinate of the mouse
+		 * @param y the Y coordinate of the entry
+		 * @param index the index of the entry
 		 * @param hovered whether the mouse is hovering over the entry
+		 * @param mouseY the Y coordinate of the mouse
+		 * @param mouseX the X coordinate of the mouse
+		 * @param entryHeight the height of the entry
+		 * @param entryWidth the width of the entry
 		 */
 		public abstract void render(
 			DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta

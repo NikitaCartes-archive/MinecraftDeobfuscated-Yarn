@@ -43,12 +43,12 @@ public class HoglinBrain {
 	private static final int field_30535 = 200;
 	private static final int field_30536 = 8;
 	private static final int field_30537 = 15;
-	private static final int field_30538 = 40;
-	private static final int field_30539 = 15;
+	private static final int ADULT_MELEE_ATTACK_COOLDOWN = 40;
+	private static final int BABY_MELEE_ATTACK_COOLDOWN = 15;
 	private static final int field_30540 = 200;
 	private static final UniformIntProvider WALK_TOWARD_CLOSEST_ADULT_RANGE = UniformIntProvider.create(5, 16);
 	private static final float field_30541 = 1.0F;
-	private static final float field_30542 = 1.3F;
+	private static final float AVOID_TARGET_SPEED = 1.3F;
 	private static final float field_30543 = 0.6F;
 	private static final float field_30544 = 0.4F;
 	private static final float field_30545 = 0.6F;

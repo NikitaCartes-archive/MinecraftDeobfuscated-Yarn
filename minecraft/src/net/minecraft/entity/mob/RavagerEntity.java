@@ -44,9 +44,9 @@ public class RavagerEntity extends RaiderEntity {
 	private static final double field_30480 = 0.3;
 	private static final double field_30481 = 0.35;
 	private static final int field_30482 = 8356754;
-	private static final double field_30483 = 0.5725490196078431;
-	private static final double field_30484 = 0.5137254901960784;
-	private static final double field_30485 = 0.4980392156862745;
+	private static final double STUNNED_PARTICLE_Z_VELOCITY = 0.5725490196078431;
+	private static final double STUNNED_PARTICLE_Y_VELOCITY = 0.5137254901960784;
+	private static final double STUNNED_PARTICLE_X_VELOCITY = 0.4980392156862745;
 	private static final int field_30486 = 10;
 	public static final int field_30479 = 40;
 	private int attackTick;

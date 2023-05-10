@@ -15,9 +15,9 @@ public class NoPenaltyTargeting {
 	 * 
 	 * @return the chosen end position or null if no valid positions could be found
 	 * 
+	 * @param verticalRange the vertical pathing range (how far the point can be from the entity's starting position on the Y range)
 	 * @param entity the entity doing the pathing
 	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
-	 * @param verticalRange the vertical pathing range (how far the point can be from the entity's starting position on the Y range)
 	 */
 	@Nullable
 	public static Vec3d find(PathAwareEntity entity, int horizontalRange, int verticalRange) {
@@ -33,11 +33,11 @@ public class NoPenaltyTargeting {
 	 * 
 	 * @return the chosen end position or null if no valid positions could be found
 	 * 
-	 * @param entity the entity doing the pathing
-	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
 	 * @param verticalRange the vertical pathing range (how far the point can be from the entity's starting position on the Y range)
-	 * @param end the position to path towards
+	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
+	 * @param entity the entity doing the pathing
 	 * @param angleRange the minimum angle of approach
+	 * @param end the position to path towards
 	 */
 	@Nullable
 	public static Vec3d findTo(PathAwareEntity entity, int horizontalRange, int verticalRange, Vec3d end, double angleRange) {
@@ -54,10 +54,10 @@ public class NoPenaltyTargeting {
 	 * 
 	 * @return the chosen end position or null if no valid positions could be found
 	 * 
-	 * @param entity the entity doing the pathing
-	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
-	 * @param verticalRange the vertical pathing range (how far the point can be from the entity's starting position on the Y range)
 	 * @param start the position to path away from
+	 * @param verticalRange the vertical pathing range (how far the point can be from the entity's starting position on the Y range)
+	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
+	 * @param entity the entity doing the pathing
 	 */
 	@Nullable
 	public static Vec3d findFrom(PathAwareEntity entity, int horizontalRange, int verticalRange, Vec3d start) {

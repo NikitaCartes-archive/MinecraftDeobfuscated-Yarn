@@ -126,12 +126,12 @@ public class SimpleResourceReload<S> implements ResourceReload {
 	 * @apiNote In vanilla, this is respectively called by {@link ReloadableResourceManagerImpl}
 	 * on the client and {@link net.minecraft.server.DataPackContents} on the server.
 	 * 
-	 * @param manager the resource manager, providing resources to the reloaders
 	 * @param reloaders the reloaders performing the reload
-	 * @param prepareExecutor the executor for the prepare stage, often asynchronous
+	 * @param manager the resource manager, providing resources to the reloaders
 	 * @param applyExecutor the executor for the apply stage, synchronous with the game engine
-	 * @param initialStage the initial stage, must be completed before the reloaders can prepare resources
+	 * @param prepareExecutor the executor for the prepare stage, often asynchronous
 	 * @param profiled whether to profile this reload and log the statistics
+	 * @param initialStage the initial stage, must be completed before the reloaders can prepare resources
 	 */
 	public static ResourceReload start(
 		ResourceManager manager,

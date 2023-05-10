@@ -70,9 +70,9 @@ public class Sprite {
 		return this.minU + f * (float)frame / 16.0F;
 	}
 
-	public float method_35804(float f) {
-		float g = this.maxU - this.minU;
-		return (f - this.minU) / g * 16.0F;
+	public float getFrameFromU(float u) {
+		float f = this.maxU - this.minU;
+		return (u - this.minU) / f * 16.0F;
 	}
 
 	public float getMinV() {
@@ -88,9 +88,9 @@ public class Sprite {
 		return this.minV + f * (float)frame / 16.0F;
 	}
 
-	public float method_35805(float f) {
-		float g = this.maxV - this.minV;
-		return (f - this.minV) / g * 16.0F;
+	public float getFrameFromV(float v) {
+		float f = this.maxV - this.minV;
+		return (v - this.minV) / f * 16.0F;
 	}
 
 	public Identifier getAtlasId() {

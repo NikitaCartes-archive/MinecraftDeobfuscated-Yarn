@@ -31,8 +31,8 @@ import net.minecraft.entity.ai.brain.task.WanderAroundTask;
 import net.minecraft.util.math.GlobalPos;
 
 public class PiglinBruteBrain {
-	private static final int field_30589 = 600;
-	private static final int field_30590 = 20;
+	private static final int ANGRY_AT_EXPIRY = 600;
+	private static final int MELEE_ATTACK_COOLDOWN = 20;
 	private static final double field_30591 = 0.0125;
 	private static final int field_30592 = 8;
 	private static final int field_30593 = 8;

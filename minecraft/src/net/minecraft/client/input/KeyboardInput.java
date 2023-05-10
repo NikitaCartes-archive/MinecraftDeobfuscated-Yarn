@@ -21,7 +21,7 @@ public class KeyboardInput extends Input {
 	}
 
 	@Override
-	public void tick(boolean slowDown, float f) {
+	public void tick(boolean slowDown, float slowDownFactor) {
 		this.pressingForward = this.settings.forwardKey.isPressed();
 		this.pressingBack = this.settings.backKey.isPressed();
 		this.pressingLeft = this.settings.leftKey.isPressed();
@@ -31,8 +31,8 @@ public class KeyboardInput extends Input {
 		this.jumping = this.settings.jumpKey.isPressed();
 		this.sneaking = this.settings.sneakKey.isPressed();
 		if (slowDown) {
-			this.movementSideways *= f;
-			this.movementForward *= f;
+			this.movementSideways *= slowDownFactor;
+			this.movementForward *= slowDownFactor;
 		}
 	}
 }

@@ -26,6 +26,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	private final boolean flatWorld;
 	private final byte flag;
 	private final Optional<GlobalPos> lastDeathPos;
+	private final int portalCooldown;
 
 	public PlayerRespawnS2CPacket(
 		RegistryKey<DimensionType> dimensionType,
@@ -36,7 +37,8 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		boolean debugWorld,
 		boolean flatWorld,
 		byte flag,
-		Optional<GlobalPos> lastDeathPos
+		Optional<GlobalPos> lastDeathPos,
+		int portalCooldown
 	) {
 		this.dimensionType = dimensionType;
 		this.dimension = dimension;
@@ -47,6 +49,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.flatWorld = flatWorld;
 		this.flag = flag;
 		this.lastDeathPos = lastDeathPos;
+		this.portalCooldown = portalCooldown;
 	}
 
 	public PlayerRespawnS2CPacket(PacketByteBuf buf) {
@@ -59,6 +62,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.flatWorld = buf.readBoolean();
 		this.flag = buf.readByte();
 		this.lastDeathPos = buf.readOptional(PacketByteBuf::readGlobalPos);
+		this.portalCooldown = buf.readVarInt();
 	}
 
 	@Override
@@ -72,6 +76,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		buf.writeBoolean(this.flatWorld);
 		buf.writeByte(this.flag);
 		buf.writeOptional(this.lastDeathPos, PacketByteBuf::writeGlobalPos);
+		buf.writeVarInt(this.portalCooldown);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -113,5 +118,9 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 
 	public Optional<GlobalPos> getLastDeathPos() {
 		return this.lastDeathPos;
+	}
+
+	public int getPortalCooldown() {
+		return this.portalCooldown;
 	}
 }

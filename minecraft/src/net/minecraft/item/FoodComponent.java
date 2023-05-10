@@ -134,8 +134,8 @@ public class FoodComponent {
 		 * Specifies a status effect to apply to an entity when a food item is consumed.
 		 * This method may be called multiple times to apply several status effects when food is consumed.
 		 * 
-		 * @param effect the effect instance to apply
 		 * @param chance the chance the status effect is applied, on a scale of {@code 0.0F} to {@code 1.0F}
+		 * @param effect the effect instance to apply
 		 */
 		public FoodComponent.Builder statusEffect(StatusEffectInstance effect, float chance) {
 			this.statusEffects.add(Pair.of(effect, chance));

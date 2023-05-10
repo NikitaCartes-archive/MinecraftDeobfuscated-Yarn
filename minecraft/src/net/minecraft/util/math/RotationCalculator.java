@@ -20,9 +20,9 @@ public class RotationCalculator {
 		}
 	}
 
-	public boolean method_48123(int i, int j) {
-		int k = this.getMax() >> 1;
-		return (i & k) == (j & k);
+	public boolean areRotationsParallel(int alpha, int beta) {
+		int i = this.getMax() >> 1;
+		return (alpha & i) == (beta & i);
 	}
 
 	public int toRotation(Direction direction) {

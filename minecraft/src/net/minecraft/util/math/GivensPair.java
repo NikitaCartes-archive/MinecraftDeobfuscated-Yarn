@@ -23,15 +23,15 @@ public record GivensPair(float sinHalf, float cosHalf) {
 		return new GivensPair(-this.sinHalf, this.cosHalf);
 	}
 
-	public Quaternionf method_49729(Quaternionf quaternionf) {
+	public Quaternionf setXRotation(Quaternionf quaternionf) {
 		return quaternionf.set(this.sinHalf, 0.0F, 0.0F, this.cosHalf);
 	}
 
-	public Quaternionf method_49732(Quaternionf quaternionf) {
+	public Quaternionf setYRotation(Quaternionf quaternionf) {
 		return quaternionf.set(0.0F, this.sinHalf, 0.0F, this.cosHalf);
 	}
 
-	public Quaternionf method_49735(Quaternionf quaternionf) {
+	public Quaternionf setZRotation(Quaternionf quaternionf) {
 		return quaternionf.set(0.0F, 0.0F, this.sinHalf, this.cosHalf);
 	}
 
@@ -43,7 +43,7 @@ public record GivensPair(float sinHalf, float cosHalf) {
 		return 2.0F * this.sinHalf * this.cosHalf;
 	}
 
-	public Matrix3f method_49728(Matrix3f matrix3f) {
+	public Matrix3f setRotationX(Matrix3f matrix3f) {
 		matrix3f.m01 = 0.0F;
 		matrix3f.m02 = 0.0F;
 		matrix3f.m10 = 0.0F;
@@ -58,7 +58,7 @@ public record GivensPair(float sinHalf, float cosHalf) {
 		return matrix3f;
 	}
 
-	public Matrix3f method_49731(Matrix3f matrix3f) {
+	public Matrix3f setRotationY(Matrix3f matrix3f) {
 		matrix3f.m01 = 0.0F;
 		matrix3f.m10 = 0.0F;
 		matrix3f.m12 = 0.0F;
@@ -73,7 +73,7 @@ public record GivensPair(float sinHalf, float cosHalf) {
 		return matrix3f;
 	}
 
-	public Matrix3f method_49734(Matrix3f matrix3f) {
+	public Matrix3f setRotationZ(Matrix3f matrix3f) {
 		matrix3f.m02 = 0.0F;
 		matrix3f.m12 = 0.0F;
 		matrix3f.m20 = 0.0F;

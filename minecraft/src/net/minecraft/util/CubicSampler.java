@@ -4,8 +4,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class CubicSampler {
-	private static final int field_33222 = 2;
-	private static final int field_33223 = 6;
+	private static final int FIRST_SEGMENT_OFFSET = 2;
+	private static final int NUM_SEGMENTS = 6;
 	private static final double[] DENSITY_CURVE = new double[]{0.0, 1.0, 4.0, 6.0, 4.0, 1.0, 0.0};
 
 	private CubicSampler() {

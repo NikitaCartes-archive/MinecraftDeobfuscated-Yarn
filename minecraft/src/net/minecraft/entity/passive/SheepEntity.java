@@ -34,6 +34,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CraftingInventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -345,11 +346,11 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	private DyeColor getChildColor(AnimalEntity firstParent, AnimalEntity secondParent) {
 		DyeColor dyeColor = ((SheepEntity)firstParent).getColor();
 		DyeColor dyeColor2 = ((SheepEntity)secondParent).getColor();
-		CraftingInventory craftingInventory = createDyeMixingCraftingInventory(dyeColor, dyeColor2);
+		RecipeInputInventory recipeInputInventory = createDyeMixingCraftingInventory(dyeColor, dyeColor2);
 		return (DyeColor)this.getWorld()
 			.getRecipeManager()
-			.getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.getWorld())
-			.map(recipe -> recipe.craft(craftingInventory, this.getWorld().getRegistryManager()))
+			.getFirstMatch(RecipeType.CRAFTING, recipeInputInventory, this.getWorld())
+			.map(recipe -> recipe.craft(recipeInputInventory, this.getWorld().getRegistryManager()))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)
@@ -357,8 +358,8 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 			.orElseGet(() -> this.getWorld().random.nextBoolean() ? dyeColor : dyeColor2);
 	}
 
-	private static CraftingInventory createDyeMixingCraftingInventory(DyeColor firstColor, DyeColor secondColor) {
-		CraftingInventory craftingInventory = new CraftingInventory(new ScreenHandler(null, -1) {
+	private static RecipeInputInventory createDyeMixingCraftingInventory(DyeColor firstColor, DyeColor secondColor) {
+		RecipeInputInventory recipeInputInventory = new CraftingInventory(new ScreenHandler(null, -1) {
 			@Override
 			public ItemStack quickMove(PlayerEntity player, int slot) {
 				return ItemStack.EMPTY;
@@ -369,9 +370,9 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 				return false;
 			}
 		}, 2, 1);
-		craftingInventory.setStack(0, new ItemStack(DyeItem.byColor(firstColor)));
-		craftingInventory.setStack(1, new ItemStack(DyeItem.byColor(secondColor)));
-		return craftingInventory;
+		recipeInputInventory.setStack(0, new ItemStack(DyeItem.byColor(firstColor)));
+		recipeInputInventory.setStack(1, new ItemStack(DyeItem.byColor(secondColor)));
+		return recipeInputInventory;
 	}
 
 	@Override

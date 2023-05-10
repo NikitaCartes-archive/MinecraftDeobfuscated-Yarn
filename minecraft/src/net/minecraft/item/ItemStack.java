@@ -13,6 +13,7 @@ import java.text.DecimalFormatSymbols;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
@@ -592,9 +593,9 @@ public final class ItemStack {
 	 * by a player. The callback should call {@link LivingEntity#sendEquipmentBreakStatus}
 	 * or {@link LivingEntity#sendToolBreakStatus}.
 	 * 
-	 * @param entity the entity that holds the stack to be damaged
 	 * @param breakCallback the callback that takes the entity holding the stack and is executed
 	 * when the item breaks
+	 * @param entity the entity that holds the stack to be damaged
 	 */
 	public <T extends LivingEntity> void damage(int amount, T entity, Consumer<T> breakCallback) {
 		if (!entity.getWorld().isClient && (!(entity instanceof PlayerEntity) || !((PlayerEntity)entity).getAbilities().creativeMode)) {
@@ -699,59 +700,21 @@ public final class ItemStack {
 	}
 
 	/**
-	 * {@return whether the given item stacks have equivalent NBT data}
-	 */
-	public static boolean areNbtEqual(ItemStack left, ItemStack right) {
-		if (left.isEmpty() && right.isEmpty()) {
-			return true;
-		} else if (left.isEmpty() || right.isEmpty()) {
-			return false;
-		} else if (left.nbt == null && right.nbt != null) {
-			return false;
-		} else {
-			return left.nbt == null || left.nbt.equals(right.nbt);
-		}
-	}
-
-	/**
 	 * {@return whether the given item stacks are equal, including the item count and NBT}
 	 * 
 	 * @see #areItemsEqual
 	 * @see #canCombine
 	 */
 	public static boolean areEqual(ItemStack left, ItemStack right) {
-		if (left.isEmpty() && right.isEmpty()) {
+		if (left == right) {
 			return true;
 		} else {
-			return !left.isEmpty() && !right.isEmpty() ? left.isEqual(right) : false;
-		}
-	}
-
-	/**
-	 * {@return whether this stack and {@code stack} are equal, including the item count and NBT}
-	 */
-	private boolean isEqual(ItemStack stack) {
-		if (this.getCount() != stack.getCount()) {
-			return false;
-		} else if (!this.isOf(stack.getItem())) {
-			return false;
-		} else if (this.nbt == null && stack.nbt != null) {
-			return false;
-		} else {
-			return this.nbt == null || this.nbt.equals(stack.nbt);
+			return left.getCount() != right.getCount() ? false : canCombine(left, right);
 		}
 	}
 
 	public static boolean areItemsEqual(ItemStack left, ItemStack right) {
-		if (left == right) {
-			return true;
-		} else {
-			return !left.isEmpty() && !right.isEmpty() ? left.isItemEqual(right) : false;
-		}
-	}
-
-	public boolean isItemEqual(ItemStack stack) {
-		return !stack.isEmpty() && this.isOf(stack.getItem());
+		return left.isOf(right.getItem());
 	}
 
 	/**
@@ -765,7 +728,11 @@ public final class ItemStack {
 	 * @see #areItemsEqual
 	 */
 	public static boolean canCombine(ItemStack stack, ItemStack otherStack) {
-		return stack.isOf(otherStack.getItem()) && areNbtEqual(stack, otherStack);
+		if (!stack.isOf(otherStack.getItem())) {
+			return false;
+		} else {
+			return stack.isEmpty() && otherStack.isEmpty() ? true : Objects.equals(stack.nbt, otherStack.nbt);
+		}
 	}
 
 	public String getTranslationKey() {

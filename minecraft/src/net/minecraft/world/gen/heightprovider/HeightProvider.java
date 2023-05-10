@@ -8,10 +8,10 @@ import net.minecraft.world.gen.HeightContext;
 import net.minecraft.world.gen.YOffset;
 
 public abstract class HeightProvider {
-	private static final Codec<Either<YOffset, HeightProvider>> field_31539 = Codec.either(
+	private static final Codec<Either<YOffset, HeightProvider>> OFFSET_OR_HEIGHT_CODEC = Codec.either(
 		YOffset.OFFSET_CODEC, Registries.HEIGHT_PROVIDER_TYPE.getCodec().dispatch(HeightProvider::getType, HeightProviderType::codec)
 	);
-	public static final Codec<HeightProvider> CODEC = field_31539.xmap(
+	public static final Codec<HeightProvider> CODEC = OFFSET_OR_HEIGHT_CODEC.xmap(
 		either -> either.map(ConstantHeightProvider::create, provider -> provider),
 		provider -> provider.getType() == HeightProviderType.CONSTANT ? Either.left(((ConstantHeightProvider)provider).getOffset()) : Either.right(provider)
 	);

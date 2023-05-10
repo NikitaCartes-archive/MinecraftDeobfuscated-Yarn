@@ -34,10 +34,10 @@ public class FuzzyTargeting {
 	 * 
 	 * @return the chosen position or null if none could be found
 	 * 
-	 * @param entity the entity doing the pathing
-	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
-	 * @param verticalRange the vertical pathing range (how far the point can be from the entity's starting position on the Y range)
 	 * @param scorer function to compute the path-finding favorability of a candidate position
+	 * @param verticalRange the vertical pathing range (how far the point can be from the entity's starting position on the Y range)
+	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
+	 * @param entity the entity doing the pathing
 	 */
 	@Nullable
 	public static Vec3d find(PathAwareEntity entity, int horizontalRange, int verticalRange, ToDoubleFunction<BlockPos> scorer) {
@@ -54,9 +54,9 @@ public class FuzzyTargeting {
 	 * 
 	 * @return the chosen position or null if none could be found
 	 * 
-	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
-	 * @param verticalRange the vertical pathing range (how far the point can be from the entity's starting position on the Y range)
 	 * @param end the position to path towards
+	 * @param verticalRange the vertical pathing range (how far the point can be from the entity's starting position on the Y range)
+	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
 	 */
 	@Nullable
 	public static Vec3d findTo(PathAwareEntity entity, int horizontalRange, int verticalRange, Vec3d end) {
@@ -71,8 +71,8 @@ public class FuzzyTargeting {
 	 * @return the chosen position or null if none could be found
 	 * 
 	 * @param entity the entity doing the pathing
-	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
 	 * @param verticalRange the vertical pathing range (how far the point can be from the entity's starting position on the Y range)
+	 * @param horizontalRange the horizontal pathing range (how far the point can be from the entity's starting position on the X or Z range)
 	 * @param start the position to path away from
 	 */
 	@Nullable
@@ -100,8 +100,8 @@ public class FuzzyTargeting {
 	 * 
 	 * @return the input position, or null if validation failed
 	 * 
-	 * @param entity the entity doing the pathing
 	 * @param pos the candidate position
+	 * @param entity the entity doing the pathing
 	 */
 	@Nullable
 	public static BlockPos validate(PathAwareEntity entity, BlockPos pos) {

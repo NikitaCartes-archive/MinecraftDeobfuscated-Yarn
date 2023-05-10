@@ -338,8 +338,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * 
 	 * @return whether the action was successful
 	 * 
-	 * @param stack the stack the cursor holds
 	 * @param slot the clicked slot
+	 * @param stack the stack the cursor holds
 	 */
 	public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
 		return false;
@@ -358,9 +358,9 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * 
 	 * @return whether the action was successful
 	 * 
+	 * @param slot the clicked slot
 	 * @param stack the slot's stack
 	 * @param otherStack the stack the cursor holds
-	 * @param slot the clicked slot
 	 */
 	public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, StackReference cursorStackReference) {
 		return false;
@@ -482,8 +482,8 @@ public class Item implements ToggleableFeature, ItemConvertible {
 	 * when overriding this method. The logical side can be checked using {@link
 	 * World#isClient}.
 	 * 
-	 * @param entity the entity holding the item; usually a player
 	 * @param selected whether the item is in the selected hotbar slot
+	 * @param entity the entity holding the item; usually a player
 	 */
 	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
 	}

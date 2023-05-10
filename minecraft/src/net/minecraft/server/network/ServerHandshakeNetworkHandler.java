@@ -11,7 +11,7 @@ import net.minecraft.server.ServerMetadata;
 import net.minecraft.text.Text;
 
 public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListener {
-	private static final Text IGNORING_STATUS_REQUEST_MESSAGE = Text.literal("Ignoring status request");
+	private static final Text IGNORING_STATUS_REQUEST_MESSAGE = Text.translatable("disconnect.ignoring_status_request");
 	private final MinecraftServer server;
 	private final ClientConnection connection;
 

@@ -24,7 +24,7 @@ public class TreePlacedFeatures {
 	public static final RegistryKey<PlacedFeature> ACACIA_CHECKED = PlacedFeatures.of("acacia_checked");
 	public static final RegistryKey<PlacedFeature> SPRUCE_CHECKED = PlacedFeatures.of("spruce_checked");
 	public static final RegistryKey<PlacedFeature> MANGROVE_CHECKED = PlacedFeatures.of("mangrove_checked");
-	public static final RegistryKey<PlacedFeature> field_42963 = PlacedFeatures.of("cherry_checked");
+	public static final RegistryKey<PlacedFeature> CHERRY_CHECKED = PlacedFeatures.of("cherry_checked");
 	public static final RegistryKey<PlacedFeature> PINE_ON_SNOW = PlacedFeatures.of("pine_on_snow");
 	public static final RegistryKey<PlacedFeature> SPRUCE_ON_SNOW = PlacedFeatures.of("spruce_on_snow");
 	public static final RegistryKey<PlacedFeature> PINE_CHECKED = PlacedFeatures.of("pine_checked");
@@ -44,7 +44,7 @@ public class TreePlacedFeatures {
 	public static final RegistryKey<PlacedFeature> FANCY_OAK_BEES_0002 = PlacedFeatures.of("fancy_oak_bees_0002");
 	public static final RegistryKey<PlacedFeature> FANCY_OAK_BEES_002 = PlacedFeatures.of("fancy_oak_bees_002");
 	public static final RegistryKey<PlacedFeature> FANCY_OAK_BEES = PlacedFeatures.of("fancy_oak_bees");
-	public static final RegistryKey<PlacedFeature> field_42962 = PlacedFeatures.of("cherry_bees_005");
+	public static final RegistryKey<PlacedFeature> CHERRY_BEES_005 = PlacedFeatures.of("cherry_bees_005");
 
 	public static void bootstrap(Registerable<PlacedFeature> featureRegisterable) {
 		RegistryEntryLookup<ConfiguredFeature<?, ?>> registryEntryLookup = featureRegisterable.getRegistryLookup(RegistryKeys.CONFIGURED_FEATURE);
@@ -83,7 +83,7 @@ public class TreePlacedFeatures {
 		PlacedFeatures.register(featureRegisterable, ACACIA_CHECKED, registryEntry6, PlacedFeatures.wouldSurvive(Blocks.ACACIA_SAPLING));
 		PlacedFeatures.register(featureRegisterable, SPRUCE_CHECKED, registryEntry7, PlacedFeatures.wouldSurvive(Blocks.SPRUCE_SAPLING));
 		PlacedFeatures.register(featureRegisterable, MANGROVE_CHECKED, registryEntry8, PlacedFeatures.wouldSurvive(Blocks.MANGROVE_PROPAGULE));
-		PlacedFeatures.register(featureRegisterable, field_42963, registryEntry9, PlacedFeatures.wouldSurvive(Blocks.CHERRY_SAPLING));
+		PlacedFeatures.register(featureRegisterable, CHERRY_CHECKED, registryEntry9, PlacedFeatures.wouldSurvive(Blocks.CHERRY_SAPLING));
 		BlockPredicate blockPredicate = BlockPredicate.matchingBlocks(Direction.DOWN.getVector(), Blocks.SNOW_BLOCK, Blocks.POWDER_SNOW);
 		List<PlacementModifier> list = List.of(
 			EnvironmentScanPlacementModifier.of(Direction.UP, BlockPredicate.not(BlockPredicate.matchingBlocks(Blocks.POWDER_SNOW)), 8),
@@ -108,6 +108,6 @@ public class TreePlacedFeatures {
 		PlacedFeatures.register(featureRegisterable, FANCY_OAK_BEES_0002, registryEntry24, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
 		PlacedFeatures.register(featureRegisterable, FANCY_OAK_BEES_002, registryEntry25, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
 		PlacedFeatures.register(featureRegisterable, FANCY_OAK_BEES, registryEntry26, PlacedFeatures.wouldSurvive(Blocks.OAK_SAPLING));
-		PlacedFeatures.register(featureRegisterable, field_42962, registryEntry27, PlacedFeatures.wouldSurvive(Blocks.CHERRY_SAPLING));
+		PlacedFeatures.register(featureRegisterable, CHERRY_BEES_005, registryEntry27, PlacedFeatures.wouldSurvive(Blocks.CHERRY_SAPLING));
 	}
 }

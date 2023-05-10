@@ -20,8 +20,8 @@ public interface PaletteStorage {
 	/**
 	 * Sets {@code value} to {@code index} in this storage.
 	 * 
-	 * @param index the index
 	 * @param value the value to set
+	 * @param index the index
 	 */
 	void set(int index, int value);
 

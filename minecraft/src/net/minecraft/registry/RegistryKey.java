@@ -41,8 +41,8 @@ public class RegistryKey<T> {
 	 * 
 	 * @param <T> the type of the value
 	 * 
-	 * @param registry the registry key of the registry in the root registry
 	 * @param value the identifier of the value
+	 * @param registry the registry key of the registry in the root registry
 	 */
 	public static <T> RegistryKey<T> of(RegistryKey<? extends Registry<T>> registry, Identifier value) {
 		return of(registry.value, value);

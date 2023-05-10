@@ -918,8 +918,8 @@ public class PacketByteBuf extends ByteBuf {
 	 * @throws io.netty.handler.codec.DecoderException if the read array has a
 	 * length over {@code maxSize}
 	 * 
-	 * @param toArray the array to reuse
 	 * @param maxSize the max length of the read array
+	 * @param toArray the array to reuse
 	 */
 	public long[] readLongArray(@Nullable long[] toArray, int maxSize) {
 		int i = this.readVarInt();

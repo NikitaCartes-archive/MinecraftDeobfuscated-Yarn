@@ -55,7 +55,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Inven
 	private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(PillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final int field_30478 = 5;
 	private static final int field_30476 = 300;
-	private static final float field_30477 = 1.6F;
+	private static final float CROSSBOW_SHOT_SPEED = 1.6F;
 	private final SimpleInventory inventory = new SimpleInventory(5);
 
 	public PillagerEntity(EntityType<? extends PillagerEntity> entityType, World world) {

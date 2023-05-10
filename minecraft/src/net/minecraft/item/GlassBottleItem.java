@@ -45,12 +45,12 @@ public class GlassBottleItem extends Item {
 
 			return TypedActionResult.success(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)), world.isClient());
 		} else {
-			HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
-			if (hitResult.getType() == HitResult.Type.MISS) {
+			BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
+			if (blockHitResult.getType() == HitResult.Type.MISS) {
 				return TypedActionResult.pass(itemStack);
 			} else {
-				if (hitResult.getType() == HitResult.Type.BLOCK) {
-					BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
+				if (blockHitResult.getType() == HitResult.Type.BLOCK) {
+					BlockPos blockPos = blockHitResult.getBlockPos();
 					if (!world.canPlayerModifyAt(user, blockPos)) {
 						return TypedActionResult.pass(itemStack);
 					}

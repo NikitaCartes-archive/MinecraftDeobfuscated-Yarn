@@ -12,6 +12,8 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class RealmsLongConfirmationScreen extends RealmsScreen {
+	static final Text WARNING_TEXT = Text.translatable("mco.warning");
+	static final Text INFO_TEXT = Text.translatable("mco.info");
 	private final RealmsLongConfirmationScreen.Type type;
 	private final Text line2;
 	private final Text line3;
@@ -33,9 +35,7 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 			this.addDrawableChild(ButtonWidget.builder(ScreenTexts.YES, button -> this.callback.accept(true)).dimensions(this.width / 2 - 105, row(8), 100, 20).build());
 			this.addDrawableChild(ButtonWidget.builder(ScreenTexts.NO, button -> this.callback.accept(false)).dimensions(this.width / 2 + 5, row(8), 100, 20).build());
 		} else {
-			this.addDrawableChild(
-				ButtonWidget.builder(Text.translatable("mco.gui.ok"), button -> this.callback.accept(true)).dimensions(this.width / 2 - 50, row(8), 100, 20).build()
-			);
+			this.addDrawableChild(ButtonWidget.builder(ScreenTexts.OK, button -> this.callback.accept(true)).dimensions(this.width / 2 - 50, row(8), 100, 20).build());
 		}
 	}
 
@@ -65,14 +65,14 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		WARNING("Warning!", 16711680),
-		INFO("Info!", 8226750);
+		WARNING(RealmsLongConfirmationScreen.WARNING_TEXT, 16711680),
+		INFO(RealmsLongConfirmationScreen.INFO_TEXT, 8226750);
 
 		public final int colorCode;
 		public final Text text;
 
-		private Type(String text, int colorCode) {
-			this.text = Text.literal(text);
+		private Type(Text text, int colorCode) {
+			this.text = text;
 			this.colorCode = colorCode;
 		}
 	}

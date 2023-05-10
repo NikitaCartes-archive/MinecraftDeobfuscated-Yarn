@@ -7,7 +7,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.ChunkLevelType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -71,8 +71,8 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public ChunkHolder.LevelType getLevelType() {
-		return ChunkHolder.LevelType.BORDER;
+	public ChunkLevelType getLevelType() {
+		return ChunkLevelType.FULL;
 	}
 
 	@Override

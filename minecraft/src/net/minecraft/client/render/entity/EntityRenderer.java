@@ -50,7 +50,7 @@ public abstract class EntityRenderer<T extends Entity> {
 			return true;
 		} else {
 			Box box = entity.getVisibilityBoundingBox().expand(0.5);
-			if (box.isValid() || box.getAverageSideLength() == 0.0) {
+			if (box.isNaN() || box.getAverageSideLength() == 0.0) {
 				box = new Box(entity.getX() - 2.0, entity.getY() - 2.0, entity.getZ() - 2.0, entity.getX() + 2.0, entity.getY() + 2.0, entity.getZ() + 2.0);
 			}
 

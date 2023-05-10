@@ -46,8 +46,8 @@ public interface StringVisitable {
 	 * @return {@code Optional.empty()} if the visit finished, or a terminating
 	 * result from the {@code visitor}
 	 * 
-	 * @param styledVisitor the visitor
 	 * @param style the contextual style
+	 * @param styledVisitor the visitor
 	 */
 	<T> Optional<T> visit(StringVisitable.StyledVisitor<T> styledVisitor, Style style);
 
@@ -73,8 +73,8 @@ public interface StringVisitable {
 	/**
 	 * Creates a visitable from a plain string and a root style.
 	 * 
-	 * @param string the plain string
 	 * @param style the root style
+	 * @param string the plain string
 	 */
 	static StringVisitable styled(String string, Style style) {
 		return new StringVisitable() {

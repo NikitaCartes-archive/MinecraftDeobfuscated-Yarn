@@ -117,8 +117,8 @@ public class CommandFunctionManager {
 	 * @see #execute(CommandFunction, ServerCommandSource)
 	 * 
 	 * @param function the function
-	 * @param source the command source to execute with
 	 * @param tracer a tracer for a non-recursive function execution
+	 * @param source the command source to execute with
 	 */
 	public int execute(CommandFunction function, ServerCommandSource source, @Nullable CommandFunctionManager.Tracer tracer) {
 		if (this.execution != null) {
@@ -246,8 +246,8 @@ public class CommandFunctionManager {
 		 * command at the head of the deque with another entry with a function element
 		 * containing the actual command elements referenced in that function.
 		 * 
-		 * @param function the function
 		 * @param source the command source
+		 * @param function the function
 		 */
 		void recursiveRun(CommandFunction function, ServerCommandSource source) {
 			int i = CommandFunctionManager.this.getMaxCommandChainLength();
@@ -270,8 +270,8 @@ public class CommandFunctionManager {
 		 * 
 		 * @return a value for the command result
 		 * 
-		 * @param function the function
 		 * @param source the command source
+		 * @param function the function
 		 */
 		int run(CommandFunction function, ServerCommandSource source) {
 			int i = CommandFunctionManager.this.getMaxCommandChainLength();

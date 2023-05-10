@@ -21,8 +21,8 @@ public interface Spawner {
 	 * 
 	 * @return the number of entities spawned
 	 * 
-	 * @param spawnMonsters whether monsters should be spawned
 	 * @param spawnAnimals whether animals should be spawned
+	 * @param spawnMonsters whether monsters should be spawned
 	 */
 	int spawn(ServerWorld world, boolean spawnMonsters, boolean spawnAnimals);
 }

@@ -190,8 +190,8 @@ public class BeaconBlockEntityRenderer implements BlockEntityRenderer<BeaconBloc
 	}
 
 	/**
-	 * @param u the left-most coordinate of the texture region
 	 * @param v the top-most coordinate of the texture region
+	 * @param u the left-most coordinate of the texture region
 	 */
 	private static void renderBeamVertex(
 		Matrix4f positionMatrix,

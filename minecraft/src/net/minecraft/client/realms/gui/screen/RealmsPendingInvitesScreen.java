@@ -257,7 +257,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			Text text = ScreenTexts.joinLines(
 				Text.literal(this.mPendingInvite.worldName),
 				Text.literal(this.mPendingInvite.worldOwnerName),
-				Text.literal(RealmsUtil.convertToAgePresentation(this.mPendingInvite.date))
+				RealmsUtil.convertToAgePresentation(this.mPendingInvite.date)
 			);
 			return Text.translatable("narrator.select", text);
 		}

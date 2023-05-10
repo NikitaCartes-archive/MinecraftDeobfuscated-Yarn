@@ -12,6 +12,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.resource.metadata.TextureResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
@@ -80,7 +81,7 @@ public class SplashOverlay extends Overlay {
 			}
 
 			int k = MathHelper.ceil((1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F)) * 255.0F);
-			context.fill(0, 0, i, j, withAlpha(BRAND_ARGB.getAsInt(), k));
+			context.fill(RenderLayer.getGuiOverlay(), 0, 0, i, j, withAlpha(BRAND_ARGB.getAsInt(), k));
 			h = 1.0F - MathHelper.clamp(f - 1.0F, 0.0F, 1.0F);
 		} else if (this.reloading) {
 			if (this.client.currentScreen != null && g < 1.0F) {
@@ -88,7 +89,7 @@ public class SplashOverlay extends Overlay {
 			}
 
 			int k = MathHelper.ceil(MathHelper.clamp((double)g, 0.15, 1.0) * 255.0);
-			context.fill(0, 0, i, j, withAlpha(BRAND_ARGB.getAsInt(), k));
+			context.fill(RenderLayer.getGuiOverlay(), 0, 0, i, j, withAlpha(BRAND_ARGB.getAsInt(), k));
 			h = MathHelper.clamp(g, 0.0F, 1.0F);
 		} else {
 			int k = BRAND_ARGB.getAsInt();
@@ -106,6 +107,8 @@ public class SplashOverlay extends Overlay {
 		int q = (int)(d * 0.5);
 		double e = d * 4.0;
 		int r = (int)(e * 0.5);
+		RenderSystem.disableDepthTest();
+		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(770, 1);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, h);
@@ -114,6 +117,8 @@ public class SplashOverlay extends Overlay {
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableBlend();
+		RenderSystem.depthMask(true);
+		RenderSystem.enableDepthTest();
 		int s = (int)((double)context.getScaledWindowHeight() * 0.8325);
 		float t = this.reload.getProgress();
 		this.progress = MathHelper.clamp(this.progress * 0.95F + t * 0.050000012F, 0.0F, 1.0F);

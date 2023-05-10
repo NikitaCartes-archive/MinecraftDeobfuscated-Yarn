@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import net.minecraft.util.math.ChunkPos;
 
 public class LevelPrioritizedQueue<T> {
-	public static final int LEVEL_COUNT = ThreadedAnvilChunkStorage.MAX_LEVEL + 2;
+	public static final int LEVEL_COUNT = ChunkLevels.INACCESSIBLE + 2;
 	private final List<Long2ObjectLinkedOpenHashMap<List<Optional<T>>>> levelToPosToElements = (List<Long2ObjectLinkedOpenHashMap<List<Optional<T>>>>)IntStream.range(
 			0, LEVEL_COUNT
 		)

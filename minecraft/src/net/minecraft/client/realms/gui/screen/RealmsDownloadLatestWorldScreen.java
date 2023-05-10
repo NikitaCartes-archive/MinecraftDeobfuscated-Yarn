@@ -182,7 +182,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 		int j = i + (int)Math.round(200.0 * d);
 		context.fill(i - 1, 79, j + 1, 96, -2501934);
 		context.fill(i, 80, j, 95, -8355712);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, Text.translatable("mco.download.percent", this.progress), this.width / 2, 84, 16777215);
 	}
 
 	private void drawDownloadSpeed(DrawContext context) {
@@ -207,8 +207,14 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	private void drawDownloadSpeed0(DrawContext context, long bytesPerSecond) {
 		if (bytesPerSecond > 0L) {
 			int i = this.textRenderer.getWidth(this.progress);
-			String string = "(" + SizeUnit.getUserFriendlyString(bytesPerSecond) + "/s)";
-			context.drawText(this.textRenderer, string, this.width / 2 + i / 2 + 15, 84, 16777215, false);
+			context.drawText(
+				this.textRenderer,
+				Text.translatable("mco.download.speed", SizeUnit.getUserFriendlyString(bytesPerSecond)),
+				this.width / 2 + i / 2 + 15,
+				84,
+				16777215,
+				false
+			);
 		}
 	}
 

@@ -327,10 +327,10 @@ public final class ModelPart {
 		 * 
 		 * @see ModelPart#forEachCuboid(MatrixStack, CuboidConsumer)
 		 * 
-		 * @param matrix the current matrix transformation from the model parts
-		 * @param path the path of the current model part, separated by {@code /}
 		 * @param index the index of the current cuboid in the current model part
+		 * @param path the path of the current model part, separated by {@code /}
 		 * @param cuboid the current cuboid
+		 * @param matrix the current matrix transformation from the model parts
 		 */
 		void accept(MatrixStack.Entry matrix, String path, int index, ModelPart.Cuboid cuboid);
 	}

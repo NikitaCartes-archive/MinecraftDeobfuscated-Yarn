@@ -27,7 +27,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -216,11 +216,11 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 * <p>If the new state {@linkplain BlockState#isAir() is air},
 	 * breaks the block at the position instead.
 	 * 
-	 * @param state the existing block state
 	 * @param newState the new block state
 	 * @param world the world
 	 * @param pos the position of the replaced block state
 	 * @param flags the bitwise flags for {@link net.minecraft.world.ModifiableWorld#setBlockState(BlockPos, BlockState, int, int)}
+	 * @param state the existing block state
 	 */
 	public static void replace(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags) {
 		replace(state, newState, world, pos, flags, 512);
@@ -234,12 +234,12 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	 * <p>If the new state {@linkplain BlockState#isAir() is air},
 	 * breaks the block at the position instead.
 	 * 
-	 * @param state the existing block state
-	 * @param newState the new block state
-	 * @param world the world
 	 * @param pos the position of the replaced block state
 	 * @param flags the bitwise flags for {@link net.minecraft.world.ModifiableWorld#setBlockState(BlockPos, BlockState, int, int)}
 	 * @param maxUpdateDepth the limit for the cascading block updates
+	 * @param state the existing block state
+	 * @param newState the new block state
+	 * @param world the world
 	 */
 	public static void replace(BlockState state, BlockState newState, WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
 		if (newState != state) {
@@ -360,31 +360,22 @@ public class Block extends AbstractBlock implements ItemConvertible {
 	}
 
 	public static List<ItemStack> getDroppedStacks(BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity) {
-		LootContext.Builder builder = new LootContext.Builder(world)
-			.random(world.random)
-			.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
-			.parameter(LootContextParameters.TOOL, ItemStack.EMPTY)
-			.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity);
+		LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+			.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
+			.add(LootContextParameters.TOOL, ItemStack.EMPTY)
+			.addOptional(LootContextParameters.BLOCK_ENTITY, blockEntity);
 		return state.getDroppedStacks(builder);
 	}
 
 	public static List<ItemStack> getDroppedStacks(
 		BlockState state, ServerWorld world, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack stack
 	) {
-		LootContext.Builder builder = new LootContext.Builder(world)
-			.random(world.random)
-			.parameter(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
-			.parameter(LootContextParameters.TOOL, stack)
-			.optionalParameter(LootContextParameters.THIS_ENTITY, entity)
-			.optionalParameter(LootContextParameters.BLOCK_ENTITY, blockEntity);
+		LootContextParameterSet.Builder builder = new LootContextParameterSet.Builder(world)
+			.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
+			.add(LootContextParameters.TOOL, stack)
+			.addOptional(LootContextParameters.THIS_ENTITY, entity)
+			.addOptional(LootContextParameters.BLOCK_ENTITY, blockEntity);
 		return state.getDroppedStacks(builder);
-	}
-
-	public static void dropStacks(BlockState state, LootContext.Builder lootContext) {
-		ServerWorld serverWorld = lootContext.getWorld();
-		BlockPos blockPos = BlockPos.ofFloored(lootContext.get(LootContextParameters.ORIGIN));
-		state.getDroppedStacks(lootContext).forEach(stack -> dropStack(serverWorld, blockPos, stack));
-		state.onStacksDropped(serverWorld, blockPos, ItemStack.EMPTY, true);
 	}
 
 	public static void dropStacks(BlockState state, World world, BlockPos pos) {

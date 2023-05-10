@@ -18,7 +18,6 @@ import net.minecraft.client.realms.dto.Subscription;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Urls;
 import net.minecraft.util.Util;
@@ -34,10 +33,6 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	private static final Text DAYS_LEFT_LABEL_TEXT = Text.translatable("mco.configure.world.subscription.recurring.daysleft");
 	private static final Text EXPIRED_TEXT = Text.translatable("mco.configure.world.subscription.expired");
 	private static final Text EXPIRES_IN_LESS_THAN_A_DAY_TEXT = Text.translatable("mco.configure.world.subscription.less_than_a_day");
-	private static final Text MONTH_TEXT = Text.translatable("mco.configure.world.subscription.month");
-	private static final Text MONTHS_TEXT = Text.translatable("mco.configure.world.subscription.months");
-	private static final Text DAY_TEXT = Text.translatable("mco.configure.world.subscription.day");
-	private static final Text DAYS_TEXT = Text.translatable("mco.configure.world.subscription.days");
 	private static final Text UNKNOWN_TEXT = Text.translatable("mco.configure.world.subscription.unknown");
 	private static final Text RECURRING_INFO_TEXT = Text.translatable("mco.configure.world.subscription.recurring.info");
 	private final Screen parent;
@@ -156,30 +151,15 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 		} else {
 			int i = daysLeft / 30;
 			int j = daysLeft % 30;
-			MutableText mutableText = Text.empty();
-			if (i > 0) {
-				mutableText.append(Integer.toString(i)).append(ScreenTexts.SPACE);
-				if (i == 1) {
-					mutableText.append(MONTH_TEXT);
-				} else {
-					mutableText.append(MONTHS_TEXT);
-				}
+			boolean bl = i > 0;
+			boolean bl2 = j > 0;
+			if (bl && bl2) {
+				return Text.translatable("mco.configure.world.subscription.remaining.months.days", i, j);
+			} else if (bl) {
+				return Text.translatable("mco.configure.world.subscription.remaining.months", i);
+			} else {
+				return bl2 ? Text.translatable("mco.configure.world.subscription.remaining.days", j) : Text.empty();
 			}
-
-			if (j > 0) {
-				if (i > 0) {
-					mutableText.append(", ");
-				}
-
-				mutableText.append(Integer.toString(j)).append(ScreenTexts.SPACE);
-				if (j == 1) {
-					mutableText.append(DAY_TEXT);
-				} else {
-					mutableText.append(DAYS_TEXT);
-				}
-			}
-
-			return mutableText;
 		}
 	}
 }

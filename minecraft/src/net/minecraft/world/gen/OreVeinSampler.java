@@ -9,15 +9,30 @@ import net.minecraft.world.gen.chunk.ChunkNoiseSampler;
 import net.minecraft.world.gen.densityfunction.DensityFunction;
 
 public final class OreVeinSampler {
-	private static final float field_36620 = 0.4F;
-	private static final int field_36621 = 20;
-	private static final double field_36622 = 0.2;
-	private static final float field_36623 = 0.7F;
-	private static final float field_36624 = 0.1F;
-	private static final float field_36625 = 0.3F;
-	private static final float field_36626 = 0.6F;
+	/**
+	 * The density threshold required to generate any blocks as part of an ore vein.
+	 */
+	private static final float DENSITY_THRESHOLD = 0.4F;
+	/**
+	 * The number of blocks away from the minimum or maximum height at which
+	 * ores in an ore vein generates at the maximum density.
+	 */
+	private static final int MAX_DENSITY_INTRUSION = 20;
+	/**
+	 * The decrease in density at the minimum or maximum height compared to the
+	 * maximum density.
+	 */
+	private static final double LIMINAL_DENSITY_REDUCTION = 0.2;
+	/**
+	 * The probability that a given block will be replaced by an ore vein,
+	 * given that the density check has passed.
+	 */
+	private static final float BLOCK_GENERATION_CHANCE = 0.7F;
+	private static final float MIN_ORE_CHANCE = 0.1F;
+	private static final float MAX_ORE_CHANCE = 0.3F;
+	private static final float DENSITY_FOR_MAX_ORE_CHANCE = 0.6F;
 	private static final float RAW_ORE_BLOCK_CHANCE = 0.02F;
-	private static final float field_36628 = -0.3F;
+	private static final float VEIN_GAP_THRESHOLD = -0.3F;
 
 	private OreVeinSampler() {
 	}

@@ -66,8 +66,8 @@ public class EnderEyeItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
-		if (hitResult.getType() == HitResult.Type.BLOCK && world.getBlockState(((BlockHitResult)hitResult).getBlockPos()).isOf(Blocks.END_PORTAL_FRAME)) {
+		BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
+		if (blockHitResult.getType() == HitResult.Type.BLOCK && world.getBlockState(blockHitResult.getBlockPos()).isOf(Blocks.END_PORTAL_FRAME)) {
 			return TypedActionResult.pass(itemStack);
 		} else {
 			user.setCurrentHand(hand);

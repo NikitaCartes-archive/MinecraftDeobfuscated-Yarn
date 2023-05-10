@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.RecipeInputInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.CraftingRecipe;
@@ -20,7 +21,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingInventory> {
+public class CraftingScreenHandler extends AbstractRecipeScreenHandler<RecipeInputInventory> {
 	public static final int field_30781 = 0;
 	private static final int field_30782 = 1;
 	private static final int field_30783 = 10;
@@ -28,7 +29,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	private static final int field_30785 = 37;
 	private static final int field_30786 = 37;
 	private static final int field_30787 = 46;
-	private final CraftingInventory input = new CraftingInventory(this, 3, 3);
+	private final RecipeInputInventory input = new CraftingInventory(this, 3, 3);
 	private final CraftingResultInventory result = new CraftingResultInventory();
 	private final ScreenHandlerContext context;
 	private final PlayerEntity player;
@@ -61,7 +62,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	}
 
 	protected static void updateResult(
-		ScreenHandler handler, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory
+		ScreenHandler handler, World world, PlayerEntity player, RecipeInputInventory craftingInventory, CraftingResultInventory resultInventory
 	) {
 		if (!world.isClient) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
@@ -100,7 +101,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	}
 
 	@Override
-	public boolean matches(Recipe<? super CraftingInventory> recipe) {
+	public boolean matches(Recipe<? super RecipeInputInventory> recipe) {
 		return recipe.matches(this.input, this.player.getWorld());
 	}
 

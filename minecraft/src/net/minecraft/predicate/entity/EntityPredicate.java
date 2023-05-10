@@ -8,9 +8,11 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
+import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.predicate.NbtPredicate;
@@ -172,7 +174,7 @@ public class EntityPredicate {
 				return false;
 			} else {
 				if (this.steppingOn != LocationPredicate.ANY) {
-					Vec3d vec3d = Vec3d.ofCenter(entity.getLandingPos());
+					Vec3d vec3d = Vec3d.ofCenter(entity.getSteppingPos());
 					if (!this.steppingOn.test(world, vec3d.getX(), vec3d.getY(), vec3d.getZ())) {
 						return false;
 					}
@@ -267,11 +269,11 @@ public class EntityPredicate {
 	}
 
 	public static LootContext createAdvancementEntityLootContext(ServerPlayerEntity player, Entity target) {
-		return new LootContext.Builder(player.getServerWorld())
-			.parameter(LootContextParameters.THIS_ENTITY, target)
-			.parameter(LootContextParameters.ORIGIN, player.getPos())
-			.random(player.getRandom())
+		LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(player.getServerWorld())
+			.add(LootContextParameters.THIS_ENTITY, target)
+			.add(LootContextParameters.ORIGIN, player.getPos())
 			.build(LootContextTypes.ADVANCEMENT_ENTITY);
+		return new LootContext.Builder(lootContextParameterSet).build(LootTable.DEFAULT_ID);
 	}
 
 	public static class Builder {

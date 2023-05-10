@@ -101,13 +101,12 @@ public class SpawnEggItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
-		if (hitResult.getType() != HitResult.Type.BLOCK) {
+		BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
+		if (blockHitResult.getType() != HitResult.Type.BLOCK) {
 			return TypedActionResult.pass(itemStack);
 		} else if (!(world instanceof ServerWorld)) {
 			return TypedActionResult.success(itemStack);
 		} else {
-			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
 				return TypedActionResult.pass(itemStack);
