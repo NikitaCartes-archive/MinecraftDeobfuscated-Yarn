@@ -54,4 +54,8 @@ public abstract class SinglePartEntityModel<E extends Entity> extends EntityMode
 		animationState.update(animationProgress, speedMultiplier);
 		animationState.run(state -> AnimationHelper.animate(this, animation, state.getTimeRunning(), 1.0F, ZERO));
 	}
+
+	protected void animate(Animation animation) {
+		AnimationHelper.animate(this, animation, 0L, 1.0F, ZERO);
+	}
 }

@@ -70,10 +70,10 @@ public abstract class AbstractSignEditScreen extends Screen {
 	}
 
 	private boolean canEdit() {
-		return this.client == null
-			|| this.client.player == null
-			|| !this.blockEntity.getType().supports(this.blockEntity.getCachedState())
-			|| !this.blockEntity.isPlayerTooFarToEdit(this.client.player.getUuid());
+		return this.client != null
+			&& this.client.player != null
+			&& !this.blockEntity.isRemoved()
+			&& !this.blockEntity.isPlayerTooFarToEdit(this.client.player.getUuid());
 	}
 
 	@Override

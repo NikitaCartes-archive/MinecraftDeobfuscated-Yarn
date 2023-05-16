@@ -86,10 +86,10 @@ public class RecipeCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.translatable("commands.recipe.give.success.single", recipes.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
+					() -> Text.translatable("commands.recipe.give.success.single", recipes.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.recipe.give.success.multiple", recipes.size(), targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.recipe.give.success.multiple", recipes.size(), targets.size()), true);
 			}
 
 			return i;
@@ -108,10 +108,10 @@ public class RecipeCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.translatable("commands.recipe.take.success.single", recipes.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
+					() -> Text.translatable("commands.recipe.take.success.single", recipes.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.recipe.take.success.multiple", recipes.size(), targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.recipe.take.success.multiple", recipes.size(), targets.size()), true);
 			}
 
 			return i;

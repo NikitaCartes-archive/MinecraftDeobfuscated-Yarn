@@ -85,6 +85,7 @@ public abstract class ProjectileEntity extends Entity implements Ownable {
 	protected void readCustomDataFromNbt(NbtCompound nbt) {
 		if (nbt.containsUuid("Owner")) {
 			this.ownerUuid = nbt.getUuid("Owner");
+			this.owner = null;
 		}
 
 		this.leftOwner = nbt.getBoolean("LeftOwner");

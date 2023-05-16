@@ -27,9 +27,9 @@ public class KillCommand {
 		}
 
 		if (targets.size() == 1) {
-			source.sendFeedback(Text.translatable("commands.kill.success.single", ((Entity)targets.iterator().next()).getDisplayName()), true);
+			source.sendFeedback(() -> Text.translatable("commands.kill.success.single", ((Entity)targets.iterator().next()).getDisplayName()), true);
 		} else {
-			source.sendFeedback(Text.translatable("commands.kill.success.multiple", targets.size()), true);
+			source.sendFeedback(() -> Text.translatable("commands.kill.success.multiple", targets.size()), true);
 		}
 
 		return targets.size();

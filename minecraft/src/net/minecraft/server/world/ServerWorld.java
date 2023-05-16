@@ -209,7 +209,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		boolean debugWorld,
 		long seed,
 		List<Spawner> spawners,
-		boolean shouldTickTime
+		boolean shouldTickTime,
+		@Nullable RandomSequencesState randomSequencesState
 	) {
 		super(
 			properties,
@@ -278,8 +279,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 		this.sleepManager = new SleepManager();
 		this.gameEventDispatchManager = new GameEventDispatchManager(this);
-		this.randomSequences = this.getPersistentStateManager()
-			.getOrCreate(nbt -> RandomSequencesState.fromNbt(l, nbt), () -> new RandomSequencesState(l), "random_sequences");
+		this.randomSequences = (RandomSequencesState)Objects.requireNonNullElseGet(
+			randomSequencesState,
+			() -> this.getPersistentStateManager().getOrCreate(nbt -> RandomSequencesState.fromNbt(l, nbt), () -> new RandomSequencesState(l), "random_sequences")
+		);
 	}
 
 	@Deprecated
@@ -1858,6 +1861,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	public Random getOrCreateRandom(Identifier id) {
 		return this.randomSequences.getOrCreate(id);
+	}
+
+	public RandomSequencesState getRandomSequences() {
+		return this.randomSequences;
 	}
 
 	final class ServerEntityHandler implements EntityHandler<Entity> {

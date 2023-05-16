@@ -32,11 +32,11 @@ public class TorchflowerBlock extends CropBlock {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return SHAPES[state.get(this.getAgeProperty())];
+		return SHAPES[this.getAge(state)];
 	}
 
 	@Override
-	public IntProperty getAgeProperty() {
+	protected IntProperty getAgeProperty() {
 		return AGE;
 	}
 

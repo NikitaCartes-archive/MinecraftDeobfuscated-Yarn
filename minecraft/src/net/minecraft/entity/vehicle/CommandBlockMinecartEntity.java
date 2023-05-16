@@ -141,5 +141,10 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 				CommandBlockMinecartEntity.this
 			);
 		}
+
+		@Override
+		public boolean isEditable() {
+			return !CommandBlockMinecartEntity.this.isRemoved();
+		}
 	}
 }

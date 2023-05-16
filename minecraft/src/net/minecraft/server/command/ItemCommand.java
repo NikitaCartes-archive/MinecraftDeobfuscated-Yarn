@@ -327,7 +327,7 @@ public class ItemCommand {
 		if (slot >= 0 && slot < inventory.size()) {
 			ItemStack itemStack = getStackWithModifier(source, modifier, inventory.getStack(slot));
 			inventory.setStack(slot, itemStack);
-			source.sendFeedback(Text.translatable("commands.item.block.set.success", pos.getX(), pos.getY(), pos.getZ(), itemStack.toHoverableText()), true);
+			source.sendFeedback(() -> Text.translatable("commands.item.block.set.success", pos.getX(), pos.getY(), pos.getZ(), itemStack.toHoverableText()), true);
 			return 1;
 		} else {
 			throw NO_SUCH_SLOT_TARGET_EXCEPTION.create(slot);
@@ -356,11 +356,13 @@ public class ItemCommand {
 			if (map.size() == 1) {
 				Entry<Entity, ItemStack> entry = (Entry)map.entrySet().iterator().next();
 				source.sendFeedback(
-					Text.translatable("commands.item.entity.set.success.single", ((Entity)entry.getKey()).getDisplayName(), ((ItemStack)entry.getValue()).toHoverableText()),
+					() -> Text.translatable(
+							"commands.item.entity.set.success.single", ((Entity)entry.getKey()).getDisplayName(), ((ItemStack)entry.getValue()).toHoverableText()
+						),
 					true
 				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.item.entity.set.success.multiple", map.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.item.entity.set.success.multiple", map.size()), true);
 			}
 
 			return map.size();
@@ -371,7 +373,7 @@ public class ItemCommand {
 		Inventory inventory = getInventoryAtPos(source, pos, NOT_A_CONTAINER_TARGET_EXCEPTION);
 		if (slot >= 0 && slot < inventory.size()) {
 			inventory.setStack(slot, stack);
-			source.sendFeedback(Text.translatable("commands.item.block.set.success", pos.getX(), pos.getY(), pos.getZ(), stack.toHoverableText()), true);
+			source.sendFeedback(() -> Text.translatable("commands.item.block.set.success", pos.getX(), pos.getY(), pos.getZ(), stack.toHoverableText()), true);
 			return 1;
 		} else {
 			throw NO_SUCH_SLOT_TARGET_EXCEPTION.create(slot);
@@ -405,10 +407,10 @@ public class ItemCommand {
 		} else {
 			if (list.size() == 1) {
 				source.sendFeedback(
-					Text.translatable("commands.item.entity.set.success.single", ((Entity)list.iterator().next()).getDisplayName(), stack.toHoverableText()), true
+					() -> Text.translatable("commands.item.entity.set.success.single", ((Entity)list.iterator().next()).getDisplayName(), stack.toHoverableText()), true
 				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.item.entity.set.success.multiple", list.size(), stack.toHoverableText()), true);
+				source.sendFeedback(() -> Text.translatable("commands.item.entity.set.success.multiple", list.size(), stack.toHoverableText()), true);
 			}
 
 			return list.size();

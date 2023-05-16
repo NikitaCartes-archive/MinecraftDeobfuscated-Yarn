@@ -55,6 +55,11 @@ public class CommandBlockBlockEntity extends BlockEntity {
 				null
 			);
 		}
+
+		@Override
+		public boolean isEditable() {
+			return !CommandBlockBlockEntity.this.isRemoved();
+		}
 	};
 
 	public CommandBlockBlockEntity(BlockPos pos, BlockState state) {

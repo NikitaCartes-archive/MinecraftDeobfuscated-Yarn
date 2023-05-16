@@ -39,7 +39,7 @@ public class JfrCommand {
 		if (!FlightProfiler.INSTANCE.start(instanceType)) {
 			throw JFR_START_FAILED_EXCEPTION.create();
 		} else {
-			source.sendFeedback(Text.translatable("commands.jfr.started"), false);
+			source.sendFeedback(() -> Text.translatable("commands.jfr.started"), false);
 			return 1;
 		}
 	}
@@ -54,7 +54,7 @@ public class JfrCommand {
 					style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, path2.toString()))
 							.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.copy.click")))
 				);
-			source.sendFeedback(Text.translatable("commands.jfr.stopped", text), false);
+			source.sendFeedback(() -> Text.translatable("commands.jfr.stopped", text), false);
 			return 1;
 		} catch (Throwable var4) {
 			throw JFR_DUMP_FAILED_EXCEPTION.create(var4.getMessage());

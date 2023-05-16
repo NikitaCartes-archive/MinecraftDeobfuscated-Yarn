@@ -23,7 +23,7 @@ public class DifficultyCommand {
 
 		dispatcher.register(literalArgumentBuilder.requires(source -> source.hasPermissionLevel(2)).executes(context -> {
 			Difficulty difficultyxx = context.getSource().getWorld().getDifficulty();
-			context.getSource().sendFeedback(Text.translatable("commands.difficulty.query", difficultyxx.getTranslatableName()), false);
+			context.getSource().sendFeedback(() -> Text.translatable("commands.difficulty.query", difficultyx.getTranslatableName()), false);
 			return difficultyxx.getId();
 		}));
 	}
@@ -34,7 +34,7 @@ public class DifficultyCommand {
 			throw FAILURE_EXCEPTION.create(difficulty.getName());
 		} else {
 			minecraftServer.setDifficulty(difficulty, true);
-			source.sendFeedback(Text.translatable("commands.difficulty.success", difficulty.getTranslatableName()), true);
+			source.sendFeedback(() -> Text.translatable("commands.difficulty.success", difficulty.getTranslatableName()), true);
 			return 0;
 		}
 	}

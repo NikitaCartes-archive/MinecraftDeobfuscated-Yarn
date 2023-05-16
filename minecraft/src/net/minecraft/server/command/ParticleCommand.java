@@ -153,7 +153,7 @@ public class ParticleCommand {
 		if (i == 0) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			source.sendFeedback(Text.translatable("commands.particle.success", Registries.PARTICLE_TYPE.getId(parameters.getType()).toString()), true);
+			source.sendFeedback(() -> Text.translatable("commands.particle.success", Registries.PARTICLE_TYPE.getId(parameters.getType()).toString()), true);
 			return i;
 		}
 	}

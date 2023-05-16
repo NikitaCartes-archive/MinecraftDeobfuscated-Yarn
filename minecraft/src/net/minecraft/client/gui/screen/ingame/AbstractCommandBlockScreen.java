@@ -35,6 +35,9 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	@Override
 	public void tick() {
 		this.consoleCommandTextField.tick();
+		if (!this.getCommandExecutor().isEditable()) {
+			this.close();
+		}
 	}
 
 	abstract CommandBlockExecutor getCommandExecutor();

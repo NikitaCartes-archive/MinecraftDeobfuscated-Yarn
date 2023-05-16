@@ -8,6 +8,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.MethodHandles.Lookup;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.OptionalInt;
@@ -306,8 +307,12 @@ public class InputUtil {
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
 		KEYSYM("key.keyboard", (keyCode, translationKey) -> {
-			String string = GLFW.glfwGetKeyName(keyCode, -1);
-			return string != null ? Text.literal(string) : Text.translatable(translationKey);
+			if ("key.keyboard.unknown".equals(translationKey)) {
+				return Text.translatable(translationKey);
+			} else {
+				String string = GLFW.glfwGetKeyName(keyCode, -1);
+				return string != null ? Text.literal(string.toUpperCase(Locale.ROOT)) : Text.translatable(translationKey);
+			}
 		}),
 		SCANCODE("scancode", (scanCode, translationKey) -> {
 			String string = GLFW.glfwGetKeyName(-1, scanCode);
@@ -320,6 +325,7 @@ public class InputUtil {
 					: Text.translatable("key.mouse", buttonCode + 1)
 		);
 
+		private static final String UNKNOWN_TRANSLATION_KEY = "key.keyboard.unknown";
 		private final Int2ObjectMap<InputUtil.Key> map = new Int2ObjectOpenHashMap<>();
 		final String name;
 		final BiFunction<Integer, String, Text> textTranslator;

@@ -215,4 +215,6 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	public boolean shouldBroadcastConsoleToOps() {
 		return this.getWorld().getGameRules().getBoolean(GameRules.COMMAND_BLOCK_OUTPUT);
 	}
+
+	public abstract boolean isEditable();
 }

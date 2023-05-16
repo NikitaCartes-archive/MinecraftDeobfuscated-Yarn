@@ -8,7 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.resource.featuretoggle.FeatureFlag;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.resource.featuretoggle.FeatureSet;
-import org.apache.commons.lang3.StringUtils;
+import net.minecraft.util.Util;
 
 public class BlockFamily {
 	private final Block baseBlock;
@@ -46,11 +46,11 @@ public class BlockFamily {
 	}
 
 	public Optional<String> getGroup() {
-		return StringUtils.isBlank(this.group) ? Optional.empty() : Optional.of(this.group);
+		return Util.isBlank(this.group) ? Optional.empty() : Optional.of(this.group);
 	}
 
 	public Optional<String> getUnlockCriterionName() {
-		return StringUtils.isBlank(this.unlockCriterionName) ? Optional.empty() : Optional.of(this.unlockCriterionName);
+		return Util.isBlank(this.unlockCriterionName) ? Optional.empty() : Optional.of(this.unlockCriterionName);
 	}
 
 	public static class Builder {

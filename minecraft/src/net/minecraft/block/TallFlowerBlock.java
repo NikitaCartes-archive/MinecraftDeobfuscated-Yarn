@@ -1,6 +1,5 @@
 package net.minecraft.block;
 
-import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -11,11 +10,6 @@ import net.minecraft.world.WorldView;
 public class TallFlowerBlock extends TallPlantBlock implements Fertilizable {
 	public TallFlowerBlock(AbstractBlock.Settings settings) {
 		super(settings);
-	}
-
-	@Override
-	public boolean canReplace(BlockState state, ItemPlacementContext context) {
-		return false;
 	}
 
 	@Override

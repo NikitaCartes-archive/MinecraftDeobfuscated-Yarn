@@ -33,7 +33,7 @@ public class DefaultGameModeCommand {
 			}
 		}
 
-		source.sendFeedback(Text.translatable("commands.defaultgamemode.success", defaultGameMode.getTranslatableName()), true);
+		source.sendFeedback(() -> Text.translatable("commands.defaultgamemode.success", defaultGameMode.getTranslatableName()), true);
 		return i;
 	}
 }

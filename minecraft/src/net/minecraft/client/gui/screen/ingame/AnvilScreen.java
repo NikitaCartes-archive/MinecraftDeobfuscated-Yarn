@@ -69,15 +69,16 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	}
 
 	private void onRenamed(String name) {
-		if (!name.isEmpty()) {
+		Slot slot = this.handler.getSlot(0);
+		if (slot.hasStack()) {
 			String string = name;
-			Slot slot = this.handler.getSlot(0);
-			if (slot != null && slot.hasStack() && !slot.getStack().hasCustomName() && name.equals(slot.getStack().getName().getString())) {
+			if (!slot.getStack().hasCustomName() && name.equals(slot.getStack().getName().getString())) {
 				string = "";
 			}
 
-			this.handler.setNewItemName(string);
-			this.client.player.networkHandler.sendPacket(new RenameItemC2SPacket(string));
+			if (this.handler.setNewItemName(string)) {
+				this.client.player.networkHandler.sendPacket(new RenameItemC2SPacket(string));
+			}
 		}
 	}
 

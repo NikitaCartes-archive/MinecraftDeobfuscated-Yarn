@@ -414,7 +414,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 
 			if (bl2) {
 				if (bl3) {
-					context.fill(o, m - 1, o + 1, m + 1 + 9, -3092272);
+					context.fill(RenderLayer.getGuiOverlay(), o, m - 1, o + 1, m + 1 + 9, -3092272);
 				} else {
 					context.drawTextWithShadow(this.textRenderer, "_", o, m, i);
 				}

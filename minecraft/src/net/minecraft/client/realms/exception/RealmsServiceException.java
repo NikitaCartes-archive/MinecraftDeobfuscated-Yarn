@@ -28,7 +28,7 @@ public class RealmsServiceException extends Exception {
 		this.error = null;
 	}
 
-	public String toString() {
+	public String getMessage() {
 		if (this.error != null) {
 			String string = "mco.errorMessage." + this.error.getErrorCode();
 			String string2 = I18n.hasTranslation(string) ? I18n.translate(string) : this.error.getErrorMessage();

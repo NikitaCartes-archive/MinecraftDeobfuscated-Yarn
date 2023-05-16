@@ -84,9 +84,9 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 			String string = JsonHelper.getString(jsonObject, "group", "");
 			Ingredient ingredient;
 			if (JsonHelper.hasArray(jsonObject, "ingredient")) {
-				ingredient = Ingredient.fromJson(JsonHelper.getArray(jsonObject, "ingredient"));
+				ingredient = Ingredient.fromJson(JsonHelper.getArray(jsonObject, "ingredient"), false);
 			} else {
-				ingredient = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "ingredient"));
+				ingredient = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "ingredient"), false);
 			}
 
 			String string2 = JsonHelper.getString(jsonObject, "result");

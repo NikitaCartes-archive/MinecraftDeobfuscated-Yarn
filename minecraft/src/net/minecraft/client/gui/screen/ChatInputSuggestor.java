@@ -234,6 +234,7 @@ public class ChatInputSuggestor {
 	}
 
 	private void showCommandSuggestions() {
+		boolean bl = false;
 		if (this.textField.getCursor() == this.textField.getText().length()) {
 			if (((Suggestions)this.pendingSuggestions.join()).isEmpty() && !this.parse.getExceptions().isEmpty()) {
 				int i = 0;
@@ -251,14 +252,14 @@ public class ChatInputSuggestor {
 					this.messages.add(formatException(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().create()));
 				}
 			} else if (this.parse.getReader().canRead()) {
-				this.messages.add(formatException(CommandManager.getException(this.parse)));
+				bl = true;
 			}
 		}
 
 		this.x = 0;
 		this.width = this.owner.width;
-		if (this.messages.isEmpty()) {
-			this.showUsages(Formatting.GRAY);
+		if (this.messages.isEmpty() && !this.showUsages(Formatting.GRAY) && bl) {
+			this.messages.add(formatException(CommandManager.getException(this.parse)));
 		}
 
 		this.window = null;
@@ -267,7 +268,7 @@ public class ChatInputSuggestor {
 		}
 	}
 
-	private void showUsages(Formatting formatting) {
+	private boolean showUsages(Formatting formatting) {
 		CommandContextBuilder<CommandSource> commandContextBuilder = this.parse.getContext();
 		SuggestionContext<CommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.textField.getCursor());
 		Map<CommandNode<CommandSource>, String> map = this.client
@@ -290,6 +291,9 @@ public class ChatInputSuggestor {
 			this.messages.addAll(list);
 			this.x = MathHelper.clamp(this.textField.getCharacterX(suggestionContext.startPos), 0, this.textField.getCharacterX(0) + this.textField.getInnerWidth() - i);
 			this.width = i;
+			return true;
+		} else {
+			return false;
 		}
 	}
 

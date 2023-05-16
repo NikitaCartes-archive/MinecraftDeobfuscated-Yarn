@@ -49,7 +49,7 @@ public class OpCommand {
 			if (!playerManager.isOperator(gameProfile)) {
 				playerManager.addToOperators(gameProfile);
 				++i;
-				source.sendFeedback(Text.translatable("commands.op.success", ((GameProfile)targets.iterator().next()).getName()), true);
+				source.sendFeedback(() -> Text.translatable("commands.op.success", ((GameProfile)targets.iterator().next()).getName()), true);
 			}
 		}
 

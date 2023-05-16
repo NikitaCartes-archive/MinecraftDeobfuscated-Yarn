@@ -23,7 +23,7 @@ import net.minecraft.client.realms.task.RealmsGetServerDetailsTask;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.ResourceReload;
 import net.minecraft.text.Text;
-import org.apache.commons.lang3.StringUtils;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class QuickPlay {
@@ -40,11 +40,11 @@ public class QuickPlay {
 		String string2 = quickPlay.multiplayer();
 		String string3 = quickPlay.realms();
 		resourceReload.whenComplete().thenRunAsync(() -> {
-			if (!StringUtils.isBlank(string)) {
+			if (!Util.isBlank(string)) {
 				startSingleplayer(client, string);
-			} else if (!StringUtils.isBlank(string2)) {
+			} else if (!Util.isBlank(string2)) {
 				startMultiplayer(client, string2);
-			} else if (!StringUtils.isBlank(string3)) {
+			} else if (!Util.isBlank(string3)) {
 				startRealms(client, realmsClient, string3);
 			}
 		}, client);

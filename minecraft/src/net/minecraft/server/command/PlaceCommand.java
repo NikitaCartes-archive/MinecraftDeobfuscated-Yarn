@@ -237,7 +237,7 @@ public class PlaceCommand {
 			throw FEATURE_FAILED_EXCEPTION.create();
 		} else {
 			String string = feature.registryKey().getValue().toString();
-			source.sendFeedback(Text.translatable("commands.place.feature.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
+			source.sendFeedback(() -> Text.translatable("commands.place.feature.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
 			return 1;
 		}
 	}
@@ -247,7 +247,7 @@ public class PlaceCommand {
 		if (!StructurePoolBasedGenerator.generate(serverWorld, structurePool, id, maxDepth, pos, false)) {
 			throw JIGSAW_FAILED_EXCEPTION.create();
 		} else {
-			source.sendFeedback(Text.translatable("commands.place.jigsaw.success", pos.getX(), pos.getY(), pos.getZ()), true);
+			source.sendFeedback(() -> Text.translatable("commands.place.jigsaw.success", pos.getX(), pos.getY(), pos.getZ()), true);
 			return 1;
 		}
 	}
@@ -287,7 +287,7 @@ public class PlaceCommand {
 						)
 				);
 			String string = structure.registryKey().getValue().toString();
-			source.sendFeedback(Text.translatable("commands.place.structure.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
+			source.sendFeedback(() -> Text.translatable("commands.place.structure.success", string, pos.getX(), pos.getY(), pos.getZ()), true);
 			return 1;
 		}
 	}
@@ -321,7 +321,7 @@ public class PlaceCommand {
 			if (!bl) {
 				throw TEMPLATE_FAILED_EXCEPTION.create();
 			} else {
-				source.sendFeedback(Text.translatable("commands.place.template.success", id, pos.getX(), pos.getY(), pos.getZ()), true);
+				source.sendFeedback(() -> Text.translatable("commands.place.template.success", id, pos.getX(), pos.getY(), pos.getZ()), true);
 				return 1;
 			}
 		}

@@ -54,8 +54,8 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
-import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
 public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
@@ -99,7 +99,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 					NbtCompound nbtCompound = stack.getNbt();
 					if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 						gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-					} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
+					} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !Util.isBlank(nbtCompound.getString("SkullOwner"))) {
 						gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
 						nbtCompound.remove("SkullOwner");
 						SkullBlockEntity.loadProperties(gameProfile, profile -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), profile)));

@@ -50,7 +50,7 @@ public class TimeCommand {
 	}
 
 	private static int executeQuery(ServerCommandSource source, int time) {
-		source.sendFeedback(Text.translatable("commands.time.query", time), false);
+		source.sendFeedback(() -> Text.translatable("commands.time.query", time), false);
 		return time;
 	}
 
@@ -59,7 +59,7 @@ public class TimeCommand {
 			serverWorld.setTimeOfDay((long)time);
 		}
 
-		source.sendFeedback(Text.translatable("commands.time.set", time), true);
+		source.sendFeedback(() -> Text.translatable("commands.time.set", time), true);
 		return getDayTime(source.getWorld());
 	}
 
@@ -69,7 +69,7 @@ public class TimeCommand {
 		}
 
 		int i = getDayTime(source.getWorld());
-		source.sendFeedback(Text.translatable("commands.time.set", i), true);
+		source.sendFeedback(() -> Text.translatable("commands.time.set", i), true);
 		return i;
 	}
 }

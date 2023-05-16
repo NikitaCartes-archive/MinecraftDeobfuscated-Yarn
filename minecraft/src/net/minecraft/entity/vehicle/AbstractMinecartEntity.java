@@ -59,6 +59,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	);
 	protected static final float VELOCITY_SLOWDOWN_MULTIPLIER = 0.95F;
 	private boolean yawFlipped;
+	private boolean onRail;
 	private static final Map<RailShape, Pair<Vec3i, Vec3i>> ADJACENT_RAIL_POSITIONS_BY_SHAPE = Util.make(Maps.newEnumMap(RailShape.class), map -> {
 		Vec3i vec3i = Direction.WEST.getVector();
 		Vec3i vec3i2 = Direction.EAST.getVector();
@@ -313,7 +314,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 			BlockPos blockPos = new BlockPos(i, j, k);
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
-			if (AbstractRailBlock.isRail(blockState)) {
+			this.onRail = AbstractRailBlock.isRail(blockState);
+			if (this.onRail) {
 				this.moveOnRail(blockPos, blockState);
 				if (blockState.isOf(Blocks.ACTIVATOR_RAIL)) {
 					this.onActivatorRail(i, j, k, blockState.get(PoweredRailBlock.POWERED));
@@ -552,6 +554,11 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.setVelocity(aa, vec3d6.y, ab);
 			}
 		}
+	}
+
+	@Override
+	public boolean isOnRail() {
+		return this.onRail;
 	}
 
 	private boolean willHitBlockAt(BlockPos pos) {
