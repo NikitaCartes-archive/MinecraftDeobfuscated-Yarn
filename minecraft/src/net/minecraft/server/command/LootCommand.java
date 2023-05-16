@@ -392,18 +392,18 @@ public class LootCommand {
 	private static void sendDroppedFeedback(ServerCommandSource source, List<ItemStack> stacks) {
 		if (stacks.size() == 1) {
 			ItemStack itemStack = (ItemStack)stacks.get(0);
-			source.sendFeedback(Text.translatable("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
+			source.sendFeedback(() -> Text.translatable("commands.drop.success.single", itemStack.getCount(), itemStack.toHoverableText()), false);
 		} else {
-			source.sendFeedback(Text.translatable("commands.drop.success.multiple", stacks.size()), false);
+			source.sendFeedback(() -> Text.translatable("commands.drop.success.multiple", stacks.size()), false);
 		}
 	}
 
 	private static void sendDroppedFeedback(ServerCommandSource source, List<ItemStack> stacks, Identifier lootTable) {
 		if (stacks.size() == 1) {
 			ItemStack itemStack = (ItemStack)stacks.get(0);
-			source.sendFeedback(Text.translatable("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), lootTable), false);
+			source.sendFeedback(() -> Text.translatable("commands.drop.success.single_with_table", itemStack.getCount(), itemStack.toHoverableText(), lootTable), false);
 		} else {
-			source.sendFeedback(Text.translatable("commands.drop.success.multiple_with_table", stacks.size(), lootTable), false);
+			source.sendFeedback(() -> Text.translatable("commands.drop.success.multiple_with_table", stacks.size(), lootTable), false);
 		}
 	}
 

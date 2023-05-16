@@ -187,10 +187,11 @@ public class EffectCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.translatable("commands.effect.give.success.single", statusEffect2.getName(), ((Entity)targets.iterator().next()).getDisplayName(), j / 20), true
+					() -> Text.translatable("commands.effect.give.success.single", statusEffect2.getName(), ((Entity)targets.iterator().next()).getDisplayName(), j / 20),
+					true
 				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.effect.give.success.multiple", statusEffect2.getName(), targets.size(), j / 20), true);
+				source.sendFeedback(() -> Text.translatable("commands.effect.give.success.multiple", statusEffect2.getName(), targets.size(), j / 20), true);
 			}
 
 			return i;
@@ -210,9 +211,9 @@ public class EffectCommand {
 			throw CLEAR_EVERYTHING_FAILED_EXCEPTION.create();
 		} else {
 			if (targets.size() == 1) {
-				source.sendFeedback(Text.translatable("commands.effect.clear.everything.success.single", ((Entity)targets.iterator().next()).getDisplayName()), true);
+				source.sendFeedback(() -> Text.translatable("commands.effect.clear.everything.success.single", ((Entity)targets.iterator().next()).getDisplayName()), true);
 			} else {
-				source.sendFeedback(Text.translatable("commands.effect.clear.everything.success.multiple", targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.effect.clear.everything.success.multiple", targets.size()), true);
 			}
 
 			return i;
@@ -234,10 +235,11 @@ public class EffectCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.translatable("commands.effect.clear.specific.success.single", statusEffect2.getName(), ((Entity)targets.iterator().next()).getDisplayName()), true
+					() -> Text.translatable("commands.effect.clear.specific.success.single", statusEffect2.getName(), ((Entity)targets.iterator().next()).getDisplayName()),
+					true
 				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.effect.clear.specific.success.multiple", statusEffect2.getName(), targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.effect.clear.specific.success.multiple", statusEffect2.getName(), targets.size()), true);
 			}
 
 			return i;

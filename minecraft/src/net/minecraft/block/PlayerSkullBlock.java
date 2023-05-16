@@ -8,9 +8,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import org.apache.commons.lang3.StringUtils;
 
 public class PlayerSkullBlock extends SkullBlock {
 	protected PlayerSkullBlock(AbstractBlock.Settings settings) {
@@ -26,7 +26,7 @@ public class PlayerSkullBlock extends SkullBlock {
 				NbtCompound nbtCompound = itemStack.getNbt();
 				if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 					gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-				} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
+				} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !Util.isBlank(nbtCompound.getString("SkullOwner"))) {
 					gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
 				}
 			}

@@ -235,7 +235,7 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	public void equipHorseArmor(PlayerEntity player, ItemStack stack) {
 		if (this.isHorseArmor(stack)) {
-			this.items.setStack(1, new ItemStack(stack.getItem()));
+			this.items.setStack(1, stack.copyWithCount(1));
 			if (!player.getAbilities().creativeMode) {
 				stack.decrement(1);
 			}

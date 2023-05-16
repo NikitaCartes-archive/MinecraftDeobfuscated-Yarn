@@ -38,16 +38,17 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		path -> Text.translatable("arguments.nbtpath.nothing_found", path)
 	);
 	static final DynamicCommandExceptionType EXPECTED_LIST_EXCEPTION = new DynamicCommandExceptionType(
-		object -> Text.translatable("commands.data.modify.expected_list", object)
+		nbt -> Text.translatable("commands.data.modify.expected_list", nbt)
 	);
 	static final DynamicCommandExceptionType INVALID_INDEX_EXCEPTION = new DynamicCommandExceptionType(
-		object -> Text.translatable("commands.data.modify.invalid_index", object)
+		index -> Text.translatable("commands.data.modify.invalid_index", index)
 	);
 	private static final char LEFT_SQUARE_BRACKET = '[';
 	private static final char RIGHT_SQUARE_BRACKET = ']';
 	private static final char LEFT_CURLY_BRACKET = '{';
 	private static final char RIGHT_CURLY_BRACKET = '}';
 	private static final char DOUBLE_QUOTE = '"';
+	private static final char SINGLE_QUOTE = '\'';
 
 	public static NbtPathArgumentType nbtPath() {
 		return new NbtPathArgumentType();
@@ -84,40 +85,34 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 	}
 
 	private static NbtPathArgumentType.PathNode parseNode(StringReader reader, boolean root) throws CommandSyntaxException {
-		switch (reader.peek()) {
-			case '"': {
-				String string = reader.readString();
-				return readCompoundChildNode(reader, string);
-			}
-			case '[':
+		return (NbtPathArgumentType.PathNode)(switch (reader.peek()) {
+			case '"', '\'' -> readCompoundChildNode(reader, reader.readString());
+			case '[' -> {
 				reader.skip();
 				int i = reader.peek();
 				if (i == 123) {
 					NbtCompound nbtCompound2 = new StringNbtReader(reader).parseCompound();
 					reader.expect(']');
-					return new NbtPathArgumentType.FilteredListElementNode(nbtCompound2);
+					yield new NbtPathArgumentType.FilteredListElementNode(nbtCompound2);
+				} else if (i == 93) {
+					reader.skip();
+					yield NbtPathArgumentType.AllListElementNode.INSTANCE;
 				} else {
-					if (i == 93) {
-						reader.skip();
-						return NbtPathArgumentType.AllListElementNode.INSTANCE;
-					}
-
 					int j = reader.readInt();
 					reader.expect(']');
-					return new NbtPathArgumentType.IndexedListElementNode(j);
+					yield new NbtPathArgumentType.IndexedListElementNode(j);
 				}
-			case '{':
+			}
+			case '{' -> {
 				if (!root) {
 					throw INVALID_PATH_NODE_EXCEPTION.createWithContext(reader);
 				}
 
 				NbtCompound nbtCompound = new StringNbtReader(reader).parseCompound();
-				return new NbtPathArgumentType.FilteredRootNode(nbtCompound);
-			default: {
-				String string = readName(reader);
-				return readCompoundChildNode(reader, string);
+				yield new NbtPathArgumentType.FilteredRootNode(nbtCompound);
 			}
-		}
+			default -> readCompoundChildNode(reader, readName(reader));
+		});
 	}
 
 	private static NbtPathArgumentType.PathNode readCompoundChildNode(StringReader reader, String name) throws CommandSyntaxException {
@@ -149,7 +144,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 	}
 
 	private static boolean isNameCharacter(char c) {
-		return c != ' ' && c != '"' && c != '[' && c != ']' && c != '.' && c != '{' && c != '}';
+		return c != ' ' && c != '"' && c != '\'' && c != '[' && c != ']' && c != '.' && c != '{' && c != '}';
 	}
 
 	static Predicate<NbtElement> getPredicate(NbtCompound filter) {

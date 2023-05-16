@@ -40,13 +40,13 @@ public class GameModeCommand {
 	private static void sendFeedback(ServerCommandSource source, ServerPlayerEntity player, GameMode gameMode) {
 		Text text = Text.translatable("gameMode." + gameMode.getName());
 		if (source.getEntity() == player) {
-			source.sendFeedback(Text.translatable("commands.gamemode.success.self", text), true);
+			source.sendFeedback(() -> Text.translatable("commands.gamemode.success.self", text), true);
 		} else {
 			if (source.getWorld().getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK)) {
 				player.sendMessage(Text.translatable("gameMode.changed", text));
 			}
 
-			source.sendFeedback(Text.translatable("commands.gamemode.success.other", player.getDisplayName(), text), true);
+			source.sendFeedback(() -> Text.translatable("commands.gamemode.success.other", player.getDisplayName(), text), true);
 		}
 	}
 

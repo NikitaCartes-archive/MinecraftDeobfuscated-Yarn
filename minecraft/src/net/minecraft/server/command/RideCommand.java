@@ -61,7 +61,7 @@ public class RideCommand {
 		} else if (!rider.startRiding(vehicle, true)) {
 			throw GENERIC_FAILURE_EXCEPTION.create(rider.getDisplayName(), vehicle.getDisplayName());
 		} else {
-			source.sendFeedback(Text.translatable("commands.ride.mount.success", rider.getDisplayName(), vehicle.getDisplayName()), true);
+			source.sendFeedback(() -> Text.translatable("commands.ride.mount.success", rider.getDisplayName(), vehicle.getDisplayName()), true);
 			return 1;
 		}
 	}
@@ -72,7 +72,7 @@ public class RideCommand {
 			throw NOT_RIDING_EXCEPTION.create(rider.getDisplayName());
 		} else {
 			rider.stopRiding();
-			source.sendFeedback(Text.translatable("commands.ride.dismount.success", rider.getDisplayName(), entity.getDisplayName()), true);
+			source.sendFeedback(() -> Text.translatable("commands.ride.dismount.success", rider.getDisplayName(), entity.getDisplayName()), true);
 			return 1;
 		}
 	}

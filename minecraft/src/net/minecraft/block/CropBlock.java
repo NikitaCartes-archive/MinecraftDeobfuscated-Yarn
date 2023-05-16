@@ -39,7 +39,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return AGE_TO_SHAPE[state.get(this.getAgeProperty())];
+		return AGE_TO_SHAPE[this.getAge(state)];
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		return floor.isOf(Blocks.FARMLAND);
 	}
 
-	public IntProperty getAgeProperty() {
+	protected IntProperty getAgeProperty() {
 		return AGE;
 	}
 
@@ -55,7 +55,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		return 7;
 	}
 
-	protected int getAge(BlockState state) {
+	public int getAge(BlockState state) {
 		return (Integer)state.get(this.getAgeProperty());
 	}
 
@@ -63,8 +63,8 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		return this.getDefaultState().with(this.getAgeProperty(), Integer.valueOf(age));
 	}
 
-	public boolean isMature(BlockState state) {
-		return (Integer)state.get(this.getAgeProperty()) >= this.getMaxAge();
+	public final boolean isMature(BlockState blockState) {
+		return this.getAge(blockState) >= this.getMaxAge();
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,9 @@ import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.context.LootContextType;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import net.minecraft.util.math.random.RandomSeed;
+import net.minecraft.util.math.random.RandomSequence;
 import org.slf4j.Logger;
 
 public class LootTableProvider implements DataProvider {
@@ -39,10 +43,16 @@ public class LootTableProvider implements DataProvider {
 	@Override
 	public CompletableFuture<?> run(DataWriter writer) {
 		final Map<Identifier, LootTable> map = Maps.<Identifier, LootTable>newHashMap();
-		this.lootTypeGenerators.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().get()).accept((id, builder) -> {
-				builder.randomSequenceId(id);
-				if (map.put(id, builder.type(lootTypeGenerator.paramSet).build()) != null) {
-					throw new IllegalStateException("Duplicate loot table " + id);
+		Map<RandomSeed.XoroshiroSeed, Identifier> map2 = new Object2ObjectOpenHashMap<>();
+		this.lootTypeGenerators.forEach(lootTypeGenerator -> ((LootTableGenerator)lootTypeGenerator.provider().get()).accept((identifierx, builder) -> {
+				Identifier identifier2 = (Identifier)map2.put(RandomSequence.createSeed(identifierx), identifierx);
+				if (identifier2 != null) {
+					Util.error("Loot table random sequence seed collision on " + identifier2 + " and " + identifierx);
+				}
+
+				builder.randomSequenceId(identifierx);
+				if (map.put(identifierx, builder.type(lootTypeGenerator.paramSet).build()) != null) {
+					throw new IllegalStateException("Duplicate loot table " + identifierx);
 				}
 			}));
 		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, new LootDataLookup() {

@@ -26,7 +26,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 		JsonElement jsonElement = (JsonElement)(JsonHelper.hasArray(jsonObject, "ingredient")
 			? JsonHelper.getArray(jsonObject, "ingredient")
 			: JsonHelper.getObject(jsonObject, "ingredient"));
-		Ingredient ingredient = Ingredient.fromJson(jsonElement);
+		Ingredient ingredient = Ingredient.fromJson(jsonElement, false);
 		String string2 = JsonHelper.getString(jsonObject, "result");
 		Identifier identifier2 = new Identifier(string2);
 		ItemStack itemStack = new ItemStack(

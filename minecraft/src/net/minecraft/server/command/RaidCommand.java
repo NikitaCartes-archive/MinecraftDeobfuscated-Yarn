@@ -74,7 +74,7 @@ public class RaidCommand {
 			} else {
 				int j = raid.getBadOmenLevel();
 				raid.setBadOmenLevel(level);
-				source.sendFeedback(Text.literal("Changed village's bad omen level from " + j + " to " + level), false);
+				source.sendFeedback(() -> Text.literal("Changed village's bad omen level from " + j + " to " + level), false);
 			}
 		} else {
 			source.sendError(Text.literal("No raid found here"));
@@ -84,7 +84,7 @@ public class RaidCommand {
 	}
 
 	private static int executeSpawnLeader(ServerCommandSource source) {
-		source.sendFeedback(Text.literal("Spawned a raid captain"), false);
+		source.sendFeedback(() -> Text.literal("Spawned a raid captain"), false);
 		RaiderEntity raiderEntity = EntityType.PILLAGER.create(source.getWorld());
 		if (raiderEntity == null) {
 			source.sendError(Text.literal("Pillager failed to spawn"));
@@ -121,7 +121,7 @@ public class RaidCommand {
 			if (raid != null) {
 				raid.setBadOmenLevel(level);
 				raidManager.markDirty();
-				source.sendFeedback(Text.literal("Created a raid in your local village"), false);
+				source.sendFeedback(() -> Text.literal("Created a raid in your local village"), false);
 			} else {
 				source.sendError(Text.literal("Failed to create a raid in your local village"));
 			}
@@ -136,7 +136,7 @@ public class RaidCommand {
 		Raid raid = serverPlayerEntity.getServerWorld().getRaidAt(blockPos);
 		if (raid != null) {
 			raid.invalidate();
-			source.sendFeedback(Text.literal("Stopped raid"), false);
+			source.sendFeedback(() -> Text.literal("Stopped raid"), false);
 			return 1;
 		} else {
 			source.sendError(Text.literal("No raid here"));
@@ -149,19 +149,19 @@ public class RaidCommand {
 		if (raid != null) {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("Found a started raid! ");
-			source.sendFeedback(Text.literal(stringBuilder.toString()), false);
-			stringBuilder = new StringBuilder();
-			stringBuilder.append("Num groups spawned: ");
-			stringBuilder.append(raid.getGroupsSpawned());
-			stringBuilder.append(" Bad omen level: ");
-			stringBuilder.append(raid.getBadOmenLevel());
-			stringBuilder.append(" Num mobs: ");
-			stringBuilder.append(raid.getRaiderCount());
-			stringBuilder.append(" Raid health: ");
-			stringBuilder.append(raid.getCurrentRaiderHealth());
-			stringBuilder.append(" / ");
-			stringBuilder.append(raid.getTotalHealth());
-			source.sendFeedback(Text.literal(stringBuilder.toString()), false);
+			source.sendFeedback(() -> Text.literal(stringBuilder.toString()), false);
+			StringBuilder stringBuilder2 = new StringBuilder();
+			stringBuilder2.append("Num groups spawned: ");
+			stringBuilder2.append(raid.getGroupsSpawned());
+			stringBuilder2.append(" Bad omen level: ");
+			stringBuilder2.append(raid.getBadOmenLevel());
+			stringBuilder2.append(" Num mobs: ");
+			stringBuilder2.append(raid.getRaiderCount());
+			stringBuilder2.append(" Raid health: ");
+			stringBuilder2.append(raid.getCurrentRaiderHealth());
+			stringBuilder2.append(" / ");
+			stringBuilder2.append(raid.getTotalHealth());
+			source.sendFeedback(() -> Text.literal(stringBuilder2.toString()), false);
 			return 1;
 		} else {
 			source.sendError(Text.literal("Found no started raids"));

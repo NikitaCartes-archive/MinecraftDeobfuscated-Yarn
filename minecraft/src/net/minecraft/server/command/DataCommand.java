@@ -9,6 +9,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.ArrayList;
@@ -47,6 +48,9 @@ public class DataCommand {
 	);
 	private static final DynamicCommandExceptionType MODIFY_EXPECTED_VALUE_EXCEPTION = new DynamicCommandExceptionType(
 		nbt -> Text.translatable("commands.data.modify.expected_value", nbt)
+	);
+	private static final Dynamic2CommandExceptionType MODIFY_INVALID_SUBSTRING_EXCEPTION = new Dynamic2CommandExceptionType(
+		(startIndex, endIndex) -> Text.translatable("commands.data.modify.invalid_substring", startIndex, endIndex)
 	);
 	public static final List<Function<String, DataCommand.ObjectType>> OBJECT_TYPE_FACTORIES = ImmutableList.of(
 		EntityDataObject.TYPE_FACTORY, BlockDataObject.TYPE_FACTORY, StorageDataObject.TYPE_FACTORY
@@ -158,12 +162,12 @@ public class DataCommand {
 		}
 	}
 
-	private static List<NbtElement> mapValues(List<NbtElement> list, Function<String, String> function) throws CommandSyntaxException {
+	private static List<NbtElement> mapValues(List<NbtElement> list, DataCommand.Processor processor) throws CommandSyntaxException {
 		List<NbtElement> list2 = new ArrayList(list.size());
 
 		for (NbtElement nbtElement : list) {
 			String string = asString(nbtElement);
-			list2.add(NbtString.of((String)function.apply(string)));
+			list2.add(NbtString.of(processor.process(string)));
 		}
 
 		return list2;
@@ -246,13 +250,24 @@ public class DataCommand {
 		return literalArgumentBuilder;
 	}
 
-	private static String substring(String string, int startIndex, int endIndex) {
-		int i = string.length();
-		return string.substring(getSubstringIndex(startIndex, i), getSubstringIndex(endIndex, i));
+	private static String substringInternal(String string, int startIndex, int endIndex) throws CommandSyntaxException {
+		if (startIndex >= 0 && endIndex <= string.length() && startIndex <= endIndex) {
+			return string.substring(startIndex, endIndex);
+		} else {
+			throw MODIFY_INVALID_SUBSTRING_EXCEPTION.create(startIndex, endIndex);
+		}
 	}
 
-	private static String substring(String string, int startIndex) {
-		return string.substring(getSubstringIndex(startIndex, string.length()));
+	private static String substring(String string, int startIndex, int endIndex) throws CommandSyntaxException {
+		int i = string.length();
+		int j = getSubstringIndex(startIndex, i);
+		int k = getSubstringIndex(endIndex, i);
+		return substringInternal(string, j, k);
+	}
+
+	private static String substring(String string, int startIndex) throws CommandSyntaxException {
+		int i = string.length();
+		return substringInternal(string, getSubstringIndex(startIndex, i), i);
 	}
 
 	private static int getSubstringIndex(int index, int length) {
@@ -281,7 +296,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			dataCommandObject.setNbt(nbtCompound);
-			context.getSource().sendFeedback(dataCommandObject.feedbackModify(), true);
+			context.getSource().sendFeedback(() -> dataCommandObject.feedbackModify(), true);
 			return i;
 		}
 	}
@@ -293,7 +308,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			object.setNbt(nbtCompound);
-			source.sendFeedback(object.feedbackModify(), true);
+			source.sendFeedback(() -> object.feedbackModify(), true);
 			return i;
 		}
 	}
@@ -326,7 +341,7 @@ public class DataCommand {
 			i = nbtElement.asString().length();
 		}
 
-		source.sendFeedback(object.feedbackQuery(nbtElement), false);
+		source.sendFeedback(() -> object.feedbackQuery(nbtElement), false);
 		return i;
 	}
 
@@ -336,13 +351,14 @@ public class DataCommand {
 			throw GET_INVALID_EXCEPTION.create(path.toString());
 		} else {
 			int i = MathHelper.floor(((AbstractNbtNumber)nbtElement).doubleValue() * scale);
-			source.sendFeedback(object.feedbackGet(path, scale, i), false);
+			source.sendFeedback(() -> object.feedbackGet(path, scale, i), false);
 			return i;
 		}
 	}
 
 	private static int executeGet(ServerCommandSource source, DataCommandObject object) throws CommandSyntaxException {
-		source.sendFeedback(object.feedbackQuery(object.getNbt()), false);
+		NbtCompound nbtCompound = object.getNbt();
+		source.sendFeedback(() -> object.feedbackQuery(nbtCompound), false);
 		return 1;
 	}
 
@@ -356,16 +372,18 @@ public class DataCommand {
 				throw MERGE_FAILED_EXCEPTION.create();
 			} else {
 				object.setNbt(nbtCompound2);
-				source.sendFeedback(object.feedbackModify(), true);
+				source.sendFeedback(() -> object.feedbackModify(), true);
 				return 1;
 			}
 		}
 	}
 
+	@FunctionalInterface
 	interface ModifyArgumentCreator {
 		ArgumentBuilder<ServerCommandSource, ?> create(DataCommand.ModifyOperation modifier);
 	}
 
+	@FunctionalInterface
 	interface ModifyOperation {
 		int modify(CommandContext<ServerCommandSource> context, NbtCompound sourceNbt, NbtPathArgumentType.NbtPath path, List<NbtElement> elements) throws CommandSyntaxException;
 	}
@@ -376,5 +394,10 @@ public class DataCommand {
 		ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(
 			ArgumentBuilder<ServerCommandSource, ?> argument, Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> argumentAdder
 		);
+	}
+
+	@FunctionalInterface
+	interface Processor {
+		String process(String string) throws CommandSyntaxException;
 	}
 }

@@ -92,7 +92,7 @@ public class ScheduleCommand {
 				}
 
 				timer.setEvent(string, l, new FunctionTimerCallback(identifier));
-				source.sendFeedback(Text.translatable("commands.schedule.created.function", identifier, time, l), true);
+				source.sendFeedback(() -> Text.translatable("commands.schedule.created.function", identifier, time, l), true);
 			}).ifRight(functions -> {
 				String string = "#" + identifier;
 				if (replace) {
@@ -100,7 +100,7 @@ public class ScheduleCommand {
 				}
 
 				timer.setEvent(string, l, new FunctionTagTimerCallback(identifier));
-				source.sendFeedback(Text.translatable("commands.schedule.created.tag", identifier, time, l), true);
+				source.sendFeedback(() -> Text.translatable("commands.schedule.created.tag", identifier, time, l), true);
 			});
 			return Math.floorMod(l, Integer.MAX_VALUE);
 		}
@@ -111,7 +111,7 @@ public class ScheduleCommand {
 		if (i == 0) {
 			throw CLEARED_FAILURE_EXCEPTION.create(eventName);
 		} else {
-			source.sendFeedback(Text.translatable("commands.schedule.cleared.success", i, eventName), true);
+			source.sendFeedback(() -> Text.translatable("commands.schedule.cleared.success", i, eventName), true);
 			return i;
 		}
 	}

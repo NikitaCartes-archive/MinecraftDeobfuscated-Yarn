@@ -719,6 +719,8 @@ public class ItemGroups {
 					entries.add(Items.ACACIA_LOG);
 					entries.add(Items.DARK_OAK_LOG);
 					entries.add(Items.MANGROVE_LOG);
+					entries.add(Items.MANGROVE_ROOTS);
+					entries.add(Items.MUDDY_MANGROVE_ROOTS);
 					entries.add(Items.CHERRY_LOG);
 					entries.add(Items.MUSHROOM_STEM);
 					entries.add(Items.CRIMSON_STEM);
@@ -730,8 +732,6 @@ public class ItemGroups {
 					entries.add(Items.ACACIA_LEAVES);
 					entries.add(Items.DARK_OAK_LEAVES);
 					entries.add(Items.MANGROVE_LEAVES);
-					entries.add(Items.MANGROVE_ROOTS);
-					entries.add(Items.MUDDY_MANGROVE_ROOTS);
 					entries.add(Items.CHERRY_LEAVES);
 					entries.add(Items.AZALEA_LEAVES);
 					entries.add(Items.FLOWERING_AZALEA_LEAVES);
@@ -770,12 +770,12 @@ public class ItemGroups {
 					entries.add(Items.CORNFLOWER);
 					entries.add(Items.LILY_OF_THE_VALLEY);
 					entries.add(Items.TORCHFLOWER);
+					entries.add(Items.WITHER_ROSE);
 					entries.add(Items.PINK_PETALS);
 					entries.add(Items.SPORE_BLOSSOM);
 					entries.add(Items.BAMBOO);
 					entries.add(Items.SUGAR_CANE);
 					entries.add(Items.CACTUS);
-					entries.add(Items.WITHER_ROSE);
 					entries.add(Items.CRIMSON_ROOTS);
 					entries.add(Items.WARPED_ROOTS);
 					entries.add(Items.NETHER_SPROUTS);
@@ -828,11 +828,11 @@ public class ItemGroups {
 					entries.add(Items.BUBBLE_CORAL);
 					entries.add(Items.FIRE_CORAL);
 					entries.add(Items.HORN_CORAL);
+					entries.add(Items.DEAD_TUBE_CORAL);
 					entries.add(Items.DEAD_BRAIN_CORAL);
 					entries.add(Items.DEAD_BUBBLE_CORAL);
 					entries.add(Items.DEAD_FIRE_CORAL);
 					entries.add(Items.DEAD_HORN_CORAL);
-					entries.add(Items.DEAD_TUBE_CORAL);
 					entries.add(Items.TUBE_CORAL_FAN);
 					entries.add(Items.BRAIN_CORAL_FAN);
 					entries.add(Items.BUBBLE_CORAL_FAN);
@@ -1194,10 +1194,10 @@ public class ItemGroups {
 						entries.add(Items.NETHERITE_HOE);
 						entries.add(Items.BUCKET);
 						entries.add(Items.WATER_BUCKET);
-						entries.add(Items.PUFFERFISH_BUCKET);
-						entries.add(Items.SALMON_BUCKET);
 						entries.add(Items.COD_BUCKET);
+						entries.add(Items.SALMON_BUCKET);
 						entries.add(Items.TROPICAL_FISH_BUCKET);
+						entries.add(Items.PUFFERFISH_BUCKET);
 						entries.add(Items.AXOLOTL_BUCKET);
 						entries.add(Items.TADPOLE_BUCKET);
 						entries.add(Items.LAVA_BUCKET);

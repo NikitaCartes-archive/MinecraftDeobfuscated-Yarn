@@ -11,6 +11,7 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 import org.slf4j.Logger;
 
 /**
@@ -138,5 +139,26 @@ public class NarratorManager {
 
 	public void destroy() {
 		this.narrator.destroy();
+	}
+
+	public void checkNarratorLibrary(boolean narratorEnabled) {
+		if (narratorEnabled
+			&& !this.isActive()
+			&& !TinyFileDialogs.tinyfd_messageBox(
+				"Minecraft",
+				"Failed to initialize text-to-speech library. Do you want to continue?\nIf this problem persists, please report it at bugs.mojang.com",
+				"yesno",
+				"error",
+				true
+			)) {
+			throw new NarratorManager.InactiveNarratorLibraryException("Narrator library is not active");
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class InactiveNarratorLibraryException extends GlException {
+		public InactiveNarratorLibraryException(String string) {
+			super(string);
+		}
 	}
 }

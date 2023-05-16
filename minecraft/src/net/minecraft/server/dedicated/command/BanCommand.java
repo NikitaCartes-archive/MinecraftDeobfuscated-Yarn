@@ -45,7 +45,7 @@ public class BanCommand {
 				BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(gameProfile, null, source.getName(), null, reason == null ? null : reason.getString());
 				bannedPlayerList.add(bannedPlayerEntry);
 				i++;
-				source.sendFeedback(Text.translatable("commands.ban.success", Texts.toText(gameProfile), bannedPlayerEntry.getReason()), true);
+				source.sendFeedback(() -> Text.translatable("commands.ban.success", Texts.toText(gameProfile), bannedPlayerEntry.getReason()), true);
 				ServerPlayerEntity serverPlayerEntity = source.getServer().getPlayerManager().getPlayer(gameProfile.getId());
 				if (serverPlayerEntity != null) {
 					serverPlayerEntity.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.banned"));

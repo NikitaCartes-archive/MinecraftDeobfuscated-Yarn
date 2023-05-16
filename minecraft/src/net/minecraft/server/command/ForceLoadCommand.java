@@ -89,7 +89,7 @@ public class ForceLoadCommand {
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		boolean bl = serverWorld.getForcedChunks().contains(chunkPos.toLong());
 		if (bl) {
-			source.sendFeedback(Text.translatable("commands.forceload.query.success", chunkPos, registryKey.getValue()), false);
+			source.sendFeedback(() -> Text.translatable("commands.forceload.query.success", chunkPos, registryKey.getValue()), false);
 			return 1;
 		} else {
 			throw QUERY_FAILURE_EXCEPTION.create(chunkPos, registryKey.getValue());
@@ -104,9 +104,9 @@ public class ForceLoadCommand {
 		if (i > 0) {
 			String string = Joiner.on(", ").join(longSet.stream().sorted().map(ChunkPos::new).map(ChunkPos::toString).iterator());
 			if (i == 1) {
-				source.sendFeedback(Text.translatable("commands.forceload.list.single", registryKey.getValue(), string), false);
+				source.sendFeedback(() -> Text.translatable("commands.forceload.list.single", registryKey.getValue(), string), false);
 			} else {
-				source.sendFeedback(Text.translatable("commands.forceload.list.multiple", i, registryKey.getValue(), string), false);
+				source.sendFeedback(() -> Text.translatable("commands.forceload.list.multiple", i, registryKey.getValue(), string), false);
 			}
 		} else {
 			source.sendError(Text.translatable("commands.forceload.added.none", registryKey.getValue()));
@@ -120,7 +120,7 @@ public class ForceLoadCommand {
 		RegistryKey<World> registryKey = serverWorld.getRegistryKey();
 		LongSet longSet = serverWorld.getForcedChunks();
 		longSet.forEach(chunkPos -> serverWorld.setChunkForced(ChunkPos.getPackedX(chunkPos), ChunkPos.getPackedZ(chunkPos), false));
-		source.sendFeedback(Text.translatable("commands.forceload.removed.all", registryKey.getValue()), true);
+		source.sendFeedback(() -> Text.translatable("commands.forceload.removed.all", registryKey.getValue()), true);
 		return 0;
 	}
 
@@ -155,16 +155,22 @@ public class ForceLoadCommand {
 					}
 				}
 
+				ChunkPos chunkPos2 = chunkPos;
 				if (r == 0) {
 					throw (forceLoaded ? ADDED_FAILURE_EXCEPTION : REMOVED_FAILURE_EXCEPTION).create();
 				} else {
 					if (r == 1) {
-						source.sendFeedback(Text.translatable("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", chunkPos, registryKey.getValue()), true);
-					} else {
-						ChunkPos chunkPos2 = new ChunkPos(m, n);
-						ChunkPos chunkPos3 = new ChunkPos(o, p);
 						source.sendFeedback(
-							Text.translatable("commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple", r, registryKey.getValue(), chunkPos2, chunkPos3), true
+							() -> Text.translatable("commands.forceload." + (forceLoaded ? "added" : "removed") + ".single", chunkPos2, registryKey.getValue()), true
+						);
+					} else {
+						ChunkPos chunkPos3 = new ChunkPos(m, n);
+						ChunkPos chunkPos4 = new ChunkPos(o, p);
+						source.sendFeedback(
+							() -> Text.translatable(
+									"commands.forceload." + (forceLoaded ? "added" : "removed") + ".multiple", chunkPos2, registryKey.getValue(), chunkPos3, chunkPos4
+								),
+							true
 						);
 					}
 

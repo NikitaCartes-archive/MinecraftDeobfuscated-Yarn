@@ -132,7 +132,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 			this.time += delta;
 			RenderSystem.enableBlend();
 			context.getMatrices().push();
-			context.getMatrices().translate(0.0F, 0.0F, 170.0F);
+			context.getMatrices().translate(0.0F, 0.0F, 1000.0F);
 			int i = this.alternativeButtons.size() <= 16 ? 4 : 5;
 			int j = Math.min(this.alternativeButtons.size(), i);
 			int k = MathHelper.ceil((float)this.alternativeButtons.size() / (float)i);
@@ -218,7 +218,10 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 				context.getMatrices().translate((double)inputSlot.y, (double)inputSlot.x, 0.0);
 				context.getMatrices().scale(0.375F, 0.375F, 1.0F);
 				context.getMatrices().translate(-8.0, -8.0, 0.0);
-				context.drawItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], 0, 0);
+				if (inputSlot.stacks.length > 0) {
+					context.drawItem(inputSlot.stacks[MathHelper.floor(RecipeAlternativesWidget.this.time / 30.0F) % inputSlot.stacks.length], 0, 0);
+				}
+
 				context.getMatrices().pop();
 			}
 

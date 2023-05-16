@@ -14,18 +14,19 @@ import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.MathHelper;
 
 public class TemptTask extends MultiTickTask<PathAwareEntity> {
 	public static final int TEMPTATION_COOLDOWN_TICKS = 100;
 	public static final double DEFAULT_STOP_DISTANCE = 2.5;
 	private final Function<LivingEntity, Float> speed;
-	private final double stopDistance;
+	private final Function<LivingEntity, Double> stopDistanceGetter;
 
 	public TemptTask(Function<LivingEntity, Float> speed) {
-		this(speed, 2.5);
+		this(speed, entity -> 2.5);
 	}
 
-	public TemptTask(Function<LivingEntity, Float> speed, double stopDistance) {
+	public TemptTask(Function<LivingEntity, Float> speed, Function<LivingEntity, Double> stopDistanceGetter) {
 		super(Util.make(() -> {
 			Builder<MemoryModuleType<?>, MemoryModuleState> builder = ImmutableMap.builder();
 			builder.put(MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED);
@@ -38,7 +39,7 @@ public class TemptTask extends MultiTickTask<PathAwareEntity> {
 			return builder.build();
 		}));
 		this.speed = speed;
-		this.stopDistance = stopDistance;
+		this.stopDistanceGetter = stopDistanceGetter;
 	}
 
 	protected float getSpeed(PathAwareEntity entity) {
@@ -76,7 +77,8 @@ public class TemptTask extends MultiTickTask<PathAwareEntity> {
 		PlayerEntity playerEntity = (PlayerEntity)this.getTemptingPlayer(pathAwareEntity).get();
 		Brain<?> brain = pathAwareEntity.getBrain();
 		brain.remember(MemoryModuleType.LOOK_TARGET, new EntityLookTarget(playerEntity, true));
-		if (pathAwareEntity.squaredDistanceTo(playerEntity) < this.stopDistance * this.stopDistance) {
+		double d = (Double)this.stopDistanceGetter.apply(pathAwareEntity);
+		if (pathAwareEntity.squaredDistanceTo(playerEntity) < MathHelper.square(d)) {
 			brain.forget(MemoryModuleType.WALK_TARGET);
 		} else {
 			brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(playerEntity, false), this.getSpeed(pathAwareEntity), 2));

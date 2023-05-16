@@ -25,7 +25,7 @@ public class SaveOffCommand {
 			if (!bl) {
 				throw ALREADY_OFF_EXCEPTION.create();
 			} else {
-				serverCommandSource.sendFeedback(Text.translatable("commands.save.disabled"), true);
+				serverCommandSource.sendFeedback(() -> Text.translatable("commands.save.disabled"), true);
 				return 1;
 			}
 		}));

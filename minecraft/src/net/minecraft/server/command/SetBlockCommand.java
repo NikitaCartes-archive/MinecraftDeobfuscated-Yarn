@@ -100,7 +100,7 @@ public class SetBlockCommand {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				serverWorld.updateNeighbors(pos, block.getBlockState().getBlock());
-				source.sendFeedback(Text.translatable("commands.setblock.success", pos.getX(), pos.getY(), pos.getZ()), true);
+				source.sendFeedback(() -> Text.translatable("commands.setblock.success", pos.getX(), pos.getY(), pos.getZ()), true);
 				return 1;
 			}
 		}

@@ -247,7 +247,7 @@ public class RedstoneWireBlock extends Block {
 		BlockPos blockPos = pos.offset(direction);
 		BlockState blockState = world.getBlockState(blockPos);
 		if (bl) {
-			boolean bl2 = this.canRunOnTop(world, blockPos, blockState);
+			boolean bl2 = blockState.getBlock() instanceof TrapdoorBlock || this.canRunOnTop(world, blockPos, blockState);
 			if (bl2 && connectsTo(world.getBlockState(blockPos.up()))) {
 				if (blockState.isSideSolidFullSquare(world, blockPos, direction.getOpposite())) {
 					return WireConnection.UP;

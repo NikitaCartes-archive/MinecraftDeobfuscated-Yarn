@@ -36,7 +36,7 @@ public class PardonCommand {
 			if (bannedPlayerList.contains(gameProfile)) {
 				bannedPlayerList.remove(gameProfile);
 				i++;
-				source.sendFeedback(Text.translatable("commands.pardon.success", Texts.toText(gameProfile)), true);
+				source.sendFeedback(() -> Text.translatable("commands.pardon.success", Texts.toText(gameProfile)), true);
 			}
 		}
 

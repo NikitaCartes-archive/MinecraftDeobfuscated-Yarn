@@ -265,7 +265,7 @@ public class TestCommand {
 						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Click to copy to clipboard")))
 						.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, "final BlockPos " + variableName + " = new BlockPos(" + string + ");"))
 				);
-			source.sendFeedback(Text.literal("Position relative to " + string2 + ": ").append(text), false);
+			source.sendFeedback(() -> Text.literal("Position relative to " + string2 + ": ").append(text), false);
 			DebugInfoSender.addGameTestMarker(serverWorld, new BlockPos(blockPos), string, -2147418368, 10000);
 			return 1;
 		}
@@ -413,7 +413,7 @@ public class TestCommand {
 	}
 
 	private static void sendMessage(ServerCommandSource source, String message) {
-		source.sendFeedback(Text.literal(message), false);
+		source.sendFeedback(() -> Text.literal(message), false);
 	}
 
 	private static int executeExport(ServerCommandSource source) {

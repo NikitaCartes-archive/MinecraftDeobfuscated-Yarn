@@ -26,7 +26,7 @@ public class KickCommand {
 	private static int execute(ServerCommandSource source, Collection<ServerPlayerEntity> targets, Text reason) {
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
 			serverPlayerEntity.networkHandler.disconnect(reason);
-			source.sendFeedback(Text.translatable("commands.kick.success", serverPlayerEntity.getDisplayName(), reason), true);
+			source.sendFeedback(() -> Text.translatable("commands.kick.success", serverPlayerEntity.getDisplayName(), reason), true);
 		}
 
 		return targets.size();

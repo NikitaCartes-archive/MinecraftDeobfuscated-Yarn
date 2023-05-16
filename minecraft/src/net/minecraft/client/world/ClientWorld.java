@@ -212,6 +212,10 @@ public class ClientWorld extends World {
 	public void tick(BooleanSupplier shouldKeepTicking) {
 		this.getWorldBorder().tick();
 		this.tickTime();
+		if (this.lightningTicksLeft > 0) {
+			this.setLightningTicksLeft(this.lightningTicksLeft - 1);
+		}
+
 		this.getProfiler().push("blocks");
 		this.chunkManager.tick(shouldKeepTicking, true);
 		this.getProfiler().pop();
@@ -663,16 +667,17 @@ public class ClientWorld extends World {
 			j = j * n + m * (1.0F - n);
 		}
 
-		if (!this.client.options.getHideLightningFlashes().getValue() && this.lightningTicksLeft > 0) {
-			float m = (float)this.lightningTicksLeft - tickDelta;
-			if (m > 1.0F) {
-				m = 1.0F;
+		int o = this.getLightningTicksLeft();
+		if (o > 0) {
+			float n = (float)o - tickDelta;
+			if (n > 1.0F) {
+				n = 1.0F;
 			}
 
-			m *= 0.45F;
-			h = h * (1.0F - m) + 0.8F * m;
-			i = i * (1.0F - m) + 0.8F * m;
-			j = j * (1.0F - m) + 1.0F * m;
+			n *= 0.45F;
+			h = h * (1.0F - n) + 0.8F * n;
+			i = i * (1.0F - n) + 0.8F * n;
+			j = j * (1.0F - n) + 1.0F * n;
 		}
 
 		return new Vec3d((double)h, (double)i, (double)j);
@@ -717,7 +722,7 @@ public class ClientWorld extends World {
 	}
 
 	public int getLightningTicksLeft() {
-		return this.lightningTicksLeft;
+		return this.client.options.getHideLightningFlashes().getValue() ? 0 : this.lightningTicksLeft;
 	}
 
 	@Override

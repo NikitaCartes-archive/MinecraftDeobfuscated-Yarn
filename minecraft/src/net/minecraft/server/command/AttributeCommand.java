@@ -234,14 +234,14 @@ public class AttributeCommand {
 	private static int executeValueGet(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, double multiplier) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntityWithAttribute(target, attribute);
 		double d = livingEntity.getAttributeValue(attribute);
-		source.sendFeedback(Text.translatable("commands.attribute.value.get.success", getName(attribute), target.getName(), d), false);
+		source.sendFeedback(() -> Text.translatable("commands.attribute.value.get.success", getName(attribute), target.getName(), d), false);
 		return (int)(d * multiplier);
 	}
 
 	private static int executeBaseValueGet(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, double multiplier) throws CommandSyntaxException {
 		LivingEntity livingEntity = getLivingEntityWithAttribute(target, attribute);
 		double d = livingEntity.getAttributeBaseValue(attribute);
-		source.sendFeedback(Text.translatable("commands.attribute.base_value.get.success", getName(attribute), target.getName(), d), false);
+		source.sendFeedback(() -> Text.translatable("commands.attribute.base_value.get.success", getName(attribute), target.getName(), d), false);
 		return (int)(d * multiplier);
 	}
 
@@ -252,14 +252,14 @@ public class AttributeCommand {
 			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), uuid);
 		} else {
 			double d = attributeContainer.getModifierValue(attribute, uuid);
-			source.sendFeedback(Text.translatable("commands.attribute.modifier.value.get.success", uuid, getName(attribute), target.getName(), d), false);
+			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.value.get.success", uuid, getName(attribute), target.getName(), d), false);
 			return (int)(d * multiplier);
 		}
 	}
 
 	private static int executeBaseValueSet(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, double value) throws CommandSyntaxException {
 		getAttributeInstance(target, attribute).setBaseValue(value);
-		source.sendFeedback(Text.translatable("commands.attribute.base_value.set.success", getName(attribute), target.getName(), value), false);
+		source.sendFeedback(() -> Text.translatable("commands.attribute.base_value.set.success", getName(attribute), target.getName(), value), false);
 		return 1;
 	}
 
@@ -278,7 +278,7 @@ public class AttributeCommand {
 			throw MODIFIER_ALREADY_PRESENT_EXCEPTION.create(target.getName(), getName(attribute), uuid);
 		} else {
 			entityAttributeInstance.addPersistentModifier(entityAttributeModifier);
-			source.sendFeedback(Text.translatable("commands.attribute.modifier.add.success", uuid, getName(attribute), target.getName()), false);
+			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.add.success", uuid, getName(attribute), target.getName()), false);
 			return 1;
 		}
 	}
@@ -286,7 +286,7 @@ public class AttributeCommand {
 	private static int executeModifierRemove(ServerCommandSource source, Entity target, RegistryEntry<EntityAttribute> attribute, UUID uuid) throws CommandSyntaxException {
 		EntityAttributeInstance entityAttributeInstance = getAttributeInstance(target, attribute);
 		if (entityAttributeInstance.tryRemoveModifier(uuid)) {
-			source.sendFeedback(Text.translatable("commands.attribute.modifier.remove.success", uuid, getName(attribute), target.getName()), false);
+			source.sendFeedback(() -> Text.translatable("commands.attribute.modifier.remove.success", uuid, getName(attribute), target.getName()), false);
 			return 1;
 		} else {
 			throw NO_MODIFIER_EXCEPTION.create(target.getName(), getName(attribute), uuid);

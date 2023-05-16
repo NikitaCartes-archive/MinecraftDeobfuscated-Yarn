@@ -61,7 +61,7 @@ public class WhitelistCommand {
 
 	private static int executeReload(ServerCommandSource source) {
 		source.getServer().getPlayerManager().reloadWhitelist();
-		source.sendFeedback(Text.translatable("commands.whitelist.reloaded"), true);
+		source.sendFeedback(() -> Text.translatable("commands.whitelist.reloaded"), true);
 		source.getServer().kickNonWhitelistedPlayers(source);
 		return 1;
 	}
@@ -74,7 +74,7 @@ public class WhitelistCommand {
 			if (!whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
 				whitelist.add(whitelistEntry);
-				source.sendFeedback(Text.translatable("commands.whitelist.add.success", Texts.toText(gameProfile)), true);
+				source.sendFeedback(() -> Text.translatable("commands.whitelist.add.success", Texts.toText(gameProfile)), true);
 				i++;
 			}
 		}
@@ -94,7 +94,7 @@ public class WhitelistCommand {
 			if (whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
 				whitelist.remove(whitelistEntry);
-				source.sendFeedback(Text.translatable("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
+				source.sendFeedback(() -> Text.translatable("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
 				i++;
 			}
 		}
@@ -113,7 +113,7 @@ public class WhitelistCommand {
 			throw ALREADY_ON_EXCEPTION.create();
 		} else {
 			playerManager.setWhitelistEnabled(true);
-			source.sendFeedback(Text.translatable("commands.whitelist.enabled"), true);
+			source.sendFeedback(() -> Text.translatable("commands.whitelist.enabled"), true);
 			source.getServer().kickNonWhitelistedPlayers(source);
 			return 1;
 		}
@@ -125,7 +125,7 @@ public class WhitelistCommand {
 			throw ALREADY_OFF_EXCEPTION.create();
 		} else {
 			playerManager.setWhitelistEnabled(false);
-			source.sendFeedback(Text.translatable("commands.whitelist.disabled"), true);
+			source.sendFeedback(() -> Text.translatable("commands.whitelist.disabled"), true);
 			return 1;
 		}
 	}
@@ -133,9 +133,9 @@ public class WhitelistCommand {
 	private static int executeList(ServerCommandSource source) {
 		String[] strings = source.getServer().getPlayerManager().getWhitelistedNames();
 		if (strings.length == 0) {
-			source.sendFeedback(Text.translatable("commands.whitelist.none"), false);
+			source.sendFeedback(() -> Text.translatable("commands.whitelist.none"), false);
 		} else {
-			source.sendFeedback(Text.translatable("commands.whitelist.list", strings.length, String.join(", ", strings)), false);
+			source.sendFeedback(() -> Text.translatable("commands.whitelist.list", strings.length, String.join(", ", strings)), false);
 		}
 
 		return strings.length;

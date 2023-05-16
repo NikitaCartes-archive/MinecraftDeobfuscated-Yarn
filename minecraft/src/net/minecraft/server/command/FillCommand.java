@@ -163,7 +163,8 @@ public class FillCommand {
 			if (k == 0) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				source.sendFeedback(Text.translatable("commands.fill.success", k), true);
+				int l = k;
+				source.sendFeedback(() -> Text.translatable("commands.fill.success", l), true);
 				return k;
 			}
 		}

@@ -100,7 +100,7 @@ public class DamageCommand {
 
 	private static int execute(ServerCommandSource source, Entity target, float amount, DamageSource damageSource) throws CommandSyntaxException {
 		if (target.damage(damageSource, amount)) {
-			source.sendFeedback(Text.translatable("commands.damage.success", amount, target.getDisplayName()), true);
+			source.sendFeedback(() -> Text.translatable("commands.damage.success", amount, target.getDisplayName()), true);
 			return 1;
 		} else {
 			throw INVULNERABLE_EXCEPTION.create();

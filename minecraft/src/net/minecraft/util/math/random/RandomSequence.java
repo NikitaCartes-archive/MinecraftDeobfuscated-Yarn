@@ -6,8 +6,7 @@ import net.minecraft.util.Identifier;
 
 public class RandomSequence {
 	public static final Codec<RandomSequence> CODEC = RecordCodecBuilder.create(
-		instance -> instance.group(Xoroshiro128PlusPlusRandom.CODEC.fieldOf("source").forGetter(randomSequence -> randomSequence.source))
-				.apply(instance, RandomSequence::new)
+		instance -> instance.group(Xoroshiro128PlusPlusRandom.CODEC.fieldOf("source").forGetter(sequence -> sequence.source)).apply(instance, RandomSequence::new)
 	);
 	private final Xoroshiro128PlusPlusRandom source;
 
@@ -16,7 +15,11 @@ public class RandomSequence {
 	}
 
 	public RandomSequence(long seed, Identifier id) {
-		this(new Xoroshiro128PlusPlusRandom(seed, (long)id.hashCode()));
+		this(new Xoroshiro128PlusPlusRandom(RandomSeed.createXoroshiroSeed(seed).split(createSeed(id))));
+	}
+
+	public static RandomSeed.XoroshiroSeed createSeed(Identifier id) {
+		return RandomSeed.createXoroshiroSeed(id.toString());
 	}
 
 	public Random getSource() {

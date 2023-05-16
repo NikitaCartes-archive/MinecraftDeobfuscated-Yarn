@@ -1024,7 +1024,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			return false;
 		} else {
 			boolean bl = this.canClimb(state);
-			if ((this.isOnGround() || bl || this.isInSneakingPose() && movement.y == 0.0) && !this.isSwimming()) {
+			if ((this.isOnGround() || bl || this.isInSneakingPose() && movement.y == 0.0 || this.isOnRail()) && !this.isSwimming()) {
 				if (playSound) {
 					this.playStepSounds(pos, state);
 				}
@@ -3192,6 +3192,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				? false
 				: this.isInvisible();
 		}
+	}
+
+	public boolean isOnRail() {
+		return false;
 	}
 
 	/**

@@ -99,6 +99,7 @@ import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.option.HotbarStorage;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.NarratorMode;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.realms.RealmsClient;
@@ -640,6 +641,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profileKeys = ProfileKeys.create(this.userApiService, this.session, this.runDirectory.toPath());
 		this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
 		this.narratorManager = new NarratorManager(this);
+		this.narratorManager.checkNarratorLibrary(this.options.getNarrator().getValue() != NarratorMode.OFF);
 		this.messageHandler = new MessageHandler(this);
 		this.messageHandler.setChatDelay(this.options.getChatDelay().getValue());
 		this.abuseReportContext = AbuseReportContext.create(ReporterEnvironment.ofIntegratedServer(), this.userApiService);
@@ -1862,10 +1864,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			this.profiler.swap("level");
 			if (!this.paused) {
-				if (this.world.getLightningTicksLeft() > 0) {
-					this.world.setLightningTicksLeft(this.world.getLightningTicksLeft() - 1);
-				}
-
 				this.world.tickEntities();
 			}
 		} else if (this.gameRenderer.getPostProcessor() != null) {

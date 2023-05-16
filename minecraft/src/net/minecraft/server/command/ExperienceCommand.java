@@ -122,7 +122,7 @@ public class ExperienceCommand {
 
 	private static int executeQuery(ServerCommandSource source, ServerPlayerEntity player, ExperienceCommand.Component component) {
 		int i = component.getter.applyAsInt(player);
-		source.sendFeedback(Text.translatable("commands.experience.query." + component.name, player.getDisplayName(), i), false);
+		source.sendFeedback(() -> Text.translatable("commands.experience.query." + component.name, player.getDisplayName(), i), false);
 		return i;
 	}
 
@@ -133,11 +133,13 @@ public class ExperienceCommand {
 
 		if (targets.size() == 1) {
 			source.sendFeedback(
-				Text.translatable("commands.experience.add." + component.name + ".success.single", amount, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()),
+				() -> Text.translatable(
+						"commands.experience.add." + component.name + ".success.single", amount, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+					),
 				true
 			);
 		} else {
-			source.sendFeedback(Text.translatable("commands.experience.add." + component.name + ".success.multiple", amount, targets.size()), true);
+			source.sendFeedback(() -> Text.translatable("commands.experience.add." + component.name + ".success.multiple", amount, targets.size()), true);
 		}
 
 		return targets.size();
@@ -157,13 +159,13 @@ public class ExperienceCommand {
 		} else {
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.translatable(
-						"commands.experience.set." + component.name + ".success.single", amount, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
-					),
+					() -> Text.translatable(
+							"commands.experience.set." + component.name + ".success.single", amount, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+						),
 					true
 				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.experience.set." + component.name + ".success.multiple", amount, targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.experience.set." + component.name + ".success.multiple", amount, targets.size()), true);
 			}
 
 			return targets.size();

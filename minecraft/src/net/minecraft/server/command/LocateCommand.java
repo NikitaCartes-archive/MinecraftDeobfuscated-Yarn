@@ -188,7 +188,7 @@ public class LocateCommand {
 						.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos.getX() + " " + string + " " + blockPos.getZ()))
 						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("chat.coordinates.tooltip")))
 			);
-		source.sendFeedback(Text.translatable(successMessage, entryString, text, i), false);
+		source.sendFeedback(() -> Text.translatable(successMessage, entryString, text, i), false);
 		LOGGER.info("Locating element " + entryString + " took " + timeTaken.toMillis() + " ms");
 		return i;
 	}

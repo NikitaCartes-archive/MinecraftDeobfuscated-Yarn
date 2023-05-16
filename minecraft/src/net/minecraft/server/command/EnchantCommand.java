@@ -94,10 +94,10 @@ public class EnchantCommand {
 			} else {
 				if (targets.size() == 1) {
 					source.sendFeedback(
-						Text.translatable("commands.enchant.success.single", enchantment2.getName(level), ((Entity)targets.iterator().next()).getDisplayName()), true
+						() -> Text.translatable("commands.enchant.success.single", enchantment2.getName(level), ((Entity)targets.iterator().next()).getDisplayName()), true
 					);
 				} else {
-					source.sendFeedback(Text.translatable("commands.enchant.success.multiple", enchantment2.getName(level), targets.size()), true);
+					source.sendFeedback(() -> Text.translatable("commands.enchant.success.multiple", enchantment2.getName(level), targets.size()), true);
 				}
 
 				return i;

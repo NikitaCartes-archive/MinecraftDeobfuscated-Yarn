@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BinaryOperator;
 import java.util.function.IntConsumer;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandSource;
@@ -552,13 +553,18 @@ public class ServerCommandSource implements CommandSource {
 		}
 	}
 
-	public void sendFeedback(Text message, boolean broadcastToOps) {
-		if (this.output.shouldReceiveFeedback() && !this.silent) {
-			this.output.sendMessage(message);
-		}
+	public void sendFeedback(Supplier<Text> feedbackSupplier, boolean broadcastToOps) {
+		boolean bl = this.output.shouldReceiveFeedback() && !this.silent;
+		boolean bl2 = broadcastToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent;
+		if (bl || bl2) {
+			Text text = (Text)feedbackSupplier.get();
+			if (bl) {
+				this.output.sendMessage(text);
+			}
 
-		if (broadcastToOps && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
-			this.sendToOps(message);
+			if (bl2) {
+				this.sendToOps(text);
+			}
 		}
 	}
 

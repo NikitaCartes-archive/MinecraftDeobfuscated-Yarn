@@ -60,13 +60,13 @@ public class ChaseCommand {
 	private static int stop(ServerCommandSource source) {
 		if (client != null) {
 			client.stop();
-			source.sendFeedback(Text.literal("You have now stopped chasing"), false);
+			source.sendFeedback(() -> Text.literal("You have now stopped chasing"), false);
 			client = null;
 		}
 
 		if (server != null) {
 			server.stop();
-			source.sendFeedback(Text.literal("You are no longer being chased"), false);
+			source.sendFeedback(() -> Text.literal("You are no longer being chased"), false);
 			server = null;
 		}
 
@@ -93,7 +93,7 @@ public class ChaseCommand {
 
 			try {
 				server.start();
-				source.sendFeedback(Text.literal("Chase server is now running on port " + port + ". Clients can follow you using /chase follow <ip> <port>"), false);
+				source.sendFeedback(() -> Text.literal("Chase server is now running on port " + port + ". Clients can follow you using /chase follow <ip> <port>"), false);
 			} catch (IOException var4) {
 				var4.printStackTrace();
 				source.sendError(Text.literal("Failed to start chase server on port " + port));
@@ -111,13 +111,13 @@ public class ChaseCommand {
 			client = new ChaseClient(ip, port, source.getServer());
 			client.start();
 			source.sendFeedback(
-				Text.literal(
-					"You are now chasing "
-						+ ip
-						+ ":"
-						+ port
-						+ ". If that server does '/chase lead' then you will automatically go to the same position. Use '/chase stop' to stop chasing."
-				),
+				() -> Text.literal(
+						"You are now chasing "
+							+ ip
+							+ ":"
+							+ port
+							+ ". If that server does '/chase lead' then you will automatically go to the same position. Use '/chase stop' to stop chasing."
+					),
 				false
 			);
 			return 0;

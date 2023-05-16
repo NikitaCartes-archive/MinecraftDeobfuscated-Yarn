@@ -34,9 +34,11 @@ public class WardenSpawnTrackerCommand {
 		}
 
 		if (players.size() == 1) {
-			source.sendFeedback(Text.translatable("commands.warden_spawn_tracker.set.success.single", ((PlayerEntity)players.iterator().next()).getDisplayName()), true);
+			source.sendFeedback(
+				() -> Text.translatable("commands.warden_spawn_tracker.set.success.single", ((PlayerEntity)players.iterator().next()).getDisplayName()), true
+			);
 		} else {
-			source.sendFeedback(Text.translatable("commands.warden_spawn_tracker.set.success.multiple", players.size()), true);
+			source.sendFeedback(() -> Text.translatable("commands.warden_spawn_tracker.set.success.multiple", players.size()), true);
 		}
 
 		return players.size();
@@ -49,10 +51,10 @@ public class WardenSpawnTrackerCommand {
 
 		if (players.size() == 1) {
 			source.sendFeedback(
-				Text.translatable("commands.warden_spawn_tracker.clear.success.single", ((PlayerEntity)players.iterator().next()).getDisplayName()), true
+				() -> Text.translatable("commands.warden_spawn_tracker.clear.success.single", ((PlayerEntity)players.iterator().next()).getDisplayName()), true
 			);
 		} else {
-			source.sendFeedback(Text.translatable("commands.warden_spawn_tracker.clear.success.multiple", players.size()), true);
+			source.sendFeedback(() -> Text.translatable("commands.warden_spawn_tracker.clear.success.multiple", players.size()), true);
 		}
 
 		return players.size();

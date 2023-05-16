@@ -36,6 +36,7 @@ import net.minecraft.client.gui.screen.ProgressScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.NativeImage;
@@ -112,6 +113,19 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 	void load() {
 		this.levelsFuture = this.loadLevels();
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (KeyCodes.isToggle(keyCode)) {
+			Optional<WorldListWidget.WorldEntry> optional = this.getSelectedAsOptional();
+			if (optional.isPresent()) {
+				((WorldListWidget.WorldEntry)optional.get()).play();
+				return true;
+			}
+		}
+
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override

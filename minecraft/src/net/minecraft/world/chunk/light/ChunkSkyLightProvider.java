@@ -273,13 +273,14 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 		super.setColumnEnabled(pos, retainData);
 		if (retainData) {
 			ChunkSkyLight chunkSkyLight = (ChunkSkyLight)Objects.requireNonNullElse(this.method_51589(pos.x, pos.z), this.field_44747);
-			int i = ChunkSectionPos.getSectionCoord(chunkSkyLight.getMaxSurfaceY());
+			int i = chunkSkyLight.getMaxSurfaceY() - 1;
+			int j = ChunkSectionPos.getSectionCoord(i) + 1;
 			long l = ChunkSectionPos.withZeroY(pos.x, pos.z);
-			int j = this.lightStorage.getTopSectionForColumn(l);
-			int k = Math.max(this.lightStorage.getMinSectionY(), i);
+			int k = this.lightStorage.getTopSectionForColumn(l);
+			int m = Math.max(this.lightStorage.getMinSectionY(), j);
 
-			for (int m = j - 1; m >= k; m--) {
-				ChunkNibbleArray chunkNibbleArray = this.lightStorage.method_51547(ChunkSectionPos.asLong(pos.x, m, pos.z));
+			for (int n = k - 1; n >= m; n--) {
+				ChunkNibbleArray chunkNibbleArray = this.lightStorage.method_51547(ChunkSectionPos.asLong(pos.x, n, pos.z));
 				if (chunkNibbleArray != null && chunkNibbleArray.isUninitialized()) {
 					chunkNibbleArray.clear(15);
 				}

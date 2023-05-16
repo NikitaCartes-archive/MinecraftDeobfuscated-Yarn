@@ -40,7 +40,7 @@ public class DebugPathCommand {
 			} else if (!path.reachesTarget()) {
 				throw TARGET_NOT_REACHED_EXCEPTION.create();
 			} else {
-				source.sendFeedback(Text.literal("Made path"), true);
+				source.sendFeedback(() -> Text.literal("Made path"), true);
 				return 1;
 			}
 		}

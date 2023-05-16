@@ -50,8 +50,9 @@ public class GiveCommand {
 	private static int execute(ServerCommandSource source, ItemStackArgument item, Collection<ServerPlayerEntity> targets, int count) throws CommandSyntaxException {
 		int i = item.getItem().getMaxCount();
 		int j = i * 100;
+		ItemStack itemStack = item.createStack(count, false);
 		if (count > j) {
-			source.sendError(Text.translatable("commands.give.failed.toomanyitems", j, item.createStack(count, false).toHoverableText()));
+			source.sendError(Text.translatable("commands.give.failed.toomanyitems", j, itemStack.toHoverableText()));
 			return 0;
 		} else {
 			for (ServerPlayerEntity serverPlayerEntity : targets) {
@@ -60,11 +61,11 @@ public class GiveCommand {
 				while (k > 0) {
 					int l = Math.min(i, k);
 					k -= l;
-					ItemStack itemStack = item.createStack(l, false);
-					boolean bl = serverPlayerEntity.getInventory().insertStack(itemStack);
-					if (bl && itemStack.isEmpty()) {
-						itemStack.setCount(1);
-						ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
+					ItemStack itemStack2 = item.createStack(l, false);
+					boolean bl = serverPlayerEntity.getInventory().insertStack(itemStack2);
+					if (bl && itemStack2.isEmpty()) {
+						itemStack2.setCount(1);
+						ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack2, false);
 						if (itemEntity != null) {
 							itemEntity.setDespawnImmediately();
 						}
@@ -82,7 +83,7 @@ public class GiveCommand {
 							);
 						serverPlayerEntity.currentScreenHandler.sendContentUpdates();
 					} else {
-						ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
+						ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack2, false);
 						if (itemEntity != null) {
 							itemEntity.resetPickupDelay();
 							itemEntity.setOwner(serverPlayerEntity.getUuid());
@@ -93,13 +94,13 @@ public class GiveCommand {
 
 			if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.translatable(
-						"commands.give.success.single", count, item.createStack(count, false).toHoverableText(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
-					),
+					() -> Text.translatable(
+							"commands.give.success.single", count, itemStack.toHoverableText(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+						),
 					true
 				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.give.success.single", count, item.createStack(count, false).toHoverableText(), targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.give.success.single", count, itemStack.toHoverableText(), targets.size()), true);
 			}
 
 			return targets.size();

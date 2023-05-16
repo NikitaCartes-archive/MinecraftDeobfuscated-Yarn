@@ -563,4 +563,9 @@ public class EnderDragonFight {
 			}
 		}
 	}
+
+	@Nullable
+	public UUID getDragonUuid() {
+		return this.dragonUuid;
+	}
 }

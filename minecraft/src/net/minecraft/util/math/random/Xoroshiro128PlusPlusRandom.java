@@ -1,10 +1,6 @@
 package net.minecraft.util.math.random;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Charsets;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
-import com.google.common.primitives.Longs;
 import com.mojang.serialization.Codec;
 import net.minecraft.util.math.MathHelper;
 
@@ -23,6 +19,10 @@ public class Xoroshiro128PlusPlusRandom implements Random {
 
 	public Xoroshiro128PlusPlusRandom(long seed) {
 		this.implementation = new Xoroshiro128PlusPlusRandomImpl(RandomSeed.createXoroshiroSeed(seed));
+	}
+
+	public Xoroshiro128PlusPlusRandom(RandomSeed.XoroshiroSeed seed) {
+		this.implementation = new Xoroshiro128PlusPlusRandomImpl(seed);
 	}
 
 	public Xoroshiro128PlusPlusRandom(long seedLo, long seedHi) {
@@ -118,7 +118,6 @@ public class Xoroshiro128PlusPlusRandom implements Random {
 	}
 
 	public static class Splitter implements RandomSplitter {
-		private static final HashFunction MD5_HASHER = Hashing.md5();
 		private final long seedLo;
 		private final long seedHi;
 
@@ -136,10 +135,8 @@ public class Xoroshiro128PlusPlusRandom implements Random {
 
 		@Override
 		public Random split(String seed) {
-			byte[] bs = MD5_HASHER.hashString(seed, Charsets.UTF_8).asBytes();
-			long l = Longs.fromBytes(bs[0], bs[1], bs[2], bs[3], bs[4], bs[5], bs[6], bs[7]);
-			long m = Longs.fromBytes(bs[8], bs[9], bs[10], bs[11], bs[12], bs[13], bs[14], bs[15]);
-			return new Xoroshiro128PlusPlusRandom(l ^ this.seedLo, m ^ this.seedHi);
+			RandomSeed.XoroshiroSeed xoroshiroSeed = RandomSeed.createXoroshiroSeed(seed);
+			return new Xoroshiro128PlusPlusRandom(xoroshiroSeed.split(this.seedLo, this.seedHi));
 		}
 
 		@VisibleForTesting

@@ -21,13 +21,13 @@ public class SaveAllCommand {
 	}
 
 	private static int saveAll(ServerCommandSource source, boolean flush) throws CommandSyntaxException {
-		source.sendFeedback(Text.translatable("commands.save.saving"), false);
+		source.sendFeedback(() -> Text.translatable("commands.save.saving"), false);
 		MinecraftServer minecraftServer = source.getServer();
 		boolean bl = minecraftServer.saveAll(true, flush, true);
 		if (!bl) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			source.sendFeedback(Text.translatable("commands.save.success"), true);
+			source.sendFeedback(() -> Text.translatable("commands.save.success"), true);
 			return 1;
 		}
 	}

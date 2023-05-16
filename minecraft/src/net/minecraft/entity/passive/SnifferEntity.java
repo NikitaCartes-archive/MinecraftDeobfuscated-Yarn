@@ -71,7 +71,6 @@ public class SnifferEntity extends AnimalEntity {
 	public final AnimationState sniffingAnimationState = new AnimationState();
 	public final AnimationState diggingAnimationState = new AnimationState();
 	public final AnimationState risingAnimationState = new AnimationState();
-	public final AnimationState babyGrowthAnimationState = new AnimationState();
 
 	public static DefaultAttributeContainer.Builder createSnifferAttributes() {
 		return MobEntity.createMobAttributes().add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1F).add(EntityAttributes.GENERIC_MAX_HEALTH, 14.0);
@@ -356,7 +355,6 @@ public class SnifferEntity extends AnimalEntity {
 				this.playSearchingSound();
 		}
 
-		this.babyGrowthAnimationState.setRunning(this.isBaby(), this.age);
 		super.tick();
 	}
 

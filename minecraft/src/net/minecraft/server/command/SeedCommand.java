@@ -9,7 +9,7 @@ public class SeedCommand {
 		dispatcher.register(CommandManager.literal("seed").requires(source -> !dedicated || source.hasPermissionLevel(2)).executes(context -> {
 			long l = context.getSource().getWorld().getSeed();
 			Text text = Texts.bracketedCopyable(String.valueOf(l));
-			context.getSource().sendFeedback(Text.translatable("commands.seed.success", text), false);
+			context.getSource().sendFeedback(() -> Text.translatable("commands.seed.success", text), false);
 			return (int)l;
 		}));
 	}

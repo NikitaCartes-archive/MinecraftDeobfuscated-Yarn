@@ -2,6 +2,8 @@ package net.minecraft.screen;
 
 import com.mojang.logging.LogUtils;
 import java.util.Map;
+import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -15,8 +17,8 @@ import net.minecraft.item.Items;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.screen.slot.ForgingSlotsManager;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import net.minecraft.world.WorldEvents;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
 public class AnvilScreenHandler extends ForgingScreenHandler {
@@ -27,6 +29,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 	private static final boolean field_30752 = false;
 	public static final int field_30751 = 50;
 	private int repairItemUsage;
+	@Nullable
 	private String newItemName;
 	private final Property levelCost = Property.create();
 	private static final int field_30753 = 0;
@@ -225,16 +228,16 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 				}
 			}
 
-			if (StringUtils.isBlank(this.newItemName)) {
-				if (itemStack.hasCustomName()) {
+			if (this.newItemName != null && !Util.isBlank(this.newItemName)) {
+				if (!this.newItemName.equals(itemStack.getName().getString())) {
 					k = 1;
 					i += k;
-					itemStack2.removeCustomName();
+					itemStack2.setCustomName(Text.literal(this.newItemName));
 				}
-			} else if (!this.newItemName.equals(itemStack.getName().getString())) {
+			} else if (itemStack.hasCustomName()) {
 				k = 1;
 				i += k;
-				itemStack2.setCustomName(Text.literal(this.newItemName));
+				itemStack2.removeCustomName();
 			}
 
 			this.levelCost.set(j + i);
@@ -273,18 +276,30 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		return cost * 2 + 1;
 	}
 
-	public void setNewItemName(String newItemName) {
-		this.newItemName = newItemName;
-		if (this.getSlot(2).hasStack()) {
-			ItemStack itemStack = this.getSlot(2).getStack();
-			if (StringUtils.isBlank(newItemName)) {
-				itemStack.removeCustomName();
-			} else {
-				itemStack.setCustomName(Text.literal(this.newItemName));
+	public boolean setNewItemName(String newItemName) {
+		String string = sanitize(newItemName);
+		if (string != null && !string.equals(this.newItemName)) {
+			this.newItemName = string;
+			if (this.getSlot(2).hasStack()) {
+				ItemStack itemStack = this.getSlot(2).getStack();
+				if (Util.isBlank(string)) {
+					itemStack.removeCustomName();
+				} else {
+					itemStack.setCustomName(Text.literal(string));
+				}
 			}
-		}
 
-		this.updateResult();
+			this.updateResult();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Nullable
+	private static String sanitize(String name) {
+		String string = SharedConstants.stripInvalidChars(name);
+		return string.length() <= 50 ? string : null;
 	}
 
 	public int getLevelCost() {

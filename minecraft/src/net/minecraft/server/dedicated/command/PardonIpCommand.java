@@ -36,7 +36,7 @@ public class PardonIpCommand {
 				throw ALREADY_UNBANNED_EXCEPTION.create();
 			} else {
 				bannedIpList.remove(target);
-				source.sendFeedback(Text.translatable("commands.pardonip.success", target), true);
+				source.sendFeedback(() -> Text.translatable("commands.pardonip.success", target), true);
 				return 1;
 			}
 		}

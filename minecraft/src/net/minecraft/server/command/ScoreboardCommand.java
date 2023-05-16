@@ -336,7 +336,7 @@ public class ScoreboardCommand {
 		} else {
 			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(target, objective);
 			source.sendFeedback(
-				Text.translatable("commands.scoreboard.players.get.success", target, scoreboardPlayerScore.getScore(), objective.toHoverableText()), false
+				() -> Text.translatable("commands.scoreboard.players.get.success", target, scoreboardPlayerScore.getScore(), objective.toHoverableText()), false
 			);
 			return scoreboardPlayerScore.getScore();
 		}
@@ -365,11 +365,14 @@ public class ScoreboardCommand {
 		}
 
 		if (targets.size() == 1) {
+			int j = i;
 			source.sendFeedback(
-				Text.translatable("commands.scoreboard.players.operation.success.single", targetObjective.toHoverableText(), targets.iterator().next(), i), true
+				() -> Text.translatable("commands.scoreboard.players.operation.success.single", targetObjective.toHoverableText(), targets.iterator().next(), j), true
 			);
 		} else {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.operation.success.multiple", targetObjective.toHoverableText(), targets.size()), true);
+			source.sendFeedback(
+				() -> Text.translatable("commands.scoreboard.players.operation.success.multiple", targetObjective.toHoverableText(), targets.size()), true
+			);
 		}
 
 		return i;
@@ -394,9 +397,11 @@ public class ScoreboardCommand {
 				throw PLAYERS_ENABLE_FAILED_EXCEPTION.create();
 			} else {
 				if (targets.size() == 1) {
-					source.sendFeedback(Text.translatable("commands.scoreboard.players.enable.success.single", objective.toHoverableText(), targets.iterator().next()), true);
+					source.sendFeedback(
+						() -> Text.translatable("commands.scoreboard.players.enable.success.single", objective.toHoverableText(), targets.iterator().next()), true
+					);
 				} else {
-					source.sendFeedback(Text.translatable("commands.scoreboard.players.enable.success.multiple", objective.toHoverableText(), targets.size()), true);
+					source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.enable.success.multiple", objective.toHoverableText(), targets.size()), true);
 				}
 
 				return i;
@@ -412,9 +417,9 @@ public class ScoreboardCommand {
 		}
 
 		if (targets.size() == 1) {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.reset.all.single", targets.iterator().next()), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.reset.all.single", targets.iterator().next()), true);
 		} else {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.reset.all.multiple", targets.size()), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.reset.all.multiple", targets.size()), true);
 		}
 
 		return targets.size();
@@ -428,9 +433,11 @@ public class ScoreboardCommand {
 		}
 
 		if (targets.size() == 1) {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.reset.specific.single", objective.toHoverableText(), targets.iterator().next()), true);
+			source.sendFeedback(
+				() -> Text.translatable("commands.scoreboard.players.reset.specific.single", objective.toHoverableText(), targets.iterator().next()), true
+			);
 		} else {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.reset.specific.multiple", objective.toHoverableText(), targets.size()), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.reset.specific.multiple", objective.toHoverableText(), targets.size()), true);
 		}
 
 		return targets.size();
@@ -445,9 +452,11 @@ public class ScoreboardCommand {
 		}
 
 		if (targets.size() == 1) {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.set.success.single", objective.toHoverableText(), targets.iterator().next(), score), true);
+			source.sendFeedback(
+				() -> Text.translatable("commands.scoreboard.players.set.success.single", objective.toHoverableText(), targets.iterator().next(), score), true
+			);
 		} else {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.set.success.multiple", objective.toHoverableText(), targets.size(), score), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.set.success.multiple", objective.toHoverableText(), targets.size(), score), true);
 		}
 
 		return score * targets.size();
@@ -464,11 +473,12 @@ public class ScoreboardCommand {
 		}
 
 		if (targets.size() == 1) {
+			int j = i;
 			source.sendFeedback(
-				Text.translatable("commands.scoreboard.players.add.success.single", score, objective.toHoverableText(), targets.iterator().next(), i), true
+				() -> Text.translatable("commands.scoreboard.players.add.success.single", score, objective.toHoverableText(), targets.iterator().next(), j), true
 			);
 		} else {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.add.success.multiple", score, objective.toHoverableText(), targets.size()), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.add.success.multiple", score, objective.toHoverableText(), targets.size()), true);
 		}
 
 		return i;
@@ -485,11 +495,12 @@ public class ScoreboardCommand {
 		}
 
 		if (targets.size() == 1) {
+			int j = i;
 			source.sendFeedback(
-				Text.translatable("commands.scoreboard.players.remove.success.single", score, objective.toHoverableText(), targets.iterator().next(), i), true
+				() -> Text.translatable("commands.scoreboard.players.remove.success.single", score, objective.toHoverableText(), targets.iterator().next(), j), true
 			);
 		} else {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.remove.success.multiple", score, objective.toHoverableText(), targets.size()), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.remove.success.multiple", score, objective.toHoverableText(), targets.size()), true);
 		}
 
 		return i;
@@ -498,9 +509,9 @@ public class ScoreboardCommand {
 	private static int executeListPlayers(ServerCommandSource source) {
 		Collection<String> collection = source.getServer().getScoreboard().getKnownPlayers();
 		if (collection.isEmpty()) {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.list.empty"), false);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.list.empty"), false);
 		} else {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.list.success", collection.size(), Texts.joinOrdered(collection)), false);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.list.success", collection.size(), Texts.joinOrdered(collection)), false);
 		}
 
 		return collection.size();
@@ -509,17 +520,17 @@ public class ScoreboardCommand {
 	private static int executeListScores(ServerCommandSource source, String target) {
 		Map<ScoreboardObjective, ScoreboardPlayerScore> map = source.getServer().getScoreboard().getPlayerObjectives(target);
 		if (map.isEmpty()) {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.list.entity.empty", target), false);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.list.entity.empty", target), false);
 		} else {
-			source.sendFeedback(Text.translatable("commands.scoreboard.players.list.entity.success", target, map.size()), false);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.players.list.entity.success", target, map.size()), false);
 
 			for (Entry<ScoreboardObjective, ScoreboardPlayerScore> entry : map.entrySet()) {
 				source.sendFeedback(
-					Text.translatable(
-						"commands.scoreboard.players.list.entity.entry",
-						((ScoreboardObjective)entry.getKey()).toHoverableText(),
-						((ScoreboardPlayerScore)entry.getValue()).getScore()
-					),
+					() -> Text.translatable(
+							"commands.scoreboard.players.list.entity.entry",
+							((ScoreboardObjective)entry.getKey()).toHoverableText(),
+							((ScoreboardPlayerScore)entry.getValue()).getScore()
+						),
 					false
 				);
 			}
@@ -534,7 +545,7 @@ public class ScoreboardCommand {
 			throw OBJECTIVES_DISPLAY_ALREADY_EMPTY_EXCEPTION.create();
 		} else {
 			scoreboard.setObjectiveSlot(slot, null);
-			source.sendFeedback(Text.translatable("commands.scoreboard.objectives.display.cleared", Scoreboard.getDisplaySlotNames()[slot]), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.display.cleared", Scoreboard.getDisplaySlotNames()[slot]), true);
 			return 0;
 		}
 	}
@@ -546,7 +557,7 @@ public class ScoreboardCommand {
 		} else {
 			scoreboard.setObjectiveSlot(slot, objective);
 			source.sendFeedback(
-				Text.translatable("commands.scoreboard.objectives.display.set", Scoreboard.getDisplaySlotNames()[slot], objective.getDisplayName()), true
+				() -> Text.translatable("commands.scoreboard.objectives.display.set", Scoreboard.getDisplaySlotNames()[slot], objective.getDisplayName()), true
 			);
 			return 0;
 		}
@@ -555,7 +566,7 @@ public class ScoreboardCommand {
 	private static int executeModifyObjective(ServerCommandSource source, ScoreboardObjective objective, Text displayName) {
 		if (!objective.getDisplayName().equals(displayName)) {
 			objective.setDisplayName(displayName);
-			source.sendFeedback(Text.translatable("commands.scoreboard.objectives.modify.displayname", objective.getName(), objective.toHoverableText()), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.modify.displayname", objective.getName(), objective.toHoverableText()), true);
 		}
 
 		return 0;
@@ -564,7 +575,7 @@ public class ScoreboardCommand {
 	private static int executeModifyRenderType(ServerCommandSource source, ScoreboardObjective objective, ScoreboardCriterion.RenderType type) {
 		if (objective.getRenderType() != type) {
 			objective.setRenderType(type);
-			source.sendFeedback(Text.translatable("commands.scoreboard.objectives.modify.rendertype", objective.toHoverableText()), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.modify.rendertype", objective.toHoverableText()), true);
 		}
 
 		return 0;
@@ -573,7 +584,7 @@ public class ScoreboardCommand {
 	private static int executeRemoveObjective(ServerCommandSource source, ScoreboardObjective objective) {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 		scoreboard.removeObjective(objective);
-		source.sendFeedback(Text.translatable("commands.scoreboard.objectives.remove.success", objective.toHoverableText()), true);
+		source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.remove.success", objective.toHoverableText()), true);
 		return scoreboard.getObjectives().size();
 	}
 
@@ -584,7 +595,7 @@ public class ScoreboardCommand {
 		} else {
 			scoreboard.addObjective(objective, criteria, displayName, criteria.getDefaultRenderType());
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objective);
-			source.sendFeedback(Text.translatable("commands.scoreboard.objectives.add.success", scoreboardObjective.toHoverableText()), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.add.success", scoreboardObjective.toHoverableText()), true);
 			return scoreboard.getObjectives().size();
 		}
 	}
@@ -592,10 +603,11 @@ public class ScoreboardCommand {
 	private static int executeListObjectives(ServerCommandSource source) {
 		Collection<ScoreboardObjective> collection = source.getServer().getScoreboard().getObjectives();
 		if (collection.isEmpty()) {
-			source.sendFeedback(Text.translatable("commands.scoreboard.objectives.list.empty"), false);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.list.empty"), false);
 		} else {
 			source.sendFeedback(
-				Text.translatable("commands.scoreboard.objectives.list.success", collection.size(), Texts.join(collection, ScoreboardObjective::toHoverableText)), false
+				() -> Text.translatable("commands.scoreboard.objectives.list.success", collection.size(), Texts.join(collection, ScoreboardObjective::toHoverableText)),
+				false
 			);
 		}
 

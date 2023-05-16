@@ -11,7 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.StringHelper;
-import org.apache.commons.lang3.StringUtils;
+import net.minecraft.util.Util;
 
 /**
  * Handles the flattening of "moj_" import strings in the loaded GLSL shader file.
@@ -72,7 +72,7 @@ public abstract class GlImportProcessor {
 						int k = context.line;
 						List<String> list2 = this.parseImports(string5, context, bl ? PathUtil.getPosixFullPath(string4) : "");
 						list2.set(0, String.format(Locale.ROOT, "#line %d %d\n%s", 0, k, this.extractVersion((String)list2.get(0), context)));
-						if (!StringUtils.isBlank(string3)) {
+						if (!Util.isBlank(string3)) {
 							list.add(string3);
 						}
 
@@ -90,7 +90,7 @@ public abstract class GlImportProcessor {
 		}
 
 		String string2x = source.substring(j);
-		if (!StringUtils.isBlank(string2x)) {
+		if (!Util.isBlank(string2x)) {
 			list.add(string + string2x);
 		}
 

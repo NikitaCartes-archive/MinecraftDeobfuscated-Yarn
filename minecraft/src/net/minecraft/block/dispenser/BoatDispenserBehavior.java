@@ -1,6 +1,7 @@
 package net.minecraft.block.dispenser;
 
 import net.minecraft.block.DispenserBlock;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.entity.vehicle.ChestBoatEntity;
 import net.minecraft.item.ItemStack;
@@ -29,22 +30,23 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 	public ItemStack dispenseSilently(BlockPointer pointer, ItemStack stack) {
 		Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
 		World world = pointer.getWorld();
-		double d = pointer.getX() + (double)((float)direction.getOffsetX() * 1.125F);
-		double e = pointer.getY() + (double)((float)direction.getOffsetY() * 1.125F);
-		double f = pointer.getZ() + (double)((float)direction.getOffsetZ() * 1.125F);
+		double d = 0.5625 + (double)EntityType.BOAT.getWidth() / 2.0;
+		double e = pointer.getX() + (double)direction.getOffsetX() * d;
+		double f = pointer.getY() + (double)direction.getOffsetY() - (double)EntityType.BOAT.getHeight();
+		double g = pointer.getZ() + (double)direction.getOffsetZ() * d;
 		BlockPos blockPos = pointer.getPos().offset(direction);
-		double g;
+		double h;
 		if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
-			g = 1.0;
+			h = 1.0;
 		} else {
 			if (!world.getBlockState(blockPos).isAir() || !world.getFluidState(blockPos.down()).isIn(FluidTags.WATER)) {
 				return this.itemDispenser.dispense(pointer, stack);
 			}
 
-			g = 0.0;
+			h = 0.0;
 		}
 
-		BoatEntity boatEntity = (BoatEntity)(this.chest ? new ChestBoatEntity(world, d, e + g, f) : new BoatEntity(world, d, e + g, f));
+		BoatEntity boatEntity = (BoatEntity)(this.chest ? new ChestBoatEntity(world, e, f + h, g) : new BoatEntity(world, e, f + h, g));
 		boatEntity.setVariant(this.boatType);
 		boatEntity.setYaw(direction.asRotation());
 		world.spawnEntity(boatEntity);

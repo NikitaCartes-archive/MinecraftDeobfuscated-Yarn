@@ -75,7 +75,6 @@ import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.state.property.IntProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.annotation.Debug;
@@ -841,34 +840,30 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 					BlockPos blockPos = BeeEntity.this.getBlockPos().down(i);
 					BlockState blockState = BeeEntity.this.getWorld().getBlockState(blockPos);
 					Block block = blockState.getBlock();
-					boolean bl = false;
-					IntProperty intProperty = null;
+					BlockState blockState2 = null;
 					if (blockState.isIn(BlockTags.BEE_GROWABLES)) {
 						if (block instanceof CropBlock) {
 							CropBlock cropBlock = (CropBlock)block;
 							if (!cropBlock.isMature(blockState)) {
-								bl = true;
-								intProperty = cropBlock.getAgeProperty();
+								blockState2 = cropBlock.withAge(cropBlock.getAge(blockState) + 1);
 							}
 						} else if (block instanceof StemBlock) {
 							int j = (Integer)blockState.get(StemBlock.AGE);
 							if (j < 7) {
-								bl = true;
-								intProperty = StemBlock.AGE;
+								blockState2 = blockState.with(StemBlock.AGE, Integer.valueOf(j + 1));
 							}
 						} else if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
 							int j = (Integer)blockState.get(SweetBerryBushBlock.AGE);
 							if (j < 3) {
-								bl = true;
-								intProperty = SweetBerryBushBlock.AGE;
+								blockState2 = blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(j + 1));
 							}
 						} else if (blockState.isOf(Blocks.CAVE_VINES) || blockState.isOf(Blocks.CAVE_VINES_PLANT)) {
 							((Fertilizable)blockState.getBlock()).grow((ServerWorld)BeeEntity.this.getWorld(), BeeEntity.this.random, blockPos, blockState);
 						}
 
-						if (bl) {
+						if (blockState2 != null) {
 							BeeEntity.this.getWorld().syncWorldEvent(WorldEvents.PLANT_FERTILIZED, blockPos, 0);
-							BeeEntity.this.getWorld().setBlockState(blockPos, blockState.with(intProperty, Integer.valueOf((Integer)blockState.get(intProperty) + 1)));
+							BeeEntity.this.getWorld().setBlockState(blockPos, blockState2);
 							BeeEntity.this.addCropCounter();
 						}
 					}

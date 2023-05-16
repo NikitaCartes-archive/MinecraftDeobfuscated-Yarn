@@ -53,7 +53,7 @@ public class DebugCommand {
 			throw ALREADY_RUNNING_EXCEPTION.create();
 		} else {
 			minecraftServer.startDebug();
-			source.sendFeedback(Text.translatable("commands.debug.started"), true);
+			source.sendFeedback(() -> Text.translatable("commands.debug.started"), true);
 			return 0;
 		}
 	}
@@ -67,7 +67,7 @@ public class DebugCommand {
 			double d = (double)profileResult.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
 			double e = (double)profileResult.getTickSpan() / d;
 			source.sendFeedback(
-				Text.translatable("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format(Locale.ROOT, "%.2f", e)),
+				() -> Text.translatable("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", d), profileResult.getTickSpan(), String.format(Locale.ROOT, "%.2f", e)),
 				true
 			);
 			return (int)e;
@@ -112,10 +112,13 @@ public class DebugCommand {
 			source.sendError(Text.translatable("commands.debug.function.traceFailed"));
 		}
 
+		int j = i;
 		if (functions.size() == 1) {
-			source.sendFeedback(Text.translatable("commands.debug.function.success.single", i, ((CommandFunction)functions.iterator().next()).getId(), string), true);
+			source.sendFeedback(
+				() -> Text.translatable("commands.debug.function.success.single", j, ((CommandFunction)functions.iterator().next()).getId(), string), true
+			);
 		} else {
-			source.sendFeedback(Text.translatable("commands.debug.function.success.multiple", i, functions.size(), string), true);
+			source.sendFeedback(() -> Text.translatable("commands.debug.function.success.multiple", j, functions.size(), string), true);
 		}
 
 		return i;

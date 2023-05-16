@@ -209,54 +209,66 @@ public class ChunkHolder {
 		if (this.pendingBlockUpdates || !this.skyLightUpdateBits.isEmpty() || !this.blockLightUpdateBits.isEmpty()) {
 			World world = chunk.getWorld();
 			if (!this.skyLightUpdateBits.isEmpty() || !this.blockLightUpdateBits.isEmpty()) {
-				this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(chunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits), true);
+				List<ServerPlayerEntity> list = this.playersWatchingChunkProvider.getPlayersWatchingChunk(this.pos, true);
+				if (!list.isEmpty()) {
+					LightUpdateS2CPacket lightUpdateS2CPacket = new LightUpdateS2CPacket(
+						chunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits
+					);
+					this.sendPacketToPlayers(list, lightUpdateS2CPacket);
+				}
+
 				this.skyLightUpdateBits.clear();
 				this.blockLightUpdateBits.clear();
 			}
 
-			for (int i = 0; i < this.blockUpdatesBySection.length; i++) {
-				ShortSet shortSet = this.blockUpdatesBySection[i];
-				if (shortSet != null) {
-					int j = this.world.sectionIndexToCoord(i);
-					ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk.getPos(), j);
-					if (shortSet.size() == 1) {
-						BlockPos blockPos = chunkSectionPos.unpackBlockPos(shortSet.iterator().nextShort());
-						BlockState blockState = world.getBlockState(blockPos);
-						this.sendPacketToPlayersWatching(new BlockUpdateS2CPacket(blockPos, blockState), false);
-						this.tryUpdateBlockEntityAt(world, blockPos, blockState);
-					} else {
-						ChunkSection chunkSection = chunk.getSection(i);
-						ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDeltaUpdateS2CPacket(chunkSectionPos, shortSet, chunkSection);
-						this.sendPacketToPlayersWatching(chunkDeltaUpdateS2CPacket, false);
-						chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> this.tryUpdateBlockEntityAt(world, pos, state));
+			if (this.pendingBlockUpdates) {
+				List<ServerPlayerEntity> list = this.playersWatchingChunkProvider.getPlayersWatchingChunk(this.pos, false);
+
+				for (int i = 0; i < this.blockUpdatesBySection.length; i++) {
+					ShortSet shortSet = this.blockUpdatesBySection[i];
+					if (shortSet != null) {
+						this.blockUpdatesBySection[i] = null;
+						if (!list.isEmpty()) {
+							int j = this.world.sectionIndexToCoord(i);
+							ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk.getPos(), j);
+							if (shortSet.size() == 1) {
+								BlockPos blockPos = chunkSectionPos.unpackBlockPos(shortSet.iterator().nextShort());
+								BlockState blockState = world.getBlockState(blockPos);
+								this.sendPacketToPlayers(list, new BlockUpdateS2CPacket(blockPos, blockState));
+								this.tryUpdateBlockEntityAt(list, world, blockPos, blockState);
+							} else {
+								ChunkSection chunkSection = chunk.getSection(i);
+								ChunkDeltaUpdateS2CPacket chunkDeltaUpdateS2CPacket = new ChunkDeltaUpdateS2CPacket(chunkSectionPos, shortSet, chunkSection);
+								this.sendPacketToPlayers(list, chunkDeltaUpdateS2CPacket);
+								chunkDeltaUpdateS2CPacket.visitUpdates((pos, state) -> this.tryUpdateBlockEntityAt(list, world, pos, state));
+							}
+						}
 					}
-
-					this.blockUpdatesBySection[i] = null;
 				}
+
+				this.pendingBlockUpdates = false;
 			}
-
-			this.pendingBlockUpdates = false;
 		}
 	}
 
-	private void tryUpdateBlockEntityAt(World world, BlockPos pos, BlockState state) {
+	private void tryUpdateBlockEntityAt(List<ServerPlayerEntity> players, World world, BlockPos pos, BlockState state) {
 		if (state.hasBlockEntity()) {
-			this.sendBlockEntityUpdatePacket(world, pos);
+			this.sendBlockEntityUpdatePacket(players, world, pos);
 		}
 	}
 
-	private void sendBlockEntityUpdatePacket(World world, BlockPos pos) {
+	private void sendBlockEntityUpdatePacket(List<ServerPlayerEntity> players, World world, BlockPos pos) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity != null) {
 			Packet<?> packet = blockEntity.toUpdatePacket();
 			if (packet != null) {
-				this.sendPacketToPlayersWatching(packet, false);
+				this.sendPacketToPlayers(players, packet);
 			}
 		}
 	}
 
-	private void sendPacketToPlayersWatching(Packet<?> packet, boolean onlyOnWatchDistanceEdge) {
-		this.playersWatchingChunkProvider.getPlayersWatchingChunk(this.pos, onlyOnWatchDistanceEdge).forEach(player -> player.networkHandler.sendPacket(packet));
+	private void sendPacketToPlayers(List<ServerPlayerEntity> players, Packet<?> packet) {
+		players.forEach(player -> player.networkHandler.sendPacket(packet));
 	}
 
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getChunkAt(ChunkStatus targetStatus, ThreadedAnvilChunkStorage chunkStorage) {

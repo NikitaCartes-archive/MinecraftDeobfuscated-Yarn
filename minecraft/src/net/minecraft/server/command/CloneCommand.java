@@ -315,7 +315,8 @@ public class CloneCommand {
 				if (mx == 0) {
 					throw FAILED_EXCEPTION.create();
 				} else {
-					source.sendFeedback(Text.translatable("commands.clone.success", mx), true);
+					int n = mx;
+					source.sendFeedback(() -> Text.translatable("commands.clone.success", n), true);
 					return mx;
 				}
 			} else {

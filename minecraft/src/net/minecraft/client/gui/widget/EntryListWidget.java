@@ -22,6 +22,7 @@ import net.minecraft.client.gui.navigation.NavigationDirection;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 
@@ -232,8 +233,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			context.drawTexture(Screen.OPTIONS_BACKGROUND_TEXTURE, this.left, this.bottom, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
 			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int n = 4;
-			context.fillGradient(this.left, this.top, this.right, this.top + 4, -16777216, 0);
-			context.fillGradient(this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216);
+			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.top, this.right, this.top + 4, -16777216, 0, 0);
+			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216, 0);
 		}
 
 		int m = this.getMaxScroll();

@@ -70,9 +70,9 @@ public class TagCommand {
 			throw ADD_FAILED_EXCEPTION.create();
 		} else {
 			if (targets.size() == 1) {
-				source.sendFeedback(Text.translatable("commands.tag.add.success.single", tag, ((Entity)targets.iterator().next()).getDisplayName()), true);
+				source.sendFeedback(() -> Text.translatable("commands.tag.add.success.single", tag, ((Entity)targets.iterator().next()).getDisplayName()), true);
 			} else {
-				source.sendFeedback(Text.translatable("commands.tag.add.success.multiple", tag, targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.tag.add.success.multiple", tag, targets.size()), true);
 			}
 
 			return i;
@@ -92,9 +92,9 @@ public class TagCommand {
 			throw REMOVE_FAILED_EXCEPTION.create();
 		} else {
 			if (targets.size() == 1) {
-				source.sendFeedback(Text.translatable("commands.tag.remove.success.single", tag, ((Entity)targets.iterator().next()).getDisplayName()), true);
+				source.sendFeedback(() -> Text.translatable("commands.tag.remove.success.single", tag, ((Entity)targets.iterator().next()).getDisplayName()), true);
 			} else {
-				source.sendFeedback(Text.translatable("commands.tag.remove.success.multiple", tag, targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.tag.remove.success.multiple", tag, targets.size()), true);
 			}
 
 			return i;
@@ -111,14 +111,14 @@ public class TagCommand {
 		if (targets.size() == 1) {
 			Entity entity2 = (Entity)targets.iterator().next();
 			if (set.isEmpty()) {
-				source.sendFeedback(Text.translatable("commands.tag.list.single.empty", entity2.getDisplayName()), false);
+				source.sendFeedback(() -> Text.translatable("commands.tag.list.single.empty", entity2.getDisplayName()), false);
 			} else {
-				source.sendFeedback(Text.translatable("commands.tag.list.single.success", entity2.getDisplayName(), set.size(), Texts.joinOrdered(set)), false);
+				source.sendFeedback(() -> Text.translatable("commands.tag.list.single.success", entity2.getDisplayName(), set.size(), Texts.joinOrdered(set)), false);
 			}
 		} else if (set.isEmpty()) {
-			source.sendFeedback(Text.translatable("commands.tag.list.multiple.empty", targets.size()), false);
+			source.sendFeedback(() -> Text.translatable("commands.tag.list.multiple.empty", targets.size()), false);
 		} else {
-			source.sendFeedback(Text.translatable("commands.tag.list.multiple.success", targets.size(), set.size(), Texts.joinOrdered(set)), false);
+			source.sendFeedback(() -> Text.translatable("commands.tag.list.multiple.success", targets.size(), set.size(), Texts.joinOrdered(set)), false);
 		}
 
 		return set.size();

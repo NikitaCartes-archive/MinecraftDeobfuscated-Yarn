@@ -35,7 +35,7 @@ public class DeOpCommand {
 			if (playerManager.isOperator(gameProfile)) {
 				playerManager.removeFromOperators(gameProfile);
 				i++;
-				source.sendFeedback(Text.translatable("commands.deop.success", ((GameProfile)targets.iterator().next()).getName()), true);
+				source.sendFeedback(() -> Text.translatable("commands.deop.success", ((GameProfile)targets.iterator().next()).getName()), true);
 			}
 		}
 

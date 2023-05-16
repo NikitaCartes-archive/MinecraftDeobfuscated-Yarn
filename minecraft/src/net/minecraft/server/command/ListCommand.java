@@ -30,7 +30,7 @@ public class ListCommand {
 		PlayerManager playerManager = source.getServer().getPlayerManager();
 		List<ServerPlayerEntity> list = playerManager.getPlayerList();
 		Text text = Texts.join(list, nameProvider);
-		source.sendFeedback(Text.translatable("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), text), false);
+		source.sendFeedback(() -> Text.translatable("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), text), false);
 		return list.size();
 	}
 }

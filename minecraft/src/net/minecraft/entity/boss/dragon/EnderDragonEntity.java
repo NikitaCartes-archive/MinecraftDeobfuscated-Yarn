@@ -189,6 +189,13 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 			}
 		}
 
+		if (this.fight == null && this.getWorld() instanceof ServerWorld serverWorld) {
+			EnderDragonFight enderDragonFight = serverWorld.getEnderDragonFight();
+			if (enderDragonFight != null && this.getUuid().equals(enderDragonFight.getDragonUuid())) {
+				this.fight = enderDragonFight;
+			}
+		}
+
 		this.prevWingPosition = this.wingPosition;
 		if (this.isDead()) {
 			float f = (this.random.nextFloat() - 0.5F) * 8.0F;

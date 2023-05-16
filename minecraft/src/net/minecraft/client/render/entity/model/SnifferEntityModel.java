@@ -117,7 +117,9 @@ public class SnifferEntityModel<T extends SnifferEntity> extends SinglePartEntit
 		this.updateAnimation(snifferEntity.risingAnimationState, SnifferAnimations.RISING, h);
 		this.updateAnimation(snifferEntity.feelingHappyAnimationState, SnifferAnimations.FEELING_HAPPY, h);
 		this.updateAnimation(snifferEntity.scentingAnimationState, SnifferAnimations.SCENTING, h);
-		this.updateAnimation(snifferEntity.babyGrowthAnimationState, SnifferAnimations.BABY_GROWTH, h);
+		if (this.child) {
+			this.animate(SnifferAnimations.BABY_GROWTH);
+		}
 	}
 
 	@Override

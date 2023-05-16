@@ -47,7 +47,7 @@ public class PerfCommand {
 			Consumer<ProfileResult> consumer = result -> sendProfilingStoppedMessage(source, result);
 			Consumer<Path> consumer2 = dumpDirectory -> saveReport(source, dumpDirectory, minecraftServer);
 			minecraftServer.setupRecorder(consumer, consumer2);
-			source.sendFeedback(Text.translatable("commands.perf.started"), false);
+			source.sendFeedback(() -> Text.translatable("commands.perf.started"), false);
 			return 0;
 		}
 	}
@@ -99,7 +99,7 @@ public class PerfCommand {
 			LOGGER.warn("Failed to delete temporary profiling file {}", tempProfilingDirectory, var9);
 		}
 
-		source.sendFeedback(Text.translatable("commands.perf.reportSaved", string2), false);
+		source.sendFeedback(() -> Text.translatable("commands.perf.reportSaved", string2), false);
 	}
 
 	private static void sendProfilingStoppedMessage(ServerCommandSource source, ProfileResult result) {
@@ -107,7 +107,7 @@ public class PerfCommand {
 			int i = result.getTickSpan();
 			double d = (double)result.getTimeSpan() / (double)TimeHelper.SECOND_IN_NANOS;
 			source.sendFeedback(
-				Text.translatable("commands.perf.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d)), false
+				() -> Text.translatable("commands.perf.stopped", String.format(Locale.ROOT, "%.2f", d), i, String.format(Locale.ROOT, "%.2f", (double)i / d)), false
 			);
 		}
 	}

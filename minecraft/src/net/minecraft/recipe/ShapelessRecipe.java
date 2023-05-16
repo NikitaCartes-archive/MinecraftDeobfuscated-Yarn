@@ -102,7 +102,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 			DefaultedList<Ingredient> defaultedList = DefaultedList.of();
 
 			for (int i = 0; i < json.size(); i++) {
-				Ingredient ingredient = Ingredient.fromJson(json.get(i));
+				Ingredient ingredient = Ingredient.fromJson(json.get(i), false);
 				if (!ingredient.isEmpty()) {
 					defaultedList.add(ingredient);
 				}

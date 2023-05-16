@@ -56,9 +56,9 @@ public class BanIpCommand {
 			List<ServerPlayerEntity> list = source.getServer().getPlayerManager().getPlayersByIp(targetIp);
 			BannedIpEntry bannedIpEntry = new BannedIpEntry(targetIp, null, source.getName(), null, reason == null ? null : reason.getString());
 			bannedIpList.add(bannedIpEntry);
-			source.sendFeedback(Text.translatable("commands.banip.success", targetIp, bannedIpEntry.getReason()), true);
+			source.sendFeedback(() -> Text.translatable("commands.banip.success", targetIp, bannedIpEntry.getReason()), true);
 			if (!list.isEmpty()) {
-				source.sendFeedback(Text.translatable("commands.banip.info", list.size(), EntitySelector.getNames(list)), true);
+				source.sendFeedback(() -> Text.translatable("commands.banip.info", list.size(), EntitySelector.getNames(list)), true);
 			}
 
 			for (ServerPlayerEntity serverPlayerEntity : list) {

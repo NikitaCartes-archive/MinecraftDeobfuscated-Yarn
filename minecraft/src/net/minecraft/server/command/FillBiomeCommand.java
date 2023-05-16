@@ -131,16 +131,16 @@ public class FillBiomeCommand {
 
 			serverWorld.getChunkManager().threadedAnvilChunkStorage.sendChunkBiomePackets(list);
 			source.sendFeedback(
-				Text.translatable(
-					"commands.fillbiome.success.count",
-					mutableInt.getValue(),
-					blockBox.getMinX(),
-					blockBox.getMinY(),
-					blockBox.getMinZ(),
-					blockBox.getMaxX(),
-					blockBox.getMaxY(),
-					blockBox.getMaxZ()
-				),
+				() -> Text.translatable(
+						"commands.fillbiome.success.count",
+						mutableInt.getValue(),
+						blockBox.getMinX(),
+						blockBox.getMinY(),
+						blockBox.getMinZ(),
+						blockBox.getMaxX(),
+						blockBox.getMaxY(),
+						blockBox.getMaxZ()
+					),
 				true
 			);
 			return mutableInt.getValue();

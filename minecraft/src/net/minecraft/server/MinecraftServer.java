@@ -116,6 +116,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.math.random.RandomSequencesState;
 import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyRecorder;
 import net.minecraft.util.profiler.EmptyProfileResult;
@@ -368,7 +369,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		);
 		DimensionOptions dimensionOptions = registry.get(DimensionOptions.OVERWORLD);
 		ServerWorld serverWorld = new ServerWorld(
-			this, this.workerExecutor, this.session, serverWorldProperties, World.OVERWORLD, dimensionOptions, worldGenerationProgressListener, bl, m, list, true
+			this, this.workerExecutor, this.session, serverWorldProperties, World.OVERWORLD, dimensionOptions, worldGenerationProgressListener, bl, m, list, true, null
 		);
 		this.worlds.put(World.OVERWORLD, serverWorld);
 		PersistentStateManager persistentStateManager = serverWorld.getPersistentStateManager();
@@ -382,12 +383,12 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				if (bl) {
 					this.setToDebugWorldProperties(this.saveProperties);
 				}
-			} catch (Throwable var22) {
-				CrashReport crashReport = CrashReport.create(var22, "Exception initializing level");
+			} catch (Throwable var23) {
+				CrashReport crashReport = CrashReport.create(var23, "Exception initializing level");
 
 				try {
 					serverWorld.addDetailsToCrashReport(crashReport);
-				} catch (Throwable var21) {
+				} catch (Throwable var22) {
 				}
 
 				throw new CrashException(crashReport);
@@ -400,6 +401,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		if (this.saveProperties.getCustomBossEvents() != null) {
 			this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents());
 		}
+
+		RandomSequencesState randomSequencesState = serverWorld.getRandomSequences();
 
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : registry.getEntrySet()) {
 			RegistryKey<DimensionOptions> registryKey = (RegistryKey<DimensionOptions>)entry.getKey();
@@ -417,7 +420,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					bl,
 					m,
 					ImmutableList.of(),
-					false
+					false,
+					randomSequencesState
 				);
 				worldBorder.addListener(new WorldBorderListener.WorldBorderSyncer(serverWorld2.getWorldBorder()));
 				this.worlds.put(registryKey2, serverWorld2);

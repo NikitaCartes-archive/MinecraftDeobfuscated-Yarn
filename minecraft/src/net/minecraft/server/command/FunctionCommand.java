@@ -44,16 +44,17 @@ public class FunctionCommand {
 			bl |= optionalInt.isPresent();
 		}
 
+		int k = i;
 		if (functions.size() == 1) {
 			if (bl) {
-				source.sendFeedback(Text.translatable("commands.function.success.single.result", i, ((CommandFunction)functions.iterator().next()).getId()), true);
+				source.sendFeedback(() -> Text.translatable("commands.function.success.single.result", k, ((CommandFunction)functions.iterator().next()).getId()), true);
 			} else {
-				source.sendFeedback(Text.translatable("commands.function.success.single", i, ((CommandFunction)functions.iterator().next()).getId()), true);
+				source.sendFeedback(() -> Text.translatable("commands.function.success.single", k, ((CommandFunction)functions.iterator().next()).getId()), true);
 			}
 		} else if (bl) {
-			source.sendFeedback(Text.translatable("commands.function.success.multiple.result", functions.size()), true);
+			source.sendFeedback(() -> Text.translatable("commands.function.success.multiple.result", functions.size()), true);
 		} else {
-			source.sendFeedback(Text.translatable("commands.function.success.multiple", i, functions.size()), true);
+			source.sendFeedback(() -> Text.translatable("commands.function.success.multiple", k, functions.size()), true);
 		}
 
 		return i;

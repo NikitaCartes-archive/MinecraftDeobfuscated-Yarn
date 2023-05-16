@@ -20,7 +20,7 @@ public class HelpCommand {
 					Map<CommandNode<ServerCommandSource>, String> map = dispatcher.getSmartUsage(dispatcher.getRoot(), context.getSource());
 
 					for (String string : map.values()) {
-						context.getSource().sendFeedback(Text.literal("/" + string), false);
+						context.getSource().sendFeedback(() -> Text.literal("/" + string), false);
 					}
 
 					return map.size();
@@ -38,7 +38,7 @@ public class HelpCommand {
 									);
 
 									for (String string : map.values()) {
-										context.getSource().sendFeedback(Text.literal("/" + parseResults.getReader().getString() + " " + string), false);
+										context.getSource().sendFeedback(() -> Text.literal("/" + parseResults.getReader().getString() + " " + string), false);
 									}
 
 									return map.size();

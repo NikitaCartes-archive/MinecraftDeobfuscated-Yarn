@@ -2949,7 +2949,6 @@ public class Blocks {
 		new TallFlowerBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
-				.replaceable()
 				.noCollision()
 				.breakInstantly()
 				.sounds(BlockSoundGroup.GRASS)
@@ -2963,7 +2962,6 @@ public class Blocks {
 		new TallFlowerBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
-				.replaceable()
 				.noCollision()
 				.breakInstantly()
 				.sounds(BlockSoundGroup.GRASS)
@@ -2977,7 +2975,6 @@ public class Blocks {
 		new TallFlowerBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
-				.replaceable()
 				.noCollision()
 				.breakInstantly()
 				.sounds(BlockSoundGroup.GRASS)
@@ -2991,7 +2988,6 @@ public class Blocks {
 		new TallFlowerBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.DARK_GREEN)
-				.replaceable()
 				.noCollision()
 				.breakInstantly()
 				.sounds(BlockSoundGroup.GRASS)

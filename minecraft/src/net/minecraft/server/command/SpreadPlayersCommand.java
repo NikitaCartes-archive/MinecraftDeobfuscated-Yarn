@@ -114,9 +114,9 @@ public class SpreadPlayersCommand {
 			spread(center, (double)spreadDistance, serverWorld, random, d, e, f, g, maxY, piles, respectTeams);
 			double h = getMinDistance(players, serverWorld, piles, maxY, respectTeams);
 			source.sendFeedback(
-				Text.translatable(
-					"commands.spreadplayers.success." + (respectTeams ? "teams" : "entities"), piles.length, center.x, center.y, String.format(Locale.ROOT, "%.2f", h)
-				),
+				() -> Text.translatable(
+						"commands.spreadplayers.success." + (respectTeams ? "teams" : "entities"), piles.length, center.x, center.y, String.format(Locale.ROOT, "%.2f", h)
+					),
 				true
 			);
 			return piles.length;

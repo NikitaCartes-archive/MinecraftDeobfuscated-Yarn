@@ -25,6 +25,7 @@ import net.minecraft.data.family.BlockFamily;
 import net.minecraft.item.HoneycombItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.NumberRange;
 import net.minecraft.predicate.StatePredicate;
@@ -304,19 +305,14 @@ public abstract class RecipeProvider implements DataProvider {
 
 	protected static void offerDyeableRecipes(Consumer<RecipeJsonProvider> exporter, List<Item> dyes, List<Item> dyeables) {
 		for (int i = 0; i < dyes.size(); i++) {
-			for (int j = 0; j != dyeables.size(); j++) {
-				if (i != j) {
-					Item item = (Item)dyes.get(i);
-					Item item2 = (Item)dyeables.get(i);
-					Item item3 = (Item)dyeables.get(j);
-					ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, item2)
-						.input(item)
-						.input(item3)
-						.group(Registries.ITEM.getId(item2).getPath())
-						.criterion("has_needed_dye", conditionsFromItem(item))
-						.offerTo(exporter, convertBetween(item2, item3));
-				}
-			}
+			Item item = (Item)dyes.get(i);
+			Item item2 = (Item)dyeables.get(i);
+			ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, item2)
+				.input(item)
+				.input(Ingredient.ofStacks(dyeables.stream().filter(dyeable -> !dyeable.equals(item2)).map(ItemStack::new)))
+				.group(Registries.ITEM.getId(item2).getPath())
+				.criterion("has_needed_dye", conditionsFromItem(item))
+				.offerTo(exporter, "dye_" + getItemPath(item2));
 		}
 	}
 

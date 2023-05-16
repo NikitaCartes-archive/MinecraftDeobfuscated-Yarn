@@ -122,7 +122,7 @@ public class DatapackCommand {
 		ResourcePackManager resourcePackManager = source.getServer().getDataPackManager();
 		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		packAdder.apply(list, container);
-		source.sendFeedback(Text.translatable("commands.datapack.modify.enable", container.getInformationText(true)), true);
+		source.sendFeedback(() -> Text.translatable("commands.datapack.modify.enable", container.getInformationText(true)), true);
 		ReloadCommand.tryReloadDataPacks((Collection<String>)list.stream().map(ResourcePackProfile::getName).collect(Collectors.toList()), source);
 		return list.size();
 	}
@@ -131,7 +131,7 @@ public class DatapackCommand {
 		ResourcePackManager resourcePackManager = source.getServer().getDataPackManager();
 		List<ResourcePackProfile> list = Lists.<ResourcePackProfile>newArrayList(resourcePackManager.getEnabledProfiles());
 		list.remove(container);
-		source.sendFeedback(Text.translatable("commands.datapack.modify.disable", container.getInformationText(true)), true);
+		source.sendFeedback(() -> Text.translatable("commands.datapack.modify.disable", container.getInformationText(true)), true);
 		ReloadCommand.tryReloadDataPacks((Collection<String>)list.stream().map(ResourcePackProfile::getName).collect(Collectors.toList()), source);
 		return list.size();
 	}
@@ -150,10 +150,10 @@ public class DatapackCommand {
 			.filter(profile -> !collection.contains(profile) && profile.getRequestedFeatures().isSubsetOf(featureSet))
 			.toList();
 		if (list.isEmpty()) {
-			source.sendFeedback(Text.translatable("commands.datapack.list.available.none"), false);
+			source.sendFeedback(() -> Text.translatable("commands.datapack.list.available.none"), false);
 		} else {
 			source.sendFeedback(
-				Text.translatable("commands.datapack.list.available.success", list.size(), Texts.join(list, profile -> profile.getInformationText(false))), false
+				() -> Text.translatable("commands.datapack.list.available.success", list.size(), Texts.join(list, profile -> profile.getInformationText(false))), false
 			);
 		}
 
@@ -165,10 +165,11 @@ public class DatapackCommand {
 		resourcePackManager.scanPacks();
 		Collection<? extends ResourcePackProfile> collection = resourcePackManager.getEnabledProfiles();
 		if (collection.isEmpty()) {
-			source.sendFeedback(Text.translatable("commands.datapack.list.enabled.none"), false);
+			source.sendFeedback(() -> Text.translatable("commands.datapack.list.enabled.none"), false);
 		} else {
 			source.sendFeedback(
-				Text.translatable("commands.datapack.list.enabled.success", collection.size(), Texts.join(collection, profile -> profile.getInformationText(true))), false
+				() -> Text.translatable("commands.datapack.list.enabled.success", collection.size(), Texts.join(collection, profile -> profile.getInformationText(true))),
+				false
 			);
 		}
 

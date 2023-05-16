@@ -47,6 +47,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.JumpingMount;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.RideableInventory;
 import net.minecraft.entity.effect.StatusEffects;
@@ -426,6 +427,10 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				m = h - this.updatedRiddenY - 1.0E-6;
 				n = i - this.updatedRiddenZ;
 				boolean bl2 = entity.groundCollision;
+				if (entity instanceof LivingEntity livingEntity && livingEntity.isClimbing()) {
+					livingEntity.onLanding();
+				}
+
 				entity.move(MovementType.PLAYER, new Vec3d(l, m, n));
 				l = g - entity.getX();
 				m = h - entity.getY();
@@ -627,10 +632,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				return;
 			}
 
-			String string = SharedConstants.stripInvalidChars(packet.getName());
-			if (string.length() <= 50) {
-				anvilScreenHandler.setNewItemName(string);
-			}
+			anvilScreenHandler.setNewItemName(packet.getName());
 		}
 	}
 
@@ -922,10 +924,10 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 								LOGGER.warn("{} moved wrongly!", this.player.getName().getString());
 							}
 
-							this.player.updatePositionAndAngles(d, e, f, g, h);
 							if (this.player.noClip
 								|| this.player.isSleeping()
-								|| (!bl3 || !serverWorld.isSpaceEmpty(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box)) {
+								|| (!bl3 || !serverWorld.isSpaceEmpty(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box, d, e, f)) {
+								this.player.updatePositionAndAngles(d, e, f, g, h);
 								this.floating = n >= -0.03125
 									&& !bl2
 									&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR
@@ -957,8 +959,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		}
 	}
 
-	private boolean isPlayerNotCollidingWithBlocks(WorldView world, Box box) {
-		Iterable<VoxelShape> iterable = world.getCollisions(this.player, this.player.getBoundingBox().contract(1.0E-5F));
+	private boolean isPlayerNotCollidingWithBlocks(WorldView world, Box box, double newX, double newY, double newZ) {
+		Box box2 = this.player.getBoundingBox().offset(newX - this.player.getX(), newY - this.player.getY(), newZ - this.player.getZ());
+		Iterable<VoxelShape> iterable = world.getCollisions(this.player, box2.contract(1.0E-5F));
 		VoxelShape voxelShape = VoxelShapes.cuboid(box.contract(1.0E-5F));
 
 		for (VoxelShape voxelShape2 : iterable) {
@@ -974,12 +977,12 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		this.requestTeleport(x, y, z, yaw, pitch, Collections.emptySet());
 	}
 
-	public void requestTeleport(double x, double y, double z, float yaw, float pitch, Set<PositionFlag> set) {
-		double d = set.contains(PositionFlag.X) ? this.player.getX() : 0.0;
-		double e = set.contains(PositionFlag.Y) ? this.player.getY() : 0.0;
-		double f = set.contains(PositionFlag.Z) ? this.player.getZ() : 0.0;
-		float g = set.contains(PositionFlag.Y_ROT) ? this.player.getYaw() : 0.0F;
-		float h = set.contains(PositionFlag.X_ROT) ? this.player.getPitch() : 0.0F;
+	public void requestTeleport(double x, double y, double z, float yaw, float pitch, Set<PositionFlag> flags) {
+		double d = flags.contains(PositionFlag.X) ? this.player.getX() : 0.0;
+		double e = flags.contains(PositionFlag.Y) ? this.player.getY() : 0.0;
+		double f = flags.contains(PositionFlag.Z) ? this.player.getZ() : 0.0;
+		float g = flags.contains(PositionFlag.Y_ROT) ? this.player.getYaw() : 0.0F;
+		float h = flags.contains(PositionFlag.X_ROT) ? this.player.getPitch() : 0.0F;
 		this.requestedTeleportPos = new Vec3d(x, y, z);
 		if (++this.requestedTeleportId == Integer.MAX_VALUE) {
 			this.requestedTeleportId = 0;
@@ -987,7 +990,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 		this.teleportRequestTick = this.ticks;
 		this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
-		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, set, this.requestedTeleportId));
+		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, flags, this.requestedTeleportId));
 	}
 
 	@Override

@@ -134,7 +134,7 @@ public class SnifferBrain {
 						super.run(serverWorld, animalEntity, l);
 					}
 				}),
-				Pair.of(1, new TemptTask(sniffer -> 1.25F, 3.5) {
+				Pair.of(1, new TemptTask(sniffer -> 1.25F, sniffer -> sniffer.isBaby() ? 2.5 : 3.5) {
 					@Override
 					protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
 						SnifferBrain.stopDiggingOrSniffing((SnifferEntity)pathAwareEntity);
@@ -275,6 +275,8 @@ public class SnifferBrain {
 					MemoryModuleType.SNIFFER_SNIFFING_TARGET,
 					MemoryModuleState.VALUE_ABSENT,
 					MemoryModuleType.SNIFFER_HAPPY,
+					MemoryModuleState.VALUE_ABSENT,
+					MemoryModuleType.BREED_TARGET,
 					MemoryModuleState.VALUE_ABSENT
 				),
 				minRunTime,

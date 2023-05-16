@@ -154,9 +154,11 @@ public class PlaySoundCommand {
 			throw FAILED_EXCEPTION.create();
 		} else {
 			if (targets.size() == 1) {
-				source.sendFeedback(Text.translatable("commands.playsound.success.single", sound, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
+				source.sendFeedback(
+					() -> Text.translatable("commands.playsound.success.single", sound, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true
+				);
 			} else {
-				source.sendFeedback(Text.translatable("commands.playsound.success.multiple", sound, targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.playsound.success.multiple", sound, targets.size()), true);
 			}
 
 			return i;

@@ -69,16 +69,17 @@ public class ClearCommand {
 				throw FAILED_MULTIPLE_EXCEPTION.create(targets.size());
 			}
 		} else {
+			int j = i;
 			if (maxCount == 0) {
 				if (targets.size() == 1) {
-					source.sendFeedback(Text.translatable("commands.clear.test.single", i, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
+					source.sendFeedback(() -> Text.translatable("commands.clear.test.single", j, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
 				} else {
-					source.sendFeedback(Text.translatable("commands.clear.test.multiple", i, targets.size()), true);
+					source.sendFeedback(() -> Text.translatable("commands.clear.test.multiple", j, targets.size()), true);
 				}
 			} else if (targets.size() == 1) {
-				source.sendFeedback(Text.translatable("commands.clear.success.single", i, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
+				source.sendFeedback(() -> Text.translatable("commands.clear.success.single", j, ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()), true);
 			} else {
-				source.sendFeedback(Text.translatable("commands.clear.success.multiple", i, targets.size()), true);
+				source.sendFeedback(() -> Text.translatable("commands.clear.success.multiple", j, targets.size()), true);
 			}
 
 			return i;

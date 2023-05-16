@@ -7,12 +7,14 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class LanguageOptionsScreen extends GameOptionsScreen {
@@ -33,18 +35,36 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		this.languageSelectionList = new LanguageOptionsScreen.LanguageSelectionListWidget(this.client);
 		this.addSelectableChild(this.languageSelectionList);
 		this.addDrawableChild(this.gameOptions.getForceUnicodeFont().createWidget(this.gameOptions, this.width / 2 - 155, this.height - 38, 150));
-		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
-			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = this.languageSelectionList.getSelectedOrNull();
-			if (languageEntry != null && !languageEntry.languageCode.equals(this.languageManager.getLanguage())) {
-				this.languageManager.setLanguage(languageEntry.languageCode);
-				this.gameOptions.language = languageEntry.languageCode;
-				this.client.reloadResources();
-				this.gameOptions.write();
-			}
-
-			this.client.setScreen(this.parent);
-		}).dimensions(this.width / 2 - 155 + 160, this.height - 38, 150, 20).build());
+		this.addDrawableChild(
+			ButtonWidget.builder(ScreenTexts.DONE, button -> this.onDone()).dimensions(this.width / 2 - 155 + 160, this.height - 38, 150, 20).build()
+		);
 		super.init();
+	}
+
+	void onDone() {
+		LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = this.languageSelectionList.getSelectedOrNull();
+		if (languageEntry != null && !languageEntry.languageCode.equals(this.languageManager.getLanguage())) {
+			this.languageManager.setLanguage(languageEntry.languageCode);
+			this.gameOptions.language = languageEntry.languageCode;
+			this.client.reloadResources();
+			this.gameOptions.write();
+		}
+
+		this.client.setScreen(this.parent);
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (KeyCodes.isToggle(keyCode)) {
+			LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry languageEntry = this.languageSelectionList.getSelectedOrNull();
+			if (languageEntry != null) {
+				languageEntry.onPressed();
+				this.onDone();
+				return true;
+			}
+		}
+
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	@Override
@@ -97,6 +117,7 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		public class LanguageEntry extends AlwaysSelectedEntryListWidget.Entry<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageEntry> {
 			final String languageCode;
 			private final Text languageDefinition;
+			private long clickTime;
 
 			public LanguageEntry(String languageCode, LanguageDefinition languageDefinition) {
 				this.languageCode = languageCode;
@@ -114,13 +135,19 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 			public boolean mouseClicked(double mouseX, double mouseY, int button) {
 				if (button == 0) {
 					this.onPressed();
+					if (Util.getMeasuringTimeMs() - this.clickTime < 250L) {
+						LanguageOptionsScreen.this.onDone();
+					}
+
+					this.clickTime = Util.getMeasuringTimeMs();
 					return true;
 				} else {
+					this.clickTime = Util.getMeasuringTimeMs();
 					return false;
 				}
 			}
 
-			private void onPressed() {
+			void onPressed() {
 				LanguageSelectionListWidget.this.setSelected(this);
 			}
 

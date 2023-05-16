@@ -1068,6 +1068,24 @@ public class Util {
 		}
 	}
 
+	/**
+	 * {@return whether {@code c} represents a space character}
+	 * 
+	 * @see Character#isWhitespace
+	 * @see Character#isSpaceChar
+	 */
+	public static boolean isWhitespace(int c) {
+		return Character.isWhitespace(c) || Character.isSpaceChar(c);
+	}
+
+	/**
+	 * {@return whether {@code string} is {@code null}, empty, or composed entirely
+	 * of {@linkplain #isWhitespace} spaces}
+	 */
+	public static boolean isBlank(@Nullable String string) {
+		return string != null && string.length() != 0 ? string.chars().allMatch(Util::isWhitespace) : true;
+	}
+
 	static enum IdentityHashStrategy implements Strategy<Object> {
 		INSTANCE;
 

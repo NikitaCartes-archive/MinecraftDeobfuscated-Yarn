@@ -62,7 +62,7 @@ public class PublishCommand {
 		} else if (!source.getServer().openToLan(gameMode, allowCommands, port)) {
 			throw FAILED_EXCEPTION.create();
 		} else {
-			source.sendFeedback(getStartedText(port), true);
+			source.sendFeedback(() -> getStartedText(port), true);
 			return port;
 		}
 	}

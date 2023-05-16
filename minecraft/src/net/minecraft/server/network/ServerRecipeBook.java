@@ -40,7 +40,10 @@ public class ServerRecipeBook extends RecipeBook {
 			}
 		}
 
-		this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.ADD, player, list);
+		if (list.size() > 0) {
+			this.sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action.ADD, player, list);
+		}
+
 		return i;
 	}
 

@@ -253,28 +253,30 @@ public class AdvancementCommand {
 			if (selection.size() == 1) {
 				if (targets.size() == 1) {
 					source.sendFeedback(
-						Text.translatable(
-							operation.getCommandPrefix() + ".one.to.one.success",
-							((Advancement)selection.iterator().next()).toHoverableText(),
-							((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
-						),
+						() -> Text.translatable(
+								operation.getCommandPrefix() + ".one.to.one.success",
+								((Advancement)selection.iterator().next()).toHoverableText(),
+								((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+							),
 						true
 					);
 				} else {
 					source.sendFeedback(
-						Text.translatable(operation.getCommandPrefix() + ".one.to.many.success", ((Advancement)selection.iterator().next()).toHoverableText(), targets.size()),
+						() -> Text.translatable(
+								operation.getCommandPrefix() + ".one.to.many.success", ((Advancement)selection.iterator().next()).toHoverableText(), targets.size()
+							),
 						true
 					);
 				}
 			} else if (targets.size() == 1) {
 				source.sendFeedback(
-					Text.translatable(
-						operation.getCommandPrefix() + ".many.to.one.success", selection.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
-					),
+					() -> Text.translatable(
+							operation.getCommandPrefix() + ".many.to.one.success", selection.size(), ((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+						),
 					true
 				);
 			} else {
-				source.sendFeedback(Text.translatable(operation.getCommandPrefix() + ".many.to.many.success", selection.size(), targets.size()), true);
+				source.sendFeedback(() -> Text.translatable(operation.getCommandPrefix() + ".many.to.many.success", selection.size(), targets.size()), true);
 			}
 
 			return i;
@@ -312,17 +314,17 @@ public class AdvancementCommand {
 			} else {
 				if (targets.size() == 1) {
 					source.sendFeedback(
-						Text.translatable(
-							operation.getCommandPrefix() + ".criterion.to.one.success",
-							criterion,
-							advancement.toHoverableText(),
-							((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
-						),
+						() -> Text.translatable(
+								operation.getCommandPrefix() + ".criterion.to.one.success",
+								criterion,
+								advancement.toHoverableText(),
+								((ServerPlayerEntity)targets.iterator().next()).getDisplayName()
+							),
 						true
 					);
 				} else {
 					source.sendFeedback(
-						Text.translatable(operation.getCommandPrefix() + ".criterion.to.many.success", criterion, advancement.toHoverableText(), targets.size()), true
+						() -> Text.translatable(operation.getCommandPrefix() + ".criterion.to.many.success", criterion, advancement.toHoverableText(), targets.size()), true
 					);
 				}
 

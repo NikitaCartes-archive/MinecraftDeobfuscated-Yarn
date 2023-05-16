@@ -43,7 +43,7 @@ public class ReloadCommand {
 			SaveProperties saveProperties = minecraftServer.getSaveProperties();
 			Collection<String> collection = resourcePackManager.getEnabledNames();
 			Collection<String> collection2 = findNewDataPacks(resourcePackManager, saveProperties, collection);
-			serverCommandSource.sendFeedback(Text.translatable("commands.reload.success"), true);
+			serverCommandSource.sendFeedback(() -> Text.translatable("commands.reload.success"), true);
 			tryReloadDataPacks(collection2, serverCommandSource);
 			return 0;
 		}));
