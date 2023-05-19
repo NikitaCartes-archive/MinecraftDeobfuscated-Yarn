@@ -14,8 +14,8 @@ public class EntityVariantTypeFix extends ChoiceFix {
 	private final String variantKey;
 	private final IntFunction<String> variantIntToId;
 
-	public EntityVariantTypeFix(Schema schema, String name, TypeReference typeReference, String entityId, String variantKey, IntFunction<String> variantIntToId) {
-		super(schema, false, name, typeReference, entityId);
+	public EntityVariantTypeFix(Schema outputSchema, String name, TypeReference type, String entityId, String variantKey, IntFunction<String> variantIntToId) {
+		super(outputSchema, false, name, type, entityId);
 		this.variantKey = variantKey;
 		this.variantIntToId = variantIntToId;
 	}

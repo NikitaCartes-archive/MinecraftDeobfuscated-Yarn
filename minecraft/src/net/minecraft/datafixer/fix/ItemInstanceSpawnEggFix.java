@@ -70,8 +70,8 @@ public class ItemInstanceSpawnEggFix extends DataFix {
 		map.put("minecraft:zombie_villager", "minecraft:zombie_villager_spawn_egg");
 	});
 
-	public ItemInstanceSpawnEggFix(Schema schema, boolean changesType, String spawnEggId) {
-		super(schema, changesType);
+	public ItemInstanceSpawnEggFix(Schema outputSchema, boolean changesType, String spawnEggId) {
+		super(outputSchema, changesType);
 		this.spawnEggId = spawnEggId;
 	}
 

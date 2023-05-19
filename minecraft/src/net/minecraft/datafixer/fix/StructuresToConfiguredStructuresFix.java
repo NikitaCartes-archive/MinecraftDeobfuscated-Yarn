@@ -112,8 +112,8 @@ public class StructuresToConfiguredStructuresFix extends DataFix {
 		.put("bastion_remnant", StructuresToConfiguredStructuresFix.Mapping.create("minecraft:bastion_remnant"))
 		.build();
 
-	public StructuresToConfiguredStructuresFix(Schema schema) {
-		super(schema, false);
+	public StructuresToConfiguredStructuresFix(Schema outputSchema) {
+		super(outputSchema, false);
 	}
 
 	@Override

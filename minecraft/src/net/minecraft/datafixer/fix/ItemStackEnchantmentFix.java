@@ -51,8 +51,8 @@ public class ItemStackEnchantmentFix extends DataFix {
 		map.put(71, "minecraft:vanishing_curse");
 	});
 
-	public ItemStackEnchantmentFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemStackEnchantmentFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

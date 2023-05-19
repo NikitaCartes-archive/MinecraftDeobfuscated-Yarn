@@ -12,8 +12,8 @@ public class EndCombatS2CPacket implements Packet<ClientPlayPacketListener> {
 		this(damageTracker.getTimeSinceLastAttack());
 	}
 
-	public EndCombatS2CPacket(int attackerId) {
-		this.timeSinceLastAttack = attackerId;
+	public EndCombatS2CPacket(int timeSinceLastAttack) {
+		this.timeSinceLastAttack = timeSinceLastAttack;
 	}
 
 	public EndCombatS2CPacket(PacketByteBuf buf) {

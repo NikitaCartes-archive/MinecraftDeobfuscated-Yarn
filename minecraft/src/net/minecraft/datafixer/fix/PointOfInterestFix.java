@@ -15,8 +15,8 @@ import net.minecraft.datafixer.TypeReferences;
 public abstract class PointOfInterestFix extends DataFix {
 	private final String name;
 
-	public PointOfInterestFix(Schema schema, String name) {
-		super(schema, false);
+	public PointOfInterestFix(Schema outputSchema, String name) {
+		super(outputSchema, false);
 		this.name = name;
 	}
 

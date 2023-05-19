@@ -1089,13 +1089,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.effectsChanged = true;
 		if (!this.getWorld().isClient) {
 			effect.getEffectType().onApplied(this, this.getAttributes(), effect.getAmplifier());
-			this.method_52197(effect);
+			this.sendEffectToControllingPlayer(effect);
 		}
 	}
 
-	public void method_52197(StatusEffectInstance statusEffectInstance) {
+	public void sendEffectToControllingPlayer(StatusEffectInstance effect) {
 		if (this.getControllingPassenger() instanceof ServerPlayerEntity serverPlayerEntity) {
-			serverPlayerEntity.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), statusEffectInstance));
+			serverPlayerEntity.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
 		}
 	}
 
@@ -1108,7 +1108,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 
 		if (!this.getWorld().isClient) {
-			this.method_52197(effect);
+			this.sendEffectToControllingPlayer(effect);
 		}
 	}
 

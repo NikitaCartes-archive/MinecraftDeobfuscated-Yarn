@@ -10,8 +10,8 @@ public class VillagerFollowRangeFix extends ChoiceFix {
 	private static final double OLD_RANGE = 16.0;
 	private static final double NEW_RANGE = 48.0;
 
-	public VillagerFollowRangeFix(Schema schema) {
-		super(schema, false, "Villager Follow Range Fix", TypeReferences.ENTITY, "minecraft:villager");
+	public VillagerFollowRangeFix(Schema outputSchema) {
+		super(outputSchema, false, "Villager Follow Range Fix", TypeReferences.ENTITY, "minecraft:villager");
 	}
 
 	@Override

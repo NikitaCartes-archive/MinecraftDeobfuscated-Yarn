@@ -17,8 +17,8 @@ public abstract class ItemNbtFix extends DataFix {
 	private final String name;
 	private final Predicate<String> itemIdPredicate;
 
-	public ItemNbtFix(Schema schema, String name, Predicate<String> itemIdPredicate) {
-		super(schema, false);
+	public ItemNbtFix(Schema outputSchema, String name, Predicate<String> itemIdPredicate) {
+		super(outputSchema, false);
 		this.name = name;
 		this.itemIdPredicate = itemIdPredicate;
 	}

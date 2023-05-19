@@ -6,8 +6,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class RemoveFilteredSignTextFix extends ChoiceFix {
-	public RemoveFilteredSignTextFix(Schema schema) {
-		super(schema, false, "Remove filtered text from signs", TypeReferences.BLOCK_ENTITY, "minecraft:sign");
+	public RemoveFilteredSignTextFix(Schema outputSchema) {
+		super(outputSchema, false, "Remove filtered text from signs", TypeReferences.BLOCK_ENTITY, "minecraft:sign");
 	}
 
 	@Override

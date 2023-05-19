@@ -8,8 +8,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsProgrammerArtFix extends DataFix {
-	public OptionsProgrammerArtFix(Schema schema) {
-		super(schema, false);
+	public OptionsProgrammerArtFix(Schema outputSchema) {
+		super(outputSchema, false);
 	}
 
 	@Override

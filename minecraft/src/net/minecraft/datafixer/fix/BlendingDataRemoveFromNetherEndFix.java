@@ -10,8 +10,8 @@ import com.mojang.serialization.OptionalDynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class BlendingDataRemoveFromNetherEndFix extends DataFix {
-	public BlendingDataRemoveFromNetherEndFix(Schema schema) {
-		super(schema, false);
+	public BlendingDataRemoveFromNetherEndFix(Schema outputSchema) {
+		super(outputSchema, false);
 	}
 
 	@Override

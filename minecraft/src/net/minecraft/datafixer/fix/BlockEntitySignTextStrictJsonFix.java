@@ -44,8 +44,8 @@ public class BlockEntitySignTextStrictJsonFix extends ChoiceFix {
 		}
 	}).create();
 
-	public BlockEntitySignTextStrictJsonFix(Schema schema, boolean bl) {
-		super(schema, bl, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
+	public BlockEntitySignTextStrictJsonFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "BlockEntitySignTextStrictJsonFix", TypeReferences.BLOCK_ENTITY, "Sign");
 	}
 
 	private Dynamic<?> fix(Dynamic<?> dynamic, String lineName) {

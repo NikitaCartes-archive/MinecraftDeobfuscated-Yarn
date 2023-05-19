@@ -17,8 +17,8 @@ import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 public class ItemRemoveBlockEntityTagFix extends DataFix {
 	private final Set<String> itemIds;
 
-	public ItemRemoveBlockEntityTagFix(Schema schema, boolean changesType, Set<String> itemIds) {
-		super(schema, changesType);
+	public ItemRemoveBlockEntityTagFix(Schema outputSchema, boolean changesType, Set<String> itemIds) {
+		super(outputSchema, changesType);
 		this.itemIds = itemIds;
 	}
 

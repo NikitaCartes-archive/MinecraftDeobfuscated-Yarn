@@ -15,8 +15,8 @@ public class GoatHornIdFix extends ItemNbtFix {
 		"minecraft:dream_goat_horn"
 	};
 
-	public GoatHornIdFix(Schema schema) {
-		super(schema, "GoatHornIdFix", itemId -> itemId.equals("minecraft:goat_horn"));
+	public GoatHornIdFix(Schema outputSchema) {
+		super(outputSchema, "GoatHornIdFix", itemId -> itemId.equals("minecraft:goat_horn"));
 	}
 
 	@Override

@@ -9,8 +9,8 @@ import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
 public class CauldronRenameFix extends DataFix {
-	public CauldronRenameFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public CauldronRenameFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	private static Dynamic<?> rename(Dynamic<?> dynamic) {

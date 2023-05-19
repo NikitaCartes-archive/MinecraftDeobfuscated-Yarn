@@ -19,8 +19,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class MissingDimensionFix extends DataFix {
-	public MissingDimensionFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public MissingDimensionFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	protected static <A> Type<Pair<A, Dynamic<?>>> method_29913(String string, Type<A> type) {

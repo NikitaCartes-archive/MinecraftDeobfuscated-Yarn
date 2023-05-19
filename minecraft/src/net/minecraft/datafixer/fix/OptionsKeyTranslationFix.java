@@ -11,8 +11,8 @@ import java.util.stream.Collectors;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsKeyTranslationFix extends DataFix {
-	public OptionsKeyTranslationFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public OptionsKeyTranslationFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

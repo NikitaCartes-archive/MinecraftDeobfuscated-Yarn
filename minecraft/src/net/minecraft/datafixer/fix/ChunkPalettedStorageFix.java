@@ -134,8 +134,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 	static final Dynamic<?> AIR = BlockStateFlattening.lookupState(0);
 	private static final int field_29870 = 4096;
 
-	public ChunkPalettedStorageFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ChunkPalettedStorageFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	private static void buildSkull(Map<String, Dynamic<?>> out, int i, String mob, String block) {
@@ -905,11 +905,11 @@ public class ChunkPalettedStorageFix extends DataFix {
 		private final Set<Dynamic<?>> seenStates = Sets.newIdentityHashSet();
 		private final int[] states = new int[4096];
 
-		public Section(Dynamic<?> dynamic) {
+		public Section(Dynamic<?> section) {
 			this.paletteData = Lists.<Dynamic<?>>newArrayList();
-			this.section = dynamic;
-			this.y = dynamic.get("Y").asInt(0);
-			this.hasBlocks = dynamic.get("Blocks").result().isPresent();
+			this.section = section;
+			this.y = section.get("Y").asInt(0);
+			this.hasBlocks = section.get("Blocks").result().isPresent();
 		}
 
 		public Dynamic<?> getBlock(int index) {

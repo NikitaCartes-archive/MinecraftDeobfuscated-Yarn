@@ -14,11 +14,11 @@ public class AddFlagIfNotPresentFix extends DataFix {
 	private final String key;
 	private final TypeReference typeReference;
 
-	public AddFlagIfNotPresentFix(Schema schema, TypeReference typeReference, String key, boolean value) {
-		super(schema, true);
+	public AddFlagIfNotPresentFix(Schema outputSchema, TypeReference typeReference, String key, boolean value) {
+		super(outputSchema, true);
 		this.value = value;
 		this.key = key;
-		this.description = "AddFlagIfNotPresentFix_" + this.key + "=" + this.value + " for " + schema.getVersionKey();
+		this.description = "AddFlagIfNotPresentFix_" + this.key + "=" + this.value + " for " + outputSchema.getVersionKey();
 		this.typeReference = typeReference;
 	}
 

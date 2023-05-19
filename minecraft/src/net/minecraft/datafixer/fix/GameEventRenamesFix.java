@@ -16,8 +16,8 @@ public class GameEventRenamesFix extends DataFix {
 	private final TypeReference typeReference;
 	private final UnaryOperator<String> renamer;
 
-	public GameEventRenamesFix(Schema schema, String name, TypeReference typeReference, UnaryOperator<String> renamer) {
-		super(schema, false);
+	public GameEventRenamesFix(Schema outputSchema, String name, TypeReference typeReference, UnaryOperator<String> renamer) {
+		super(outputSchema, false);
 		this.name = name;
 		this.typeReference = typeReference;
 		this.renamer = renamer;

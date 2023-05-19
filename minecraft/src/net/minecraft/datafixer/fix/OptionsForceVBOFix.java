@@ -7,8 +7,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsForceVBOFix extends DataFix {
-	public OptionsForceVBOFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public OptionsForceVBOFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

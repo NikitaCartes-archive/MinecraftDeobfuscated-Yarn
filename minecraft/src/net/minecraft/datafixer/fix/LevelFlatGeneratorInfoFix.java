@@ -25,8 +25,8 @@ public class LevelFlatGeneratorInfoFix extends DataFix {
 	private static final Splitter SPLIT_ON_ASTERISK = Splitter.on('*').limit(2);
 	private static final Splitter SPLIT_ON_COLON = Splitter.on(':').limit(3);
 
-	public LevelFlatGeneratorInfoFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public LevelFlatGeneratorInfoFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

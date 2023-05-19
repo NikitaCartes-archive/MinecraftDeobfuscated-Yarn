@@ -44,8 +44,8 @@ public class EntityTheRenameningBlockFix extends EntityRenameFix {
 		.build();
 	private static final String field_29882 = "minecraft:bred_";
 
-	public EntityTheRenameningBlockFix(Schema schema, boolean bl) {
-		super("EntityTheRenameningBlock", schema, bl);
+	public EntityTheRenameningBlockFix(Schema outputSchema, boolean changesType) {
+		super("EntityTheRenameningBlock", outputSchema, changesType);
 	}
 
 	@Override

@@ -17,8 +17,8 @@ import java.util.function.Function;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ChunkLevelTagRenameFix extends DataFix {
-	public ChunkLevelTagRenameFix(Schema schema) {
-		super(schema, true);
+	public ChunkLevelTagRenameFix(Schema outputSchema) {
+		super(outputSchema, true);
 	}
 
 	@Override

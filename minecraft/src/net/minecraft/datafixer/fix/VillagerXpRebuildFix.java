@@ -21,8 +21,8 @@ public class VillagerXpRebuildFix extends DataFix {
 		return LEVEL_TO_XP[MathHelper.clamp(level - 1, 0, LEVEL_TO_XP.length - 1)];
 	}
 
-	public VillagerXpRebuildFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public VillagerXpRebuildFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -66,12 +66,12 @@ public class VillagerXpRebuildFix extends DataFix {
 		);
 	}
 
-	private static Typed<?> fixLevel(Typed<?> typed, int i) {
-		return typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("VillagerData", dynamicx -> dynamicx.set("level", dynamicx.createInt(i))));
+	private static Typed<?> fixLevel(Typed<?> typed, int level) {
+		return typed.update(DSL.remainderFinder(), dynamic -> dynamic.update("VillagerData", dynamicx -> dynamicx.set("level", dynamicx.createInt(level))));
 	}
 
-	private static Typed<?> fixXp(Typed<?> typed, int i) {
-		int j = levelToXp(i);
-		return typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("Xp", dynamic.createInt(j)));
+	private static Typed<?> fixXp(Typed<?> typed, int level) {
+		int i = levelToXp(level);
+		return typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("Xp", dynamic.createInt(i)));
 	}
 }

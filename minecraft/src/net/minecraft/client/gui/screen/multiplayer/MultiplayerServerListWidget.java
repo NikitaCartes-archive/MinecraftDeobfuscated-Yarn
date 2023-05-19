@@ -14,11 +14,11 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_8573;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.LoadingDisplay;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.world.WorldIcon;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
@@ -60,12 +60,6 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	public MultiplayerServerListWidget(MultiplayerScreen screen, MinecraftClient client, int width, int height, int top, int bottom, int entryHeight) {
 		super(client, width, height, top, bottom, entryHeight);
 		this.screen = screen;
-	}
-
-	@Override
-	protected void clearEntries() {
-		this.children().forEach(MultiplayerServerListWidget.Entry::close);
-		super.clearEntries();
 	}
 
 	private void updateEntries() {
@@ -127,8 +121,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		return super.getRowWidth() + 85;
 	}
 
-	public void method_52204() {
-		this.clearEntries();
+	public void onRemoved() {
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -229,16 +222,16 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		private final MultiplayerScreen screen;
 		private final MinecraftClient client;
 		private final ServerInfo server;
-		private final class_8573 icon;
+		private final WorldIcon icon;
 		@Nullable
 		private byte[] favicon;
 		private long time;
 
-		protected ServerEntry(MultiplayerScreen screen, ServerInfo serverInfo) {
+		protected ServerEntry(MultiplayerScreen screen, ServerInfo server) {
 			this.screen = screen;
-			this.server = serverInfo;
+			this.server = server;
 			this.client = MinecraftClient.getInstance();
-			this.icon = class_8573.method_52202(this.client.getTextureManager(), serverInfo.address);
+			this.icon = WorldIcon.forServer(this.client.getTextureManager(), server.address);
 		}
 
 		@Override
@@ -324,7 +317,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				}
 			}
 
-			this.draw(context, x, y, this.icon.method_52201());
+			this.draw(context, x, y, this.icon.getTextureId());
 			int m = mouseX - x;
 			int n = mouseY - y;
 			if (m >= entryWidth - 15 && m <= entryWidth - 5 && n >= 0 && n <= 8) {
@@ -385,12 +378,12 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			return true;
 		}
 
-		private boolean uploadFavicon(@Nullable byte[] bs) {
-			if (bs == null) {
-				this.icon.method_52198();
+		private boolean uploadFavicon(@Nullable byte[] bytes) {
+			if (bytes == null) {
+				this.icon.destroy();
 			} else {
 				try {
-					this.icon.method_52199(NativeImage.read(bs));
+					this.icon.load(NativeImage.read(bytes));
 				} catch (Throwable var3) {
 					MultiplayerServerListWidget.LOGGER.error("Invalid icon for server {} ({})", this.server.name, this.server.address, var3);
 					return false;

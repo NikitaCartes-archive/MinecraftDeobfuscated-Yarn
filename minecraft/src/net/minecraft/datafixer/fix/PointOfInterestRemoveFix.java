@@ -8,8 +8,8 @@ import java.util.stream.Stream;
 public class PointOfInterestRemoveFix extends PointOfInterestFix {
 	private final Predicate<String> keepPredicate;
 
-	public PointOfInterestRemoveFix(Schema schema, String name, Predicate<String> removePredicate) {
-		super(schema, name);
+	public PointOfInterestRemoveFix(Schema outputSchema, String name, Predicate<String> removePredicate) {
+		super(outputSchema, name);
 		this.keepPredicate = removePredicate.negate();
 	}
 

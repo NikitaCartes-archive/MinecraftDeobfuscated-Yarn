@@ -402,8 +402,8 @@ public class ItemInstanceTheFlatteningFix extends DataFix {
 		"minecraft:wooden_sword"
 	);
 
-	public ItemInstanceTheFlatteningFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemInstanceTheFlatteningFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

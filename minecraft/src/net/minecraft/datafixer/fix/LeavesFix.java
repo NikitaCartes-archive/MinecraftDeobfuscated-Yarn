@@ -76,8 +76,8 @@ public class LeavesFix extends DataFix {
 		"minecraft:stripped_spruce_log"
 	);
 
-	public LeavesFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public LeavesFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
@@ -362,8 +362,8 @@ public class LeavesFix extends DataFix {
 			return this.blockStateMap == null;
 		}
 
-		public int needsFix(int i) {
-			return this.blockStateMap.get(i);
+		public int needsFix(int index) {
+			return this.blockStateMap.get(index);
 		}
 
 		protected int computeFlags(String leafBlockName, boolean persistent, int i) {

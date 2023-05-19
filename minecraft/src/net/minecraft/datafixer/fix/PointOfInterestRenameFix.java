@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 public class PointOfInterestRenameFix extends PointOfInterestFix {
 	private final Function<String, String> renamer;
 
-	public PointOfInterestRenameFix(Schema schema, String name, Function<String, String> renamer) {
-		super(schema, name);
+	public PointOfInterestRenameFix(Schema outputSchema, String name, Function<String, String> renamer) {
+		super(outputSchema, name);
 		this.renamer = renamer;
 	}
 

@@ -18,8 +18,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class NewVillageFix extends DataFix {
-	public NewVillageFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public NewVillageFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

@@ -13,8 +13,8 @@ public class RenameChunkStatusFix extends DataFix {
 	private final String name;
 	private final UnaryOperator<String> mapper;
 
-	public RenameChunkStatusFix(Schema schema, String name, UnaryOperator<String> mapper) {
-		super(schema, false);
+	public RenameChunkStatusFix(Schema outputSchema, String name, UnaryOperator<String> mapper) {
+		super(outputSchema, false);
 		this.name = name;
 		this.mapper = mapper;
 	}

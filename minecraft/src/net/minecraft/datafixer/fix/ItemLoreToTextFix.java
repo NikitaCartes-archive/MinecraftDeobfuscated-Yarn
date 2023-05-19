@@ -13,8 +13,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.text.Text;
 
 public class ItemLoreToTextFix extends DataFix {
-	public ItemLoreToTextFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemLoreToTextFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

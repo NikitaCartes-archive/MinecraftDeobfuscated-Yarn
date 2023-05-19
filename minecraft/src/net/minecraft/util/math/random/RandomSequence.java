@@ -15,11 +15,11 @@ public class RandomSequence {
 	}
 
 	public RandomSequence(long seed, Identifier id) {
-		this(method_52189(seed, id));
+		this(createSource(seed, id));
 	}
 
-	private static Xoroshiro128PlusPlusRandom method_52189(long l, Identifier identifier) {
-		Xoroshiro128PlusPlusRandom xoroshiro128PlusPlusRandom = new Xoroshiro128PlusPlusRandom(RandomSeed.createXoroshiroSeed(l).split(createSeed(identifier)));
+	private static Xoroshiro128PlusPlusRandom createSource(long seed, Identifier id) {
+		Xoroshiro128PlusPlusRandom xoroshiro128PlusPlusRandom = new Xoroshiro128PlusPlusRandom(RandomSeed.createXoroshiroSeed(seed).split(createSeed(id)));
 		xoroshiro128PlusPlusRandom.nextLong();
 		return xoroshiro128PlusPlusRandom;
 	}

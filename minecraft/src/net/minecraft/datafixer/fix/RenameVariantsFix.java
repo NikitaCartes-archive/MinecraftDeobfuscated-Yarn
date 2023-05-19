@@ -10,8 +10,8 @@ import java.util.Map;
 public class RenameVariantsFix extends ChoiceFix {
 	private final Map<String, String> oldToNewNames;
 
-	public RenameVariantsFix(Schema schema, String name, TypeReference type, String choiceName, Map<String, String> oldToNewNames) {
-		super(schema, false, name, type, choiceName);
+	public RenameVariantsFix(Schema outputSchema, String name, TypeReference type, String choiceName, Map<String, String> oldToNewNames) {
+		super(outputSchema, false, name, type, choiceName);
 		this.oldToNewNames = oldToNewNames;
 	}
 

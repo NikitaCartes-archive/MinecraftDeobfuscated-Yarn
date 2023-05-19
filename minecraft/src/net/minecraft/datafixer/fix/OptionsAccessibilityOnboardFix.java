@@ -7,8 +7,8 @@ import com.mojang.datafixers.schemas.Schema;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsAccessibilityOnboardFix extends DataFix {
-	public OptionsAccessibilityOnboardFix(Schema schema) {
-		super(schema, false);
+	public OptionsAccessibilityOnboardFix(Schema outputSchema) {
+		super(outputSchema, false);
 	}
 
 	@Override

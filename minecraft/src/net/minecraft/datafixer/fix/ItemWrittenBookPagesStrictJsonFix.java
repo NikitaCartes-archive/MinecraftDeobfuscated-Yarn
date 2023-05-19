@@ -15,8 +15,8 @@ import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 public class ItemWrittenBookPagesStrictJsonFix extends DataFix {
-	public ItemWrittenBookPagesStrictJsonFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public ItemWrittenBookPagesStrictJsonFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	public Dynamic<?> fixBookPages(Dynamic<?> dynamic) {

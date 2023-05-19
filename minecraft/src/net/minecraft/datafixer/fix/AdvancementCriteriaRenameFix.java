@@ -14,8 +14,8 @@ public class AdvancementCriteriaRenameFix extends DataFix {
 	private final String advancementId;
 	private final UnaryOperator<String> renamer;
 
-	public AdvancementCriteriaRenameFix(Schema schema, String description, String advancementId, UnaryOperator<String> renamer) {
-		super(schema, false);
+	public AdvancementCriteriaRenameFix(Schema outputSchema, String description, String advancementId, UnaryOperator<String> renamer) {
+		super(outputSchema, false);
 		this.description = description;
 		this.advancementId = advancementId;
 		this.renamer = renamer;

@@ -37,8 +37,8 @@ public class BlockEntityIdFix extends DataFix {
 		map.put("Trap", "minecraft:dispenser");
 	});
 
-	public BlockEntityIdFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public BlockEntityIdFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

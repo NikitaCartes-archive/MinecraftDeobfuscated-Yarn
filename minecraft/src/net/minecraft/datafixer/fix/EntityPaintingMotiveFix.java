@@ -19,8 +19,8 @@ public class EntityPaintingMotiveFix extends ChoiceFix {
 		map.put("skullandroses", "skull_and_roses");
 	});
 
-	public EntityPaintingMotiveFix(Schema schema, boolean bl) {
-		super(schema, bl, "EntityPaintingMotiveFix", TypeReferences.ENTITY, "minecraft:painting");
+	public EntityPaintingMotiveFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "EntityPaintingMotiveFix", TypeReferences.ENTITY, "minecraft:painting");
 	}
 
 	public Dynamic<?> renameMotive(Dynamic<?> dynamic) {

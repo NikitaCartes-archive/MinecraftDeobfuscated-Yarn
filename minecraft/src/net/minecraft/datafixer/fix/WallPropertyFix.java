@@ -28,8 +28,8 @@ public class WallPropertyFix extends DataFix {
 		"minecraft:stone_brick_wall"
 	);
 
-	public WallPropertyFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public WallPropertyFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override
