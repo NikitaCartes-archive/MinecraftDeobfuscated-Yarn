@@ -75,18 +75,18 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 		}
 	}
 
-	private void closeTexture(Identifier id, AbstractTexture abstractTexture) {
-		if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
-			this.tickListeners.remove(abstractTexture);
+	private void closeTexture(Identifier id, AbstractTexture texture) {
+		if (texture != MissingSprite.getMissingSpriteTexture()) {
+			this.tickListeners.remove(texture);
 
 			try {
-				abstractTexture.close();
+				texture.close();
 			} catch (Exception var4) {
 				LOGGER.warn("Failed to close texture {}", id, var4);
 			}
 		}
 
-		abstractTexture.clearGlId();
+		texture.clearGlId();
 	}
 
 	private AbstractTexture loadTexture(Identifier id, AbstractTexture texture) {

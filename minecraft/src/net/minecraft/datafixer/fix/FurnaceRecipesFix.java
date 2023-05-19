@@ -17,8 +17,8 @@ import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
 public class FurnaceRecipesFix extends DataFix {
-	public FurnaceRecipesFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public FurnaceRecipesFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

@@ -7,8 +7,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityArmorStandSilentFix extends ChoiceFix {
-	public EntityArmorStandSilentFix(Schema schema, boolean bl) {
-		super(schema, bl, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
+	public EntityArmorStandSilentFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "EntityArmorStandSilentFix", TypeReferences.ENTITY, "ArmorStand");
 	}
 
 	public Dynamic<?> fixSilent(Dynamic<?> dynamic) {

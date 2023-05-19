@@ -13,8 +13,8 @@ import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
 public class TicksInWrongChunkFix extends DataFix {
-	public TicksInWrongChunkFix(Schema schema) {
-		super(schema, false);
+	public TicksInWrongChunkFix(Schema outputSchema) {
+		super(outputSchema, false);
 	}
 
 	@Override

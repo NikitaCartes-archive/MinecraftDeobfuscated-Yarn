@@ -9,9 +9,9 @@ public class DeathMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int entityId;
 	private final Text message;
 
-	public DeathMessageS2CPacket(int entityId, Text text) {
+	public DeathMessageS2CPacket(int entityId, Text message) {
 		this.entityId = entityId;
-		this.message = text;
+		this.message = message;
 	}
 
 	public DeathMessageS2CPacket(PacketByteBuf buf) {

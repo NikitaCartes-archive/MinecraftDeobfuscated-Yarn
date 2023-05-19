@@ -19,8 +19,8 @@ public class WorldGenSettingsHeightAndBiomeFix extends DataFix {
 	private static final String NAME = "WorldGenSettingsHeightAndBiomeFix";
 	public static final String HAS_INCREASED_HEIGHT_ALREADY_KEY = "has_increased_height_already";
 
-	public WorldGenSettingsHeightAndBiomeFix(Schema schema) {
-		super(schema, true);
+	public WorldGenSettingsHeightAndBiomeFix(Schema outputSchema) {
+		super(outputSchema, true);
 	}
 
 	@Override

@@ -5,8 +5,8 @@ import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 
 public class OminousBannerItemRenameFix extends ItemNbtFix {
-	public OminousBannerItemRenameFix(Schema schema) {
-		super(schema, "OminousBannerRenameFix", itemId -> itemId.equals("minecraft:white_banner"));
+	public OminousBannerItemRenameFix(Schema outputSchema) {
+		super(outputSchema, "OminousBannerRenameFix", itemId -> itemId.equals("minecraft:white_banner"));
 	}
 
 	@Override

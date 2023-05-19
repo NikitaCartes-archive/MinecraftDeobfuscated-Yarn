@@ -10,8 +10,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class OptionsAddTextBackgroundFix extends DataFix {
-	public OptionsAddTextBackgroundFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public OptionsAddTextBackgroundFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

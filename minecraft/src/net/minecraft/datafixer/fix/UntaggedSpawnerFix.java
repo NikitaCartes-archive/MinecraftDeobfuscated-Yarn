@@ -13,8 +13,8 @@ import java.util.List;
 import net.minecraft.datafixer.TypeReferences;
 
 public class UntaggedSpawnerFix extends DataFix {
-	public UntaggedSpawnerFix(Schema schema) {
-		super(schema, true);
+	public UntaggedSpawnerFix(Schema outputSchema) {
+		super(outputSchema, true);
 	}
 
 	@Override

@@ -32,8 +32,8 @@ public class ProtoChunkTickListFix extends DataFix {
 		"minecraft:bubble_column", "minecraft:kelp", "minecraft:kelp_plant", "minecraft:seagrass", "minecraft:tall_seagrass"
 	);
 
-	public ProtoChunkTickListFix(Schema schema) {
-		super(schema, false);
+	public ProtoChunkTickListFix(Schema outputSchema) {
+		super(outputSchema, false);
 	}
 
 	@Override

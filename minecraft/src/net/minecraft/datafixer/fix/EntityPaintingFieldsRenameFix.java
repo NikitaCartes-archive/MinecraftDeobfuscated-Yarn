@@ -9,8 +9,8 @@ import java.util.Optional;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityPaintingFieldsRenameFix extends ChoiceFix {
-	public EntityPaintingFieldsRenameFix(Schema schema) {
-		super(schema, false, "EntityPaintingFieldsRenameFix", TypeReferences.ENTITY, "minecraft:painting");
+	public EntityPaintingFieldsRenameFix(Schema outputSchema) {
+		super(outputSchema, false, "EntityPaintingFieldsRenameFix", TypeReferences.ENTITY, "minecraft:painting");
 	}
 
 	public Dynamic<?> rename(Dynamic<?> dynamic) {

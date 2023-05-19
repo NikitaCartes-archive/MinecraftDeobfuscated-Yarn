@@ -4,8 +4,8 @@ import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
 
 public class RemoveFilteredBookTextFix extends ItemNbtFix {
-	public RemoveFilteredBookTextFix(Schema schema) {
-		super(schema, "Remove filtered text from books", itemId -> itemId.equals("minecraft:writable_book") || itemId.equals("minecraft:written_book"));
+	public RemoveFilteredBookTextFix(Schema outputSchema) {
+		super(outputSchema, "Remove filtered text from books", itemId -> itemId.equals("minecraft:writable_book") || itemId.equals("minecraft:written_book"));
 	}
 
 	@Override

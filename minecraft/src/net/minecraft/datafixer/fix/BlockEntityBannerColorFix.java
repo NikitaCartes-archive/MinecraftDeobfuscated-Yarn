@@ -9,8 +9,8 @@ import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
 
 public class BlockEntityBannerColorFix extends ChoiceFix {
-	public BlockEntityBannerColorFix(Schema schema, boolean bl) {
-		super(schema, bl, "BlockEntityBannerColorFix", TypeReferences.BLOCK_ENTITY, "minecraft:banner");
+	public BlockEntityBannerColorFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "BlockEntityBannerColorFix", TypeReferences.BLOCK_ENTITY, "minecraft:banner");
 	}
 
 	public Dynamic<?> fixBannerColor(Dynamic<?> dynamic) {

@@ -19,8 +19,8 @@ import net.minecraft.datafixer.TypeReferences;
 public class EntityMinecartIdentifiersFix extends DataFix {
 	private static final List<String> MINECARTS = Lists.newArrayList("MinecartRideable", "MinecartChest", "MinecartFurnace");
 
-	public EntityMinecartIdentifiersFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityMinecartIdentifiersFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

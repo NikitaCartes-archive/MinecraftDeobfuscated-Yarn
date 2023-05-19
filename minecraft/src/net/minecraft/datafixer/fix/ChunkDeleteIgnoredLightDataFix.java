@@ -11,8 +11,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class ChunkDeleteIgnoredLightDataFix extends DataFix {
-	public ChunkDeleteIgnoredLightDataFix(Schema schema) {
-		super(schema, true);
+	public ChunkDeleteIgnoredLightDataFix(Schema outputSchema) {
+		super(outputSchema, true);
 	}
 
 	@Override

@@ -12,8 +12,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class StructureSettingsFlattenFix extends DataFix {
-	public StructureSettingsFlattenFix(Schema schema) {
-		super(schema, false);
+	public StructureSettingsFlattenFix(Schema outputSchema) {
+		super(outputSchema, false);
 	}
 
 	@Override

@@ -149,7 +149,7 @@ public class MultiplayerScreen extends Screen {
 		}
 
 		this.serverListPinger.cancel();
-		this.serverListWidget.method_52204();
+		this.serverListWidget.onRemoved();
 	}
 
 	private void refresh() {

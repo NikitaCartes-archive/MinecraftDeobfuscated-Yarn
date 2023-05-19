@@ -18,8 +18,8 @@ import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 public abstract class BlockNameFix extends DataFix {
 	private final String name;
 
-	public BlockNameFix(Schema oldSchema, String name) {
-		super(oldSchema, false);
+	public BlockNameFix(Schema outputSchema, String name) {
+		super(outputSchema, false);
 		this.name = name;
 	}
 
@@ -43,8 +43,8 @@ public abstract class BlockNameFix extends DataFix {
 
 	protected abstract String rename(String oldName);
 
-	public static DataFix create(Schema oldSchema, String name, Function<String, String> rename) {
-		return new BlockNameFix(oldSchema, name) {
+	public static DataFix create(Schema outputSchema, String name, Function<String, String> rename) {
+		return new BlockNameFix(outputSchema, name) {
 			@Override
 			protected String rename(String oldName) {
 				return (String)rename.apply(oldName);

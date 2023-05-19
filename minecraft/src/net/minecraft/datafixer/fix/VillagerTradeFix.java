@@ -13,8 +13,8 @@ import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 
 public class VillagerTradeFix extends ChoiceFix {
-	public VillagerTradeFix(Schema schema, boolean bl) {
-		super(schema, bl, "Villager trade fix", TypeReferences.ENTITY, "minecraft:villager");
+	public VillagerTradeFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType, "Villager trade fix", TypeReferences.ENTITY, "minecraft:villager");
 	}
 
 	@Override

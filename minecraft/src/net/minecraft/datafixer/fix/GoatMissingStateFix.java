@@ -7,8 +7,8 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.datafixer.TypeReferences;
 
 public class GoatMissingStateFix extends ChoiceFix {
-	public GoatMissingStateFix(Schema schema) {
-		super(schema, false, "EntityGoatMissingStateFix", TypeReferences.ENTITY, "minecraft:goat");
+	public GoatMissingStateFix(Schema outputSchema) {
+		super(outputSchema, false, "EntityGoatMissingStateFix", TypeReferences.ENTITY, "minecraft:goat");
 	}
 
 	@Override

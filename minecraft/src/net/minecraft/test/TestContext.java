@@ -70,12 +70,12 @@ public class TestContext {
 	}
 
 	public void killAllEntities() {
-		this.method_52207(Entity.class);
+		this.killAllEntities(Entity.class);
 	}
 
-	public void method_52207(Class class_) {
+	public void killAllEntities(Class entityClass) {
 		Box box = this.getTestBox();
-		List<Entity> list = this.getWorld().getEntitiesByClass(class_, box.expand(1.0), entity -> !(entity instanceof PlayerEntity));
+		List<Entity> list = this.getWorld().getEntitiesByClass(entityClass, box.expand(1.0), entity -> !(entity instanceof PlayerEntity));
 		list.forEach(Entity::kill);
 	}
 

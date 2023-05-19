@@ -139,8 +139,8 @@ public class StatsCounterFix extends DataFix {
 		.build();
 	private static final String CUSTOM = "minecraft:custom";
 
-	public StatsCounterFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public StatsCounterFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	@Override

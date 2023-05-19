@@ -11,8 +11,8 @@ import java.util.Map;
 import net.minecraft.datafixer.TypeReferences;
 
 public class WorldGenSettingsDisallowOldCustomWorldsFix extends DataFix {
-	public WorldGenSettingsDisallowOldCustomWorldsFix(Schema schema) {
-		super(schema, false);
+	public WorldGenSettingsDisallowOldCustomWorldsFix(Schema outputSchema) {
+		super(outputSchema, false);
 	}
 
 	@Override

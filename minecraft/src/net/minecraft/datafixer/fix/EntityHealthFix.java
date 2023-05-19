@@ -49,8 +49,8 @@ public class EntityHealthFix extends DataFix {
 		"Zombie"
 	);
 
-	public EntityHealthFix(Schema schema, boolean bl) {
-		super(schema, bl);
+	public EntityHealthFix(Schema outputSchema, boolean changesType) {
+		super(outputSchema, changesType);
 	}
 
 	public Dynamic<?> fixHealth(Dynamic<?> dynamic) {

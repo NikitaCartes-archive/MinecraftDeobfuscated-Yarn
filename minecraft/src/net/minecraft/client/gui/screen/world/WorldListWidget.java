@@ -22,7 +22,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_8573;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
@@ -297,22 +296,22 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private final MinecraftClient client;
 		private final SelectWorldScreen screen;
 		private final LevelSummary level;
-		private final class_8573 icon;
+		private final WorldIcon icon;
 		@Nullable
 		private Path iconPath;
 		private long time;
 
-		public WorldEntry(WorldListWidget levelList, LevelSummary levelSummary) {
+		public WorldEntry(WorldListWidget levelList, LevelSummary level) {
 			this.client = levelList.client;
 			this.screen = levelList.getParent();
-			this.level = levelSummary;
-			this.icon = class_8573.method_52200(this.client.getTextureManager(), levelSummary.getName());
-			this.iconPath = levelSummary.getIconPath();
+			this.level = level;
+			this.icon = WorldIcon.forWorld(this.client.getTextureManager(), level.getName());
+			this.iconPath = level.getIconPath();
 			if (!Files.isRegularFile(this.iconPath, new LinkOption[0])) {
 				this.iconPath = null;
 			}
 
-			this.method_52205();
+			this.loadIcon();
 		}
 
 		@Override
@@ -348,7 +347,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			context.drawText(this.client.textRenderer, string2, x + 32 + 3, y + 9 + 3, 8421504, false);
 			context.drawText(this.client.textRenderer, text, x + 32 + 3, y + 9 + 9 + 3, 8421504, false);
 			RenderSystem.enableBlend();
-			context.drawTexture(this.icon.method_52201(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
+			context.drawTexture(this.icon.getTextureId(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
 				context.fill(x, y, x + 32, y + 32, -1601138544);
@@ -573,14 +572,14 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			this.client.setScreenAndRender(new MessageScreen(Text.translatable("selectWorld.data_read")));
 		}
 
-		private void method_52205() {
+		private void loadIcon() {
 			boolean bl = this.iconPath != null && Files.isRegularFile(this.iconPath, new LinkOption[0]);
 			if (bl) {
 				try {
 					InputStream inputStream = Files.newInputStream(this.iconPath);
 
 					try {
-						this.icon.method_52199(NativeImage.read(inputStream));
+						this.icon.load(NativeImage.read(inputStream));
 					} catch (Throwable var6) {
 						if (inputStream != null) {
 							try {
@@ -601,7 +600,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					this.iconPath = null;
 				}
 			} else {
-				this.icon.method_52198();
+				this.icon.destroy();
 			}
 		}
 
