@@ -662,7 +662,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	}
 
 	@Override
-	public void updatePassengerPosition(Entity passenger) {
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
 		if (this.hasPassenger(passenger)) {
 			float f = this.getPassengerHorizontalOffset();
 			float g = (float)((this.isRemoved() ? 0.01F : this.getMountedHeightOffset()) + passenger.getHeightOffset());
@@ -680,7 +680,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 			}
 
 			Vec3d vec3d = new Vec3d((double)f, 0.0, 0.0).rotateY(-this.getYaw() * (float) (Math.PI / 180.0) - (float) (Math.PI / 2));
-			passenger.setPosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
+			positionUpdater.accept(passenger, this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
 			passenger.setYaw(passenger.getYaw() + this.yawVelocity);
 			passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
 			this.copyEntityData(passenger);

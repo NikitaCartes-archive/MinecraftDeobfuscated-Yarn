@@ -392,7 +392,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		}
 	}
 
-	public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack tool) {
+	public static void dropStacks(BlockState state, World world, BlockPos pos, @Nullable BlockEntity blockEntity, @Nullable Entity entity, ItemStack tool) {
 		if (world instanceof ServerWorld) {
 			getDroppedStacks(state, (ServerWorld)world, pos, blockEntity, entity, tool).forEach(stack -> dropStack(world, pos, stack));
 			state.onStacksDropped((ServerWorld)world, pos, tool, true);

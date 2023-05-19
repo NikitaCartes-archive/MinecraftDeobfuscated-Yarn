@@ -155,13 +155,13 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	@Override
-	public void updatePassengerPosition(Entity passenger) {
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
 		if (this.hasPassenger(passenger)) {
 			float f = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 			float g = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
 			float h = 0.3F;
-			passenger.setPosition(
-				this.getX() + (double)(0.3F * g), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() - (double)(0.3F * f)
+			positionUpdater.accept(
+				passenger, this.getX() + (double)(0.3F * g), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() - (double)(0.3F * f)
 			);
 		}
 	}

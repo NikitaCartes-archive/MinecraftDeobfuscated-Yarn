@@ -1,8 +1,6 @@
 package net.minecraft.client.gui.screen.world;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
@@ -24,6 +22,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8573;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.BackupPromptScreen;
@@ -40,7 +39,6 @@ import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.screen.ScreenTexts;
@@ -63,7 +61,7 @@ import org.slf4j.Logger;
 public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidget.Entry> {
 	static final Logger LOGGER = LogUtils.getLogger();
 	static final DateFormat DATE_FORMAT = new SimpleDateFormat();
-	static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
+	private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
 	static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
 	static final Text FROM_NEWER_VERSION_FIRST_LINE = Text.translatable("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
 	static final Text FROM_NEWER_VERSION_SECOND_LINE = Text.translatable("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
@@ -100,6 +98,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		this.show(this.tryGet());
+	}
+
+	@Override
+	protected void clearEntries() {
+		this.children().forEach(WorldListWidget.Entry::close);
+		super.clearEntries();
 	}
 
 	@Nullable
@@ -293,27 +297,22 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		private final MinecraftClient client;
 		private final SelectWorldScreen screen;
 		private final LevelSummary level;
-		private final Identifier iconLocation;
+		private final class_8573 icon;
 		@Nullable
 		private Path iconPath;
-		@Nullable
-		private final NativeImageBackedTexture icon;
 		private long time;
 
-		public WorldEntry(WorldListWidget levelList, LevelSummary level) {
+		public WorldEntry(WorldListWidget levelList, LevelSummary levelSummary) {
 			this.client = levelList.client;
 			this.screen = levelList.getParent();
-			this.level = level;
-			String string = level.getName();
-			this.iconLocation = new Identifier(
-				"minecraft", "worlds/" + Util.replaceInvalidChars(string, Identifier::isPathCharacterValid) + "/" + Hashing.sha1().hashUnencodedChars(string) + "/icon"
-			);
-			this.iconPath = level.getIconPath();
+			this.level = levelSummary;
+			this.icon = class_8573.method_52200(this.client.getTextureManager(), levelSummary.getName());
+			this.iconPath = levelSummary.getIconPath();
 			if (!Files.isRegularFile(this.iconPath, new LinkOption[0])) {
 				this.iconPath = null;
 			}
 
-			this.icon = this.getIconTexture();
+			this.method_52205();
 		}
 
 		@Override
@@ -348,9 +347,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			context.drawText(this.client.textRenderer, string, x + 32 + 3, y + 1, 16777215, false);
 			context.drawText(this.client.textRenderer, string2, x + 32 + 3, y + 9 + 3, 8421504, false);
 			context.drawText(this.client.textRenderer, text, x + 32 + 3, y + 9 + 9 + 3, 8421504, false);
-			Identifier identifier = this.icon != null ? this.iconLocation : WorldListWidget.UNKNOWN_SERVER_LOCATION;
 			RenderSystem.enableBlend();
-			context.drawTexture(identifier, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
+			context.drawTexture(this.icon.method_52201(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
 				context.fill(x, y, x + 32, y + 32, -1601138544);
@@ -575,54 +573,41 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			this.client.setScreenAndRender(new MessageScreen(Text.translatable("selectWorld.data_read")));
 		}
 
-		@Nullable
-		private NativeImageBackedTexture getIconTexture() {
+		private void method_52205() {
 			boolean bl = this.iconPath != null && Files.isRegularFile(this.iconPath, new LinkOption[0]);
 			if (bl) {
 				try {
 					InputStream inputStream = Files.newInputStream(this.iconPath);
 
-					NativeImageBackedTexture var5;
 					try {
-						NativeImage nativeImage = NativeImage.read(inputStream);
-						Preconditions.checkState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
-						Preconditions.checkState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
-						NativeImageBackedTexture nativeImageBackedTexture = new NativeImageBackedTexture(nativeImage);
-						this.client.getTextureManager().registerTexture(this.iconLocation, nativeImageBackedTexture);
-						var5 = nativeImageBackedTexture;
-					} catch (Throwable var7) {
+						this.icon.method_52199(NativeImage.read(inputStream));
+					} catch (Throwable var6) {
 						if (inputStream != null) {
 							try {
 								inputStream.close();
-							} catch (Throwable var6) {
-								var7.addSuppressed(var6);
+							} catch (Throwable var5) {
+								var6.addSuppressed(var5);
 							}
 						}
 
-						throw var7;
+						throw var6;
 					}
 
 					if (inputStream != null) {
 						inputStream.close();
 					}
-
-					return var5;
-				} catch (Throwable var8) {
-					WorldListWidget.LOGGER.error("Invalid icon for world {}", this.level.getName(), var8);
+				} catch (Throwable var7) {
+					WorldListWidget.LOGGER.error("Invalid icon for world {}", this.level.getName(), var7);
 					this.iconPath = null;
-					return null;
 				}
 			} else {
-				this.client.getTextureManager().destroyTexture(this.iconLocation);
-				return null;
+				this.icon.method_52198();
 			}
 		}
 
 		@Override
 		public void close() {
-			if (this.icon != null) {
-				this.icon.close();
-			}
+			this.icon.close();
 		}
 
 		public String getLevelDisplayName() {
