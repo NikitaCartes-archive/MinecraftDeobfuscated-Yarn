@@ -463,7 +463,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	}
 
 	@Override
-	public void updatePassengerPosition(Entity passenger) {
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
 		int i = this.getPassengerList().indexOf(passenger);
 		if (i >= 0) {
 			boolean bl = i == 0;
@@ -480,7 +480,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 			}
 
 			Vec3d vec3d = new Vec3d(0.0, 0.0, (double)f).rotateY(-this.bodyYaw * (float) (Math.PI / 180.0));
-			passenger.setPosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
+			positionUpdater.accept(passenger, this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
 			this.clampPassengerYaw(passenger);
 		}
 	}

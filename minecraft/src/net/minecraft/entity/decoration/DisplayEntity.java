@@ -284,6 +284,11 @@ public abstract class DisplayEntity extends Entity {
 		return PistonBehavior.IGNORE;
 	}
 
+	@Override
+	public boolean canAvoidTraps() {
+		return true;
+	}
+
 	public Quaternionf getFixedRotation() {
 		return this.fixedRotation;
 	}

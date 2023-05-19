@@ -37,8 +37,6 @@ public record ServerMetadata(
 	);
 
 	public static record Favicon(byte[] iconBytes) {
-		public static final int HEIGHT = 64;
-		public static final int WIDTH = 64;
 		private static final String DATA_URI_PREFIX = "data:image/png;base64,";
 		public static final Codec<ServerMetadata.Favicon> CODEC = Codec.STRING.comapFlatMap(uri -> {
 			if (!uri.startsWith("data:image/png;base64,")) {

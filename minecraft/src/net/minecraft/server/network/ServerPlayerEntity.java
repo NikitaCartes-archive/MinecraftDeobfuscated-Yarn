@@ -599,7 +599,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			Text text = this.getDamageTracker().getDeathMessage();
 			this.networkHandler
 				.sendPacket(
-					new DeathMessageS2CPacket(this.getDamageTracker(), text),
+					new DeathMessageS2CPacket(this.getId(), text),
 					PacketCallbacks.of(
 						() -> {
 							int i = 256;
@@ -607,7 +607,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 							Text text2 = Text.translatable("death.attack.message_too_long", Text.literal(string).formatted(Formatting.YELLOW));
 							Text text3 = Text.translatable("death.attack.even_more_magic", this.getDisplayName())
 								.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
-							return new DeathMessageS2CPacket(this.getDamageTracker(), text3);
+							return new DeathMessageS2CPacket(this.getId(), text3);
 						}
 					)
 				);
@@ -620,7 +620,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				this.server.getPlayerManager().sendToOtherTeams(this, text);
 			}
 		} else {
-			this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), ScreenTexts.EMPTY));
+			this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getId(), ScreenTexts.EMPTY));
 		}
 
 		this.dropShoulderEntities();
@@ -1259,7 +1259,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public void refreshPositionAfterTeleport(double x, double y, double z) {
-		this.requestTeleport(x, y, z);
+		super.refreshPositionAfterTeleport(x, y, z);
 		this.networkHandler.syncWithPlayerPosition();
 	}
 
@@ -1740,12 +1740,29 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	@Override
 	public boolean startRiding(Entity entity, boolean force) {
-		if (super.startRiding(entity, force)) {
+		if (!super.startRiding(entity, force)) {
+			return false;
+		} else {
 			entity.updatePassengerPosition(this);
 			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.getYaw(), this.getPitch());
+			if (entity instanceof LivingEntity livingEntity) {
+				for (StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
+					this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(entity.getId(), statusEffectInstance));
+				}
+			}
+
 			return true;
-		} else {
-			return false;
+		}
+	}
+
+	@Override
+	public void stopRiding() {
+		Entity entity = this.getVehicle();
+		super.stopRiding();
+		if (entity instanceof LivingEntity livingEntity) {
+			for (StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
+				this.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(entity.getId(), statusEffectInstance.getEffectType()));
+			}
 		}
 	}
 }

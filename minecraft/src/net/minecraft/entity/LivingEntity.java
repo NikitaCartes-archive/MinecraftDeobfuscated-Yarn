@@ -76,8 +76,10 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
+import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -1087,6 +1089,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.effectsChanged = true;
 		if (!this.getWorld().isClient) {
 			effect.getEffectType().onApplied(this, this.getAttributes(), effect.getAmplifier());
+			this.method_52197(effect);
+		}
+	}
+
+	public void method_52197(StatusEffectInstance statusEffectInstance) {
+		if (this.getControllingPassenger() instanceof ServerPlayerEntity serverPlayerEntity) {
+			serverPlayerEntity.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), statusEffectInstance));
 		}
 	}
 
@@ -1097,12 +1106,19 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			statusEffect.onRemoved(this, this.getAttributes(), effect.getAmplifier());
 			statusEffect.onApplied(this, this.getAttributes(), effect.getAmplifier());
 		}
+
+		if (!this.getWorld().isClient) {
+			this.method_52197(effect);
+		}
 	}
 
 	protected void onStatusEffectRemoved(StatusEffectInstance effect) {
 		this.effectsChanged = true;
 		if (!this.getWorld().isClient) {
 			effect.getEffectType().onRemoved(this, this.getAttributes(), effect.getAmplifier());
+			if (this.getControllingPassenger() instanceof ServerPlayerEntity serverPlayerEntity) {
+				serverPlayerEntity.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getId(), effect.getEffectType()));
+			}
 		}
 	}
 
@@ -1713,9 +1729,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			}
 
 			if (var9 != 0.0F) {
-				float h = this.getHealth();
-				this.getDamageTracker().onDamage(source, h, var9);
-				this.setHealth(h - var9);
+				this.getDamageTracker().onDamage(source, var9);
+				this.setHealth(this.getHealth() - var9);
 				this.setAbsorptionAmount(this.getAbsorptionAmount() - var9);
 				this.emitGameEvent(GameEvent.ENTITY_DAMAGE);
 			}
@@ -1728,9 +1743,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 
 	@Nullable
 	public LivingEntity getPrimeAdversary() {
-		if (this.damageTracker.getBiggestAttacker() != null) {
-			return this.damageTracker.getBiggestAttacker();
-		} else if (this.attackingPlayer != null) {
+		if (this.attackingPlayer != null) {
 			return this.attackingPlayer;
 		} else {
 			return this.attacker != null ? this.attacker : null;
@@ -2118,7 +2131,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			boolean bl = this.getVelocity().y <= 0.0;
 			if (bl && this.hasStatusEffect(StatusEffects.SLOW_FALLING)) {
 				d = 0.01;
-				this.onLanding();
 			}
 
 			FluidState fluidState = this.getWorld().getFluidState(this.getBlockPos());
@@ -2225,7 +2237,6 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				double q = vec3d6.y;
 				if (this.hasStatusEffect(StatusEffects.LEVITATION)) {
 					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
-					this.onLanding();
 				} else if (this.getWorld().isClient && !this.getWorld().isChunkLoaded(blockPos)) {
 					if (this.getY() > (double)this.getWorld().getBottomY()) {
 						q = -0.1;
@@ -2683,18 +2694,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			this.jumpingCooldown = 0;
 		}
 
-		Box box;
-		label101: {
-			this.getWorld().getProfiler().pop();
-			this.getWorld().getProfiler().push("travel");
-			this.sidewaysSpeed *= 0.98F;
-			this.forwardSpeed *= 0.98F;
-			this.tickFallFlying();
-			box = this.getBoundingBox();
-			Vec3d vec3d2 = new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed);
+		this.getWorld().getProfiler().pop();
+		this.getWorld().getProfiler().push("travel");
+		this.sidewaysSpeed *= 0.98F;
+		this.forwardSpeed *= 0.98F;
+		this.tickFallFlying();
+		Box box = this.getBoundingBox();
+		Vec3d vec3d2 = new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed);
+		if (this.hasStatusEffect(StatusEffects.SLOW_FALLING) || this.hasStatusEffect(StatusEffects.LEVITATION)) {
+			this.onLanding();
+		}
+
+		label104: {
 			if (this.getControllingPassenger() instanceof PlayerEntity playerEntity && this.isAlive()) {
 				this.travelControlled(playerEntity, vec3d2);
-				break label101;
+				break label104;
 			}
 
 			this.travel(vec3d2);

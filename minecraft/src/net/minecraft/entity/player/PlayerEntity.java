@@ -937,20 +937,19 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (!this.isInvulnerableTo(source)) {
 			amount = this.applyArmorToDamage(source, amount);
 			amount = this.modifyAppliedDamage(source, amount);
-			float var8 = Math.max(amount - this.getAbsorptionAmount(), 0.0F);
-			this.setAbsorptionAmount(this.getAbsorptionAmount() - (amount - var8));
-			float g = amount - var8;
+			float var7 = Math.max(amount - this.getAbsorptionAmount(), 0.0F);
+			this.setAbsorptionAmount(this.getAbsorptionAmount() - (amount - var7));
+			float g = amount - var7;
 			if (g > 0.0F && g < 3.4028235E37F) {
 				this.increaseStat(Stats.DAMAGE_ABSORBED, Math.round(g * 10.0F));
 			}
 
-			if (var8 != 0.0F) {
+			if (var7 != 0.0F) {
 				this.addExhaustion(source.getExhaustion());
-				float h = this.getHealth();
-				this.getDamageTracker().onDamage(source, h, var8);
-				this.setHealth(this.getHealth() - var8);
-				if (var8 < 3.4028235E37F) {
-					this.increaseStat(Stats.DAMAGE_TAKEN, Math.round(var8 * 10.0F));
+				this.getDamageTracker().onDamage(source, var7);
+				this.setHealth(this.getHealth() - var7);
+				if (var7 < 3.4028235E37F) {
+					this.increaseStat(Stats.DAMAGE_TAKEN, Math.round(var7 * 10.0F));
 				}
 
 				this.emitGameEvent(GameEvent.ENTITY_DAMAGE);

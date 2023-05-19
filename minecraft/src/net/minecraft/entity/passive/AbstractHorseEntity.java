@@ -975,15 +975,18 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	}
 
 	@Override
-	public void updatePassengerPosition(Entity passenger) {
-		super.updatePassengerPosition(passenger);
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
+		super.updatePassengerPosition(passenger, positionUpdater);
 		if (this.lastAngryAnimationProgress > 0.0F) {
 			float f = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
 			float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 			float h = 0.7F * this.lastAngryAnimationProgress;
 			float i = 0.15F * this.lastAngryAnimationProgress;
-			passenger.setPosition(
-				this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g)
+			positionUpdater.accept(
+				passenger,
+				this.getX() + (double)(h * f),
+				this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i,
+				this.getZ() - (double)(h * g)
 			);
 			if (passenger instanceof LivingEntity) {
 				((LivingEntity)passenger).bodyYaw = this.bodyYaw;

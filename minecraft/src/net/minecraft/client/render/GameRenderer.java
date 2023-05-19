@@ -94,6 +94,7 @@ public class GameRenderer implements AutoCloseable {
 	 * @see Camera#getProjection()
 	 */
 	public static final float CAMERA_DEPTH = 0.05F;
+	private static final float field_44940 = 1000.0F;
 	final MinecraftClient client;
 	private final ResourceManager resourceManager;
 	private final Random random = Random.create();
@@ -1025,13 +1026,13 @@ public class GameRenderer implements AutoCloseable {
 					(float)((double)window.getFramebufferHeight() / window.getScaleFactor()),
 					0.0F,
 					1000.0F,
-					3000.0F
+					21000.0F
 				);
 			RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_Z);
 			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.push();
 			matrixStack.loadIdentity();
-			matrixStack.translate(0.0F, 0.0F, -2000.0F);
+			matrixStack.translate(0.0F, 0.0F, -11000.0F);
 			RenderSystem.applyModelViewMatrix();
 			DiffuseLighting.enableGuiDepthLighting();
 			DrawContext drawContext = new DrawContext(this.client, this.buffers.getEntityVertexConsumers());

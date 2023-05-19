@@ -2505,11 +2505,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public void updatePassengerPosition(Entity passenger) {
+	public final void updatePassengerPosition(Entity passenger) {
 		this.updatePassengerPosition(passenger, Entity::setPosition);
 	}
 
-	private void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
 		if (this.hasPassenger(passenger)) {
 			double d = this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset();
 			positionUpdater.accept(passenger, this.getX(), d, this.getZ());

@@ -58,6 +58,8 @@ import org.joml.Vector2ic;
 
 @Environment(EnvType.CLIENT)
 public class DrawContext {
+	public static final float field_44931 = 10000.0F;
+	public static final float field_44932 = -10000.0F;
 	private static final int field_44655 = 2;
 	private final MinecraftClient client;
 	private final MatrixStack matrices;

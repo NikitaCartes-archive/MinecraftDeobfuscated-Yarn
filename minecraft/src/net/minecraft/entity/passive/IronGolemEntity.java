@@ -37,8 +37,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.particle.BlockStateParticleEffect;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -46,7 +44,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.SpawnHelper;
@@ -128,28 +125,14 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			this.lookingAtVillagerTicksLeft--;
 		}
 
-		if (this.getVelocity().horizontalLengthSquared() > 2.5000003E-7F && this.random.nextInt(5) == 0) {
-			int i = MathHelper.floor(this.getX());
-			int j = MathHelper.floor(this.getY() - 0.2F);
-			int k = MathHelper.floor(this.getZ());
-			BlockState blockState = this.getWorld().getBlockState(new BlockPos(i, j, k));
-			if (!blockState.isAir()) {
-				this.getWorld()
-					.addParticle(
-						new BlockStateParticleEffect(ParticleTypes.BLOCK, blockState),
-						this.getX() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
-						this.getY() + 0.1,
-						this.getZ() + ((double)this.random.nextFloat() - 0.5) * (double)this.getWidth(),
-						4.0 * ((double)this.random.nextFloat() - 0.5),
-						0.5,
-						((double)this.random.nextFloat() - 0.5) * 4.0
-					);
-			}
-		}
-
 		if (!this.getWorld().isClient) {
 			this.tickAngerLogic((ServerWorld)this.getWorld(), true);
 		}
+	}
+
+	@Override
+	public boolean shouldSpawnSprintingParticles() {
+		return this.getVelocity().horizontalLengthSquared() > 2.5000003E-7F && this.random.nextInt(5) == 0;
 	}
 
 	@Override

@@ -2,22 +2,18 @@ package net.minecraft.entity.damage;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import javax.annotation.Nullable;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
+import net.minecraft.class_8572;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
-import net.minecraft.util.math.BlockPos;
 
 public class DamageTracker {
 	public static final int DAMAGE_COOLDOWN = 100;
@@ -32,44 +28,19 @@ public class DamageTracker {
 	private int ageOnLastUpdate;
 	private boolean recentlyAttacked;
 	private boolean hasDamage;
-	@Nullable
-	private String fallDeathSuffix;
 
 	public DamageTracker(LivingEntity entity) {
 		this.entity = entity;
 	}
 
-	public void setFallDeathSuffix() {
-		this.clearFallDeathSuffix();
-		Optional<BlockPos> optional = this.entity.getClimbingPos();
-		if (optional.isPresent()) {
-			BlockState blockState = this.entity.getWorld().getBlockState((BlockPos)optional.get());
-			if (blockState.isOf(Blocks.LADDER) || blockState.isIn(BlockTags.TRAPDOORS)) {
-				this.fallDeathSuffix = "ladder";
-			} else if (blockState.isOf(Blocks.VINE)) {
-				this.fallDeathSuffix = "vines";
-			} else if (blockState.isOf(Blocks.WEEPING_VINES) || blockState.isOf(Blocks.WEEPING_VINES_PLANT)) {
-				this.fallDeathSuffix = "weeping_vines";
-			} else if (blockState.isOf(Blocks.TWISTING_VINES) || blockState.isOf(Blocks.TWISTING_VINES_PLANT)) {
-				this.fallDeathSuffix = "twisting_vines";
-			} else if (blockState.isOf(Blocks.SCAFFOLDING)) {
-				this.fallDeathSuffix = "scaffolding";
-			} else {
-				this.fallDeathSuffix = "other_climbable";
-			}
-		} else if (this.entity.isTouchingWater()) {
-			this.fallDeathSuffix = "water";
-		}
-	}
-
-	public void onDamage(DamageSource damageSource, float originalHealth, float damage) {
+	public void onDamage(DamageSource damageSource, float originalHealth) {
 		this.update();
-		this.setFallDeathSuffix();
-		DamageRecord damageRecord = new DamageRecord(damageSource, this.entity.age, originalHealth, damage, this.fallDeathSuffix, this.entity.fallDistance);
+		class_8572 lv = class_8572.method_52195(this.entity);
+		DamageRecord damageRecord = new DamageRecord(damageSource, originalHealth, lv, this.entity.fallDistance);
 		this.recentDamage.add(damageRecord);
 		this.ageOnLastDamage = this.entity.age;
 		this.hasDamage = true;
-		if (damageRecord.isAttackerLiving() && !this.recentlyAttacked && this.entity.isAlive()) {
+		if (!this.recentlyAttacked && this.entity.isAlive() && method_52191(damageSource)) {
 			this.recentlyAttacked = true;
 			this.ageOnLastAttacked = this.entity.age;
 			this.ageOnLastUpdate = this.ageOnLastAttacked;
@@ -77,73 +48,59 @@ public class DamageTracker {
 		}
 	}
 
-	public Text getDeathMessage() {
-		if (this.recentDamage.isEmpty()) {
-			return Text.translatable("death.attack.generic", this.entity.getDisplayName());
-		} else {
-			DamageRecord damageRecord = this.getBiggestFall();
-			DamageRecord damageRecord2 = (DamageRecord)this.recentDamage.get(this.recentDamage.size() - 1);
-			Text text = damageRecord2.getAttackerName();
-			DamageSource damageSource = damageRecord2.getDamageSource();
-			Entity entity = damageSource.getAttacker();
-			DeathMessageType deathMessageType = damageSource.getType().deathMessageType();
-			Text text3;
-			if (damageRecord != null && deathMessageType == DeathMessageType.FALL_VARIANTS) {
-				Text text2 = damageRecord.getAttackerName();
-				DamageSource damageSource2 = damageRecord.getDamageSource();
-				if (damageSource2.isIn(DamageTypeTags.IS_FALL) || damageSource2.isIn(DamageTypeTags.ALWAYS_MOST_SIGNIFICANT_FALL)) {
-					text3 = Text.translatable("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
-				} else if (text2 != null && !text2.equals(text)) {
-					ItemStack itemStack = damageSource2.getAttacker() instanceof LivingEntity livingEntity ? livingEntity.getMainHandStack() : ItemStack.EMPTY;
-					if (!itemStack.isEmpty() && itemStack.hasCustomName()) {
-						text3 = Text.translatable("death.fell.assist.item", this.entity.getDisplayName(), text2, itemStack.toHoverableText());
-					} else {
-						text3 = Text.translatable("death.fell.assist", this.entity.getDisplayName(), text2);
-					}
-				} else if (text != null) {
-					ItemStack itemStack2 = entity instanceof LivingEntity livingEntity2 ? livingEntity2.getMainHandStack() : ItemStack.EMPTY;
-					if (!itemStack2.isEmpty() && itemStack2.hasCustomName()) {
-						text3 = Text.translatable("death.fell.finish.item", this.entity.getDisplayName(), text, itemStack2.toHoverableText());
-					} else {
-						text3 = Text.translatable("death.fell.finish", this.entity.getDisplayName(), text);
-					}
-				} else {
-					text3 = Text.translatable("death.fell.killer", this.entity.getDisplayName());
-				}
+	private static boolean method_52191(DamageSource damageSource) {
+		return damageSource.getAttacker() instanceof LivingEntity;
+	}
+
+	private Text method_52193(Entity entity, Text text, String string, String string2) {
+		ItemStack itemStack = entity instanceof LivingEntity livingEntity ? livingEntity.getMainHandStack() : ItemStack.EMPTY;
+		return !itemStack.isEmpty() && itemStack.hasCustomName()
+			? Text.translatable(string, this.entity.getDisplayName(), text, itemStack.toHoverableText())
+			: Text.translatable(string2, this.entity.getDisplayName(), text);
+	}
+
+	private Text method_52190(DamageRecord damageRecord, @Nullable Entity entity) {
+		DamageSource damageSource = damageRecord.damageSource();
+		if (!damageSource.isIn(DamageTypeTags.IS_FALL) && !damageSource.isIn(DamageTypeTags.ALWAYS_MOST_SIGNIFICANT_FALL)) {
+			Text text = method_52192(entity);
+			Entity entity2 = damageSource.getAttacker();
+			Text text2 = method_52192(entity2);
+			if (text2 != null && !text2.equals(text)) {
+				return this.method_52193(entity2, text2, "death.fell.assist.item", "death.fell.assist");
 			} else {
-				if (deathMessageType == DeathMessageType.INTENTIONAL_GAME_DESIGN) {
-					String string = "death.attack." + damageSource.getName();
-					Text text4 = Texts.bracketed(Text.translatable(string + ".link")).fillStyle(INTENTIONAL_GAME_DESIGN_ISSUE_LINK_STYLE);
-					return Text.translatable(string + ".message", this.entity.getDisplayName(), text4);
-				}
-
-				text3 = damageSource.getDeathMessage(this.entity);
+				return (Text)(text != null
+					? this.method_52193(entity, text, "death.fell.finish.item", "death.fell.finish")
+					: Text.translatable("death.fell.killer", this.entity.getDisplayName()));
 			}
-
-			return text3;
+		} else {
+			class_8572 lv = (class_8572)Objects.requireNonNullElse(damageRecord.fallLocation(), class_8572.GENERIC);
+			return Text.translatable(lv.method_52194(), this.entity.getDisplayName());
 		}
 	}
 
 	@Nullable
-	public LivingEntity getBiggestAttacker() {
-		LivingEntity livingEntity = null;
-		PlayerEntity playerEntity = null;
-		float f = 0.0F;
-		float g = 0.0F;
+	private static Text method_52192(@Nullable Entity entity) {
+		return entity == null ? null : entity.getDisplayName();
+	}
 
-		for (DamageRecord damageRecord : this.recentDamage) {
-			if (damageRecord.getDamageSource().getAttacker() instanceof PlayerEntity playerEntity2 && (playerEntity == null || damageRecord.getDamage() > g)) {
-				g = damageRecord.getDamage();
-				playerEntity = playerEntity2;
-			}
-
-			if (damageRecord.getDamageSource().getAttacker() instanceof LivingEntity livingEntity2 && (livingEntity == null || damageRecord.getDamage() > f)) {
-				f = damageRecord.getDamage();
-				livingEntity = livingEntity2;
+	public Text getDeathMessage() {
+		if (this.recentDamage.isEmpty()) {
+			return Text.translatable("death.attack.generic", this.entity.getDisplayName());
+		} else {
+			DamageRecord damageRecord = (DamageRecord)this.recentDamage.get(this.recentDamage.size() - 1);
+			DamageSource damageSource = damageRecord.damageSource();
+			DamageRecord damageRecord2 = this.getBiggestFall();
+			DeathMessageType deathMessageType = damageSource.getType().deathMessageType();
+			if (deathMessageType == DeathMessageType.FALL_VARIANTS && damageRecord2 != null) {
+				return this.method_52190(damageRecord2, damageSource.getAttacker());
+			} else if (deathMessageType == DeathMessageType.INTENTIONAL_GAME_DESIGN) {
+				String string = "death.attack." + damageSource.getName();
+				Text text = Texts.bracketed(Text.translatable(string + ".link")).fillStyle(INTENTIONAL_GAME_DESIGN_ISSUE_LINK_STYLE);
+				return Text.translatable(string + ".message", this.entity.getDisplayName(), text);
+			} else {
+				return damageSource.getDeathMessage(this.entity);
 			}
 		}
-
-		return (LivingEntity)(playerEntity != null && g >= f / 3.0F ? playerEntity : livingEntity);
 	}
 
 	@Nullable
@@ -156,9 +113,9 @@ public class DamageTracker {
 		for (int i = 0; i < this.recentDamage.size(); i++) {
 			DamageRecord damageRecord3 = (DamageRecord)this.recentDamage.get(i);
 			DamageRecord damageRecord4 = i > 0 ? (DamageRecord)this.recentDamage.get(i - 1) : null;
-			DamageSource damageSource = damageRecord3.getDamageSource();
+			DamageSource damageSource = damageRecord3.damageSource();
 			boolean bl = damageSource.isIn(DamageTypeTags.ALWAYS_MOST_SIGNIFICANT_FALL);
-			float h = bl ? Float.MAX_VALUE : damageRecord3.getFallDistance();
+			float h = bl ? Float.MAX_VALUE : damageRecord3.fallDistance();
 			if ((damageSource.isIn(DamageTypeTags.IS_FALL) || bl) && h > 0.0F && (damageRecord == null || h > g)) {
 				if (i > 0) {
 					damageRecord = damageRecord4;
@@ -169,9 +126,9 @@ public class DamageTracker {
 				g = h;
 			}
 
-			if (damageRecord3.getFallDeathSuffix() != null && (damageRecord2 == null || damageRecord3.getDamage() > f)) {
+			if (damageRecord3.fallLocation() != null && (damageRecord2 == null || damageRecord3.damage() > f)) {
 				damageRecord2 = damageRecord3;
-				f = damageRecord3.getDamage();
+				f = damageRecord3.damage();
 			}
 		}
 
@@ -182,26 +139,8 @@ public class DamageTracker {
 		}
 	}
 
-	private String getFallDeathSuffix(DamageRecord damageRecord) {
-		return damageRecord.getFallDeathSuffix() == null ? "generic" : damageRecord.getFallDeathSuffix();
-	}
-
-	public boolean hasDamage() {
-		this.update();
-		return this.hasDamage;
-	}
-
-	public boolean wasRecentlyAttacked() {
-		this.update();
-		return this.recentlyAttacked;
-	}
-
 	public int getTimeSinceLastAttack() {
 		return this.recentlyAttacked ? this.entity.age - this.ageOnLastAttacked : this.ageOnLastUpdate - this.ageOnLastAttacked;
-	}
-
-	private void clearFallDeathSuffix() {
-		this.fallDeathSuffix = null;
 	}
 
 	public void update() {
@@ -217,23 +156,5 @@ public class DamageTracker {
 
 			this.recentDamage.clear();
 		}
-	}
-
-	public LivingEntity getEntity() {
-		return this.entity;
-	}
-
-	@Nullable
-	public DamageRecord getMostRecentDamage() {
-		return this.recentDamage.isEmpty() ? null : (DamageRecord)this.recentDamage.get(this.recentDamage.size() - 1);
-	}
-
-	/**
-	 * Gets the Entity ID of the biggest attacker
-	 * @see #getBiggestAttacker() for getting the entity itself
-	 */
-	public int getBiggestAttackerId() {
-		LivingEntity livingEntity = this.getBiggestAttacker();
-		return livingEntity == null ? -1 : livingEntity.getId();
 	}
 }

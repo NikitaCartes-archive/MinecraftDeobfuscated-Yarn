@@ -222,28 +222,28 @@ public class EntityTrackerEntry {
 
 	public void startTracking(ServerPlayerEntity player) {
 		List<Packet<ClientPlayPacketListener>> list = new ArrayList();
-		this.sendPackets(list::add);
+		this.sendPackets(player, list::add);
 		player.networkHandler.sendPacket(new BundleS2CPacket(list));
 		this.entity.onStartedTrackingBy(player);
 	}
 
-	public void sendPackets(Consumer<Packet<ClientPlayPacketListener>> sender) {
+	public void sendPackets(ServerPlayerEntity serverPlayerEntity, Consumer<Packet<ClientPlayPacketListener>> consumer) {
 		if (this.entity.isRemoved()) {
 			LOGGER.warn("Fetching packet for removed entity {}", this.entity);
 		}
 
 		Packet<ClientPlayPacketListener> packet = this.entity.createSpawnPacket();
 		this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
-		sender.accept(packet);
+		consumer.accept(packet);
 		if (this.changedEntries != null) {
-			sender.accept(new EntityTrackerUpdateS2CPacket(this.entity.getId(), this.changedEntries));
+			consumer.accept(new EntityTrackerUpdateS2CPacket(this.entity.getId(), this.changedEntries));
 		}
 
 		boolean bl = this.alwaysUpdateVelocity;
 		if (this.entity instanceof LivingEntity) {
 			Collection<EntityAttributeInstance> collection = ((LivingEntity)this.entity).getAttributes().getAttributesToSend();
 			if (!collection.isEmpty()) {
-				sender.accept(new EntityAttributesS2CPacket(this.entity.getId(), collection));
+				consumer.accept(new EntityAttributesS2CPacket(this.entity.getId(), collection));
 			}
 
 			if (((LivingEntity)this.entity).isFallFlying()) {
@@ -253,7 +253,7 @@ public class EntityTrackerEntry {
 
 		this.velocity = this.entity.getVelocity();
 		if (bl && !(this.entity instanceof LivingEntity)) {
-			sender.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
+			consumer.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
 		}
 
 		if (this.entity instanceof LivingEntity) {
@@ -267,26 +267,26 @@ public class EntityTrackerEntry {
 			}
 
 			if (!list.isEmpty()) {
-				sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getId(), list));
+				consumer.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getId(), list));
 			}
 		}
 
-		if (this.entity instanceof LivingEntity livingEntity) {
+		if (this.entity instanceof LivingEntity livingEntity && livingEntity.getControllingPassenger() == serverPlayerEntity) {
 			for (StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
-				sender.accept(new EntityStatusEffectS2CPacket(this.entity.getId(), statusEffectInstance));
+				consumer.accept(new EntityStatusEffectS2CPacket(this.entity.getId(), statusEffectInstance));
 			}
 		}
 
 		if (!this.entity.getPassengerList().isEmpty()) {
-			sender.accept(new EntityPassengersSetS2CPacket(this.entity));
+			consumer.accept(new EntityPassengersSetS2CPacket(this.entity));
 		}
 
 		if (this.entity.hasVehicle()) {
-			sender.accept(new EntityPassengersSetS2CPacket(this.entity.getVehicle()));
+			consumer.accept(new EntityPassengersSetS2CPacket(this.entity.getVehicle()));
 		}
 
 		if (this.entity instanceof MobEntity mobEntity && mobEntity.isLeashed()) {
-			sender.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getHoldingEntity()));
+			consumer.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getHoldingEntity()));
 		}
 	}
 

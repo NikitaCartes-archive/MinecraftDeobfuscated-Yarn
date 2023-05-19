@@ -128,6 +128,11 @@ public class InteractionEntity extends Entity implements Attackable, Targeter {
 	}
 
 	@Override
+	public boolean canAvoidTraps() {
+		return true;
+	}
+
+	@Override
 	public boolean handleAttack(Entity attacker) {
 		if (attacker instanceof PlayerEntity playerEntity) {
 			this.attack = new InteractionEntity.Interaction(playerEntity.getUuid(), this.getWorld().getTime());

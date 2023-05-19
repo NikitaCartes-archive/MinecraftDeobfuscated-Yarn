@@ -32,7 +32,7 @@ public class BoatDispenserBehavior extends ItemDispenserBehavior {
 		World world = pointer.getWorld();
 		double d = 0.5625 + (double)EntityType.BOAT.getWidth() / 2.0;
 		double e = pointer.getX() + (double)direction.getOffsetX() * d;
-		double f = pointer.getY() + (double)direction.getOffsetY() - (double)EntityType.BOAT.getHeight();
+		double f = pointer.getY() + (double)((float)direction.getOffsetY() * 1.125F);
 		double g = pointer.getZ() + (double)direction.getOffsetZ() * d;
 		BlockPos blockPos = pointer.getPos().offset(direction);
 		double h;

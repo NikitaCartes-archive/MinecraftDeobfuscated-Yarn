@@ -60,4 +60,9 @@ public class MarkerEntity extends Entity {
 	public PistonBehavior getPistonBehavior() {
 		return PistonBehavior.IGNORE;
 	}
+
+	@Override
+	public boolean canAvoidTraps() {
+		return true;
+	}
 }

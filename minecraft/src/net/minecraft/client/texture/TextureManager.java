@@ -2,7 +2,6 @@ package net.minecraft.client.texture;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.mojang.blaze3d.platform.TextureUtil;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
@@ -67,7 +66,6 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 		AbstractTexture abstractTexture = (AbstractTexture)this.textures.put(id, texture);
 		if (abstractTexture != texture) {
 			if (abstractTexture != null && abstractTexture != MissingSprite.getMissingSpriteTexture()) {
-				this.tickListeners.remove(abstractTexture);
 				this.closeTexture(id, abstractTexture);
 			}
 
@@ -77,16 +75,18 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 		}
 	}
 
-	private void closeTexture(Identifier id, AbstractTexture texture) {
-		if (texture != MissingSprite.getMissingSpriteTexture()) {
+	private void closeTexture(Identifier id, AbstractTexture abstractTexture) {
+		if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
+			this.tickListeners.remove(abstractTexture);
+
 			try {
-				texture.close();
+				abstractTexture.close();
 			} catch (Exception var4) {
 				LOGGER.warn("Failed to close texture {}", id, var4);
 			}
 		}
 
-		texture.clearGlId();
+		abstractTexture.clearGlId();
 	}
 
 	private AbstractTexture loadTexture(Identifier id, AbstractTexture texture) {
@@ -158,9 +158,9 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 	}
 
 	public void destroyTexture(Identifier id) {
-		AbstractTexture abstractTexture = this.getOrDefault(id, MissingSprite.getMissingSpriteTexture());
-		if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
-			TextureUtil.releaseTextureId(abstractTexture.getGlId());
+		AbstractTexture abstractTexture = (AbstractTexture)this.textures.remove(id);
+		if (abstractTexture != null) {
+			this.closeTexture(id, abstractTexture);
 		}
 	}
 

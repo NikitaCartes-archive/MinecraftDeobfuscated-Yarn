@@ -166,13 +166,13 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void updatePassengerPosition(Entity passenger) {
-		super.updatePassengerPosition(passenger);
+	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
+		super.updatePassengerPosition(passenger, positionUpdater);
 		float f = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
 		float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 		float h = 0.1F;
 		float i = 0.0F;
-		passenger.setPosition(this.getX() + (double)(0.1F * f), this.getBodyY(0.5) + passenger.getHeightOffset() + 0.0, this.getZ() - (double)(0.1F * g));
+		positionUpdater.accept(passenger, this.getX() + (double)(0.1F * f), this.getBodyY(0.5) + passenger.getHeightOffset() + 0.0, this.getZ() - (double)(0.1F * g));
 		if (passenger instanceof LivingEntity) {
 			((LivingEntity)passenger).bodyYaw = this.bodyYaw;
 		}

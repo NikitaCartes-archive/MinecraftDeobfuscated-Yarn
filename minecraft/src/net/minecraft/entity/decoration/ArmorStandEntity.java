@@ -628,6 +628,11 @@ public class ArmorStandEntity extends LivingEntity {
 		return this.isMarker() ? PistonBehavior.IGNORE : super.getPistonBehavior();
 	}
 
+	@Override
+	public boolean canAvoidTraps() {
+		return this.isMarker();
+	}
+
 	private void setSmall(boolean small) {
 		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), SMALL_FLAG, small));
 	}

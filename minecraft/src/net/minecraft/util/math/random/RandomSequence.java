@@ -15,7 +15,13 @@ public class RandomSequence {
 	}
 
 	public RandomSequence(long seed, Identifier id) {
-		this(new Xoroshiro128PlusPlusRandom(RandomSeed.createXoroshiroSeed(seed).split(createSeed(id))));
+		this(method_52189(seed, id));
+	}
+
+	private static Xoroshiro128PlusPlusRandom method_52189(long l, Identifier identifier) {
+		Xoroshiro128PlusPlusRandom xoroshiro128PlusPlusRandom = new Xoroshiro128PlusPlusRandom(RandomSeed.createXoroshiroSeed(l).split(createSeed(identifier)));
+		xoroshiro128PlusPlusRandom.nextLong();
+		return xoroshiro128PlusPlusRandom;
 	}
 
 	public static RandomSeed.XoroshiroSeed createSeed(Identifier id) {

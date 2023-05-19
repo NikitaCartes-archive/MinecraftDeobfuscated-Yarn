@@ -1,8 +1,6 @@
 package net.minecraft.client.gui.screen.multiplayer;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
@@ -16,6 +14,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_8573;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.LoadingDisplay;
@@ -24,10 +23,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
@@ -46,7 +42,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(
 		5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build()
 	);
-	static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
+	private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
 	static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
 	static final Identifier ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
 	static final Text LAN_SCANNING_TEXT = Text.translatable("lanServer.scanning");
@@ -64,6 +60,12 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	public MultiplayerServerListWidget(MultiplayerScreen screen, MinecraftClient client, int width, int height, int top, int bottom, int entryHeight) {
 		super(client, width, height, top, bottom, entryHeight);
 		this.screen = screen;
+	}
+
+	@Override
+	protected void clearEntries() {
+		this.children().forEach(MultiplayerServerListWidget.Entry::close);
+		super.clearEntries();
 	}
 
 	private void updateEntries() {
@@ -125,8 +127,14 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		return super.getRowWidth() + 85;
 	}
 
+	public void method_52204() {
+		this.clearEntries();
+	}
+
 	@Environment(EnvType.CLIENT)
-	public abstract static class Entry extends AlwaysSelectedEntryListWidget.Entry<MultiplayerServerListWidget.Entry> {
+	public abstract static class Entry extends AlwaysSelectedEntryListWidget.Entry<MultiplayerServerListWidget.Entry> implements AutoCloseable {
+		public void close() {
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -221,22 +229,16 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		private final MultiplayerScreen screen;
 		private final MinecraftClient client;
 		private final ServerInfo server;
-		private final Identifier iconTextureId;
+		private final class_8573 icon;
 		@Nullable
 		private byte[] favicon;
-		@Nullable
-		private NativeImageBackedTexture icon;
 		private long time;
 
-		protected ServerEntry(MultiplayerScreen screen, ServerInfo server) {
+		protected ServerEntry(MultiplayerScreen screen, ServerInfo serverInfo) {
 			this.screen = screen;
-			this.server = server;
+			this.server = serverInfo;
 			this.client = MinecraftClient.getInstance();
-			this.iconTextureId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(server.address) + "/icon");
-			AbstractTexture abstractTexture = this.client.getTextureManager().getOrDefault(this.iconTextureId, MissingSprite.getMissingSpriteTexture());
-			if (abstractTexture != MissingSprite.getMissingSpriteTexture() && abstractTexture instanceof NativeImageBackedTexture) {
-				this.icon = (NativeImageBackedTexture)abstractTexture;
-			}
+			this.icon = class_8573.method_52202(this.client.getTextureManager(), serverInfo.address);
 		}
 
 		@Override
@@ -322,12 +324,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				}
 			}
 
-			if (this.icon == null) {
-				this.draw(context, x, y, MultiplayerServerListWidget.UNKNOWN_SERVER_TEXTURE);
-			} else {
-				this.draw(context, x, y, this.iconTextureId);
-			}
-
+			this.draw(context, x, y, this.icon.method_52201());
 			int m = mouseX - x;
 			int n = mouseY - y;
 			if (m >= entryWidth - 15 && m <= entryWidth - 5 && n >= 0 && n <= 8) {
@@ -388,27 +385,12 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			return true;
 		}
 
-		private boolean uploadFavicon(@Nullable byte[] favicon) {
-			if (favicon == null) {
-				this.client.getTextureManager().destroyTexture(this.iconTextureId);
-				if (this.icon != null && this.icon.getImage() != null) {
-					this.icon.getImage().close();
-				}
-
-				this.icon = null;
+		private boolean uploadFavicon(@Nullable byte[] bs) {
+			if (bs == null) {
+				this.icon.method_52198();
 			} else {
 				try {
-					NativeImage nativeImage = NativeImage.read(favicon);
-					Preconditions.checkState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
-					Preconditions.checkState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
-					if (this.icon == null) {
-						this.icon = new NativeImageBackedTexture(nativeImage);
-					} else {
-						this.icon.setImage(nativeImage);
-						this.icon.upload();
-					}
-
-					this.client.getTextureManager().registerTexture(this.iconTextureId, this.icon);
+					this.icon.method_52199(NativeImage.read(bs));
 				} catch (Throwable var3) {
 					MultiplayerServerListWidget.LOGGER.error("Invalid icon for server {} ({})", this.server.name, this.server.address, var3);
 					return false;
@@ -510,6 +492,11 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			return mutableText;
+		}
+
+		@Override
+		public void close() {
+			this.icon.close();
 		}
 	}
 }
