@@ -135,7 +135,7 @@ public class ResetChunksCommand {
 			}
 
 			source.getServer().runTasks(completableFuture::isDone);
-			LOGGER.debug(chunkStatus.getId() + " took " + (System.currentTimeMillis() - q) + " ms");
+			LOGGER.debug(chunkStatus + " took " + (System.currentTimeMillis() - q) + " ms");
 		}
 
 		long w = System.currentTimeMillis();

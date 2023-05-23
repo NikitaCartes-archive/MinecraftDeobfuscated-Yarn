@@ -867,56 +867,55 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 						double i = this.player.getX();
 						double j = this.player.getY();
 						double k = this.player.getZ();
-						double l = this.player.getY();
-						double m = d - this.lastTickX;
-						double n = e - this.lastTickY;
-						double o = f - this.lastTickZ;
-						double p = this.player.getVelocity().lengthSquared();
-						double q = m * m + n * n + o * o;
+						double l = d - this.lastTickX;
+						double m = e - this.lastTickY;
+						double n = f - this.lastTickZ;
+						double o = this.player.getVelocity().lengthSquared();
+						double p = l * l + m * m + n * n;
 						if (this.player.isSleeping()) {
-							if (q > 1.0) {
+							if (p > 1.0) {
 								this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), g, h);
 							}
 						} else {
 							this.movePacketsCount++;
-							int r = this.movePacketsCount - this.lastTickMovePacketsCount;
-							if (r > 5) {
-								LOGGER.debug("{} is sending move packets too frequently ({} packets since last tick)", this.player.getName().getString(), r);
-								r = 1;
+							int q = this.movePacketsCount - this.lastTickMovePacketsCount;
+							if (q > 5) {
+								LOGGER.debug("{} is sending move packets too frequently ({} packets since last tick)", this.player.getName().getString(), q);
+								q = 1;
 							}
 
 							if (!this.player.isInTeleportationState()
 								&& (!this.player.getWorld().getGameRules().getBoolean(GameRules.DISABLE_ELYTRA_MOVEMENT_CHECK) || !this.player.isFallFlying())) {
-								float s = this.player.isFallFlying() ? 300.0F : 100.0F;
-								if (q - p > (double)(s * (float)r) && !this.isHost()) {
-									LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), m, n, o);
+								float r = this.player.isFallFlying() ? 300.0F : 100.0F;
+								if (p - o > (double)(r * (float)q) && !this.isHost()) {
+									LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), l, m, n);
 									this.requestTeleport(this.player.getX(), this.player.getY(), this.player.getZ(), this.player.getYaw(), this.player.getPitch());
 									return;
 								}
 							}
 
 							Box box = this.player.getBoundingBox();
-							m = d - this.updatedX;
-							n = e - this.updatedY;
-							o = f - this.updatedZ;
-							boolean bl = n > 0.0;
+							l = d - this.updatedX;
+							m = e - this.updatedY;
+							n = f - this.updatedZ;
+							boolean bl = m > 0.0;
 							if (this.player.isOnGround() && !packet.isOnGround() && bl) {
 								this.player.jump();
 							}
 
 							boolean bl2 = this.player.groundCollision;
-							this.player.move(MovementType.PLAYER, new Vec3d(m, n, o));
-							m = d - this.player.getX();
-							n = e - this.player.getY();
-							if (n > -0.5 || n < 0.5) {
-								n = 0.0;
+							this.player.move(MovementType.PLAYER, new Vec3d(l, m, n));
+							l = d - this.player.getX();
+							m = e - this.player.getY();
+							if (m > -0.5 || m < 0.5) {
+								m = 0.0;
 							}
 
-							o = f - this.player.getZ();
-							q = m * m + n * n + o * o;
+							n = f - this.player.getZ();
+							p = l * l + m * m + n * n;
 							boolean bl3 = false;
 							if (!this.player.isInTeleportationState()
-								&& q > 0.0625
+								&& p > 0.0625
 								&& !this.player.isSleeping()
 								&& !this.player.interactionManager.isCreative()
 								&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR) {
@@ -928,7 +927,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 								|| this.player.isSleeping()
 								|| (!bl3 || !serverWorld.isSpaceEmpty(this.player, box)) && !this.isPlayerNotCollidingWithBlocks(serverWorld, box, d, e, f)) {
 								this.player.updatePositionAndAngles(d, e, f, g, h);
-								this.floating = n >= -0.03125
+								this.floating = m >= -0.03125
 									&& !bl2
 									&& this.player.interactionManager.getGameMode() != GameMode.SPECTATOR
 									&& !this.server.isFlightEnabled()
@@ -938,8 +937,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 									&& !this.player.isUsingRiptide()
 									&& this.isEntityOnAir(this.player);
 								this.player.getServerWorld().getChunkManager().updatePosition(this.player);
-								this.player.handleFall(this.player.getY() - l, packet.isOnGround());
-								this.player.setOnGround(packet.isOnGround());
+								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
+								this.player.setOnGround(packet.isOnGround(), new Vec3d(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k));
 								if (bl) {
 									this.player.onLanding();
 								}
@@ -950,7 +949,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 								this.updatedZ = this.player.getZ();
 							} else {
 								this.requestTeleport(i, j, k, g, h);
-								this.player.handleFall(this.player.getY() - l, packet.isOnGround());
+								this.player.handleFall(this.player.getX() - i, this.player.getY() - j, this.player.getZ() - k, packet.isOnGround());
 							}
 						}
 					}

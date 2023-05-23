@@ -1933,7 +1933,7 @@ public class Blocks {
 	);
 	public static final Block CARVED_PUMPKIN = register(
 		"carved_pumpkin",
-		new CarvedPumpkinBlock(
+		new WearableCarvedPumpkinBlock(
 			AbstractBlock.Settings.create()
 				.mapColor(MapColor.ORANGE)
 				.strength(1.0F)

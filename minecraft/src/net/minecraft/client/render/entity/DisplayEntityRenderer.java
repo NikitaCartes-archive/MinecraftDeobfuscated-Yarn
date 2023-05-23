@@ -21,6 +21,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.AffineTransformation;
+import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -125,8 +126,7 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends 
 			int i,
 			float f
 		) {
-			Matrix4f matrix4f = matrixStack.peek().getPositionMatrix();
-			matrix4f.rotate((float) Math.PI, 0.0F, 1.0F, 0.0F);
+			matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation((float) Math.PI));
 			this.itemRenderer
 				.renderItem(
 					data.itemStack(),

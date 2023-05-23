@@ -303,14 +303,14 @@ public abstract class RecipeProvider implements DataProvider {
 			.offerTo(exporter);
 	}
 
-	protected static void offerDyeableRecipes(Consumer<RecipeJsonProvider> exporter, List<Item> dyes, List<Item> dyeables) {
+	protected static void offerDyeableRecipes(Consumer<RecipeJsonProvider> exporter, List<Item> dyes, List<Item> dyeables, String group) {
 		for (int i = 0; i < dyes.size(); i++) {
 			Item item = (Item)dyes.get(i);
 			Item item2 = (Item)dyeables.get(i);
 			ShapelessRecipeJsonBuilder.create(RecipeCategory.BUILDING_BLOCKS, item2)
 				.input(item)
 				.input(Ingredient.ofStacks(dyeables.stream().filter(dyeable -> !dyeable.equals(item2)).map(ItemStack::new)))
-				.group(Registries.ITEM.getId(item2).getPath())
+				.group(group)
 				.criterion("has_needed_dye", conditionsFromItem(item))
 				.offerTo(exporter, "dye_" + getItemPath(item2));
 		}

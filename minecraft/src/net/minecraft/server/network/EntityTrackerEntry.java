@@ -18,7 +18,6 @@ import net.minecraft.entity.TrackedPosition;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.FilledMapItem;
@@ -35,7 +34,6 @@ import net.minecraft.network.packet.s2c.play.EntityPassengersSetS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitySetHeadYawS2CPacket;
-import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityTrackerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
@@ -268,12 +266,6 @@ public class EntityTrackerEntry {
 
 			if (!list.isEmpty()) {
 				sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getId(), list));
-			}
-		}
-
-		if (this.entity instanceof LivingEntity livingEntity && livingEntity.getControllingPassenger() == player) {
-			for (StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
-				sender.accept(new EntityStatusEffectS2CPacket(this.entity.getId(), statusEffectInstance));
 			}
 		}
 

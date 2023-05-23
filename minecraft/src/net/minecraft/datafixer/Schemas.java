@@ -1128,7 +1128,9 @@ public class Schemas {
 		Schema schema186 = builder.addSchema(3450, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(
 			new RenameChunkStatusFix(
-				schema186, "Remove liquid_carvers and heightmap chunk statuses", replacing(Map.of("liquid_carvers", "carvers", "heightmaps", "spawn"))
+				schema186,
+				"Remove liquid_carvers and heightmap chunk statuses",
+				replacing(Map.of("minecraft:liquid_carvers", "minecraft:carvers", "minecraft:heightmaps", "minecraft:spawn"))
 			)
 		);
 		Schema schema187 = builder.addSchema(3451, EMPTY_IDENTIFIER_NORMALIZE);

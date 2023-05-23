@@ -235,16 +235,10 @@ public class FallingBlockEntity extends Entity {
 			if (i < 0) {
 				return false;
 			} else {
-				Predicate<Entity> predicate;
-				DamageSource damageSource2;
-				if (this.block.getBlock() instanceof LandingBlock landingBlock) {
-					predicate = landingBlock.getEntityPredicate();
-					damageSource2 = landingBlock.getDamageSource(this);
-				} else {
-					predicate = EntityPredicates.EXCEPT_SPECTATOR;
-					damageSource2 = this.getDamageSources().fallingBlock(this);
-				}
-
+				Predicate<Entity> predicate = EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_LIVING_ENTITY);
+				DamageSource damageSource2 = this.block.getBlock() instanceof LandingBlock landingBlock
+					? landingBlock.getDamageSource(this)
+					: this.getDamageSources().fallingBlock(this);
 				float f = (float)Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax);
 				this.getWorld().getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damage(damageSource2, f));
 				boolean bl = this.block.isIn(BlockTags.ANVIL);

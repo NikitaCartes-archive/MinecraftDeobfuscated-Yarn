@@ -1,6 +1,7 @@
 package net.minecraft.client.realms.gui.screen;
 
 import com.mojang.logging.LogUtils;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,15 +14,18 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsInviteScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Text INVITE_PROFILE_NAME_TEXT = Text.translatable("mco.configure.world.invite.profile.name");
-	private static final Text PLAYER_ERROR_TEXT = Text.translatable("mco.configure.world.players.error");
+	private static final Text INVITE_PROFILE_NAME_TEXT = Text.translatable("mco.configure.world.invite.profile.name").styled(style -> style.withColor(-6250336));
+	private static final Text INVITING_TEXT = Text.translatable("mco.configure.world.players.inviting").styled(style -> style.withColor(-6250336));
+	private static final Text PLAYER_ERROR_TEXT = Text.translatable("mco.configure.world.players.error").styled(style -> style.withColor(-65536));
 	private TextFieldWidget nameWidget;
+	private ButtonWidget inviteButton;
 	private final RealmsServer serverData;
 	private final RealmsConfigureWorldScreen configureScreen;
 	private final Screen parent;
@@ -47,7 +51,7 @@ public class RealmsInviteScreen extends RealmsScreen {
 		);
 		this.addSelectableChild(this.nameWidget);
 		this.setInitialFocus(this.nameWidget);
-		this.addDrawableChild(
+		this.inviteButton = this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("mco.configure.world.buttons.invite"), button -> this.onInvite())
 				.dimensions(this.width / 2 - 100, row(10), 200, 20)
 				.build()
@@ -58,22 +62,32 @@ public class RealmsInviteScreen extends RealmsScreen {
 	}
 
 	private void onInvite() {
-		RealmsClient realmsClient = RealmsClient.create();
-		if (this.nameWidget.getText() != null && !this.nameWidget.getText().isEmpty()) {
-			try {
-				RealmsServer realmsServer = realmsClient.invite(this.serverData.id, this.nameWidget.getText().trim());
+		if (Util.isBlank(this.nameWidget.getText())) {
+			this.showError(PLAYER_ERROR_TEXT);
+		} else {
+			long l = this.serverData.id;
+			String string = this.nameWidget.getText().trim();
+			this.inviteButton.active = false;
+			this.nameWidget.setEditable(false);
+			this.showError(INVITING_TEXT);
+			CompletableFuture.supplyAsync(() -> {
+				try {
+					return RealmsClient.create().invite(l, string);
+				} catch (Exception var4) {
+					LOGGER.error("Couldn't invite user");
+					return null;
+				}
+			}, Util.getIoWorkerExecutor()).thenAcceptAsync(realmsServer -> {
 				if (realmsServer != null) {
 					this.serverData.players = realmsServer.players;
 					this.client.setScreen(new RealmsPlayerScreen(this.configureScreen, this.serverData));
 				} else {
 					this.showError(PLAYER_ERROR_TEXT);
 				}
-			} catch (Exception var3) {
-				LOGGER.error("Couldn't invite user");
-				this.showError(PLAYER_ERROR_TEXT);
-			}
-		} else {
-			this.showError(PLAYER_ERROR_TEXT);
+
+				this.nameWidget.setEditable(true);
+				this.inviteButton.active = true;
+			}, this.executor);
 		}
 	}
 
@@ -95,9 +109,9 @@ public class RealmsInviteScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.renderBackground(context);
-		context.drawText(this.textRenderer, INVITE_PROFILE_NAME_TEXT, this.width / 2 - 100, row(1), 10526880, false);
+		context.drawText(this.textRenderer, INVITE_PROFILE_NAME_TEXT, this.width / 2 - 100, row(1), -1, false);
 		if (this.errorMessage != null) {
-			context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessage, this.width / 2, row(5), 16711680);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessage, this.width / 2, row(5), -1);
 		}
 
 		this.nameWidget.render(context, mouseX, mouseY, delta);

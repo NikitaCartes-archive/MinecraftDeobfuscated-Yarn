@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -99,18 +100,8 @@ public class RealmsClient {
 		String string2 = client.getSession().getSessionId();
 		if (!initialized) {
 			initialized = true;
-			String string3 = System.getenv("realms.environment");
-			if (string3 == null) {
-				string3 = System.getProperty("realms.environment");
-			}
-
-			if (string3 != null) {
-				if ("LOCAL".equals(string3)) {
-					switchToLocal();
-				} else if ("STAGE".equals(string3)) {
-					switchToStage();
-				}
-			}
+			Optional<String> optional = Optional.ofNullable(System.getenv("realms.environment")).or(() -> Optional.ofNullable(System.getProperty("realms.environment")));
+			optional.flatMap(RealmsClient.Environment::fromName).ifPresent(environment -> currentEnvironment = environment);
 		}
 
 		return new RealmsClient(string2, string, client);
@@ -476,6 +467,17 @@ public class RealmsClient {
 		private Environment(String baseUrl, String protocol) {
 			this.baseUrl = baseUrl;
 			this.protocol = protocol;
+		}
+
+		public static Optional<RealmsClient.Environment> fromName(String name) {
+			String var1 = name.toLowerCase(Locale.ROOT);
+
+			return switch (var1) {
+				case "production" -> Optional.of(PRODUCTION);
+				case "local" -> Optional.of(LOCAL);
+				case "stage" -> Optional.of(STAGE);
+				default -> Optional.empty();
+			};
 		}
 	}
 }

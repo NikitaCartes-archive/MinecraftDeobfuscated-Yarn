@@ -269,7 +269,7 @@ public class ChunkSerializer {
 		nbtCompound.putInt("zPos", chunkPos.z);
 		nbtCompound.putLong("LastUpdate", world.getTime());
 		nbtCompound.putLong("InhabitedTime", chunk.getInhabitedTime());
-		nbtCompound.putString("Status", chunk.getStatus().getId());
+		nbtCompound.putString("Status", Registries.CHUNK_STATUS.getId(chunk.getStatus()).toString());
 		BlendingData blendingData = chunk.getBlendingData();
 		if (blendingData != null) {
 			BlendingData.CODEC

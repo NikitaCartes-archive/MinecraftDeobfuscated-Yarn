@@ -11,7 +11,6 @@ import net.minecraft.client.render.TexturedRenderLayers;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.BakedModelManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
@@ -55,20 +54,22 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 				this.getContextModel().copyBipedStateTo(model);
 				this.setVisible(model, armorSlot);
 				boolean bl = this.usesInnerModel(armorSlot);
-				boolean bl2 = itemStack.hasGlint();
-				if (armorItem instanceof DyeableArmorItem) {
-					int i = ((DyeableArmorItem)armorItem).getColor(itemStack);
+				if (armorItem instanceof DyeableArmorItem dyeableArmorItem) {
+					int i = dyeableArmorItem.getColor(itemStack);
 					float f = (float)(i >> 16 & 0xFF) / 255.0F;
 					float g = (float)(i >> 8 & 0xFF) / 255.0F;
 					float h = (float)(i & 0xFF) / 255.0F;
-					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, f, g, h, null);
-					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, "overlay");
+					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, model, bl, f, g, h, null);
+					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, model, bl, 1.0F, 1.0F, 1.0F, "overlay");
 				} else {
-					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, bl2, model, bl, 1.0F, 1.0F, 1.0F, null);
+					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, model, bl, 1.0F, 1.0F, 1.0F, null);
 				}
 
 				ArmorTrim.getTrim(entity.getWorld().getRegistryManager(), itemStack)
-					.ifPresent(trim -> this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, trim, bl2, model, bl, 1.0F, 1.0F, 1.0F));
+					.ifPresent(trim -> this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, trim, model, bl));
+				if (itemStack.hasGlint()) {
+					this.renderGlint(matrices, vertexConsumers, light, model);
+				}
 			}
 		}
 	}
@@ -101,7 +102,6 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		VertexConsumerProvider vertexConsumers,
 		int light,
 		ArmorItem item,
-		boolean glint,
 		A model,
 		boolean secondTextureLayer,
 		float red,
@@ -109,30 +109,20 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 		float blue,
 		@Nullable String overlay
 	) {
-		VertexConsumer vertexConsumer = ItemRenderer.getArmorGlintConsumer(
-			vertexConsumers, RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(item, secondTextureLayer, overlay)), false, glint
-		);
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getArmorCutoutNoCull(this.getArmorTexture(item, secondTextureLayer, overlay)));
 		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, red, green, blue, 1.0F);
 	}
 
 	private void renderTrim(
-		ArmorMaterial material,
-		MatrixStack matrices,
-		VertexConsumerProvider vertexConsumers,
-		int light,
-		ArmorTrim trim,
-		boolean glint,
-		A model,
-		boolean leggings,
-		float red,
-		float green,
-		float blue
+		ArmorMaterial material, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, ArmorTrim trim, A model, boolean leggings
 	) {
 		Sprite sprite = this.armorTrimsAtlas.getSprite(leggings ? trim.getLeggingsModelId(material) : trim.getGenericModelId(material));
-		VertexConsumer vertexConsumer = sprite.getTextureSpecificVertexConsumer(
-			ItemRenderer.getDirectItemGlintConsumer(vertexConsumers, TexturedRenderLayers.getArmorTrims(), true, glint)
-		);
-		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, red, green, blue, 1.0F);
+		VertexConsumer vertexConsumer = sprite.getTextureSpecificVertexConsumer(vertexConsumers.getBuffer(TexturedRenderLayers.getArmorTrims()));
+		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+	}
+
+	private void renderGlint(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, A model) {
+		model.render(matrices, vertexConsumers.getBuffer(RenderLayer.getArmorEntityGlint()), light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private A getModel(EquipmentSlot slot) {

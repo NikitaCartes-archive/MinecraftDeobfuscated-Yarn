@@ -1,8 +1,6 @@
 package net.minecraft.client.gui.screen.ingame;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.systems.VertexSorter;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -25,7 +23,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.random.Random;
-import org.joml.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
@@ -77,92 +74,70 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 
 	@Override
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-		DiffuseLighting.disableGuiDepthLighting();
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
 		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		int k = (int)this.client.getWindow().getScaleFactor();
-		RenderSystem.viewport((this.width - 320) / 2 * k, (this.height - 240) / 2 * k, 320 * k, 240 * k);
-		Matrix4f matrix4f = new Matrix4f().translation(-0.34F, 0.23F, 0.0F).perspective((float) (Math.PI / 2), 1.3333334F, 9.0F, 80.0F);
-		RenderSystem.backupProjectionMatrix();
-		RenderSystem.setProjectionMatrix(matrix4f, VertexSorter.BY_DISTANCE);
+		this.drawBook(context, i, j, delta);
+		EnchantingPhrases.getInstance().setSeed((long)this.handler.getSeed());
+		int k = this.handler.getLapisCount();
+
+		for (int l = 0; l < 3; l++) {
+			int m = i + 60;
+			int n = m + 20;
+			int o = this.handler.enchantmentPower[l];
+			if (o == 0) {
+				context.drawTexture(TEXTURE, m, j + 14 + 19 * l, 0, 185, 108, 19);
+			} else {
+				String string = o + "";
+				int p = 86 - this.textRenderer.getWidth(string);
+				StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, p);
+				int q = 6839882;
+				if ((k < l + 1 || this.client.player.experienceLevel < o) && !this.client.player.getAbilities().creativeMode) {
+					context.drawTexture(TEXTURE, m, j + 14 + 19 * l, 0, 185, 108, 19);
+					context.drawTexture(TEXTURE, m + 1, j + 15 + 19 * l, 16 * l, 239, 16, 16);
+					context.drawTextWrapped(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, (q & 16711422) >> 1);
+					q = 4226832;
+				} else {
+					int r = mouseX - (i + 60);
+					int s = mouseY - (j + 14 + 19 * l);
+					if (r >= 0 && s >= 0 && r < 108 && s < 19) {
+						context.drawTexture(TEXTURE, m, j + 14 + 19 * l, 0, 204, 108, 19);
+						q = 16777088;
+					} else {
+						context.drawTexture(TEXTURE, m, j + 14 + 19 * l, 0, 166, 108, 19);
+					}
+
+					context.drawTexture(TEXTURE, m + 1, j + 15 + 19 * l, 16 * l, 223, 16, 16);
+					context.drawTextWrapped(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, q);
+					q = 8453920;
+				}
+
+				context.drawTextWithShadow(this.textRenderer, string, n + 86 - this.textRenderer.getWidth(string), j + 16 + 19 * l + 7, q);
+			}
+		}
+	}
+
+	private void drawBook(DrawContext context, int x, int y, float delta) {
+		float f = MathHelper.lerp(delta, this.pageTurningSpeed, this.nextPageTurningSpeed);
+		float g = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle);
+		DiffuseLighting.method_34742();
 		context.getMatrices().push();
-		context.getMatrices().loadIdentity();
-		context.getMatrices().translate(0.0F, 3.3F, 1984.0F);
-		float f = 5.0F;
-		context.getMatrices().scale(5.0F, 5.0F, 5.0F);
-		context.getMatrices().multiply(RotationAxis.POSITIVE_Z.rotationDegrees(180.0F));
-		context.getMatrices().multiply(RotationAxis.POSITIVE_X.rotationDegrees(20.0F));
-		float g = MathHelper.lerp(delta, this.pageTurningSpeed, this.nextPageTurningSpeed);
-		context.getMatrices().translate((1.0F - g) * 0.2F, (1.0F - g) * 0.1F, (1.0F - g) * 0.25F);
-		float h = -(1.0F - g) * 90.0F - 90.0F;
-		context.getMatrices().multiply(RotationAxis.POSITIVE_Y.rotationDegrees(h));
+		context.getMatrices().translate((float)x + 33.0F, (float)y + 31.0F, 100.0F);
+		float h = 40.0F;
+		context.getMatrices().scale(-40.0F, 40.0F, 40.0F);
+		context.getMatrices().multiply(RotationAxis.POSITIVE_X.rotationDegrees(25.0F));
+		context.getMatrices().translate((1.0F - f) * 0.2F, (1.0F - f) * 0.1F, (1.0F - f) * 0.25F);
+		float i = -(1.0F - f) * 90.0F - 90.0F;
+		context.getMatrices().multiply(RotationAxis.POSITIVE_Y.rotationDegrees(i));
 		context.getMatrices().multiply(RotationAxis.POSITIVE_X.rotationDegrees(180.0F));
-		float l = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.25F;
-		float m = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.75F;
-		l = (l - (float)MathHelper.floor(l)) * 1.6F - 0.3F;
-		m = (m - (float)MathHelper.floor(m)) * 1.6F - 0.3F;
-		if (l < 0.0F) {
-			l = 0.0F;
-		}
-
-		if (m < 0.0F) {
-			m = 0.0F;
-		}
-
-		if (l > 1.0F) {
-			l = 1.0F;
-		}
-
-		if (m > 1.0F) {
-			m = 1.0F;
-		}
-
-		this.BOOK_MODEL.setPageAngles(0.0F, l, m, g);
+		float j = MathHelper.clamp(MathHelper.fractionalPart(g + 0.25F) * 1.6F - 0.3F, 0.0F, 1.0F);
+		float k = MathHelper.clamp(MathHelper.fractionalPart(g + 0.75F) * 1.6F - 0.3F, 0.0F, 1.0F);
+		this.BOOK_MODEL.setPageAngles(0.0F, j, k, f);
 		VertexConsumer vertexConsumer = context.getVertexConsumers().getBuffer(this.BOOK_MODEL.getLayer(BOOK_TEXTURE));
 		this.BOOK_MODEL.render(context.getMatrices(), vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		context.draw();
 		context.getMatrices().pop();
-		RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
-		RenderSystem.restoreProjectionMatrix();
 		DiffuseLighting.enableGuiDepthLighting();
-		EnchantingPhrases.getInstance().setSeed((long)this.handler.getSeed());
-		int n = this.handler.getLapisCount();
-
-		for (int o = 0; o < 3; o++) {
-			int p = i + 60;
-			int q = p + 20;
-			int r = this.handler.enchantmentPower[o];
-			if (r == 0) {
-				context.drawTexture(TEXTURE, p, j + 14 + 19 * o, 0, 185, 108, 19);
-			} else {
-				String string = r + "";
-				int s = 86 - this.textRenderer.getWidth(string);
-				StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, s);
-				int t = 6839882;
-				if ((n < o + 1 || this.client.player.experienceLevel < r) && !this.client.player.getAbilities().creativeMode) {
-					context.drawTexture(TEXTURE, p, j + 14 + 19 * o, 0, 185, 108, 19);
-					context.drawTexture(TEXTURE, p + 1, j + 15 + 19 * o, 16 * o, 239, 16, 16);
-					context.drawTextWrapped(this.textRenderer, stringVisitable, q, j + 16 + 19 * o, s, (t & 16711422) >> 1);
-					t = 4226832;
-				} else {
-					int u = mouseX - (i + 60);
-					int v = mouseY - (j + 14 + 19 * o);
-					if (u >= 0 && v >= 0 && u < 108 && v < 19) {
-						context.drawTexture(TEXTURE, p, j + 14 + 19 * o, 0, 204, 108, 19);
-						t = 16777088;
-					} else {
-						context.drawTexture(TEXTURE, p, j + 14 + 19 * o, 0, 166, 108, 19);
-					}
-
-					context.drawTexture(TEXTURE, p + 1, j + 15 + 19 * o, 16 * o, 223, 16, 16);
-					context.drawTextWrapped(this.textRenderer, stringVisitable, q, j + 16 + 19 * o, s, t);
-					t = 8453920;
-				}
-
-				context.drawTextWithShadow(this.textRenderer, string, q + 86 - this.textRenderer.getWidth(string), j + 16 + 19 * o + 7, t);
-			}
-		}
 	}
 
 	@Override

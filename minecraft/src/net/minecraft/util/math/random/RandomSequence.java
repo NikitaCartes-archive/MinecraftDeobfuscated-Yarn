@@ -19,9 +19,7 @@ public class RandomSequence {
 	}
 
 	private static Xoroshiro128PlusPlusRandom createSource(long seed, Identifier id) {
-		Xoroshiro128PlusPlusRandom xoroshiro128PlusPlusRandom = new Xoroshiro128PlusPlusRandom(RandomSeed.createXoroshiroSeed(seed).split(createSeed(id)));
-		xoroshiro128PlusPlusRandom.nextLong();
-		return xoroshiro128PlusPlusRandom;
+		return new Xoroshiro128PlusPlusRandom(RandomSeed.createUnmixedXoroshiroSeed(seed).split(createSeed(id)).mix());
 	}
 
 	public static RandomSeed.XoroshiroSeed createSeed(Identifier id) {

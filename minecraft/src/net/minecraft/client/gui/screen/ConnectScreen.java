@@ -60,13 +60,17 @@ public class ConnectScreen extends Screen {
 	}
 
 	public static void connect(Screen screen, MinecraftClient client, ServerAddress address, ServerInfo info, boolean quickPlay) {
-		ConnectScreen connectScreen = new ConnectScreen(screen, quickPlay ? QuickPlay.ERROR_TITLE : ScreenTexts.CONNECT_FAILED);
-		client.disconnect();
-		client.loadBlockList();
-		client.ensureAbuseReportContext(ReporterEnvironment.ofThirdPartyServer(info != null ? info.address : address.getAddress()));
-		client.getQuickPlayLogger().setWorld(QuickPlayLogger.WorldType.MULTIPLAYER, info.address, info.name);
-		client.setScreen(connectScreen);
-		connectScreen.connect(client, address, info);
+		if (client.currentScreen instanceof ConnectScreen) {
+			LOGGER.error("Attempt to connect while already connecting");
+		} else {
+			ConnectScreen connectScreen = new ConnectScreen(screen, quickPlay ? QuickPlay.ERROR_TITLE : ScreenTexts.CONNECT_FAILED);
+			client.disconnect();
+			client.loadBlockList();
+			client.ensureAbuseReportContext(ReporterEnvironment.ofThirdPartyServer(info != null ? info.address : address.getAddress()));
+			client.getQuickPlayLogger().setWorld(QuickPlayLogger.WorldType.MULTIPLAYER, info.address, info.name);
+			client.setScreen(connectScreen);
+			connectScreen.connect(client, address, info);
+		}
 	}
 
 	private void connect(MinecraftClient client, ServerAddress address, @Nullable ServerInfo info) {
@@ -93,26 +97,32 @@ public class ConnectScreen extends Screen {
 					}
 
 					inetSocketAddress = (InetSocketAddress)optional.get();
-					ConnectScreen.this.connection = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport());
-					ConnectScreen.this.connection
-						.setPacketListener(
-							new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, info, ConnectScreen.this.parent, false, null, ConnectScreen.this::setStatus)
-						);
-					ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
-					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), Optional.ofNullable(client.getSession().getUuidOrNull())));
-				} catch (Exception var6) {
+					synchronized (ConnectScreen.this) {
+						if (ConnectScreen.this.connectingCancelled) {
+							return;
+						}
+
+						ConnectScreen.this.connection = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport());
+						ConnectScreen.this.connection
+							.setPacketListener(
+								new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, info, ConnectScreen.this.parent, false, null, ConnectScreen.this::setStatus)
+							);
+						ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
+						ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), Optional.ofNullable(client.getSession().getUuidOrNull())));
+					}
+				} catch (Exception var7) {
 					if (ConnectScreen.this.connectingCancelled) {
 						return;
 					}
 
 					Exception exception3;
-					if (var6.getCause() instanceof Exception exception2) {
+					if (var7.getCause() instanceof Exception exception2) {
 						exception3 = exception2;
 					} else {
-						exception3 = var6;
+						exception3 = var7;
 					}
 
-					ConnectScreen.LOGGER.error("Couldn't connect to server", (Throwable)var6);
+					ConnectScreen.LOGGER.error("Couldn't connect to server", (Throwable)var7);
 					String string = inetSocketAddress == null
 						? exception3.getMessage()
 						: exception3.getMessage()
@@ -153,9 +163,11 @@ public class ConnectScreen extends Screen {
 	@Override
 	protected void init() {
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> {
-			this.connectingCancelled = true;
-			if (this.connection != null) {
-				this.connection.disconnect(Text.translatable("connect.aborted"));
+			synchronized (this) {
+				this.connectingCancelled = true;
+				if (this.connection != null) {
+					this.connection.disconnect(Text.translatable("connect.aborted"));
+				}
 			}
 
 			this.client.setScreen(this.parent);

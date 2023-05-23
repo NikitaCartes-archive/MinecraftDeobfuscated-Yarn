@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.math.BlockPos;
@@ -126,6 +127,10 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	@Override
 	public boolean emitsRedstonePower(BlockState state) {
 		return true;
+	}
+
+	protected static int getEntityCount(World world, Box box, Class<? extends Entity> entityClass) {
+		return world.getEntitiesByClass(entityClass, box, EntityPredicates.EXCEPT_SPECTATOR.and(entity -> !entity.canAvoidTraps())).size();
 	}
 
 	protected abstract int getRedstoneOutput(World world, BlockPos pos);

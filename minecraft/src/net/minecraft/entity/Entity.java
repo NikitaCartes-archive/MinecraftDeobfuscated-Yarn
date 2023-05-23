@@ -850,19 +850,28 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void setOnGround(boolean onGround) {
 		this.onGround = onGround;
-		this.updateSupportingBlockPos(onGround);
+		this.updateSupportingBlockPos(onGround, null);
+	}
+
+	public void setOnGround(boolean onGround, Vec3d movement) {
+		this.onGround = onGround;
+		this.updateSupportingBlockPos(onGround, movement);
 	}
 
 	public boolean isSupportedBy(BlockPos pos) {
 		return this.supportingBlockPos.isPresent() && ((BlockPos)this.supportingBlockPos.get()).equals(pos);
 	}
 
-	protected void updateSupportingBlockPos(boolean onGround) {
+	protected void updateSupportingBlockPos(boolean onGround, @Nullable Vec3d movement) {
 		if (onGround) {
 			Box box = this.getBoundingBox();
 			Box box2 = new Box(box.minX, box.minY - 1.0E-6, box.minZ, box.maxX, box.minY, box.maxZ);
 			Optional<BlockPos> optional = this.world.findSupportingBlockPos(this, box2);
 			if (optional.isPresent() || this.forceUpdateSupportingBlockPos) {
+				this.supportingBlockPos = optional;
+			} else if (movement != null) {
+				Box box3 = box2.offset(-movement.x, 0.0, -movement.z);
+				optional = this.world.findSupportingBlockPos(this, box3);
 				this.supportingBlockPos = optional;
 			}
 
@@ -931,7 +940,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				this.collidedSoftly = false;
 			}
 
-			this.setOnGround(this.groundCollision);
+			this.setOnGround(this.groundCollision, vec3d);
 			BlockPos blockPos = this.getLandingPos();
 			BlockState blockState = this.getWorld().getBlockState(blockPos);
 			this.fall(vec3d.y, this.isOnGround(), blockState, blockPos);

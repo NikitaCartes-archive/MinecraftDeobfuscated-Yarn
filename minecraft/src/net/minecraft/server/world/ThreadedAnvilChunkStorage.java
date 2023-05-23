@@ -639,7 +639,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.getRegion(
 			holder, requiredStatus.getTaskMargin(), distance -> this.getRequiredStatusForGeneration(requiredStatus, distance)
 		);
-		this.world.getProfiler().visit((Supplier<String>)(() -> "chunkGenerate " + requiredStatus.getId()));
+		this.world.getProfiler().visit((Supplier<String>)(() -> "chunkGenerate " + requiredStatus));
 		Executor executor = task -> this.worldGenExecutor.send(ChunkTaskPrioritySystem.createMessage(holder, task));
 		return completableFuture.thenComposeAsync(
 			either -> either.map(

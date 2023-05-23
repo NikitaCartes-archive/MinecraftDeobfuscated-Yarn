@@ -8,10 +8,8 @@ import net.minecraft.block.pattern.BlockPatternBuilder;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SnowGolemEntity;
-import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,7 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 
-public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Equipment {
+public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	@Nullable
 	private BlockPattern snowGolemDispenserPattern;
@@ -158,10 +156,5 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock implements Equipme
 		}
 
 		return this.ironGolemPattern;
-	}
-
-	@Override
-	public EquipmentSlot getSlotType() {
-		return EquipmentSlot.HEAD;
 	}
 }

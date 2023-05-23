@@ -18,7 +18,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -284,11 +283,6 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	@Override
 	public DamageSource getDamageSource(Entity attacker) {
 		return attacker.getDamageSources().fallingStalactite(attacker);
-	}
-
-	@Override
-	public Predicate<Entity> getEntityPredicate() {
-		return EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(EntityPredicates.VALID_LIVING_ENTITY);
 	}
 
 	private static void spawnFallingBlock(BlockState state, ServerWorld world, BlockPos pos) {

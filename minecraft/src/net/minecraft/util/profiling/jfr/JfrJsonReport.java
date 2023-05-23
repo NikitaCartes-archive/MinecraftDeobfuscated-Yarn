@@ -75,7 +75,7 @@ public class JfrJsonReport {
 		for (Pair<ChunkStatus, LongRunningSampleStatistics<ChunkGenerationSample>> pair : statistics) {
 			LongRunningSampleStatistics<ChunkGenerationSample> longRunningSampleStatistics = pair.getSecond();
 			JsonObject jsonObject2 = Util.make(new JsonObject(), jsonArray::add);
-			jsonObject2.addProperty("state", pair.getFirst().getId());
+			jsonObject2.addProperty("state", pair.getFirst().toString());
 			jsonObject2.addProperty("count", longRunningSampleStatistics.count());
 			jsonObject2.addProperty("durationNanosTotal", longRunningSampleStatistics.totalDuration().toNanos());
 			jsonObject2.addProperty("durationNanosAvg", longRunningSampleStatistics.totalDuration().toNanos() / (long)longRunningSampleStatistics.count());

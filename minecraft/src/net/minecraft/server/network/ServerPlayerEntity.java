@@ -971,11 +971,11 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public void handleFall(double heightDifference, boolean onGround) {
+	public void handleFall(double xDifference, double yDifference, double zDifference, boolean onGround) {
 		if (!this.isRegionUnloaded()) {
-			this.updateSupportingBlockPos(onGround);
+			this.updateSupportingBlockPos(onGround, new Vec3d(xDifference, yDifference, zDifference));
 			BlockPos blockPos = this.getLandingPos();
-			super.fall(heightDifference, onGround, this.getWorld().getBlockState(blockPos), blockPos);
+			super.fall(yDifference, onGround, this.getWorld().getBlockState(blockPos), blockPos);
 		}
 	}
 
