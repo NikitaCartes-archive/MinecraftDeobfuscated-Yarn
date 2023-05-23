@@ -20,10 +20,14 @@ public final class RandomSeed {
 		return seed ^ seed >>> 31;
 	}
 
-	public static RandomSeed.XoroshiroSeed createXoroshiroSeed(long seed) {
+	public static RandomSeed.XoroshiroSeed createUnmixedXoroshiroSeed(long seed) {
 		long l = seed ^ 7640891576956012809L;
 		long m = l + -7046029254386353131L;
-		return new RandomSeed.XoroshiroSeed(mixStafford13(l), mixStafford13(m));
+		return new RandomSeed.XoroshiroSeed(l, m);
+	}
+
+	public static RandomSeed.XoroshiroSeed createXoroshiroSeed(long seed) {
+		return createUnmixedXoroshiroSeed(seed).mix();
 	}
 
 	public static RandomSeed.XoroshiroSeed createXoroshiroSeed(String seed) {
@@ -47,6 +51,10 @@ public final class RandomSeed {
 
 		public RandomSeed.XoroshiroSeed split(RandomSeed.XoroshiroSeed seed) {
 			return this.split(seed.seedLo, seed.seedHi);
+		}
+
+		public RandomSeed.XoroshiroSeed mix() {
+			return new RandomSeed.XoroshiroSeed(RandomSeed.mixStafford13(this.seedLo), RandomSeed.mixStafford13(this.seedHi));
 		}
 	}
 }

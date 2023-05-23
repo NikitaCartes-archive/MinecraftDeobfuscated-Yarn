@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntPredicate;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.LongStream;
@@ -344,6 +345,16 @@ public class TestContext {
 		BlockState blockState = this.getBlockState(pos);
 		if (!predicate.test(blockState)) {
 			throw new PositionedException((String)errorMessageSupplier.get(), this.getAbsolutePos(pos), pos, this.test.getTick());
+		}
+	}
+
+	public void expectRedstonePower(BlockPos pos, Direction direction, IntPredicate powerPredicate, Supplier<String> errorMessage) {
+		BlockPos blockPos = this.getAbsolutePos(pos);
+		ServerWorld serverWorld = this.getWorld();
+		BlockState blockState = serverWorld.getBlockState(blockPos);
+		int i = blockState.getWeakRedstonePower(serverWorld, blockPos, direction);
+		if (!powerPredicate.test(i)) {
+			throw new PositionedException((String)errorMessage.get(), blockPos, pos, this.test.getTick());
 		}
 	}
 

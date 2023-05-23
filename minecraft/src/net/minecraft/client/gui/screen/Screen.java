@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -85,6 +86,11 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	private Selectable selected;
 	@Nullable
 	private Screen.PositionedTooltip tooltip;
+	protected final Executor executor = runnable -> this.client.execute(() -> {
+			if (this.client.currentScreen == this) {
+				runnable.run();
+			}
+		});
 
 	protected Screen(Text title) {
 		this.title = title;

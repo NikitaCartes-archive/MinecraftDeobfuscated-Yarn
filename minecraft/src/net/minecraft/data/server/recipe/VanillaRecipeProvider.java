@@ -164,9 +164,9 @@ public class VanillaRecipeProvider extends RecipeProvider {
 			Items.YELLOW_CARPET,
 			Items.WHITE_CARPET
 		);
-		offerDyeableRecipes(exporter, list, list2);
-		offerDyeableRecipes(exporter, list, list3);
-		offerDyeableRecipes(exporter, list, list4);
+		offerDyeableRecipes(exporter, list, list2, "wool");
+		offerDyeableRecipes(exporter, list, list3, "bed");
+		offerDyeableRecipes(exporter, list, list4, "carpet");
 		offerCarpetRecipe(exporter, Blocks.BLACK_CARPET, Blocks.BLACK_WOOL);
 		offerBedRecipe(exporter, Items.BLACK_BED, Blocks.BLACK_WOOL);
 		offerBannerRecipe(exporter, Items.BLACK_BANNER, Blocks.BLACK_WOOL);

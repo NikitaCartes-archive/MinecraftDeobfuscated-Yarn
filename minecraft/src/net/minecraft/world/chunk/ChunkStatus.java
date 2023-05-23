@@ -226,7 +226,6 @@ public class ChunkStatus {
 			statusToDistance.add(0, i);
 		}
 	});
-	private final String id;
 	private final int index;
 	private final ChunkStatus previous;
 	private final ChunkStatus.GenerationTask generationTask;
@@ -281,7 +280,7 @@ public class ChunkStatus {
 		ChunkStatus.LoadTask loadTask
 	) {
 		return Registry.register(
-			Registries.CHUNK_STATUS, id, new ChunkStatus(id, previous, taskMargin, shouldAlwaysUpgrade, heightMapTypes, chunkType, generationTask, loadTask)
+			Registries.CHUNK_STATUS, id, new ChunkStatus(previous, taskMargin, shouldAlwaysUpgrade, heightMapTypes, chunkType, generationTask, loadTask)
 		);
 	}
 
@@ -319,7 +318,6 @@ public class ChunkStatus {
 	}
 
 	ChunkStatus(
-		String id,
 		@Nullable ChunkStatus previous,
 		int taskMargin,
 		boolean shouldAlwaysUpgrade,
@@ -328,7 +326,6 @@ public class ChunkStatus {
 		ChunkStatus.GenerationTask generationTask,
 		ChunkStatus.LoadTask loadTask
 	) {
-		this.id = id;
 		this.previous = previous == null ? this : previous;
 		this.generationTask = generationTask;
 		this.loadTask = loadTask;
@@ -341,10 +338,6 @@ public class ChunkStatus {
 
 	public int getIndex() {
 		return this.index;
-	}
-
-	public String getId() {
-		return this.id;
 	}
 
 	public ChunkStatus getPrevious() {
@@ -361,7 +354,7 @@ public class ChunkStatus {
 		List<Chunk> chunks
 	) {
 		Chunk chunk = (Chunk)chunks.get(chunks.size() / 2);
-		Finishable finishable = FlightProfiler.INSTANCE.startChunkGenerationProfiling(chunk.getPos(), world.getRegistryKey(), this.id);
+		Finishable finishable = FlightProfiler.INSTANCE.startChunkGenerationProfiling(chunk.getPos(), world.getRegistryKey(), this.toString());
 		return this.generationTask
 			.doWork(this, executor, world, generator, structureTemplateManager, lightingProvider, fullChunkConverter, chunks, chunk)
 			.thenApply(either -> {

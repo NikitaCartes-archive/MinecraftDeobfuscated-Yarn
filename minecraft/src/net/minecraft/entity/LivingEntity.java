@@ -1094,9 +1094,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	public void sendEffectToControllingPlayer(StatusEffectInstance effect) {
-		LivingEntity var3 = this.getControllingPassenger();
-		if (var3 instanceof ServerPlayerEntity serverPlayerEntity) {
-			serverPlayerEntity.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
+		for(Entity entity : this.getPassengerList()) {
+			if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+				serverPlayerEntity.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
+			}
 		}
 	}
 
@@ -1117,9 +1118,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.effectsChanged = true;
 		if (!this.getWorld().isClient) {
 			effect.getEffectType().onRemoved(this, this.getAttributes(), effect.getAmplifier());
-			LivingEntity var3 = this.getControllingPassenger();
-			if (var3 instanceof ServerPlayerEntity serverPlayerEntity) {
-				serverPlayerEntity.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getId(), effect.getEffectType()));
+
+			for(Entity entity : this.getPassengerList()) {
+				if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
+					serverPlayerEntity.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getId(), effect.getEffectType()));
+				}
 			}
 		}
 	}

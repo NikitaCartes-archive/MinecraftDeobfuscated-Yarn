@@ -486,7 +486,7 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public int getBlockBreakingProgress() {
-		return (int)(this.currentBreakingProgress * 10.0F);
+		return this.currentBreakingProgress > 0.0F ? (int)(this.currentBreakingProgress * 10.0F) : -1;
 	}
 
 	public void pickFromInventory(int slot) {
