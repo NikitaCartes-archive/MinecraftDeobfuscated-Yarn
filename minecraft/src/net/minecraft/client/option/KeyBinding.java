@@ -69,6 +69,14 @@ public class KeyBinding implements Comparable<KeyBinding> {
 		}
 	}
 
+	public static void untoggleStickyKeys() {
+		for (KeyBinding keyBinding : KEYS_BY_ID.values()) {
+			if (keyBinding instanceof StickyKeyBinding stickyKeyBinding) {
+				stickyKeyBinding.untoggle();
+			}
+		}
+	}
+
 	public static void updateKeysByCode() {
 		KEY_TO_BINDINGS.clear();
 

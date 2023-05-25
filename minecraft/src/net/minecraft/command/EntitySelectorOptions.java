@@ -20,7 +20,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootDataType;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
@@ -465,7 +464,7 @@ public class EntitySelectorOptions {
 										.add(LootContextParameters.THIS_ENTITY, entity)
 										.add(LootContextParameters.ORIGIN, entity.getPos())
 										.build(LootContextTypes.SELECTOR);
-									LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(LootTable.DEFAULT_ID);
+									LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(null);
 									lootContext.markActive(LootContext.predicate(lootCondition));
 									return bl ^ lootCondition.test(lootContext);
 								}

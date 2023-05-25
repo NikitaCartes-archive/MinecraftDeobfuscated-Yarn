@@ -6,7 +6,6 @@ import java.util.Arrays;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
 import net.minecraft.loot.condition.LocationCheckLootCondition;
 import net.minecraft.loot.condition.LootCondition;
@@ -59,7 +58,7 @@ public class ItemCriterion extends AbstractCriterion<ItemCriterion.Conditions> {
 			.add(LootContextParameters.BLOCK_STATE, blockState)
 			.add(LootContextParameters.TOOL, stack)
 			.build(LootContextTypes.ADVANCEMENT_LOCATION);
-		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(LootTable.DEFAULT_ID);
+		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(null);
 		this.trigger(player, conditions -> conditions.test(lootContext));
 	}
 

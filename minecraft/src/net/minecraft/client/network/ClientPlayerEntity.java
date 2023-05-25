@@ -28,6 +28,7 @@ import net.minecraft.client.gui.screen.ingame.MinecartCommandBlockScreen;
 import net.minecraft.client.gui.screen.ingame.SignEditScreen;
 import net.minecraft.client.gui.screen.ingame.StructureBlockScreen;
 import net.minecraft.client.input.Input;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.sound.AmbientSoundLoops;
 import net.minecraft.client.sound.AmbientSoundPlayer;
@@ -309,6 +310,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public void requestRespawn() {
 		this.networkHandler.sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.PERFORM_RESPAWN));
+		KeyBinding.untoggleStickyKeys();
 	}
 
 	@Override

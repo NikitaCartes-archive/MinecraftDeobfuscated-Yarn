@@ -24,4 +24,8 @@ public class StickyKeyBinding extends KeyBinding {
 			super.setPressed(pressed);
 		}
 	}
+
+	protected void untoggle() {
+		super.setPressed(false);
+	}
 }

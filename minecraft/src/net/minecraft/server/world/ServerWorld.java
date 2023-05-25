@@ -811,7 +811,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	private void saveLevel() {
 		if (this.enderDragonFight != null) {
-			this.server.getSaveProperties().setDragonFight(this.enderDragonFight.toNbt());
+			this.server.getSaveProperties().setDragonFight(this.enderDragonFight.toData());
 		}
 
 		this.getChunkManager().getPersistentStateManager().save();

@@ -27,7 +27,6 @@ import net.minecraft.inventory.StackReference;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootManager;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
 import net.minecraft.loot.context.LootContextParameters;
@@ -456,7 +455,7 @@ public class ItemCommand {
 			.add(LootContextParameters.ORIGIN, source.getPosition())
 			.addOptional(LootContextParameters.THIS_ENTITY, source.getEntity())
 			.build(LootContextTypes.COMMAND);
-		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(LootTable.DEFAULT_ID);
+		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(null);
 		lootContext.markActive(LootContext.itemModifier(modifier));
 		return (ItemStack)modifier.apply(stack, lootContext);
 	}

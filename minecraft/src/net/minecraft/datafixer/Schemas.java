@@ -120,6 +120,7 @@ import net.minecraft.datafixer.fix.JigsawBlockNameFix;
 import net.minecraft.datafixer.fix.JigsawPropertiesFix;
 import net.minecraft.datafixer.fix.JigsawRotationFix;
 import net.minecraft.datafixer.fix.LeavesFix;
+import net.minecraft.datafixer.fix.LegacyDragonFightFix;
 import net.minecraft.datafixer.fix.LevelDataGeneratorOptionsFix;
 import net.minecraft.datafixer.fix.LevelFlatGeneratorInfoFix;
 import net.minecraft.datafixer.fix.MapIdFix;
@@ -1135,6 +1136,8 @@ public class Schemas {
 		);
 		Schema schema187 = builder.addSchema(3451, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new ChunkDeleteLightFix(schema187));
+		Schema schema188 = builder.addSchema(3459, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new LegacyDragonFightFix(schema188));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

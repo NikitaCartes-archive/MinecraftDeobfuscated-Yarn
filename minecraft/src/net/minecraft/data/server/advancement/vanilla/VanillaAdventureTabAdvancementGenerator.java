@@ -668,7 +668,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				Text.translatable("advancements.adventure.trim_with_all_exclusive_armor_patterns.title"),
 				Text.translatable("advancements.adventure.trim_with_all_exclusive_armor_patterns.description"),
 				null,
-				AdvancementFrame.TASK,
+				AdvancementFrame.CHALLENGE,
 				true,
 				true,
 				false

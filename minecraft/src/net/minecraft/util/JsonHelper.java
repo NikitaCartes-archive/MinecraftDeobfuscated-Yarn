@@ -71,8 +71,17 @@ public class JsonHelper {
 		return !hasElement(object, element) ? false : object.get(element).isJsonPrimitive();
 	}
 
-	public static boolean hasElement(JsonObject object, String element) {
+	public static boolean hasElement(@Nullable JsonObject object, String element) {
 		return object == null ? false : object.get(element) != null;
+	}
+
+	public static JsonElement getElement(JsonObject object, String name) {
+		JsonElement jsonElement = object.get(name);
+		if (jsonElement != null && !jsonElement.isJsonNull()) {
+			return jsonElement;
+		} else {
+			throw new JsonSyntaxException("Missing field " + name);
+		}
 	}
 
 	public static String asString(JsonElement element, String name) {

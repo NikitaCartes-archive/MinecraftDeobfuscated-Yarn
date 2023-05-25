@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import javax.annotation.Nullable;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.context.LootContext;
@@ -35,16 +36,16 @@ import org.slf4j.Logger;
 
 public class LootTable {
 	static final Logger LOGGER = LogUtils.getLogger();
-	public static final Identifier DEFAULT_ID = new Identifier("default");
-	public static final LootTable EMPTY = new LootTable(LootContextTypes.EMPTY, DEFAULT_ID, new LootPool[0], new LootFunction[0]);
+	public static final LootTable EMPTY = new LootTable(LootContextTypes.EMPTY, null, new LootPool[0], new LootFunction[0]);
 	public static final LootContextType GENERIC = LootContextTypes.GENERIC;
 	final LootContextType type;
+	@Nullable
 	final Identifier randomSequenceId;
 	final LootPool[] pools;
 	final LootFunction[] functions;
 	private final BiFunction<ItemStack, LootContext, ItemStack> combinedFunction;
 
-	LootTable(LootContextType type, Identifier randomSequenceId, LootPool[] pools, LootFunction[] functions) {
+	LootTable(LootContextType type, @Nullable Identifier randomSequenceId, LootPool[] pools, LootFunction[] functions) {
 		this.type = type;
 		this.randomSequenceId = randomSequenceId;
 		this.pools = pools;
@@ -208,7 +209,8 @@ public class LootTable {
 		private final List<LootPool> pools = Lists.<LootPool>newArrayList();
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
 		private LootContextType type = LootTable.GENERIC;
-		private Identifier randomSequenceId = LootTable.DEFAULT_ID;
+		@Nullable
+		private Identifier randomSequenceId = null;
 
 		public LootTable.Builder pool(LootPool.Builder poolBuilder) {
 			this.pools.add(poolBuilder.build());
@@ -256,7 +258,7 @@ public class LootTable {
 				String string2 = JsonHelper.getString(jsonObject, "random_sequence");
 				identifier = new Identifier(string2);
 			} else {
-				identifier = LootTable.DEFAULT_ID;
+				identifier = null;
 			}
 
 			LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
@@ -274,7 +276,10 @@ public class LootTable {
 				}
 			}
 
-			jsonObject.addProperty("random_sequence", lootTable.randomSequenceId.toString());
+			if (lootTable.randomSequenceId != null) {
+				jsonObject.addProperty("random_sequence", lootTable.randomSequenceId.toString());
+			}
+
 			if (lootTable.pools.length > 0) {
 				jsonObject.add("pools", jsonSerializationContext.serialize(lootTable.pools));
 			}

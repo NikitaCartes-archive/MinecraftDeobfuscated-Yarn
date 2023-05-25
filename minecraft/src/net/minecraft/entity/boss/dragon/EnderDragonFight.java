@@ -7,8 +7,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -27,11 +31,6 @@ import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.decoration.EndCrystalEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtInt;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.predicate.block.BlockPredicate;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKeys;
@@ -42,6 +41,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
+import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
@@ -98,49 +98,29 @@ public class EnderDragonFight {
 	@Nullable
 	private List<EndCrystalEntity> crystals;
 
-	public EnderDragonFight(ServerWorld world, long gatewaysSeed, NbtCompound nbt) {
-		this(world, gatewaysSeed, nbt, BlockPos.ORIGIN);
+	public EnderDragonFight(ServerWorld world, long gatewaysSeed, EnderDragonFight.Data data) {
+		this(world, gatewaysSeed, data, BlockPos.ORIGIN);
 	}
 
-	public EnderDragonFight(ServerWorld world, long gatewaysSeed, NbtCompound nbt, BlockPos origin) {
+	public EnderDragonFight(ServerWorld world, long gatewaysSeed, EnderDragonFight.Data data, BlockPos origin) {
 		this.world = world;
 		this.origin = origin;
 		this.showBossBarPredicate = EntityPredicates.VALID_ENTITY
 			.and(EntityPredicates.maxDistance((double)origin.getX(), (double)(128 + origin.getY()), (double)origin.getZ(), 192.0));
-		if (nbt.contains("NeedsStateScanning")) {
-			this.doLegacyCheck = nbt.getBoolean("NeedsStateScanning");
+		this.doLegacyCheck = data.needsStateScanning;
+		this.dragonUuid = (UUID)data.dragonUUID.orElse(null);
+		this.dragonKilled = data.dragonKilled;
+		this.previouslyKilled = data.previouslyKilled;
+		if (data.isRespawning) {
+			this.dragonSpawnState = EnderDragonSpawnState.START;
 		}
 
-		if (nbt.contains("DragonKilled", NbtElement.NUMBER_TYPE)) {
-			if (nbt.containsUuid("Dragon")) {
-				this.dragonUuid = nbt.getUuid("Dragon");
-			}
-
-			this.dragonKilled = nbt.getBoolean("DragonKilled");
-			this.previouslyKilled = nbt.getBoolean("PreviouslyKilled");
-			if (nbt.getBoolean("IsRespawning")) {
-				this.dragonSpawnState = EnderDragonSpawnState.START;
-			}
-
-			if (nbt.contains("ExitPortalLocation", NbtElement.COMPOUND_TYPE)) {
-				this.exitPortalLocation = NbtHelper.toBlockPos(nbt.getCompound("ExitPortalLocation"));
-			}
-		} else {
-			this.dragonKilled = false;
-			this.previouslyKilled = false;
-		}
-
-		if (nbt.contains("Gateways", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("Gateways", NbtElement.INT_TYPE);
-
-			for (int i = 0; i < nbtList.size(); i++) {
-				this.gateways.add(nbtList.getInt(i));
-			}
-		} else {
-			this.gateways.addAll(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
-			Util.shuffle(this.gateways, Random.create(gatewaysSeed));
-		}
-
+		this.exitPortalLocation = (BlockPos)data.exitPortalLocation.orElse(null);
+		this.gateways.addAll((Collection<? extends Integer>)data.gateways.orElseGet(() -> {
+			ObjectArrayList<Integer> objectArrayList = new ObjectArrayList<>(ContiguousSet.create(Range.closedOpen(0, 20), DiscreteDomain.integers()));
+			Util.shuffle(objectArrayList, Random.create(gatewaysSeed));
+			return objectArrayList;
+		}));
 		this.endPortalPattern = BlockPatternBuilder.start()
 			.aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ")
 			.aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ")
@@ -157,27 +137,16 @@ public class EnderDragonFight {
 		this.skipChunksLoadedCheck = true;
 	}
 
-	public NbtCompound toNbt() {
-		NbtCompound nbtCompound = new NbtCompound();
-		nbtCompound.putBoolean("NeedsStateScanning", this.doLegacyCheck);
-		if (this.dragonUuid != null) {
-			nbtCompound.putUuid("Dragon", this.dragonUuid);
-		}
-
-		nbtCompound.putBoolean("DragonKilled", this.dragonKilled);
-		nbtCompound.putBoolean("PreviouslyKilled", this.previouslyKilled);
-		if (this.exitPortalLocation != null) {
-			nbtCompound.put("ExitPortalLocation", NbtHelper.fromBlockPos(this.exitPortalLocation));
-		}
-
-		NbtList nbtList = new NbtList();
-
-		for (int i : this.gateways) {
-			nbtList.add(NbtInt.of(i));
-		}
-
-		nbtCompound.put("Gateways", nbtList);
-		return nbtCompound;
+	public EnderDragonFight.Data toData() {
+		return new EnderDragonFight.Data(
+			this.doLegacyCheck,
+			this.dragonKilled,
+			this.previouslyKilled,
+			false,
+			Optional.ofNullable(this.dragonUuid),
+			Optional.ofNullable(this.exitPortalLocation),
+			Optional.of(this.gateways)
+		);
 	}
 
 	public void tick() {
@@ -567,5 +536,29 @@ public class EnderDragonFight {
 	@Nullable
 	public UUID getDragonUuid() {
 		return this.dragonUuid;
+	}
+
+	public static record Data(
+		boolean needsStateScanning,
+		boolean dragonKilled,
+		boolean previouslyKilled,
+		boolean isRespawning,
+		Optional<UUID> dragonUUID,
+		Optional<BlockPos> exitPortalLocation,
+		Optional<List<Integer>> gateways
+	) {
+		public static final Codec<EnderDragonFight.Data> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+						Codec.BOOL.fieldOf("NeedsStateScanning").orElse(true).forGetter(EnderDragonFight.Data::needsStateScanning),
+						Codec.BOOL.fieldOf("DragonKilled").orElse(false).forGetter(EnderDragonFight.Data::dragonKilled),
+						Codec.BOOL.fieldOf("PreviouslyKilled").orElse(false).forGetter(EnderDragonFight.Data::previouslyKilled),
+						Codec.BOOL.optionalFieldOf("IsRespawning", Boolean.valueOf(false)).forGetter(EnderDragonFight.Data::isRespawning),
+						Uuids.INT_STREAM_CODEC.optionalFieldOf("Dragon").forGetter(EnderDragonFight.Data::dragonUUID),
+						BlockPos.CODEC.optionalFieldOf("ExitPortalLocation").forGetter(EnderDragonFight.Data::exitPortalLocation),
+						Codec.list(Codec.INT).optionalFieldOf("Gateways").forGetter(EnderDragonFight.Data::gateways)
+					)
+					.apply(instance, EnderDragonFight.Data::new)
+		);
+		public static final EnderDragonFight.Data DEFAULT = new EnderDragonFight.Data(true, false, false, false, Optional.empty(), Optional.empty(), Optional.empty());
 	}
 }

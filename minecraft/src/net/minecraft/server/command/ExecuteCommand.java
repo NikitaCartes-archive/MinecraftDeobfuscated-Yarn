@@ -60,7 +60,6 @@ import net.minecraft.entity.boss.CommandBossBar;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.loot.LootDataType;
 import net.minecraft.loot.LootManager;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameterSet;
@@ -708,7 +707,7 @@ public class ExecuteCommand {
 			.add(LootContextParameters.ORIGIN, source.getPosition())
 			.addOptional(LootContextParameters.THIS_ENTITY, source.getEntity())
 			.build(LootContextTypes.COMMAND);
-		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(LootTable.DEFAULT_ID);
+		LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(null);
 		lootContext.markActive(LootContext.predicate(condition));
 		return condition.test(lootContext);
 	}

@@ -1114,11 +1114,17 @@ public class ClientPlayNetworkHandler implements TickablePacketListener, ClientP
 			clientPlayerEntity.closeHandledScreen();
 		}
 
-		ClientPlayerEntity clientPlayerEntity2 = this.client
-			.interactionManager
-			.createPlayer(
-				this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook(), clientPlayerEntity.isSneaking(), clientPlayerEntity.isSprinting()
-			);
+		ClientPlayerEntity clientPlayerEntity2;
+		if (packet.hasFlag((byte)2)) {
+			clientPlayerEntity2 = this.client
+				.interactionManager
+				.createPlayer(
+					this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook(), clientPlayerEntity.isSneaking(), clientPlayerEntity.isSprinting()
+				);
+		} else {
+			clientPlayerEntity2 = this.client.interactionManager.createPlayer(this.world, clientPlayerEntity.getStatHandler(), clientPlayerEntity.getRecipeBook());
+		}
+
 		clientPlayerEntity2.setId(i);
 		this.client.player = clientPlayerEntity2;
 		if (registryKey != clientPlayerEntity.getWorld().getRegistryKey()) {

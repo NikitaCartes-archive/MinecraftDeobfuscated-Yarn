@@ -4,6 +4,7 @@ import com.mojang.serialization.Lifecycle;
 import java.util.Locale;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.resource.DataConfiguration;
@@ -87,9 +88,9 @@ public interface SaveProperties {
 	@Nullable
 	NbtCompound getPlayerData();
 
-	NbtCompound getDragonFight();
+	EnderDragonFight.Data getDragonFight();
 
-	void setDragonFight(NbtCompound dragonFight);
+	void setDragonFight(EnderDragonFight.Data dragonFight);
 
 	GeneratorOptions getGeneratorOptions();
 

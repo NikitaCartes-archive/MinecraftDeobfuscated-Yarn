@@ -82,11 +82,6 @@ public class TelemetryEventWidget extends ScrollableWidget {
 	}
 
 	@Override
-	protected boolean overflows() {
-		return this.getContentsHeight() > this.height;
-	}
-
-	@Override
 	protected double getDeltaYPerScroll() {
 		return 9.0;
 	}
