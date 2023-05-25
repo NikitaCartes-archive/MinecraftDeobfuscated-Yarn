@@ -4,6 +4,8 @@ import java.util.Optional;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.StainedGlassBlock;
 import net.minecraft.block.StainedGlassPaneBlock;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -70,8 +72,18 @@ public class LargeEntitySpawnHelper {
 				&& !state.isOf(Blocks.CACTUS)
 				&& !state.isOf(Blocks.GLASS_PANE)
 				&& !(state.getBlock() instanceof StainedGlassPaneBlock)
-				&& !state.isOf(Blocks.CONDUIT)) {
-				return (aboveState.isAir() || aboveState.isLiquid()) && state.isSolid();
+				&& !(state.getBlock() instanceof StainedGlassBlock)
+				&& !(state.getBlock() instanceof LeavesBlock)
+				&& !state.isOf(Blocks.CONDUIT)
+				&& !state.isOf(Blocks.ICE)
+				&& !state.isOf(Blocks.TNT)
+				&& !state.isOf(Blocks.GLOWSTONE)
+				&& !state.isOf(Blocks.BEACON)
+				&& !state.isOf(Blocks.SEA_LANTERN)
+				&& !state.isOf(Blocks.FROSTED_ICE)
+				&& !state.isOf(Blocks.TINTED_GLASS)
+				&& !state.isOf(Blocks.GLASS)) {
+				return (aboveState.isAir() || aboveState.isLiquid()) && (state.isSolid() || state.isOf(Blocks.POWDER_SNOW));
 			} else {
 				return false;
 			}

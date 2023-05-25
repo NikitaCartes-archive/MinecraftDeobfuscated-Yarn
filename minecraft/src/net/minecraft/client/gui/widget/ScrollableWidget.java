@@ -156,10 +156,14 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	/**
 	 * Draws the box that the contents are rendered over, including its borders.
 	 */
-	private void drawBox(DrawContext context) {
+	protected void drawBox(DrawContext context) {
+		this.drawBox(context, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+	}
+
+	protected void drawBox(DrawContext context, int x, int y, int width, int height) {
 		int i = this.isFocused() ? -1 : -6250336;
-		context.fill(this.getX(), this.getY(), this.getX() + this.width, this.getY() + this.height, i);
-		context.fill(this.getX() + 1, this.getY() + 1, this.getX() + this.width - 1, this.getY() + this.height - 1, -16777216);
+		context.fill(x, y, x + width, y + height, i);
+		context.fill(x + 1, y + 1, x + width - 1, y + height - 1, -16777216);
 	}
 
 	private void drawScrollbar(DrawContext context) {
@@ -184,14 +188,16 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	}
 
 	/**
+	 * {@return whether the contents overflow and needs a scrollbar}
+	 */
+	protected boolean overflows() {
+		return this.getContentsHeight() > this.getHeight();
+	}
+
+	/**
 	 * {@return the total height of the contents}
 	 */
 	protected abstract int getContentsHeight();
-
-	/**
-	 * {@return whether the contents overflow and needs a scrollbar}
-	 */
-	protected abstract boolean overflows();
 
 	protected abstract double getDeltaYPerScroll();
 

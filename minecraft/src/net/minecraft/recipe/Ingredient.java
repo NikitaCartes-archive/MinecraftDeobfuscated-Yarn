@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -21,7 +20,6 @@ import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
@@ -140,39 +138,25 @@ public final class Ingredient implements Predicate<ItemStack> {
 		if (json == null || json.isJsonNull()) {
 			throw new JsonSyntaxException("Item cannot be null");
 		} else if (json.isJsonObject()) {
-			return ofEntries(Stream.of(entryFromJson(json.getAsJsonObject(), allowAir)).filter(Objects::nonNull));
+			return ofEntries(Stream.of(entryFromJson(json.getAsJsonObject())));
 		} else if (json.isJsonArray()) {
 			JsonArray jsonArray = json.getAsJsonArray();
 			if (jsonArray.size() == 0 && !allowAir) {
 				throw new JsonSyntaxException("Item array cannot be empty, at least one item must be defined");
 			} else {
-				return ofEntries(
-					StreamSupport.stream(jsonArray.spliterator(), false)
-						.map(jsonElement -> entryFromJson(JsonHelper.asObject(jsonElement, "item"), false))
-						.filter(Objects::nonNull)
-				);
+				return ofEntries(StreamSupport.stream(jsonArray.spliterator(), false).map(jsonElement -> entryFromJson(JsonHelper.asObject(jsonElement, "item"))));
 			}
 		} else {
 			throw new JsonSyntaxException("Expected item to be object or array of objects");
 		}
 	}
 
-	@Nullable
-	private static Ingredient.Entry entryFromJson(JsonObject json, boolean allowAir) {
+	private static Ingredient.Entry entryFromJson(JsonObject json) {
 		if (json.has("item") && json.has("tag")) {
 			throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
 		} else if (json.has("item")) {
-			String string = JsonHelper.getString(json, "item");
-			Item item = (Item)Registries.ITEM.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + string + "'"));
-			if (item == Items.AIR) {
-				if (allowAir) {
-					return null;
-				} else {
-					throw new JsonSyntaxException("Empty ingredient not allowed here");
-				}
-			} else {
-				return new Ingredient.StackEntry(new ItemStack(item));
-			}
+			Item item = ShapedRecipe.getItem(json);
+			return new Ingredient.StackEntry(new ItemStack(item));
 		} else if (json.has("tag")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
 			TagKey<Item> tagKey = TagKey.of(RegistryKeys.ITEM, identifier);

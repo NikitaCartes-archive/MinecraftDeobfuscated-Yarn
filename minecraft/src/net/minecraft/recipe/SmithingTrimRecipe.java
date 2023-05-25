@@ -109,9 +109,9 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 
 	public static class Serializer implements RecipeSerializer<SmithingTrimRecipe> {
 		public SmithingTrimRecipe read(Identifier identifier, JsonObject jsonObject) {
-			Ingredient ingredient = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "template"));
-			Ingredient ingredient2 = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "base"));
-			Ingredient ingredient3 = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "addition"));
+			Ingredient ingredient = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "template"));
+			Ingredient ingredient2 = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "base"));
+			Ingredient ingredient3 = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "addition"));
 			return new SmithingTrimRecipe(identifier, ingredient, ingredient2, ingredient3);
 		}
 

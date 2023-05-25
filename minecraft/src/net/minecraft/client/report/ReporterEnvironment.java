@@ -46,7 +46,7 @@ public record ReporterEnvironment(String clientVersion, @Nullable ReporterEnviro
 
 	private static String getVersion() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("1.20-pre5");
+		stringBuilder.append("1.20-pre6");
 		if (MinecraftClient.getModStatus().isModded()) {
 			stringBuilder.append(" (modded)");
 		}

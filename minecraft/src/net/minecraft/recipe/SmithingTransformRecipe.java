@@ -79,9 +79,9 @@ public class SmithingTransformRecipe implements SmithingRecipe {
 
 	public static class Serializer implements RecipeSerializer<SmithingTransformRecipe> {
 		public SmithingTransformRecipe read(Identifier identifier, JsonObject jsonObject) {
-			Ingredient ingredient = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "template"));
-			Ingredient ingredient2 = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "base"));
-			Ingredient ingredient3 = Ingredient.fromJson(JsonHelper.getObject(jsonObject, "addition"));
+			Ingredient ingredient = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "template"));
+			Ingredient ingredient2 = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "base"));
+			Ingredient ingredient3 = Ingredient.fromJson(JsonHelper.getElement(jsonObject, "addition"));
 			ItemStack itemStack = ShapedRecipe.outputFromJson(JsonHelper.getObject(jsonObject, "result"));
 			return new SmithingTransformRecipe(identifier, ingredient, ingredient2, ingredient3, itemStack);
 		}

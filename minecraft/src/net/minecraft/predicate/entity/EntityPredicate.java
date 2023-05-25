@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.loot.LootTable;
 import net.minecraft.loot.condition.EntityPropertiesLootCondition;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
@@ -273,7 +272,7 @@ public class EntityPredicate {
 			.add(LootContextParameters.THIS_ENTITY, target)
 			.add(LootContextParameters.ORIGIN, player.getPos())
 			.build(LootContextTypes.ADVANCEMENT_ENTITY);
-		return new LootContext.Builder(lootContextParameterSet).build(LootTable.DEFAULT_ID);
+		return new LootContext.Builder(lootContextParameterSet).build(null);
 	}
 
 	public static class Builder {

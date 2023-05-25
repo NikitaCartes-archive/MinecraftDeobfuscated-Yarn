@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
+import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
@@ -71,7 +72,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	private boolean initialized;
 	private boolean difficultyLocked;
 	private WorldBorder.Properties worldBorder;
-	private NbtCompound dragonFight;
+	private EnderDragonFight.Data dragonFight;
 	@Nullable
 	private NbtCompound customBossEvents;
 	private int wanderingTraderSpawnDelay;
@@ -110,7 +111,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		Set<String> removedFeatures,
 		Timer<MinecraftServer> scheduledEvents,
 		@Nullable NbtCompound customBossEvents,
-		NbtCompound dragonFight,
+		EnderDragonFight.Data dragonFight,
 		LevelInfo levelInfo,
 		GeneratorOptions generatorOptions,
 		LevelProperties.SpecialProperty specialProperty,
@@ -177,7 +178,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			new HashSet(),
 			new Timer<>(TimerCallbackSerializer.INSTANCE),
 			null,
-			new NbtCompound(),
+			EnderDragonFight.Data.DEFAULT,
 			levelInfo.withCopiedGameRules(),
 			generatorOptions,
 			specialProperty,
@@ -197,11 +198,6 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		Lifecycle lifecycle
 	) {
 		long l = dynamic.get("Time").asLong(0L);
-		NbtCompound nbtCompound = (NbtCompound)((Dynamic)dynamic.get("DragonFight")
-				.result()
-				.orElseGet(() -> dynamic.get("DimensionData").get("1").get("DragonFight").orElseEmptyMap()))
-			.convert(NbtOps.INSTANCE)
-			.getValue();
 		return new LevelProperties(
 			dataFixer,
 			dataVersion,
@@ -232,7 +228,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 			(Set<String>)dynamic.get("removed_features").asStream().flatMap(dynamicx -> dynamicx.asString().result().stream()).collect(Collectors.toSet()),
 			new Timer<>(TimerCallbackSerializer.INSTANCE, dynamic.get("ScheduledEvents").asStream()),
 			(NbtCompound)dynamic.get("CustomBossEvents").orElseEmptyMap().getValue(),
-			nbtCompound,
+			(EnderDragonFight.Data)dynamic.get("DragonFight").read(EnderDragonFight.Data.CODEC).resultOrPartial(LOGGER::error).orElse(EnderDragonFight.Data.DEFAULT),
 			levelInfo,
 			generatorOptions,
 			specialProperty,
@@ -292,7 +288,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		levelNbt.putByte("Difficulty", (byte)this.levelInfo.getDifficulty().getId());
 		levelNbt.putBoolean("DifficultyLocked", this.difficultyLocked);
 		levelNbt.put("GameRules", this.levelInfo.getGameRules().toNbt());
-		levelNbt.put("DragonFight", this.dragonFight);
+		levelNbt.put("DragonFight", Util.getResult(EnderDragonFight.Data.CODEC.encodeStart(NbtOps.INSTANCE, this.dragonFight), IllegalStateException::new));
 		if (playerNbt != null) {
 			levelNbt.put("Player", playerNbt);
 		}
@@ -564,12 +560,12 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public NbtCompound getDragonFight() {
+	public EnderDragonFight.Data getDragonFight() {
 		return this.dragonFight;
 	}
 
 	@Override
-	public void setDragonFight(NbtCompound dragonFight) {
+	public void setDragonFight(EnderDragonFight.Data dragonFight) {
 		this.dragonFight = dragonFight;
 	}
 

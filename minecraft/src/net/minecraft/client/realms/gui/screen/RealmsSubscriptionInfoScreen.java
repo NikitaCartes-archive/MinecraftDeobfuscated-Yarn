@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.MultilineTextWidget;
+import net.minecraft.client.gui.widget.ScrollableTextWidget;
 import net.minecraft.client.realms.RealmsClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.dto.Subscription;
@@ -58,9 +58,6 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 			this.client.keyboard.setClipboard(string);
 			Util.getOperatingSystem().open(string);
 		}).dimensions(this.width / 2 - 100, row(6), 200, 20).build());
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, row(12), 200, 20).build()
-		);
 		if (this.serverData.expired) {
 			this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.configure.world.delete.button"), button -> {
 				Text text = Text.translatable("mco.configure.world.delete.question.line1");
@@ -68,8 +65,12 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				this.client.setScreen(new RealmsLongConfirmationScreen(this::onDeletionConfirmed, RealmsLongConfirmationScreen.Type.WARNING, text, text2, true));
 			}).dimensions(this.width / 2 - 100, row(10), 200, 20).build());
 		} else {
-			this.addDrawableChild(new MultilineTextWidget(this.width / 2 - 100, row(8), RECURRING_INFO_TEXT, this.textRenderer).setTextColor(10526880).setMaxWidth(200));
+			this.addDrawableChild(new ScrollableTextWidget(this.width / 2 - 100, row(8), 200, 46, RECURRING_INFO_TEXT, this.textRenderer).textColor(10526880));
 		}
+
+		this.addDrawableChild(
+			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 - 100, row(12), 200, 20).build()
+		);
 	}
 
 	@Override

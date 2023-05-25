@@ -110,14 +110,16 @@ public class LootContext {
 			return this.parameters.getWorld();
 		}
 
-		public LootContext build(Identifier randomSequenceId) {
+		public LootContext build(@Nullable Identifier randomSequenceId) {
 			ServerWorld serverWorld = this.getWorld();
 			MinecraftServer minecraftServer = serverWorld.getServer();
 			Random random;
 			if (this.random != null) {
 				random = this.random;
-			} else {
+			} else if (randomSequenceId != null) {
 				random = serverWorld.getOrCreateRandom(randomSequenceId);
+			} else {
+				random = serverWorld.getRandom();
 			}
 
 			return new LootContext(this.parameters, random, minecraftServer.getLootManager());
