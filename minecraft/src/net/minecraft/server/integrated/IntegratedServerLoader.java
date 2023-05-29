@@ -19,6 +19,7 @@ import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.client.gui.screen.world.EditWorldScreen;
+import net.minecraft.client.gui.screen.world.SymlinkWarningScreen;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.world.GeneratorOptionsHolder;
 import net.minecraft.nbt.NbtElement;
@@ -42,6 +43,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.path.SymlinkValidationException;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionOptionsRegistryHolder;
@@ -109,6 +111,10 @@ public class IntegratedServerLoader {
 			LOGGER.warn("Failed to read level {} data", levelName, var3);
 			SystemToast.addWorldAccessFailureToast(this.client, levelName);
 			this.client.setScreen(null);
+			return null;
+		} catch (SymlinkValidationException var4) {
+			LOGGER.warn("{}", var4.getMessage());
+			this.client.setScreen(new SymlinkWarningScreen(null));
 			return null;
 		}
 	}

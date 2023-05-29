@@ -21,6 +21,7 @@ import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.path.SymlinkValidationException;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelSummary;
 import org.apache.commons.io.FileUtils;
@@ -138,6 +139,9 @@ public class EditWorldScreen extends Screen {
 			}
 
 			LOGGER.warn("Failed to create backup of level {}", levelName, var8);
+		} catch (SymlinkValidationException var9) {
+			LOGGER.warn("{}", var9.getMessage());
+			SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), levelName);
 		}
 	}
 

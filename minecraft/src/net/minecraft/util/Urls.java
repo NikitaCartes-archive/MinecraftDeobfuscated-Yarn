@@ -14,6 +14,7 @@ public class Urls {
 	public static final String ABOUT_JAVA_REPORTING = "https://aka.ms/aboutjavareporting";
 	public static final String JAVA_MODERATION = "https://aka.ms/mcjavamoderation";
 	public static final String JAVA_BLOCKING = "https://aka.ms/javablocking";
+	public static final String MINECRAFT_SYMLINKS = "https://aka.ms/MinecraftSymLinks";
 	public static final String JAVA_REALMS_TRIAL = "https://aka.ms/startjavarealmstrial";
 	public static final String BUY_JAVA_REALMS = "https://aka.ms/BuyJavaRealms";
 	public static final String REALMS_TERMS = "https://aka.ms/MinecraftRealmsTerms";
