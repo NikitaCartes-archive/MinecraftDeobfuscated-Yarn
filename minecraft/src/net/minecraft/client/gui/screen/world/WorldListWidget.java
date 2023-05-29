@@ -8,9 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -49,6 +52,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.path.SymlinkEntry;
+import net.minecraft.util.path.SymlinkValidationException;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
@@ -307,23 +312,40 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			this.level = level;
 			this.icon = WorldIcon.forWorld(this.client.getTextureManager(), level.getName());
 			this.iconPath = level.getIconPath();
-			if (!Files.isRegularFile(this.iconPath, new LinkOption[0])) {
-				this.iconPath = null;
-			}
-
+			this.validateIconPath();
 			this.loadIcon();
+		}
+
+		private void validateIconPath() {
+			if (this.iconPath != null) {
+				try {
+					BasicFileAttributes basicFileAttributes = Files.readAttributes(this.iconPath, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+					if (basicFileAttributes.isSymbolicLink()) {
+						List<SymlinkEntry> list = new ArrayList();
+						this.client.getLevelStorage().getSymlinkFinder().validate(this.iconPath, list);
+						if (!list.isEmpty()) {
+							WorldListWidget.LOGGER.warn(SymlinkValidationException.getMessage(this.iconPath, list));
+							this.iconPath = null;
+						} else {
+							basicFileAttributes = Files.readAttributes(this.iconPath, BasicFileAttributes.class);
+						}
+					}
+
+					if (!basicFileAttributes.isRegularFile()) {
+						this.iconPath = null;
+					}
+				} catch (NoSuchFileException var3) {
+					this.iconPath = null;
+				} catch (IOException var4) {
+					WorldListWidget.LOGGER.error("could not validate symlink", (Throwable)var4);
+					this.iconPath = null;
+				}
+			}
 		}
 
 		@Override
 		public Text getNarration() {
-			Text text = Text.translatable(
-				"narrator.select.world",
-				this.level.getDisplayName(),
-				new Date(this.level.getLastPlayed()),
-				this.level.isHardcore() ? Text.translatable("gameMode.hardcore") : Text.translatable("gameMode." + this.level.getGameMode().getName()),
-				this.level.hasCheats() ? Text.translatable("selectWorld.cheats") : ScreenTexts.EMPTY,
-				this.level.getVersion()
-			);
+			Text text = Text.translatable("narrator.select.world_info", this.level.getDisplayName(), new Date(this.level.getLastPlayed()), this.level.getDetails());
 			Text text2;
 			if (this.level.isLocked()) {
 				text2 = ScreenTexts.joinSentences(text, WorldListWidget.LOCKED_TEXT);
@@ -337,7 +359,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			String string = this.level.getDisplayName();
-			String string2 = this.level.getName() + " (" + WorldListWidget.DATE_FORMAT.format(new Date(this.level.getLastPlayed())) + ")";
+			String string2 = this.level.getName();
+			long l = this.level.getLastPlayed();
+			if (l != -1L) {
+				string2 = string2 + " (" + WorldListWidget.DATE_FORMAT.format(new Date(l)) + ")";
+			}
+
 			if (StringUtils.isEmpty(string)) {
 				string = I18n.translate("selectWorld.world") + " " + (index + 1);
 			}
@@ -354,6 +381,12 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				int i = mouseX - x;
 				boolean bl = i < 32;
 				int j = bl ? 32 : 0;
+				if (this.level instanceof LevelSummary.SymlinkLevelSummary) {
+					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 32.0F, (float)j, 32, 32, 256, 256);
+					return;
+				}
+
 				if (this.level.isLocked()) {
 					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 96.0F, (float)j, 32, 32, 256, 256);
 					if (bl) {
@@ -407,61 +440,68 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 		public void play() {
 			if (!this.level.isUnavailable()) {
-				LevelSummary.ConversionWarning conversionWarning = this.level.getConversionWarning();
-				if (conversionWarning.promptsBackup()) {
-					String string = "selectWorld.backupQuestion." + conversionWarning.getTranslationKeySuffix();
-					String string2 = "selectWorld.backupWarning." + conversionWarning.getTranslationKeySuffix();
-					MutableText mutableText = Text.translatable(string);
-					if (conversionWarning.needsBoldRedFormatting()) {
-						mutableText.formatted(Formatting.BOLD, Formatting.RED);
-					}
-
-					Text text = Text.translatable(string2, this.level.getVersion(), SharedConstants.getGameVersion().getName());
-					this.client.setScreen(new BackupPromptScreen(this.screen, (backup, eraseCache) -> {
-						if (backup) {
-							String stringx = this.level.getName();
-
-							try (LevelStorage.Session session = this.client.getLevelStorage().createSession(stringx)) {
-								EditWorldScreen.backupLevel(session);
-							} catch (IOException var9) {
-								SystemToast.addWorldAccessFailureToast(this.client, stringx);
-								WorldListWidget.LOGGER.error("Failed to backup level {}", stringx, var9);
-							}
+				if (this.level instanceof LevelSummary.SymlinkLevelSummary) {
+					this.client.setScreen(new SymlinkWarningScreen(this.screen));
+				} else {
+					LevelSummary.ConversionWarning conversionWarning = this.level.getConversionWarning();
+					if (conversionWarning.promptsBackup()) {
+						String string = "selectWorld.backupQuestion." + conversionWarning.getTranslationKeySuffix();
+						String string2 = "selectWorld.backupWarning." + conversionWarning.getTranslationKeySuffix();
+						MutableText mutableText = Text.translatable(string);
+						if (conversionWarning.needsBoldRedFormatting()) {
+							mutableText.formatted(Formatting.BOLD, Formatting.RED);
 						}
 
-						this.start();
-					}, mutableText, text, false));
-				} else if (this.level.isFutureLevel()) {
-					this.client
-						.setScreen(
-							new ConfirmScreen(
-								confirmed -> {
-									if (confirmed) {
-										try {
-											this.start();
-										} catch (Exception var3x) {
-											WorldListWidget.LOGGER.error("Failure to open 'future world'", (Throwable)var3x);
-											this.client
-												.setScreen(
-													new NoticeScreen(
-														() -> this.client.setScreen(this.screen),
-														Text.translatable("selectWorld.futureworld.error.title"),
-														Text.translatable("selectWorld.futureworld.error.text")
-													)
-												);
+						Text text = Text.translatable(string2, this.level.getVersion(), SharedConstants.getGameVersion().getName());
+						this.client.setScreen(new BackupPromptScreen(this.screen, (backup, eraseCache) -> {
+							if (backup) {
+								String stringx = this.level.getName();
+
+								try (LevelStorage.Session session = this.client.getLevelStorage().createSession(stringx)) {
+									EditWorldScreen.backupLevel(session);
+								} catch (IOException var9) {
+									SystemToast.addWorldAccessFailureToast(this.client, stringx);
+									WorldListWidget.LOGGER.error("Failed to backup level {}", stringx, var9);
+								} catch (SymlinkValidationException var10) {
+									WorldListWidget.LOGGER.warn("{}", var10.getMessage());
+									this.client.setScreen(new SymlinkWarningScreen(this.screen));
+								}
+							}
+
+							this.start();
+						}, mutableText, text, false));
+					} else if (this.level.isFutureLevel()) {
+						this.client
+							.setScreen(
+								new ConfirmScreen(
+									confirmed -> {
+										if (confirmed) {
+											try {
+												this.start();
+											} catch (Exception var3x) {
+												WorldListWidget.LOGGER.error("Failure to open 'future world'", (Throwable)var3x);
+												this.client
+													.setScreen(
+														new NoticeScreen(
+															() -> this.client.setScreen(this.screen),
+															Text.translatable("selectWorld.futureworld.error.title"),
+															Text.translatable("selectWorld.futureworld.error.text")
+														)
+													);
+											}
+										} else {
+											this.client.setScreen(this.screen);
 										}
-									} else {
-										this.client.setScreen(this.screen);
-									}
-								},
-								Text.translatable("selectWorld.versionQuestion"),
-								Text.translatable("selectWorld.versionWarning", this.level.getVersion()),
-								Text.translatable("selectWorld.versionJoinButton"),
-								ScreenTexts.CANCEL
-							)
-						);
-				} else {
-					this.start();
+									},
+									Text.translatable("selectWorld.versionQuestion"),
+									Text.translatable("selectWorld.versionWarning", this.level.getVersion()),
+									Text.translatable("selectWorld.versionJoinButton"),
+									ScreenTexts.CANCEL
+								)
+							);
+					} else {
+						this.start();
+					}
 				}
 			}
 		}
@@ -490,7 +530,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			LevelStorage levelStorage = this.client.getLevelStorage();
 			String string = this.level.getName();
 
-			try (LevelStorage.Session session = levelStorage.createSession(string)) {
+			try (LevelStorage.Session session = levelStorage.createSessionWithoutSymlinkCheck(string)) {
 				session.deleteSessionLock();
 			} catch (IOException var8) {
 				SystemToast.addWorldDeleteFailureToast(this.client, string);
@@ -501,62 +541,76 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		public void edit() {
-			this.openReadingWorldScreen();
-			String string = this.level.getName();
+			if (this.level instanceof LevelSummary.SymlinkLevelSummary) {
+				this.client.setScreen(new SymlinkWarningScreen(this.screen));
+			} else {
+				this.openReadingWorldScreen();
+				String string = this.level.getName();
 
-			try {
-				LevelStorage.Session session = this.client.getLevelStorage().createSession(string);
-				this.client.setScreen(new EditWorldScreen(edited -> {
-					try {
-						session.close();
-					} catch (IOException var5) {
-						WorldListWidget.LOGGER.error("Failed to unlock level {}", string, var5);
-					}
+				try {
+					LevelStorage.Session session = this.client.getLevelStorage().createSession(string);
+					this.client.setScreen(new EditWorldScreen(edited -> {
+						try {
+							session.close();
+						} catch (IOException var5) {
+							WorldListWidget.LOGGER.error("Failed to unlock level {}", string, var5);
+						}
 
-					if (edited) {
-						WorldListWidget.this.load();
-					}
+						if (edited) {
+							WorldListWidget.this.load();
+						}
 
-					this.client.setScreen(this.screen);
-				}, session));
-			} catch (IOException var3) {
-				SystemToast.addWorldAccessFailureToast(this.client, string);
-				WorldListWidget.LOGGER.error("Failed to access level {}", string, var3);
-				WorldListWidget.this.load();
+						this.client.setScreen(this.screen);
+					}, session));
+				} catch (IOException var3) {
+					SystemToast.addWorldAccessFailureToast(this.client, string);
+					WorldListWidget.LOGGER.error("Failed to access level {}", string, var3);
+					WorldListWidget.this.load();
+				} catch (SymlinkValidationException var4) {
+					WorldListWidget.LOGGER.warn("{}", var4.getMessage());
+					this.client.setScreen(new SymlinkWarningScreen(this.screen));
+				}
 			}
 		}
 
 		public void recreate() {
-			this.openReadingWorldScreen();
+			if (this.level instanceof LevelSummary.SymlinkLevelSummary) {
+				this.client.setScreen(new SymlinkWarningScreen(this.screen));
+			} else {
+				this.openReadingWorldScreen();
 
-			try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName())) {
-				Pair<LevelInfo, GeneratorOptionsHolder> pair = this.client.createIntegratedServerLoader().loadForRecreation(session);
-				LevelInfo levelInfo = pair.getFirst();
-				GeneratorOptionsHolder generatorOptionsHolder = pair.getSecond();
-				Path path = CreateWorldScreen.copyDataPack(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
-				if (generatorOptionsHolder.generatorOptions().isLegacyCustomizedType()) {
+				try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName())) {
+					Pair<LevelInfo, GeneratorOptionsHolder> pair = this.client.createIntegratedServerLoader().loadForRecreation(session);
+					LevelInfo levelInfo = pair.getFirst();
+					GeneratorOptionsHolder generatorOptionsHolder = pair.getSecond();
+					Path path = CreateWorldScreen.copyDataPack(session.getDirectory(WorldSavePath.DATAPACKS), this.client);
+					if (generatorOptionsHolder.generatorOptions().isLegacyCustomizedType()) {
+						this.client
+							.setScreen(
+								new ConfirmScreen(
+									confirmed -> this.client
+											.setScreen((Screen)(confirmed ? CreateWorldScreen.create(this.client, this.screen, levelInfo, generatorOptionsHolder, path) : this.screen)),
+									Text.translatable("selectWorld.recreate.customized.title"),
+									Text.translatable("selectWorld.recreate.customized.text"),
+									ScreenTexts.PROCEED,
+									ScreenTexts.CANCEL
+								)
+							);
+					} else {
+						this.client.setScreen(CreateWorldScreen.create(this.client, this.screen, levelInfo, generatorOptionsHolder, path));
+					}
+				} catch (SymlinkValidationException var8) {
+					WorldListWidget.LOGGER.warn("{}", var8.getMessage());
+					this.client.setScreen(new SymlinkWarningScreen(this.screen));
+				} catch (Exception var9) {
+					WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var9);
 					this.client
 						.setScreen(
-							new ConfirmScreen(
-								confirmed -> this.client
-										.setScreen((Screen)(confirmed ? CreateWorldScreen.create(this.client, this.screen, levelInfo, generatorOptionsHolder, path) : this.screen)),
-								Text.translatable("selectWorld.recreate.customized.title"),
-								Text.translatable("selectWorld.recreate.customized.text"),
-								ScreenTexts.PROCEED,
-								ScreenTexts.CANCEL
+							new NoticeScreen(
+								() -> this.client.setScreen(this.screen), Text.translatable("selectWorld.recreate.error.title"), Text.translatable("selectWorld.recreate.error.text")
 							)
 						);
-				} else {
-					this.client.setScreen(CreateWorldScreen.create(this.client, this.screen, levelInfo, generatorOptionsHolder, path));
 				}
-			} catch (Exception var8) {
-				WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var8);
-				this.client
-					.setScreen(
-						new NoticeScreen(
-							() -> this.client.setScreen(this.screen), Text.translatable("selectWorld.recreate.error.title"), Text.translatable("selectWorld.recreate.error.text")
-						)
-					);
 			}
 		}
 

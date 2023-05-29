@@ -505,7 +505,7 @@ public class CreateWorldScreen extends Screen {
 		String string = this.worldCreator.getWorldDirectoryName();
 
 		try {
-			LevelStorage.Session session = this.client.getLevelStorage().createSession(string);
+			LevelStorage.Session session = this.client.getLevelStorage().createSessionWithoutSymlinkCheck(string);
 			if (this.dataPackTempDir == null) {
 				return Optional.of(session);
 			}

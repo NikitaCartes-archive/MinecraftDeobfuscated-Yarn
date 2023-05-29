@@ -250,7 +250,7 @@ public class TitleScreen extends Screen {
 					button -> {
 						LevelStorage levelStorage = this.client.getLevelStorage();
 
-						try (LevelStorage.Session session = levelStorage.createSession("Demo_World")) {
+						try (LevelStorage.Session session = levelStorage.createSessionWithoutSymlinkCheck("Demo_World")) {
 							LevelSummary levelSummary = session.getLevelSummary();
 							if (levelSummary != null) {
 								this.client
@@ -279,7 +279,7 @@ public class TitleScreen extends Screen {
 	private boolean canReadDemoWorldData() {
 		try {
 			boolean var2;
-			try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
+			try (LevelStorage.Session session = this.client.getLevelStorage().createSessionWithoutSymlinkCheck("Demo_World")) {
 				var2 = session.getLevelSummary() != null;
 			}
 
@@ -370,7 +370,7 @@ public class TitleScreen extends Screen {
 
 	private void onDemoDeletionConfirmed(boolean delete) {
 		if (delete) {
-			try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
+			try (LevelStorage.Session session = this.client.getLevelStorage().createSessionWithoutSymlinkCheck("Demo_World")) {
 				session.deleteSessionLock();
 			} catch (IOException var7) {
 				SystemToast.addWorldDeleteFailureToast(this.client, "Demo_World");

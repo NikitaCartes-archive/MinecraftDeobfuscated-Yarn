@@ -26,6 +26,7 @@ import net.minecraft.client.realms.gui.screen.RealmsDownloadLatestWorldScreen;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.path.SymlinkValidationException;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -261,8 +262,8 @@ public class FileDownload {
 					}
 				}
 			}
-		} catch (Exception var39) {
-			LOGGER.error("Error getting level list", (Throwable)var39);
+		} catch (Exception var43) {
+			LOGGER.error("Error getting level list", (Throwable)var43);
 			this.error = true;
 			return;
 		}
@@ -305,21 +306,21 @@ public class FileDownload {
 
 					try {
 						IOUtils.copy(tarArchiveInputStream, fileOutputStream);
-					} catch (Throwable var34) {
+					} catch (Throwable var37) {
 						try {
 							fileOutputStream.close();
-						} catch (Throwable var33) {
-							var34.addSuppressed(var33);
+						} catch (Throwable var36) {
+							var37.addSuppressed(var36);
 						}
 
-						throw var34;
+						throw var37;
 					}
 
 					fileOutputStream.close();
 				}
 			}
-		} catch (Exception var37) {
-			LOGGER.error("Error extracting world", (Throwable)var37);
+		} catch (Exception var41) {
+			LOGGER.error("Error extracting world", (Throwable)var41);
 			this.error = true;
 		} finally {
 			if (tarArchiveInputStream != null) {
@@ -334,8 +335,10 @@ public class FileDownload {
 				session2.save(string2.trim());
 				Path path2 = session2.getDirectory(WorldSavePath.LEVEL_DAT);
 				readNbtFile(path2.toFile());
-			} catch (IOException var36) {
-				LOGGER.error("Failed to rename unpacked realms level {}", string2, var36);
+			} catch (IOException var39) {
+				LOGGER.error("Failed to rename unpacked realms level {}", string2, var39);
+			} catch (SymlinkValidationException var40) {
+				LOGGER.warn("{}", var40.getMessage());
 			}
 
 			this.resourcePackPath = new File(file, string2 + File.separator + "resources.zip");

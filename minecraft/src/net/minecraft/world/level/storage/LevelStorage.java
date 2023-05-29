@@ -10,6 +10,7 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.Lifecycle;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Nullable;
@@ -59,6 +61,10 @@ import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashMemoryReserve;
+import net.minecraft.util.path.AllowedSymlinkPathMatcher;
+import net.minecraft.util.path.SymlinkEntry;
+import net.minecraft.util.path.SymlinkFinder;
+import net.minecraft.util.path.SymlinkValidationException;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
@@ -89,25 +95,63 @@ public class LevelStorage {
 		"RandomSeed", "generatorName", "generatorOptions", "generatorVersion", "legacy_custom_options", "MapFeatures", "BonusChest"
 	);
 	private static final String DATA_KEY = "Data";
-	final Path savesDirectory;
+	private static final AllowedSymlinkPathMatcher DEFAULT_ALLOWED_SYMLINK_MATCHER = new AllowedSymlinkPathMatcher(List.of());
+	public static final String ALLOWED_SYMLINKS_FILE_NAME = "allowed_symlinks.txt";
+	private final Path savesDirectory;
 	private final Path backupsDirectory;
 	final DataFixer dataFixer;
+	private final SymlinkFinder symlinkFinder;
 
-	public LevelStorage(Path savesDirectory, Path backupsDirectory, DataFixer dataFixer) {
+	public LevelStorage(Path savesDirectory, Path backupsDirectory, SymlinkFinder symlinkFinder, DataFixer dataFixer) {
 		this.dataFixer = dataFixer;
 
 		try {
 			PathUtil.createDirectories(savesDirectory);
-		} catch (IOException var5) {
-			throw new RuntimeException(var5);
+		} catch (IOException var6) {
+			throw new UncheckedIOException(var6);
 		}
 
 		this.savesDirectory = savesDirectory;
 		this.backupsDirectory = backupsDirectory;
+		this.symlinkFinder = symlinkFinder;
+	}
+
+	public static SymlinkFinder createSymlinkFinder(Path allowedSymlinksFile) {
+		if (Files.exists(allowedSymlinksFile, new LinkOption[0])) {
+			try {
+				BufferedReader bufferedReader = Files.newBufferedReader(allowedSymlinksFile);
+
+				SymlinkFinder var2;
+				try {
+					var2 = new SymlinkFinder(AllowedSymlinkPathMatcher.fromReader(bufferedReader));
+				} catch (Throwable var5) {
+					if (bufferedReader != null) {
+						try {
+							bufferedReader.close();
+						} catch (Throwable var4) {
+							var5.addSuppressed(var4);
+						}
+					}
+
+					throw var5;
+				}
+
+				if (bufferedReader != null) {
+					bufferedReader.close();
+				}
+
+				return var2;
+			} catch (Exception var6) {
+				LOGGER.error("Failed to parse {}, disallowing all symbolic links", "allowed_symlinks.txt", var6);
+			}
+		}
+
+		return new SymlinkFinder(DEFAULT_ALLOWED_SYMLINK_MATCHER);
 	}
 
 	public static LevelStorage create(Path path) {
-		return new LevelStorage(path, path.resolve("../backups"), Schemas.getFixer());
+		SymlinkFinder symlinkFinder = createSymlinkFinder(path.resolve("allowed_symlinks.txt"));
+		return new LevelStorage(path, path.resolve("../backups"), symlinkFinder, Schemas.getFixer());
 	}
 
 	private static <T> DataResult<WorldGenSettings> readGeneratorProperties(Dynamic<T> levelData, DataFixer dataFixer, int version) {
@@ -137,16 +181,36 @@ public class LevelStorage {
 			throw new LevelStorageException(Text.translatable("selectWorld.load_folder_access"));
 		} else {
 			try {
-				List<LevelStorage.LevelSave> list = Files.list(this.savesDirectory)
-					.filter(path -> Files.isDirectory(path, new LinkOption[0]))
-					.map(LevelStorage.LevelSave::new)
-					.filter(
-						levelSave -> Files.isRegularFile(levelSave.getLevelDatPath(), new LinkOption[0])
-								|| Files.isRegularFile(levelSave.getLevelDatOldPath(), new LinkOption[0])
-					)
-					.toList();
-				return new LevelStorage.LevelList(list);
-			} catch (IOException var2) {
+				Stream<Path> stream = Files.list(this.savesDirectory);
+
+				LevelStorage.LevelList var3;
+				try {
+					List<LevelStorage.LevelSave> list = stream.filter(path -> Files.isDirectory(path, new LinkOption[0]))
+						.map(LevelStorage.LevelSave::new)
+						.filter(
+							levelSave -> Files.isRegularFile(levelSave.getLevelDatPath(), new LinkOption[0])
+									|| Files.isRegularFile(levelSave.getLevelDatOldPath(), new LinkOption[0])
+						)
+						.toList();
+					var3 = new LevelStorage.LevelList(list);
+				} catch (Throwable var5) {
+					if (stream != null) {
+						try {
+							stream.close();
+						} catch (Throwable var4) {
+							var5.addSuppressed(var4);
+						}
+					}
+
+					throw var5;
+				}
+
+				if (stream != null) {
+					stream.close();
+				}
+
+				return var3;
+			} catch (IOException var6) {
 				throw new LevelStorageException(Text.translatable("selectWorld.load_folder_access"));
 			}
 		}
@@ -262,6 +326,15 @@ public class LevelStorage {
 	BiFunction<Path, DataFixer, LevelSummary> createLevelDataParser(LevelStorage.LevelSave levelSave, boolean locked) {
 		return (path, dataFixer) -> {
 			try {
+				if (Files.isSymbolicLink(path)) {
+					List<SymlinkEntry> list = new ArrayList();
+					this.symlinkFinder.validate(path, list);
+					if (!list.isEmpty()) {
+						LOGGER.warn(SymlinkValidationException.getMessage(path, list));
+						return new LevelSummary.SymlinkLevelSummary(levelSave.getRootPath(), levelSave.getIconPath());
+					}
+				}
+
 				if (loadCompactLevelData(path) instanceof NbtCompound nbtCompound) {
 					NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
 					int i = NbtHelper.getDataVersion(nbtCompound2, -1);
@@ -314,7 +387,7 @@ public class LevelStorage {
 
 	public boolean isLevelNameValid(String name) {
 		try {
-			Path path = this.savesDirectory.resolve(name);
+			Path path = this.resolve(name);
 			Files.createDirectory(path);
 			Files.deleteIfExists(path);
 			return true;
@@ -324,7 +397,11 @@ public class LevelStorage {
 	}
 
 	public boolean levelExists(String name) {
-		return Files.isDirectory(this.savesDirectory.resolve(name), new LinkOption[0]);
+		return Files.isDirectory(this.resolve(name), new LinkOption[0]);
+	}
+
+	private Path resolve(String name) {
+		return this.savesDirectory.resolve(name);
 	}
 
 	public Path getSavesDirectory() {
@@ -335,8 +412,23 @@ public class LevelStorage {
 		return this.backupsDirectory;
 	}
 
-	public LevelStorage.Session createSession(String directoryName) throws IOException {
-		return new LevelStorage.Session(directoryName);
+	public LevelStorage.Session createSession(String directoryName) throws IOException, SymlinkValidationException {
+		Path path = this.resolve(directoryName);
+		List<SymlinkEntry> list = this.symlinkFinder.collect(path, true);
+		if (!list.isEmpty()) {
+			throw new SymlinkValidationException(path, list);
+		} else {
+			return new LevelStorage.Session(directoryName, path);
+		}
+	}
+
+	public LevelStorage.Session createSessionWithoutSymlinkCheck(String directoryName) throws IOException {
+		Path path = this.resolve(directoryName);
+		return new LevelStorage.Session(directoryName, path);
+	}
+
+	public SymlinkFinder getSymlinkFinder() {
+		return this.symlinkFinder;
 	}
 
 	public static record LevelList(List<LevelStorage.LevelSave> levels) implements Iterable<LevelStorage.LevelSave> {
@@ -386,10 +478,10 @@ public class LevelStorage {
 		private final String directoryName;
 		private final Map<WorldSavePath, Path> paths = Maps.<WorldSavePath, Path>newHashMap();
 
-		public Session(String directoryName) throws IOException {
+		Session(String directoryName, Path path) throws IOException {
 			this.directoryName = directoryName;
-			this.directory = new LevelStorage.LevelSave(LevelStorage.this.savesDirectory.resolve(directoryName));
-			this.lock = SessionLock.create(this.directory.path());
+			this.directory = new LevelStorage.LevelSave(path);
+			this.lock = SessionLock.create(path);
 		}
 
 		public String getDirectoryName() {
@@ -479,7 +571,7 @@ public class LevelStorage {
 							return FileVisitResult.CONTINUE;
 						}
 
-						public FileVisitResult postVisitDirectory(Path path, IOException iOException) throws IOException {
+						public FileVisitResult postVisitDirectory(Path path, @Nullable IOException iOException) throws IOException {
 							if (iOException != null) {
 								throw iOException;
 							} else {

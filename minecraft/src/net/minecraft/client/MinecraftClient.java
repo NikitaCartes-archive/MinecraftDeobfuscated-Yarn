@@ -239,6 +239,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.path.SymlinkFinder;
 import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.DummyRecorder;
@@ -534,8 +535,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		try {
 			this.window.setIcon(this.defaultResourcePack, SharedConstants.getGameVersion().isStable() ? Icons.RELEASE : Icons.SNAPSHOT);
-		} catch (IOException var10) {
-			LOGGER.error("Couldn't set icon", (Throwable)var10);
+		} catch (IOException var12) {
+			LOGGER.error("Couldn't set icon", (Throwable)var12);
 		}
 
 		this.window.setFramerateLimit(this.options.getMaxFps().getValue());
@@ -555,7 +556,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.textureManager = new TextureManager(this.resourceManager);
 		this.resourceManager.registerReloader(this.textureManager);
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(file, "skins"), this.sessionService);
-		this.levelStorage = new LevelStorage(this.runDirectory.toPath().resolve("saves"), this.runDirectory.toPath().resolve("backups"), this.dataFixer);
+		Path path = this.runDirectory.toPath();
+		SymlinkFinder symlinkFinder = LevelStorage.createSymlinkFinder(path.resolve("allowed_symlinks.txt"));
+		this.levelStorage = new LevelStorage(path.resolve("saves"), path.resolve("backups"), symlinkFinder, this.dataFixer);
 		this.soundManager = new SoundManager(this.options);
 		this.resourceManager.registerReloader(this.soundManager);
 		this.splashTextLoader = new SplashTextResourceSupplier(this.session);
@@ -638,7 +641,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.onResolutionChanged();
 		this.gameRenderer.preloadPrograms(this.defaultResourcePack.getFactory());
 		this.telemetryManager = new TelemetryManager(this, this.userApiService, this.session);
-		this.profileKeys = ProfileKeys.create(this.userApiService, this.session, this.runDirectory.toPath());
+		this.profileKeys = ProfileKeys.create(this.userApiService, this.session, path);
 		this.realms32BitWarningChecker = new Realms32BitWarningChecker(this);
 		this.narratorManager = new NarratorManager(this);
 		this.narratorManager.checkNarratorLibrary(this.options.getNarrator().getValue() != NarratorMode.OFF);
