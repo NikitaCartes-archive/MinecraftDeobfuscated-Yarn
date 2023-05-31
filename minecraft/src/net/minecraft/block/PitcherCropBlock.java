@@ -72,12 +72,11 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		if (state.get(HALF) == DoubleBlockHalf.LOWER && (Integer)state.get(AGE) >= 3) {
-			BlockState blockState = world.getBlockState(pos.up());
-			return blockState.isOf(this) && blockState.get(HALF) == DoubleBlockHalf.UPPER && this.canPlantOnTop(world.getBlockState(pos.down()), world, pos);
-		} else {
-			return (world.getBaseLightLevel(pos, 0) >= 8 || world.isSkyVisible(pos)) && super.canPlaceAt(state, world, pos);
-		}
+		return !isLowerHalf(state)
+			? super.canPlaceAt(state, world, pos)
+			: this.canPlantOnTop(world.getBlockState(pos.down()), world, pos.down())
+				&& canPlaceAt(world, pos)
+				&& ((Integer)state.get(AGE) < 3 || isUpperHalf(world.getBlockState(pos.up())));
 	}
 
 	@Override
@@ -127,37 +126,53 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 
 	private void tryGrow(ServerWorld world, BlockState state, BlockPos pos, int amount) {
 		int i = Math.min((Integer)state.get(AGE) + amount, 4);
-		if (i < 3 || canGrowAt(world, isLowerHalf(state) ? pos.up() : pos)) {
+		if (this.canGrow(world, pos, state, i)) {
 			world.setBlockState(pos, state.with(AGE, Integer.valueOf(i)), Block.NOTIFY_LISTENERS);
 			if (i >= 3) {
-				if (isLowerHalf(state)) {
-					BlockPos blockPos = pos.up();
-					world.setBlockState(
-						blockPos, withWaterloggedState(world, pos, this.getDefaultState().with(AGE, Integer.valueOf(i)).with(HALF, DoubleBlockHalf.UPPER)), Block.NOTIFY_ALL
-					);
-				} else {
-					BlockPos blockPos = pos.down();
-					world.setBlockState(
-						blockPos, withWaterloggedState(world, pos, this.getDefaultState().with(AGE, Integer.valueOf(i)).with(HALF, DoubleBlockHalf.LOWER)), Block.NOTIFY_ALL
-					);
-				}
+				BlockPos blockPos = pos.up();
+				world.setBlockState(
+					blockPos, withWaterloggedState(world, pos, this.getDefaultState().with(AGE, Integer.valueOf(i)).with(HALF, DoubleBlockHalf.UPPER)), Block.NOTIFY_ALL
+				);
 			}
 		}
 	}
 
-	private static boolean canGrowAt(ServerWorld world, BlockPos pos) {
+	private static boolean canGrowAt(WorldView world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
 		return blockState.isAir() || blockState.isOf(Blocks.PITCHER_CROP);
 	}
 
+	private static boolean canPlaceAt(WorldView world, BlockPos pos) {
+		return world.getBaseLightLevel(pos, 0) >= 8 || world.isSkyVisible(pos);
+	}
+
 	private static boolean isLowerHalf(BlockState state) {
-		return state.get(HALF) == DoubleBlockHalf.LOWER;
+		return state.isOf(Blocks.PITCHER_CROP) && state.get(HALF) == DoubleBlockHalf.LOWER;
+	}
+
+	private static boolean isUpperHalf(BlockState state) {
+		return state.isOf(Blocks.PITCHER_CROP) && state.get(HALF) == DoubleBlockHalf.UPPER;
+	}
+
+	private boolean canGrow(WorldView world, BlockPos pos, BlockState state, int age) {
+		return !this.isFullyGrown(state) && canPlaceAt(world, pos) && (age < 3 || canGrowAt(world, pos.up()));
+	}
+
+	@Nullable
+	private PitcherCropBlock.LowerHalfContext getLowerHalfContext(WorldView world, BlockPos pos, BlockState state) {
+		if (isLowerHalf(state)) {
+			return new PitcherCropBlock.LowerHalfContext(pos, state);
+		} else {
+			BlockPos blockPos = pos.down();
+			BlockState blockState = world.getBlockState(blockPos);
+			return isLowerHalf(blockState) ? new PitcherCropBlock.LowerHalfContext(blockPos, blockState) : null;
+		}
 	}
 
 	@Override
 	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
-		return !this.isFullyGrown(state)
-			&& ((Integer)state.get(AGE) < 2 || world instanceof ServerWorld serverWorld && canGrowAt(serverWorld, isLowerHalf(state) ? pos.up() : pos));
+		PitcherCropBlock.LowerHalfContext lowerHalfContext = this.getLowerHalfContext(world, pos, state);
+		return lowerHalfContext == null ? false : this.canGrow(world, lowerHalfContext.pos, lowerHalfContext.state, (Integer)lowerHalfContext.state.get(AGE) + 1);
 	}
 
 	@Override
@@ -167,6 +182,12 @@ public class PitcherCropBlock extends TallPlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		this.tryGrow(world, state, pos, 1);
+		PitcherCropBlock.LowerHalfContext lowerHalfContext = this.getLowerHalfContext(world, pos, state);
+		if (lowerHalfContext != null) {
+			this.tryGrow(world, lowerHalfContext.state, lowerHalfContext.pos, 1);
+		}
+	}
+
+	static record LowerHalfContext(BlockPos pos, BlockState state) {
 	}
 }
