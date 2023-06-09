@@ -98,6 +98,8 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private float averagePacketsSent;
 	private int ticks;
 	private boolean errored;
+	@Nullable
+	private volatile Text pendingDisconnectionReason;
 
 	public ClientConnection(NetworkSide side) {
 		this.side = side;
@@ -113,6 +115,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			this.setState(NetworkState.HANDSHAKING);
 		} catch (Throwable var3) {
 			LOGGER.error(LogUtils.FATAL_MARKER, "Failed to change protocol to handshake", var3);
+		}
+
+		if (this.pendingDisconnectionReason != null) {
+			this.disconnect(this.pendingDisconnectionReason);
 		}
 	}
 
@@ -293,7 +299,11 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	public void disconnect(Text disconnectReason) {
-		if (this.channel.isOpen()) {
+		if (this.channel == null) {
+			this.pendingDisconnectionReason = disconnectReason;
+		}
+
+		if (this.isOpen()) {
 			this.channel.close().awaitUninterruptibly();
 			this.disconnectReason = disconnectReason;
 		}
@@ -320,7 +330,13 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	public static ClientConnection connect(InetSocketAddress address, boolean useEpoll) {
-		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
+		ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
+		ChannelFuture channelFuture = connect(address, useEpoll, clientConnection);
+		channelFuture.syncUninterruptibly();
+		return clientConnection;
+	}
+
+	public static ChannelFuture connect(InetSocketAddress address, boolean useEpoll, ClientConnection connection) {
 		Class<? extends SocketChannel> class_;
 		Lazy<? extends EventLoopGroup> lazy;
 		if (Epoll.isAvailable() && useEpoll) {
@@ -331,7 +347,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			lazy = CLIENT_IO_GROUP;
 		}
 
-		new Bootstrap().group(lazy.get()).handler(new ChannelInitializer<Channel>() {
+		return new Bootstrap().group(lazy.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) {
 				try {
@@ -341,10 +357,9 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 				ChannelPipeline channelPipeline = channel.pipeline().addLast("timeout", new ReadTimeoutHandler(30));
 				ClientConnection.addHandlers(channelPipeline, NetworkSide.CLIENTBOUND);
-				channelPipeline.addLast("packet_handler", clientConnection);
+				channelPipeline.addLast("packet_handler", connection);
 			}
-		}).channel(class_).connect(address.getAddress(), address.getPort()).syncUninterruptibly();
-		return clientConnection;
+		}).channel(class_).connect(address.getAddress(), address.getPort());
 	}
 
 	public static void addHandlers(ChannelPipeline pipeline, NetworkSide side) {

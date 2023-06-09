@@ -357,16 +357,17 @@ public class ChunkStatus {
 		Finishable finishable = FlightProfiler.INSTANCE.startChunkGenerationProfiling(chunk.getPos(), world.getRegistryKey(), this.toString());
 		return this.generationTask
 			.doWork(this, executor, world, generator, structureTemplateManager, lightingProvider, fullChunkConverter, chunks, chunk)
-			.thenApply(either -> {
-				if (chunk instanceof ProtoChunk protoChunk && !protoChunk.getStatus().isAtLeast(this)) {
-					protoChunk.setStatus(this);
-				}
-
+			.thenApply(chunkx -> {
+				chunkx.ifLeft(c -> {
+					if (c instanceof ProtoChunk protoChunk && !protoChunk.getStatus().isAtLeast(this)) {
+						protoChunk.setStatus(this);
+					}
+				});
 				if (finishable != null) {
 					finishable.finish();
 				}
 
-				return either;
+				return chunkx;
 			});
 	}
 

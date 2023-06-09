@@ -268,18 +268,18 @@ public class RealmsMainScreen extends RealmsScreen {
 	}
 
 	public void addPurchaseButtons() {
-		this.createTrialButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.selectServer.trial"), button -> {
+		this.createTrialButton = this.addSelectableChild(ButtonWidget.builder(Text.translatable("mco.selectServer.trial"), button -> {
 			if (this.trialAvailable && !this.createdTrial) {
 				Util.getOperatingSystem().open("https://aka.ms/startjavarealmstrial");
 				this.client.setScreen(this.parent);
 			}
 		}).dimensions(this.width / 2 + 52, this.popupY0() + 137 - 20, 98, 20).build());
-		this.buyARealmButton = this.addDrawableChild(
+		this.buyARealmButton = this.addSelectableChild(
 			ButtonWidget.builder(Text.translatable("mco.selectServer.buy"), button -> Util.getOperatingSystem().open("https://aka.ms/BuyJavaRealms"))
 				.dimensions(this.width / 2 + 52, this.popupY0() + 160 - 20, 98, 20)
 				.build()
 		);
-		this.closeButton = this.addDrawableChild(new RealmsMainScreen.CloseButton());
+		this.closeButton = this.addSelectableChild(new RealmsMainScreen.CloseButton());
 	}
 
 	public void addLowerButtons() {
@@ -792,7 +792,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		if (this.shouldShowPopup()) {
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, 100.0F);
-			this.drawPopup(context);
+			this.drawPopup(context, mouseX, mouseY, delta);
 			context.getMatrices().pop();
 		} else {
 			if (this.showingPopup) {
@@ -817,6 +817,8 @@ public class RealmsMainScreen extends RealmsScreen {
 				k = 8;
 			}
 
+			context.getMatrices().push();
+			context.getMatrices().translate(0.0F, 0.0F, 110.0F);
 			context.drawTexture(
 				TRIAL_ICON,
 				this.createTrialButton.getX() + this.createTrialButton.getWidth() - 8 - 4,
@@ -828,6 +830,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				8,
 				16
 			);
+			context.getMatrices().pop();
 		}
 	}
 
@@ -848,7 +851,7 @@ public class RealmsMainScreen extends RealmsScreen {
 		return xm < (double)(i - 5) || xm > (double)(i + 315) || ym < (double)(j - 5) || ym > (double)(j + 171);
 	}
 
-	private void drawPopup(DrawContext context) {
+	private void drawPopup(DrawContext context, int mouseX, int mouseY, float delta) {
 		int i = this.popupX0();
 		int j = this.popupY0();
 		if (!this.showingPopup) {
@@ -870,9 +873,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 0.7F);
 		RenderSystem.enableBlend();
-		int k = 0;
-		int l = 32;
-		context.drawTexture(DARKEN, 0, 32, 0.0F, 0.0F, this.width, this.height - 40 - 32, 310, 166);
+		context.drawTexture(DARKEN, 0, 44, 0.0F, 0.0F, this.width, this.height - 44, 310, 166);
 		RenderSystem.disableBlend();
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		context.drawTexture(POPUP, i, j, 0.0F, 0.0F, 310, 166, 310, 166);
@@ -889,6 +890,9 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 
 		this.popupText.draw(context, this.width / 2 + 52, j + 7, 10, 16777215);
+		this.createTrialButton.render(context, mouseX, mouseY, delta);
+		this.buyARealmButton.render(context, mouseX, mouseY, delta);
+		this.closeButton.render(context, mouseX, mouseY, delta);
 	}
 
 	int popupX0() {

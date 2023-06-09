@@ -141,13 +141,13 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (validClient) {
-			this.drawIcons(context, mouseX, mouseY);
+			this.drawIcons(context);
 		}
 
 		super.render(context, mouseX, mouseY, delta);
 	}
 
-	private void drawIcons(DrawContext context, int mouseX, int mouseY) {
+	private void drawIcons(DrawContext context) {
 		int i = this.pendingInvitesCount;
 		int j = 24;
 		int k = this.height / 4 + 48;
@@ -169,7 +169,7 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 			}
 
 			if (i != 0) {
-				context.drawTexture(INVITE_ICON, l - n, m - 6, 0.0F, 0.0F, 15, 25, 31, 25);
+				context.drawTexture(INVITE_ICON, l - n, m, 0.0F, 0.0F, 18, 15, 18, 30);
 				n += 16;
 			}
 

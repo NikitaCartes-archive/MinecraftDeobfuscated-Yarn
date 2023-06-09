@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen;
 
 import com.mojang.logging.LogUtils;
+import io.netty.channel.ChannelFuture;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -20,6 +21,7 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.report.ReporterEnvironment;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.NetworkSide;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -38,6 +40,7 @@ public class ConnectScreen extends Screen {
 	private static final AtomicInteger CONNECTOR_THREADS_COUNT = new AtomicInteger(0);
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final long NARRATOR_INTERVAL = 2000L;
+	static final Text ABORTED_TEXT = Text.translatable("connect.aborted");
 	public static final Text BLOCKED_HOST_TEXT = Text.translatable("disconnect.genericReason", Text.translatable("disconnect.unknownHost"));
 	/**
 	 * The client connection to the remote server.
@@ -47,6 +50,8 @@ public class ConnectScreen extends Screen {
 	 */
 	@Nullable
 	volatile ClientConnection connection;
+	@Nullable
+	ChannelFuture future;
 	volatile boolean connectingCancelled;
 	final Screen parent;
 	private Text status = Text.translatable("connect.connecting");
@@ -97,32 +102,45 @@ public class ConnectScreen extends Screen {
 					}
 
 					inetSocketAddress = (InetSocketAddress)optional.get();
+					ClientConnection clientConnection;
 					synchronized (ConnectScreen.this) {
 						if (ConnectScreen.this.connectingCancelled) {
 							return;
 						}
 
-						ConnectScreen.this.connection = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport());
-						ConnectScreen.this.connection
-							.setPacketListener(
-								new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, info, ConnectScreen.this.parent, false, null, ConnectScreen.this::setStatus)
-							);
-						ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
-						ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), Optional.ofNullable(client.getSession().getUuidOrNull())));
+						clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
+						ConnectScreen.this.future = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport(), clientConnection);
 					}
-				} catch (Exception var7) {
+
+					ConnectScreen.this.future.syncUninterruptibly();
+					synchronized (ConnectScreen.this) {
+						if (ConnectScreen.this.connectingCancelled) {
+							clientConnection.disconnect(ConnectScreen.ABORTED_TEXT);
+							return;
+						}
+
+						ConnectScreen.this.connection = clientConnection;
+					}
+
+					ConnectScreen.this.connection
+						.setPacketListener(
+							new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, info, ConnectScreen.this.parent, false, null, ConnectScreen.this::setStatus)
+						);
+					ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
+					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), Optional.ofNullable(client.getSession().getUuidOrNull())));
+				} catch (Exception var9) {
 					if (ConnectScreen.this.connectingCancelled) {
 						return;
 					}
 
 					Exception exception3;
-					if (var7.getCause() instanceof Exception exception2) {
+					if (var9.getCause() instanceof Exception exception2) {
 						exception3 = exception2;
 					} else {
-						exception3 = var7;
+						exception3 = var9;
 					}
 
-					ConnectScreen.LOGGER.error("Couldn't connect to server", (Throwable)var7);
+					ConnectScreen.LOGGER.error("Couldn't connect to server", (Throwable)var9);
 					String string = inetSocketAddress == null
 						? exception3.getMessage()
 						: exception3.getMessage()
@@ -165,8 +183,13 @@ public class ConnectScreen extends Screen {
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> {
 			synchronized (this) {
 				this.connectingCancelled = true;
+				if (this.future != null) {
+					this.future.cancel(true);
+					this.future = null;
+				}
+
 				if (this.connection != null) {
-					this.connection.disconnect(Text.translatable("connect.aborted"));
+					this.connection.disconnect(ABORTED_TEXT);
 				}
 			}
 
