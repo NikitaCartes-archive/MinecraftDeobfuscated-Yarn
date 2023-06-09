@@ -127,7 +127,7 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 		return Text.translatable("gui.narrate.button", message);
 	}
 
-	public abstract void renderButton(DrawContext context, int mouseX, int mouseY, float delta);
+	protected abstract void renderButton(DrawContext context, int mouseX, int mouseY, float delta);
 
 	protected static void drawScrollableText(DrawContext context, TextRenderer textRenderer, Text text, int left, int top, int right, int bottom, int color) {
 		int i = textRenderer.getWidth(text);
