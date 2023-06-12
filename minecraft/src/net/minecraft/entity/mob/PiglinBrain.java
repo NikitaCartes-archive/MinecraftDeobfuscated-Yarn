@@ -143,7 +143,7 @@ public class PiglinBrain {
 				new WanderAroundTask(),
 				OpenDoorsTask.create(),
 				goToNemesisTask(),
-				makeGoToZombifiedPiglinTask(),
+				makeFleeFromZombifiedPiglinTask(),
 				RemoveOffHandItemTask.create(),
 				AdmireItemTask.create(120),
 				DefeatTargetTask.create(300, PiglinBrain::isHuntingTarget),
@@ -288,7 +288,7 @@ public class PiglinBrain {
 		);
 	}
 
-	private static Task<PiglinEntity> makeGoToZombifiedPiglinTask() {
+	private static Task<PiglinEntity> makeFleeFromZombifiedPiglinTask() {
 		return MemoryTransferTask.create(
 			PiglinBrain::getNearestZombifiedPiglin, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.AVOID_TARGET, GO_TO_ZOMBIFIED_MEMORY_DURATION
 		);

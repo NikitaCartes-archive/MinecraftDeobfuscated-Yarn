@@ -13,13 +13,13 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.world.World;
 
 public class BeaconScreenHandler extends ScreenHandler {
-	private static final int field_30756 = 0;
-	private static final int field_30757 = 1;
-	private static final int field_30758 = 3;
-	private static final int field_30759 = 1;
-	private static final int field_30760 = 28;
-	private static final int field_30761 = 28;
-	private static final int field_30762 = 37;
+	private static final int PAYMENT_SLOT_ID = 0;
+	private static final int BEACON_INVENTORY_SIZE = 1;
+	private static final int PROPERTY_COUNT = 3;
+	private static final int INVENTORY_START = 1;
+	private static final int INVENTORY_END = 28;
+	private static final int HOTBAR_START = 28;
+	private static final int HOTBAR_END = 37;
 	private final Inventory payment = new SimpleInventory(1) {
 		@Override
 		public boolean isValid(int slot, ItemStack stack) {

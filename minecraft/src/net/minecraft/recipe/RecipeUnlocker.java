@@ -18,7 +18,7 @@ public interface RecipeUnlocker {
 	default void unlockLastRecipe(PlayerEntity player, List<ItemStack> ingredients) {
 		Recipe<?> recipe = this.getLastRecipe();
 		if (recipe != null) {
-			player.unlockCraftedRecipe(recipe, ingredients);
+			player.onRecipeCrafted(recipe, ingredients);
 			if (!recipe.isIgnoredInRecipeBook()) {
 				player.unlockRecipes(Collections.singleton(recipe));
 				this.setLastRecipe(null);

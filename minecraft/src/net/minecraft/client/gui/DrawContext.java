@@ -187,21 +187,21 @@ public class DrawContext {
 		this.fill(RenderLayer.getGui(), x1, y1, x2, y2, z, color);
 	}
 
-	public void fill(RenderLayer layer, int x1, int x2, int y1, int y2, int color) {
-		this.fill(layer, x1, x2, y1, y2, 0, color);
+	public void fill(RenderLayer layer, int x1, int y1, int x2, int y2, int color) {
+		this.fill(layer, x1, y1, x2, y2, 0, color);
 	}
 
-	public void fill(RenderLayer layer, int x1, int x2, int y1, int y2, int z, int color) {
+	public void fill(RenderLayer layer, int x1, int y1, int x2, int y2, int z, int color) {
 		Matrix4f matrix4f = this.matrices.peek().getPositionMatrix();
-		if (x1 < y1) {
+		if (x1 < x2) {
 			int i = x1;
-			x1 = y1;
-			y1 = i;
+			x1 = x2;
+			x2 = i;
 		}
 
-		if (x2 < y2) {
-			int i = x2;
-			x2 = y2;
+		if (y1 < y2) {
+			int i = y1;
+			y1 = y2;
 			y2 = i;
 		}
 
@@ -210,10 +210,10 @@ public class DrawContext {
 		float h = (float)ColorHelper.Argb.getGreen(color) / 255.0F;
 		float j = (float)ColorHelper.Argb.getBlue(color) / 255.0F;
 		VertexConsumer vertexConsumer = this.vertexConsumers.getBuffer(layer);
-		vertexConsumer.vertex(matrix4f, (float)x1, (float)x2, (float)z).color(g, h, j, f).next();
+		vertexConsumer.vertex(matrix4f, (float)x1, (float)y1, (float)z).color(g, h, j, f).next();
 		vertexConsumer.vertex(matrix4f, (float)x1, (float)y2, (float)z).color(g, h, j, f).next();
-		vertexConsumer.vertex(matrix4f, (float)y1, (float)y2, (float)z).color(g, h, j, f).next();
-		vertexConsumer.vertex(matrix4f, (float)y1, (float)x2, (float)z).color(g, h, j, f).next();
+		vertexConsumer.vertex(matrix4f, (float)x2, (float)y2, (float)z).color(g, h, j, f).next();
+		vertexConsumer.vertex(matrix4f, (float)x2, (float)y1, (float)z).color(g, h, j, f).next();
 		this.tryDraw();
 	}
 

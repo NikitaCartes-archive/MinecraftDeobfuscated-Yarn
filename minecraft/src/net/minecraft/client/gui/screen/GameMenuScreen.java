@@ -21,11 +21,11 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class GameMenuScreen extends Screen {
-	private static final int field_41616 = 2;
-	private static final int field_41617 = 50;
-	private static final int field_41618 = 4;
-	private static final int field_41619 = 204;
-	private static final int field_41620 = 98;
+	private static final int GRID_COLUMNS = 2;
+	private static final int BUTTONS_TOP_MARGIN = 50;
+	private static final int GRID_MARGIN = 4;
+	private static final int WIDE_BUTTON_WIDTH = 204;
+	private static final int NORMAL_BUTTON_WIDTH = 98;
 	private static final Text RETURN_TO_GAME_TEXT = Text.translatable("menu.returnToGame");
 	private static final Text ADVANCEMENTS_TEXT = Text.translatable("gui.advancements");
 	private static final Text STATS_TEXT = Text.translatable("gui.stats");

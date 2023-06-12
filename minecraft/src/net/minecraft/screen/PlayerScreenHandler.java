@@ -21,16 +21,16 @@ import net.minecraft.util.Identifier;
 
 public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInputInventory> {
 	public static final int field_30802 = 0;
-	public static final int field_30803 = 0;
-	public static final int field_30804 = 1;
-	public static final int field_30805 = 5;
-	public static final int field_30806 = 5;
-	public static final int field_30807 = 9;
-	public static final int field_30808 = 9;
-	public static final int field_30809 = 36;
-	public static final int field_30810 = 36;
-	public static final int field_30811 = 45;
-	public static final int field_30812 = 45;
+	public static final int CRAFTING_RESULT_ID = 0;
+	public static final int CRAFTING_INPUT_START = 1;
+	public static final int CRAFTING_INPUT_END = 5;
+	public static final int EQUIPMENT_START = 5;
+	public static final int EQUIPMENT_END = 9;
+	public static final int INVENTORY_START = 9;
+	public static final int INVENTORY_END = 36;
+	public static final int HOTBAR_START = 36;
+	public static final int HOTBAR_END = 45;
+	public static final int OFFHAND_ID = 45;
 	public static final Identifier BLOCK_ATLAS_TEXTURE = new Identifier("textures/atlas/blocks.png");
 	public static final Identifier EMPTY_HELMET_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_helmet");
 	public static final Identifier EMPTY_CHESTPLATE_SLOT_TEXTURE = new Identifier("item/empty_armor_slot_chestplate");

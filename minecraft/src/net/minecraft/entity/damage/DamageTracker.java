@@ -32,10 +32,10 @@ public class DamageTracker {
 		this.entity = entity;
 	}
 
-	public void onDamage(DamageSource damageSource, float originalHealth) {
+	public void onDamage(DamageSource damageSource, float damage) {
 		this.update();
 		FallLocation fallLocation = FallLocation.fromEntity(this.entity);
-		DamageRecord damageRecord = new DamageRecord(damageSource, originalHealth, fallLocation, this.entity.fallDistance);
+		DamageRecord damageRecord = new DamageRecord(damageSource, damage, fallLocation, this.entity.fallDistance);
 		this.recentDamage.add(damageRecord);
 		this.ageOnLastDamage = this.entity.age;
 		this.hasDamage = true;

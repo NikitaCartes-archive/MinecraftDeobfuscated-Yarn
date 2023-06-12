@@ -14,9 +14,9 @@ import net.minecraft.entity.passive.FrogEntity;
 
 @Environment(EnvType.CLIENT)
 public class FrogEntityModel<T extends FrogEntity> extends SinglePartEntityModel<T> {
-	private static final float field_39193 = 1.5F;
-	private static final float field_42228 = 1.0F;
-	private static final float field_42229 = 2.5F;
+	private static final float WALKING_LIMB_ANGLE_SCALE = 1.5F;
+	private static final float SWIMMING_LIMB_ANGLE_SCALE = 1.0F;
+	private static final float LIMB_DISTANCE_SCALE = 2.5F;
 	private final ModelPart root;
 	private final ModelPart body;
 	private final ModelPart head;

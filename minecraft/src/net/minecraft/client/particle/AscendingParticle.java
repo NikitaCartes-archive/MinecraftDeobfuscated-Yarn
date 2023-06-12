@@ -30,7 +30,7 @@ public class AscendingParticle extends SpriteBillboardParticle {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.velocityMultiplier = 0.96F;
 		this.gravityStrength = gravityStrength;
-		this.field_28787 = true;
+		this.ascending = true;
 		this.spriteProvider = spriteProvider;
 		this.velocityX *= (double)randomVelocityXMultiplier;
 		this.velocityY *= (double)randomVelocityYMultiplier;

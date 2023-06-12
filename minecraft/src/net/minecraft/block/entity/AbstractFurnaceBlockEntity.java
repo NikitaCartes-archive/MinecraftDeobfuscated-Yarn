@@ -482,7 +482,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 
 		for(Recipe<?> recipe : list) {
 			if (recipe != null) {
-				player.unlockCraftedRecipe(recipe, this.inventory);
+				player.onRecipeCrafted(recipe, this.inventory);
 			}
 		}
 

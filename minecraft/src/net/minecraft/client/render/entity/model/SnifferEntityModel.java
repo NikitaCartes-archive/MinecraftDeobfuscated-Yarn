@@ -14,8 +14,8 @@ import net.minecraft.entity.passive.SnifferEntity;
 
 @Environment(EnvType.CLIENT)
 public class SnifferEntityModel<T extends SnifferEntity> extends SinglePartEntityModelWithChildTransform<T> {
-	private static final float field_43364 = 9.0F;
-	private static final float field_43407 = 100.0F;
+	private static final float LIMB_ANGLE_SCALE = 9.0F;
+	private static final float LIMB_DISTANCE_SCALE = 100.0F;
 	private final ModelPart root;
 	private final ModelPart head;
 

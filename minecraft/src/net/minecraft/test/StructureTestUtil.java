@@ -133,7 +133,7 @@ public class StructureTestUtil {
 	}
 
 	public static StructureBlockBlockEntity createStructureTemplate(
-		String templateName, BlockPos pos, BlockRotation rotation, int i, ServerWorld world, boolean bl
+		String templateName, BlockPos pos, BlockRotation rotation, int i, ServerWorld world, boolean interactive
 	) {
 		Vec3i vec3i = createStructureTemplate(templateName, world).getSize();
 		BlockBox blockBox = getStructureBlockBox(pos, vec3i, rotation);
@@ -154,7 +154,7 @@ public class StructureTestUtil {
 
 		forceLoadNearbyChunks(pos, world);
 		clearArea(blockBox, pos.getY(), world);
-		StructureBlockBlockEntity structureBlockBlockEntity = placeStructureTemplate(templateName, blockPos, rotation, world, bl);
+		StructureBlockBlockEntity structureBlockBlockEntity = placeStructureTemplate(templateName, blockPos, rotation, world, interactive);
 		world.getBlockTickScheduler().clearNextTicks(blockBox);
 		world.clearUpdatesInArea(blockBox);
 		return structureBlockBlockEntity;

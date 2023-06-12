@@ -16,7 +16,7 @@ public class SpectatorMenu {
 	private static final SpectatorMenuCommand PREVIOUS_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(-1, true);
 	private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, true);
 	private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, false);
-	private static final int field_32443 = 8;
+	private static final int CLOSE_SLOT = 8;
 	static final Text CLOSE_TEXT = Text.translatable("spectatorMenu.close");
 	static final Text PREVIOUS_PAGE_TEXT = Text.translatable("spectatorMenu.previous_page");
 	static final Text NEXT_PAGE_TEXT = Text.translatable("spectatorMenu.next_page");

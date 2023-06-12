@@ -80,7 +80,7 @@ public class AddTrappedChestFix extends DataFix {
 										int kxx = dynamic.get("x").asInt(0) - (k << 4);
 										int lxx = dynamic.get("y").asInt(0);
 										int m = dynamic.get("z").asInt(0) - (l << 4);
-										return intSet.contains(LeavesFix.method_5051(kxx, lxx, m)) ? typedxxx.update(taggedChoiceType.finder(), pair -> pair.mapFirst(string -> {
+										return intSet.contains(LeavesFix.packLocalPos(kxx, lxx, m)) ? typedxxx.update(taggedChoiceType.finder(), pair -> pair.mapFirst(string -> {
 												if (!Objects.equals(string, "minecraft:chest")) {
 													LOGGER.warn("Block Entity was expected to be a chest");
 												}

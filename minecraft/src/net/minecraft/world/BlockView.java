@@ -66,36 +66,36 @@ public interface BlockView extends HeightLimitView {
 			context.getStart(),
 			context.getEnd(),
 			context,
-			(contextx, pos) -> {
+			(innerContext, pos) -> {
 				BlockState blockState = this.getBlockState(pos);
-				Vec3d vec3d = contextx.getStart().subtract(contextx.getEnd());
-				return contextx.getStatePredicate().test(blockState)
-					? new BlockHitResult(contextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), BlockPos.ofFloored(contextx.getEnd()), false)
+				Vec3d vec3d = innerContext.getStart().subtract(innerContext.getEnd());
+				return innerContext.getStatePredicate().test(blockState)
+					? new BlockHitResult(innerContext.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), BlockPos.ofFloored(innerContext.getEnd()), false)
 					: null;
 			},
-			contextx -> {
-				Vec3d vec3d = contextx.getStart().subtract(contextx.getEnd());
-				return BlockHitResult.createMissed(contextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), BlockPos.ofFloored(contextx.getEnd()));
+			innerContext -> {
+				Vec3d vec3d = innerContext.getStart().subtract(innerContext.getEnd());
+				return BlockHitResult.createMissed(innerContext.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), BlockPos.ofFloored(innerContext.getEnd()));
 			}
 		);
 	}
 
 	default BlockHitResult raycast(RaycastContext context) {
-		return raycast(context.getStart(), context.getEnd(), context, (contextx, pos) -> {
+		return raycast(context.getStart(), context.getEnd(), context, (innerContext, pos) -> {
 			BlockState blockState = this.getBlockState(pos);
 			FluidState fluidState = this.getFluidState(pos);
-			Vec3d vec3d = contextx.getStart();
-			Vec3d vec3d2 = contextx.getEnd();
-			VoxelShape voxelShape = contextx.getBlockShape(blockState, this, pos);
+			Vec3d vec3d = innerContext.getStart();
+			Vec3d vec3d2 = innerContext.getEnd();
+			VoxelShape voxelShape = innerContext.getBlockShape(blockState, this, pos);
 			BlockHitResult blockHitResult = this.raycastBlock(vec3d, vec3d2, pos, voxelShape, blockState);
-			VoxelShape voxelShape2 = contextx.getFluidShape(fluidState, this, pos);
+			VoxelShape voxelShape2 = innerContext.getFluidShape(fluidState, this, pos);
 			BlockHitResult blockHitResult2 = voxelShape2.raycast(vec3d, vec3d2, pos);
-			double d = blockHitResult == null ? Double.MAX_VALUE : contextx.getStart().squaredDistanceTo(blockHitResult.getPos());
-			double e = blockHitResult2 == null ? Double.MAX_VALUE : contextx.getStart().squaredDistanceTo(blockHitResult2.getPos());
+			double d = blockHitResult == null ? Double.MAX_VALUE : innerContext.getStart().squaredDistanceTo(blockHitResult.getPos());
+			double e = blockHitResult2 == null ? Double.MAX_VALUE : innerContext.getStart().squaredDistanceTo(blockHitResult2.getPos());
 			return d <= e ? blockHitResult : blockHitResult2;
-		}, contextx -> {
-			Vec3d vec3d = contextx.getStart().subtract(contextx.getEnd());
-			return BlockHitResult.createMissed(contextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), BlockPos.ofFloored(contextx.getEnd()));
+		}, innerContext -> {
+			Vec3d vec3d = innerContext.getStart().subtract(innerContext.getEnd());
+			return BlockHitResult.createMissed(innerContext.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), BlockPos.ofFloored(innerContext.getEnd()));
 		});
 	}
 

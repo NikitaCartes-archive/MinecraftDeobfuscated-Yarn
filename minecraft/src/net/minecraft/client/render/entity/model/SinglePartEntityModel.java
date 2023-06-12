@@ -17,7 +17,7 @@ import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public abstract class SinglePartEntityModel<E extends Entity> extends EntityModel<E> {
-	private static final Vector3f ZERO = new Vector3f();
+	private static final Vector3f TEMP = new Vector3f();
 
 	public SinglePartEntityModel() {
 		this(RenderLayer::getEntityCutoutNoCull);
@@ -44,18 +44,18 @@ public abstract class SinglePartEntityModel<E extends Entity> extends EntityMode
 		this.updateAnimation(animationState, animation, animationProgress, 1.0F);
 	}
 
-	protected void animateMovement(Animation animation, float limbAngle, float limbDistance, float f, float g) {
-		long l = (long)(limbAngle * 50.0F * f);
-		float h = Math.min(limbDistance * g, 1.0F);
-		AnimationHelper.animate(this, animation, l, h, ZERO);
+	protected void animateMovement(Animation animation, float limbAngle, float limbDistance, float limbAngleScale, float limbDistanceScale) {
+		long l = (long)(limbAngle * 50.0F * limbAngleScale);
+		float f = Math.min(limbDistance * limbDistanceScale, 1.0F);
+		AnimationHelper.animate(this, animation, l, f, TEMP);
 	}
 
 	protected void updateAnimation(AnimationState animationState, Animation animation, float animationProgress, float speedMultiplier) {
 		animationState.update(animationProgress, speedMultiplier);
-		animationState.run(state -> AnimationHelper.animate(this, animation, state.getTimeRunning(), 1.0F, ZERO));
+		animationState.run(state -> AnimationHelper.animate(this, animation, state.getTimeRunning(), 1.0F, TEMP));
 	}
 
 	protected void animate(Animation animation) {
-		AnimationHelper.animate(this, animation, 0L, 1.0F, ZERO);
+		AnimationHelper.animate(this, animation, 0L, 1.0F, TEMP);
 	}
 }
