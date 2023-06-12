@@ -21,10 +21,10 @@ public class WardenAttackablesSensor extends NearestLivingEntitiesSensor<WardenE
 
 	protected void sense(ServerWorld serverWorld, WardenEntity wardenEntity) {
 		super.sense(serverWorld, wardenEntity);
-		findNearestTarget(wardenEntity, entity -> entity.getType() == EntityType.PLAYER)
-			.or(() -> findNearestTarget(wardenEntity, livingEntity -> livingEntity.getType() != EntityType.PLAYER))
+		findNearestTarget(wardenEntity, entityx -> entityx.getType() == EntityType.PLAYER)
+			.or(() -> findNearestTarget(wardenEntity, entityx -> entityx.getType() != EntityType.PLAYER))
 			.ifPresentOrElse(
-				entity -> wardenEntity.getBrain().remember(MemoryModuleType.NEAREST_ATTACKABLE, entity),
+				entityx -> wardenEntity.getBrain().remember(MemoryModuleType.NEAREST_ATTACKABLE, entityx),
 				() -> wardenEntity.getBrain().forget(MemoryModuleType.NEAREST_ATTACKABLE)
 			);
 	}

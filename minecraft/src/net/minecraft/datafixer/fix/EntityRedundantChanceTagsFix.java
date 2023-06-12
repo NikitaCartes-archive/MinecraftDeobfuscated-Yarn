@@ -10,7 +10,7 @@ import java.util.List;
 import net.minecraft.datafixer.TypeReferences;
 
 public class EntityRedundantChanceTagsFix extends DataFix {
-	private static final Codec<List<Float>> field_25695 = Codec.FLOAT.listOf();
+	private static final Codec<List<Float>> FLOAT_LIST_CODEC = Codec.FLOAT.listOf();
 
 	public EntityRedundantChanceTagsFix(Schema outputSchema, boolean changesType) {
 		super(outputSchema, changesType);
@@ -33,9 +33,9 @@ public class EntityRedundantChanceTagsFix extends DataFix {
 		);
 	}
 
-	private static boolean hasZeroDropChance(OptionalDynamic<?> optionalDynamic, int i) {
-		return (Boolean)optionalDynamic.flatMap(field_25695::parse)
-			.map(list -> list.size() == i && list.stream().allMatch(float_ -> float_ == 0.0F))
+	private static boolean hasZeroDropChance(OptionalDynamic<?> listTag, int expectedLength) {
+		return (Boolean)listTag.flatMap(FLOAT_LIST_CODEC::parse)
+			.map(list -> list.size() == expectedLength && list.stream().allMatch(chance -> chance == 0.0F))
 			.result()
 			.orElse(false);
 	}

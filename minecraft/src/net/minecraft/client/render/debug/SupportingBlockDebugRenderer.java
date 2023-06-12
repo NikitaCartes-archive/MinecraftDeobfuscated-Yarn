@@ -43,7 +43,7 @@ public class SupportingBlockDebugRenderer implements DebugRenderer.Renderer {
 
 		for (Entity entity2 : this.entities) {
 			if (entity2 != playerEntity) {
-				this.renderBlockHighlights(matrices, vertexConsumers, cameraX, cameraY, cameraZ, entity2, () -> this.method_51789(entity2), 0.0F, 1.0F, 0.0F);
+				this.renderBlockHighlights(matrices, vertexConsumers, cameraX, cameraY, cameraZ, entity2, () -> this.getAdditionalDilation(entity2), 0.0F, 1.0F, 0.0F);
 			}
 		}
 	}
@@ -55,13 +55,13 @@ public class SupportingBlockDebugRenderer implements DebugRenderer.Renderer {
 		double cameraY,
 		double cameraZ,
 		Entity entity,
-		DoubleSupplier doubleSupplier,
+		DoubleSupplier extraDilation,
 		float red,
 		float green,
 		float blue
 	) {
 		entity.supportingBlockPos.ifPresent(pos -> {
-			double j = doubleSupplier.getAsDouble();
+			double j = extraDilation.getAsDouble();
 			BlockPos blockPos = entity.getSteppingPos();
 			this.renderBlockHighlight(blockPos, matrices, cameraX, cameraY, cameraZ, vertexConsumers, 0.02 + j, red, green, blue);
 			BlockPos blockPos2 = entity.getLandingPos();
@@ -71,7 +71,7 @@ public class SupportingBlockDebugRenderer implements DebugRenderer.Renderer {
 		});
 	}
 
-	private double method_51789(Entity entity) {
+	private double getAdditionalDilation(Entity entity) {
 		return 0.02 * (double)(String.valueOf((double)entity.getId() + 0.132453657).hashCode() % 1000) / 1000.0;
 	}
 
@@ -82,18 +82,18 @@ public class SupportingBlockDebugRenderer implements DebugRenderer.Renderer {
 		double cameraY,
 		double cameraZ,
 		VertexConsumerProvider vertexConsumers,
-		double d,
+		double dilation,
 		float red,
 		float green,
 		float blue
 	) {
-		double e = (double)pos.getX() - cameraX - 2.0 * d;
-		double f = (double)pos.getY() - cameraY - 2.0 * d;
-		double g = (double)pos.getZ() - cameraZ - 2.0 * d;
-		double h = e + 1.0 + 4.0 * d;
-		double i = f + 1.0 + 4.0 * d;
-		double j = g + 1.0 + 4.0 * d;
-		WorldRenderer.drawBox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), e, f, g, h, i, j, red, green, blue, 0.4F);
+		double d = (double)pos.getX() - cameraX - 2.0 * dilation;
+		double e = (double)pos.getY() - cameraY - 2.0 * dilation;
+		double f = (double)pos.getZ() - cameraZ - 2.0 * dilation;
+		double g = d + 1.0 + 4.0 * dilation;
+		double h = e + 1.0 + 4.0 * dilation;
+		double i = f + 1.0 + 4.0 * dilation;
+		WorldRenderer.drawBox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), d, e, f, g, h, i, red, green, blue, 0.4F);
 		WorldRenderer.drawShapeOutline(
 			matrices,
 			vertexConsumers.getBuffer(RenderLayer.getLines()),

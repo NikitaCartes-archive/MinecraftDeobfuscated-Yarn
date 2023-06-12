@@ -20,8 +20,8 @@ public class EntityItemFrameDirectionFix extends ChoiceFix {
 		return inputType.update(DSL.remainderFinder(), this::fixDirection);
 	}
 
-	private static byte updateDirection(byte b) {
-		switch (b) {
+	private static byte updateDirection(byte oldDirection) {
+		switch (oldDirection) {
 			case 0:
 				return 3;
 			case 1:

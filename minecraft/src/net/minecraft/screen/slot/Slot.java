@@ -160,7 +160,7 @@ public class Slot {
 		return this.index;
 	}
 
-	public boolean method_51306() {
+	public boolean canBeHighlighted() {
 		return true;
 	}
 }

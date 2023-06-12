@@ -30,7 +30,7 @@ public class LookAtMobWithIntervalTask {
 						context,
 						(lookTarget, visibleMobs) -> (world, entity, time) -> {
 								Optional<LivingEntity> optional = context.<LivingTargetCache>getValue(visibleMobs)
-									.findFirst(predicate.and(entityx -> entityx.squaredDistanceTo(entity) <= (double)f));
+									.findFirst(predicate.and(other -> other.squaredDistanceTo(entity) <= (double)f));
 								if (optional.isEmpty()) {
 									return false;
 								} else if (!interval2.shouldRun(world.random)) {

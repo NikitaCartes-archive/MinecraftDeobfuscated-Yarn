@@ -16,15 +16,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
 
 public class SmithingScreenHandler extends ForgingScreenHandler {
-	public static final int field_41924 = 0;
-	public static final int field_41925 = 1;
-	public static final int field_41926 = 2;
-	public static final int field_41927 = 3;
-	public static final int field_41928 = 8;
-	public static final int field_41929 = 26;
-	public static final int field_41930 = 44;
-	private static final int field_41932 = 98;
-	public static final int field_41931 = 48;
+	public static final int TEMPLATE_ID = 0;
+	public static final int EQUIPMENT_ID = 1;
+	public static final int MATERIAL_ID = 2;
+	public static final int OUTPUT_ID = 3;
+	public static final int TEMPLATE_X = 8;
+	public static final int EQUIPMENT_X = 26;
+	public static final int MATERIAL_X = 44;
+	private static final int OUTPUT_X = 98;
+	public static final int SLOT_Y = 48;
 	private final World world;
 	@Nullable
 	private SmithingRecipe currentRecipe;

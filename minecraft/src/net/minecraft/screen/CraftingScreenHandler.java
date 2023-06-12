@@ -21,13 +21,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 public class CraftingScreenHandler extends AbstractRecipeScreenHandler<RecipeInputInventory> {
-	public static final int field_30781 = 0;
-	private static final int field_30782 = 1;
-	private static final int field_30783 = 10;
-	private static final int field_30784 = 10;
-	private static final int field_30785 = 37;
-	private static final int field_30786 = 37;
-	private static final int field_30787 = 46;
+	public static final int RESULT_ID = 0;
+	private static final int INPUT_START = 1;
+	private static final int INPUT_END = 10;
+	private static final int INVENTORY_START = 10;
+	private static final int INVENTORY_END = 37;
+	private static final int HOTBAR_START = 37;
+	private static final int HOTBAR_END = 46;
 	private final RecipeInputInventory input = new CraftingInventory(this, 3, 3);
 	private final CraftingResultInventory result = new CraftingResultInventory();
 	private final ScreenHandlerContext context;

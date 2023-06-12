@@ -71,16 +71,16 @@ public class LootDataType<T> {
 
 	private static <T> BiFunction<Gson, String, BiFunction<Identifier, JsonElement, Optional<T>>> parserFactory(Class<T> clazz, Function<T[], T> combiner) {
 		Class<T[]> class_ = clazz.arrayType();
-		return (gson2, string) -> (id, json) -> {
+		return (gson, dataTypeId) -> (id, json) -> {
 				try {
 					if (json.isJsonArray()) {
-						T[] objects = (T[])((Object[])gson2.fromJson(json, class_));
+						T[] objects = (T[])((Object[])gson.fromJson(json, class_));
 						return Optional.of(combiner.apply(objects));
 					} else {
-						return Optional.of(gson2.fromJson(json, clazz));
+						return Optional.of(gson.fromJson(json, clazz));
 					}
 				} catch (Exception var8) {
-					LOGGER.error("Couldn't parse element {}:{}", string, id, var8);
+					LOGGER.error("Couldn't parse element {}:{}", dataTypeId, id, var8);
 					return Optional.empty();
 				}
 			};

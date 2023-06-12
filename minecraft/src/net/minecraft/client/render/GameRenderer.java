@@ -970,13 +970,13 @@ public class GameRenderer implements AutoCloseable {
 						(float)(fov * (float) (Math.PI / 180.0)),
 						(float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(),
 						0.05F,
-						this.method_32796()
+						this.getFarPlaneDistance()
 					)
 			);
 		return matrixStack.peek().getPositionMatrix();
 	}
 
-	public float method_32796() {
+	public float getFarPlaneDistance() {
 		return this.viewDistance * 4.0F;
 	}
 

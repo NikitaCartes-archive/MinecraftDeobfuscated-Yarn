@@ -15,7 +15,7 @@ public class GlowParticle extends SpriteBillboardParticle {
 	GlowParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ);
 		this.velocityMultiplier = 0.96F;
-		this.field_28787 = true;
+		this.ascending = true;
 		this.spriteProvider = spriteProvider;
 		this.scale *= 0.75F;
 		this.collidesWithWorld = false;

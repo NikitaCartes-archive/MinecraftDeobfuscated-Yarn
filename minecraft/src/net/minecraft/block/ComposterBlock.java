@@ -38,9 +38,9 @@ import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
 
 public class ComposterBlock extends Block implements InventoryProvider {
-	public static final int MAX_LEVEL = 8;
-	public static final int field_31072 = 0;
-	public static final int field_31073 = 7;
+	public static final int NUM_LEVELS = 8;
+	public static final int MIN_LEVEL = 0;
+	public static final int MAX_LEVEL = 7;
 	public static final IntProperty LEVEL = Properties.LEVEL_8;
 	public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<>();
 	private static final int field_31074 = 2;

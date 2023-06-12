@@ -17,8 +17,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityModel<T> {
-	private static final float field_40459 = 2.0F;
-	private static final float field_42227 = 2.5F;
+	private static final float LIMB_ANGLE_SCALE = 2.0F;
+	private static final float LIMB_DISTANCE_SCALE = 2.5F;
 	private static final float field_43083 = 0.45F;
 	private static final float field_43084 = 29.35F;
 	private static final String SADDLE = "saddle";

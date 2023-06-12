@@ -1,7 +1,7 @@
 package net.minecraft.sound;
 
 public class BlockSoundGroup {
-	public static final BlockSoundGroup field_44608 = new BlockSoundGroup(
+	public static final BlockSoundGroup INTENTIONALLY_EMPTY = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.INTENTIONALLY_EMPTY,

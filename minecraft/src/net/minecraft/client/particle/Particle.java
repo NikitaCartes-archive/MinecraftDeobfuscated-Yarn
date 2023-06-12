@@ -42,7 +42,7 @@ public abstract class Particle {
 	private Box boundingBox = EMPTY_BOUNDING_BOX;
 	protected boolean onGround;
 	protected boolean collidesWithWorld = true;
-	private boolean field_21507;
+	private boolean stopped;
 	protected boolean dead;
 	protected float spacingXZ = 0.6F;
 	protected float spacingY = 1.8F;
@@ -57,7 +57,7 @@ public abstract class Particle {
 	protected float angle;
 	protected float prevAngle;
 	protected float velocityMultiplier = 0.98F;
-	protected boolean field_28787 = false;
+	protected boolean ascending = false;
 
 	protected Particle(ClientWorld world, double x, double y, double z) {
 		this.world = world;
@@ -177,7 +177,7 @@ public abstract class Particle {
 		} else {
 			this.velocityY = this.velocityY - 0.04 * (double)this.gravityStrength;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.field_28787 && this.y == this.prevPosY) {
+			if (this.ascending && this.y == this.prevPosY) {
 				this.velocityX *= 1.1;
 				this.velocityZ *= 1.1;
 			}
@@ -271,7 +271,7 @@ public abstract class Particle {
 	 * @param dy the delta y to move this particle by
 	 */
 	public void move(double dx, double dy, double dz) {
-		if (!this.field_21507) {
+		if (!this.stopped) {
 			double d = dx;
 			double e = dy;
 			double f = dz;
@@ -288,7 +288,7 @@ public abstract class Particle {
 			}
 
 			if (Math.abs(e) >= 1.0E-5F && Math.abs(dy) < 1.0E-5F) {
-				this.field_21507 = true;
+				this.stopped = true;
 			}
 
 			this.onGround = e != dy && e < 0.0;

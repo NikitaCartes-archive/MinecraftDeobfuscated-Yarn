@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 
 public class GenericContainerScreenHandler extends ScreenHandler {
-	private static final int field_30780 = 9;
+	private static final int NUM_COLUMNS = 9;
 	private final Inventory inventory;
 	private final int rows;
 

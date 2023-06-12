@@ -170,7 +170,7 @@ public interface EntityView {
 	default <T extends LivingEntity> T getClosestEntity(
 		Class<? extends T> entityClass, TargetPredicate targetPredicate, @Nullable LivingEntity entity, double x, double y, double z, Box box
 	) {
-		return this.getClosestEntity(this.getEntitiesByClass(entityClass, box, entityx -> true), targetPredicate, entity, x, y, z);
+		return this.getClosestEntity(this.getEntitiesByClass(entityClass, box, entityOfClass -> true), targetPredicate, entity, x, y, z);
 	}
 
 	@Nullable

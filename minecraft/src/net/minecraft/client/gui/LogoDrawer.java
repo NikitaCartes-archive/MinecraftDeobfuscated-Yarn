@@ -10,16 +10,16 @@ public class LogoDrawer {
 	public static final Identifier LOGO_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	public static final Identifier MINCERAFT_TEXTURE = new Identifier("textures/gui/title/minceraft.png");
 	public static final Identifier EDITION_TEXTURE = new Identifier("textures/gui/title/edition.png");
-	public static final int field_41807 = 256;
-	public static final int field_41808 = 44;
-	private static final int field_44541 = 256;
-	private static final int field_44542 = 64;
-	private static final int field_44543 = 128;
-	private static final int field_44544 = 14;
-	private static final int field_44545 = 128;
-	private static final int field_44546 = 16;
-	public static final int field_41809 = 30;
-	private static final int field_44547 = 7;
+	public static final int LOGO_REGION_WIDTH = 256;
+	public static final int LOGO_REGION_HEIGHT = 44;
+	private static final int LOGO_TEXTURE_WIDTH = 256;
+	private static final int LOGO_TEXTURE_HEIGHT = 64;
+	private static final int EDITION_REGION_WIDTH = 128;
+	private static final int EDITION_REGION_HEIGHT = 14;
+	private static final int EDITION_TEXTURE_WIDTH = 128;
+	private static final int EDITION_TEXTURE_HEIGHT = 16;
+	public static final int LOGO_BASE_Y = 30;
+	private static final int LOGO_AND_EDITION_OVERLAP = 7;
 	private final boolean minceraft = (double)Random.create().nextFloat() < 1.0E-4;
 	private final boolean ignoreAlpha;
 

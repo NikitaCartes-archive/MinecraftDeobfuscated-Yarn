@@ -69,7 +69,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
 				listener2.getPos(world)
 					.ifPresent(
-						pos -> WorldRenderer.method_3258(
+						pos -> WorldRenderer.renderFilledBox(
 								matrices,
 								vertexConsumer2,
 								pos.getX() - 0.25 - cameraX,

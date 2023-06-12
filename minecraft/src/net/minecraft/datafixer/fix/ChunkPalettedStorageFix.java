@@ -138,18 +138,18 @@ public class ChunkPalettedStorageFix extends DataFix {
 		super(outputSchema, changesType);
 	}
 
-	private static void buildSkull(Map<String, Dynamic<?>> out, int i, String mob, String block) {
-		out.put(i + "north", BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_wall_" + block + "',Properties:{facing:'north'}}"));
-		out.put(i + "east", BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_wall_" + block + "',Properties:{facing:'east'}}"));
-		out.put(i + "south", BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_wall_" + block + "',Properties:{facing:'south'}}"));
-		out.put(i + "west", BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_wall_" + block + "',Properties:{facing:'west'}}"));
+	private static void buildSkull(Map<String, Dynamic<?>> out, int variant, String mob, String block) {
+		out.put(variant + "north", BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_wall_" + block + "',Properties:{facing:'north'}}"));
+		out.put(variant + "east", BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_wall_" + block + "',Properties:{facing:'east'}}"));
+		out.put(variant + "south", BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_wall_" + block + "',Properties:{facing:'south'}}"));
+		out.put(variant + "west", BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_wall_" + block + "',Properties:{facing:'west'}}"));
 
-		for (int j = 0; j < 16; j++) {
-			out.put("" + i + j, BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_" + block + "',Properties:{rotation:'" + j + "'}}"));
+		for (int i = 0; i < 16; i++) {
+			out.put("" + variant + i, BlockStateFlattening.parseState("{Name:'minecraft:" + mob + "_" + block + "',Properties:{rotation:'" + i + "'}}"));
 		}
 	}
 
-	private static void buildDoor(Map<String, Dynamic<?>> out, String name, int i) {
+	private static void buildDoor(Map<String, Dynamic<?>> out, String name, int firstStateId) {
 		out.put(
 			"minecraft:" + name + "eastlowerleftfalsefalse",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'east',half:'lower',hinge:'left',open:'false',powered:'false'}}")
@@ -166,18 +166,18 @@ public class ChunkPalettedStorageFix extends DataFix {
 			"minecraft:" + name + "eastlowerlefttruetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'east',half:'lower',hinge:'left',open:'true',powered:'true'}}")
 		);
-		out.put("minecraft:" + name + "eastlowerrightfalsefalse", BlockStateFlattening.lookupState(i));
+		out.put("minecraft:" + name + "eastlowerrightfalsefalse", BlockStateFlattening.lookupState(firstStateId));
 		out.put(
 			"minecraft:" + name + "eastlowerrightfalsetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'east',half:'lower',hinge:'right',open:'false',powered:'true'}}")
 		);
-		out.put("minecraft:" + name + "eastlowerrighttruefalse", BlockStateFlattening.lookupState(i + 4));
+		out.put("minecraft:" + name + "eastlowerrighttruefalse", BlockStateFlattening.lookupState(firstStateId + 4));
 		out.put(
 			"minecraft:" + name + "eastlowerrighttruetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'east',half:'lower',hinge:'right',open:'true',powered:'true'}}")
 		);
-		out.put("minecraft:" + name + "eastupperleftfalsefalse", BlockStateFlattening.lookupState(i + 8));
-		out.put("minecraft:" + name + "eastupperleftfalsetrue", BlockStateFlattening.lookupState(i + 10));
+		out.put("minecraft:" + name + "eastupperleftfalsefalse", BlockStateFlattening.lookupState(firstStateId + 8));
+		out.put("minecraft:" + name + "eastupperleftfalsetrue", BlockStateFlattening.lookupState(firstStateId + 10));
 		out.put(
 			"minecraft:" + name + "eastupperlefttruefalse",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'east',half:'upper',hinge:'left',open:'true',powered:'false'}}")
@@ -186,8 +186,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 			"minecraft:" + name + "eastupperlefttruetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'east',half:'upper',hinge:'left',open:'true',powered:'true'}}")
 		);
-		out.put("minecraft:" + name + "eastupperrightfalsefalse", BlockStateFlattening.lookupState(i + 9));
-		out.put("minecraft:" + name + "eastupperrightfalsetrue", BlockStateFlattening.lookupState(i + 11));
+		out.put("minecraft:" + name + "eastupperrightfalsefalse", BlockStateFlattening.lookupState(firstStateId + 9));
+		out.put("minecraft:" + name + "eastupperrightfalsetrue", BlockStateFlattening.lookupState(firstStateId + 11));
 		out.put(
 			"minecraft:" + name + "eastupperrighttruefalse",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'east',half:'upper',hinge:'right',open:'true',powered:'false'}}")
@@ -212,12 +212,12 @@ public class ChunkPalettedStorageFix extends DataFix {
 			"minecraft:" + name + "northlowerlefttruetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'north',half:'lower',hinge:'left',open:'true',powered:'true'}}")
 		);
-		out.put("minecraft:" + name + "northlowerrightfalsefalse", BlockStateFlattening.lookupState(i + 3));
+		out.put("minecraft:" + name + "northlowerrightfalsefalse", BlockStateFlattening.lookupState(firstStateId + 3));
 		out.put(
 			"minecraft:" + name + "northlowerrightfalsetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'north',half:'lower',hinge:'right',open:'false',powered:'true'}}")
 		);
-		out.put("minecraft:" + name + "northlowerrighttruefalse", BlockStateFlattening.lookupState(i + 7));
+		out.put("minecraft:" + name + "northlowerrighttruefalse", BlockStateFlattening.lookupState(firstStateId + 7));
 		out.put(
 			"minecraft:" + name + "northlowerrighttruetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'north',half:'lower',hinge:'right',open:'true',powered:'true'}}")
@@ -270,12 +270,12 @@ public class ChunkPalettedStorageFix extends DataFix {
 			"minecraft:" + name + "southlowerlefttruetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'south',half:'lower',hinge:'left',open:'true',powered:'true'}}")
 		);
-		out.put("minecraft:" + name + "southlowerrightfalsefalse", BlockStateFlattening.lookupState(i + 1));
+		out.put("minecraft:" + name + "southlowerrightfalsefalse", BlockStateFlattening.lookupState(firstStateId + 1));
 		out.put(
 			"minecraft:" + name + "southlowerrightfalsetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'south',half:'lower',hinge:'right',open:'false',powered:'true'}}")
 		);
-		out.put("minecraft:" + name + "southlowerrighttruefalse", BlockStateFlattening.lookupState(i + 5));
+		out.put("minecraft:" + name + "southlowerrighttruefalse", BlockStateFlattening.lookupState(firstStateId + 5));
 		out.put(
 			"minecraft:" + name + "southlowerrighttruetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'south',half:'lower',hinge:'right',open:'true',powered:'true'}}")
@@ -328,12 +328,12 @@ public class ChunkPalettedStorageFix extends DataFix {
 			"minecraft:" + name + "westlowerlefttruetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'west',half:'lower',hinge:'left',open:'true',powered:'true'}}")
 		);
-		out.put("minecraft:" + name + "westlowerrightfalsefalse", BlockStateFlattening.lookupState(i + 2));
+		out.put("minecraft:" + name + "westlowerrightfalsefalse", BlockStateFlattening.lookupState(firstStateId + 2));
 		out.put(
 			"minecraft:" + name + "westlowerrightfalsetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'west',half:'lower',hinge:'right',open:'false',powered:'true'}}")
 		);
-		out.put("minecraft:" + name + "westlowerrighttruefalse", BlockStateFlattening.lookupState(i + 6));
+		out.put("minecraft:" + name + "westlowerrighttruefalse", BlockStateFlattening.lookupState(firstStateId + 6));
 		out.put(
 			"minecraft:" + name + "westlowerrighttruetrue",
 			BlockStateFlattening.parseState("{Name:'minecraft:" + name + "',Properties:{facing:'west',half:'lower',hinge:'right',open:'true',powered:'true'}}")
@@ -372,38 +372,54 @@ public class ChunkPalettedStorageFix extends DataFix {
 		);
 	}
 
-	private static void buildBed(Map<String, Dynamic<?>> out, int i, String color) {
+	private static void buildBed(Map<String, Dynamic<?>> out, int colorId, String color) {
 		out.put(
-			"southfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'false',part:'foot'}}")
+			"southfalsefoot" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'false',part:'foot'}}")
 		);
-		out.put("westfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'false',part:'foot'}}"));
 		out.put(
-			"northfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'false',part:'foot'}}")
+			"westfalsefoot" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'false',part:'foot'}}")
 		);
-		out.put("eastfalsefoot" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'false',part:'foot'}}"));
 		out.put(
-			"southfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'false',part:'head'}}")
+			"northfalsefoot" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'false',part:'foot'}}")
 		);
-		out.put("westfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'false',part:'head'}}"));
 		out.put(
-			"northfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'false',part:'head'}}")
+			"eastfalsefoot" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'false',part:'foot'}}")
 		);
-		out.put("eastfalsehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'false',part:'head'}}"));
-		out.put("southtruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'true',part:'head'}}"));
-		out.put("westtruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'true',part:'head'}}"));
-		out.put("northtruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'true',part:'head'}}"));
-		out.put("easttruehead" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'true',part:'head'}}"));
+		out.put(
+			"southfalsehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'false',part:'head'}}")
+		);
+		out.put(
+			"westfalsehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'false',part:'head'}}")
+		);
+		out.put(
+			"northfalsehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'false',part:'head'}}")
+		);
+		out.put(
+			"eastfalsehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'false',part:'head'}}")
+		);
+		out.put(
+			"southtruehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'south',occupied:'true',part:'head'}}")
+		);
+		out.put(
+			"westtruehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'west',occupied:'true',part:'head'}}")
+		);
+		out.put(
+			"northtruehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'north',occupied:'true',part:'head'}}")
+		);
+		out.put(
+			"easttruehead" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_bed',Properties:{facing:'east',occupied:'true',part:'head'}}")
+		);
 	}
 
-	private static void buildBanner(Map<String, Dynamic<?>> out, int i, String color) {
-		for (int j = 0; j < 16; j++) {
-			out.put(j + "_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_banner',Properties:{rotation:'" + j + "'}}"));
+	private static void buildBanner(Map<String, Dynamic<?>> out, int colorId, String color) {
+		for (int i = 0; i < 16; i++) {
+			out.put(i + "_" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_banner',Properties:{rotation:'" + i + "'}}"));
 		}
 
-		out.put("north_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'north'}}"));
-		out.put("south_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'south'}}"));
-		out.put("west_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'west'}}"));
-		out.put("east_" + i, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'east'}}"));
+		out.put("north_" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'north'}}"));
+		out.put("south_" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'south'}}"));
+		out.put("west_" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'west'}}"));
+		out.put("east_" + colorId, BlockStateFlattening.parseState("{Name:'minecraft:" + color + "_wall_banner',Properties:{facing:'east'}}"));
 	}
 
 	public static String getName(Dynamic<?> dynamic) {
@@ -528,7 +544,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 	}
 
 	static class ChunkNibbleArray {
-		private static final int field_29879 = 2048;
+		private static final int CONTENTS_LENGTH = 2048;
 		private static final int field_29880 = 4;
 		private final byte[] contents;
 
@@ -536,16 +552,16 @@ public class ChunkPalettedStorageFix extends DataFix {
 			this.contents = new byte[2048];
 		}
 
-		public ChunkNibbleArray(byte[] bs) {
-			this.contents = bs;
-			if (bs.length != 2048) {
-				throw new IllegalArgumentException("ChunkNibbleArrays should be 2048 bytes not: " + bs.length);
+		public ChunkNibbleArray(byte[] contents) {
+			this.contents = contents;
+			if (contents.length != 2048) {
+				throw new IllegalArgumentException("ChunkNibbleArrays should be 2048 bytes not: " + contents.length);
 			}
 		}
 
-		public int get(int x, int y, int i) {
-			int j = this.getRawIndex(y << 8 | i << 4 | x);
-			return this.usesLowNibble(y << 8 | i << 4 | x) ? this.contents[j] & 15 : this.contents[j] >> 4 & 15;
+		public int get(int x, int y, int z) {
+			int i = this.getRawIndex(y << 8 | z << 4 | x);
+			return this.usesLowNibble(y << 8 | z << 4 | x) ? this.contents[i] & 15 : this.contents[i] >> 4 & 15;
 		}
 
 		private boolean usesLowNibble(int index) {
@@ -593,8 +609,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 
 			private final int offset;
 
-			private Direction(int j) {
-				this.offset = j;
+			private Direction(int offset) {
+				this.offset = offset;
 			}
 
 			public int getOffset() {
@@ -611,22 +627,22 @@ public class ChunkPalettedStorageFix extends DataFix {
 		private final int z;
 		private final Int2ObjectMap<Dynamic<?>> blockEntities = new Int2ObjectLinkedOpenHashMap<>(16);
 
-		public Level(Dynamic<?> dynamic) {
-			this.level = dynamic;
-			this.x = dynamic.get("xPos").asInt(0) << 4;
-			this.z = dynamic.get("zPos").asInt(0) << 4;
-			dynamic.get("TileEntities").asStreamOpt().result().ifPresent(stream -> stream.forEach(dynamicx -> {
-					int ix = dynamicx.get("x").asInt(0) - this.x & 15;
-					int jx = dynamicx.get("y").asInt(0);
-					int k = dynamicx.get("z").asInt(0) - this.z & 15;
+		public Level(Dynamic<?> chunkTag) {
+			this.level = chunkTag;
+			this.x = chunkTag.get("xPos").asInt(0) << 4;
+			this.z = chunkTag.get("zPos").asInt(0) << 4;
+			chunkTag.get("TileEntities").asStreamOpt().result().ifPresent(stream -> stream.forEach(blockEntityTag -> {
+					int ix = blockEntityTag.get("x").asInt(0) - this.x & 15;
+					int jx = blockEntityTag.get("y").asInt(0);
+					int k = blockEntityTag.get("z").asInt(0) - this.z & 15;
 					int l = jx << 8 | k << 4 | ix;
-					if (this.blockEntities.put(l, dynamicx) != null) {
+					if (this.blockEntities.put(l, blockEntityTag) != null) {
 						ChunkPalettedStorageFix.LOGGER.warn("In chunk: {}x{} found a duplicate block entity at position: [{}, {}, {}]", this.x, this.z, ix, jx, k);
 					}
 				}));
-			boolean bl = dynamic.get("convertedFromAlphaFormat").asBoolean(false);
-			dynamic.get("Sections").asStreamOpt().result().ifPresent(stream -> stream.forEach(dynamicx -> {
-					ChunkPalettedStorageFix.Section sectionx = new ChunkPalettedStorageFix.Section(dynamicx);
+			boolean bl = chunkTag.get("convertedFromAlphaFormat").asBoolean(false);
+			chunkTag.get("Sections").asStreamOpt().result().ifPresent(stream -> stream.forEach(sectionTag -> {
+					ChunkPalettedStorageFix.Section sectionx = new ChunkPalettedStorageFix.Section(sectionTag);
 					this.sidesToUpgrade = sectionx.visit(this.sidesToUpgrade);
 					this.sections[sectionx.y] = sectionx;
 				}));
@@ -639,8 +655,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 2:
 								for (int j : (IntList)entry.getValue()) {
 									j |= i;
-									Dynamic<?> dynamic2 = this.getBlock(j);
-									if ("minecraft:grass_block".equals(ChunkPalettedStorageFix.getName(dynamic2))) {
+									Dynamic<?> dynamic = this.getBlock(j);
+									if ("minecraft:grass_block".equals(ChunkPalettedStorageFix.getName(dynamic))) {
 										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(j, ChunkPalettedStorageFix.Facing.UP)));
 										if ("minecraft:snow".equals(string) || "minecraft:snow_layer".equals(string)) {
 											this.setBlock(j, ChunkPalettedStorageFix.SNOWY_GRASS);
@@ -651,8 +667,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 3:
 								for (int jxxxxxxxxx : (IntList)entry.getValue()) {
 									jxxxxxxxxx |= i;
-									Dynamic<?> dynamic2 = this.getBlock(jxxxxxxxxx);
-									if ("minecraft:podzol".equals(ChunkPalettedStorageFix.getName(dynamic2))) {
+									Dynamic<?> dynamic = this.getBlock(jxxxxxxxxx);
+									if ("minecraft:podzol".equals(ChunkPalettedStorageFix.getName(dynamic))) {
 										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxxxx, ChunkPalettedStorageFix.Facing.UP)));
 										if ("minecraft:snow".equals(string) || "minecraft:snow_layer".equals(string)) {
 											this.setBlock(jxxxxxxxxx, ChunkPalettedStorageFix.PODZOL);
@@ -663,9 +679,9 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 25:
 								for (int jxxxxx : (IntList)entry.getValue()) {
 									jxxxxx |= i;
-									Dynamic<?> dynamic2 = this.removeBlockEntity(jxxxxx);
-									if (dynamic2 != null) {
-										String string = Boolean.toString(dynamic2.get("powered").asBoolean(false)) + (byte)Math.min(Math.max(dynamic2.get("note").asInt(0), 0), 24);
+									Dynamic<?> dynamic = this.removeBlockEntity(jxxxxx);
+									if (dynamic != null) {
+										String string = Boolean.toString(dynamic.get("powered").asBoolean(false)) + (byte)Math.min(Math.max(dynamic.get("note").asInt(0), 0), 24);
 										this.setBlock(jxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.NOTE_BLOCK.getOrDefault(string, (Dynamic)ChunkPalettedStorageFix.NOTE_BLOCK.get("false0")));
 									}
 								}
@@ -673,14 +689,14 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 26:
 								for (int jxxxx : (IntList)entry.getValue()) {
 									jxxxx |= i;
-									Dynamic<?> dynamic2 = this.getBlockEntity(jxxxx);
-									Dynamic<?> dynamic3 = this.getBlock(jxxxx);
-									if (dynamic2 != null) {
-										int k = dynamic2.get("color").asInt(0);
+									Dynamic<?> dynamic = this.getBlockEntity(jxxxx);
+									Dynamic<?> dynamic2 = this.getBlock(jxxxx);
+									if (dynamic != null) {
+										int k = dynamic.get("color").asInt(0);
 										if (k != 14 && k >= 0 && k < 16) {
-											String string2 = ChunkPalettedStorageFix.getProperty(dynamic3, "facing")
-												+ ChunkPalettedStorageFix.getProperty(dynamic3, "occupied")
-												+ ChunkPalettedStorageFix.getProperty(dynamic3, "part")
+											String string2 = ChunkPalettedStorageFix.getProperty(dynamic2, "facing")
+												+ ChunkPalettedStorageFix.getProperty(dynamic2, "occupied")
+												+ ChunkPalettedStorageFix.getProperty(dynamic2, "part")
 												+ k;
 											if (ChunkPalettedStorageFix.BED.containsKey(string2)) {
 												this.setBlock(jxxxx, (Dynamic<?>)ChunkPalettedStorageFix.BED.get(string2));
@@ -698,18 +714,18 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 197:
 								for (int jxxx : (IntList)entry.getValue()) {
 									jxxx |= i;
-									Dynamic<?> dynamic2 = this.getBlock(jxxx);
-									if (ChunkPalettedStorageFix.getName(dynamic2).endsWith("_door")) {
-										Dynamic<?> dynamic3 = this.getBlock(jxxx);
-										if ("lower".equals(ChunkPalettedStorageFix.getProperty(dynamic3, "half"))) {
+									Dynamic<?> dynamic = this.getBlock(jxxx);
+									if (ChunkPalettedStorageFix.getName(dynamic).endsWith("_door")) {
+										Dynamic<?> dynamic2 = this.getBlock(jxxx);
+										if ("lower".equals(ChunkPalettedStorageFix.getProperty(dynamic2, "half"))) {
 											int k = adjacentTo(jxxx, ChunkPalettedStorageFix.Facing.UP);
-											Dynamic<?> dynamic4 = this.getBlock(k);
-											String string4 = ChunkPalettedStorageFix.getName(dynamic3);
-											if (string4.equals(ChunkPalettedStorageFix.getName(dynamic4))) {
-												String string5 = ChunkPalettedStorageFix.getProperty(dynamic3, "facing");
-												String string6 = ChunkPalettedStorageFix.getProperty(dynamic3, "open");
-												String string7 = bl ? "left" : ChunkPalettedStorageFix.getProperty(dynamic4, "hinge");
-												String string8 = bl ? "false" : ChunkPalettedStorageFix.getProperty(dynamic4, "powered");
+											Dynamic<?> dynamic3 = this.getBlock(k);
+											String string4 = ChunkPalettedStorageFix.getName(dynamic2);
+											if (string4.equals(ChunkPalettedStorageFix.getName(dynamic3))) {
+												String string5 = ChunkPalettedStorageFix.getProperty(dynamic2, "facing");
+												String string6 = ChunkPalettedStorageFix.getProperty(dynamic2, "open");
+												String string7 = bl ? "left" : ChunkPalettedStorageFix.getProperty(dynamic3, "hinge");
+												String string8 = bl ? "false" : ChunkPalettedStorageFix.getProperty(dynamic3, "powered");
 												this.setBlock(jxxx, (Dynamic<?>)ChunkPalettedStorageFix.DOOR.get(string4 + string5 + "lower" + string7 + string6 + string8));
 												this.setBlock(k, (Dynamic<?>)ChunkPalettedStorageFix.DOOR.get(string4 + string5 + "upper" + string7 + string6 + string8));
 											}
@@ -720,8 +736,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 86:
 								for (int jxxxxxxxx : (IntList)entry.getValue()) {
 									jxxxxxxxx |= i;
-									Dynamic<?> dynamic2 = this.getBlock(jxxxxxxxx);
-									if ("minecraft:carved_pumpkin".equals(ChunkPalettedStorageFix.getName(dynamic2))) {
+									Dynamic<?> dynamic = this.getBlock(jxxxxxxxx);
+									if ("minecraft:carved_pumpkin".equals(ChunkPalettedStorageFix.getName(dynamic))) {
 										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxxx, ChunkPalettedStorageFix.Facing.DOWN)));
 										if ("minecraft:grass_block".equals(string) || "minecraft:dirt".equals(string)) {
 											this.setBlock(jxxxxxxxx, ChunkPalettedStorageFix.PUMPKIN);
@@ -732,8 +748,8 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 110:
 								for (int jxxxxxxx : (IntList)entry.getValue()) {
 									jxxxxxxx |= i;
-									Dynamic<?> dynamic2 = this.getBlock(jxxxxxxx);
-									if ("minecraft:mycelium".equals(ChunkPalettedStorageFix.getName(dynamic2))) {
+									Dynamic<?> dynamic = this.getBlock(jxxxxxxx);
+									if ("minecraft:mycelium".equals(ChunkPalettedStorageFix.getName(dynamic))) {
 										String string = ChunkPalettedStorageFix.getName(this.getBlock(adjacentTo(jxxxxxxx, ChunkPalettedStorageFix.Facing.UP)));
 										if ("minecraft:snow".equals(string) || "minecraft:snow_layer".equals(string)) {
 											this.setBlock(jxxxxxxx, ChunkPalettedStorageFix.SNOWY_MYCELIUM);
@@ -744,9 +760,9 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 140:
 								for (int jxx : (IntList)entry.getValue()) {
 									jxx |= i;
-									Dynamic<?> dynamic2 = this.removeBlockEntity(jxx);
-									if (dynamic2 != null) {
-										String string = dynamic2.get("Item").asString("") + dynamic2.get("Data").asInt(0);
+									Dynamic<?> dynamic = this.removeBlockEntity(jxx);
+									if (dynamic != null) {
+										String string = dynamic.get("Item").asString("") + dynamic.get("Data").asInt(0);
 										this.setBlock(
 											jxx, (Dynamic<?>)ChunkPalettedStorageFix.FLOWER_POT.getOrDefault(string, (Dynamic)ChunkPalettedStorageFix.FLOWER_POT.get("minecraft:air0"))
 										);
@@ -756,20 +772,20 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 144:
 								for (int jxxxxxx : (IntList)entry.getValue()) {
 									jxxxxxx |= i;
-									Dynamic<?> dynamic2 = this.getBlockEntity(jxxxxxx);
-									if (dynamic2 != null) {
-										String string = String.valueOf(dynamic2.get("SkullType").asInt(0));
+									Dynamic<?> dynamic = this.getBlockEntity(jxxxxxx);
+									if (dynamic != null) {
+										String string = String.valueOf(dynamic.get("SkullType").asInt(0));
 										String string3 = ChunkPalettedStorageFix.getProperty(this.getBlock(jxxxxxx), "facing");
 										String string2;
 										if (!"up".equals(string3) && !"down".equals(string3)) {
 											string2 = string + string3;
 										} else {
-											string2 = string + dynamic2.get("Rot").asInt(0);
+											string2 = string + dynamic.get("Rot").asInt(0);
 										}
 
-										dynamic2.remove("SkullType");
-										dynamic2.remove("facing");
-										dynamic2.remove("Rot");
+										dynamic.remove("SkullType");
+										dynamic.remove("facing");
+										dynamic.remove("Rot");
 										this.setBlock(jxxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.SKULL.getOrDefault(string2, (Dynamic)ChunkPalettedStorageFix.SKULL.get("0north")));
 									}
 								}
@@ -777,10 +793,10 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 175:
 								for (int jx : (IntList)entry.getValue()) {
 									jx |= i;
-									Dynamic<?> dynamic2 = this.getBlock(jx);
-									if ("upper".equals(ChunkPalettedStorageFix.getProperty(dynamic2, "half"))) {
-										Dynamic<?> dynamic3 = this.getBlock(adjacentTo(jx, ChunkPalettedStorageFix.Facing.DOWN));
-										String string3 = ChunkPalettedStorageFix.getName(dynamic3);
+									Dynamic<?> dynamic = this.getBlock(jx);
+									if ("upper".equals(ChunkPalettedStorageFix.getProperty(dynamic, "half"))) {
+										Dynamic<?> dynamic2 = this.getBlock(adjacentTo(jx, ChunkPalettedStorageFix.Facing.DOWN));
+										String string3 = ChunkPalettedStorageFix.getName(dynamic2);
 										if ("minecraft:sunflower".equals(string3)) {
 											this.setBlock(jx, ChunkPalettedStorageFix.SUNFLOWER_UPPER);
 										} else if ("minecraft:lilac".equals(string3)) {
@@ -801,12 +817,12 @@ public class ChunkPalettedStorageFix extends DataFix {
 							case 177:
 								for (int jxxxxxxxxxx : (IntList)entry.getValue()) {
 									jxxxxxxxxxx |= i;
-									Dynamic<?> dynamic2 = this.getBlockEntity(jxxxxxxxxxx);
-									Dynamic<?> dynamic3 = this.getBlock(jxxxxxxxxxx);
-									if (dynamic2 != null) {
-										int k = dynamic2.get("Base").asInt(0);
+									Dynamic<?> dynamic = this.getBlockEntity(jxxxxxxxxxx);
+									Dynamic<?> dynamic2 = this.getBlock(jxxxxxxxxxx);
+									if (dynamic != null) {
+										int k = dynamic.get("Base").asInt(0);
 										if (k != 15 && k >= 0 && k < 16) {
-											String string2 = ChunkPalettedStorageFix.getProperty(dynamic3, entry.getKey() == 176 ? "rotation" : "facing") + "_" + k;
+											String string2 = ChunkPalettedStorageFix.getProperty(dynamic2, entry.getKey() == 176 ? "rotation" : "facing") + "_" + k;
 											if (ChunkPalettedStorageFix.BANNER.containsKey(string2)) {
 												this.setBlock(jxxxxxxxxxx, (Dynamic<?>)ChunkPalettedStorageFix.BANNER.get(string2));
 											}
@@ -820,50 +836,50 @@ public class ChunkPalettedStorageFix extends DataFix {
 		}
 
 		@Nullable
-		private Dynamic<?> getBlockEntity(int i) {
-			return this.blockEntities.get(i);
+		private Dynamic<?> getBlockEntity(int packedLocalPos) {
+			return this.blockEntities.get(packedLocalPos);
 		}
 
 		@Nullable
-		private Dynamic<?> removeBlockEntity(int i) {
-			return this.blockEntities.remove(i);
+		private Dynamic<?> removeBlockEntity(int packedLocalPos) {
+			return this.blockEntities.remove(packedLocalPos);
 		}
 
-		public static int adjacentTo(int i, ChunkPalettedStorageFix.Facing direction) {
+		public static int adjacentTo(int packedLocalPos, ChunkPalettedStorageFix.Facing direction) {
 			switch (direction.getAxis()) {
 				case X:
-					int j = (i & 15) + direction.getDirection().getOffset();
-					return j >= 0 && j <= 15 ? i & -16 | j : -1;
+					int i = (packedLocalPos & 15) + direction.getDirection().getOffset();
+					return i >= 0 && i <= 15 ? packedLocalPos & -16 | i : -1;
 				case Y:
-					int k = (i >> 8) + direction.getDirection().getOffset();
-					return k >= 0 && k <= 255 ? i & 0xFF | k << 8 : -1;
+					int j = (packedLocalPos >> 8) + direction.getDirection().getOffset();
+					return j >= 0 && j <= 255 ? packedLocalPos & 0xFF | j << 8 : -1;
 				case Z:
-					int l = (i >> 4 & 15) + direction.getDirection().getOffset();
-					return l >= 0 && l <= 15 ? i & -241 | l << 4 : -1;
+					int k = (packedLocalPos >> 4 & 15) + direction.getDirection().getOffset();
+					return k >= 0 && k <= 15 ? packedLocalPos & -241 | k << 4 : -1;
 				default:
 					return -1;
 			}
 		}
 
-		private void setBlock(int i, Dynamic<?> dynamic) {
-			if (i >= 0 && i <= 65535) {
-				ChunkPalettedStorageFix.Section section = this.getSection(i);
+		private void setBlock(int packedLocalPos, Dynamic<?> dynamic) {
+			if (packedLocalPos >= 0 && packedLocalPos <= 65535) {
+				ChunkPalettedStorageFix.Section section = this.getSection(packedLocalPos);
 				if (section != null) {
-					section.setBlock(i & 4095, dynamic);
+					section.setBlock(packedLocalPos & 4095, dynamic);
 				}
 			}
 		}
 
 		@Nullable
-		private ChunkPalettedStorageFix.Section getSection(int i) {
-			int j = i >> 12;
-			return j < this.sections.length ? this.sections[j] : null;
+		private ChunkPalettedStorageFix.Section getSection(int packedLocalPos) {
+			int i = packedLocalPos >> 12;
+			return i < this.sections.length ? this.sections[i] : null;
 		}
 
-		public Dynamic<?> getBlock(int i) {
-			if (i >= 0 && i <= 65535) {
-				ChunkPalettedStorageFix.Section section = this.getSection(i);
-				return section == null ? ChunkPalettedStorageFix.AIR : section.getBlock(i & 4095);
+		public Dynamic<?> getBlock(int packedLocalPos) {
+			if (packedLocalPos >= 0 && packedLocalPos <= 65535) {
+				ChunkPalettedStorageFix.Section section = this.getSection(packedLocalPos);
+				return section == null ? ChunkPalettedStorageFix.AIR : section.getBlock(packedLocalPos & 4095);
 			} else {
 				return ChunkPalettedStorageFix.AIR;
 			}

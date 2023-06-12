@@ -34,12 +34,12 @@ public class UntaggedSpawnerFix extends DataFix {
 		);
 	}
 
-	private <T> Typed<T> method_37974(Type<T> type, Typed<?> typed) {
+	private <T> Typed<T> method_37974(Type<T> spawnDataType, Typed<?> typed) {
 		DynamicOps<?> dynamicOps = typed.getOps();
-		return new Typed<>(type, dynamicOps, (T)Pair.<Object, Dynamic<?>>of(typed.getValue(), new Dynamic<>(dynamicOps)));
+		return new Typed<>(spawnDataType, dynamicOps, (T)Pair.<Object, Dynamic<?>>of(typed.getValue(), new Dynamic<>(dynamicOps)));
 	}
 
-	private <T> Typed<T> fixSpawner(Type<T> type, Typed<?> typed) {
+	private <T> Typed<T> fixSpawner(Type<T> spawnPotentialsType, Typed<?> typed) {
 		DynamicOps<?> dynamicOps = typed.getOps();
 		List<?> list = (List<?>)typed.getValue();
 		List<?> list2 = list.stream().map(object -> {
@@ -50,6 +50,6 @@ public class UntaggedSpawnerFix extends DataFix {
 			Dynamic<?> dynamic2 = pair.getSecond().remove("Weight").remove("Entity");
 			return Pair.of(Pair.of(pair.getFirst(), dynamic2), dynamic);
 		}).toList();
-		return new Typed<>(type, dynamicOps, (T)list2);
+		return new Typed<>(spawnPotentialsType, dynamicOps, (T)list2);
 	}
 }

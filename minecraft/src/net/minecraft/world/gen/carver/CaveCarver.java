@@ -41,7 +41,7 @@ public class CaveCarver extends Carver<CaveCarverConfig> {
 			double g = (double)caveCarverConfig.horizontalRadiusMultiplier.get(random);
 			double h = (double)caveCarverConfig.verticalRadiusMultiplier.get(random);
 			double l = (double)caveCarverConfig.floorLevel.get(random);
-			Carver.SkipPredicate skipPredicate = (context, scaledRelativeX, scaledRelativeY, scaledRelativeZ, y) -> isPositionExcluded(
+			Carver.SkipPredicate skipPredicate = (contextx, scaledRelativeX, scaledRelativeY, scaledRelativeZ, y) -> isPositionExcluded(
 					scaledRelativeX, scaledRelativeY, scaledRelativeZ, l
 				);
 			int m = 1;

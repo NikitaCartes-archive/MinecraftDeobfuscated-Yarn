@@ -36,8 +36,8 @@ public class ChatHud {
 	private static final int MISSING_MESSAGE_INDEX = -1;
 	private static final int field_39772 = 4;
 	private static final int field_39773 = 4;
-	private static final int field_40389 = 40;
-	private static final int field_40390 = 60;
+	private static final int OFFSET_FROM_BOTTOM = 40;
+	private static final int REMOVAL_QUEUE_TICKS = 60;
 	private static final Text DELETED_MARKER_TEXT = Text.translatable("chat.deleted_marker").formatted(Formatting.GRAY, Formatting.ITALIC);
 	private final MinecraftClient client;
 	private final List<String> messageHistory = Lists.<String>newArrayList();

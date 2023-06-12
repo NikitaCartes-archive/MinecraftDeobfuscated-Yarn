@@ -16,17 +16,17 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 
 public class MerchantScreenHandler extends ScreenHandler {
-	protected static final int field_30830 = 0;
-	protected static final int field_30831 = 1;
-	protected static final int field_30832 = 2;
-	private static final int field_30833 = 3;
-	private static final int field_30834 = 30;
-	private static final int field_30835 = 30;
-	private static final int field_30836 = 39;
-	private static final int field_30837 = 136;
-	private static final int field_30838 = 162;
-	private static final int field_30839 = 220;
-	private static final int field_30840 = 37;
+	protected static final int INPUT_1_ID = 0;
+	protected static final int INPUT_2_ID = 1;
+	protected static final int OUTPUT_ID = 2;
+	private static final int INVENTORY_START = 3;
+	private static final int INVENTORY_END = 30;
+	private static final int HOTBAR_START = 30;
+	private static final int HOTBAR_END = 39;
+	private static final int INPUT_1_X = 136;
+	private static final int INPUT_2_X = 162;
+	private static final int OUTPUT_X = 220;
+	private static final int SLOT_Y = 37;
 	private final Merchant merchant;
 	private final MerchantInventory merchantInventory;
 	private int levelProgress;

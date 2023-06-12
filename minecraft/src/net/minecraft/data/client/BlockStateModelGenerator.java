@@ -2774,12 +2774,12 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createBlockStateWithRandomHorizontalRotations(Blocks.DIRT_PATH, ModelIds.getBlockModelId(Blocks.DIRT_PATH)));
 	}
 
-	private void registerPressurePlate(Block pressurePlate, Block textureSource) {
+	private void registerWeightedPressurePlate(Block weightedPressurePlate, Block textureSource) {
 		TextureMap textureMap = TextureMap.texture(textureSource);
-		Identifier identifier = Models.PRESSURE_PLATE_UP.upload(pressurePlate, textureMap, this.modelCollector);
-		Identifier identifier2 = Models.PRESSURE_PLATE_DOWN.upload(pressurePlate, textureMap, this.modelCollector);
+		Identifier identifier = Models.PRESSURE_PLATE_UP.upload(weightedPressurePlate, textureMap, this.modelCollector);
+		Identifier identifier2 = Models.PRESSURE_PLATE_DOWN.upload(weightedPressurePlate, textureMap, this.modelCollector);
 		this.blockStateCollector
-			.accept(VariantsBlockStateSupplier.create(pressurePlate).coordinate(createValueFencedModelMap(Properties.POWER, 1, identifier2, identifier)));
+			.accept(VariantsBlockStateSupplier.create(weightedPressurePlate).coordinate(createValueFencedModelMap(Properties.POWER, 1, identifier2, identifier)));
 	}
 
 	private void registerHopper() {
@@ -3974,8 +3974,8 @@ public class BlockStateModelGenerator {
 		this.registerParented(Blocks.EXPOSED_COPPER, Blocks.WAXED_EXPOSED_COPPER);
 		this.registerParented(Blocks.WEATHERED_COPPER, Blocks.WAXED_WEATHERED_COPPER);
 		this.registerParented(Blocks.OXIDIZED_COPPER, Blocks.WAXED_OXIDIZED_COPPER);
-		this.registerPressurePlate(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.GOLD_BLOCK);
-		this.registerPressurePlate(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.IRON_BLOCK);
+		this.registerWeightedPressurePlate(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.GOLD_BLOCK);
+		this.registerWeightedPressurePlate(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.IRON_BLOCK);
 		this.registerAmethysts();
 		this.registerBookshelf();
 		this.registerChiseledBookshelf();

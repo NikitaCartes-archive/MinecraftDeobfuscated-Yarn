@@ -561,12 +561,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Optional<BlockPos> optional = this.getPointOfInterestStorage()
 			.getNearestPosition(
 				poiType -> poiType.matchesKey(PointOfInterestTypes.LIGHTNING_ROD),
-				posx -> posx.getY() == this.getTopY(Heightmap.Type.WORLD_SURFACE, posx.getX(), posx.getZ()) - 1,
+				innerPos -> innerPos.getY() == this.getTopY(Heightmap.Type.WORLD_SURFACE, innerPos.getX(), innerPos.getZ()) - 1,
 				pos,
 				128,
 				PointOfInterestStorage.OccupationStatus.ANY
 			);
-		return optional.map(posx -> posx.up(1));
+		return optional.map(innerPos -> innerPos.up(1));
 	}
 
 	protected BlockPos getLightningPos(BlockPos pos) {

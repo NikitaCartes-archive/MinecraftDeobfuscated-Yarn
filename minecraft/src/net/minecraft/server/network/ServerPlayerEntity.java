@@ -588,7 +588,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	private void updateScores(ScoreboardCriterion criterion, int score) {
-		this.getScoreboard().forEachScore(criterion, this.getEntityName(), scorex -> scorex.setScore(score));
+		this.getScoreboard().forEachScore(criterion, this.getEntityName(), innerScore -> innerScore.setScore(score));
 	}
 
 	@Override
@@ -1094,7 +1094,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	@Override
-	public void unlockCraftedRecipe(Recipe<?> recipe, List<ItemStack> ingredients) {
+	public void onRecipeCrafted(Recipe<?> recipe, List<ItemStack> ingredients) {
 		Criteria.RECIPE_CRAFTED.trigger(this, recipe.getId(), ingredients);
 	}
 

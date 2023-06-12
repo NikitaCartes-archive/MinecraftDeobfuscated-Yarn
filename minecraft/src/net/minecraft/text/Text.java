@@ -441,8 +441,8 @@ public interface Text extends Message, StringVisitable {
 			return jsonObject;
 		}
 
-		private void addSeparator(JsonSerializationContext context, JsonObject json, Optional<Text> separator) {
-			separator.ifPresent(separatorx -> json.add("separator", this.serialize(separatorx, separatorx.getClass(), context)));
+		private void addSeparator(JsonSerializationContext context, JsonObject json, Optional<Text> optionalSeparator) {
+			optionalSeparator.ifPresent(separator -> json.add("separator", this.serialize(separator, separator.getClass(), context)));
 		}
 
 		public static String toJson(Text text) {

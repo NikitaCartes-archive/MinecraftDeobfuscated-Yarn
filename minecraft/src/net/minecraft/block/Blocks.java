@@ -261,7 +261,7 @@ public class Blocks {
 				.pistonBehavior(PistonBehavior.DESTROY)
 				.dropsNothing()
 				.liquid()
-				.sounds(BlockSoundGroup.field_44608)
+				.sounds(BlockSoundGroup.INTENTIONALLY_EMPTY)
 		)
 	);
 	public static final Block LAVA = register(
@@ -278,7 +278,7 @@ public class Blocks {
 				.pistonBehavior(PistonBehavior.DESTROY)
 				.dropsNothing()
 				.liquid()
-				.sounds(BlockSoundGroup.field_44608)
+				.sounds(BlockSoundGroup.INTENTIONALLY_EMPTY)
 		)
 	);
 	public static final Block SAND = register(
@@ -4920,7 +4920,7 @@ public class Blocks {
 				.dropsNothing()
 				.pistonBehavior(PistonBehavior.DESTROY)
 				.liquid()
-				.sounds(BlockSoundGroup.field_44608)
+				.sounds(BlockSoundGroup.INTENTIONALLY_EMPTY)
 		)
 	);
 	public static final Block POLISHED_GRANITE_STAIRS = register(

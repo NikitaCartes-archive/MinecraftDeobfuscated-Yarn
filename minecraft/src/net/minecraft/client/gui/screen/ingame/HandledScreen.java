@@ -109,7 +109,7 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 				this.focusedSlot = slot;
 				int l = slot.x;
 				int m = slot.y;
-				if (this.focusedSlot.method_51306()) {
+				if (this.focusedSlot.canBeHighlighted()) {
 					drawSlotHighlight(context, l, m, 0);
 				}
 			}

@@ -18,10 +18,10 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	public static final int MAP_SLOT_INDEX = 0;
 	public static final int MATERIAL_SLOT_INDEX = 1;
 	public static final int RESULT_SLOT_INDEX = 2;
-	private static final int field_30776 = 3;
-	private static final int field_30777 = 30;
-	private static final int field_30778 = 30;
-	private static final int field_30779 = 39;
+	private static final int INVENTORY_START = 3;
+	private static final int INVENTORY_END = 30;
+	private static final int HOTBAR_START = 30;
+	private static final int HOTBAR_END = 39;
 	private final ScreenHandlerContext context;
 	long lastTakeResultTime;
 	public final Inventory inventory = new SimpleInventory(2) {

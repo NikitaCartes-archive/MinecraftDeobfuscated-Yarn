@@ -23,13 +23,13 @@ import net.minecraft.world.WorldEvents;
 
 public class GrindstoneScreenHandler extends ScreenHandler {
 	public static final int field_30793 = 35;
-	public static final int field_30794 = 0;
-	public static final int field_30795 = 1;
-	public static final int field_30796 = 2;
-	private static final int field_30797 = 3;
-	private static final int field_30798 = 30;
-	private static final int field_30799 = 30;
-	private static final int field_30800 = 39;
+	public static final int INPUT_1_ID = 0;
+	public static final int INPUT_2_ID = 1;
+	public static final int OUTPUT_ID = 2;
+	private static final int INVENTORY_START = 3;
+	private static final int INVENTORY_END = 30;
+	private static final int HOTBAR_START = 30;
+	private static final int HOTBAR_END = 39;
 	private final Inventory result = new CraftingResultInventory();
 	final Inventory input = new SimpleInventory(2) {
 		@Override

@@ -141,7 +141,7 @@ public class Schema704 extends Schema {
 	protected static final HookFunction field_5745 = new HookFunction() {
 		@Override
 		public <T> T apply(DynamicOps<T> ops, T value) {
-			return Schema99.method_5359(new Dynamic<>(ops, value), Schema704.BLOCK_RENAMES, "ArmorStand");
+			return Schema99.updateBlockEntityTags(new Dynamic<>(ops, value), Schema704.BLOCK_RENAMES, "ArmorStand");
 		}
 	};
 

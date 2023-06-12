@@ -11,7 +11,7 @@ public class NoteParticle extends SpriteBillboardParticle {
 	NoteParticle(ClientWorld world, double x, double y, double z, double d) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
 		this.velocityMultiplier = 0.66F;
-		this.field_28787 = true;
+		this.ascending = true;
 		this.velocityX *= 0.01F;
 		this.velocityY *= 0.01F;
 		this.velocityZ *= 0.01F;

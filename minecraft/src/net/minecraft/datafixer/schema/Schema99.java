@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 
 public class Schema99 extends Schema {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	static final Map<String, String> field_5748 = DataFixUtils.make(Maps.<String, String>newHashMap(), map -> {
+	static final Map<String, String> BLOCKS_TO_BLOCK_ENTITIES = DataFixUtils.make(Maps.<String, String>newHashMap(), map -> {
 		map.put("minecraft:furnace", "Furnace");
 		map.put("minecraft:lit_furnace", "Furnace");
 		map.put("minecraft:chest", "Chest");
@@ -56,7 +56,7 @@ public class Schema99 extends Schema {
 	protected static final HookFunction field_5747 = new HookFunction() {
 		@Override
 		public <T> T apply(DynamicOps<T> ops, T value) {
-			return Schema99.method_5359(new Dynamic<>(ops, value), Schema99.field_5748, "ArmorStand");
+			return Schema99.updateBlockEntityTags(new Dynamic<>(ops, value), Schema99.BLOCKS_TO_BLOCK_ENTITIES, "ArmorStand");
 		}
 	};
 
@@ -338,7 +338,7 @@ public class Schema99 extends Schema {
 		schema.registerType(false, TypeReferences.ENTITY_CHUNK, () -> DSL.optionalFields("Entities", DSL.list(TypeReferences.ENTITY_TREE.in(schema))));
 	}
 
-	protected static <T> T method_5359(Dynamic<T> stack, Map<String, String> renames, String newArmorStandId) {
+	protected static <T> T updateBlockEntityTags(Dynamic<T> stack, Map<String, String> renames, String newArmorStandId) {
 		return stack.update(
 				"tag",
 				tag -> tag.update("BlockEntityTag", blockEntityTag -> {

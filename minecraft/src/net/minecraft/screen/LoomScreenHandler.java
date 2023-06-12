@@ -26,11 +26,11 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 
 public class LoomScreenHandler extends ScreenHandler {
-	private static final int field_39120 = -1;
-	private static final int field_30826 = 4;
-	private static final int field_30827 = 31;
-	private static final int field_30828 = 31;
-	private static final int field_30829 = 40;
+	private static final int NO_PATTERN = -1;
+	private static final int INVENTORY_START = 4;
+	private static final int INVENTORY_END = 31;
+	private static final int HOTBAR_START = 31;
+	private static final int HOTBAR_END = 40;
 	private final ScreenHandlerContext context;
 	final Property selectedPattern = Property.create();
 	private List<RegistryEntry<BannerPattern>> bannerPatterns = List.of();

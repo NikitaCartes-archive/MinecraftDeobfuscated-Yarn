@@ -37,7 +37,7 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 			BlockPos blockPos = (BlockPos)this.positions.get(i);
 			Float float_ = (Float)this.sizes.get(i);
 			float f = float_ / 2.0F;
-			WorldRenderer.method_3258(
+			WorldRenderer.renderFilledBox(
 				matrices,
 				vertexConsumer,
 				(double)((float)blockPos.getX() + 0.5F - f) - cameraX,

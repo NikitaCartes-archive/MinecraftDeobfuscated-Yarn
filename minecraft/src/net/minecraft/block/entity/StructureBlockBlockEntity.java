@@ -318,7 +318,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.saveStructure(true);
 	}
 
-	public boolean saveStructure(boolean bl) {
+	public boolean saveStructure(boolean interactive) {
 		if (this.mode == StructureBlockMode.SAVE && !this.world.isClient && this.templateName != null) {
 			BlockPos blockPos = this.getPos().add(this.offset);
 			ServerWorld serverWorld = (ServerWorld)this.world;
@@ -333,7 +333,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 
 			structureTemplate.saveFromWorld(this.world, blockPos, this.size, !this.ignoreEntities, Blocks.STRUCTURE_VOID);
 			structureTemplate.setAuthor(this.author);
-			if (bl) {
+			if (interactive) {
 				try {
 					return structureTemplateManager.saveTemplate(this.templateName);
 				} catch (InvalidIdentifierException var7) {
@@ -355,7 +355,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return seed == 0L ? Random.create(Util.getMeasuringTimeMs()) : Random.create(seed);
 	}
 
-	public boolean loadStructure(ServerWorld world, boolean bl) {
+	public boolean loadStructure(ServerWorld world, boolean interactive) {
 		if (this.mode == StructureBlockMode.LOAD && this.templateName != null) {
 			StructureTemplateManager structureTemplateManager = world.getStructureTemplateManager();
 
@@ -366,28 +366,28 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				return false;
 			}
 
-			return !optional.isPresent() ? false : this.place(world, bl, (StructureTemplate)optional.get());
+			return !optional.isPresent() ? false : this.place(world, interactive, (StructureTemplate)optional.get());
 		} else {
 			return false;
 		}
 	}
 
-	public boolean place(ServerWorld world, boolean bl, StructureTemplate template) {
+	public boolean place(ServerWorld world, boolean interactive, StructureTemplate template) {
 		BlockPos blockPos = this.getPos();
 		if (!StringHelper.isEmpty(template.getAuthor())) {
 			this.author = template.getAuthor();
 		}
 
 		Vec3i vec3i = template.getSize();
-		boolean bl2 = this.size.equals(vec3i);
-		if (!bl2) {
+		boolean bl = this.size.equals(vec3i);
+		if (!bl) {
 			this.size = vec3i;
 			this.markDirty();
 			BlockState blockState = world.getBlockState(blockPos);
 			world.updateListeners(blockPos, blockState, blockState, Block.NOTIFY_ALL);
 		}
 
-		if (bl && !bl2) {
+		if (interactive && !bl) {
 			return false;
 		} else {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()

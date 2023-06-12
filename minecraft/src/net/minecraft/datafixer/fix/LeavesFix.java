@@ -43,7 +43,7 @@ public class LeavesFix extends DataFix {
 	private static final int field_29891 = 4;
 	private static final int field_29892 = 2;
 	private static final int field_29893 = 1;
-	private static final int[][] field_5687 = new int[][]{{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
+	private static final int[][] AXIAL_OFFSETS = new int[][]{{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
 	private static final int field_29894 = 7;
 	private static final int field_29895 = 12;
 	private static final int field_29896 = 4096;
@@ -123,9 +123,9 @@ public class LeavesFix extends DataFix {
 													if (leavesLogFixer.isLog(k)) {
 														((IntSet)list.get(0)).add(leavesLogFixer.getY() << 12 | j);
 													} else if (leavesLogFixer.isLeaf(k)) {
-														int l = this.method_5052(j);
-														int m = this.method_5050(j);
-														is[0] |= method_5061(l == 0, l == 15, m == 0, m == 15);
+														int l = this.getX(j);
+														int m = this.getZ(j);
+														is[0] |= getBoundaryClassBit(l == 0, l == 15, m == 0, m == 15);
 													}
 												}
 											}
@@ -138,24 +138,24 @@ public class LeavesFix extends DataFix {
 
 											while (intIterator.hasNext()) {
 												int l = intIterator.nextInt();
-												int m = this.method_5052(l);
-												int n = this.method_5062(l);
-												int o = this.method_5050(l);
+												int m = this.getX(l);
+												int n = this.getY(l);
+												int o = this.getZ(l);
 
-												for (int[] js : field_5687) {
+												for (int[] js : AXIAL_OFFSETS) {
 													int p = m + js[0];
 													int q = n + js[1];
 													int r = o + js[2];
 													if (p >= 0 && p <= 15 && r >= 0 && r <= 15 && q >= 0 && q <= 255) {
 														LeavesFix.LeavesLogFixer leavesLogFixer2 = int2ObjectMap.get(q >> 4);
 														if (leavesLogFixer2 != null && !leavesLogFixer2.isFixed()) {
-															int s = method_5051(p, q & 15, r);
+															int s = packLocalPos(p, q & 15, r);
 															int t = leavesLogFixer2.needsFix(s);
 															if (leavesLogFixer2.isLeaf(t)) {
 																int u = leavesLogFixer2.getDistanceToLog(t);
 																if (u > i) {
 																	leavesLogFixer2.computeLeafStates(s, t, i);
-																	intSet2.add(method_5051(p, q, r));
+																	intSet2.add(packLocalPos(p, q, r));
 																}
 															}
 														}
@@ -182,43 +182,43 @@ public class LeavesFix extends DataFix {
 		}
 	}
 
-	public static int method_5051(int i, int j, int k) {
-		return j << 8 | k << 4 | i;
+	public static int packLocalPos(int localX, int localY, int localZ) {
+		return localY << 8 | localZ << 4 | localX;
 	}
 
-	private int method_5052(int i) {
-		return i & 15;
+	private int getX(int packedLocalPos) {
+		return packedLocalPos & 15;
 	}
 
-	private int method_5062(int i) {
-		return i >> 8 & 0xFF;
+	private int getY(int packedLocalPos) {
+		return packedLocalPos >> 8 & 0xFF;
 	}
 
-	private int method_5050(int i) {
-		return i >> 4 & 15;
+	private int getZ(int packedLocalPos) {
+		return packedLocalPos >> 4 & 15;
 	}
 
-	public static int method_5061(boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+	public static int getBoundaryClassBit(boolean westernmost, boolean easternmost, boolean northernmost, boolean southernmost) {
 		int i = 0;
-		if (bl3) {
-			if (bl2) {
+		if (northernmost) {
+			if (easternmost) {
 				i |= 2;
-			} else if (bl) {
+			} else if (westernmost) {
 				i |= 128;
 			} else {
 				i |= 1;
 			}
-		} else if (bl4) {
-			if (bl) {
+		} else if (southernmost) {
+			if (westernmost) {
 				i |= 32;
-			} else if (bl2) {
+			} else if (easternmost) {
 				i |= 8;
 			} else {
 				i |= 16;
 			}
-		} else if (bl2) {
+		} else if (easternmost) {
 			i |= 4;
-		} else if (bl) {
+		} else if (westernmost) {
 			i |= 64;
 		}
 
@@ -264,13 +264,13 @@ public class LeavesFix extends DataFix {
 			return this.leafIndices.isEmpty() && this.logIndices.isEmpty();
 		}
 
-		private Dynamic<?> createLeafProperties(Dynamic<?> dynamic, String string, boolean bl, int i) {
-			Dynamic<?> dynamic2 = dynamic.emptyMap();
-			dynamic2 = dynamic2.set("persistent", dynamic2.createString(bl ? "true" : "false"));
-			dynamic2 = dynamic2.set("distance", dynamic2.createString(Integer.toString(i)));
-			Dynamic<?> dynamic3 = dynamic.emptyMap();
-			dynamic3 = dynamic3.set("Properties", dynamic2);
-			return dynamic3.set("Name", dynamic3.createString(string));
+		private Dynamic<?> createLeafProperties(Dynamic<?> tag, String name, boolean persistent, int distance) {
+			Dynamic<?> dynamic = tag.emptyMap();
+			dynamic = dynamic.set("persistent", dynamic.createString(persistent ? "true" : "false"));
+			dynamic = dynamic.set("distance", dynamic.createString(Integer.toString(distance)));
+			Dynamic<?> dynamic2 = tag.emptyMap();
+			dynamic2 = dynamic2.set("Properties", dynamic);
+			return dynamic2.set("Name", dynamic2.createString(name));
 		}
 
 		public boolean isLog(int i) {
@@ -285,30 +285,30 @@ public class LeavesFix extends DataFix {
 			return this.isLog(i) ? 0 : Integer.parseInt(((Dynamic)this.properties.get(i)).get("Properties").get("distance").asString(""));
 		}
 
-		void computeLeafStates(int i, int j, int k) {
+		void computeLeafStates(int i, int j, int distance) {
 			Dynamic<?> dynamic = (Dynamic<?>)this.properties.get(j);
 			String string = dynamic.get("Name").asString("");
 			boolean bl = Objects.equals(dynamic.get("Properties").get("persistent").asString(""), "true");
-			int l = this.computeFlags(string, bl, k);
-			if (!this.leafStates.containsKey(l)) {
-				int m = this.properties.size();
-				this.leafIndices.add(m);
-				this.leafStates.put(l, m);
-				this.properties.add(this.createLeafProperties(dynamic, string, bl, k));
+			int k = this.computeFlags(string, bl, distance);
+			if (!this.leafStates.containsKey(k)) {
+				int l = this.properties.size();
+				this.leafIndices.add(l);
+				this.leafStates.put(k, l);
+				this.properties.add(this.createLeafProperties(dynamic, string, bl, distance));
 			}
 
-			int m = this.leafStates.get(l);
-			if (1 << this.blockStateMap.getUnitSize() <= m) {
+			int l = this.leafStates.get(k);
+			if (1 << this.blockStateMap.getUnitSize() <= l) {
 				WordPackedArray wordPackedArray = new WordPackedArray(this.blockStateMap.getUnitSize() + 1, 4096);
 
-				for (int n = 0; n < 4096; n++) {
-					wordPackedArray.set(n, this.blockStateMap.get(n));
+				for (int m = 0; m < 4096; m++) {
+					wordPackedArray.set(m, this.blockStateMap.get(m));
 				}
 
 				this.blockStateMap = wordPackedArray;
 			}
 
-			this.blockStateMap.set(i, m);
+			this.blockStateMap.set(i, l);
 		}
 	}
 
@@ -316,18 +316,18 @@ public class LeavesFix extends DataFix {
 		protected static final String BLOCK_STATES_KEY = "BlockStates";
 		protected static final String NAME_KEY = "Name";
 		protected static final String PROPERTIES_KEY = "Properties";
-		private final Type<Pair<String, Dynamic<?>>> field_5695 = DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType());
-		protected final OpticFinder<List<Pair<String, Dynamic<?>>>> field_5693 = DSL.fieldFinder("Palette", DSL.list(this.field_5695));
+		private final Type<Pair<String, Dynamic<?>>> blockStateType = DSL.named(TypeReferences.BLOCK_STATE.typeName(), DSL.remainderType());
+		protected final OpticFinder<List<Pair<String, Dynamic<?>>>> paletteFinder = DSL.fieldFinder("Palette", DSL.list(this.blockStateType));
 		protected final List<Dynamic<?>> properties;
 		protected final int y;
 		@Nullable
 		protected WordPackedArray blockStateMap;
 
 		public ListFixer(Typed<?> typed, Schema schema) {
-			if (!Objects.equals(schema.getType(TypeReferences.BLOCK_STATE), this.field_5695)) {
+			if (!Objects.equals(schema.getType(TypeReferences.BLOCK_STATE), this.blockStateType)) {
 				throw new IllegalStateException("Block state type is not what was expected.");
 			} else {
-				Optional<List<Pair<String, Dynamic<?>>>> optional = typed.getOptional(this.field_5693);
+				Optional<List<Pair<String, Dynamic<?>>>> optional = typed.getOptional(this.paletteFinder);
 				this.properties = (List<Dynamic<?>>)optional.map(list -> (List)list.stream().map(Pair::getSecond).collect(Collectors.toList())).orElse(ImmutableList.of());
 				Dynamic<?> dynamic = typed.get(DSL.remainderFinder());
 				this.y = dynamic.get("Y").asInt(0);
@@ -350,7 +350,7 @@ public class LeavesFix extends DataFix {
 				? typed
 				: typed.update(DSL.remainderFinder(), dynamic -> dynamic.set("BlockStates", dynamic.createLongList(Arrays.stream(this.blockStateMap.getAlignedArray()))))
 					.set(
-						this.field_5693,
+						this.paletteFinder,
 						(List<Pair<String, Dynamic<?>>>)this.properties
 							.stream()
 							.map(dynamic -> Pair.of(TypeReferences.BLOCK_STATE.typeName(), dynamic))
@@ -366,8 +366,8 @@ public class LeavesFix extends DataFix {
 			return this.blockStateMap.get(index);
 		}
 
-		protected int computeFlags(String leafBlockName, boolean persistent, int i) {
-			return LeavesFix.LEAVES_MAP.get(leafBlockName) << 5 | (persistent ? 16 : 0) | i;
+		protected int computeFlags(String leafBlockName, boolean persistent, int distance) {
+			return LeavesFix.LEAVES_MAP.get(leafBlockName) << 5 | (persistent ? 16 : 0) | distance;
 		}
 
 		int getY() {

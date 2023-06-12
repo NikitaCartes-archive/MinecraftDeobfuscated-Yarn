@@ -1503,7 +1503,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return 0;
 	}
 
-	public void unlockCraftedRecipe(Recipe<?> recipe, List<ItemStack> ingredients) {
+	public void onRecipeCrafted(Recipe<?> recipe, List<ItemStack> ingredients) {
 	}
 
 	public void unlockRecipes(Identifier[] ids) {

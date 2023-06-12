@@ -89,9 +89,9 @@ public class DebugHud {
 	private WorldChunk chunk;
 	@Nullable
 	private CompletableFuture<WorldChunk> chunkFuture;
-	private static final int field_32191 = -65536;
-	private static final int field_32192 = -256;
-	private static final int field_32193 = -16711936;
+	private static final int METRICS_RED = -65536;
+	private static final int METRICS_YELLOW = -256;
+	private static final int METRICS_GREEN = -16711936;
 
 	public DebugHud(MinecraftClient client) {
 		this.client = client;

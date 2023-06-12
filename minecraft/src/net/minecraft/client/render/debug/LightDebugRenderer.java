@@ -23,7 +23,7 @@ import org.joml.Vector4f;
 @Environment(EnvType.CLIENT)
 public class LightDebugRenderer implements DebugRenderer.Renderer {
 	private static final Duration UPDATE_INTERVAL = Duration.ofMillis(500L);
-	private static final int field_44676 = 10;
+	private static final int RADIUS = 10;
 	private static final Vector4f READY_SHAPE_COLOR = new Vector4f(1.0F, 1.0F, 0.0F, 0.25F);
 	private static final Vector4f DEFAULT_SHAPE_COLOR = new Vector4f(0.25F, 0.125F, 0.0F, 0.125F);
 	private final MinecraftClient client;

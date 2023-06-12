@@ -10,16 +10,16 @@ import net.minecraft.util.Identifier;
  */
 @Environment(EnvType.CLIENT)
 public class PlayerSkinDrawer {
-	public static final int field_39525 = 8;
-	public static final int field_39526 = 8;
-	public static final int field_39527 = 8;
-	public static final int field_39528 = 8;
-	public static final int field_39529 = 40;
-	public static final int field_39530 = 8;
+	public static final int FACE_WIDTH = 8;
+	public static final int FACE_HEIGHT = 8;
+	public static final int FACE_X = 8;
+	public static final int FACE_Y = 8;
+	public static final int FACE_OVERLAY_X = 40;
+	public static final int FACE_OVERLAY_Y = 8;
 	public static final int field_39531 = 8;
 	public static final int field_39532 = 8;
-	public static final int field_39533 = 64;
-	public static final int field_39534 = 64;
+	public static final int SKIN_TEXTURE_WIDTH = 64;
+	public static final int SKIN_TEXTURE_HEIGHT = 64;
 
 	/**
 	 * Draws the player's head (including the hat) on GUI.

@@ -24,30 +24,30 @@ public class TicksInWrongChunkFix extends DataFix {
 		return this.fixTypeEverywhereTyped("Handle ticks saved in the wrong chunk", type, typed -> {
 			Optional<? extends Typed<?>> optional = typed.getOptionalTyped(opticFinder);
 			Optional<? extends Dynamic<?>> optional2 = optional.isPresent() ? ((Typed)optional.get()).write().result() : Optional.empty();
-			return typed.update(DSL.remainderFinder(), dynamic -> {
-				int i = dynamic.get("xPos").asInt(0);
-				int j = dynamic.get("zPos").asInt(0);
-				Optional<? extends Dynamic<?>> optional2x = dynamic.get("fluid_ticks").get().result();
-				dynamic = method_40439(dynamic, i, j, optional2, "neighbor_block_ticks");
-				return method_40439(dynamic, i, j, optional2x, "neighbor_fluid_ticks");
+			return typed.update(DSL.remainderFinder(), chunkTag -> {
+				int i = chunkTag.get("xPos").asInt(0);
+				int j = chunkTag.get("zPos").asInt(0);
+				Optional<? extends Dynamic<?>> optional2x = chunkTag.get("fluid_ticks").get().result();
+				chunkTag = putNeighborTicks(chunkTag, i, j, optional2, "neighbor_block_ticks");
+				return putNeighborTicks(chunkTag, i, j, optional2x, "neighbor_fluid_ticks");
 			});
 		});
 	}
 
-	private static Dynamic<?> method_40439(Dynamic<?> dynamic, int i, int j, Optional<? extends Dynamic<?>> optional, String string) {
-		if (optional.isPresent()) {
-			List<? extends Dynamic<?>> list = ((Dynamic)optional.get()).asStream().filter(dynamicx -> {
-				int k = dynamicx.get("x").asInt(0);
-				int l = dynamicx.get("z").asInt(0);
-				int m = Math.abs(i - (k >> 4));
-				int n = Math.abs(j - (l >> 4));
+	private static Dynamic<?> putNeighborTicks(Dynamic<?> chunkTag, int chunkX, int chunkZ, Optional<? extends Dynamic<?>> fluidTicks, String upgradeDataKey) {
+		if (fluidTicks.isPresent()) {
+			List<? extends Dynamic<?>> list = ((Dynamic)fluidTicks.get()).asStream().filter(dynamic -> {
+				int k = dynamic.get("x").asInt(0);
+				int l = dynamic.get("z").asInt(0);
+				int m = Math.abs(chunkX - (k >> 4));
+				int n = Math.abs(chunkZ - (l >> 4));
 				return (m != 0 || n != 0) && m <= 1 && n <= 1;
 			}).toList();
 			if (!list.isEmpty()) {
-				dynamic = dynamic.set("UpgradeData", dynamic.get("UpgradeData").orElseEmptyMap().set(string, dynamic.createList(list.stream())));
+				chunkTag = chunkTag.set("UpgradeData", chunkTag.get("UpgradeData").orElseEmptyMap().set(upgradeDataKey, chunkTag.createList(list.stream())));
 			}
 		}
 
-		return dynamic;
+		return chunkTag;
 	}
 }

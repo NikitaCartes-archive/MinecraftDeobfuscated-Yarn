@@ -9,10 +9,13 @@ import org.joml.Vector4f;
 
 @Environment(EnvType.CLIENT)
 public class Frustum {
-	public static final int field_34820 = 4;
+	public static final int RECESSION_SCALE = 4;
 	private final FrustumIntersection frustumIntersection = new FrustumIntersection();
-	private final Matrix4f field_40824 = new Matrix4f();
-	private Vector4f field_34821;
+	private final Matrix4f positionProjectionMatrix = new Matrix4f();
+	/**
+	 * The vector corresponding to the direction toward the far plane of the frustum.
+	 */
+	private Vector4f recession;
 	private double x;
 	private double y;
 	private double z;
@@ -22,29 +25,33 @@ public class Frustum {
 	}
 
 	public Frustum(Frustum frustum) {
-		this.frustumIntersection.set(frustum.field_40824);
-		this.field_40824.set(frustum.field_40824);
+		this.frustumIntersection.set(frustum.positionProjectionMatrix);
+		this.positionProjectionMatrix.set(frustum.positionProjectionMatrix);
 		this.x = frustum.x;
 		this.y = frustum.y;
 		this.z = frustum.z;
-		this.field_34821 = frustum.field_34821;
+		this.recession = frustum.recession;
 	}
 
-	public Frustum method_38557(int i) {
-		double d = Math.floor(this.x / (double)i) * (double)i;
-		double e = Math.floor(this.y / (double)i) * (double)i;
-		double f = Math.floor(this.z / (double)i) * (double)i;
-		double g = Math.ceil(this.x / (double)i) * (double)i;
-		double h = Math.ceil(this.y / (double)i) * (double)i;
+	/**
+	 * Moves the frustum backwards until it entirely covers the cell containing the
+	 * current position in a cubic lattice with cell size {@code boxSize}.
+	 */
+	public Frustum coverBoxAroundSetPosition(int boxSize) {
+		double d = Math.floor(this.x / (double)boxSize) * (double)boxSize;
+		double e = Math.floor(this.y / (double)boxSize) * (double)boxSize;
+		double f = Math.floor(this.z / (double)boxSize) * (double)boxSize;
+		double g = Math.ceil(this.x / (double)boxSize) * (double)boxSize;
+		double h = Math.ceil(this.y / (double)boxSize) * (double)boxSize;
 
-		for (double j = Math.ceil(this.z / (double)i) * (double)i;
+		for (double i = Math.ceil(this.z / (double)boxSize) * (double)boxSize;
 			this.frustumIntersection
-					.intersectAab((float)(d - this.x), (float)(e - this.y), (float)(f - this.z), (float)(g - this.x), (float)(h - this.y), (float)(j - this.z))
+					.intersectAab((float)(d - this.x), (float)(e - this.y), (float)(f - this.z), (float)(g - this.x), (float)(h - this.y), (float)(i - this.z))
 				!= -2;
-			this.z = this.z - (double)(this.field_34821.z() * 4.0F)
+			this.z = this.z - (double)(this.recession.z() * 4.0F)
 		) {
-			this.x = this.x - (double)(this.field_34821.x() * 4.0F);
-			this.y = this.y - (double)(this.field_34821.y() * 4.0F);
+			this.x = this.x - (double)(this.recession.x() * 4.0F);
+			this.y = this.y - (double)(this.recession.y() * 4.0F);
 		}
 
 		return this;
@@ -56,10 +63,14 @@ public class Frustum {
 		this.z = cameraZ;
 	}
 
+	/**
+	 * @implNote The upper-left 3x3 matrix of {@code positionMatrix * projectionMatrix}
+	 * should be orthogonal for {@link Frustum#recession} to be set to a meaningful value.
+	 */
 	private void init(Matrix4f positionMatrix, Matrix4f projectionMatrix) {
-		projectionMatrix.mul(positionMatrix, this.field_40824);
-		this.frustumIntersection.set(this.field_40824);
-		this.field_34821 = this.field_40824.transformTranspose(new Vector4f(0.0F, 0.0F, 1.0F, 0.0F));
+		projectionMatrix.mul(positionMatrix, this.positionProjectionMatrix);
+		this.frustumIntersection.set(this.positionProjectionMatrix);
+		this.recession = this.positionProjectionMatrix.transformTranspose(new Vector4f(0.0F, 0.0F, 1.0F, 0.0F));
 	}
 
 	public boolean isVisible(Box box) {
