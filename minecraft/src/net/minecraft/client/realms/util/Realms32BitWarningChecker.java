@@ -53,7 +53,7 @@ public class Realms32BitWarningChecker {
 				.listWorlds()
 				.servers
 				.stream()
-				.anyMatch(server -> server.ownerUUID != null && !server.expired && server.ownerUUID.equals(this.client.getSession().getUuid()));
+				.anyMatch(server -> !server.expired && this.client.uuidEquals(server.ownerUUID));
 		} catch (RealmsServiceException var2) {
 			return false;
 		}

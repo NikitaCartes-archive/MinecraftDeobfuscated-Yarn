@@ -1,34 +1,37 @@
 package net.minecraft.resource;
 
 import com.mojang.logging.LogUtils;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.resource.fs.ResourceFileSystem;
 import net.minecraft.text.Text;
 import net.minecraft.util.PathUtil;
+import net.minecraft.util.path.SymlinkEntry;
+import net.minecraft.util.path.SymlinkFinder;
+import net.minecraft.util.path.SymlinkValidationException;
 import org.slf4j.Logger;
 
 public class FileResourcePackProvider implements ResourcePackProvider {
-	private static final Logger LOGGER = LogUtils.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	private final Path packsDir;
 	private final ResourceType type;
 	private final ResourcePackSource source;
+	private final SymlinkFinder symlinkFinder;
 
-	public FileResourcePackProvider(Path packsDir, ResourceType type, ResourcePackSource source) {
+	public FileResourcePackProvider(Path packsDir, ResourceType type, ResourcePackSource source, SymlinkFinder symlinkFinder) {
 		this.packsDir = packsDir;
 		this.type = type;
 		this.source = source;
+		this.symlinkFinder = symlinkFinder;
 	}
 
 	private static String getFileName(Path path) {
@@ -41,6 +44,7 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 			PathUtil.createDirectories(this.packsDir);
 			forEachProfile(
 				this.packsDir,
+				this.symlinkFinder,
 				false,
 				(path, packFactory) -> {
 					String string = getFileName(path);
@@ -57,26 +61,36 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 		}
 	}
 
-	public static void forEachProfile(Path packsDir, boolean alwaysStable, BiConsumer<Path, ResourcePackProfile.PackFactory> consumer) throws IOException {
-		DirectoryStream<Path> directoryStream = Files.newDirectoryStream(packsDir);
+	public static void forEachProfile(Path path, SymlinkFinder symlinkFinder, boolean alwaysStable, BiConsumer<Path, ResourcePackProfile.PackFactory> consumer) throws IOException {
+		FileResourcePackProvider.PackOpenerImpl packOpenerImpl = new FileResourcePackProvider.PackOpenerImpl(symlinkFinder, alwaysStable);
+		DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path);
 
 		try {
-			for (Path path : directoryStream) {
-				ResourcePackProfile.PackFactory packFactory = getFactory(path, alwaysStable);
-				if (packFactory != null) {
-					consumer.accept(path, packFactory);
+			for (Path path2 : directoryStream) {
+				try {
+					List<SymlinkEntry> list = new ArrayList();
+					ResourcePackProfile.PackFactory packFactory = packOpenerImpl.open(path2, list);
+					if (!list.isEmpty()) {
+						LOGGER.warn("Ignoring potential pack entry: {}", SymlinkValidationException.getMessage(path2, list));
+					} else if (packFactory != null) {
+						consumer.accept(path2, packFactory);
+					} else {
+						LOGGER.info("Found non-pack entry '{}', ignoring", path2);
+					}
+				} catch (IOException var11) {
+					LOGGER.warn("Failed to read properties of '{}', ignoring", path2, var11);
 				}
 			}
-		} catch (Throwable var8) {
+		} catch (Throwable var12) {
 			if (directoryStream != null) {
 				try {
 					directoryStream.close();
-				} catch (Throwable var7) {
-					var8.addSuppressed(var7);
+				} catch (Throwable var10) {
+					var12.addSuppressed(var10);
 				}
 			}
 
-			throw var8;
+			throw var12;
 		}
 
 		if (directoryStream != null) {
@@ -84,31 +98,27 @@ public class FileResourcePackProvider implements ResourcePackProvider {
 		}
 	}
 
-	@Nullable
-	public static ResourcePackProfile.PackFactory getFactory(Path path, boolean alwaysStable) {
-		BasicFileAttributes basicFileAttributes;
-		try {
-			basicFileAttributes = Files.readAttributes(path, BasicFileAttributes.class);
-		} catch (NoSuchFileException var5) {
-			return null;
-		} catch (IOException var6) {
-			LOGGER.warn("Failed to read properties of '{}', ignoring", path, var6);
-			return null;
+	static class PackOpenerImpl extends ResourcePackOpener<ResourcePackProfile.PackFactory> {
+		private final boolean alwaysStable;
+
+		protected PackOpenerImpl(SymlinkFinder symlinkFinder, boolean alwaysStable) {
+			super(symlinkFinder);
+			this.alwaysStable = alwaysStable;
 		}
 
-		if (basicFileAttributes.isDirectory() && Files.isRegularFile(path.resolve("pack.mcmeta"), new LinkOption[0])) {
-			return name -> new DirectoryResourcePack(name, path, alwaysStable);
-		} else {
-			if (basicFileAttributes.isRegularFile() && path.getFileName().toString().endsWith(".zip")) {
-				FileSystem fileSystem = path.getFileSystem();
-				if (fileSystem == FileSystems.getDefault() || fileSystem instanceof ResourceFileSystem) {
-					File file = path.toFile();
-					return name -> new ZipResourcePack(name, file, alwaysStable);
-				}
+		@Nullable
+		protected ResourcePackProfile.PackFactory openZip(Path path) {
+			FileSystem fileSystem = path.getFileSystem();
+			if (fileSystem != FileSystems.getDefault() && !(fileSystem instanceof ResourceFileSystem)) {
+				FileResourcePackProvider.LOGGER.info("Can't open pack archive at {}", path);
+				return null;
+			} else {
+				return new ZipResourcePack.ZipBackedFactory(path, this.alwaysStable);
 			}
+		}
 
-			LOGGER.info("Found non-pack entry '{}', ignoring", path);
-			return null;
+		protected ResourcePackProfile.PackFactory openDirectory(Path path) {
+			return new DirectoryResourcePack.DirectoryBackedFactory(path, this.alwaysStable);
 		}
 	}
 }

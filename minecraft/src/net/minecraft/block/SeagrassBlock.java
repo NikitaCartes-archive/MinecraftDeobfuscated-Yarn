@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -55,7 +56,7 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 	}
 
 	@Override
-	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
 		return true;
 	}
 
@@ -81,7 +82,7 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 	}
 
 	@Override
-	public boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+	public boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
 		return false;
 	}
 

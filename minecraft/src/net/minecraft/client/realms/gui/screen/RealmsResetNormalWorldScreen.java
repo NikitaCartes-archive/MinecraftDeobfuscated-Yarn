@@ -3,16 +3,23 @@ package net.minecraft.client.realms.gui.screen;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	private static final Text RESET_SEED_TEXT = Text.translatable("mco.reset.world.seed");
+	private static final int field_45278 = 10;
+	private static final int field_45279 = 210;
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	private final Consumer<ResetWorldInfo> callback;
 	private TextFieldWidget seedEdit;
 	private RealmsWorldGeneratorType generatorType = RealmsWorldGeneratorType.DEFAULT;
@@ -26,46 +33,46 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void tick() {
-		this.seedEdit.tick();
-		super.tick();
-	}
-
-	@Override
 	public void init() {
-		this.seedEdit = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, Text.translatable("mco.reset.world.seed"));
+		this.seedEdit = new TextFieldWidget(this.textRenderer, 208, 20, Text.translatable("mco.reset.world.seed"));
 		this.seedEdit.setMaxLength(32);
-		this.addSelectableChild(this.seedEdit);
 		this.setInitialFocus(this.seedEdit);
-		this.addDrawableChild(
+		this.layout.addHeader(new TextWidget(this.title, this.textRenderer));
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical()).spacing(10);
+		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
+		DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.vertical().spacing(4));
+		directionalLayoutWidget2.add(new TextWidget(RESET_SEED_TEXT, this.textRenderer), Positioner::alignLeft);
+		directionalLayoutWidget2.add(this.seedEdit, positioner -> positioner.margin(1));
+		directionalLayoutWidget.add(
 			CyclingButtonWidget.<RealmsWorldGeneratorType>builder(RealmsWorldGeneratorType::getText)
 				.values(RealmsWorldGeneratorType.values())
 				.initially(this.generatorType)
-				.build(this.width / 2 - 102, row(4), 205, 20, Text.translatable("selectWorld.mapType"), (button, generatorType) -> this.generatorType = generatorType)
+				.build(0, 0, 210, 20, Text.translatable("selectWorld.mapType"), (button, generatorType) -> this.generatorType = generatorType)
 		);
-		this.addDrawableChild(
+		directionalLayoutWidget.add(
 			CyclingButtonWidget.onOffBuilder(this.mapFeatures)
-				.build(this.width / 2 - 102, row(6) - 2, 205, 20, Text.translatable("selectWorld.mapFeatures"), (button, mapFeatures) -> this.mapFeatures = mapFeatures)
+				.build(0, 0, 210, 20, Text.translatable("selectWorld.mapFeatures"), (button, mapFeatures) -> this.mapFeatures = mapFeatures)
 		);
-		this.addDrawableChild(
-			ButtonWidget.builder(this.parentTitle, button -> this.callback.accept(new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures)))
-				.dimensions(this.width / 2 - 102, row(12), 97, 20)
-				.build()
-		);
-		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.width / 2 + 8, row(12), 97, 20).build());
+		DirectionalLayoutWidget directionalLayoutWidget3 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(10));
+		directionalLayoutWidget3.add(ButtonWidget.builder(this.parentTitle, button -> this.callback.accept(this.createResetWorldInfo())).build());
+		directionalLayoutWidget3.add(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).build());
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
+		});
+		this.initTabNavigation();
+	}
+
+	private ResetWorldInfo createResetWorldInfo() {
+		return new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures);
+	}
+
+	@Override
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
 	}
 
 	@Override
 	public void close() {
 		this.callback.accept(null);
-	}
-
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, 16777215);
-		context.drawText(this.textRenderer, RESET_SEED_TEXT, this.width / 2 - 100, row(1), 10526880, false);
-		this.seedEdit.render(context, mouseX, mouseY, delta);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

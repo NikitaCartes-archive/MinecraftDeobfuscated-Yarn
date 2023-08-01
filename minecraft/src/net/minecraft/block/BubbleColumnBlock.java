@@ -1,7 +1,9 @@
 package net.minecraft.block;
 
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
@@ -183,7 +185,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
+	public ItemStack tryDrainFluid(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 		return new ItemStack(Items.WATER_BUCKET);
 	}

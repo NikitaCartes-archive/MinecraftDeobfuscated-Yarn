@@ -1,6 +1,5 @@
 package net.minecraft.network;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -31,7 +30,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.PublicKey;
 import java.time.Instant;
 import java.util.Arrays;
@@ -47,13 +45,18 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.ToIntFunction;
 import javax.annotation.Nullable;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtEnd;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtTagSizeTracker;
+import net.minecraft.network.encoding.StringEncoding;
+import net.minecraft.network.encoding.VarInts;
+import net.minecraft.network.encoding.VarLongs;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.registry.Registries;
@@ -89,13 +92,16 @@ import org.joml.Vector3f;
  *  <th><b>Object Type</b></th> <th><b>read method</b></th> <th><b>write method</b></th>
  * </tr>
  * <tr>
- *  <td>Codec-based (NBT)</td><td>{@link #decode(DynamicOps, Codec)}</td><td>{@link #encode(DynamicOps, Codec, Object)}</td>
+ *  <td>Codec-based (NBT)</td><td>{@link #decode(DynamicOps, Codec, NbtTagSizeTracker)}</td><td>{@link #encode(DynamicOps, Codec, Object)}</td>
  * </tr>
  * <tr>
  *  <td>Codec-based (JSON)</td><td>{@link #decodeAsJson(Codec)}</td><td>{@link #encodeAsJson(Codec, Object)}</td>
  * </tr>
  * <tr>
  *  <td>{@link net.minecraft.registry.Registry} value</td><td>{@link #readRegistryValue(IndexedIterable)}</td><td>{@link #writeRegistryValue(IndexedIterable, Object)}</td>
+ * </tr>
+ * <tr>
+ *  <td>Integer-identified value</td><td>{@link #decode(IntFunction)}</td><td>{@link #encode(ToIntFunction, Object)}</td>
  * </tr>
  * <tr>
  *  <td>{@link Collection}</td><td>{@link #readCollection(IntFunction, PacketByteBuf.PacketReader)}</td><td>{@link #writeCollection(Collection, PacketByteBuf.PacketWriter)}</td>
@@ -132,6 +138,9 @@ import org.joml.Vector3f;
  * </tr>
  * <tr>
  *  <td>{@link Vector3f}</td><td>{@link #readVector3f()}</td><td>{@link #writeVector3f(Vector3f)}</td>
+ * </tr>
+ * <tr>
+ *  <td>{@link Vec3d}</td><td>{@link #readVec3d()}</td><td>{@link #writeVec3d(Vec3d)}</td>
  * </tr>
  * <tr>
  *  <td>{@link Quaternionf}</td><td>{@link #readQuaternionf()}</td><td>{@link #writeQuaternionf(Quaternionf)}</td>
@@ -176,6 +185,9 @@ import org.joml.Vector3f;
  *  <td>{@link RegistryKey}</td><td>{@link #readRegistryKey(RegistryKey)}</td><td>{@link #writeRegistryKey(RegistryKey)}</td>
  * </tr>
  * <tr>
+ *  <td>{@link RegistryKey} of a registry</td><td>{@link #readRegistryRef()}</td><td>{@link #writeRegistryKey(RegistryKey)}</td>
+ * </tr>
+ * <tr>
  *  <td>{@link Date}</td><td>{@link #readDate()}</td><td>{@link #writeDate(Date)}</td>
  * </tr>
  * <tr>
@@ -206,22 +218,6 @@ import org.joml.Vector3f;
  * not enough space to write.
  */
 public class PacketByteBuf extends ByteBuf {
-	/**
-	 * The max number of bytes an encoded var int value may use.
-	 * 
-	 * <p>Its value is {@value}. A regular int value always use 4 bytes in contrast.
-	 * 
-	 * @see #getVarIntLength(int)
-	 */
-	private static final int MAX_VAR_INT_LENGTH = 5;
-	/**
-	 * The max number of bytes an encoded var long value may use.
-	 * 
-	 * <p>Its value is {@value}. A regular long value always use 8 bytes in contrast.
-	 * 
-	 * @see #getVarLongLength(long)
-	 */
-	private static final int MAX_VAR_LONG_LENGTH = 10;
 	/**
 	 * The maximum size, in number of bytes, allowed of the NBT compound read by
 	 * {@link #readNbt()}.
@@ -256,41 +252,17 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	/**
-	 * Returns the number of bytes needed to encode {@code value} as a
-	 * {@linkplain #writeVarInt(int) var int}. Guaranteed to be between {@code
-	 * 1} and {@value #MAX_VAR_INT_LENGTH}.
+	 * Reads an object from this buf as a compound NBT with the given codec.
 	 * 
-	 * @return the number of bytes a var int {@code value} uses
-	 * 
-	 * @param value the value to encode
+	 * @param <T> the decoded object's type
+	 * @return the read object
+	 * @throws io.netty.handler.codec.EncoderException if the {@code codec} fails
+	 * to decode the compound NBT
+	 * @see #encode(DynamicOps, Codec, Object)
 	 */
-	public static int getVarIntLength(int value) {
-		for (int i = 1; i < MAX_VAR_INT_LENGTH; i++) {
-			if ((value & -1 << i * 7) == 0) {
-				return i;
-			}
-		}
-
-		return MAX_VAR_INT_LENGTH;
-	}
-
-	/**
-	 * Returns the number of bytes needed to encode {@code value} as a
-	 * {@linkplain #writeVarLong(int) var long}. Guaranteed to be between {@code
-	 * 1} and {@value #MAX_VAR_LONG_LENGTH}.
-	 * 
-	 * @return the number of bytes a var long {@code value} uses
-	 * 
-	 * @param value the value to encode
-	 */
-	public static int getVarLongLength(long value) {
-		for (int i = 1; i < MAX_VAR_LONG_LENGTH; i++) {
-			if ((value & -1L << i * 7) == 0L) {
-				return i;
-			}
-		}
-
-		return MAX_VAR_LONG_LENGTH;
+	@Deprecated
+	public <T> T decode(DynamicOps<NbtElement> ops, Codec<T> codec) {
+		return this.decode(ops, codec, NbtTagSizeTracker.EMPTY);
 	}
 
 	/**
@@ -303,9 +275,9 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #encode(DynamicOps, Codec, Object)
 	 */
 	@Deprecated
-	public <T> T decode(DynamicOps<NbtElement> ops, Codec<T> codec) {
-		NbtCompound nbtCompound = this.readUnlimitedNbt();
-		return Util.getResult(codec.parse(ops, nbtCompound), error -> new DecoderException("Failed to decode: " + error + " " + nbtCompound));
+	public <T> T decode(DynamicOps<NbtElement> ops, Codec<T> codec, NbtTagSizeTracker sizeTracker) {
+		NbtElement nbtElement = this.readNbt(sizeTracker);
+		return Util.getResult(codec.parse(ops, nbtElement), error -> new DecoderException("Failed to decode: " + error + " " + nbtElement));
 	}
 
 	/**
@@ -314,12 +286,13 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param <T> the encoded object's type
 	 * @throws io.netty.handler.codec.EncoderException if the {@code codec} fails
 	 * to encode the compound NBT
-	 * @see #decode(DynamicOps, Codec)
+	 * @see #decode(DynamicOps, Codec, NbtTagSizeTracker)
 	 */
 	@Deprecated
-	public <T> void encode(DynamicOps<NbtElement> ops, Codec<T> codec, T value) {
+	public <T> PacketByteBuf encode(DynamicOps<NbtElement> ops, Codec<T> codec, T value) {
 		NbtElement nbtElement = Util.getResult(codec.encodeStart(ops, value), error -> new EncoderException("Failed to encode: " + error + " " + value));
-		this.writeNbt((NbtCompound)nbtElement);
+		this.writeNbt(nbtElement);
+		return this;
 	}
 
 	/**
@@ -939,18 +912,6 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	/**
-	 * Returns an array of bytes of contents in this buf between index {@code 0} and
-	 * the {@link #writerIndex()}.
-	 */
-	@VisibleForTesting
-	public byte[] getWrittenBytes() {
-		int i = this.writerIndex();
-		byte[] bs = new byte[i];
-		this.getBytes(0, bs);
-		return bs;
-	}
-
-	/**
 	 * Reads a block position from this buf. A block position is represented by
 	 * a regular long.
 	 * 
@@ -1097,6 +1058,28 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	/**
+	 * Reads a {@link Vec3d} from this buf. A {@link Vec3d} is represented
+	 * by four {@code double}s.
+	 * 
+	 * @see #writeVec3d(Vec3d)
+	 */
+	public Vec3d readVec3d() {
+		return new Vec3d(this.readDouble(), this.readDouble(), this.readDouble());
+	}
+
+	/**
+	 * Writes a {@link Vec3d} to this buf. A {@link Vec3d} is represented
+	 * by four {@code double}s.
+	 * 
+	 * @see #readVec3d()
+	 */
+	public void writeVec3d(Vec3d vec) {
+		this.writeDouble(vec.getX());
+		this.writeDouble(vec.getY());
+		this.writeDouble(vec.getZ());
+	}
+
+	/**
 	 * Reads a text from this buf. A text is represented by a JSON string with
 	 * max length {@value #MAX_TEXT_LENGTH}.
 	 * 
@@ -1158,25 +1141,39 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	/**
+	 * Reads a {@linkplain #readVarInt var int} representing an ID, then
+	 * returns the value converted by {@code idToValue}.
+	 * 
+	 * @see #encode(ToIntFunction, Object)
+	 * 
+	 * @param idToValue a function that gets the value from the integer ID
+	 */
+	public <T> T decode(IntFunction<T> idToValue) {
+		int i = this.readVarInt();
+		return (T)idToValue.apply(i);
+	}
+
+	/**
+	 * Converts {@code value} to an integer representing its ID, then
+	 * writes a {@linkplain #readVarInt var int} representation of such ID.
+	 * 
+	 * @see #decode(IntFunction)
+	 * 
+	 * @param valueToId a function that gets the value's integer ID
+	 */
+	public <T> PacketByteBuf encode(ToIntFunction<T> valueToId, T value) {
+		int i = valueToId.applyAsInt(value);
+		return this.writeVarInt(i);
+	}
+
+	/**
 	 * Reads a single var int from this buf.
 	 * 
 	 * @return the value read
 	 * @see #writeVarInt(int)
 	 */
 	public int readVarInt() {
-		int i = 0;
-		int j = 0;
-
-		byte b;
-		do {
-			b = this.readByte();
-			i |= (b & 127) << j++ * 7;
-			if (j > 5) {
-				throw new RuntimeException("VarInt too big");
-			}
-		} while ((b & 128) == 128);
-
-		return i;
+		return VarInts.read(this.parent);
 	}
 
 	/**
@@ -1186,19 +1183,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #writeVarLong(long)
 	 */
 	public long readVarLong() {
-		long l = 0L;
-		int i = 0;
-
-		byte b;
-		do {
-			b = this.readByte();
-			l |= (long)(b & 127) << i++ * 7;
-			if (i > 10) {
-				throw new RuntimeException("VarLong too big");
-			}
-		} while ((b & 128) == 128);
-
-		return l;
+		return VarLongs.read(this.parent);
 	}
 
 	/**
@@ -1236,17 +1221,12 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @return this buf, for chaining
 	 * @see #readVarInt()
-	 * @see #getVarIntLength(int)
+	 * @see net.minecraft.network.encoding.VarInts
 	 * 
 	 * @param value the value to write
 	 */
 	public PacketByteBuf writeVarInt(int value) {
-		while ((value & -128) != 0) {
-			this.writeByte(value & 127 | 128);
-			value >>>= 7;
-		}
-
-		this.writeByte(value);
+		VarInts.write(this.parent, value);
 		return this;
 	}
 
@@ -1258,46 +1238,37 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @return this buf, for chaining
 	 * @see #readVarLong()
-	 * @see #getVarLongLength(long)
+	 * @see net.minecraft.network.encoding.VarLong
 	 * 
 	 * @param value the value to write
 	 */
 	public PacketByteBuf writeVarLong(long value) {
-		while ((value & -128L) != 0L) {
-			this.writeByte((int)(value & 127L) | 128);
-			value >>>= 7;
-		}
-
-		this.writeByte((int)value);
+		VarLongs.write(this.parent, value);
 		return this;
 	}
 
 	/**
-	 * Writes an NBT compound to this buf. The binary representation of NBT is
-	 * handled by {@link net.minecraft.nbt.NbtIo}. If {@code compound} is {@code
+	 * Writes an NBT element to this buf. The binary representation of NBT is
+	 * handled by {@link net.minecraft.nbt.NbtIo}. If {@code nbt} is {@code
 	 * null}, it is treated as an NBT null.
 	 * 
 	 * @return this buf, for chaining
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be
 	 * written
 	 * @see #readNbt()
-	 * @see #readUnlimitedNbt()
 	 * @see #readNbt(NbtTagSizeTracker)
-	 * 
-	 * @param compound the compound to write
 	 */
-	public PacketByteBuf writeNbt(@Nullable NbtCompound compound) {
-		if (compound == null) {
-			this.writeByte(0);
-		} else {
-			try {
-				NbtIo.write(compound, new ByteBufOutputStream(this));
-			} catch (IOException var3) {
-				throw new EncoderException(var3);
-			}
+	public PacketByteBuf writeNbt(@Nullable NbtElement nbt) {
+		if (nbt == null) {
+			nbt = NbtEnd.INSTANCE;
 		}
 
-		return this;
+		try {
+			NbtIo.writeForPacket(nbt, new ByteBufOutputStream(this));
+			return this;
+		} catch (IOException var3) {
+			throw new EncoderException(var3);
+		}
 	}
 
 	/**
@@ -1306,65 +1277,45 @@ public class PacketByteBuf extends ByteBuf {
 	 * this method returns {@code null}. The compound can have a maximum size of
 	 * {@value #MAX_READ_NBT_SIZE} bytes.
 	 * 
+	 * <p>Note that unlike {@link #readNbt(NbtTagSizeTracker)}, this can only
+	 * read compounds.
+	 * 
 	 * @return the read compound, may be {@code null}
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
 	 * @throws RuntimeException if the compound exceeds the allowed maximum size
 	 * @see #writeNbt(NbtCompound)
-	 * @see #readUnlimitedNbt()
 	 * @see #readNbt(NbtTagSizeTracker)
 	 * @see #MAX_READ_NBT_SIZE
 	 */
 	@Nullable
 	public NbtCompound readNbt() {
-		return this.readNbt(new NbtTagSizeTracker(2097152L));
+		NbtElement nbtElement = this.readNbt(new NbtTagSizeTracker(2097152L));
+		if (nbtElement != null && !(nbtElement instanceof NbtCompound)) {
+			throw new DecoderException("Not a compound tag: " + nbtElement);
+		} else {
+			return (NbtCompound)nbtElement;
+		}
 	}
 
 	/**
-	 * Reads an NBT compound from this buf. The binary representation of NBT is
+	 * Reads an NBT element from this buf. The binary representation of NBT is
 	 * handled by {@link net.minecraft.nbt.NbtIo}. If an NBT null is encountered,
-	 * this method returns {@code null}. The compound does not have a size limit.
-	 * 
-	 * @apiNote Since this version does not have a size limit, it may be
-	 * vulnerable to malicious NBT spam attacks.
-	 * 
-	 * @return the read compound, may be {@code null}
-	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
-	 * @see #writeNbt(NbtCompound)
-	 * @see #readNbt()
-	 * @see #readNbt(NbtTagSizeTracker)
-	 */
-	@Nullable
-	public NbtCompound readUnlimitedNbt() {
-		return this.readNbt(NbtTagSizeTracker.EMPTY);
-	}
-
-	/**
-	 * Reads an NBT compound from this buf. The binary representation of NBT is
-	 * handled by {@link net.minecraft.nbt.NbtIo}. If an NBT null is encountered,
-	 * this method returns {@code null}. The compound can have a maximum size
+	 * this method returns {@code null}. The element can have a maximum size
 	 * controlled by the {@code sizeTracker}.
 	 * 
-	 * @return the read compound, may be {@code null}
+	 * @return the read element, may be {@code null}
 	 * @throws io.netty.handler.codec.EncoderException if the NBT cannot be read
-	 * @throws RuntimeException if the compound exceeds the allowed maximum size
-	 * @see #writeNbt(NbtCompound)
+	 * @throws RuntimeException if the element exceeds the allowed maximum size
+	 * @see #writeNbt(NbtElement)
 	 * @see #readNbt()
-	 * @see #readUnlimitedNbt()
 	 */
 	@Nullable
-	public NbtCompound readNbt(NbtTagSizeTracker sizeTracker) {
-		int i = this.readerIndex();
-		byte b = this.readByte();
-		if (b == 0) {
-			return null;
-		} else {
-			this.readerIndex(i);
-
-			try {
-				return NbtIo.read(new ByteBufInputStream(this), sizeTracker);
-			} catch (IOException var5) {
-				throw new EncoderException(var5);
-			}
+	public NbtElement readNbt(NbtTagSizeTracker sizeTracker) {
+		try {
+			NbtElement nbtElement = NbtIo.read(new ByteBufInputStream(this), sizeTracker);
+			return nbtElement.getType() == 0 ? null : nbtElement;
+		} catch (IOException var3) {
+			throw new EncoderException(var3);
 		}
 	}
 
@@ -1449,21 +1400,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * @param maxLength the maximum length of the string read
 	 */
 	public String readString(int maxLength) {
-		int i = toEncodedStringLength(maxLength);
-		int j = this.readVarInt();
-		if (j > i) {
-			throw new DecoderException("The received encoded string buffer length is longer than maximum allowed (" + j + " > " + i + ")");
-		} else if (j < 0) {
-			throw new DecoderException("The received encoded string buffer length is less than zero! Weird string!");
-		} else {
-			String string = this.toString(this.readerIndex(), j, StandardCharsets.UTF_8);
-			this.readerIndex(this.readerIndex() + j);
-			if (string.length() > maxLength) {
-				throw new DecoderException("The received string length is longer than maximum allowed (" + string.length() + " > " + maxLength + ")");
-			} else {
-				return string;
-			}
-		}
+		return StringEncoding.decode(this.parent, maxLength);
 	}
 
 	/**
@@ -1496,27 +1433,11 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readString(int)
 	 * @see #writeString(String)
 	 * 
-	 * @param string the string to write
 	 * @param maxLength the max length of the byte array
 	 */
 	public PacketByteBuf writeString(String string, int maxLength) {
-		if (string.length() > maxLength) {
-			throw new EncoderException("String too big (was " + string.length() + " characters, max " + maxLength + ")");
-		} else {
-			byte[] bs = string.getBytes(StandardCharsets.UTF_8);
-			int i = toEncodedStringLength(maxLength);
-			if (bs.length > i) {
-				throw new EncoderException("String too big (was " + bs.length + " bytes encoded, max " + i + ")");
-			} else {
-				this.writeVarInt(bs.length);
-				this.writeBytes(bs);
-				return this;
-			}
-		}
-	}
-
-	private static int toEncodedStringLength(int decodedLength) {
-		return decodedLength * 3;
+		StringEncoding.encode(this.parent, string, maxLength);
+		return this;
 	}
 
 	/**
@@ -1572,6 +1493,23 @@ public class PacketByteBuf extends ByteBuf {
 	 */
 	public void writeRegistryKey(RegistryKey<?> key) {
 		this.writeIdentifier(key.getValue());
+	}
+
+	/**
+	 * Reads a registry key referencing another registry key from this buf.
+	 * Such key is represented by its {@linkplain #readIdentifier value as an identifier}.
+	 * 
+	 * <p>This is the same as {@code readRegistryKey(Registries.ROOT)}.
+	 * To read a registry key of a registered object (such as biomes),
+	 * use {@link #readRegistryKey(RegistryKey)}.
+	 * 
+	 * @return the read registry key
+	 * @see #readRegistryKey(RegistryKey)
+	 * @see #writeRegistryKey(RegistryKey)
+	 */
+	public <T> RegistryKey<? extends Registry<T>> readRegistryRefKey() {
+		Identifier identifier = this.readIdentifier();
+		return RegistryKey.ofRegistry(identifier);
 	}
 
 	/**
@@ -1781,7 +1719,7 @@ public class PacketByteBuf extends ByteBuf {
 		PropertyMap propertyMap = new PropertyMap();
 		this.forEachInCollection(buf -> {
 			Property property = this.readProperty();
-			propertyMap.put(property.getName(), property);
+			propertyMap.put(property.name(), property);
 		});
 		return propertyMap;
 	}
@@ -1808,12 +1746,8 @@ public class PacketByteBuf extends ByteBuf {
 	public Property readProperty() {
 		String string = this.readString();
 		String string2 = this.readString();
-		if (this.readBoolean()) {
-			String string3 = this.readString();
-			return new Property(string, string2, string3);
-		} else {
-			return new Property(string, string2);
-		}
+		String string3 = this.readNullable(PacketByteBuf::readString);
+		return new Property(string, string2, string3);
 	}
 
 	/**
@@ -1825,14 +1759,19 @@ public class PacketByteBuf extends ByteBuf {
 	 * @see #readProperty()
 	 */
 	public void writeProperty(Property property) {
-		this.writeString(property.getName());
-		this.writeString(property.getValue());
-		if (property.hasSignature()) {
-			this.writeBoolean(true);
-			this.writeString(property.getSignature());
-		} else {
-			this.writeBoolean(false);
-		}
+		this.writeString(property.name());
+		this.writeString(property.value());
+		this.writeNullable(property.signature(), PacketByteBuf::writeString);
+	}
+
+	@Override
+	public boolean isContiguous() {
+		return this.parent.isContiguous();
+	}
+
+	@Override
+	public int maxFastWritableBytes() {
+		return this.parent.maxFastWritableBytes();
 	}
 
 	@Override
@@ -1840,9 +1779,9 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.capacity();
 	}
 
-	@Override
-	public ByteBuf capacity(int capacity) {
-		return this.parent.capacity(capacity);
+	public PacketByteBuf capacity(int i) {
+		this.parent.capacity(i);
+		return this;
 	}
 
 	@Override
@@ -1867,7 +1806,7 @@ public class PacketByteBuf extends ByteBuf {
 
 	@Override
 	public ByteBuf unwrap() {
-		return this.parent.unwrap();
+		return this.parent;
 	}
 
 	@Override
@@ -1890,9 +1829,9 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.readerIndex();
 	}
 
-	@Override
-	public ByteBuf readerIndex(int index) {
-		return this.parent.readerIndex(index);
+	public PacketByteBuf readerIndex(int i) {
+		this.parent.readerIndex(i);
+		return this;
 	}
 
 	@Override
@@ -1900,14 +1839,14 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.writerIndex();
 	}
 
-	@Override
-	public ByteBuf writerIndex(int index) {
-		return this.parent.writerIndex(index);
+	public PacketByteBuf writerIndex(int i) {
+		this.parent.writerIndex(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setIndex(int readerIndex, int writerIndex) {
-		return this.parent.setIndex(readerIndex, writerIndex);
+	public PacketByteBuf setIndex(int i, int j) {
+		this.parent.setIndex(i, j);
+		return this;
 	}
 
 	@Override
@@ -1945,44 +1884,44 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.isWritable(size);
 	}
 
-	@Override
-	public ByteBuf clear() {
-		return this.parent.clear();
+	public PacketByteBuf clear() {
+		this.parent.clear();
+		return this;
 	}
 
-	@Override
-	public ByteBuf markReaderIndex() {
-		return this.parent.markReaderIndex();
+	public PacketByteBuf markReaderIndex() {
+		this.parent.markReaderIndex();
+		return this;
 	}
 
-	@Override
-	public ByteBuf resetReaderIndex() {
-		return this.parent.resetReaderIndex();
+	public PacketByteBuf resetReaderIndex() {
+		this.parent.resetReaderIndex();
+		return this;
 	}
 
-	@Override
-	public ByteBuf markWriterIndex() {
-		return this.parent.markWriterIndex();
+	public PacketByteBuf markWriterIndex() {
+		this.parent.markWriterIndex();
+		return this;
 	}
 
-	@Override
-	public ByteBuf resetWriterIndex() {
-		return this.parent.resetWriterIndex();
+	public PacketByteBuf resetWriterIndex() {
+		this.parent.resetWriterIndex();
+		return this;
 	}
 
-	@Override
-	public ByteBuf discardReadBytes() {
-		return this.parent.discardReadBytes();
+	public PacketByteBuf discardReadBytes() {
+		this.parent.discardReadBytes();
+		return this;
 	}
 
-	@Override
-	public ByteBuf discardSomeReadBytes() {
-		return this.parent.discardSomeReadBytes();
+	public PacketByteBuf discardSomeReadBytes() {
+		this.parent.discardSomeReadBytes();
+		return this;
 	}
 
-	@Override
-	public ByteBuf ensureWritable(int minBytes) {
-		return this.parent.ensureWritable(minBytes);
+	public PacketByteBuf ensureWritable(int i) {
+		this.parent.ensureWritable(i);
+		return this;
 	}
 
 	@Override
@@ -2090,39 +2029,39 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.getDouble(index);
 	}
 
-	@Override
-	public ByteBuf getBytes(int index, ByteBuf buf) {
-		return this.parent.getBytes(index, buf);
+	public PacketByteBuf getBytes(int i, ByteBuf byteBuf) {
+		this.parent.getBytes(i, byteBuf);
+		return this;
 	}
 
-	@Override
-	public ByteBuf getBytes(int index, ByteBuf buf, int length) {
-		return this.parent.getBytes(index, buf, length);
+	public PacketByteBuf getBytes(int i, ByteBuf byteBuf, int j) {
+		this.parent.getBytes(i, byteBuf, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf getBytes(int index, ByteBuf buf, int outputIndex, int length) {
-		return this.parent.getBytes(index, buf, outputIndex, length);
+	public PacketByteBuf getBytes(int i, ByteBuf byteBuf, int j, int k) {
+		this.parent.getBytes(i, byteBuf, j, k);
+		return this;
 	}
 
-	@Override
-	public ByteBuf getBytes(int index, byte[] bytes) {
-		return this.parent.getBytes(index, bytes);
+	public PacketByteBuf getBytes(int i, byte[] bs) {
+		this.parent.getBytes(i, bs);
+		return this;
 	}
 
-	@Override
-	public ByteBuf getBytes(int index, byte[] bytes, int outputIndex, int length) {
-		return this.parent.getBytes(index, bytes, outputIndex, length);
+	public PacketByteBuf getBytes(int i, byte[] bs, int j, int k) {
+		this.parent.getBytes(i, bs, j, k);
+		return this;
 	}
 
-	@Override
-	public ByteBuf getBytes(int index, ByteBuffer buf) {
-		return this.parent.getBytes(index, buf);
+	public PacketByteBuf getBytes(int i, ByteBuffer byteBuffer) {
+		this.parent.getBytes(i, byteBuffer);
+		return this;
 	}
 
-	@Override
-	public ByteBuf getBytes(int index, OutputStream stream, int length) throws IOException {
-		return this.parent.getBytes(index, stream, length);
+	public PacketByteBuf getBytes(int i, OutputStream outputStream, int j) throws IOException {
+		this.parent.getBytes(i, outputStream, j);
+		return this;
 	}
 
 	@Override
@@ -2140,99 +2079,99 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.getCharSequence(index, length, charset);
 	}
 
-	@Override
-	public ByteBuf setBoolean(int index, boolean value) {
-		return this.parent.setBoolean(index, value);
+	public PacketByteBuf setBoolean(int i, boolean bl) {
+		this.parent.setBoolean(i, bl);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setByte(int index, int value) {
-		return this.parent.setByte(index, value);
+	public PacketByteBuf setByte(int i, int j) {
+		this.parent.setByte(i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setShort(int index, int value) {
-		return this.parent.setShort(index, value);
+	public PacketByteBuf setShort(int i, int j) {
+		this.parent.setShort(i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setShortLE(int index, int value) {
-		return this.parent.setShortLE(index, value);
+	public PacketByteBuf setShortLE(int i, int j) {
+		this.parent.setShortLE(i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setMedium(int index, int value) {
-		return this.parent.setMedium(index, value);
+	public PacketByteBuf setMedium(int i, int j) {
+		this.parent.setMedium(i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setMediumLE(int index, int value) {
-		return this.parent.setMediumLE(index, value);
+	public PacketByteBuf setMediumLE(int i, int j) {
+		this.parent.setMediumLE(i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setInt(int index, int value) {
-		return this.parent.setInt(index, value);
+	public PacketByteBuf setInt(int i, int j) {
+		this.parent.setInt(i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setIntLE(int index, int value) {
-		return this.parent.setIntLE(index, value);
+	public PacketByteBuf setIntLE(int i, int j) {
+		this.parent.setIntLE(i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setLong(int index, long value) {
-		return this.parent.setLong(index, value);
+	public PacketByteBuf setLong(int i, long l) {
+		this.parent.setLong(i, l);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setLongLE(int index, long value) {
-		return this.parent.setLongLE(index, value);
+	public PacketByteBuf setLongLE(int i, long l) {
+		this.parent.setLongLE(i, l);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setChar(int index, int value) {
-		return this.parent.setChar(index, value);
+	public PacketByteBuf setChar(int i, int j) {
+		this.parent.setChar(i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setFloat(int index, float value) {
-		return this.parent.setFloat(index, value);
+	public PacketByteBuf setFloat(int i, float f) {
+		this.parent.setFloat(i, f);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setDouble(int index, double value) {
-		return this.parent.setDouble(index, value);
+	public PacketByteBuf setDouble(int i, double d) {
+		this.parent.setDouble(i, d);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setBytes(int index, ByteBuf buf) {
-		return this.parent.setBytes(index, buf);
+	public PacketByteBuf setBytes(int i, ByteBuf byteBuf) {
+		this.parent.setBytes(i, byteBuf);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setBytes(int index, ByteBuf buf, int length) {
-		return this.parent.setBytes(index, buf, length);
+	public PacketByteBuf setBytes(int i, ByteBuf byteBuf, int j) {
+		this.parent.setBytes(i, byteBuf, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setBytes(int index, ByteBuf buf, int sourceIndex, int length) {
-		return this.parent.setBytes(index, buf, sourceIndex, length);
+	public PacketByteBuf setBytes(int i, ByteBuf byteBuf, int j, int k) {
+		this.parent.setBytes(i, byteBuf, j, k);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setBytes(int index, byte[] bytes) {
-		return this.parent.setBytes(index, bytes);
+	public PacketByteBuf setBytes(int i, byte[] bs) {
+		this.parent.setBytes(i, bs);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setBytes(int index, byte[] bytes, int sourceIndex, int length) {
-		return this.parent.setBytes(index, bytes, sourceIndex, length);
+	public PacketByteBuf setBytes(int i, byte[] bs, int j, int k) {
+		this.parent.setBytes(i, bs, j, k);
+		return this;
 	}
 
-	@Override
-	public ByteBuf setBytes(int index, ByteBuffer buf) {
-		return this.parent.setBytes(index, buf);
+	public PacketByteBuf setBytes(int i, ByteBuffer byteBuffer) {
+		this.parent.setBytes(i, byteBuffer);
+		return this;
 	}
 
 	@Override
@@ -2250,9 +2189,9 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.setBytes(index, channel, pos, length);
 	}
 
-	@Override
-	public ByteBuf setZero(int index, int length) {
-		return this.parent.setZero(index, length);
+	public PacketByteBuf setZero(int i, int j) {
+		this.parent.setZero(i, j);
+		return this;
 	}
 
 	@Override
@@ -2375,39 +2314,39 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.readRetainedSlice(length);
 	}
 
-	@Override
-	public ByteBuf readBytes(ByteBuf buf) {
-		return this.parent.readBytes(buf);
+	public PacketByteBuf readBytes(ByteBuf byteBuf) {
+		this.parent.readBytes(byteBuf);
+		return this;
 	}
 
-	@Override
-	public ByteBuf readBytes(ByteBuf buf, int length) {
-		return this.parent.readBytes(buf, length);
+	public PacketByteBuf readBytes(ByteBuf byteBuf, int i) {
+		this.parent.readBytes(byteBuf, i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf readBytes(ByteBuf buf, int outputIndex, int length) {
-		return this.parent.readBytes(buf, outputIndex, length);
+	public PacketByteBuf readBytes(ByteBuf byteBuf, int i, int j) {
+		this.parent.readBytes(byteBuf, i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf readBytes(byte[] bytes) {
-		return this.parent.readBytes(bytes);
+	public PacketByteBuf readBytes(byte[] bs) {
+		this.parent.readBytes(bs);
+		return this;
 	}
 
-	@Override
-	public ByteBuf readBytes(byte[] bytes, int outputIndex, int length) {
-		return this.parent.readBytes(bytes, outputIndex, length);
+	public PacketByteBuf readBytes(byte[] bs, int i, int j) {
+		this.parent.readBytes(bs, i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf readBytes(ByteBuffer buf) {
-		return this.parent.readBytes(buf);
+	public PacketByteBuf readBytes(ByteBuffer byteBuffer) {
+		this.parent.readBytes(byteBuffer);
+		return this;
 	}
 
-	@Override
-	public ByteBuf readBytes(OutputStream stream, int length) throws IOException {
-		return this.parent.readBytes(stream, length);
+	public PacketByteBuf readBytes(OutputStream outputStream, int i) throws IOException {
+		this.parent.readBytes(outputStream, i);
+		return this;
 	}
 
 	@Override
@@ -2425,104 +2364,104 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.readBytes(channel, pos, length);
 	}
 
-	@Override
-	public ByteBuf skipBytes(int length) {
-		return this.parent.skipBytes(length);
+	public PacketByteBuf skipBytes(int i) {
+		this.parent.skipBytes(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeBoolean(boolean value) {
-		return this.parent.writeBoolean(value);
+	public PacketByteBuf writeBoolean(boolean bl) {
+		this.parent.writeBoolean(bl);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeByte(int value) {
-		return this.parent.writeByte(value);
+	public PacketByteBuf writeByte(int i) {
+		this.parent.writeByte(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeShort(int value) {
-		return this.parent.writeShort(value);
+	public PacketByteBuf writeShort(int i) {
+		this.parent.writeShort(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeShortLE(int value) {
-		return this.parent.writeShortLE(value);
+	public PacketByteBuf writeShortLE(int i) {
+		this.parent.writeShortLE(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeMedium(int value) {
-		return this.parent.writeMedium(value);
+	public PacketByteBuf writeMedium(int i) {
+		this.parent.writeMedium(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeMediumLE(int value) {
-		return this.parent.writeMediumLE(value);
+	public PacketByteBuf writeMediumLE(int i) {
+		this.parent.writeMediumLE(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeInt(int value) {
-		return this.parent.writeInt(value);
+	public PacketByteBuf writeInt(int i) {
+		this.parent.writeInt(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeIntLE(int value) {
-		return this.parent.writeIntLE(value);
+	public PacketByteBuf writeIntLE(int i) {
+		this.parent.writeIntLE(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeLong(long value) {
-		return this.parent.writeLong(value);
+	public PacketByteBuf writeLong(long l) {
+		this.parent.writeLong(l);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeLongLE(long value) {
-		return this.parent.writeLongLE(value);
+	public PacketByteBuf writeLongLE(long l) {
+		this.parent.writeLongLE(l);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeChar(int value) {
-		return this.parent.writeChar(value);
+	public PacketByteBuf writeChar(int i) {
+		this.parent.writeChar(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeFloat(float value) {
-		return this.parent.writeFloat(value);
+	public PacketByteBuf writeFloat(float f) {
+		this.parent.writeFloat(f);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeDouble(double value) {
-		return this.parent.writeDouble(value);
+	public PacketByteBuf writeDouble(double d) {
+		this.parent.writeDouble(d);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeBytes(ByteBuf buf) {
-		return this.parent.writeBytes(buf);
+	public PacketByteBuf writeBytes(ByteBuf byteBuf) {
+		this.parent.writeBytes(byteBuf);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeBytes(ByteBuf buf, int length) {
-		return this.parent.writeBytes(buf, length);
+	public PacketByteBuf writeBytes(ByteBuf byteBuf, int i) {
+		this.parent.writeBytes(byteBuf, i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeBytes(ByteBuf buf, int sourceIndex, int length) {
-		return this.parent.writeBytes(buf, sourceIndex, length);
+	public PacketByteBuf writeBytes(ByteBuf byteBuf, int i, int j) {
+		this.parent.writeBytes(byteBuf, i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeBytes(byte[] bytes) {
-		return this.parent.writeBytes(bytes);
+	public PacketByteBuf writeBytes(byte[] bs) {
+		this.parent.writeBytes(bs);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeBytes(byte[] bytes, int sourceIndex, int length) {
-		return this.parent.writeBytes(bytes, sourceIndex, length);
+	public PacketByteBuf writeBytes(byte[] bs, int i, int j) {
+		this.parent.writeBytes(bs, i, j);
+		return this;
 	}
 
-	@Override
-	public ByteBuf writeBytes(ByteBuffer buf) {
-		return this.parent.writeBytes(buf);
+	public PacketByteBuf writeBytes(ByteBuffer byteBuffer) {
+		this.parent.writeBytes(byteBuffer);
+		return this;
 	}
 
 	@Override
@@ -2540,9 +2479,9 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.writeBytes(channel, pos, length);
 	}
 
-	@Override
-	public ByteBuf writeZero(int length) {
-		return this.parent.writeZero(length);
+	public PacketByteBuf writeZero(int i) {
+		this.parent.writeZero(i);
+		return this;
 	}
 
 	@Override
@@ -2715,24 +2654,24 @@ public class PacketByteBuf extends ByteBuf {
 		return this.parent.toString();
 	}
 
-	@Override
-	public ByteBuf retain(int i) {
-		return this.parent.retain(i);
+	public PacketByteBuf retain(int i) {
+		this.parent.retain(i);
+		return this;
 	}
 
-	@Override
-	public ByteBuf retain() {
-		return this.parent.retain();
+	public PacketByteBuf retain() {
+		this.parent.retain();
+		return this;
 	}
 
-	@Override
-	public ByteBuf touch() {
-		return this.parent.touch();
+	public PacketByteBuf touch() {
+		this.parent.touch();
+		return this;
 	}
 
-	@Override
-	public ByteBuf touch(Object object) {
-		return this.parent.touch(object);
+	public PacketByteBuf touch(Object object) {
+		this.parent.touch(object);
+		return this;
 	}
 
 	@Override

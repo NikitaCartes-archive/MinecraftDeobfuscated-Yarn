@@ -13,7 +13,6 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
@@ -71,6 +70,7 @@ import net.minecraft.util.Arm;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.glfw.GLFW;
@@ -137,20 +137,7 @@ public class GameOptions {
 		SimpleOption.emptyTooltip(),
 		SimpleOption.enumValueText(),
 		new SimpleOption.PotentialValuesBasedCallbacks<>(
-			Arrays.asList(CloudRenderMode.values()),
-			Codec.either(Codec.BOOL, Codec.STRING).xmap(either -> either.map(value -> value ? CloudRenderMode.FANCY : CloudRenderMode.OFF, cloudRenderMode -> {
-					return switch (cloudRenderMode) {
-						case "true" -> CloudRenderMode.FANCY;
-						case "fast" -> CloudRenderMode.FAST;
-						default -> CloudRenderMode.OFF;
-					};
-				}), cloudRenderMode -> {
-				return Either.right(switch (cloudRenderMode) {
-					case FANCY -> "true";
-					case FAST -> "fast";
-					case OFF -> "false";
-				});
-			})
+			Arrays.asList(CloudRenderMode.values()), Codecs.either(CloudRenderMode.CODEC, Codec.BOOL, value -> value ? CloudRenderMode.FANCY : CloudRenderMode.OFF)
 		),
 		CloudRenderMode.FANCY,
 		cloudRenderMode -> {
@@ -283,9 +270,7 @@ public class GameOptions {
 		"options.mainHand",
 		SimpleOption.emptyTooltip(),
 		SimpleOption.enumValueText(),
-		new SimpleOption.PotentialValuesBasedCallbacks<>(
-			Arrays.asList(Arm.values()), Codec.STRING.xmap(value -> "left".equals(value) ? Arm.LEFT : Arm.RIGHT, value -> value == Arm.LEFT ? "left" : "right")
-		),
+		new SimpleOption.PotentialValuesBasedCallbacks<>(Arrays.asList(Arm.values()), Arm.CODEC),
 		Arm.RIGHT,
 		value -> this.sendClientSettings()
 	);

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criteria;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.RaiderEntity;
@@ -34,6 +35,10 @@ public class RaidManager extends PersistentState {
 	private final ServerWorld world;
 	private int nextAvailableId;
 	private int currentTime;
+
+	public static PersistentState.Type<RaidManager> getPersistentStateType(ServerWorld world) {
+		return new PersistentState.Type<>(() -> new RaidManager(world), nbt -> fromNbt(world, nbt), DataFixTypes.SAVED_DATA_RAIDS);
+	}
 
 	public RaidManager(ServerWorld world) {
 		this.world = world;

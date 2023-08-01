@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -17,8 +19,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.packet.s2c.custom.DebugBeeCustomPayload;
+import net.minecraft.network.packet.s2c.custom.DebugHiveCustomPayload;
 import net.minecraft.util.NameGenerator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Position;
@@ -52,8 +55,9 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 	private static final int PINK = -98404;
 	private static final int RED = -65536;
 	private final MinecraftClient client;
-	private final Map<BlockPos, BeeDebugRenderer.Hive> hives = Maps.<BlockPos, BeeDebugRenderer.Hive>newHashMap();
-	private final Map<UUID, BeeDebugRenderer.Bee> bees = Maps.<UUID, BeeDebugRenderer.Bee>newHashMap();
+	private final Map<BlockPos, BeeDebugRenderer.Hive> hives = new HashMap();
+	private final Map<UUID, DebugBeeCustomPayload.Bee> bees = new HashMap();
+	@Nullable
 	private UUID targetedEntity;
 
 	public BeeDebugRenderer(MinecraftClient client) {
@@ -67,16 +71,16 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 		this.targetedEntity = null;
 	}
 
-	public void addHive(BeeDebugRenderer.Hive hive) {
-		this.hives.put(hive.pos, hive);
+	public void addHive(DebugHiveCustomPayload.HiveInfo hive, long time) {
+		this.hives.put(hive.pos(), new BeeDebugRenderer.Hive(hive, time));
 	}
 
-	public void addBee(BeeDebugRenderer.Bee bee) {
-		this.bees.put(bee.uuid, bee);
+	public void addBee(DebugBeeCustomPayload.Bee bee) {
+		this.bees.put(bee.uuid(), bee);
 	}
 
 	public void removeBee(int id) {
-		this.bees.values().removeIf(bee -> bee.entityId == id);
+		this.bees.values().removeIf(bee -> bee.entityId() == id);
 	}
 
 	@Override
@@ -90,12 +94,12 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	private void removeInvalidBees() {
-		this.bees.entrySet().removeIf(bee -> this.client.world.getEntityById(((BeeDebugRenderer.Bee)bee.getValue()).entityId) == null);
+		this.bees.entrySet().removeIf(bee -> this.client.world.getEntityById(((DebugBeeCustomPayload.Bee)bee.getValue()).entityId()) == null);
 	}
 
 	private void removeOutdatedHives() {
 		long l = this.client.world.getTime() - 20L;
-		this.hives.entrySet().removeIf(hive -> ((BeeDebugRenderer.Hive)hive.getValue()).time < l);
+		this.hives.entrySet().removeIf(hive -> ((BeeDebugRenderer.Hive)hive.getValue()).lastSeen() < l);
 	}
 
 	private void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
@@ -115,9 +119,9 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 
 		Map<BlockPos, Set<UUID>> map = this.getBlacklistingBees();
 		this.hives.values().forEach(hive -> {
-			if (blockPos.isWithinDistance(hive.pos, 30.0)) {
-				Set<UUID> set = (Set<UUID>)map.get(hive.pos);
-				this.drawHiveInfo(matrices, vertexConsumers, hive, (Collection<UUID>)(set == null ? Sets.<UUID>newHashSet() : set));
+			if (blockPos.isWithinDistance(hive.info.pos(), 30.0)) {
+				Set<UUID> set = (Set<UUID>)map.get(hive.info.pos());
+				this.drawHiveInfo(matrices, vertexConsumers, hive.info, (Collection<UUID>)(set == null ? Sets.<UUID>newHashSet() : set));
 			}
 		});
 		this.getBeesByHive().forEach((hive, bees) -> {
@@ -129,26 +133,24 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 
 	private Map<BlockPos, Set<UUID>> getBlacklistingBees() {
 		Map<BlockPos, Set<UUID>> map = Maps.<BlockPos, Set<UUID>>newHashMap();
-		this.bees.values().forEach(bee -> bee.blacklist.forEach(pos -> ((Set)map.computeIfAbsent(pos, pos2 -> Sets.newHashSet())).add(bee.getUuid())));
+		this.bees.values().forEach(bee -> bee.disallowedHives().forEach(pos -> ((Set)map.computeIfAbsent(pos, pos2 -> Sets.newHashSet())).add(bee.uuid())));
 		return map;
 	}
 
 	private void drawFlowers(MatrixStack matrices, VertexConsumerProvider vertexConsumers) {
 		Map<BlockPos, Set<UUID>> map = Maps.<BlockPos, Set<UUID>>newHashMap();
-		this.bees
-			.values()
-			.stream()
-			.filter(BeeDebugRenderer.Bee::hasFlower)
-			.forEach(bee -> ((Set)map.computeIfAbsent(bee.flower, flower -> Sets.newHashSet())).add(bee.getUuid()));
-		map.entrySet().forEach(entry -> {
-			BlockPos blockPos = (BlockPos)entry.getKey();
-			Set<UUID> set = (Set<UUID>)entry.getValue();
-			Set<String> set2 = (Set<String>)set.stream().map(NameGenerator::name).collect(Collectors.toSet());
+		this.bees.values().forEach(bee -> {
+			if (bee.flowerPos() != null) {
+				((Set)map.computeIfAbsent(bee.flowerPos(), flower -> new HashSet())).add(bee.uuid());
+			}
+		});
+		map.forEach((flowerPos, bees) -> {
+			Set<String> set = (Set<String>)bees.stream().map(NameGenerator::name).collect(Collectors.toSet());
 			int i = 1;
-			drawString(matrices, vertexConsumers, set2.toString(), blockPos, i++, -256);
-			drawString(matrices, vertexConsumers, "Flower", blockPos, i++, -1);
+			drawString(matrices, vertexConsumers, set.toString(), flowerPos, i++, -256);
+			drawString(matrices, vertexConsumers, "Flower", flowerPos, i++, -1);
 			float f = 0.05F;
-			DebugRenderer.drawBox(matrices, vertexConsumers, blockPos, 0.05F, 0.8F, 0.8F, 0.0F, 0.3F);
+			DebugRenderer.drawBox(matrices, vertexConsumers, flowerPos, 0.05F, 0.8F, 0.8F, 0.0F, 0.3F);
 		});
 	}
 
@@ -172,31 +174,33 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 		drawString(matrices, vertexConsumers, "Ghost Hive", pos, 1, -65536);
 	}
 
-	private void drawHiveInfo(MatrixStack matrices, VertexConsumerProvider vertexConsumers, BeeDebugRenderer.Hive hive, Collection<UUID> blacklistingBees) {
+	private void drawHiveInfo(
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, DebugHiveCustomPayload.HiveInfo hive, Collection<UUID> blacklistingBees
+	) {
 		int i = 0;
 		if (!blacklistingBees.isEmpty()) {
 			drawString(matrices, vertexConsumers, "Blacklisted by " + toString(blacklistingBees), hive, i++, -65536);
 		}
 
-		drawString(matrices, vertexConsumers, "Out: " + toString(this.getBeesForHive(hive.pos)), hive, i++, -3355444);
-		if (hive.beeCount == 0) {
+		drawString(matrices, vertexConsumers, "Out: " + toString(this.getBeesForHive(hive.pos())), hive, i++, -3355444);
+		if (hive.occupantCount() == 0) {
 			drawString(matrices, vertexConsumers, "In: -", hive, i++, -256);
-		} else if (hive.beeCount == 1) {
+		} else if (hive.occupantCount() == 1) {
 			drawString(matrices, vertexConsumers, "In: 1 bee", hive, i++, -256);
 		} else {
-			drawString(matrices, vertexConsumers, "In: " + hive.beeCount + " bees", hive, i++, -256);
+			drawString(matrices, vertexConsumers, "In: " + hive.occupantCount() + " bees", hive, i++, -256);
 		}
 
-		drawString(matrices, vertexConsumers, "Honey: " + hive.honeyLevel, hive, i++, -23296);
-		drawString(matrices, vertexConsumers, hive.label + (hive.sedated ? " (sedated)" : ""), hive, i++, -1);
+		drawString(matrices, vertexConsumers, "Honey: " + hive.honeyLevel(), hive, i++, -23296);
+		drawString(matrices, vertexConsumers, hive.hiveType() + (hive.sedated() ? " (sedated)" : ""), hive, i++, -1);
 	}
 
-	private void drawPath(MatrixStack matrices, VertexConsumerProvider vertexConsumers, BeeDebugRenderer.Bee bee) {
-		if (bee.path != null) {
+	private void drawPath(MatrixStack matrices, VertexConsumerProvider vertexConsumers, DebugBeeCustomPayload.Bee bee) {
+		if (bee.path() != null) {
 			PathfindingDebugRenderer.drawPath(
 				matrices,
 				vertexConsumers,
-				bee.path,
+				bee.path(),
 				0.5F,
 				false,
 				false,
@@ -207,39 +211,40 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	private void drawBee(MatrixStack matrices, VertexConsumerProvider vertexConsumers, BeeDebugRenderer.Bee bee) {
+	private void drawBee(MatrixStack matrices, VertexConsumerProvider vertexConsumers, DebugBeeCustomPayload.Bee bee) {
 		boolean bl = this.isTargeted(bee);
 		int i = 0;
-		drawString(matrices, vertexConsumers, bee.position, i++, bee.toString(), -1, 0.03F);
-		if (bee.hive == null) {
-			drawString(matrices, vertexConsumers, bee.position, i++, "No hive", -98404, 0.02F);
+		drawString(matrices, vertexConsumers, bee.pos(), i++, bee.toString(), -1, 0.03F);
+		if (bee.hivePos() == null) {
+			drawString(matrices, vertexConsumers, bee.pos(), i++, "No hive", -98404, 0.02F);
 		} else {
-			drawString(matrices, vertexConsumers, bee.position, i++, "Hive: " + this.getPositionString(bee, bee.hive), -256, 0.02F);
+			drawString(matrices, vertexConsumers, bee.pos(), i++, "Hive: " + this.getPositionString(bee, bee.hivePos()), -256, 0.02F);
 		}
 
-		if (bee.flower == null) {
-			drawString(matrices, vertexConsumers, bee.position, i++, "No flower", -98404, 0.02F);
+		if (bee.flowerPos() == null) {
+			drawString(matrices, vertexConsumers, bee.pos(), i++, "No flower", -98404, 0.02F);
 		} else {
-			drawString(matrices, vertexConsumers, bee.position, i++, "Flower: " + this.getPositionString(bee, bee.flower), -256, 0.02F);
+			drawString(matrices, vertexConsumers, bee.pos(), i++, "Flower: " + this.getPositionString(bee, bee.flowerPos()), -256, 0.02F);
 		}
 
-		for (String string : bee.labels) {
-			drawString(matrices, vertexConsumers, bee.position, i++, string, -16711936, 0.02F);
+		for (String string : bee.goals()) {
+			drawString(matrices, vertexConsumers, bee.pos(), i++, string, -16711936, 0.02F);
 		}
 
 		if (bl) {
 			this.drawPath(matrices, vertexConsumers, bee);
 		}
 
-		if (bee.travelTicks > 0) {
-			int j = bee.travelTicks < 600 ? -3355444 : -23296;
-			drawString(matrices, vertexConsumers, bee.position, i++, "Travelling: " + bee.travelTicks + " ticks", j, 0.02F);
+		if (bee.travelTicks() > 0) {
+			int j = bee.travelTicks() < 600 ? -3355444 : -23296;
+			drawString(matrices, vertexConsumers, bee.pos(), i++, "Travelling: " + bee.travelTicks() + " ticks", j, 0.02F);
 		}
 	}
 
-	private static void drawString(MatrixStack matrices, VertexConsumerProvider vertexConsumers, String string, BeeDebugRenderer.Hive hive, int line, int color) {
-		BlockPos blockPos = hive.pos;
-		drawString(matrices, vertexConsumers, string, blockPos, line, color);
+	private static void drawString(
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, String string, DebugHiveCustomPayload.HiveInfo hive, int line, int color
+	) {
+		drawString(matrices, vertexConsumers, string, hive.pos(), line, color);
 	}
 
 	private static void drawString(MatrixStack matrices, VertexConsumerProvider vertexConsumers, String string, BlockPos pos, int line, int color) {
@@ -266,37 +271,37 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 		return this.client.gameRenderer.getCamera();
 	}
 
-	private Set<String> getBeeNamesForHive(BeeDebugRenderer.Hive hive) {
-		return (Set<String>)this.getBeesForHive(hive.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
+	private Set<String> getBeeNamesForHive(DebugHiveCustomPayload.HiveInfo hive) {
+		return (Set<String>)this.getBeesForHive(hive.pos()).stream().map(NameGenerator::name).collect(Collectors.toSet());
 	}
 
-	private String getPositionString(BeeDebugRenderer.Bee bee, BlockPos pos) {
-		double d = Math.sqrt(pos.getSquaredDistance(bee.position));
+	private String getPositionString(DebugBeeCustomPayload.Bee bee, BlockPos pos) {
+		double d = Math.sqrt(pos.getSquaredDistance(bee.pos()));
 		double e = (double)Math.round(d * 10.0) / 10.0;
 		return pos.toShortString() + " (dist " + e + ")";
 	}
 
-	private boolean isTargeted(BeeDebugRenderer.Bee bee) {
-		return Objects.equals(this.targetedEntity, bee.uuid);
+	private boolean isTargeted(DebugBeeCustomPayload.Bee bee) {
+		return Objects.equals(this.targetedEntity, bee.uuid());
 	}
 
-	private boolean isInRange(BeeDebugRenderer.Bee bee) {
+	private boolean isInRange(DebugBeeCustomPayload.Bee bee) {
 		PlayerEntity playerEntity = this.client.player;
-		BlockPos blockPos = BlockPos.ofFloored(playerEntity.getX(), bee.position.getY(), playerEntity.getZ());
-		BlockPos blockPos2 = BlockPos.ofFloored(bee.position);
+		BlockPos blockPos = BlockPos.ofFloored(playerEntity.getX(), bee.pos().getY(), playerEntity.getZ());
+		BlockPos blockPos2 = BlockPos.ofFloored(bee.pos());
 		return blockPos.isWithinDistance(blockPos2, 30.0);
 	}
 
 	private Collection<UUID> getBeesForHive(BlockPos hivePos) {
-		return (Collection<UUID>)this.bees.values().stream().filter(bee -> bee.isHiveAt(hivePos)).map(BeeDebugRenderer.Bee::getUuid).collect(Collectors.toSet());
+		return (Collection<UUID>)this.bees.values().stream().filter(bee -> bee.isHiveAt(hivePos)).map(DebugBeeCustomPayload.Bee::uuid).collect(Collectors.toSet());
 	}
 
 	private Map<BlockPos, List<String>> getBeesByHive() {
 		Map<BlockPos, List<String>> map = Maps.<BlockPos, List<String>>newHashMap();
 
-		for (BeeDebugRenderer.Bee bee : this.bees.values()) {
-			if (bee.hive != null && !this.hives.containsKey(bee.hive)) {
-				((List)map.computeIfAbsent(bee.hive, hive -> Lists.newArrayList())).add(bee.getName());
+		for (DebugBeeCustomPayload.Bee bee : this.bees.values()) {
+			if (bee.hivePos() != null && !this.hives.containsKey(bee.hivePos())) {
+				((List)map.computeIfAbsent(bee.hivePos(), hive -> Lists.newArrayList())).add(bee.getName());
 			}
 		}
 
@@ -308,67 +313,6 @@ public class BeeDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Bee {
-		public final UUID uuid;
-		public final int entityId;
-		public final Position position;
-		@Nullable
-		public final Path path;
-		@Nullable
-		public final BlockPos hive;
-		@Nullable
-		public final BlockPos flower;
-		public final int travelTicks;
-		public final List<String> labels = Lists.<String>newArrayList();
-		public final Set<BlockPos> blacklist = Sets.<BlockPos>newHashSet();
-
-		public Bee(UUID uuid, int entityId, Position position, @Nullable Path path, @Nullable BlockPos hive, @Nullable BlockPos flower, int travelTicks) {
-			this.uuid = uuid;
-			this.entityId = entityId;
-			this.position = position;
-			this.path = path;
-			this.hive = hive;
-			this.flower = flower;
-			this.travelTicks = travelTicks;
-		}
-
-		public boolean isHiveAt(BlockPos pos) {
-			return this.hive != null && this.hive.equals(pos);
-		}
-
-		public UUID getUuid() {
-			return this.uuid;
-		}
-
-		public String getName() {
-			return NameGenerator.name(this.uuid);
-		}
-
-		public String toString() {
-			return this.getName();
-		}
-
-		public boolean hasFlower() {
-			return this.flower != null;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class Hive {
-		public final BlockPos pos;
-		public final String label;
-		public final int beeCount;
-		public final int honeyLevel;
-		public final boolean sedated;
-		public final long time;
-
-		public Hive(BlockPos pos, String label, int beeCount, int honeyLevel, boolean sedated, long time) {
-			this.pos = pos;
-			this.label = label;
-			this.beeCount = beeCount;
-			this.honeyLevel = honeyLevel;
-			this.sedated = sedated;
-			this.time = time;
-		}
+	static record Hive(DebugHiveCustomPayload.HiveInfo info, long lastSeen) {
 	}
 }

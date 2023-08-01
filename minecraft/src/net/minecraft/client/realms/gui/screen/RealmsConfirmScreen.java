@@ -30,9 +30,8 @@ public class RealmsConfirmScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title1, this.width / 2, row(3), 16777215);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title2, this.width / 2, row(5), 16777215);
 		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title1, this.width / 2, row(3), -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title2, this.width / 2, row(5), -1);
 	}
 }

@@ -34,7 +34,6 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Override
 	public void tick() {
-		this.consoleCommandTextField.tick();
 		if (!this.getCommandExecutor().isEditable()) {
 			this.close();
 		}
@@ -129,8 +128,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-		return this.commandSuggestor.mouseScrolled(amount) ? true : super.mouseScrolled(mouseX, mouseY, amount);
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		return this.commandSuggestor.mouseScrolled(verticalAmount) ? true : super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
 	}
 
 	@Override
@@ -140,7 +139,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, SET_COMMAND_TEXT, this.width / 2, 20, 16777215);
 		context.drawTextWithShadow(this.textRenderer, COMMAND_TEXT, this.width / 2 - 150, 40, 10526880);
 		this.consoleCommandTextField.render(context, mouseX, mouseY, delta);
@@ -151,7 +150,6 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			this.previousOutputTextField.render(context, mouseX, mouseY, delta);
 		}
 
-		super.render(context, mouseX, mouseY, delta);
 		this.commandSuggestor.render(context, mouseX, mouseY);
 	}
 }

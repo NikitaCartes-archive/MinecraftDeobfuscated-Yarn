@@ -26,6 +26,19 @@ import net.minecraft.util.math.random.Random;
 
 @Environment(EnvType.CLIENT)
 public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
+	private static final Identifier[] LEVEL_TEXTURES = new Identifier[]{
+		new Identifier("container/enchanting_table/level_1"),
+		new Identifier("container/enchanting_table/level_2"),
+		new Identifier("container/enchanting_table/level_3")
+	};
+	private static final Identifier[] LEVEL_DISABLED_TEXTURES = new Identifier[]{
+		new Identifier("container/enchanting_table/level_1_disabled"),
+		new Identifier("container/enchanting_table/level_2_disabled"),
+		new Identifier("container/enchanting_table/level_3_disabled")
+	};
+	private static final Identifier ENCHANTMENT_SLOT_DISABLED_TEXTURE = new Identifier("container/enchanting_table/enchantment_slot_disabled");
+	private static final Identifier ENCHANTMENT_SLOT_HIGHLIGHTED_TEXTURE = new Identifier("container/enchanting_table/enchantment_slot_highlighted");
+	private static final Identifier ENCHANTMENT_SLOT_TEXTURE = new Identifier("container/enchanting_table/enchantment_slot");
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
 	private static final Identifier BOOK_TEXTURE = new Identifier("textures/entity/enchanting_table_book.png");
 	private final Random random = Random.create();
@@ -86,28 +99,28 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 			int n = m + 20;
 			int o = this.handler.enchantmentPower[l];
 			if (o == 0) {
-				context.drawTexture(TEXTURE, m, j + 14 + 19 * l, 0, 185, 108, 19);
+				context.drawGuiTexture(ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
 			} else {
 				String string = o + "";
 				int p = 86 - this.textRenderer.getWidth(string);
 				StringVisitable stringVisitable = EnchantingPhrases.getInstance().generatePhrase(this.textRenderer, p);
 				int q = 6839882;
 				if ((k < l + 1 || this.client.player.experienceLevel < o) && !this.client.player.getAbilities().creativeMode) {
-					context.drawTexture(TEXTURE, m, j + 14 + 19 * l, 0, 185, 108, 19);
-					context.drawTexture(TEXTURE, m + 1, j + 15 + 19 * l, 16 * l, 239, 16, 16);
+					context.drawGuiTexture(ENCHANTMENT_SLOT_DISABLED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
+					context.drawGuiTexture(LEVEL_DISABLED_TEXTURES[l], m + 1, j + 15 + 19 * l, 16, 16);
 					context.drawTextWrapped(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, (q & 16711422) >> 1);
 					q = 4226832;
 				} else {
 					int r = mouseX - (i + 60);
 					int s = mouseY - (j + 14 + 19 * l);
 					if (r >= 0 && s >= 0 && r < 108 && s < 19) {
-						context.drawTexture(TEXTURE, m, j + 14 + 19 * l, 0, 204, 108, 19);
+						context.drawGuiTexture(ENCHANTMENT_SLOT_HIGHLIGHTED_TEXTURE, m, j + 14 + 19 * l, 108, 19);
 						q = 16777088;
 					} else {
-						context.drawTexture(TEXTURE, m, j + 14 + 19 * l, 0, 166, 108, 19);
+						context.drawGuiTexture(ENCHANTMENT_SLOT_TEXTURE, m, j + 14 + 19 * l, 108, 19);
 					}
 
-					context.drawTexture(TEXTURE, m + 1, j + 15 + 19 * l, 16 * l, 223, 16, 16);
+					context.drawGuiTexture(LEVEL_TEXTURES[l], m + 1, j + 15 + 19 * l, 16, 16);
 					context.drawTextWrapped(this.textRenderer, stringVisitable, n, j + 16 + 19 * l, p, q);
 					q = 8453920;
 				}
@@ -143,7 +156,6 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		delta = this.client.getTickDelta();
-		this.renderBackground(context);
 		super.render(context, mouseX, mouseY, delta);
 		this.drawMouseoverTooltip(context, mouseX, mouseY);
 		boolean bl = this.client.player.getAbilities().creativeMode;

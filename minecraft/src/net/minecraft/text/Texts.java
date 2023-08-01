@@ -1,7 +1,6 @@
 package net.minecraft.text;
 
 import com.google.common.collect.Lists;
-import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.Message;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.datafixers.DataFixUtils;
@@ -63,14 +62,6 @@ public class Texts {
 		}
 
 		return style;
-	}
-
-	public static Text toText(GameProfile profile) {
-		if (profile.getName() != null) {
-			return Text.literal(profile.getName());
-		} else {
-			return profile.getId() != null ? Text.literal(profile.getId().toString()) : Text.literal("(unknown)");
-		}
 	}
 
 	public static Text joinOrdered(Collection<String> strings) {

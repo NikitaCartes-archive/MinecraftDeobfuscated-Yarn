@@ -1,14 +1,10 @@
 package net.minecraft.network.listener;
 
-/**
- * The base interface for serverbound packet listeners.
- * 
- * @implNote Serverbound packet listeners log any uncaught exceptions
- * without crashing.
- */
+import net.minecraft.network.NetworkSide;
+
 public interface ServerPacketListener extends PacketListener {
 	@Override
-	default boolean shouldCrashOnException() {
-		return false;
+	default NetworkSide getSide() {
+		return NetworkSide.SERVERBOUND;
 	}
 }

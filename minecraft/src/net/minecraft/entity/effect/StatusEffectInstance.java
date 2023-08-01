@@ -99,7 +99,6 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			LOGGER.warn("This method should only be called for matching effects!");
 		}
 
-		int i = this.duration;
 		boolean bl = false;
 		if (that.amplifier > this.amplifier) {
 			if (that.lastsShorterThan(this)) {
@@ -184,7 +183,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		if (this.isActive()) {
 			int i = this.isInfinite() ? entity.age : this.duration;
 			if (this.type.canApplyUpdateEffect(i, this.amplifier)) {
-				this.applyUpdateEffect(entity);
+				this.type.applyUpdateEffect(entity, this.amplifier);
 			}
 
 			this.updateDuration();
@@ -211,10 +210,8 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return this.duration = this.mapDuration(duration -> duration - 1);
 	}
 
-	public void applyUpdateEffect(LivingEntity entity) {
-		if (this.isActive()) {
-			this.type.applyUpdateEffect(entity, this.amplifier);
-		}
+	public void onApplied(LivingEntity entity) {
+		this.type.onApplied(entity, this.amplifier);
 	}
 
 	public String getTranslationKey() {

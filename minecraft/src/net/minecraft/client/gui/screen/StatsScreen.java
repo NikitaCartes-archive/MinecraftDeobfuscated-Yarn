@@ -34,8 +34,11 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class StatsScreen extends Screen implements StatsListener {
+	static final Identifier SLOT_TEXTURE = new Identifier("container/slot");
+	static final Identifier HEADER_TEXTURE = new Identifier("statistics/header");
+	static final Identifier SORT_UP_TEXTURE = new Identifier("statistics/sort_up");
+	static final Identifier SORT_DOWN_TEXTURE = new Identifier("statistics/sort_down");
 	private static final Text DOWNLOADING_STATS_TEXT = Text.translatable("multiplayer.downloadingStats");
-	private static final Identifier STATS_ICONS_TEXTURE = new Identifier("textures/gui/container/stats_icons.png");
 	protected final Screen parent;
 	private StatsScreen.GeneralStatsListWidget generalStats;
 	StatsScreen.ItemStatsListWidget itemStats;
@@ -44,7 +47,6 @@ public class StatsScreen extends Screen implements StatsListener {
 	@Nullable
 	private AlwaysSelectedEntryListWidget<?> selectedList;
 	private boolean downloadingStats = true;
-	private static final int field_32281 = 128;
 	private static final int field_32282 = 18;
 	private static final int field_32283 = 20;
 	private static final int field_32284 = 1;
@@ -106,7 +108,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.downloadingStats) {
-			this.renderBackground(context);
+			this.renderBackground(context, mouseX, mouseY, delta);
 			context.drawCenteredTextWithShadow(this.textRenderer, DOWNLOADING_STATS_TEXT, this.width / 2, this.height / 2, 16777215);
 			context.drawCenteredTextWithShadow(
 				this.textRenderer,
@@ -116,10 +118,15 @@ public class StatsScreen extends Screen implements StatsListener {
 				16777215
 			);
 		} else {
+			super.render(context, mouseX, mouseY, delta);
 			this.getSelectedStatList().render(context, mouseX, mouseY, delta);
 			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
-			super.render(context, mouseX, mouseY, delta);
 		}
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
 	}
 
 	@Override
@@ -162,12 +169,12 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	void renderStatItem(DrawContext context, int x, int y, Item item) {
-		this.renderIcon(context, x + 1, y + 1, 0, 0);
+		this.renderIcon(context, x + 1, y + 1, SLOT_TEXTURE);
 		context.drawItemWithoutEntity(item.getDefaultStack(), x + 2, y + 2);
 	}
 
-	void renderIcon(DrawContext context, int x, int y, int u, int v) {
-		context.drawTexture(STATS_ICONS_TEXTURE, x, y, 0, (float)u, (float)v, 18, 18, 128, 128);
+	void renderIcon(DrawContext context, int x, int y, Identifier texture) {
+		context.drawGuiTexture(texture, x, y, 0, 18, 18);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -181,11 +188,6 @@ public class StatsScreen extends Screen implements StatsListener {
 					this.addEntry(new StatsScreen.EntityStatsListWidget.Entry(entityType));
 				}
 			}
-		}
-
-		@Override
-		protected void renderBackground(DrawContext context) {
-			StatsScreen.this.renderBackground(context);
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -243,11 +245,6 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 		}
 
-		@Override
-		protected void renderBackground(DrawContext context) {
-			StatsScreen.this.renderBackground(context);
-		}
-
 		@Environment(EnvType.CLIENT)
 		class Entry extends AlwaysSelectedEntryListWidget.Entry<StatsScreen.GeneralStatsListWidget.Entry> {
 			private final Stat<Identifier> stat;
@@ -282,7 +279,14 @@ public class StatsScreen extends Screen implements StatsListener {
 	class ItemStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.ItemStatsListWidget.Entry> {
 		protected final List<StatType<Block>> blockStatTypes;
 		protected final List<StatType<Item>> itemStatTypes;
-		private final int[] HEADER_ICON_SPRITE_INDICES = new int[]{3, 4, 1, 2, 5, 6};
+		private final Identifier[] headerIconTextures = new Identifier[]{
+			new Identifier("statistics/block_mined"),
+			new Identifier("statistics/item_broken"),
+			new Identifier("statistics/item_crafted"),
+			new Identifier("statistics/item_used"),
+			new Identifier("statistics/item_picked_up"),
+			new Identifier("statistics/item_dropped")
+		};
 		protected int selectedHeaderColumn = -1;
 		protected final Comparator<StatsScreen.ItemStatsListWidget.Entry> comparator = new StatsScreen.ItemStatsListWidget.ItemComparator();
 		@Nullable
@@ -338,19 +342,20 @@ public class StatsScreen extends Screen implements StatsListener {
 				this.selectedHeaderColumn = -1;
 			}
 
-			for (int i = 0; i < this.HEADER_ICON_SPRITE_INDICES.length; i++) {
-				StatsScreen.this.renderIcon(context, x + StatsScreen.this.getColumnX(i) - 18, y + 1, 0, this.selectedHeaderColumn == i ? 0 : 18);
+			for (int i = 0; i < this.headerIconTextures.length; i++) {
+				Identifier identifier = this.selectedHeaderColumn == i ? StatsScreen.SLOT_TEXTURE : StatsScreen.HEADER_TEXTURE;
+				StatsScreen.this.renderIcon(context, x + StatsScreen.this.getColumnX(i) - 18, y + 1, identifier);
 			}
 
 			if (this.selectedStatType != null) {
 				int i = StatsScreen.this.getColumnX(this.getHeaderIndex(this.selectedStatType)) - 36;
-				int j = this.listOrder == 1 ? 2 : 1;
-				StatsScreen.this.renderIcon(context, x + i, y + 1, 18 * j, 0);
+				Identifier identifier = this.listOrder == 1 ? StatsScreen.SORT_UP_TEXTURE : StatsScreen.SORT_DOWN_TEXTURE;
+				StatsScreen.this.renderIcon(context, x + i, y + 1, identifier);
 			}
 
-			for (int i = 0; i < this.HEADER_ICON_SPRITE_INDICES.length; i++) {
+			for (int i = 0; i < this.headerIconTextures.length; i++) {
 				int j = this.selectedHeaderColumn == i ? 1 : 0;
-				StatsScreen.this.renderIcon(context, x + StatsScreen.this.getColumnX(i) - 18 + j, y + 1 + j, 18 * this.HEADER_ICON_SPRITE_INDICES[i], 18);
+				StatsScreen.this.renderIcon(context, x + StatsScreen.this.getColumnX(i) - 18 + j, y + 1 + j, this.headerIconTextures[i]);
 			}
 		}
 
@@ -365,15 +370,10 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void renderBackground(DrawContext context) {
-			StatsScreen.this.renderBackground(context);
-		}
-
-		@Override
 		protected void clickedHeader(int x, int y) {
 			this.selectedHeaderColumn = -1;
 
-			for (int i = 0; i < this.HEADER_ICON_SPRITE_INDICES.length; i++) {
+			for (int i = 0; i < this.headerIconTextures.length; i++) {
 				int j = x - StatsScreen.this.getColumnX(i);
 				if (j >= -36 && j <= 0) {
 					this.selectedHeaderColumn = i;
@@ -414,12 +414,12 @@ public class StatsScreen extends Screen implements StatsListener {
 					}
 
 					Item item = entry.getItem();
-					this.render(context, this.getText(item), mouseX, mouseY);
+					context.drawTooltip(StatsScreen.this.textRenderer, this.getText(item), mouseX, mouseY);
 				} else {
 					Text text = null;
 					int j = mouseX - i;
 
-					for (int k = 0; k < this.HEADER_ICON_SPRITE_INDICES.length; k++) {
+					for (int k = 0; k < this.headerIconTextures.length; k++) {
 						int l = StatsScreen.this.getColumnX(k);
 						if (j >= l - 18 && j <= l) {
 							text = this.getStatType(k).getName();
@@ -427,21 +427,10 @@ public class StatsScreen extends Screen implements StatsListener {
 						}
 					}
 
-					this.render(context, text, mouseX, mouseY);
+					if (text != null) {
+						context.drawTooltip(StatsScreen.this.textRenderer, text, mouseX, mouseY);
+					}
 				}
-			}
-		}
-
-		protected void render(DrawContext drawContext, @Nullable Text text, int mouseX, int mouseY) {
-			if (text != null) {
-				int i = mouseX + 12;
-				int j = mouseY - 12;
-				int k = StatsScreen.this.textRenderer.getWidth(text);
-				drawContext.fillGradient(i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
-				drawContext.getMatrices().push();
-				drawContext.getMatrices().translate(0.0F, 0.0F, 400.0F);
-				drawContext.drawTextWithShadow(StatsScreen.this.textRenderer, text, i, j, -1);
-				drawContext.getMatrices().pop();
 			}
 		}
 
@@ -501,9 +490,9 @@ public class StatsScreen extends Screen implements StatsListener {
 				}
 			}
 
-			protected void render(DrawContext drawContext, @Nullable Stat<?> stat, int x, int y, boolean white) {
+			protected void render(DrawContext context, @Nullable Stat<?> stat, int x, int y, boolean white) {
 				String string = stat == null ? "-" : stat.format(StatsScreen.this.statHandler.getStat(stat));
-				drawContext.drawTextWithShadow(StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getWidth(string), y + 5, white ? 16777215 : 9474192);
+				context.drawTextWithShadow(StatsScreen.this.textRenderer, string, x - StatsScreen.this.textRenderer.getWidth(string), y + 5, white ? 16777215 : 9474192);
 			}
 
 			@Override

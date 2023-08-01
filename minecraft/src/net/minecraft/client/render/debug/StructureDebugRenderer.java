@@ -1,9 +1,9 @@
 package net.minecraft.client.render.debug;
 
 import com.google.common.collect.Maps;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -13,17 +13,17 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.network.packet.s2c.custom.DebugStructuresCustomPayload;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.WorldAccess;
-import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class StructureDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
-	private final Map<DimensionType, Map<String, BlockBox>> structureBoundingBoxes = Maps.<DimensionType, Map<String, BlockBox>>newIdentityHashMap();
-	private final Map<DimensionType, Map<String, BlockBox>> structurePiecesBoundingBoxes = Maps.<DimensionType, Map<String, BlockBox>>newIdentityHashMap();
-	private final Map<DimensionType, Map<String, Boolean>> field_4625 = Maps.<DimensionType, Map<String, Boolean>>newIdentityHashMap();
+	private final Map<RegistryKey<World>, Map<String, BlockBox>> structureBoundingBoxes = Maps.<RegistryKey<World>, Map<String, BlockBox>>newIdentityHashMap();
+	private final Map<RegistryKey<World>, Map<String, DebugStructuresCustomPayload.Piece>> structurePiecesBoundingBoxes = Maps.<RegistryKey<World>, Map<String, DebugStructuresCustomPayload.Piece>>newIdentityHashMap();
 	private static final int RANGE = 500;
 
 	public StructureDebugRenderer(MinecraftClient client) {
@@ -33,12 +33,11 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		Camera camera = this.client.gameRenderer.getCamera();
-		WorldAccess worldAccess = this.client.world;
-		DimensionType dimensionType = worldAccess.getDimension();
+		RegistryKey<World> registryKey = this.client.world.getRegistryKey();
 		BlockPos blockPos = BlockPos.ofFloored(camera.getPos().x, 0.0, camera.getPos().z);
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
-		if (this.structureBoundingBoxes.containsKey(dimensionType)) {
-			for (BlockBox blockBox : ((Map)this.structureBoundingBoxes.get(dimensionType)).values()) {
+		if (this.structureBoundingBoxes.containsKey(registryKey)) {
+			for (BlockBox blockBox : ((Map)this.structureBoundingBoxes.get(registryKey)).values()) {
 				if (blockPos.isWithinDistance(blockBox.getCenter(), 500.0)) {
 					WorldRenderer.drawBox(
 						matrices,
@@ -61,13 +60,12 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		if (this.structurePiecesBoundingBoxes.containsKey(dimensionType)) {
-			for (Entry<String, BlockBox> entry : ((Map)this.structurePiecesBoundingBoxes.get(dimensionType)).entrySet()) {
-				String string = (String)entry.getKey();
-				BlockBox blockBox2 = (BlockBox)entry.getValue();
-				Boolean boolean_ = (Boolean)((Map)this.field_4625.get(dimensionType)).get(string);
+		Map<String, DebugStructuresCustomPayload.Piece> map = (Map<String, DebugStructuresCustomPayload.Piece>)this.structurePiecesBoundingBoxes.get(registryKey);
+		if (map != null) {
+			for (DebugStructuresCustomPayload.Piece piece : map.values()) {
+				BlockBox blockBox2 = piece.boundingBox();
 				if (blockPos.isWithinDistance(blockBox2.getCenter(), 500.0)) {
-					if (boolean_) {
+					if (piece.isStart()) {
 						WorldRenderer.drawBox(
 							matrices,
 							vertexConsumer,
@@ -109,23 +107,13 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	public void addStructure(BlockBox boundingBox, List<BlockBox> piecesBoundingBoxes, List<Boolean> list, DimensionType dimension) {
-		if (!this.structureBoundingBoxes.containsKey(dimension)) {
-			this.structureBoundingBoxes.put(dimension, Maps.newHashMap());
-		}
+	public void addStructure(BlockBox boundingBox, List<DebugStructuresCustomPayload.Piece> pieces, RegistryKey<World> dimensionKey) {
+		((Map)this.structureBoundingBoxes.computeIfAbsent(dimensionKey, dimension -> new HashMap())).put(boundingBox.toString(), boundingBox);
+		Map<String, DebugStructuresCustomPayload.Piece> map = (Map<String, DebugStructuresCustomPayload.Piece>)this.structurePiecesBoundingBoxes
+			.computeIfAbsent(dimensionKey, dimension -> new HashMap());
 
-		if (!this.structurePiecesBoundingBoxes.containsKey(dimension)) {
-			this.structurePiecesBoundingBoxes.put(dimension, Maps.newHashMap());
-			this.field_4625.put(dimension, Maps.newHashMap());
-		}
-
-		((Map)this.structureBoundingBoxes.get(dimension)).put(boundingBox.toString(), boundingBox);
-
-		for (int i = 0; i < piecesBoundingBoxes.size(); i++) {
-			BlockBox blockBox = (BlockBox)piecesBoundingBoxes.get(i);
-			Boolean boolean_ = (Boolean)list.get(i);
-			((Map)this.structurePiecesBoundingBoxes.get(dimension)).put(blockBox.toString(), blockBox);
-			((Map)this.field_4625.get(dimension)).put(blockBox.toString(), boolean_);
+		for (DebugStructuresCustomPayload.Piece piece : pieces) {
+			map.put(piece.boundingBox().toString(), piece);
 		}
 	}
 
@@ -133,6 +121,5 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 	public void clear() {
 		this.structureBoundingBoxes.clear();
 		this.structurePiecesBoundingBoxes.clear();
-		this.field_4625.clear();
 	}
 }

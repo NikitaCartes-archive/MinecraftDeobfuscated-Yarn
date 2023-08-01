@@ -10,16 +10,16 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
+import net.minecraft.entity.attribute.AttributeModifierCreator;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 
 public class StatusEffect {
-	private final Map<EntityAttribute, EntityAttributeModifier> attributeModifiers = Maps.<EntityAttribute, EntityAttributeModifier>newHashMap();
+	private final Map<EntityAttribute, AttributeModifierCreator> attributeModifiers = Maps.<EntityAttribute, AttributeModifierCreator>newHashMap();
 	private final StatusEffectCategory category;
 	private final int color;
 	@Nullable
@@ -49,62 +49,17 @@ public class StatusEffect {
 	}
 
 	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-		if (this == StatusEffects.REGENERATION) {
-			if (entity.getHealth() < entity.getMaxHealth()) {
-				entity.heal(1.0F);
-			}
-		} else if (this == StatusEffects.POISON) {
-			if (entity.getHealth() > 1.0F) {
-				entity.damage(entity.getDamageSources().magic(), 1.0F);
-			}
-		} else if (this == StatusEffects.WITHER) {
-			entity.damage(entity.getDamageSources().wither(), 1.0F);
-		} else if (this == StatusEffects.HUNGER && entity instanceof PlayerEntity) {
-			((PlayerEntity)entity).addExhaustion(0.005F * (float)(amplifier + 1));
-		} else if (this == StatusEffects.SATURATION && entity instanceof PlayerEntity) {
-			if (!entity.getWorld().isClient) {
-				((PlayerEntity)entity).getHungerManager().add(amplifier + 1, 1.0F);
-			}
-		} else if ((this != StatusEffects.INSTANT_HEALTH || entity.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !entity.isUndead())) {
-			if (this == StatusEffects.INSTANT_DAMAGE && !entity.isUndead() || this == StatusEffects.INSTANT_HEALTH && entity.isUndead()) {
-				entity.damage(entity.getDamageSources().magic(), (float)(6 << amplifier));
-			}
-		} else {
-			entity.heal((float)Math.max(4 << amplifier, 0));
-		}
 	}
 
 	public void applyInstantEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
-		if ((this != StatusEffects.INSTANT_HEALTH || target.isUndead()) && (this != StatusEffects.INSTANT_DAMAGE || !target.isUndead())) {
-			if (this == StatusEffects.INSTANT_DAMAGE && !target.isUndead() || this == StatusEffects.INSTANT_HEALTH && target.isUndead()) {
-				int i = (int)(proximity * (double)(6 << amplifier) + 0.5);
-				if (source == null) {
-					target.damage(target.getDamageSources().magic(), (float)i);
-				} else {
-					target.damage(target.getDamageSources().indirectMagic(source, attacker), (float)i);
-				}
-			} else {
-				this.applyUpdateEffect(target, amplifier);
-			}
-		} else {
-			int i = (int)(proximity * (double)(4 << amplifier) + 0.5);
-			target.heal((float)i);
-		}
+		this.applyUpdateEffect(target, amplifier);
 	}
 
 	public boolean canApplyUpdateEffect(int duration, int amplifier) {
-		if (this == StatusEffects.REGENERATION) {
-			int i = 50 >> amplifier;
-			return i > 0 ? duration % i == 0 : true;
-		} else if (this == StatusEffects.POISON) {
-			int i = 25 >> amplifier;
-			return i > 0 ? duration % i == 0 : true;
-		} else if (this == StatusEffects.WITHER) {
-			int i = 40 >> amplifier;
-			return i > 0 ? duration % i == 0 : true;
-		} else {
-			return this == StatusEffects.HUNGER;
-		}
+		return false;
+	}
+
+	public void onApplied(LivingEntity entity, int amplifier) {
 	}
 
 	public boolean isInstant() {
@@ -136,8 +91,7 @@ public class StatusEffect {
 	}
 
 	public StatusEffect addAttributeModifier(EntityAttribute attribute, String uuid, double amount, EntityAttributeModifier.Operation operation) {
-		EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(UUID.fromString(uuid), this::getTranslationKey, amount, operation);
-		this.attributeModifiers.put(attribute, entityAttributeModifier);
+		this.attributeModifiers.put(attribute, new StatusEffect.EffectAttributeModifierCreator(UUID.fromString(uuid), amount, operation));
 		return this;
 	}
 
@@ -146,42 +100,54 @@ public class StatusEffect {
 		return this;
 	}
 
-	public Map<EntityAttribute, EntityAttributeModifier> getAttributeModifiers() {
+	public Map<EntityAttribute, AttributeModifierCreator> getAttributeModifiers() {
 		return this.attributeModifiers;
 	}
 
-	public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-		for (Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributeModifiers.entrySet()) {
-			EntityAttributeInstance entityAttributeInstance = attributes.getCustomInstance((EntityAttribute)entry.getKey());
+	public void onRemoved(AttributeContainer attributeContainer) {
+		for (Entry<EntityAttribute, AttributeModifierCreator> entry : this.attributeModifiers.entrySet()) {
+			EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance((EntityAttribute)entry.getKey());
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.removeModifier((EntityAttributeModifier)entry.getValue());
+				entityAttributeInstance.removeModifier(((AttributeModifierCreator)entry.getValue()).getUuid());
 			}
 		}
 	}
 
-	public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-		for (Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributeModifiers.entrySet()) {
-			EntityAttributeInstance entityAttributeInstance = attributes.getCustomInstance((EntityAttribute)entry.getKey());
+	public void onApplied(AttributeContainer attributeContainer, int amplifier) {
+		for (Entry<EntityAttribute, AttributeModifierCreator> entry : this.attributeModifiers.entrySet()) {
+			EntityAttributeInstance entityAttributeInstance = attributeContainer.getCustomInstance((EntityAttribute)entry.getKey());
 			if (entityAttributeInstance != null) {
-				EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
-				entityAttributeInstance.removeModifier(entityAttributeModifier);
-				entityAttributeInstance.addPersistentModifier(
-					new EntityAttributeModifier(
-						entityAttributeModifier.getId(),
-						this.getTranslationKey() + " " + amplifier,
-						this.adjustModifierAmount(amplifier, entityAttributeModifier),
-						entityAttributeModifier.getOperation()
-					)
-				);
+				entityAttributeInstance.removeModifier(((AttributeModifierCreator)entry.getValue()).getUuid());
+				entityAttributeInstance.addPersistentModifier(((AttributeModifierCreator)entry.getValue()).createAttributeModifier(amplifier));
 			}
 		}
-	}
-
-	public double adjustModifierAmount(int amplifier, EntityAttributeModifier modifier) {
-		return modifier.getValue() * (double)(amplifier + 1);
 	}
 
 	public boolean isBeneficial() {
 		return this.category == StatusEffectCategory.BENEFICIAL;
+	}
+
+	class EffectAttributeModifierCreator implements AttributeModifierCreator {
+		private final UUID uuid;
+		private final double baseValue;
+		private final EntityAttributeModifier.Operation operation;
+
+		public EffectAttributeModifierCreator(UUID uuid, double baseValue, EntityAttributeModifier.Operation operation) {
+			this.uuid = uuid;
+			this.baseValue = baseValue;
+			this.operation = operation;
+		}
+
+		@Override
+		public UUID getUuid() {
+			return this.uuid;
+		}
+
+		@Override
+		public EntityAttributeModifier createAttributeModifier(int amplifier) {
+			return new EntityAttributeModifier(
+				this.uuid, StatusEffect.this.getTranslationKey() + " " + amplifier, this.baseValue * (double)(amplifier + 1), this.operation
+			);
+		}
 	}
 }

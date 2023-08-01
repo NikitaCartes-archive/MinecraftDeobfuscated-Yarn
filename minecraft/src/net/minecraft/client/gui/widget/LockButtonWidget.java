@@ -6,6 +6,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class LockButtonWidget extends ButtonWidget {
@@ -33,41 +34,31 @@ public class LockButtonWidget extends ButtonWidget {
 
 	@Override
 	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-		LockButtonWidget.IconLocation iconLocation;
+		LockButtonWidget.Icon icon;
 		if (!this.active) {
-			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED_DISABLED : LockButtonWidget.IconLocation.UNLOCKED_DISABLED;
+			icon = this.locked ? LockButtonWidget.Icon.LOCKED_DISABLED : LockButtonWidget.Icon.UNLOCKED_DISABLED;
 		} else if (this.isSelected()) {
-			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED_HOVER : LockButtonWidget.IconLocation.UNLOCKED_HOVER;
+			icon = this.locked ? LockButtonWidget.Icon.LOCKED_HOVER : LockButtonWidget.Icon.UNLOCKED_HOVER;
 		} else {
-			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED : LockButtonWidget.IconLocation.UNLOCKED;
+			icon = this.locked ? LockButtonWidget.Icon.LOCKED : LockButtonWidget.Icon.UNLOCKED;
 		}
 
-		context.drawTexture(ButtonWidget.WIDGETS_TEXTURE, this.getX(), this.getY(), iconLocation.getU(), iconLocation.getV(), this.width, this.height);
+		context.drawGuiTexture(icon.texture, this.getX(), this.getY(), this.width, this.height);
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum IconLocation {
-		LOCKED(0, 146),
-		LOCKED_HOVER(0, 166),
-		LOCKED_DISABLED(0, 186),
-		UNLOCKED(20, 146),
-		UNLOCKED_HOVER(20, 166),
-		UNLOCKED_DISABLED(20, 186);
+	static enum Icon {
+		LOCKED(new Identifier("widget/locked_button")),
+		LOCKED_HOVER(new Identifier("widget/locked_button_highlighted")),
+		LOCKED_DISABLED(new Identifier("widget/locked_button_disabled")),
+		UNLOCKED(new Identifier("widget/unlocked_button")),
+		UNLOCKED_HOVER(new Identifier("widget/unlocked_button_highlighted")),
+		UNLOCKED_DISABLED(new Identifier("widget/unlocked_button_disabled"));
 
-		private final int u;
-		private final int v;
+		final Identifier texture;
 
-		private IconLocation(int u, int v) {
-			this.u = u;
-			this.v = v;
-		}
-
-		public int getU() {
-			return this.u;
-		}
-
-		public int getV() {
-			return this.v;
+		private Icon(Identifier texture) {
+			this.texture = texture;
 		}
 	}
 }

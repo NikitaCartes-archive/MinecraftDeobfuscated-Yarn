@@ -14,14 +14,14 @@ import net.fabricmc.api.Environment;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTruetype;
 import org.lwjgl.system.MemoryUtil;
 
 @Environment(EnvType.CLIENT)
 public record TrueTypeFontLoader(Identifier location, float size, float oversample, TrueTypeFontLoader.Shift shift, String skip) implements FontLoader {
-	private static final Codec<String> SKIP_CODEC = Codec.either(Codec.STRING, Codec.STRING.listOf())
-		.xmap(either -> either.map(string -> string, list -> String.join("", list)), Either::left);
+	private static final Codec<String> SKIP_CODEC = Codecs.either(Codec.STRING, Codec.STRING.listOf(), chars -> String.join("", chars));
 	public static final MapCodec<TrueTypeFontLoader> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
 					Identifier.CODEC.fieldOf("file").forGetter(TrueTypeFontLoader::location),

@@ -63,6 +63,7 @@ import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.ItemTags;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -871,10 +872,17 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Override
 	protected void fillRecipes() {
 		VillagerData villagerData = this.getVillagerData();
-		Int2ObjectMap<TradeOffers.Factory[]> int2ObjectMap = (Int2ObjectMap<TradeOffers.Factory[]>)TradeOffers.PROFESSION_TO_LEVELED_TRADE
-			.get(villagerData.getProfession());
-		if (int2ObjectMap != null && !int2ObjectMap.isEmpty()) {
-			TradeOffers.Factory[] factorys = int2ObjectMap.get(villagerData.getLevel());
+		Int2ObjectMap<TradeOffers.Factory[]> int2ObjectMap2;
+		if (this.getWorld().getEnabledFeatures().contains(FeatureFlags.TRADE_REBALANCE)) {
+			Int2ObjectMap<TradeOffers.Factory[]> int2ObjectMap = (Int2ObjectMap<TradeOffers.Factory[]>)TradeOffers.REBALANCED_PROFESSION_TO_LEVELED_TRADE
+				.get(villagerData.getProfession());
+			int2ObjectMap2 = int2ObjectMap != null ? int2ObjectMap : (Int2ObjectMap)TradeOffers.PROFESSION_TO_LEVELED_TRADE.get(villagerData.getProfession());
+		} else {
+			int2ObjectMap2 = (Int2ObjectMap<TradeOffers.Factory[]>)TradeOffers.PROFESSION_TO_LEVELED_TRADE.get(villagerData.getProfession());
+		}
+
+		if (int2ObjectMap2 != null && !int2ObjectMap2.isEmpty()) {
+			TradeOffers.Factory[] factorys = int2ObjectMap2.get(villagerData.getLevel());
 			if (factorys != null) {
 				TradeOfferList tradeOfferList = this.getOffers();
 				this.fillRecipesFromPool(tradeOfferList, factorys, 2);

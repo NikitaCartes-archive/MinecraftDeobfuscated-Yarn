@@ -40,7 +40,7 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
-		Dilation dilation = new Dilation(0.1F);
+		Dilation dilation = new Dilation(0.05F);
 		ModelPartData modelPartData2 = modelPartData.addChild(
 			EntityModelPartNames.BODY, ModelPartBuilder.create().uv(0, 25).cuboid(-7.5F, -12.0F, -23.5F, 15.0F, 12.0F, 27.0F), ModelTransform.pivot(0.0F, 4.0F, 9.5F)
 		);
@@ -62,10 +62,10 @@ public class CamelEntityModel<T extends CamelEntity> extends SinglePartEntityMod
 			ModelTransform.pivot(0.0F, -3.0F, -19.5F)
 		);
 		modelPartData3.addChild(
-			EntityModelPartNames.LEFT_EAR, ModelPartBuilder.create().uv(45, 0).cuboid(-0.5F, 0.5F, -1.0F, 3.0F, 1.0F, 2.0F), ModelTransform.pivot(3.0F, -21.0F, -9.5F)
+			EntityModelPartNames.LEFT_EAR, ModelPartBuilder.create().uv(45, 0).cuboid(-0.5F, 0.5F, -1.0F, 3.0F, 1.0F, 2.0F), ModelTransform.pivot(2.5F, -21.0F, -9.5F)
 		);
 		modelPartData3.addChild(
-			EntityModelPartNames.RIGHT_EAR, ModelPartBuilder.create().uv(67, 0).cuboid(-2.5F, 0.5F, -1.0F, 3.0F, 1.0F, 2.0F), ModelTransform.pivot(-3.0F, -21.0F, -9.5F)
+			EntityModelPartNames.RIGHT_EAR, ModelPartBuilder.create().uv(67, 0).cuboid(-2.5F, 0.5F, -1.0F, 3.0F, 1.0F, 2.0F), ModelTransform.pivot(-2.5F, -21.0F, -9.5F)
 		);
 		modelPartData.addChild(
 			EntityModelPartNames.LEFT_HIND_LEG,

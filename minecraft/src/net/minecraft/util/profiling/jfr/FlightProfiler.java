@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import java.net.SocketAddress;
 import java.nio.file.Path;
 import javax.annotation.Nullable;
+import net.minecraft.network.NetworkState;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
@@ -24,9 +25,9 @@ public interface FlightProfiler {
 
 	void onTick(float tickTime);
 
-	void onPacketReceived(int protocolId, int packetId, SocketAddress remoteAddress, int bytes);
+	void onPacketReceived(NetworkState state, int packetId, SocketAddress remoteAddress, int bytes);
 
-	void onPacketSent(int protocolId, int packetId, SocketAddress remoteAddress, int bytes);
+	void onPacketSent(NetworkState state, int packetId, SocketAddress remoteAddress, int bytes);
 
 	@Nullable
 	Finishable startWorldLoadProfiling();
@@ -61,11 +62,11 @@ public interface FlightProfiler {
 		}
 
 		@Override
-		public void onPacketReceived(int protocolId, int packetId, SocketAddress remoteAddress, int bytes) {
+		public void onPacketReceived(NetworkState state, int packetId, SocketAddress remoteAddress, int bytes) {
 		}
 
 		@Override
-		public void onPacketSent(int protocolId, int packetId, SocketAddress remoteAddress, int bytes) {
+		public void onPacketSent(NetworkState state, int packetId, SocketAddress remoteAddress, int bytes) {
 		}
 
 		@Override

@@ -11,6 +11,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -68,6 +69,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import org.joml.Vector3f;
 
 public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddleable {
 	private static final UUID SUFFOCATING_MODIFIER_ID = UUID.fromString("9e362924-01de-4ddd-a2b2-d0f7a405a174");
@@ -84,8 +86,6 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	private final SaddledComponent saddledComponent = new SaddledComponent(this.dataTracker, BOOST_TIME, SADDLED);
 	@Nullable
 	private TemptGoal temptGoal;
-	@Nullable
-	private EscapeDangerGoal escapeDangerGoal;
 
 	public StriderEntity(EntityType<? extends StriderEntity> entityType, World world) {
 		super(entityType, world);
@@ -155,8 +155,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	protected void initGoals() {
-		this.escapeDangerGoal = new EscapeDangerGoal(this, 1.65);
-		this.goalSelector.add(1, this.escapeDangerGoal);
+		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.65));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
 		this.temptGoal = new TemptGoal(this, 1.4, ATTRACTING_INGREDIENT, false);
 		this.goalSelector.add(3, this.temptGoal);
@@ -189,10 +188,11 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	}
 
 	@Override
-	public double getMountedHeightOffset() {
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
 		float f = Math.min(0.25F, this.limbAnimator.getSpeed());
 		float g = this.limbAnimator.getPos();
-		return (double)this.getHeight() - 0.19 + (double)(0.12F * MathHelper.cos(g * 1.5F) * 2.0F * f);
+		float h = 0.12F * MathHelper.cos(g * 1.5F) * 2.0F * f;
+		return new Vector3f(0.0F, dimensions.height + h * scaleFactor, 0.0F);
 	}
 
 	@Override
@@ -203,12 +203,11 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	@Nullable
 	@Override
 	public LivingEntity getControllingPassenger() {
-		if (this.getFirstPassenger() instanceof PlayerEntity playerEntity
-			&& (playerEntity.getMainHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK) || playerEntity.getOffHandStack().isOf(Items.WARPED_FUNGUS_ON_A_STICK))) {
-			return playerEntity;
-		}
-
-		return null;
+		return (LivingEntity)(this.isSaddled()
+				&& this.getFirstPassenger() instanceof PlayerEntity playerEntity
+				&& playerEntity.isHolding(Items.WARPED_FUNGUS_ON_A_STICK)
+			? playerEntity
+			: super.getControllingPassenger());
 	}
 
 	@Override
@@ -305,7 +304,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 	public void tick() {
 		if (this.isBeingTempted() && this.random.nextInt(140) == 0) {
 			this.playSound(SoundEvents.ENTITY_STRIDER_HAPPY, 1.0F, this.getSoundPitch());
-		} else if (this.isEscapingDanger() && this.random.nextInt(60) == 0) {
+		} else if (this.isPanicking() && this.random.nextInt(60) == 0) {
 			this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT, 1.0F, this.getSoundPitch());
 		}
 
@@ -331,10 +330,6 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		super.tick();
 		this.updateFloating();
 		this.checkBlockCollision();
-	}
-
-	private boolean isEscapingDanger() {
-		return this.escapeDangerGoal != null && this.escapeDangerGoal.isActive();
 	}
 
 	private boolean isBeingTempted() {
@@ -364,7 +359,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return !this.isEscapingDanger() && !this.isBeingTempted() ? SoundEvents.ENTITY_STRIDER_AMBIENT : null;
+		return !this.isPanicking() && !this.isBeingTempted() ? SoundEvents.ENTITY_STRIDER_AMBIENT : null;
 	}
 
 	@Override

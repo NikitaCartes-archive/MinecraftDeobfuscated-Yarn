@@ -2,6 +2,7 @@ package net.minecraft.server.network;
 
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Floats;
+import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
@@ -65,7 +66,6 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
-import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.PlayerPublicKey;
 import net.minecraft.network.encryption.PublicPlayerSession;
 import net.minecraft.network.encryption.SignatureVerifier;
@@ -82,6 +82,8 @@ import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SignedCommandArguments;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.play.AcknowledgeChunksC2SPacket;
+import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
@@ -95,13 +97,10 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
-import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
-import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
@@ -115,7 +114,6 @@ import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
-import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
@@ -133,9 +131,8 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
-import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EnterReconfigurationS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerActionResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
@@ -156,7 +153,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.FilteredMessage;
 import net.minecraft.server.filter.TextStream;
-import net.minecraft.server.world.EntityTrackingListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -165,10 +161,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringHelper;
 import net.minecraft.util.Util;
-import net.minecraft.util.crash.CrashCallable;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -185,21 +177,20 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import org.slf4j.Logger;
 
-public class ServerPlayNetworkHandler implements EntityTrackingListener, TickablePacketListener, ServerPlayPacketListener {
+public class ServerPlayNetworkHandler
+	extends ServerCommonNetworkHandler
+	implements ServerPlayPacketListener,
+	PlayerAssociatedNetworkHandler,
+	TickablePacketListener {
 	static final Logger LOGGER = LogUtils.getLogger();
-	private static final int KEEP_ALIVE_INTERVAL = 15000;
 	public static final double MAX_BREAK_SQUARED_DISTANCE = MathHelper.square(6.0);
 	private static final int DEFAULT_SEQUENCE = -1;
 	private static final int MAX_PENDING_ACKNOWLEDGMENTS = 4096;
 	private static final Text CHAT_VALIDATION_FAILED_TEXT = Text.translatable("multiplayer.disconnect.chat_validation_failed");
-	private final ClientConnection connection;
-	private final MinecraftServer server;
 	public ServerPlayerEntity player;
+	public final ChunkDataSender chunkDataSender;
 	private int ticks;
 	private int sequence = -1;
-	private long lastKeepAliveTime;
-	private boolean waitingForKeepAlive;
-	private long keepAliveId;
 	private int messageCooldown;
 	private int creativeItemDropThreshold;
 	private double lastTickX;
@@ -233,14 +224,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	private final AcknowledgmentValidator acknowledgmentValidator = new AcknowledgmentValidator(20);
 	private final MessageSignatureStorage signatureStorage = MessageSignatureStorage.create();
 	private final MessageChainTaskQueue messageChainTaskQueue;
+	private boolean requestedReconfiguration;
 
-	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player) {
-		this.server = server;
-		this.connection = connection;
+	public ServerPlayNetworkHandler(MinecraftServer server, ClientConnection connection, ServerPlayerEntity player, int latency) {
+		super(server, connection, latency);
+		this.chunkDataSender = new ChunkDataSender(connection.isLocal());
 		connection.setPacketListener(this);
 		this.player = player;
 		player.networkHandler = this;
-		this.lastKeepAliveTime = Util.getMeasuringTimeMs();
 		player.getTextStream().onConnect();
 		this.messageUnpacker = server.shouldEnforceSecureProfile() ? MessageChain.Unpacker.NOT_INITIALIZED : MessageChain.Unpacker.unsigned(player.getUuid());
 		this.messageChainTaskQueue = new MessageChainTaskQueue(server);
@@ -296,20 +287,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			this.vehicleFloatingTicks = 0;
 		}
 
-		this.server.getProfiler().push("keepAlive");
-		long l = Util.getMeasuringTimeMs();
-		if (l - this.lastKeepAliveTime >= 15000L) {
-			if (this.waitingForKeepAlive) {
-				this.disconnect(Text.translatable("disconnect.timeout"));
-			} else {
-				this.waitingForKeepAlive = true;
-				this.lastKeepAliveTime = l;
-				this.keepAliveId = l;
-				this.sendPacket(new KeepAliveS2CPacket(this.keepAliveId));
-			}
-		}
-
-		this.server.getProfiler().pop();
+		this.baseTick();
 		if (this.messageCooldown > 0) {
 			this.messageCooldown--;
 		}
@@ -336,17 +314,17 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 
 	@Override
 	public boolean isConnectionOpen() {
-		return this.connection.isOpen();
+		return this.connection.isOpen() && !this.requestedReconfiguration;
 	}
 
-	private boolean isHost() {
-		return this.server.isHost(this.player.getGameProfile());
+	@Override
+	public boolean accepts(Packet<?> packet) {
+		return super.accepts(packet) ? true : this.requestedReconfiguration && this.connection.isOpen() && packet instanceof AcknowledgeReconfigurationC2SPacket;
 	}
 
-	public void disconnect(Text reason) {
-		this.connection.send(new DisconnectS2CPacket(reason), PacketCallbacks.always(() -> this.connection.disconnect(reason)));
-		this.connection.disableAutoRead();
-		this.server.submitAndJoin(this.connection::handleDisconnection);
+	@Override
+	protected GameProfile getProfile() {
+		return this.player.getGameProfile();
 	}
 
 	private <T, R> CompletableFuture<R> filterText(T text, BiFunction<TextStream, T, CompletableFuture<R>> filterer) {
@@ -542,7 +520,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		} else {
 			CommandBlockExecutor commandBlockExecutor = null;
 			CommandBlockBlockEntity commandBlockBlockEntity = null;
-			BlockPos blockPos = packet.getBlockPos();
+			BlockPos blockPos = packet.getPos();
 			BlockEntity blockEntity = this.player.getWorld().getBlockEntity(blockPos);
 			if (blockEntity instanceof CommandBlockBlockEntity) {
 				commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
@@ -1124,15 +1102,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	}
 
 	@Override
-	public void onResourcePackStatus(ResourcePackStatusC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		if (packet.getStatus() == ResourcePackStatusC2SPacket.Status.DECLINED && this.server.requireResourcePack()) {
-			LOGGER.info("Disconnecting {} due to resource pack rejection", this.player.getName());
-			this.disconnect(Text.translatable("multiplayer.requiredTexturePrompt.disconnect"));
-		}
-	}
-
-	@Override
 	public void onBoatPaddleState(BoatPaddleStateC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.getControllingVehicle() instanceof BoatEntity boatEntity) {
@@ -1141,22 +1110,19 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	}
 
 	@Override
-	public void onPong(PlayPongC2SPacket packet) {
+	public void onDisconnected(Text reason) {
+		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), reason.getString());
+		this.method_52415();
+		super.onDisconnected(reason);
 	}
 
-	@Override
-	public void onDisconnected(Text reason) {
+	private void method_52415() {
 		this.messageChainTaskQueue.close();
-		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), reason.getString());
 		this.server.forcePlayerSampleUpdate();
 		this.server.getPlayerManager().broadcast(Text.translatable("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), false);
 		this.player.onDisconnect();
 		this.server.getPlayerManager().remove(this.player);
 		this.player.getTextStream().onDisconnect();
-		if (this.isHost()) {
-			LOGGER.info("Stopping singleplayer server as player logged out");
-			this.server.stop(false);
-		}
 	}
 
 	public void updateSequence(int sequence) {
@@ -1164,22 +1130,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 			throw new IllegalArgumentException("Expected packet sequence nr >= 0");
 		} else {
 			this.sequence = Math.max(sequence, this.sequence);
-		}
-	}
-
-	@Override
-	public void sendPacket(Packet<?> packet) {
-		this.sendPacket(packet, null);
-	}
-
-	public void sendPacket(Packet<?> packet, @Nullable PacketCallbacks callbacks) {
-		try {
-			this.connection.send(packet, callbacks);
-		} catch (Throwable var6) {
-			CrashReport crashReport = CrashReport.create(var6, "Sending packet");
-			CrashReportSection crashReportSection = crashReport.addElement("Packet being sent");
-			crashReportSection.add("Packet class", (CrashCallable<String>)(() -> packet.getClass().getCanonicalName()));
-			throw new CrashException(crashReport);
 		}
 	}
 
@@ -1494,6 +1444,12 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		return this.connection.getAddress();
 	}
 
+	public void method_52414() {
+		this.requestedReconfiguration = true;
+		this.method_52415();
+		this.sendPacket(new EnterReconfigurationS2CPacket());
+	}
+
 	@Override
 	public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
@@ -1662,7 +1618,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.interactionManager.isCreative()) {
 			boolean bl = packet.getSlot() < 0;
-			ItemStack itemStack = packet.getItemStack();
+			ItemStack itemStack = packet.getStack();
 			if (!itemStack.isItemEnabled(this.player.getWorld().getEnabledFeatures())) {
 				return;
 			}
@@ -1710,17 +1666,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	}
 
 	@Override
-	public void onKeepAlive(KeepAliveC2SPacket packet) {
-		if (this.waitingForKeepAlive && packet.getId() == this.keepAliveId) {
-			int i = (int)(Util.getMeasuringTimeMs() - this.lastKeepAliveTime);
-			this.player.pingMilliseconds = (this.player.pingMilliseconds * 3 + i) / 4;
-			this.waitingForKeepAlive = false;
-		} else if (!this.isHost()) {
-			this.disconnect(Text.translatable("disconnect.timeout"));
-		}
-	}
-
-	@Override
 	public void onUpdatePlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.getAbilities().flying = packet.isFlying() && this.player.getAbilities().allowFlying;
@@ -1730,10 +1675,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 	public void onClientSettings(ClientSettingsC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.setClientSettings(packet);
-	}
-
-	@Override
-	public void onCustomPayload(CustomPayloadC2SPacket packet) {
 	}
 
 	@Override
@@ -1776,6 +1717,21 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, Tickabl
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onAcknowledgeReconfiguration(AcknowledgeReconfigurationC2SPacket packet) {
+		if (!this.requestedReconfiguration) {
+			throw new IllegalStateException("Client acknowledged config, but none was requested");
+		} else {
+			this.connection.setPacketListener(new ServerConfigurationNetworkHandler(this.server, this.connection, this.getProfile()));
+		}
+	}
+
+	@Override
+	public void onAcknowledgeChunks(AcknowledgeChunksC2SPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
+		this.chunkDataSender.onAcknowledgeChunks(packet.desiredBatchSize());
 	}
 
 	private void setSession(PublicPlayerSession session) {

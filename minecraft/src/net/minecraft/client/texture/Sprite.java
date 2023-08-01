@@ -65,14 +65,14 @@ public class Sprite {
 		} : null;
 	}
 
-	public float getFrameU(double frame) {
+	public float getFrameU(float frame) {
 		float f = this.maxU - this.minU;
-		return this.minU + f * (float)frame / 16.0F;
+		return this.minU + f * frame;
 	}
 
 	public float getFrameFromU(float u) {
 		float f = this.maxU - this.minU;
-		return (u - this.minU) / f * 16.0F;
+		return (u - this.minU) / f;
 	}
 
 	public float getMinV() {
@@ -83,14 +83,14 @@ public class Sprite {
 		return this.maxV;
 	}
 
-	public float getFrameV(double frame) {
+	public float getFrameV(float frame) {
 		float f = this.maxV - this.minV;
-		return this.minV + f * (float)frame / 16.0F;
+		return this.minV + f * frame;
 	}
 
 	public float getFrameFromV(float v) {
 		float f = this.maxV - this.minV;
-		return (v - this.minV) / f * 16.0F;
+		return (v - this.minV) / f;
 	}
 
 	public Identifier getAtlasId() {

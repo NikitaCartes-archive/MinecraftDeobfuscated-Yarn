@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -121,10 +122,10 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 			try {
 				for (Path path2 : directoryStream) {
 					String string = path2.getFileName().toString();
-					if (string.equals(string.toLowerCase(Locale.ROOT))) {
+					if (Identifier.isNamespaceValid(string)) {
 						set.add(string);
 					} else {
-						LOGGER.warn("Ignored non-lowercase namespace: {} in {}", string, this.root);
+						LOGGER.warn("Non [a-z0-9_.-] character in namespace {} in pack {}, ignoring", string, this.root);
 					}
 				}
 			} catch (Throwable var9) {
@@ -152,5 +153,38 @@ public class DirectoryResourcePack extends AbstractFileResourcePack {
 
 	@Override
 	public void close() {
+	}
+
+	public static class DirectoryBackedFactory implements ResourcePackProfile.PackFactory {
+		private final Path path;
+		private final boolean alwaysStable;
+
+		public DirectoryBackedFactory(Path path, boolean alwaysStable) {
+			this.path = path;
+			this.alwaysStable = alwaysStable;
+		}
+
+		@Override
+		public ResourcePack open(String name) {
+			return new DirectoryResourcePack(name, this.path, this.alwaysStable);
+		}
+
+		@Override
+		public ResourcePack openWithOverlays(String name, ResourcePackProfile.Metadata metadata) {
+			ResourcePack resourcePack = this.open(name);
+			List<String> list = metadata.overlays();
+			if (list.isEmpty()) {
+				return resourcePack;
+			} else {
+				List<ResourcePack> list2 = new ArrayList(list.size());
+
+				for (String string : list) {
+					Path path = this.path.resolve(string);
+					list2.add(new DirectoryResourcePack(name, path, this.alwaysStable));
+				}
+
+				return new OverlayResourcePack(resourcePack, list2);
+			}
+		}
 	}
 }

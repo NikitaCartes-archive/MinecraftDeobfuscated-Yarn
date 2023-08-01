@@ -29,7 +29,7 @@ public interface Equipment extends Vanishable {
 		ItemStack itemStack = user.getStackInHand(hand);
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 		ItemStack itemStack2 = user.getEquippedStack(equipmentSlot);
-		if (!EnchantmentHelper.hasBindingCurse(itemStack2) && !ItemStack.areEqual(itemStack, itemStack2)) {
+		if ((!EnchantmentHelper.hasBindingCurse(itemStack2) || user.isCreative()) && !ItemStack.areEqual(itemStack, itemStack2)) {
 			if (!world.isClient()) {
 				user.incrementStat(Stats.USED.getOrCreateStat(item));
 			}

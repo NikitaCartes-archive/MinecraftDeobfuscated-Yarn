@@ -1,5 +1,6 @@
 package net.minecraft.screen;
 
+import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Blocks;
@@ -20,11 +21,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 
 public class EnchantmentScreenHandler extends ScreenHandler {
+	static final Identifier EMPTY_LAPIS_SLOT_TEXTURE = new Identifier("item/empty_slot_lapis_lazuli");
 	private final Inventory inventory = new SimpleInventory(2) {
 		@Override
 		public void markDirty() {
@@ -48,11 +51,6 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 		this.context = context;
 		this.addSlot(new Slot(this.inventory, 0, 15, 47) {
 			@Override
-			public boolean canInsert(ItemStack stack) {
-				return true;
-			}
-
-			@Override
 			public int getMaxItemCount() {
 				return 1;
 			}
@@ -61,6 +59,11 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return stack.isOf(Items.LAPIS_LAZULI);
+			}
+
+			@Override
+			public Pair<Identifier, Identifier> getBackgroundSprite() {
+				return Pair.of(PlayerScreenHandler.BLOCK_ATLAS_TEXTURE, EnchantmentScreenHandler.EMPTY_LAPIS_SLOT_TEXTURE);
 			}
 		});
 

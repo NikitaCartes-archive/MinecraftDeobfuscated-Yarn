@@ -2,6 +2,7 @@ package net.minecraft.entity.mob;
 
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityStatuses;
@@ -42,6 +43,8 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	private static final UUID DRINKING_SPEED_PENALTY_MODIFIER_ID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
@@ -129,7 +132,8 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 						}
 					}
 
-					this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
+					this.emitGameEvent(GameEvent.DRINK);
+					this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER.getId());
 				}
 			} else {
 				Potion potion = null;
@@ -160,7 +164,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 					}
 
 					EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-					entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
+					entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER.getId());
 					entityAttributeInstance.addTemporaryModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 				}
 			}
@@ -255,6 +259,11 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 1.62F;
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + 0.3125F * scaleFactor, 0.0F);
 	}
 
 	@Override

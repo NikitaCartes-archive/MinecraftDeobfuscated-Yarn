@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalLong;
-import java.util.UUID;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.IntFunction;
@@ -110,8 +109,7 @@ public class Codecs {
 				)
 				.apply(instance, AxisAngle4f::new)
 	);
-	public static final Codec<Quaternionf> ROTATION = Codec.either(QUATERNIONF, AXIS_ANGLE4F.xmap(Quaternionf::new, AxisAngle4f::new))
-		.xmap(either -> either.map(quaternion -> quaternion, quaternion -> quaternion), com.mojang.datafixers.util.Either::left);
+	public static final Codec<Quaternionf> ROTATION = either(QUATERNIONF, AXIS_ANGLE4F.xmap(Quaternionf::new, AxisAngle4f::new));
 	public static Codec<Matrix4f> MATRIX4F = Codec.FLOAT.listOf().comapFlatMap(list -> Util.decodeFixedLengthList(list, 16).map(listx -> {
 			Matrix4f matrix4f = new Matrix4f();
 
@@ -162,9 +160,9 @@ public class Codecs {
 	public static final Codec<BitSet> BIT_SET = Codec.LONG_STREAM.xmap(stream -> BitSet.valueOf(stream.toArray()), set -> Arrays.stream(set.toLongArray()));
 	private static final Codec<Property> GAME_PROFILE_PROPERTY = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.STRING.fieldOf("name").forGetter(Property::getName),
-					Codec.STRING.fieldOf("value").forGetter(Property::getValue),
-					Codec.STRING.optionalFieldOf("signature").forGetter(property -> Optional.ofNullable(property.getSignature()))
+					Codec.STRING.fieldOf("name").forGetter(Property::name),
+					Codec.STRING.fieldOf("value").forGetter(Property::value),
+					Codec.STRING.optionalFieldOf("signature").forGetter(property -> Optional.ofNullable(property.signature()))
 				)
 				.apply(instance, (key, value, signature) -> new Property(key, value, (String)signature.orElse(null)))
 	);
@@ -180,19 +178,18 @@ public class Codecs {
 					}
 				})).ifRight(properties -> {
 				for (Property property : properties) {
-					propertyMap.put(property.getName(), property);
+					propertyMap.put(property.name(), property);
 				}
 			});
 			return propertyMap;
 		}, properties -> com.mojang.datafixers.util.Either.right(properties.values().stream().toList()));
-	public static final Codec<GameProfile> GAME_PROFILE = RecordCodecBuilder.create(
+	private static final MapCodec<GameProfile> GAME_PROFILE = RecordCodecBuilder.mapCodec(
+		instance -> instance.group(Uuids.CODEC.fieldOf("id").forGetter(GameProfile::getId), Codec.STRING.fieldOf("name").forGetter(GameProfile::getName))
+				.apply(instance, GameProfile::new)
+	);
+	public static final Codec<GameProfile> GAME_PROFILE_WITH_PROPERTIES = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.mapPair(
-							Uuids.CODEC.<Optional>xmap(Optional::of, optional -> (UUID)optional.orElse(null)).optionalFieldOf("id", Optional.empty()),
-							Codec.STRING.<Optional>xmap(Optional::of, optional -> (String)optional.orElse(null)).optionalFieldOf("name", Optional.empty())
-						)
-						.flatXmap(Codecs::createGameProfileFromPair, Codecs::createPairFromGameProfile)
-						.forGetter(Function.identity()),
+					GAME_PROFILE.forGetter(Function.identity()),
 					GAME_PROFILE_PROPERTY_MAP.optionalFieldOf("properties", new PropertyMap()).forGetter(GameProfile::getProperties)
 				)
 				.apply(instance, (profile, properties) -> {
@@ -207,6 +204,10 @@ public class Codecs {
 		int[] is = string.codePoints().toArray();
 		return is.length != 1 ? DataResult.error(() -> "Expected one codepoint, got: " + string) : DataResult.success(is[0]);
 	}, Character::toString);
+	public static Codec<String> IDENTIFIER_PATH = validate(
+		Codec.STRING,
+		path -> !Identifier.isPathValid(path) ? DataResult.error(() -> "Invalid string to use as a resource path element: " + path) : DataResult.success(path)
+	);
 
 	/**
 	 * Returns an exclusive-or codec for {@link Either} instances.
@@ -250,7 +251,7 @@ public class Codecs {
 			.comapFlatMap(
 				pair -> (DataResult)combineFunction.apply(pair.getFirst(), pair.getSecond()), pair -> Pair.of(leftFunction.apply(pair), rightFunction.apply(pair))
 			);
-		Codec<I> codec4 = new Codecs.Either<>(codec2, codec3).xmap(either -> either.map(object -> object, object -> object), com.mojang.datafixers.util.Either::left);
+		Codec<I> codec4 = either(codec2, codec3);
 		return Codec.either(codec, codec4)
 			.comapFlatMap(either -> either.map(object -> (DataResult)combineFunction.apply(object, object), DataResult::success), pair -> {
 				P object = (P)leftFunction.apply(pair);
@@ -452,18 +453,6 @@ public class Codecs {
 		return codec.xmap(OPTIONAL_OF_LONG_TO_OPTIONAL_LONG, OPTIONAL_LONG_TO_OPTIONAL_OF_LONG);
 	}
 
-	private static DataResult<GameProfile> createGameProfileFromPair(Pair<Optional<UUID>, Optional<String>> pair) {
-		try {
-			return DataResult.success(new GameProfile((UUID)pair.getFirst().orElse(null), (String)pair.getSecond().orElse(null)));
-		} catch (Throwable var2) {
-			return DataResult.error(var2::getMessage);
-		}
-	}
-
-	private static DataResult<Pair<Optional<UUID>, Optional<String>>> createPairFromGameProfile(GameProfile profile) {
-		return DataResult.success(Pair.of(Optional.ofNullable(profile.getId()), Optional.ofNullable(profile.getName())));
-	}
-
 	public static Codec<String> string(int minLength, int maxLength) {
 		return validate(
 			Codec.STRING,
@@ -478,6 +467,14 @@ public class Codecs {
 				}
 			}
 		);
+	}
+
+	public static <T> Codec<T> either(Codec<T> a, Codec<T> b) {
+		return Codec.either(a, b).xmap(either -> either.map(o -> o, o -> o), com.mojang.datafixers.util.Either::left);
+	}
+
+	public static <T, U> Codec<T> either(Codec<T> serialized, Codec<U> alternative, Function<U, T> alternativeMapper) {
+		return Codec.either(serialized, alternative).xmap(either -> either.map(o -> o, alternativeMapper), com.mojang.datafixers.util.Either::left);
 	}
 
 	static final class Either<F, S> implements Codec<com.mojang.datafixers.util.Either<F, S>> {

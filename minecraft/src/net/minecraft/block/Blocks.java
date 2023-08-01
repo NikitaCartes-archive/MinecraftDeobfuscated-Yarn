@@ -27,6 +27,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.DyeColor;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
@@ -6338,7 +6339,6 @@ public class Blocks {
 				.suffocates(contextPredicate)
 				.blockVision(contextPredicate)
 				.pistonBehavior(PistonBehavior.DESTROY)
-				.solidBlock(Blocks::always)
 		);
 	}
 
@@ -6391,6 +6391,10 @@ public class Blocks {
 	}
 
 	public static Block register(String id, Block block) {
+		return Registry.register(Registries.BLOCK, id, block);
+	}
+
+	public static Block register(Identifier id, Block block) {
 		return Registry.register(Registries.BLOCK, id, block);
 	}
 

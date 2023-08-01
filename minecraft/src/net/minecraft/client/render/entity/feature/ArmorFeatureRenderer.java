@@ -65,7 +65,7 @@ public class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityM
 					this.renderArmorParts(matrices, vertexConsumers, light, armorItem, model, bl, 1.0F, 1.0F, 1.0F, null);
 				}
 
-				ArmorTrim.getTrim(entity.getWorld().getRegistryManager(), itemStack)
+				ArmorTrim.getTrim(entity.getWorld().getRegistryManager(), itemStack, true)
 					.ifPresent(trim -> this.renderTrim(armorItem.getMaterial(), matrices, vertexConsumers, light, trim, model, bl));
 				if (itemStack.hasGlint()) {
 					this.renderGlint(matrices, vertexConsumers, light, model);

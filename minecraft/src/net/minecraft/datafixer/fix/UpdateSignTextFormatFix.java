@@ -1,9 +1,11 @@
 package net.minecraft.datafixer.fix;
 
+import com.google.common.collect.Streams;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.Typed;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.serialization.Dynamic;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.minecraft.datafixer.TypeReferences;
@@ -11,48 +13,53 @@ import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 
 public class UpdateSignTextFormatFix extends ChoiceFix {
+	public static final String FILTERED_CORRECT = "_filtered_correct";
+	private static final String DEFAULT_COLOR = "black";
+	private static final String EMPTY_TEXT_JSON = Text.Serializer.toJson(ScreenTexts.EMPTY);
+
 	public UpdateSignTextFormatFix(Schema outputSchema, String name, String blockEntityId) {
 		super(outputSchema, false, name, TypeReferences.BLOCK_ENTITY, blockEntityId);
 	}
 
-	private static Dynamic<?> updateSignTextFormat(Dynamic<?> dynamic) {
-		String string = "black";
-		Dynamic<?> dynamic2 = dynamic.emptyMap();
-		dynamic2 = dynamic2.set("messages", updateFrontText(dynamic, "Text"));
-		dynamic2 = dynamic2.set("filtered_messages", updateFrontText(dynamic, "FilteredText"));
-		Optional<? extends Dynamic<?>> optional = dynamic.get("Color").result();
-		dynamic2 = dynamic2.set("color", optional.isPresent() ? (Dynamic)optional.get() : dynamic2.createString("black"));
-		Optional<? extends Dynamic<?>> optional2 = dynamic.get("GlowingText").result();
-		dynamic2 = dynamic2.set("has_glowing_text", optional2.isPresent() ? (Dynamic)optional2.get() : dynamic2.createBoolean(false));
-		Dynamic<?> dynamic3 = dynamic.emptyMap();
-		Dynamic<?> dynamic4 = updateBackText(dynamic);
-		dynamic3 = dynamic3.set("messages", dynamic4);
-		dynamic3 = dynamic3.set("filtered_messages", dynamic4);
-		dynamic3 = dynamic3.set("color", dynamic3.createString("black"));
-		dynamic3 = dynamic3.set("has_glowing_text", dynamic3.createBoolean(false));
-		dynamic = dynamic.set("front_text", dynamic2);
-		return dynamic.set("back_text", dynamic3);
+	private static <T> Dynamic<T> updateSignTextFormat(Dynamic<T> signData) {
+		return signData.set("front_text", updateFront(signData)).set("back_text", updateBack(signData)).set("is_waxed", signData.createBoolean(false));
 	}
 
-	private static <T> Dynamic<T> updateFrontText(Dynamic<T> dynamic, String textKey) {
-		Dynamic<T> dynamic2 = dynamic.createString(getEmptyText());
-		return dynamic.createList(
-			Stream.of(
-				(Dynamic)dynamic.get(textKey + "1").result().orElse(dynamic2),
-				(Dynamic)dynamic.get(textKey + "2").result().orElse(dynamic2),
-				(Dynamic)dynamic.get(textKey + "3").result().orElse(dynamic2),
-				(Dynamic)dynamic.get(textKey + "4").result().orElse(dynamic2)
-			)
+	private static <T> Dynamic<T> updateFront(Dynamic<T> signData) {
+		Dynamic<T> dynamic = signData.createString(EMPTY_TEXT_JSON);
+		List<Dynamic<T>> list = streamKeys(signData, "Text").map(text -> (Dynamic)text.orElse(dynamic)).toList();
+		Dynamic<T> dynamic2 = signData.emptyMap()
+			.set("messages", signData.createList(list.stream()))
+			.set("color", (Dynamic<?>)signData.get("Color").result().orElse(signData.createString("black")))
+			.set("has_glowing_text", (Dynamic<?>)signData.get("GlowingText").result().orElse(signData.createBoolean(false)))
+			.set("_filtered_correct", signData.createBoolean(true));
+		List<Optional<Dynamic<T>>> list2 = streamKeys(signData, "FilteredText").toList();
+		if (list2.stream().anyMatch(Optional::isPresent)) {
+			dynamic2 = dynamic2.set("filtered_messages", signData.createList(Streams.mapWithIndex(list2.stream(), (message, index) -> {
+				Dynamic<T> dynamicx = (Dynamic<T>)list.get((int)index);
+				return (Dynamic<?>)message.orElse(dynamicx);
+			})));
+		}
+
+		return dynamic2;
+	}
+
+	private static <T> Stream<Optional<Dynamic<T>>> streamKeys(Dynamic<T> signData, String prefix) {
+		return Stream.of(
+			signData.get(prefix + "1").result(), signData.get(prefix + "2").result(), signData.get(prefix + "3").result(), signData.get(prefix + "4").result()
 		);
 	}
 
-	private static <T> Dynamic<T> updateBackText(Dynamic<T> dynamic) {
-		Dynamic<T> dynamic2 = dynamic.createString(getEmptyText());
-		return dynamic.createList(Stream.of(dynamic2, dynamic2, dynamic2, dynamic2));
+	private static <T> Dynamic<T> updateBack(Dynamic<T> signData) {
+		return signData.emptyMap()
+			.set("messages", emptySignData(signData))
+			.set("color", signData.createString("black"))
+			.set("has_glowing_text", signData.createBoolean(false));
 	}
 
-	private static String getEmptyText() {
-		return Text.Serializer.toJson(ScreenTexts.EMPTY);
+	private static <T> Dynamic<T> emptySignData(Dynamic<T> signData) {
+		Dynamic<T> dynamic = signData.createString(EMPTY_TEXT_JSON);
+		return signData.createList(Stream.of(dynamic, dynamic, dynamic, dynamic));
 	}
 
 	@Override

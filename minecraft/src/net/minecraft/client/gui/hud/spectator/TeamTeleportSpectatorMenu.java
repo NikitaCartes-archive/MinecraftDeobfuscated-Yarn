@@ -4,13 +4,14 @@ import com.mojang.authlib.GameProfile;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
-import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
@@ -21,6 +22,7 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
+	private static final Identifier TEXTURE = new Identifier("spectator/teleport_to_team");
 	private static final Text TEAM_TELEPORT_TEXT = Text.translatable("spectatorMenu.team_teleport");
 	private static final Text PROMPT_TEXT = Text.translatable("spectatorMenu.team_teleport.prompt");
 	private final List<SpectatorMenuCommand> commands;
@@ -56,7 +58,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 
 	@Override
 	public void renderIcon(DrawContext context, float brightness, int alpha) {
-		context.drawTexture(SpectatorHud.SPECTATOR_TEXTURE, 0, 0, 16.0F, 0.0F, 16, 16, 256, 256);
+		context.drawGuiTexture(TEXTURE, 0, 0, 16, 16);
 	}
 
 	@Override
@@ -67,13 +69,13 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	@Environment(EnvType.CLIENT)
 	static class TeleportToSpecificTeamCommand implements SpectatorMenuCommand {
 		private final Team team;
-		private final Identifier skinId;
+		private final Supplier<SkinTextures> skinTexturesSupplier;
 		private final List<PlayerListEntry> scoreboardEntries;
 
-		private TeleportToSpecificTeamCommand(Team team, List<PlayerListEntry> scoreboardEntries, Identifier skinId) {
+		private TeleportToSpecificTeamCommand(Team team, List<PlayerListEntry> scoreboardEntries, Supplier<SkinTextures> skinTexturesSupplier) {
 			this.team = team;
 			this.scoreboardEntries = scoreboardEntries;
-			this.skinId = skinId;
+			this.skinTexturesSupplier = skinTexturesSupplier;
 		}
 
 		public static Optional<SpectatorMenuCommand> create(MinecraftClient client, Team team) {
@@ -90,8 +92,8 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 				return Optional.empty();
 			} else {
 				GameProfile gameProfile = ((PlayerListEntry)list.get(Random.create().nextInt(list.size()))).getProfile();
-				Identifier identifier = client.getSkinProvider().loadSkin(gameProfile);
-				return Optional.of(new TeamTeleportSpectatorMenu.TeleportToSpecificTeamCommand(team, list, identifier));
+				Supplier<SkinTextures> supplier = client.getSkinProvider().getSkinTexturesSupplier(gameProfile);
+				return Optional.of(new TeamTeleportSpectatorMenu.TeleportToSpecificTeamCommand(team, list, supplier));
 			}
 		}
 
@@ -116,7 +118,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 			}
 
 			context.setShaderColor(brightness, brightness, brightness, (float)alpha / 255.0F);
-			PlayerSkinDrawer.draw(context, this.skinId, 2, 2, 12);
+			PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), 2, 2, 12);
 			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 

@@ -1,34 +1,32 @@
 package net.minecraft.client.realms.gui.screen;
 
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.realms.RealmsClient;
+import net.minecraft.client.realms.RealmsAvailability;
 import net.minecraft.client.realms.RealmsPeriodicCheckers;
 import net.minecraft.client.realms.dto.RealmsNotification;
-import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.util.PeriodicRunnerFactory;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class RealmsNotificationsScreen extends RealmsScreen {
-	private static final Identifier INVITE_ICON = new Identifier("realms", "textures/gui/realms/invite_icon.png");
-	private static final Identifier TRIAL_ICON = new Identifier("realms", "textures/gui/realms/trial_icon.png");
-	private static final Identifier NEWS_NOTIFICATION = new Identifier("realms", "textures/gui/realms/news_notification_mainscreen.png");
-	private static final Identifier UNSEEN_NOTIFICATION = new Identifier("minecraft", "textures/gui/unseen_notification.png");
+	private static final Identifier UNSEEN_NOTIFICATION_ICON_TEXTURE = new Identifier("icon/unseen_notification");
+	private static final Identifier NEWS_ICON_TEXTURE = new Identifier("icon/news");
+	private static final Identifier INVITE_ICON_TEXTURE = new Identifier("icon/invite");
+	private static final Identifier TRIAL_AVAILABLE_ICON_TEXTURE = new Identifier("icon/trial_available");
+	private final CompletableFuture<Boolean> validClient = RealmsAvailability.check().thenApply(info -> info.type() == RealmsAvailability.Type.SUCCESS);
 	@Nullable
 	private PeriodicRunnerFactory.RunnersManager periodicRunnersManager;
 	@Nullable
 	private RealmsNotificationsScreen.NotificationRunnersFactory currentRunnersFactory;
 	private volatile int pendingInvitesCount;
-	static boolean checkedMcoAvailability;
 	private static boolean trialAvailable;
-	static boolean validClient;
 	private static boolean hasUnreadNews;
 	private static boolean hasUnseenNotification;
 	private final RealmsNotificationsScreen.NotificationRunnersFactory newsAndNotifications = new RealmsNotificationsScreen.NotificationRunnersFactory() {
@@ -65,7 +63,6 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 
 	@Override
 	public void init() {
-		this.checkIfMcoEnabled();
 		if (this.periodicRunnersManager != null) {
 			this.periodicRunnersManager.forceRunListeners();
 		}
@@ -79,7 +76,7 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 
 	@Nullable
 	private RealmsNotificationsScreen.NotificationRunnersFactory getRunnersFactory() {
-		boolean bl = this.isTitleScreen() && validClient;
+		boolean bl = this.isTitleScreen() && (Boolean)this.validClient.getNow(false);
 		if (!bl) {
 			return null;
 		} else {
@@ -112,74 +109,43 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 		return this.client.currentScreen instanceof TitleScreen;
 	}
 
-	private void checkIfMcoEnabled() {
-		if (!checkedMcoAvailability) {
-			checkedMcoAvailability = true;
-			(new Thread("Realms Notification Availability checker #1") {
-				public void run() {
-					RealmsClient realmsClient = RealmsClient.create();
-
-					try {
-						RealmsClient.CompatibleVersionResponse compatibleVersionResponse = realmsClient.clientCompatible();
-						if (compatibleVersionResponse != RealmsClient.CompatibleVersionResponse.COMPATIBLE) {
-							return;
-						}
-					} catch (RealmsServiceException var3) {
-						if (var3.httpResultCode != 401) {
-							RealmsNotificationsScreen.checkedMcoAvailability = false;
-						}
-
-						return;
-					}
-
-					RealmsNotificationsScreen.validClient = true;
-				}
-			}).start();
+	@Override
+	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
+		if ((Boolean)this.validClient.getNow(false)) {
+			this.drawIcons(context);
 		}
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		if (validClient) {
-			this.drawIcons(context);
-		}
-
-		super.render(context, mouseX, mouseY, delta);
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 	}
 
 	private void drawIcons(DrawContext context) {
 		int i = this.pendingInvitesCount;
 		int j = 24;
 		int k = this.height / 4 + 48;
-		int l = this.width / 2 + 80;
+		int l = this.width / 2 + 100;
 		int m = k + 48 + 2;
-		int n = 0;
+		int n = l - 3;
 		if (hasUnseenNotification) {
-			context.drawTexture(UNSEEN_NOTIFICATION, l - n + 5, m + 3, 0.0F, 0.0F, 10, 10, 10, 10);
-			n += 14;
+			context.drawGuiTexture(UNSEEN_NOTIFICATION_ICON_TEXTURE, n - 12, m + 3, 10, 10);
+			n -= 16;
 		}
 
 		if (this.currentRunnersFactory != null && this.currentRunnersFactory.isNews()) {
 			if (hasUnreadNews) {
-				context.getMatrices().push();
-				context.getMatrices().scale(0.4F, 0.4F, 0.4F);
-				context.drawTexture(NEWS_NOTIFICATION, (int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0F, 0.0F, 40, 40, 40, 40);
-				context.getMatrices().pop();
-				n += 14;
+				context.drawGuiTexture(NEWS_ICON_TEXTURE, n - 14, m + 1, 14, 14);
+				n -= 16;
 			}
 
 			if (i != 0) {
-				context.drawTexture(INVITE_ICON, l - n, m, 0.0F, 0.0F, 18, 15, 18, 30);
-				n += 16;
+				context.drawGuiTexture(INVITE_ICON_TEXTURE, n - 14, m + 1, 14, 14);
+				n -= 16;
 			}
 
 			if (trialAvailable) {
-				int o = 0;
-				if ((Util.getMeasuringTimeMs() / 800L & 1L) == 1L) {
-					o = 8;
-				}
-
-				context.drawTexture(TRIAL_ICON, l + 4 - n, m + 4, 0.0F, (float)o, 8, 8, 8, 16);
+				context.drawGuiTexture(TRIAL_AVAILABLE_ICON_TEXTURE, n - 10, m + 4, 8, 8);
 			}
 		}
 	}

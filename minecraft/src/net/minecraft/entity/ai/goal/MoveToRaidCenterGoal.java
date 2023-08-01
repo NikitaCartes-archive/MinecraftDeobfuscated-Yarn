@@ -25,7 +25,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 	@Override
 	public boolean canStart() {
 		return this.actor.getTarget() == null
-			&& !this.actor.hasPassengers()
+			&& !this.actor.hasControllingPassenger()
 			&& this.actor.hasActiveRaid()
 			&& !this.actor.getRaid().isFinished()
 			&& !((ServerWorld)this.actor.getWorld()).isNearOccupiedPointOfInterest(this.actor.getBlockPos());

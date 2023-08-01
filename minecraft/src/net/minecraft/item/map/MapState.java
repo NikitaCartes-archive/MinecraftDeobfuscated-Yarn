@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -65,6 +66,12 @@ public class MapState extends PersistentState {
 	final Map<String, MapIcon> icons = Maps.<String, MapIcon>newLinkedHashMap();
 	private final Map<String, MapFrameMarker> frames = Maps.<String, MapFrameMarker>newHashMap();
 	private int iconCount;
+
+	public static PersistentState.Type<MapState> getPersistentStateType() {
+		return new PersistentState.Type<>(() -> {
+			throw new IllegalStateException("Should never create an empty map saved data");
+		}, MapState::fromNbt, DataFixTypes.SAVED_DATA_MAP_DATA);
+	}
 
 	private MapState(int centerX, int centerZ, byte scale, boolean showIcons, boolean unlimitedTracking, boolean locked, RegistryKey<World> dimension) {
 		this.scale = scale;

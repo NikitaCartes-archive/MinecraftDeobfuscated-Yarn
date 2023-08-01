@@ -2,10 +2,13 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -32,7 +35,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
-import org.jetbrains.annotations.Nullable;
 
 public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable {
 	public static final Identifier SHERDS_DYNAMIC_DROP_ID = new Identifier("sherds");
@@ -66,6 +68,13 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 			.with(FACING, ctx.getHorizontalPlayerFacing())
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER))
 			.with(CRACKED, Boolean.valueOf(false));
+	}
+
+	@Override
+	public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+		if (world.isClient) {
+			world.getBlockEntity(pos, BlockEntityType.DECORATED_POT).ifPresent(blockEntity -> blockEntity.readNbtFromStack(itemStack));
+		}
 	}
 
 	@Override
@@ -130,5 +139,12 @@ public class DecoratedPotBlock extends BlockWithEntity implements Waterloggable 
 			Stream.of(sherds.front(), sherds.left(), sherds.right(), sherds.back())
 				.forEach(sherd -> tooltip.add(new ItemStack(sherd, 1).getName().copyContentOnly().formatted(Formatting.GRAY)));
 		}
+	}
+
+	@Override
+	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
+		return world.getBlockEntity(pos) instanceof DecoratedPotBlockEntity decoratedPotBlockEntity
+			? decoratedPotBlockEntity.asStack()
+			: super.getPickStack(world, pos, state);
 	}
 }

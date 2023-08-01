@@ -55,8 +55,8 @@ public class ChaseBoatGoal extends Goal {
 	@Override
 	public void start() {
 		for (BoatEntity boatEntity : this.mob.getWorld().getNonSpectatingEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0))) {
-			if (boatEntity.getControllingPassenger() != null && boatEntity.getControllingPassenger() instanceof PlayerEntity) {
-				this.passenger = (PlayerEntity)boatEntity.getControllingPassenger();
+			if (boatEntity.getControllingPassenger() instanceof PlayerEntity playerEntity) {
+				this.passenger = playerEntity;
 				break;
 			}
 		}

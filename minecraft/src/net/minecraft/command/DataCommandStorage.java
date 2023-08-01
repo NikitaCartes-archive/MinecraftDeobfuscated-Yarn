@@ -3,6 +3,7 @@ package net.minecraft.command;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.stream.Stream;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.PersistentStateManager;
@@ -22,17 +23,21 @@ public class DataCommandStorage {
 		return persistentState;
 	}
 
+	private net.minecraft.world.PersistentState.Type<DataCommandStorage.PersistentState> getPersistentStateType(String namespace) {
+		return new net.minecraft.world.PersistentState.Type<>(
+			() -> this.createStorage(namespace), nbt -> this.createStorage(namespace).readNbt(nbt), DataFixTypes.SAVED_DATA_COMMAND_STORAGE
+		);
+	}
+
 	public NbtCompound get(Identifier id) {
 		String string = id.getNamespace();
-		DataCommandStorage.PersistentState persistentState = this.stateManager.get(data -> this.createStorage(string).readNbt(data), getSaveKey(string));
+		DataCommandStorage.PersistentState persistentState = this.stateManager.get(this.getPersistentStateType(string), getSaveKey(string));
 		return persistentState != null ? persistentState.get(id.getPath()) : new NbtCompound();
 	}
 
 	public void set(Identifier id, NbtCompound nbt) {
 		String string = id.getNamespace();
-		this.stateManager
-			.<DataCommandStorage.PersistentState>getOrCreate(data -> this.createStorage(string).readNbt(data), () -> this.createStorage(string), getSaveKey(string))
-			.set(id.getPath(), nbt);
+		this.stateManager.getOrCreate(this.getPersistentStateType(string), getSaveKey(string)).set(id.getPath(), nbt);
 	}
 
 	public Stream<Identifier> getIds() {

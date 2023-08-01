@@ -30,6 +30,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.PostEffectProcessor;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnGroup;
@@ -170,14 +171,15 @@ public class DebugHud {
 
 	protected List<String> getLeftText() {
 		IntegratedServer integratedServer = this.client.getServer();
-		ClientConnection clientConnection = this.client.getNetworkHandler().getConnection();
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+		ClientConnection clientConnection = clientPlayNetworkHandler.getConnection();
 		float f = clientConnection.getAveragePacketsSent();
 		float g = clientConnection.getAveragePacketsReceived();
 		String string;
 		if (integratedServer != null) {
 			string = String.format(Locale.ROOT, "Integrated server @ %.0f ms ticks, %.0f tx, %.0f rx", integratedServer.getTickTime(), f, g);
 		} else {
-			string = String.format(Locale.ROOT, "\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), f, g);
+			string = String.format(Locale.ROOT, "\"%s\" server, %.0f tx, %.0f rx", clientPlayNetworkHandler.getBrand(), f, g);
 		}
 
 		BlockPos blockPos = this.client.getCameraEntity().getBlockPos();
@@ -308,23 +310,22 @@ public class DebugHud {
 				list.add(stringBuilder.toString());
 				if (blockPos.getY() >= this.client.world.getBottomY() && blockPos.getY() < this.client.world.getTopY()) {
 					list.add("Biome: " + getBiomeString(this.client.world.getBiome(blockPos)));
-					long l = 0L;
-					float h = 0.0F;
 					if (worldChunk2 != null) {
-						h = world.getMoonSize();
-						l = worldChunk2.getInhabitedTime();
+						float h = world.getMoonSize();
+						long l = worldChunk2.getInhabitedTime();
+						LocalDifficulty localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), l, h);
+						list.add(
+							String.format(
+								Locale.ROOT,
+								"Local Difficulty: %.2f // %.2f (Day %d)",
+								localDifficulty.getLocalDifficulty(),
+								localDifficulty.getClampedLocalDifficulty(),
+								this.client.world.getTimeOfDay() / 24000L
+							)
+						);
+					} else {
+						list.add("Local Difficulty: ??");
 					}
-
-					LocalDifficulty localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), l, h);
-					list.add(
-						String.format(
-							Locale.ROOT,
-							"Local Difficulty: %.2f // %.2f (Day %d)",
-							localDifficulty.getLocalDifficulty(),
-							localDifficulty.getClampedLocalDifficulty(),
-							this.client.world.getTimeOfDay() / 24000L
-						)
-					);
 				}
 
 				if (worldChunk2 != null && worldChunk2.usesOldNoise()) {
@@ -396,15 +397,13 @@ public class DebugHud {
 	private WorldChunk getChunk() {
 		if (this.chunkFuture == null) {
 			ServerWorld serverWorld = this.getServerWorld();
-			if (serverWorld != null) {
-				this.chunkFuture = serverWorld.getChunkManager()
-					.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false)
-					.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
+			if (serverWorld == null) {
+				return null;
 			}
 
-			if (this.chunkFuture == null) {
-				this.chunkFuture = CompletableFuture.completedFuture(this.getClientChunk());
-			}
+			this.chunkFuture = serverWorld.getChunkManager()
+				.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, ChunkStatus.FULL, false)
+				.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
 		}
 
 		return (WorldChunk)this.chunkFuture.getNow(null);

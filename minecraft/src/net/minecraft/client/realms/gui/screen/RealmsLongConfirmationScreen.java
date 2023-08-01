@@ -56,16 +56,15 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.type.text, this.width / 2, row(2), this.type.colorCode);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.line2, this.width / 2, row(4), 16777215);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.line3, this.width / 2, row(6), 16777215);
 		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.type.text, this.width / 2, row(2), this.type.colorCode);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.line2, this.width / 2, row(4), -1);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.line3, this.width / 2, row(6), -1);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		WARNING(RealmsLongConfirmationScreen.WARNING_TEXT, 16711680),
+		WARNING(RealmsLongConfirmationScreen.WARNING_TEXT, -65536),
 		INFO(RealmsLongConfirmationScreen.INFO_TEXT, 8226750);
 
 		public final int colorCode;

@@ -55,6 +55,7 @@ import net.minecraft.command.DataCommandStorage;
 import net.minecraft.entity.boss.BossBarManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootManager;
+import net.minecraft.network.QueryableServer;
 import net.minecraft.network.encryption.NetworkEncryptionException;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.encryption.SignatureVerifier;
@@ -176,7 +177,7 @@ import org.slf4j.Logger;
  * @see net.minecraft.server.dedicated.MinecraftDedicatedServer
  * @see net.minecraft.server.integrated.IntegratedServer
  */
-public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements CommandOutput, AutoCloseable {
+public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask> implements QueryableServer, CommandOutput, AutoCloseable {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String VANILLA = "vanilla";
 	private static final float field_33212 = 0.8F;
@@ -319,7 +320,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void initScoreboard(PersistentStateManager persistentStateManager) {
-		persistentStateManager.getOrCreate(this.getScoreboard()::stateFromNbt, this.getScoreboard()::createState, "scoreboard");
+		persistentStateManager.getOrCreate(this.getScoreboard().getPersistentStateType(), "scoreboard");
 	}
 
 	/**
@@ -515,7 +516,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.runTasksTillTickEnd();
 
 		for (ServerWorld serverWorld2 : this.worlds.values()) {
-			ForcedChunkState forcedChunkState = serverWorld2.getPersistentStateManager().get(ForcedChunkState::fromNbt, "chunks");
+			ForcedChunkState forcedChunkState = serverWorld2.getPersistentStateManager().get(ForcedChunkState.getPersistentStateType(), "chunks");
 			if (forcedChunkState != null) {
 				LongIterator longIterator = forcedChunkState.getChunks().iterator();
 
@@ -609,10 +610,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 
 		LOGGER.info("Stopping server");
-		if (this.getNetworkIo() != null) {
-			this.getNetworkIo().stop();
-		}
-
+		this.getNetworkIo().stop();
 		this.saving = true;
 		if (this.playerManager != null) {
 			LOGGER.info("Saving players");
@@ -1011,14 +1009,17 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.worlds.values();
 	}
 
+	@Override
 	public String getVersion() {
 		return SharedConstants.getGameVersion().getName();
 	}
 
+	@Override
 	public int getCurrentPlayerCount() {
 		return this.playerManager.getCurrentPlayerCount();
 	}
 
+	@Override
 	public int getMaxPlayerCount() {
 		return this.playerManager.getMaxPlayerCount();
 	}
@@ -1253,6 +1254,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 */
 	public abstract boolean areCommandBlocksEnabled();
 
+	@Override
 	public String getServerMotd() {
 		return this.motd;
 	}
@@ -1279,7 +1281,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.saveProperties.setGameMode(gameMode);
 	}
 
-	@Nullable
 	public ServerNetworkIo getNetworkIo() {
 		return this.networkIo;
 	}
@@ -1980,6 +1981,10 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 */
 	public MessageDecorator getMessageDecorator() {
 		return MessageDecorator.NOOP;
+	}
+
+	public boolean shouldLogIps() {
+		return true;
 	}
 
 	static class DebugStart {

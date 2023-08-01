@@ -26,7 +26,7 @@ public class SpriteTexturedVertexConsumer implements VertexConsumer {
 
 	@Override
 	public VertexConsumer texture(float u, float v) {
-		return this.delegate.texture(this.sprite.getFrameU((double)(u * 16.0F)), this.sprite.getFrameV((double)(v * 16.0F)));
+		return this.delegate.texture(this.sprite.getFrameU(u), this.sprite.getFrameV(v));
 	}
 
 	@Override
@@ -76,22 +76,6 @@ public class SpriteTexturedVertexConsumer implements VertexConsumer {
 		float normalY,
 		float normalZ
 	) {
-		this.delegate
-			.vertex(
-				x,
-				y,
-				z,
-				red,
-				green,
-				blue,
-				alpha,
-				this.sprite.getFrameU((double)(u * 16.0F)),
-				this.sprite.getFrameV((double)(v * 16.0F)),
-				overlay,
-				light,
-				normalX,
-				normalY,
-				normalZ
-			);
+		this.delegate.vertex(x, y, z, red, green, blue, alpha, this.sprite.getFrameU(u), this.sprite.getFrameV(v), overlay, light, normalX, normalY, normalZ);
 	}
 }

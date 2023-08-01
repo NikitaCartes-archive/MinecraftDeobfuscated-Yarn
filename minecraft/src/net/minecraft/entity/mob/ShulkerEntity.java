@@ -33,7 +33,6 @@ import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -260,14 +259,6 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	@Override
-	public double getHeightOffset() {
-		EntityType<?> entityType = this.getVehicle().getType();
-		return !(this.getVehicle() instanceof BoatEntity) && entityType != EntityType.MINECART
-			? super.getHeightOffset()
-			: 0.1875 - this.getVehicle().getMountedHeightOffset();
-	}
-
-	@Override
 	public boolean startRiding(Entity entity, boolean force) {
 		if (this.getWorld().isClient()) {
 			this.prevAttachedBlock = null;
@@ -411,7 +402,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 	}
 
 	@Override
-	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
+	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
 		this.bodyTrackingIncrements = 0;
 		this.setPosition(x, y, z);
 		this.setRotation(yaw, pitch);
@@ -491,7 +482,7 @@ public class ShulkerEntity extends GolemEntity implements VariantHolder<Optional
 
 	void setPeekAmount(int peekAmount) {
 		if (!this.getWorld().isClient) {
-			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_BONUS);
+			this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).removeModifier(COVERED_ARMOR_BONUS.getId());
 			if (peekAmount == 0) {
 				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
 				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);

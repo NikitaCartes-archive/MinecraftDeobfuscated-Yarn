@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.PushbackInputStream;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
@@ -34,22 +33,22 @@ public class PersistentStateManager {
 		return new File(this.directory, id + ".dat");
 	}
 
-	public <T extends PersistentState> T getOrCreate(Function<NbtCompound, T> readFunction, Supplier<T> supplier, String id) {
-		T persistentState = this.get(readFunction, id);
+	public <T extends PersistentState> T getOrCreate(PersistentState.Type<T> type, String id) {
+		T persistentState = this.get(type, id);
 		if (persistentState != null) {
 			return persistentState;
 		} else {
-			T persistentState2 = (T)supplier.get();
+			T persistentState2 = (T)type.constructor().get();
 			this.set(id, persistentState2);
 			return persistentState2;
 		}
 	}
 
 	@Nullable
-	public <T extends PersistentState> T get(Function<NbtCompound, T> readFunction, String id) {
+	public <T extends PersistentState> T get(PersistentState.Type type, String id) {
 		PersistentState persistentState = (PersistentState)this.loadedStates.get(id);
 		if (persistentState == null && !this.loadedStates.containsKey(id)) {
-			persistentState = this.readFromFile(readFunction, id);
+			persistentState = this.readFromFile(type.deserializer(), type.type(), id);
 			this.loadedStates.put(id, persistentState);
 		}
 
@@ -57,15 +56,15 @@ public class PersistentStateManager {
 	}
 
 	@Nullable
-	private <T extends PersistentState> T readFromFile(Function<NbtCompound, T> readFunction, String id) {
+	private <T extends PersistentState> T readFromFile(Function<NbtCompound, T> readFunction, DataFixTypes dataFixTypes, String id) {
 		try {
 			File file = this.getFile(id);
 			if (file.exists()) {
-				NbtCompound nbtCompound = this.readNbt(id, SharedConstants.getGameVersion().getSaveVersion().getId());
+				NbtCompound nbtCompound = this.readNbt(id, dataFixTypes, SharedConstants.getGameVersion().getSaveVersion().getId());
 				return (T)readFunction.apply(nbtCompound.getCompound("data"));
 			}
-		} catch (Exception var5) {
-			LOGGER.error("Error loading saved data: {}", id, var5);
+		} catch (Exception var6) {
+			LOGGER.error("Error loading saved data: {}", id, var6);
 		}
 
 		return null;
@@ -75,11 +74,11 @@ public class PersistentStateManager {
 		this.loadedStates.put(id, state);
 	}
 
-	public NbtCompound readNbt(String id, int dataVersion) throws IOException {
+	public NbtCompound readNbt(String id, DataFixTypes dataFixTypes, int currentSaveVersion) throws IOException {
 		File file = this.getFile(id);
 		FileInputStream fileInputStream = new FileInputStream(file);
 
-		NbtCompound var8;
+		NbtCompound var9;
 		try {
 			PushbackInputStream pushbackInputStream = new PushbackInputStream(fileInputStream, 2);
 
@@ -91,45 +90,45 @@ public class PersistentStateManager {
 					DataInputStream dataInputStream = new DataInputStream(pushbackInputStream);
 
 					try {
-						nbtCompound = NbtIo.read(dataInputStream);
-					} catch (Throwable var13) {
+						nbtCompound = NbtIo.readCompound(dataInputStream);
+					} catch (Throwable var14) {
 						try {
 							dataInputStream.close();
-						} catch (Throwable var12) {
-							var13.addSuppressed(var12);
+						} catch (Throwable var13) {
+							var14.addSuppressed(var13);
 						}
 
-						throw var13;
+						throw var14;
 					}
 
 					dataInputStream.close();
 				}
 
 				int i = NbtHelper.getDataVersion(nbtCompound, 1343);
-				var8 = DataFixTypes.SAVED_DATA.update(this.dataFixer, nbtCompound, i, dataVersion);
-			} catch (Throwable var14) {
+				var9 = dataFixTypes.update(this.dataFixer, nbtCompound, i, currentSaveVersion);
+			} catch (Throwable var15) {
 				try {
 					pushbackInputStream.close();
-				} catch (Throwable var11) {
-					var14.addSuppressed(var11);
+				} catch (Throwable var12) {
+					var15.addSuppressed(var12);
 				}
 
-				throw var14;
+				throw var15;
 			}
 
 			pushbackInputStream.close();
-		} catch (Throwable var15) {
+		} catch (Throwable var16) {
 			try {
 				fileInputStream.close();
-			} catch (Throwable var10) {
-				var15.addSuppressed(var10);
+			} catch (Throwable var11) {
+				var16.addSuppressed(var11);
 			}
 
-			throw var15;
+			throw var16;
 		}
 
 		fileInputStream.close();
-		return var8;
+		return var9;
 	}
 
 	private boolean isCompressed(PushbackInputStream stream) throws IOException {

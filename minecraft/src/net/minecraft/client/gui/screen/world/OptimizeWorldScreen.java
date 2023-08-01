@@ -104,7 +104,7 @@ public class OptimizeWorldScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		int i = this.width / 2 - 150;
 		int j = this.width / 2 + 150;
@@ -132,7 +132,5 @@ public class OptimizeWorldScreen extends Screen {
 				this.textRenderer, MathHelper.floor(this.updater.getProgress() * 100.0F) + "%", this.width / 2, k + (l - k) / 2 - 9 / 2, 10526880
 			);
 		}
-
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

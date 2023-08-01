@@ -8,9 +8,11 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RecipeToast implements Toast {
+	private static final Identifier TEXTURE = new Identifier("toast/recipe");
 	private static final long DEFAULT_DURATION_MS = 5000L;
 	private static final Text TITLE = Text.translatable("recipe.toast.title");
 	private static final Text DESCRIPTION = Text.translatable("recipe.toast.description");
@@ -32,7 +34,7 @@ public class RecipeToast implements Toast {
 		if (this.recipes.isEmpty()) {
 			return Toast.Visibility.HIDE;
 		} else {
-			context.drawTexture(TEXTURE, 0, 0, 0, 32, this.getWidth(), this.getHeight());
+			context.drawGuiTexture(TEXTURE, 0, 0, this.getWidth(), this.getHeight());
 			context.drawText(manager.getClient().textRenderer, TITLE, 30, 7, -11534256, false);
 			context.drawText(manager.getClient().textRenderer, DESCRIPTION, 30, 18, -16777216, false);
 			Recipe<?> recipe = (Recipe<?>)this.recipes

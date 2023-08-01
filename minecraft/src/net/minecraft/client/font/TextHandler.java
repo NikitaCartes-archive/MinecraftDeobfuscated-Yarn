@@ -312,7 +312,7 @@ public class TextHandler {
 			}
 		}
 
-		StringVisitable stringVisitable2 = lineWrappingCollector.collectRemainers();
+		StringVisitable stringVisitable2 = lineWrappingCollector.collectRemainders();
 		if (stringVisitable2 != null) {
 			lineConsumer.accept(stringVisitable2, bl3);
 		} else if (bl2) {
@@ -442,7 +442,7 @@ public class TextHandler {
 		}
 
 		@Nullable
-		public StringVisitable collectRemainers() {
+		public StringVisitable collectRemainders() {
 			TextCollector textCollector = new TextCollector();
 			this.parts.forEach(textCollector::add);
 			this.parts.clear();

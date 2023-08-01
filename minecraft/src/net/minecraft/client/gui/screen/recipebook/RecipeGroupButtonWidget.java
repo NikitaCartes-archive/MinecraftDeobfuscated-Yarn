@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
@@ -13,9 +14,11 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RecipeGroupButtonWidget extends ToggleButtonWidget {
+	private static final ButtonTextures TEXTURES = new ButtonTextures(new Identifier("recipe_book/tab"), new Identifier("recipe_book/tab_selected"));
 	private final RecipeBookGroup category;
 	private static final float field_32412 = 15.0F;
 	private float bounce;
@@ -23,7 +26,7 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	public RecipeGroupButtonWidget(RecipeBookGroup category) {
 		super(0, 0, 35, 27, false);
 		this.category = category;
-		this.setTextureUV(153, 2, 35, 0, RecipeBookWidget.TEXTURE);
+		this.setTextures(TEXTURES);
 	}
 
 	public void checkForNewRecipes(MinecraftClient client) {
@@ -45,37 +48,30 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 
 	@Override
 	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-		if (this.bounce > 0.0F) {
-			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
-			context.getMatrices().push();
-			context.getMatrices().translate((float)(this.getX() + 8), (float)(this.getY() + 12), 0.0F);
-			context.getMatrices().scale(1.0F, f, 1.0F);
-			context.getMatrices().translate((float)(-(this.getX() + 8)), (float)(-(this.getY() + 12)), 0.0F);
-		}
+		if (this.textures != null) {
+			if (this.bounce > 0.0F) {
+				float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
+				context.getMatrices().push();
+				context.getMatrices().translate((float)(this.getX() + 8), (float)(this.getY() + 12), 0.0F);
+				context.getMatrices().scale(1.0F, f, 1.0F);
+				context.getMatrices().translate((float)(-(this.getX() + 8)), (float)(-(this.getY() + 12)), 0.0F);
+			}
 
-		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		RenderSystem.disableDepthTest();
-		int i = this.u;
-		int j = this.v;
-		if (this.toggled) {
-			i += this.pressedUOffset;
-		}
+			MinecraftClient minecraftClient = MinecraftClient.getInstance();
+			RenderSystem.disableDepthTest();
+			Identifier identifier = this.textures.get(true, this.toggled);
+			int i = this.getX();
+			if (this.toggled) {
+				i -= 2;
+			}
 
-		if (this.isSelected()) {
-			j += this.hoverVOffset;
-		}
-
-		int k = this.getX();
-		if (this.toggled) {
-			k -= 2;
-		}
-
-		context.drawTexture(this.texture, k, this.getY(), i, j, this.width, this.height);
-		RenderSystem.enableDepthTest();
-		this.renderIcons(context, minecraftClient.getItemRenderer());
-		if (this.bounce > 0.0F) {
-			context.getMatrices().pop();
-			this.bounce -= delta;
+			context.drawGuiTexture(identifier, i, this.getY(), this.width, this.height);
+			RenderSystem.enableDepthTest();
+			this.renderIcons(context, minecraftClient.getItemRenderer());
+			if (this.bounce > 0.0F) {
+				context.getMatrices().pop();
+				this.bounce -= delta;
+			}
 		}
 	}
 

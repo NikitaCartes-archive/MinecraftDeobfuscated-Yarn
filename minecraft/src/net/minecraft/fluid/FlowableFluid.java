@@ -386,8 +386,8 @@ public abstract class FlowableFluid extends Fluid {
 
 	private boolean canFill(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
 		Block block = state.getBlock();
-		if (block instanceof FluidFillable) {
-			return ((FluidFillable)block).canFillWithFluid(world, pos, state, fluid);
+		if (block instanceof FluidFillable fluidFillable) {
+			return fluidFillable.canFillWithFluid(null, world, pos, state, fluid);
 		} else if (block instanceof DoorBlock
 			|| state.isIn(BlockTags.SIGNS)
 			|| state.isOf(Blocks.LADDER)

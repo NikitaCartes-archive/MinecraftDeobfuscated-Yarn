@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import javax.annotation.Nullable;
@@ -22,11 +23,12 @@ import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.resource.metadata.ResourceMetadataMap;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.path.SymlinkFinder;
 
 @Environment(EnvType.CLIENT)
 public class DefaultClientResourcePackProvider extends VanillaResourcePackProvider {
 	private static final PackResourceMetadata METADATA = new PackResourceMetadata(
-		Text.translatable("resourcePack.vanilla.description"), SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES)
+		Text.translatable("resourcePack.vanilla.description"), SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES), Optional.empty()
 	);
 	private static final ResourceMetadataMap METADATA_MAP = ResourceMetadataMap.of(PackResourceMetadata.SERIALIZER, METADATA);
 	private static final Text VANILLA_NAME_TEXT = Text.translatable("resourcePack.vanilla.name");
@@ -38,8 +40,8 @@ public class DefaultClientResourcePackProvider extends VanillaResourcePackProvid
 	@Nullable
 	private final Path resourcePacksPath;
 
-	public DefaultClientResourcePackProvider(Path assetsPath) {
-		super(ResourceType.CLIENT_RESOURCES, createDefaultPack(assetsPath), ID);
+	public DefaultClientResourcePackProvider(Path assetsPath, SymlinkFinder symlinkFinder) {
+		super(ResourceType.CLIENT_RESOURCES, createDefaultPack(assetsPath), ID, symlinkFinder);
 		this.resourcePacksPath = this.getResourcePacksPath(assetsPath);
 	}
 
@@ -70,7 +72,13 @@ public class DefaultClientResourcePackProvider extends VanillaResourcePackProvid
 	@Override
 	protected ResourcePackProfile createDefault(ResourcePack pack) {
 		return ResourcePackProfile.create(
-			"vanilla", VANILLA_NAME_TEXT, true, name -> pack, ResourceType.CLIENT_RESOURCES, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.BUILTIN
+			"vanilla",
+			VANILLA_NAME_TEXT,
+			true,
+			createPackFactory(pack),
+			ResourceType.CLIENT_RESOURCES,
+			ResourcePackProfile.InsertionPosition.BOTTOM,
+			ResourcePackSource.BUILTIN
 		);
 	}
 

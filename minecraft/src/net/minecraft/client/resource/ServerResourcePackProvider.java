@@ -2,6 +2,7 @@ package net.minecraft.client.resource;
 
 import com.google.common.hash.Hashing;
 import com.mojang.logging.LogUtils;
+import com.mojang.util.UndashedUuid;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -74,7 +75,7 @@ public class ServerResourcePackProvider implements ResourcePackProvider {
 			"X-Minecraft-Username",
 			MinecraftClient.getInstance().getSession().getUsername(),
 			"X-Minecraft-UUID",
-			MinecraftClient.getInstance().getSession().getUuid(),
+			UndashedUuid.toString(MinecraftClient.getInstance().getSession().getUuidOrNull()),
 			"X-Minecraft-Version",
 			SharedConstants.getGameVersion().getName(),
 			"X-Minecraft-Version-ID",
@@ -223,14 +224,15 @@ public class ServerResourcePackProvider implements ResourcePackProvider {
 	}
 
 	public CompletableFuture<Void> loadServerPack(File packZip, ResourcePackSource packSource) {
-		ResourcePackProfile.PackFactory packFactory = name -> new ZipResourcePack(name, packZip, false);
-		ResourcePackProfile.Metadata metadata = ResourcePackProfile.loadMetadata("server", packFactory);
+		ResourcePackProfile.PackFactory packFactory = new ZipResourcePack.ZipBackedFactory(packZip, false);
+		int i = SharedConstants.getGameVersion().getResourceVersion(ResourceType.CLIENT_RESOURCES);
+		ResourcePackProfile.Metadata metadata = ResourcePackProfile.loadMetadata("server", packFactory, i);
 		if (metadata == null) {
 			return CompletableFuture.failedFuture(new IllegalArgumentException("Invalid pack metadata at " + packZip));
 		} else {
 			LOGGER.info("Applying server pack {}", packZip);
 			this.serverContainer = ResourcePackProfile.of(
-				"server", SERVER_NAME_TEXT, true, packFactory, metadata, ResourceType.CLIENT_RESOURCES, ResourcePackProfile.InsertionPosition.TOP, true, packSource
+				"server", SERVER_NAME_TEXT, true, packFactory, metadata, ResourcePackProfile.InsertionPosition.TOP, true, packSource
 			);
 			return MinecraftClient.getInstance().reloadResourcesConcurrently();
 		}

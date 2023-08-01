@@ -30,6 +30,7 @@ public class OreConfiguredFeatures {
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_GOLD_BURIED = ConfiguredFeatures.of("ore_gold_buried");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_REDSTONE = ConfiguredFeatures.of("ore_redstone");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_DIAMOND_SMALL = ConfiguredFeatures.of("ore_diamond_small");
+	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_DIAMOND_MEDIUM = ConfiguredFeatures.of("ore_diamond_medium");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_DIAMOND_LARGE = ConfiguredFeatures.of("ore_diamond_large");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_DIAMOND_BURIED = ConfiguredFeatures.of("ore_diamond_buried");
 	public static final RegistryKey<ConfiguredFeature<?, ?>> ORE_LAPIS = ConfiguredFeatures.of("ore_lapis");
@@ -105,6 +106,7 @@ public class OreConfiguredFeatures {
 		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_SMALL, Feature.ORE, new OreFeatureConfig(list3, 4, 0.5F));
 		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_LARGE, Feature.ORE, new OreFeatureConfig(list3, 12, 0.7F));
 		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_BURIED, Feature.ORE, new OreFeatureConfig(list3, 8, 1.0F));
+		ConfiguredFeatures.register(featureRegisterable, ORE_DIAMOND_MEDIUM, Feature.ORE, new OreFeatureConfig(list3, 8, 0.5F));
 		ConfiguredFeatures.register(featureRegisterable, ORE_LAPIS, Feature.ORE, new OreFeatureConfig(list4, 7));
 		ConfiguredFeatures.register(featureRegisterable, ORE_LAPIS_BURIED, Feature.ORE, new OreFeatureConfig(list4, 7, 1.0F));
 		ConfiguredFeatures.register(

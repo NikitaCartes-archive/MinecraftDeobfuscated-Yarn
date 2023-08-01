@@ -105,6 +105,7 @@ public class CommandManager {
 		ParticleCommand.register(this.dispatcher, commandRegistryAccess);
 		PlaceCommand.register(this.dispatcher);
 		PlaySoundCommand.register(this.dispatcher);
+		RandomCommand.register(this.dispatcher);
 		ReloadCommand.register(this.dispatcher);
 		RecipeCommand.register(this.dispatcher);
 		ReturnCommand.register(this.dispatcher);
@@ -137,6 +138,9 @@ public class CommandManager {
 		if (SharedConstants.isDevelopment) {
 			TestCommand.register(this.dispatcher);
 			SpawnArmorTrimsCommand.register(this.dispatcher);
+			if (environment.dedicated) {
+				DebugConfigCommand.register(this.dispatcher);
+			}
 		}
 
 		if (environment.dedicated) {

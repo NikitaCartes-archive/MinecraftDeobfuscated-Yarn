@@ -33,6 +33,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public class ChickenEntity extends AnimalEntity {
 	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(
@@ -168,14 +169,14 @@ public class ChickenEntity extends AnimalEntity {
 	@Override
 	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
 		super.updatePassengerPosition(passenger, positionUpdater);
-		float f = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
-		float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
-		float h = 0.1F;
-		float i = 0.0F;
-		positionUpdater.accept(passenger, this.getX() + (double)(0.1F * f), this.getBodyY(0.5) + passenger.getHeightOffset() + 0.0, this.getZ() - (double)(0.1F * g));
 		if (passenger instanceof LivingEntity) {
 			((LivingEntity)passenger).bodyYaw = this.bodyYaw;
 		}
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height, -0.1F * scaleFactor);
 	}
 
 	public boolean hasJockey() {

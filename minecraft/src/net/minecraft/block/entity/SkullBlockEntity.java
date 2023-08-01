@@ -1,11 +1,11 @@
 package net.minecraft.block.entity;
 
-import com.google.common.collect.Iterables;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.authlib.properties.Property;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.NbtCompound;
@@ -28,7 +28,13 @@ public class SkullBlockEntity extends BlockEntity {
 	@Nullable
 	private static MinecraftSessionService sessionService;
 	@Nullable
-	private static Executor executor;
+	private static Executor currentExecutor;
+	private static final Executor EXECUTOR = runnable -> {
+		Executor executor = currentExecutor;
+		if (executor != null) {
+			executor.execute(runnable);
+		}
+	};
 	@Nullable
 	private GameProfile owner;
 	@Nullable
@@ -43,13 +49,13 @@ public class SkullBlockEntity extends BlockEntity {
 	public static void setServices(ApiServices apiServices, Executor executor) {
 		userCache = apiServices.userCache();
 		sessionService = apiServices.sessionService();
-		SkullBlockEntity.executor = executor;
+		currentExecutor = executor;
 	}
 
 	public static void clearServices() {
 		userCache = null;
 		sessionService = null;
-		executor = null;
+		currentExecutor = null;
 	}
 
 	@Override
@@ -74,7 +80,7 @@ public class SkullBlockEntity extends BlockEntity {
 		} else if (nbt.contains("ExtraType", NbtElement.STRING_TYPE)) {
 			String string = nbt.getString("ExtraType");
 			if (!StringHelper.isEmpty(string)) {
-				this.setOwner(new GameProfile(null, string));
+				this.setOwner(new GameProfile(Util.NIL_UUID, string));
 			}
 		}
 
@@ -124,48 +130,77 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	private void loadOwnerProperties() {
-		loadProperties(this.owner, owner -> {
-			this.owner = owner;
+		if (this.owner != null && !Util.isBlank(this.owner.getName()) && !hasTextures(this.owner)) {
+			fetchProfile(this.owner.getName()).thenAcceptAsync(profile -> {
+				this.owner = (GameProfile)profile.orElse(this.owner);
+				this.markDirty();
+			}, this.world.getServer());
+		} else {
 			this.markDirty();
-		});
+		}
 	}
 
-	public static void loadProperties(@Nullable GameProfile owner, Consumer<GameProfile> callback) {
-		if (owner != null
-			&& !StringHelper.isEmpty(owner.getName())
-			&& (!owner.isComplete() || !owner.getProperties().containsKey("textures"))
-			&& userCache != null
-			&& sessionService != null) {
-			userCache.findByNameAsync(owner.getName(), profile -> Util.getMainWorkerExecutor().execute(() -> Util.ifPresentOrElse(profile, profilex -> {
-						Property property = Iterables.getFirst(profilex.getProperties().get("textures"), null);
-						if (property == null) {
-							MinecraftSessionService minecraftSessionService = sessionService;
-							if (minecraftSessionService == null) {
-								return;
-							}
-
-							profilex = minecraftSessionService.fillProfileProperties(profilex, true);
-						}
-
-						GameProfile gameProfilexx = profilex;
-						Executor executor = SkullBlockEntity.executor;
-						if (executor != null) {
-							executor.execute(() -> {
-								UserCache userCache = SkullBlockEntity.userCache;
-								if (userCache != null) {
-									userCache.add(gameProfilexx);
-									callback.accept(gameProfilexx);
-								}
-							});
-						}
-					}, () -> {
-						Executor executor = SkullBlockEntity.executor;
-						if (executor != null) {
-							executor.execute(() -> callback.accept(owner));
-						}
-					})));
+	@Nullable
+	public static GameProfile getProfile(NbtCompound nbt) {
+		if (nbt.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
+			return NbtHelper.toGameProfile(nbt.getCompound("SkullOwner"));
 		} else {
-			callback.accept(owner);
+			if (nbt.contains("SkullOwner", NbtElement.STRING_TYPE)) {
+				String string = nbt.getString("SkullOwner");
+				if (!Util.isBlank(string)) {
+					nbt.remove("SkullOwner");
+					fillSkullOwner(nbt, string);
+				}
+			}
+
+			return null;
 		}
+	}
+
+	public static void fillSkullOwner(NbtCompound nbt) {
+		String string = nbt.getString("SkullOwner");
+		if (!Util.isBlank(string)) {
+			fillSkullOwner(nbt, string);
+		}
+	}
+
+	private static void fillSkullOwner(NbtCompound nbt, String name) {
+		fetchProfile(name)
+			.thenAccept(
+				profile -> nbt.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), (GameProfile)profile.orElse(new GameProfile(Util.NIL_UUID, name))))
+			);
+	}
+
+	private static CompletableFuture<Optional<GameProfile>> fetchProfile(String name) {
+		UserCache userCache = SkullBlockEntity.userCache;
+		return userCache == null
+			? CompletableFuture.completedFuture(Optional.empty())
+			: userCache.findByNameAsync(name)
+				.thenCompose(profile -> profile.isPresent() ? fetchProfileWithTextures((GameProfile)profile.get()) : CompletableFuture.completedFuture(Optional.empty()))
+				.thenApplyAsync(profile -> {
+					UserCache userCachex = SkullBlockEntity.userCache;
+					if (userCachex != null) {
+						profile.ifPresent(userCachex::add);
+						return profile;
+					} else {
+						return Optional.empty();
+					}
+				}, EXECUTOR);
+	}
+
+	private static CompletableFuture<Optional<GameProfile>> fetchProfileWithTextures(GameProfile profile) {
+		return hasTextures(profile) ? CompletableFuture.completedFuture(Optional.of(profile)) : CompletableFuture.supplyAsync(() -> {
+			MinecraftSessionService minecraftSessionService = sessionService;
+			if (minecraftSessionService != null) {
+				GameProfile gameProfile2 = minecraftSessionService.fetchProfile(profile.getId(), true);
+				return Optional.of((GameProfile)Objects.requireNonNullElse(gameProfile2, profile));
+			} else {
+				return Optional.empty();
+			}
+		}, Util.getMainWorkerExecutor());
+	}
+
+	private static boolean hasTextures(GameProfile profile) {
+		return profile.getProperties().containsKey("textures");
 	}
 }

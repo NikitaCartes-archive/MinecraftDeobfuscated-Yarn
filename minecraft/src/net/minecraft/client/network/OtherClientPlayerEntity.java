@@ -7,7 +7,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -49,18 +48,12 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public void tickMovement() {
 		if (this.bodyTrackingIncrements > 0) {
-			double d = this.getX() + (this.serverX - this.getX()) / (double)this.bodyTrackingIncrements;
-			double e = this.getY() + (this.serverY - this.getY()) / (double)this.bodyTrackingIncrements;
-			double f = this.getZ() + (this.serverZ - this.getZ()) / (double)this.bodyTrackingIncrements;
-			this.setYaw(this.getYaw() + (float)MathHelper.wrapDegrees(this.serverYaw - (double)this.getYaw()) / (float)this.bodyTrackingIncrements);
-			this.setPitch(this.getPitch() + (float)(this.serverPitch - (double)this.getPitch()) / (float)this.bodyTrackingIncrements);
+			this.lerpPosAndRotation(this.bodyTrackingIncrements, this.serverX, this.serverY, this.serverZ, this.serverYaw, this.serverPitch);
 			this.bodyTrackingIncrements--;
-			this.setPosition(d, e, f);
-			this.setRotation(this.getYaw(), this.getPitch());
 		}
 
 		if (this.headTrackingIncrements > 0) {
-			this.headYaw = this.headYaw + (float)(MathHelper.wrapDegrees(this.serverHeadYaw - (double)this.headYaw) / (double)this.headTrackingIncrements);
+			this.method_52539(this.headTrackingIncrements, this.serverHeadYaw);
 			this.headTrackingIncrements--;
 		}
 
@@ -77,14 +70,14 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 
 		this.prevStrideDistance = this.strideDistance;
 		this.tickHandSwing();
-		float g;
+		float f;
 		if (this.isOnGround() && !this.isDead()) {
-			g = (float)Math.min(0.1, this.getVelocity().horizontalLength());
+			f = (float)Math.min(0.1, this.getVelocity().horizontalLength());
 		} else {
-			g = 0.0F;
+			f = 0.0F;
 		}
 
-		this.strideDistance = this.strideDistance + (g - this.strideDistance) * 0.4F;
+		this.strideDistance = this.strideDistance + (f - this.strideDistance) * 0.4F;
 		this.getWorld().getProfiler().push("push");
 		this.tickCramming();
 		this.getWorld().getProfiler().pop();

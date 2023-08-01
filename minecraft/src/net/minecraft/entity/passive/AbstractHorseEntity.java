@@ -75,6 +75,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public abstract class AbstractHorseEntity extends AnimalEntity implements InventoryChangedListener, RideableInventory, Tameable, JumpingMount, Saddleable {
 	public static final int field_30413 = 400;
@@ -977,20 +978,8 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	@Override
 	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
 		super.updatePassengerPosition(passenger, positionUpdater);
-		if (this.lastAngryAnimationProgress > 0.0F) {
-			float f = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
-			float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
-			float h = 0.7F * this.lastAngryAnimationProgress;
-			float i = 0.15F * this.lastAngryAnimationProgress;
-			positionUpdater.accept(
-				passenger,
-				this.getX() + (double)(h * f),
-				this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i,
-				this.getZ() - (double)(h * g)
-			);
-			if (passenger instanceof LivingEntity) {
-				((LivingEntity)passenger).bodyYaw = this.bodyYaw;
-			}
+		if (passenger instanceof LivingEntity) {
+			((LivingEntity)passenger).bodyYaw = this.bodyYaw;
 		}
 	}
 
@@ -1093,19 +1082,14 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 	@Nullable
 	@Override
 	public LivingEntity getControllingPassenger() {
-		Entity var3 = this.getFirstPassenger();
-		if (var3 instanceof MobEntity) {
-			return (MobEntity)var3;
-		} else {
-			if (this.isSaddled()) {
-				var3 = this.getFirstPassenger();
-				if (var3 instanceof PlayerEntity) {
-					return (PlayerEntity)var3;
-				}
+		if (this.isSaddled()) {
+			Entity var2 = this.getFirstPassenger();
+			if (var2 instanceof PlayerEntity) {
+				return (PlayerEntity)var2;
 			}
-
-			return null;
 		}
+
+		return super.getControllingPassenger();
 	}
 
 	@Nullable
@@ -1180,5 +1164,18 @@ public abstract class AbstractHorseEntity extends AnimalEntity implements Invent
 
 	public int getMinAmbientStandDelay() {
 		return this.getMinAmbientSoundDelay();
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(
+			0.0F,
+			this.getPassengerAttachmentY(dimensions, scaleFactor) + 0.15F * this.lastAngryAnimationProgress * scaleFactor,
+			-0.7F * this.lastAngryAnimationProgress * scaleFactor
+		);
+	}
+
+	protected float getPassengerAttachmentY(EntityDimensions dimensions, float scaleFactor) {
+		return dimensions.height + (this.isBaby() ? 0.125F : -0.15625F) * scaleFactor;
 	}
 }

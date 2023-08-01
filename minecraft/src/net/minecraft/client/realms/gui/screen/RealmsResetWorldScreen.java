@@ -25,19 +25,19 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsResetWorldScreen extends RealmsScreen {
+	private static final Identifier SLOT_FRAME_TEXTURE = new Identifier("widget/slot_frame");
 	static final Logger LOGGER = LogUtils.getLogger();
 	private final Screen parent;
 	private final RealmsServer serverData;
 	private Text subtitle = Text.translatable("mco.reset.world.warning");
 	private Text buttonTitle = ScreenTexts.CANCEL;
-	private int subtitleColor = 16711680;
-	private static final Identifier SLOT_FRAME_TEXTURE = new Identifier("realms", "textures/gui/realms/slot_frame.png");
-	private static final Identifier UPLOAD_TEXTURE = new Identifier("realms", "textures/gui/realms/upload.png");
-	private static final Identifier ADVENTURE_TEXTURE = new Identifier("realms", "textures/gui/realms/adventure.png");
-	private static final Identifier SURVIVAL_SPAWN_TEXTURE = new Identifier("realms", "textures/gui/realms/survival_spawn.png");
-	private static final Identifier NEW_WORLD_TEXTURE = new Identifier("realms", "textures/gui/realms/new_world.png");
-	private static final Identifier EXPERIENCE_TEXTURE = new Identifier("realms", "textures/gui/realms/experience.png");
-	private static final Identifier INSPIRATION_TEXTURE = new Identifier("realms", "textures/gui/realms/inspiration.png");
+	private int subtitleColor = -65536;
+	private static final Identifier UPLOAD_TEXTURE = new Identifier("textures/gui/realms/upload.png");
+	private static final Identifier ADVENTURE_TEXTURE = new Identifier("textures/gui/realms/adventure.png");
+	private static final Identifier SURVIVAL_SPAWN_TEXTURE = new Identifier("textures/gui/realms/survival_spawn.png");
+	private static final Identifier NEW_WORLD_TEXTURE = new Identifier("textures/gui/realms/new_world.png");
+	private static final Identifier EXPERIENCE_TEXTURE = new Identifier("textures/gui/realms/experience.png");
+	private static final Identifier INSPIRATION_TEXTURE = new Identifier("textures/gui/realms/inspiration.png");
 	WorldTemplatePaginatedList normalWorldTemplates;
 	WorldTemplatePaginatedList adventureWorldTemplates;
 	WorldTemplatePaginatedList experienceWorldTemplates;
@@ -202,9 +202,8 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 7, 16777215);
 		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 7, -1);
 	}
 
 	void drawFrame(DrawContext context, int x, int y, Text text, Identifier texture, boolean hovered, boolean mouseOver) {
@@ -213,8 +212,8 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 		}
 
 		context.drawTexture(texture, x + 2, y + 14, 0.0F, 0.0F, 56, 56, 56, 56);
-		context.drawTexture(SLOT_FRAME_TEXTURE, x, y + 12, 0.0F, 0.0F, 60, 60, 60, 60);
-		int i = hovered ? 10526880 : 16777215;
+		context.drawGuiTexture(SLOT_FRAME_TEXTURE, x, y + 12, 60, 60);
+		int i = hovered ? -6250336 : -1;
 		context.drawCenteredTextWithShadow(this.textRenderer, text, x + 30, y, i);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}

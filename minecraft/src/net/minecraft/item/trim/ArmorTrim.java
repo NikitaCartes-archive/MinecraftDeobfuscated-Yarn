@@ -95,10 +95,14 @@ public class ArmorTrim {
 		}
 	}
 
-	public static Optional<ArmorTrim> getTrim(DynamicRegistryManager registryManager, ItemStack stack) {
+	public static Optional<ArmorTrim> getTrim(DynamicRegistryManager registryManager, ItemStack stack, boolean suppressError) {
 		if (stack.isIn(ItemTags.TRIMMABLE_ARMOR) && stack.getNbt() != null && stack.getNbt().contains("Trim")) {
 			NbtCompound nbtCompound = stack.getSubNbt("Trim");
-			ArmorTrim armorTrim = (ArmorTrim)CODEC.parse(RegistryOps.of(NbtOps.INSTANCE, registryManager), nbtCompound).resultOrPartial(LOGGER::error).orElse(null);
+			ArmorTrim armorTrim = (ArmorTrim)CODEC.parse(RegistryOps.of(NbtOps.INSTANCE, registryManager), nbtCompound).resultOrPartial(error -> {
+				if (!suppressError) {
+					LOGGER.warn(error);
+				}
+			}).orElse(null);
 			return Optional.ofNullable(armorTrim);
 		} else {
 			return Optional.empty();
@@ -106,7 +110,7 @@ public class ArmorTrim {
 	}
 
 	public static void appendTooltip(ItemStack stack, DynamicRegistryManager registryManager, List<Text> tooltip) {
-		Optional<ArmorTrim> optional = getTrim(registryManager, stack);
+		Optional<ArmorTrim> optional = getTrim(registryManager, stack, true);
 		if (optional.isPresent()) {
 			ArmorTrim armorTrim = (ArmorTrim)optional.get();
 			tooltip.add(UPGRADE_TEXT);

@@ -7,7 +7,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public interface Fertilizable {
-	boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient);
+	boolean isFertilizable(WorldView world, BlockPos pos, BlockState state);
 
 	boolean canGrow(World world, Random random, BlockPos pos, BlockState state);
 

@@ -4,23 +4,72 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 enum AdvancementTabType {
-	ABOVE(0, 0, 28, 32, 8),
-	BELOW(84, 0, 28, 32, 8),
-	LEFT(0, 64, 32, 28, 5),
-	RIGHT(96, 64, 32, 28, 5);
+	ABOVE(
+		new AdvancementTabType.Textures(
+			new Identifier("advancements/tab_above_left_selected"),
+			new Identifier("advancements/tab_above_middle_selected"),
+			new Identifier("advancements/tab_above_right_selected")
+		),
+		new AdvancementTabType.Textures(
+			new Identifier("advancements/tab_above_left"), new Identifier("advancements/tab_above_middle"), new Identifier("advancements/tab_above_right")
+		),
+		28,
+		32,
+		8
+	),
+	BELOW(
+		new AdvancementTabType.Textures(
+			new Identifier("advancements/tab_below_left_selected"),
+			new Identifier("advancements/tab_below_middle_selected"),
+			new Identifier("advancements/tab_below_right_selected")
+		),
+		new AdvancementTabType.Textures(
+			new Identifier("advancements/tab_below_left"), new Identifier("advancements/tab_below_middle"), new Identifier("advancements/tab_below_right")
+		),
+		28,
+		32,
+		8
+	),
+	LEFT(
+		new AdvancementTabType.Textures(
+			new Identifier("advancements/tab_left_top_selected"),
+			new Identifier("advancements/tab_left_middle_selected"),
+			new Identifier("advancements/tab_left_bottom_selected")
+		),
+		new AdvancementTabType.Textures(
+			new Identifier("advancements/tab_left_top"), new Identifier("advancements/tab_left_middle"), new Identifier("advancements/tab_left_bottom")
+		),
+		32,
+		28,
+		5
+	),
+	RIGHT(
+		new AdvancementTabType.Textures(
+			new Identifier("advancements/tab_right_top_selected"),
+			new Identifier("advancements/tab_right_middle_selected"),
+			new Identifier("advancements/tab_right_bottom_selected")
+		),
+		new AdvancementTabType.Textures(
+			new Identifier("advancements/tab_right_top"), new Identifier("advancements/tab_right_middle"), new Identifier("advancements/tab_right_bottom")
+		),
+		32,
+		28,
+		5
+	);
 
-	private final int u;
-	private final int v;
+	private final AdvancementTabType.Textures selectedTextures;
+	private final AdvancementTabType.Textures unselectedTextures;
 	private final int width;
 	private final int height;
 	private final int tabCount;
 
-	private AdvancementTabType(int u, int v, int width, int height, int tabCount) {
-		this.u = u;
-		this.v = v;
+	private AdvancementTabType(AdvancementTabType.Textures selectedTextures, AdvancementTabType.Textures unselectedTextures, int width, int height, int tabCount) {
+		this.selectedTextures = selectedTextures;
+		this.unselectedTextures = unselectedTextures;
 		this.width = width;
 		this.height = height;
 		this.tabCount = tabCount;
@@ -31,17 +80,17 @@ enum AdvancementTabType {
 	}
 
 	public void drawBackground(DrawContext context, int x, int y, boolean selected, int index) {
-		int i = this.u;
-		if (index > 0) {
-			i += this.width;
+		AdvancementTabType.Textures textures = selected ? this.selectedTextures : this.unselectedTextures;
+		Identifier identifier;
+		if (index == 0) {
+			identifier = textures.first();
+		} else if (index == this.tabCount - 1) {
+			identifier = textures.last();
+		} else {
+			identifier = textures.middle();
 		}
 
-		if (index == this.tabCount - 1) {
-			i += this.width;
-		}
-
-		int j = selected ? this.v + this.height : this.v;
-		context.drawTexture(AdvancementsScreen.TABS_TEXTURE, x + this.getTabX(index), y + this.getTabY(index), i, j, this.width, this.height);
+		context.drawGuiTexture(identifier, x + this.getTabX(index), y + this.getTabY(index), this.width, this.height);
 	}
 
 	public void drawIcon(DrawContext context, int x, int y, int index, ItemStack stack) {
@@ -102,5 +151,9 @@ enum AdvancementTabType {
 		int i = screenX + this.getTabX(index);
 		int j = screenY + this.getTabY(index);
 		return mouseX > (double)i && mouseX < (double)(i + this.width) && mouseY > (double)j && mouseY < (double)(j + this.height);
+	}
+
+	@Environment(EnvType.CLIENT)
+	static record Textures(Identifier first, Identifier middle, Identifier last) {
 	}
 }

@@ -42,7 +42,7 @@ public class StatisticsS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeRegistryValue(stat.getType().getRegistry(), stat.getValue());
 	}
 
-	public Map<Stat<?>, Integer> getStatMap() {
+	public Map<Stat<?>, Integer> getStats() {
 		return this.stats;
 	}
 }

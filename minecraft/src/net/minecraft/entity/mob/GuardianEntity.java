@@ -46,6 +46,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import org.joml.Vector3f;
 
 public class GuardianEntity extends HostileEntity {
 	protected static final int WARMUP_TIME = 80;
@@ -367,6 +368,11 @@ public class GuardianEntity extends HostileEntity {
 		} else {
 			super.travel(movementInput);
 		}
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + 0.125F * scaleFactor, 0.0F);
 	}
 
 	static class FireBeamGoal extends Goal {

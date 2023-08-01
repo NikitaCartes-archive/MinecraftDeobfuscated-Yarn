@@ -174,10 +174,10 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		if (Screen.hasControlDown()) {
 			SimpleOption<Integer> simpleOption = this.gameOptions.getGuiScale();
-			int i = simpleOption.getValue() + (int)Math.signum(amount);
+			int i = simpleOption.getValue() + (int)Math.signum(verticalAmount);
 			if (i != 0) {
 				simpleOption.setValue(i);
 				if (simpleOption.getValue() == i) {
@@ -188,12 +188,17 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 
 			return false;
 		} else {
-			return super.mouseScrolled(mouseX, mouseY, amount);
+			return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
 		}
 	}
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.render(context, this.list, mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
 	}
 }

@@ -83,11 +83,15 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.biomeSelectionList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		context.drawCenteredTextWithShadow(this.textRenderer, BUFFET_BIOME_TEXT, this.width / 2, 28, 10526880);
-		super.render(context, mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
 	}
 
 	@Environment(EnvType.CLIENT)

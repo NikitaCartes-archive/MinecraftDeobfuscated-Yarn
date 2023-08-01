@@ -19,9 +19,9 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RealmsWorldSlotButton extends ButtonWidget {
-	public static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
-	public static final Identifier EMPTY_FRAME = new Identifier("realms", "textures/gui/realms/empty_frame.png");
-	public static final Identifier CHECKMARK = new Identifier("minecraft", "textures/gui/checkmark.png");
+	private static final Identifier SLOT_FRAME = new Identifier("widget/slot_frame");
+	private static final Identifier CHECKMARK = new Identifier("icon/checkmark");
+	public static final Identifier EMPTY_FRAME = new Identifier("textures/gui/realms/empty_frame.png");
 	public static final Identifier PANORAMA_0 = new Identifier("minecraft", "textures/gui/title/background/panorama_0.png");
 	public static final Identifier PANORAMA_2 = new Identifier("minecraft", "textures/gui/title/background/panorama_2.png");
 	public static final Identifier PANORAMA_3 = new Identifier("minecraft", "textures/gui/title/background/panorama_3.png");
@@ -200,18 +200,18 @@ public class RealmsWorldSlotButton extends ButtonWidget {
 			context.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		context.drawTexture(SLOT_FRAME, x, y, 0.0F, 0.0F, 80, 80, 80, 80);
+		context.drawGuiTexture(SLOT_FRAME, x, y, 80, 80);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (active) {
 			this.drawCheckmark(context, x, y);
 		}
 
-		context.drawCenteredTextWithShadow(minecraftClient.textRenderer, slotName, x + 40, y + 66, 16777215);
+		context.drawCenteredTextWithShadow(minecraftClient.textRenderer, slotName, x + 40, y + 66, -1);
 	}
 
 	private void drawCheckmark(DrawContext context, int x, int y) {
 		RenderSystem.enableBlend();
-		context.drawTexture(CHECKMARK, x + 67, y + 4, 0.0F, 0.0F, 9, 8, 9, 8);
+		context.drawGuiTexture(CHECKMARK, x + 67, y + 4, 9, 8);
 		RenderSystem.disableBlend();
 	}
 

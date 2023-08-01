@@ -38,13 +38,29 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<MultiplayerServerListWidget.Entry> {
+	static final Identifier INCOMPATIBLE_TEXTURE = new Identifier("server_list/incompatible");
+	static final Identifier UNREACHABLE_TEXTURE = new Identifier("server_list/unreachable");
+	static final Identifier PING_1_TEXTURE = new Identifier("server_list/ping_1");
+	static final Identifier PING_2_TEXTURE = new Identifier("server_list/ping_2");
+	static final Identifier PING_3_TEXTURE = new Identifier("server_list/ping_3");
+	static final Identifier PING_4_TEXTURE = new Identifier("server_list/ping_4");
+	static final Identifier PING_5_TEXTURE = new Identifier("server_list/ping_5");
+	static final Identifier PINGING_1_TEXTURE = new Identifier("server_list/pinging_1");
+	static final Identifier PINGING_2_TEXTURE = new Identifier("server_list/pinging_2");
+	static final Identifier PINGING_3_TEXTURE = new Identifier("server_list/pinging_3");
+	static final Identifier PINGING_4_TEXTURE = new Identifier("server_list/pinging_4");
+	static final Identifier PINGING_5_TEXTURE = new Identifier("server_list/pinging_5");
+	static final Identifier JOIN_HIGHLIGHTED_TEXTURE = new Identifier("server_list/join_highlighted");
+	static final Identifier JOIN_TEXTURE = new Identifier("server_list/join");
+	static final Identifier MOVE_UP_HIGHLIGHTED_TEXTURE = new Identifier("server_list/move_up_highlighted");
+	static final Identifier MOVE_UP_TEXTURE = new Identifier("server_list/move_up");
+	static final Identifier MOVE_DOWN_HIGHLIGHTED_TEXTURE = new Identifier("server_list/move_down_highlighted");
+	static final Identifier MOVE_DOWN_TEXTURE = new Identifier("server_list/move_down");
 	static final Logger LOGGER = LogUtils.getLogger();
 	static final ThreadPoolExecutor SERVER_PINGER_THREAD_POOL = new ScheduledThreadPoolExecutor(
 		5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build()
 	);
 	private static final Identifier UNKNOWN_SERVER_TEXTURE = new Identifier("textures/misc/unknown_server.png");
-	static final Identifier SERVER_SELECTION_TEXTURE = new Identifier("textures/gui/server_selection.png");
-	static final Identifier ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
 	static final Text LAN_SCANNING_TEXT = Text.translatable("lanServer.scanning");
 	static final Text CANNOT_RESOLVE_TEXT = Text.translatable("multiplayer.status.cannot_resolve").styled(style -> style.withColor(-65536));
 	static final Text CANNOT_CONNECT_TEXT = Text.translatable("multiplayer.status.cannot_connect").styled(style -> style.withColor(-65536));
@@ -149,7 +165,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			context.drawText(this.client.textRenderer, TITLE_TEXT, x + 32 + 3, y + 1, 16777215, false);
-			context.drawText(this.client.textRenderer, this.server.getMotd(), x + 32 + 3, y + 12, 8421504, false);
+			context.drawText(this.client.textRenderer, this.server.getMotd(), x + 32 + 3, y + 12, -8355712, false);
 			if (this.client.options.hideServerAddress) {
 				context.drawText(this.client.textRenderer, HIDDEN_ADDRESS_TEXT, x + 32 + 3, y + 12 + 11, 3158064, false);
 			} else {
@@ -199,7 +215,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			);
 			String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
 			context.drawText(
-				this.client.textRenderer, string, this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(string) / 2, i + 9, 8421504, false
+				this.client.textRenderer, string, this.client.currentScreen.width / 2 - this.client.textRenderer.getWidth(string) / 2, i + 9, -8355712, false
 			);
 		}
 
@@ -213,12 +229,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	public class ServerEntry extends MultiplayerServerListWidget.Entry {
 		private static final int field_32387 = 32;
 		private static final int field_32388 = 32;
-		private static final int field_32389 = 0;
 		private static final int field_32390 = 32;
-		private static final int field_32391 = 64;
-		private static final int field_32392 = 96;
-		private static final int field_32393 = 0;
-		private static final int field_32394 = 32;
 		private final MultiplayerScreen screen;
 		private final MinecraftClient client;
 		private final ServerInfo server;
@@ -259,33 +270,32 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			List<OrderedText> list = this.client.textRenderer.wrapLines(this.server.label, entryWidth - 32 - 2);
 
 			for (int i = 0; i < Math.min(list.size(), 2); i++) {
-				context.drawText(this.client.textRenderer, (OrderedText)list.get(i), x + 32 + 3, y + 12 + 9 * i, 8421504, false);
+				context.drawText(this.client.textRenderer, (OrderedText)list.get(i), x + 32 + 3, y + 12 + 9 * i, -8355712, false);
 			}
 
 			Text text = (Text)(bl ? this.server.version.copy().formatted(Formatting.RED) : this.server.playerCountLabel);
 			int j = this.client.textRenderer.getWidth(text);
-			context.drawText(this.client.textRenderer, text, x + entryWidth - j - 15 - 2, y + 1, 8421504, false);
-			int k = 0;
-			int l;
+			context.drawText(this.client.textRenderer, text, x + entryWidth - j - 15 - 2, y + 1, -8355712, false);
+			Identifier identifier;
 			List<Text> list2;
 			Text text2;
 			if (bl) {
-				l = 5;
+				identifier = MultiplayerServerListWidget.INCOMPATIBLE_TEXTURE;
 				text2 = MultiplayerServerListWidget.INCOMPATIBLE_TEXT;
 				list2 = this.server.playerListSummary;
 			} else if (this.pinged()) {
 				if (this.server.ping < 0L) {
-					l = 5;
+					identifier = MultiplayerServerListWidget.UNREACHABLE_TEXTURE;
 				} else if (this.server.ping < 150L) {
-					l = 0;
+					identifier = MultiplayerServerListWidget.PING_5_TEXTURE;
 				} else if (this.server.ping < 300L) {
-					l = 1;
+					identifier = MultiplayerServerListWidget.PING_4_TEXTURE;
 				} else if (this.server.ping < 600L) {
-					l = 2;
+					identifier = MultiplayerServerListWidget.PING_3_TEXTURE;
 				} else if (this.server.ping < 1000L) {
-					l = 3;
+					identifier = MultiplayerServerListWidget.PING_2_TEXTURE;
 				} else {
-					l = 4;
+					identifier = MultiplayerServerListWidget.PING_1_TEXTURE;
 				}
 
 				if (this.server.ping < 0L) {
@@ -296,17 +306,22 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 					list2 = this.server.playerListSummary;
 				}
 			} else {
-				k = 1;
-				l = (int)(Util.getMeasuringTimeMs() / 100L + (long)(index * 2) & 7L);
-				if (l > 4) {
-					l = 8 - l;
+				int k = (int)(Util.getMeasuringTimeMs() / 100L + (long)(index * 2) & 7L);
+				if (k > 4) {
+					k = 8 - k;
 				}
-
+				identifier = switch (k) {
+					case 1 -> MultiplayerServerListWidget.PINGING_2_TEXTURE;
+					case 2 -> MultiplayerServerListWidget.PINGING_3_TEXTURE;
+					case 3 -> MultiplayerServerListWidget.PINGING_4_TEXTURE;
+					case 4 -> MultiplayerServerListWidget.PINGING_5_TEXTURE;
+					default -> MultiplayerServerListWidget.PINGING_1_TEXTURE;
+				};
 				text2 = MultiplayerServerListWidget.PINGING_TEXT;
 				list2 = Collections.emptyList();
 			}
 
-			context.drawTexture(MultiplayerServerListWidget.ICONS_TEXTURE, x + entryWidth - 15, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256, 256);
+			context.drawGuiTexture(identifier, x + entryWidth - 15, y, 10, 8);
 			byte[] bs = this.server.getFavicon();
 			if (!Arrays.equals(bs, this.favicon)) {
 				if (this.uploadFavicon(bs)) {
@@ -318,39 +333,39 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			this.draw(context, x, y, this.icon.getTextureId());
-			int m = mouseX - x;
-			int n = mouseY - y;
-			if (m >= entryWidth - 15 && m <= entryWidth - 5 && n >= 0 && n <= 8) {
+			int l = mouseX - x;
+			int m = mouseY - y;
+			if (l >= entryWidth - 15 && l <= entryWidth - 5 && m >= 0 && m <= 8) {
 				this.screen.setMultiplayerScreenTooltip(Collections.singletonList(text2));
-			} else if (m >= entryWidth - j - 15 - 2 && m <= entryWidth - 15 - 2 && n >= 0 && n <= 8) {
+			} else if (l >= entryWidth - j - 15 - 2 && l <= entryWidth - 15 - 2 && m >= 0 && m <= 8) {
 				this.screen.setMultiplayerScreenTooltip(list2);
 			}
 
 			if (this.client.options.getTouchscreen().getValue() || hovered) {
 				context.fill(x, y, x + 32, y + 32, -1601138544);
-				int o = mouseX - x;
-				int p = mouseY - y;
+				int n = mouseX - x;
+				int o = mouseY - y;
 				if (this.canConnect()) {
-					if (o < 32 && o > 16) {
-						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 0.0F, 32.0F, 32, 32, 256, 256);
+					if (n < 32 && n > 16) {
+						context.drawGuiTexture(MultiplayerServerListWidget.JOIN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
-						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 0.0F, 0.0F, 32, 32, 256, 256);
+						context.drawGuiTexture(MultiplayerServerListWidget.JOIN_TEXTURE, x, y, 32, 32);
 					}
 				}
 
 				if (index > 0) {
-					if (o < 16 && p < 16) {
-						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 96.0F, 32.0F, 32, 32, 256, 256);
+					if (n < 16 && o < 16) {
+						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
-						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 96.0F, 0.0F, 32, 32, 256, 256);
+						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_UP_TEXTURE, x, y, 32, 32);
 					}
 				}
 
 				if (index < this.screen.getServerList().size() - 1) {
-					if (o < 16 && p > 16) {
-						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 64.0F, 32.0F, 32, 32, 256, 256);
+					if (n < 16 && o > 16) {
+						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
-						context.drawTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE, x, y, 64.0F, 0.0F, 32, 32, 256, 256);
+						context.drawGuiTexture(MultiplayerServerListWidget.MOVE_DOWN_TEXTURE, x, y, 32, 32);
 					}
 				}
 			}

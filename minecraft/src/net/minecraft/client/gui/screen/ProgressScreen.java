@@ -67,7 +67,7 @@ public class ProgressScreen extends Screen implements ProgressListener {
 				this.client.setScreen(null);
 			}
 		} else {
-			this.renderBackground(context);
+			super.render(context, mouseX, mouseY, delta);
 			if (this.title != null) {
 				context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 70, 16777215);
 			}
@@ -75,8 +75,6 @@ public class ProgressScreen extends Screen implements ProgressListener {
 			if (this.task != null && this.progress != 0) {
 				context.drawCenteredTextWithShadow(this.textRenderer, Text.empty().append(this.task).append(" " + this.progress + "%"), this.width / 2, 90, 16777215);
 			}
-
-			super.render(context, mouseX, mouseY, delta);
 		}
 	}
 }

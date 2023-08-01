@@ -75,11 +75,6 @@ public class ChatScreen extends Screen {
 		this.client.inGameHud.getChatHud().resetScroll();
 	}
 
-	@Override
-	public void tick() {
-		this.chatField.tick();
-	}
-
 	private void onChatFieldUpdate(String chatText) {
 		String string = this.chatField.getText();
 		this.chatInputSuggestor.setWindowActive(!string.equals(this.originalChatText));
@@ -119,16 +114,16 @@ public class ChatScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-		amount = MathHelper.clamp(amount, -1.0, 1.0);
-		if (this.chatInputSuggestor.mouseScrolled(amount)) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		verticalAmount = MathHelper.clamp(verticalAmount, -1.0, 1.0);
+		if (this.chatInputSuggestor.mouseScrolled(verticalAmount)) {
 			return true;
 		} else {
 			if (!hasShiftDown()) {
-				amount *= 7.0;
+				verticalAmount *= 7.0;
 			}
 
-			this.client.inGameHud.getChatHud().scroll((int)amount);
+			this.client.inGameHud.getChatHud().scroll((int)verticalAmount);
 			return true;
 		}
 	}
@@ -177,7 +172,7 @@ public class ChatScreen extends Screen {
 					this.chatLastMessage = this.chatField.getText();
 				}
 
-				this.chatField.setText((String)this.client.inGameHud.getChatHud().getMessageHistory().get(i));
+				this.chatField.setText(this.client.inGameHud.getChatHud().getMessageHistory().get(i));
 				this.chatInputSuggestor.setWindowActive(false);
 				this.messageHistorySize = i;
 			}
@@ -199,6 +194,10 @@ public class ChatScreen extends Screen {
 				context.drawHoverEvent(this.textRenderer, style, mouseX, mouseY);
 			}
 		}
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 	}
 
 	@Override

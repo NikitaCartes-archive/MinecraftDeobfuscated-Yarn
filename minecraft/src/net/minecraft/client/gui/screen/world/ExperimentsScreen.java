@@ -12,6 +12,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.TextWidget;
@@ -49,10 +50,10 @@ public class ExperimentsScreen extends Screen {
 	@Override
 	protected void init() {
 		this.experimentToggleList.addHeader(new TextWidget(Text.translatable("selectWorld.experiments"), this.textRenderer));
-		GridWidget.Adder adder = this.experimentToggleList.addBody(new GridWidget()).createAdder(1);
-		adder.add(
+		DirectionalLayoutWidget directionalLayoutWidget = this.experimentToggleList.addBody(DirectionalLayoutWidget.vertical());
+		directionalLayoutWidget.add(
 			new MultilineTextWidget(Text.translatable("selectWorld.experiments.info").formatted(Formatting.RED), this.textRenderer).setMaxWidth(310),
-			adder.copyPositioner().marginBottom(15)
+			positioner -> positioner.marginBottom(15)
 		);
 		WorldScreenOptionGrid.Builder builder = WorldScreenOptionGrid.builder(310).withTooltipBox(2, true).setRowSpacing(4);
 		this.experiments
@@ -62,10 +63,10 @@ public class ExperimentsScreen extends Screen {
 						)
 						.tooltip(pack.getDescription())
 			);
-		builder.build(adder::add);
-		GridWidget.Adder adder2 = this.experimentToggleList.addFooter(new GridWidget().setColumnSpacing(10)).createAdder(2);
-		adder2.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.applyAndClose()).build());
-		adder2.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
+		builder.build(directionalLayoutWidget::add);
+		GridWidget.Adder adder = this.experimentToggleList.addFooter(new GridWidget().setColumnSpacing(10)).createAdder(2);
+		adder.add(ButtonWidget.builder(ScreenTexts.DONE, button -> this.applyAndClose()).build());
+		adder.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
 		this.experimentToggleList.forEachChild(widget -> {
 			ClickableWidget var10000 = this.addDrawableChild(widget);
 		});
@@ -102,8 +103,8 @@ public class ExperimentsScreen extends Screen {
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.renderBackground(context, mouseX, mouseY, delta);
 		context.setShaderColor(0.125F, 0.125F, 0.125F, 1.0F);
 		int i = 32;
 		context.drawTexture(
@@ -118,6 +119,5 @@ public class ExperimentsScreen extends Screen {
 			32
 		);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

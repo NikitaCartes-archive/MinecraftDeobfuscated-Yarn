@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.AbstractParentElement;
@@ -24,7 +25,6 @@ import net.minecraft.client.gui.tab.Tab;
 import net.minecraft.client.gui.tab.TabManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class TabNavigationWidget extends AbstractParentElement implements Drawable, Element, Selectable {

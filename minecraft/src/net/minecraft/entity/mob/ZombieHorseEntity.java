@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -64,5 +65,10 @@ public class ZombieHorseEntity extends AbstractHorseEntity {
 
 	@Override
 	protected void initCustomGoals() {
+	}
+
+	@Override
+	protected float getPassengerAttachmentY(EntityDimensions dimensions, float scaleFactor) {
+		return dimensions.height - (this.isBaby() ? 0.03125F : 0.28125F) * scaleFactor;
 	}
 }

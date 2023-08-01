@@ -10,9 +10,11 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SystemToast implements Toast {
+	private static final Identifier TEXTURE = new Identifier("toast/system");
 	private static final int MIN_WIDTH = 200;
 	private static final int LINE_HEIGHT = 12;
 	private static final int PADDING_Y = 10;
@@ -75,18 +77,18 @@ public class SystemToast implements Toast {
 
 		int i = this.getWidth();
 		if (i == 160 && this.lines.size() <= 1) {
-			context.drawTexture(TEXTURE, 0, 0, 0, 64, i, this.getHeight());
+			context.drawGuiTexture(TEXTURE, 0, 0, i, this.getHeight());
 		} else {
 			int j = this.getHeight();
 			int k = 28;
 			int l = Math.min(4, j - 28);
-			this.drawPart(context, manager, i, 0, 0, 28);
+			this.drawPart(context, i, 0, 0, 28);
 
 			for (int m = 28; m < j - l; m += 10) {
-				this.drawPart(context, manager, i, 16, m, Math.min(16, j - m - l));
+				this.drawPart(context, i, 16, m, Math.min(16, j - m - l));
 			}
 
-			this.drawPart(context, manager, i, 32 - l, j - l, l);
+			this.drawPart(context, i, 32 - l, j - l, l);
 		}
 
 		if (this.lines == null) {
@@ -104,16 +106,17 @@ public class SystemToast implements Toast {
 			: Toast.Visibility.HIDE;
 	}
 
-	private void drawPart(DrawContext context, ToastManager manager, int width, int textureV, int y, int height) {
-		int i = textureV == 0 ? 20 : 5;
-		int j = Math.min(60, width - i);
-		context.drawTexture(TEXTURE, 0, y, 0, 64 + textureV, i, height);
+	private void drawPart(DrawContext context, int i, int j, int k, int l) {
+		int m = j == 0 ? 20 : 5;
+		int n = Math.min(60, i - m);
+		Identifier identifier = TEXTURE;
+		context.drawGuiTexture(identifier, 160, 32, 0, j, 0, k, m, l);
 
-		for (int k = i; k < width - j; k += 64) {
-			context.drawTexture(TEXTURE, k, y, 32, 64 + textureV, Math.min(64, width - k - j), height);
+		for (int o = m; o < i - n; o += 64) {
+			context.drawGuiTexture(identifier, 160, 32, 32, j, o, k, Math.min(64, i - o - n), l);
 		}
 
-		context.drawTexture(TEXTURE, width - j, y, 160 - j, 64 + textureV, j, height);
+		context.drawGuiTexture(identifier, 160, 32, 160 - n, j, i - n, k, n, l);
 	}
 
 	public void setContent(Text title, @Nullable Text description) {

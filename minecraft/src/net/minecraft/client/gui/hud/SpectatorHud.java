@@ -17,8 +17,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorHud implements SpectatorMenuCloseCallback {
-	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
-	public static final Identifier SPECTATOR_TEXTURE = new Identifier("textures/gui/spectator_widgets.png");
+	private static final Identifier HOTBAR_TEXTURE = new Identifier("hud/hotbar");
+	private static final Identifier HOTBAR_SELECTION_TEXTURE = new Identifier("hud/hotbar_selection");
 	private static final long FADE_OUT_DELAY = 5000L;
 	private static final long FADE_OUT_DURATION = 2000L;
 	private final MinecraftClient client;
@@ -64,9 +64,9 @@ public class SpectatorHud implements SpectatorMenuCloseCallback {
 	protected void renderSpectatorMenu(DrawContext context, float height, int x, int y, SpectatorMenuState state) {
 		RenderSystem.enableBlend();
 		context.setShaderColor(1.0F, 1.0F, 1.0F, height);
-		context.drawTexture(WIDGETS_TEXTURE, x - 91, y, 0, 0, 182, 22);
+		context.drawGuiTexture(HOTBAR_TEXTURE, x - 91, y, 182, 22);
 		if (state.getSelectedSlot() >= 0) {
-			context.drawTexture(WIDGETS_TEXTURE, x - 91 - 1 + state.getSelectedSlot() * 20, y - 1, 0, 22, 24, 22);
+			context.drawGuiTexture(HOTBAR_SELECTION_TEXTURE, x - 91 - 1 + state.getSelectedSlot() * 20, y - 1, 24, 23);
 		}
 
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);

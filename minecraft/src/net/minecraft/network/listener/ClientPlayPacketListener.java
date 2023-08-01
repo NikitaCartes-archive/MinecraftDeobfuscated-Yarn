@@ -1,5 +1,6 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -14,19 +15,19 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkSentS2CPacket;
 import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
-import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
+import net.minecraft.network.packet.s2c.play.EnterReconfigurationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
@@ -45,14 +46,12 @@ import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
-import net.minecraft.network.packet.s2c.play.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
-import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
@@ -62,7 +61,6 @@ import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
@@ -77,7 +75,6 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
@@ -89,11 +86,11 @@ import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
+import net.minecraft.network.packet.s2c.play.StartChunkSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
-import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
@@ -113,7 +110,12 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 /**
  * A client side packet listener where play stage packets from the server are processed.
  */
-public interface ClientPlayPacketListener extends PacketListener {
+public interface ClientPlayPacketListener extends ClientCommonPacketListener {
+	@Override
+	default NetworkState getState() {
+		return NetworkState.PLAY;
+	}
+
 	/**
 	 * Handles the spawning of non-living entities.
 	 */
@@ -165,10 +167,6 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onScreenHandlerSlotUpdate(ScreenHandlerSlotUpdateS2CPacket packet);
 
-	void onCustomPayload(CustomPayloadS2CPacket packet);
-
-	void onDisconnect(DisconnectS2CPacket packet);
-
 	void onEntityStatus(EntityStatusS2CPacket packet);
 
 	void onEntityAttach(EntityAttachS2CPacket packet);
@@ -178,8 +176,6 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onExplosion(ExplosionS2CPacket packet);
 
 	void onGameStateChange(GameStateChangeS2CPacket packet);
-
-	void onKeepAlive(KeepAliveS2CPacket packet);
 
 	void onChunkData(ChunkDataS2CPacket packet);
 
@@ -196,8 +192,6 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onPlayerPositionLook(PlayerPositionLookS2CPacket packet);
 
 	void onParticle(ParticleS2CPacket packet);
-
-	void onPing(PlayPingS2CPacket packet);
 
 	void onPlayerAbilities(PlayerAbilitiesS2CPacket packet);
 
@@ -247,8 +241,6 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onEntityStatusEffect(EntityStatusEffectS2CPacket packet);
 
-	void onSynchronizeTags(SynchronizeTagsS2CPacket packet);
-
 	void onEndCombat(EndCombatS2CPacket packet);
 
 	void onEnterCombat(EnterCombatS2CPacket packet);
@@ -272,8 +264,6 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onWorldBorderCenterChanged(WorldBorderCenterChangedS2CPacket packet);
 
 	void onPlayerListHeader(PlayerListHeaderS2CPacket packet);
-
-	void onResourcePackSend(ResourcePackSendS2CPacket packet);
 
 	void onBossBar(BossBarS2CPacket packet);
 
@@ -329,9 +319,13 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onChatSuggestions(ChatSuggestionsS2CPacket packet);
 
-	void onFeatures(FeaturesS2CPacket packet);
-
 	void onBundle(BundleS2CPacket packet);
 
 	void onEntityDamage(EntityDamageS2CPacket packet);
+
+	void onEnterReconfiguration(EnterReconfigurationS2CPacket packet);
+
+	void onStartChunkSend(StartChunkSendS2CPacket packet);
+
+	void onChunkSent(ChunkSentS2CPacket packet);
 }

@@ -13,9 +13,13 @@ public class Colors {
 	 */
 	public static final int BLACK = -16777216;
 	/**
-	 * Represents the color gray, {@code 0xFFA0A0A0}.
+	 * Represents the color gray, {@code 0xFF808080}.
 	 */
-	public static final int GRAY = -6250336;
+	public static final int GRAY = -8355712;
+	/**
+	 * Represents the color light gray, {@code 0xFFA0A0A0}.
+	 */
+	public static final int LIGHT_GRAY = -6250336;
 	/**
 	 * Represents the color red, {@code 0xFFFF0000}.
 	 */

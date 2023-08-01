@@ -13,7 +13,6 @@ import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -63,16 +62,24 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidget.Entry> {
+	static final Identifier ERROR_HIGHLIGHTED_TEXTURE = new Identifier("world_list/error_highlighted");
+	static final Identifier ERROR_TEXTURE = new Identifier("world_list/error");
+	static final Identifier MARKED_JOIN_HIGHLIGHTED_TEXTURE = new Identifier("world_list/marked_join_highlighted");
+	static final Identifier MARKED_JOIN_TEXTURE = new Identifier("world_list/marked_join");
+	static final Identifier WARNING_HIGHLIGHTED_TEXTURE = new Identifier("world_list/warning_highlighted");
+	static final Identifier WARNING_TEXTURE = new Identifier("world_list/warning");
+	static final Identifier JOIN_HIGHLIGHTED_TEXTURE = new Identifier("world_list/join_highlighted");
+	static final Identifier JOIN_TEXTURE = new Identifier("world_list/join");
 	static final Logger LOGGER = LogUtils.getLogger();
 	static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
-	static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
 	static final Text FROM_NEWER_VERSION_FIRST_LINE = Text.translatable("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
 	static final Text FROM_NEWER_VERSION_SECOND_LINE = Text.translatable("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
 	static final Text SNAPSHOT_FIRST_LINE = Text.translatable("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
 	static final Text SNAPSHOT_SECOND_LINE = Text.translatable("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
 	static final Text LOCKED_TEXT = Text.translatable("selectWorld.locked").formatted(Formatting.RED);
 	static final Text CONVERSION_TOOLTIP = Text.translatable("selectWorld.conversion.tooltip").formatted(Formatting.RED);
+	static final Text EXPERIMENTAL_TEXT = Text.translatable("selectWorld.experimental");
 	private final SelectWorldScreen parent;
 	private CompletableFuture<List<LevelSummary>> levelsFuture;
 	@Nullable
@@ -274,7 +281,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
 			int k = (this.client.currentScreen.width - this.client.textRenderer.getWidth(string)) / 2;
 			int l = j + 9;
-			context.drawText(this.client.textRenderer, string, k, l, 8421504, false);
+			context.drawText(this.client.textRenderer, string, k, l, -8355712, false);
 		}
 
 		@Override
@@ -292,12 +299,6 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	public final class WorldEntry extends WorldListWidget.Entry implements AutoCloseable {
 		private static final int field_32435 = 32;
 		private static final int field_32436 = 32;
-		private static final int field_32437 = 0;
-		private static final int field_32438 = 32;
-		private static final int field_32439 = 64;
-		private static final int field_32440 = 96;
-		private static final int field_32441 = 0;
-		private static final int field_32442 = 32;
 		private final MinecraftClient client;
 		private final SelectWorldScreen screen;
 		private final LevelSummary level;
@@ -321,10 +322,9 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				try {
 					BasicFileAttributes basicFileAttributes = Files.readAttributes(this.iconPath, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
 					if (basicFileAttributes.isSymbolicLink()) {
-						List<SymlinkEntry> list = new ArrayList();
-						this.client.getLevelStorage().getSymlinkFinder().validate(this.iconPath, list);
+						List<SymlinkEntry> list = this.client.getSymlinkFinder().validate(this.iconPath);
 						if (!list.isEmpty()) {
-							WorldListWidget.LOGGER.warn(SymlinkValidationException.getMessage(this.iconPath, list));
+							WorldListWidget.LOGGER.warn("{}", SymlinkValidationException.getMessage(this.iconPath, list));
 							this.iconPath = null;
 						} else {
 							basicFileAttributes = Files.readAttributes(this.iconPath, BasicFileAttributes.class);
@@ -346,14 +346,15 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		@Override
 		public Text getNarration() {
 			Text text = Text.translatable("narrator.select.world_info", this.level.getDisplayName(), new Date(this.level.getLastPlayed()), this.level.getDetails());
-			Text text2;
 			if (this.level.isLocked()) {
-				text2 = ScreenTexts.joinSentences(text, WorldListWidget.LOCKED_TEXT);
-			} else {
-				text2 = text;
+				text = ScreenTexts.joinSentences(text, WorldListWidget.LOCKED_TEXT);
 			}
 
-			return Text.translatable("narrator.select", text2);
+			if (this.level.isExperimental()) {
+				text = ScreenTexts.joinSentences(text, WorldListWidget.EXPERIMENTAL_TEXT);
+			}
+
+			return Text.translatable("narrator.select", text);
 		}
 
 		@Override
@@ -371,8 +372,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 			Text text = this.level.getDetails();
 			context.drawText(this.client.textRenderer, string, x + 32 + 3, y + 1, 16777215, false);
-			context.drawText(this.client.textRenderer, string2, x + 32 + 3, y + 9 + 3, 8421504, false);
-			context.drawText(this.client.textRenderer, text, x + 32 + 3, y + 9 + 9 + 3, 8421504, false);
+			context.drawText(this.client.textRenderer, string2, x + 32 + 3, y + 9 + 3, -8355712, false);
+			context.drawText(this.client.textRenderer, text, x + 32 + 3, y + 9 + 9 + 3, -8355712, false);
 			RenderSystem.enableBlend();
 			context.drawTexture(this.icon.getTextureId(), x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
@@ -380,27 +381,30 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				context.fill(x, y, x + 32, y + 32, -1601138544);
 				int i = mouseX - x;
 				boolean bl = i < 32;
-				int j = bl ? 32 : 0;
+				Identifier identifier = bl ? WorldListWidget.JOIN_HIGHLIGHTED_TEXTURE : WorldListWidget.JOIN_TEXTURE;
+				Identifier identifier2 = bl ? WorldListWidget.WARNING_HIGHLIGHTED_TEXTURE : WorldListWidget.WARNING_TEXTURE;
+				Identifier identifier3 = bl ? WorldListWidget.ERROR_HIGHLIGHTED_TEXTURE : WorldListWidget.ERROR_TEXTURE;
+				Identifier identifier4 = bl ? WorldListWidget.MARKED_JOIN_HIGHLIGHTED_TEXTURE : WorldListWidget.MARKED_JOIN_TEXTURE;
 				if (this.level instanceof LevelSummary.SymlinkLevelSummary) {
-					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 96.0F, (float)j, 32, 32, 256, 256);
-					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 32.0F, (float)j, 32, 32, 256, 256);
+					context.drawGuiTexture(identifier3, x, y, 32, 32);
+					context.drawGuiTexture(identifier4, x, y, 32, 32);
 					return;
 				}
 
 				if (this.level.isLocked()) {
-					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+					context.drawGuiTexture(identifier3, x, y, 32, 32);
 					if (bl) {
 						this.screen.setTooltip(this.client.textRenderer.wrapLines(WorldListWidget.LOCKED_TEXT, 175));
 					}
 				} else if (this.level.requiresConversion()) {
-					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+					context.drawGuiTexture(identifier3, x, y, 32, 32);
 					if (bl) {
 						this.screen.setTooltip(this.client.textRenderer.wrapLines(WorldListWidget.CONVERSION_TOOLTIP, 175));
 					}
 				} else if (this.level.isDifferentVersion()) {
-					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 32.0F, (float)j, 32, 32, 256, 256);
+					context.drawGuiTexture(identifier4, x, y, 32, 32);
 					if (this.level.isFutureLevel()) {
-						context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 96.0F, (float)j, 32, 32, 256, 256);
+						context.drawGuiTexture(identifier3, x, y, 32, 32);
 						if (bl) {
 							this.screen
 								.setTooltip(
@@ -408,13 +412,13 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 								);
 						}
 					} else if (!SharedConstants.getGameVersion().isStable()) {
-						context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 64.0F, (float)j, 32, 32, 256, 256);
+						context.drawGuiTexture(identifier2, x, y, 32, 32);
 						if (bl) {
 							this.screen.setTooltip(ImmutableList.of(WorldListWidget.SNAPSHOT_FIRST_LINE.asOrderedText(), WorldListWidget.SNAPSHOT_SECOND_LINE.asOrderedText()));
 						}
 					}
 				} else {
-					context.drawTexture(WorldListWidget.WORLD_SELECTION_LOCATION, x, y, 0.0F, (float)j, 32, 32, 256, 256);
+					context.drawGuiTexture(identifier, x, y, 32, 32);
 				}
 			}
 		}
@@ -441,7 +445,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		public void play() {
 			if (!this.level.isUnavailable()) {
 				if (this.level instanceof LevelSummary.SymlinkLevelSummary) {
-					this.client.setScreen(new SymlinkWarningScreen(this.screen));
+					this.client.setScreen(SymlinkWarningScreen.world(this.screen));
 				} else {
 					LevelSummary.ConversionWarning conversionWarning = this.level.getConversionWarning();
 					if (conversionWarning.promptsBackup()) {
@@ -464,7 +468,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 									WorldListWidget.LOGGER.error("Failed to backup level {}", stringx, var9);
 								} catch (SymlinkValidationException var10) {
 									WorldListWidget.LOGGER.warn("{}", var10.getMessage());
-									this.client.setScreen(new SymlinkWarningScreen(this.screen));
+									this.client.setScreen(SymlinkWarningScreen.world(this.screen));
 								}
 							}
 
@@ -542,7 +546,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 		public void edit() {
 			if (this.level instanceof LevelSummary.SymlinkLevelSummary) {
-				this.client.setScreen(new SymlinkWarningScreen(this.screen));
+				this.client.setScreen(SymlinkWarningScreen.world(this.screen));
 			} else {
 				this.openReadingWorldScreen();
 				String string = this.level.getName();
@@ -568,14 +572,14 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					WorldListWidget.this.load();
 				} catch (SymlinkValidationException var4) {
 					WorldListWidget.LOGGER.warn("{}", var4.getMessage());
-					this.client.setScreen(new SymlinkWarningScreen(this.screen));
+					this.client.setScreen(SymlinkWarningScreen.world(this.screen));
 				}
 			}
 		}
 
 		public void recreate() {
 			if (this.level instanceof LevelSummary.SymlinkLevelSummary) {
-				this.client.setScreen(new SymlinkWarningScreen(this.screen));
+				this.client.setScreen(SymlinkWarningScreen.world(this.screen));
 			} else {
 				this.openReadingWorldScreen();
 
@@ -601,7 +605,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 					}
 				} catch (SymlinkValidationException var8) {
 					WorldListWidget.LOGGER.warn("{}", var8.getMessage());
-					this.client.setScreen(new SymlinkWarningScreen(this.screen));
+					this.client.setScreen(SymlinkWarningScreen.world(this.screen));
 				} catch (Exception var9) {
 					WorldListWidget.LOGGER.error("Unable to recreate world", (Throwable)var9);
 					this.client

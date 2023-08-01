@@ -40,11 +40,6 @@ public class RealmsInviteScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void tick() {
-		this.nameWidget.tick();
-	}
-
-	@Override
 	public void init() {
 		this.nameWidget = new TextFieldWidget(
 			this.client.textRenderer, this.width / 2 - 100, row(2), 200, 20, null, Text.translatable("mco.configure.world.invite.profile.name")
@@ -108,13 +103,12 @@ public class RealmsInviteScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawText(this.textRenderer, INVITE_PROFILE_NAME_TEXT, this.width / 2 - 100, row(1), -1, false);
 		if (this.errorMessage != null) {
 			context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessage, this.width / 2, row(5), -1);
 		}
 
 		this.nameWidget.render(context, mouseX, mouseY, delta);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

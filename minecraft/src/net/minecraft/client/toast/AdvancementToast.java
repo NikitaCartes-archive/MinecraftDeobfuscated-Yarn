@@ -10,10 +10,12 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.OrderedText;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AdvancementToast implements Toast {
+	private static final Identifier TEXTURE = new Identifier("toast/advancement");
 	public static final int DEFAULT_DURATION_MS = 5000;
 	private final Advancement advancement;
 	private boolean soundPlayed;
@@ -25,7 +27,7 @@ public class AdvancementToast implements Toast {
 	@Override
 	public Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime) {
 		AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
-		context.drawTexture(TEXTURE, 0, 0, 0, 0, this.getWidth(), this.getHeight());
+		context.drawGuiTexture(TEXTURE, 0, 0, this.getWidth(), this.getHeight());
 		if (advancementDisplay != null) {
 			List<OrderedText> list = manager.getClient().textRenderer.wrapLines(advancementDisplay.getTitle(), 125);
 			int i = advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE ? 16746751 : 16776960;

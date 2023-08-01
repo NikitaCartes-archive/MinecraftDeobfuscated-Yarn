@@ -17,10 +17,11 @@ import net.minecraft.screen.SmithingScreenHandler;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/smithing.png");
+	private static final Identifier ERROR_TEXTURE = new Identifier("container/smithing/error");
 	private static final Identifier EMPTY_SLOT_SMITHING_TEMPLATE_ARMOR_TRIM_TEXTURE = new Identifier("item/empty_slot_smithing_template_armor_trim");
 	private static final Identifier EMPTY_SLOT_SMITHING_TEMPLATE_NETHERITE_UPGRADE_TEXTURE = new Identifier("item/empty_slot_smithing_template_netherite_upgrade");
 	private static final Text MISSING_TEMPLATE_TOOLTIP = Text.translatable("container.upgrade.missing_template_tooltip");
@@ -35,12 +36,13 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 	private static final int field_42061 = 65;
 	private static final int field_42062 = 46;
 	private static final int field_42063 = 115;
-	public static final int field_42068 = 210;
-	public static final int field_42047 = 25;
-	public static final Quaternionf ARMOR_STAND_ROTATION = new Quaternionf().rotationXYZ(0.43633232F, 0.0F, (float) Math.PI);
-	public static final int field_42049 = 25;
-	public static final int field_42050 = 75;
-	public static final int field_42051 = 141;
+	private static final int field_42068 = 210;
+	private static final int field_42047 = 25;
+	private static final Vector3f field_45497 = new Vector3f();
+	private static final Quaternionf ARMOR_STAND_ROTATION = new Quaternionf().rotationXYZ(0.43633232F, 0.0F, (float) Math.PI);
+	private static final int field_42049 = 25;
+	private static final int field_42050 = 75;
+	private static final int field_42051 = 141;
 	private final CyclingSlotIcon templateSlotIcon = new CyclingSlotIcon(0);
 	private final CyclingSlotIcon baseSlotIcon = new CyclingSlotIcon(1);
 	private final CyclingSlotIcon additionsSlotIcon = new CyclingSlotIcon(2);
@@ -48,7 +50,7 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 	private ArmorStandEntity armorStand;
 
 	public SmithingScreen(SmithingScreenHandler handler, PlayerInventory playerInventory, Text title) {
-		super(handler, playerInventory, title, TEXTURE);
+		super(handler, playerInventory, title, new Identifier("textures/gui/container/smithing.png"));
 		this.titleX = 44;
 		this.titleY = 15;
 	}
@@ -93,7 +95,7 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 		this.templateSlotIcon.render(this.handler, context, delta, this.x, this.y);
 		this.baseSlotIcon.render(this.handler, context, delta, this.x, this.y);
 		this.additionsSlotIcon.render(this.handler, context, delta, this.x, this.y);
-		InventoryScreen.drawEntity(context, this.x + 141, this.y + 75, 25, ARMOR_STAND_ROTATION, null, this.armorStand);
+		InventoryScreen.drawEntity(context, (float)(this.x + 141), (float)(this.y + 75), 25, field_45497, ARMOR_STAND_ROTATION, null, this.armorStand);
 	}
 
 	@Override
@@ -123,7 +125,7 @@ public class SmithingScreen extends ForgingScreen<SmithingScreenHandler> {
 	@Override
 	protected void drawInvalidRecipeArrow(DrawContext context, int x, int y) {
 		if (this.hasInvalidRecipe()) {
-			context.drawTexture(TEXTURE, x + 65, y + 46, this.backgroundWidth, 0, 28, 21);
+			context.drawGuiTexture(ERROR_TEXTURE, x + 65, y + 46, 28, 21);
 		}
 	}
 

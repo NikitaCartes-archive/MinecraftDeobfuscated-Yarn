@@ -106,12 +106,11 @@ public class RegistryPredicateArgumentType<T> implements ArgumentType<RegistryPr
 
 	public static class Serializer<T> implements ArgumentSerializer<RegistryPredicateArgumentType<T>, RegistryPredicateArgumentType.Serializer<T>.Properties> {
 		public void writePacket(RegistryPredicateArgumentType.Serializer<T>.Properties properties, PacketByteBuf packetByteBuf) {
-			packetByteBuf.writeIdentifier(properties.registryRef.getValue());
+			packetByteBuf.writeRegistryKey(properties.registryRef);
 		}
 
 		public RegistryPredicateArgumentType.Serializer<T>.Properties fromPacket(PacketByteBuf packetByteBuf) {
-			Identifier identifier = packetByteBuf.readIdentifier();
-			return new RegistryPredicateArgumentType.Serializer.Properties(RegistryKey.ofRegistry(identifier));
+			return new RegistryPredicateArgumentType.Serializer.Properties(packetByteBuf.readRegistryRefKey());
 		}
 
 		public void writeJson(RegistryPredicateArgumentType.Serializer<T>.Properties properties, JsonObject jsonObject) {

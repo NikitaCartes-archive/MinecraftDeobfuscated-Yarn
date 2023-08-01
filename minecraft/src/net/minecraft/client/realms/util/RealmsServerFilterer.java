@@ -1,8 +1,8 @@
 package net.minecraft.client.realms.util;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
@@ -11,16 +11,16 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.realms.dto.RealmsServer;
 
 @Environment(EnvType.CLIENT)
-public class RealmsServerFilterer {
+public class RealmsServerFilterer implements Iterable<RealmsServer> {
 	private final MinecraftClient client;
-	private final Set<RealmsServer> removedServers = Sets.<RealmsServer>newHashSet();
-	private List<RealmsServer> sortedServers = Lists.<RealmsServer>newArrayList();
+	private final Set<RealmsServer> removedServers = new HashSet();
+	private List<RealmsServer> sortedServers = List.of();
 
 	public RealmsServerFilterer(MinecraftClient client) {
 		this.client = client;
 	}
 
-	public List<RealmsServer> filterAndSort(List<RealmsServer> servers) {
+	public void filterAndSort(List<RealmsServer> servers) {
 		List<RealmsServer> list = new ArrayList(servers);
 		list.sort(new RealmsServer.McoServerComparator(this.client.getSession().getUsername()));
 		boolean bl = list.removeAll(this.removedServers);
@@ -29,12 +29,18 @@ public class RealmsServerFilterer {
 		}
 
 		this.sortedServers = list;
-		return List.copyOf(this.sortedServers);
 	}
 
-	public synchronized List<RealmsServer> remove(RealmsServer server) {
+	public void remove(RealmsServer server) {
 		this.sortedServers.remove(server);
 		this.removedServers.add(server);
-		return List.copyOf(this.sortedServers);
+	}
+
+	public Iterator<RealmsServer> iterator() {
+		return this.sortedServers.iterator();
+	}
+
+	public boolean isEmpty() {
+		return this.sortedServers.isEmpty();
 	}
 }

@@ -47,7 +47,7 @@ public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacket
 		return this.slot;
 	}
 
-	public ItemStack getItemStack() {
+	public ItemStack getStack() {
 		return this.stack;
 	}
 

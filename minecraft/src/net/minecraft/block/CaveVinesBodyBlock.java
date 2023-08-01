@@ -47,7 +47,7 @@ public class CaveVinesBodyBlock extends AbstractPlantBlock implements Fertilizab
 	}
 
 	@Override
-	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
 		return !(Boolean)state.get(BERRIES);
 	}
 

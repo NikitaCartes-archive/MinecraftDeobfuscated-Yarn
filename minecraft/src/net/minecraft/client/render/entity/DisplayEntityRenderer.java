@@ -21,6 +21,7 @@ import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.AffineTransformation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -50,7 +51,7 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends 
 				int k = j != -1 ? j : i;
 				super.render(displayEntity, f, g, matrixStack, vertexConsumerProvider, k);
 				matrixStack.push();
-				matrixStack.multiply(this.getBillboardRotation(renderState, displayEntity));
+				matrixStack.multiply(this.getBillboardRotation(renderState, displayEntity, g, new Quaternionf()));
 				AffineTransformation affineTransformation = renderState.transformation().interpolate(h);
 				matrixStack.multiplyPositionMatrix(affineTransformation.getMatrix());
 				matrixStack.peek().getNormalMatrix().rotate(affineTransformation.getLeftRotation()).rotate(affineTransformation.getRightRotation());
@@ -60,17 +61,31 @@ public abstract class DisplayEntityRenderer<T extends DisplayEntity, S> extends 
 		}
 	}
 
-	private Quaternionf getBillboardRotation(DisplayEntity.RenderState renderState, T entity) {
+	private Quaternionf getBillboardRotation(DisplayEntity.RenderState renderState, T entity, float yaw, Quaternionf rotation) {
 		Camera camera = this.renderDispatcher.camera;
 
 		return switch (renderState.billboardConstraints()) {
-			case FIXED -> entity.getFixedRotation();
-			case HORIZONTAL -> new Quaternionf().rotationYXZ((float) (-Math.PI / 180.0) * entity.getYaw(), (float) (-Math.PI / 180.0) * camera.getPitch(), 0.0F);
-			case VERTICAL -> new Quaternionf()
-			.rotationYXZ((float) Math.PI - (float) (Math.PI / 180.0) * camera.getYaw(), (float) (Math.PI / 180.0) * entity.getPitch(), 0.0F);
-			case CENTER -> new Quaternionf()
-			.rotationYXZ((float) Math.PI - (float) (Math.PI / 180.0) * camera.getYaw(), (float) (-Math.PI / 180.0) * camera.getPitch(), 0.0F);
+			case FIXED -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * method_52844(entity, yaw), (float) (Math.PI / 180.0) * method_52846(entity, yaw), 0.0F);
+			case HORIZONTAL -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * method_52844(entity, yaw), (float) (Math.PI / 180.0) * method_52847(camera), 0.0F);
+			case VERTICAL -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * method_52845(camera), (float) (Math.PI / 180.0) * method_52846(entity, yaw), 0.0F);
+			case CENTER -> rotation.rotationYXZ((float) (-Math.PI / 180.0) * method_52845(camera), (float) (Math.PI / 180.0) * method_52847(camera), 0.0F);
 		};
+	}
+
+	private static float method_52845(Camera camera) {
+		return camera.getYaw() - 180.0F;
+	}
+
+	private static float method_52847(Camera camera) {
+		return -camera.getPitch();
+	}
+
+	private static <T extends DisplayEntity> float method_52844(T displayEntity, float f) {
+		return MathHelper.lerpAngleDegrees(f, displayEntity.prevYaw, displayEntity.getYaw());
+	}
+
+	private static <T extends DisplayEntity> float method_52846(T displayEntity, float f) {
+		return MathHelper.lerp(f, displayEntity.prevPitch, displayEntity.getPitch());
 	}
 
 	@Nullable

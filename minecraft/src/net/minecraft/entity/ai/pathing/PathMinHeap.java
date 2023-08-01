@@ -1,5 +1,7 @@
 package net.minecraft.entity.ai.pathing;
 
+import java.util.Arrays;
+
 public class PathMinHeap {
 	private PathNode[] pathNodes = new PathNode[128];
 	private int count;
@@ -140,8 +142,6 @@ public class PathMinHeap {
 	}
 
 	public PathNode[] getNodes() {
-		PathNode[] pathNodes = new PathNode[this.getCount()];
-		System.arraycopy(this.pathNodes, 0, pathNodes, 0, this.getCount());
-		return pathNodes;
+		return (PathNode[])Arrays.copyOf(this.pathNodes, this.count);
 	}
 }

@@ -1,24 +1,23 @@
 package net.minecraft.client.texture;
 
 import com.mojang.logging.LogUtils;
-import java.io.IOException;
-import java.io.InputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.atlas.AtlasLoader;
-import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.crash.CrashException;
@@ -29,6 +28,7 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SpriteLoader {
+	public static final Set<ResourceMetadataReader<?>> METADATA_READERS = Set.of(AnimationResourceMetadata.READER);
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private final Identifier id;
 	private final int maxTextureSize;
@@ -110,70 +110,24 @@ public class SpriteLoader {
 		return new SpriteLoader.StitchResult(o, p, l, sprite, map, completableFuture);
 	}
 
-	public static CompletableFuture<List<SpriteContents>> loadAll(List<Supplier<SpriteContents>> sources, Executor executor) {
-		List<CompletableFuture<SpriteContents>> list = sources.stream().map(source -> CompletableFuture.supplyAsync(source, executor)).toList();
+	public static CompletableFuture<List<SpriteContents>> loadAll(SpriteOpener opener, List<Function<SpriteOpener, SpriteContents>> sources, Executor executor) {
+		List<CompletableFuture<SpriteContents>> list = sources.stream()
+			.map(sprite -> CompletableFuture.supplyAsync(() -> (SpriteContents)sprite.apply(opener), executor))
+			.toList();
 		return Util.combineSafe(list).thenApply(sprites -> sprites.stream().filter(Objects::nonNull).toList());
 	}
 
 	public CompletableFuture<SpriteLoader.StitchResult> load(ResourceManager resourceManager, Identifier path, int mipLevel, Executor executor) {
-		return CompletableFuture.supplyAsync(() -> AtlasLoader.of(resourceManager, path).loadSources(resourceManager), executor)
-			.thenCompose(sources -> loadAll(sources, executor))
-			.thenApply(sprites -> this.stitch(sprites, mipLevel, executor));
+		return this.load(resourceManager, path, mipLevel, executor, METADATA_READERS);
 	}
 
-	@Nullable
-	public static SpriteContents load(Identifier id, Resource resource) {
-		AnimationResourceMetadata animationResourceMetadata;
-		try {
-			animationResourceMetadata = (AnimationResourceMetadata)resource.getMetadata()
-				.decode(AnimationResourceMetadata.READER)
-				.orElse(AnimationResourceMetadata.EMPTY);
-		} catch (Exception var8) {
-			LOGGER.error("Unable to parse metadata from {}", id, var8);
-			return null;
-		}
-
-		NativeImage nativeImage;
-		try {
-			InputStream inputStream = resource.getInputStream();
-
-			try {
-				nativeImage = NativeImage.read(inputStream);
-			} catch (Throwable var9) {
-				if (inputStream != null) {
-					try {
-						inputStream.close();
-					} catch (Throwable var7) {
-						var9.addSuppressed(var7);
-					}
-				}
-
-				throw var9;
-			}
-
-			if (inputStream != null) {
-				inputStream.close();
-			}
-		} catch (IOException var10) {
-			LOGGER.error("Using missing texture, unable to load {}", id, var10);
-			return null;
-		}
-
-		SpriteDimensions spriteDimensions = animationResourceMetadata.getSize(nativeImage.getWidth(), nativeImage.getHeight());
-		if (MathHelper.isMultipleOf(nativeImage.getWidth(), spriteDimensions.width()) && MathHelper.isMultipleOf(nativeImage.getHeight(), spriteDimensions.height())) {
-			return new SpriteContents(id, spriteDimensions, nativeImage, animationResourceMetadata);
-		} else {
-			LOGGER.error(
-				"Image {} size {},{} is not multiple of frame size {},{}",
-				id,
-				nativeImage.getWidth(),
-				nativeImage.getHeight(),
-				spriteDimensions.width(),
-				spriteDimensions.height()
-			);
-			nativeImage.close();
-			return null;
-		}
+	public CompletableFuture<SpriteLoader.StitchResult> load(
+		ResourceManager resourceManager, Identifier path, int mipLevel, Executor executor, Collection<ResourceMetadataReader<?>> metadatas
+	) {
+		SpriteOpener spriteOpener = SpriteOpener.create(metadatas);
+		return CompletableFuture.supplyAsync(() -> AtlasLoader.of(resourceManager, path).loadSources(resourceManager), executor)
+			.thenCompose(sources -> loadAll(spriteOpener, sources, executor))
+			.thenApply(sprites -> this.stitch(sprites, mipLevel, executor));
 	}
 
 	private Map<Identifier, Sprite> collectStitchedSprites(TextureStitcher<SpriteContents> stitcher, int atlasWidth, int atlasHeight) {

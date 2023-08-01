@@ -36,9 +36,8 @@ public class DatapackFailureScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		this.wrappedText.drawCenterWithShadow(context, this.width / 2, 70);
 		super.render(context, mouseX, mouseY, delta);
+		this.wrappedText.drawCenterWithShadow(context, this.width / 2, 70);
 	}
 
 	@Override

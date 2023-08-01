@@ -17,6 +17,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 
 public class CaveSpiderEntity extends SpiderEntity {
 	public CaveSpiderEntity(EntityType<? extends CaveSpiderEntity> entityType, World world) {
@@ -60,5 +61,15 @@ public class CaveSpiderEntity extends SpiderEntity {
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 0.45F;
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height, 0.0F);
+	}
+
+	@Override
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return vehicle.getWidth() <= this.getWidth() ? -0.21875F : 0.0F;
 	}
 }

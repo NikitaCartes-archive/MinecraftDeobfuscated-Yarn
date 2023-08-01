@@ -1,11 +1,11 @@
 package net.minecraft.client.texture.atlas;
 
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.SpriteContents;
-import net.minecraft.client.texture.SpriteLoader;
+import net.minecraft.client.texture.SpriteOpener;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
@@ -20,7 +20,7 @@ public interface AtlasSource {
 	AtlasSourceType getType();
 
 	@Environment(EnvType.CLIENT)
-	public interface SpriteRegion extends Supplier<SpriteContents> {
+	public interface SpriteRegion extends Function<SpriteOpener, SpriteContents> {
 		default void close() {
 		}
 	}
@@ -28,7 +28,7 @@ public interface AtlasSource {
 	@Environment(EnvType.CLIENT)
 	public interface SpriteRegions {
 		default void add(Identifier id, Resource resource) {
-			this.add(id, () -> SpriteLoader.load(id, resource));
+			this.add(id, opener -> opener.loadSprite(id, resource));
 		}
 
 		void add(Identifier arg, AtlasSource.SpriteRegion region);

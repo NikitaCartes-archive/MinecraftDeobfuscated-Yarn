@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encoding.VarInts;
 import net.minecraft.util.collection.IndexedIterable;
 import org.apache.commons.lang3.Validate;
 
@@ -82,7 +83,7 @@ public class SingularPalette<T> implements Palette<T> {
 		if (this.entry == null) {
 			throw new IllegalStateException("Use of an uninitialized palette");
 		} else {
-			return PacketByteBuf.getVarIntLength(this.idList.getRawId(this.entry));
+			return VarInts.getSizeInBytes(this.idList.getRawId(this.entry));
 		}
 	}
 

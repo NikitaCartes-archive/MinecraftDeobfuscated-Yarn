@@ -20,6 +20,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Nullables;
+import net.minecraft.util.collection.ArrayListDeque;
 import net.minecraft.util.math.MathHelper;
 import org.slf4j.Logger;
 
@@ -40,7 +41,7 @@ public class ChatHud {
 	private static final int REMOVAL_QUEUE_TICKS = 60;
 	private static final Text DELETED_MARKER_TEXT = Text.translatable("chat.deleted_marker").formatted(Formatting.GRAY, Formatting.ITALIC);
 	private final MinecraftClient client;
-	private final List<String> messageHistory = Lists.<String>newArrayList();
+	private final ArrayListDeque<String> messageHistory = new ArrayListDeque<>(100);
 	private final List<ChatHudLine> messages = Lists.<ChatHudLine>newArrayList();
 	private final List<ChatHudLine.Visible> visibleMessages = Lists.<ChatHudLine.Visible>newArrayList();
 	private int scrolledLines;
@@ -49,6 +50,7 @@ public class ChatHud {
 
 	public ChatHud(MinecraftClient client) {
 		this.client = client;
+		this.messageHistory.addAll(client.getCommandHistoryManager().getHistory());
 	}
 
 	public void tickRemovalQueueIfExists() {
@@ -136,8 +138,8 @@ public class ChatHud {
 						int v = af > 0 ? 170 : 96;
 						int w = this.hasUnreadNewMessages ? 13382451 : 3355562;
 						int x = k + 4;
-						context.fill(x, -af, x + 2, -af - u, w + (v << 24));
-						context.fill(x + 2, -af, x + 1, -af - u, 13421772 + (v << 24));
+						context.fill(x, -af, x + 2, -af - u, 100, w + (v << 24));
+						context.fill(x + 2, -af, x + 1, -af - u, 100, 13421772 + (v << 24));
 					}
 				}
 
@@ -174,6 +176,7 @@ public class ChatHud {
 		this.messages.clear();
 		if (clearHistory) {
 			this.messageHistory.clear();
+			this.messageHistory.addAll(this.client.getCommandHistoryManager().getHistory());
 		}
 	}
 
@@ -281,13 +284,21 @@ public class ChatHud {
 		}
 	}
 
-	public List<String> getMessageHistory() {
+	public ArrayListDeque<String> getMessageHistory() {
 		return this.messageHistory;
 	}
 
 	public void addToMessageHistory(String message) {
-		if (this.messageHistory.isEmpty() || !((String)this.messageHistory.get(this.messageHistory.size() - 1)).equals(message)) {
-			this.messageHistory.add(message);
+		if (!message.equals(this.messageHistory.peekLast())) {
+			if (this.messageHistory.size() >= 100) {
+				this.messageHistory.removeFirst();
+			}
+
+			this.messageHistory.addLast(message);
+		}
+
+		if (message.startsWith("/")) {
+			this.client.getCommandHistoryManager().add(message);
 		}
 	}
 

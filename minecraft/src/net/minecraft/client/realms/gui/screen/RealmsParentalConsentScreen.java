@@ -50,8 +50,7 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		this.privacyInfoText.drawCenterWithShadow(context, this.width / 2, 15, 15, 16777215);
 		super.render(context, mouseX, mouseY, delta);
+		this.privacyInfoText.drawCenterWithShadow(context, this.width / 2, 15, 15, 16777215);
 	}
 }

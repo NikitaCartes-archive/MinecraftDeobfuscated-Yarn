@@ -2,8 +2,6 @@ package net.minecraft.client.realms;
 
 import com.mojang.logging.LogUtils;
 import java.net.InetSocketAddress;
-import java.util.Optional;
-import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,8 +14,6 @@ import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.report.ReporterEnvironment;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -37,7 +33,6 @@ public class RealmsConnection {
 
 	public void connect(RealmsServer server, ServerAddress address) {
 		final MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.setConnectedToRealms(true);
 		minecraftClient.loadBlockList();
 		minecraftClient.getNarratorManager().narrate(Text.translatable("mco.connect.success"));
 		final String string = address.getAddress();
@@ -65,19 +60,16 @@ public class RealmsConnection {
 							clientLoginNetworkHandler.setMinigameName(server.minigameName);
 						}
 
-						RealmsConnection.this.connection.setPacketListener(clientLoginNetworkHandler);
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
 
-						RealmsConnection.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
+						RealmsConnection.this.connection.connect(string, i, clientLoginNetworkHandler);
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
 
-						String string = minecraftClient.getSession().getUsername();
-						UUID uUID = minecraftClient.getSession().getUuidOrNull();
-						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(string, Optional.ofNullable(uUID)));
+						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getUsername(), minecraftClient.getSession().getUuidOrNull()));
 						minecraftClient.ensureAbuseReportContext(ReporterEnvironment.ofRealm(server));
 						minecraftClient.getQuickPlayLogger().setWorld(QuickPlayLogger.WorldType.REALMS, String.valueOf(server.id), server.name);
 					} catch (Exception var5) {

@@ -45,14 +45,6 @@ public class JigsawBlockScreen extends Screen {
 		this.jigsaw = jigsaw;
 	}
 
-	@Override
-	public void tick() {
-		this.nameField.tick();
-		this.targetField.tick();
-		this.poolField.tick();
-		this.finalStateField.tick();
-	}
-
 	private void onDone() {
 		this.updateServer();
 		this.client.setScreen(null);
@@ -188,7 +180,7 @@ public class JigsawBlockScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawTextWithShadow(this.textRenderer, POOL_TEXT, this.width / 2 - 153, 10, 10526880);
 		this.poolField.render(context, mouseX, mouseY, delta);
 		context.drawTextWithShadow(this.textRenderer, NAME_TEXT, this.width / 2 - 153, 45, 10526880);
@@ -200,7 +192,5 @@ public class JigsawBlockScreen extends Screen {
 		if (JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical()) {
 			context.drawTextWithShadow(this.textRenderer, JOINT_LABEL_TEXT, this.width / 2 - 153, 156, 16777215);
 		}
-
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

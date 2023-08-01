@@ -66,6 +66,16 @@ public interface CollisionView extends BlockView {
 		}
 	}
 
+	default boolean isBlockSpaceEmpty(@Nullable Entity entity, Box box) {
+		for (VoxelShape voxelShape : this.getBlockCollisions(entity, box)) {
+			if (!voxelShape.isEmpty()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	List<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box);
 
 	default Iterable<VoxelShape> getCollisions(@Nullable Entity entity, Box box) {

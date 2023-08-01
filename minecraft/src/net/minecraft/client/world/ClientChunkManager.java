@@ -56,11 +56,11 @@ public class ClientChunkManager extends ChunkManager {
 		}
 	}
 
-	public void unload(int chunkX, int chunkZ) {
-		if (this.chunks.isInRadius(chunkX, chunkZ)) {
-			int i = this.chunks.getIndex(chunkX, chunkZ);
+	public void unload(ChunkPos pos) {
+		if (this.chunks.isInRadius(pos.x, pos.z)) {
+			int i = this.chunks.getIndex(pos.x, pos.z);
 			WorldChunk worldChunk = this.chunks.getChunk(i);
-			if (positionEquals(worldChunk, chunkX, chunkZ)) {
+			if (positionEquals(worldChunk, pos.x, pos.z)) {
 				this.chunks.compareAndSet(i, worldChunk, null);
 			}
 		}

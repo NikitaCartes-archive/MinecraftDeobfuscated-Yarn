@@ -7,12 +7,10 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public interface Toast {
-	Identifier TEXTURE = new Identifier("textures/gui/toasts.png");
 	Object TYPE = new Object();
 	int BASE_HEIGHT = 32;
 

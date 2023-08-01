@@ -98,6 +98,7 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
 	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList = this.booleanAccessor("white-list", false);
 	public final boolean enforceSecureProfile = this.parseBoolean("enforce-secure-profile", true);
+	public final boolean logIps = this.parseBoolean("log-ips", true);
 	private final ServerPropertiesHandler.WorldGenProperties worldGenProperties;
 	public final GeneratorOptions generatorOptions;
 

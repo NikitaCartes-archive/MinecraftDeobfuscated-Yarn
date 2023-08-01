@@ -45,6 +45,7 @@ import net.minecraft.world.BlockLocating;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public abstract class AbstractMinecartEntity extends Entity {
 	private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -59,6 +60,13 @@ public abstract class AbstractMinecartEntity extends Entity {
 	protected static final float VELOCITY_SLOWDOWN_MULTIPLIER = 0.95F;
 	private boolean yawFlipped;
 	private boolean onRail;
+	private int clientInterpolationSteps;
+	private double clientX;
+	private double clientY;
+	private double clientZ;
+	private double clientYaw;
+	private double clientPitch;
+	private Vec3d clientVelocity = Vec3d.ZERO;
 	private static final Map<RailShape, Pair<Vec3i, Vec3i>> ADJACENT_RAIL_POSITIONS_BY_SHAPE = Util.make(Maps.newEnumMap(RailShape.class), map -> {
 		Vec3i vec3i = Direction.WEST.getVector();
 		Vec3i vec3i2 = Direction.EAST.getVector();
@@ -79,15 +87,6 @@ public abstract class AbstractMinecartEntity extends Entity {
 		map.put(RailShape.NORTH_WEST, Pair.of(vec3i3, vec3i));
 		map.put(RailShape.NORTH_EAST, Pair.of(vec3i3, vec3i2));
 	});
-	private int clientInterpolationSteps;
-	private double clientX;
-	private double clientY;
-	private double clientZ;
-	private double clientYaw;
-	private double clientPitch;
-	private double clientXVelocity;
-	private double clientYVelocity;
-	private double clientZVelocity;
 
 	protected AbstractMinecartEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -151,8 +150,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	public double getMountedHeightOffset() {
-		return 0.0;
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, 0.0F, 0.0F);
 	}
 
 	@Override
@@ -285,15 +284,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.tickPortal();
 		if (this.getWorld().isClient) {
 			if (this.clientInterpolationSteps > 0) {
-				double d = this.getX() + (this.clientX - this.getX()) / (double)this.clientInterpolationSteps;
-				double e = this.getY() + (this.clientY - this.getY()) / (double)this.clientInterpolationSteps;
-				double f = this.getZ() + (this.clientZ - this.getZ()) / (double)this.clientInterpolationSteps;
-				double g = MathHelper.wrapDegrees(this.clientYaw - (double)this.getYaw());
-				this.setYaw(this.getYaw() + (float)g / (float)this.clientInterpolationSteps);
-				this.setPitch(this.getPitch() + (float)(this.clientPitch - (double)this.getPitch()) / (float)this.clientInterpolationSteps);
+				this.lerpPosAndRotation(this.clientInterpolationSteps, this.clientX, this.clientY, this.clientZ, this.clientYaw, this.clientPitch);
 				this.clientInterpolationSteps--;
-				this.setPosition(d, e, f);
-				this.setRotation(this.getYaw(), this.getPitch());
 			} else {
 				this.refreshPosition();
 				this.setRotation(this.getYaw(), this.getPitch());
@@ -325,17 +317,17 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 			this.checkBlockCollision();
 			this.setPitch(0.0F);
-			double h = this.prevX - this.getX();
-			double l = this.prevZ - this.getZ();
-			if (h * h + l * l > 0.001) {
-				this.setYaw((float)(MathHelper.atan2(l, h) * 180.0 / Math.PI));
+			double e = this.prevX - this.getX();
+			double f = this.prevZ - this.getZ();
+			if (e * e + f * f > 0.001) {
+				this.setYaw((float)(MathHelper.atan2(f, e) * 180.0 / Math.PI));
 				if (this.yawFlipped) {
 					this.setYaw(this.getYaw() + 180.0F);
 				}
 			}
 
-			double m = (double)MathHelper.wrapDegrees(this.getYaw() - this.prevYaw);
-			if (m < -170.0 || m >= 170.0) {
+			double g = (double)MathHelper.wrapDegrees(this.getYaw() - this.prevYaw);
+			if (g < -170.0 || g >= 170.0) {
 				this.setYaw(this.getYaw() + 180.0F);
 				this.yawFlipped = !this.yawFlipped;
 			}
@@ -344,8 +336,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 			if (this.getMinecartType() == AbstractMinecartEntity.Type.RIDEABLE && this.getVelocity().horizontalLengthSquared() > 0.01) {
 				List<Entity> list = this.getWorld().getOtherEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F), EntityPredicates.canBePushedBy(this));
 				if (!list.isEmpty()) {
-					for (int n = 0; n < list.size(); n++) {
-						Entity entity = (Entity)list.get(n);
+					for (int l = 0; l < list.size(); l++) {
+						Entity entity = (Entity)list.get(l);
 						if (!(entity instanceof PlayerEntity)
 							&& !(entity instanceof IronGolemEntity)
 							&& !(entity instanceof AbstractMinecartEntity)
@@ -757,22 +749,20 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
+	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
 		this.clientX = x;
 		this.clientY = y;
 		this.clientZ = z;
 		this.clientYaw = (double)yaw;
 		this.clientPitch = (double)pitch;
 		this.clientInterpolationSteps = interpolationSteps + 2;
-		this.setVelocity(this.clientXVelocity, this.clientYVelocity, this.clientZVelocity);
+		this.setVelocity(this.clientVelocity);
 	}
 
 	@Override
 	public void setVelocityClient(double x, double y, double z) {
-		this.clientXVelocity = x;
-		this.clientYVelocity = y;
-		this.clientZVelocity = z;
-		this.setVelocity(this.clientXVelocity, this.clientYVelocity, this.clientZVelocity);
+		this.clientVelocity = new Vec3d(x, y, z);
+		this.setVelocity(this.clientVelocity);
 	}
 
 	public void setDamageWobbleStrength(float damageWobbleStrength) {

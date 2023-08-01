@@ -49,7 +49,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeCollection(this.entries, (buf2, attribute) -> {
-			buf2.writeIdentifier(Registries.ATTRIBUTE.getId(attribute.getId()));
+			buf2.writeIdentifier(Registries.ATTRIBUTE.getId(attribute.getAttribute()));
 			buf2.writeDouble(attribute.getBaseValue());
 			buf2.writeCollection(attribute.getModifiers(), (buf3, modifier) -> {
 				buf3.writeUuid(modifier.getId());
@@ -82,7 +82,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 			this.modifiers = modifiers;
 		}
 
-		public EntityAttribute getId() {
+		public EntityAttribute getAttribute() {
 			return this.attribute;
 		}
 

@@ -11,6 +11,8 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
@@ -19,6 +21,7 @@ import net.minecraft.world.WorldView;
 public class ChorusFlowerBlock extends Block {
 	public static final int MAX_AGE = 5;
 	public static final IntProperty AGE = Properties.AGE_5;
+	protected static final VoxelShape field_45145 = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 15.0, 15.0);
 	private final ChorusPlantBlock plantBlock;
 
 	protected ChorusFlowerBlock(ChorusPlantBlock plantBlock, AbstractBlock.Settings settings) {
@@ -37,6 +40,11 @@ public class ChorusFlowerBlock extends Block {
 	@Override
 	public boolean hasRandomTicks(BlockState state) {
 		return (Integer)state.get(AGE) < 5;
+	}
+
+	@Override
+	public VoxelShape getSidesShape(BlockState state, BlockView world, BlockPos pos) {
+		return field_45145;
 	}
 
 	@Override

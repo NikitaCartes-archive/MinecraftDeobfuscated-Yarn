@@ -35,6 +35,7 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
+import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.DimensionArgumentType;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
@@ -79,6 +80,8 @@ import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.server.function.CommandFunction;
+import net.minecraft.server.function.MacroException;
 import net.minecraft.server.world.ChunkLevelType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -630,6 +633,17 @@ public class ExecuteCommand {
 							context -> testLootCondition(context.getSource(), IdentifierArgumentType.getPredicateArgument(context, "predicate"))
 						)
 					)
+			)
+			.then(
+				CommandManager.literal("function")
+					.then(
+						addConditionLogic(
+							root,
+							CommandManager.argument("function", CommandFunctionArgumentType.commandFunction()).suggests(FunctionCommand.SUGGESTION_PROVIDER),
+							positive,
+							context -> testFunction(context.getSource(), CommandFunctionArgumentType.getFunctions(context, "function"))
+						)
+					)
 			);
 
 		for (DataCommand.ObjectType objectType : DataCommand.SOURCE_OBJECT_TYPES) {
@@ -699,6 +713,22 @@ public class ExecuteCommand {
 		ScoreboardObjective scoreboardObjective = ScoreboardObjectiveArgumentType.getObjective(context, "targetObjective");
 		Scoreboard scoreboard = context.getSource().getServer().getScoreboard();
 		return !scoreboard.playerHasObjective(string, scoreboardObjective) ? false : range.test(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
+	}
+
+	private static boolean testFunction(ServerCommandSource source, Collection<CommandFunction> functions) {
+		boolean bl = false;
+
+		for (CommandFunction commandFunction : functions) {
+			try {
+				FunctionCommand.FunctionResult functionResult = FunctionCommand.execute(source, commandFunction, null);
+				if (functionResult.isReturn() && functionResult.value() != 0) {
+					bl = true;
+				}
+			} catch (MacroException var6) {
+			}
+		}
+
+		return bl;
 	}
 
 	private static boolean testLootCondition(ServerCommandSource source, LootCondition condition) {

@@ -2,7 +2,6 @@ package net.minecraft.client.render.item;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -152,7 +151,6 @@ public class HeldItemRenderer {
 	}
 
 	private void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Arm arm) {
-		RenderSystem.setShaderTexture(0, this.client.player.getSkinTexture());
 		PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.entityRenderDispatcher.<AbstractClientPlayerEntity>getRenderer(this.client.player);
 		matrices.push();
 		float f = arm == Arm.RIGHT ? 1.0F : -1.0F;
@@ -252,7 +250,6 @@ public class HeldItemRenderer {
 		matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(f * l * 70.0F));
 		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(f * k * -20.0F));
 		AbstractClientPlayerEntity abstractClientPlayerEntity = this.client.player;
-		RenderSystem.setShaderTexture(0, abstractClientPlayerEntity.getSkinTexture());
 		matrices.translate(f * -1.0F, 3.6F, 3.5F);
 		matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(f * 120.0F));
 		matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(200.0F));

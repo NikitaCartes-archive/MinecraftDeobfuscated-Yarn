@@ -69,6 +69,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import org.joml.Vector3f;
 
 public class ParrotEntity extends TameableShoulderEntity implements VariantHolder<ParrotEntity.Variant>, Flutterer {
 	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(ParrotEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -450,6 +451,11 @@ public class ParrotEntity extends TameableShoulderEntity implements VariantHolde
 	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.5F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height - 0.4375F * scaleFactor, 0.0F);
 	}
 
 	static class FlyOntoTreeGoal extends FlyGoal {

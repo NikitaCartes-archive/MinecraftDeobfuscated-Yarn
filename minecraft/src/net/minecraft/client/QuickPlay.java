@@ -65,7 +65,7 @@ public class QuickPlay {
 		serverList.loadFile();
 		ServerInfo serverInfo = serverList.get(serverAddress);
 		if (serverInfo == null) {
-			serverInfo = new ServerInfo(I18n.translate("selectServer.defaultName"), serverAddress, false);
+			serverInfo = new ServerInfo(I18n.translate("selectServer.defaultName"), serverAddress, ServerInfo.ServerType.OTHER);
 			serverList.add(serverInfo, true);
 			serverList.saveFile();
 		}

@@ -1,8 +1,8 @@
 package net.minecraft.resource;
 
-import net.minecraft.SharedConstants;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.dynamic.Range;
 
 public enum ResourcePackCompatibility {
 	TOO_OLD("old"),
@@ -21,12 +21,11 @@ public enum ResourcePackCompatibility {
 		return this == COMPATIBLE;
 	}
 
-	public static ResourcePackCompatibility from(int packVersion, ResourceType type) {
-		int i = SharedConstants.getGameVersion().getResourceVersion(type);
-		if (packVersion < i) {
+	public static ResourcePackCompatibility from(Range<Integer> range, int current) {
+		if ((Integer)range.maxInclusive() < current) {
 			return TOO_OLD;
 		} else {
-			return packVersion > i ? TOO_NEW : COMPATIBLE;
+			return current < range.minInclusive() ? TOO_NEW : COMPATIBLE;
 		}
 	}
 

@@ -33,7 +33,7 @@ public class CreativeInventoryActionC2SPacket implements Packet<ServerPlayPacket
 		return this.slot;
 	}
 
-	public ItemStack getItemStack() {
+	public ItemStack getStack() {
 		return this.stack;
 	}
 }

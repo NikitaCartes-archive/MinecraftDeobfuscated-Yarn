@@ -27,6 +27,7 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -61,7 +62,7 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	private static final float field_43377 = 32.0F;
 	private static final float field_43378 = 0.5F;
 	private Map<EntityType<?>, EntityRenderer<?>> renderers = ImmutableMap.of();
-	private Map<String, EntityRenderer<? extends PlayerEntity>> modelRenderers = ImmutableMap.of();
+	private Map<SkinTextures.Model, EntityRenderer<? extends PlayerEntity>> modelRenderers = Map.of();
 	public final TextureManager textureManager;
 	private World world;
 	public Camera camera;
@@ -99,10 +100,10 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 	}
 
 	public <T extends Entity> EntityRenderer<? super T> getRenderer(T entity) {
-		if (entity instanceof AbstractClientPlayerEntity) {
-			String string = ((AbstractClientPlayerEntity)entity).getModel();
-			EntityRenderer<? extends PlayerEntity> entityRenderer = (EntityRenderer<? extends PlayerEntity>)this.modelRenderers.get(string);
-			return (EntityRenderer<? super T>)(entityRenderer != null ? entityRenderer : (EntityRenderer)this.modelRenderers.get("default"));
+		if (entity instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
+			SkinTextures.Model model = abstractClientPlayerEntity.method_52814().model();
+			EntityRenderer<? extends PlayerEntity> entityRenderer = (EntityRenderer<? extends PlayerEntity>)this.modelRenderers.get(model);
+			return (EntityRenderer<? super T>)(entityRenderer != null ? entityRenderer : (EntityRenderer)this.modelRenderers.get(SkinTextures.Model.WIDE));
 		} else {
 			return (EntityRenderer<? super T>)this.renderers.get(entity.getType());
 		}
@@ -225,16 +226,26 @@ public class EntityRenderDispatcher implements SynchronousResourceReloader {
 			);
 		}
 
-		Vec3d vec3d = entity.getRotationVec(tickDelta);
+		Entity entity2 = entity.getVehicle();
+		if (entity2 != null) {
+			float k = Math.min(entity2.getWidth(), entity.getWidth()) / 2.0F;
+			float l = 0.0625F;
+			Vec3d vec3d = entity2.getPassengerRidingPos(entity).subtract(entity.getPos());
+			WorldRenderer.drawBox(
+				matrices, vertices, vec3d.x - (double)k, vec3d.y, vec3d.z - (double)k, vec3d.x + (double)k, vec3d.y + 0.0625, vec3d.z + (double)k, 1.0F, 1.0F, 0.0F, 1.0F
+			);
+		}
+
+		Vec3d vec3d2 = entity.getRotationVec(tickDelta);
 		Matrix4f matrix4f = matrices.peek().getPositionMatrix();
 		Matrix3f matrix3f = matrices.peek().getNormalMatrix();
 		vertices.vertex(matrix4f, 0.0F, entity.getStandingEyeHeight(), 0.0F)
 			.color(0, 0, 255, 255)
-			.normal(matrix3f, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z)
+			.normal(matrix3f, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z)
 			.next();
-		vertices.vertex(matrix4f, (float)(vec3d.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d.y * 2.0), (float)(vec3d.z * 2.0))
+		vertices.vertex(matrix4f, (float)(vec3d2.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d2.y * 2.0), (float)(vec3d2.z * 2.0))
 			.color(0, 0, 255, 255)
-			.normal(matrix3f, (float)vec3d.x, (float)vec3d.y, (float)vec3d.z)
+			.normal(matrix3f, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z)
 			.next();
 	}
 

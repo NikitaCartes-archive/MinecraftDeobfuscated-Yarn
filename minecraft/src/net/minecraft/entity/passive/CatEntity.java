@@ -67,6 +67,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 
 /**
  * Meow.
@@ -463,6 +464,11 @@ public class CatEntity extends TameableEntity implements VariantHolder<CatVarian
 	@Override
 	public boolean bypassesSteppingEffects() {
 		return this.isInSneakingPose() || super.bypassesSteppingEffects();
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height - 0.1875F * scaleFactor, 0.0F);
 	}
 
 	static class CatFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {

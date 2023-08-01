@@ -30,11 +30,6 @@ public class SelectWorldScreen extends Screen {
 	}
 
 	@Override
-	public void tick() {
-		this.searchBox.tick();
-	}
-
-	@Override
 	protected void init() {
 		this.searchBox = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 22, 200, 20, this.searchBox, Text.translatable("selectWorld.search"));
 		this.searchBox.setChangedListener(search -> this.levelList.setSearch(search));
@@ -71,7 +66,7 @@ public class SelectWorldScreen extends Screen {
 				.build()
 		);
 		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 82, this.height - 28, 72, 20).build()
+			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 82, this.height - 28, 72, 20).build()
 		);
 		this.worldSelected(false, false);
 		this.setInitialFocus(this.searchBox);
@@ -94,10 +89,10 @@ public class SelectWorldScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 		this.levelList.render(context, mouseX, mouseY, delta);
 		this.searchBox.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	public void worldSelected(boolean buttonsActive, boolean deleteButtonActive) {

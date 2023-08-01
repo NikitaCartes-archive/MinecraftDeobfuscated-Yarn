@@ -15,12 +15,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.SpriteContents;
+import net.minecraft.client.texture.SpriteOpener;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFinder;
 import net.minecraft.resource.ResourceManager;
@@ -37,7 +38,7 @@ public class AtlasLoader {
 		this.sources = sources;
 	}
 
-	public List<Supplier<SpriteContents>> loadSources(ResourceManager resourceManager) {
+	public List<Function<SpriteOpener, SpriteContents>> loadSources(ResourceManager resourceManager) {
 		final Map<Identifier, AtlasSource.SpriteRegion> map = new HashMap();
 		AtlasSource.SpriteRegions spriteRegions = new AtlasSource.SpriteRegions() {
 			@Override
@@ -62,8 +63,8 @@ public class AtlasLoader {
 			}
 		};
 		this.sources.forEach(source -> source.load(resourceManager, spriteRegions));
-		Builder<Supplier<SpriteContents>> builder = ImmutableList.builder();
-		builder.add(MissingSprite::createSpriteContents);
+		Builder<Function<SpriteOpener, SpriteContents>> builder = ImmutableList.builder();
+		builder.add(opener -> MissingSprite.createSpriteContents());
 		builder.addAll(map.values());
 		return builder.build();
 	}

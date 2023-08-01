@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
+import net.minecraft.entity.attribute.AttributeModifierCreator;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.effect.StatusEffect;
@@ -164,16 +165,12 @@ public class PotionUtil {
 			for (StatusEffectInstance statusEffectInstance : statusEffects) {
 				MutableText mutableText = Text.translatable(statusEffectInstance.getTranslationKey());
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
-				Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.getAttributeModifiers();
+				Map<EntityAttribute, AttributeModifierCreator> map = statusEffect.getAttributeModifiers();
 				if (!map.isEmpty()) {
-					for (Entry<EntityAttribute, EntityAttributeModifier> entry : map.entrySet()) {
-						EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
-						EntityAttributeModifier entityAttributeModifier2 = new EntityAttributeModifier(
-							entityAttributeModifier.getName(),
-							statusEffect.adjustModifierAmount(statusEffectInstance.getAmplifier(), entityAttributeModifier),
-							entityAttributeModifier.getOperation()
+					for (Entry<EntityAttribute, AttributeModifierCreator> entry : map.entrySet()) {
+						list2.add(
+							new Pair<>((EntityAttribute)entry.getKey(), ((AttributeModifierCreator)entry.getValue()).createAttributeModifier(statusEffectInstance.getAmplifier()))
 						);
-						list2.add(new Pair<>((EntityAttribute)entry.getKey(), entityAttributeModifier2));
 					}
 				}
 
@@ -194,20 +191,20 @@ public class PotionUtil {
 			list.add(Text.translatable("potion.whenDrank").formatted(Formatting.DARK_PURPLE));
 
 			for (Pair<EntityAttribute, EntityAttributeModifier> pair : list2) {
-				EntityAttributeModifier entityAttributeModifier3 = pair.getSecond();
-				double d = entityAttributeModifier3.getValue();
+				EntityAttributeModifier entityAttributeModifier = pair.getSecond();
+				double d = entityAttributeModifier.getValue();
 				double e;
-				if (entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_BASE
-					&& entityAttributeModifier3.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
-					e = entityAttributeModifier3.getValue();
+				if (entityAttributeModifier.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_BASE
+					&& entityAttributeModifier.getOperation() != EntityAttributeModifier.Operation.MULTIPLY_TOTAL) {
+					e = entityAttributeModifier.getValue();
 				} else {
-					e = entityAttributeModifier3.getValue() * 100.0;
+					e = entityAttributeModifier.getValue() * 100.0;
 				}
 
 				if (d > 0.0) {
 					list.add(
 						Text.translatable(
-								"attribute.modifier.plus." + entityAttributeModifier3.getOperation().getId(),
+								"attribute.modifier.plus." + entityAttributeModifier.getOperation().getId(),
 								ItemStack.MODIFIER_FORMAT.format(e),
 								Text.translatable(pair.getFirst().getTranslationKey())
 							)
@@ -217,7 +214,7 @@ public class PotionUtil {
 					e *= -1.0;
 					list.add(
 						Text.translatable(
-								"attribute.modifier.take." + entityAttributeModifier3.getOperation().getId(),
+								"attribute.modifier.take." + entityAttributeModifier.getOperation().getId(),
 								ItemStack.MODIFIER_FORMAT.format(e),
 								Text.translatable(pair.getFirst().getTranslationKey())
 							)

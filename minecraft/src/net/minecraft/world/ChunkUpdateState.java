@@ -2,6 +2,7 @@ package net.minecraft.world;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 
 public class ChunkUpdateState extends PersistentState {
@@ -9,6 +10,10 @@ public class ChunkUpdateState extends PersistentState {
 	private static final String ALL_KEY = "All";
 	private final LongSet all;
 	private final LongSet remaining;
+
+	public static PersistentState.Type<ChunkUpdateState> getPersistentStateType() {
+		return new PersistentState.Type<>(ChunkUpdateState::new, ChunkUpdateState::fromNbt, DataFixTypes.SAVED_DATA_STRUCTURE_FEATURE_INDICES);
+	}
 
 	private ChunkUpdateState(LongSet all, LongSet remaining) {
 		this.all = all;

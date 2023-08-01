@@ -1,6 +1,5 @@
 package net.minecraft.util.math;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Objects;
@@ -33,10 +32,9 @@ public final class AffineTransformation {
 				)
 				.apply(instance, AffineTransformation::new)
 	);
-	public static final Codec<AffineTransformation> ANY_CODEC = Codec.either(
-			CODEC, Codecs.MATRIX4F.xmap(AffineTransformation::new, AffineTransformation::getMatrix)
-		)
-		.xmap(either -> either.map(affineTransformation -> affineTransformation, affineTransformation -> affineTransformation), Either::left);
+	public static final Codec<AffineTransformation> ANY_CODEC = Codecs.either(
+		CODEC, Codecs.MATRIX4F.xmap(AffineTransformation::new, AffineTransformation::getMatrix)
+	);
 	private boolean initialized;
 	@Nullable
 	private Vector3f translation;

@@ -10,7 +10,9 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
@@ -46,13 +48,14 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEvents;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataContainer {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
-	private static final int BASE_CONVERTION_DELAY = 3600;
+	private static final int BASE_CONVERSION_DELAY = 3600;
 	private static final int field_30520 = 6000;
 	private static final int field_30521 = 14;
 	private static final int field_30522 = 4;
@@ -342,5 +345,10 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	public void setXp(int xp) {
 		this.xp = xp;
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + 0.175F * scaleFactor, 0.0F);
 	}
 }

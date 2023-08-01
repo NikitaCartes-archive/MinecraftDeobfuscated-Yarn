@@ -72,10 +72,7 @@ public class SocialInteractionsManager {
 
 	public void setPlayerOnline(PlayerListEntry player) {
 		GameProfile gameProfile = player.getProfile();
-		if (gameProfile.isComplete()) {
-			this.playerNameByUuid.put(gameProfile.getName(), gameProfile.getId());
-		}
-
+		this.playerNameByUuid.put(gameProfile.getName(), gameProfile.getId());
 		if (this.client.currentScreen instanceof SocialInteractionsScreen socialInteractionsScreen) {
 			socialInteractionsScreen.setPlayerOnline(player);
 		}

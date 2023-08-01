@@ -146,6 +146,10 @@ public class Main {
 		pack3 = dataGenerator.createVanillaSubPack(includeServer, "bundle");
 		pack3.addProvider(BundleRecipeProvider::new);
 		pack3.addProvider(outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.bundle.description"), FeatureSet.of(FeatureFlags.BUNDLE)));
+		pack3 = dataGenerator.createVanillaSubPack(includeServer, "trade_rebalance");
+		pack3.addProvider(
+			outputx -> MetadataProvider.create(outputx, Text.translatable("dataPack.trade_rebalance.description"), FeatureSet.of(FeatureFlags.TRADE_REBALANCE))
+		);
 		return dataGenerator;
 	}
 }

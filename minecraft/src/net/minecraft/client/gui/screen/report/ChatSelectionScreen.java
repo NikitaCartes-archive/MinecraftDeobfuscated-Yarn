@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,6 +25,7 @@ import net.minecraft.client.report.AbuseReportContext;
 import net.minecraft.client.report.ChatAbuseReport;
 import net.minecraft.client.report.MessagesListAdder;
 import net.minecraft.client.report.log.ReceivedMessage;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -36,6 +38,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ChatSelectionScreen extends Screen {
+	static final Identifier CHECKMARK_ICON_TEXTURE = new Identifier("icon/checkmark");
 	private static final Text TITLE = Text.translatable("gui.chatSelection.title");
 	private static final Text CONTEXT_MESSAGE = Text.translatable("gui.chatSelection.context").formatted(Formatting.GRAY);
 	@Nullable
@@ -62,7 +65,6 @@ public class ChatSelectionScreen extends Screen {
 		this.listAdder = new MessagesListAdder(this.reporter, this::isSentByReportedPlayer);
 		this.contextMessage = MultilineText.create(this.textRenderer, CONTEXT_MESSAGE, this.width - 16);
 		this.selectionList = new ChatSelectionScreen.SelectionListWidget(this.client, (this.contextMessage.count() + 1) * 9);
-		this.selectionList.setRenderBackground(false);
 		this.addSelectableChild(this.selectionList);
 		this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.close()).dimensions(this.width / 2 - 155, this.height - 32, 150, 20).build());
 		this.doneButton = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.DONE, button -> {
@@ -93,7 +95,7 @@ public class ChatSelectionScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.selectionList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
 		AbuseReportLimits abuseReportLimits = this.reporter.getSender().getLimits();
@@ -102,7 +104,11 @@ public class ChatSelectionScreen extends Screen {
 		Text text = Text.translatable("gui.chatSelection.selected", i, j);
 		context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, 16 + 9 * 3 / 2, 10526880);
 		this.contextMessage.drawCenterWithShadow(context, this.width / 2, this.selectionList.getContextMessageY());
-		super.render(context, mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
 	}
 
 	@Override
@@ -252,7 +258,6 @@ public class ChatSelectionScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class MessageEntry extends ChatSelectionScreen.SelectionListWidget.Entry {
-			private static final Identifier CHECKMARK = new Identifier("minecraft", "textures/gui/checkmark.png");
 			private static final int CHECKMARK_WIDTH = 9;
 			private static final int CHECKMARK_HEIGHT = 8;
 			private static final int CHAT_MESSAGE_LEFT_MARGIN = 11;
@@ -322,7 +327,7 @@ public class ChatSelectionScreen extends Screen {
 			private void drawCheckmark(DrawContext context, int y, int x, int entryHeight) {
 				int j = y + (entryHeight - 8) / 2;
 				RenderSystem.enableBlend();
-				context.drawTexture(CHECKMARK, x, j, 0.0F, 0.0F, 9, 8, 9, 8);
+				context.drawGuiTexture(ChatSelectionScreen.CHECKMARK_ICON_TEXTURE, x, j, 9, 8);
 				RenderSystem.disableBlend();
 			}
 
@@ -385,20 +390,20 @@ public class ChatSelectionScreen extends Screen {
 		public class SenderEntry extends ChatSelectionScreen.SelectionListWidget.Entry {
 			private static final int PLAYER_SKIN_SIZE = 12;
 			private final Text headingText;
-			private final Identifier skinTextureId;
+			private final Supplier<SkinTextures> skinTexturesSupplier;
 			private final boolean fromReportedPlayer;
 
 			public SenderEntry(GameProfile gameProfile, Text headingText, boolean fromReportedPlayer) {
 				this.headingText = headingText;
 				this.fromReportedPlayer = fromReportedPlayer;
-				this.skinTextureId = SelectionListWidget.this.client.getSkinProvider().loadSkin(gameProfile);
+				this.skinTexturesSupplier = SelectionListWidget.this.client.getSkinProvider().getSkinTexturesSupplier(gameProfile);
 			}
 
 			@Override
 			public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				int i = x - 12 - 4;
 				int j = y + (entryHeight - 12) / 2;
-				PlayerSkinDrawer.draw(context, this.skinTextureId, i, j, 12);
+				PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexturesSupplier.get(), i, j, 12);
 				int k = y + 1 + (entryHeight - 9) / 2;
 				context.drawTextWithShadow(ChatSelectionScreen.this.textRenderer, this.headingText, x, k, this.fromReportedPlayer ? -1 : -1593835521);
 			}

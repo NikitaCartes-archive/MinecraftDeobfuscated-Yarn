@@ -1,6 +1,7 @@
 package net.minecraft.server.network;
 
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.ConnectionIntent;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.server.MinecraftServer;
@@ -26,8 +27,12 @@ public class LocalServerHandshakeNetworkHandler implements ServerHandshakePacket
 
 	@Override
 	public void onHandshake(HandshakeC2SPacket packet) {
-		this.connection.setState(packet.getIntendedState());
-		this.connection.setPacketListener(new ServerLoginNetworkHandler(this.server, this.connection));
+		if (packet.intendedState() != ConnectionIntent.LOGIN) {
+			throw new UnsupportedOperationException("Invalid intention " + packet.intendedState());
+		} else {
+			this.connection.setS2CPacketHandler(ConnectionIntent.LOGIN);
+			this.connection.setPacketListener(new ServerLoginNetworkHandler(this.server, this.connection));
+		}
 	}
 
 	@Override

@@ -103,6 +103,8 @@ public class ChiseledBookshelfBlockEntity extends BlockEntity implements Invento
 		if (stack.isIn(ItemTags.BOOKSHELF_BOOKS)) {
 			this.inventory.set(slot, stack);
 			this.updateState(slot);
+		} else if (stack.isEmpty()) {
+			this.removeStack(slot, 1);
 		}
 	}
 

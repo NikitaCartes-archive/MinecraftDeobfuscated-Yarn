@@ -16,8 +16,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Saddleable;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.brain.Brain;
-import net.minecraft.entity.ai.brain.MemoryModuleState;
-import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.pathing.MobNavigation;
@@ -33,9 +31,9 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -48,9 +46,12 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public class CamelEntity extends AbstractHorseEntity implements JumpingMount, AttackPosOffsettingMount, Saddleable {
 	public static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.CACTUS);
+	public static final float field_45127 = 0.45F;
 	public static final int field_40132 = 55;
 	public static final int field_41764 = 30;
 	private static final float field_40146 = 0.1F;
@@ -142,7 +143,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
-		return dimensions.height - 0.1F;
+		return dimensions.height - 0.1F * this.getScaleFactor();
 	}
 
 	@Override
@@ -165,7 +166,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.isDashing() && this.dashCooldown < 50 && (this.isOnGround() || this.isTouchingWater() || this.hasVehicle())) {
+		if (this.isDashing() && this.dashCooldown < 50 && (this.isOnGround() || this.isInFluid() || this.hasVehicle())) {
 			this.setDashing(false);
 		}
 
@@ -306,13 +307,10 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 		this.dataTracker.set(DASHING, dashing);
 	}
 
-	public boolean isPanicking() {
-		return this.getBrain().isMemoryInState(MemoryModuleType.IS_PANICKING, MemoryModuleState.VALUE_PRESENT);
-	}
-
 	@Override
 	public void startJumping(int height) {
-		this.playSound(SoundEvents.ENTITY_CAMEL_DASH, 1.0F, 1.0F);
+		this.playSound(SoundEvents.ENTITY_CAMEL_DASH, 1.0F, this.getSoundPitch());
+		this.emitGameEvent(GameEvent.ENTITY_ACTION);
 		this.setDashing(true);
 	}
 
@@ -342,7 +340,7 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	@Override
 	protected void playStepSound(BlockPos pos, BlockState state) {
-		if (state.getSoundGroup() == BlockSoundGroup.SAND) {
+		if (state.isIn(BlockTags.CAMEL_SAND_STEP_SOUND_BLOCKS)) {
 			this.playSound(SoundEvents.ENTITY_CAMEL_STEP_SAND, 1.0F, 1.0F);
 		} else {
 			this.playSound(SoundEvents.ENTITY_CAMEL_STEP, 1.0F, 1.0F);
@@ -378,9 +376,13 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	@Override
 	protected void updateForLeashLength(float leashLength) {
-		if (leashLength > 6.0F && this.isSitting() && !this.isChangingPose()) {
+		if (leashLength > 6.0F && this.isSitting() && !this.isChangingPose() && this.canChangePose()) {
 			this.startStanding();
 		}
+	}
+
+	public boolean canChangePose() {
+		return this.wouldNotSuffocateInPose(this.isSitting() ? EntityPose.STANDING : EntityPose.SITTING);
 	}
 
 	@Override
@@ -464,55 +466,62 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	@Override
 	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
-		int i = this.getPassengerList().indexOf(passenger);
-		if (i >= 0) {
-			boolean bl = i == 0;
-			float f = 0.5F;
-			float g = (float)(this.isRemoved() ? 0.01F : this.method_45346(bl, 0.0F) + passenger.getHeightOffset());
-			if (this.getPassengerList().size() > 1) {
-				if (!bl) {
-					f = -0.7F;
-				}
-
-				if (passenger instanceof AnimalEntity) {
-					f += 0.2F;
-				}
-			}
-
-			Vec3d vec3d = new Vec3d(0.0, 0.0, (double)f).rotateY(-this.bodyYaw * (float) (Math.PI / 180.0));
-			positionUpdater.accept(passenger, this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
-			this.clampPassengerYaw(passenger);
-		}
+		super.updatePassengerPosition(passenger, positionUpdater);
+		this.clampPassengerYaw(passenger);
 	}
 
-	private double method_45346(boolean bl, float f) {
-		double d = this.getMountedHeightOffset();
-		float g = this.getScaleFactor() * 1.43F;
-		float h = g - this.getScaleFactor() * 0.2F;
-		float i = g - h;
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		int i = Math.max(this.getPassengerList().indexOf(passenger), 0);
+		boolean bl = i == 0;
+		float f = 0.5F;
+		float g = (float)(this.isRemoved() ? 0.01F : this.method_45346(bl, 0.0F, dimensions, scaleFactor));
+		if (this.getPassengerList().size() > 1) {
+			if (!bl) {
+				f = -0.7F;
+			}
+
+			if (passenger instanceof AnimalEntity) {
+				f += 0.2F;
+			}
+		}
+
+		return new Vector3f(0.0F, g, f * scaleFactor);
+	}
+
+	@Override
+	public float getScaleFactor() {
+		return this.isBaby() ? 0.45F : 1.0F;
+	}
+
+	private double method_45346(boolean bl, float f, EntityDimensions entityDimensions, float g) {
+		double d = (double)(entityDimensions.height - 0.375F * g);
+		float h = g * 1.43F;
+		float i = h - g * 0.2F;
+		float j = h - i;
 		boolean bl2 = this.isChangingPose();
 		boolean bl3 = this.isSitting();
 		if (bl2) {
-			int j = bl3 ? 40 : 52;
-			int k;
-			float l;
+			int k = bl3 ? 40 : 52;
+			int l;
+			float m;
 			if (bl3) {
-				k = 28;
-				l = bl ? 0.5F : 0.1F;
+				l = 28;
+				m = bl ? 0.5F : 0.1F;
 			} else {
-				k = bl ? 24 : 32;
-				l = bl ? 0.6F : 0.35F;
+				l = bl ? 24 : 32;
+				m = bl ? 0.6F : 0.35F;
 			}
 
-			float m = MathHelper.clamp((float)this.getLastPoseTickDelta() + f, 0.0F, (float)j);
-			boolean bl4 = m < (float)k;
-			float n = bl4 ? m / (float)k : (m - (float)k) / (float)(j - k);
-			float o = g - l * h;
-			d += bl3 ? (double)MathHelper.lerp(n, bl4 ? g : o, bl4 ? o : i) : (double)MathHelper.lerp(n, bl4 ? i - g : i - o, bl4 ? i - o : 0.0F);
+			float n = MathHelper.clamp((float)this.getLastPoseTickDelta() + f, 0.0F, (float)k);
+			boolean bl4 = n < (float)l;
+			float o = bl4 ? n / (float)l : (n - (float)l) / (float)(k - l);
+			float p = h - m * i;
+			d += bl3 ? (double)MathHelper.lerp(o, bl4 ? h : p, bl4 ? p : j) : (double)MathHelper.lerp(o, bl4 ? j - h : j - p, bl4 ? j - p : 0.0F);
 		}
 
 		if (bl3 && !bl2) {
-			d += (double)i;
+			d += (double)j;
 		}
 
 		return d;
@@ -520,12 +529,9 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	@Override
 	public Vec3d getLeashOffset(float tickDelta) {
-		return new Vec3d(0.0, this.method_45346(true, tickDelta) - (double)(0.2F * this.getScaleFactor()), (double)(this.getWidth() * 0.56F));
-	}
-
-	@Override
-	public double getMountedHeightOffset() {
-		return (double)(this.getDimensions(this.isSitting() ? EntityPose.SITTING : EntityPose.STANDING).height - (this.isBaby() ? 0.35F : 0.6F));
+		EntityDimensions entityDimensions = this.getDimensions(this.getPose());
+		float f = this.getScaleFactor();
+		return new Vec3d(0.0, this.method_45346(true, tickDelta, entityDimensions, f) - (double)(0.2F * f), (double)(entityDimensions.width * 0.56F));
 	}
 
 	@Override
@@ -564,19 +570,6 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 		return this.getPassengerList().size() <= 2;
 	}
 
-	@Nullable
-	@Override
-	public LivingEntity getControllingPassenger() {
-		if (!this.getPassengerList().isEmpty() && this.isSaddled()) {
-			Entity entity = (Entity)this.getPassengerList().get(0);
-			if (entity instanceof LivingEntity) {
-				return (LivingEntity)entity;
-			}
-		}
-
-		return null;
-	}
-
 	@Override
 	protected void sendAiDebugData() {
 		super.sendAiDebugData();
@@ -602,22 +595,25 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 	public void startSitting() {
 		if (!this.isSitting()) {
-			this.playSound(SoundEvents.ENTITY_CAMEL_SIT, 1.0F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_CAMEL_SIT, 1.0F, this.getSoundPitch());
 			this.setPose(EntityPose.SITTING);
+			this.emitGameEvent(GameEvent.ENTITY_ACTION);
 			this.setLastPoseTick(-this.getWorld().getTime());
 		}
 	}
 
 	public void startStanding() {
 		if (this.isSitting()) {
-			this.playSound(SoundEvents.ENTITY_CAMEL_STAND, 1.0F, 1.0F);
+			this.playSound(SoundEvents.ENTITY_CAMEL_STAND, 1.0F, this.getSoundPitch());
 			this.setPose(EntityPose.STANDING);
+			this.emitGameEvent(GameEvent.ENTITY_ACTION);
 			this.setLastPoseTick(this.getWorld().getTime());
 		}
 	}
 
 	public void setStanding() {
 		this.setPose(EntityPose.STANDING);
+		this.emitGameEvent(GameEvent.ENTITY_ACTION);
 		this.initLastPoseTick(this.getWorld().getTime());
 	}
 
@@ -685,7 +681,11 @@ public class CamelEntity extends AbstractHorseEntity implements JumpingMount, At
 
 		@Override
 		public void tick() {
-			if (this.state == MoveControl.State.MOVE_TO && !CamelEntity.this.isLeashed() && CamelEntity.this.isSitting() && !CamelEntity.this.isChangingPose()) {
+			if (this.state == MoveControl.State.MOVE_TO
+				&& !CamelEntity.this.isLeashed()
+				&& CamelEntity.this.isSitting()
+				&& !CamelEntity.this.isChangingPose()
+				&& CamelEntity.this.canChangePose()) {
 				CamelEntity.this.startStanding();
 			}
 

@@ -10,9 +10,11 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BlastFurnaceScreen extends AbstractFurnaceScreen<BlastFurnaceScreenHandler> {
+	private static final Identifier LIT_PROGRESS_TEXTURE = new Identifier("container/blast_furnace/lit_progress");
+	private static final Identifier BURN_PROGRESS_TEXTURE = new Identifier("container/blast_furnace/burn_progress");
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/blast_furnace.png");
 
 	public BlastFurnaceScreen(BlastFurnaceScreenHandler container, PlayerInventory inventory, Text title) {
-		super(container, new BlastFurnaceRecipeBookScreen(), inventory, title, TEXTURE);
+		super(container, new BlastFurnaceRecipeBookScreen(), inventory, title, TEXTURE, LIT_PROGRESS_TEXTURE, BURN_PROGRESS_TEXTURE);
 	}
 }

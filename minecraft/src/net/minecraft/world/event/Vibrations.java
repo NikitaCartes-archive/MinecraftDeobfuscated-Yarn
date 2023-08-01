@@ -58,8 +58,7 @@ public interface Vibrations {
 		frequencies.put(GameEvent.ITEM_INTERACT_FINISH, 3);
 		frequencies.put(GameEvent.PROJECTILE_SHOOT, 3);
 		frequencies.put(GameEvent.INSTRUMENT_PLAY, 3);
-		frequencies.put(GameEvent.ENTITY_ROAR, 4);
-		frequencies.put(GameEvent.ENTITY_SHAKE, 4);
+		frequencies.put(GameEvent.ENTITY_ACTION, 4);
 		frequencies.put(GameEvent.ELYTRA_GLIDE, 4);
 		frequencies.put(GameEvent.ENTITY_DISMOUNT, 5);
 		frequencies.put(GameEvent.EQUIP, 5);

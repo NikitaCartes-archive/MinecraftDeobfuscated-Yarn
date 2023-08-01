@@ -67,7 +67,7 @@ public class Keyboard {
 		switch (key) {
 			case 69:
 				this.client.debugChunkInfo = !this.client.debugChunkInfo;
-				this.debugFormattedLog("ChunkPath: {0}", this.client.debugChunkInfo ? "shown" : "hidden");
+				this.debugFormattedLog("SectionPath: {0}", this.client.debugChunkInfo ? "shown" : "hidden");
 				return true;
 			case 76:
 				this.client.chunkCullingEnabled = !this.client.chunkCullingEnabled;
@@ -85,7 +85,7 @@ public class Keyboard {
 				return true;
 			case 86:
 				this.client.debugChunkOcclusion = !this.client.debugChunkOcclusion;
-				this.debugFormattedLog("ChunkVisibility: {0}", this.client.debugChunkOcclusion ? "enabled" : "disabled");
+				this.debugFormattedLog("SectionVisibility: {0}", this.client.debugChunkOcclusion ? "enabled" : "disabled");
 				return true;
 			case 87:
 				this.client.wireFrame = !this.client.wireFrame;

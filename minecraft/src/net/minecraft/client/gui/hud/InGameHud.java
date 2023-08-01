@@ -17,7 +17,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.AbstractInventoryScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
@@ -40,6 +39,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
@@ -72,12 +72,41 @@ import net.minecraft.world.border.WorldBorder;
  */
 @Environment(EnvType.CLIENT)
 public class InGameHud {
+	private static final Identifier CROSSHAIR_TEXTURE = new Identifier("hud/crosshair");
+	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE = new Identifier("hud/crosshair_attack_indicator_full");
+	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE = new Identifier("hud/crosshair_attack_indicator_background");
+	private static final Identifier CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE = new Identifier("hud/crosshair_attack_indicator_progress");
+	private static final Identifier EFFECT_BACKGROUND_AMBIENT_TEXTURE = new Identifier("hud/effect_background_ambient");
+	private static final Identifier EFFECT_BACKGROUND_TEXTURE = new Identifier("hud/effect_background");
+	private static final Identifier HOTBAR_TEXTURE = new Identifier("hud/hotbar");
+	private static final Identifier HOTBAR_SELECTION_TEXTURE = new Identifier("hud/hotbar_selection");
+	private static final Identifier HOTBAR_OFFHAND_LEFT_TEXTURE = new Identifier("hud/hotbar_offhand_left");
+	private static final Identifier HOTBAR_OFFHAND_RIGHT_TEXTURE = new Identifier("hud/hotbar_offhand_right");
+	private static final Identifier HOTBAR_ATTACK_INDICATOR_BACKGROUND_TEXTURE = new Identifier("hud/hotbar_attack_indicator_background");
+	private static final Identifier HOTBAR_ATTACK_INDICATOR_PROGRESS_TEXTURE = new Identifier("hud/hotbar_attack_indicator_progress");
+	private static final Identifier JUMP_BAR_BACKGROUND_TEXTURE = new Identifier("hud/jump_bar_background");
+	private static final Identifier JUMP_BAR_COOLDOWN_TEXTURE = new Identifier("hud/jump_bar_cooldown");
+	private static final Identifier JUMP_BAR_PROGRESS_TEXTURE = new Identifier("hud/jump_bar_progress");
+	private static final Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE = new Identifier("hud/experience_bar_background");
+	private static final Identifier EXPERIENCE_BAR_PROGRESS_TEXTURE = new Identifier("hud/experience_bar_progress");
+	private static final Identifier ARMOR_EMPTY_TEXTURE = new Identifier("hud/armor_empty");
+	private static final Identifier ARMOR_HALF_TEXTURE = new Identifier("hud/armor_half");
+	private static final Identifier ARMOR_FULL_TEXTURE = new Identifier("hud/armor_full");
+	private static final Identifier FOOD_EMPTY_HUNGER_TEXTURE = new Identifier("hud/food_empty_hunger");
+	private static final Identifier FOOD_HALF_HUNGER_TEXTURE = new Identifier("hud/food_half_hunger");
+	private static final Identifier FOOD_FULL_HUNGER_TEXTURE = new Identifier("hud/food_full_hunger");
+	private static final Identifier FOOD_EMPTY_TEXTURE = new Identifier("hud/food_empty");
+	private static final Identifier FOOD_HALF_TEXTURE = new Identifier("hud/food_half");
+	private static final Identifier FOOD_FULL_TEXTURE = new Identifier("hud/food_full");
+	private static final Identifier AIR_TEXTURE = new Identifier("hud/air");
+	private static final Identifier AIR_BURSTING_TEXTURE = new Identifier("hud/air_bursting");
+	private static final Identifier VEHICLE_CONTAINER_HEART_TEXTURE = new Identifier("hud/heart/vehicle_container");
+	private static final Identifier VEHICLE_FULL_HEART_TEXTURE = new Identifier("hud/heart/vehicle_full");
+	private static final Identifier VEHICLE_HALF_HEART_TEXTURE = new Identifier("hud/heart/vehicle_half");
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	private static final Identifier PUMPKIN_BLUR = new Identifier("textures/misc/pumpkinblur.png");
 	private static final Identifier SPYGLASS_SCOPE = new Identifier("textures/misc/spyglass_scope.png");
 	private static final Identifier POWDER_SNOW_OUTLINE = new Identifier("textures/misc/powder_snow_outline.png");
-	private static final Identifier ICONS = new Identifier("textures/gui/icons.png");
 	private static final Text DEMO_EXPIRED_MESSAGE = Text.translatable("demo.demoExpired");
 	private static final Text SAVING_LEVEL_TEXT = Text.translatable("menu.savingLevel");
 	private static final int WHITE = 16777215;
@@ -306,13 +335,13 @@ public class InGameHud {
 			ScoreboardObjective scoreboardObjective = null;
 			Team team = scoreboard.getPlayerTeam(this.client.player.getEntityName());
 			if (team != null) {
-				int m = team.getColor().getColorIndex();
-				if (m >= 0) {
-					scoreboardObjective = scoreboard.getObjectiveForSlot(3 + m);
+				ScoreboardDisplaySlot scoreboardDisplaySlot = ScoreboardDisplaySlot.fromFormatting(team.getColor());
+				if (scoreboardDisplaySlot != null) {
+					scoreboardObjective = scoreboard.getObjectiveForSlot(scoreboardDisplaySlot);
 				}
 			}
 
-			ScoreboardObjective scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective : scoreboard.getObjectiveForSlot(1);
+			ScoreboardObjective scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective : scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.SIDEBAR);
 			if (scoreboardObjective2 != null) {
 				this.renderScoreboardSidebar(context, scoreboardObjective2);
 			}
@@ -323,7 +352,7 @@ public class InGameHud {
 			this.client.getProfiler().push("chat");
 			this.chatHud.render(context, this.ticks, n, p);
 			this.client.getProfiler().pop();
-			scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
+			scoreboardObjective2 = scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.LIST);
 			if (!this.client.options.playerListKey.isPressed()
 				|| this.client.isInSingleplayer() && this.client.player.networkHandler.getListedPlayerListEntries().size() <= 1 && scoreboardObjective2 == null) {
 				this.playerListHud.setVisible(false);
@@ -366,7 +395,7 @@ public class InGameHud {
 						GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 					);
 					int i = 15;
-					context.drawTexture(ICONS, (this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
+					context.drawGuiTexture(CROSSHAIR_TEXTURE, (this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 15, 15);
 					if (this.client.options.getAttackIndicator().getValue() == AttackIndicator.CROSSHAIR) {
 						float f = this.client.player.getAttackCooldownProgress(0.0F);
 						boolean bl = false;
@@ -378,11 +407,11 @@ public class InGameHud {
 						int j = this.scaledHeight / 2 - 7 + 16;
 						int k = this.scaledWidth / 2 - 8;
 						if (bl) {
-							context.drawTexture(ICONS, k, j, 68, 94, 16, 16);
+							context.drawGuiTexture(CROSSHAIR_ATTACK_INDICATOR_FULL_TEXTURE, k, j, 16, 16);
 						} else if (f < 1.0F) {
 							int l = (int)(f * 17.0F);
-							context.drawTexture(ICONS, k, j, 36, 94, 16, 4);
-							context.drawTexture(ICONS, k, j, 52, 94, l, 4);
+							context.drawGuiTexture(CROSSHAIR_ATTACK_INDICATOR_BACKGROUND_TEXTURE, k, j, 16, 4);
+							context.drawGuiTexture(CROSSHAIR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 16, 4, 0, 0, k, j, l, 4);
 						}
 					}
 
@@ -439,9 +468,9 @@ public class InGameHud {
 
 					float f = 1.0F;
 					if (statusEffectInstance.isAmbient()) {
-						context.drawTexture(HandledScreen.BACKGROUND_TEXTURE, k, l, 165, 166, 24, 24);
+						context.drawGuiTexture(EFFECT_BACKGROUND_AMBIENT_TEXTURE, k, l, 24, 24);
 					} else {
-						context.drawTexture(HandledScreen.BACKGROUND_TEXTURE, k, l, 141, 166, 24, 24);
+						context.drawGuiTexture(EFFECT_BACKGROUND_TEXTURE, k, l, 24, 24);
 						if (statusEffectInstance.isDurationBelow(200)) {
 							int m = statusEffectInstance.getDuration();
 							int n = 10 - m / 20;
@@ -476,13 +505,13 @@ public class InGameHud {
 			int k = 91;
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, -90.0F);
-			context.drawTexture(WIDGETS_TEXTURE, i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
-			context.drawTexture(WIDGETS_TEXTURE, i - 91 - 1 + playerEntity.getInventory().selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
+			context.drawGuiTexture(HOTBAR_TEXTURE, i - 91, this.scaledHeight - 22, 182, 22);
+			context.drawGuiTexture(HOTBAR_SELECTION_TEXTURE, i - 91 - 1 + playerEntity.getInventory().selectedSlot * 20, this.scaledHeight - 22 - 1, 24, 23);
 			if (!itemStack.isEmpty()) {
 				if (arm == Arm.LEFT) {
-					context.drawTexture(WIDGETS_TEXTURE, i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
+					context.drawGuiTexture(HOTBAR_OFFHAND_LEFT_TEXTURE, i - 91 - 29, this.scaledHeight - 23, 29, 24);
 				} else {
-					context.drawTexture(WIDGETS_TEXTURE, i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
+					context.drawGuiTexture(HOTBAR_OFFHAND_RIGHT_TEXTURE, i + 91, this.scaledHeight - 23, 29, 24);
 				}
 			}
 
@@ -515,8 +544,8 @@ public class InGameHud {
 					}
 
 					int p = (int)(f * 19.0F);
-					context.drawTexture(ICONS, o, n, 0, 94, 18, 18);
-					context.drawTexture(ICONS, o, n + 18 - p, 18, 112 - p, 18, p);
+					context.drawGuiTexture(HOTBAR_ATTACK_INDICATOR_BACKGROUND_TEXTURE, o, n, 18, 18);
+					context.drawGuiTexture(HOTBAR_ATTACK_INDICATOR_PROGRESS_TEXTURE, 18, 18, 0, 18 - p, o, n + 18 - p, 18, p);
 				}
 			}
 
@@ -530,11 +559,11 @@ public class InGameHud {
 		int i = 182;
 		int j = (int)(f * 183.0F);
 		int k = this.scaledHeight - 32 + 3;
-		context.drawTexture(ICONS, x, k, 0, 84, 182, 5);
+		context.drawGuiTexture(JUMP_BAR_BACKGROUND_TEXTURE, x, k, 182, 5);
 		if (mount.getJumpCooldown() > 0) {
-			context.drawTexture(ICONS, x, k, 0, 74, 182, 5);
+			context.drawGuiTexture(JUMP_BAR_COOLDOWN_TEXTURE, x, k, 182, 5);
 		} else if (j > 0) {
-			context.drawTexture(ICONS, x, k, 0, 89, j, 5);
+			context.drawGuiTexture(JUMP_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, x, k, j, 5);
 		}
 
 		this.client.getProfiler().pop();
@@ -547,9 +576,9 @@ public class InGameHud {
 			int j = 182;
 			int k = (int)(this.client.player.experienceProgress * 183.0F);
 			int l = this.scaledHeight - 32 + 3;
-			context.drawTexture(ICONS, x, l, 0, 64, 182, 5);
+			context.drawGuiTexture(EXPERIENCE_BAR_BACKGROUND_TEXTURE, x, l, 182, 5);
 			if (k > 0) {
-				context.drawTexture(ICONS, x, l, 0, 69, k, 5);
+				context.drawGuiTexture(EXPERIENCE_BAR_PROGRESS_TEXTURE, 182, 5, 0, 0, x, l, k, 5);
 			}
 		}
 
@@ -749,15 +778,15 @@ public class InGameHud {
 				if (u > 0) {
 					int x = m + w * 8;
 					if (w * 2 + 1 < u) {
-						context.drawTexture(ICONS, x, s, 34, 9, 9, 9);
+						context.drawGuiTexture(ARMOR_FULL_TEXTURE, x, s, 9, 9);
 					}
 
 					if (w * 2 + 1 == u) {
-						context.drawTexture(ICONS, x, s, 25, 9, 9, 9);
+						context.drawGuiTexture(ARMOR_HALF_TEXTURE, x, s, 9, 9);
 					}
 
 					if (w * 2 + 1 > u) {
-						context.drawTexture(ICONS, x, s, 16, 9, 9, 9);
+						context.drawGuiTexture(ARMOR_EMPTY_TEXTURE, x, s, 9, 9);
 					}
 				}
 			}
@@ -771,25 +800,31 @@ public class InGameHud {
 
 				for (int y = 0; y < 10; y++) {
 					int z = o;
-					int aa = 16;
-					int ab = 0;
+					Identifier identifier;
+					Identifier identifier2;
+					Identifier identifier3;
 					if (playerEntity.hasStatusEffect(StatusEffects.HUNGER)) {
-						aa += 36;
-						ab = 13;
+						identifier = FOOD_EMPTY_HUNGER_TEXTURE;
+						identifier2 = FOOD_HALF_HUNGER_TEXTURE;
+						identifier3 = FOOD_FULL_HUNGER_TEXTURE;
+					} else {
+						identifier = FOOD_EMPTY_TEXTURE;
+						identifier2 = FOOD_HALF_TEXTURE;
+						identifier3 = FOOD_FULL_TEXTURE;
 					}
 
 					if (playerEntity.getHungerManager().getSaturationLevel() <= 0.0F && this.ticks % (k * 3 + 1) == 0) {
 						z = o + (this.random.nextInt(3) - 1);
 					}
 
-					int ac = n - y * 8 - 9;
-					context.drawTexture(ICONS, ac, z, 16 + ab * 9, 27, 9, 9);
+					int aa = n - y * 8 - 9;
+					context.drawGuiTexture(identifier, aa, z, 9, 9);
 					if (y * 2 + 1 < k) {
-						context.drawTexture(ICONS, ac, z, aa + 36, 27, 9, 9);
+						context.drawGuiTexture(identifier2, aa, z, 9, 9);
 					}
 
 					if (y * 2 + 1 == k) {
-						context.drawTexture(ICONS, ac, z, aa + 45, 27, 9, 9);
+						context.drawGuiTexture(identifier3, aa, z, 9, 9);
 					}
 				}
 
@@ -800,16 +835,16 @@ public class InGameHud {
 			int y = playerEntity.getMaxAir();
 			int zx = Math.min(playerEntity.getAir(), y);
 			if (playerEntity.isSubmergedIn(FluidTags.WATER) || zx < y) {
-				int aax = this.getHeartRows(xx) - 1;
-				t -= aax * 10;
-				int abx = MathHelper.ceil((double)(zx - 2) * 10.0 / (double)y);
-				int acx = MathHelper.ceil((double)zx * 10.0 / (double)y) - abx;
+				int ab = this.getHeartRows(xx) - 1;
+				t -= ab * 10;
+				int ac = MathHelper.ceil((double)(zx - 2) * 10.0 / (double)y);
+				int ad = MathHelper.ceil((double)zx * 10.0 / (double)y) - ac;
 
-				for (int ad = 0; ad < abx + acx; ad++) {
-					if (ad < abx) {
-						context.drawTexture(ICONS, n - ad * 8 - 9, t, 16, 18, 9, 9);
+				for (int aax = 0; aax < ac + ad; aax++) {
+					if (aax < ac) {
+						context.drawGuiTexture(AIR_TEXTURE, n - aax * 8 - 9, t, 9, 9);
 					} else {
-						context.drawTexture(ICONS, n - ad * 8 - 9, t, 25, 18, 9, 9);
+						context.drawGuiTexture(AIR_BURSTING_TEXTURE, n - aax * 8 - 9, t, 9, 9);
 					}
 				}
 			}
@@ -832,49 +867,49 @@ public class InGameHud {
 		boolean blinking
 	) {
 		InGameHud.HeartType heartType = InGameHud.HeartType.fromPlayerState(player);
-		int i = 9 * (player.getWorld().getLevelProperties().isHardcore() ? 5 : 0);
-		int j = MathHelper.ceil((double)maxHealth / 2.0);
-		int k = MathHelper.ceil((double)absorption / 2.0);
-		int l = j * 2;
+		boolean bl = player.getWorld().getLevelProperties().isHardcore();
+		int i = MathHelper.ceil((double)maxHealth / 2.0);
+		int j = MathHelper.ceil((double)absorption / 2.0);
+		int k = i * 2;
 
-		for (int m = j + k - 1; m >= 0; m--) {
-			int n = m / 10;
-			int o = m % 10;
-			int p = x + o * 8;
-			int q = y - n * lines;
+		for (int l = i + j - 1; l >= 0; l--) {
+			int m = l / 10;
+			int n = l % 10;
+			int o = x + n * 8;
+			int p = y - m * lines;
 			if (lastHealth + absorption <= 4) {
-				q += this.random.nextInt(2);
+				p += this.random.nextInt(2);
 			}
 
-			if (m < j && m == regeneratingHeartIndex) {
-				q -= 2;
+			if (l < i && l == regeneratingHeartIndex) {
+				p -= 2;
 			}
 
-			this.drawHeart(context, InGameHud.HeartType.CONTAINER, p, q, i, blinking, false);
-			int r = m * 2;
-			boolean bl = m >= j;
-			if (bl) {
-				int s = r - l;
-				if (s < absorption) {
-					boolean bl2 = s + 1 == absorption;
-					this.drawHeart(context, heartType == InGameHud.HeartType.WITHERED ? heartType : InGameHud.HeartType.ABSORBING, p, q, i, false, bl2);
+			this.drawHeart(context, InGameHud.HeartType.CONTAINER, o, p, bl, blinking, false);
+			int q = l * 2;
+			boolean bl2 = l >= i;
+			if (bl2) {
+				int r = q - k;
+				if (r < absorption) {
+					boolean bl3 = r + 1 == absorption;
+					this.drawHeart(context, heartType == InGameHud.HeartType.WITHERED ? heartType : InGameHud.HeartType.ABSORBING, o, p, bl, false, bl3);
 				}
 			}
 
-			if (blinking && r < health) {
-				boolean bl3 = r + 1 == health;
-				this.drawHeart(context, heartType, p, q, i, true, bl3);
+			if (blinking && q < health) {
+				boolean bl4 = q + 1 == health;
+				this.drawHeart(context, heartType, o, p, bl, true, bl4);
 			}
 
-			if (r < lastHealth) {
-				boolean bl3 = r + 1 == lastHealth;
-				this.drawHeart(context, heartType, p, q, i, false, bl3);
+			if (q < lastHealth) {
+				boolean bl4 = q + 1 == lastHealth;
+				this.drawHeart(context, heartType, o, p, bl, false, bl4);
 			}
 		}
 	}
 
-	private void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, int v, boolean blinking, boolean halfHeart) {
-		context.drawTexture(ICONS, x, y, type.getU(halfHeart, blinking), v, 9, 9);
+	private void drawHeart(DrawContext context, InGameHud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half) {
+		context.drawGuiTexture(type.getTexture(hardcore, half, blinking), x, y, 9, 9);
 	}
 
 	private void renderMountHealth(DrawContext context) {
@@ -887,23 +922,20 @@ public class InGameHud {
 				int k = this.scaledHeight - 39;
 				int l = this.scaledWidth / 2 + 91;
 				int m = k;
-				int n = 0;
 
-				for (boolean bl = false; i > 0; n += 20) {
+				for (int n = 0; i > 0; n += 20) {
 					int o = Math.min(i, 10);
 					i -= o;
 
 					for (int p = 0; p < o; p++) {
-						int q = 52;
-						int r = 0;
-						int s = l - p * 8 - 9;
-						context.drawTexture(ICONS, s, m, 52 + r * 9, 9, 9, 9);
+						int q = l - p * 8 - 9;
+						context.drawGuiTexture(VEHICLE_CONTAINER_HEART_TEXTURE, q, m, 9, 9);
 						if (p * 2 + 1 + n < j) {
-							context.drawTexture(ICONS, s, m, 88, 9, 9, 9);
+							context.drawGuiTexture(VEHICLE_FULL_HEART_TEXTURE, q, m, 9, 9);
 						}
 
 						if (p * 2 + 1 + n == j) {
-							context.drawTexture(ICONS, s, m, 97, 9, 9, 9);
+							context.drawGuiTexture(VEHICLE_HALF_HEART_TEXTURE, q, m, 9, 9);
 						}
 					}
 
@@ -999,19 +1031,19 @@ public class InGameHud {
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private void renderHotbarItem(DrawContext context, int x, int y, float f, PlayerEntity player, ItemStack stack, int seed) {
+	private void renderHotbarItem(DrawContext context, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed) {
 		if (!stack.isEmpty()) {
-			float g = (float)stack.getBobbingAnimationTime() - f;
-			if (g > 0.0F) {
-				float h = 1.0F + g / 5.0F;
+			float f = (float)stack.getBobbingAnimationTime() - tickDelta;
+			if (f > 0.0F) {
+				float g = 1.0F + f / 5.0F;
 				context.getMatrices().push();
 				context.getMatrices().translate((float)(x + 8), (float)(y + 12), 0.0F);
-				context.getMatrices().scale(1.0F / h, (h + 1.0F) / 2.0F, 1.0F);
+				context.getMatrices().scale(1.0F / g, (g + 1.0F) / 2.0F, 1.0F);
 				context.getMatrices().translate((float)(-(x + 8)), (float)(-(y + 12)), 0.0F);
 			}
 
 			context.drawItem(player, stack, x, y, seed);
-			if (g > 0.0F) {
+			if (f > 0.0F) {
 				context.getMatrices().pop();
 			}
 
@@ -1174,35 +1206,108 @@ public class InGameHud {
 
 	@Environment(EnvType.CLIENT)
 	static enum HeartType {
-		CONTAINER(0, false),
-		NORMAL(2, true),
-		POISONED(4, true),
-		WITHERED(6, true),
-		ABSORBING(8, false),
-		FROZEN(9, false);
+		CONTAINER(
+			new Identifier("hud/heart/container"),
+			new Identifier("hud/heart/container_blinking"),
+			new Identifier("hud/heart/container"),
+			new Identifier("hud/heart/container_blinking"),
+			new Identifier("hud/heart/container_hardcore"),
+			new Identifier("hud/heart/container_hardcore_blinking"),
+			new Identifier("hud/heart/container_hardcore"),
+			new Identifier("hud/heart/container_hardcore_blinking")
+		),
+		NORMAL(
+			new Identifier("hud/heart/full"),
+			new Identifier("hud/heart/full_blinking"),
+			new Identifier("hud/heart/half"),
+			new Identifier("hud/heart/half_blinking"),
+			new Identifier("hud/heart/hardcore_full"),
+			new Identifier("hud/heart/hardcore_full_blinking"),
+			new Identifier("hud/heart/hardcore_half"),
+			new Identifier("hud/heart/hardcore_half_blinking")
+		),
+		POISONED(
+			new Identifier("hud/heart/poisoned_full"),
+			new Identifier("hud/heart/poisoned_full_blinking"),
+			new Identifier("hud/heart/poisoned_half"),
+			new Identifier("hud/heart/poisoned_half_blinking"),
+			new Identifier("hud/heart/poisoned_hardcore_full"),
+			new Identifier("hud/heart/poisoned_hardcore_full_blinking"),
+			new Identifier("hud/heart/poisoned_hardcore_half"),
+			new Identifier("hud/heart/poisoned_hardcore_half_blinking")
+		),
+		WITHERED(
+			new Identifier("hud/heart/withered_full"),
+			new Identifier("hud/heart/withered_full_blinking"),
+			new Identifier("hud/heart/withered_half"),
+			new Identifier("hud/heart/withered_half_blinking"),
+			new Identifier("hud/heart/withered_hardcore_full"),
+			new Identifier("hud/heart/withered_hardcore_full_blinking"),
+			new Identifier("hud/heart/withered_hardcore_half"),
+			new Identifier("hud/heart/withered_hardcore_half_blinking")
+		),
+		ABSORBING(
+			new Identifier("hud/heart/absorbing_full"),
+			new Identifier("hud/heart/absorbing_full_blinking"),
+			new Identifier("hud/heart/absorbing_half"),
+			new Identifier("hud/heart/absorbing_half_blinking"),
+			new Identifier("hud/heart/absorbing_hardcore_full"),
+			new Identifier("hud/heart/absorbing_hardcore_full_blinking"),
+			new Identifier("hud/heart/absorbing_hardcore_half"),
+			new Identifier("hud/heart/absorbing_hardcore_half_blinking")
+		),
+		FROZEN(
+			new Identifier("hud/heart/frozen_full"),
+			new Identifier("hud/heart/frozen_full_blinking"),
+			new Identifier("hud/heart/frozen_half"),
+			new Identifier("hud/heart/frozen_half_blinking"),
+			new Identifier("hud/heart/frozen_hardcore_full"),
+			new Identifier("hud/heart/frozen_hardcore_full_blinking"),
+			new Identifier("hud/heart/frozen_hardcore_half"),
+			new Identifier("hud/heart/frozen_hardcore_half_blinking")
+		);
 
-		private final int textureIndex;
-		private final boolean hasBlinkingTexture;
+		private final Identifier fullTexture;
+		private final Identifier fullBlinkingTexture;
+		private final Identifier halfTexture;
+		private final Identifier halfBlinkingTexture;
+		private final Identifier hardcoreFullTexture;
+		private final Identifier hardcoreFullBlinkingTexture;
+		private final Identifier hardcoreHalfTexture;
+		private final Identifier hardcoreHalfBlinkingTexture;
 
-		private HeartType(int textureIndex, boolean hasBlinkingTexture) {
-			this.textureIndex = textureIndex;
-			this.hasBlinkingTexture = hasBlinkingTexture;
+		private HeartType(
+			Identifier fullTexture,
+			Identifier fullBlinkingTexture,
+			Identifier halfTexture,
+			Identifier halfBlinkingTexture,
+			Identifier hardcoreFullTexture,
+			Identifier hardcoreFullBlinkingTexture,
+			Identifier hardcoreHalfTexture,
+			Identifier hardcoreHalfBlinkingTexture
+		) {
+			this.fullTexture = fullTexture;
+			this.fullBlinkingTexture = fullBlinkingTexture;
+			this.halfTexture = halfTexture;
+			this.halfBlinkingTexture = halfBlinkingTexture;
+			this.hardcoreFullTexture = hardcoreFullTexture;
+			this.hardcoreFullBlinkingTexture = hardcoreFullBlinkingTexture;
+			this.hardcoreHalfTexture = hardcoreHalfTexture;
+			this.hardcoreHalfBlinkingTexture = hardcoreHalfBlinkingTexture;
 		}
 
-		/**
-		 * {@return the left-most coordinate of the heart texture}
-		 */
-		public int getU(boolean halfHeart, boolean blinking) {
-			int i;
-			if (this == CONTAINER) {
-				i = blinking ? 1 : 0;
+		public Identifier getTexture(boolean hardcore, boolean half, boolean blinking) {
+			if (!hardcore) {
+				if (half) {
+					return blinking ? this.halfBlinkingTexture : this.halfTexture;
+				} else {
+					return blinking ? this.fullBlinkingTexture : this.fullTexture;
+				}
+			} else if (half) {
+				return blinking ? this.hardcoreHalfBlinkingTexture : this.hardcoreHalfTexture;
 			} else {
-				int j = halfHeart ? 1 : 0;
-				int k = this.hasBlinkingTexture && blinking ? 2 : 0;
-				i = j + k;
+				return blinking ? this.hardcoreFullBlinkingTexture : this.hardcoreFullTexture;
 			}
-
-			return 16 + (this.textureIndex * 2 + i) * 9;
 		}
 
 		static InGameHud.HeartType fromPlayerState(PlayerEntity player) {

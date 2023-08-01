@@ -7,15 +7,15 @@ import net.minecraft.village.TradeOfferList;
 
 public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final int syncId;
-	private final TradeOfferList recipes;
+	private final TradeOfferList offers;
 	private final int levelProgress;
 	private final int experience;
 	private final boolean leveled;
 	private final boolean refreshable;
 
-	public SetTradeOffersS2CPacket(int syncId, TradeOfferList recipes, int levelProgress, int experience, boolean leveled, boolean refreshable) {
+	public SetTradeOffersS2CPacket(int syncId, TradeOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
 		this.syncId = syncId;
-		this.recipes = recipes;
+		this.offers = offers;
 		this.levelProgress = levelProgress;
 		this.experience = experience;
 		this.leveled = leveled;
@@ -24,7 +24,7 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 
 	public SetTradeOffersS2CPacket(PacketByteBuf buf) {
 		this.syncId = buf.readVarInt();
-		this.recipes = TradeOfferList.fromPacket(buf);
+		this.offers = TradeOfferList.fromPacket(buf);
 		this.levelProgress = buf.readVarInt();
 		this.experience = buf.readVarInt();
 		this.leveled = buf.readBoolean();
@@ -34,7 +34,7 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.syncId);
-		this.recipes.toPacket(buf);
+		this.offers.toPacket(buf);
 		buf.writeVarInt(this.levelProgress);
 		buf.writeVarInt(this.experience);
 		buf.writeBoolean(this.leveled);
@@ -50,7 +50,7 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	public TradeOfferList getOffers() {
-		return this.recipes;
+		return this.offers;
 	}
 
 	public int getLevelProgress() {

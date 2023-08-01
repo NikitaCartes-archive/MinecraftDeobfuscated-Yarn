@@ -12,6 +12,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -103,7 +104,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 				double i = vec3d2.y + 0.2F + 0.5;
 				double j = vec3d2.z + 0.2F;
 				drawBoxIfCameraReady(matrices, vertexConsumers, new Box(e, f, g, h, i, j), 1.0F, 1.0F, 1.0F, 0.2F);
-				DebugRenderer.drawString(matrices, vertexConsumers, entry.event.getId(), vec3d2.x, vec3d2.y + 0.85F, vec3d2.z, -7564911, 0.0075F);
+				DebugRenderer.drawString(matrices, vertexConsumers, entry.event.getValue().toString(), vec3d2.x, vec3d2.y + 0.85F, vec3d2.z, -7564911, 0.0075F);
 			}
 		}
 	}
@@ -118,8 +119,8 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	public void addEvent(GameEvent event, Vec3d pos) {
-		this.entries.add(new GameEventDebugRenderer.Entry(Util.getMeasuringTimeMs(), event, pos));
+	public void addEvent(RegistryKey<GameEvent> eventKey, Vec3d pos) {
+		this.entries.add(new GameEventDebugRenderer.Entry(Util.getMeasuringTimeMs(), eventKey, pos));
 	}
 
 	public void addListener(PositionSource positionSource, int range) {
@@ -127,7 +128,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record Entry(long startingMs, GameEvent event, Vec3d pos) {
+	static record Entry(long startingMs, RegistryKey<GameEvent> event, Vec3d pos) {
 
 		public boolean hasExpired() {
 			return Util.getMeasuringTimeMs() - this.startingMs > 3000L;

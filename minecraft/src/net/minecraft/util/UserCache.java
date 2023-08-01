@@ -10,7 +10,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
 import com.mojang.authlib.ProfileLookupCallback;
@@ -36,7 +35,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.slf4j.Logger;
@@ -65,15 +63,8 @@ public class UserCache {
 	private void add(UserCache.Entry entry) {
 		GameProfile gameProfile = entry.getProfile();
 		entry.setLastAccessed(this.incrementAndGetAccessCount());
-		String string = gameProfile.getName();
-		if (string != null) {
-			this.byName.put(string.toLowerCase(Locale.ROOT), entry);
-		}
-
-		UUID uUID = gameProfile.getId();
-		if (uUID != null) {
-			this.byUuid.put(uUID, entry);
-		}
+		this.byName.put(gameProfile.getName().toLowerCase(Locale.ROOT), entry);
+		this.byUuid.put(gameProfile.getId(), entry);
 	}
 
 	private static Optional<GameProfile> findProfileByName(GameProfileRepository repository, String name) {
@@ -85,14 +76,14 @@ public class UserCache {
 			}
 
 			@Override
-			public void onProfileLookupFailed(GameProfile profile, Exception exception) {
+			public void onProfileLookupFailed(String string, Exception exception) {
 				atomicReference.set(null);
 			}
 		};
-		repository.findProfilesByNames(new String[]{name}, Agent.MINECRAFT, profileLookupCallback);
+		repository.findProfilesByNames(new String[]{name}, profileLookupCallback);
 		GameProfile gameProfile = (GameProfile)atomicReference.get();
 		if (!shouldUseRemote() && gameProfile == null) {
-			UUID uUID = Uuids.getUuidFromProfile(new GameProfile(null, name));
+			UUID uUID = Uuids.getOfflinePlayerUuid(name);
 			return Optional.of(new GameProfile(uUID, name));
 		} else {
 			return Optional.ofNullable(gameProfile);
@@ -151,21 +142,18 @@ public class UserCache {
 		return optional;
 	}
 
-	public void findByNameAsync(String username, Consumer<Optional<GameProfile>> consumer) {
+	public CompletableFuture<Optional<GameProfile>> findByNameAsync(String username) {
 		if (this.executor == null) {
 			throw new IllegalStateException("No executor");
 		} else {
 			CompletableFuture<Optional<GameProfile>> completableFuture = (CompletableFuture<Optional<GameProfile>>)this.pendingRequests.get(username);
 			if (completableFuture != null) {
-				this.pendingRequests.put(username, completableFuture.whenCompleteAsync((profile, throwable) -> consumer.accept(profile), this.executor));
+				return completableFuture;
 			} else {
-				this.pendingRequests
-					.put(
-						username,
-						CompletableFuture.supplyAsync(() -> this.findByName(username), Util.getMainWorkerExecutor())
-							.whenCompleteAsync((profile, throwable) -> this.pendingRequests.remove(username), this.executor)
-							.whenCompleteAsync((profile, throwable) -> consumer.accept(profile), this.executor)
-					);
+				CompletableFuture<Optional<GameProfile>> completableFuture2 = CompletableFuture.supplyAsync(() -> this.findByName(username), Util.getMainWorkerExecutor())
+					.whenCompleteAsync((profile, throwable) -> this.pendingRequests.remove(username), this.executor);
+				this.pendingRequests.put(username, completableFuture2);
+				return completableFuture2;
 			}
 		}
 	}
@@ -278,8 +266,7 @@ public class UserCache {
 	private static JsonElement entryToJson(UserCache.Entry entry, DateFormat dateFormat) {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("name", entry.getProfile().getName());
-		UUID uUID = entry.getProfile().getId();
-		jsonObject.addProperty("uuid", uUID == null ? "" : uUID.toString());
+		jsonObject.addProperty("uuid", entry.getProfile().getId().toString());
 		jsonObject.addProperty("expiresOn", dateFormat.format(entry.getExpirationDate()));
 		return jsonObject;
 	}

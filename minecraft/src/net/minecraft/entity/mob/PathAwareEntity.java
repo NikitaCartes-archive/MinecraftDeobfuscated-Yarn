@@ -3,6 +3,8 @@ package net.minecraft.entity.mob;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.math.BlockPos;
@@ -35,6 +37,12 @@ public abstract class PathAwareEntity extends MobEntity {
 		return !this.getNavigation().isIdle();
 	}
 
+	public boolean isPanicking() {
+		return this.brain.hasMemoryModule(MemoryModuleType.IS_PANICKING)
+			? this.brain.getOptionalRegisteredMemory(MemoryModuleType.IS_PANICKING).isPresent()
+			: this.goalSelector.getRunningGoals().anyMatch(goal -> goal.getGoal() instanceof EscapeDangerGoal);
+	}
+
 	@Override
 	protected void updateLeash() {
 		super.updateLeash();
@@ -60,7 +68,7 @@ public abstract class PathAwareEntity extends MobEntity {
 				double g = (entity.getZ() - this.getZ()) / (double)f;
 				this.setVelocity(this.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g)));
 				this.limitFallDistance();
-			} else if (this.shouldFollowLeash()) {
+			} else if (this.shouldFollowLeash() && !this.isPanicking()) {
 				this.goalSelector.enableControl(Goal.Control.MOVE);
 				float h = 2.0F;
 				Vec3d vec3d = new Vec3d(entity.getX() - this.getX(), entity.getY() - this.getY(), entity.getZ() - this.getZ())

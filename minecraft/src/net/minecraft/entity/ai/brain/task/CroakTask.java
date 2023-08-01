@@ -25,7 +25,7 @@ public class CroakTask extends MultiTickTask<FrogEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, FrogEntity frogEntity, long l) {
-		if (!frogEntity.isInsideWaterOrBubbleColumn() && !frogEntity.isInLava()) {
+		if (!frogEntity.isInFluid()) {
 			frogEntity.setPose(EntityPose.CROAKING);
 			this.runningTicks = 0;
 		}

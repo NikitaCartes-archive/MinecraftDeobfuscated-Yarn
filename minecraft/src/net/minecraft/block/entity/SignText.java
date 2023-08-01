@@ -58,17 +58,7 @@ public class SignText {
 	}
 
 	private static SignText create(Text[] messages, Optional<Text[]> filteredMessages, DyeColor color, boolean glowing) {
-		Text[] texts = (Text[])filteredMessages.orElseGet(SignText::getDefaultText);
-		copyMessages(messages, texts);
-		return new SignText(messages, texts, color, glowing);
-	}
-
-	private static void copyMessages(Text[] from, Text[] to) {
-		for (int i = 0; i < 4; i++) {
-			if (to[i].equals(ScreenTexts.EMPTY)) {
-				to[i] = from[i];
-			}
-		}
+		return new SignText(messages, (Text[])filteredMessages.orElse((Text[])Arrays.copyOf(messages, messages.length)), color, glowing);
 	}
 
 	public boolean isGlowing() {
@@ -125,20 +115,13 @@ public class SignText {
 	}
 
 	private Optional<Text[]> getFilteredMessages() {
-		Text[] texts = new Text[4];
-		boolean bl = false;
-
 		for (int i = 0; i < 4; i++) {
-			Text text = this.filteredMessages[i];
-			if (!text.equals(this.messages[i])) {
-				texts[i] = text;
-				bl = true;
-			} else {
-				texts[i] = ScreenTexts.EMPTY;
+			if (!this.filteredMessages[i].equals(this.messages[i])) {
+				return Optional.of(this.filteredMessages);
 			}
 		}
 
-		return bl ? Optional.of(texts) : Optional.empty();
+		return Optional.empty();
 	}
 
 	public boolean hasRunCommandClickEvent(PlayerEntity player) {

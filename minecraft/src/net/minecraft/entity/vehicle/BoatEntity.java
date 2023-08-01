@@ -35,6 +35,7 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.StringIdentifiable;
@@ -51,6 +52,7 @@ import net.minecraft.world.BlockLocating;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type> {
 	private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -153,8 +155,22 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	}
 
 	@Override
-	public double getMountedHeightOffset() {
-		return this.getVariant() == BoatEntity.Type.BAMBOO ? 0.25 : -0.1;
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		float f = this.getPassengerHorizontalOffset();
+		if (this.getPassengerList().size() > 1) {
+			int i = this.getPassengerList().indexOf(passenger);
+			if (i == 0) {
+				f = 0.2F;
+			} else {
+				f = -0.6F;
+			}
+
+			if (passenger instanceof AnimalEntity) {
+				f += 0.2F;
+			}
+		}
+
+		return new Vector3f(0.0F, this.getVariant() == BoatEntity.Type.BAMBOO ? dimensions.height * 0.8888889F : dimensions.height / 3.0F, f);
 	}
 
 	@Override
@@ -245,7 +261,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	}
 
 	@Override
-	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
+	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -327,8 +343,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		if (!list.isEmpty()) {
 			boolean bl = !this.getWorld().isClient && !(this.getControllingPassenger() instanceof PlayerEntity);
 
-			for (int j = 0; j < list.size(); j++) {
-				Entity entity = (Entity)list.get(j);
+			for (Entity entity : list) {
 				if (!entity.hasPassenger(this)) {
 					if (bl
 						&& this.getPassengerList().size() < this.getMaxPassengers()
@@ -405,15 +420,8 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		}
 
 		if (this.field_7708 > 0) {
-			double d = this.getX() + (this.x - this.getX()) / (double)this.field_7708;
-			double e = this.getY() + (this.y - this.getY()) / (double)this.field_7708;
-			double f = this.getZ() + (this.z - this.getZ()) / (double)this.field_7708;
-			double g = MathHelper.wrapDegrees(this.boatYaw - (double)this.getYaw());
-			this.setYaw(this.getYaw() + (float)g / (float)this.field_7708);
-			this.setPitch(this.getPitch() + (float)(this.boatPitch - (double)this.getPitch()) / (float)this.field_7708);
+			this.lerpPosAndRotation(this.field_7708, this.x, this.y, this.z, this.boatYaw, this.boatPitch);
 			this.field_7708--;
-			this.setPosition(d, e, f);
-			this.setRotation(this.getYaw(), this.getPitch());
 		}
 	}
 
@@ -663,32 +671,14 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 
 	@Override
 	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
-		if (this.hasPassenger(passenger)) {
-			float f = this.getPassengerHorizontalOffset();
-			float g = (float)((this.isRemoved() ? 0.01F : this.getMountedHeightOffset()) + passenger.getHeightOffset());
-			if (this.getPassengerList().size() > 1) {
-				int i = this.getPassengerList().indexOf(passenger);
-				if (i == 0) {
-					f = 0.2F;
-				} else {
-					f = -0.6F;
-				}
-
-				if (passenger instanceof AnimalEntity) {
-					f += 0.2F;
-				}
-			}
-
-			Vec3d vec3d = new Vec3d((double)f, 0.0, 0.0).rotateY(-this.getYaw() * (float) (Math.PI / 180.0) - (float) (Math.PI / 2));
-			positionUpdater.accept(passenger, this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
-			passenger.setYaw(passenger.getYaw() + this.yawVelocity);
-			passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
-			this.copyEntityData(passenger);
-			if (passenger instanceof AnimalEntity && this.getPassengerList().size() == this.getMaxPassengers()) {
-				int j = passenger.getId() % 2 == 0 ? 90 : 270;
-				passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
-				passenger.setHeadYaw(passenger.getHeadYaw() + (float)j);
-			}
+		super.updatePassengerPosition(passenger, positionUpdater);
+		passenger.setYaw(passenger.getYaw() + this.yawVelocity);
+		passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
+		this.copyEntityData(passenger);
+		if (passenger instanceof AnimalEntity && this.getPassengerList().size() == this.getMaxPassengers()) {
+			int i = passenger.getId() % 2 == 0 ? 90 : 270;
+			passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)i);
+			passenger.setHeadYaw(passenger.getHeadYaw() + (float)i);
 		}
 	}
 
@@ -858,7 +848,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 	@Nullable
 	@Override
 	public LivingEntity getControllingPassenger() {
-		return this.getFirstPassenger() instanceof LivingEntity livingEntity ? livingEntity : null;
+		return this.getFirstPassenger() instanceof LivingEntity livingEntity ? livingEntity : super.getControllingPassenger();
 	}
 
 	public void setInputs(boolean pressingLeft, boolean pressingRight, boolean pressingForward, boolean pressingBack) {
@@ -866,6 +856,11 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		this.pressingRight = pressingRight;
 		this.pressingForward = pressingForward;
 		this.pressingBack = pressingBack;
+	}
+
+	@Override
+	protected Text getDefaultName() {
+		return Text.translatable(this.asItem().getTranslationKey());
 	}
 
 	@Override

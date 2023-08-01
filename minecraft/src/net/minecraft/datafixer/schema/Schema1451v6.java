@@ -60,11 +60,6 @@ public class Schema1451v6 extends IdentifierNormalizingSchema {
 		}
 	};
 	protected static final HookFunction field_34015 = new HookFunction() {
-		private String normalize(String id) {
-			Identifier identifier = Identifier.tryParse(id);
-			return identifier != null ? identifier.getNamespace() + "." + identifier.getPath() : id;
-		}
-
 		@Override
 		public <T> T apply(DynamicOps<T> ops, T value) {
 			Dynamic<T> dynamic = new Dynamic<>(ops, value);
@@ -73,14 +68,14 @@ public class Schema1451v6 extends IdentifierNormalizingSchema {
 				.get()
 				.left()
 				.flatMap(
-					criteriaType -> {
-						Optional<String> optionalx = criteriaType.get("type").asString().get().left();
-						Optional<String> optional2 = criteriaType.get("id").asString().get().left();
+					dynamic2 -> {
+						Optional<String> optionalx = dynamic2.get("type").asString().get().left();
+						Optional<String> optional2 = dynamic2.get("id").asString().get().left();
 						if (optionalx.isPresent() && optional2.isPresent()) {
 							String string = (String)optionalx.get();
 							return string.equals("_special")
 								? Optional.of(dynamic.createString((String)optional2.get()))
-								: Optional.of(criteriaType.createString(this.normalize(string) + ":" + this.normalize((String)optional2.get())));
+								: Optional.of(dynamic2.createString(Schema1451v6.toDotSeparated(string) + ":" + Schema1451v6.toDotSeparated((String)optional2.get())));
 						} else {
 							return Optional.empty();
 						}
@@ -151,5 +146,10 @@ public class Schema1451v6 extends IdentifierNormalizingSchema {
 		map.put("minecraft:custom", (Supplier)() -> DSL.optionalFields("id", DSL.constType(getIdentifierType())));
 		map.put("_special", (Supplier)() -> DSL.optionalFields("id", DSL.constType(DSL.string())));
 		return map;
+	}
+
+	public static String toDotSeparated(String id) {
+		Identifier identifier = Identifier.tryParse(id);
+		return identifier != null ? identifier.getNamespace() + "." + identifier.getPath() : id;
 	}
 }

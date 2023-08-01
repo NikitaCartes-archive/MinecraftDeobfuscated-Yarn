@@ -42,15 +42,6 @@ public class WoodlandMansionGenerator {
 		layoutGenerator.generate(pos, rotation, pieces, mansionParameters);
 	}
 
-	public static void printRandomFloorLayouts(String[] args) {
-		Random random = Random.create();
-		long l = random.nextLong();
-		System.out.println("Seed: " + l);
-		random.setSeed(l);
-		WoodlandMansionGenerator.MansionParameters mansionParameters = new WoodlandMansionGenerator.MansionParameters(random);
-		mansionParameters.printFloorLayouts();
-	}
-
 	/**
 	 * The {@link RoomPool} used for the first floor.
 	 */
@@ -1087,41 +1078,6 @@ public class WoodlandMansionGenerator {
 
 					i++;
 				}
-			}
-		}
-
-		/**
-		 * Prints a string representation of {@link #baseLayout} and {@link
-		 * #thirdFloorLayout}. Useful for debugging.
-		 * 
-		 * @see WoodlandMansionGenerator#printRandomFloorLayouts
-		 */
-		public void printFloorLayouts() {
-			for (int i = 0; i < 2; i++) {
-				WoodlandMansionGenerator.FlagMatrix flagMatrix = i == 0 ? this.baseLayout : this.thirdFloorLayout;
-
-				for (int j = 0; j < flagMatrix.m; j++) {
-					for (int k = 0; k < flagMatrix.n; k++) {
-						int l = flagMatrix.get(k, j);
-						if (l == CORRIDOR) {
-							System.out.print("+");
-						} else if (l == UNUSED) {
-							System.out.print("x");
-						} else if (l == ROOM) {
-							System.out.print("X");
-						} else if (l == STAIRCASE) {
-							System.out.print("O");
-						} else if (l == OUTSIDE) {
-							System.out.print("#");
-						} else {
-							System.out.print(" ");
-						}
-					}
-
-					System.out.println("");
-				}
-
-				System.out.println("");
 			}
 		}
 	}

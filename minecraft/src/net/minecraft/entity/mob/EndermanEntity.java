@@ -68,6 +68,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public class EndermanEntity extends HostileEntity implements Angerable {
 	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
@@ -126,7 +127,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			this.ageWhenTargetSet = 0;
 			this.dataTracker.set(ANGRY, false);
 			this.dataTracker.set(PROVOKED, false);
-			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
+			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST.getId());
 		} else {
 			this.ageWhenTargetSet = this.age;
 			this.dataTracker.set(ANGRY, true);
@@ -231,6 +232,11 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 2.55F;
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height - 0.09375F * scaleFactor, 0.0F);
 	}
 
 	@Override

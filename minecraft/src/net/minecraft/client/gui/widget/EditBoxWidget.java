@@ -12,6 +12,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 
 /**
  * A widget of {@link EditBox}, a multiline edit box with support for
@@ -25,6 +26,7 @@ public class EditBoxWidget extends ScrollableWidget {
 	private static final String UNDERSCORE = "_";
 	private static final int FOCUSED_BOX_TEXT_COLOR = -2039584;
 	private static final int UNFOCUSED_BOX_TEXT_COLOR = -857677600;
+	private static final int CURSOR_BLINK_INTERVAL = 300;
 	private final TextRenderer textRenderer;
 	/**
 	 * The placeholder text that gets rendered when the edit box is empty. This does not
@@ -32,7 +34,7 @@ public class EditBoxWidget extends ScrollableWidget {
 	 */
 	private final Text placeholder;
 	private final EditBox editBox;
-	private int tick;
+	private long lastSwitchFocusTime = Util.getMeasuringTimeMs();
 
 	public EditBoxWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text placeholder, Text message) {
 		super(x, y, width, height, message);
@@ -76,10 +78,6 @@ public class EditBoxWidget extends ScrollableWidget {
 	 */
 	public String getText() {
 		return this.editBox.getText();
-	}
-
-	public void tick() {
-		this.tick++;
 	}
 
 	@Override
@@ -138,7 +136,7 @@ public class EditBoxWidget extends ScrollableWidget {
 			);
 		} else {
 			int i = this.editBox.getCursor();
-			boolean bl = this.isFocused() && this.tick / 6 % 2 == 0;
+			boolean bl = this.isFocused() && (Util.getMeasuringTimeMs() - this.lastSwitchFocusTime) / 300L % 2L == 0L;
 			boolean bl2 = i < string.length();
 			int j = 0;
 			int k = 0;
@@ -257,5 +255,13 @@ public class EditBoxWidget extends ScrollableWidget {
 		double d = mouseX - (double)this.getX() - (double)this.getPadding();
 		double e = mouseY - (double)this.getY() - (double)this.getPadding() + this.getScrollY();
 		this.editBox.moveCursor(d, e);
+	}
+
+	@Override
+	public void setFocused(boolean focused) {
+		super.setFocused(focused);
+		if (focused) {
+			this.lastSwitchFocusTime = Util.getMeasuringTimeMs();
+		}
 	}
 }

@@ -114,8 +114,9 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		if (drawDebugNodes) {
-			for (PathNode pathNode2 : path.getDebugSecondNodes()) {
+		Path.DebugNodeInfo debugNodeInfo = path.getDebugNodeInfos();
+		if (drawDebugNodes && debugNodeInfo != null) {
+			for (PathNode pathNode2 : debugNodeInfo.closedSet()) {
 				if (getManhattanDistance(pathNode2.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawBox(
 						matrices,
@@ -137,7 +138,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 				}
 			}
 
-			for (PathNode pathNode2x : path.getDebugNodes()) {
+			for (PathNode pathNode2x : debugNodeInfo.openSet()) {
 				if (getManhattanDistance(pathNode2x.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawBox(
 						matrices,
@@ -161,16 +162,16 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		if (drawLabels) {
-			for (int ix = 0; ix < path.getLength(); ix++) {
-				PathNode pathNode = path.getNode(ix);
-				if (getManhattanDistance(pathNode.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
+			for (int j = 0; j < path.getLength(); j++) {
+				PathNode pathNode3 = path.getNode(j);
+				if (getManhattanDistance(pathNode3.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawString(
 						matrices,
 						vertexConsumers,
-						String.valueOf(pathNode.type),
-						(double)pathNode.x + 0.5,
-						(double)pathNode.y + 0.75,
-						(double)pathNode.z + 0.5,
+						String.valueOf(pathNode3.type),
+						(double)pathNode3.x + 0.5,
+						(double)pathNode3.y + 0.75,
+						(double)pathNode3.z + 0.5,
 						-1,
 						0.02F,
 						true,
@@ -180,10 +181,10 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 					DebugRenderer.drawString(
 						matrices,
 						vertexConsumers,
-						String.format(Locale.ROOT, "%.2f", pathNode.penalty),
-						(double)pathNode.x + 0.5,
-						(double)pathNode.y + 0.25,
-						(double)pathNode.z + 0.5,
+						String.format(Locale.ROOT, "%.2f", pathNode3.penalty),
+						(double)pathNode3.x + 0.5,
+						(double)pathNode3.y + 0.25,
+						(double)pathNode3.z + 0.5,
 						-1,
 						0.02F,
 						true,

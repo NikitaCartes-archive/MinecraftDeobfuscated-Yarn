@@ -49,7 +49,44 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInventoryScreen.CreativeScreenHandler> {
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
+	private static final Identifier SCROLLER_TEXTURE = new Identifier("container/creative_inventory/scroller");
+	private static final Identifier SCROLLER_DISABLED_TEXTURE = new Identifier("container/creative_inventory/scroller_disabled");
+	private static final Identifier[] TAB_TOP_UNSELECTED_TEXTURES = new Identifier[]{
+		new Identifier("container/creative_inventory/tab_top_unselected_1"),
+		new Identifier("container/creative_inventory/tab_top_unselected_2"),
+		new Identifier("container/creative_inventory/tab_top_unselected_3"),
+		new Identifier("container/creative_inventory/tab_top_unselected_4"),
+		new Identifier("container/creative_inventory/tab_top_unselected_5"),
+		new Identifier("container/creative_inventory/tab_top_unselected_6"),
+		new Identifier("container/creative_inventory/tab_top_unselected_7")
+	};
+	private static final Identifier[] TAB_TOP_SELECTED_TEXTURES = new Identifier[]{
+		new Identifier("container/creative_inventory/tab_top_selected_1"),
+		new Identifier("container/creative_inventory/tab_top_selected_2"),
+		new Identifier("container/creative_inventory/tab_top_selected_3"),
+		new Identifier("container/creative_inventory/tab_top_selected_4"),
+		new Identifier("container/creative_inventory/tab_top_selected_5"),
+		new Identifier("container/creative_inventory/tab_top_selected_6"),
+		new Identifier("container/creative_inventory/tab_top_selected_7")
+	};
+	private static final Identifier[] TAB_BOTTOM_UNSELECTED_TEXTURES = new Identifier[]{
+		new Identifier("container/creative_inventory/tab_bottom_unselected_1"),
+		new Identifier("container/creative_inventory/tab_bottom_unselected_2"),
+		new Identifier("container/creative_inventory/tab_bottom_unselected_3"),
+		new Identifier("container/creative_inventory/tab_bottom_unselected_4"),
+		new Identifier("container/creative_inventory/tab_bottom_unselected_5"),
+		new Identifier("container/creative_inventory/tab_bottom_unselected_6"),
+		new Identifier("container/creative_inventory/tab_bottom_unselected_7")
+	};
+	private static final Identifier[] TAB_BOTTOM_SELECTED_TEXTURES = new Identifier[]{
+		new Identifier("container/creative_inventory/tab_bottom_selected_1"),
+		new Identifier("container/creative_inventory/tab_bottom_selected_2"),
+		new Identifier("container/creative_inventory/tab_bottom_selected_3"),
+		new Identifier("container/creative_inventory/tab_bottom_selected_4"),
+		new Identifier("container/creative_inventory/tab_bottom_selected_5"),
+		new Identifier("container/creative_inventory/tab_bottom_selected_6"),
+		new Identifier("container/creative_inventory/tab_bottom_selected_7")
+	};
 	private static final String TAB_TEXTURE_PREFIX = "textures/gui/container/creative_inventory/tab_";
 	private static final String CUSTOM_CREATIVE_LOCK_KEY = "CustomCreativeLock";
 	private static final int ROWS_COUNT = 5;
@@ -128,8 +165,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 			if (!this.client.interactionManager.hasCreativeInventory()) {
 				this.client.setScreen(new InventoryScreen(this.client.player));
-			} else {
-				this.searchBox.tick();
 			}
 		}
 	}
@@ -137,7 +172,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	@Override
 	protected void onMouseClick(@Nullable Slot slot, int slotId, int button, SlotActionType actionType) {
 		if (this.isCreativeInventorySlot(slot)) {
-			this.searchBox.setCursorToEnd();
+			this.searchBox.setCursorToEnd(false);
 			this.searchBox.setSelectionEnd(0);
 		}
 
@@ -555,11 +590,11 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		if (!this.hasScrollbar()) {
 			return false;
 		} else {
-			this.scrollPosition = this.handler.getScrollPosition(this.scrollPosition, amount);
+			this.scrollPosition = this.handler.getScrollPosition(this.scrollPosition, verticalAmount);
 			this.handler.scrollItems(this.scrollPosition);
 			return true;
 		}
@@ -601,7 +636,6 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
 		super.render(context, mouseX, mouseY, delta);
 
 		for (ItemGroup itemGroup : ItemGroups.getGroupsToDisplay()) {
@@ -673,12 +707,13 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		int j = this.y + 18;
 		int k = j + 112;
 		if (selectedTab.hasScrollbar()) {
-			context.drawTexture(TEXTURE, i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);
+			Identifier identifier = this.hasScrollbar() ? SCROLLER_TEXTURE : SCROLLER_DISABLED_TEXTURE;
+			context.drawGuiTexture(identifier, i, j + (int)((float)(k - j - 17) * this.scrollPosition), 12, 15);
 		}
 
 		this.renderTabIcon(context, selectedTab);
 		if (selectedTab.getType() == ItemGroup.Type.INVENTORY) {
-			InventoryScreen.drawEntity(context, this.x + 88, this.y + 45, 20, (float)(this.x + 88 - mouseX), (float)(this.y + 45 - 30 - mouseY), this.client.player);
+			InventoryScreen.drawEntity(context, this.x + 73, this.y + 6, this.x + 105, this.y + 49, 20, 0.0625F, (float)mouseX, (float)mouseY, this.client.player);
 		}
 	}
 
@@ -725,30 +760,23 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		boolean bl = group == selectedTab;
 		boolean bl2 = group.getRow() == ItemGroup.Row.TOP;
 		int i = group.getColumn();
-		int j = i * 26;
-		int k = 0;
-		int l = this.x + this.getTabX(group);
-		int m = this.y;
-		int n = 32;
-		if (bl) {
-			k += 32;
-		}
-
+		int j = this.x + this.getTabX(group);
+		int k = this.y - (bl2 ? 28 : -(this.backgroundHeight - 4));
+		Identifier[] identifiers;
 		if (bl2) {
-			m -= 28;
+			identifiers = bl ? TAB_TOP_SELECTED_TEXTURES : TAB_TOP_UNSELECTED_TEXTURES;
 		} else {
-			k += 64;
-			m += this.backgroundHeight - 4;
+			identifiers = bl ? TAB_BOTTOM_SELECTED_TEXTURES : TAB_BOTTOM_UNSELECTED_TEXTURES;
 		}
 
-		context.drawTexture(TEXTURE, l, m, j, k, 26, 32);
+		context.drawGuiTexture(identifiers[MathHelper.clamp(i, 0, identifiers.length)], j, k, 26, 32);
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
-		l += 5;
-		m += 8 + (bl2 ? 1 : -1);
+		j += 5;
+		k += 8 + (bl2 ? 1 : -1);
 		ItemStack itemStack = group.getIcon();
-		context.drawItem(itemStack, l, m);
-		context.drawItemInSlot(this.textRenderer, itemStack, l, m);
+		context.drawItem(itemStack, j, k);
+		context.drawItemInSlot(this.textRenderer, itemStack, j, k);
 		context.getMatrices().pop();
 	}
 

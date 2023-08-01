@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -173,7 +174,7 @@ public class FeatureUpdater {
 				NbtCompound nbtCompound = new NbtCompound();
 
 				try {
-					nbtCompound = persistentStateManager.readNbt(string, 1493).getCompound("data").getCompound("Features");
+					nbtCompound = persistentStateManager.readNbt(string, DataFixTypes.SAVED_DATA_STRUCTURE_FEATURE_INDICES, 1493).getCompound("data").getCompound("Features");
 					if (nbtCompound.isEmpty()) {
 						continue;
 					}
@@ -197,7 +198,7 @@ public class FeatureUpdater {
 				}
 
 				String string5 = string + "_index";
-				ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(ChunkUpdateState::fromNbt, ChunkUpdateState::new, string5);
+				ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(ChunkUpdateState.getPersistentStateType(), string5);
 				if (!chunkUpdateState.getAll().isEmpty()) {
 					this.updateStates.put(string, chunkUpdateState);
 				} else {

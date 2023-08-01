@@ -2,6 +2,7 @@ package net.minecraft.client.realms.exception;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.realms.RealmsError;
 
 @Environment(EnvType.CLIENT)
 public class RetryCallException extends RealmsServiceException {
@@ -9,7 +10,7 @@ public class RetryCallException extends RealmsServiceException {
 	public final int delaySeconds;
 
 	public RetryCallException(int delaySeconds, int httpResultCode) {
-		super(httpResultCode, "Retry operation");
+		super(RealmsError.SimpleHttpError.retryable(httpResultCode));
 		if (delaySeconds >= 0 && delaySeconds <= 120) {
 			this.delaySeconds = delaySeconds;
 		} else {

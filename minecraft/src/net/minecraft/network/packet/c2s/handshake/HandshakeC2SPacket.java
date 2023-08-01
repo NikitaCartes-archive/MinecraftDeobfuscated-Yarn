@@ -1,30 +1,24 @@
 package net.minecraft.network.packet.c2s.handshake;
 
-import net.minecraft.SharedConstants;
+import net.minecraft.network.ConnectionIntent;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.network.packet.Packet;
 
-public class HandshakeC2SPacket implements Packet<ServerHandshakePacketListener> {
+public record HandshakeC2SPacket(int protocolVersion, String address, int port, ConnectionIntent intendedState) implements Packet<ServerHandshakePacketListener> {
 	private static final int MAX_ADDRESS_LENGTH = 255;
-	private final int protocolVersion;
-	private final String address;
-	private final int port;
-	private final NetworkState intendedState;
 
-	public HandshakeC2SPacket(String address, int port, NetworkState intendedState) {
-		this.protocolVersion = SharedConstants.getGameVersion().getProtocolVersion();
+	@Deprecated
+	public HandshakeC2SPacket(int protocolVersion, String address, int port, ConnectionIntent intendedState) {
+		this.protocolVersion = protocolVersion;
 		this.address = address;
 		this.port = port;
 		this.intendedState = intendedState;
 	}
 
 	public HandshakeC2SPacket(PacketByteBuf buf) {
-		this.protocolVersion = buf.readVarInt();
-		this.address = buf.readString(255);
-		this.port = buf.readUnsignedShort();
-		this.intendedState = NetworkState.byId(buf.readVarInt());
+		this(buf.readVarInt(), buf.readString(255), buf.readUnsignedShort(), ConnectionIntent.byId(buf.readVarInt()));
 	}
 
 	@Override
@@ -39,19 +33,8 @@ public class HandshakeC2SPacket implements Packet<ServerHandshakePacketListener>
 		serverHandshakePacketListener.onHandshake(this);
 	}
 
-	public NetworkState getIntendedState() {
-		return this.intendedState;
-	}
-
-	public int getProtocolVersion() {
-		return this.protocolVersion;
-	}
-
-	public String getAddress() {
-		return this.address;
-	}
-
-	public int getPort() {
-		return this.port;
+	@Override
+	public NetworkState getNewNetworkState() {
+		return this.intendedState.getState();
 	}
 }

@@ -180,6 +180,20 @@ public class ChunkPos {
 		return Math.max(Math.abs(this.x - pos.x), Math.abs(this.z - pos.z));
 	}
 
+	public int getSquaredDistance(ChunkPos pos) {
+		return this.getSquaredDistance(pos.x, pos.z);
+	}
+
+	public int getSquaredDistance(long pos) {
+		return this.getSquaredDistance(getPackedX(pos), getPackedZ(pos));
+	}
+
+	private int getSquaredDistance(int x, int z) {
+		int i = x - this.x;
+		int j = z - this.z;
+		return i * i + j * j;
+	}
+
 	public static Stream<ChunkPos> stream(ChunkPos center, int radius) {
 		return stream(new ChunkPos(center.x - radius, center.z - radius), new ChunkPos(center.x + radius, center.z + radius));
 	}

@@ -64,6 +64,7 @@ public final class BlockTags {
 	public static final TagKey<Block> CANDLES = of("candles");
 	public static final TagKey<Block> DIRT = of("dirt");
 	public static final TagKey<Block> TERRACOTTA = of("terracotta");
+	public static final TagKey<Block> CONCRETE_POWDER = of("concrete_powder");
 	public static final TagKey<Block> COMPLETES_FIND_TREE_TUTORIAL = of("completes_find_tree_tutorial");
 	public static final TagKey<Block> FLOWER_POTS = of("flower_pots");
 	public static final TagKey<Block> ENDERMAN_HOLDABLE = of("enderman_holdable");
@@ -122,6 +123,7 @@ public final class BlockTags {
 	public static final TagKey<Block> CRYSTAL_SOUND_BLOCKS = of("crystal_sound_blocks");
 	public static final TagKey<Block> INSIDE_STEP_SOUND_BLOCKS = of("inside_step_sound_blocks");
 	public static final TagKey<Block> COMBINATION_STEP_SOUND_BLOCKS = of("combination_step_sound_blocks");
+	public static final TagKey<Block> CAMEL_SAND_STEP_SOUND_BLOCKS = of("camel_sand_step_sound_blocks");
 	public static final TagKey<Block> OCCLUDES_VIBRATION_SIGNALS = of("occludes_vibration_signals");
 	public static final TagKey<Block> DAMPENS_VIBRATIONS = of("dampens_vibrations");
 	public static final TagKey<Block> DRIPSTONE_REPLACEABLE_BLOCKS = of("dripstone_replaceable_blocks");

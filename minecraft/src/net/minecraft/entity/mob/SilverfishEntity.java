@@ -32,6 +32,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import org.joml.Vector3f;
 
 public class SilverfishEntity extends HostileEntity {
 	@Nullable
@@ -51,11 +52,6 @@ public class SilverfishEntity extends HostileEntity {
 		this.goalSelector.add(5, new SilverfishEntity.WanderAndInfestGoal(this));
 		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 		this.targetSelector.add(2, new ActiveTargetGoal(this, PlayerEntity.class, true));
-	}
-
-	@Override
-	public double getHeightOffset() {
-		return 0.1;
 	}
 
 	@Override
@@ -137,6 +133,11 @@ public class SilverfishEntity extends HostileEntity {
 	@Override
 	public EntityGroup getGroup() {
 		return EntityGroup.ARTHROPOD;
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height - 0.0625F * scaleFactor, 0.0F);
 	}
 
 	static class CallForHelpGoal extends Goal {

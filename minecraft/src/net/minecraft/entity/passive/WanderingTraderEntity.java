@@ -32,6 +32,7 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -44,6 +45,7 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class WanderingTraderEntity extends MerchantEntity {
 	private static final int field_30629 = 5;
@@ -131,17 +133,30 @@ public class WanderingTraderEntity extends MerchantEntity {
 
 	@Override
 	protected void fillRecipes() {
-		TradeOffers.Factory[] factorys = TradeOffers.WANDERING_TRADER_TRADES.get(1);
-		TradeOffers.Factory[] factorys2 = TradeOffers.WANDERING_TRADER_TRADES.get(2);
-		if (factorys != null && factorys2 != null) {
-			TradeOfferList tradeOfferList = this.getOffers();
-			this.fillRecipesFromPool(tradeOfferList, factorys, 5);
-			int i = this.random.nextInt(factorys2.length);
-			TradeOffers.Factory factory = factorys2[i];
-			TradeOffer tradeOffer = factory.create(this, this.random);
-			if (tradeOffer != null) {
-				tradeOfferList.add(tradeOffer);
+		if (this.getWorld().getEnabledFeatures().contains(FeatureFlags.TRADE_REBALANCE)) {
+			this.fillRebalancedRecipes();
+		} else {
+			TradeOffers.Factory[] factorys = TradeOffers.WANDERING_TRADER_TRADES.get(1);
+			TradeOffers.Factory[] factorys2 = TradeOffers.WANDERING_TRADER_TRADES.get(2);
+			if (factorys != null && factorys2 != null) {
+				TradeOfferList tradeOfferList = this.getOffers();
+				this.fillRecipesFromPool(tradeOfferList, factorys, 5);
+				int i = this.random.nextInt(factorys2.length);
+				TradeOffers.Factory factory = factorys2[i];
+				TradeOffer tradeOffer = factory.create(this, this.random);
+				if (tradeOffer != null) {
+					tradeOfferList.add(tradeOffer);
+				}
 			}
+		}
+	}
+
+	private void fillRebalancedRecipes() {
+		TradeOfferList tradeOfferList = this.getOffers();
+
+		for (Pair<TradeOffers.Factory[], Integer> pair : TradeOffers.REBALANCED_WANDERING_TRADER_TRADES) {
+			TradeOffers.Factory[] factorys = pair.getLeft();
+			this.fillRecipesFromPool(tradeOfferList, factorys, pair.getRight());
 		}
 	}
 

@@ -313,7 +313,7 @@ public class DataCommand {
 		}
 	}
 
-	private static NbtElement getNbt(NbtPathArgumentType.NbtPath path, DataCommandObject object) throws CommandSyntaxException {
+	public static NbtElement getNbt(NbtPathArgumentType.NbtPath path, DataCommandObject object) throws CommandSyntaxException {
 		Collection<NbtElement> collection = path.get(object.getNbt());
 		Iterator<NbtElement> iterator = collection.iterator();
 		NbtElement nbtElement = (NbtElement)iterator.next();

@@ -27,7 +27,14 @@ public class TypeReferences {
 	public static final TypeReference OPTIONS = () -> "options";
 	public static final TypeReference STRUCTURE = () -> "structure";
 	public static final TypeReference STATS = () -> "stats";
-	public static final TypeReference SAVED_DATA = () -> "saved_data";
+	public static final TypeReference SAVED_DATA_COMMAND_STORAGE = () -> "saved_data/command_storage";
+	public static final TypeReference SAVED_DATA_CHUNKS = () -> "saved_data/chunks";
+	public static final TypeReference SAVED_DATA_MAP_DATA = () -> "saved_data/map_data";
+	public static final TypeReference SAVED_DATA_IDCOUNTS = () -> "saved_data/idcounts";
+	public static final TypeReference SAVED_DATA_RAIDS = () -> "saved_data/raids";
+	public static final TypeReference SAVED_DATA_RANDOM_SEQUENCES = () -> "saved_data/random_sequences";
+	public static final TypeReference SAVED_DATA_STRUCTURE_FEATURE_INDICES = () -> "saved_data/structure_feature_indices";
+	public static final TypeReference SAVED_DATA_SCOREBOARD = () -> "saved_data/scoreboard";
 	public static final TypeReference ADVANCEMENTS = () -> "advancements";
 	/**
 	 * A type reference which refers to the point of interest data in a chunk.

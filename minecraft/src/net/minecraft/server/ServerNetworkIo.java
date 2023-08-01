@@ -1,5 +1,6 @@
 package net.minecraft.server;
 
+import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.mojang.logging.LogUtils;
@@ -32,27 +33,27 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.LegacyQueryHandler;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.RateLimitedConnection;
-import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.handler.LegacyQueryHandler;
+import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.server.network.LocalServerHandshakeNetworkHandler;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
 import net.minecraft.text.Text;
-import net.minecraft.util.Lazy;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import org.slf4j.Logger;
 
 public class ServerNetworkIo {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final Lazy<NioEventLoopGroup> DEFAULT_CHANNEL = new Lazy<>(
+	public static final Supplier<NioEventLoopGroup> DEFAULT_CHANNEL = Suppliers.memoize(
 		() -> new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").setDaemon(true).build())
 	);
-	public static final Lazy<EpollEventLoopGroup> EPOLL_CHANNEL = new Lazy<>(
+	public static final Supplier<EpollEventLoopGroup> EPOLL_CHANNEL = Suppliers.memoize(
 		() -> new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build())
 	);
 	final MinecraftServer server;
@@ -68,14 +69,14 @@ public class ServerNetworkIo {
 	public void bind(@Nullable InetAddress address, int port) throws IOException {
 		synchronized (this.channels) {
 			Class<? extends ServerSocketChannel> class_;
-			Lazy<? extends EventLoopGroup> lazy;
+			EventLoopGroup eventLoopGroup;
 			if (Epoll.isAvailable() && this.server.isUsingNativeTransport()) {
 				class_ = EpollServerSocketChannel.class;
-				lazy = EPOLL_CHANNEL;
+				eventLoopGroup = (EventLoopGroup)EPOLL_CHANNEL.get();
 				LOGGER.info("Using epoll channel type");
 			} else {
 				class_ = NioServerSocketChannel.class;
-				lazy = DEFAULT_CHANNEL;
+				eventLoopGroup = (EventLoopGroup)DEFAULT_CHANNEL.get();
 				LOGGER.info("Using default channel type");
 			}
 
@@ -87,6 +88,8 @@ public class ServerNetworkIo {
 							new ChannelInitializer<Channel>() {
 								@Override
 								protected void initChannel(Channel channel) {
+									ClientConnection.setHandlers(channel);
+
 									try {
 										channel.config().setOption(ChannelOption.TCP_NODELAY, true);
 									} catch (ChannelException var5) {
@@ -94,17 +97,17 @@ public class ServerNetworkIo {
 
 									ChannelPipeline channelPipeline = channel.pipeline()
 										.addLast("timeout", new ReadTimeoutHandler(30))
-										.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIo.this));
+										.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIo.this.getServer()));
 									ClientConnection.addHandlers(channelPipeline, NetworkSide.SERVERBOUND);
 									int i = ServerNetworkIo.this.server.getRateLimit();
 									ClientConnection clientConnection = (ClientConnection)(i > 0 ? new RateLimitedConnection(i) : new ClientConnection(NetworkSide.SERVERBOUND));
 									ServerNetworkIo.this.connections.add(clientConnection);
 									channelPipeline.addLast("packet_handler", clientConnection);
-									clientConnection.setPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
+									clientConnection.setInitialPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 								}
 							}
 						)
-						.group(lazy.get())
+						.group(eventLoopGroup)
 						.localAddress(address, port)
 						.bind()
 						.syncUninterruptibly()
@@ -118,13 +121,15 @@ public class ServerNetworkIo {
 			channelFuture = new ServerBootstrap().channel(LocalServerChannel.class).childHandler(new ChannelInitializer<Channel>() {
 				@Override
 				protected void initChannel(Channel channel) {
+					ClientConnection.setHandlers(channel);
 					ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
-					clientConnection.setPacketListener(new LocalServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
+					clientConnection.setInitialPacketListener(new LocalServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
 					ServerNetworkIo.this.connections.add(clientConnection);
 					ChannelPipeline channelPipeline = channel.pipeline();
+					ClientConnection.addValidator(channelPipeline, NetworkSide.SERVERBOUND);
 					channelPipeline.addLast("packet_handler", clientConnection);
 				}
-			}).group(DEFAULT_CHANNEL.get()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
+			}).group((EventLoopGroup)DEFAULT_CHANNEL.get()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
 			this.channels.add(channelFuture);
 		}
 
@@ -158,10 +163,10 @@ public class ServerNetworkIo {
 								throw new CrashException(CrashReport.create(var7, "Ticking memory connection"));
 							}
 
-							LOGGER.warn("Failed to handle packet for {}", clientConnection.getAddress(), var7);
+							LOGGER.warn("Failed to handle packet for {}", clientConnection.getAddressAsString(this.server.shouldLogIps()), var7);
 							Text text = Text.literal("Internal server error");
 							clientConnection.send(new DisconnectS2CPacket(text), PacketCallbacks.always(() -> clientConnection.disconnect(text)));
-							clientConnection.disableAutoRead();
+							clientConnection.tryDisableAutoRead();
 						}
 					} else {
 						iterator.remove();

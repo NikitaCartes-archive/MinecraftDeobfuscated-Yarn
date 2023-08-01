@@ -34,7 +34,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -145,6 +144,7 @@ import net.minecraft.client.search.TextSearchProvider;
 import net.minecraft.client.sound.MusicTracker;
 import net.minecraft.client.sound.MusicType;
 import net.minecraft.client.sound.SoundManager;
+import net.minecraft.client.texture.GuiAtlasManager;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.texture.Sprite;
@@ -157,6 +157,7 @@ import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.Bans;
 import net.minecraft.client.util.ClientSamplerSource;
+import net.minecraft.client.util.CommandHistoryManager;
 import net.minecraft.client.util.Icons;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ProfileKeys;
@@ -182,9 +183,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkState;
 import net.minecraft.network.encryption.SignatureVerifier;
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.registry.Registries;
@@ -381,6 +380,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final BlockRenderManager blockRenderManager;
 	private final PaintingManager paintingManager;
 	private final StatusEffectSpriteManager statusEffectSpriteManager;
+	private final GuiAtlasManager guiAtlasManager;
 	private final ToastManager toastManager;
 	private final TutorialManager tutorialManager;
 	private final SocialInteractionsManager socialInteractionsManager;
@@ -476,6 +476,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final NarratorManager narratorManager;
 	private final MessageHandler messageHandler;
 	private AbuseReportContext abuseReportContext;
+	private final CommandHistoryManager commandHistoryManager;
+	private final SymlinkFinder symlinkFinder;
 	private String openProfilerSection = "root";
 
 	public MinecraftClient(RunArgs args) {
@@ -487,9 +489,15 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.gameVersion = args.game.version;
 		this.versionType = args.game.versionType;
 		this.sessionPropertyMap = args.network.profileProperties;
-		DefaultClientResourcePackProvider defaultClientResourcePackProvider = new DefaultClientResourcePackProvider(args.directories.getAssetDir());
+		Path path = this.runDirectory.toPath();
+		this.symlinkFinder = LevelStorage.createSymlinkFinder(path.resolve("allowed_symlinks.txt"));
+		DefaultClientResourcePackProvider defaultClientResourcePackProvider = new DefaultClientResourcePackProvider(
+			args.directories.getAssetDir(), this.symlinkFinder
+		);
 		this.serverResourcePackProvider = new ServerResourcePackProvider(new File(this.runDirectory, "server-resource-packs"));
-		ResourcePackProvider resourcePackProvider = new FileResourcePackProvider(this.resourcePackDir, ResourceType.CLIENT_RESOURCES, ResourcePackSource.NONE);
+		ResourcePackProvider resourcePackProvider = new FileResourcePackProvider(
+			this.resourcePackDir, ResourceType.CLIENT_RESOURCES, ResourcePackSource.NONE, this.symlinkFinder
+		);
 		this.resourcePackManager = new ResourcePackManager(defaultClientResourcePackProvider, this.serverResourcePackProvider, resourcePackProvider);
 		this.defaultResourcePack = defaultClientResourcePackProvider.getResourcePack();
 		this.networkProxy = args.network.netProxy;
@@ -535,8 +543,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		try {
 			this.window.setIcon(this.defaultResourcePack, SharedConstants.getGameVersion().isStable() ? Icons.RELEASE : Icons.SNAPSHOT);
-		} catch (IOException var12) {
-			LOGGER.error("Couldn't set icon", (Throwable)var12);
+		} catch (IOException var11) {
+			LOGGER.error("Couldn't set icon", (Throwable)var11);
 		}
 
 		this.window.setFramerateLimit(this.options.getMaxFps().getValue());
@@ -555,10 +563,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(this.languageManager);
 		this.textureManager = new TextureManager(this.resourceManager);
 		this.resourceManager.registerReloader(this.textureManager);
-		this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(file, "skins"), this.sessionService);
-		Path path = this.runDirectory.toPath();
-		SymlinkFinder symlinkFinder = LevelStorage.createSymlinkFinder(path.resolve("allowed_symlinks.txt"));
-		this.levelStorage = new LevelStorage(path.resolve("saves"), path.resolve("backups"), symlinkFinder, this.dataFixer);
+		this.skinProvider = new PlayerSkinProvider(this.textureManager, file.toPath().resolve("skins"), this.sessionService, this);
+		this.levelStorage = new LevelStorage(path.resolve("saves"), path.resolve("backups"), this.symlinkFinder, this.dataFixer);
+		this.commandHistoryManager = new CommandHistoryManager(path);
 		this.soundManager = new SoundManager(this.options);
 		this.resourceManager.registerReloader(this.soundManager);
 		this.splashTextLoader = new SplashTextResourceSupplier(this.session);
@@ -608,6 +615,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourceManager.registerReloader(this.paintingManager);
 		this.statusEffectSpriteManager = new StatusEffectSpriteManager(this.textureManager);
 		this.resourceManager.registerReloader(this.statusEffectSpriteManager);
+		this.guiAtlasManager = new GuiAtlasManager(this.textureManager);
+		this.resourceManager.registerReloader(this.guiAtlasManager);
 		this.videoWarningManager = new VideoWarningManager();
 		this.resourceManager.registerReloader(this.videoWarningManager);
 		this.resourceManager.registerReloader(this.regionalComplianciesManager);
@@ -714,11 +723,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
 		if (clientPlayNetworkHandler != null && clientPlayNetworkHandler.getConnection().isOpen()) {
 			stringBuilder.append(" - ");
+			ServerInfo serverInfo = this.getCurrentServerEntry();
 			if (this.server != null && !this.server.isRemote()) {
 				stringBuilder.append(I18n.translate("title.singleplayer"));
-			} else if (this.isConnectedToRealms()) {
+			} else if (serverInfo != null && serverInfo.isRealm()) {
 				stringBuilder.append(I18n.translate("title.multiplayer.realms"));
-			} else if (this.server == null && (this.getCurrentServerEntry() == null || !this.getCurrentServerEntry().isLocal())) {
+			} else if (this.server == null && (serverInfo == null || !serverInfo.isLocal())) {
 				stringBuilder.append(I18n.translate("title.multiplayer.other"));
 			} else {
 				stringBuilder.append(I18n.translate("title.multiplayer.lan"));
@@ -1136,6 +1146,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.particleManager.clearAtlas();
 			this.statusEffectSpriteManager.close();
 			this.paintingManager.close();
+			this.guiAtlasManager.close();
 			this.textureManager.close();
 			this.resourceManager.close();
 			Util.shutdownExecutors();
@@ -1820,10 +1831,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.profiler.swap("textures");
-		if (this.world != null) {
-			this.textureManager.tick();
-		}
-
+		this.textureManager.tick();
 		if (this.currentScreen != null || this.player == null) {
 			if (this.currentScreen instanceof SleepingChatScreen sleepingChatScreen && !this.player.isSleeping()) {
 				sleepingChatScreen.closeChatIfEmpty();
@@ -2112,10 +2120,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		Duration duration = Duration.between(instant, Instant.now());
 		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
 		ClientConnection clientConnection = ClientConnection.connectLocal(socketAddress);
-		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, null, newWorld, duration, status -> {
+		clientConnection.connect(socketAddress.toString(), 0, new ClientLoginNetworkHandler(clientConnection, this, null, null, newWorld, duration, status -> {
 		}));
-		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), Optional.ofNullable(this.getSession().getUuidOrNull())));
+		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getUsername(), this.getSession().getUuidOrNull()));
 		this.integratedServerConnection = clientConnection;
 	}
 
@@ -2171,6 +2178,23 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.integratedServerRunning = false;
 		}
 
+		this.world = null;
+		this.setWorld(null);
+		this.player = null;
+		SkullBlockEntity.clearServices();
+	}
+
+	public void enterReconfiguration(Screen screen) {
+		if (this.recorder.isActive()) {
+			this.forceStopRecorder();
+		}
+
+		this.gameRenderer.reset();
+		this.interactionManager = null;
+		this.narratorManager.clear();
+		this.reset(screen);
+		this.inGameHud.clear();
+		this.serverResourcePackProvider.clear();
 		this.world = null;
 		this.setWorld(null);
 		this.player = null;
@@ -2484,14 +2508,20 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return integratedServer != null && !integratedServer.isRemote();
 	}
 
+	public boolean uuidEquals(UUID uuid) {
+		return uuid.equals(this.getSession().getUuidOrNull());
+	}
+
 	public Session getSession() {
 		return this.session;
 	}
 
 	public PropertyMap getSessionProperties() {
 		if (this.sessionPropertyMap.isEmpty()) {
-			GameProfile gameProfile = this.getSessionService().fillProfileProperties(this.session.getProfile(), false);
-			this.sessionPropertyMap.putAll(gameProfile.getProperties());
+			GameProfile gameProfile = this.getSessionService().fetchProfile(this.session.getUuidOrNull(), false);
+			if (gameProfile != null) {
+				this.sessionPropertyMap.putAll(gameProfile.getProperties());
+			}
 		}
 
 		return this.sessionPropertyMap;
@@ -2640,14 +2670,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.metricsData;
 	}
 
-	public boolean isConnectedToRealms() {
-		return this.connectedToRealms;
-	}
-
-	public void setConnectedToRealms(boolean connectedToRealms) {
-		this.connectedToRealms = connectedToRealms;
-	}
-
 	public DataFixer getDataFixer() {
 		return this.dataFixer;
 	}
@@ -2694,6 +2716,10 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public StatusEffectSpriteManager getStatusEffectSpriteManager() {
 		return this.statusEffectSpriteManager;
+	}
+
+	public GuiAtlasManager getGuiAtlasManager() {
+		return this.guiAtlasManager;
 	}
 
 	@Override
@@ -2923,6 +2949,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public QuickPlayLogger getQuickPlayLogger() {
 		return this.quickPlayLogger;
+	}
+
+	public CommandHistoryManager getCommandHistoryManager() {
+		return this.commandHistoryManager;
+	}
+
+	public SymlinkFinder getSymlinkFinder() {
+		return this.symlinkFinder;
 	}
 
 	/**

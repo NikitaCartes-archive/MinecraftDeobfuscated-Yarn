@@ -69,7 +69,7 @@ public class RealmsTermsScreen extends RealmsScreen {
 					new RealmsLongRunningMcoTaskScreen(this.parent, new RealmsGetServerDetailsTask(this.mainScreen, this.parent, this.realmsServer, new ReentrantLock()))
 				);
 		} catch (RealmsServiceException var3) {
-			LOGGER.error("Couldn't agree to TOS");
+			LOGGER.error("Couldn't agree to TOS", (Throwable)var3);
 		}
 	}
 
@@ -91,9 +91,9 @@ public class RealmsTermsScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, 16777215);
-		context.drawText(this.textRenderer, SENTENCE_ONE_TEXT, this.width / 2 - 120, row(5), 16777215, false);
+		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
+		context.drawText(this.textRenderer, SENTENCE_ONE_TEXT, this.width / 2 - 120, row(5), -1, false);
 		int i = this.textRenderer.getWidth(SENTENCE_ONE_TEXT);
 		int j = this.width / 2 - 121 + i;
 		int k = row(5);
@@ -101,6 +101,5 @@ public class RealmsTermsScreen extends RealmsScreen {
 		int m = k + 1 + 9;
 		this.onLink = j <= mouseX && mouseX <= l && k <= mouseY && mouseY <= m;
 		context.drawText(this.textRenderer, SENTENCE_TWO_TEXT, this.width / 2 - 120 + i, row(5), this.onLink ? 7107012 : 3368635, false);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

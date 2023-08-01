@@ -133,7 +133,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		if (!this.uploadFinished && this.uploadStatus.bytesWritten != 0L && this.uploadStatus.bytesWritten == this.uploadStatus.totalBytes) {
 			this.status = VERIFYING_TEXT;
 			this.cancelButton.active = false;
@@ -154,8 +154,6 @@ public class RealmsUploadScreen extends RealmsScreen {
 				context.drawCenteredTextWithShadow(this.textRenderer, this.statusTexts[i], this.width / 2, 110 + 12 * i, 16711680);
 			}
 		}
-
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	private void drawDots(DrawContext context) {
@@ -321,7 +319,7 @@ public class RealmsUploadScreen extends RealmsScreen {
 					} catch (IOException var21) {
 						this.setStatusTexts(Text.translatable("mco.upload.failed", var21.getMessage()));
 					} catch (RealmsServiceException var22) {
-						this.setStatusTexts(Text.translatable("mco.upload.failed", var22.toString()));
+						this.setStatusTexts(Text.translatable("mco.upload.failed", var22.error.getText()));
 					} catch (InterruptedException var23) {
 						LOGGER.error("Could not acquire upload lock");
 					} finally {

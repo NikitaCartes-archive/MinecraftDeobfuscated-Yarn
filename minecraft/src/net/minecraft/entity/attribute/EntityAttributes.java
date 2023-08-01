@@ -37,6 +37,10 @@ public class EntityAttributes {
 	public static final EntityAttribute GENERIC_LUCK = register(
 		"generic.luck", new ClampedEntityAttribute("attribute.name.generic.luck", 0.0, -1024.0, 1024.0).setTracked(true)
 	);
+	public static final EntityAttribute GENERIC_MAX_ABSORPTION = register(
+			"generic.max_absorption", new ClampedEntityAttribute("attribute.name.generic.max_absorption", 0.0, 0.0, 2048.0)
+		)
+		.setTracked(true);
 	public static final EntityAttribute ZOMBIE_SPAWN_REINFORCEMENTS = register(
 		"zombie.spawn_reinforcements", new ClampedEntityAttribute("attribute.name.zombie.spawn_reinforcements", 0.0, 0.0, 1.0)
 	);

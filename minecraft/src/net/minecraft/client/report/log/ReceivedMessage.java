@@ -73,7 +73,7 @@ public interface ReceivedMessage extends ChatLogEntry {
 	public static record ChatMessage(GameProfile profile, SignedMessage message, MessageTrustStatus trustStatus) implements ReceivedMessage {
 		public static final Codec<ReceivedMessage.ChatMessage> CHAT_MESSAGE_CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codecs.GAME_PROFILE.fieldOf("profile").forGetter(ReceivedMessage.ChatMessage::profile),
+						Codecs.GAME_PROFILE_WITH_PROPERTIES.fieldOf("profile").forGetter(ReceivedMessage.ChatMessage::profile),
 						SignedMessage.CODEC.forGetter(ReceivedMessage.ChatMessage::message),
 						MessageTrustStatus.CODEC.optionalFieldOf("trust_level", MessageTrustStatus.SECURE).forGetter(ReceivedMessage.ChatMessage::trustStatus)
 					)

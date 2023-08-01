@@ -88,14 +88,6 @@ public class OpenToLanScreen extends Screen {
 		);
 	}
 
-	@Override
-	public void tick() {
-		super.tick();
-		if (this.portField != null) {
-			this.portField.tick();
-		}
-	}
-
 	@Nullable
 	private Text updatePort(String portText) {
 		if (portText.isBlank()) {
@@ -118,10 +110,9 @@ public class OpenToLanScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 50, 16777215);
 		context.drawCenteredTextWithShadow(this.textRenderer, OTHER_PLAYERS_TEXT, this.width / 2, 82, 16777215);
 		context.drawCenteredTextWithShadow(this.textRenderer, PORT_TEXT, this.width / 2, 142, 16777215);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

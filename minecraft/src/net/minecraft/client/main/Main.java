@@ -8,6 +8,7 @@ import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.properties.PropertyMap.Serializer;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.logging.LogUtils;
+import com.mojang.util.UndashedUuid;
 import java.io.File;
 import java.net.Authenticator;
 import java.net.InetSocketAddress;
@@ -17,6 +18,7 @@ import java.net.Proxy.Type;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import joptsimple.ArgumentAcceptingOptionSpec;
 import joptsimple.OptionParser;
@@ -97,7 +99,7 @@ public class Main {
 		OptionSet optionSet = optionParser.parse(args);
 		List<String> list = optionSet.valuesOf(optionSpec28);
 		if (!list.isEmpty()) {
-			System.out.println("Completely ignored arguments: " + list);
+			LOGGER.info("Completely ignored arguments: " + list);
 		}
 
 		String string = getOption(optionSet, optionSpec9);
@@ -135,14 +137,16 @@ public class Main {
 		File file = getOption(optionSet, optionSpec6);
 		File file2 = optionSet.has(optionSpec7) ? getOption(optionSet, optionSpec7) : new File(file, "assets/");
 		File file3 = optionSet.has(optionSpec8) ? getOption(optionSet, optionSpec8) : new File(file, "resourcepacks/");
-		String string6 = optionSet.has(optionSpec14) ? optionSpec14.value(optionSet) : Uuids.getOfflinePlayerUuid(optionSpec13.value(optionSet)).toString();
-		String string7 = optionSet.has(optionSpec25) ? optionSpec25.value(optionSet) : null;
-		String string8 = optionSet.valueOf(optionSpec15);
-		String string9 = optionSet.valueOf(optionSpec16);
-		String string10 = getOption(optionSet, optionSpec2);
-		String string11 = getOption(optionSet, optionSpec3);
-		String string12 = getOption(optionSet, optionSpec4);
-		String string13 = getOption(optionSet, optionSpec5);
+		UUID uUID = optionSet.has(optionSpec14)
+			? UndashedUuid.fromStringLenient(optionSpec14.value(optionSet))
+			: Uuids.getOfflinePlayerUuid(optionSpec13.value(optionSet));
+		String string6 = optionSet.has(optionSpec25) ? optionSpec25.value(optionSet) : null;
+		String string7 = optionSet.valueOf(optionSpec15);
+		String string8 = optionSet.valueOf(optionSpec16);
+		String string9 = getOption(optionSet, optionSpec2);
+		String string10 = getOption(optionSet, optionSpec3);
+		String string11 = getOption(optionSet, optionSpec4);
+		String string12 = getOption(optionSet, optionSpec5);
 		if (optionSet.has(optionSpec)) {
 			FlightProfiler.INSTANCE.start(InstanceType.CLIENT);
 		}
@@ -152,19 +156,19 @@ public class Main {
 		GameLoadTimeEvent.INSTANCE.setBootstrapTime(Bootstrap.LOAD_TIME.get());
 		Bootstrap.logMissing();
 		Util.startTimerHack();
-		String string14 = optionSpec26.value(optionSet);
-		Session.AccountType accountType = Session.AccountType.byName(string14);
+		String string13 = optionSpec26.value(optionSet);
+		Session.AccountType accountType = Session.AccountType.byName(string13);
 		if (accountType == null) {
-			LOGGER.warn("Unrecognized user type: {}", string14);
+			LOGGER.warn("Unrecognized user type: {}", string13);
 		}
 
-		Session session = new Session(optionSpec13.value(optionSet), string6, optionSpec17.value(optionSet), toOptional(string8), toOptional(string9), accountType);
+		Session session = new Session(optionSpec13.value(optionSet), uUID, optionSpec17.value(optionSet), toOptional(string7), toOptional(string8), accountType);
 		RunArgs runArgs = new RunArgs(
 			new RunArgs.Network(session, propertyMap, propertyMap2, proxy),
 			new WindowSettings(i, j, optionalInt, optionalInt2, bl),
-			new RunArgs.Directories(file, file3, file2, string7),
+			new RunArgs.Directories(file, file3, file2, string6),
 			new RunArgs.Game(bl2, string4, string5, bl3, bl4),
-			new RunArgs.QuickPlay(string10, string11, string12, string13)
+			new RunArgs.QuickPlay(string9, string10, string11, string12)
 		);
 		Thread thread = new Thread("Client Shutdown Thread") {
 			public void run() {

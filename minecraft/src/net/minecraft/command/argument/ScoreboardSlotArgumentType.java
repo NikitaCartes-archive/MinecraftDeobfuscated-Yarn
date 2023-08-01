@@ -11,11 +11,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.command.CommandSource;
-import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 
-public class ScoreboardSlotArgumentType implements ArgumentType<Integer> {
+public class ScoreboardSlotArgumentType implements ArgumentType<ScoreboardDisplaySlot> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("sidebar", "foo.bar");
 	public static final DynamicCommandExceptionType INVALID_SLOT_EXCEPTION = new DynamicCommandExceptionType(
 		name -> Text.translatable("argument.scoreboardDisplaySlot.invalid", name)
@@ -28,23 +28,23 @@ public class ScoreboardSlotArgumentType implements ArgumentType<Integer> {
 		return new ScoreboardSlotArgumentType();
 	}
 
-	public static int getScoreboardSlot(CommandContext<ServerCommandSource> context, String name) {
-		return context.<Integer>getArgument(name, Integer.class);
+	public static ScoreboardDisplaySlot getScoreboardSlot(CommandContext<ServerCommandSource> context, String name) {
+		return context.getArgument(name, ScoreboardDisplaySlot.class);
 	}
 
-	public Integer parse(StringReader stringReader) throws CommandSyntaxException {
+	public ScoreboardDisplaySlot parse(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
-		int i = Scoreboard.getDisplaySlotId(string);
-		if (i == -1) {
+		ScoreboardDisplaySlot scoreboardDisplaySlot = (ScoreboardDisplaySlot)ScoreboardDisplaySlot.CODEC.byId(string);
+		if (scoreboardDisplaySlot == null) {
 			throw INVALID_SLOT_EXCEPTION.create(string);
 		} else {
-			return i;
+			return scoreboardDisplaySlot;
 		}
 	}
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		return CommandSource.suggestMatching(Scoreboard.getDisplaySlotNames(), builder);
+		return CommandSource.suggestMatching(Arrays.stream(ScoreboardDisplaySlot.values()).map(ScoreboardDisplaySlot::asString), builder);
 	}
 
 	@Override

@@ -49,8 +49,8 @@ public class DemoScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(DrawContext context) {
-		super.renderBackground(context);
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.renderBackground(context, mouseX, mouseY, delta);
 		int i = (this.width - 248) / 2;
 		int j = (this.height - 166) / 2;
 		context.drawTexture(DEMO_BG, i, j, 0, 0, 248, 166);
@@ -58,12 +58,11 @@ public class DemoScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		int i = (this.width - 248) / 2 + 10;
 		int j = (this.height - 166) / 2 + 8;
 		context.drawText(this.textRenderer, this.title, i, j, 2039583, false);
 		j = this.movementText.draw(context, i, j + 12, 12, 5197647);
 		this.fullWrappedText.draw(context, i, j + 20, 9, 2039583);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

@@ -108,7 +108,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
 		return true;
 	}
 

@@ -299,6 +299,7 @@ public class ClientWorld extends World {
 	public void resetChunkColor(ChunkPos chunkPos) {
 		this.colorCache.forEach((resolver, cache) -> cache.reset(chunkPos.x, chunkPos.z));
 		this.entityManager.startTicking(chunkPos);
+		this.worldRenderer.method_52815(chunkPos);
 	}
 
 	public void reloadColor() {
@@ -458,7 +459,7 @@ public class ClientWorld extends World {
 	@Override
 	public CrashReportSection addDetailsToCrashReport(CrashReport report) {
 		CrashReportSection crashReportSection = super.addDetailsToCrashReport(report);
-		crashReportSection.add("Server brand", (CrashCallable<String>)(() -> this.client.player.getServerBrand()));
+		crashReportSection.add("Server brand", (CrashCallable<String>)(() -> this.client.player.networkHandler.getBrand()));
 		crashReportSection.add(
 			"Server type", (CrashCallable<String>)(() -> this.client.getServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server")
 		);

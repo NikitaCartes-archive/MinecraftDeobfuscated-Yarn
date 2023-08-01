@@ -241,7 +241,12 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 	@Nullable
 	@Override
 	public LivingEntity getControllingPassenger() {
-		return !this.isAiDisabled() && this.getFirstPassenger() instanceof MobEntity mobEntity ? mobEntity : null;
+		Entity entity = this.getFirstPassenger();
+		if (!this.isAiDisabled() && entity instanceof MobEntity mobEntity && entity.shouldControlVehicles()) {
+			return mobEntity;
+		}
+
+		return null;
 	}
 
 	public MobVisibilityCache getVisibilityCache() {

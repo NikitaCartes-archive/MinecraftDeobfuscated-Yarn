@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableBiMap;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.logging.LogUtils;
 import java.io.IOException;
 import javax.annotation.Nullable;
 import net.minecraft.registry.RegistryKey;
@@ -12,8 +13,10 @@ import net.minecraft.server.chase.ChaseClient;
 import net.minecraft.server.chase.ChaseServer;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
+import org.slf4j.Logger;
 
 public class ChaseCommand {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final String LOCALHOST = "localhost";
 	private static final String BIND_ALL = "0.0.0.0";
 	private static final int DEFAULT_PORT = 10000;
@@ -95,7 +98,7 @@ public class ChaseCommand {
 				server.start();
 				source.sendFeedback(() -> Text.literal("Chase server is now running on port " + port + ". Clients can follow you using /chase follow <ip> <port>"), false);
 			} catch (IOException var4) {
-				var4.printStackTrace();
+				LOGGER.error("Failed to start chase server", (Throwable)var4);
 				source.sendError(Text.literal("Failed to start chase server on port " + port));
 				server = null;
 			}

@@ -250,8 +250,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
 		this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
-		this.raidManager = this.getPersistentStateManager()
-			.getOrCreate(nbt -> RaidManager.fromNbt(this, nbt), () -> new RaidManager(this), RaidManager.nameFor(this.getDimensionEntry()));
+		this.raidManager = this.getPersistentStateManager().getOrCreate(RaidManager.getPersistentStateType(this), RaidManager.nameFor(this.getDimensionEntry()));
 		if (!server.isSingleplayer()) {
 			properties.setGameMode(server.getDefaultGameMode());
 		}
@@ -279,8 +278,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.sleepManager = new SleepManager();
 		this.gameEventDispatchManager = new GameEventDispatchManager(this);
 		this.randomSequences = (RandomSequencesState)Objects.requireNonNullElseGet(
-			randomSequencesState,
-			() -> this.getPersistentStateManager().getOrCreate(nbt -> RandomSequencesState.fromNbt(l, nbt), () -> new RandomSequencesState(l), "random_sequences")
+			randomSequencesState, () -> this.getPersistentStateManager().getOrCreate(RandomSequencesState.getPersistentStateType(l), "random_sequences")
 		);
 	}
 
@@ -493,35 +491,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		profiler.swap("iceandsnow");
-		if (this.random.nextInt(16) == 0) {
-			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(i, 0, j, 15));
-			BlockPos blockPos2 = blockPos.down();
-			Biome biome = this.getBiome(blockPos).value();
-			if (biome.canSetIce(this, blockPos2)) {
-				this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
-			}
 
-			if (bl) {
-				int k = this.getGameRules().getInt(GameRules.SNOW_ACCUMULATION_HEIGHT);
-				if (k > 0 && biome.canSetSnow(this, blockPos)) {
-					BlockState blockState = this.getBlockState(blockPos);
-					if (blockState.isOf(Blocks.SNOW)) {
-						int l = (Integer)blockState.get(SnowBlock.LAYERS);
-						if (l < Math.min(k, 8)) {
-							BlockState blockState2 = blockState.with(SnowBlock.LAYERS, Integer.valueOf(l + 1));
-							Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, this, blockPos);
-							this.setBlockState(blockPos, blockState2);
-						}
-					} else {
-						this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
-					}
-				}
-
-				Biome.Precipitation precipitation = biome.getPrecipitation(blockPos2);
-				if (precipitation != Biome.Precipitation.NONE) {
-					BlockState blockState3 = this.getBlockState(blockPos2);
-					blockState3.getBlock().precipitationTick(blockState3, this, blockPos2, precipitation);
-				}
+		for (int k = 0; k < randomTickSpeed; k++) {
+			if (this.random.nextInt(48) == 0) {
+				this.tickIceAndSnow(bl, this.getRandomPosInChunk(i, 0, j, 15));
 			}
 		}
 
@@ -529,23 +502,23 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (randomTickSpeed > 0) {
 			ChunkSection[] chunkSections = chunk.getSectionArray();
 
-			for (int m = 0; m < chunkSections.length; m++) {
-				ChunkSection chunkSection = chunkSections[m];
+			for (int l = 0; l < chunkSections.length; l++) {
+				ChunkSection chunkSection = chunkSections[l];
 				if (chunkSection.hasRandomTicks()) {
-					int kx = chunk.sectionIndexToCoord(m);
-					int n = ChunkSectionPos.getBlockCoord(kx);
+					int m = chunk.sectionIndexToCoord(l);
+					int n = ChunkSectionPos.getBlockCoord(m);
 
-					for (int l = 0; l < randomTickSpeed; l++) {
-						BlockPos blockPos3 = this.getRandomPosInChunk(i, n, j, 15);
+					for (int o = 0; o < randomTickSpeed; o++) {
+						BlockPos blockPos2 = this.getRandomPosInChunk(i, n, j, 15);
 						profiler.push("randomTick");
-						BlockState blockState4 = chunkSection.getBlockState(blockPos3.getX() - i, blockPos3.getY() - n, blockPos3.getZ() - j);
-						if (blockState4.hasRandomTicks()) {
-							blockState4.randomTick(this, blockPos3, this.random);
+						BlockState blockState = chunkSection.getBlockState(blockPos2.getX() - i, blockPos2.getY() - n, blockPos2.getZ() - j);
+						if (blockState.hasRandomTicks()) {
+							blockState.randomTick(this, blockPos2, this.random);
 						}
 
-						FluidState fluidState = blockState4.getFluidState();
+						FluidState fluidState = blockState.getFluidState();
 						if (fluidState.hasRandomTicks()) {
-							fluidState.onRandomTick(this, blockPos3, this.random);
+							fluidState.onRandomTick(this, blockPos2, this.random);
 						}
 
 						profiler.pop();
@@ -555,6 +528,38 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		profiler.pop();
+	}
+
+	private void tickIceAndSnow(boolean raining, BlockPos pos) {
+		BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, pos);
+		BlockPos blockPos2 = blockPos.down();
+		Biome biome = this.getBiome(blockPos).value();
+		if (biome.canSetIce(this, blockPos2)) {
+			this.setBlockState(blockPos2, Blocks.ICE.getDefaultState());
+		}
+
+		if (raining) {
+			int i = this.getGameRules().getInt(GameRules.SNOW_ACCUMULATION_HEIGHT);
+			if (i > 0 && biome.canSetSnow(this, blockPos)) {
+				BlockState blockState = this.getBlockState(blockPos);
+				if (blockState.isOf(Blocks.SNOW)) {
+					int j = (Integer)blockState.get(SnowBlock.LAYERS);
+					if (j < Math.min(i, 8)) {
+						BlockState blockState2 = blockState.with(SnowBlock.LAYERS, Integer.valueOf(j + 1));
+						Block.pushEntitiesUpBeforeBlockChange(blockState, blockState2, this, blockPos);
+						this.setBlockState(blockPos, blockState2);
+					}
+				} else {
+					this.setBlockState(blockPos, Blocks.SNOW.getDefaultState());
+				}
+			}
+
+			Biome.Precipitation precipitation = biome.getPrecipitation(blockPos2);
+			if (precipitation != Biome.Precipitation.NONE) {
+				BlockState blockState3 = this.getBlockState(blockPos2);
+				blockState3.getBlock().precipitationTick(blockState3, this, blockPos2, precipitation);
+			}
+		}
 	}
 
 	private Optional<BlockPos> getLightningRodPos(BlockPos pos) {
@@ -1378,7 +1383,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Nullable
 	@Override
 	public MapState getMapState(String id) {
-		return this.getServer().getOverworld().getPersistentStateManager().get(MapState::fromNbt, id);
+		return this.getServer().getOverworld().getPersistentStateManager().get(MapState.getPersistentStateType(), id);
 	}
 
 	@Override
@@ -1388,11 +1393,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Override
 	public int getNextMapId() {
-		return this.getServer()
-			.getOverworld()
-			.getPersistentStateManager()
-			.<IdCountsState>getOrCreate(IdCountsState::fromNbt, IdCountsState::new, "idcounts")
-			.getNextMapId();
+		return this.getServer().getOverworld().getPersistentStateManager().getOrCreate(IdCountsState.getPersistentStateType(), "idcounts").getNextMapId();
 	}
 
 	/**
@@ -1413,7 +1414,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * {@return the set that contains {@link ChunkPos} of forced chunks serialized as a long}
 	 */
 	public LongSet getForcedChunks() {
-		ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::fromNbt, "chunks");
+		ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState.getPersistentStateType(), "chunks");
 		return (LongSet)(forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET);
 	}
 
@@ -1428,7 +1429,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * @param x the chunk's X coordinate
 	 */
 	public boolean setChunkForced(int x, int z, boolean forced) {
-		ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::fromNbt, ForcedChunkState::new, "chunks");
+		ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState.getPersistentStateType(), "chunks");
 		ChunkPos chunkPos = new ChunkPos(x, z);
 		long l = chunkPos.toLong();
 		boolean bl;

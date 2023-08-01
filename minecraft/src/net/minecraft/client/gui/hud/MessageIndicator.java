@@ -20,7 +20,6 @@ public record MessageIndicator(int indicatorColor, @Nullable MessageIndicator.Ic
 	private static final MessageIndicator SYSTEM = new MessageIndicator(13684944, null, SYSTEM_TEXT, "System");
 	private static final MessageIndicator SINGLE_PLAYER = new MessageIndicator(13684944, null, SINGLE_PLAYER_TEXT, "System");
 	private static final MessageIndicator NOT_SECURE = new MessageIndicator(13684944, null, NOT_SECURE_TEXT, "Not Secure");
-	static final Identifier CHAT_TAGS_TEXTURE = new Identifier("textures/gui/chat_tags.png");
 
 	public static MessageIndicator system() {
 		return SYSTEM;
@@ -42,22 +41,20 @@ public record MessageIndicator(int indicatorColor, @Nullable MessageIndicator.Ic
 
 	@Environment(EnvType.CLIENT)
 	public static enum Icon {
-		CHAT_MODIFIED(0, 0, 9, 9);
+		CHAT_MODIFIED(new Identifier("icon/chat_modified"), 9, 9);
 
-		public final int u;
-		public final int v;
+		public final Identifier texture;
 		public final int width;
 		public final int height;
 
-		private Icon(int u, int v, int width, int height) {
-			this.u = u;
-			this.v = v;
+		private Icon(Identifier texture, int width, int height) {
+			this.texture = texture;
 			this.width = width;
 			this.height = height;
 		}
 
 		public void draw(DrawContext context, int x, int y) {
-			context.drawTexture(MessageIndicator.CHAT_TAGS_TEXTURE, x, y, (float)this.u, (float)this.v, this.width, this.height, 32, 32);
+			context.drawGuiTexture(this.texture, x, y, this.width, this.height);
 		}
 	}
 }

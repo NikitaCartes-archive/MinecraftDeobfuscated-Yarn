@@ -4,8 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture.Type;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -25,11 +23,11 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.PiglinHeadEntityModel;
 import net.minecraft.client.render.entity.model.SkullEntityModel;
+import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.Uuids;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationPropertyHelper;
 
@@ -103,11 +101,8 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 	public static RenderLayer getRenderLayer(SkullBlock.SkullType type, @Nullable GameProfile profile) {
 		Identifier identifier = (Identifier)TEXTURES.get(type);
 		if (type == SkullBlock.Type.PLAYER && profile != null) {
-			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(profile);
-			return map.containsKey(Type.SKIN)
-				? RenderLayer.getEntityTranslucent(minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN))
-				: RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(Uuids.getUuidFromProfile(profile)));
+			PlayerSkinProvider playerSkinProvider = MinecraftClient.getInstance().getSkinProvider();
+			return RenderLayer.getEntityTranslucent(playerSkinProvider.getSkinTextures(profile).texture());
 		} else {
 			return RenderLayer.getEntityCutoutNoCullZOffset(identifier);
 		}

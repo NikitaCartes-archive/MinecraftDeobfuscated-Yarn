@@ -143,11 +143,11 @@ public class FluidRenderer {
 				float ag;
 				if (vec3d.x == 0.0 && vec3d.z == 0.0) {
 					Sprite sprite = sprites[0];
-					z = sprite.getFrameU(0.0);
-					aa = sprite.getFrameV(0.0);
+					z = sprite.getFrameU(0.0F);
+					aa = sprite.getFrameV(0.0F);
 					ab = z;
-					ac = sprite.getFrameV(16.0);
-					ad = sprite.getFrameU(16.0);
+					ac = sprite.getFrameV(1.0F);
+					ad = sprite.getFrameU(1.0F);
 					ae = ac;
 					af = ad;
 					ag = aa;
@@ -156,15 +156,15 @@ public class FluidRenderer {
 					float ah = (float)MathHelper.atan2(vec3d.z, vec3d.x) - (float) (Math.PI / 2);
 					float ai = MathHelper.sin(ah) * 0.25F;
 					float aj = MathHelper.cos(ah) * 0.25F;
-					float ak = 8.0F;
-					z = sprite.getFrameU((double)(8.0F + (-aj - ai) * 16.0F));
-					aa = sprite.getFrameV((double)(8.0F + (-aj + ai) * 16.0F));
-					ab = sprite.getFrameU((double)(8.0F + (-aj + ai) * 16.0F));
-					ac = sprite.getFrameV((double)(8.0F + (aj + ai) * 16.0F));
-					ad = sprite.getFrameU((double)(8.0F + (aj + ai) * 16.0F));
-					ae = sprite.getFrameV((double)(8.0F + (aj - ai) * 16.0F));
-					af = sprite.getFrameU((double)(8.0F + (aj - ai) * 16.0F));
-					ag = sprite.getFrameV((double)(8.0F + (-aj - ai) * 16.0F));
+					float ak = 0.5F;
+					z = sprite.getFrameU(0.5F + (-aj - ai));
+					aa = sprite.getFrameV(0.5F + -aj + ai);
+					ab = sprite.getFrameU(0.5F + -aj + ai);
+					ac = sprite.getFrameV(0.5F + aj + ai);
+					ad = sprite.getFrameU(0.5F + aj + ai);
+					ae = sprite.getFrameV(0.5F + (aj - ai));
+					af = sprite.getFrameU(0.5F + (aj - ai));
+					ag = sprite.getFrameV(0.5F + (-aj - ai));
 				}
 
 				float al = (z + ab + ad + af) / 4.0F;
@@ -267,11 +267,11 @@ public class FluidRenderer {
 						}
 					}
 
-					float av = sprite2.getFrameU(0.0);
-					float aw = sprite2.getFrameU(8.0);
-					float ax = sprite2.getFrameV((double)((1.0F - afx) * 16.0F * 0.5F));
-					float ay = sprite2.getFrameV((double)((1.0F - aax) * 16.0F * 0.5F));
-					float az = sprite2.getFrameV(8.0);
+					float av = sprite2.getFrameU(0.0F);
+					float aw = sprite2.getFrameU(0.5F);
+					float ax = sprite2.getFrameV((1.0F - afx) * 0.5F);
+					float ay = sprite2.getFrameV((1.0F - aax) * 0.5F);
+					float az = sprite2.getFrameV(0.5F);
 					float ba = direction.getAxis() == Direction.Axis.Z ? l : m;
 					float bb = k * ba * f;
 					float bc = k * ba * g;

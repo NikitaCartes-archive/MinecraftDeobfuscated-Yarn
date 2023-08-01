@@ -22,9 +22,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.OrderedText;
@@ -43,10 +40,11 @@ import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 public abstract class DisplayEntity extends Entity {
-	static final Logger field_42397 = LogUtils.getLogger();
+	static final Logger LOGGER = LogUtils.getLogger();
 	public static final int field_42384 = -1;
 	private static final TrackedData<Integer> START_INTERPOLATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> INTERPOLATION_DURATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> TELEPORT_DURATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Vector3f> TRANSLATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
 	private static final TrackedData<Vector3f> SCALE = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
 	private static final TrackedData<Quaternionf> LEFT_ROTATION = DataTracker.registerData(DisplayEntity.class, TrackedDataHandlerRegistry.QUATERNIONF);
@@ -72,7 +70,8 @@ public abstract class DisplayEntity extends Entity {
 	private static final float field_42376 = 0.0F;
 	private static final float field_42377 = 1.0F;
 	private static final int field_42378 = -1;
-	public static final String INTERPOLATION_DURATION_NBT_KEY = "interpolation_duration";
+	public static final String TELEPORT_DURATION_KEY = "teleport_duration";
+	public static final String INTERPOLATION_DURATION_KEY = "interpolation_duration";
 	public static final String START_INTERPOLATION_KEY = "start_interpolation";
 	public static final String TRANSFORMATION_NBT_KEY = "transformation";
 	public static final String BILLBOARD_NBT_KEY = "billboard";
@@ -83,7 +82,6 @@ public abstract class DisplayEntity extends Entity {
 	public static final String WIDTH_NBT_KEY = "width";
 	public static final String HEIGHT_NBT_KEY = "height";
 	public static final String GLOW_COLOR_OVERRIDE_NBT_KEY = "glow_color_override";
-	private final Quaternionf fixedRotation = new Quaternionf();
 	private long interpolationStart = -2147483648L;
 	private int interpolationDuration;
 	private float lerpProgress;
@@ -93,6 +91,8 @@ public abstract class DisplayEntity extends Entity {
 	private boolean interpolationDurationSet;
 	@Nullable
 	private DisplayEntity.RenderState renderState;
+	@Nullable
+	private DisplayEntity.InterpolationTarget interpolationTarget;
 
 	public DisplayEntity(EntityType<?> entityType, World world) {
 		super(entityType, world);
@@ -159,6 +159,20 @@ public abstract class DisplayEntity extends Entity {
 
 				this.refreshData(bl, this.lerpProgress);
 			}
+
+			if (this.interpolationTarget != null) {
+				if (this.interpolationTarget.step == 0) {
+					this.interpolationTarget.apply(this);
+					this.resetPosition();
+					this.interpolationTarget = null;
+				} else {
+					this.interpolationTarget.applyInterpolated(this);
+					this.interpolationTarget.step--;
+					if (this.interpolationTarget.step == 0) {
+						this.interpolationTarget = null;
+					}
+				}
+			}
 		}
 	}
 
@@ -166,6 +180,7 @@ public abstract class DisplayEntity extends Entity {
 
 	@Override
 	protected void initDataTracker() {
+		this.dataTracker.startTracking(TELEPORT_DURATION, 0);
 		this.dataTracker.startTracking(START_INTERPOLATION, 0);
 		this.dataTracker.startTracking(INTERPOLATION_DURATION, 0);
 		this.dataTracker.startTracking(TRANSLATION, new Vector3f());
@@ -187,7 +202,7 @@ public abstract class DisplayEntity extends Entity {
 		if (nbt.contains("transformation")) {
 			AffineTransformation.ANY_CODEC
 				.decode(NbtOps.INSTANCE, nbt.get("transformation"))
-				.resultOrPartial(Util.addPrefix("Display entity", field_42397::error))
+				.resultOrPartial(Util.addPrefix("Display entity", LOGGER::error))
 				.ifPresent(pair -> this.setTransformation((AffineTransformation)pair.getFirst()));
 		}
 
@@ -201,10 +216,15 @@ public abstract class DisplayEntity extends Entity {
 			this.setStartInterpolation(i);
 		}
 
+		if (nbt.contains("teleport_duration", NbtElement.NUMBER_TYPE)) {
+			int i = nbt.getInt("teleport_duration");
+			this.setTeleportDuration(MathHelper.clamp(i, 0, 59));
+		}
+
 		if (nbt.contains("billboard", NbtElement.STRING_TYPE)) {
 			DisplayEntity.BillboardMode.CODEC
 				.decode(NbtOps.INSTANCE, nbt.get("billboard"))
-				.resultOrPartial(Util.addPrefix("Display entity", field_42397::error))
+				.resultOrPartial(Util.addPrefix("Display entity", LOGGER::error))
 				.ifPresent(pair -> this.setBillboardMode((DisplayEntity.BillboardMode)pair.getFirst()));
 		}
 
@@ -235,7 +255,7 @@ public abstract class DisplayEntity extends Entity {
 		if (nbt.contains("brightness", NbtElement.COMPOUND_TYPE)) {
 			Brightness.CODEC
 				.decode(NbtOps.INSTANCE, nbt.get("brightness"))
-				.resultOrPartial(Util.addPrefix("Display entity", field_42397::error))
+				.resultOrPartial(Util.addPrefix("Display entity", LOGGER::error))
 				.ifPresent(pair -> this.setBrightness((Brightness)pair.getFirst()));
 		} else {
 			this.setBrightness(null);
@@ -257,6 +277,7 @@ public abstract class DisplayEntity extends Entity {
 			.ifPresent(transformations -> nbt.put("transformation", transformations));
 		DisplayEntity.BillboardMode.CODEC.encodeStart(NbtOps.INSTANCE, this.getBillboardMode()).result().ifPresent(billboard -> nbt.put("billboard", billboard));
 		nbt.putInt("interpolation_duration", this.getInterpolationDuration());
+		nbt.putInt("teleport_duration", this.getTeleportDuration());
 		nbt.putFloat("view_range", this.getViewRange());
 		nbt.putFloat("shadow_radius", this.getShadowRadius());
 		nbt.putFloat("shadow_strength", this.getShadowStrength());
@@ -270,8 +291,9 @@ public abstract class DisplayEntity extends Entity {
 	}
 
 	@Override
-	public Packet<ClientPlayPacketListener> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this);
+	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
+		int i = this.getTeleportDuration();
+		this.interpolationTarget = new DisplayEntity.InterpolationTarget(i, x, y, z, (double)yaw, (double)pitch);
 	}
 
 	@Override
@@ -287,10 +309,6 @@ public abstract class DisplayEntity extends Entity {
 	@Override
 	public boolean canAvoidTraps() {
 		return true;
-	}
-
-	public Quaternionf getFixedRotation() {
-		return this.fixedRotation;
 	}
 
 	@Nullable
@@ -312,6 +330,14 @@ public abstract class DisplayEntity extends Entity {
 
 	private int getStartInterpolation() {
 		return this.dataTracker.get(START_INTERPOLATION);
+	}
+
+	private void setTeleportDuration(int teleportDuration) {
+		this.dataTracker.set(TELEPORT_DURATION, teleportDuration);
+	}
+
+	private int getTeleportDuration() {
+		return this.dataTracker.get(TELEPORT_DURATION);
 	}
 
 	private void setBillboardMode(DisplayEntity.BillboardMode billboardMode) {
@@ -416,22 +442,6 @@ public abstract class DisplayEntity extends Entity {
 		} else {
 			this.ignoreCameraFrustum = true;
 		}
-	}
-
-	@Override
-	public void setPitch(float pitch) {
-		super.setPitch(pitch);
-		this.updateFixedRotation();
-	}
-
-	@Override
-	public void setYaw(float yaw) {
-		super.setYaw(yaw);
-		this.updateFixedRotation();
-	}
-
-	private void updateFixedRotation() {
-		this.fixedRotation.rotationYXZ((float) (-Math.PI / 180.0) * this.getYaw(), (float) (Math.PI / 180.0) * this.getPitch(), 0.0F);
 	}
 
 	@Override
@@ -613,6 +623,33 @@ public abstract class DisplayEntity extends Entity {
 		}
 	}
 
+	static class InterpolationTarget {
+		int step;
+		private final double x;
+		private final double y;
+		private final double z;
+		private final double yaw;
+		private final double pitch;
+
+		InterpolationTarget(int step, double x, double y, double z, double yaw, double pitch) {
+			this.step = step;
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.yaw = yaw;
+			this.pitch = pitch;
+		}
+
+		void apply(Entity entity) {
+			entity.setPosition(this.x, this.y, this.z);
+			entity.setRotation((float)this.yaw, (float)this.pitch);
+		}
+
+		void applyInterpolated(Entity entity) {
+			entity.lerpPosAndRotation(this.step, this.x, this.y, this.z, this.yaw, this.pitch);
+		}
+	}
+
 	public static class ItemDisplayEntity extends DisplayEntity {
 		private static final String ITEM_NBT_KEY = "item";
 		private static final String ITEM_DISPLAY_NBT_KEY = "item_display";
@@ -675,7 +712,7 @@ public abstract class DisplayEntity extends Entity {
 			if (nbt.contains("item_display", NbtElement.STRING_TYPE)) {
 				ModelTransformationMode.CODEC
 					.decode(NbtOps.INSTANCE, nbt.get("item_display"))
-					.resultOrPartial(Util.addPrefix("Display entity", DisplayEntity.field_42397::error))
+					.resultOrPartial(Util.addPrefix("Display entity", DisplayEntity.LOGGER::error))
 					.ifPresent(mode -> this.setTransformationMode((ModelTransformationMode)mode.getFirst()));
 			}
 		}
@@ -831,7 +868,7 @@ public abstract class DisplayEntity extends Entity {
 			b = readFlag(b, nbt, "default_background", (byte)4);
 			Optional<DisplayEntity.TextDisplayEntity.TextAlignment> optional = DisplayEntity.TextDisplayEntity.TextAlignment.CODEC
 				.decode(NbtOps.INSTANCE, nbt.get("alignment"))
-				.resultOrPartial(Util.addPrefix("Display entity", DisplayEntity.field_42397::error))
+				.resultOrPartial(Util.addPrefix("Display entity", DisplayEntity.LOGGER::error))
 				.map(Pair::getFirst);
 			if (optional.isPresent()) {
 				b = switch ((DisplayEntity.TextDisplayEntity.TextAlignment)optional.get()) {
@@ -855,7 +892,7 @@ public abstract class DisplayEntity extends Entity {
 						this.setText(Text.empty());
 					}
 				} catch (Exception var8) {
-					DisplayEntity.field_42397.warn("Failed to parse display entity text {}", string, var8);
+					DisplayEntity.LOGGER.warn("Failed to parse display entity text {}", string, var8);
 				}
 			}
 		}

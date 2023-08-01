@@ -27,7 +27,7 @@ public class PlayerSkullBlock extends SkullBlock {
 				if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
 					gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
 				} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !Util.isBlank(nbtCompound.getString("SkullOwner"))) {
-					gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
+					gameProfile = new GameProfile(Util.NIL_UUID, nbtCompound.getString("SkullOwner"));
 				}
 			}
 

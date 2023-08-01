@@ -99,7 +99,7 @@ public class SimulationDistanceLevelPropagator extends ChunkPosDistanceLevelProp
 
 	@Override
 	protected void setLevel(long id, int level) {
-		if (level > 33) {
+		if (level >= 33) {
 			this.levels.remove(id);
 		} else {
 			this.levels.put(id, (byte)level);

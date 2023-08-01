@@ -32,12 +32,6 @@ public class AddServerScreen extends Screen {
 	}
 
 	@Override
-	public void tick() {
-		this.serverNameField.tick();
-		this.addressField.tick();
-	}
-
-	@Override
 	protected void init() {
 		this.serverNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 66, 200, 20, Text.translatable("addServer.enterName"));
 		this.serverNameField.setText(this.server.name);
@@ -101,12 +95,11 @@ public class AddServerScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, 16777215);
 		context.drawTextWithShadow(this.textRenderer, ENTER_NAME_TEXT, this.width / 2 - 100, 53, 10526880);
 		context.drawTextWithShadow(this.textRenderer, ENTER_IP_TEXT, this.width / 2 - 100, 94, 10526880);
 		this.serverNameField.render(context, mouseX, mouseY, delta);
 		this.addressField.render(context, mouseX, mouseY, delta);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

@@ -30,6 +30,7 @@ import net.minecraft.util.math.MathHelper;
 public class TextFieldWidget extends ClickableWidget implements Drawable {
 	public static final int field_32194 = -1;
 	public static final int field_32195 = 1;
+	public static final int field_45353 = 4;
 	private static final int field_32197 = 1;
 	private static final int VERTICAL_CURSOR_COLOR = -3092272;
 	private static final String HORIZONTAL_CURSOR = "_";
@@ -37,14 +38,13 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 	private static final int field_32201 = -1;
 	private static final int BORDER_COLOR = -6250336;
 	private static final int BACKGROUND_COLOR = -16777216;
+	private static final int field_45354 = 300;
 	private final TextRenderer textRenderer;
 	private String text = "";
 	private int maxLength = 32;
-	private int focusedTicks;
 	private boolean drawsBackground = true;
 	private boolean focusUnlocked = true;
 	private boolean editable = true;
-	private boolean selecting;
 	/**
 	 * The index of the leftmost character that is rendered on a screen.
 	 */
@@ -63,6 +63,11 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		);
 	@Nullable
 	private Text placeholder;
+	private long lastSwitchFocusTime = Util.getMeasuringTimeMs();
+
+	public TextFieldWidget(TextRenderer textRenderer, int width, int height, Text text) {
+		this(textRenderer, 0, 0, width, height, text);
+	}
 
 	public TextFieldWidget(TextRenderer textRenderer, int x, int y, int width, int height, Text text) {
 		this(textRenderer, x, y, width, height, null, text);
@@ -84,10 +89,6 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		this.renderTextProvider = renderTextProvider;
 	}
 
-	public void tick() {
-		this.focusedTicks++;
-	}
-
 	@Override
 	protected MutableText getNarrationMessage() {
 		Text text = this.getMessage();
@@ -102,7 +103,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 				this.text = text;
 			}
 
-			this.setCursorToEnd();
+			this.setCursorToEnd(false);
 			this.setSelectionEnd(this.selectionStart);
 			this.onChanged(text);
 		}
@@ -178,7 +179,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 					String string = new StringBuilder(this.text).delete(j, k).toString();
 					if (this.textPredicate.test(string)) {
 						this.text = string;
-						this.setCursor(j);
+						this.setCursor(j, false);
 					}
 				}
 			}
@@ -223,17 +224,17 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		return i;
 	}
 
-	public void moveCursor(int offset) {
-		this.setCursor(this.getCursorPosWithOffset(offset));
+	public void moveCursor(int offset, boolean shiftKeyPressed) {
+		this.setCursor(this.getCursorPosWithOffset(offset), shiftKeyPressed);
 	}
 
 	private int getCursorPosWithOffset(int offset) {
 		return Util.moveCursor(this.text, this.selectionStart, offset);
 	}
 
-	public void setCursor(int cursor) {
+	public void setCursor(int cursor, boolean shiftKeyPressed) {
 		this.setSelectionStart(cursor);
-		if (!this.selecting) {
+		if (!shiftKeyPressed) {
 			this.setSelectionEnd(this.selectionStart);
 		}
 
@@ -242,90 +243,84 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 
 	public void setSelectionStart(int cursor) {
 		this.selectionStart = MathHelper.clamp(cursor, 0, this.text.length());
+		this.updateFirstCharacterIndex(this.selectionStart);
 	}
 
-	public void setCursorToStart() {
-		this.setCursor(0);
+	public void setCursorToStart(boolean shiftKeyPressed) {
+		this.setCursor(0, shiftKeyPressed);
 	}
 
-	public void setCursorToEnd() {
-		this.setCursor(this.text.length());
+	public void setCursorToEnd(boolean shiftKeyPressed) {
+		this.setCursor(this.text.length(), shiftKeyPressed);
 	}
 
 	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (!this.isActive()) {
 			return false;
+		} else if (Screen.isSelectAll(keyCode)) {
+			this.setCursorToEnd(false);
+			this.setSelectionEnd(0);
+			return true;
+		} else if (Screen.isCopy(keyCode)) {
+			MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
+			return true;
+		} else if (Screen.isPaste(keyCode)) {
+			if (this.editable) {
+				this.write(MinecraftClient.getInstance().keyboard.getClipboard());
+			}
+
+			return true;
+		} else if (Screen.isCut(keyCode)) {
+			MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
+			if (this.editable) {
+				this.write("");
+			}
+
+			return true;
 		} else {
-			this.selecting = Screen.hasShiftDown();
-			if (Screen.isSelectAll(keyCode)) {
-				this.setCursorToEnd();
-				this.setSelectionEnd(0);
-				return true;
-			} else if (Screen.isCopy(keyCode)) {
-				MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
-				return true;
-			} else if (Screen.isPaste(keyCode)) {
-				if (this.editable) {
-					this.write(MinecraftClient.getInstance().keyboard.getClipboard());
-				}
+			switch (keyCode) {
+				case 259:
+					if (this.editable) {
+						this.erase(-1);
+					}
 
-				return true;
-			} else if (Screen.isCut(keyCode)) {
-				MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
-				if (this.editable) {
-					this.write("");
-				}
+					return true;
+				case 260:
+				case 264:
+				case 265:
+				case 266:
+				case 267:
+				default:
+					return false;
+				case 261:
+					if (this.editable) {
+						this.erase(1);
+					}
 
-				return true;
-			} else {
-				switch (keyCode) {
-					case 259:
-						if (this.editable) {
-							this.selecting = false;
-							this.erase(-1);
-							this.selecting = Screen.hasShiftDown();
-						}
+					return true;
+				case 262:
+					if (Screen.hasControlDown()) {
+						this.setCursor(this.getWordSkipPosition(1), Screen.hasShiftDown());
+					} else {
+						this.moveCursor(1, Screen.hasShiftDown());
+					}
 
-						return true;
-					case 260:
-					case 264:
-					case 265:
-					case 266:
-					case 267:
-					default:
-						return false;
-					case 261:
-						if (this.editable) {
-							this.selecting = false;
-							this.erase(1);
-							this.selecting = Screen.hasShiftDown();
-						}
+					return true;
+				case 263:
+					if (Screen.hasControlDown()) {
+						this.setCursor(this.getWordSkipPosition(-1), Screen.hasShiftDown());
+					} else {
+						this.moveCursor(-1, Screen.hasShiftDown());
+					}
 
-						return true;
-					case 262:
-						if (Screen.hasControlDown()) {
-							this.setCursor(this.getWordSkipPosition(1));
-						} else {
-							this.moveCursor(1);
-						}
-
-						return true;
-					case 263:
-						if (Screen.hasControlDown()) {
-							this.setCursor(this.getWordSkipPosition(-1));
-						} else {
-							this.moveCursor(-1);
-						}
-
-						return true;
-					case 268:
-						this.setCursorToStart();
-						return true;
-					case 269:
-						this.setCursorToEnd();
-						return true;
-				}
+					return true;
+				case 268:
+					this.setCursorToStart(Screen.hasShiftDown());
+					return true;
+				case 269:
+					this.setCursorToEnd(Screen.hasShiftDown());
+					return true;
 			}
 		}
 	}
@@ -357,7 +352,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		}
 
 		String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
-		this.setCursor(this.textRenderer.trimToWidth(string, i).length() + this.firstCharacterIndex);
+		this.setCursor(this.textRenderer.trimToWidth(string, i).length() + this.firstCharacterIndex, Screen.hasShiftDown());
 	}
 
 	@Override
@@ -375,54 +370,50 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 
 			int i = this.editable ? this.editableColor : this.uneditableColor;
 			int j = this.selectionStart - this.firstCharacterIndex;
-			int k = this.selectionEnd - this.firstCharacterIndex;
 			String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), this.getInnerWidth());
 			boolean bl = j >= 0 && j <= string.length();
-			boolean bl2 = this.isFocused() && this.focusedTicks / 6 % 2 == 0 && bl;
-			int l = this.drawsBackground ? this.getX() + 4 : this.getX();
-			int m = this.drawsBackground ? this.getY() + (this.height - 8) / 2 : this.getY();
-			int n = l;
-			if (k > string.length()) {
-				k = string.length();
-			}
-
+			boolean bl2 = this.isFocused() && (Util.getMeasuringTimeMs() - this.lastSwitchFocusTime) / 300L % 2L == 0L && bl;
+			int k = this.drawsBackground ? this.getX() + 4 : this.getX();
+			int l = this.drawsBackground ? this.getY() + (this.height - 8) / 2 : this.getY();
+			int m = k;
+			int n = MathHelper.clamp(this.selectionEnd - this.firstCharacterIndex, 0, string.length());
 			if (!string.isEmpty()) {
 				String string2 = bl ? string.substring(0, j) : string;
-				n = context.drawTextWithShadow(this.textRenderer, (OrderedText)this.renderTextProvider.apply(string2, this.firstCharacterIndex), l, m, i);
+				m = context.drawTextWithShadow(this.textRenderer, (OrderedText)this.renderTextProvider.apply(string2, this.firstCharacterIndex), k, l, i);
 			}
 
 			boolean bl3 = this.selectionStart < this.text.length() || this.text.length() >= this.getMaxLength();
-			int o = n;
+			int o = m;
 			if (!bl) {
-				o = j > 0 ? l + this.width : l;
+				o = j > 0 ? k + this.width : k;
 			} else if (bl3) {
-				o = n - 1;
-				n--;
+				o = m - 1;
+				m--;
 			}
 
 			if (!string.isEmpty() && bl && j < string.length()) {
-				context.drawTextWithShadow(this.textRenderer, (OrderedText)this.renderTextProvider.apply(string.substring(j), this.selectionStart), n, m, i);
+				context.drawTextWithShadow(this.textRenderer, (OrderedText)this.renderTextProvider.apply(string.substring(j), this.selectionStart), m, l, i);
 			}
 
 			if (this.placeholder != null && string.isEmpty() && !this.isFocused()) {
-				context.drawTextWithShadow(this.textRenderer, this.placeholder, n, m, i);
+				context.drawTextWithShadow(this.textRenderer, this.placeholder, m, l, i);
 			}
 
 			if (!bl3 && this.suggestion != null) {
-				context.drawTextWithShadow(this.textRenderer, this.suggestion, o - 1, m, -8355712);
+				context.drawTextWithShadow(this.textRenderer, this.suggestion, o - 1, l, -8355712);
 			}
 
 			if (bl2) {
 				if (bl3) {
-					context.fill(RenderLayer.getGuiOverlay(), o, m - 1, o + 1, m + 1 + 9, -3092272);
+					context.fill(RenderLayer.getGuiOverlay(), o, l - 1, o + 1, l + 1 + 9, -3092272);
 				} else {
-					context.drawTextWithShadow(this.textRenderer, "_", o, m, i);
+					context.drawTextWithShadow(this.textRenderer, "_", o, l, i);
 				}
 			}
 
-			if (k != j) {
-				int p = l + this.textRenderer.getWidth(string.substring(0, k));
-				this.drawSelectionHighlight(context, o, m - 1, p - 1, m + 1 + 9);
+			if (n != j) {
+				int p = k + this.textRenderer.getWidth(string.substring(0, n));
+				this.drawSelectionHighlight(context, o, l - 1, p - 1, l + 1 + 9);
 			}
 		}
 	}
@@ -503,7 +494,7 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 		if (this.focusUnlocked || focused) {
 			super.setFocused(focused);
 			if (focused) {
-				this.focusedTicks = 0;
+				this.lastSwitchFocusTime = Util.getMeasuringTimeMs();
 			}
 		}
 	}
@@ -521,27 +512,27 @@ public class TextFieldWidget extends ClickableWidget implements Drawable {
 	}
 
 	public void setSelectionEnd(int index) {
-		int i = this.text.length();
-		this.selectionEnd = MathHelper.clamp(index, 0, i);
+		this.selectionEnd = MathHelper.clamp(index, 0, this.text.length());
+		this.updateFirstCharacterIndex(this.selectionEnd);
+	}
+
+	private void updateFirstCharacterIndex(int cursor) {
 		if (this.textRenderer != null) {
-			if (this.firstCharacterIndex > i) {
-				this.firstCharacterIndex = i;
+			this.firstCharacterIndex = Math.min(this.firstCharacterIndex, this.text.length());
+			int i = this.getInnerWidth();
+			String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), i);
+			int j = string.length() + this.firstCharacterIndex;
+			if (cursor == this.firstCharacterIndex) {
+				this.firstCharacterIndex = this.firstCharacterIndex - this.textRenderer.trimToWidth(this.text, i, true).length();
 			}
 
-			int j = this.getInnerWidth();
-			String string = this.textRenderer.trimToWidth(this.text.substring(this.firstCharacterIndex), j);
-			int k = string.length() + this.firstCharacterIndex;
-			if (this.selectionEnd == this.firstCharacterIndex) {
-				this.firstCharacterIndex = this.firstCharacterIndex - this.textRenderer.trimToWidth(this.text, j, true).length();
+			if (cursor > j) {
+				this.firstCharacterIndex += cursor - j;
+			} else if (cursor <= this.firstCharacterIndex) {
+				this.firstCharacterIndex = this.firstCharacterIndex - (this.firstCharacterIndex - cursor);
 			}
 
-			if (this.selectionEnd > k) {
-				this.firstCharacterIndex = this.firstCharacterIndex + (this.selectionEnd - k);
-			} else if (this.selectionEnd <= this.firstCharacterIndex) {
-				this.firstCharacterIndex = this.firstCharacterIndex - (this.firstCharacterIndex - this.selectionEnd);
-			}
-
-			this.firstCharacterIndex = MathHelper.clamp(this.firstCharacterIndex, 0, i);
+			this.firstCharacterIndex = MathHelper.clamp(this.firstCharacterIndex, 0, this.text.length());
 		}
 	}
 

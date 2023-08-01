@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.ScreenRect;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -82,6 +83,10 @@ public class SimplePositioningWidget extends WrapperWidget {
 	public <T extends Widget> T add(T widget, Positioner positioner) {
 		this.elements.add(new SimplePositioningWidget.Element(widget, positioner));
 		return widget;
+	}
+
+	public <T extends Widget> T add(T widget, Consumer<Positioner> callback) {
+		return this.add(widget, Util.make(this.copyPositioner(), callback));
 	}
 
 	@Override

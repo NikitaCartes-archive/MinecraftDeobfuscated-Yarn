@@ -2,20 +2,29 @@ package net.minecraft.client.option;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.TranslatableOption;
 
 @Environment(EnvType.CLIENT)
-public enum CloudRenderMode implements TranslatableOption {
-	OFF(0, "options.off"),
-	FAST(1, "options.clouds.fast"),
-	FANCY(2, "options.clouds.fancy");
+public enum CloudRenderMode implements TranslatableOption, StringIdentifiable {
+	OFF(0, "false", "options.off"),
+	FAST(1, "fast", "options.clouds.fast"),
+	FANCY(2, "true", "options.clouds.fancy");
 
+	public static final com.mojang.serialization.Codec<CloudRenderMode> CODEC = StringIdentifiable.createCodec(CloudRenderMode::values);
 	private final int id;
+	private final String serializedId;
 	private final String translationKey;
 
-	private CloudRenderMode(int id, String translationKey) {
+	private CloudRenderMode(int id, String serializedId, String translationKey) {
 		this.id = id;
+		this.serializedId = serializedId;
 		this.translationKey = translationKey;
+	}
+
+	@Override
+	public String asString() {
+		return this.serializedId;
 	}
 
 	@Override

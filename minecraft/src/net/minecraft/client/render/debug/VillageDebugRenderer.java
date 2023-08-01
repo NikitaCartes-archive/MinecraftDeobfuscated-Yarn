@@ -3,7 +3,6 @@ package net.minecraft.client.render.debug;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import java.util.Collection;
 import java.util.List;
@@ -20,8 +19,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.network.packet.s2c.custom.DebugBrainCustomPayload;
 import net.minecraft.util.NameGenerator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Position;
@@ -66,7 +65,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	private static final int ORANGE = -23296;
 	private final MinecraftClient client;
 	private final Map<BlockPos, VillageDebugRenderer.PointOfInterest> pointsOfInterest = Maps.<BlockPos, VillageDebugRenderer.PointOfInterest>newHashMap();
-	private final Map<UUID, VillageDebugRenderer.Brain> brains = Maps.<UUID, VillageDebugRenderer.Brain>newHashMap();
+	private final Map<UUID, DebugBrainCustomPayload.Brain> brains = Maps.<UUID, DebugBrainCustomPayload.Brain>newHashMap();
 	@Nullable
 	private UUID targetedEntity;
 
@@ -98,12 +97,12 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		}
 	}
 
-	public void addBrain(VillageDebugRenderer.Brain brain) {
-		this.brains.put(brain.uuid, brain);
+	public void addBrain(DebugBrainCustomPayload.Brain brain) {
+		this.brains.put(brain.uuid(), brain);
 	}
 
 	public void removeBrain(int entityId) {
-		this.brains.values().removeIf(brain -> brain.entityId == entityId);
+		this.brains.values().removeIf(brain -> brain.entityId() == entityId);
 	}
 
 	@Override
@@ -117,7 +116,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 
 	private void removeRemovedBrains() {
 		this.brains.entrySet().removeIf(entry -> {
-			Entity entity = this.client.world.getEntityById(((VillageDebugRenderer.Brain)entry.getValue()).entityId);
+			Entity entity = this.client.world.getEntityById(((DebugBrainCustomPayload.Brain)entry.getValue()).entityId());
 			return entity == null || entity.isRemoved();
 		});
 	}
@@ -178,78 +177,78 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		drawString(matrices, vertexConsumers, "Free tickets: " + pointOfInterest.freeTicketCount, pointOfInterest, ++i, -256);
-		drawString(matrices, vertexConsumers, pointOfInterest.field_18932, pointOfInterest, ++i, -1);
+		drawString(matrices, vertexConsumers, pointOfInterest.type, pointOfInterest, ++i, -1);
 	}
 
 	private void drawPath(
-		MatrixStack matrices, VertexConsumerProvider vertexConsumers, VillageDebugRenderer.Brain brain, double cameraX, double cameraY, double cameraZ
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, DebugBrainCustomPayload.Brain brain, double cameraX, double cameraY, double cameraZ
 	) {
-		if (brain.path != null) {
-			PathfindingDebugRenderer.drawPath(matrices, vertexConsumers, brain.path, 0.5F, false, false, cameraX, cameraY, cameraZ);
+		if (brain.path() != null) {
+			PathfindingDebugRenderer.drawPath(matrices, vertexConsumers, brain.path(), 0.5F, false, false, cameraX, cameraY, cameraZ);
 		}
 	}
 
 	private void drawBrain(
-		MatrixStack matrices, VertexConsumerProvider vertexConsumers, VillageDebugRenderer.Brain brain, double cameraX, double cameraY, double cameraZ
+		MatrixStack matrices, VertexConsumerProvider vertexConsumers, DebugBrainCustomPayload.Brain brain, double cameraX, double cameraY, double cameraZ
 	) {
 		boolean bl = this.isTargeted(brain);
 		int i = 0;
-		drawString(matrices, vertexConsumers, brain.pos, i, brain.name, -1, 0.03F);
+		drawString(matrices, vertexConsumers, brain.pos(), i, brain.name(), -1, 0.03F);
 		i++;
 		if (bl) {
-			drawString(matrices, vertexConsumers, brain.pos, i, brain.profession + " " + brain.xp + " xp", -1, 0.02F);
+			drawString(matrices, vertexConsumers, brain.pos(), i, brain.profession() + " " + brain.xp() + " xp", -1, 0.02F);
 			i++;
 		}
 
 		if (bl) {
-			int j = brain.health < brain.maxHealth ? -23296 : -1;
+			int j = brain.health() < brain.maxHealth() ? -23296 : -1;
 			drawString(
 				matrices,
 				vertexConsumers,
-				brain.pos,
+				brain.pos(),
 				i,
-				"health: " + String.format(Locale.ROOT, "%.1f", brain.health) + " / " + String.format(Locale.ROOT, "%.1f", brain.maxHealth),
+				"health: " + String.format(Locale.ROOT, "%.1f", brain.health()) + " / " + String.format(Locale.ROOT, "%.1f", brain.maxHealth()),
 				j,
 				0.02F
 			);
 			i++;
 		}
 
-		if (bl && !brain.inventory.equals("")) {
-			drawString(matrices, vertexConsumers, brain.pos, i, brain.inventory, -98404, 0.02F);
+		if (bl && !brain.inventory().equals("")) {
+			drawString(matrices, vertexConsumers, brain.pos(), i, brain.inventory(), -98404, 0.02F);
 			i++;
 		}
 
 		if (bl) {
-			for (String string : brain.runningTasks) {
-				drawString(matrices, vertexConsumers, brain.pos, i, string, -16711681, 0.02F);
+			for (String string : brain.runningTasks()) {
+				drawString(matrices, vertexConsumers, brain.pos(), i, string, -16711681, 0.02F);
 				i++;
 			}
 		}
 
 		if (bl) {
-			for (String string : brain.possibleActivities) {
-				drawString(matrices, vertexConsumers, brain.pos, i, string, -16711936, 0.02F);
+			for (String string : brain.possibleActivities()) {
+				drawString(matrices, vertexConsumers, brain.pos(), i, string, -16711936, 0.02F);
 				i++;
 			}
 		}
 
-		if (brain.wantsGolem) {
-			drawString(matrices, vertexConsumers, brain.pos, i, "Wants Golem", -23296, 0.02F);
+		if (brain.wantsGolem()) {
+			drawString(matrices, vertexConsumers, brain.pos(), i, "Wants Golem", -23296, 0.02F);
 			i++;
 		}
 
-		if (bl && brain.angerLevel != -1) {
-			drawString(matrices, vertexConsumers, brain.pos, i, "Anger Level: " + brain.angerLevel, -98404, 0.02F);
+		if (bl && brain.angerLevel() != -1) {
+			drawString(matrices, vertexConsumers, brain.pos(), i, "Anger Level: " + brain.angerLevel(), -98404, 0.02F);
 			i++;
 		}
 
 		if (bl) {
-			for (String string : brain.gossips) {
-				if (string.startsWith(brain.name)) {
-					drawString(matrices, vertexConsumers, brain.pos, i, string, -1, 0.02F);
+			for (String string : brain.gossips()) {
+				if (string.startsWith(brain.name())) {
+					drawString(matrices, vertexConsumers, brain.pos(), i, string, -1, 0.02F);
 				} else {
-					drawString(matrices, vertexConsumers, brain.pos, i, string, -23296, 0.02F);
+					drawString(matrices, vertexConsumers, brain.pos(), i, string, -23296, 0.02F);
 				}
 
 				i++;
@@ -257,8 +256,8 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		if (bl) {
-			for (String string : Lists.reverse(brain.memories)) {
-				drawString(matrices, vertexConsumers, brain.pos, i, string, -3355444, 0.02F);
+			for (String string : Lists.reverse(brain.memories())) {
+				drawString(matrices, vertexConsumers, brain.pos(), i, string, -3355444, 0.02F);
 				i++;
 			}
 		}
@@ -302,14 +301,14 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		return (Set<String>)this.getBrainsContainingPotentialJobSite(potentialJobSite.pos).stream().map(NameGenerator::name).collect(Collectors.toSet());
 	}
 
-	private boolean isTargeted(VillageDebugRenderer.Brain brain) {
-		return Objects.equals(this.targetedEntity, brain.uuid);
+	private boolean isTargeted(DebugBrainCustomPayload.Brain brain) {
+		return Objects.equals(this.targetedEntity, brain.uuid());
 	}
 
-	private boolean isClose(VillageDebugRenderer.Brain brain) {
+	private boolean isClose(DebugBrainCustomPayload.Brain brain) {
 		PlayerEntity playerEntity = this.client.player;
-		BlockPos blockPos = BlockPos.ofFloored(playerEntity.getX(), brain.pos.getY(), playerEntity.getZ());
-		BlockPos blockPos2 = BlockPos.ofFloored(brain.pos);
+		BlockPos blockPos = BlockPos.ofFloored(playerEntity.getX(), brain.pos().getY(), playerEntity.getZ());
+		BlockPos blockPos2 = BlockPos.ofFloored(brain.pos());
 		return blockPos.isWithinDistance(blockPos2, 30.0);
 	}
 
@@ -318,7 +317,7 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 			.values()
 			.stream()
 			.filter(brain -> brain.isPointOfInterest(pointOfInterest))
-			.map(VillageDebugRenderer.Brain::getUuid)
+			.map(DebugBrainCustomPayload.Brain::uuid)
 			.collect(Collectors.toSet());
 	}
 
@@ -327,17 +326,17 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 			.values()
 			.stream()
 			.filter(brain -> brain.isPotentialJobSite(potentialJobSite))
-			.map(VillageDebugRenderer.Brain::getUuid)
+			.map(DebugBrainCustomPayload.Brain::uuid)
 			.collect(Collectors.toSet());
 	}
 
 	private Map<BlockPos, List<String>> getGhostPointsOfInterest() {
 		Map<BlockPos, List<String>> map = Maps.<BlockPos, List<String>>newHashMap();
 
-		for (VillageDebugRenderer.Brain brain : this.brains.values()) {
-			for (BlockPos blockPos : Iterables.concat(brain.pointsOfInterest, brain.potentialJobSites)) {
+		for (DebugBrainCustomPayload.Brain brain : this.brains.values()) {
+			for (BlockPos blockPos : Iterables.concat(brain.pois(), brain.potentialPois())) {
 				if (!this.pointsOfInterest.containsKey(blockPos)) {
-					((List)map.computeIfAbsent(blockPos, pos -> Lists.newArrayList())).add(brain.name);
+					((List)map.computeIfAbsent(blockPos, pos -> Lists.newArrayList())).add(brain.name());
 				}
 			}
 		}
@@ -350,76 +349,14 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Brain {
-		public final UUID uuid;
-		public final int entityId;
-		public final String name;
-		public final String profession;
-		public final int xp;
-		public final float health;
-		public final float maxHealth;
-		public final Position pos;
-		public final String inventory;
-		public final Path path;
-		public final boolean wantsGolem;
-		public final int angerLevel;
-		public final List<String> possibleActivities = Lists.<String>newArrayList();
-		public final List<String> runningTasks = Lists.<String>newArrayList();
-		public final List<String> memories = Lists.<String>newArrayList();
-		public final List<String> gossips = Lists.<String>newArrayList();
-		public final Set<BlockPos> pointsOfInterest = Sets.<BlockPos>newHashSet();
-		public final Set<BlockPos> potentialJobSites = Sets.<BlockPos>newHashSet();
-
-		public Brain(
-			UUID uuid,
-			int entityId,
-			String name,
-			String profession,
-			int xp,
-			float health,
-			float maxHealth,
-			Position pos,
-			String inventory,
-			@Nullable Path path,
-			boolean wantsGolem,
-			int angerLevel
-		) {
-			this.uuid = uuid;
-			this.entityId = entityId;
-			this.name = name;
-			this.profession = profession;
-			this.xp = xp;
-			this.health = health;
-			this.maxHealth = maxHealth;
-			this.pos = pos;
-			this.inventory = inventory;
-			this.path = path;
-			this.wantsGolem = wantsGolem;
-			this.angerLevel = angerLevel;
-		}
-
-		boolean isPointOfInterest(BlockPos pos) {
-			return this.pointsOfInterest.stream().anyMatch(pos::equals);
-		}
-
-		boolean isPotentialJobSite(BlockPos pos) {
-			return this.potentialJobSites.contains(pos);
-		}
-
-		public UUID getUuid() {
-			return this.uuid;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
 	public static class PointOfInterest {
 		public final BlockPos pos;
-		public String field_18932;
+		public final String type;
 		public int freeTicketCount;
 
-		public PointOfInterest(BlockPos pos, String string, int freeTicketCount) {
+		public PointOfInterest(BlockPos pos, String type, int freeTicketCount) {
 			this.pos = pos;
-			this.field_18932 = string;
+			this.type = type;
 			this.freeTicketCount = freeTicketCount;
 		}
 	}

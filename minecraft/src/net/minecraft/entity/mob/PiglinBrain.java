@@ -83,7 +83,7 @@ public class PiglinBrain {
 	public static final Item BARTERING_ITEM = Items.GOLD_INGOT;
 	private static final int field_30567 = 16;
 	private static final int field_30568 = 600;
-	private static final int field_30569 = 120;
+	private static final int field_30569 = 119;
 	private static final int field_30570 = 9;
 	private static final int field_30571 = 200;
 	private static final int field_30572 = 200;
@@ -145,7 +145,7 @@ public class PiglinBrain {
 				goToNemesisTask(),
 				makeFleeFromZombifiedPiglinTask(),
 				RemoveOffHandItemTask.create(),
-				AdmireItemTask.create(120),
+				AdmireItemTask.create(119),
 				DefeatTargetTask.create(300, PiglinBrain::isHuntingTarget),
 				ForgetAngryAtTargetTask.create()
 			)
@@ -793,7 +793,7 @@ public class PiglinBrain {
 	}
 
 	private static void setAdmiringItem(LivingEntity entity) {
-		entity.getBrain().remember(MemoryModuleType.ADMIRING_ITEM, true, 120L);
+		entity.getBrain().remember(MemoryModuleType.ADMIRING_ITEM, true, 119L);
 	}
 
 	private static boolean isAdmiringItem(PiglinEntity entity) {

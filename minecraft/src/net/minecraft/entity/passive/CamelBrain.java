@@ -98,7 +98,7 @@ public class CamelBrain {
 			ImmutableList.of(
 				Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
 				Pair.of(1, new BreedTask(EntityType.CAMEL, 1.0F)),
-				Pair.of(2, new TemptTask(entity -> 2.5F)),
+				Pair.of(2, new TemptTask(entity -> 2.5F, entity -> entity.isBaby() ? 2.5 : 3.5)),
 				Pair.of(3, TaskTriggerer.runIf(Predicate.not(CamelEntity::isStationary), WalkTowardClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, 2.5F))),
 				Pair.of(4, new RandomLookAroundTask(UniformIntProvider.create(150, 250), 30.0F, 0.0F, 0.0F)),
 				Pair.of(
@@ -153,7 +153,8 @@ public class CamelBrain {
 				&& camelEntity.getLastPoseTickDelta() >= (long)this.lastPoseTickDelta
 				&& !camelEntity.isLeashed()
 				&& camelEntity.isOnGround()
-				&& !camelEntity.hasControllingPassenger();
+				&& !camelEntity.hasControllingPassenger()
+				&& camelEntity.canChangePose();
 		}
 
 		protected void run(ServerWorld serverWorld, CamelEntity camelEntity, long l) {

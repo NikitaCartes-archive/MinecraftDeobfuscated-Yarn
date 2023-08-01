@@ -66,6 +66,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public class WolfEntity extends TameableEntity implements Angerable {
 	private static final TrackedData<Boolean> BEGGING = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -216,7 +217,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			} else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
 				if (this.shakeProgress == 0.0F) {
 					this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-					this.emitGameEvent(GameEvent.ENTITY_SHAKE);
+					this.emitGameEvent(GameEvent.ENTITY_ACTION);
 				}
 
 				this.lastShakeProgress = this.shakeProgress;
@@ -535,6 +536,11 @@ public class WolfEntity extends TameableEntity implements Angerable {
 	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, (double)(0.6F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height - 0.03125F * scaleFactor, -0.0625F * scaleFactor);
 	}
 
 	public static boolean canSpawn(EntityType<WolfEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {

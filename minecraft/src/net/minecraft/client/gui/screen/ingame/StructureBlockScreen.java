@@ -75,20 +75,6 @@ public class StructureBlockScreen extends Screen {
 		this.decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
 	}
 
-	@Override
-	public void tick() {
-		this.inputName.tick();
-		this.inputPosX.tick();
-		this.inputPosY.tick();
-		this.inputPosZ.tick();
-		this.inputSizeX.tick();
-		this.inputSizeY.tick();
-		this.inputSizeZ.tick();
-		this.inputIntegrity.tick();
-		this.inputSeed.tick();
-		this.inputMetadata.tick();
-	}
-
 	private void done() {
 		if (this.updateStructureBlock(StructureBlockBlockEntity.Action.UPDATE_DATA)) {
 			this.client.setScreen(null);
@@ -410,7 +396,7 @@ public class StructureBlockScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		StructureBlockMode structureBlockMode = this.structureBlock.getMode();
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 16777215);
 		if (structureBlockMode != StructureBlockMode.DATA) {
@@ -450,7 +436,6 @@ public class StructureBlockScreen extends Screen {
 		}
 
 		context.drawTextWithShadow(this.textRenderer, structureBlockMode.asText(), this.width / 2 - 153, 174, 10526880);
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override

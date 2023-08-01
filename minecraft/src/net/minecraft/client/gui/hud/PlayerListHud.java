@@ -43,19 +43,24 @@ import net.minecraft.world.GameMode;
  */
 @Environment(EnvType.CLIENT)
 public class PlayerListHud {
+	private static final Identifier PING_UNKNOWN_ICON_TEXTURE = new Identifier("icon/ping_unknown");
+	private static final Identifier PING_1_ICON_TEXTURE = new Identifier("icon/ping_1");
+	private static final Identifier PING_2_ICON_TEXTURE = new Identifier("icon/ping_2");
+	private static final Identifier PING_3_ICON_TEXTURE = new Identifier("icon/ping_3");
+	private static final Identifier PING_4_ICON_TEXTURE = new Identifier("icon/ping_4");
+	private static final Identifier PING_5_ICON_TEXTURE = new Identifier("icon/ping_5");
+	private static final Identifier CONTAINER_HEART_BLINKING_TEXTURE = new Identifier("hud/heart/container_blinking");
+	private static final Identifier CONTAINER_HEART_TEXTURE = new Identifier("hud/heart/container");
+	private static final Identifier FULL_HEART_BLINKING_TEXTURE = new Identifier("hud/heart/full_blinking");
+	private static final Identifier HALF_HEART_BLINKING_TEXTURE = new Identifier("hud/heart/half_blinking");
+	private static final Identifier ABSORBING_FULL_HEART_BLINKING_TEXTURE = new Identifier("hud/heart/absorbing_full_blinking");
+	private static final Identifier FULL_HEART_TEXTURE = new Identifier("hud/heart/full");
+	private static final Identifier ABSORBING_HALF_HEART_BLINKING_TEXTURE = new Identifier("hud/heart/absorbing_half_blinking");
+	private static final Identifier HALF_HEART_TEXTURE = new Identifier("hud/heart/half");
 	private static final Comparator<PlayerListEntry> ENTRY_ORDERING = Comparator.comparingInt(entry -> entry.getGameMode() == GameMode.SPECTATOR ? 1 : 0)
 		.thenComparing(entry -> Nullables.mapOrElse(entry.getScoreboardTeam(), Team::getName, ""))
 		.thenComparing(entry -> entry.getProfile().getName(), String::compareToIgnoreCase);
-	private static final Identifier ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
 	public static final int MAX_ROWS = 20;
-	public static final int HEART_OUTLINE_U = 16;
-	public static final int BLINKING_HEART_OUTLINE_U = 25;
-	public static final int HEART_U = 52;
-	public static final int HALF_HEART_U = 61;
-	public static final int GOLDEN_HEART_U = 160;
-	public static final int HALF_GOLDEN_HEART_U = 169;
-	public static final int BLINKING_HEART_U = 70;
-	public static final int BLINKING_HALF_HEART_U = 79;
 	private final MinecraftClient client;
 	private final InGameHud inGameHud;
 	@Nullable
@@ -192,7 +197,7 @@ public class PlayerListHud {
 					PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
 					boolean bl2 = playerEntity != null && LivingEntityRenderer.shouldFlipUpsideDown(playerEntity);
 					boolean bl3 = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT);
-					PlayerSkinDrawer.draw(context, playerListEntry2.getSkinTexture(), w, x, 8, bl3, bl2);
+					PlayerSkinDrawer.draw(context, playerListEntry2.getSkinTextures().texture(), w, x, 8, bl3, bl2);
 					w += 9;
 				}
 
@@ -224,25 +229,24 @@ public class PlayerListHud {
 	}
 
 	protected void renderLatencyIcon(DrawContext context, int width, int x, int y, PlayerListEntry entry) {
-		int i = 0;
-		int j;
+		Identifier identifier;
 		if (entry.getLatency() < 0) {
-			j = 5;
+			identifier = PING_UNKNOWN_ICON_TEXTURE;
 		} else if (entry.getLatency() < 150) {
-			j = 0;
+			identifier = PING_5_ICON_TEXTURE;
 		} else if (entry.getLatency() < 300) {
-			j = 1;
+			identifier = PING_4_ICON_TEXTURE;
 		} else if (entry.getLatency() < 600) {
-			j = 2;
+			identifier = PING_3_ICON_TEXTURE;
 		} else if (entry.getLatency() < 1000) {
-			j = 3;
+			identifier = PING_2_ICON_TEXTURE;
 		} else {
-			j = 4;
+			identifier = PING_1_ICON_TEXTURE;
 		}
 
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 100.0F);
-		context.drawTexture(ICONS_TEXTURE, x + width - 11, y, 0, 176 + j * 8, 10, 8);
+		context.drawGuiTexture(identifier, x + width - 11, y, 10, 8);
 		context.getMatrices().pop();
 	}
 
@@ -274,28 +278,30 @@ public class PlayerListHud {
 
 				context.drawTextWithShadow(this.client.textRenderer, string, (right + left - this.client.textRenderer.getWidth(string)) / 2, y, l);
 			} else {
-				for (int m = i; m < j; m++) {
-					context.drawTexture(ICONS_TEXTURE, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+				Identifier identifier = bl ? CONTAINER_HEART_BLINKING_TEXTURE : CONTAINER_HEART_TEXTURE;
+
+				for (int l = i; l < j; l++) {
+					context.drawGuiTexture(identifier, left + l * k, y, 9, 9);
 				}
 
-				for (int m = 0; m < i; m++) {
-					context.drawTexture(ICONS_TEXTURE, left + m * k, y, bl ? 25 : 16, 0, 9, 9);
+				for (int l = 0; l < i; l++) {
+					context.drawGuiTexture(identifier, left + l * k, y, 9, 9);
 					if (bl) {
-						if (m * 2 + 1 < heart.getPrevScore()) {
-							context.drawTexture(ICONS_TEXTURE, left + m * k, y, 70, 0, 9, 9);
+						if (l * 2 + 1 < heart.getPrevScore()) {
+							context.drawGuiTexture(FULL_HEART_BLINKING_TEXTURE, left + l * k, y, 9, 9);
 						}
 
-						if (m * 2 + 1 == heart.getPrevScore()) {
-							context.drawTexture(ICONS_TEXTURE, left + m * k, y, 79, 0, 9, 9);
+						if (l * 2 + 1 == heart.getPrevScore()) {
+							context.drawGuiTexture(HALF_HEART_BLINKING_TEXTURE, left + l * k, y, 9, 9);
 						}
 					}
 
-					if (m * 2 + 1 < score) {
-						context.drawTexture(ICONS_TEXTURE, left + m * k, y, m >= 10 ? 160 : 52, 0, 9, 9);
+					if (l * 2 + 1 < score) {
+						context.drawGuiTexture(l >= 10 ? ABSORBING_FULL_HEART_BLINKING_TEXTURE : FULL_HEART_TEXTURE, left + l * k, y, 9, 9);
 					}
 
-					if (m * 2 + 1 == score) {
-						context.drawTexture(ICONS_TEXTURE, left + m * k, y, m >= 10 ? 169 : 61, 0, 9, 9);
+					if (l * 2 + 1 == score) {
+						context.drawGuiTexture(l >= 10 ? ABSORBING_HALF_HEART_BLINKING_TEXTURE : HALF_HEART_TEXTURE, left + l * k, y, 9, 9);
 					}
 				}
 			}

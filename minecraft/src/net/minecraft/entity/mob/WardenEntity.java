@@ -69,6 +69,7 @@ import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.Vibrations;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import org.jetbrains.annotations.Contract;
+import org.joml.Vector3f;
 import org.slf4j.Logger;
 
 public class WardenEntity extends HostileEntity implements Vibrations {
@@ -570,6 +571,11 @@ public class WardenEntity extends HostileEntity implements Vibrations {
 				};
 			}
 		};
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + 0.25F * scaleFactor, 0.0F);
 	}
 
 	@Override

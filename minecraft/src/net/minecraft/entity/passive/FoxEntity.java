@@ -87,6 +87,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
+import org.joml.Vector3f;
 
 public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.Type> {
 	private static final TrackedData<Integer> TYPE = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -681,6 +682,11 @@ public class FoxEntity extends AnimalEntity implements VariantHolder<FoxEntity.T
 		}
 
 		super.drop(source);
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + -0.0625F * scaleFactor, -0.25F * scaleFactor);
 	}
 
 	public static boolean canJumpChase(FoxEntity fox, LivingEntity chasedEntity) {

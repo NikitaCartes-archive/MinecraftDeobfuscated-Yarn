@@ -1,6 +1,8 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.goal.SkeletonHorseTrapTriggerGoal;
@@ -19,6 +21,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 
 public class SkeletonHorseEntity extends AbstractHorseEntity {
 	private final SkeletonHorseTrapTriggerGoal trapTriggerGoal = new SkeletonHorseTrapTriggerGoal(this);
@@ -102,8 +105,8 @@ public class SkeletonHorseEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	public double getMountedHeightOffset() {
-		return super.getMountedHeightOffset() - 0.1875;
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height - (this.isBaby() ? 0.03125F : 0.28125F) * scaleFactor, 0.0F);
 	}
 
 	@Override

@@ -56,10 +56,9 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.backupInfoList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 16777215);
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	Text checkForSpecificMetadata(String key, String value) {
@@ -121,9 +120,9 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 		@Override
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			context.drawTextWithShadow(RealmsBackupInfoScreen.this.textRenderer, this.getTextFromKey(this.key), x, y, 10526880);
+			context.drawTextWithShadow(RealmsBackupInfoScreen.this.textRenderer, this.getTextFromKey(this.key), x, y, -6250336);
 			context.drawTextWithShadow(
-				RealmsBackupInfoScreen.this.textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.key, this.value), x, y + 12, 16777215
+				RealmsBackupInfoScreen.this.textRenderer, RealmsBackupInfoScreen.this.checkForSpecificMetadata(this.key, this.value), x, y + 12, -1
 			);
 		}
 

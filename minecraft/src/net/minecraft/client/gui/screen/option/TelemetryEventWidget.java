@@ -12,10 +12,10 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.EmptyWidget;
-import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.LayoutWidget;
 import net.minecraft.client.gui.widget.MultilineTextWidget;
-import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.ScrollableWidget;
 import net.minecraft.client.util.telemetry.TelemetryEventProperty;
 import net.minecraft.client.util.telemetry.TelemetryEventType;
@@ -121,24 +121,20 @@ public class TelemetryEventWidget extends ScrollableWidget {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static record Contents(GridWidget grid, Text narration) {
+	static record Contents(LayoutWidget grid, Text narration) {
 	}
 
 	@Environment(EnvType.CLIENT)
 	static class ContentsBuilder {
 		private final int gridWidth;
-		private final GridWidget grid;
-		private final GridWidget.Adder widgetAdder;
-		private final Positioner positioner;
+		private final DirectionalLayoutWidget layout;
 		private final MutableText narration = Text.empty();
 
 		public ContentsBuilder(int gridWidth) {
 			this.gridWidth = gridWidth;
-			this.grid = new GridWidget();
-			this.grid.getMainPositioner().alignLeft();
-			this.widgetAdder = this.grid.createAdder(1);
-			this.widgetAdder.add(EmptyWidget.ofWidth(gridWidth));
-			this.positioner = this.widgetAdder.copyPositioner().alignHorizontalCenter().marginX(32);
+			this.layout = DirectionalLayoutWidget.vertical();
+			this.layout.getMainPositioner().alignLeft();
+			this.layout.add(EmptyWidget.ofWidth(gridWidth));
 		}
 
 		public void appendTitle(TextRenderer textRenderer, Text title) {
@@ -146,22 +142,26 @@ public class TelemetryEventWidget extends ScrollableWidget {
 		}
 
 		public void appendTitle(TextRenderer textRenderer, Text title, int marginBottom) {
-			this.widgetAdder.add(new MultilineTextWidget(title, textRenderer).setMaxWidth(this.gridWidth), this.widgetAdder.copyPositioner().marginBottom(marginBottom));
+			this.layout.add(new MultilineTextWidget(title, textRenderer).setMaxWidth(this.gridWidth), positioner -> positioner.marginBottom(marginBottom));
 			this.narration.append(title).append("\n");
 		}
 
 		public void appendText(TextRenderer textRenderer, Text text) {
-			this.widgetAdder.add(new MultilineTextWidget(text, textRenderer).setMaxWidth(this.gridWidth - 64).setCentered(true), this.positioner);
+			this.layout
+				.add(
+					new MultilineTextWidget(text, textRenderer).setMaxWidth(this.gridWidth - 64).setCentered(true),
+					positioner -> positioner.alignHorizontalCenter().marginX(32)
+				);
 			this.narration.append(text).append("\n");
 		}
 
 		public void appendSpace(int height) {
-			this.widgetAdder.add(EmptyWidget.ofHeight(height));
+			this.layout.add(EmptyWidget.ofHeight(height));
 		}
 
 		public TelemetryEventWidget.Contents build() {
-			this.grid.refreshPositions();
-			return new TelemetryEventWidget.Contents(this.grid, this.narration);
+			this.layout.refreshPositions();
+			return new TelemetryEventWidget.Contents(this.layout, this.narration);
 		}
 	}
 }

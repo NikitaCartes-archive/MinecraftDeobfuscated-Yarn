@@ -6,7 +6,6 @@ import com.google.common.collect.Sets;
 import com.mojang.authlib.GameProfile;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Dynamic;
-import io.netty.buffer.Unpooled;
 import java.io.File;
 import java.net.SocketAddress;
 import java.nio.file.Path;
@@ -33,18 +32,16 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.message.MessageType;
 import net.minecraft.network.message.SentMessage;
 import net.minecraft.network.message.SignedMessage;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
@@ -55,7 +52,6 @@ import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
-import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
@@ -66,14 +62,12 @@ import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CP
 import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.registry.CombinedDynamicRegistries;
-import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.SerializableRegistries;
 import net.minecraft.registry.ServerDynamicRegistryType;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagPacketSerializer;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
@@ -90,7 +84,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.PathUtil;
 import net.minecraft.util.UserCache;
-import net.minecraft.util.Uuids;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -99,7 +92,6 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.WorldSaveHandler;
-import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.border.WorldBorderListener;
 import net.minecraft.world.dimension.DimensionType;
@@ -111,6 +103,7 @@ public abstract class PlayerManager {
 	public static final File OPERATORS_FILE = new File("ops.json");
 	public static final File WHITELIST_FILE = new File("whitelist.json");
 	public static final Text FILTERED_FULL_TEXT = Text.translatable("chat.filtered_full");
+	public static final Text DUPLICATE_LOGIN_TEXT = Text.translatable("multiplayer.disconnect.duplicate_login");
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int LATENCY_UPDATE_INTERVAL = 600;
 	private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
@@ -126,7 +119,6 @@ public abstract class PlayerManager {
 	private final WorldSaveHandler saveHandler;
 	private boolean whitelistEnabled;
 	private final CombinedDynamicRegistries<ServerDynamicRegistryType> registryManager;
-	private final DynamicRegistryManager.Immutable syncedRegistryManager;
 	protected final int maxPlayers;
 	private int viewDistance;
 	private int simulationDistance;
@@ -139,12 +131,11 @@ public abstract class PlayerManager {
 	) {
 		this.server = server;
 		this.registryManager = registryManager;
-		this.syncedRegistryManager = new DynamicRegistryManager.ImmutableImpl(SerializableRegistries.streamDynamicEntries(registryManager)).toImmutable();
 		this.maxPlayers = maxPlayers;
 		this.saveHandler = saveHandler;
 	}
 
-	public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player) {
+	public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, int latency) {
 		GameProfile gameProfile = player.getGameProfile();
 		UserCache userCache = this.server.getUserCache();
 		String string;
@@ -172,17 +163,13 @@ public abstract class PlayerManager {
 		}
 
 		player.setServerWorld(serverWorld2);
-		String string2 = "local";
-		if (connection.getAddress() != null) {
-			string2 = connection.getAddress().toString();
-		}
-
+		String string2 = connection.getAddressAsString(this.server.shouldLogIps());
 		LOGGER.info(
 			"{}[{}] logged in with entity id {} at ({}, {}, {})", player.getName().getString(), string2, player.getId(), player.getX(), player.getY(), player.getZ()
 		);
 		WorldProperties worldProperties = serverWorld2.getLevelProperties();
 		player.setGameMode(nbtCompound);
-		ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player);
+		ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player, latency);
 		GameRules gameRules = serverWorld2.getGameRules();
 		boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
 		boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
@@ -190,33 +177,19 @@ public abstract class PlayerManager {
 			new GameJoinS2CPacket(
 				player.getId(),
 				worldProperties.isHardcore(),
-				player.interactionManager.getGameMode(),
-				player.interactionManager.getPreviousGameMode(),
 				this.server.getWorldRegistryKeys(),
-				this.syncedRegistryManager,
-				serverWorld2.getDimensionKey(),
-				serverWorld2.getRegistryKey(),
-				BiomeAccess.hashSeed(serverWorld2.getSeed()),
 				this.getMaxPlayerCount(),
 				this.viewDistance,
 				this.simulationDistance,
 				bl2,
 				!bl,
-				serverWorld2.isDebugWorld(),
-				serverWorld2.isFlat(),
-				player.getLastDeathPos(),
-				player.getPortalCooldown()
+				player.createCommonPlayerSpawnInfo(serverWorld2)
 			)
-		);
-		serverPlayNetworkHandler.sendPacket(new FeaturesS2CPacket(FeatureFlags.FEATURE_MANAGER.toId(serverWorld2.getEnabledFeatures())));
-		serverPlayNetworkHandler.sendPacket(
-			new CustomPayloadS2CPacket(CustomPayloadS2CPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(this.getServer().getServerModName()))
 		);
 		serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 		serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
 		serverPlayNetworkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.getInventory().selectedSlot));
 		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values()));
-		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsS2CPacket(TagPacketSerializer.serializeTags(this.registryManager)));
 		this.sendCommandTree(player);
 		player.getStatHandler().updateStatSet();
 		player.getRecipeBook().sendInitRecipesPacket(player);
@@ -243,9 +216,6 @@ public abstract class PlayerManager {
 		this.sendWorldInfo(player, serverWorld2);
 		serverWorld2.onPlayerConnected(player);
 		this.server.getBossBarManager().onPlayerConnect(player);
-		this.server
-			.getResourcePackProperties()
-			.ifPresent(properties -> player.sendResourcePackUrl(properties.url(), properties.hash(), properties.isRequired(), properties.prompt()));
 
 		for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
 			serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance));
@@ -296,8 +266,8 @@ public abstract class PlayerManager {
 			player.networkHandler.sendPacket(TeamS2CPacket.updateTeam(team, true));
 		}
 
-		for (int i = 0; i < 19; i++) {
-			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(i);
+		for (ScoreboardDisplaySlot scoreboardDisplaySlot : ScoreboardDisplaySlot.values()) {
+			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(scoreboardDisplaySlot);
 			if (scoreboardObjective != null && !set.contains(scoreboardObjective)) {
 				for (Packet<?> packet : scoreboard.createChangePackets(scoreboardObjective)) {
 					player.networkHandler.sendPacket(packet);
@@ -428,26 +398,29 @@ public abstract class PlayerManager {
 	}
 
 	public ServerPlayerEntity createPlayer(GameProfile profile) {
-		UUID uUID = Uuids.getUuidFromProfile(profile);
-		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
+		return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile);
+	}
 
-		for (int i = 0; i < this.players.size(); i++) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
+	public boolean disconnectDuplicateLogins(GameProfile profile) {
+		UUID uUID = profile.getId();
+		Set<ServerPlayerEntity> set = Sets.newIdentityHashSet();
+
+		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			if (serverPlayerEntity.getUuid().equals(uUID)) {
-				list.add(serverPlayerEntity);
+				set.add(serverPlayerEntity);
 			}
 		}
 
 		ServerPlayerEntity serverPlayerEntity2 = (ServerPlayerEntity)this.playerMap.get(profile.getId());
-		if (serverPlayerEntity2 != null && !list.contains(serverPlayerEntity2)) {
-			list.add(serverPlayerEntity2);
+		if (serverPlayerEntity2 != null) {
+			set.add(serverPlayerEntity2);
 		}
 
-		for (ServerPlayerEntity serverPlayerEntity3 : list) {
-			serverPlayerEntity3.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.duplicate_login"));
+		for (ServerPlayerEntity serverPlayerEntity3 : set) {
+			serverPlayerEntity3.networkHandler.disconnect(DUPLICATE_LOGIN_TEXT);
 		}
 
-		return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile);
+		return !set.isEmpty();
 	}
 
 	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
@@ -501,22 +474,9 @@ public abstract class PlayerManager {
 		}
 
 		byte b = (byte)(alive ? 1 : 0);
-		WorldProperties worldProperties = serverPlayerEntity.getWorld().getLevelProperties();
-		serverPlayerEntity.networkHandler
-			.sendPacket(
-				new PlayerRespawnS2CPacket(
-					serverPlayerEntity.getWorld().getDimensionKey(),
-					serverPlayerEntity.getWorld().getRegistryKey(),
-					BiomeAccess.hashSeed(serverPlayerEntity.getServerWorld().getSeed()),
-					serverPlayerEntity.interactionManager.getGameMode(),
-					serverPlayerEntity.interactionManager.getPreviousGameMode(),
-					serverPlayerEntity.getWorld().isDebugWorld(),
-					serverPlayerEntity.getServerWorld().isFlat(),
-					b,
-					serverPlayerEntity.getLastDeathPos(),
-					serverPlayerEntity.getPortalCooldown()
-				)
-			);
+		ServerWorld serverWorld3 = serverPlayerEntity.getServerWorld();
+		WorldProperties worldProperties = serverWorld3.getLevelProperties();
+		serverPlayerEntity.networkHandler.sendPacket(new PlayerRespawnS2CPacket(serverPlayerEntity.createCommonPlayerSpawnInfo(serverWorld3), b));
 		serverPlayerEntity.networkHandler
 			.requestTeleport(serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), serverPlayerEntity.getYaw(), serverPlayerEntity.getPitch());
 		serverPlayerEntity.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(serverWorld2.getSpawnPos(), serverWorld2.getSpawnAngle()));

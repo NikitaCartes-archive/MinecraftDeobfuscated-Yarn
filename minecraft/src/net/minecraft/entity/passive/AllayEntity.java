@@ -6,6 +6,7 @@ import com.mojang.serialization.Dynamic;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -66,7 +67,6 @@ import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.Vibrations;
 import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.event.listener.GameEventListener;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibrations {
@@ -78,7 +78,6 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	private static final Ingredient DUPLICATION_INGREDIENT = Ingredient.ofItems(Items.AMETHYST_SHARD);
 	private static final int DUPLICATION_COOLDOWN = 6000;
 	private static final int field_39679 = 3;
-	private static final double field_40129 = 0.4;
 	private static final TrackedData<Boolean> DANCING = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> CAN_DUPLICATE = DataTracker.registerData(AllayEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	protected static final ImmutableList<SensorType<? extends Sensor<? super AllayEntity>>> SENSORS = ImmutableList.of(
@@ -426,10 +425,6 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 		return this.dataTracker.get(DANCING);
 	}
 
-	public boolean isPanicking() {
-		return this.brain.getOptionalRegisteredMemory(MemoryModuleType.IS_PANICKING).isPresent();
-	}
-
 	public void setDancing(boolean dancing) {
 		if (!this.getWorld().isClient && this.canMoveVoluntarily() && (!dancing || !this.isPanicking())) {
 			this.dataTracker.set(DANCING, dancing);
@@ -554,8 +549,8 @@ public class AllayEntity extends PathAwareEntity implements InventoryOwner, Vibr
 	}
 
 	@Override
-	public double getHeightOffset() {
-		return 0.4;
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return 0.04F;
 	}
 
 	@Override

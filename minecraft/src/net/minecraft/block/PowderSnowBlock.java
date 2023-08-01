@@ -1,6 +1,7 @@
 package net.minecraft.block;
 
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.FallingBlockEntity;
@@ -122,7 +123,7 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
+	public ItemStack tryDrainFluid(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos, BlockState state) {
 		world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 		if (!world.isClient()) {
 			world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));

@@ -54,7 +54,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 	public void init() {
 		this.getSubscription(this.serverData.id);
 		this.addDrawableChild(ButtonWidget.builder(Text.translatable("mco.configure.world.subscription.extend"), button -> {
-			String string = Urls.getExtendJavaRealmsUrl(this.serverData.remoteSubscriptionId, this.client.getSession().getUuid());
+			String string = Urls.getExtendJavaRealmsUrl(this.serverData.remoteSubscriptionId, this.client.getSession().getUuidOrNull());
 			this.client.keyboard.setClipboard(string);
 			Util.getOperatingSystem().open(string);
 		}).dimensions(this.width / 2 - 100, row(6), 200, 20).build());
@@ -65,7 +65,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 				this.client.setScreen(new RealmsLongConfirmationScreen(this::onDeletionConfirmed, RealmsLongConfirmationScreen.Type.WARNING, text, text2, true));
 			}).dimensions(this.width / 2 - 100, row(10), 200, 20).build());
 		} else {
-			this.addDrawableChild(new ScrollableTextWidget(this.width / 2 - 100, row(8), 200, 46, RECURRING_INFO_TEXT, this.textRenderer).textColor(10526880));
+			this.addDrawableChild(new ScrollableTextWidget(this.width / 2 - 100, row(8), 200, 46, RECURRING_INFO_TEXT, this.textRenderer).textColor(-6250336));
 		}
 
 		this.addDrawableChild(
@@ -106,7 +106,7 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 			this.startDate = localPresentation(subscription.startDate);
 			this.type = subscription.type;
 		} catch (RealmsServiceException var5) {
-			LOGGER.error("Couldn't get subscription");
+			LOGGER.error("Couldn't get subscription", (Throwable)var5);
 			this.client.setScreen(new RealmsGenericErrorScreen(var5, this.parent));
 		}
 	}
@@ -129,19 +129,18 @@ public class RealmsSubscriptionInfoScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		int i = this.width / 2 - 100;
-		context.drawCenteredTextWithShadow(this.textRenderer, SUBSCRIPTION_TITLE, this.width / 2, 17, 16777215);
-		context.drawText(this.textRenderer, SUBSCRIPTION_START_LABEL_TEXT, i, row(0), 10526880, false);
-		context.drawText(this.textRenderer, this.startDate, i, row(1), 16777215, false);
+		context.drawCenteredTextWithShadow(this.textRenderer, SUBSCRIPTION_TITLE, this.width / 2, 17, -1);
+		context.drawText(this.textRenderer, SUBSCRIPTION_START_LABEL_TEXT, i, row(0), -6250336, false);
+		context.drawText(this.textRenderer, this.startDate, i, row(1), -1, false);
 		if (this.type == Subscription.SubscriptionType.NORMAL) {
-			context.drawText(this.textRenderer, TIME_LEFT_LABEL_TEXT, i, row(3), 10526880, false);
+			context.drawText(this.textRenderer, TIME_LEFT_LABEL_TEXT, i, row(3), -6250336, false);
 		} else if (this.type == Subscription.SubscriptionType.RECURRING) {
-			context.drawText(this.textRenderer, DAYS_LEFT_LABEL_TEXT, i, row(3), 10526880, false);
+			context.drawText(this.textRenderer, DAYS_LEFT_LABEL_TEXT, i, row(3), -6250336, false);
 		}
 
-		context.drawText(this.textRenderer, this.daysLeft, i, row(4), 16777215, false);
-		super.render(context, mouseX, mouseY, delta);
+		context.drawText(this.textRenderer, this.daysLeft, i, row(4), -1, false);
 	}
 
 	private Text daysLeftPresentation(int daysLeft) {

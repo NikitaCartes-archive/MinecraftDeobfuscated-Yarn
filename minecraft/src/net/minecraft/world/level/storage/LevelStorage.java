@@ -18,6 +18,7 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -95,7 +96,7 @@ public class LevelStorage {
 		"RandomSeed", "generatorName", "generatorOptions", "generatorVersion", "legacy_custom_options", "MapFeatures", "BonusChest"
 	);
 	private static final String DATA_KEY = "Data";
-	private static final AllowedSymlinkPathMatcher DEFAULT_ALLOWED_SYMLINK_MATCHER = new AllowedSymlinkPathMatcher(List.of());
+	private static final PathMatcher DEFAULT_ALLOWED_SYMLINK_MATCHER = path -> false;
 	public static final String ALLOWED_SYMLINKS_FILE_NAME = "allowed_symlinks.txt";
 	private final Path savesDirectory;
 	private final Path backupsDirectory;
@@ -327,10 +328,9 @@ public class LevelStorage {
 		return (path, dataFixer) -> {
 			try {
 				if (Files.isSymbolicLink(path)) {
-					List<SymlinkEntry> list = new ArrayList();
-					this.symlinkFinder.validate(path, list);
+					List<SymlinkEntry> list = this.symlinkFinder.validate(path);
 					if (!list.isEmpty()) {
-						LOGGER.warn(SymlinkValidationException.getMessage(path, list));
+						LOGGER.warn("{}", SymlinkValidationException.getMessage(path, list));
 						return new LevelSummary.SymlinkLevelSummary(levelSave.getRootPath(), levelSave.getIconPath());
 					}
 				}
@@ -482,6 +482,10 @@ public class LevelStorage {
 			this.directoryName = directoryName;
 			this.directory = new LevelStorage.LevelSave(path);
 			this.lock = SessionLock.create(path);
+		}
+
+		public LevelStorage getLevelStorage() {
+			return LevelStorage.this;
 		}
 
 		public String getDirectoryName() {

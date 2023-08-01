@@ -1,6 +1,5 @@
 package net.minecraft.server;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.util.Pair;
@@ -43,7 +42,6 @@ import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.text.Text;
 import net.minecraft.util.ApiServices;
 import net.minecraft.util.Util;
-import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.logging.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
@@ -77,14 +75,13 @@ public class Main {
 		OptionSpec<Void> optionSpec6 = optionParser.accepts("eraseCache");
 		OptionSpec<Void> optionSpec7 = optionParser.accepts("safeMode", "Loads level with vanilla datapack only");
 		OptionSpec<Void> optionSpec8 = optionParser.accepts("help").forHelp();
-		OptionSpec<String> optionSpec9 = optionParser.accepts("singleplayer").withRequiredArg();
-		OptionSpec<String> optionSpec10 = optionParser.accepts("universe").withRequiredArg().defaultsTo(".");
-		OptionSpec<String> optionSpec11 = optionParser.accepts("world").withRequiredArg();
-		OptionSpec<Integer> optionSpec12 = optionParser.accepts("port").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(-1);
-		OptionSpec<String> optionSpec13 = optionParser.accepts("serverId").withRequiredArg();
-		OptionSpec<Void> optionSpec14 = optionParser.accepts("jfrProfile");
-		OptionSpec<Path> optionSpec15 = optionParser.accepts("pidFile").withRequiredArg().withValuesConvertedBy(new PathConverter());
-		OptionSpec<String> optionSpec16 = optionParser.nonOptions();
+		OptionSpec<String> optionSpec9 = optionParser.accepts("universe").withRequiredArg().defaultsTo(".");
+		OptionSpec<String> optionSpec10 = optionParser.accepts("world").withRequiredArg();
+		OptionSpec<Integer> optionSpec11 = optionParser.accepts("port").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(-1);
+		OptionSpec<String> optionSpec12 = optionParser.accepts("serverId").withRequiredArg();
+		OptionSpec<Void> optionSpec13 = optionParser.accepts("jfrProfile");
+		OptionSpec<Path> optionSpec14 = optionParser.accepts("pidFile").withRequiredArg().withValuesConvertedBy(new PathConverter());
+		OptionSpec<String> optionSpec15 = optionParser.nonOptions();
 
 		try {
 			OptionSet optionSet = optionParser.parse(args);
@@ -93,13 +90,13 @@ public class Main {
 				return;
 			}
 
-			Path path = optionSet.valueOf(optionSpec15);
+			Path path = optionSet.valueOf(optionSpec14);
 			if (path != null) {
 				writePidFile(path);
 			}
 
 			CrashReport.initCrashReport();
-			if (optionSet.has(optionSpec14)) {
+			if (optionSet.has(optionSpec13)) {
 				FlightProfiler.INSTANCE.start(InstanceType.SERVER);
 			}
 
@@ -121,9 +118,9 @@ public class Main {
 				return;
 			}
 
-			File file = new File(optionSet.valueOf(optionSpec10));
+			File file = new File(optionSet.valueOf(optionSpec9));
 			ApiServices apiServices = ApiServices.create(new YggdrasilAuthenticationService(Proxy.NO_PROXY), file);
-			String string = (String)Optional.ofNullable(optionSet.valueOf(optionSpec11)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
+			String string = (String)Optional.ofNullable(optionSet.valueOf(optionSpec10)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
 			LevelStorage levelStorage = LevelStorage.create(file.toPath());
 			LevelStorage.Session session = levelStorage.createSession(string);
 			LevelSummary levelSummary = session.getLevelSummary();
@@ -144,7 +141,7 @@ public class Main {
 				LOGGER.warn("Safe mode active, only vanilla datapack will be loaded");
 			}
 
-			ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session.getDirectory(WorldSavePath.DATAPACKS));
+			ResourcePackManager resourcePackManager = VanillaDataPackProvider.createManager(session);
 
 			SaveLoader saveLoader;
 			try {
@@ -198,9 +195,9 @@ public class Main {
 							)
 					)
 					.get();
-			} catch (Exception var37) {
+			} catch (Exception var36) {
 				LOGGER.warn(
-					"Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)var37
+					"Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)var36
 				);
 				return;
 			}
@@ -217,11 +214,10 @@ public class Main {
 					MinecraftDedicatedServer minecraftDedicatedServerx = new MinecraftDedicatedServer(
 						threadx, session, resourcePackManager, saveLoader, serverPropertiesLoader, Schemas.getFixer(), apiServices, WorldGenerationProgressLogger::new
 					);
-					minecraftDedicatedServerx.setHostProfile(optionSet.has(optionSpec9) ? new GameProfile(null, optionSet.valueOf(optionSpec9)) : null);
-					minecraftDedicatedServerx.setServerPort(optionSet.valueOf(optionSpec12));
+					minecraftDedicatedServerx.setServerPort(optionSet.valueOf(optionSpec11));
 					minecraftDedicatedServerx.setDemo(optionSet.has(optionSpec3));
-					minecraftDedicatedServerx.setServerId(optionSet.valueOf(optionSpec13));
-					boolean blx = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec16).contains("nogui");
+					minecraftDedicatedServerx.setServerId(optionSet.valueOf(optionSpec12));
+					boolean blx = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec15).contains("nogui");
 					if (blx && !GraphicsEnvironment.isHeadless()) {
 						minecraftDedicatedServerx.createGui();
 					}
@@ -236,8 +232,8 @@ public class Main {
 			};
 			thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 			Runtime.getRuntime().addShutdownHook(thread);
-		} catch (Exception var38) {
-			LOGGER.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", (Throwable)var38);
+		} catch (Exception var37) {
+			LOGGER.error(LogUtils.FATAL_MARKER, "Failed to start the minecraft server", (Throwable)var37);
 		}
 	}
 

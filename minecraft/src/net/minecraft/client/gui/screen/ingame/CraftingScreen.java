@@ -16,7 +16,6 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class CraftingScreen extends HandledScreen<CraftingScreenHandler> implements RecipeBookProvider {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/crafting_table.png");
-	private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
 	private final RecipeBookWidget recipeBook = new RecipeBookWidget();
 	private boolean narrow;
 
@@ -30,7 +29,7 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 		this.narrow = this.width < 379;
 		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.handler);
 		this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
-		this.addDrawableChild(new TexturedButtonWidget(this.x + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
+		this.addDrawableChild(new TexturedButtonWidget(this.x + 5, this.height / 2 - 49, 20, 18, RecipeBookWidget.BUTTON_TEXTURES, button -> {
 			this.recipeBook.toggleOpen();
 			this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
 			button.setPosition(this.x + 5, this.height / 2 - 49);
@@ -48,13 +47,12 @@ public class CraftingScreen extends HandledScreen<CraftingScreenHandler> impleme
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
 		if (this.recipeBook.isOpen() && this.narrow) {
-			this.drawBackground(context, delta, mouseX, mouseY);
+			this.renderBackground(context, mouseX, mouseY, delta);
 			this.recipeBook.render(context, mouseX, mouseY, delta);
 		} else {
-			this.recipeBook.render(context, mouseX, mouseY, delta);
 			super.render(context, mouseX, mouseY, delta);
+			this.recipeBook.render(context, mouseX, mouseY, delta);
 			this.recipeBook.drawGhostSlots(context, this.x, this.y, true, delta);
 		}
 

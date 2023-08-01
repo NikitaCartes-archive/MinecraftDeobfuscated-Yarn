@@ -56,7 +56,6 @@ import net.minecraft.predicate.entity.LightningBoltPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.entity.PlayerPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
-import net.minecraft.recipe.CraftingDecoratedPotRecipe;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryWrapper;
@@ -624,9 +623,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		Advancement.Builder.create()
 			.parent(advancement11)
 			.display(
-				CraftingDecoratedPotRecipe.getPotStackWith(
-					new DecoratedPotBlockEntity.Sherds(Items.BRICK, Items.HEART_POTTERY_SHERD, Items.BRICK, Items.EXPLORER_POTTERY_SHERD)
-				),
+				DecoratedPotBlockEntity.getStackWith(new DecoratedPotBlockEntity.Sherds(Items.BRICK, Items.HEART_POTTERY_SHERD, Items.BRICK, Items.EXPLORER_POTTERY_SHERD)),
 				Text.translatable("advancements.adventure.craft_decorated_pot_using_only_sherds.title"),
 				Text.translatable("advancements.adventure.craft_decorated_pot_using_only_sherds.description"),
 				null,
@@ -673,6 +670,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				true,
 				false
 			)
+			.rewards(AdvancementRewards.Builder.experience(150))
 			.build(exporter, "adventure/trim_with_all_exclusive_armor_patterns");
 		Advancement.Builder.create()
 			.parent(advancement)

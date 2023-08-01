@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -33,8 +34,6 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsBackupScreen extends RealmsScreen {
 	static final Logger LOGGER = LogUtils.getLogger();
-	static final Identifier PLUS_ICON = new Identifier("realms", "textures/gui/realms/plus_icon.png");
-	static final Identifier RESTORE_ICON = new Identifier("realms", "textures/gui/realms/restore_icon.png");
 	static final Text RESTORE_TEXT = Text.translatable("mco.backup.button.restore");
 	static final Text CHANGES_TOOLTIP = Text.translatable("mco.backup.changes.tooltip");
 	private static final Text BACKUPS_TEXT = Text.translatable("mco.configure.world.backup");
@@ -52,7 +51,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 	private static final String UPLOADED = "uploaded";
 
 	public RealmsBackupScreen(RealmsConfigureWorldScreen parent, RealmsServer serverData, int slotId) {
-		super(Text.translatable("mco.configure.world.backup"));
+		super(BACKUPS_TEXT);
 		this.parent = parent;
 		this.serverData = serverData;
 		this.slotId = slotId;
@@ -180,16 +179,14 @@ public class RealmsBackupScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.backupObjectSelectionList.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, 16777215);
-		context.drawText(this.textRenderer, BACKUPS_TEXT, (this.width - 150) / 2 - 90, 20, 10526880, false);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, -1);
 		if (this.noBackups) {
-			context.drawText(this.textRenderer, NO_BACKUPS_TEXT, 20, this.height / 2 - 10, 16777215, false);
+			context.drawText(this.textRenderer, NO_BACKUPS_TEXT, 20, this.height / 2 - 10, -1, false);
 		}
 
 		this.downloadButton.active = !this.noBackups;
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -210,11 +207,6 @@ public class RealmsBackupScreen extends RealmsScreen {
 		@Override
 		public int getMaxPosition() {
 			return this.getEntryCount() * 36;
-		}
-
-		@Override
-		public void renderBackground(DrawContext context) {
-			RealmsBackupScreen.this.renderBackground(context);
 		}
 
 		@Override
@@ -244,6 +236,12 @@ public class RealmsBackupScreen extends RealmsScreen {
 	class BackupObjectSelectionListEntry extends AlwaysSelectedEntryListWidget.Entry<RealmsBackupScreen.BackupObjectSelectionListEntry> {
 		private static final int field_44525 = 2;
 		private static final int field_44526 = 7;
+		private static final ButtonTextures CHANGES_BUTTON_TEXTURES = new ButtonTextures(
+			new Identifier("backup/changes"), new Identifier("backup/changes_highlighted")
+		);
+		private static final ButtonTextures RESTORE_BUTTON_TEXTURES = new ButtonTextures(
+			new Identifier("backup/restore"), new Identifier("backup/restore_highlighted")
+		);
 		private final Backup mBackup;
 		private final List<ClickableWidget> buttons = new ArrayList();
 		@Nullable
@@ -300,13 +298,9 @@ public class RealmsBackupScreen extends RealmsScreen {
 				l,
 				9,
 				9,
-				0,
-				0,
-				9,
-				RealmsBackupScreen.PLUS_ICON,
-				9,
-				18,
-				button -> RealmsBackupScreen.this.client.setScreen(new RealmsBackupInfoScreen(RealmsBackupScreen.this, this.mBackup))
+				CHANGES_BUTTON_TEXTURES,
+				button -> RealmsBackupScreen.this.client.setScreen(new RealmsBackupInfoScreen(RealmsBackupScreen.this, this.mBackup)),
+				ScreenTexts.EMPTY
 			);
 			this.infoButton.setTooltip(Tooltip.of(RealmsBackupScreen.CHANGES_TOOLTIP));
 			this.buttons.add(this.infoButton);
@@ -322,13 +316,9 @@ public class RealmsBackupScreen extends RealmsScreen {
 				l,
 				17,
 				10,
-				0,
-				0,
-				10,
-				RealmsBackupScreen.RESTORE_ICON,
-				17,
-				20,
-				button -> RealmsBackupScreen.this.restoreClicked(RealmsBackupScreen.this.backups.indexOf(this.mBackup))
+				RESTORE_BUTTON_TEXTURES,
+				button -> RealmsBackupScreen.this.restoreClicked(RealmsBackupScreen.this.backups.indexOf(this.mBackup)),
+				ScreenTexts.EMPTY
 			);
 			this.restoreButton.setTooltip(Tooltip.of(RealmsBackupScreen.RESTORE_TEXT));
 			this.buttons.add(this.restoreButton);

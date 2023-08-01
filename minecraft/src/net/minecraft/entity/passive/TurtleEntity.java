@@ -7,7 +7,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TurtleEggBlock;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -58,6 +60,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<BlockPos> HOME_POS = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
@@ -298,6 +301,7 @@ public class TurtleEntity extends AnimalEntity {
 			BlockPos blockPos = this.getBlockPos();
 			if (TurtleEggBlock.isSandBelow(this.getWorld(), blockPos)) {
 				this.getWorld().syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(this.getWorld().getBlockState(blockPos.down())));
+				this.emitGameEvent(GameEvent.ENTITY_ACTION);
 			}
 		}
 	}
@@ -332,6 +336,11 @@ public class TurtleEntity extends AnimalEntity {
 	@Override
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		this.damage(this.getDamageSources().lightningBolt(), Float.MAX_VALUE);
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + (this.isBaby() ? 0.0F : 0.15625F) * scaleFactor, -0.25F * scaleFactor);
 	}
 
 	static class GoHomeGoal extends Goal {

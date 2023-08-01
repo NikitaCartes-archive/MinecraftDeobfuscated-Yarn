@@ -24,7 +24,6 @@ public class Generic3x3ContainerScreen extends HandledScreen<Generic3x3Container
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
 		super.render(context, mouseX, mouseY, delta);
 		this.drawMouseoverTooltip(context, mouseX, mouseY);
 	}

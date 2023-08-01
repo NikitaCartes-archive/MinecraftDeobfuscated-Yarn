@@ -2,12 +2,11 @@ package net.minecraft.client.gui.screen.option;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.screen.ScreenTexts;
@@ -32,12 +31,15 @@ public class CreditsAndAttributionScreen extends Screen {
 	@Override
 	protected void init() {
 		this.layout.addHeader(new TextWidget(this.getTitle(), this.textRenderer));
-		GridWidget gridWidget = this.layout.addBody(new GridWidget()).setSpacing(8);
-		gridWidget.getMainPositioner().alignHorizontalCenter();
-		GridWidget.Adder adder = gridWidget.createAdder(1);
-		adder.add(ButtonWidget.builder(CREDITS_TEXT, button -> this.openCredits()).width(210).build());
-		adder.add(ButtonWidget.builder(ATTRIBUTION_TEXT, ConfirmLinkScreen.opening("https://aka.ms/MinecraftJavaAttribution", this, true)).width(210).build());
-		adder.add(ButtonWidget.builder(LICENSE_TEXT, ConfirmLinkScreen.opening("https://aka.ms/MinecraftJavaLicenses", this, true)).width(210).build());
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical()).spacing(8);
+		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
+		directionalLayoutWidget.add(ButtonWidget.builder(CREDITS_TEXT, button -> this.openCredits()).width(210).build());
+		directionalLayoutWidget.add(
+			ButtonWidget.builder(ATTRIBUTION_TEXT, ConfirmLinkScreen.opening("https://aka.ms/MinecraftJavaAttribution", this, true)).width(210).build()
+		);
+		directionalLayoutWidget.add(
+			ButtonWidget.builder(LICENSE_TEXT, ConfirmLinkScreen.opening("https://aka.ms/MinecraftJavaLicenses", this, true)).width(210).build()
+		);
 		this.layout.addFooter(ButtonWidget.builder(ScreenTexts.DONE, button -> this.close()).build());
 		this.layout.refreshPositions();
 		this.layout.forEachChild(this::addDrawableChild);
@@ -55,11 +57,5 @@ public class CreditsAndAttributionScreen extends Screen {
 	@Override
 	public void close() {
 		this.client.setScreen(this.parent);
-	}
-
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

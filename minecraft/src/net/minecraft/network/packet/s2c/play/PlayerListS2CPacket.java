@@ -5,6 +5,7 @@ import com.mojang.authlib.GameProfile;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
@@ -93,8 +94,9 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 			gameProfile.getProperties().putAll(buf.readPropertyMap());
 			serialized.gameProfile = gameProfile;
 		}, (buf, entry) -> {
-			buf.writeString(entry.profile().getName(), 16);
-			buf.writePropertyMap(entry.profile().getProperties());
+			GameProfile gameProfile = (GameProfile)Objects.requireNonNull(entry.profile());
+			buf.writeString(gameProfile.getName(), 16);
+			buf.writePropertyMap(gameProfile.getProperties());
 		}),
 		INITIALIZE_CHAT(
 			(serialized, buf) -> serialized.session = buf.readNullable(PublicPlayerSession.Serialized::fromBuf),
@@ -127,7 +129,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public static record Entry(
 		UUID profileId,
-		GameProfile profile,
+		@Nullable GameProfile profile,
 		boolean listed,
 		int latency,
 		GameMode gameMode,
@@ -140,7 +142,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				player.getUuid(),
 				player.getGameProfile(),
 				true,
-				player.pingMilliseconds,
+				player.networkHandler.getLatency(),
 				player.interactionManager.getGameMode(),
 				player.getPlayerListName(),
 				Nullables.map(player.getSession(), PublicPlayerSession::toSerialized)
@@ -150,6 +152,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	static class Serialized {
 		final UUID profileId;
+		@Nullable
 		GameProfile gameProfile;
 		boolean listed;
 		int latency;
@@ -161,7 +164,6 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		Serialized(UUID profileId) {
 			this.profileId = profileId;
-			this.gameProfile = new GameProfile(profileId, null);
 		}
 
 		PlayerListS2CPacket.Entry toEntry() {

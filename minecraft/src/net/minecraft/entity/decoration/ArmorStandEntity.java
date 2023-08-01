@@ -539,11 +539,6 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public double getHeightOffset() {
-		return this.isMarker() ? 0.0 : 0.1F;
-	}
-
-	@Override
 	public void travel(Vec3d movementInput) {
 		if (this.canClip()) {
 			super.travel(movementInput);

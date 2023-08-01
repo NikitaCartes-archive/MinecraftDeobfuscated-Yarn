@@ -13,7 +13,7 @@ public class NetherrackBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
 		if (!world.getBlockState(pos.up()).isTransparent(world, pos)) {
 			return false;
 		} else {

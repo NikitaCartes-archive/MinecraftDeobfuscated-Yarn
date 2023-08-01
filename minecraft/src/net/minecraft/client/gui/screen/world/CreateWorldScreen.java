@@ -70,6 +70,7 @@ import net.minecraft.util.PathUtil;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.path.SymlinkFinder;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
@@ -107,6 +108,7 @@ public class CreateWorldScreen extends Screen {
 	final WorldCreator worldCreator;
 	private final TabManager tabManager = new TabManager(this::addDrawableChild, child -> this.remove(child));
 	private boolean recreated;
+	private final SymlinkFinder symlinkFinder;
 	@Nullable
 	private final Screen parent;
 	@Nullable
@@ -120,7 +122,7 @@ public class CreateWorldScreen extends Screen {
 
 	public static void create(MinecraftClient client, @Nullable Screen parent) {
 		showMessage(client, PREPARING_TEXT);
-		ResourcePackManager resourcePackManager = new ResourcePackManager(new VanillaDataPackProvider());
+		ResourcePackManager resourcePackManager = new ResourcePackManager(new VanillaDataPackProvider(client.getSymlinkFinder()));
 		SaveLoading.ServerConfig serverConfig = createServerConfig(resourcePackManager, DataConfiguration.SAFE_MODE);
 		CompletableFuture<GeneratorOptionsHolder> completableFuture = SaveLoading.load(
 			serverConfig,
@@ -179,16 +181,12 @@ public class CreateWorldScreen extends Screen {
 	) {
 		super(Text.translatable("selectWorld.create"));
 		this.parent = parent;
+		this.symlinkFinder = client.getSymlinkFinder();
 		this.worldCreator = new WorldCreator(client.getLevelStorage().getSavesDirectory(), generatorOptionsHolder, defaultWorldType, seed);
 	}
 
 	public WorldCreator getWorldCreator() {
 		return this.worldCreator;
-	}
-
-	@Override
-	public void tick() {
-		this.tabManager.tick();
 	}
 
 	@Override
@@ -304,9 +302,8 @@ public class CreateWorldScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		context.drawTexture(FOOTER_SEPARATOR_TEXTURE, 0, MathHelper.roundUpToMultiple(this.height - 36 - 2, 2), 0.0F, 0.0F, this.width, 2, 32, 2);
 		super.render(context, mouseX, mouseY, delta);
+		context.drawTexture(FOOTER_SEPARATOR_TEXTURE, 0, MathHelper.roundUpToMultiple(this.height - 36 - 2, 2), 0.0F, 0.0F, this.width, 2, 32, 2);
 	}
 
 	@Override
@@ -601,7 +598,7 @@ public class CreateWorldScreen extends Screen {
 		Path path = this.getDataPackTempDir();
 		if (path != null) {
 			if (this.packManager == null) {
-				this.packManager = VanillaDataPackProvider.createManager(path);
+				this.packManager = VanillaDataPackProvider.createManager(path, this.symlinkFinder);
 				this.packManager.scanPacks();
 			}
 
@@ -625,7 +622,7 @@ public class CreateWorldScreen extends Screen {
 			GridWidget.Adder adder2 = new GridWidget().setRowSpacing(4).createAdder(1);
 			adder2.add(new TextWidget(CreateWorldScreen.ENTER_NAME_TEXT, CreateWorldScreen.this.client.textRenderer), adder2.copyPositioner().marginLeft(1));
 			this.worldNameField = adder2.add(
-				new TextFieldWidget(CreateWorldScreen.this.textRenderer, 0, 0, 208, 20, Text.translatable("selectWorld.enterName")), adder2.copyPositioner().margin(1)
+				new TextFieldWidget(CreateWorldScreen.this.textRenderer, 208, 20, Text.translatable("selectWorld.enterName")), adder2.copyPositioner().margin(1)
 			);
 			this.worldNameField.setText(CreateWorldScreen.this.worldCreator.getWorldName());
 			this.worldNameField.setChangedListener(CreateWorldScreen.this.worldCreator::setWorldName);
@@ -677,11 +674,6 @@ public class CreateWorldScreen extends Screen {
 						.build()
 				);
 			}
-		}
-
-		@Override
-		public void tick() {
-			this.worldNameField.tick();
 		}
 	}
 
@@ -764,7 +756,7 @@ public class CreateWorldScreen extends Screen {
 			CreateWorldScreen.this.worldCreator.addListener(creator -> this.customizeButton.active = !creator.isDebug() && creator.getLevelScreenProvider() != null);
 			GridWidget.Adder adder2 = new GridWidget().setRowSpacing(4).createAdder(1);
 			adder2.add(new TextWidget(ENTER_SEED_TEXT, CreateWorldScreen.this.textRenderer).alignLeft());
-			this.seedField = adder2.add(new TextFieldWidget(CreateWorldScreen.this.textRenderer, 0, 0, 308, 20, Text.translatable("selectWorld.enterSeed")) {
+			this.seedField = adder2.add(new TextFieldWidget(CreateWorldScreen.this.textRenderer, 308, 20, Text.translatable("selectWorld.enterSeed")) {
 				@Override
 				protected MutableText getNarrationMessage() {
 					return super.getNarrationMessage().append(ScreenTexts.SENTENCE_SEPARATOR).append(CreateWorldScreen.WorldTab.SEED_INFO_TEXT);
@@ -812,11 +804,6 @@ public class CreateWorldScreen extends Screen {
 			return worldTypeButton.getValue().isAmplified()
 				? ScreenTexts.joinSentences(worldTypeButton.getGenericNarrationMessage(), AMPLIFIED_GENERATOR_INFO_TEXT)
 				: worldTypeButton.getGenericNarrationMessage();
-		}
-
-		@Override
-		public void tick() {
-			this.seedField.tick();
 		}
 	}
 }

@@ -61,7 +61,6 @@ import org.slf4j.Logger;
 public class ChunkBuilder {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_32831 = 4;
-	private static final VertexFormat POSITION_COLOR_TEXTURE_LIGHT_NORMAL = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
 	private static final int field_35300 = 2;
 	private final PriorityBlockingQueue<ChunkBuilder.BuiltChunk.Task> prioritizedTaskQueue = Queues.newPriorityBlockingQueue();
 	private final Queue<ChunkBuilder.BuiltChunk.Task> taskQueue = Queues.<ChunkBuilder.BuiltChunk.Task>newLinkedBlockingDeque();
@@ -112,7 +111,7 @@ public class ChunkBuilder {
 		this.threadBuffers = Queues.<BlockBufferBuilderStorage>newArrayDeque(list);
 		this.bufferCount = this.threadBuffers.size();
 		this.executor = executor;
-		this.mailbox = TaskExecutor.create(executor, "Chunk Renderer");
+		this.mailbox = TaskExecutor.create(executor, "Section Renderer");
 		this.mailbox.send(this::scheduleRunTasks);
 	}
 
@@ -131,7 +130,7 @@ public class ChunkBuilder {
 					.thenCompose(future -> future)
 					.whenComplete((result, throwable) -> {
 						if (throwable != null) {
-							MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Batching chunks"));
+							MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Batching sections"));
 						} else {
 							this.mailbox.send(() -> {
 								if (result == ChunkBuilder.Result.SUCCESSFUL) {
@@ -445,6 +444,13 @@ public class ChunkBuilder {
 			task.run(ChunkBuilder.this.buffers);
 		}
 
+		public boolean method_52841(int i, int j, int k) {
+			BlockPos blockPos = this.getOrigin();
+			return i == ChunkSectionPos.getSectionCoord(blockPos.getX())
+				|| k == ChunkSectionPos.getSectionCoord(blockPos.getZ())
+				|| j == ChunkSectionPos.getSectionCoord(blockPos.getY());
+		}
+
 		@Environment(EnvType.CLIENT)
 		class RebuildTask extends ChunkBuilder.BuiltChunk.Task {
 			@Nullable
@@ -493,7 +499,7 @@ public class ChunkBuilder {
 						});
 						return Util.combine(list).handle((results, throwable) -> {
 							if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
-								MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Rendering chunk"));
+								MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Rendering section"));
 							}
 
 							if (this.cancelled.get()) {
@@ -537,8 +543,7 @@ public class ChunkBuilder {
 							}
 						}
 
-						BlockState blockState2 = chunkRendererRegion.getBlockState(blockPos3);
-						FluidState fluidState = blockState2.getFluidState();
+						FluidState fluidState = blockState.getFluidState();
 						if (!fluidState.isEmpty()) {
 							RenderLayer renderLayer = RenderLayers.getFluidLayer(fluidState);
 							BufferBuilder bufferBuilder = storage.get(renderLayer);
@@ -546,7 +551,7 @@ public class ChunkBuilder {
 								BuiltChunk.this.beginBufferBuilding(bufferBuilder);
 							}
 
-							blockRenderManager.renderFluid(blockPos3, chunkRendererRegion, bufferBuilder, blockState2, fluidState);
+							blockRenderManager.renderFluid(blockPos3, chunkRendererRegion, bufferBuilder, blockState, fluidState);
 						}
 
 						if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
@@ -662,7 +667,7 @@ public class ChunkBuilder {
 								.thenApply(void_ -> ChunkBuilder.Result.CANCELLED);
 							return completableFuture.handle((result, throwable) -> {
 								if (throwable != null && !(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
-									MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Rendering chunk"));
+									MinecraftClient.getInstance().setCrashReportSupplierAndAddDetails(CrashReport.create(throwable, "Rendering section"));
 								}
 
 								return this.cancelled.get() ? ChunkBuilder.Result.CANCELLED : ChunkBuilder.Result.SUCCESSFUL;

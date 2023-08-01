@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import java.util.Optional;
+import javax.annotation.Nullable;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -14,7 +16,7 @@ import net.minecraft.world.WorldAccess;
 
 public interface Waterloggable extends FluidDrainable, FluidFillable {
 	@Override
-	default boolean canFillWithFluid(BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
+	default boolean canFillWithFluid(@Nullable PlayerEntity player, BlockView world, BlockPos pos, BlockState state, Fluid fluid) {
 		return fluid == Fluids.WATER;
 	}
 
@@ -33,7 +35,7 @@ public interface Waterloggable extends FluidDrainable, FluidFillable {
 	}
 
 	@Override
-	default ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
+	default ItemStack tryDrainFluid(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos, BlockState state) {
 		if ((Boolean)state.get(Properties.WATERLOGGED)) {
 			world.setBlockState(pos, state.with(Properties.WATERLOGGED, Boolean.valueOf(false)), Block.NOTIFY_ALL);
 			if (!state.canPlaceAt(world, pos)) {

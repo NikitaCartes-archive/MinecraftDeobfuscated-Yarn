@@ -46,7 +46,6 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	@Nullable
 	private E selected;
 	private boolean renderBackground = true;
-	private boolean renderHorizontalShadows = true;
 	@Nullable
 	private E hoveredEntry;
 
@@ -95,10 +94,6 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 	public void setRenderBackground(boolean renderBackground) {
 		this.renderBackground = renderBackground;
-	}
-
-	public void setRenderHorizontalShadows(boolean renderHorizontalShadows) {
-		this.renderHorizontalShadows = renderHorizontalShadows;
 	}
 
 	@Nullable
@@ -188,15 +183,11 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected void renderHeader(DrawContext context, int x, int y) {
 	}
 
-	protected void renderBackground(DrawContext context) {
-	}
-
 	protected void renderDecorations(DrawContext context, int mouseX, int mouseY) {
 	}
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
 		int i = this.getScrollbarPositionX();
 		int j = i + 6;
 		this.hoveredEntry = this.isMouseOver((double)mouseX, (double)mouseY) ? this.getEntryAtPosition((double)mouseX, (double)mouseY) : null;
@@ -215,6 +206,9 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				32
 			);
 			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			int l = 4;
+			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.top, this.right, this.top + 4, -16777216, 0, 0);
+			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216, 0);
 		}
 
 		int k = this.getRowLeft();
@@ -226,17 +220,6 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 		this.renderList(context, mouseX, mouseY, delta);
 		context.disableScissor();
-		if (this.renderHorizontalShadows) {
-			int m = 32;
-			context.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
-			context.drawTexture(Screen.OPTIONS_BACKGROUND_TEXTURE, this.left, 0, 0.0F, 0.0F, this.width, this.top, 32, 32);
-			context.drawTexture(Screen.OPTIONS_BACKGROUND_TEXTURE, this.left, this.bottom, 0.0F, (float)this.bottom, this.width, this.height - this.bottom, 32, 32);
-			context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-			int n = 4;
-			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.top, this.right, this.top + 4, -16777216, 0, 0);
-			context.fillGradient(RenderLayer.getGuiOverlay(), this.left, this.bottom - 4, this.right, this.bottom, 0, -16777216, 0);
-		}
-
 		int m = this.getMaxScroll();
 		if (m > 0) {
 			int n = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
@@ -366,8 +349,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-		this.setScrollAmount(this.getScrollAmount() - amount * (double)this.itemHeight / 2.0);
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		this.setScrollAmount(this.getScrollAmount() - verticalAmount * (double)this.itemHeight / 2.0);
 		return true;
 	}
 

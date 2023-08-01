@@ -189,8 +189,8 @@ public class ChatReportScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 		int i = this.width / 2;
-		this.renderBackground(context);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, i, 10, 16777215);
 		context.drawCenteredTextWithShadow(this.textRenderer, OBSERVED_WHAT_TEXT, i, this.getSelectionButtonY() - 9 - 6, 16777215);
 		if (this.reasonDescription != null) {
@@ -198,13 +198,6 @@ public class ChatReportScreen extends Screen {
 		}
 
 		context.drawTextWithShadow(this.textRenderer, MORE_COMMENTS_TEXT, this.getWidgetsLeft(), this.getEditBoxTop() - 9 - 6, 16777215);
-		super.render(context, mouseX, mouseY, delta);
-	}
-
-	@Override
-	public void tick() {
-		this.editBox.tick();
-		super.tick();
 	}
 
 	@Override

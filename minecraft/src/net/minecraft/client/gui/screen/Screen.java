@@ -114,6 +114,8 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackground(context, mouseX, mouseY, delta);
+
 		for (Drawable drawable : this.drawables) {
 			drawable.render(context, mouseX, mouseY, delta);
 		}
@@ -354,15 +356,23 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	/**
 	 * Renders the background of this screen.
 	 * 
-	 * <p>If the client is in a world, renders the translucent background gradient.
+	 * <p>If the client is in a world, {@linkplain #renderIngameBackground
+	 * renders the translucent background gradient}.
 	 * Otherwise {@linkplain #renderBackgroundTexture renders the background texture}.
 	 */
-	public void renderBackground(DrawContext context) {
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		if (this.client.world != null) {
-			context.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
+			this.renderInGameBackground(context);
 		} else {
 			this.renderBackgroundTexture(context);
 		}
+	}
+
+	/**
+	 * Renders the translucent background gradient used as the in-game screen background.
+	 */
+	public void renderInGameBackground(DrawContext context) {
+		context.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
 	}
 
 	/**

@@ -22,16 +22,17 @@ import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsConfigureWorldScreen extends RealmsScreen {
+	private static final Identifier EXPIRED_STATUS_TEXTURE = new Identifier("realm_status/expired");
+	private static final Identifier EXPIRES_SOON_STATUS_TEXTURE = new Identifier("realm_status/expires_soon");
+	private static final Identifier OPEN_STATUS_TEXTURE = new Identifier("realm_status/open");
+	private static final Identifier CLOSED_STATUS_TEXTURE = new Identifier("realm_status/closed");
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final Identifier ON_ICON = new Identifier("realms", "textures/gui/realms/on_icon.png");
-	private static final Identifier OFF_ICON = new Identifier("realms", "textures/gui/realms/off_icon.png");
-	private static final Identifier EXPIRED_ICON = new Identifier("realms", "textures/gui/realms/expired_icon.png");
-	private static final Identifier EXPIRES_SOON_ICON = new Identifier("realms", "textures/gui/realms/expires_soon_icon.png");
 	private static final Text WORLDS_TITLE = Text.translatable("mco.configure.worlds.title");
 	private static final Text CONFIGURE_REALM_TITLE = Text.translatable("mco.configure.world.title");
 	private static final Text EXPIRED_TEXT = Text.translatable("mco.selectServer.expired");
@@ -57,7 +58,6 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	private ButtonWidget resetWorldButton;
 	private ButtonWidget switchMinigameButton;
 	private boolean stateChanged;
-	private int animTick;
 	private int clicks;
 	private final List<RealmsWorldSlotButton> slotButtons = Lists.<RealmsWorldSlotButton>newArrayList();
 
@@ -209,7 +209,6 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	@Override
 	public void tick() {
 		super.tick();
-		this.animTick++;
 		this.clicks--;
 		if (this.clicks < 0) {
 			this.clicks = 0;
@@ -220,29 +219,28 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.tooltip = null;
-		this.renderBackground(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, WORLDS_TITLE, this.width / 2, row(4), 16777215);
 		super.render(context, mouseX, mouseY, delta);
+		this.tooltip = null;
+		context.drawCenteredTextWithShadow(this.textRenderer, WORLDS_TITLE, this.width / 2, row(4), -1);
 		if (this.server == null) {
-			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, 16777215);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
 		} else {
 			String string = this.server.getName();
 			int i = this.textRenderer.getWidth(string);
-			int j = this.server.state == RealmsServer.State.CLOSED ? 10526880 : 8388479;
+			int j = this.server.state == RealmsServer.State.CLOSED ? -6250336 : 8388479;
 			int k = this.textRenderer.getWidth(this.title);
-			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, 16777215);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 12, -1);
 			context.drawCenteredTextWithShadow(this.textRenderer, string, this.width / 2, 24, j);
 			int l = Math.min(this.buttonCenter(2, 3) + 80 - 11, this.width / 2 + i / 2 + k / 2 + 10);
 			this.drawServerStatus(context, l, 7, mouseX, mouseY);
 			if (this.isMinigame()) {
 				context.drawText(
-					this.textRenderer, Text.translatable("mco.configure.world.minigame", this.server.getMinigameName()), this.left_x + 80 + 20 + 10, row(13), 16777215, false
+					this.textRenderer, Text.translatable("mco.configure.world.minigame", this.server.getMinigameName()), this.left_x + 80 + 20 + 10, row(13), -1, false
 				);
 			}
 
 			if (this.tooltip != null) {
-				this.renderMousehoverTooltip(context, this.tooltip, mouseX, mouseY);
+				context.drawTooltip(this.textRenderer, this.tooltip, mouseX, mouseY);
 			}
 		}
 	}
@@ -287,8 +285,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 					}
 				});
 			} catch (RealmsServiceException var5) {
-				LOGGER.error("Couldn't get own world");
-				this.client.execute(() -> this.client.setScreen(new RealmsGenericErrorScreen(Text.of(var5.getMessage()), this.parent)));
+				LOGGER.error("Couldn't get own world", (Throwable)var5);
+				this.client.execute(() -> this.client.setScreen(new RealmsGenericErrorScreen(var5, this.parent)));
 			}
 		}).start();
 	}
@@ -357,7 +355,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 								serverData,
 								Text.translatable("mco.configure.world.switch.slot"),
 								Text.translatable("mco.configure.world.switch.slot.subtitle"),
-								10526880,
+								-6250336,
 								ScreenTexts.CANCEL,
 								() -> this.client.execute(() -> this.client.setScreen(this.getNewScreen())),
 								() -> this.client.setScreen(this.getNewScreen())
@@ -377,18 +375,6 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			);
 	}
 
-	protected void renderMousehoverTooltip(DrawContext context, @Nullable Text text, int mouseX, int mouseY) {
-		int i = mouseX + 12;
-		int j = mouseY - 12;
-		int k = this.textRenderer.getWidth(text);
-		if (i + k + 3 > this.right_x) {
-			i = i - k - 20;
-		}
-
-		context.fillGradient(i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
-		context.drawTextWithShadow(this.textRenderer, text, i, j, 16777215);
-	}
-
 	private void drawServerStatus(DrawContext context, int x, int y, int mouseX, int mouseY) {
 		if (this.server.expired) {
 			this.drawExpired(context, x, y, mouseX, mouseY);
@@ -404,19 +390,14 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	private void drawExpired(DrawContext context, int x, int y, int mouseX, int mouseY) {
-		context.drawTexture(EXPIRED_ICON, x, y, 0.0F, 0.0F, 10, 28, 10, 28);
+		context.drawGuiTexture(EXPIRED_STATUS_TEXTURE, x, y, 10, 28);
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
 			this.tooltip = EXPIRED_TEXT;
 		}
 	}
 
 	private void drawExpiring(DrawContext context, int x, int y, int mouseX, int mouseY, int remainingDays) {
-		if (this.animTick % 20 < 10) {
-			context.drawTexture(EXPIRES_SOON_ICON, x, y, 0.0F, 0.0F, 10, 28, 20, 28);
-		} else {
-			context.drawTexture(EXPIRES_SOON_ICON, x, y, 10.0F, 0.0F, 10, 28, 20, 28);
-		}
-
+		context.drawGuiTexture(EXPIRES_SOON_STATUS_TEXTURE, x, y, 10, 28);
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
 			if (remainingDays <= 0) {
 				this.tooltip = EXPIRES_SOON_TEXT;
@@ -429,14 +410,14 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	private void drawOpen(DrawContext context, int x, int y, int mouseX, int mouseY) {
-		context.drawTexture(ON_ICON, x, y, 0.0F, 0.0F, 10, 28, 10, 28);
+		context.drawGuiTexture(OPEN_STATUS_TEXTURE, x, y, 10, 28);
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
 			this.tooltip = OPEN_TEXT;
 		}
 	}
 
 	private void drawClosed(DrawContext context, int x, int y, int mouseX, int mouseY) {
-		context.drawTexture(OFF_ICON, x, y, 0.0F, 0.0F, 10, 28, 10, 28);
+		context.drawGuiTexture(CLOSED_STATUS_TEXTURE, x, y, 10, 28);
 		if (mouseX >= x && mouseX <= x + 9 && mouseY >= y && mouseY <= y + 27) {
 			this.tooltip = CLOSED_TEXT;
 		}
@@ -454,12 +435,10 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 
 	private void removeButton(ButtonWidget button) {
 		button.visible = false;
-		this.remove(button);
 	}
 
 	private void addButton(ButtonWidget button) {
 		button.visible = true;
-		this.addDrawableChild(button);
 	}
 
 	private void hideMinigameButtons() {
@@ -476,7 +455,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			realmsClient.updateSlot(this.server.id, this.server.activeSlot, options);
 			this.server.slots.put(this.server.activeSlot, options);
 		} catch (RealmsServiceException var5) {
-			LOGGER.error("Couldn't save slot settings");
+			LOGGER.error("Couldn't save slot settings", (Throwable)var5);
 			this.client.setScreen(new RealmsGenericErrorScreen(var5, this));
 			return;
 		}
@@ -485,7 +464,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	public void saveSettings(String name, String desc) {
-		String string = desc.trim().isEmpty() ? null : desc;
+		String string = Util.isBlank(desc) ? null : desc;
 		RealmsClient realmsClient = RealmsClient.create();
 
 		try {
@@ -493,7 +472,7 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 			this.server.setName(name);
 			this.server.setDescription(string);
 		} catch (RealmsServiceException var6) {
-			LOGGER.error("Couldn't save settings");
+			LOGGER.error("Couldn't save settings", (Throwable)var6);
 			this.client.setScreen(new RealmsGenericErrorScreen(var6, this));
 			return;
 		}

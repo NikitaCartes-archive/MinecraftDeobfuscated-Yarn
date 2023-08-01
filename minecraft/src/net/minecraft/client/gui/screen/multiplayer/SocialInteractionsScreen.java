@@ -27,7 +27,8 @@ import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsScreen extends Screen {
-	protected static final Identifier SOCIAL_INTERACTIONS_TEXTURE = new Identifier("textures/gui/social_interactions.png");
+	private static final Identifier BACKGROUND_TEXTURE = new Identifier("social_interactions/background");
+	private static final Identifier SEARCH_ICON_TEXTURE = new Identifier("icon/search");
 	private static final Text ALL_TAB_TITLE = Text.translatable("gui.socialInteractions.tab_all");
 	private static final Text HIDDEN_TAB_TITLE = Text.translatable("gui.socialInteractions.tab_hidden");
 	private static final Text BLOCKED_TAB_TITLE = Text.translatable("gui.socialInteractions.tab_blocked");
@@ -81,12 +82,6 @@ public class SocialInteractionsScreen extends Screen {
 	@Override
 	public Text getNarratedTitle() {
 		return (Text)(this.serverLabel != null ? ScreenTexts.joinSentences(super.getNarratedTitle(), this.serverLabel) : super.getNarratedTitle());
-	}
-
-	@Override
-	public void tick() {
-		super.tick();
-		this.searchBox.tick();
 	}
 
 	@Override
@@ -185,17 +180,17 @@ public class SocialInteractionsScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(DrawContext context) {
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		int i = this.getSearchBoxX() + 3;
-		super.renderBackground(context);
-		context.drawNineSlicedTexture(SOCIAL_INTERACTIONS_TEXTURE, i, 64, 236, this.getScreenHeight() + 16, 8, 236, 34, 1, 1);
-		context.drawTexture(SOCIAL_INTERACTIONS_TEXTURE, i + 10, 76, 243, 1, 12, 12);
+		super.renderBackground(context, mouseX, mouseY, delta);
+		context.drawGuiTexture(BACKGROUND_TEXTURE, i, 64, 236, this.getScreenHeight() + 16);
+		context.drawGuiTexture(SEARCH_ICON_TEXTURE, i + 10, 76, 12, 12);
 	}
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 		this.updateServerLabel(this.client);
-		this.renderBackground(context);
 		if (this.serverLabel != null) {
 			context.drawTextWithShadow(this.client.textRenderer, this.serverLabel, this.getSearchBoxX() + 8, 35, -1);
 		}
@@ -212,7 +207,6 @@ public class SocialInteractionsScreen extends Screen {
 
 		this.searchBox.render(context, mouseX, mouseY, delta);
 		this.blockingButton.visible = this.currentTab == SocialInteractionsScreen.Tab.BLOCKED;
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override

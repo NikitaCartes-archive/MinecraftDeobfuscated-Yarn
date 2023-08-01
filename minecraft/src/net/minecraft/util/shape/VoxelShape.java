@@ -50,6 +50,19 @@ public abstract class VoxelShape {
 		}
 	}
 
+	public VoxelShape asCuboid() {
+		return this.isEmpty()
+			? VoxelShapes.empty()
+			: VoxelShapes.cuboid(
+				this.getMin(Direction.Axis.X),
+				this.getMin(Direction.Axis.Y),
+				this.getMin(Direction.Axis.Z),
+				this.getMax(Direction.Axis.X),
+				this.getMax(Direction.Axis.Y),
+				this.getMax(Direction.Axis.Z)
+			);
+	}
+
 	protected double getPointPosition(Direction.Axis axis, int index) {
 		return this.getPointPositions(axis).getDouble(index);
 	}

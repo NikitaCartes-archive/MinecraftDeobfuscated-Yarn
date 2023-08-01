@@ -42,11 +42,11 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		clientPlayPacketListener.onChunkData(this);
 	}
 
-	public int getX() {
+	public int getChunkX() {
 		return this.chunkX;
 	}
 
-	public int getZ() {
+	public int getChunkZ() {
 		return this.chunkZ;
 	}
 

@@ -49,7 +49,7 @@ public final class NetworkIoStatistics {
 		return this.topContributors;
 	}
 
-	public static record Packet(NetworkSide side, int protocolId, int packetId) {
+	public static record Packet(NetworkSide side, String protocolId, int packetId) {
 		private static final Map<NetworkIoStatistics.Packet, String> PACKET_TO_NAME;
 
 		public String getName() {
@@ -59,7 +59,7 @@ public final class NetworkIoStatistics {
 		public static NetworkIoStatistics.Packet fromEvent(RecordedEvent event) {
 			return new NetworkIoStatistics.Packet(
 				event.getEventType().getName().equals("minecraft.PacketSent") ? NetworkSide.CLIENTBOUND : NetworkSide.SERVERBOUND,
-				event.getInt("protocolId"),
+				event.getString("protocolId"),
 				event.getInt("packetId")
 			);
 		}

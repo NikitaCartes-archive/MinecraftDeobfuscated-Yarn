@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -38,6 +39,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import org.joml.Vector3f;
 
 public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("49455A49-7EC5-45BA-B886-3B90B23A1718");
@@ -64,11 +66,6 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	@Override
 	public void setAngryAt(@Nullable UUID angryAt) {
 		this.angryAt = angryAt;
-	}
-
-	@Override
-	public double getHeightOffset() {
-		return this.isBaby() ? -0.05 : -0.45;
 	}
 
 	@Override
@@ -107,7 +104,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 			this.tickAngrySound();
 		} else if (entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
-			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
+			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST.getId());
 		}
 
 		this.tickAngerLogic((ServerWorld)this.getWorld(), true);
@@ -253,5 +250,10 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	@Override
 	public boolean canGather(ItemStack stack) {
 		return this.canPickupItem(stack);
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + 0.05F * scaleFactor, 0.0F);
 	}
 }

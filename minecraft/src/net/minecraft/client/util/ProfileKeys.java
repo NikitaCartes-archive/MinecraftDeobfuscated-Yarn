@@ -23,7 +23,7 @@ public interface ProfileKeys {
 	};
 
 	static ProfileKeys create(UserApiService userApiService, Session session, Path root) {
-		return (ProfileKeys)(session.getAccountType() == Session.AccountType.MSA ? new ProfileKeysImpl(userApiService, session.getProfile().getId(), root) : MISSING);
+		return (ProfileKeys)(session.getAccountType() == Session.AccountType.MSA ? new ProfileKeysImpl(userApiService, session.getUuidOrNull(), root) : MISSING);
 	}
 
 	CompletableFuture<Optional<PlayerKeyPair>> fetchKeyPair();

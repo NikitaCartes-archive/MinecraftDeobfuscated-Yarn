@@ -3,12 +3,17 @@ package net.minecraft.world;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 
 public class IdCountsState extends PersistentState {
 	public static final String IDCOUNTS_KEY = "idcounts";
 	private final Object2IntMap<String> idCounts = new Object2IntOpenHashMap<>();
+
+	public static PersistentState.Type<IdCountsState> getPersistentStateType() {
+		return new PersistentState.Type<>(IdCountsState::new, IdCountsState::fromNbt, DataFixTypes.SAVED_DATA_MAP_INDEX);
+	}
 
 	public IdCountsState() {
 		this.idCounts.defaultReturnValue(-1);

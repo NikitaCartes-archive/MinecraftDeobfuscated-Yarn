@@ -3,7 +3,6 @@ package net.minecraft.server;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
-import com.mojang.authlib.Agent;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.ProfileLookupCallback;
 import com.mojang.authlib.yggdrasil.ProfileNotFoundException;
@@ -50,10 +49,10 @@ public class ServerConfigHandler {
 	private static void lookupProfile(MinecraftServer server, Collection<String> bannedPlayers, ProfileLookupCallback callback) {
 		String[] strings = (String[])bannedPlayers.stream().filter(playerName -> !StringHelper.isEmpty(playerName)).toArray(String[]::new);
 		if (server.isOnlineMode()) {
-			server.getGameProfileRepo().findProfilesByNames(strings, Agent.MINECRAFT, callback);
+			server.getGameProfileRepo().findProfilesByNames(strings, callback);
 		} else {
 			for (String string : strings) {
-				UUID uUID = Uuids.getUuidFromProfile(new GameProfile(null, string));
+				UUID uUID = Uuids.getOfflinePlayerUuid(string);
 				GameProfile gameProfile = new GameProfile(uUID, string);
 				callback.onProfileLookupSucceeded(gameProfile);
 			}
@@ -92,10 +91,10 @@ public class ServerConfigHandler {
 					}
 
 					@Override
-					public void onProfileLookupFailed(GameProfile profile, Exception exception) {
-						ServerConfigHandler.LOGGER.warn("Could not lookup user banlist entry for {}", profile.getName(), exception);
+					public void onProfileLookupFailed(String string, Exception exception) {
+						ServerConfigHandler.LOGGER.warn("Could not lookup user banlist entry for {}", string, exception);
 						if (!(exception instanceof ProfileNotFoundException)) {
-							throw new ServerConfigHandler.ServerConfigException("Could not request user " + profile.getName() + " from backend systems", exception);
+							throw new ServerConfigHandler.ServerConfigException("Could not request user " + string + " from backend systems", exception);
 						}
 					}
 				};
@@ -172,10 +171,10 @@ public class ServerConfigHandler {
 					}
 
 					@Override
-					public void onProfileLookupFailed(GameProfile profile, Exception exception) {
-						ServerConfigHandler.LOGGER.warn("Could not lookup oplist entry for {}", profile.getName(), exception);
+					public void onProfileLookupFailed(String string, Exception exception) {
+						ServerConfigHandler.LOGGER.warn("Could not lookup oplist entry for {}", string, exception);
 						if (!(exception instanceof ProfileNotFoundException)) {
-							throw new ServerConfigHandler.ServerConfigException("Could not request user " + profile.getName() + " from backend systems", exception);
+							throw new ServerConfigHandler.ServerConfigException("Could not request user " + string + " from backend systems", exception);
 						}
 					}
 				};
@@ -216,10 +215,10 @@ public class ServerConfigHandler {
 					}
 
 					@Override
-					public void onProfileLookupFailed(GameProfile profile, Exception exception) {
-						ServerConfigHandler.LOGGER.warn("Could not lookup user whitelist entry for {}", profile.getName(), exception);
+					public void onProfileLookupFailed(String string, Exception exception) {
+						ServerConfigHandler.LOGGER.warn("Could not lookup user whitelist entry for {}", string, exception);
 						if (!(exception instanceof ProfileNotFoundException)) {
-							throw new ServerConfigHandler.ServerConfigException("Could not request user " + profile.getName() + " from backend systems", exception);
+							throw new ServerConfigHandler.ServerConfigException("Could not request user " + string + " from backend systems", exception);
 						}
 					}
 				};
@@ -255,14 +254,14 @@ public class ServerConfigHandler {
 					}
 
 					@Override
-					public void onProfileLookupFailed(GameProfile profile, Exception exception) {
-						ServerConfigHandler.LOGGER.warn("Could not lookup user whitelist entry for {}", profile.getName(), exception);
+					public void onProfileLookupFailed(String string, Exception exception) {
+						ServerConfigHandler.LOGGER.warn("Could not lookup user whitelist entry for {}", string, exception);
 					}
 				};
 				lookupProfile(server, Lists.<String>newArrayList(name), profileLookupCallback);
-				return !list.isEmpty() && ((GameProfile)list.get(0)).getId() != null ? ((GameProfile)list.get(0)).getId() : null;
+				return !list.isEmpty() ? ((GameProfile)list.get(0)).getId() : null;
 			} else {
-				return Uuids.getUuidFromProfile(new GameProfile(null, name));
+				return Uuids.getOfflinePlayerUuid(name);
 			}
 		} else {
 			try {
@@ -295,24 +294,20 @@ public class ServerConfigHandler {
 				final String[] strings = (String[])list.toArray(new String[list.size()]);
 				ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 					@Override
-					public void onProfileLookupSucceeded(GameProfile profile) {
-						minecraftServer.getUserCache().add(profile);
-						UUID uUID = profile.getId();
-						if (uUID == null) {
-							throw new ServerConfigHandler.ServerConfigException("Missing UUID for user profile " + profile.getName());
-						} else {
-							this.convertPlayerFile(file2, this.getPlayerFileName(profile), uUID.toString());
-						}
+					public void onProfileLookupSucceeded(GameProfile gameProfile) {
+						minecraftServer.getUserCache().add(gameProfile);
+						UUID uUID = gameProfile.getId();
+						this.convertPlayerFile(file2, this.getPlayerFileName(gameProfile.getName()), uUID.toString());
 					}
 
 					@Override
-					public void onProfileLookupFailed(GameProfile profile, Exception exception) {
-						ServerConfigHandler.LOGGER.warn("Could not lookup user uuid for {}", profile.getName(), exception);
+					public void onProfileLookupFailed(String string, Exception exception) {
+						ServerConfigHandler.LOGGER.warn("Could not lookup user uuid for {}", string, exception);
 						if (exception instanceof ProfileNotFoundException) {
-							String string = this.getPlayerFileName(profile);
-							this.convertPlayerFile(file3, string, string);
+							String string2 = this.getPlayerFileName(string);
+							this.convertPlayerFile(file3, string2, string2);
 						} else {
-							throw new ServerConfigHandler.ServerConfigException("Could not request user " + profile.getName() + " from backend systems", exception);
+							throw new ServerConfigHandler.ServerConfigException("Could not request user " + string + " from backend systems", exception);
 						}
 					}
 
@@ -325,20 +320,20 @@ public class ServerConfigHandler {
 						}
 					}
 
-					private String getPlayerFileName(GameProfile profile) {
-						String string = null;
+					private String getPlayerFileName(String string) {
+						String string2 = null;
 
-						for (String string2 : strings) {
-							if (string2 != null && string2.equalsIgnoreCase(profile.getName())) {
-								string = string2;
+						for (String string3 : strings) {
+							if (string3 != null && string3.equalsIgnoreCase(string)) {
+								string2 = string3;
 								break;
 							}
 						}
 
-						if (string == null) {
-							throw new ServerConfigHandler.ServerConfigException("Could not find the filename for " + profile.getName() + " anymore");
+						if (string2 == null) {
+							throw new ServerConfigHandler.ServerConfigException("Could not find the filename for " + string + " anymore");
 						} else {
-							return string;
+							return string2;
 						}
 					}
 				};

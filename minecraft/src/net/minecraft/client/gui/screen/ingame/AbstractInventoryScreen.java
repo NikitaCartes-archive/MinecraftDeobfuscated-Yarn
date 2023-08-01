@@ -17,9 +17,13 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends HandledScreen<T> {
+	private static final Identifier EFFECT_BACKGROUND_LARGE_TEXTURE = new Identifier("container/inventory/effect_background_large");
+	private static final Identifier EFFECT_BACKGROUND_SMALL_TEXTURE = new Identifier("container/inventory/effect_background_small");
+
 	public AbstractInventoryScreen(T screenHandler, PlayerInventory playerInventory, Text text) {
 		super(screenHandler, playerInventory, text);
 	}
@@ -77,9 +81,9 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 
 		for (StatusEffectInstance statusEffectInstance : statusEffects) {
 			if (wide) {
-				context.drawTexture(BACKGROUND_TEXTURE, x, i, 0, 166, 120, 32);
+				context.drawGuiTexture(EFFECT_BACKGROUND_LARGE_TEXTURE, x, i, 120, 32);
 			} else {
-				context.drawTexture(BACKGROUND_TEXTURE, x, i, 0, 198, 32, 32);
+				context.drawGuiTexture(EFFECT_BACKGROUND_SMALL_TEXTURE, x, i, 32, 32);
 			}
 
 			i += height;

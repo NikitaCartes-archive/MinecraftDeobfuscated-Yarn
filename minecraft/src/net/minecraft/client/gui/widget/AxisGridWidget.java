@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Divider;
 
 @Environment(EnvType.CLIENT)
@@ -88,6 +89,10 @@ public class AxisGridWidget extends WrapperWidget {
 	public <T extends Widget> T add(T widget, Positioner positioner) {
 		this.elements.add(new AxisGridWidget.Element(widget, positioner));
 		return widget;
+	}
+
+	public <T extends Widget> T add(T widget, Consumer<Positioner> callback) {
+		return this.add(widget, Util.make(this.copyPositioner(), callback));
 	}
 
 	@Environment(EnvType.CLIENT)

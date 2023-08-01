@@ -2,6 +2,7 @@ package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
@@ -39,13 +40,13 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 
 public class VexEntity extends HostileEntity implements Ownable {
 	public static final float field_30502 = 45.836624F;
 	public static final int field_28645 = MathHelper.ceil((float) (Math.PI * 5.0 / 4.0));
 	protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(VexEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final int CHARGING_FLAG = 1;
-	private static final double HEIGHT_OFFSET = 0.4;
 	@Nullable
 	MobEntity owner;
 	@Nullable
@@ -221,8 +222,13 @@ public class VexEntity extends HostileEntity implements Ownable {
 	}
 
 	@Override
-	public double getHeightOffset() {
-		return 0.4;
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return 0.04F;
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height - 0.0625F * scaleFactor, 0.0F);
 	}
 
 	class ChargeTargetGoal extends Goal {

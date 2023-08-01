@@ -12,10 +12,9 @@ import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class BundleTooltipComponent implements TooltipComponent {
-	public static final Identifier TEXTURE = new Identifier("textures/gui/container/bundle.png");
+	private static final Identifier BACKGROUND_TEXTURE = new Identifier("container/bundle/background");
 	private static final int field_32381 = 4;
 	private static final int field_32382 = 1;
-	private static final int TEXTURE_SIZE = 128;
 	private static final int WIDTH_PER_COLUMN = 18;
 	private static final int HEIGHT_PER_ROW = 20;
 	private final DefaultedList<ItemStack> inventory;
@@ -28,18 +27,27 @@ public class BundleTooltipComponent implements TooltipComponent {
 
 	@Override
 	public int getHeight() {
-		return this.getRows() * 20 + 2 + 4;
+		return this.getRowsHeight() + 4;
 	}
 
 	@Override
 	public int getWidth(TextRenderer textRenderer) {
+		return this.getColumnsWidth();
+	}
+
+	private int getColumnsWidth() {
 		return this.getColumns() * 18 + 2;
+	}
+
+	private int getRowsHeight() {
+		return this.getRows() * 20 + 2;
 	}
 
 	@Override
 	public void drawItems(TextRenderer textRenderer, int x, int y, DrawContext context) {
 		int i = this.getColumns();
 		int j = this.getRows();
+		context.drawGuiTexture(BACKGROUND_TEXTURE, x, y, this.getColumnsWidth(), this.getRowsHeight());
 		boolean bl = this.occupancy >= 64;
 		int k = 0;
 
@@ -50,8 +58,6 @@ public class BundleTooltipComponent implements TooltipComponent {
 				this.drawSlot(n, o, k++, bl, context, textRenderer);
 			}
 		}
-
-		this.drawOutline(x, y, i, j, context);
 	}
 
 	private void drawSlot(int x, int y, int index, boolean shouldBlock, DrawContext context, TextRenderer textRenderer) {
@@ -68,26 +74,8 @@ public class BundleTooltipComponent implements TooltipComponent {
 		}
 	}
 
-	private void drawOutline(int x, int y, int columns, int rows, DrawContext context) {
-		this.draw(context, x, y, BundleTooltipComponent.Sprite.BORDER_CORNER_TOP);
-		this.draw(context, x + columns * 18 + 1, y, BundleTooltipComponent.Sprite.BORDER_CORNER_TOP);
-
-		for (int i = 0; i < columns; i++) {
-			this.draw(context, x + 1 + i * 18, y, BundleTooltipComponent.Sprite.BORDER_HORIZONTAL_TOP);
-			this.draw(context, x + 1 + i * 18, y + rows * 20, BundleTooltipComponent.Sprite.BORDER_HORIZONTAL_BOTTOM);
-		}
-
-		for (int i = 0; i < rows; i++) {
-			this.draw(context, x, y + i * 20 + 1, BundleTooltipComponent.Sprite.BORDER_VERTICAL);
-			this.draw(context, x + columns * 18 + 1, y + i * 20 + 1, BundleTooltipComponent.Sprite.BORDER_VERTICAL);
-		}
-
-		this.draw(context, x, y + rows * 20, BundleTooltipComponent.Sprite.BORDER_CORNER_BOTTOM);
-		this.draw(context, x + columns * 18 + 1, y + rows * 20, BundleTooltipComponent.Sprite.BORDER_CORNER_BOTTOM);
-	}
-
 	private void draw(DrawContext context, int x, int y, BundleTooltipComponent.Sprite sprite) {
-		context.drawTexture(TEXTURE, x, y, 0, (float)sprite.u, (float)sprite.v, sprite.width, sprite.height, 128, 128);
+		context.drawGuiTexture(sprite.texture, x, y, 0, sprite.width, sprite.height);
 	}
 
 	private int getColumns() {
@@ -100,22 +88,15 @@ public class BundleTooltipComponent implements TooltipComponent {
 
 	@Environment(EnvType.CLIENT)
 	static enum Sprite {
-		SLOT(0, 0, 18, 20),
-		BLOCKED_SLOT(0, 40, 18, 20),
-		BORDER_VERTICAL(0, 18, 1, 20),
-		BORDER_HORIZONTAL_TOP(0, 20, 18, 1),
-		BORDER_HORIZONTAL_BOTTOM(0, 60, 18, 1),
-		BORDER_CORNER_TOP(0, 20, 1, 1),
-		BORDER_CORNER_BOTTOM(0, 60, 1, 1);
+		BLOCKED_SLOT(new Identifier("container/bundle/blocked_slot"), 18, 20),
+		SLOT(new Identifier("container/bundle/slot"), 18, 20);
 
-		public final int u;
-		public final int v;
+		public final Identifier texture;
 		public final int width;
 		public final int height;
 
-		private Sprite(int u, int v, int width, int height) {
-			this.u = u;
-			this.v = v;
+		private Sprite(Identifier texture, int width, int height) {
+			this.texture = texture;
 			this.width = width;
 			this.height = height;
 		}

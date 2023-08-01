@@ -30,7 +30,6 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 		this.footerHeight = footerHeight;
 		this.header.getMainPositioner().relative(0.5F, 0.5F);
 		this.footer.getMainPositioner().relative(0.5F, 0.5F);
-		this.body.getMainPositioner().relative(0.5F, 0.0F).marginTop(30);
 	}
 
 	@Override
@@ -97,44 +96,33 @@ public class ThreePartsLayoutWidget implements LayoutWidget {
 		this.footer.refreshPositions();
 		this.footer.setY(this.screen.height - j);
 		this.body.setMinWidth(this.screen.width);
-		this.body.setMinHeight(this.screen.height - i - j);
-		this.body.setPosition(0, i);
 		this.body.refreshPositions();
+		int k = i + 30;
+		int l = this.screen.height - j - this.body.getHeight();
+		this.body.setPosition(0, Math.min(k, l));
 	}
 
 	public <T extends Widget> T addHeader(T widget) {
 		return this.header.add(widget);
 	}
 
-	public <T extends Widget> T addHeader(T widget, Positioner positioner) {
-		return this.header.add(widget, positioner);
+	public <T extends Widget> T addHeader(T widget, Consumer<Positioner> callback) {
+		return this.header.add(widget, callback);
 	}
 
 	public <T extends Widget> T addFooter(T widget) {
 		return this.footer.add(widget);
 	}
 
-	public <T extends Widget> T addFooter(T widget, Positioner positioner) {
-		return this.footer.add(widget, positioner);
+	public <T extends Widget> T addFooter(T widget, Consumer<Positioner> callback) {
+		return this.footer.add(widget, callback);
 	}
 
 	public <T extends Widget> T addBody(T widget) {
 		return this.body.add(widget);
 	}
 
-	public <T extends Widget> T addBody(T widget, Positioner positioner) {
-		return this.body.add(widget, positioner);
-	}
-
-	public Positioner copyHeaderPositioner() {
-		return this.header.copyPositioner();
-	}
-
-	public Positioner copyBodyPositioner() {
-		return this.body.copyPositioner();
-	}
-
-	public Positioner copyFooterPositioner() {
-		return this.footer.copyPositioner();
+	public <T extends Widget> T addBody(T widget, Consumer<Positioner> callback) {
+		return this.body.add(widget, callback);
 	}
 }

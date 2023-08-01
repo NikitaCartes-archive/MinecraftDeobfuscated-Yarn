@@ -18,8 +18,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.client.realms.gui.screen.BuyRealmsScreen;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
@@ -181,26 +180,24 @@ public class TextureManager implements ResourceReloader, TextureTickListener, Au
 		Executor applyExecutor
 	) {
 		CompletableFuture<Void> completableFuture = new CompletableFuture();
-		CompletableFuture.allOf(TitleScreen.loadTexturesAsync(this, prepareExecutor), this.loadTextureAsync(ClickableWidget.WIDGETS_TEXTURE, prepareExecutor))
-			.thenCompose(synchronizer::whenPrepared)
-			.thenAcceptAsync(void_ -> {
-				MissingSprite.getMissingSpriteTexture();
-				RealmsMainScreen.loadImages(this.resourceContainer);
-				Iterator<Entry<Identifier, AbstractTexture>> iterator = this.textures.entrySet().iterator();
+		TitleScreen.loadTexturesAsync(this, prepareExecutor).thenCompose(synchronizer::whenPrepared).thenAcceptAsync(void_ -> {
+			MissingSprite.getMissingSpriteTexture();
+			BuyRealmsScreen.refreshImages(this.resourceContainer);
+			Iterator<Entry<Identifier, AbstractTexture>> iterator = this.textures.entrySet().iterator();
 
-				while (iterator.hasNext()) {
-					Entry<Identifier, AbstractTexture> entry = (Entry<Identifier, AbstractTexture>)iterator.next();
-					Identifier identifier = (Identifier)entry.getKey();
-					AbstractTexture abstractTexture = (AbstractTexture)entry.getValue();
-					if (abstractTexture == MissingSprite.getMissingSpriteTexture() && !identifier.equals(MissingSprite.getMissingSpriteId())) {
-						iterator.remove();
-					} else {
-						abstractTexture.registerTexture(this, manager, identifier, applyExecutor);
-					}
+			while (iterator.hasNext()) {
+				Entry<Identifier, AbstractTexture> entry = (Entry<Identifier, AbstractTexture>)iterator.next();
+				Identifier identifier = (Identifier)entry.getKey();
+				AbstractTexture abstractTexture = (AbstractTexture)entry.getValue();
+				if (abstractTexture == MissingSprite.getMissingSpriteTexture() && !identifier.equals(MissingSprite.getMissingSpriteId())) {
+					iterator.remove();
+				} else {
+					abstractTexture.registerTexture(this, manager, identifier, applyExecutor);
 				}
+			}
 
-				MinecraftClient.getInstance().send(() -> completableFuture.complete(null));
-			}, runnable -> RenderSystem.recordRenderCall(runnable::run));
+			MinecraftClient.getInstance().send(() -> completableFuture.complete(null));
+		}, runnable -> RenderSystem.recordRenderCall(runnable::run));
 		return completableFuture;
 	}
 

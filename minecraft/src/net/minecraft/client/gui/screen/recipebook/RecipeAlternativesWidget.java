@@ -26,7 +26,15 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class RecipeAlternativesWidget implements Drawable, Element {
-	static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
+	private static final Identifier OVERLAY_RECIPE_TEXTURE = new Identifier("recipe_book/overlay_recipe");
+	static final Identifier FURNACE_OVERLAY_HIGHLIGHTED_TEXTURE = new Identifier("recipe_book/furnace_overlay_highlighted");
+	static final Identifier FURNACE_OVERLAY_TEXTURE = new Identifier("recipe_book/furnace_overlay");
+	static final Identifier CRAFTING_OVERLAY_HIGHLIGHTED_TEXTURE = new Identifier("recipe_book/crafting_overlay_highlighted");
+	static final Identifier CRAFTING_OVERLAY_TEXTURE = new Identifier("recipe_book/crafting_overlay");
+	static final Identifier FURNACE_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE = new Identifier("recipe_book/furnace_overlay_disabled_highlighted");
+	static final Identifier FURNACE_OVERLAY_DISABLED_TEXTURE = new Identifier("recipe_book/furnace_overlay_disabled");
+	static final Identifier CRAFTING_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE = new Identifier("recipe_book/crafting_overlay_disabled_highlighted");
+	static final Identifier CRAFTING_OVERLAY_DISABLED_TEXTURE = new Identifier("recipe_book/crafting_overlay_disabled");
 	private static final int field_32406 = 4;
 	private static final int field_32407 = 5;
 	private static final float field_33739 = 0.375F;
@@ -137,7 +145,7 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 			int j = Math.min(this.alternativeButtons.size(), i);
 			int k = MathHelper.ceil((float)this.alternativeButtons.size() / (float)i);
 			int l = 4;
-			context.drawNineSlicedTexture(BACKGROUND_TEXTURE, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8, 4, 32, 32, 82, 208);
+			context.drawGuiTexture(OVERLAY_RECIPE_TEXTURE, this.buttonX, this.buttonY, j * 25 + 8, k * 25 + 8);
 			RenderSystem.disableBlend();
 
 			for (RecipeAlternativesWidget.AlternativeButtonWidget alternativeButtonWidget : this.alternativeButtons) {
@@ -199,17 +207,24 @@ public class RecipeAlternativesWidget implements Drawable, Element {
 
 		@Override
 		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-			int i = 152;
-			if (!this.craftable) {
-				i += 26;
+			Identifier identifier;
+			if (this.craftable) {
+				if (RecipeAlternativesWidget.this.furnace) {
+					identifier = this.isSelected() ? RecipeAlternativesWidget.FURNACE_OVERLAY_HIGHLIGHTED_TEXTURE : RecipeAlternativesWidget.FURNACE_OVERLAY_TEXTURE;
+				} else {
+					identifier = this.isSelected() ? RecipeAlternativesWidget.CRAFTING_OVERLAY_HIGHLIGHTED_TEXTURE : RecipeAlternativesWidget.CRAFTING_OVERLAY_TEXTURE;
+				}
+			} else if (RecipeAlternativesWidget.this.furnace) {
+				identifier = this.isSelected()
+					? RecipeAlternativesWidget.FURNACE_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE
+					: RecipeAlternativesWidget.FURNACE_OVERLAY_DISABLED_TEXTURE;
+			} else {
+				identifier = this.isSelected()
+					? RecipeAlternativesWidget.CRAFTING_OVERLAY_DISABLED_HIGHLIGHTED_TEXTURE
+					: RecipeAlternativesWidget.CRAFTING_OVERLAY_DISABLED_TEXTURE;
 			}
 
-			int j = RecipeAlternativesWidget.this.furnace ? 130 : 78;
-			if (this.isSelected()) {
-				j += 26;
-			}
-
-			context.drawTexture(RecipeAlternativesWidget.BACKGROUND_TEXTURE, this.getX(), this.getY(), i, j, this.width, this.height);
+			context.drawGuiTexture(identifier, this.getX(), this.getY(), this.width, this.height);
 			context.getMatrices().push();
 			context.getMatrices().translate((double)(this.getX() + 2), (double)(this.getY() + 2), 150.0);
 

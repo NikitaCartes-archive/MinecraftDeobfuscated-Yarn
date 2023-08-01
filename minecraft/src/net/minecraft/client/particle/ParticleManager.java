@@ -505,7 +505,7 @@ public class ParticleManager implements ResourceReloader {
 
 	public void addBlockBreakingParticles(BlockPos pos, Direction direction) {
 		BlockState blockState = this.world.getBlockState(pos);
-		if (blockState.getRenderType() != BlockRenderType.INVISIBLE) {
+		if (blockState.getRenderType() != BlockRenderType.INVISIBLE && blockState.hasBlockBreakParticles()) {
 			int i = pos.getX();
 			int j = pos.getY();
 			int k = pos.getZ();

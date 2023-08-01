@@ -146,7 +146,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
 		int i = this.countBambooAbove(world, pos);
 		int j = this.countBambooBelow(world, pos);
 		return i + j + 1 < 16 && (Integer)world.getBlockState(pos.up(i)).get(STAGE) != 1;

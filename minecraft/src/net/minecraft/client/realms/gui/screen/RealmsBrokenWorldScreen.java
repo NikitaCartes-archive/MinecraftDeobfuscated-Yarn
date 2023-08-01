@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBrokenWorldScreen extends RealmsScreen {
+	private static final Identifier SLOT_FRAME_TEXTURE = new Identifier("widget/slot_frame");
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_32120 = 80;
 	private final Screen parent;
@@ -86,7 +87,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 									this.serverData,
 									Text.translatable("mco.configure.world.switch.slot"),
 									Text.translatable("mco.configure.world.switch.slot.subtitle"),
-									10526880,
+									-6250336,
 									ScreenTexts.CANCEL,
 									this::play,
 									() -> {
@@ -145,12 +146,11 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
 		super.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
 
 		for (int i = 0; i < this.message.length; i++) {
-			context.drawCenteredTextWithShadow(this.textRenderer, this.message[i], this.width / 2, row(-1) + 3 + i * 12, 10526880);
+			context.drawCenteredTextWithShadow(this.textRenderer, this.message[i], this.width / 2, row(-1) + 3 + i * 12, -6250336);
 		}
 
 		if (this.serverData != null) {
@@ -214,8 +214,8 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 				this.serverData = realmsClient.getOwnWorld(worldId);
 				this.addButtons();
 			} catch (RealmsServiceException var5) {
-				LOGGER.error("Couldn't get own world");
-				this.client.setScreen(new RealmsGenericErrorScreen(Text.of(var5.getMessage()), this.parent));
+				LOGGER.error("Couldn't get own world", (Throwable)var5);
+				this.client.setScreen(new RealmsGenericErrorScreen(var5, this.parent));
 			}
 		}).start();
 	}
@@ -234,7 +234,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 							RealmsServer realmsServer = realmsClient.getOwnWorld(this.serverId);
 							this.client.execute(() -> this.mainScreen.newScreen().play(realmsServer, this));
 						} catch (RealmsServiceException var3) {
-							LOGGER.error("Couldn't get own world");
+							LOGGER.error("Couldn't get own world", (Throwable)var3);
 							this.client.execute(() -> this.client.setScreen(this.parent));
 						}
 					}
@@ -261,7 +261,7 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			);
 			this.client.setScreen(realmsDownloadLatestWorldScreen);
 		} catch (RealmsServiceException var5) {
-			LOGGER.error("Couldn't download world data");
+			LOGGER.error("Couldn't download world data", (Throwable)var5);
 			this.client.setScreen(new RealmsGenericErrorScreen(var5, this));
 		}
 	}
@@ -312,8 +312,8 @@ public class RealmsBrokenWorldScreen extends RealmsScreen {
 			context.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
-		context.drawTexture(RealmsWorldSlotButton.SLOT_FRAME, x, y, 0.0F, 0.0F, 80, 80, 80, 80);
-		context.drawCenteredTextWithShadow(this.textRenderer, slotName, x + 40, y + 66, 16777215);
+		context.drawGuiTexture(SLOT_FRAME_TEXTURE, x, y, 80, 80);
+		context.drawCenteredTextWithShadow(this.textRenderer, slotName, x + 40, y + 66, -1);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 }

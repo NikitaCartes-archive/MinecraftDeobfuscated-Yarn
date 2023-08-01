@@ -1,7 +1,7 @@
 package net.minecraft.client.util;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.util.UUIDTypeAdapter;
+import com.mojang.util.UndashedUuid;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
@@ -16,13 +16,13 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class Session {
 	private final String username;
-	private final String uuid;
+	private final UUID uuid;
 	private final String accessToken;
 	private final Optional<String> xuid;
 	private final Optional<String> clientId;
 	private final Session.AccountType accountType;
 
-	public Session(String username, String uuid, String accessToken, Optional<String> xuid, Optional<String> clientId, Session.AccountType accountType) {
+	public Session(String username, UUID uuid, String accessToken, Optional<String> xuid, Optional<String> clientId, Session.AccountType accountType) {
 		this.username = username;
 		this.uuid = uuid;
 		this.accessToken = accessToken;
@@ -32,10 +32,13 @@ public class Session {
 	}
 
 	public String getSessionId() {
-		return "token:" + this.accessToken + ":" + this.uuid;
+		return "token:" + this.accessToken + ":" + UndashedUuid.toString(this.uuid);
 	}
 
-	public String getUuid() {
+	/**
+	 * {@return the UUID, or {@code null} if it is invalid}
+	 */
+	public UUID getUuidOrNull() {
 		return this.uuid;
 	}
 
@@ -53,18 +56,6 @@ public class Session {
 
 	public Optional<String> getXuid() {
 		return this.xuid;
-	}
-
-	/**
-	 * {@return the UUID, or {@code null} if it is invalid}
-	 */
-	@Nullable
-	public UUID getUuidOrNull() {
-		try {
-			return UUIDTypeAdapter.fromString(this.getUuid());
-		} catch (IllegalArgumentException var2) {
-			return null;
-		}
 	}
 
 	public GameProfile getProfile() {

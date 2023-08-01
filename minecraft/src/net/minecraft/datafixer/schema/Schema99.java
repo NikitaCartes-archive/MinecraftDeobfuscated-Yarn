@@ -314,20 +314,23 @@ public class Schema99 extends Schema {
 		);
 		schema.registerType(false, TypeReferences.ITEM_NAME, () -> DSL.constType(IdentifierNormalizingSchema.getIdentifierType()));
 		schema.registerType(false, TypeReferences.STATS, DSL::remainder);
+		schema.registerType(false, TypeReferences.SAVED_DATA_COMMAND_STORAGE, DSL::remainder);
+		schema.registerType(false, TypeReferences.SAVED_DATA_CHUNKS, DSL::remainder);
+		schema.registerType(false, TypeReferences.SAVED_DATA_MAP_DATA, DSL::remainder);
+		schema.registerType(false, TypeReferences.SAVED_DATA_IDCOUNTS, DSL::remainder);
+		schema.registerType(false, TypeReferences.SAVED_DATA_RAIDS, DSL::remainder);
+		schema.registerType(false, TypeReferences.SAVED_DATA_RANDOM_SEQUENCES, DSL::remainder);
 		schema.registerType(
 			false,
-			TypeReferences.SAVED_DATA,
+			TypeReferences.SAVED_DATA_SCOREBOARD,
 			() -> DSL.optionalFields(
-					"data",
-					DSL.optionalFields(
-						"Features",
-						DSL.compoundList(TypeReferences.STRUCTURE_FEATURE.in(schema)),
-						"Objectives",
-						DSL.list(TypeReferences.OBJECTIVE.in(schema)),
-						"Teams",
-						DSL.list(TypeReferences.TEAM.in(schema))
-					)
+					"data", DSL.optionalFields("Objectives", DSL.list(TypeReferences.OBJECTIVE.in(schema)), "Teams", DSL.list(TypeReferences.TEAM.in(schema)))
 				)
+		);
+		schema.registerType(
+			false,
+			TypeReferences.SAVED_DATA_STRUCTURE_FEATURE_INDICES,
+			() -> DSL.optionalFields("data", DSL.optionalFields("Features", DSL.compoundList(TypeReferences.STRUCTURE_FEATURE.in(schema))))
 		);
 		schema.registerType(false, TypeReferences.STRUCTURE_FEATURE, DSL::remainder);
 		schema.registerType(false, TypeReferences.OBJECTIVE, DSL::remainder);

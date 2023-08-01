@@ -1,7 +1,7 @@
 package net.minecraft.screen;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.OptionalInt;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -44,8 +44,8 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 	protected ForgingSlotsManager getForgingSlotsManager() {
 		return ForgingSlotsManager.create()
 			.input(0, 8, 48, stack -> this.recipes.stream().anyMatch(recipe -> recipe.testTemplate(stack)))
-			.input(1, 26, 48, stack -> this.recipes.stream().anyMatch(smithingRecipe -> smithingRecipe.testBase(stack)))
-			.input(2, 44, 48, stack -> this.recipes.stream().anyMatch(smithingRecipe -> smithingRecipe.testAddition(stack)))
+			.input(1, 26, 48, stack -> this.recipes.stream().anyMatch(recipe -> recipe.testBase(stack)))
+			.input(2, 44, 48, stack -> this.recipes.stream().anyMatch(recipe -> recipe.testAddition(stack)))
 			.output(3, 98, 48)
 			.build();
 	}
@@ -100,22 +100,16 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	public int getSlotFor(ItemStack stack) {
-		return (Integer)((Optional)this.recipes
-				.stream()
-				.map(recipe -> getQuickMoveSlot(recipe, stack))
-				.filter(Optional::isPresent)
-				.findFirst()
-				.orElse(Optional.of(0)))
-			.get();
+		return this.getQuickMoveSlot(stack).orElse(0);
 	}
 
-	private static Optional<Integer> getQuickMoveSlot(SmithingRecipe recipe, ItemStack stack) {
+	private static OptionalInt getQuickMoveSlot(SmithingRecipe recipe, ItemStack stack) {
 		if (recipe.testTemplate(stack)) {
-			return Optional.of(0);
+			return OptionalInt.of(0);
 		} else if (recipe.testBase(stack)) {
-			return Optional.of(1);
+			return OptionalInt.of(1);
 		} else {
-			return recipe.testAddition(stack) ? Optional.of(2) : Optional.empty();
+			return recipe.testAddition(stack) ? OptionalInt.of(2) : OptionalInt.empty();
 		}
 	}
 
@@ -126,6 +120,10 @@ public class SmithingScreenHandler extends ForgingScreenHandler {
 
 	@Override
 	public boolean isValidIngredient(ItemStack stack) {
-		return this.recipes.stream().map(recipe -> getQuickMoveSlot(recipe, stack)).anyMatch(Optional::isPresent);
+		return this.getQuickMoveSlot(stack).isPresent();
+	}
+
+	private OptionalInt getQuickMoveSlot(ItemStack stack) {
+		return this.recipes.stream().flatMapToInt(recipe -> getQuickMoveSlot(recipe, stack).stream()).filter(slot -> !this.getSlot(slot).hasStack()).findFirst();
 	}
 }

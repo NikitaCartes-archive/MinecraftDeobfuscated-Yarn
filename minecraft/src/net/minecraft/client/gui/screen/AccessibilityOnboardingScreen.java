@@ -12,7 +12,7 @@ import net.minecraft.client.gui.screen.option.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screen.option.LanguageOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
-import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.NarratedMultilineTextWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.option.GameOptions;
@@ -45,23 +45,23 @@ public class AccessibilityOnboardingScreen extends Screen {
 		int i = this.yMargin();
 		SimplePositioningWidget simplePositioningWidget = new SimplePositioningWidget(this.width, this.height - i);
 		simplePositioningWidget.getMainPositioner().alignTop().margin(4);
-		GridWidget gridWidget = simplePositioningWidget.add(new GridWidget());
-		gridWidget.getMainPositioner().alignHorizontalCenter().margin(4);
-		GridWidget.Adder adder = gridWidget.createAdder(1);
-		adder.getMainPositioner().margin(2);
-		this.textWidget = new NarratedMultilineTextWidget(this.textRenderer, this.title, this.width);
-		adder.add(this.textWidget, adder.copyPositioner().marginBottom(16));
+		DirectionalLayoutWidget directionalLayoutWidget = simplePositioningWidget.add(DirectionalLayoutWidget.vertical());
+		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter().margin(2);
+		this.textWidget = new NarratedMultilineTextWidget(this.width - 16, this.title, this.textRenderer);
+		directionalLayoutWidget.add(this.textWidget, positioner -> positioner.marginBottom(16));
 		ClickableWidget clickableWidget = this.gameOptions.getNarrator().createWidget(this.gameOptions, 0, 0, 150);
 		clickableWidget.active = this.isNarratorUsable;
-		adder.add(clickableWidget);
+		directionalLayoutWidget.add(clickableWidget);
 		if (this.isNarratorUsable) {
 			this.setInitialFocus(clickableWidget);
 		}
 
-		adder.add(AccessibilityOnboardingButtons.createAccessibilityButton(button -> this.setScreen(new AccessibilityOptionsScreen(this, this.client.options))));
-		adder.add(
+		directionalLayoutWidget.add(
+			AccessibilityOnboardingButtons.createAccessibilityButton(150, button -> this.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), false)
+		);
+		directionalLayoutWidget.add(
 			AccessibilityOnboardingButtons.createLanguageButton(
-				button -> this.setScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager()))
+				150, button -> this.setScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())), false
 			)
 		);
 		simplePositioningWidget.add(
@@ -90,15 +90,18 @@ public class AccessibilityOnboardingScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 		this.tickNarratorPrompt();
-		this.backgroundRenderer.render(0.0F, 1.0F);
-		context.fill(0, 0, this.width, this.height, -1877995504);
 		this.logoDrawer.draw(context, this.width, 1.0F);
 		if (this.textWidget != null) {
 			this.textWidget.render(context, mouseX, mouseY, delta);
 		}
+	}
 
-		super.render(context, mouseX, mouseY, delta);
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.backgroundRenderer.render(0.0F, 1.0F);
+		context.fill(0, 0, this.width, this.height, -1877995504);
 	}
 
 	private void tickNarratorPrompt() {

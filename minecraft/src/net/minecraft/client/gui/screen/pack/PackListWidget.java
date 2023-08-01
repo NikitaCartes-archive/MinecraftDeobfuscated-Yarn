@@ -18,7 +18,14 @@ import net.minecraft.util.Language;
 
 @Environment(EnvType.CLIENT)
 public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget.ResourcePackEntry> {
-	static final Identifier RESOURCE_PACKS_TEXTURE = new Identifier("textures/gui/resource_packs.png");
+	static final Identifier SELECT_HIGHLIGHTED_TEXTURE = new Identifier("transferable_list/select_highlighted");
+	static final Identifier SELECT_TEXTURE = new Identifier("transferable_list/select");
+	static final Identifier UNSELECT_HIGHLIGHTED_TEXTURE = new Identifier("transferable_list/unselect_highlighted");
+	static final Identifier UNSELECT_TEXTURE = new Identifier("transferable_list/unselect");
+	static final Identifier MOVE_UP_HIGHLIGHTED_TEXTURE = new Identifier("transferable_list/move_up_highlighted");
+	static final Identifier MOVE_UP_TEXTURE = new Identifier("transferable_list/move_up");
+	static final Identifier MOVE_DOWN_HIGHLIGHTED_TEXTURE = new Identifier("transferable_list/move_down_highlighted");
+	static final Identifier MOVE_DOWN_TEXTURE = new Identifier("transferable_list/move_down");
 	static final Text INCOMPATIBLE = Text.translatable("pack.incompatible");
 	static final Text INCOMPATIBLE_CONFIRM = Text.translatable("pack.incompatible.confirm.title");
 	private final Text title;
@@ -75,12 +82,6 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 
 	@Environment(EnvType.CLIENT)
 	public static class ResourcePackEntry extends AlwaysSelectedEntryListWidget.Entry<PackListWidget.ResourcePackEntry> {
-		private static final int field_32397 = 0;
-		private static final int field_32398 = 32;
-		private static final int field_32399 = 64;
-		private static final int field_32400 = 96;
-		private static final int field_32401 = 0;
-		private static final int field_32402 = 32;
 		private static final int field_32403 = 157;
 		private static final int field_32404 = 157;
 		private static final String ELLIPSIS = "...";
@@ -145,39 +146,39 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 
 				if (this.pack.canBeEnabled()) {
 					if (i < 32) {
-						context.drawTexture(PackListWidget.RESOURCE_PACKS_TEXTURE, x, y, 0.0F, 32.0F, 32, 32, 256, 256);
+						context.drawGuiTexture(PackListWidget.SELECT_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 					} else {
-						context.drawTexture(PackListWidget.RESOURCE_PACKS_TEXTURE, x, y, 0.0F, 0.0F, 32, 32, 256, 256);
+						context.drawGuiTexture(PackListWidget.SELECT_TEXTURE, x, y, 32, 32);
 					}
 				} else {
 					if (this.pack.canBeDisabled()) {
 						if (i < 16) {
-							context.drawTexture(PackListWidget.RESOURCE_PACKS_TEXTURE, x, y, 32.0F, 32.0F, 32, 32, 256, 256);
+							context.drawGuiTexture(PackListWidget.UNSELECT_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 						} else {
-							context.drawTexture(PackListWidget.RESOURCE_PACKS_TEXTURE, x, y, 32.0F, 0.0F, 32, 32, 256, 256);
+							context.drawGuiTexture(PackListWidget.UNSELECT_TEXTURE, x, y, 32, 32);
 						}
 					}
 
 					if (this.pack.canMoveTowardStart()) {
 						if (i < 32 && i > 16 && j < 16) {
-							context.drawTexture(PackListWidget.RESOURCE_PACKS_TEXTURE, x, y, 96.0F, 32.0F, 32, 32, 256, 256);
+							context.drawGuiTexture(PackListWidget.MOVE_UP_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 						} else {
-							context.drawTexture(PackListWidget.RESOURCE_PACKS_TEXTURE, x, y, 96.0F, 0.0F, 32, 32, 256, 256);
+							context.drawGuiTexture(PackListWidget.MOVE_UP_TEXTURE, x, y, 32, 32);
 						}
 					}
 
 					if (this.pack.canMoveTowardEnd()) {
 						if (i < 32 && i > 16 && j > 16) {
-							context.drawTexture(PackListWidget.RESOURCE_PACKS_TEXTURE, x, y, 64.0F, 32.0F, 32, 32, 256, 256);
+							context.drawGuiTexture(PackListWidget.MOVE_DOWN_HIGHLIGHTED_TEXTURE, x, y, 32, 32);
 						} else {
-							context.drawTexture(PackListWidget.RESOURCE_PACKS_TEXTURE, x, y, 64.0F, 0.0F, 32, 32, 256, 256);
+							context.drawGuiTexture(PackListWidget.MOVE_DOWN_TEXTURE, x, y, 32, 32);
 						}
 					}
 				}
 			}
 
 			context.drawTextWithShadow(this.client.textRenderer, orderedText, x + 32 + 2, y + 1, 16777215);
-			multilineText.drawWithShadow(context, x + 32 + 2, y + 12, 10, 8421504);
+			multilineText.drawWithShadow(context, x + 32 + 2, y + 12, 10, -8355712);
 		}
 
 		public String getName() {

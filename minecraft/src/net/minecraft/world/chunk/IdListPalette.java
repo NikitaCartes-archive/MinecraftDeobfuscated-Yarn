@@ -51,7 +51,7 @@ public class IdListPalette<T> implements Palette<T> {
 
 	@Override
 	public int getPacketSize() {
-		return PacketByteBuf.getVarIntLength(0);
+		return 0;
 	}
 
 	@Override

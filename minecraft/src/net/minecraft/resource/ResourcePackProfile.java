@@ -5,13 +5,16 @@ import com.mojang.logging.LogUtils;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
 import net.minecraft.resource.featuretoggle.FeatureSet;
 import net.minecraft.resource.metadata.PackFeatureSetMetadata;
+import net.minecraft.resource.metadata.PackOverlaysMetadata;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.dynamic.Range;
 import org.slf4j.Logger;
 
 /**
@@ -30,9 +33,7 @@ public class ResourcePackProfile {
 	private final String name;
 	private final ResourcePackProfile.PackFactory packFactory;
 	private final Text displayName;
-	private final Text description;
-	private final ResourcePackCompatibility compatibility;
-	private final FeatureSet requestedFeatures;
+	private final ResourcePackProfile.Metadata metadata;
 	private final ResourcePackProfile.InsertionPosition position;
 	private final boolean alwaysEnabled;
 	private final boolean pinned;
@@ -48,8 +49,9 @@ public class ResourcePackProfile {
 		ResourcePackProfile.InsertionPosition position,
 		ResourcePackSource source
 	) {
-		ResourcePackProfile.Metadata metadata = loadMetadata(name, packFactory);
-		return metadata != null ? of(name, displayName, alwaysEnabled, packFactory, metadata, type, position, false, source) : null;
+		int i = SharedConstants.getGameVersion().getResourceVersion(type);
+		ResourcePackProfile.Metadata metadata = loadMetadata(name, packFactory, i);
+		return metadata != null ? of(name, displayName, alwaysEnabled, packFactory, metadata, position, false, source) : null;
 	}
 
 	/**
@@ -68,12 +70,11 @@ public class ResourcePackProfile {
 		boolean alwaysEnabled,
 		ResourcePackProfile.PackFactory packFactory,
 		ResourcePackProfile.Metadata metadata,
-		ResourceType type,
 		ResourcePackProfile.InsertionPosition position,
 		boolean pinned,
 		ResourcePackSource source
 	) {
-		return new ResourcePackProfile(name, alwaysEnabled, packFactory, displayName, metadata, metadata.getCompatibility(type), position, pinned, source);
+		return new ResourcePackProfile(name, alwaysEnabled, packFactory, displayName, metadata, position, pinned, source);
 	}
 
 	private ResourcePackProfile(
@@ -82,7 +83,6 @@ public class ResourcePackProfile {
 		ResourcePackProfile.PackFactory packFactory,
 		Text displayName,
 		ResourcePackProfile.Metadata metadata,
-		ResourcePackCompatibility compatibility,
 		ResourcePackProfile.InsertionPosition position,
 		boolean pinned,
 		ResourcePackSource source
@@ -90,9 +90,7 @@ public class ResourcePackProfile {
 		this.name = name;
 		this.packFactory = packFactory;
 		this.displayName = displayName;
-		this.description = metadata.description();
-		this.compatibility = compatibility;
-		this.requestedFeatures = metadata.requestedFeatures();
+		this.metadata = metadata;
 		this.alwaysEnabled = alwaysEnabled;
 		this.position = position;
 		this.pinned = pinned;
@@ -100,9 +98,9 @@ public class ResourcePackProfile {
 	}
 
 	@Nullable
-	public static ResourcePackProfile.Metadata loadMetadata(String name, ResourcePackProfile.PackFactory packFactory) {
+	public static ResourcePackProfile.Metadata loadMetadata(String name, ResourcePackProfile.PackFactory packFactory, int currentPackFormat) {
 		try {
-			ResourcePackProfile.Metadata var6;
+			ResourcePackProfile.Metadata var11;
 			try (ResourcePack resourcePack = packFactory.open(name)) {
 				PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.SERIALIZER);
 				if (packResourceMetadata == null) {
@@ -112,13 +110,32 @@ public class ResourcePackProfile {
 
 				PackFeatureSetMetadata packFeatureSetMetadata = resourcePack.parseMetadata(PackFeatureSetMetadata.SERIALIZER);
 				FeatureSet featureSet = packFeatureSetMetadata != null ? packFeatureSetMetadata.flags() : FeatureSet.empty();
-				var6 = new ResourcePackProfile.Metadata(packResourceMetadata.getDescription(), packResourceMetadata.getPackFormat(), featureSet);
+				Range<Integer> range = getSupportedFormats(name, packResourceMetadata);
+				ResourcePackCompatibility resourcePackCompatibility = ResourcePackCompatibility.from(range, currentPackFormat);
+				PackOverlaysMetadata packOverlaysMetadata = resourcePack.parseMetadata(PackOverlaysMetadata.SERIALIZER);
+				List<String> list = packOverlaysMetadata != null ? packOverlaysMetadata.getAppliedOverlays(currentPackFormat) : List.of();
+				var11 = new ResourcePackProfile.Metadata(packResourceMetadata.description(), resourcePackCompatibility, featureSet, list);
 			}
 
-			return var6;
-		} catch (Exception var9) {
-			LOGGER.warn("Failed to read pack metadata", (Throwable)var9);
+			return var11;
+		} catch (Exception var14) {
+			LOGGER.warn("Failed to read pack {} metadata", name, var14);
 			return null;
+		}
+	}
+
+	private static Range<Integer> getSupportedFormats(String packName, PackResourceMetadata metadata) {
+		int i = metadata.packFormat();
+		if (metadata.supportedFormats().isEmpty()) {
+			return new Range(i);
+		} else {
+			Range<Integer> range = (Range<Integer>)metadata.supportedFormats().get();
+			if (!range.contains(i)) {
+				LOGGER.warn("Pack {} declared support for versions {} but declared main format is {}, defaulting to {}", packName, range, i, i);
+				return new Range(i);
+			} else {
+				return range;
+			}
 		}
 	}
 
@@ -127,7 +144,7 @@ public class ResourcePackProfile {
 	}
 
 	public Text getDescription() {
-		return this.description;
+		return this.metadata.description();
 	}
 
 	public Text getInformationText(boolean enabled) {
@@ -135,20 +152,20 @@ public class ResourcePackProfile {
 			.styled(
 				style -> style.withColor(enabled ? Formatting.GREEN : Formatting.RED)
 						.withInsertion(StringArgumentType.escapeIfRequired(this.name))
-						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.empty().append(this.displayName).append("\n").append(this.description)))
+						.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.empty().append(this.displayName).append("\n").append(this.metadata.description)))
 			);
 	}
 
 	public ResourcePackCompatibility getCompatibility() {
-		return this.compatibility;
+		return this.metadata.compatibility();
 	}
 
 	public FeatureSet getRequestedFeatures() {
-		return this.requestedFeatures;
+		return this.metadata.requestedFeatures();
 	}
 
 	public ResourcePack createResourcePack() {
-		return this.packFactory.open(this.name);
+		return this.packFactory.openWithOverlays(this.name, this.metadata);
 	}
 
 	public String getName() {
@@ -219,14 +236,12 @@ public class ResourcePackProfile {
 		}
 	}
 
-	public static record Metadata(Text description, int format, FeatureSet requestedFeatures) {
-		public ResourcePackCompatibility getCompatibility(ResourceType type) {
-			return ResourcePackCompatibility.from(this.format, type);
-		}
+	public static record Metadata(Text description, ResourcePackCompatibility compatibility, FeatureSet requestedFeatures, List<String> overlays) {
 	}
 
-	@FunctionalInterface
 	public interface PackFactory {
 		ResourcePack open(String name);
+
+		ResourcePack openWithOverlays(String name, ResourcePackProfile.Metadata metadata);
 	}
 }

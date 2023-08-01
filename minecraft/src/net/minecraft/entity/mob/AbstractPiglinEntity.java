@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -19,6 +20,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 
 public abstract class AbstractPiglinEntity extends HostileEntity {
 	protected static final TrackedData<Boolean> IMMUNE_TO_ZOMBIFICATION = DataTracker.registerData(AbstractPiglinEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -45,6 +47,16 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 		return 1.79F;
 	}
 
+	@Override
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return -0.7F;
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + 0.0625F * scaleFactor, 0.0F);
+	}
+
 	protected abstract boolean canHunt();
 
 	public void setImmuneToZombification(boolean immuneToZombification) {
@@ -69,11 +81,6 @@ public abstract class AbstractPiglinEntity extends HostileEntity {
 		}
 
 		nbt.putInt("TimeInOverworld", this.timeInOverworld);
-	}
-
-	@Override
-	public double getHeightOffset() {
-		return this.isBaby() ? -0.05 : -0.45;
 	}
 
 	@Override

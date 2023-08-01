@@ -7,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.chunk.ChunkBuilder;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -16,6 +17,7 @@ public class BuiltChunkStorage {
 	protected int sizeY;
 	protected int sizeX;
 	protected int sizeZ;
+	private int viewDistance;
 	public ChunkBuilder.BuiltChunk[] chunks;
 
 	public BuiltChunkStorage(ChunkBuilder chunkBuilder, World world, int viewDistance, WorldRenderer worldRenderer) {
@@ -27,7 +29,7 @@ public class BuiltChunkStorage {
 
 	protected void createChunks(ChunkBuilder chunkBuilder) {
 		if (!MinecraftClient.getInstance().isOnThread()) {
-			throw new IllegalStateException("createChunks called from wrong thread: " + Thread.currentThread().getName());
+			throw new IllegalStateException("createSections called from wrong thread: " + Thread.currentThread().getName());
 		} else {
 			int i = this.sizeX * this.sizeY * this.sizeZ;
 			this.chunks = new ChunkBuilder.BuiltChunk[i];
@@ -36,7 +38,7 @@ public class BuiltChunkStorage {
 				for (int k = 0; k < this.sizeY; k++) {
 					for (int l = 0; l < this.sizeZ; l++) {
 						int m = this.getChunkIndex(j, k, l);
-						this.chunks[m] = chunkBuilder.new BuiltChunk(m, j * 16, k * 16, l * 16);
+						this.chunks[m] = chunkBuilder.new BuiltChunk(m, j * 16, this.world.getBottomY() + k * 16, l * 16);
 					}
 				}
 			}
@@ -58,6 +60,15 @@ public class BuiltChunkStorage {
 		this.sizeX = i;
 		this.sizeY = this.world.countVerticalSections();
 		this.sizeZ = i;
+		this.viewDistance = viewDistance;
+	}
+
+	public int getViewDistance() {
+		return this.viewDistance;
+	}
+
+	public HeightLimitView getWorld() {
+		return this.world;
 	}
 
 	public void updateCameraPosition(double x, double z) {
@@ -96,13 +107,11 @@ public class BuiltChunkStorage {
 
 	@Nullable
 	protected ChunkBuilder.BuiltChunk getRenderedChunk(BlockPos pos) {
-		int i = MathHelper.floorDiv(pos.getX(), 16);
-		int j = MathHelper.floorDiv(pos.getY() - this.world.getBottomY(), 16);
-		int k = MathHelper.floorDiv(pos.getZ(), 16);
-		if (j >= 0 && j < this.sizeY) {
-			i = MathHelper.floorMod(i, this.sizeX);
-			k = MathHelper.floorMod(k, this.sizeZ);
-			return this.chunks[this.getChunkIndex(i, j, k)];
+		int i = MathHelper.floorDiv(pos.getY() - this.world.getBottomY(), 16);
+		if (i >= 0 && i < this.sizeY) {
+			int j = MathHelper.floorMod(MathHelper.floorDiv(pos.getX(), 16), this.sizeX);
+			int k = MathHelper.floorMod(MathHelper.floorDiv(pos.getZ(), 16), this.sizeZ);
+			return this.chunks[this.getChunkIndex(j, i, k)];
 		} else {
 			return null;
 		}

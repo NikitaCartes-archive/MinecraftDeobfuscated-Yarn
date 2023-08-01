@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
@@ -13,6 +14,7 @@ import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.world.PersistentState;
 
 public class ServerScoreboard extends Scoreboard {
 	private final MinecraftServer server;
@@ -53,7 +55,7 @@ public class ServerScoreboard extends Scoreboard {
 	}
 
 	@Override
-	public void setObjectiveSlot(int slot, @Nullable ScoreboardObjective objective) {
+	public void setObjectiveSlot(ScoreboardDisplaySlot slot, @Nullable ScoreboardObjective objective) {
 		ScoreboardObjective scoreboardObjective = this.getObjectiveForSlot(slot);
 		super.setObjectiveSlot(slot, objective);
 		if (scoreboardObjective != objective && scoreboardObjective != null) {
@@ -154,9 +156,9 @@ public class ServerScoreboard extends Scoreboard {
 		List<Packet<?>> list = Lists.<Packet<?>>newArrayList();
 		list.add(new ScoreboardObjectiveUpdateS2CPacket(objective, ScoreboardObjectiveUpdateS2CPacket.ADD_MODE));
 
-		for (int i = 0; i < 19; i++) {
-			if (this.getObjectiveForSlot(i) == objective) {
-				list.add(new ScoreboardDisplayS2CPacket(i, objective));
+		for (ScoreboardDisplaySlot scoreboardDisplaySlot : ScoreboardDisplaySlot.values()) {
+			if (this.getObjectiveForSlot(scoreboardDisplaySlot) == objective) {
+				list.add(new ScoreboardDisplayS2CPacket(scoreboardDisplaySlot, objective));
 			}
 		}
 
@@ -190,9 +192,9 @@ public class ServerScoreboard extends Scoreboard {
 		List<Packet<?>> list = Lists.<Packet<?>>newArrayList();
 		list.add(new ScoreboardObjectiveUpdateS2CPacket(objective, ScoreboardObjectiveUpdateS2CPacket.REMOVE_MODE));
 
-		for (int i = 0; i < 19; i++) {
-			if (this.getObjectiveForSlot(i) == objective) {
-				list.add(new ScoreboardDisplayS2CPacket(i, objective));
+		for (ScoreboardDisplaySlot scoreboardDisplaySlot : ScoreboardDisplaySlot.values()) {
+			if (this.getObjectiveForSlot(scoreboardDisplaySlot) == objective) {
+				list.add(new ScoreboardDisplayS2CPacket(scoreboardDisplaySlot, objective));
 			}
 		}
 
@@ -214,8 +216,8 @@ public class ServerScoreboard extends Scoreboard {
 	public int getSlot(ScoreboardObjective objective) {
 		int i = 0;
 
-		for (int j = 0; j < 19; j++) {
-			if (this.getObjectiveForSlot(j) == objective) {
+		for (ScoreboardDisplaySlot scoreboardDisplaySlot : ScoreboardDisplaySlot.values()) {
+			if (this.getObjectiveForSlot(scoreboardDisplaySlot) == objective) {
 				i++;
 			}
 		}
@@ -223,13 +225,17 @@ public class ServerScoreboard extends Scoreboard {
 		return i;
 	}
 
-	public ScoreboardState createState() {
+	public PersistentState.Type<ScoreboardState> getPersistentStateType() {
+		return new PersistentState.Type<>(this::createState, this::stateFromNbt, DataFixTypes.SAVED_DATA_SCOREBOARD);
+	}
+
+	private ScoreboardState createState() {
 		ScoreboardState scoreboardState = new ScoreboardState(this);
 		this.addUpdateListener(scoreboardState::markDirty);
 		return scoreboardState;
 	}
 
-	public ScoreboardState stateFromNbt(NbtCompound nbt) {
+	private ScoreboardState stateFromNbt(NbtCompound nbt) {
 		return this.createState().readNbt(nbt);
 	}
 

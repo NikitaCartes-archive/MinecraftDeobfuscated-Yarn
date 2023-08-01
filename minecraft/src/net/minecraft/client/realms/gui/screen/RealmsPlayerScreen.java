@@ -3,10 +3,12 @@ package net.minecraft.client.realms.gui.screen;
 import com.mojang.logging.LogUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -28,9 +30,6 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class RealmsPlayerScreen extends RealmsScreen {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	static final Identifier OP_ICON = new Identifier("realms", "textures/gui/realms/op_icon.png");
-	static final Identifier USER_ICON = new Identifier("realms", "textures/gui/realms/user_icon.png");
-	static final Identifier CROSS_PLAYER_ICON = new Identifier("realms", "textures/gui/realms/cross_player_icon.png");
 	private static final Identifier OPTIONS_BACKGROUND = new Identifier("minecraft", "textures/gui/options_background.png");
 	private static final Text QUESTION_TEXT = Text.translatable("mco.question");
 	static final Text NORMAL_TOOLTIP = Text.translatable("mco.configure.world.invites.normal.tooltip");
@@ -124,12 +123,12 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 	void op(int index) {
 		RealmsClient realmsClient = RealmsClient.create();
-		String string = ((PlayerInfo)this.serverData.players.get(index)).getUuid();
+		UUID uUID = ((PlayerInfo)this.serverData.players.get(index)).getUuid();
 
 		try {
-			this.updateOps(realmsClient.op(this.serverData.id, string));
+			this.updateOps(realmsClient.op(this.serverData.id, uUID));
 		} catch (RealmsServiceException var5) {
-			LOGGER.error("Couldn't op the user");
+			LOGGER.error("Couldn't op the user", (Throwable)var5);
 		}
 
 		this.updateButtonStates();
@@ -137,12 +136,12 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 	void deop(int index) {
 		RealmsClient realmsClient = RealmsClient.create();
-		String string = ((PlayerInfo)this.serverData.players.get(index)).getUuid();
+		UUID uUID = ((PlayerInfo)this.serverData.players.get(index)).getUuid();
 
 		try {
-			this.updateOps(realmsClient.deop(this.serverData.id, string));
+			this.updateOps(realmsClient.deop(this.serverData.id, uUID));
 		} catch (RealmsServiceException var5) {
-			LOGGER.error("Couldn't deop the user");
+			LOGGER.error("Couldn't deop the user", (Throwable)var5);
 		}
 
 		this.updateButtonStates();
@@ -165,7 +164,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 					try {
 						realmsClient.uninvite(this.serverData.id, playerInfo.getUuid());
 					} catch (RealmsServiceException var5) {
-						LOGGER.error("Couldn't uninvite user");
+						LOGGER.error("Couldn't uninvite user", (Throwable)var5);
 					}
 
 					this.serverData.players.remove(this.player);
@@ -182,16 +181,15 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.invitedObjectSelectionList.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, 16777215);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
 		int i = row(12) + 20;
 		context.setShaderColor(0.25F, 0.25F, 0.25F, 1.0F);
 		context.drawTexture(OPTIONS_BACKGROUND, 0, i, 0.0F, 0.0F, this.width, this.height - i, 32, 32);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		String string = this.serverData.players != null ? Integer.toString(this.serverData.players.size()) : "0";
-		context.drawText(this.textRenderer, Text.translatable("mco.configure.world.invited.number", string), this.column1_x, row(0), 10526880, false);
-		super.render(context, mouseX, mouseY, delta);
+		context.drawText(this.textRenderer, Text.translatable("mco.configure.world.invited.number", string), this.column1_x, row(0), -6250336, false);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -233,11 +231,6 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		}
 
 		@Override
-		public void renderBackground(DrawContext context) {
-			RealmsPlayerScreen.this.renderBackground(context);
-		}
-
-		@Override
 		public int getScrollbarPositionX() {
 			return RealmsPlayerScreen.this.column1_x + this.width - 5;
 		}
@@ -254,6 +247,15 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		private static final int field_44532 = 1;
 		private static final int field_44533 = 8;
 		private static final int field_44534 = 7;
+		private static final ButtonTextures REMOVE_PLAYER_TEXTURES = new ButtonTextures(
+			new Identifier("player_list/remove_player"), new Identifier("player_list/remove_player_highlighted")
+		);
+		private static final ButtonTextures MAKE_OPERATOR_TEXTURES = new ButtonTextures(
+			new Identifier("player_list/make_operator"), new Identifier("player_list/make_operator_highlighted")
+		);
+		private static final ButtonTextures REMOVE_OPERATOR_TEXTURES = new ButtonTextures(
+			new Identifier("player_list/remove_operator"), new Identifier("player_list/remove_operator_highlighted")
+		);
 		private final PlayerInfo playerInfo;
 		private final List<ClickableWidget> buttons = new ArrayList();
 		private final TexturedButtonWidget uninviteButton;
@@ -265,16 +267,14 @@ public class RealmsPlayerScreen extends RealmsScreen {
 			int i = RealmsPlayerScreen.this.serverData.players.indexOf(this.playerInfo);
 			int j = RealmsPlayerScreen.this.invitedObjectSelectionList.getRowRight() - 16 - 9;
 			int k = RealmsPlayerScreen.this.invitedObjectSelectionList.getRowTop(i) + 1;
-			this.uninviteButton = new TexturedButtonWidget(
-				j, k, 8, 7, 0, 0, 7, RealmsPlayerScreen.CROSS_PLAYER_ICON, 8, 14, button -> RealmsPlayerScreen.this.uninvite(i)
-			);
+			this.uninviteButton = new TexturedButtonWidget(j, k, 8, 7, REMOVE_PLAYER_TEXTURES, button -> RealmsPlayerScreen.this.uninvite(i), ScreenTexts.EMPTY);
 			this.uninviteButton.setTooltip(Tooltip.of(RealmsPlayerScreen.REMOVE_TOOLTIP));
 			this.buttons.add(this.uninviteButton);
 			j += 11;
-			this.opButton = new TexturedButtonWidget(j, k, 8, 7, 0, 0, 7, RealmsPlayerScreen.USER_ICON, 8, 14, button -> RealmsPlayerScreen.this.op(i));
+			this.opButton = new TexturedButtonWidget(j, k, 8, 7, MAKE_OPERATOR_TEXTURES, button -> RealmsPlayerScreen.this.op(i), ScreenTexts.EMPTY);
 			this.opButton.setTooltip(Tooltip.of(RealmsPlayerScreen.NORMAL_TOOLTIP));
 			this.buttons.add(this.opButton);
-			this.deopButton = new TexturedButtonWidget(j, k, 8, 7, 0, 0, 7, RealmsPlayerScreen.OP_ICON, 8, 14, button -> RealmsPlayerScreen.this.deop(i));
+			this.deopButton = new TexturedButtonWidget(j, k, 8, 7, REMOVE_OPERATOR_TEXTURES, button -> RealmsPlayerScreen.this.deop(i), ScreenTexts.EMPTY);
 			this.deopButton.setTooltip(Tooltip.of(RealmsPlayerScreen.OPERATOR_TOOLTIP));
 			this.buttons.add(this.deopButton);
 			this.updateButtonStates();
@@ -299,11 +299,11 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			int i;
 			if (!this.playerInfo.isAccepted()) {
-				i = 10526880;
+				i = -6250336;
 			} else if (this.playerInfo.isOnline()) {
 				i = 8388479;
 			} else {
-				i = 16777215;
+				i = -1;
 			}
 
 			RealmsUtil.drawPlayerHead(context, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, this.playerInfo.getUuid());

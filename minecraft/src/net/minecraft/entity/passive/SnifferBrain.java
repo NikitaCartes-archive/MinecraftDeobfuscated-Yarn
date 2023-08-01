@@ -96,7 +96,7 @@ public class SnifferBrain {
 				SnifferBrain.stopDiggingOrSniffing((SnifferEntity)pathAwareEntity);
 				super.run(serverWorld, pathAwareEntity, l);
 			}
-		}, new WanderAroundTask(10000, 15000), new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)));
+		}, new WanderAroundTask(500, 700), new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)));
 	}
 
 	private static void addSniffActivities(Brain<SnifferEntity> brain) {

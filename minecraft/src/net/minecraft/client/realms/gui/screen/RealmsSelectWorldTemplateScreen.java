@@ -25,17 +25,18 @@ import net.minecraft.client.realms.util.TextRenderingUtils;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
+	static final Identifier SLOT_FRAME_TEXTURE = new Identifier("widget/slot_frame");
+	static final Identifier LINK_HIGHLIGHTED_ICON_TEXTURE = new Identifier("icon/link_highlighted");
+	static final Identifier LINK_ICON_TEXTURE = new Identifier("icon/link");
+	static final Identifier VIDEO_LINK_HIGHLIGHTED_ICON_TEXTURE = new Identifier("icon/video_link_highlighted");
+	static final Identifier VIDEO_LINK_ICON_TEXTURE = new Identifier("icon/video_link");
 	static final Logger LOGGER = LogUtils.getLogger();
-	static final Identifier LINK_ICONS = new Identifier("realms", "textures/gui/realms/link_icons.png");
-	static final Identifier TRAILER_ICONS = new Identifier("realms", "textures/gui/realms/trailer_icons.png");
-	static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
 	static final Text INFO_TOOLTIP = Text.translatable("mco.template.info.tooltip");
 	static final Text TRAILER_TOOLTIP = Text.translatable("mco.template.trailer.tooltip");
 	private final Consumer<WorldTemplate> callback;
@@ -51,10 +52,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	private final RealmsServer.WorldType worldType;
 	int clicks;
 	@Nullable
-	private Text[] warning;
-	private String warningURL;
-	boolean displayWarning;
-	private boolean hoverWarning;
+	Text[] warning;
 	@Nullable
 	List<TextRenderingUtils.Line> noTemplatesMessage;
 
@@ -79,17 +77,6 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 	public void setWarning(Text... warning) {
 		this.warning = warning;
-		this.displayWarning = true;
-	}
-
-	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		if (this.hoverWarning && this.warningURL != null) {
-			Util.getOperatingSystem().open("https://www.minecraft.net/realms/adventure-maps-in-1-9");
-			return true;
-		} else {
-			return super.mouseClicked(mouseX, mouseY, button);
-		}
 	}
 
 	@Override
@@ -205,12 +192,12 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 					RealmsClient realmsClient = RealmsClient.create();
 
 					while (worldTemplatePaginatedList != null) {
-						Either<WorldTemplatePaginatedList, String> either = RealmsSelectWorldTemplateScreen.this.fetchWorldTemplates(worldTemplatePaginatedList, realmsClient);
+						Either<WorldTemplatePaginatedList, Exception> either = RealmsSelectWorldTemplateScreen.this.fetchWorldTemplates(worldTemplatePaginatedList, realmsClient);
 						worldTemplatePaginatedList = (WorldTemplatePaginatedList)RealmsSelectWorldTemplateScreen.this.client
 							.submit(
 								() -> {
 									if (either.right().isPresent()) {
-										RealmsSelectWorldTemplateScreen.LOGGER.error("Couldn't fetch templates: {}", either.right().get());
+										RealmsSelectWorldTemplateScreen.LOGGER.error("Couldn't fetch templates", (Throwable)either.right().get());
 										if (RealmsSelectWorldTemplateScreen.this.templateList.isEmpty()) {
 											RealmsSelectWorldTemplateScreen.this.noTemplatesMessage = TextRenderingUtils.decompose(I18n.translate("mco.template.select.failure"));
 										}
@@ -246,56 +233,35 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			.start();
 	}
 
-	Either<WorldTemplatePaginatedList, String> fetchWorldTemplates(WorldTemplatePaginatedList templateList, RealmsClient realms) {
+	Either<WorldTemplatePaginatedList, Exception> fetchWorldTemplates(WorldTemplatePaginatedList templateList, RealmsClient realms) {
 		try {
 			return Either.left(realms.fetchWorldTemplates(templateList.page + 1, templateList.size, this.worldType));
 		} catch (RealmsServiceException var4) {
-			return Either.right(var4.getMessage());
+			return Either.right(var4);
 		}
 	}
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 		this.tooltip = null;
 		this.currentLink = null;
-		this.hoverWarning = false;
-		this.renderBackground(context);
 		this.templateList.render(context, mouseX, mouseY, delta);
 		if (this.noTemplatesMessage != null) {
 			this.renderMessages(context, mouseX, mouseY, this.noTemplatesMessage);
 		}
 
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 13, 16777215);
-		if (this.displayWarning) {
-			Text[] texts = this.warning;
-
-			for (int i = 0; i < texts.length; i++) {
-				int j = this.textRenderer.getWidth(texts[i]);
-				int k = this.width / 2 - j / 2;
-				int l = row(-1 + i);
-				if (mouseX >= k && mouseX <= k + j && mouseY >= l && mouseY <= l + 9) {
-					this.hoverWarning = true;
-				}
-			}
-
-			for (int ix = 0; ix < texts.length; ix++) {
-				Text text = texts[ix];
-				int k = 10526880;
-				if (this.warningURL != null) {
-					if (this.hoverWarning) {
-						k = 7107012;
-						text = text.copy().formatted(Formatting.STRIKETHROUGH);
-					} else {
-						k = 3368635;
-					}
-				}
-
-				context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, row(-1 + ix), k);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 13, -1);
+		if (this.warning != null) {
+			for (int i = 0; i < this.warning.length; i++) {
+				Text text = this.warning[i];
+				context.drawCenteredTextWithShadow(this.textRenderer, text, this.width / 2, row(-1 + i), -6250336);
 			}
 		}
 
-		super.render(context, mouseX, mouseY, delta);
-		this.renderMousehoverTooltip(context, this.tooltip, mouseX, mouseY);
+		if (this.tooltip != null) {
+			context.drawTooltip(this.textRenderer, this.tooltip, mouseX, mouseY);
+		}
 	}
 
 	private void renderMessages(DrawContext context, int x, int y, List<TextRenderingUtils.Line> messages) {
@@ -306,7 +272,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			int l = this.width / 2 - k / 2;
 
 			for (TextRenderingUtils.LineSegment lineSegment : line.segments) {
-				int m = lineSegment.isLink() ? 3368635 : 16777215;
+				int m = lineSegment.isLink() ? 3368635 : -1;
 				int n = context.drawTextWithShadow(this.textRenderer, lineSegment.renderedText(), l, j, m);
 				if (lineSegment.isLink() && x > l && x < n && y > j - 3 && y < j + 8) {
 					this.tooltip = Text.literal(lineSegment.getLinkUrl());
@@ -315,16 +281,6 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 				l = n;
 			}
-		}
-	}
-
-	protected void renderMousehoverTooltip(DrawContext context, @Nullable Text tooltip, int mouseX, int mouseY) {
-		if (tooltip != null) {
-			int i = mouseX + 12;
-			int j = mouseY - 12;
-			int k = this.textRenderer.getWidth(tooltip);
-			context.fillGradient(i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
-			context.drawTextWithShadow(this.textRenderer, tooltip, i, j, 16777215);
 		}
 	}
 
@@ -338,7 +294,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			super(
 				RealmsSelectWorldTemplateScreen.this.width,
 				RealmsSelectWorldTemplateScreen.this.height,
-				RealmsSelectWorldTemplateScreen.this.displayWarning ? RealmsSelectWorldTemplateScreen.row(1) : 32,
+				RealmsSelectWorldTemplateScreen.this.warning != null ? RealmsSelectWorldTemplateScreen.row(1) : 32,
 				RealmsSelectWorldTemplateScreen.this.height - 40,
 				46
 			);
@@ -394,11 +350,6 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			return 300;
 		}
 
-		@Override
-		public void renderBackground(DrawContext context) {
-			RealmsSelectWorldTemplateScreen.this.renderBackground(context);
-		}
-
 		public boolean isEmpty() {
 			return this.getEntryCount() == 0;
 		}
@@ -427,7 +378,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 		private void renderWorldTemplateItem(DrawContext context, WorldTemplate template, int x, int y, int mouseX, int mouseY) {
 			int i = x + 45 + 20;
-			context.drawText(RealmsSelectWorldTemplateScreen.this.textRenderer, template.name, i, y + 2, 16777215, false);
+			context.drawText(RealmsSelectWorldTemplateScreen.this.textRenderer, template.name, i, y + 2, -1, false);
 			context.drawText(RealmsSelectWorldTemplateScreen.this.textRenderer, template.author, i, y + 15, 7105644, false);
 			context.drawText(
 				RealmsSelectWorldTemplateScreen.this.textRenderer,
@@ -446,7 +397,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 		private void drawImage(DrawContext context, int x, int y, int mouseX, int mouseY, WorldTemplate template) {
 			context.drawTexture(RealmsTextureManager.getTextureId(template.id, template.image), x + 1, y + 1, 0.0F, 0.0F, 38, 38, 38, 38);
-			context.drawTexture(RealmsSelectWorldTemplateScreen.SLOT_FRAME, x, y, 0.0F, 0.0F, 40, 40, 40, 40);
+			context.drawGuiTexture(RealmsSelectWorldTemplateScreen.SLOT_FRAME_TEXTURE, x, y, 40, 40);
 		}
 
 		private void drawIcons(DrawContext context, int x, int y, int mouseX, int mouseY, String link, String trailer, String recommendedPlayers) {
@@ -471,14 +422,16 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			}
 
 			if (!bl3) {
-				float f = bl ? 15.0F : 0.0F;
-				context.drawTexture(RealmsSelectWorldTemplateScreen.LINK_ICONS, x + i, y, f, 0.0F, 15, 15, 30, 15);
+				context.drawGuiTexture(
+					bl ? RealmsSelectWorldTemplateScreen.LINK_HIGHLIGHTED_ICON_TEXTURE : RealmsSelectWorldTemplateScreen.LINK_ICON_TEXTURE, x + i, y, 15, 15
+				);
 			}
 
 			if (!"".equals(trailer)) {
 				int j = x + i + (bl3 ? 0 : 17);
-				float g = bl2 ? 15.0F : 0.0F;
-				context.drawTexture(RealmsSelectWorldTemplateScreen.TRAILER_ICONS, j, y, g, 0.0F, 15, 15, 30, 15);
+				context.drawGuiTexture(
+					bl2 ? RealmsSelectWorldTemplateScreen.VIDEO_LINK_HIGHLIGHTED_ICON_TEXTURE : RealmsSelectWorldTemplateScreen.VIDEO_LINK_ICON_TEXTURE, j, y, 15, 15
+				);
 			}
 
 			if (bl) {

@@ -81,9 +81,9 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		this.addDrawableChild(
 			ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).dimensions(this.width / 2 + 6, this.height - 32, 153, 20).build()
 		);
-		this.addLabel(new RealmsLabel(Text.translatable("mco.upload.select.world.subtitle"), this.width / 2, row(-1), 10526880));
+		this.addLabel(new RealmsLabel(Text.translatable("mco.upload.select.world.subtitle"), this.width / 2, row(-1), -6250336));
 		if (this.levelList.isEmpty()) {
-			this.addLabel(new RealmsLabel(Text.translatable("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, 16777215));
+			this.addLabel(new RealmsLabel(Text.translatable("mco.upload.select.world.none"), this.width / 2, this.height / 2 - 20, -1));
 		}
 	}
 
@@ -101,10 +101,9 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		this.worldSelectionList.render(context, mouseX, mouseY, delta);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 13, 16777215);
 		super.render(context, mouseX, mouseY, delta);
+		this.worldSelectionList.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 13, -1);
 	}
 
 	@Override
@@ -170,8 +169,8 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 			}
 
 			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, string, x + 2, y + 1, 16777215, false);
-			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, this.nameAndLastPlayed, x + 2, y + 12, 8421504, false);
-			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, this.details, x + 2, y + 12 + 10, 8421504, false);
+			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, this.nameAndLastPlayed, x + 2, y + 12, -8355712, false);
+			context.drawText(RealmsSelectFileToUploadScreen.this.textRenderer, this.details, x + 2, y + 12 + 10, -8355712, false);
 		}
 
 		@Override
@@ -204,11 +203,6 @@ public class RealmsSelectFileToUploadScreen extends RealmsScreen {
 		@Override
 		public int getMaxPosition() {
 			return RealmsSelectFileToUploadScreen.this.levelList.size() * 36;
-		}
-
-		@Override
-		public void renderBackground(DrawContext context) {
-			RealmsSelectFileToUploadScreen.this.renderBackground(context);
 		}
 
 		public void setSelected(@Nullable RealmsSelectFileToUploadScreen.WorldListEntry worldListEntry) {

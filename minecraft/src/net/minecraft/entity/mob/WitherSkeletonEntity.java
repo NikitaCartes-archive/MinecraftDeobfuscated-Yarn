@@ -93,6 +93,11 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return -0.875F;
+	}
+
+	@Override
 	public boolean tryAttack(Entity target) {
 		if (!super.tryAttack(target)) {
 			return false;

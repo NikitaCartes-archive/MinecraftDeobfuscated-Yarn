@@ -4,25 +4,33 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.network.handler.PacketBundleHandler;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.BundlePacket;
 import net.minecraft.network.packet.BundleSplitterPacket;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
+import net.minecraft.network.packet.c2s.common.PlayPongC2SPacket;
+import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
+import net.minecraft.network.packet.c2s.config.ReadyC2SPacket;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
+import net.minecraft.network.packet.c2s.login.EnterConfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
+import net.minecraft.network.packet.c2s.play.AcknowledgeChunksC2SPacket;
+import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
@@ -36,13 +44,10 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
-import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
-import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
@@ -56,7 +61,6 @@ import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
-import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
@@ -73,6 +77,15 @@ import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
 import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
+import net.minecraft.network.packet.s2c.common.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
+import net.minecraft.network.packet.s2c.common.PlayPingS2CPacket;
+import net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket;
+import net.minecraft.network.packet.s2c.common.SynchronizeTagsS2CPacket;
+import net.minecraft.network.packet.s2c.config.DynamicRegistriesS2CPacket;
+import net.minecraft.network.packet.s2c.config.FeaturesS2CPacket;
+import net.minecraft.network.packet.s2c.config.ReadyS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginCompressionS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
@@ -92,19 +105,19 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
+import net.minecraft.network.packet.s2c.play.ChunkSentS2CPacket;
 import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
-import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
 import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
-import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
+import net.minecraft.network.packet.s2c.play.EnterReconfigurationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
@@ -123,14 +136,12 @@ import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
-import net.minecraft.network.packet.s2c.play.FeaturesS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
-import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
@@ -140,7 +151,6 @@ import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
 import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
-import net.minecraft.network.packet.s2c.play.PlayPingS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
@@ -155,7 +165,6 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.RemoveMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
@@ -167,11 +176,11 @@ import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.SimulationDistanceS2CPacket;
+import net.minecraft.network.packet.s2c.play.StartChunkSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
-import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
@@ -193,17 +202,19 @@ import net.minecraft.util.Util;
 import net.minecraft.util.annotation.Debug;
 import org.slf4j.Logger;
 
-public enum NetworkState implements PacketBundleHandler.BundlerGetter {
+public enum NetworkState {
 	HANDSHAKING(
-		-1,
-		createPacketHandlerInitializer().setup(NetworkSide.SERVERBOUND, new NetworkState.PacketHandler().register(HandshakeC2SPacket.class, HandshakeC2SPacket::new))
+		"handshake",
+		createPacketHandlerInitializer()
+			.setup(NetworkSide.CLIENTBOUND, new NetworkState.InternalPacketHandler())
+			.setup(NetworkSide.SERVERBOUND, new NetworkState.InternalPacketHandler().register(HandshakeC2SPacket.class, HandshakeC2SPacket::new))
 	),
 	PLAY(
-		0,
+		"play",
 		createPacketHandlerInitializer()
 			.setup(
 				NetworkSide.CLIENTBOUND,
-				new NetworkState.PacketHandler()
+				new NetworkState.InternalPacketHandler()
 					.registerBundlePacket(BundleS2CPacket.class, BundleS2CPacket::new)
 					.register(EntitySpawnS2CPacket.class, EntitySpawnS2CPacket::new)
 					.register(ExperienceOrbSpawnS2CPacket.class, ExperienceOrbSpawnS2CPacket::new)
@@ -217,6 +228,8 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 					.register(BlockUpdateS2CPacket.class, BlockUpdateS2CPacket::new)
 					.register(BossBarS2CPacket.class, BossBarS2CPacket::new)
 					.register(DifficultyS2CPacket.class, DifficultyS2CPacket::new)
+					.register(ChunkSentS2CPacket.class, ChunkSentS2CPacket::new)
+					.register(StartChunkSendS2CPacket.class, StartChunkSendS2CPacket::new)
 					.register(ChunkBiomeDataS2CPacket.class, ChunkBiomeDataS2CPacket::new)
 					.register(ClearTitleS2CPacket.class, ClearTitleS2CPacket::new)
 					.register(CommandSuggestionsS2CPacket.class, CommandSuggestionsS2CPacket::new)
@@ -303,6 +316,7 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 					.register(TitleFadeS2CPacket.class, TitleFadeS2CPacket::new)
 					.register(PlaySoundFromEntityS2CPacket.class, PlaySoundFromEntityS2CPacket::new)
 					.register(PlaySoundS2CPacket.class, PlaySoundS2CPacket::new)
+					.register(EnterReconfigurationS2CPacket.class, EnterReconfigurationS2CPacket::new)
 					.register(StopSoundS2CPacket.class, StopSoundS2CPacket::new)
 					.register(GameMessageS2CPacket.class, GameMessageS2CPacket::new)
 					.register(PlayerListHeaderS2CPacket.class, PlayerListHeaderS2CPacket::new)
@@ -311,14 +325,13 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 					.register(EntityPositionS2CPacket.class, EntityPositionS2CPacket::new)
 					.register(AdvancementUpdateS2CPacket.class, AdvancementUpdateS2CPacket::new)
 					.register(EntityAttributesS2CPacket.class, EntityAttributesS2CPacket::new)
-					.register(FeaturesS2CPacket.class, FeaturesS2CPacket::new)
 					.register(EntityStatusEffectS2CPacket.class, EntityStatusEffectS2CPacket::new)
 					.register(SynchronizeRecipesS2CPacket.class, SynchronizeRecipesS2CPacket::new)
 					.register(SynchronizeTagsS2CPacket.class, SynchronizeTagsS2CPacket::new)
 			)
 			.setup(
 				NetworkSide.SERVERBOUND,
-				new NetworkState.PacketHandler()
+				new NetworkState.InternalPacketHandler()
 					.register(TeleportConfirmC2SPacket.class, TeleportConfirmC2SPacket::new)
 					.register(QueryBlockNbtC2SPacket.class, QueryBlockNbtC2SPacket::new)
 					.register(UpdateDifficultyC2SPacket.class, UpdateDifficultyC2SPacket::new)
@@ -326,9 +339,11 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 					.register(CommandExecutionC2SPacket.class, CommandExecutionC2SPacket::new)
 					.register(ChatMessageC2SPacket.class, ChatMessageC2SPacket::new)
 					.register(PlayerSessionC2SPacket.class, PlayerSessionC2SPacket::new)
+					.register(AcknowledgeChunksC2SPacket.class, AcknowledgeChunksC2SPacket::new)
 					.register(ClientStatusC2SPacket.class, ClientStatusC2SPacket::new)
 					.register(ClientSettingsC2SPacket.class, ClientSettingsC2SPacket::new)
 					.register(RequestCommandCompletionsC2SPacket.class, RequestCommandCompletionsC2SPacket::new)
+					.register(AcknowledgeReconfigurationC2SPacket.class, AcknowledgeReconfigurationC2SPacket::new)
 					.register(ButtonClickC2SPacket.class, ButtonClickC2SPacket::new)
 					.register(ClickSlotC2SPacket.class, ClickSlotC2SPacket::new)
 					.register(CloseHandledScreenC2SPacket.class, CloseHandledScreenC2SPacket::new)
@@ -373,27 +388,27 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 			)
 	),
 	STATUS(
-		1,
+		"status",
 		createPacketHandlerInitializer()
 			.setup(
 				NetworkSide.SERVERBOUND,
-				new NetworkState.PacketHandler()
+				new NetworkState.InternalPacketHandler()
 					.register(QueryRequestC2SPacket.class, QueryRequestC2SPacket::new)
 					.register(QueryPingC2SPacket.class, QueryPingC2SPacket::new)
 			)
 			.setup(
 				NetworkSide.CLIENTBOUND,
-				new NetworkState.PacketHandler()
+				new NetworkState.InternalPacketHandler()
 					.register(QueryResponseS2CPacket.class, QueryResponseS2CPacket::new)
 					.register(QueryPongS2CPacket.class, QueryPongS2CPacket::new)
 			)
 	),
 	LOGIN(
-		2,
+		"login",
 		createPacketHandlerInitializer()
 			.setup(
 				NetworkSide.CLIENTBOUND,
-				new NetworkState.PacketHandler()
+				new NetworkState.InternalPacketHandler()
 					.register(LoginDisconnectS2CPacket.class, LoginDisconnectS2CPacket::new)
 					.register(LoginHelloS2CPacket.class, LoginHelloS2CPacket::new)
 					.register(LoginSuccessS2CPacket.class, LoginSuccessS2CPacket::new)
@@ -402,103 +417,75 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 			)
 			.setup(
 				NetworkSide.SERVERBOUND,
-				new NetworkState.PacketHandler()
+				new NetworkState.InternalPacketHandler()
 					.register(LoginHelloC2SPacket.class, LoginHelloC2SPacket::new)
 					.register(LoginKeyC2SPacket.class, LoginKeyC2SPacket::new)
-					.register(LoginQueryResponseC2SPacket.class, LoginQueryResponseC2SPacket::new)
+					.register(LoginQueryResponseC2SPacket.class, LoginQueryResponseC2SPacket::read)
+					.register(EnterConfigurationC2SPacket.class, EnterConfigurationC2SPacket::new)
+			)
+	),
+	CONFIGURATION(
+		"configuration",
+		createPacketHandlerInitializer()
+			.setup(
+				NetworkSide.CLIENTBOUND,
+				new NetworkState.InternalPacketHandler()
+					.register(CustomPayloadS2CPacket.class, CustomPayloadS2CPacket::new)
+					.register(DisconnectS2CPacket.class, DisconnectS2CPacket::new)
+					.register(ReadyS2CPacket.class, ReadyS2CPacket::new)
+					.register(KeepAliveS2CPacket.class, KeepAliveS2CPacket::new)
+					.register(PlayPingS2CPacket.class, PlayPingS2CPacket::new)
+					.register(DynamicRegistriesS2CPacket.class, DynamicRegistriesS2CPacket::new)
+					.register(ResourcePackSendS2CPacket.class, ResourcePackSendS2CPacket::new)
+					.register(FeaturesS2CPacket.class, FeaturesS2CPacket::new)
+					.register(SynchronizeTagsS2CPacket.class, SynchronizeTagsS2CPacket::new)
+			)
+			.setup(
+				NetworkSide.SERVERBOUND,
+				new NetworkState.InternalPacketHandler()
+					.register(CustomPayloadC2SPacket.class, CustomPayloadC2SPacket::new)
+					.register(ReadyC2SPacket.class, ReadyC2SPacket::new)
+					.register(KeepAliveC2SPacket.class, KeepAliveC2SPacket::new)
+					.register(PlayPongC2SPacket.class, PlayPongC2SPacket::new)
+					.register(ResourcePackStatusC2SPacket.class, ResourcePackStatusC2SPacket::new)
 			)
 	);
 
-	public static final int field_41866 = -1;
-	private static final int NULL_PACKET_ID_OR_MIN_STATE_ID = -1;
-	private static final int MAX_STATE_ID = 2;
-	private static final NetworkState[] STATES = new NetworkState[4];
-	private static final Map<Class<? extends Packet<?>>, NetworkState> HANDLER_STATE_MAP = Maps.<Class<? extends Packet<?>>, NetworkState>newHashMap();
-	private final int stateId;
-	private final Map<NetworkSide, ? extends NetworkState.PacketHandler<?>> packetHandlers;
+	public static final int UNKNOWN_PACKET_ID = -1;
+	private final String stateId;
+	private final Map<NetworkSide, NetworkState.PacketHandler<?>> packetHandlers;
 
 	private static NetworkState.PacketHandlerInitializer createPacketHandlerInitializer() {
 		return new NetworkState.PacketHandlerInitializer();
 	}
 
-	private NetworkState(int id, NetworkState.PacketHandlerInitializer initializer) {
-		this.stateId = id;
-		this.packetHandlers = initializer.packetHandlers;
-	}
-
-	public int getPacketId(NetworkSide side, Packet<?> packet) {
-		return ((NetworkState.PacketHandler)this.packetHandlers.get(side)).getId(packet.getClass());
-	}
-
-	@Override
-	public PacketBundleHandler getBundler(NetworkSide side) {
-		return ((NetworkState.PacketHandler)this.packetHandlers.get(side)).getBundler();
+	private NetworkState(String stateId, NetworkState.PacketHandlerInitializer initializer) {
+		this.stateId = stateId;
+		this.packetHandlers = initializer.createSideToHandlerMap(this);
 	}
 
 	@Debug
 	public Int2ObjectMap<Class<? extends Packet<?>>> getPacketIdToPacketMap(NetworkSide side) {
-		Int2ObjectMap<Class<? extends Packet<?>>> int2ObjectMap = new Int2ObjectOpenHashMap<>();
-		NetworkState.PacketHandler<?> packetHandler = (NetworkState.PacketHandler<?>)this.packetHandlers.get(side);
-		if (packetHandler == null) {
-			return Int2ObjectMaps.emptyMap();
-		} else {
-			packetHandler.packetIds.forEach((packetId, integer) -> int2ObjectMap.put(integer.intValue(), packetId));
-			return int2ObjectMap;
-		}
+		return ((NetworkState.PacketHandler)this.packetHandlers.get(side)).getPacketIdToPacketMap();
 	}
 
-	@Nullable
-	public Packet<?> getPacketHandler(NetworkSide side, int packetId, PacketByteBuf buf) {
-		return ((NetworkState.PacketHandler)this.packetHandlers.get(side)).createPacket(packetId, buf);
-	}
-
-	public int getId() {
+	@Debug
+	public String getId() {
 		return this.stateId;
 	}
 
-	@Nullable
-	public static NetworkState byId(int id) {
-		return id >= -1 && id <= 2 ? STATES[id - -1] : null;
+	public NetworkState.PacketHandler<?> getHandler(NetworkSide side) {
+		return (NetworkState.PacketHandler<?>)this.packetHandlers.get(side);
 	}
 
-	@Nullable
-	public static NetworkState getPacketHandlerState(Packet<?> handler) {
-		return (NetworkState)HANDLER_STATE_MAP.get(handler.getClass());
-	}
-
-	static {
-		for (NetworkState networkState : values()) {
-			int i = networkState.getId();
-			if (i < -1 || i > 2) {
-				throw new Error("Invalid protocol ID " + i);
-			}
-
-			STATES[i - -1] = networkState;
-			networkState.packetHandlers
-				.forEach(
-					(side, handler) -> handler.forEachPacketType(
-							packetClass -> {
-								if (HANDLER_STATE_MAP.containsKey(packetClass) && HANDLER_STATE_MAP.get(packetClass) != networkState) {
-									throw new IllegalStateException(
-										"Packet " + packetClass + " is already assigned to protocol " + HANDLER_STATE_MAP.get(packetClass) + " - can't reassign to " + networkState
-									);
-								} else {
-									HANDLER_STATE_MAP.put(packetClass, networkState);
-								}
-							}
-						)
-				);
-		}
-	}
-
-	static class PacketHandler<T extends PacketListener> {
+	static class InternalPacketHandler<T extends PacketListener> {
 		private static final Logger LOGGER = LogUtils.getLogger();
-		final Object2IntMap<Class<? extends Packet<T>>> packetIds = Util.make(new Object2IntOpenHashMap<>(), map -> map.defaultReturnValue(-1));
-		private final List<Function<PacketByteBuf, ? extends Packet<T>>> packetFactories = Lists.<Function<PacketByteBuf, ? extends Packet<T>>>newArrayList();
+		final Object2IntMap<Class<? extends Packet<? super T>>> packetIds = Util.make(new Object2IntOpenHashMap<>(), map -> map.defaultReturnValue(-1));
+		private final List<Function<PacketByteBuf, ? extends Packet<? super T>>> packetFactories = Lists.<Function<PacketByteBuf, ? extends Packet<? super T>>>newArrayList();
 		private PacketBundleHandler bundler = PacketBundleHandler.NOOP;
 		private final Set<Class<? extends Packet<T>>> bundlePacketTypes = new HashSet();
 
-		public <P extends Packet<T>> NetworkState.PacketHandler<T> register(Class<P> type, Function<PacketByteBuf, P> packetFactory) {
+		public <P extends Packet<? super T>> NetworkState.InternalPacketHandler<T> register(Class<P> type, Function<PacketByteBuf, P> packetFactory) {
 			int i = this.packetFactories.size();
 			int j = this.packetIds.put(type, i);
 			if (j != -1) {
@@ -511,7 +498,7 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 			}
 		}
 
-		public <P extends BundlePacket<T>> NetworkState.PacketHandler<T> registerBundlePacket(
+		public <P extends BundlePacket<T>> NetworkState.InternalPacketHandler<T> registerBundlePacket(
 			Class<P> bundlePacketType, Function<Iterable<Packet<T>>, P> bundleFunction
 		) {
 			if (this.bundler != PacketBundleHandler.NOOP) {
@@ -529,15 +516,14 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 			return this.packetIds.getInt(packet);
 		}
 
-		@Nullable
-		public Packet<?> createPacket(int id, PacketByteBuf buf) {
-			Function<PacketByteBuf, ? extends Packet<T>> function = (Function<PacketByteBuf, ? extends Packet<T>>)this.packetFactories.get(id);
-			return function != null ? (Packet)function.apply(buf) : null;
+		public boolean canHandle(Class<?> clazz) {
+			return this.packetIds.containsKey(clazz) || this.bundlePacketTypes.contains(clazz);
 		}
 
-		public void forEachPacketType(Consumer<Class<? extends Packet<?>>> consumer) {
-			this.packetIds.keySet().stream().filter(type -> type != BundleSplitterPacket.class).forEach(consumer);
-			this.bundlePacketTypes.forEach(consumer);
+		@Nullable
+		public Packet<?> createPacket(int id, PacketByteBuf buf) {
+			Function<PacketByteBuf, ? extends Packet<? super T>> function = (Function<PacketByteBuf, ? extends Packet<? super T>>)this.packetFactories.get(id);
+			return function != null ? (Packet)function.apply(buf) : null;
 		}
 
 		public PacketBundleHandler getBundler() {
@@ -545,12 +531,71 @@ public enum NetworkState implements PacketBundleHandler.BundlerGetter {
 		}
 	}
 
-	static class PacketHandlerInitializer {
-		final Map<NetworkSide, NetworkState.PacketHandler<?>> packetHandlers = Maps.newEnumMap(NetworkSide.class);
+	public static class PacketHandler<T extends PacketListener> implements PacketBundleHandler.BundlerGetter {
+		private final NetworkState state;
+		private final NetworkSide side;
+		private final NetworkState.InternalPacketHandler<T> backingHandler;
 
-		public <T extends PacketListener> NetworkState.PacketHandlerInitializer setup(NetworkSide side, NetworkState.PacketHandler<T> handler) {
+		public PacketHandler(NetworkState state, NetworkSide side, NetworkState.InternalPacketHandler<T> backingHandler) {
+			this.state = state;
+			this.side = side;
+			this.backingHandler = backingHandler;
+		}
+
+		public NetworkState getState() {
+			return this.state;
+		}
+
+		public NetworkSide getSide() {
+			return this.side;
+		}
+
+		public int getId(Packet<?> packet) {
+			return this.backingHandler.getId(packet.getClass());
+		}
+
+		@Override
+		public PacketBundleHandler getBundler() {
+			return this.backingHandler.getBundler();
+		}
+
+		Int2ObjectMap<Class<? extends Packet<?>>> getPacketIdToPacketMap() {
+			Int2ObjectMap<Class<? extends Packet<?>>> int2ObjectMap = new Int2ObjectOpenHashMap<>();
+			this.backingHandler.packetIds.forEach((packet, id) -> int2ObjectMap.put(id.intValue(), packet));
+			return int2ObjectMap;
+		}
+
+		@Nullable
+		public Packet<?> createPacket(int id, PacketByteBuf buf) {
+			return this.backingHandler.createPacket(id, buf);
+		}
+
+		public boolean canHandle(Packet<?> packet) {
+			return this.backingHandler.canHandle(packet.getClass());
+		}
+	}
+
+	static class PacketHandlerInitializer {
+		private final Map<NetworkSide, NetworkState.InternalPacketHandler<?>> packetHandlers = Maps.newEnumMap(NetworkSide.class);
+
+		public <T extends PacketListener> NetworkState.PacketHandlerInitializer setup(NetworkSide side, NetworkState.InternalPacketHandler<T> handler) {
 			this.packetHandlers.put(side, handler);
 			return this;
+		}
+
+		public Map<NetworkSide, NetworkState.PacketHandler<?>> createSideToHandlerMap(NetworkState state) {
+			Map<NetworkSide, NetworkState.PacketHandler<?>> map = new EnumMap(NetworkSide.class);
+
+			for (NetworkSide networkSide : NetworkSide.values()) {
+				NetworkState.InternalPacketHandler<?> internalPacketHandler = (NetworkState.InternalPacketHandler<?>)this.packetHandlers.get(networkSide);
+				if (internalPacketHandler == null) {
+					throw new IllegalStateException("Missing packets for flow " + networkSide + " in protocol " + state);
+				}
+
+				map.put(networkSide, new NetworkState.PacketHandler<>(state, networkSide, internalPacketHandler));
+			}
+
+			return map;
 		}
 	}
 }

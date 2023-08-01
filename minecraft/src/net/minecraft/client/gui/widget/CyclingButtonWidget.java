@@ -87,10 +87,10 @@ public class CyclingButtonWidget<T> extends PressableWidget {
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-		if (amount > 0.0) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		if (verticalAmount > 0.0) {
 			this.cycle(-1);
-		} else if (amount < 0.0) {
+		} else if (verticalAmount < 0.0) {
 			this.cycle(1);
 		}
 

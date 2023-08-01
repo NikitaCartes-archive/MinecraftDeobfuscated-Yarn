@@ -1271,9 +1271,9 @@ public class ItemGroups {
 						entries.add(Items.MUSIC_DISC_11);
 						entries.add(Items.MUSIC_DISC_WAIT);
 						entries.add(Items.MUSIC_DISC_OTHERSIDE);
+						entries.add(Items.MUSIC_DISC_RELIC);
 						entries.add(Items.MUSIC_DISC_5);
 						entries.add(Items.MUSIC_DISC_PIGSTEP);
-						entries.add(Items.MUSIC_DISC_RELIC);
 					}
 				)
 				.build()

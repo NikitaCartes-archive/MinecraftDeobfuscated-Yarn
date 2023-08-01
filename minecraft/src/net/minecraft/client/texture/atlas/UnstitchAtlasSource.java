@@ -7,13 +7,14 @@ import java.util.List;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.texture.SpriteDimensions;
+import net.minecraft.client.texture.SpriteOpener;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.metadata.ResourceMetadata;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
@@ -24,10 +25,10 @@ public class UnstitchAtlasSource implements AtlasSource {
 	static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<UnstitchAtlasSource> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Identifier.CODEC.fieldOf("resource").forGetter(unstitchAtlasSource -> unstitchAtlasSource.resource),
-					Codecs.nonEmptyList(UnstitchAtlasSource.Region.CODEC.listOf()).fieldOf("regions").forGetter(unstitchAtlasSource -> unstitchAtlasSource.regions),
-					Codec.DOUBLE.optionalFieldOf("divisor_x", Double.valueOf(1.0)).forGetter(unstitchAtlasSource -> unstitchAtlasSource.divisorX),
-					Codec.DOUBLE.optionalFieldOf("divisor_y", Double.valueOf(1.0)).forGetter(unstitchAtlasSource -> unstitchAtlasSource.divisorY)
+					Identifier.CODEC.fieldOf("resource").forGetter(source -> source.resource),
+					Codecs.nonEmptyList(UnstitchAtlasSource.Region.CODEC.listOf()).fieldOf("regions").forGetter(source -> source.regions),
+					Codec.DOUBLE.optionalFieldOf("divisor_x", Double.valueOf(1.0)).forGetter(source -> source.divisorX),
+					Codec.DOUBLE.optionalFieldOf("divisor_y", Double.valueOf(1.0)).forGetter(source -> source.divisorY)
 				)
 				.apply(instance, UnstitchAtlasSource::new)
 	);
@@ -91,7 +92,7 @@ public class UnstitchAtlasSource implements AtlasSource {
 			this.divisorY = divisorY;
 		}
 
-		public SpriteContents get() {
+		public SpriteContents apply(SpriteOpener spriteOpener) {
 			try {
 				NativeImage nativeImage = this.sprite.read();
 				double d = (double)nativeImage.getWidth() / this.divisorX;
@@ -102,9 +103,9 @@ public class UnstitchAtlasSource implements AtlasSource {
 				int l = MathHelper.floor(this.region.height * e);
 				NativeImage nativeImage2 = new NativeImage(NativeImage.Format.RGBA, k, l, false);
 				nativeImage.copyRect(nativeImage2, i, j, 0, 0, k, l, false, false);
-				return new SpriteContents(this.region.sprite, new SpriteDimensions(k, l), nativeImage2, AnimationResourceMetadata.EMPTY);
-			} catch (Exception var15) {
-				UnstitchAtlasSource.LOGGER.error("Failed to unstitch region {}", this.region.sprite, var15);
+				return new SpriteContents(this.region.sprite, new SpriteDimensions(k, l), nativeImage2, ResourceMetadata.NONE);
+			} catch (Exception var16) {
+				UnstitchAtlasSource.LOGGER.error("Failed to unstitch region {}", this.region.sprite, var16);
 			} finally {
 				this.sprite.close();
 			}

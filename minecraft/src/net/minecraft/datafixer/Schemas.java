@@ -60,6 +60,7 @@ import net.minecraft.datafixer.fix.ChunkStructuresTemplateRenameFix;
 import net.minecraft.datafixer.fix.ChunkToProtoChunkFix;
 import net.minecraft.datafixer.fix.ColorlessShulkerEntityFix;
 import net.minecraft.datafixer.fix.DecoratedPotFieldRenameFix;
+import net.minecraft.datafixer.fix.DropInvalidSignDatafixDataFix;
 import net.minecraft.datafixer.fix.EntityArmorStandSilentFix;
 import net.minecraft.datafixer.fix.EntityBlockStateFix;
 import net.minecraft.datafixer.fix.EntityBrushableBlockFieldsRenameFix;
@@ -147,6 +148,7 @@ import net.minecraft.datafixer.fix.PointOfInterestRemoveFix;
 import net.minecraft.datafixer.fix.PointOfInterestRenameFix;
 import net.minecraft.datafixer.fix.PointOfInterestReorganizationFix;
 import net.minecraft.datafixer.fix.ProtoChunkTickListFix;
+import net.minecraft.datafixer.fix.RandomSequenceSettingsFix;
 import net.minecraft.datafixer.fix.RedstoneConnectionsFix;
 import net.minecraft.datafixer.fix.RemoveFeatureTogglesFix;
 import net.minecraft.datafixer.fix.RemoveFilteredBookTextFix;
@@ -156,6 +158,7 @@ import net.minecraft.datafixer.fix.RemovePoiValidTagFix;
 import net.minecraft.datafixer.fix.RenameBlockEntityFix;
 import net.minecraft.datafixer.fix.RenameChunkStatusFix;
 import net.minecraft.datafixer.fix.RenameItemStackAttributesFix;
+import net.minecraft.datafixer.fix.RenameScoreboardDisplaySlotFix;
 import net.minecraft.datafixer.fix.RenameVariantsFix;
 import net.minecraft.datafixer.fix.StatsCounterFix;
 import net.minecraft.datafixer.fix.StatsRenameFix;
@@ -423,7 +426,6 @@ public class Schemas {
 		builder.addFixer(new LevelFlatGeneratorInfoFix(schema42, false));
 		Schema schema43 = builder.addSchema(1451, 6, Schema1451v6::new);
 		builder.addFixer(new StatsCounterFix(schema43, true));
-		builder.addFixer(new WriteAndReadFix(schema43, "Rewrite objectives", TypeReferences.OBJECTIVE));
 		builder.addFixer(new BlockEntityJukeboxFix(schema43, false));
 		Schema schema44 = builder.addSchema(1451, 7, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new VillagerTradeFix(schema44, false));
@@ -436,6 +438,7 @@ public class Schemas {
 		Schema schema47 = builder.addSchema(1460, Schema1460::new);
 		builder.addFixer(new EntityPaintingMotiveFix(schema47, false));
 		Schema schema48 = builder.addSchema(1466, Schema1466::new);
+		builder.addFixer(new ChoiceTypesFix(schema48, "Add DUMMY block entity", TypeReferences.BLOCK_ENTITY));
 		builder.addFixer(new ChunkToProtoChunkFix(schema48, true));
 		Schema schema49 = builder.addSchema(1470, Schema1470::new);
 		builder.addFixer(new ChoiceTypesFix(schema49, "Add 1.13 entities fix", TypeReferences.ENTITY));
@@ -1138,6 +1141,13 @@ public class Schemas {
 		builder.addFixer(new ChunkDeleteLightFix(schema187));
 		Schema schema188 = builder.addSchema(3459, EMPTY_IDENTIFIER_NORMALIZE);
 		builder.addFixer(new LegacyDragonFightFix(schema188));
+		Schema schema189 = builder.addSchema(3564, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new DropInvalidSignDatafixDataFix(schema189, "Drop invalid sign datafix data", "minecraft:sign"));
+		builder.addFixer(new DropInvalidSignDatafixDataFix(schema189, "Drop invalid hanging sign datafix data", "minecraft:hanging_sign"));
+		Schema schema190 = builder.addSchema(3565, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RandomSequenceSettingsFix(schema190));
+		Schema schema191 = builder.addSchema(3566, EMPTY_IDENTIFIER_NORMALIZE);
+		builder.addFixer(new RenameScoreboardDisplaySlotFix(schema191));
 	}
 
 	private static UnaryOperator<String> replacing(Map<String, String> replacements) {

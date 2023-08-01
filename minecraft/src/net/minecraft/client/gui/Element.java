@@ -95,11 +95,12 @@ public interface Element extends Navigable {
 	 * @return {@code true} to indicate that the event handling is successful/valid
 	 * @see net.minecraft.client.Mouse#onMouseScroll(long, double, double)
 	 * 
-	 * @param amount value is {@code < 0} if scrolled down, {@code > 0} if scrolled up
 	 * @param mouseX the X coordinate of the mouse
 	 * @param mouseY the Y coordinate of the mouse
+	 * @param horizontalAmount the horizontal scroll amount
+	 * @param verticalAmount the vertical scroll amount
 	 */
-	default boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+	default boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		return false;
 	}
 

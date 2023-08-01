@@ -2,24 +2,30 @@ package net.minecraft.client.realms.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
+import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.gui.widget.ThreePartsLayoutWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.client.realms.task.WorldCreationTask;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class RealmsCreateRealmScreen extends RealmsScreen {
 	private static final Text WORLD_NAME_TEXT = Text.translatable("mco.configure.world.name");
 	private static final Text WORLD_DESCRIPTION_TEXT = Text.translatable("mco.configure.world.description");
+	private static final int field_45243 = 10;
+	private static final int field_45244 = 210;
 	private final RealmsServer server;
 	private final RealmsMainScreen parent;
+	private final ThreePartsLayoutWidget layout = new ThreePartsLayoutWidget(this);
 	private TextFieldWidget nameBox;
 	private TextFieldWidget descriptionBox;
-	private ButtonWidget createButton;
 
 	public RealmsCreateRealmScreen(RealmsServer server, RealmsMainScreen parent) {
 		super(Text.translatable("mco.selectServer.create"));
@@ -28,97 +34,58 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void tick() {
-		if (this.nameBox != null) {
-			this.nameBox.tick();
-		}
-
-		if (this.descriptionBox != null) {
-			this.descriptionBox.tick();
-		}
-	}
-
-	@Override
 	public void init() {
-		this.createButton = this.addDrawableChild(
-			ButtonWidget.builder(Text.translatable("mco.create.world"), button -> this.createWorld())
-				.dimensions(this.width / 2 - 100, this.height / 4 + 120 + 17, 97, 20)
-				.build()
-		);
-		this.addDrawableChild(
-			ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent))
-				.dimensions(this.width / 2 + 5, this.height / 4 + 120 + 17, 95, 20)
-				.build()
-		);
-		this.createButton.active = false;
-		this.nameBox = new TextFieldWidget(this.client.textRenderer, this.width / 2 - 100, 65, 200, 20, null, Text.translatable("mco.configure.world.name"));
-		this.addSelectableChild(this.nameBox);
+		this.layout.addHeader(new TextWidget(this.title, this.textRenderer));
+		DirectionalLayoutWidget directionalLayoutWidget = this.layout.addBody(DirectionalLayoutWidget.vertical()).spacing(10);
+		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter();
+		ButtonWidget buttonWidget = ButtonWidget.builder(Text.translatable("mco.create.world"), button -> this.createWorld()).build();
+		buttonWidget.active = false;
+		this.nameBox = new TextFieldWidget(this.textRenderer, 208, 20, Text.translatable("mco.configure.world.name"));
+		this.nameBox.setChangedListener(name -> buttonWidget.active = !Util.isBlank(name));
+		this.descriptionBox = new TextFieldWidget(this.textRenderer, 208, 20, Text.translatable("mco.configure.world.description"));
+		DirectionalLayoutWidget directionalLayoutWidget2 = directionalLayoutWidget.add(DirectionalLayoutWidget.vertical().spacing(4));
+		directionalLayoutWidget2.add(new TextWidget(WORLD_NAME_TEXT, this.textRenderer), Positioner::alignLeft);
+		directionalLayoutWidget2.add(this.nameBox, positioner -> positioner.margin(1));
+		DirectionalLayoutWidget directionalLayoutWidget3 = directionalLayoutWidget.add(DirectionalLayoutWidget.vertical().spacing(4));
+		directionalLayoutWidget3.add(new TextWidget(WORLD_DESCRIPTION_TEXT, this.textRenderer), Positioner::alignLeft);
+		directionalLayoutWidget3.add(this.descriptionBox, positioner -> positioner.margin(1));
+		DirectionalLayoutWidget directionalLayoutWidget4 = this.layout.addFooter(DirectionalLayoutWidget.horizontal().spacing(10));
+		directionalLayoutWidget4.add(buttonWidget);
+		directionalLayoutWidget4.add(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.close()).build());
+		this.layout.forEachChild(child -> {
+			ClickableWidget var10000 = this.addDrawableChild(child);
+		});
+		this.initTabNavigation();
 		this.setInitialFocus(this.nameBox);
-		this.descriptionBox = new TextFieldWidget(
-			this.client.textRenderer, this.width / 2 - 100, 115, 200, 20, null, Text.translatable("mco.configure.world.description")
-		);
-		this.addSelectableChild(this.descriptionBox);
 	}
 
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
-		boolean bl = super.charTyped(chr, modifiers);
-		this.createButton.active = this.valid();
-		return bl;
-	}
-
-	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-			this.client.setScreen(this.parent);
-			return true;
-		} else {
-			boolean bl = super.keyPressed(keyCode, scanCode, modifiers);
-			this.createButton.active = this.valid();
-			return bl;
-		}
+	protected void initTabNavigation() {
+		this.layout.refreshPositions();
 	}
 
 	private void createWorld() {
-		if (this.valid()) {
-			RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
-				this.parent,
-				this.server,
-				Text.translatable("mco.selectServer.create"),
-				Text.translatable("mco.create.world.subtitle"),
-				10526880,
-				Text.translatable("mco.create.world.skip"),
-				() -> this.client.execute(() -> this.client.setScreen(this.parent.newScreen())),
-				() -> this.client.setScreen(this.parent.newScreen())
+		RealmsResetWorldScreen realmsResetWorldScreen = new RealmsResetWorldScreen(
+			this.parent,
+			this.server,
+			Text.translatable("mco.selectServer.create"),
+			Text.translatable("mco.create.world.subtitle"),
+			-6250336,
+			Text.translatable("mco.create.world.skip"),
+			() -> this.client.execute(() -> this.client.setScreen(this.parent.newScreen())),
+			() -> this.client.setScreen(this.parent.newScreen())
+		);
+		realmsResetWorldScreen.setResetTitle(Text.translatable("mco.create.world.reset.title"));
+		this.client
+			.setScreen(
+				new RealmsLongRunningMcoTaskScreen(
+					this.parent, new WorldCreationTask(this.server.id, this.nameBox.getText(), this.descriptionBox.getText(), realmsResetWorldScreen)
+				)
 			);
-			realmsResetWorldScreen.setResetTitle(Text.translatable("mco.create.world.reset.title"));
-			this.client
-				.setScreen(
-					new RealmsLongRunningMcoTaskScreen(
-						this.parent, new WorldCreationTask(this.server.id, this.nameBox.getText(), this.descriptionBox.getText(), realmsResetWorldScreen)
-					)
-				);
-		}
-	}
-
-	private boolean valid() {
-		return !this.nameBox.getText().trim().isEmpty();
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 11, 16777215);
-		context.drawText(this.textRenderer, WORLD_NAME_TEXT, this.width / 2 - 100, 52, 10526880, false);
-		context.drawText(this.textRenderer, WORLD_DESCRIPTION_TEXT, this.width / 2 - 100, 102, 10526880, false);
-		if (this.nameBox != null) {
-			this.nameBox.render(context, mouseX, mouseY, delta);
-		}
-
-		if (this.descriptionBox != null) {
-			this.descriptionBox.render(context, mouseX, mouseY, delta);
-		}
-
-		super.render(context, mouseX, mouseY, delta);
+	public void close() {
+		this.client.setScreen(this.parent);
 	}
 }

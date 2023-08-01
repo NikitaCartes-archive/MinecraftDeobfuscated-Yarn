@@ -41,13 +41,13 @@ public class ServerInfo {
 	private ServerInfo.ResourcePackPolicy resourcePackPolicy = ServerInfo.ResourcePackPolicy.PROMPT;
 	@Nullable
 	private byte[] favicon;
-	private boolean local;
+	private ServerInfo.ServerType serverType;
 	private boolean secureChatEnforced;
 
-	public ServerInfo(String name, String address, boolean local) {
+	public ServerInfo(String name, String address, ServerInfo.ServerType serverType) {
 		this.name = name;
 		this.address = address;
-		this.local = local;
+		this.serverType = serverType;
 	}
 
 	public NbtCompound toNbt() {
@@ -85,7 +85,7 @@ public class ServerInfo {
 	}
 
 	public static ServerInfo fromNbt(NbtCompound root) {
-		ServerInfo serverInfo = new ServerInfo(root.getString("name"), root.getString("ip"), false);
+		ServerInfo serverInfo = new ServerInfo(root.getString("name"), root.getString("ip"), ServerInfo.ServerType.OTHER);
 		if (root.contains("icon", NbtElement.STRING_TYPE)) {
 			try {
 				serverInfo.setFavicon(Base64.getDecoder().decode(root.getString("icon")));
@@ -117,7 +117,11 @@ public class ServerInfo {
 	}
 
 	public boolean isLocal() {
-		return this.local;
+		return this.serverType == ServerInfo.ServerType.LAN;
+	}
+
+	public boolean isRealm() {
+		return this.serverType == ServerInfo.ServerType.REALM;
 	}
 
 	public void setSecureChatEnforced(boolean secureChatEnforced) {
@@ -137,13 +141,13 @@ public class ServerInfo {
 	public void copyWithSettingsFrom(ServerInfo serverInfo) {
 		this.copyFrom(serverInfo);
 		this.setResourcePackPolicy(serverInfo.getResourcePackPolicy());
-		this.local = serverInfo.local;
+		this.serverType = serverInfo.serverType;
 		this.secureChatEnforced = serverInfo.secureChatEnforced;
 	}
 
 	/**
 	 * The policy of the client when this server sends a {@linkplain
-	 * net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket server
+	 * net.minecraft.network.packet.s2c.common.ResourcePackSendS2CPacket server
 	 * resource pack}.
 	 * 
 	 * @see ServerInfo#getResourcePackPolicy()
@@ -173,5 +177,12 @@ public class ServerInfo {
 		public Text getName() {
 			return this.name;
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static enum ServerType {
+		LAN,
+		REALM,
+		OTHER;
 	}
 }

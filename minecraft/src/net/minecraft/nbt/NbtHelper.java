@@ -38,7 +38,7 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.Property;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.StringHelper;
+import net.minecraft.util.Util;
 import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import org.slf4j.Logger;
@@ -74,15 +74,8 @@ public final class NbtHelper {
 	 */
 	@Nullable
 	public static GameProfile toGameProfile(NbtCompound nbt) {
-		String string = null;
-		UUID uUID = null;
-		if (nbt.contains("Name", NbtElement.STRING_TYPE)) {
-			string = nbt.getString("Name");
-		}
-
-		if (nbt.containsUuid("Id")) {
-			uUID = nbt.getUuid("Id");
-		}
+		UUID uUID = nbt.containsUuid("Id") ? nbt.getUuid("Id") : Util.NIL_UUID;
+		String string = nbt.getString("Name");
 
 		try {
 			GameProfile gameProfile = new GameProfile(uUID, string);
@@ -117,11 +110,11 @@ public final class NbtHelper {
 	 * @see #toGameProfile(NbtCompound)
 	 */
 	public static NbtCompound writeGameProfile(NbtCompound nbt, GameProfile profile) {
-		if (!StringHelper.isEmpty(profile.getName())) {
+		if (!profile.getName().isEmpty()) {
 			nbt.putString("Name", profile.getName());
 		}
 
-		if (profile.getId() != null) {
+		if (!profile.getId().equals(Util.NIL_UUID)) {
 			nbt.putUuid("Id", profile.getId());
 		}
 
@@ -133,9 +126,10 @@ public final class NbtHelper {
 
 				for (com.mojang.authlib.properties.Property property : profile.getProperties().get(string)) {
 					NbtCompound nbtCompound2 = new NbtCompound();
-					nbtCompound2.putString("Value", property.getValue());
-					if (property.hasSignature()) {
-						nbtCompound2.putString("Signature", property.getSignature());
+					nbtCompound2.putString("Value", property.value());
+					String string2 = property.signature();
+					if (string2 != null) {
+						nbtCompound2.putString("Signature", string2);
 					}
 
 					nbtList.add(nbtCompound2);

@@ -8,15 +8,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class DeathScreen extends Screen {
+	private static final Identifier DRAFT_REPORT_ICON_TEXTURE = new Identifier("icon/draft_report");
 	private int ticksSinceDeath;
 	private final Text message;
 	private final boolean isHardcore;
@@ -88,7 +89,7 @@ public class DeathScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		context.fillGradient(0, 0, this.width, this.height, 1615855616, -1602211792);
+		super.render(context, mouseX, mouseY, delta);
 		context.getMatrices().push();
 		context.getMatrices().scale(2.0F, 2.0F, 2.0F);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2 / 2, 30, 16777215);
@@ -103,12 +104,16 @@ public class DeathScreen extends Screen {
 			context.drawHoverEvent(this.textRenderer, style, mouseX, mouseY);
 		}
 
-		super.render(context, mouseX, mouseY, delta);
 		if (this.titleScreenButton != null && this.client.getAbuseReportContext().hasDraft()) {
-			context.drawTexture(
-				ClickableWidget.WIDGETS_TEXTURE, this.titleScreenButton.getX() + this.titleScreenButton.getWidth() - 17, this.titleScreenButton.getY() + 3, 182, 24, 15, 15
+			context.drawGuiTexture(
+				DRAFT_REPORT_ICON_TEXTURE, this.titleScreenButton.getX() + this.titleScreenButton.getWidth() - 17, this.titleScreenButton.getY() + 3, 15, 15
 			);
 		}
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		context.fillGradient(0, 0, this.width, this.height, 1615855616, -1602211792);
 	}
 
 	@Nullable

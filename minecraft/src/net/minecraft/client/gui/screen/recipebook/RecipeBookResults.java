@@ -9,14 +9,22 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.book.RecipeBook;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookResults {
 	public static final int field_32411 = 20;
+	private static final ButtonTextures PAGE_FORWARD_TEXTURES = new ButtonTextures(
+		new Identifier("recipe_book/page_forward"), new Identifier("recipe_book/page_forward_highlighted")
+	);
+	private static final ButtonTextures PAGE_BACKWARD_TEXTURES = new ButtonTextures(
+		new Identifier("recipe_book/page_backward"), new Identifier("recipe_book/page_backward_highlighted")
+	);
 	private final List<AnimatedResultButton> resultButtons = Lists.<AnimatedResultButton>newArrayListWithCapacity(20);
 	@Nullable
 	private AnimatedResultButton hoveredResultButton;
@@ -49,9 +57,9 @@ public class RecipeBookResults {
 		}
 
 		this.nextPageButton = new ToggleButtonWidget(parentLeft + 93, parentTop + 137, 12, 17, false);
-		this.nextPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
+		this.nextPageButton.setTextures(PAGE_FORWARD_TEXTURES);
 		this.prevPageButton = new ToggleButtonWidget(parentLeft + 38, parentTop + 137, 12, 17, true);
-		this.prevPageButton.setTextureUV(1, 208, 13, 18, RecipeBookWidget.TEXTURE);
+		this.prevPageButton.setTextures(PAGE_BACKWARD_TEXTURES);
 	}
 
 	public void setGui(RecipeBookWidget widget) {

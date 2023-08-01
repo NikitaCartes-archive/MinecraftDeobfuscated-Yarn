@@ -24,6 +24,7 @@ import net.minecraft.command.argument.ScoreboardSlotArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.text.Text;
@@ -539,26 +540,24 @@ public class ScoreboardCommand {
 		return map.size();
 	}
 
-	private static int executeClearDisplay(ServerCommandSource source, int slot) throws CommandSyntaxException {
+	private static int executeClearDisplay(ServerCommandSource source, ScoreboardDisplaySlot slot) throws CommandSyntaxException {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 		if (scoreboard.getObjectiveForSlot(slot) == null) {
 			throw OBJECTIVES_DISPLAY_ALREADY_EMPTY_EXCEPTION.create();
 		} else {
 			scoreboard.setObjectiveSlot(slot, null);
-			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.display.cleared", Scoreboard.getDisplaySlotNames()[slot]), true);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.display.cleared", slot.asString()), true);
 			return 0;
 		}
 	}
 
-	private static int executeSetDisplay(ServerCommandSource source, int slot, ScoreboardObjective objective) throws CommandSyntaxException {
+	private static int executeSetDisplay(ServerCommandSource source, ScoreboardDisplaySlot slot, ScoreboardObjective objective) throws CommandSyntaxException {
 		Scoreboard scoreboard = source.getServer().getScoreboard();
 		if (scoreboard.getObjectiveForSlot(slot) == objective) {
 			throw OBJECTIVES_DISPLAY_ALREADY_SET_EXCEPTION.create();
 		} else {
 			scoreboard.setObjectiveSlot(slot, objective);
-			source.sendFeedback(
-				() -> Text.translatable("commands.scoreboard.objectives.display.set", Scoreboard.getDisplaySlotNames()[slot], objective.getDisplayName()), true
-			);
+			source.sendFeedback(() -> Text.translatable("commands.scoreboard.objectives.display.set", slot.asString(), objective.getDisplayName()), true);
 			return 0;
 		}
 	}

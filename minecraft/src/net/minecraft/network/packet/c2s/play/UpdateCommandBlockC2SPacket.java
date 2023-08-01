@@ -63,7 +63,7 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 		serverPlayPacketListener.onUpdateCommandBlock(this);
 	}
 
-	public BlockPos getBlockPos() {
+	public BlockPos getPos() {
 		return this.pos;
 	}
 

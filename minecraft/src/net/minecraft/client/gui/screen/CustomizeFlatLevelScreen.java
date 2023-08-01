@@ -22,7 +22,7 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeFlatLevelScreen extends Screen {
-	private static final int ICON_TEXTURE_SIZE = 128;
+	static final Identifier SLOT_TEXTURE = new Identifier("container/slot");
 	private static final int ICON_SIZE = 18;
 	private static final int BUTTON_HEIGHT = 20;
 	private static final int ICON_BACKGROUND_OFFSET_X = 1;
@@ -115,18 +115,17 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.layers.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		int i = this.width / 2 - 92 - 16;
 		context.drawTextWithShadow(this.textRenderer, this.tileText, i, 32, 16777215);
 		context.drawTextWithShadow(this.textRenderer, this.heightText, i + 2 + 213 - this.textRenderer.getWidth(this.heightText), 32, 16777215);
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Environment(EnvType.CLIENT)
 	class SuperflatLayersListWidget extends AlwaysSelectedEntryListWidget<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerEntry> {
-		static final Identifier STATS_ICONS_TEXTURE = new Identifier("textures/gui/container/stats_icons.png");
+		private static final Identifier STATS_ICONS_TEXTURE = new Identifier("textures/gui/container/stats_icons.png");
 
 		public SuperflatLayersListWidget() {
 			super(
@@ -232,7 +231,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 
 			private void renderIconBackgroundTexture(DrawContext context, int x, int y) {
-				context.drawTexture(CustomizeFlatLevelScreen.SuperflatLayersListWidget.STATS_ICONS_TEXTURE, x, y, 0, 0.0F, 0.0F, 18, 18, 128, 128);
+				context.drawGuiTexture(CustomizeFlatLevelScreen.SLOT_TEXTURE, x, y, 0, 18, 18);
 			}
 		}
 	}

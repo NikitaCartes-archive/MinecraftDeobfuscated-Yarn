@@ -17,13 +17,12 @@ import net.minecraft.screen.PlayerScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 @Environment(EnvType.CLIENT)
 public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler> implements RecipeBookProvider {
-	private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
 	private float mouseX;
 	private float mouseY;
 	private final RecipeBookWidget recipeBook = new RecipeBookWidget();
@@ -63,7 +62,7 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 			this.narrow = this.width < 379;
 			this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.handler);
 			this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
-			this.addDrawableChild(new TexturedButtonWidget(this.x + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
+			this.addDrawableChild(new TexturedButtonWidget(this.x + 104, this.height / 2 - 22, 20, 18, RecipeBookWidget.BUTTON_TEXTURES, button -> {
 				this.recipeBook.toggleOpen();
 				this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
 				button.setPosition(this.x + 104, this.height / 2 - 22);
@@ -81,13 +80,12 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
 		if (this.recipeBook.isOpen() && this.narrow) {
-			this.drawBackground(context, delta, mouseX, mouseY);
+			this.renderBackground(context, mouseX, mouseY, delta);
 			this.recipeBook.render(context, mouseX, mouseY, delta);
 		} else {
-			this.recipeBook.render(context, mouseX, mouseY, delta);
 			super.render(context, mouseX, mouseY, delta);
+			this.recipeBook.render(context, mouseX, mouseY, delta);
 			this.recipeBook.drawGhostSlots(context, this.x, this.y, false, delta);
 		}
 
@@ -102,37 +100,45 @@ public class InventoryScreen extends AbstractInventoryScreen<PlayerScreenHandler
 		int i = this.x;
 		int j = this.y;
 		context.drawTexture(BACKGROUND_TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		drawEntity(context, i + 51, j + 75, 30, (float)(i + 51) - this.mouseX, (float)(j + 75 - 50) - this.mouseY, this.client.player);
+		drawEntity(context, i + 26, j + 8, i + 75, j + 78, 30, 0.0625F, this.mouseX, this.mouseY, this.client.player);
 	}
 
-	public static void drawEntity(DrawContext context, int x, int y, int size, float mouseX, float mouseY, LivingEntity entity) {
-		float f = (float)Math.atan((double)(mouseX / 40.0F));
-		float g = (float)Math.atan((double)(mouseY / 40.0F));
+	public static void drawEntity(DrawContext context, int x, int y, int i, int j, int k, float f, float mouseX, float mouseY, LivingEntity entity) {
+		float g = (float)(x + i) / 2.0F;
+		float h = (float)(y + j) / 2.0F;
+		context.enableScissor(x, y, i, j);
+		float l = (float)Math.atan((double)((g - mouseX) / 40.0F));
+		float m = (float)Math.atan((double)((h - mouseY) / 40.0F));
 		Quaternionf quaternionf = new Quaternionf().rotateZ((float) Math.PI);
-		Quaternionf quaternionf2 = new Quaternionf().rotateX(g * 20.0F * (float) (Math.PI / 180.0));
+		Quaternionf quaternionf2 = new Quaternionf().rotateX(m * 20.0F * (float) (Math.PI / 180.0));
 		quaternionf.mul(quaternionf2);
-		float h = entity.bodyYaw;
-		float i = entity.getYaw();
-		float j = entity.getPitch();
-		float k = entity.prevHeadYaw;
-		float l = entity.headYaw;
-		entity.bodyYaw = 180.0F + f * 20.0F;
-		entity.setYaw(180.0F + f * 40.0F);
-		entity.setPitch(-g * 20.0F);
+		float n = entity.bodyYaw;
+		float o = entity.getYaw();
+		float p = entity.getPitch();
+		float q = entity.prevHeadYaw;
+		float r = entity.headYaw;
+		entity.bodyYaw = 180.0F + l * 20.0F;
+		entity.setYaw(180.0F + l * 40.0F);
+		entity.setPitch(-m * 20.0F);
 		entity.headYaw = entity.getYaw();
 		entity.prevHeadYaw = entity.getYaw();
-		drawEntity(context, x, y, size, quaternionf, quaternionf2, entity);
-		entity.bodyYaw = h;
-		entity.setYaw(i);
-		entity.setPitch(j);
-		entity.prevHeadYaw = k;
-		entity.headYaw = l;
+		Vector3f vector3f = new Vector3f(0.0F, entity.getHeight() / 2.0F + f, 0.0F);
+		drawEntity(context, g, h, k, vector3f, quaternionf, quaternionf2, entity);
+		entity.bodyYaw = n;
+		entity.setYaw(o);
+		entity.setPitch(p);
+		entity.prevHeadYaw = q;
+		entity.headYaw = r;
+		context.disableScissor();
 	}
 
-	public static void drawEntity(DrawContext context, int x, int y, int size, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity) {
+	public static void drawEntity(
+		DrawContext context, float f, float g, int size, Vector3f vector3f, Quaternionf quaternionf, @Nullable Quaternionf quaternionf2, LivingEntity entity
+	) {
 		context.getMatrices().push();
-		context.getMatrices().translate((double)x, (double)y, 50.0);
+		context.getMatrices().translate((double)f, (double)g, 50.0);
 		context.getMatrices().multiplyPositionMatrix(new Matrix4f().scaling((float)size, (float)size, (float)(-size)));
+		context.getMatrices().translate(vector3f.x, vector3f.y, vector3f.z);
 		context.getMatrices().multiply(quaternionf);
 		DiffuseLighting.method_34742();
 		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();

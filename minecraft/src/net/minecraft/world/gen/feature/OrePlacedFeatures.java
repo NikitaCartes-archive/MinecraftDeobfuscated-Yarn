@@ -44,6 +44,7 @@ public class OrePlacedFeatures {
 	public static final RegistryKey<PlacedFeature> ORE_REDSTONE = PlacedFeatures.of("ore_redstone");
 	public static final RegistryKey<PlacedFeature> ORE_REDSTONE_LOWER = PlacedFeatures.of("ore_redstone_lower");
 	public static final RegistryKey<PlacedFeature> ORE_DIAMOND = PlacedFeatures.of("ore_diamond");
+	public static final RegistryKey<PlacedFeature> ORE_DIAMOND_MEDIUM = PlacedFeatures.of("ore_diamond_medium");
 	public static final RegistryKey<PlacedFeature> ORE_DIAMOND_LARGE = PlacedFeatures.of("ore_diamond_large");
 	public static final RegistryKey<PlacedFeature> ORE_DIAMOND_BURIED = PlacedFeatures.of("ore_diamond_buried");
 	public static final RegistryKey<PlacedFeature> ORE_LAPIS = PlacedFeatures.of("ore_lapis");
@@ -90,17 +91,18 @@ public class OrePlacedFeatures {
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry18 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_GOLD_BURIED);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry19 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_REDSTONE);
 		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry20 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_DIAMOND_SMALL);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry21 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_DIAMOND_LARGE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry22 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_DIAMOND_BURIED);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry23 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_LAPIS);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry24 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_LAPIS_BURIED);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry25 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_INFESTED);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry26 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_EMERALD);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry27 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_ANCIENT_DEBRIS_LARGE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry28 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_ANCIENT_DEBRIS_SMALL);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry29 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_COPPER_SMALL);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry30 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_COPPER_LARGE);
-		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry31 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_CLAY);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry21 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_DIAMOND_MEDIUM);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry22 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_DIAMOND_LARGE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry23 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_DIAMOND_BURIED);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry24 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_LAPIS);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry25 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_LAPIS_BURIED);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry26 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_INFESTED);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry27 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_EMERALD);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry28 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_ANCIENT_DEBRIS_LARGE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry29 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_ANCIENT_DEBRIS_SMALL);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry30 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_COPPER_SMALL);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry31 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_COPPER_LARGE);
+		RegistryEntry<ConfiguredFeature<?, ?>> registryEntry32 = registryEntryLookup.getOrThrow(OreConfiguredFeatures.ORE_CLAY);
 		PlacedFeatures.register(
 			featureRegisterable, ORE_MAGMA, registryEntry, modifiersWithCount(4, HeightRangePlacementModifier.uniform(YOffset.fixed(27), YOffset.fixed(36)))
 		);
@@ -190,33 +192,36 @@ public class OrePlacedFeatures {
 			modifiersWithCount(7, HeightRangePlacementModifier.trapezoid(YOffset.aboveBottom(-80), YOffset.aboveBottom(80)))
 		);
 		PlacedFeatures.register(
+			featureRegisterable, ORE_DIAMOND_MEDIUM, registryEntry21, modifiersWithCount(2, HeightRangePlacementModifier.uniform(YOffset.fixed(-64), YOffset.fixed(-4)))
+		);
+		PlacedFeatures.register(
 			featureRegisterable,
 			ORE_DIAMOND_LARGE,
-			registryEntry21,
+			registryEntry22,
 			modifiersWithRarity(9, HeightRangePlacementModifier.trapezoid(YOffset.aboveBottom(-80), YOffset.aboveBottom(80)))
 		);
 		PlacedFeatures.register(
 			featureRegisterable,
 			ORE_DIAMOND_BURIED,
-			registryEntry22,
+			registryEntry23,
 			modifiersWithCount(4, HeightRangePlacementModifier.trapezoid(YOffset.aboveBottom(-80), YOffset.aboveBottom(80)))
 		);
 		PlacedFeatures.register(
-			featureRegisterable, ORE_LAPIS, registryEntry23, modifiersWithCount(2, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-32), YOffset.fixed(32)))
+			featureRegisterable, ORE_LAPIS, registryEntry24, modifiersWithCount(2, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-32), YOffset.fixed(32)))
 		);
 		PlacedFeatures.register(
-			featureRegisterable, ORE_LAPIS_BURIED, registryEntry24, modifiersWithCount(4, HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(64)))
+			featureRegisterable, ORE_LAPIS_BURIED, registryEntry25, modifiersWithCount(4, HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(64)))
 		);
 		PlacedFeatures.register(
-			featureRegisterable, ORE_INFESTED, registryEntry25, modifiersWithCount(14, HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(63)))
+			featureRegisterable, ORE_INFESTED, registryEntry26, modifiersWithCount(14, HeightRangePlacementModifier.uniform(YOffset.getBottom(), YOffset.fixed(63)))
 		);
 		PlacedFeatures.register(
-			featureRegisterable, ORE_EMERALD, registryEntry26, modifiersWithCount(100, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-16), YOffset.fixed(480)))
+			featureRegisterable, ORE_EMERALD, registryEntry27, modifiersWithCount(100, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-16), YOffset.fixed(480)))
 		);
 		PlacedFeatures.register(
 			featureRegisterable,
 			ORE_ANCIENT_DEBRIS_LARGE,
-			registryEntry27,
+			registryEntry28,
 			SquarePlacementModifier.of(),
 			HeightRangePlacementModifier.trapezoid(YOffset.fixed(8), YOffset.fixed(24)),
 			BiomePlacementModifier.of()
@@ -224,20 +229,20 @@ public class OrePlacedFeatures {
 		PlacedFeatures.register(
 			featureRegisterable,
 			ORE_DEBRIS_SMALL,
-			registryEntry28,
+			registryEntry29,
 			SquarePlacementModifier.of(),
 			PlacedFeatures.EIGHT_ABOVE_AND_BELOW_RANGE,
 			BiomePlacementModifier.of()
 		);
 		PlacedFeatures.register(
-			featureRegisterable, ORE_COPPER, registryEntry29, modifiersWithCount(16, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-16), YOffset.fixed(112)))
+			featureRegisterable, ORE_COPPER, registryEntry30, modifiersWithCount(16, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-16), YOffset.fixed(112)))
 		);
 		PlacedFeatures.register(
 			featureRegisterable,
 			ORE_COPPER_LARGE,
-			registryEntry30,
+			registryEntry31,
 			modifiersWithCount(16, HeightRangePlacementModifier.trapezoid(YOffset.fixed(-16), YOffset.fixed(112)))
 		);
-		PlacedFeatures.register(featureRegisterable, ORE_CLAY, registryEntry31, modifiersWithCount(46, PlacedFeatures.BOTTOM_TO_120_RANGE));
+		PlacedFeatures.register(featureRegisterable, ORE_CLAY, registryEntry32, modifiersWithCount(46, PlacedFeatures.BOTTOM_TO_120_RANGE));
 	}
 }

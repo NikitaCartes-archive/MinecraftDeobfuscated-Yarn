@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encoding.VarInts;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.collection.Int2ObjectBiMap;
 
@@ -92,10 +93,10 @@ public class BiMapPalette<T> implements Palette<T> {
 
 	@Override
 	public int getPacketSize() {
-		int i = PacketByteBuf.getVarIntLength(this.getSize());
+		int i = VarInts.getSizeInBytes(this.getSize());
 
 		for (int j = 0; j < this.getSize(); j++) {
-			i += PacketByteBuf.getVarIntLength(this.idList.getRawId(this.map.get(j)));
+			i += VarInts.getSizeInBytes(this.idList.getRawId(this.map.get(j)));
 		}
 
 		return i;

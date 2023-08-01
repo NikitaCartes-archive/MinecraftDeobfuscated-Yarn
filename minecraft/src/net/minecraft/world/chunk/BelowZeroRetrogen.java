@@ -38,7 +38,7 @@ public final class BelowZeroRetrogen {
 				)
 				.apply(instance, BelowZeroRetrogen::new)
 	);
-	private static final Set<RegistryKey<Biome>> CAVE_BIOMES = Set.of(BiomeKeys.LUSH_CAVES, BiomeKeys.DRIPSTONE_CAVES);
+	private static final Set<RegistryKey<Biome>> CAVE_BIOMES = Set.of(BiomeKeys.LUSH_CAVES, BiomeKeys.DRIPSTONE_CAVES, BiomeKeys.DEEP_DARK);
 	public static final HeightLimitView BELOW_ZERO_VIEW = new HeightLimitView() {
 		@Override
 		public int getHeight() {

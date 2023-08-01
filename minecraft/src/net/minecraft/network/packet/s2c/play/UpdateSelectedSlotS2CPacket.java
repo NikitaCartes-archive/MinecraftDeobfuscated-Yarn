@@ -5,19 +5,19 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 
 public class UpdateSelectedSlotS2CPacket implements Packet<ClientPlayPacketListener> {
-	private final int selectedSlot;
+	private final int slot;
 
 	public UpdateSelectedSlotS2CPacket(int slot) {
-		this.selectedSlot = slot;
+		this.slot = slot;
 	}
 
 	public UpdateSelectedSlotS2CPacket(PacketByteBuf buf) {
-		this.selectedSlot = buf.readByte();
+		this.slot = buf.readByte();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeByte(this.selectedSlot);
+		buf.writeByte(this.slot);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -25,6 +25,6 @@ public class UpdateSelectedSlotS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public int getSlot() {
-		return this.selectedSlot;
+		return this.slot;
 	}
 }

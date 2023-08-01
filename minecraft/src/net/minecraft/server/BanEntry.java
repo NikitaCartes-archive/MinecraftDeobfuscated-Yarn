@@ -17,7 +17,7 @@ public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 	protected final Date expiryDate;
 	protected final String reason;
 
-	public BanEntry(T key, @Nullable Date creationDate, @Nullable String source, @Nullable Date expiryDate, @Nullable String reason) {
+	public BanEntry(@Nullable T key, @Nullable Date creationDate, @Nullable String source, @Nullable Date expiryDate, @Nullable String reason) {
 		super(key);
 		this.creationDate = creationDate == null ? new Date() : creationDate;
 		this.source = source == null ? "(Unknown)" : source;
@@ -25,7 +25,7 @@ public abstract class BanEntry<T> extends ServerConfigEntry<T> {
 		this.reason = reason == null ? "Banned by an operator." : reason;
 	}
 
-	protected BanEntry(T key, JsonObject json) {
+	protected BanEntry(@Nullable T key, JsonObject json) {
 		super(key);
 
 		Date date;

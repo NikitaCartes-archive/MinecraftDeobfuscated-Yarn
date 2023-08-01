@@ -17,24 +17,27 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.DisconnectedScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
-import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkState;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.encryption.NetworkEncryptionUtils;
 import net.minecraft.network.listener.ClientLoginPacketListener;
+import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
+import net.minecraft.network.packet.c2s.login.EnterConfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginQueryResponseC2SPacket;
+import net.minecraft.network.packet.s2c.custom.BrandCustomPayload;
 import net.minecraft.network.packet.s2c.login.LoginCompressionS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginHelloS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginQueryRequestS2CPacket;
 import net.minecraft.network.packet.s2c.login.LoginSuccessS2CPacket;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import org.slf4j.Logger;
@@ -49,7 +52,6 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private final Screen parentScreen;
 	private final Consumer<Text> statusConsumer;
 	private final ClientConnection connection;
-	private GameProfile profile;
 	private final boolean newWorld;
 	@Nullable
 	private final Duration worldLoadTime;
@@ -112,7 +114,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Nullable
 	private Text joinServerSession(String serverId) {
 		try {
-			this.getSessionService().joinServer(this.client.getSession().getProfile(), this.client.getSession().getAccessToken(), serverId);
+			this.getSessionService().joinServer(this.client.getSession().getUuidOrNull(), this.client.getSession().getAccessToken(), serverId);
 			return null;
 		} catch (AuthenticationUnavailableException var3) {
 			return Text.translatable("disconnect.loginFailedInfo", Text.translatable("disconnect.loginFailedInfo.serversUnavailable"));
@@ -134,24 +136,30 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Override
 	public void onSuccess(LoginSuccessS2CPacket packet) {
 		this.statusConsumer.accept(Text.translatable("connect.joining"));
-		this.profile = packet.getProfile();
-		this.connection.setState(NetworkState.PLAY);
+		GameProfile gameProfile = packet.getProfile();
+		this.connection.send(new EnterConfigurationC2SPacket());
 		this.connection
 			.setPacketListener(
-				new ClientPlayNetworkHandler(
+				new ClientConfigurationNetworkHandler(
 					this.client,
-					this.parentScreen,
 					this.connection,
-					this.serverInfo,
-					this.profile,
-					this.client.getTelemetryManager().createWorldSession(this.newWorld, this.worldLoadTime, this.minigameName)
+					new ClientConnectionState(
+						gameProfile,
+						this.client.getTelemetryManager().createWorldSession(this.newWorld, this.worldLoadTime, this.minigameName),
+						ClientDynamicRegistryType.createCombinedDynamicRegistries().getCombinedRegistryManager(),
+						FeatureFlags.DEFAULT_ENABLED_FEATURES,
+						null,
+						this.serverInfo,
+						this.parentScreen
+					)
 				)
 			);
+		this.connection.send(new CustomPayloadC2SPacket(new BrandCustomPayload(ClientBrandRetriever.getClientModName())));
 	}
 
 	@Override
 	public void onDisconnected(Text reason) {
-		if (this.parentScreen != null && this.parentScreen instanceof RealmsScreen) {
+		if (this.serverInfo != null && this.serverInfo.isRealm()) {
 			this.client.setScreen(new DisconnectedRealmsScreen(this.parentScreen, ScreenTexts.CONNECT_FAILED, reason));
 		} else {
 			this.client.setScreen(new DisconnectedScreen(this.parentScreen, ScreenTexts.CONNECT_FAILED, reason));
@@ -178,7 +186,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Override
 	public void onQueryRequest(LoginQueryRequestS2CPacket packet) {
 		this.statusConsumer.accept(Text.translatable("connect.negotiating"));
-		this.connection.send(new LoginQueryResponseC2SPacket(packet.getQueryId(), null));
+		this.connection.send(new LoginQueryResponseC2SPacket(packet.queryId(), null));
 	}
 
 	public void setMinigameName(String minigameName) {

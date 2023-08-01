@@ -1,5 +1,8 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.network.NetworkState;
+import net.minecraft.network.packet.c2s.play.AcknowledgeChunksC2SPacket;
+import net.minecraft.network.packet.c2s.play.AcknowledgeReconfigurationC2SPacket;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
@@ -13,13 +16,10 @@ import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
-import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.HandSwingC2SPacket;
 import net.minecraft.network.packet.c2s.play.JigsawGeneratingC2SPacket;
-import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.MessageAcknowledgmentC2SPacket;
 import net.minecraft.network.packet.c2s.play.PickFromInventoryC2SPacket;
-import net.minecraft.network.packet.c2s.play.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInputC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractBlockC2SPacket;
@@ -33,7 +33,6 @@ import net.minecraft.network.packet.c2s.play.RecipeBookDataC2SPacket;
 import net.minecraft.network.packet.c2s.play.RecipeCategoryOptionsC2SPacket;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.RequestCommandCompletionsC2SPacket;
-import net.minecraft.network.packet.c2s.play.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket;
 import net.minecraft.network.packet.c2s.play.SpectatorTeleportC2SPacket;
 import net.minecraft.network.packet.c2s.play.TeleportConfirmC2SPacket;
@@ -52,7 +51,12 @@ import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 /**
  * A server side packet listener where play stage packets from a client are processed.
  */
-public interface ServerPlayPacketListener extends ServerPacketListener {
+public interface ServerPlayPacketListener extends ServerCommonPacketListener {
+	@Override
+	default NetworkState getState() {
+		return NetworkState.PLAY;
+	}
+
 	void onHandSwing(HandSwingC2SPacket packet);
 
 	void onChatMessage(ChatMessageC2SPacket packet);
@@ -73,15 +77,9 @@ public interface ServerPlayPacketListener extends ServerPacketListener {
 
 	void onCloseHandledScreen(CloseHandledScreenC2SPacket packet);
 
-	void onCustomPayload(CustomPayloadC2SPacket packet);
-
 	void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet);
 
-	void onKeepAlive(KeepAliveC2SPacket packet);
-
 	void onPlayerMove(PlayerMoveC2SPacket packet);
-
-	void onPong(PlayPongC2SPacket packet);
 
 	void onUpdatePlayerAbilities(UpdatePlayerAbilitiesC2SPacket packet);
 
@@ -102,8 +100,6 @@ public interface ServerPlayPacketListener extends ServerPacketListener {
 	void onPlayerInteractItem(PlayerInteractItemC2SPacket packet);
 
 	void onSpectatorTeleport(SpectatorTeleportC2SPacket packet);
-
-	void onResourcePackStatus(ResourcePackStatusC2SPacket packet);
 
 	void onBoatPaddleState(BoatPaddleStateC2SPacket packet);
 
@@ -148,4 +144,8 @@ public interface ServerPlayPacketListener extends ServerPacketListener {
 	void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket packet);
 
 	void onPlayerSession(PlayerSessionC2SPacket packet);
+
+	void onAcknowledgeReconfiguration(AcknowledgeReconfigurationC2SPacket packet);
+
+	void onAcknowledgeChunks(AcknowledgeChunksC2SPacket packet);
 }

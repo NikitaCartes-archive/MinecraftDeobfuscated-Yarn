@@ -2,7 +2,7 @@ package net.minecraft.server.network;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.network.NetworkState;
+import net.minecraft.network.ConnectionIntent;
 import net.minecraft.network.listener.ServerHandshakePacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.s2c.login.LoginDisconnectS2CPacket;
@@ -22,12 +22,12 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 
 	@Override
 	public void onHandshake(HandshakeC2SPacket packet) {
-		switch (packet.getIntendedState()) {
+		switch (packet.intendedState()) {
 			case LOGIN:
-				this.connection.setState(NetworkState.LOGIN);
-				if (packet.getProtocolVersion() != SharedConstants.getGameVersion().getProtocolVersion()) {
+				this.connection.setS2CPacketHandler(ConnectionIntent.LOGIN);
+				if (packet.protocolVersion() != SharedConstants.getGameVersion().getProtocolVersion()) {
 					Text text;
-					if (packet.getProtocolVersion() < 754) {
+					if (packet.protocolVersion() < 754) {
 						text = Text.translatable("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
 					} else {
 						text = Text.translatable("multiplayer.disconnect.incompatible", SharedConstants.getGameVersion().getName());
@@ -42,14 +42,14 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 			case STATUS:
 				ServerMetadata serverMetadata = this.server.getServerMetadata();
 				if (this.server.acceptsStatusQuery() && serverMetadata != null) {
-					this.connection.setState(NetworkState.STATUS);
+					this.connection.setS2CPacketHandler(ConnectionIntent.STATUS);
 					this.connection.setPacketListener(new ServerQueryNetworkHandler(serverMetadata, this.connection));
 				} else {
 					this.connection.disconnect(IGNORING_STATUS_REQUEST_MESSAGE);
 				}
 				break;
 			default:
-				throw new UnsupportedOperationException("Invalid intention " + packet.getIntendedState());
+				throw new UnsupportedOperationException("Invalid intention " + packet.intendedState());
 		}
 	}
 

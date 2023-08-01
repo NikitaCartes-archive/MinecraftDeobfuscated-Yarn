@@ -16,15 +16,26 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandler> extends HandledScreen<T> implements RecipeBookProvider {
-	private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
 	public final AbstractFurnaceRecipeBookScreen recipeBook;
 	private boolean narrow;
 	private final Identifier background;
+	private final Identifier litProgressTexture;
+	private final Identifier burnProgressTexture;
 
-	public AbstractFurnaceScreen(T handler, AbstractFurnaceRecipeBookScreen recipeBook, PlayerInventory inventory, Text title, Identifier background) {
+	public AbstractFurnaceScreen(
+		T handler,
+		AbstractFurnaceRecipeBookScreen recipeBook,
+		PlayerInventory inventory,
+		Text title,
+		Identifier background,
+		Identifier litProgressTexture,
+		Identifier burnProgressTexture
+	) {
 		super(handler, inventory, title);
 		this.recipeBook = recipeBook;
 		this.background = background;
+		this.litProgressTexture = litProgressTexture;
+		this.burnProgressTexture = burnProgressTexture;
 	}
 
 	@Override
@@ -33,7 +44,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		this.narrow = this.width < 379;
 		this.recipeBook.initialize(this.width, this.height, this.client, this.narrow, this.handler);
 		this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
-		this.addDrawableChild(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, button -> {
+		this.addDrawableChild(new TexturedButtonWidget(this.x + 20, this.height / 2 - 49, 20, 18, RecipeBookWidget.BUTTON_TEXTURES, button -> {
 			this.recipeBook.toggleOpen();
 			this.x = this.recipeBook.findLeftEdge(this.width, this.backgroundWidth);
 			button.setPosition(this.x + 20, this.height / 2 - 49);
@@ -49,13 +60,12 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
 		if (this.recipeBook.isOpen() && this.narrow) {
-			this.drawBackground(context, delta, mouseX, mouseY);
+			this.renderBackground(context, mouseX, mouseY, delta);
 			this.recipeBook.render(context, mouseX, mouseY, delta);
 		} else {
-			this.recipeBook.render(context, mouseX, mouseY, delta);
 			super.render(context, mouseX, mouseY, delta);
+			this.recipeBook.render(context, mouseX, mouseY, delta);
 			this.recipeBook.drawGhostSlots(context, this.x, this.y, true, delta);
 		}
 
@@ -70,11 +80,11 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 		context.drawTexture(this.background, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		if (this.handler.isBurning()) {
 			int k = this.handler.getFuelProgress();
-			context.drawTexture(this.background, i + 56, j + 36 + 12 - k, 176, 12 - k, 14, k + 1);
+			context.drawGuiTexture(this.litProgressTexture, 14, 14, 0, 12 - k, i + 56, j + 36 + 12 - k, 14, k + 1);
 		}
 
 		int k = this.handler.getCookProgress();
-		context.drawTexture(this.background, i + 79, j + 34, 176, 14, k + 1, 16);
+		context.drawGuiTexture(this.burnProgressTexture, 24, 16, 0, 0, i + 79, j + 34, k + 1, 16);
 	}
 
 	@Override

@@ -154,8 +154,8 @@ public class BakedQuadFactory {
 		vertices[i + 1] = Float.floatToRawIntBits(position.y());
 		vertices[i + 2] = Float.floatToRawIntBits(position.z());
 		vertices[i + 3] = -1;
-		vertices[i + 4] = Float.floatToRawIntBits(sprite.getFrameU((double)modelElementTexture.getU(cornerIndex)));
-		vertices[i + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV((double)modelElementTexture.getV(cornerIndex)));
+		vertices[i + 4] = Float.floatToRawIntBits(sprite.getFrameU(modelElementTexture.getU(cornerIndex) / 16.0F));
+		vertices[i + 4 + 1] = Float.floatToRawIntBits(sprite.getFrameV(modelElementTexture.getV(cornerIndex) / 16.0F));
 	}
 
 	private void rotateVertex(Vector3f vector, @Nullable net.minecraft.client.render.model.json.ModelRotation rotation) {

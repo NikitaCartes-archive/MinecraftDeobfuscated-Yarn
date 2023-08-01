@@ -14,7 +14,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
 
 public class BanCommand {
 	private static final SimpleCommandExceptionType ALREADY_BANNED_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.ban.failed"));
@@ -45,7 +44,7 @@ public class BanCommand {
 				BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(gameProfile, null, source.getName(), null, reason == null ? null : reason.getString());
 				bannedPlayerList.add(bannedPlayerEntry);
 				i++;
-				source.sendFeedback(() -> Text.translatable("commands.ban.success", Texts.toText(gameProfile), bannedPlayerEntry.getReason()), true);
+				source.sendFeedback(() -> Text.translatable("commands.ban.success", Text.literal(gameProfile.getName()), bannedPlayerEntry.getReason()), true);
 				ServerPlayerEntity serverPlayerEntity = source.getServer().getPlayerManager().getPlayer(gameProfile.getId());
 				if (serverPlayerEntity != null) {
 					serverPlayerEntity.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.banned"));

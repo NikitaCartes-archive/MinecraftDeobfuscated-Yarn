@@ -18,8 +18,12 @@ public class MessageScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 70, 16777215);
 		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 70, 16777215);
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
 	}
 }

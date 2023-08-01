@@ -27,6 +27,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import org.joml.Vector3f;
 
 public class EndermiteEntity extends HostileEntity {
 	private static final int DESPAWN_TIME = 2400;
@@ -111,11 +112,6 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public double getHeightOffset() {
-		return 0.1;
-	}
-
-	@Override
 	public void tickMovement() {
 		super.tickMovement();
 		if (this.getWorld().isClient) {
@@ -154,5 +150,10 @@ public class EndermiteEntity extends HostileEntity {
 	@Override
 	public EntityGroup getGroup() {
 		return EntityGroup.ARTHROPOD;
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height - 0.0625F * scaleFactor, 0.0F);
 	}
 }

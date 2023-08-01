@@ -8,6 +8,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.dto.RealmsServer;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
@@ -29,9 +30,7 @@ public class RealmsSettingsScreen extends RealmsScreen {
 
 	@Override
 	public void tick() {
-		this.nameEdit.tick();
-		this.descEdit.tick();
-		this.doneButton.active = !this.nameEdit.getText().trim().isEmpty();
+		this.doneButton.active = !Util.isBlank(this.nameEdit.getText());
 	}
 
 	@Override
@@ -83,13 +82,12 @@ public class RealmsSettingsScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, 16777215);
-		context.drawText(this.textRenderer, WORLD_NAME_TEXT, this.width / 2 - 106, row(3), 10526880, false);
-		context.drawText(this.textRenderer, WORLD_DESCRIPTION_TEXT, this.width / 2 - 106, row(7), 10526880, false);
+		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
+		context.drawText(this.textRenderer, WORLD_NAME_TEXT, this.width / 2 - 106, row(3), -6250336, false);
+		context.drawText(this.textRenderer, WORLD_DESCRIPTION_TEXT, this.width / 2 - 106, row(7), -6250336, false);
 		this.nameEdit.render(context, mouseX, mouseY, delta);
 		this.descEdit.render(context, mouseX, mouseY, delta);
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	public void save() {

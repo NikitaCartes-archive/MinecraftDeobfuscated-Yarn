@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import net.minecraft.MinecraftVersion;
@@ -41,7 +42,10 @@ public class MetadataProvider implements DataProvider {
 
 	public static MetadataProvider create(DataOutput output, Text description) {
 		return new MetadataProvider(output)
-			.add(PackResourceMetadata.SERIALIZER, new PackResourceMetadata(description, MinecraftVersion.CURRENT.getResourceVersion(ResourceType.SERVER_DATA)));
+			.add(
+				PackResourceMetadata.SERIALIZER,
+				new PackResourceMetadata(description, MinecraftVersion.CURRENT.getResourceVersion(ResourceType.SERVER_DATA), Optional.empty())
+			);
 	}
 
 	public static MetadataProvider create(DataOutput output, Text description, FeatureSet requiredFeatures) {

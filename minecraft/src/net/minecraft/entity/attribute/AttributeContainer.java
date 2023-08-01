@@ -96,7 +96,7 @@ public class AttributeContainer {
 		attributeModifiers.asMap().forEach((attribute, modifiers) -> {
 			EntityAttributeInstance entityAttributeInstance = (EntityAttributeInstance)this.custom.get(attribute);
 			if (entityAttributeInstance != null) {
-				modifiers.forEach(entityAttributeInstance::removeModifier);
+				modifiers.forEach(modifier -> entityAttributeInstance.removeModifier(modifier.getId()));
 			}
 		});
 	}
@@ -105,7 +105,7 @@ public class AttributeContainer {
 		attributeModifiers.forEach((attribute, attributeModifier) -> {
 			EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(attribute);
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.removeModifier(attributeModifier);
+				entityAttributeInstance.removeModifier(attributeModifier.getId());
 				entityAttributeInstance.addTemporaryModifier(attributeModifier);
 			}
 		});

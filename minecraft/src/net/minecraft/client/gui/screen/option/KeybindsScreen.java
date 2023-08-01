@@ -76,7 +76,7 @@ public class KeybindsScreen extends GameOptionsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.controlsList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		boolean bl = false;
@@ -89,6 +89,10 @@ public class KeybindsScreen extends GameOptionsScreen {
 		}
 
 		this.resetAllButton.active = bl;
-		super.render(context, mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
 	}
 }

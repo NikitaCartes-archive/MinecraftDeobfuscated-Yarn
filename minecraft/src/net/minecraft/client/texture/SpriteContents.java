@@ -14,6 +14,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
+import net.minecraft.resource.metadata.ResourceMetadata;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
@@ -31,12 +32,16 @@ public class SpriteContents implements TextureStitcher.Stitchable, AutoCloseable
 	NativeImage[] mipmapLevelsImages;
 	@Nullable
 	private final SpriteContents.Animation animation;
+	private final ResourceMetadata metadata;
 
-	public SpriteContents(Identifier id, SpriteDimensions dimensions, NativeImage image, AnimationResourceMetadata metadata) {
+	public SpriteContents(Identifier id, SpriteDimensions dimensions, NativeImage image, ResourceMetadata metadata) {
 		this.id = id;
 		this.width = dimensions.width();
 		this.height = dimensions.height();
-		this.animation = this.createAnimation(dimensions, image.getWidth(), image.getHeight(), metadata);
+		this.metadata = metadata;
+		AnimationResourceMetadata animationResourceMetadata = (AnimationResourceMetadata)metadata.decode(AnimationResourceMetadata.READER)
+			.orElse(AnimationResourceMetadata.EMPTY);
+		this.animation = this.createAnimation(dimensions, image.getWidth(), image.getHeight(), animationResourceMetadata);
 		this.image = image;
 		this.mipmapLevelsImages = new NativeImage[]{this.image};
 	}
@@ -142,6 +147,10 @@ public class SpriteContents implements TextureStitcher.Stitchable, AutoCloseable
 	@Nullable
 	public Animator createAnimator() {
 		return this.animation != null ? this.animation.createAnimator() : null;
+	}
+
+	public ResourceMetadata getMetadata() {
+		return this.metadata;
 	}
 
 	public void close() {

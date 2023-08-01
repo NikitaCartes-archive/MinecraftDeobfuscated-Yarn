@@ -1,19 +1,13 @@
 package net.minecraft.util.math.floatprovider;
 
-import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.random.Random;
 
 public class ConstantFloatProvider extends FloatProvider {
 	public static final ConstantFloatProvider ZERO = new ConstantFloatProvider(0.0F);
-	public static final Codec<ConstantFloatProvider> CODEC = Codec.either(
-			Codec.FLOAT,
-			RecordCodecBuilder.create(
-				instance -> instance.group(Codec.FLOAT.fieldOf("value").forGetter(provider -> provider.value)).apply(instance, ConstantFloatProvider::new)
-			)
-		)
-		.xmap(either -> either.map(ConstantFloatProvider::create, provider -> provider), provider -> Either.left(provider.value));
+	public static final Codec<ConstantFloatProvider> CODEC = Codecs.either(Codec.FLOAT, Codec.FLOAT.fieldOf("value").codec())
+		.xmap(ConstantFloatProvider::new, ConstantFloatProvider::getValue);
 	private final float value;
 
 	public static ConstantFloatProvider create(float value) {

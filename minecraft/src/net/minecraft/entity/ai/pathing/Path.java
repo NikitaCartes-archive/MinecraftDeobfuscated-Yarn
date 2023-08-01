@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.pathing;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
@@ -13,10 +12,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class Path {
 	private final List<PathNode> nodes;
-	private PathNode[] debugNodes = new PathNode[0];
-	private PathNode[] debugSecondNodes = new PathNode[0];
 	@Nullable
-	private Set<TargetPathNode> debugTargetNodes;
+	private Path.DebugNodeInfo debugNodeInfos;
 	private int currentNodeIndex;
 	private final BlockPos target;
 	private final float manhattanDistanceFromTarget;
@@ -125,84 +122,32 @@ public class Path {
 
 	@Debug
 	void setDebugInfo(PathNode[] debugNodes, PathNode[] debugSecondNodes, Set<TargetPathNode> debugTargetNodes) {
-		this.debugNodes = debugNodes;
-		this.debugSecondNodes = debugSecondNodes;
-		this.debugTargetNodes = debugTargetNodes;
+		this.debugNodeInfos = new Path.DebugNodeInfo(debugNodes, debugSecondNodes, debugTargetNodes);
 	}
 
-	@Debug
-	public PathNode[] getDebugNodes() {
-		return this.debugNodes;
+	@Nullable
+	public Path.DebugNodeInfo getDebugNodeInfos() {
+		return this.debugNodeInfos;
 	}
 
-	@Debug
-	public PathNode[] getDebugSecondNodes() {
-		return this.debugSecondNodes;
-	}
-
-	public void toBuffer(PacketByteBuf buffer) {
-		if (this.debugTargetNodes != null && !this.debugTargetNodes.isEmpty()) {
-			buffer.writeBoolean(this.reachesTarget);
-			buffer.writeInt(this.currentNodeIndex);
-			buffer.writeInt(this.debugTargetNodes.size());
-			this.debugTargetNodes.forEach(targetPathNode -> targetPathNode.write(buffer));
-			buffer.writeInt(this.target.getX());
-			buffer.writeInt(this.target.getY());
-			buffer.writeInt(this.target.getZ());
-			buffer.writeInt(this.nodes.size());
-
-			for (PathNode pathNode : this.nodes) {
-				pathNode.write(buffer);
-			}
-
-			buffer.writeInt(this.debugNodes.length);
-
-			for (PathNode pathNode2 : this.debugNodes) {
-				pathNode2.write(buffer);
-			}
-
-			buffer.writeInt(this.debugSecondNodes.length);
-
-			for (PathNode pathNode2 : this.debugSecondNodes) {
-				pathNode2.write(buffer);
-			}
+	public void toBuf(PacketByteBuf buf) {
+		if (this.debugNodeInfos != null && !this.debugNodeInfos.targetNodes.isEmpty()) {
+			buf.writeBoolean(this.reachesTarget);
+			buf.writeInt(this.currentNodeIndex);
+			buf.writeBlockPos(this.target);
+			buf.writeCollection(this.nodes, (bufx, node) -> node.write(bufx));
+			this.debugNodeInfos.write(buf);
 		}
 	}
 
-	public static Path fromBuffer(PacketByteBuf buffer) {
-		boolean bl = buffer.readBoolean();
-		int i = buffer.readInt();
-		int j = buffer.readInt();
-		Set<TargetPathNode> set = Sets.<TargetPathNode>newHashSet();
-
-		for (int k = 0; k < j; k++) {
-			set.add(TargetPathNode.fromBuffer(buffer));
-		}
-
-		BlockPos blockPos = new BlockPos(buffer.readInt(), buffer.readInt(), buffer.readInt());
-		List<PathNode> list = Lists.<PathNode>newArrayList();
-		int l = buffer.readInt();
-
-		for (int m = 0; m < l; m++) {
-			list.add(PathNode.fromBuf(buffer));
-		}
-
-		PathNode[] pathNodes = new PathNode[buffer.readInt()];
-
-		for (int n = 0; n < pathNodes.length; n++) {
-			pathNodes[n] = PathNode.fromBuf(buffer);
-		}
-
-		PathNode[] pathNodes2 = new PathNode[buffer.readInt()];
-
-		for (int o = 0; o < pathNodes2.length; o++) {
-			pathNodes2[o] = PathNode.fromBuf(buffer);
-		}
-
+	public static Path fromBuf(PacketByteBuf buf) {
+		boolean bl = buf.readBoolean();
+		int i = buf.readInt();
+		BlockPos blockPos = buf.readBlockPos();
+		List<PathNode> list = buf.readList(PathNode::fromBuf);
+		Path.DebugNodeInfo debugNodeInfo = Path.DebugNodeInfo.fromBuf(buf);
 		Path path = new Path(list, blockPos, bl);
-		path.debugNodes = pathNodes;
-		path.debugSecondNodes = pathNodes2;
-		path.debugTargetNodes = set;
+		path.debugNodeInfos = debugNodeInfo;
 		path.currentNodeIndex = i;
 		return path;
 	}
@@ -217,5 +162,46 @@ public class Path {
 
 	public float getManhattanDistanceFromTarget() {
 		return this.manhattanDistanceFromTarget;
+	}
+
+	static PathNode[] nodesFromBuf(PacketByteBuf buf) {
+		PathNode[] pathNodes = new PathNode[buf.readVarInt()];
+
+		for (int i = 0; i < pathNodes.length; i++) {
+			pathNodes[i] = PathNode.fromBuf(buf);
+		}
+
+		return pathNodes;
+	}
+
+	static void write(PacketByteBuf buf, PathNode[] nodes) {
+		buf.writeVarInt(nodes.length);
+
+		for (PathNode pathNode : nodes) {
+			pathNode.write(buf);
+		}
+	}
+
+	public Path copy() {
+		Path path = new Path(this.nodes, this.target, this.reachesTarget);
+		path.debugNodeInfos = this.debugNodeInfos;
+		path.currentNodeIndex = this.currentNodeIndex;
+		return path;
+	}
+
+	public static record DebugNodeInfo(PathNode[] openSet, PathNode[] closedSet, Set<TargetPathNode> targetNodes) {
+
+		public void write(PacketByteBuf buf) {
+			buf.writeCollection(this.targetNodes, (bufx, node) -> node.write(bufx));
+			Path.write(buf, this.openSet);
+			Path.write(buf, this.closedSet);
+		}
+
+		public static Path.DebugNodeInfo fromBuf(PacketByteBuf buf) {
+			HashSet<TargetPathNode> hashSet = buf.readCollection(HashSet::new, TargetPathNode::fromBuffer);
+			PathNode[] pathNodes = Path.nodesFromBuf(buf);
+			PathNode[] pathNodes2 = Path.nodesFromBuf(buf);
+			return new Path.DebugNodeInfo(pathNodes, pathNodes2, hashSet);
+		}
 	}
 }

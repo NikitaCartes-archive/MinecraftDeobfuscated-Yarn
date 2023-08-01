@@ -41,7 +41,7 @@ public class FungusBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
 		BlockState blockState = world.getBlockState(pos.down());
 		return blockState.isOf(this.nylium);
 	}

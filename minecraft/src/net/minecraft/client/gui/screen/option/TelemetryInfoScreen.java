@@ -8,6 +8,7 @@ import net.minecraft.client.gui.screen.ConfirmLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
@@ -23,6 +24,7 @@ public class TelemetryInfoScreen extends Screen {
 	private static final int MARGIN = 8;
 	private static final Text TITLE_TEXT = Text.translatable("telemetry_info.screen.title");
 	private static final Text DESCRIPTION_TEXT = Text.translatable("telemetry_info.screen.description").formatted(Formatting.GRAY);
+	private static final Text PRIVACY_STATEMENT_TEXT = Text.translatable("telemetry_info.button.privacy_statement");
 	private static final Text GIVE_FEEDBACK_TEXT = Text.translatable("telemetry_info.button.give_feedback");
 	private static final Text SHOW_DATA_TEXT = Text.translatable("telemetry_info.button.show_data");
 	private final Screen parent;
@@ -46,25 +48,28 @@ public class TelemetryInfoScreen extends Screen {
 		SimplePositioningWidget simplePositioningWidget = new SimplePositioningWidget();
 		simplePositioningWidget.getMainPositioner().margin(8);
 		simplePositioningWidget.setMinHeight(this.height);
-		GridWidget gridWidget = simplePositioningWidget.add(new GridWidget(), simplePositioningWidget.copyPositioner().relative(0.5F, 0.0F));
-		gridWidget.getMainPositioner().alignHorizontalCenter().marginBottom(8);
-		GridWidget.Adder adder = gridWidget.createAdder(1);
-		adder.add(new TextWidget(this.getTitle(), this.textRenderer));
-		adder.add(new MultilineTextWidget(DESCRIPTION_TEXT, this.textRenderer).setMaxWidth(this.width - 16).setCentered(true));
-		GridWidget gridWidget2 = this.createButtonRow(
+		DirectionalLayoutWidget directionalLayoutWidget = simplePositioningWidget.add(
+			DirectionalLayoutWidget.vertical(), simplePositioningWidget.copyPositioner().relative(0.5F, 0.0F)
+		);
+		directionalLayoutWidget.getMainPositioner().alignHorizontalCenter().marginBottom(8);
+		directionalLayoutWidget.add(new TextWidget(this.getTitle(), this.textRenderer));
+		directionalLayoutWidget.add(new MultilineTextWidget(DESCRIPTION_TEXT, this.textRenderer).setMaxWidth(this.width - 16).setCentered(true));
+		ButtonWidget buttonWidget = ButtonWidget.builder(PRIVACY_STATEMENT_TEXT, this::openPrivacyStatementPage).build();
+		directionalLayoutWidget.add(buttonWidget);
+		GridWidget gridWidget = this.createButtonRow(
 			ButtonWidget.builder(GIVE_FEEDBACK_TEXT, this::openFeedbackPage).build(), ButtonWidget.builder(SHOW_DATA_TEXT, this::openLogDirectory).build()
 		);
-		adder.add(gridWidget2);
-		GridWidget gridWidget3 = this.createButtonRow(this.createOptInButton(), ButtonWidget.builder(ScreenTexts.DONE, this::goBack).build());
-		simplePositioningWidget.add(gridWidget3, simplePositioningWidget.copyPositioner().relative(0.5F, 1.0F));
+		directionalLayoutWidget.add(gridWidget);
+		GridWidget gridWidget2 = this.createButtonRow(this.createOptInButton(), ButtonWidget.builder(ScreenTexts.DONE, this::goBack).build());
+		simplePositioningWidget.add(gridWidget2, simplePositioningWidget.copyPositioner().relative(0.5F, 1.0F));
 		simplePositioningWidget.refreshPositions();
 		this.telemetryEventWidget = new TelemetryEventWidget(
-			0, 0, this.width - 40, gridWidget3.getY() - (gridWidget2.getY() + gridWidget2.getHeight()) - 16, this.client.textRenderer
+			0, 0, this.width - 40, gridWidget2.getY() - (gridWidget.getY() + gridWidget.getHeight()) - 16, this.client.textRenderer
 		);
 		this.telemetryEventWidget.setScrollY(this.scroll);
 		this.telemetryEventWidget.setScrollConsumer(scroll -> this.scroll = scroll);
 		this.setInitialFocus(this.telemetryEventWidget);
-		adder.add(this.telemetryEventWidget);
+		directionalLayoutWidget.add(this.telemetryEventWidget);
 		simplePositioningWidget.refreshPositions();
 		SimplePositioningWidget.setPos(simplePositioningWidget, 0, 0, this.width, this.height, 0.5F, 0.0F);
 		simplePositioningWidget.forEachChild(child -> {
@@ -82,6 +87,16 @@ public class TelemetryInfoScreen extends Screen {
 
 	private void goBack(ButtonWidget button) {
 		this.client.setScreen(this.parent);
+	}
+
+	private void openPrivacyStatementPage(ButtonWidget button) {
+		this.client.setScreen(new ConfirmLinkScreen(confirmed -> {
+			if (confirmed) {
+				Util.getOperatingSystem().open("http://go.microsoft.com/fwlink/?LinkId=521839");
+			}
+
+			this.client.setScreen(this);
+		}, "http://go.microsoft.com/fwlink/?LinkId=521839", true));
 	}
 
 	private void openFeedbackPage(ButtonWidget button) {
@@ -105,9 +120,8 @@ public class TelemetryInfoScreen extends Screen {
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.renderBackgroundTexture(context);
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	private GridWidget createButtonRow(ClickableWidget left, ClickableWidget right) {

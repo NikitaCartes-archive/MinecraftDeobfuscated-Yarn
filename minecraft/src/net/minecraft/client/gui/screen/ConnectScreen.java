@@ -22,8 +22,6 @@ import net.minecraft.client.report.ReporterEnvironment;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
-import net.minecraft.network.NetworkState;
-import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -40,7 +38,7 @@ public class ConnectScreen extends Screen {
 	private static final AtomicInteger CONNECTOR_THREADS_COUNT = new AtomicInteger(0);
 	static final Logger LOGGER = LogUtils.getLogger();
 	private static final long NARRATOR_INTERVAL = 2000L;
-	static final Text ABORTED_TEXT = Text.translatable("connect.aborted");
+	public static final Text ABORTED_TEXT = Text.translatable("connect.aborted");
 	public static final Text BLOCKED_HOST_TEXT = Text.translatable("disconnect.genericReason", Text.translatable("disconnect.unknownHost"));
 	/**
 	 * The client connection to the remote server.
@@ -123,11 +121,12 @@ public class ConnectScreen extends Screen {
 					}
 
 					ConnectScreen.this.connection
-						.setPacketListener(
+						.connect(
+							inetSocketAddress.getHostName(),
+							inetSocketAddress.getPort(),
 							new ClientLoginNetworkHandler(ConnectScreen.this.connection, client, info, ConnectScreen.this.parent, false, null, ConnectScreen.this::setStatus)
 						);
-					ConnectScreen.this.connection.send(new HandshakeC2SPacket(inetSocketAddress.getHostName(), inetSocketAddress.getPort(), NetworkState.LOGIN));
-					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), Optional.ofNullable(client.getSession().getUuidOrNull())));
+					ConnectScreen.this.connection.send(new LoginHelloC2SPacket(client.getSession().getUsername(), client.getSession().getUuidOrNull()));
 				} catch (Exception var9) {
 					if (ConnectScreen.this.connectingCancelled) {
 						return;
@@ -199,7 +198,7 @@ public class ConnectScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		long l = Util.getMeasuringTimeMs();
 		if (l - this.lastNarrationTime > 2000L) {
 			this.lastNarrationTime = l;
@@ -207,6 +206,5 @@ public class ConnectScreen extends Screen {
 		}
 
 		context.drawCenteredTextWithShadow(this.textRenderer, this.status, this.width / 2, this.height / 2 - 50, 16777215);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

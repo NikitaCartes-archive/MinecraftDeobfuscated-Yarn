@@ -1,10 +1,12 @@
 package net.minecraft.village;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,6 +16,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffects;
@@ -31,6 +34,7 @@ import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
+import net.minecraft.potion.Potions;
 import net.minecraft.recipe.BrewingRecipeRegistry;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.StructureTags;
@@ -43,6 +47,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.gen.structure.Structure;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class TradeOffers {
 	private static final int DEFAULT_MAX_USES = 12;
@@ -68,20 +73,20 @@ public class TradeOffers {
 					ImmutableMap.of(
 						1,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.WHEAT, 20, 16, 2),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.POTATO, 26, 16, 2),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.CARROT, 22, 16, 2),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.BEETROOT, 15, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.WHEAT, 20, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.POTATO, 26, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.CARROT, 22, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.BEETROOT, 15, 16, 2),
 							new TradeOffers.SellItemFactory(Items.BREAD, 1, 6, 16, 1)
 						},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Blocks.PUMPKIN, 6, 12, 10),
+							new TradeOffers.BuyItemFactory(Blocks.PUMPKIN, 6, 12, 10),
 							new TradeOffers.SellItemFactory(Items.PUMPKIN_PIE, 1, 4, 5),
 							new TradeOffers.SellItemFactory(Items.APPLE, 1, 4, 16, 5)
 						},
 						3,
-						new TradeOffers.Factory[]{new TradeOffers.SellItemFactory(Items.COOKIE, 3, 18, 10), new TradeOffers.BuyForOneEmeraldFactory(Blocks.MELON, 4, 12, 20)},
+						new TradeOffers.Factory[]{new TradeOffers.SellItemFactory(Items.COOKIE, 3, 18, 10), new TradeOffers.BuyItemFactory(Blocks.MELON, 4, 12, 20)},
 						4,
 						new TradeOffers.Factory[]{
 							new TradeOffers.SellItemFactory(Blocks.CAKE, 1, 1, 12, 15),
@@ -105,26 +110,26 @@ public class TradeOffers {
 					ImmutableMap.of(
 						1,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.STRING, 20, 16, 2),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.COAL, 10, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.STRING, 20, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.COAL, 10, 16, 2),
 							new TradeOffers.ProcessItemFactory(Items.COD, 6, Items.COOKED_COD, 6, 16, 1),
 							new TradeOffers.SellItemFactory(Items.COD_BUCKET, 3, 1, 16, 1)
 						},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.COD, 15, 16, 10),
+							new TradeOffers.BuyItemFactory(Items.COD, 15, 16, 10),
 							new TradeOffers.ProcessItemFactory(Items.SALMON, 6, Items.COOKED_SALMON, 6, 16, 5),
 							new TradeOffers.SellItemFactory(Items.CAMPFIRE, 2, 1, 5)
 						},
 						3,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.SALMON, 13, 16, 20), new TradeOffers.SellEnchantedToolFactory(Items.FISHING_ROD, 3, 3, 10, 0.2F)
+							new TradeOffers.BuyItemFactory(Items.SALMON, 13, 16, 20), new TradeOffers.SellEnchantedToolFactory(Items.FISHING_ROD, 3, 3, 10, 0.2F)
 						},
 						4,
-						new TradeOffers.Factory[]{new TradeOffers.BuyForOneEmeraldFactory(Items.TROPICAL_FISH, 6, 12, 30)},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.TROPICAL_FISH, 6, 12, 30)},
 						5,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.PUFFERFISH, 4, 12, 30),
+							new TradeOffers.BuyItemFactory(Items.PUFFERFISH, 4, 12, 30),
 							new TradeOffers.TypeAwareBuyForOneEmeraldFactory(
 								1,
 								12,
@@ -149,19 +154,19 @@ public class TradeOffers {
 					ImmutableMap.of(
 						1,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Blocks.WHITE_WOOL, 18, 16, 2),
-							new TradeOffers.BuyForOneEmeraldFactory(Blocks.BROWN_WOOL, 18, 16, 2),
-							new TradeOffers.BuyForOneEmeraldFactory(Blocks.BLACK_WOOL, 18, 16, 2),
-							new TradeOffers.BuyForOneEmeraldFactory(Blocks.GRAY_WOOL, 18, 16, 2),
+							new TradeOffers.BuyItemFactory(Blocks.WHITE_WOOL, 18, 16, 2),
+							new TradeOffers.BuyItemFactory(Blocks.BROWN_WOOL, 18, 16, 2),
+							new TradeOffers.BuyItemFactory(Blocks.BLACK_WOOL, 18, 16, 2),
+							new TradeOffers.BuyItemFactory(Blocks.GRAY_WOOL, 18, 16, 2),
 							new TradeOffers.SellItemFactory(Items.SHEARS, 2, 1, 1)
 						},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.WHITE_DYE, 12, 16, 10),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.GRAY_DYE, 12, 16, 10),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.BLACK_DYE, 12, 16, 10),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.LIGHT_BLUE_DYE, 12, 16, 10),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.LIME_DYE, 12, 16, 10),
+							new TradeOffers.BuyItemFactory(Items.WHITE_DYE, 12, 16, 10),
+							new TradeOffers.BuyItemFactory(Items.GRAY_DYE, 12, 16, 10),
+							new TradeOffers.BuyItemFactory(Items.BLACK_DYE, 12, 16, 10),
+							new TradeOffers.BuyItemFactory(Items.LIGHT_BLUE_DYE, 12, 16, 10),
+							new TradeOffers.BuyItemFactory(Items.LIME_DYE, 12, 16, 10),
 							new TradeOffers.SellItemFactory(Blocks.WHITE_WOOL, 1, 1, 16, 5),
 							new TradeOffers.SellItemFactory(Blocks.ORANGE_WOOL, 1, 1, 16, 5),
 							new TradeOffers.SellItemFactory(Blocks.MAGENTA_WOOL, 1, 1, 16, 5),
@@ -197,11 +202,11 @@ public class TradeOffers {
 						},
 						3,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.YELLOW_DYE, 12, 16, 20),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.LIGHT_GRAY_DYE, 12, 16, 20),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.ORANGE_DYE, 12, 16, 20),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.RED_DYE, 12, 16, 20),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.PINK_DYE, 12, 16, 20),
+							new TradeOffers.BuyItemFactory(Items.YELLOW_DYE, 12, 16, 20),
+							new TradeOffers.BuyItemFactory(Items.LIGHT_GRAY_DYE, 12, 16, 20),
+							new TradeOffers.BuyItemFactory(Items.ORANGE_DYE, 12, 16, 20),
+							new TradeOffers.BuyItemFactory(Items.RED_DYE, 12, 16, 20),
+							new TradeOffers.BuyItemFactory(Items.PINK_DYE, 12, 16, 20),
 							new TradeOffers.SellItemFactory(Blocks.WHITE_BED, 3, 1, 12, 10),
 							new TradeOffers.SellItemFactory(Blocks.YELLOW_BED, 3, 1, 12, 10),
 							new TradeOffers.SellItemFactory(Blocks.RED_BED, 3, 1, 12, 10),
@@ -221,12 +226,12 @@ public class TradeOffers {
 						},
 						4,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.BROWN_DYE, 12, 16, 30),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.PURPLE_DYE, 12, 16, 30),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.BLUE_DYE, 12, 16, 30),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.GREEN_DYE, 12, 16, 30),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.MAGENTA_DYE, 12, 16, 30),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.CYAN_DYE, 12, 16, 30),
+							new TradeOffers.BuyItemFactory(Items.BROWN_DYE, 12, 16, 30),
+							new TradeOffers.BuyItemFactory(Items.PURPLE_DYE, 12, 16, 30),
+							new TradeOffers.BuyItemFactory(Items.BLUE_DYE, 12, 16, 30),
+							new TradeOffers.BuyItemFactory(Items.GREEN_DYE, 12, 16, 30),
+							new TradeOffers.BuyItemFactory(Items.MAGENTA_DYE, 12, 16, 30),
+							new TradeOffers.BuyItemFactory(Items.CYAN_DYE, 12, 16, 30),
 							new TradeOffers.SellItemFactory(Items.WHITE_BANNER, 3, 1, 12, 15),
 							new TradeOffers.SellItemFactory(Items.BLUE_BANNER, 3, 1, 12, 15),
 							new TradeOffers.SellItemFactory(Items.LIGHT_BLUE_BANNER, 3, 1, 12, 15),
@@ -255,21 +260,19 @@ public class TradeOffers {
 					ImmutableMap.of(
 						1,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.STICK, 32, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.STICK, 32, 16, 2),
 							new TradeOffers.SellItemFactory(Items.ARROW, 1, 16, 1),
 							new TradeOffers.ProcessItemFactory(Blocks.GRAVEL, 10, Items.FLINT, 10, 12, 1)
 						},
 						2,
-						new TradeOffers.Factory[]{new TradeOffers.BuyForOneEmeraldFactory(Items.FLINT, 26, 12, 10), new TradeOffers.SellItemFactory(Items.BOW, 2, 1, 5)},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.FLINT, 26, 12, 10), new TradeOffers.SellItemFactory(Items.BOW, 2, 1, 5)},
 						3,
-						new TradeOffers.Factory[]{new TradeOffers.BuyForOneEmeraldFactory(Items.STRING, 14, 16, 20), new TradeOffers.SellItemFactory(Items.CROSSBOW, 3, 1, 10)},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.STRING, 14, 16, 20), new TradeOffers.SellItemFactory(Items.CROSSBOW, 3, 1, 10)},
 						4,
-						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.FEATHER, 24, 16, 30), new TradeOffers.SellEnchantedToolFactory(Items.BOW, 2, 3, 15)
-						},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.FEATHER, 24, 16, 30), new TradeOffers.SellEnchantedToolFactory(Items.BOW, 2, 3, 15)},
 						5,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.TRIPWIRE_HOOK, 8, 12, 30),
+							new TradeOffers.BuyItemFactory(Items.TRIPWIRE_HOOK, 8, 12, 30),
 							new TradeOffers.SellEnchantedToolFactory(Items.CROSSBOW, 3, 3, 15),
 							new TradeOffers.SellPotionHoldingItemFactory(Items.ARROW, 5, Items.TIPPED_ARROW, 5, 2, 12, 30)
 						}
@@ -283,7 +286,7 @@ public class TradeOffers {
 						.put(
 							1,
 							new TradeOffers.Factory[]{
-								new TradeOffers.BuyForOneEmeraldFactory(Items.PAPER, 24, 16, 2),
+								new TradeOffers.BuyItemFactory(Items.PAPER, 24, 16, 2),
 								new TradeOffers.EnchantBookFactory(1),
 								new TradeOffers.SellItemFactory(Blocks.BOOKSHELF, 9, 1, 12, 1)
 							}
@@ -291,15 +294,13 @@ public class TradeOffers {
 						.put(
 							2,
 							new TradeOffers.Factory[]{
-								new TradeOffers.BuyForOneEmeraldFactory(Items.BOOK, 4, 12, 10),
-								new TradeOffers.EnchantBookFactory(5),
-								new TradeOffers.SellItemFactory(Items.LANTERN, 1, 1, 5)
+								new TradeOffers.BuyItemFactory(Items.BOOK, 4, 12, 10), new TradeOffers.EnchantBookFactory(5), new TradeOffers.SellItemFactory(Items.LANTERN, 1, 1, 5)
 							}
 						)
 						.put(
 							3,
 							new TradeOffers.Factory[]{
-								new TradeOffers.BuyForOneEmeraldFactory(Items.INK_SAC, 5, 12, 20),
+								new TradeOffers.BuyItemFactory(Items.INK_SAC, 5, 12, 20),
 								new TradeOffers.EnchantBookFactory(10),
 								new TradeOffers.SellItemFactory(Items.GLASS, 1, 4, 10)
 							}
@@ -307,7 +308,7 @@ public class TradeOffers {
 						.put(
 							4,
 							new TradeOffers.Factory[]{
-								new TradeOffers.BuyForOneEmeraldFactory(Items.WRITABLE_BOOK, 2, 12, 30),
+								new TradeOffers.BuyItemFactory(Items.WRITABLE_BOOK, 2, 12, 30),
 								new TradeOffers.EnchantBookFactory(15),
 								new TradeOffers.SellItemFactory(Items.CLOCK, 5, 1, 15),
 								new TradeOffers.SellItemFactory(Items.COMPASS, 4, 1, 15)
@@ -322,15 +323,15 @@ public class TradeOffers {
 				copyToFastUtilMap(
 					ImmutableMap.of(
 						1,
-						new TradeOffers.Factory[]{new TradeOffers.BuyForOneEmeraldFactory(Items.PAPER, 24, 16, 2), new TradeOffers.SellItemFactory(Items.MAP, 7, 1, 1)},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.PAPER, 24, 16, 2), new TradeOffers.SellItemFactory(Items.MAP, 7, 1, 1)},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.GLASS_PANE, 11, 16, 10),
+							new TradeOffers.BuyItemFactory(Items.GLASS_PANE, 11, 16, 10),
 							new TradeOffers.SellMapFactory(13, StructureTags.ON_OCEAN_EXPLORER_MAPS, "filled_map.monument", MapIcon.Type.MONUMENT, 12, 5)
 						},
 						3,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.COMPASS, 1, 12, 20),
+							new TradeOffers.BuyItemFactory(Items.COMPASS, 1, 12, 20),
 							new TradeOffers.SellMapFactory(14, StructureTags.ON_WOODLAND_EXPLORER_MAPS, "filled_map.mansion", MapIcon.Type.MANSION, 12, 10)
 						},
 						4,
@@ -363,26 +364,20 @@ public class TradeOffers {
 				copyToFastUtilMap(
 					ImmutableMap.of(
 						1,
-						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.ROTTEN_FLESH, 32, 16, 2), new TradeOffers.SellItemFactory(Items.REDSTONE, 1, 2, 1)
-						},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.ROTTEN_FLESH, 32, 16, 2), new TradeOffers.SellItemFactory(Items.REDSTONE, 1, 2, 1)},
 						2,
-						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.GOLD_INGOT, 3, 12, 10), new TradeOffers.SellItemFactory(Items.LAPIS_LAZULI, 1, 1, 5)
-						},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.GOLD_INGOT, 3, 12, 10), new TradeOffers.SellItemFactory(Items.LAPIS_LAZULI, 1, 1, 5)},
 						3,
-						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.RABBIT_FOOT, 2, 12, 20), new TradeOffers.SellItemFactory(Blocks.GLOWSTONE, 4, 1, 12, 10)
-						},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.RABBIT_FOOT, 2, 12, 20), new TradeOffers.SellItemFactory(Blocks.GLOWSTONE, 4, 1, 12, 10)},
 						4,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.SCUTE, 4, 12, 30),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.GLASS_BOTTLE, 9, 12, 30),
+							new TradeOffers.BuyItemFactory(Items.SCUTE, 4, 12, 30),
+							new TradeOffers.BuyItemFactory(Items.GLASS_BOTTLE, 9, 12, 30),
 							new TradeOffers.SellItemFactory(Items.ENDER_PEARL, 5, 1, 15)
 						},
 						5,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.NETHER_WART, 22, 12, 30), new TradeOffers.SellItemFactory(Items.EXPERIENCE_BOTTLE, 3, 1, 30)
+							new TradeOffers.BuyItemFactory(Items.NETHER_WART, 22, 12, 30), new TradeOffers.SellItemFactory(Items.EXPERIENCE_BOTTLE, 3, 1, 30)
 						}
 					)
 				)
@@ -393,7 +388,7 @@ public class TradeOffers {
 					ImmutableMap.of(
 						1,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.COAL, 15, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.COAL, 15, 16, 2),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.IRON_LEGGINGS), 7, 1, 12, 1, 0.2F),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.IRON_BOOTS), 4, 1, 12, 1, 0.2F),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.IRON_HELMET), 5, 1, 12, 1, 0.2F),
@@ -401,15 +396,15 @@ public class TradeOffers {
 						},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.IRON_INGOT, 4, 12, 10),
+							new TradeOffers.BuyItemFactory(Items.IRON_INGOT, 4, 12, 10),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.BELL), 36, 1, 12, 5, 0.2F),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.CHAINMAIL_BOOTS), 1, 1, 12, 5, 0.2F),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.CHAINMAIL_LEGGINGS), 3, 1, 12, 5, 0.2F)
 						},
 						3,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.LAVA_BUCKET, 1, 12, 20),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.DIAMOND, 1, 12, 20),
+							new TradeOffers.BuyItemFactory(Items.LAVA_BUCKET, 1, 12, 20),
+							new TradeOffers.BuyItemFactory(Items.DIAMOND, 1, 12, 20),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.CHAINMAIL_HELMET), 1, 1, 12, 10, 0.2F),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.CHAINMAIL_CHESTPLATE), 4, 1, 12, 10, 0.2F),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.SHIELD), 5, 1, 12, 10, 0.2F)
@@ -433,19 +428,19 @@ public class TradeOffers {
 					ImmutableMap.of(
 						1,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.COAL, 15, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.COAL, 15, 16, 2),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.IRON_AXE), 3, 1, 12, 1, 0.2F),
 							new TradeOffers.SellEnchantedToolFactory(Items.IRON_SWORD, 2, 3, 1)
 						},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.IRON_INGOT, 4, 12, 10), new TradeOffers.SellItemFactory(new ItemStack(Items.BELL), 36, 1, 12, 5, 0.2F)
+							new TradeOffers.BuyItemFactory(Items.IRON_INGOT, 4, 12, 10), new TradeOffers.SellItemFactory(new ItemStack(Items.BELL), 36, 1, 12, 5, 0.2F)
 						},
 						3,
-						new TradeOffers.Factory[]{new TradeOffers.BuyForOneEmeraldFactory(Items.FLINT, 24, 12, 20)},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.FLINT, 24, 12, 20)},
 						4,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.DIAMOND, 1, 12, 30), new TradeOffers.SellEnchantedToolFactory(Items.DIAMOND_AXE, 12, 3, 15, 0.2F)
+							new TradeOffers.BuyItemFactory(Items.DIAMOND, 1, 12, 30), new TradeOffers.SellEnchantedToolFactory(Items.DIAMOND_AXE, 12, 3, 15, 0.2F)
 						},
 						5,
 						new TradeOffers.Factory[]{new TradeOffers.SellEnchantedToolFactory(Items.DIAMOND_SWORD, 8, 3, 30, 0.2F)}
@@ -458,7 +453,7 @@ public class TradeOffers {
 					ImmutableMap.of(
 						1,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.COAL, 15, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.COAL, 15, 16, 2),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.STONE_AXE), 1, 1, 12, 1, 0.2F),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.STONE_SHOVEL), 1, 1, 12, 1, 0.2F),
 							new TradeOffers.SellItemFactory(new ItemStack(Items.STONE_PICKAXE), 1, 1, 12, 1, 0.2F),
@@ -466,11 +461,11 @@ public class TradeOffers {
 						},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.IRON_INGOT, 4, 12, 10), new TradeOffers.SellItemFactory(new ItemStack(Items.BELL), 36, 1, 12, 5, 0.2F)
+							new TradeOffers.BuyItemFactory(Items.IRON_INGOT, 4, 12, 10), new TradeOffers.SellItemFactory(new ItemStack(Items.BELL), 36, 1, 12, 5, 0.2F)
 						},
 						3,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.FLINT, 30, 12, 20),
+							new TradeOffers.BuyItemFactory(Items.FLINT, 30, 12, 20),
 							new TradeOffers.SellEnchantedToolFactory(Items.IRON_AXE, 1, 3, 10, 0.2F),
 							new TradeOffers.SellEnchantedToolFactory(Items.IRON_SHOVEL, 2, 3, 10, 0.2F),
 							new TradeOffers.SellEnchantedToolFactory(Items.IRON_PICKAXE, 3, 3, 10, 0.2F),
@@ -478,7 +473,7 @@ public class TradeOffers {
 						},
 						4,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.DIAMOND, 1, 12, 30),
+							new TradeOffers.BuyItemFactory(Items.DIAMOND, 1, 12, 30),
 							new TradeOffers.SellEnchantedToolFactory(Items.DIAMOND_AXE, 12, 3, 15, 0.2F),
 							new TradeOffers.SellEnchantedToolFactory(Items.DIAMOND_SHOVEL, 5, 3, 15, 0.2F)
 						},
@@ -493,25 +488,23 @@ public class TradeOffers {
 					ImmutableMap.of(
 						1,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.CHICKEN, 14, 16, 2),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.PORKCHOP, 7, 16, 2),
-							new TradeOffers.BuyForOneEmeraldFactory(Items.RABBIT, 4, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.CHICKEN, 14, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.PORKCHOP, 7, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.RABBIT, 4, 16, 2),
 							new TradeOffers.SellItemFactory(Items.RABBIT_STEW, 1, 1, 1)
 						},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.COAL, 15, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.COAL, 15, 16, 2),
 							new TradeOffers.SellItemFactory(Items.COOKED_PORKCHOP, 1, 5, 16, 5),
 							new TradeOffers.SellItemFactory(Items.COOKED_CHICKEN, 1, 8, 16, 5)
 						},
 						3,
-						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.MUTTON, 7, 16, 20), new TradeOffers.BuyForOneEmeraldFactory(Items.BEEF, 10, 16, 20)
-						},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.MUTTON, 7, 16, 20), new TradeOffers.BuyItemFactory(Items.BEEF, 10, 16, 20)},
 						4,
-						new TradeOffers.Factory[]{new TradeOffers.BuyForOneEmeraldFactory(Items.DRIED_KELP_BLOCK, 10, 12, 30)},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.DRIED_KELP_BLOCK, 10, 12, 30)},
 						5,
-						new TradeOffers.Factory[]{new TradeOffers.BuyForOneEmeraldFactory(Items.SWEET_BERRIES, 10, 12, 30)}
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.SWEET_BERRIES, 10, 12, 30)}
 					)
 				)
 			);
@@ -521,23 +514,23 @@ public class TradeOffers {
 					ImmutableMap.of(
 						1,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.LEATHER, 6, 16, 2),
+							new TradeOffers.BuyItemFactory(Items.LEATHER, 6, 16, 2),
 							new TradeOffers.SellDyedArmorFactory(Items.LEATHER_LEGGINGS, 3),
 							new TradeOffers.SellDyedArmorFactory(Items.LEATHER_CHESTPLATE, 7)
 						},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.FLINT, 26, 12, 10),
+							new TradeOffers.BuyItemFactory(Items.FLINT, 26, 12, 10),
 							new TradeOffers.SellDyedArmorFactory(Items.LEATHER_HELMET, 5, 12, 5),
 							new TradeOffers.SellDyedArmorFactory(Items.LEATHER_BOOTS, 4, 12, 5)
 						},
 						3,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.RABBIT_HIDE, 9, 12, 20), new TradeOffers.SellDyedArmorFactory(Items.LEATHER_CHESTPLATE, 7)
+							new TradeOffers.BuyItemFactory(Items.RABBIT_HIDE, 9, 12, 20), new TradeOffers.SellDyedArmorFactory(Items.LEATHER_CHESTPLATE, 7)
 						},
 						4,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.SCUTE, 4, 12, 30), new TradeOffers.SellDyedArmorFactory(Items.LEATHER_HORSE_ARMOR, 6, 12, 15)
+							new TradeOffers.BuyItemFactory(Items.SCUTE, 4, 12, 30), new TradeOffers.SellDyedArmorFactory(Items.LEATHER_HORSE_ARMOR, 6, 12, 15)
 						},
 						5,
 						new TradeOffers.Factory[]{
@@ -551,18 +544,16 @@ public class TradeOffers {
 				copyToFastUtilMap(
 					ImmutableMap.of(
 						1,
-						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.CLAY_BALL, 10, 16, 2), new TradeOffers.SellItemFactory(Items.BRICK, 1, 10, 16, 1)
-						},
+						new TradeOffers.Factory[]{new TradeOffers.BuyItemFactory(Items.CLAY_BALL, 10, 16, 2), new TradeOffers.SellItemFactory(Items.BRICK, 1, 10, 16, 1)},
 						2,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Blocks.STONE, 20, 16, 10), new TradeOffers.SellItemFactory(Blocks.CHISELED_STONE_BRICKS, 1, 4, 16, 5)
+							new TradeOffers.BuyItemFactory(Blocks.STONE, 20, 16, 10), new TradeOffers.SellItemFactory(Blocks.CHISELED_STONE_BRICKS, 1, 4, 16, 5)
 						},
 						3,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Blocks.GRANITE, 16, 16, 20),
-							new TradeOffers.BuyForOneEmeraldFactory(Blocks.ANDESITE, 16, 16, 20),
-							new TradeOffers.BuyForOneEmeraldFactory(Blocks.DIORITE, 16, 16, 20),
+							new TradeOffers.BuyItemFactory(Blocks.GRANITE, 16, 16, 20),
+							new TradeOffers.BuyItemFactory(Blocks.ANDESITE, 16, 16, 20),
+							new TradeOffers.BuyItemFactory(Blocks.DIORITE, 16, 16, 20),
 							new TradeOffers.SellItemFactory(Blocks.DRIPSTONE_BLOCK, 1, 4, 16, 10),
 							new TradeOffers.SellItemFactory(Blocks.POLISHED_ANDESITE, 1, 4, 16, 10),
 							new TradeOffers.SellItemFactory(Blocks.POLISHED_DIORITE, 1, 4, 16, 10),
@@ -570,7 +561,7 @@ public class TradeOffers {
 						},
 						4,
 						new TradeOffers.Factory[]{
-							new TradeOffers.BuyForOneEmeraldFactory(Items.QUARTZ, 12, 12, 30),
+							new TradeOffers.BuyItemFactory(Items.QUARTZ, 12, 12, 30),
 							new TradeOffers.SellItemFactory(Blocks.ORANGE_TERRACOTTA, 1, 1, 12, 15),
 							new TradeOffers.SellItemFactory(Blocks.WHITE_TERRACOTTA, 1, 1, 12, 15),
 							new TradeOffers.SellItemFactory(Blocks.BLUE_TERRACOTTA, 1, 1, 12, 15),
@@ -693,59 +684,254 @@ public class TradeOffers {
 			}
 		)
 	);
+	public static final Map<VillagerProfession, Int2ObjectMap<TradeOffers.Factory[]>> REBALANCED_PROFESSION_TO_LEVELED_TRADE = Map.of(
+		VillagerProfession.LIBRARIAN,
+		copyToFastUtilMap(
+			ImmutableMap.<Integer, TradeOffers.Factory[]>builder()
+				.put(
+					1,
+					new TradeOffers.Factory[]{
+						new TradeOffers.BuyItemFactory(Items.PAPER, 24, 16, 2), createLibrarianTradeFactory(1), new TradeOffers.SellItemFactory(Blocks.BOOKSHELF, 9, 1, 12, 1)
+					}
+				)
+				.put(
+					2,
+					new TradeOffers.Factory[]{
+						new TradeOffers.BuyItemFactory(Items.BOOK, 4, 12, 10), createLibrarianTradeFactory(5), new TradeOffers.SellItemFactory(Items.LANTERN, 1, 1, 5)
+					}
+				)
+				.put(
+					3,
+					new TradeOffers.Factory[]{
+						new TradeOffers.BuyItemFactory(Items.INK_SAC, 5, 12, 20), createLibrarianTradeFactory(10), new TradeOffers.SellItemFactory(Items.GLASS, 1, 4, 10)
+					}
+				)
+				.put(
+					4,
+					new TradeOffers.Factory[]{
+						new TradeOffers.BuyItemFactory(Items.WRITABLE_BOOK, 2, 12, 30),
+						new TradeOffers.SellItemFactory(Items.CLOCK, 5, 1, 15),
+						new TradeOffers.SellItemFactory(Items.COMPASS, 4, 1, 15)
+					}
+				)
+				.put(5, new TradeOffers.Factory[]{createMasterLibrarianTradeFactory(), new TradeOffers.SellItemFactory(Items.NAME_TAG, 20, 1, 30)})
+				.build()
+		)
+	);
+	public static final List<Pair<TradeOffers.Factory[], Integer>> REBALANCED_WANDERING_TRADER_TRADES = ImmutableList.<Pair<TradeOffers.Factory[], Integer>>builder()
+		.add(
+			Pair.of(
+				new TradeOffers.Factory[]{
+					new TradeOffers.BuyItemFactory(createPotionStack(Potions.WATER), 1, 1, 1),
+					new TradeOffers.BuyItemFactory(Items.WATER_BUCKET, 1, 1, 1, 2),
+					new TradeOffers.BuyItemFactory(Items.MILK_BUCKET, 1, 1, 1, 2),
+					new TradeOffers.BuyItemFactory(Items.FERMENTED_SPIDER_EYE, 1, 1, 1, 3),
+					new TradeOffers.BuyItemFactory(Items.BAKED_POTATO, 4, 1, 1),
+					new TradeOffers.BuyItemFactory(Items.HAY_BLOCK, 1, 1, 1)
+				},
+				2
+			)
+		)
+		.add(
+			Pair.of(
+				new TradeOffers.Factory[]{
+					new TradeOffers.SellItemFactory(Items.PACKED_ICE, 1, 1, 6, 1),
+					new TradeOffers.SellItemFactory(Items.BLUE_ICE, 6, 1, 6, 1),
+					new TradeOffers.SellItemFactory(Items.GUNPOWDER, 1, 4, 2, 1),
+					new TradeOffers.SellItemFactory(Items.PODZOL, 3, 3, 6, 1),
+					new TradeOffers.SellItemFactory(Blocks.ACACIA_LOG, 1, 8, 4, 1),
+					new TradeOffers.SellItemFactory(Blocks.BIRCH_LOG, 1, 8, 4, 1),
+					new TradeOffers.SellItemFactory(Blocks.DARK_OAK_LOG, 1, 8, 4, 1),
+					new TradeOffers.SellItemFactory(Blocks.JUNGLE_LOG, 1, 8, 4, 1),
+					new TradeOffers.SellItemFactory(Blocks.OAK_LOG, 1, 8, 4, 1),
+					new TradeOffers.SellItemFactory(Blocks.SPRUCE_LOG, 1, 8, 4, 1),
+					new TradeOffers.SellItemFactory(Blocks.CHERRY_LOG, 1, 8, 4, 1),
+					new TradeOffers.SellEnchantedToolFactory(Items.IRON_PICKAXE, 1, 1, 1, 0.2F),
+					new TradeOffers.SellItemFactory(createPotionStack(Potions.LONG_INVISIBILITY), 5, 1, 1, 1)
+				},
+				2
+			)
+		)
+		.add(
+			Pair.of(
+				new TradeOffers.Factory[]{
+					new TradeOffers.SellItemFactory(Items.TROPICAL_FISH_BUCKET, 3, 1, 4, 1),
+					new TradeOffers.SellItemFactory(Items.PUFFERFISH_BUCKET, 3, 1, 4, 1),
+					new TradeOffers.SellItemFactory(Items.SEA_PICKLE, 2, 1, 5, 1),
+					new TradeOffers.SellItemFactory(Items.SLIME_BALL, 4, 1, 5, 1),
+					new TradeOffers.SellItemFactory(Items.GLOWSTONE, 2, 1, 5, 1),
+					new TradeOffers.SellItemFactory(Items.NAUTILUS_SHELL, 5, 1, 5, 1),
+					new TradeOffers.SellItemFactory(Items.FERN, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.SUGAR_CANE, 1, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.PUMPKIN, 1, 1, 4, 1),
+					new TradeOffers.SellItemFactory(Items.KELP, 3, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.CACTUS, 3, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.DANDELION, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.POPPY, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.BLUE_ORCHID, 1, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.ALLIUM, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.AZURE_BLUET, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.RED_TULIP, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.ORANGE_TULIP, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.WHITE_TULIP, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.PINK_TULIP, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.OXEYE_DAISY, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.CORNFLOWER, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.LILY_OF_THE_VALLEY, 1, 1, 7, 1),
+					new TradeOffers.SellItemFactory(Items.WHEAT_SEEDS, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.BEETROOT_SEEDS, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.PUMPKIN_SEEDS, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.MELON_SEEDS, 1, 1, 12, 1),
+					new TradeOffers.SellItemFactory(Items.ACACIA_SAPLING, 5, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.BIRCH_SAPLING, 5, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.DARK_OAK_SAPLING, 5, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.JUNGLE_SAPLING, 5, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.OAK_SAPLING, 5, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.SPRUCE_SAPLING, 5, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.CHERRY_SAPLING, 5, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.MANGROVE_PROPAGULE, 5, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.RED_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.WHITE_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.BLUE_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.PINK_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.BLACK_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.GREEN_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.LIGHT_GRAY_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.MAGENTA_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.YELLOW_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.GRAY_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.PURPLE_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.LIGHT_BLUE_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.LIME_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.ORANGE_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.BROWN_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.CYAN_DYE, 1, 3, 12, 1),
+					new TradeOffers.SellItemFactory(Items.BRAIN_CORAL_BLOCK, 3, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.BUBBLE_CORAL_BLOCK, 3, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.FIRE_CORAL_BLOCK, 3, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.HORN_CORAL_BLOCK, 3, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.TUBE_CORAL_BLOCK, 3, 1, 8, 1),
+					new TradeOffers.SellItemFactory(Items.VINE, 1, 3, 4, 1),
+					new TradeOffers.SellItemFactory(Items.BROWN_MUSHROOM, 1, 3, 4, 1),
+					new TradeOffers.SellItemFactory(Items.RED_MUSHROOM, 1, 3, 4, 1),
+					new TradeOffers.SellItemFactory(Items.LILY_PAD, 1, 5, 2, 1),
+					new TradeOffers.SellItemFactory(Items.SMALL_DRIPLEAF, 1, 2, 5, 1),
+					new TradeOffers.SellItemFactory(Items.SAND, 1, 8, 8, 1),
+					new TradeOffers.SellItemFactory(Items.RED_SAND, 1, 4, 6, 1),
+					new TradeOffers.SellItemFactory(Items.POINTED_DRIPSTONE, 1, 2, 5, 1),
+					new TradeOffers.SellItemFactory(Items.ROOTED_DIRT, 1, 2, 5, 1),
+					new TradeOffers.SellItemFactory(Items.MOSS_BLOCK, 1, 2, 5, 1)
+				},
+				5
+			)
+		)
+		.build();
+
+	private static TradeOffers.Factory createLibrarianTradeFactory(int experience) {
+		return new TradeOffers.TypedWrapperFactory(
+			ImmutableMap.<VillagerType, TradeOffers.Factory>builder()
+				.put(VillagerType.DESERT, new TradeOffers.EnchantBookFactory(experience, Enchantments.FIRE_PROTECTION, Enchantments.THORNS, Enchantments.INFINITY))
+				.put(
+					VillagerType.JUNGLE, new TradeOffers.EnchantBookFactory(experience, Enchantments.FEATHER_FALLING, Enchantments.PROJECTILE_PROTECTION, Enchantments.POWER)
+				)
+				.put(VillagerType.PLAINS, new TradeOffers.EnchantBookFactory(experience, Enchantments.PUNCH, Enchantments.SMITE, Enchantments.BANE_OF_ARTHROPODS))
+				.put(VillagerType.SAVANNA, new TradeOffers.EnchantBookFactory(experience, Enchantments.KNOCKBACK, Enchantments.BINDING_CURSE, Enchantments.SWEEPING))
+				.put(VillagerType.SNOW, new TradeOffers.EnchantBookFactory(experience, Enchantments.AQUA_AFFINITY, Enchantments.LOOTING, Enchantments.FROST_WALKER))
+				.put(VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(experience, Enchantments.DEPTH_STRIDER, Enchantments.RESPIRATION, Enchantments.VANISHING_CURSE))
+				.put(VillagerType.TAIGA, new TradeOffers.EnchantBookFactory(experience, Enchantments.BLAST_PROTECTION, Enchantments.FIRE_ASPECT, Enchantments.FLAME))
+				.build()
+		);
+	}
+
+	private static TradeOffers.Factory createMasterLibrarianTradeFactory() {
+		return new TradeOffers.TypedWrapperFactory(
+			ImmutableMap.<VillagerType, TradeOffers.Factory>builder()
+				.put(VillagerType.DESERT, new TradeOffers.EnchantBookFactory(30, 3, 3, Enchantments.EFFICIENCY))
+				.put(VillagerType.JUNGLE, new TradeOffers.EnchantBookFactory(30, 2, 2, Enchantments.UNBREAKING))
+				.put(VillagerType.PLAINS, new TradeOffers.EnchantBookFactory(30, 3, 3, Enchantments.PROTECTION))
+				.put(VillagerType.SAVANNA, new TradeOffers.EnchantBookFactory(30, 3, 3, Enchantments.SHARPNESS))
+				.put(VillagerType.SNOW, new TradeOffers.EnchantBookFactory(30, Enchantments.SILK_TOUCH))
+				.put(VillagerType.SWAMP, new TradeOffers.EnchantBookFactory(30, Enchantments.MENDING))
+				.put(VillagerType.TAIGA, new TradeOffers.EnchantBookFactory(30, 2, 2, Enchantments.FORTUNE))
+				.build()
+		);
+	}
 
 	private static Int2ObjectMap<TradeOffers.Factory[]> copyToFastUtilMap(ImmutableMap<Integer, TradeOffers.Factory[]> map) {
 		return new Int2ObjectOpenHashMap<>(map);
 	}
 
-	static class BuyForOneEmeraldFactory implements TradeOffers.Factory {
-		private final Item buy;
-		private final int price;
+	private static ItemStack createPotionStack(Potion potion) {
+		return PotionUtil.setPotion(new ItemStack(Items.POTION), potion);
+	}
+
+	static class BuyItemFactory implements TradeOffers.Factory {
+		private final ItemStack stack;
 		private final int maxUses;
 		private final int experience;
+		private final int price;
 		private final float multiplier;
 
-		public BuyForOneEmeraldFactory(ItemConvertible item, int price, int maxUses, int experience) {
-			this.buy = item.asItem();
-			this.price = price;
+		public BuyItemFactory(ItemConvertible item, int count, int maxUses, int experience) {
+			this(item, count, maxUses, experience, 1);
+		}
+
+		public BuyItemFactory(ItemConvertible item, int count, int maxUses, int experience, int price) {
+			this(new ItemStack(item.asItem(), count), maxUses, experience, price);
+		}
+
+		public BuyItemFactory(ItemStack stack, int maxUses, int experience, int price) {
+			this.stack = stack;
 			this.maxUses = maxUses;
 			this.experience = experience;
+			this.price = price;
 			this.multiplier = 0.05F;
 		}
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			ItemStack itemStack = new ItemStack(this.buy, this.price);
-			return new TradeOffer(itemStack, new ItemStack(Items.EMERALD), this.maxUses, this.experience, this.multiplier);
+			return new TradeOffer(this.stack.copy(), new ItemStack(Items.EMERALD, this.price), this.maxUses, this.experience, this.multiplier);
 		}
 	}
 
 	static class EnchantBookFactory implements TradeOffers.Factory {
 		private final int experience;
+		private final List<Enchantment> possibleEnchantments;
+		private final int minLevel;
+		private final int maxLevel;
 
 		public EnchantBookFactory(int experience) {
+			this(experience, (Enchantment[])Registries.ENCHANTMENT.stream().filter(Enchantment::isAvailableForEnchantedBookOffer).toArray(Enchantment[]::new));
+		}
+
+		public EnchantBookFactory(int experience, Enchantment... possibleEnchantments) {
+			this(experience, 0, Integer.MAX_VALUE, possibleEnchantments);
+		}
+
+		public EnchantBookFactory(int experience, int minLevel, int maxLevel, Enchantment... possibleEnchantments) {
+			this.minLevel = minLevel;
+			this.maxLevel = maxLevel;
 			this.experience = experience;
+			this.possibleEnchantments = Arrays.asList(possibleEnchantments);
 		}
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			List<Enchantment> list = (List<Enchantment>)Registries.ENCHANTMENT
-				.stream()
-				.filter(Enchantment::isAvailableForEnchantedBookOffer)
-				.collect(Collectors.toList());
-			Enchantment enchantment = (Enchantment)list.get(random.nextInt(list.size()));
-			int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
-			ItemStack itemStack = EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, i));
-			int j = 2 + random.nextInt(5 + i * 10) + 3 * i;
+			Enchantment enchantment = (Enchantment)this.possibleEnchantments.get(random.nextInt(this.possibleEnchantments.size()));
+			int i = Math.max(enchantment.getMinLevel(), this.minLevel);
+			int j = Math.min(enchantment.getMaxLevel(), this.maxLevel);
+			int k = MathHelper.nextInt(random, i, j);
+			ItemStack itemStack = EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(enchantment, k));
+			int l = 2 + random.nextInt(5 + k * 10) + 3 * k;
 			if (enchantment.isTreasure()) {
-				j *= 2;
+				l *= 2;
 			}
 
-			if (j > 64) {
-				j = 64;
+			if (l > 64) {
+				l = 64;
 			}
 
-			return new TradeOffer(new ItemStack(Items.EMERALD, j), new ItemStack(Items.BOOK), itemStack, 12, this.experience, 0.2F);
+			return new TradeOffer(new ItemStack(Items.EMERALD, l), new ItemStack(Items.BOOK), itemStack, 12, this.experience, 0.2F);
 		}
 	}
 
@@ -876,7 +1062,6 @@ public class TradeOffers {
 	static class SellItemFactory implements TradeOffers.Factory {
 		private final ItemStack sell;
 		private final int price;
-		private final int count;
 		private final int maxUses;
 		private final int experience;
 		private final float multiplier;
@@ -900,7 +1085,7 @@ public class TradeOffers {
 		public SellItemFactory(ItemStack stack, int price, int count, int maxUses, int experience, float multiplier) {
 			this.sell = stack;
 			this.price = price;
-			this.count = count;
+			this.sell.setCount(count);
 			this.maxUses = maxUses;
 			this.experience = experience;
 			this.multiplier = multiplier;
@@ -908,9 +1093,7 @@ public class TradeOffers {
 
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			return new TradeOffer(
-				new ItemStack(Items.EMERALD, this.price), new ItemStack(this.sell.getItem(), this.count), this.maxUses, this.experience, this.multiplier
-			);
+			return new TradeOffer(new ItemStack(Items.EMERALD, this.price), this.sell.copy(), this.maxUses, this.experience, this.multiplier);
 		}
 	}
 
@@ -1027,9 +1210,31 @@ public class TradeOffers {
 		@Nullable
 		@Override
 		public TradeOffer create(Entity entity, Random random) {
-			if (entity instanceof VillagerDataContainer) {
-				ItemStack itemStack = new ItemStack((ItemConvertible)this.map.get(((VillagerDataContainer)entity).getVillagerData().getType()), this.count);
+			if (entity instanceof VillagerDataContainer villagerDataContainer) {
+				ItemStack itemStack = new ItemStack((ItemConvertible)this.map.get(villagerDataContainer.getVillagerData().getType()), this.count);
 				return new TradeOffer(itemStack, new ItemStack(Items.EMERALD), this.maxUses, this.experience, 0.05F);
+			} else {
+				return null;
+			}
+		}
+	}
+
+	static class TypedWrapperFactory implements TradeOffers.Factory {
+		private final Map<VillagerType, TradeOffers.Factory> typeToFactory;
+
+		public TypedWrapperFactory(Map<VillagerType, TradeOffers.Factory> typeToFactory) {
+			Registries.VILLAGER_TYPE.stream().filter(type -> !typeToFactory.containsKey(type)).findAny().ifPresent(type -> {
+				throw new IllegalStateException("Missing trade for villager type: " + Registries.VILLAGER_TYPE.getId(type));
+			});
+			this.typeToFactory = typeToFactory;
+		}
+
+		@Nullable
+		@Override
+		public TradeOffer create(Entity entity, Random random) {
+			if (entity instanceof VillagerDataContainer villagerDataContainer) {
+				VillagerType villagerType = villagerDataContainer.getVillagerData().getType();
+				return ((TradeOffers.Factory)this.typeToFactory.get(villagerType)).create(entity, random);
 			} else {
 				return null;
 			}

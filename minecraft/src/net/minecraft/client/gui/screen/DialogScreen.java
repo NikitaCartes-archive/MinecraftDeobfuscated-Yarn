@@ -58,10 +58,14 @@ public class DialogScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, this.linesY - 9 * 2, -1);
 		this.lines.drawCenterWithShadow(context, this.width / 2, this.linesY);
-		super.render(context, mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
 	}
 
 	@Override

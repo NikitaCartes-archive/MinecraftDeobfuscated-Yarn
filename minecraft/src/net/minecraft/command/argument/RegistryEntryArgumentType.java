@@ -118,12 +118,11 @@ public class RegistryEntryArgumentType<T> implements ArgumentType<RegistryEntry.
 
 	public static class Serializer<T> implements ArgumentSerializer<RegistryEntryArgumentType<T>, RegistryEntryArgumentType.Serializer<T>.Properties> {
 		public void writePacket(RegistryEntryArgumentType.Serializer<T>.Properties properties, PacketByteBuf packetByteBuf) {
-			packetByteBuf.writeIdentifier(properties.registryRef.getValue());
+			packetByteBuf.writeRegistryKey(properties.registryRef);
 		}
 
 		public RegistryEntryArgumentType.Serializer<T>.Properties fromPacket(PacketByteBuf packetByteBuf) {
-			Identifier identifier = packetByteBuf.readIdentifier();
-			return new RegistryEntryArgumentType.Serializer.Properties(RegistryKey.ofRegistry(identifier));
+			return new RegistryEntryArgumentType.Serializer.Properties(packetByteBuf.readRegistryRefKey());
 		}
 
 		public void writeJson(RegistryEntryArgumentType.Serializer<T>.Properties properties, JsonObject jsonObject) {

@@ -15,10 +15,38 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BossBarHud {
-	private static final Identifier BARS_TEXTURE = new Identifier("textures/gui/bars.png");
 	private static final int WIDTH = 182;
 	private static final int HEIGHT = 5;
-	private static final int NOTCHED_BAR_OVERLAY_V = 80;
+	private static final Identifier[] BACKGROUND_TEXTURES = new Identifier[]{
+		new Identifier("boss_bar/pink_background"),
+		new Identifier("boss_bar/blue_background"),
+		new Identifier("boss_bar/red_background"),
+		new Identifier("boss_bar/green_background"),
+		new Identifier("boss_bar/yellow_background"),
+		new Identifier("boss_bar/purple_background"),
+		new Identifier("boss_bar/white_background")
+	};
+	private static final Identifier[] PROGRESS_TEXTURES = new Identifier[]{
+		new Identifier("boss_bar/pink_progress"),
+		new Identifier("boss_bar/blue_progress"),
+		new Identifier("boss_bar/red_progress"),
+		new Identifier("boss_bar/green_progress"),
+		new Identifier("boss_bar/yellow_progress"),
+		new Identifier("boss_bar/purple_progress"),
+		new Identifier("boss_bar/white_progress")
+	};
+	private static final Identifier[] NOTCHED_BACKGROUND_TEXTURES = new Identifier[]{
+		new Identifier("boss_bar/notched_6_background"),
+		new Identifier("boss_bar/notched_10_background"),
+		new Identifier("boss_bar/notched_12_background"),
+		new Identifier("boss_bar/notched_20_background")
+	};
+	private static final Identifier[] NOTCHED_PROGRESS_TEXTURES = new Identifier[]{
+		new Identifier("boss_bar/notched_6_progress"),
+		new Identifier("boss_bar/notched_10_progress"),
+		new Identifier("boss_bar/notched_12_progress"),
+		new Identifier("boss_bar/notched_20_progress")
+	};
 	private final MinecraftClient client;
 	final Map<UUID, ClientBossBar> bossBars = Maps.<UUID, ClientBossBar>newLinkedHashMap();
 
@@ -48,18 +76,18 @@ public class BossBarHud {
 	}
 
 	private void renderBossBar(DrawContext context, int x, int y, BossBar bossBar) {
-		this.renderBossBar(context, x, y, bossBar, 182, 0);
+		this.renderBossBar(context, x, y, bossBar, 182, BACKGROUND_TEXTURES, NOTCHED_BACKGROUND_TEXTURES);
 		int i = (int)(bossBar.getPercent() * 183.0F);
 		if (i > 0) {
-			this.renderBossBar(context, x, y, bossBar, i, 5);
+			this.renderBossBar(context, x, y, bossBar, i, PROGRESS_TEXTURES, NOTCHED_PROGRESS_TEXTURES);
 		}
 	}
 
-	private void renderBossBar(DrawContext context, int x, int y, BossBar bossBar, int width, int height) {
-		context.drawTexture(BARS_TEXTURE, x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + height, width, 5);
+	private void renderBossBar(DrawContext context, int x, int y, BossBar bossBar, int width, Identifier[] textures, Identifier[] notchedTextures) {
+		context.drawGuiTexture(textures[bossBar.getColor().ordinal()], 182, 5, 0, 0, x, y, width, 5);
 		if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
 			RenderSystem.enableBlend();
-			context.drawTexture(BARS_TEXTURE, x, y, 0, 80 + (bossBar.getStyle().ordinal() - 1) * 5 * 2 + height, width, 5);
+			context.drawGuiTexture(notchedTextures[bossBar.getStyle().ordinal() - 1], x, y, width, 5);
 			RenderSystem.disableBlend();
 		}
 	}

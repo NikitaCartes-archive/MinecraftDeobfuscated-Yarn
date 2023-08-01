@@ -8,10 +8,10 @@ import java.util.Set;
 import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.random.Random;
-import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 /**

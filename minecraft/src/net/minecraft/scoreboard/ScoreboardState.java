@@ -1,5 +1,6 @@
 package net.minecraft.scoreboard;
 
+import com.mojang.logging.LogUtils;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -7,8 +8,10 @@ import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.PersistentState;
+import org.slf4j.Logger;
 
 public class ScoreboardState extends PersistentState {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	public static final String SCOREBOARD_KEY = "scoreboard";
 	private final Scoreboard scoreboard;
 
@@ -98,11 +101,12 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	private void readDisplaySlotsNbt(NbtCompound nbt) {
-		for (int i = 0; i < 19; i++) {
-			if (nbt.contains("slot_" + i, NbtElement.STRING_TYPE)) {
-				String string = nbt.getString("slot_" + i);
-				ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
-				this.scoreboard.setObjectiveSlot(i, scoreboardObjective);
+		for (String string : nbt.getKeys()) {
+			ScoreboardDisplaySlot scoreboardDisplaySlot = (ScoreboardDisplaySlot)ScoreboardDisplaySlot.CODEC.byId(string);
+			if (scoreboardDisplaySlot != null) {
+				String string2 = nbt.getString(string);
+				ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string2);
+				this.scoreboard.setObjectiveSlot(scoreboardDisplaySlot, scoreboardObjective);
 			}
 		}
 	}
@@ -110,12 +114,15 @@ public class ScoreboardState extends PersistentState {
 	private void readObjectivesNbt(NbtList nbt) {
 		for (int i = 0; i < nbt.size(); i++) {
 			NbtCompound nbtCompound = nbt.getCompound(i);
-			ScoreboardCriterion.getOrCreateStatCriterion(nbtCompound.getString("CriteriaName")).ifPresent(criterion -> {
-				String string = nbtCompound.getString("Name");
-				Text text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
-				ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(nbtCompound.getString("RenderType"));
-				this.scoreboard.addObjective(string, criterion, text, renderType);
+			String string = nbtCompound.getString("CriteriaName");
+			ScoreboardCriterion scoreboardCriterion = (ScoreboardCriterion)ScoreboardCriterion.getOrCreateStatCriterion(string).orElseGet(() -> {
+				LOGGER.warn("Unknown scoreboard criteria {}, replacing with {}", string, ScoreboardCriterion.DUMMY.getName());
+				return ScoreboardCriterion.DUMMY;
 			});
+			String string2 = nbtCompound.getString("Name");
+			Text text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
+			ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(nbtCompound.getString("RenderType"));
+			this.scoreboard.addObjective(string2, scoreboardCriterion, text, renderType);
 		}
 	}
 
@@ -161,17 +168,15 @@ public class ScoreboardState extends PersistentState {
 
 	private void writeDisplaySlotsNbt(NbtCompound nbt) {
 		NbtCompound nbtCompound = new NbtCompound();
-		boolean bl = false;
 
-		for (int i = 0; i < 19; i++) {
-			ScoreboardObjective scoreboardObjective = this.scoreboard.getObjectiveForSlot(i);
+		for (ScoreboardDisplaySlot scoreboardDisplaySlot : ScoreboardDisplaySlot.values()) {
+			ScoreboardObjective scoreboardObjective = this.scoreboard.getObjectiveForSlot(scoreboardDisplaySlot);
 			if (scoreboardObjective != null) {
-				nbtCompound.putString("slot_" + i, scoreboardObjective.getName());
-				bl = true;
+				nbtCompound.putString(scoreboardDisplaySlot.asString(), scoreboardObjective.getName());
 			}
 		}
 
-		if (bl) {
+		if (!nbtCompound.isEmpty()) {
 			nbt.put("DisplaySlots", nbtCompound);
 		}
 	}
@@ -180,14 +185,12 @@ public class ScoreboardState extends PersistentState {
 		NbtList nbtList = new NbtList();
 
 		for (ScoreboardObjective scoreboardObjective : this.scoreboard.getObjectives()) {
-			if (scoreboardObjective.getCriterion() != null) {
-				NbtCompound nbtCompound = new NbtCompound();
-				nbtCompound.putString("Name", scoreboardObjective.getName());
-				nbtCompound.putString("CriteriaName", scoreboardObjective.getCriterion().getName());
-				nbtCompound.putString("DisplayName", Text.Serializer.toJson(scoreboardObjective.getDisplayName()));
-				nbtCompound.putString("RenderType", scoreboardObjective.getRenderType().getName());
-				nbtList.add(nbtCompound);
-			}
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.putString("Name", scoreboardObjective.getName());
+			nbtCompound.putString("CriteriaName", scoreboardObjective.getCriterion().getName());
+			nbtCompound.putString("DisplayName", Text.Serializer.toJson(scoreboardObjective.getDisplayName()));
+			nbtCompound.putString("RenderType", scoreboardObjective.getRenderType().getName());
+			nbtList.add(nbtCompound);
 		}
 
 		return nbtList;

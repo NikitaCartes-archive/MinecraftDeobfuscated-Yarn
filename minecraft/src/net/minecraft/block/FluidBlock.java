@@ -5,7 +5,9 @@ import com.google.common.collect.Lists;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.NavigationType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
@@ -161,7 +163,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
+	public ItemStack tryDrainFluid(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos, BlockState state) {
 		if ((Integer)state.get(LEVEL) == 0) {
 			world.setBlockState(pos, Blocks.AIR.getDefaultState(), Block.NOTIFY_ALL | Block.REDRAW_ON_MAIN_THREAD);
 			return new ItemStack(this.fluid.getBucketItem());

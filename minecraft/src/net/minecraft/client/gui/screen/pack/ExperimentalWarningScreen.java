@@ -69,12 +69,6 @@ public class ExperimentalWarningScreen extends Screen {
 	}
 
 	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		super.render(context, mouseX, mouseY, delta);
-	}
-
-	@Override
 	public void close() {
 		this.callback.accept(false);
 	}
@@ -104,10 +98,9 @@ public class ExperimentalWarningScreen extends Screen {
 
 		@Override
 		public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-			this.renderBackground(context);
+			super.render(context, mouseX, mouseY, delta);
 			this.packList.render(context, mouseX, mouseY, delta);
 			context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 16777215);
-			super.render(context, mouseX, mouseY, delta);
 		}
 
 		@Environment(EnvType.CLIENT)

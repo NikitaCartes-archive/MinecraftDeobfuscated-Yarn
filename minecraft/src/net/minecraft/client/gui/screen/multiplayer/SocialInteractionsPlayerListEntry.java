@@ -13,6 +13,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.PlayerSkinDrawer;
 import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.report.ChatReportScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -21,6 +22,7 @@ import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.network.SocialInteractionsManager;
 import net.minecraft.client.report.AbuseReportContext;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -30,13 +32,24 @@ import net.minecraft.util.math.ColorHelper;
 
 @Environment(EnvType.CLIENT)
 public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
-	private static final Identifier REPORT_BUTTON_TEXTURE = new Identifier("textures/gui/report_button.png");
+	private static final Identifier DRAFT_REPORT_ICON_TEXTURE = new Identifier("icon/draft_report");
 	private static final int field_32418 = 10;
+	private static final ButtonTextures REPORT_BUTTON_TEXTURES = new ButtonTextures(
+		new Identifier("social_interactions/report_button"),
+		new Identifier("social_interactions/report_button_disabled"),
+		new Identifier("social_interactions/report_button_highlighted")
+	);
+	private static final ButtonTextures MUTE_BUTTON_TEXTURES = new ButtonTextures(
+		new Identifier("social_interactions/mute_button"), new Identifier("social_interactions/mute_button_highlighted")
+	);
+	private static final ButtonTextures UNMUTE_BUTTON_TEXTURES = new ButtonTextures(
+		new Identifier("social_interactions/unmute_button"), new Identifier("social_interactions/unmute_button_highlighted")
+	);
 	private final MinecraftClient client;
 	private final List<ClickableWidget> buttons;
 	private final UUID uuid;
 	private final String name;
-	private final Supplier<Identifier> skinTexture;
+	private final Supplier<SkinTextures> skinTexture;
 	private boolean offline;
 	private boolean sentMessage;
 	private final boolean canSendReports;
@@ -61,17 +74,15 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private static final Text reportText = Text.translatable("gui.socialInteractions.tooltip.report");
 	private static final int field_32420 = 24;
 	private static final int field_32421 = 4;
-	private static final int field_32422 = 20;
-	private static final int field_32416 = 0;
-	private static final int field_32417 = 38;
 	public static final int BLACK_COLOR = ColorHelper.Argb.getArgb(190, 0, 0, 0);
+	private static final int field_32422 = 20;
 	public static final int GRAY_COLOR = ColorHelper.Argb.getArgb(255, 74, 74, 74);
 	public static final int DARK_GRAY_COLOR = ColorHelper.Argb.getArgb(255, 48, 48, 48);
 	public static final int WHITE_COLOR = ColorHelper.Argb.getArgb(255, 255, 255, 255);
 	public static final int LIGHT_GRAY_COLOR = ColorHelper.Argb.getArgb(140, 255, 255, 255);
 
 	public SocialInteractionsPlayerListEntry(
-		MinecraftClient client, SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> skinTexture, boolean reportable
+		MinecraftClient client, SocialInteractionsScreen parent, UUID uuid, String name, Supplier<SkinTextures> skinTexture, boolean reportable
 	) {
 		this.client = client;
 		this.uuid = uuid;
@@ -92,12 +103,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 				0,
 				20,
 				20,
-				0,
-				0,
-				20,
-				REPORT_BUTTON_TEXTURE,
-				64,
-				64,
+				REPORT_BUTTON_TEXTURES,
 				button -> abuseReportContext.tryShowDraftScreen(client, parent, () -> client.setScreen(new ChatReportScreen(parent, abuseReportContext, uuid)), false),
 				Text.translatable("gui.socialInteractions.report")
 			) {
@@ -108,7 +114,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 			};
 			this.reportButton.setTooltip(this.getReportButtonTooltip());
 			this.reportButton.setTooltipDelay(10);
-			this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, button -> {
+			this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, MUTE_BUTTON_TEXTURES, button -> {
 				socialInteractionsManager.hidePlayer(uuid);
 				this.onButtonClick(true, Text.translatable("gui.socialInteractions.hidden_in_chat", name));
 			}, Text.translatable("gui.socialInteractions.hide")) {
@@ -119,7 +125,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 			};
 			this.hideButton.setTooltip(Tooltip.of(hideText, text));
 			this.hideButton.setTooltipDelay(10);
-			this.showButton = new TexturedButtonWidget(0, 0, 20, 20, 20, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, button -> {
+			this.showButton = new TexturedButtonWidget(0, 0, 20, 20, UNMUTE_BUTTON_TEXTURES, button -> {
 				socialInteractionsManager.showPlayer(uuid);
 				this.onButtonClick(false, Text.translatable("gui.socialInteractions.shown_in_chat", name));
 			}, Text.translatable("gui.socialInteractions.show")) {
@@ -168,7 +174,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 			context.drawText(this.client.textRenderer, text, k, l + 12, LIGHT_GRAY_COLOR, false);
 		}
 
-		PlayerSkinDrawer.draw(context, (Identifier)this.skinTexture.get(), i, j, 24);
+		PlayerSkinDrawer.draw(context, (SkinTextures)this.skinTexture.get(), i, j, 24);
 		context.drawText(this.client.textRenderer, this.name, k, l, WHITE_COLOR, false);
 		if (this.offline) {
 			context.fill(i, j, i + 24, j + 24, BLACK_COLOR);
@@ -191,7 +197,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		}
 
 		if (this.hasDraftReport && this.reportButton != null) {
-			context.drawTexture(ClickableWidget.WIDGETS_TEXTURE, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 182.0F, 24.0F, 15, 15, 256, 256);
+			context.drawGuiTexture(DRAFT_REPORT_ICON_TEXTURE, this.reportButton.getX() + 5, this.reportButton.getY() + 1, 15, 15);
 		}
 	}
 

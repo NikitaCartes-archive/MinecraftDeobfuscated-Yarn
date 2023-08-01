@@ -277,16 +277,11 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser, 
 	}
 
 	@Override
-	public double getMountedHeightOffset() {
-		return (double)this.getHeight() * 0.92;
-	}
-
-	@Override
 	public void setBaby(boolean baby) {
 		this.getDataTracker().set(BABY, baby);
 		if (!this.getWorld().isClient) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-			entityAttributeInstance.removeModifier(BABY_SPEED_BOOST);
+			entityAttributeInstance.removeModifier(BABY_SPEED_BOOST.getId());
 			if (baby) {
 				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BOOST);
 			}

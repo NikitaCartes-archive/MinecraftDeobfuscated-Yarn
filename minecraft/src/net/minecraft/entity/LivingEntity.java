@@ -127,11 +127,10 @@ import org.slf4j.Logger;
  */
 public abstract class LivingEntity extends Entity implements Attackable {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private static final UUID SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
 	private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
 	private static final UUID POWDER_SNOW_SLOW_ID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
 	private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(
-		SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", 0.3F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL
+		UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D"), "Sprinting speed boost", 0.3F, EntityAttributeModifier.Operation.MULTIPLY_TOTAL
 	);
 	public static final int field_30069 = 2;
 	public static final int field_30070 = 4;
@@ -290,7 +289,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			.add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE)
 			.add(EntityAttributes.GENERIC_MOVEMENT_SPEED)
 			.add(EntityAttributes.GENERIC_ARMOR)
-			.add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS);
+			.add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS)
+			.add(EntityAttributes.GENERIC_MAX_ABSORPTION);
 	}
 
 	@Override
@@ -1002,9 +1002,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 			if (statusEffectInstance == null) {
 				this.activeStatusEffects.put(effect.getEffectType(), effect);
 				this.onStatusEffectApplied(effect, source);
+				effect.onApplied(this);
 				return true;
 			} else if (statusEffectInstance.upgrade(effect)) {
 				this.onStatusEffectUpgraded(statusEffectInstance, true, source);
+				effect.onApplied(this);
 				return true;
 			} else {
 				return false;
@@ -1088,7 +1090,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected void onStatusEffectApplied(StatusEffectInstance effect, @Nullable Entity source) {
 		this.effectsChanged = true;
 		if (!this.getWorld().isClient) {
-			effect.getEffectType().onApplied(this, this.getAttributes(), effect.getAmplifier());
+			effect.getEffectType().onApplied(this.getAttributes(), effect.getAmplifier());
 			this.sendEffectToControllingPlayer(effect);
 		}
 	}
@@ -1105,8 +1107,9 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.effectsChanged = true;
 		if (reapplyEffect && !this.getWorld().isClient) {
 			StatusEffect statusEffect = effect.getEffectType();
-			statusEffect.onRemoved(this, this.getAttributes(), effect.getAmplifier());
-			statusEffect.onApplied(this, this.getAttributes(), effect.getAmplifier());
+			statusEffect.onRemoved(this.getAttributes());
+			statusEffect.onApplied(this.getAttributes(), effect.getAmplifier());
+			this.updateAttributes();
 		}
 
 		if (!this.getWorld().isClient) {
@@ -1117,12 +1120,33 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	protected void onStatusEffectRemoved(StatusEffectInstance effect) {
 		this.effectsChanged = true;
 		if (!this.getWorld().isClient) {
-			effect.getEffectType().onRemoved(this, this.getAttributes(), effect.getAmplifier());
+			effect.getEffectType().onRemoved(this.getAttributes());
+			this.updateAttributes();
 
 			for (Entity entity : this.getPassengerList()) {
 				if (entity instanceof ServerPlayerEntity serverPlayerEntity) {
 					serverPlayerEntity.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getId(), effect.getEffectType()));
 				}
+			}
+		}
+	}
+
+	private void updateAttributes() {
+		for (EntityAttributeInstance entityAttributeInstance : this.getAttributes().getTracked()) {
+			this.updateAttribute(entityAttributeInstance.getAttribute());
+		}
+	}
+
+	private void updateAttribute(EntityAttribute attribute) {
+		if (attribute == EntityAttributes.GENERIC_MAX_HEALTH) {
+			float f = this.getMaxHealth();
+			if (this.getHealth() > f) {
+				this.setHealth(f);
+			}
+		} else if (attribute == EntityAttributes.GENERIC_MAX_ABSORPTION) {
+			float f = this.getMaxAbsorption();
+			if (this.getAbsorptionAmount() > f) {
+				this.setAbsorptionAmount(f);
 			}
 		}
 	}
@@ -1240,7 +1264,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 					this.scheduleVelocityUpdate();
 				}
 
-				if (entity2 != null && !source.isIn(DamageTypeTags.IS_EXPLOSION)) {
+				if (entity2 != null && !source.isIn(DamageTypeTags.NO_KNOCKBACK)) {
 					double d = entity2.getX() - this.getX();
 
 					double e;
@@ -1316,6 +1340,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 				if (this instanceof ServerPlayerEntity serverPlayerEntity) {
 					serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(Items.TOTEM_OF_UNDYING));
 					Criteria.USED_TOTEM.trigger(serverPlayerEntity, itemStack);
+					this.emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
 				}
 
 				this.setHealth(1.0F);
@@ -1759,6 +1784,10 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MAX_HEALTH);
 	}
 
+	public final float getMaxAbsorption() {
+		return (float)this.getAttributeValue(EntityAttributes.GENERIC_MAX_ABSORPTION);
+	}
+
 	public final int getStuckArrowCount() {
 		return this.dataTracker.get(STUCK_ARROW_COUNT);
 	}
@@ -2039,10 +2068,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public void setSprinting(boolean sprinting) {
 		super.setSprinting(sprinting);
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-		if (entityAttributeInstance.getModifier(SPRINTING_SPEED_BOOST_ID) != null) {
-			entityAttributeInstance.removeModifier(SPRINTING_SPEED_BOOST);
-		}
-
+		entityAttributeInstance.removeModifier(SPRINTING_SPEED_BOOST.getId());
 		if (sprinting) {
 			entityAttributeInstance.addTemporaryModifier(SPRINTING_SPEED_BOOST);
 		}
@@ -2483,6 +2509,8 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		if (this.isSleeping()) {
 			this.setPitch(0.0F);
 		}
+
+		this.updateAttributes();
 	}
 
 	/**
@@ -2625,41 +2653,34 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		}
 
 		if (this.bodyTrackingIncrements > 0) {
-			double d = this.getX() + (this.serverX - this.getX()) / (double)this.bodyTrackingIncrements;
-			double e = this.getY() + (this.serverY - this.getY()) / (double)this.bodyTrackingIncrements;
-			double f = this.getZ() + (this.serverZ - this.getZ()) / (double)this.bodyTrackingIncrements;
-			double g = MathHelper.wrapDegrees(this.serverYaw - (double)this.getYaw());
-			this.setYaw(this.getYaw() + (float)g / (float)this.bodyTrackingIncrements);
-			this.setPitch(this.getPitch() + (float)(this.serverPitch - (double)this.getPitch()) / (float)this.bodyTrackingIncrements);
+			this.lerpPosAndRotation(this.bodyTrackingIncrements, this.serverX, this.serverY, this.serverZ, this.serverYaw, this.serverPitch);
 			this.bodyTrackingIncrements--;
-			this.setPosition(d, e, f);
-			this.setRotation(this.getYaw(), this.getPitch());
 		} else if (!this.canMoveVoluntarily()) {
 			this.setVelocity(this.getVelocity().multiply(0.98));
 		}
 
 		if (this.headTrackingIncrements > 0) {
-			this.headYaw = this.headYaw + (float)MathHelper.wrapDegrees(this.serverHeadYaw - (double)this.headYaw) / (float)this.headTrackingIncrements;
+			this.method_52539(this.headTrackingIncrements, this.serverHeadYaw);
 			this.headTrackingIncrements--;
 		}
 
 		Vec3d vec3d = this.getVelocity();
-		double h = vec3d.x;
-		double i = vec3d.y;
-		double j = vec3d.z;
+		double d = vec3d.x;
+		double e = vec3d.y;
+		double f = vec3d.z;
 		if (Math.abs(vec3d.x) < 0.003) {
-			h = 0.0;
+			d = 0.0;
 		}
 
 		if (Math.abs(vec3d.y) < 0.003) {
-			i = 0.0;
+			e = 0.0;
 		}
 
 		if (Math.abs(vec3d.z) < 0.003) {
-			j = 0.0;
+			f = 0.0;
 		}
 
-		this.setVelocity(h, i, j);
+		this.setVelocity(d, e, f);
 		this.getWorld().getProfiler().push("ai");
 		if (this.isImmobile()) {
 			this.jumping = false;
@@ -2674,18 +2695,18 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.getWorld().getProfiler().pop();
 		this.getWorld().getProfiler().push("jump");
 		if (this.jumping && this.shouldSwimInFluids()) {
-			double k;
+			double g;
 			if (this.isInLava()) {
-				k = this.getFluidHeight(FluidTags.LAVA);
+				g = this.getFluidHeight(FluidTags.LAVA);
 			} else {
-				k = this.getFluidHeight(FluidTags.WATER);
+				g = this.getFluidHeight(FluidTags.WATER);
 			}
 
-			boolean bl = this.isTouchingWater() && k > 0.0;
-			double l = this.getSwimHeight();
-			if (!bl || this.isOnGround() && !(k > l)) {
-				if (!this.isInLava() || this.isOnGround() && !(k > l)) {
-					if ((this.isOnGround() || bl && k <= l) && this.jumpingCooldown == 0) {
+			boolean bl = this.isTouchingWater() && g > 0.0;
+			double h = this.getSwimHeight();
+			if (!bl || this.isOnGround() && !(g > h)) {
+				if (!this.isInLava() || this.isOnGround() && !(g > h)) {
+					if ((this.isOnGround() || bl && g <= h) && this.jumpingCooldown == 0) {
 						this.jump();
 						this.jumpingCooldown = 10;
 					}
@@ -2722,11 +2743,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		this.getWorld().getProfiler().pop();
 		this.getWorld().getProfiler().push("freezing");
 		if (!this.getWorld().isClient && !this.isDead()) {
-			int m = this.getFrozenTicks();
+			int i = this.getFrozenTicks();
 			if (this.inPowderSnow && this.canFreeze()) {
-				this.setFrozenTicks(Math.min(this.getMinFreezeDamageTicks(), m + 1));
+				this.setFrozenTicks(Math.min(this.getMinFreezeDamageTicks(), i + 1));
 			} else {
-				this.setFrozenTicks(Math.max(0, m - 2));
+				this.setFrozenTicks(Math.max(0, i - 2));
 			}
 		}
 
@@ -2866,7 +2887,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	}
 
 	@Override
-	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
+	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps) {
 		this.serverX = x;
 		this.serverY = y;
 		this.serverZ = z;
@@ -2969,12 +2990,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		return this.absorptionAmount;
 	}
 
-	public void setAbsorptionAmount(float amount) {
-		if (amount < 0.0F) {
-			amount = 0.0F;
-		}
+	public final void setAbsorptionAmount(float absorptionAmount) {
+		this.setAbsorptionAmountUnclamped(MathHelper.clamp(absorptionAmount, 0.0F, this.getMaxAbsorption()));
+	}
 
-		this.absorptionAmount = amount;
+	protected void setAbsorptionAmountUnclamped(float absorptionAmount) {
+		this.absorptionAmount = absorptionAmount;
 	}
 
 	public void enterCombat() {
@@ -3282,6 +3303,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
 		);
 	}
 
+	protected boolean wouldNotSuffocateInPose(EntityPose pose) {
+		Box box = this.getDimensions(pose).getBoxAt(this.getPos());
+		return this.getWorld().isBlockSpaceEmpty(this, box);
+	}
+
 	@Override
 	public boolean canUsePortals() {
 		return super.canUsePortals() && !this.isSleeping();
@@ -3534,6 +3560,23 @@ public abstract class LivingEntity extends Entity implements Attackable {
 	public float getStepHeight() {
 		float f = super.getStepHeight();
 		return this.getControllingPassenger() instanceof PlayerEntity ? Math.max(f, 1.0F) : f;
+	}
+
+	@Override
+	public Vec3d getPassengerRidingPos(Entity passenger) {
+		return new Vec3d(
+				this.getPassengerAttachmentPos(passenger, this.getDimensions(this.getPose()), this.getScaleFactor()).rotateY(-this.bodyYaw * (float) (Math.PI / 180.0))
+			)
+			.add(this.getPos());
+	}
+
+	@Override
+	public float getRidingOffset(Entity vehicle) {
+		return this.getUnscaledRidingOffset(vehicle) * this.getScaleFactor();
+	}
+
+	protected void method_52539(int i, double d) {
+		this.headYaw = (float)MathHelper.lerpAngleDegrees(1.0 / (double)i, (double)this.headYaw, d);
 	}
 
 	public static record FallSounds(SoundEvent small, SoundEvent big) {

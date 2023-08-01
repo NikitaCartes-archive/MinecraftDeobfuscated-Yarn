@@ -79,11 +79,6 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 	}
 
 	@Override
-	public void tick() {
-		this.nameEdit.tick();
-	}
-
-	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
 			this.client.setScreen(this.parent);
@@ -253,13 +248,12 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, 16777215);
+		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 17, -1);
 		context.drawText(
-			this.textRenderer, EDIT_SLOT_NAME, this.column1_x + this.column2_x / 2 - this.textRenderer.getWidth(EDIT_SLOT_NAME) / 2, row(0) - 5, 16777215, false
+			this.textRenderer, EDIT_SLOT_NAME, this.column1_x + this.column2_x / 2 - this.textRenderer.getWidth(EDIT_SLOT_NAME) / 2, row(0) - 5, -1, false
 		);
 		this.nameEdit.render(context, mouseX, mouseY, delta);
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	private void setSlotName(String slotName) {

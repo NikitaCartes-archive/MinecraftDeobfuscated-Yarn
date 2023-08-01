@@ -1,12 +1,13 @@
 package net.minecraft.resource;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Sets;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -19,35 +20,14 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 public class ZipResourcePack extends AbstractFileResourcePack {
-	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final Splitter TYPE_NAMESPACE_SPLITTER = Splitter.on('/').omitEmptyStrings().limit(3);
-	private final File backingZipFile;
-	@Nullable
-	private ZipFile file;
-	private boolean failedToOpen;
+	static final Logger LOGGER = LogUtils.getLogger();
+	private final ZipResourcePack.ZipFileWrapper zipFile;
+	private final String overlay;
 
-	public ZipResourcePack(String name, File backingZipFile, boolean alwaysStable) {
+	ZipResourcePack(String name, ZipResourcePack.ZipFileWrapper zipFile, boolean alwaysStable, String overlay) {
 		super(name, alwaysStable);
-		this.backingZipFile = backingZipFile;
-	}
-
-	@Nullable
-	private ZipFile getZipFile() {
-		if (this.failedToOpen) {
-			return null;
-		} else {
-			if (this.file == null) {
-				try {
-					this.file = new ZipFile(this.backingZipFile);
-				} catch (IOException var2) {
-					LOGGER.error("Failed to open pack {}", this.backingZipFile, var2);
-					this.failedToOpen = true;
-					return null;
-				}
-			}
-
-			return this.file;
-		}
+		this.zipFile = zipFile;
+		this.overlay = overlay;
 	}
 
 	private static String toPath(ResourceType type, Identifier id) {
@@ -65,38 +45,40 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 		return this.openFile(toPath(type, id));
 	}
 
+	private String appendOverlayPrefix(String path) {
+		return this.overlay.isEmpty() ? path : this.overlay + "/" + path;
+	}
+
 	@Nullable
 	private InputSupplier<InputStream> openFile(String path) {
-		ZipFile zipFile = this.getZipFile();
+		ZipFile zipFile = this.zipFile.open();
 		if (zipFile == null) {
 			return null;
 		} else {
-			ZipEntry zipEntry = zipFile.getEntry(path);
+			ZipEntry zipEntry = zipFile.getEntry(this.appendOverlayPrefix(path));
 			return zipEntry == null ? null : InputSupplier.create(zipFile, zipEntry);
 		}
 	}
 
 	@Override
 	public Set<String> getNamespaces(ResourceType type) {
-		ZipFile zipFile = this.getZipFile();
+		ZipFile zipFile = this.zipFile.open();
 		if (zipFile == null) {
 			return Set.of();
 		} else {
 			Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
 			Set<String> set = Sets.<String>newHashSet();
+			String string = this.appendOverlayPrefix(type.getDirectory() + "/");
 
 			while (enumeration.hasMoreElements()) {
 				ZipEntry zipEntry = (ZipEntry)enumeration.nextElement();
-				String string = zipEntry.getName();
-				if (string.startsWith(type.getDirectory() + "/")) {
-					List<String> list = Lists.<String>newArrayList(TYPE_NAMESPACE_SPLITTER.split(string));
-					if (list.size() > 1) {
-						String string2 = (String)list.get(1);
-						if (string2.equals(string2.toLowerCase(Locale.ROOT))) {
-							set.add(string2);
-						} else {
-							LOGGER.warn("Ignored non-lowercase namespace: {} in {}", string2, this.backingZipFile);
-						}
+				String string2 = zipEntry.getName();
+				String string3 = getNamespace(string, string2);
+				if (!string3.isEmpty()) {
+					if (Identifier.isNamespaceValid(string3)) {
+						set.add(string3);
+					} else {
+						LOGGER.warn("Non [a-z0-9_.-] character in namespace {} in pack {}, ignoring", string3, this.zipFile.file);
 					}
 				}
 			}
@@ -105,25 +87,28 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 		}
 	}
 
-	protected void finalize() throws Throwable {
-		this.close();
-		super.finalize();
-	}
-
-	@Override
-	public void close() {
-		if (this.file != null) {
-			IOUtils.closeQuietly(this.file);
-			this.file = null;
+	@VisibleForTesting
+	public static String getNamespace(String prefix, String entryName) {
+		if (!entryName.startsWith(prefix)) {
+			return "";
+		} else {
+			int i = prefix.length();
+			int j = entryName.indexOf(47, i);
+			return j == -1 ? entryName.substring(i) : entryName.substring(i, j);
 		}
 	}
 
 	@Override
+	public void close() {
+		this.zipFile.close();
+	}
+
+	@Override
 	public void findResources(ResourceType type, String namespace, String prefix, ResourcePack.ResultConsumer consumer) {
-		ZipFile zipFile = this.getZipFile();
+		ZipFile zipFile = this.zipFile.open();
 		if (zipFile != null) {
 			Enumeration<? extends ZipEntry> enumeration = zipFile.entries();
-			String string = type.getDirectory() + "/" + namespace + "/";
+			String string = this.appendOverlayPrefix(type.getDirectory() + "/" + namespace + "/");
 			String string2 = string + prefix + "/";
 
 			while (enumeration.hasMoreElements()) {
@@ -141,6 +126,86 @@ public class ZipResourcePack extends AbstractFileResourcePack {
 					}
 				}
 			}
+		}
+	}
+
+	public static class ZipBackedFactory implements ResourcePackProfile.PackFactory {
+		private final File file;
+		private final boolean alwaysStable;
+
+		public ZipBackedFactory(Path path, boolean alwaysStable) {
+			this(path.toFile(), alwaysStable);
+		}
+
+		public ZipBackedFactory(File file, boolean alwaysStable) {
+			this.alwaysStable = alwaysStable;
+			this.file = file;
+		}
+
+		@Override
+		public ResourcePack open(String name) {
+			ZipResourcePack.ZipFileWrapper zipFileWrapper = new ZipResourcePack.ZipFileWrapper(this.file);
+			return new ZipResourcePack(name, zipFileWrapper, this.alwaysStable, "");
+		}
+
+		@Override
+		public ResourcePack openWithOverlays(String name, ResourcePackProfile.Metadata metadata) {
+			ZipResourcePack.ZipFileWrapper zipFileWrapper = new ZipResourcePack.ZipFileWrapper(this.file);
+			ResourcePack resourcePack = new ZipResourcePack(name, zipFileWrapper, this.alwaysStable, "");
+			List<String> list = metadata.overlays();
+			if (list.isEmpty()) {
+				return resourcePack;
+			} else {
+				List<ResourcePack> list2 = new ArrayList(list.size());
+
+				for (String string : list) {
+					list2.add(new ZipResourcePack(name, zipFileWrapper, this.alwaysStable, string));
+				}
+
+				return new OverlayResourcePack(resourcePack, list2);
+			}
+		}
+	}
+
+	static class ZipFileWrapper implements AutoCloseable {
+		final File file;
+		@Nullable
+		private ZipFile zip;
+		private boolean closed;
+
+		ZipFileWrapper(File file) {
+			this.file = file;
+		}
+
+		@Nullable
+		ZipFile open() {
+			if (this.closed) {
+				return null;
+			} else {
+				if (this.zip == null) {
+					try {
+						this.zip = new ZipFile(this.file);
+					} catch (IOException var2) {
+						ZipResourcePack.LOGGER.error("Failed to open pack {}", this.file, var2);
+						this.closed = true;
+						return null;
+					}
+				}
+
+				return this.zip;
+			}
+		}
+
+		public void close() {
+			if (this.zip != null) {
+				IOUtils.closeQuietly(this.zip);
+				this.zip = null;
+			}
+		}
+
+		protected void finalize() throws Throwable {
+			this.close();
+			super.finalize();
 		}
 	}
 }

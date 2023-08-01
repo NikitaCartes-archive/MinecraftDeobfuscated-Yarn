@@ -2,13 +2,13 @@ package net.minecraft.client.gui;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -33,6 +33,8 @@ import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.model.BakedModel;
 import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.texture.GuiAtlasManager;
+import net.minecraft.client.texture.Scaling;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
@@ -49,10 +51,8 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.ColorHelper;
-import net.minecraft.util.math.Divider;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.joml.Vector2ic;
 
@@ -65,12 +65,14 @@ public class DrawContext {
 	private final MatrixStack matrices;
 	private final VertexConsumerProvider.Immediate vertexConsumers;
 	private final DrawContext.ScissorStack scissorStack = new DrawContext.ScissorStack();
+	private final GuiAtlasManager guiAtlasManager;
 	private boolean runningDrawCallback;
 
 	private DrawContext(MinecraftClient client, MatrixStack matrices, VertexConsumerProvider.Immediate vertexConsumers) {
 		this.client = client;
 		this.matrices = matrices;
 		this.vertexConsumers = vertexConsumers;
+		this.guiAtlasManager = client.getGuiAtlasManager();
 	}
 
 	public DrawContext(MinecraftClient client, VertexConsumerProvider.Immediate vertexConsumers) {
@@ -314,7 +316,7 @@ public class DrawContext {
 	}
 
 	public void drawSprite(int x, int y, int z, int width, int height, Sprite sprite) {
-		this.drawTexturedQuad(sprite.getAtlasId(), x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
+		this.drawSprite(sprite, x, y, z, width, height);
 	}
 
 	public void drawSprite(int x, int y, int z, int width, int height, Sprite sprite, float red, float green, float blue, float alpha) {
@@ -328,6 +330,55 @@ public class DrawContext {
 		this.fill(x, y + height - 1, x + width, y + height, color);
 		this.fill(x, y + 1, x + 1, y + height - 1, color);
 		this.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
+	}
+
+	public void drawGuiTexture(Identifier texture, int x, int y, int width, int height) {
+		this.drawGuiTexture(texture, x, y, 0, width, height);
+	}
+
+	public void drawGuiTexture(Identifier texture, int x, int y, int z, int width, int height) {
+		Sprite sprite = this.guiAtlasManager.getSprite(texture);
+		Scaling scaling = this.guiAtlasManager.getScaling(sprite);
+		if (scaling instanceof Scaling.Stretch) {
+			this.drawSprite(sprite, x, y, z, width, height);
+		} else if (scaling instanceof Scaling.Tile tile) {
+			this.drawSpriteTiled(sprite, x, y, z, width, height, 0, 0, tile.width(), tile.height(), tile.width(), tile.height());
+		} else if (scaling instanceof Scaling.NineSlice nineSlice) {
+			this.drawSprite(sprite, nineSlice, x, y, z, width, height);
+		}
+	}
+
+	public void drawGuiTexture(Identifier texture, int i, int j, int k, int l, int x, int y, int width, int height) {
+		this.drawGuiTexture(texture, i, j, k, l, x, y, 0, width, height);
+	}
+
+	public void drawGuiTexture(Identifier texture, int i, int j, int k, int l, int x, int y, int z, int width, int height) {
+		Sprite sprite = this.guiAtlasManager.getSprite(texture);
+		Scaling scaling = this.guiAtlasManager.getScaling(sprite);
+		if (scaling instanceof Scaling.Stretch) {
+			this.drawSprite(sprite, i, j, k, l, x, y, z, width, height);
+		} else {
+			this.drawGuiTexture(texture, x, y, z, width, height);
+		}
+	}
+
+	private void drawSprite(Sprite sprite, int i, int j, int k, int l, int x, int y, int z, int width, int height) {
+		this.drawTexturedQuad(
+			sprite.getAtlasId(),
+			x,
+			x + width,
+			y,
+			y + height,
+			z,
+			sprite.getFrameU((float)k / (float)i),
+			sprite.getFrameU((float)(k + width) / (float)i),
+			sprite.getFrameV((float)l / (float)j),
+			sprite.getFrameV((float)(l + height) / (float)j)
+		);
+	}
+
+	private void drawSprite(Sprite sprite, int x, int y, int z, int width, int height) {
+		this.drawTexturedQuad(sprite.getAtlasId(), x, x + width, y, y + height, z, sprite.getMinU(), sprite.getMaxU(), sprite.getMinV(), sprite.getMaxV());
 	}
 
 	/**
@@ -418,166 +469,56 @@ public class DrawContext {
 		RenderSystem.disableBlend();
 	}
 
-	public void drawNineSlicedTexture(
-		Identifier texture, int x, int y, int width, int height, int outerSliceSize, int centerSliceWidth, int centerSliceHeight, int u, int v
-	) {
-		this.drawNineSlicedTexture(
-			texture, x, y, width, height, outerSliceSize, outerSliceSize, outerSliceSize, outerSliceSize, centerSliceWidth, centerSliceHeight, u, v
-		);
-	}
-
-	public void drawNineSlicedTexture(
-		Identifier texture, int x, int y, int width, int height, int outerSliceWidth, int outerSliceHeight, int centerSliceWidth, int centerSliceHeight, int u, int v
-	) {
-		this.drawNineSlicedTexture(
-			texture, x, y, width, height, outerSliceWidth, outerSliceHeight, outerSliceWidth, outerSliceHeight, centerSliceWidth, centerSliceHeight, u, v
-		);
-	}
-
-	public void drawNineSlicedTexture(
-		Identifier texture,
-		int x,
-		int y,
-		int width,
-		int height,
-		int leftSliceWidth,
-		int topSliceHeight,
-		int rightSliceWidth,
-		int bottomSliceHeight,
-		int centerSliceWidth,
-		int centerSliceHeight,
-		int u,
-		int v
-	) {
-		leftSliceWidth = Math.min(leftSliceWidth, width / 2);
-		rightSliceWidth = Math.min(rightSliceWidth, width / 2);
-		topSliceHeight = Math.min(topSliceHeight, height / 2);
-		bottomSliceHeight = Math.min(bottomSliceHeight, height / 2);
-		if (width == centerSliceWidth && height == centerSliceHeight) {
-			this.drawTexture(texture, x, y, u, v, width, height);
-		} else if (height == centerSliceHeight) {
-			this.drawTexture(texture, x, y, u, v, leftSliceWidth, height);
-			this.drawRepeatingTexture(
-				texture,
-				x + leftSliceWidth,
-				y,
-				width - rightSliceWidth - leftSliceWidth,
-				height,
-				u + leftSliceWidth,
-				v,
-				centerSliceWidth - rightSliceWidth - leftSliceWidth,
-				centerSliceHeight
-			);
-			this.drawTexture(texture, x + width - rightSliceWidth, y, u + centerSliceWidth - rightSliceWidth, v, rightSliceWidth, height);
-		} else if (width == centerSliceWidth) {
-			this.drawTexture(texture, x, y, u, v, width, topSliceHeight);
-			this.drawRepeatingTexture(
-				texture,
-				x,
-				y + topSliceHeight,
-				width,
-				height - bottomSliceHeight - topSliceHeight,
-				u,
-				v + topSliceHeight,
-				centerSliceWidth,
-				centerSliceHeight - bottomSliceHeight - topSliceHeight
-			);
-			this.drawTexture(texture, x, y + height - bottomSliceHeight, u, v + centerSliceHeight - bottomSliceHeight, width, bottomSliceHeight);
+	private void drawSprite(Sprite sprite, Scaling.NineSlice nineSlice, int x, int y, int z, int width, int height) {
+		Scaling.NineSlice.Border border = nineSlice.border();
+		int i = Math.min(border.left(), width / 2);
+		int j = Math.min(border.right(), width / 2);
+		int k = Math.min(border.top(), height / 2);
+		int l = Math.min(border.bottom(), height / 2);
+		if (width == nineSlice.width() && height == nineSlice.height()) {
+			this.drawSprite(sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, z, width, height);
+		} else if (height == nineSlice.height()) {
+			this.drawSprite(sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, z, i, height);
+			this.drawSpriteTiled(sprite, x + i, y, z, width - j - i, height, i, 0, nineSlice.width() - j - i, nineSlice.height(), nineSlice.width(), nineSlice.height());
+			this.drawSprite(sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, 0, x + width - j, y, z, j, height);
+		} else if (width == nineSlice.width()) {
+			this.drawSprite(sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, z, width, k);
+			this.drawSpriteTiled(sprite, x, y + k, z, width, height - l - k, 0, k, nineSlice.width(), nineSlice.height() - l - k, nineSlice.width(), nineSlice.height());
+			this.drawSprite(sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - l, x, y + height - l, z, width, l);
 		} else {
-			this.drawTexture(texture, x, y, u, v, leftSliceWidth, topSliceHeight);
-			this.drawRepeatingTexture(
-				texture,
-				x + leftSliceWidth,
-				y,
-				width - rightSliceWidth - leftSliceWidth,
-				topSliceHeight,
-				u + leftSliceWidth,
-				v,
-				centerSliceWidth - rightSliceWidth - leftSliceWidth,
-				topSliceHeight
+			this.drawSprite(sprite, nineSlice.width(), nineSlice.height(), 0, 0, x, y, z, i, k);
+			this.drawSpriteTiled(sprite, x + i, y, z, width - j - i, k, i, 0, nineSlice.width() - j - i, k, nineSlice.width(), nineSlice.height());
+			this.drawSprite(sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, 0, x + width - j, y, z, j, k);
+			this.drawSprite(sprite, nineSlice.width(), nineSlice.height(), 0, nineSlice.height() - l, x, y + height - l, z, i, l);
+			this.drawSpriteTiled(
+				sprite, x + i, y + height - l, z, width - j - i, l, i, nineSlice.height() - l, nineSlice.width() - j - i, l, nineSlice.width(), nineSlice.height()
 			);
-			this.drawTexture(texture, x + width - rightSliceWidth, y, u + centerSliceWidth - rightSliceWidth, v, rightSliceWidth, topSliceHeight);
-			this.drawTexture(texture, x, y + height - bottomSliceHeight, u, v + centerSliceHeight - bottomSliceHeight, leftSliceWidth, bottomSliceHeight);
-			this.drawRepeatingTexture(
-				texture,
-				x + leftSliceWidth,
-				y + height - bottomSliceHeight,
-				width - rightSliceWidth - leftSliceWidth,
-				bottomSliceHeight,
-				u + leftSliceWidth,
-				v + centerSliceHeight - bottomSliceHeight,
-				centerSliceWidth - rightSliceWidth - leftSliceWidth,
-				bottomSliceHeight
+			this.drawSprite(sprite, nineSlice.width(), nineSlice.height(), nineSlice.width() - j, nineSlice.height() - l, x + width - j, y + height - l, z, j, l);
+			this.drawSpriteTiled(sprite, x, y + k, z, i, height - l - k, 0, k, i, nineSlice.height() - l - k, nineSlice.width(), nineSlice.height());
+			this.drawSpriteTiled(
+				sprite, x + i, y + k, z, width - j - i, height - l - k, i, k, nineSlice.width() - j - i, nineSlice.height() - l - k, nineSlice.width(), nineSlice.height()
 			);
-			this.drawTexture(
-				texture,
-				x + width - rightSliceWidth,
-				y + height - bottomSliceHeight,
-				u + centerSliceWidth - rightSliceWidth,
-				v + centerSliceHeight - bottomSliceHeight,
-				rightSliceWidth,
-				bottomSliceHeight
-			);
-			this.drawRepeatingTexture(
-				texture,
-				x,
-				y + topSliceHeight,
-				leftSliceWidth,
-				height - bottomSliceHeight - topSliceHeight,
-				u,
-				v + topSliceHeight,
-				leftSliceWidth,
-				centerSliceHeight - bottomSliceHeight - topSliceHeight
-			);
-			this.drawRepeatingTexture(
-				texture,
-				x + leftSliceWidth,
-				y + topSliceHeight,
-				width - rightSliceWidth - leftSliceWidth,
-				height - bottomSliceHeight - topSliceHeight,
-				u + leftSliceWidth,
-				v + topSliceHeight,
-				centerSliceWidth - rightSliceWidth - leftSliceWidth,
-				centerSliceHeight - bottomSliceHeight - topSliceHeight
-			);
-			this.drawRepeatingTexture(
-				texture,
-				x + width - rightSliceWidth,
-				y + topSliceHeight,
-				leftSliceWidth,
-				height - bottomSliceHeight - topSliceHeight,
-				u + centerSliceWidth - rightSliceWidth,
-				v + topSliceHeight,
-				rightSliceWidth,
-				centerSliceHeight - bottomSliceHeight - topSliceHeight
+			this.drawSpriteTiled(
+				sprite, x + width - j, y + k, z, i, height - l - k, nineSlice.width() - j, k, j, nineSlice.height() - l - k, nineSlice.width(), nineSlice.height()
 			);
 		}
 	}
 
-	public void drawRepeatingTexture(Identifier texture, int x, int y, int width, int height, int u, int v, int textureWidth, int textureHeight) {
-		int i = x;
-		IntIterator intIterator = createDivider(width, textureWidth);
+	private void drawSpriteTiled(Sprite sprite, int x, int y, int z, int width, int height, int i, int j, int tileWidth, int tileHeight, int k, int l) {
+		int m = 0;
 
-		while (intIterator.hasNext()) {
-			int j = intIterator.nextInt();
-			int k = (textureWidth - j) / 2;
-			int l = y;
-			IntIterator intIterator2 = createDivider(height, textureHeight);
+		while (m < width) {
+			int n = Math.min(tileWidth, width - m);
+			int o = 0;
 
-			while (intIterator2.hasNext()) {
-				int m = intIterator2.nextInt();
-				int n = (textureHeight - m) / 2;
-				this.drawTexture(texture, i, l, u + k, v + n, j, m);
-				l += m;
+			while (o < height) {
+				int p = Math.min(tileHeight, height - o);
+				this.drawSprite(sprite, k, l, i, j, x + m, y + o, z, n, p);
+				o += tileHeight;
 			}
 
-			i += j;
+			m += tileWidth;
 		}
-	}
-
-	private static IntIterator createDivider(int sideLength, int textureSideLength) {
-		int i = MathHelper.ceilDiv(sideLength, textureSideLength);
-		return new Divider(sideLength, i);
 	}
 
 	public void drawItem(ItemStack item, int x, int y) {

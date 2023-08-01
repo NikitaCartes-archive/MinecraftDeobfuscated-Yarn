@@ -26,6 +26,7 @@ import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.screen.ScreenTexts;
@@ -146,7 +147,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	public Identifier getTexture(AbstractClientPlayerEntity abstractClientPlayerEntity) {
-		return abstractClientPlayerEntity.getSkinTexture();
+		return abstractClientPlayerEntity.method_52814().texture();
 	}
 
 	protected void scale(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f) {
@@ -161,7 +162,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		matrixStack.push();
 		if (d < 100.0) {
 			Scoreboard scoreboard = abstractClientPlayerEntity.getScoreboard();
-			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(2);
+			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.BELOW_NAME);
 			if (scoreboardObjective != null) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
 				super.renderLabelIfPresent(
@@ -197,19 +198,21 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.leaningPitch = 0.0F;
 		playerEntityModel.setAngles(player, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
 		arm.pitch = 0.0F;
-		arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);
+		Identifier identifier = player.method_52814().texture();
+		arm.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntitySolid(identifier)), light, OverlayTexture.DEFAULT_UV);
 		sleeve.pitch = 0.0F;
-		sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(player.getSkinTexture())), light, OverlayTexture.DEFAULT_UV);
+		sleeve.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(identifier)), light, OverlayTexture.DEFAULT_UV);
 	}
 
 	protected void setupTransforms(AbstractClientPlayerEntity abstractClientPlayerEntity, MatrixStack matrixStack, float f, float g, float h) {
 		float i = abstractClientPlayerEntity.getLeaningPitch(h);
+		float j = abstractClientPlayerEntity.getPitch(h);
 		if (abstractClientPlayerEntity.isFallFlying()) {
 			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
-			float j = (float)abstractClientPlayerEntity.getRoll() + h;
-			float k = MathHelper.clamp(j * j / 100.0F, 0.0F, 1.0F);
+			float k = (float)abstractClientPlayerEntity.getRoll() + h;
+			float l = MathHelper.clamp(k * k / 100.0F, 0.0F, 1.0F);
 			if (!abstractClientPlayerEntity.isUsingRiptide()) {
-				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(k * (-90.0F - abstractClientPlayerEntity.getPitch())));
+				matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(l * (-90.0F - j)));
 			}
 
 			Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
@@ -217,15 +220,15 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			double d = vec3d2.horizontalLengthSquared();
 			double e = vec3d.horizontalLengthSquared();
 			if (d > 0.0 && e > 0.0) {
-				double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
-				double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation((float)(Math.signum(m) * Math.acos(l))));
+				double m = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
+				double n = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
+				matrixStack.multiply(RotationAxis.POSITIVE_Y.rotation((float)(Math.signum(n) * Math.acos(m))));
 			}
 		} else if (i > 0.0F) {
 			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
-			float jx = abstractClientPlayerEntity.isTouchingWater() ? -90.0F - abstractClientPlayerEntity.getPitch() : -90.0F;
-			float kx = MathHelper.lerp(i, 0.0F, jx);
-			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(kx));
+			float kx = abstractClientPlayerEntity.isTouchingWater() ? -90.0F - j : -90.0F;
+			float lx = MathHelper.lerp(i, 0.0F, kx);
+			matrixStack.multiply(RotationAxis.POSITIVE_X.rotationDegrees(lx));
 			if (abstractClientPlayerEntity.isInSwimmingPose()) {
 				matrixStack.translate(0.0F, -1.0F, 0.3F);
 			}

@@ -21,7 +21,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AnimatedResultButton extends ClickableWidget {
-	private static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/recipe_book.png");
+	private static final Identifier SLOT_MANY_CRAFTABLE_TEXTURE = new Identifier("recipe_book/slot_many_craftable");
+	private static final Identifier SLOT_CRAFTABLE_TEXTURE = new Identifier("recipe_book/slot_craftable");
+	private static final Identifier SLOT_MANY_UNCRAFTABLE_TEXTURE = new Identifier("recipe_book/slot_many_uncraftable");
+	private static final Identifier SLOT_UNCRAFTABLE_TEXTURE = new Identifier("recipe_book/slot_uncraftable");
 	private static final float field_32414 = 15.0F;
 	private static final int field_32415 = 25;
 	public static final int field_32413 = 30;
@@ -62,15 +65,17 @@ public class AnimatedResultButton extends ClickableWidget {
 			this.time += delta;
 		}
 
-		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		int i = 29;
-		if (!this.resultCollection.hasCraftableRecipes()) {
-			i += 25;
-		}
-
-		int j = 206;
-		if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
-			j += 25;
+		Identifier identifier;
+		if (this.resultCollection.hasCraftableRecipes()) {
+			if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
+				identifier = SLOT_MANY_CRAFTABLE_TEXTURE;
+			} else {
+				identifier = SLOT_CRAFTABLE_TEXTURE;
+			}
+		} else if (this.resultCollection.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
+			identifier = SLOT_MANY_UNCRAFTABLE_TEXTURE;
+		} else {
+			identifier = SLOT_UNCRAFTABLE_TEXTURE;
 		}
 
 		boolean bl = this.bounce > 0.0F;
@@ -83,17 +88,17 @@ public class AnimatedResultButton extends ClickableWidget {
 			this.bounce -= delta;
 		}
 
-		context.drawTexture(BACKGROUND_TEXTURE, this.getX(), this.getY(), i, j, this.width, this.height);
+		context.drawGuiTexture(identifier, this.getX(), this.getY(), this.width, this.height);
 		List<Recipe<?>> list = this.getResults();
 		this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
 		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput(this.resultCollection.getRegistryManager());
-		int k = 4;
+		int i = 4;
 		if (this.resultCollection.hasSingleOutput() && this.getResults().size() > 1) {
-			context.drawItem(itemStack, this.getX() + k + 1, this.getY() + k + 1, 0, 10);
-			k--;
+			context.drawItem(itemStack, this.getX() + i + 1, this.getY() + i + 1, 0, 10);
+			i--;
 		}
 
-		context.drawItemWithoutEntity(itemStack, this.getX() + k, this.getY() + k);
+		context.drawItemWithoutEntity(itemStack, this.getX() + i, this.getY() + i);
 		if (bl) {
 			context.getMatrices().pop();
 		}

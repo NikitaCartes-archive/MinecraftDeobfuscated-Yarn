@@ -13,8 +13,12 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,7 +29,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.ConfirmScreen;
+import net.minecraft.client.gui.screen.NoticeScreen;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.world.SymlinkWarningScreen;
 import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.texture.NativeImage;
@@ -35,12 +41,14 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.resource.InputSupplier;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourcePackManager;
+import net.minecraft.resource.ResourcePackOpener;
 import net.minecraft.resource.ResourcePackProfile;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.path.SymlinkEntry;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.slf4j.Logger;
 
@@ -162,12 +170,16 @@ public class PackScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackgroundTexture(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.availablePackList.render(context, mouseX, mouseY, delta);
 		this.selectedPackList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 8, 16777215);
 		context.drawCenteredTextWithShadow(this.textRenderer, DROP_INFO, this.width / 2, 20, 16777215);
-		super.render(context, mouseX, mouseY, delta);
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
 	}
 
 	protected static void copyPacks(MinecraftClient client, List<Path> srcPaths, Path destPath) {
@@ -212,15 +224,71 @@ public class PackScreen extends Screen {
 
 	@Override
 	public void filesDragged(List<Path> paths) {
-		String string = (String)paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
-		this.client.setScreen(new ConfirmScreen(confirmed -> {
-			if (confirmed) {
-				copyPacks(this.client, paths, this.file);
-				this.refresh();
-			}
+		String string = (String)streamFileNames(paths).collect(Collectors.joining(", "));
+		this.client
+			.setScreen(
+				new ConfirmScreen(
+					confirmed -> {
+						if (confirmed) {
+							List<Path> list2 = new ArrayList(paths.size());
+							Set<Path> set = new HashSet(paths);
+							ResourcePackOpener<Path> resourcePackOpener = new ResourcePackOpener<Path>(this.client.getSymlinkFinder()) {
+								protected Path openZip(Path path) {
+									return path;
+								}
 
-			this.client.setScreen(this);
-		}, Text.translatable("pack.dropConfirm"), Text.literal(string)));
+								protected Path openDirectory(Path path) {
+									return path;
+								}
+							};
+							List<SymlinkEntry> list3 = new ArrayList();
+
+							for (Path path : paths) {
+								try {
+									Path path2 = resourcePackOpener.open(path, list3);
+									if (path2 == null) {
+										LOGGER.warn("Path {} does not seem like pack", path);
+									} else {
+										list2.add(path2);
+										set.remove(path2);
+									}
+								} catch (IOException var10) {
+									LOGGER.warn("Failed to check {} for packs", path, var10);
+								}
+							}
+
+							if (!list3.isEmpty()) {
+								this.client.setScreen(SymlinkWarningScreen.pack(this));
+								return;
+							}
+
+							if (!list2.isEmpty()) {
+								copyPacks(this.client, list2, this.file);
+								this.refresh();
+							}
+
+							if (!set.isEmpty()) {
+								String stringx = (String)streamFileNames(set).collect(Collectors.joining(", "));
+								this.client
+									.setScreen(
+										new NoticeScreen(
+											() -> this.client.setScreen(this), Text.translatable("pack.dropRejected.title"), Text.translatable("pack.dropRejected.message", stringx)
+										)
+									);
+								return;
+							}
+						}
+
+						this.client.setScreen(this);
+					},
+					Text.translatable("pack.dropConfirm"),
+					Text.literal(string)
+				)
+			);
+	}
+
+	private static Stream<String> streamFileNames(Collection<Path> paths) {
+		return paths.stream().map(Path::getFileName).map(Path::toString);
 	}
 
 	private Identifier loadPackIcon(TextureManager textureManager, ResourcePackProfile resourcePackProfile) {

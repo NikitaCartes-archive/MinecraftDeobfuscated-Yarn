@@ -137,6 +137,8 @@ public class JukeboxBlockEntity extends BlockEntity implements Clearable, Single
 			this.inventory.set(slot, stack);
 			this.updateState(null, true);
 			this.startPlaying();
+		} else if (stack.isEmpty()) {
+			this.removeStack(slot, 1);
 		}
 	}
 

@@ -1,43 +1,23 @@
 package net.minecraft.client.realms.util;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftSessionService;
-import com.mojang.util.UUIDTypeAdapter;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.PlayerSkinDrawer;
+import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RealmsUtil {
-	static final MinecraftSessionService SESSION_SERVICE = MinecraftClient.getInstance().getSessionService();
 	private static final Text NOW_TEXT = Text.translatable("mco.util.time.now");
-	private static final LoadingCache<String, GameProfile> gameProfileCache = CacheBuilder.newBuilder()
-		.expireAfterWrite(60L, TimeUnit.MINUTES)
-		.build(new CacheLoader<String, GameProfile>() {
-			public GameProfile load(String string) {
-				return RealmsUtil.SESSION_SERVICE.fillProfileProperties(new GameProfile(UUIDTypeAdapter.fromString(string), null), false);
-			}
-		});
 	private static final int SECONDS_PER_MINUTE = 60;
 	private static final int SECONDS_PER_HOUR = 3600;
 	private static final int SECONDS_PER_DAY = 86400;
-
-	public static String uuidToName(String uuid) {
-		return gameProfileCache.getUnchecked(uuid).getName();
-	}
-
-	public static GameProfile uuidToProfile(String uuid) {
-		return gameProfileCache.getUnchecked(uuid);
-	}
 
 	public static Text convertToAgePresentation(long milliseconds) {
 		if (milliseconds < 0L) {
@@ -63,9 +43,10 @@ public class RealmsUtil {
 		return convertToAgePresentation(System.currentTimeMillis() - date.getTime());
 	}
 
-	public static void drawPlayerHead(DrawContext context, int x, int y, int size, String uuid) {
-		GameProfile gameProfile = uuidToProfile(uuid);
-		Identifier identifier = MinecraftClient.getInstance().getSkinProvider().loadSkin(gameProfile);
-		PlayerSkinDrawer.draw(context, identifier, x, y, size);
+	public static void drawPlayerHead(DrawContext context, int x, int y, int size, UUID playerUuid) {
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		GameProfile gameProfile = minecraftClient.getSessionService().fetchProfile(playerUuid, false);
+		SkinTextures skinTextures = gameProfile != null ? minecraftClient.getSkinProvider().getSkinTextures(gameProfile) : DefaultSkinHelper.getTexture(playerUuid);
+		PlayerSkinDrawer.draw(context, skinTextures.texture(), x, y, size);
 	}
 }

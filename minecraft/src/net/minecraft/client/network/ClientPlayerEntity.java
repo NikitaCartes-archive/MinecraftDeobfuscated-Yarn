@@ -117,8 +117,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	private boolean lastSprinting;
 	private int ticksSinceLastPositionPacketSent;
 	private boolean healthInitialized;
-	@Nullable
-	private String serverBrand;
 	public Input input;
 	protected final MinecraftClient client;
 	protected int ticksLeftToDoubleTapSprint;
@@ -384,15 +382,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	public void openRidingInventory() {
 		this.networkHandler.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.OPEN_INVENTORY));
-	}
-
-	public void setServerBrand(@Nullable String serverBrand) {
-		this.serverBrand = serverBrand;
-	}
-
-	@Nullable
-	public String getServerBrand() {
-		return this.serverBrand;
 	}
 
 	public StatHandler getStatHandler() {
@@ -675,8 +664,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl3 = this.isWalking();
 		this.inSneakingPose = !this.getAbilities().flying
 			&& !this.isSwimming()
-			&& this.wouldPoseNotCollide(EntityPose.CROUCHING)
-			&& (this.isSneaking() || !this.isSleeping() && !this.wouldPoseNotCollide(EntityPose.STANDING));
+			&& !this.hasVehicle()
+			&& this.canChangeIntoPose(EntityPose.CROUCHING)
+			&& (this.isSneaking() || !this.isSleeping() && !this.canChangeIntoPose(EntityPose.STANDING));
 		float f = MathHelper.clamp(0.3F + EnchantmentHelper.getSwiftSneakSpeedBoost(this), 0.0F, 1.0F);
 		this.input.tick(this.shouldSlowDown(), f);
 		this.client.getTutorialManager().onMovement(this.input);

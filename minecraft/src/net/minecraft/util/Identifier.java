@@ -309,7 +309,7 @@ public class Identifier implements Comparable<Identifier> {
 	/**
 	 * {@return whether {@code path} can be used as an identifier's path}
 	 */
-	private static boolean isPathValid(String path) {
+	public static boolean isPathValid(String path) {
 		for (int i = 0; i < path.length(); i++) {
 			if (!isPathCharacterValid(path.charAt(i))) {
 				return false;
@@ -322,7 +322,7 @@ public class Identifier implements Comparable<Identifier> {
 	/**
 	 * {@return whether {@code namespace} can be used as an identifier's namespace}
 	 */
-	private static boolean isNamespaceValid(String namespace) {
+	public static boolean isNamespaceValid(String namespace) {
 		for (int i = 0; i < namespace.length(); i++) {
 			if (!isNamespaceCharacterValid(namespace.charAt(i))) {
 				return false;

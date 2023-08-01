@@ -58,6 +58,7 @@ import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.CommonPlayerSpawnInfo;
 import net.minecraft.network.packet.s2c.play.DamageTiltS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -81,14 +82,12 @@ import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PositionFlag;
 import net.minecraft.network.packet.s2c.play.RemoveEntityStatusEffectS2CPacket;
-import net.minecraft.network.packet.s2c.play.ResourcePackSendS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerPropertyUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ServerMetadataS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetCameraEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
-import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Recipe;
@@ -184,6 +183,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	private Vec3d levitationStartPos;
 	private int levitationStartTick;
 	private boolean disconnected;
+	private OptionalInt viewDistance = OptionalInt.empty();
 	@Nullable
 	private Vec3d fallStartPos;
 	@Nullable
@@ -199,6 +199,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	 * @see #setWatchedSection(ChunkSectionPos)
 	 */
 	private ChunkSectionPos watchedSection = ChunkSectionPos.from(0, 0, 0);
+	private ChunkFilter chunkFilter = ChunkFilter.IGNORE_ALL;
 	private RegistryKey<World> spawnPointDimension = World.OVERWORLD;
 	@Nullable
 	private BlockPos spawnPointPosition;
@@ -255,7 +256,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 	@Nullable
 	private PublicPlayerSession session;
 	private int screenHandlerSyncId;
-	public int pingMilliseconds;
 	public boolean notInAnyWorld;
 
 	public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile) {
@@ -598,7 +598,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		if (bl) {
 			Text text = this.getDamageTracker().getDeathMessage();
 			this.networkHandler
-				.sendPacket(
+				.send(
 					new DeathMessageS2CPacket(this.getId(), text),
 					PacketCallbacks.of(
 						() -> {
@@ -609,7 +609,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 								.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
 							return new DeathMessageS2CPacket(this.getId(), text3);
 						}
-					)
+					),
+					true
 				);
 			AbstractTeam abstractTeam = this.getScoreboardTeam();
 			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
@@ -756,21 +757,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 			return this;
 		} else {
 			WorldProperties worldProperties = destination.getLevelProperties();
-			this.networkHandler
-				.sendPacket(
-					new PlayerRespawnS2CPacket(
-						destination.getDimensionKey(),
-						destination.getRegistryKey(),
-						BiomeAccess.hashSeed(destination.getSeed()),
-						this.interactionManager.getGameMode(),
-						this.interactionManager.getPreviousGameMode(),
-						destination.isDebugWorld(),
-						destination.isFlat(),
-						(byte)3,
-						this.getLastDeathPos(),
-						this.getPortalCooldown()
-					)
-				);
+			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(destination), (byte)3));
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
 			playerManager.sendCommandTree(this);
@@ -1193,6 +1180,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 		this.recipeBook.copyFrom(oldPlayer.recipeBook);
 		this.seenCredits = oldPlayer.seenCredits;
 		this.enteredNetherPos = oldPlayer.enteredNetherPos;
+		this.chunkFilter = oldPlayer.chunkFilter;
+		this.viewDistance = oldPlayer.viewDistance;
 		this.setShoulderEntityLeft(oldPlayer.getShoulderEntityLeft());
 		this.setShoulderEntityRight(oldPlayer.getShoulderEntityRight());
 		this.setLastDeathPos(oldPlayer.getLastDeathPos());
@@ -1320,7 +1309,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 
 	public void sendMessageToClient(Text message, boolean overlay) {
 		if (this.acceptsMessage(overlay)) {
-			this.networkHandler.sendPacket(new GameMessageS2CPacket(message, overlay), PacketCallbacks.of(() -> {
+			this.networkHandler.send(new GameMessageS2CPacket(message, overlay), PacketCallbacks.of(() -> {
 				if (this.acceptsMessage(false)) {
 					int i = 256;
 					String string = message.asTruncatedString(256);
@@ -1329,7 +1318,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 				} else {
 					return null;
 				}
-			}));
+			}), true);
 		}
 	}
 
@@ -1358,6 +1347,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 	}
 
 	public void setClientSettings(ClientSettingsC2SPacket packet) {
+		this.viewDistance = OptionalInt.of(packet.viewDistance());
 		this.clientChatVisibility = packet.chatVisibility();
 		this.clientChatColorsEnabled = packet.chatColors();
 		this.filterText = packet.filterText();
@@ -1382,8 +1372,8 @@ public class ServerPlayerEntity extends PlayerEntity {
 		return this.clientChatVisibility == ChatVisibility.FULL;
 	}
 
-	public void sendResourcePackUrl(String url, String hash, boolean required, @Nullable Text resourcePackPrompt) {
-		this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(url, hash, required, resourcePackPrompt));
+	public OptionalInt getViewDistance() {
+		return this.viewDistance;
 	}
 
 	public void sendServerMetadata(ServerMetadata metadata) {
@@ -1490,21 +1480,7 @@ public class ServerPlayerEntity extends PlayerEntity {
 		} else {
 			ServerWorld serverWorld = this.getServerWorld();
 			WorldProperties worldProperties = targetWorld.getLevelProperties();
-			this.networkHandler
-				.sendPacket(
-					new PlayerRespawnS2CPacket(
-						targetWorld.getDimensionKey(),
-						targetWorld.getRegistryKey(),
-						BiomeAccess.hashSeed(targetWorld.getSeed()),
-						this.interactionManager.getGameMode(),
-						this.interactionManager.getPreviousGameMode(),
-						targetWorld.isDebugWorld(),
-						targetWorld.isFlat(),
-						(byte)3,
-						this.getLastDeathPos(),
-						this.getPortalCooldown()
-					)
-				);
+			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.createCommonPlayerSpawnInfo(targetWorld), (byte)3));
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 			this.server.getPlayerManager().sendCommandTree(this);
 			serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
@@ -1563,16 +1539,6 @@ public class ServerPlayerEntity extends PlayerEntity {
 		}
 	}
 
-	public void sendChunkPacket(ChunkPos chunkPos, Packet<?> chunkDataPacket) {
-		this.networkHandler.sendPacket(chunkDataPacket);
-	}
-
-	public void sendUnloadChunkPacket(ChunkPos chunkPos) {
-		if (this.isAlive()) {
-			this.networkHandler.sendPacket(new UnloadChunkS2CPacket(chunkPos.x, chunkPos.z));
-		}
-	}
-
 	/**
 	 * Returns the chunk section position the player's client is currently watching
 	 * from. This may differ from the chunk section the player is currently in.
@@ -1598,6 +1564,14 @@ public class ServerPlayerEntity extends PlayerEntity {
 	 */
 	public void setWatchedSection(ChunkSectionPos section) {
 		this.watchedSection = section;
+	}
+
+	public ChunkFilter getChunkFilter() {
+		return this.chunkFilter;
+	}
+
+	public void setChunkFilter(ChunkFilter chunkFilter) {
+		this.chunkFilter = chunkFilter;
 	}
 
 	@Override
@@ -1764,5 +1738,19 @@ public class ServerPlayerEntity extends PlayerEntity {
 				this.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(entity.getId(), statusEffectInstance.getEffectType()));
 			}
 		}
+	}
+
+	public CommonPlayerSpawnInfo createCommonPlayerSpawnInfo(ServerWorld world) {
+		return new CommonPlayerSpawnInfo(
+			world.getDimensionKey(),
+			world.getRegistryKey(),
+			BiomeAccess.hashSeed(world.getSeed()),
+			this.interactionManager.getGameMode(),
+			this.interactionManager.getPreviousGameMode(),
+			world.isDebugWorld(),
+			world.isFlat(),
+			this.getLastDeathPos(),
+			this.getPortalCooldown()
+		);
 	}
 }

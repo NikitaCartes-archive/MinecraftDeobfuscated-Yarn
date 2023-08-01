@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import javax.annotation.Nullable;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BrushableBlockEntity;
 import net.minecraft.entity.FallingBlockEntity;
@@ -18,7 +19,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.event.GameEvent;
-import org.jetbrains.annotations.Nullable;
 
 public class BrushableBlock extends BlockWithEntity implements LandingBlock {
 	private static final IntProperty DUSTED = Properties.DUSTED;

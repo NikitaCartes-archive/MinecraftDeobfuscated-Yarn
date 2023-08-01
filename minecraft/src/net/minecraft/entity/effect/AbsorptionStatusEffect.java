@@ -1,22 +1,28 @@
 package net.minecraft.entity.effect;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.AttributeContainer;
 
-public class AbsorptionStatusEffect extends StatusEffect {
+class AbsorptionStatusEffect extends StatusEffect {
 	protected AbsorptionStatusEffect(StatusEffectCategory statusEffectCategory, int i) {
 		super(statusEffectCategory, i);
 	}
 
 	@Override
-	public void onRemoved(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-		entity.setAbsorptionAmount(entity.getAbsorptionAmount() - (float)(4 * (amplifier + 1)));
-		super.onRemoved(entity, attributes, amplifier);
+	public void applyUpdateEffect(LivingEntity entity, int amplifier) {
+		super.applyUpdateEffect(entity, amplifier);
+		if (entity.getAbsorptionAmount() <= 0.0F) {
+			entity.removeStatusEffect(this);
+		}
 	}
 
 	@Override
-	public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-		entity.setAbsorptionAmount(entity.getAbsorptionAmount() + (float)(4 * (amplifier + 1)));
-		super.onApplied(entity, attributes, amplifier);
+	public boolean canApplyUpdateEffect(int duration, int amplifier) {
+		return true;
+	}
+
+	@Override
+	public void onApplied(LivingEntity entity, int amplifier) {
+		super.onApplied(entity, amplifier);
+		entity.setAbsorptionAmount(entity.getAbsorptionAmount() + (float)(4 * (1 + amplifier)));
 	}
 }
