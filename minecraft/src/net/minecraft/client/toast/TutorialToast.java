@@ -6,10 +6,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TutorialToast implements Toast {
+	private static final Identifier TEXTURE = new Identifier("toast/tutorial");
 	public static final int PROGRESS_BAR_WIDTH = 154;
 	public static final int PROGRESS_BAR_HEIGHT = 1;
 	public static final int PROGRESS_BAR_X = 3;
@@ -33,7 +35,7 @@ public class TutorialToast implements Toast {
 
 	@Override
 	public Toast.Visibility draw(DrawContext context, ToastManager manager, long startTime) {
-		context.drawTexture(TEXTURE, 0, 0, 0, 96, this.getWidth(), this.getHeight());
+		context.drawGuiTexture(TEXTURE, 0, 0, this.getWidth(), this.getHeight());
 		this.type.drawIcon(context, 6, 6);
 		if (this.description == null) {
 			context.drawText(manager.getClient().textRenderer, this.title, 30, 12, -11534256, false);
@@ -70,25 +72,23 @@ public class TutorialToast implements Toast {
 
 	@Environment(EnvType.CLIENT)
 	public static enum Type {
-		MOVEMENT_KEYS(0, 0),
-		MOUSE(1, 0),
-		TREE(2, 0),
-		RECIPE_BOOK(0, 1),
-		WOODEN_PLANKS(1, 1),
-		SOCIAL_INTERACTIONS(2, 1),
-		RIGHT_CLICK(3, 1);
+		MOVEMENT_KEYS(new Identifier("toast/movement_keys")),
+		MOUSE(new Identifier("toast/mouse")),
+		TREE(new Identifier("toast/tree")),
+		RECIPE_BOOK(new Identifier("toast/recipe_book")),
+		WOODEN_PLANKS(new Identifier("toast/wooden_planks")),
+		SOCIAL_INTERACTIONS(new Identifier("toast/social_interactions")),
+		RIGHT_CLICK(new Identifier("toast/right_click"));
 
-		private final int textureSlotX;
-		private final int textureSlotY;
+		private final Identifier texture;
 
-		private Type(int textureSlotX, int textureSlotY) {
-			this.textureSlotX = textureSlotX;
-			this.textureSlotY = textureSlotY;
+		private Type(Identifier texture) {
+			this.texture = texture;
 		}
 
 		public void drawIcon(DrawContext context, int x, int y) {
 			RenderSystem.enableBlend();
-			context.drawTexture(Toast.TEXTURE, x, y, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
+			context.drawGuiTexture(this.texture, x, y, 20, 20);
 		}
 	}
 }

@@ -13,6 +13,7 @@ import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.path.SymlinkFinder;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 
@@ -22,11 +23,13 @@ public abstract class VanillaResourcePackProvider implements ResourcePackProvide
 	private final ResourceType type;
 	private final DefaultResourcePack resourcePack;
 	private final Identifier id;
+	private final SymlinkFinder symlinkFinder;
 
-	public VanillaResourcePackProvider(ResourceType type, DefaultResourcePack resourcePack, Identifier id) {
+	public VanillaResourcePackProvider(ResourceType type, DefaultResourcePack resourcePack, Identifier id, SymlinkFinder symlinkFinder) {
 		this.type = type;
 		this.resourcePack = resourcePack;
 		this.id = id;
+		this.symlinkFinder = symlinkFinder;
 	}
 
 	@Override
@@ -68,6 +71,7 @@ public abstract class VanillaResourcePackProvider implements ResourcePackProvide
 			try {
 				FileResourcePackProvider.forEachProfile(
 					namespacedPath,
+					this.symlinkFinder,
 					true,
 					(profilePath, factory) -> consumer.accept(getFileName(profilePath), (Function)name -> this.create(name, factory, this.getProfileName(name)))
 				);
@@ -83,4 +87,18 @@ public abstract class VanillaResourcePackProvider implements ResourcePackProvide
 
 	@Nullable
 	protected abstract ResourcePackProfile create(String name, ResourcePackProfile.PackFactory packFactory, Text displayName);
+
+	protected static ResourcePackProfile.PackFactory createPackFactory(ResourcePack pack) {
+		return new ResourcePackProfile.PackFactory() {
+			@Override
+			public ResourcePack open(String name) {
+				return pack;
+			}
+
+			@Override
+			public ResourcePack openWithOverlays(String name, ResourcePackProfile.Metadata metadata) {
+				return pack;
+			}
+		};
+	}
 }

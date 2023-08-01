@@ -30,7 +30,7 @@ import net.minecraft.client.gui.tooltip.Tooltip;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PressableTextWidget;
-import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.gui.widget.TextIconButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
 import net.minecraft.client.realms.gui.screen.RealmsNotificationsScreen;
 import net.minecraft.client.resource.language.I18n;
@@ -129,22 +129,12 @@ public class TitleScreen extends Screen {
 			this.initWidgetsNormal(l, 24);
 		}
 
-		this.addDrawableChild(
-			new TexturedButtonWidget(
-				this.width / 2 - 124,
-				l + 72 + 12,
-				20,
-				20,
-				0,
-				106,
-				20,
-				ButtonWidget.WIDGETS_TEXTURE,
-				256,
-				256,
-				button -> this.client.setScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())),
-				Text.translatable("narrator.button.language")
+		TextIconButtonWidget textIconButtonWidget = this.addDrawableChild(
+			AccessibilityOnboardingButtons.createLanguageButton(
+				20, button -> this.client.setScreen(new LanguageOptionsScreen(this, this.client.options, this.client.getLanguageManager())), true
 			)
 		);
+		textIconButtonWidget.setPosition(this.width / 2 - 124, l + 72 + 12);
 		this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("menu.options"), button -> this.client.setScreen(new OptionsScreen(this, this.client.options)))
 				.dimensions(this.width / 2 - 100, l + 72 + 12, 98, 20)
@@ -153,26 +143,15 @@ public class TitleScreen extends Screen {
 		this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("menu.quit"), button -> this.client.scheduleStop()).dimensions(this.width / 2 + 2, l + 72 + 12, 98, 20).build()
 		);
-		this.addDrawableChild(
-			new TexturedButtonWidget(
-				this.width / 2 + 104,
-				l + 72 + 12,
-				20,
-				20,
-				0,
-				0,
-				20,
-				ButtonWidget.ACCESSIBILITY_TEXTURE,
-				32,
-				64,
-				button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)),
-				Text.translatable("narrator.button.accessibility")
+		TextIconButtonWidget textIconButtonWidget2 = this.addDrawableChild(
+			AccessibilityOnboardingButtons.createAccessibilityButton(
+				20, button -> this.client.setScreen(new AccessibilityOptionsScreen(this, this.client.options)), true
 			)
 		);
+		textIconButtonWidget2.setPosition(this.width / 2 + 104, l + 72 + 12);
 		this.addDrawableChild(
 			new PressableTextWidget(j, this.height - 10, i, 10, COPYRIGHT, button -> this.client.setScreen(new CreditsAndAttributionScreen(this)), this.textRenderer)
 		);
-		this.client.setConnectedToRealms(false);
 		if (this.realmsNotificationGui == null) {
 			this.realmsNotificationGui = new RealmsNotificationsScreen();
 		}
@@ -344,6 +323,10 @@ public class TitleScreen extends Screen {
 				this.realmsNotificationGui.render(context, mouseX, mouseY, delta);
 			}
 		}
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 	}
 
 	@Override

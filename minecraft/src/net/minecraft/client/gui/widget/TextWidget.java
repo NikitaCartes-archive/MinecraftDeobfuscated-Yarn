@@ -4,7 +4,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.screen.ScreenTexts;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import net.minecraft.util.Language;
 
 @Environment(EnvType.CLIENT)
 public class TextWidget extends AbstractTextWidget {
@@ -49,8 +53,17 @@ public class TextWidget extends AbstractTextWidget {
 	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
 		Text text = this.getMessage();
 		TextRenderer textRenderer = this.getTextRenderer();
-		int i = this.getX() + Math.round(this.horizontalAlignment * (float)(this.getWidth() - textRenderer.getWidth(text)));
-		int j = this.getY() + (this.getHeight() - 9) / 2;
-		context.drawTextWithShadow(textRenderer, text, i, j, this.getTextColor());
+		int i = this.getWidth();
+		int j = textRenderer.getWidth(text);
+		int k = this.getX() + Math.round(this.horizontalAlignment * (float)(i - j));
+		int l = this.getY() + (this.getHeight() - 9) / 2;
+		OrderedText orderedText = j > i ? this.trim(text, i) : text.asOrderedText();
+		context.drawTextWithShadow(textRenderer, orderedText, k, l, this.getTextColor());
+	}
+
+	private OrderedText trim(Text text, int width) {
+		TextRenderer textRenderer = this.getTextRenderer();
+		StringVisitable stringVisitable = textRenderer.trimToWidth(text, width - textRenderer.getWidth(ScreenTexts.ELLIPSIS));
+		return Language.getInstance().reorder(StringVisitable.concat(stringVisitable, ScreenTexts.ELLIPSIS));
 	}
 }

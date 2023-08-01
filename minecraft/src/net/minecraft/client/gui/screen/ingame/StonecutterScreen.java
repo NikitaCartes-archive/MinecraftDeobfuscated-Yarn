@@ -16,6 +16,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
+	private static final Identifier SCROLLER_TEXTURE = new Identifier("container/stonecutter/scroller");
+	private static final Identifier SCROLLER_DISABLED_TEXTURE = new Identifier("container/stonecutter/scroller_disabled");
+	private static final Identifier RECIPE_SELECTED_TEXTURE = new Identifier("container/stonecutter/recipe_selected");
+	private static final Identifier RECIPE_HIGHLIGHTED_TEXTURE = new Identifier("container/stonecutter/recipe_highlighted");
+	private static final Identifier RECIPE_TEXTURE = new Identifier("container/stonecutter/recipe");
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/stonecutter.png");
 	private static final int SCROLLBAR_WIDTH = 12;
 	private static final int SCROLLBAR_HEIGHT = 15;
@@ -45,12 +50,12 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 
 	@Override
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-		this.renderBackground(context);
 		int i = this.x;
 		int j = this.y;
 		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		int k = (int)(41.0F * this.scrollAmount);
-		context.drawTexture(TEXTURE, i + 119, j + 15 + k, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
+		Identifier identifier = this.shouldScroll() ? SCROLLER_TEXTURE : SCROLLER_DISABLED_TEXTURE;
+		context.drawGuiTexture(identifier, i + 119, j + 15 + k, 12, 15);
 		int l = this.x + 52;
 		int m = this.y + 14;
 		int n = this.scrollOffset + 12;
@@ -84,14 +89,16 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 			int k = x + j % 4 * 16;
 			int l = j / 4;
 			int m = y + l * 18 + 2;
-			int n = this.backgroundHeight;
+			Identifier identifier;
 			if (i == this.handler.getSelectedRecipe()) {
-				n += 18;
+				identifier = RECIPE_SELECTED_TEXTURE;
 			} else if (mouseX >= k && mouseY >= m && mouseX < k + 16 && mouseY < m + 18) {
-				n += 36;
+				identifier = RECIPE_HIGHLIGHTED_TEXTURE;
+			} else {
+				identifier = RECIPE_TEXTURE;
 			}
 
-			context.drawTexture(TEXTURE, k, m - 1, 0, n, 16, 18);
+			context.drawGuiTexture(identifier, k, m - 1, 16, 18);
 		}
 	}
 
@@ -151,10 +158,10 @@ public class StonecutterScreen extends HandledScreen<StonecutterScreenHandler> {
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		if (this.shouldScroll()) {
 			int i = this.getMaxScroll();
-			float f = (float)amount / (float)i;
+			float f = (float)verticalAmount / (float)i;
 			this.scrollAmount = MathHelper.clamp(this.scrollAmount - f, 0.0F, 1.0F);
 			this.scrollOffset = (int)((double)(this.scrollAmount * (float)i) + 0.5) * 4;
 		}

@@ -13,8 +13,8 @@ import net.minecraft.client.gui.screen.DirectConnectScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AxisGridWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.EmptyWidget;
-import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.input.KeyCodes;
 import net.minecraft.client.network.LanServerInfo;
@@ -69,8 +69,8 @@ public class MultiplayerScreen extends Screen {
 			try {
 				this.lanServerDetector = new LanServerQueryManager.LanServerDetector(this.lanServers);
 				this.lanServerDetector.start();
-			} catch (Exception var9) {
-				LOGGER.warn("Unable to start LAN server detection: {}", var9.getMessage());
+			} catch (Exception var8) {
+				LOGGER.warn("Unable to start LAN server detection: {}", var8.getMessage());
 			}
 
 			this.serverListWidget = new MultiplayerServerListWidget(this, this.client, this.width, this.height, 32, this.height - 64, 36);
@@ -80,18 +80,18 @@ public class MultiplayerScreen extends Screen {
 		this.addSelectableChild(this.serverListWidget);
 		this.buttonJoin = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.select"), button -> this.connect()).width(100).build());
 		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.direct"), button -> {
-			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", false);
+			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", ServerInfo.ServerType.OTHER);
 			this.client.setScreen(new DirectConnectScreen(this, this::directConnect, this.selectedEntry));
 		}).width(100).build());
 		ButtonWidget buttonWidget2 = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.add"), button -> {
-			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", false);
+			this.selectedEntry = new ServerInfo(I18n.translate("selectServer.defaultName"), "", ServerInfo.ServerType.OTHER);
 			this.client.setScreen(new AddServerScreen(this, this::addEntry, this.selectedEntry));
 		}).width(100).build());
 		this.buttonEdit = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.edit"), button -> {
 			MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedOrNull();
 			if (entry instanceof MultiplayerServerListWidget.ServerEntry) {
 				ServerInfo serverInfo = ((MultiplayerServerListWidget.ServerEntry)entry).getServer();
-				this.selectedEntry = new ServerInfo(serverInfo.name, serverInfo.address, false);
+				this.selectedEntry = new ServerInfo(serverInfo.name, serverInfo.address, ServerInfo.ServerType.OTHER);
 				this.selectedEntry.copyWithSettingsFrom(serverInfo);
 				this.client.setScreen(new AddServerScreen(this, this::editEntry, this.selectedEntry));
 			}
@@ -112,21 +112,20 @@ public class MultiplayerScreen extends Screen {
 		ButtonWidget buttonWidget3 = this.addDrawableChild(
 			ButtonWidget.builder(Text.translatable("selectServer.refresh"), button -> this.refresh()).width(74).build()
 		);
-		ButtonWidget buttonWidget4 = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.CANCEL, button -> this.client.setScreen(this.parent)).width(74).build());
-		GridWidget gridWidget = new GridWidget();
-		GridWidget.Adder adder = gridWidget.createAdder(1);
-		AxisGridWidget axisGridWidget = adder.add(new AxisGridWidget(308, 20, AxisGridWidget.DisplayAxis.HORIZONTAL));
+		ButtonWidget buttonWidget4 = this.addDrawableChild(ButtonWidget.builder(ScreenTexts.BACK, button -> this.client.setScreen(this.parent)).width(74).build());
+		DirectionalLayoutWidget directionalLayoutWidget = DirectionalLayoutWidget.vertical();
+		AxisGridWidget axisGridWidget = directionalLayoutWidget.add(new AxisGridWidget(308, 20, AxisGridWidget.DisplayAxis.HORIZONTAL));
 		axisGridWidget.add(this.buttonJoin);
 		axisGridWidget.add(buttonWidget);
 		axisGridWidget.add(buttonWidget2);
-		adder.add(EmptyWidget.ofHeight(4));
-		AxisGridWidget axisGridWidget2 = adder.add(new AxisGridWidget(308, 20, AxisGridWidget.DisplayAxis.HORIZONTAL));
+		directionalLayoutWidget.add(EmptyWidget.ofHeight(4));
+		AxisGridWidget axisGridWidget2 = directionalLayoutWidget.add(new AxisGridWidget(308, 20, AxisGridWidget.DisplayAxis.HORIZONTAL));
 		axisGridWidget2.add(this.buttonEdit);
 		axisGridWidget2.add(this.buttonDelete);
 		axisGridWidget2.add(buttonWidget3);
 		axisGridWidget2.add(buttonWidget4);
-		gridWidget.refreshPositions();
-		SimplePositioningWidget.setPos(gridWidget, 0, this.height - 64, this.width, 64);
+		directionalLayoutWidget.refreshPositions();
+		SimplePositioningWidget.setPos(directionalLayoutWidget, 0, this.height - 64, this.width, 64);
 		this.updateButtonActivationStates();
 	}
 
@@ -236,11 +235,10 @@ public class MultiplayerScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 		this.multiplayerScreenTooltip = null;
-		this.renderBackground(context);
 		this.serverListWidget.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
-		super.render(context, mouseX, mouseY, delta);
 		if (this.multiplayerScreenTooltip != null) {
 			context.drawTooltip(this.textRenderer, this.multiplayerScreenTooltip, mouseX, mouseY);
 		}
@@ -252,7 +250,7 @@ public class MultiplayerScreen extends Screen {
 			this.connect(((MultiplayerServerListWidget.ServerEntry)entry).getServer());
 		} else if (entry instanceof MultiplayerServerListWidget.LanServerEntry) {
 			LanServerInfo lanServerInfo = ((MultiplayerServerListWidget.LanServerEntry)entry).getLanServerEntry();
-			this.connect(new ServerInfo(lanServerInfo.getMotd(), lanServerInfo.getAddressPort(), true));
+			this.connect(new ServerInfo(lanServerInfo.getMotd(), lanServerInfo.getAddressPort(), ServerInfo.ServerType.LAN));
 		}
 	}
 

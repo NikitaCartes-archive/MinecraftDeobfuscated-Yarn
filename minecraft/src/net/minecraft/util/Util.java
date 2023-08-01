@@ -462,7 +462,7 @@ public class Util {
 	 * });
 	 * }</pre>
 	 */
-	public static <T> T make(T object, Consumer<T> initializer) {
+	public static <T> T make(T object, Consumer<? super T> initializer) {
 		initializer.accept(object);
 		return object;
 	}

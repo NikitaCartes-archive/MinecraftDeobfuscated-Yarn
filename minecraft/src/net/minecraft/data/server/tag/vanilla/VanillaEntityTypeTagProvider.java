@@ -71,5 +71,6 @@ public class VanillaEntityTypeTagProvider extends ValueLookupTagProvider<EntityT
 				EntityType.TRADER_LLAMA,
 				EntityType.ZOMBIE_HORSE
 			);
+		this.getOrCreateTagBuilder(EntityTypeTags.NON_CONTROLLING_RIDER).add(EntityType.SLIME, EntityType.MAGMA_CUBE);
 	}
 }

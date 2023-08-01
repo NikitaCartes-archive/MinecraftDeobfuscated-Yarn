@@ -1,15 +1,16 @@
 package net.minecraft.client.render.entity;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SquidEntityModel;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,10 +20,12 @@ import org.slf4j.Logger;
 @Environment(EnvType.CLIENT)
 public class EntityRenderers {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final String DEFAULT = "default";
-	private static final Map<EntityType<?>, EntityRendererFactory<?>> RENDERER_FACTORIES = Maps.<EntityType<?>, EntityRendererFactory<?>>newHashMap();
-	private static final Map<String, EntityRendererFactory<AbstractClientPlayerEntity>> PLAYER_RENDERER_FACTORIES = ImmutableMap.of(
-		"default", context -> new PlayerEntityRenderer(context, false), "slim", context -> new PlayerEntityRenderer(context, true)
+	private static final Map<EntityType<?>, EntityRendererFactory<?>> RENDERER_FACTORIES = new Object2ObjectOpenHashMap<>();
+	private static final Map<SkinTextures.Model, EntityRendererFactory<AbstractClientPlayerEntity>> PLAYER_RENDERER_FACTORIES = Map.of(
+		SkinTextures.Model.WIDE,
+		(EntityRendererFactory<>)context -> new PlayerEntityRenderer(context, false),
+		SkinTextures.Model.SLIM,
+		(EntityRendererFactory<>)context -> new PlayerEntityRenderer(context, true)
 	);
 
 	private static <T extends Entity> void register(EntityType<? extends T> type, EntityRendererFactory<T> factory) {
@@ -41,13 +44,13 @@ public class EntityRenderers {
 		return builder.build();
 	}
 
-	public static Map<String, EntityRenderer<? extends PlayerEntity>> reloadPlayerRenderers(EntityRendererFactory.Context ctx) {
-		Builder<String, EntityRenderer<? extends PlayerEntity>> builder = ImmutableMap.builder();
-		PLAYER_RENDERER_FACTORIES.forEach((type, factory) -> {
+	public static Map<SkinTextures.Model, EntityRenderer<? extends PlayerEntity>> reloadPlayerRenderers(EntityRendererFactory.Context ctx) {
+		Builder<SkinTextures.Model, EntityRenderer<? extends PlayerEntity>> builder = ImmutableMap.builder();
+		PLAYER_RENDERER_FACTORIES.forEach((model, factory) -> {
 			try {
-				builder.put(type, factory.create(ctx));
+				builder.put(model, factory.create(ctx));
 			} catch (Exception var5) {
-				throw new IllegalArgumentException("Failed to create player model for " + type, var5);
+				throw new IllegalArgumentException("Failed to create player model for " + model, var5);
 			}
 		});
 		return builder.build();

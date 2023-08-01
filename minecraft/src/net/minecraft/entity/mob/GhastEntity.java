@@ -1,6 +1,7 @@
 package net.minecraft.entity.mob;
 
 import java.util.EnumSet;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -31,6 +32,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import org.joml.Vector3f;
 
 public class GhastEntity extends FlyingEntity implements Monster {
 	private static final TrackedData<Boolean> SHOOTING = DataTracker.registerData(GhastEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -134,6 +136,16 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	@Override
 	public int getLimitPerChunk() {
 		return 1;
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + 0.0625F * scaleFactor, 0.0F);
+	}
+
+	@Override
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return 0.5F;
 	}
 
 	@Override

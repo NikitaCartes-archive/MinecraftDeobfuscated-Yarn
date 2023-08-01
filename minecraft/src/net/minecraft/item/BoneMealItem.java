@@ -60,7 +60,7 @@ public class BoneMealItem extends Item {
 
 	public static boolean useOnFertilizable(ItemStack stack, World world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
-		if (blockState.getBlock() instanceof Fertilizable fertilizable && fertilizable.isFertilizable(world, pos, blockState, world.isClient)) {
+		if (blockState.getBlock() instanceof Fertilizable fertilizable && fertilizable.isFertilizable(world, pos, blockState)) {
 			if (world instanceof ServerWorld) {
 				if (fertilizable.canGrow(world, world.random, pos, blockState)) {
 					fertilizable.grow((ServerWorld)world, world.random, pos, blockState);

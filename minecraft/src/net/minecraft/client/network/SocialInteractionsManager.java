@@ -73,19 +73,16 @@ public class SocialInteractionsManager {
 
 	public void setPlayerOnline(PlayerListEntry player) {
 		GameProfile gameProfile = player.getProfile();
-		if (gameProfile.isComplete()) {
-			this.playerNameByUuid.put(gameProfile.getName(), gameProfile.getId());
-		}
-
-		Screen screen = this.client.currentScreen;
-		if (screen instanceof SocialInteractionsScreen socialInteractionsScreen) {
+		this.playerNameByUuid.put(gameProfile.getName(), gameProfile.getId());
+		Screen var4 = this.client.currentScreen;
+		if (var4 instanceof SocialInteractionsScreen socialInteractionsScreen) {
 			socialInteractionsScreen.setPlayerOnline(player);
 		}
 	}
 
 	public void setPlayerOffline(UUID uuid) {
-		Screen screen = this.client.currentScreen;
-		if (screen instanceof SocialInteractionsScreen socialInteractionsScreen) {
+		Screen var3 = this.client.currentScreen;
+		if (var3 instanceof SocialInteractionsScreen socialInteractionsScreen) {
 			socialInteractionsScreen.setPlayerOffline(uuid);
 		}
 	}

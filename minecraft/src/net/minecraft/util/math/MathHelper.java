@@ -725,6 +725,10 @@ public class MathHelper {
 		return start + delta * wrapDegrees(end - start);
 	}
 
+	public static double lerpAngleDegrees(double delta, double start, double end) {
+		return start + delta * wrapDegrees(end - start);
+	}
+
 	public static float wrap(float value, float maxDeviation) {
 		return (Math.abs(value % maxDeviation - maxDeviation * 0.5F) - maxDeviation * 0.25F) / (maxDeviation * 0.25F);
 	}

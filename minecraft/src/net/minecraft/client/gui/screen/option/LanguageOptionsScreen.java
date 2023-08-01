@@ -69,10 +69,15 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 		this.languageSelectionList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
-		context.drawCenteredTextWithShadow(this.textRenderer, LANGUAGE_WARNING_TEXT, this.width / 2, this.height - 56, 8421504);
-		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, LANGUAGE_WARNING_TEXT, this.width / 2, this.height - 56, -8355712);
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -106,11 +111,6 @@ public class LanguageOptionsScreen extends GameOptionsScreen {
 		@Override
 		public int getRowWidth() {
 			return super.getRowWidth() + 50;
-		}
-
-		@Override
-		protected void renderBackground(DrawContext context) {
-			LanguageOptionsScreen.this.renderBackground(context);
 		}
 
 		@Environment(EnvType.CLIENT)

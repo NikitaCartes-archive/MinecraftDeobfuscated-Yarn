@@ -3,6 +3,9 @@ package net.minecraft.world;
 import com.mojang.logging.LogUtils;
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
@@ -40,5 +43,8 @@ public abstract class PersistentState {
 
 			this.setDirty(false);
 		}
+	}
+
+	public static record Type<T extends PersistentState>(Supplier<T> constructor, Function<NbtCompound, T> deserializer, DataFixTypes type) {
 	}
 }

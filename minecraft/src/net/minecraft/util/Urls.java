@@ -1,8 +1,12 @@
 package net.minecraft.util;
 
+import com.mojang.util.UndashedUuid;
+import java.util.UUID;
+
 public class Urls {
 	public static final String GDPR = "https://aka.ms/MinecraftGDPR";
 	public static final String EULA = "https://aka.ms/MinecraftEULA";
+	public static final String PRIVACY_STATEMENT = "http://go.microsoft.com/fwlink/?LinkId=521839";
 	public static final String JAVA_ATTRIBUTION = "https://aka.ms/MinecraftJavaAttribution";
 	public static final String JAVA_LICENSES = "https://aka.ms/MinecraftJavaLicenses";
 	public static final String BUY_JAVA = "https://aka.ms/BuyMinecraftJava";
@@ -21,11 +25,11 @@ public class Urls {
 	public static final String REALMS_CONTENT_CREATOR = "https://aka.ms/MinecraftRealmsContentCreator";
 	public static final String UPDATE_MOJANG_ACCOUNT = "https://aka.ms/UpdateMojangAccount";
 
-	public static String getExtendJavaRealmsUrl(String subscriptionId, String profileId, boolean trial) {
-		return getExtendJavaRealmsUrl(subscriptionId, profileId) + "&ref=" + (trial ? "expiredTrial" : "expiredRealm");
+	public static String getExtendJavaRealmsUrl(String subscriptionId, UUID uuid, boolean trial) {
+		return getExtendJavaRealmsUrl(subscriptionId, uuid) + "&ref=" + (trial ? "expiredTrial" : "expiredRealm");
 	}
 
-	public static String getExtendJavaRealmsUrl(String subscriptionId, String profileId) {
-		return "https://aka.ms/ExtendJavaRealms?subscriptionId=" + subscriptionId + "&profileId=" + profileId;
+	public static String getExtendJavaRealmsUrl(String subscriptionId, UUID uuid) {
+		return "https://aka.ms/ExtendJavaRealms?subscriptionId=" + subscriptionId + "&profileId=" + UndashedUuid.toString(uuid);
 	}
 }

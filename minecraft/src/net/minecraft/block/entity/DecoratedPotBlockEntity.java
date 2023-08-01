@@ -59,14 +59,29 @@ public class DecoratedPotBlockEntity extends BlockEntity {
 		this.sherds = DecoratedPotBlockEntity.Sherds.fromNbt(BlockItem.getBlockEntityNbt(stack));
 	}
 
+	public ItemStack asStack() {
+		return getStackWith(this.sherds);
+	}
+
+	public static ItemStack getStackWith(DecoratedPotBlockEntity.Sherds sherds) {
+		ItemStack itemStack = Items.DECORATED_POT.getDefaultStack();
+		NbtCompound nbtCompound = sherds.toNbt(new NbtCompound());
+		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.DECORATED_POT, nbtCompound);
+		return itemStack;
+	}
+
 	public static record Sherds(Item back, Item left, Item right, Item front) {
 		public static final DecoratedPotBlockEntity.Sherds DEFAULT = new DecoratedPotBlockEntity.Sherds(Items.BRICK, Items.BRICK, Items.BRICK, Items.BRICK);
 
 		public NbtCompound toNbt(NbtCompound nbt) {
-			NbtList nbtList = new NbtList();
-			this.stream().forEach(sherd -> nbtList.add(NbtString.of(Registries.ITEM.getId(sherd).toString())));
-			nbt.put("sherds", nbtList);
-			return nbt;
+			if (this.equals(DEFAULT)) {
+				return nbt;
+			} else {
+				NbtList nbtList = new NbtList();
+				this.stream().forEach(sherd -> nbtList.add(NbtString.of(Registries.ITEM.getId(sherd).toString())));
+				nbt.put("sherds", nbtList);
+				return nbt;
+			}
 		}
 
 		public Stream<Item> stream() {
@@ -87,7 +102,7 @@ public class DecoratedPotBlockEntity extends BlockEntity {
 				return Items.BRICK;
 			} else {
 				NbtElement nbtElement = list.get(index);
-				return Registries.ITEM.get(new Identifier(nbtElement.asString()));
+				return Registries.ITEM.get(Identifier.tryParse(nbtElement.asString()));
 			}
 		}
 	}

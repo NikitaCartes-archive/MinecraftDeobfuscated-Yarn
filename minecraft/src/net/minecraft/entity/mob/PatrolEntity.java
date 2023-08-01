@@ -60,11 +60,6 @@ public abstract class PatrolEntity extends HostileEntity {
 		this.patrolling = nbt.getBoolean("Patrolling");
 	}
 
-	@Override
-	public double getHeightOffset() {
-		return -0.45;
-	}
-
 	public boolean canLead() {
 		return true;
 	}
@@ -163,7 +158,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		@Override
 		public boolean canStart() {
 			boolean bl = this.entity.getWorld().getTime() < this.nextPatrolSearchTime;
-			return this.entity.isRaidCenterSet() && this.entity.getTarget() == null && !this.entity.hasPassengers() && this.entity.hasPatrolTarget() && !bl;
+			return this.entity.isRaidCenterSet() && this.entity.getTarget() == null && !this.entity.hasControllingPassenger() && this.entity.hasPatrolTarget() && !bl;
 		}
 
 		@Override

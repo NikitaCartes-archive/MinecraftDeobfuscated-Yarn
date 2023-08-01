@@ -69,7 +69,7 @@ public class ScoreTextContent implements TextContent {
 		if (minecraftServer != null) {
 			Scoreboard scoreboard = minecraftServer.getScoreboard();
 			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(this.objective);
-			if (scoreboard.playerHasObjective(playerName, scoreboardObjective)) {
+			if (scoreboardObjective != null && scoreboard.playerHasObjective(playerName, scoreboardObjective)) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(playerName, scoreboardObjective);
 				return Integer.toString(scoreboardPlayerScore.getScore());
 			}

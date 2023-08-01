@@ -94,11 +94,6 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public double getHeightOffset() {
-		return 0.14;
-	}
-
-	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
 		this.loveTicks = nbt.getInt("InLove");

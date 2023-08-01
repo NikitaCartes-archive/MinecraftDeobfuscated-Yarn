@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.Set;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.event.GameEvent;
 
@@ -103,7 +105,7 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 		if (optional.isEmpty()) {
 			return Optional.empty();
 		} else {
-			double d = ((Vec3d)optional.get()).squaredDistanceTo(listenerPos);
+			double d = BlockPos.ofFloored((Position)optional.get()).getSquaredDistance(BlockPos.ofFloored(listenerPos));
 			int i = listener.getRange() * listener.getRange();
 			return d > (double)i ? Optional.empty() : optional;
 		}

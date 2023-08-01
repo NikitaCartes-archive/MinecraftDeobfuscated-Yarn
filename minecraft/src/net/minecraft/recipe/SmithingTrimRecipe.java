@@ -44,7 +44,7 @@ public class SmithingTrimRecipe implements SmithingRecipe {
 			Optional<RegistryEntry.Reference<ArmorTrimMaterial>> optional = ArmorTrimMaterials.get(registryManager, inventory.getStack(2));
 			Optional<RegistryEntry.Reference<ArmorTrimPattern>> optional2 = ArmorTrimPatterns.get(registryManager, inventory.getStack(0));
 			if (optional.isPresent() && optional2.isPresent()) {
-				Optional<ArmorTrim> optional3 = ArmorTrim.getTrim(registryManager, itemStack);
+				Optional<ArmorTrim> optional3 = ArmorTrim.getTrim(registryManager, itemStack, false);
 				if (optional3.isPresent()
 					&& ((ArmorTrim)optional3.get()).equals((RegistryEntry<ArmorTrimPattern>)optional2.get(), (RegistryEntry<ArmorTrimMaterial>)optional.get())) {
 					return ItemStack.EMPTY;

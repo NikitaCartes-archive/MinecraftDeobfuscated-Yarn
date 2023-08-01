@@ -49,22 +49,22 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 
 	@Override
 	protected float getMinU() {
-		return this.sprite.getFrameU((double)((this.sampleU + 1.0F) / 4.0F * 16.0F));
+		return this.sprite.getFrameU((this.sampleU + 1.0F) / 4.0F);
 	}
 
 	@Override
 	protected float getMaxU() {
-		return this.sprite.getFrameU((double)(this.sampleU / 4.0F * 16.0F));
+		return this.sprite.getFrameU(this.sampleU / 4.0F);
 	}
 
 	@Override
 	protected float getMinV() {
-		return this.sprite.getFrameV((double)(this.sampleV / 4.0F * 16.0F));
+		return this.sprite.getFrameV(this.sampleV / 4.0F);
 	}
 
 	@Override
 	protected float getMaxV() {
-		return this.sprite.getFrameV((double)((this.sampleV + 1.0F) / 4.0F * 16.0F));
+		return this.sprite.getFrameV((this.sampleV + 1.0F) / 4.0F);
 	}
 
 	@Override
@@ -79,7 +79,9 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 			BlockStateParticleEffect blockStateParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i
 		) {
 			BlockState blockState = blockStateParticleEffect.getBlockState();
-			return !blockState.isAir() && !blockState.isOf(Blocks.MOVING_PISTON) ? new BlockDustParticle(clientWorld, d, e, f, g, h, i, blockState) : null;
+			return !blockState.isAir() && !blockState.isOf(Blocks.MOVING_PISTON) && blockState.hasBlockBreakParticles()
+				? new BlockDustParticle(clientWorld, d, e, f, g, h, i, blockState)
+				: null;
 		}
 	}
 }

@@ -2,9 +2,8 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.DirectionalLayoutWidget;
 import net.minecraft.client.gui.widget.MultilineTextWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TextWidget;
@@ -18,7 +17,7 @@ public class DisconnectedScreen extends Screen {
 	private final Screen parent;
 	private final Text reason;
 	private final Text buttonLabel;
-	private final GridWidget grid = new GridWidget();
+	private final DirectionalLayoutWidget grid = DirectionalLayoutWidget.vertical();
 
 	public DisconnectedScreen(Screen parent, Text title, Text reason) {
 		this(parent, title, reason, TO_MENU_TEXT);
@@ -34,9 +33,8 @@ public class DisconnectedScreen extends Screen {
 	@Override
 	protected void init() {
 		this.grid.getMainPositioner().alignHorizontalCenter().margin(10);
-		GridWidget.Adder adder = this.grid.createAdder(1);
-		adder.add(new TextWidget(this.title, this.textRenderer));
-		adder.add(new MultilineTextWidget(this.reason, this.textRenderer).setMaxWidth(this.width - 50).setCentered(true));
+		this.grid.add(new TextWidget(this.title, this.textRenderer));
+		this.grid.add(new MultilineTextWidget(this.reason, this.textRenderer).setMaxWidth(this.width - 50).setCentered(true));
 		ButtonWidget buttonWidget;
 		if (this.client.isMultiplayerEnabled()) {
 			buttonWidget = ButtonWidget.builder(this.buttonLabel, button -> this.client.setScreen(this.parent)).build();
@@ -44,7 +42,7 @@ public class DisconnectedScreen extends Screen {
 			buttonWidget = ButtonWidget.builder(TO_TITLE_TEXT, button -> this.client.setScreen(new TitleScreen())).build();
 		}
 
-		adder.add(buttonWidget);
+		this.grid.add(buttonWidget);
 		this.grid.refreshPositions();
 		this.grid.forEachChild(this::addDrawableChild);
 		this.initTabNavigation();
@@ -63,11 +61,5 @@ public class DisconnectedScreen extends Screen {
 	@Override
 	public boolean shouldCloseOnEsc() {
 		return false;
-	}
-
-	@Override
-	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

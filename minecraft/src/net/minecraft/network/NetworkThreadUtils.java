@@ -17,7 +17,7 @@ public class NetworkThreadUtils {
 	public static <T extends PacketListener> void forceMainThread(Packet<T> packet, T listener, ThreadExecutor<?> engine) throws OffThreadException {
 		if (!engine.isOnThread()) {
 			engine.executeSync(() -> {
-				if (listener.isConnectionOpen()) {
+				if (listener.accepts(packet)) {
 					try {
 						packet.apply(listener);
 					} catch (Exception var3) {

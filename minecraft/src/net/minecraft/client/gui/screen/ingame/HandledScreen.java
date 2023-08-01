@@ -92,9 +92,8 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		int i = this.x;
 		int j = this.y;
-		this.drawBackground(context, delta, mouseX, mouseY);
-		RenderSystem.disableDepthTest();
 		super.render(context, mouseX, mouseY, delta);
+		RenderSystem.disableDepthTest();
 		context.getMatrices().push();
 		context.getMatrices().translate((float)i, (float)j, 0.0F);
 		this.focusedSlot = null;
@@ -149,6 +148,12 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 		context.getMatrices().pop();
 		RenderSystem.enableDepthTest();
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.renderBackground(context, mouseX, mouseY, delta);
+		this.drawBackground(context, delta, mouseX, mouseY);
 	}
 
 	public static void drawSlotHighlight(DrawContext context, int x, int y, int z) {

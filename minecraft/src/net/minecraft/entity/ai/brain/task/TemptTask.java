@@ -19,6 +19,7 @@ import net.minecraft.util.math.MathHelper;
 public class TemptTask extends MultiTickTask<PathAwareEntity> {
 	public static final int TEMPTATION_COOLDOWN_TICKS = 100;
 	public static final double DEFAULT_STOP_DISTANCE = 2.5;
+	public static final double LARGE_ENTITY_STOP_DISTANCE = 3.5;
 	private final Function<LivingEntity, Float> speed;
 	private final Function<LivingEntity, Double> stopDistanceGetter;
 

@@ -6,21 +6,29 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookWidget {
+	private static final ButtonTextures TEXTURES = new ButtonTextures(
+		new Identifier("recipe_book/furnace_filter_enabled"),
+		new Identifier("recipe_book/furnace_filter_disabled"),
+		new Identifier("recipe_book/furnace_filter_enabled_highlighted"),
+		new Identifier("recipe_book/furnace_filter_disabled_highlighted")
+	);
 	@Nullable
 	private Ingredient fuels;
 
 	@Override
 	protected void setBookButtonTexture() {
-		this.toggleCraftableButton.setTextureUV(152, 182, 28, 18, TEXTURE);
+		this.toggleCraftableButton.setTextures(TEXTURES);
 	}
 
 	@Override

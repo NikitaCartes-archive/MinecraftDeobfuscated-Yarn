@@ -31,8 +31,7 @@ public class GameEvent {
 	public static final GameEvent ENTITY_INTERACT = register("entity_interact");
 	public static final GameEvent ENTITY_MOUNT = register("entity_mount");
 	public static final GameEvent ENTITY_PLACE = register("entity_place");
-	public static final GameEvent ENTITY_ROAR = register("entity_roar");
-	public static final GameEvent ENTITY_SHAKE = register("entity_shake");
+	public static final GameEvent ENTITY_ACTION = register("entity_action");
 	public static final GameEvent EQUIP = register("equip");
 	public static final GameEvent EXPLODE = register("explode");
 	public static final GameEvent FLAP = register("flap");
@@ -72,17 +71,11 @@ public class GameEvent {
 	public static final GameEvent RESONATE_14 = register("resonate_14");
 	public static final GameEvent RESONATE_15 = register("resonate_15");
 	public static final int DEFAULT_RANGE = 16;
-	private final String id;
 	private final int range;
 	private final RegistryEntry.Reference<GameEvent> registryEntry = Registries.GAME_EVENT.createEntry(this);
 
-	public GameEvent(String id, int range) {
-		this.id = id;
+	public GameEvent(int range) {
 		this.range = range;
-	}
-
-	public String getId() {
-		return this.id;
 	}
 
 	public int getRange() {
@@ -94,11 +87,11 @@ public class GameEvent {
 	}
 
 	private static GameEvent register(String id, int range) {
-		return Registry.register(Registries.GAME_EVENT, id, new GameEvent(id, range));
+		return Registry.register(Registries.GAME_EVENT, id, new GameEvent(range));
 	}
 
 	public String toString() {
-		return "Game Event{ " + this.id + " , " + this.range + "}";
+		return "Game Event{ " + this.getRegistryEntry().registryKey().getValue() + " , " + this.range + "}";
 	}
 
 	@Deprecated

@@ -44,8 +44,8 @@ import org.slf4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class PresetsScreen extends Screen {
+	static final Identifier SLOT_TEXTURE = new Identifier("container/slot");
 	static final Logger LOGGER = LogUtils.getLogger();
-	private static final int ICON_TEXTURE_SIZE = 128;
 	private static final int ICON_SIZE = 18;
 	private static final int BUTTON_HEIGHT = 20;
 	private static final int ICON_BACKGROUND_OFFSET_X = 1;
@@ -219,8 +219,8 @@ public class PresetsScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-		return this.listWidget.mouseScrolled(mouseX, mouseY, amount);
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		return this.listWidget.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
 	}
 
 	@Override
@@ -237,7 +237,7 @@ public class PresetsScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.listWidget.render(context, mouseX, mouseY, delta);
 		context.getMatrices().push();
 		context.getMatrices().translate(0.0F, 0.0F, 400.0F);
@@ -246,13 +246,6 @@ public class PresetsScreen extends Screen {
 		context.drawTextWithShadow(this.textRenderer, this.listText, 50, 70, 10526880);
 		context.getMatrices().pop();
 		this.customPresetField.render(context, mouseX, mouseY, delta);
-		super.render(context, mouseX, mouseY, delta);
-	}
-
-	@Override
-	public void tick() {
-		this.customPresetField.tick();
-		super.tick();
 	}
 
 	public void updateSelectButton(boolean hasSelected) {
@@ -336,7 +329,7 @@ public class PresetsScreen extends Screen {
 				SuperflatPresetsListWidget.this.setSelected(this);
 				PresetsScreen.this.config = this.preset.settings();
 				PresetsScreen.this.customPresetField.setText(PresetsScreen.getGeneratorConfigString(PresetsScreen.this.config));
-				PresetsScreen.this.customPresetField.setCursorToStart();
+				PresetsScreen.this.customPresetField.setCursorToStart(false);
 			}
 
 			private void renderIcon(DrawContext context, int x, int y, Item iconItem) {
@@ -345,7 +338,7 @@ public class PresetsScreen extends Screen {
 			}
 
 			private void drawIconBackground(DrawContext context, int x, int y) {
-				context.drawTexture(STATS_ICONS_TEXTURE, x, y, 0, 0.0F, 0.0F, 18, 18, 128, 128);
+				context.drawGuiTexture(PresetsScreen.SLOT_TEXTURE, x, y, 0, 18, 18);
 			}
 
 			@Override

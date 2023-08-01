@@ -14,7 +14,4 @@ public interface Tab {
 	void forEachChild(Consumer<ClickableWidget> consumer);
 
 	void refreshGrid(ScreenRect tabArea);
-
-	default void tick() {
-	}
 }

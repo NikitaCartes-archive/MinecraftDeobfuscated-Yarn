@@ -3,6 +3,7 @@ package net.minecraft.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.SkinTextures;
 import net.minecraft.util.Identifier;
 
 /**
@@ -20,6 +21,10 @@ public class PlayerSkinDrawer {
 	public static final int field_39532 = 8;
 	public static final int SKIN_TEXTURE_WIDTH = 64;
 	public static final int SKIN_TEXTURE_HEIGHT = 64;
+
+	public static void draw(DrawContext context, SkinTextures textures, int x, int y, int size) {
+		draw(context, textures.texture(), x, y, size);
+	}
 
 	/**
 	 * Draws the player's head (including the hat) on GUI.

@@ -161,10 +161,9 @@ public class BookScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		context.drawTexture(BOOK_TEXTURE, i, 2, 0, 0, 192, 192);
 		if (this.cachedPageIndex != this.pageIndex) {
 			StringVisitable stringVisitable = this.contents.getPage(this.pageIndex);
 			this.cachedPage = this.textRenderer.wrapLines(stringVisitable, 114);
@@ -185,8 +184,12 @@ public class BookScreen extends Screen {
 		if (style != null) {
 			context.drawHoverEvent(this.textRenderer, style, mouseX, mouseY);
 		}
+	}
 
-		super.render(context, mouseX, mouseY, delta);
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.renderBackground(context, mouseX, mouseY, delta);
+		context.drawTexture(BOOK_TEXTURE, (this.width - 192) / 2, 2, 0, 0, 192, 192);
 	}
 
 	@Override

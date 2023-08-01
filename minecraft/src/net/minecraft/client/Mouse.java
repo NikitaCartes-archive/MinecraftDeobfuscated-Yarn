@@ -33,7 +33,8 @@ public class Mouse {
 	private final SmoothUtil cursorYSmoother = new SmoothUtil();
 	private double cursorDeltaX;
 	private double cursorDeltaY;
-	private double eventDeltaWheel;
+	private double eventDeltaHorizontalWheel;
+	private double eventDeltaVerticalWheel;
 	private double lastMouseUpdateTime = Double.MIN_VALUE;
 	private boolean cursorLocked;
 
@@ -125,35 +126,45 @@ public class Mouse {
 	 */
 	private void onMouseScroll(long window, double horizontal, double vertical) {
 		if (window == MinecraftClient.getInstance().getWindow().getHandle()) {
-			double d = (this.client.options.getDiscreteMouseScroll().getValue() ? Math.signum(vertical) : vertical)
-				* this.client.options.getMouseWheelSensitivity().getValue();
+			boolean bl = this.client.options.getDiscreteMouseScroll().getValue();
+			double d = this.client.options.getMouseWheelSensitivity().getValue();
+			double e = (bl ? Math.signum(horizontal) : horizontal) * d;
+			double f = (bl ? Math.signum(vertical) : vertical) * d;
 			if (this.client.getOverlay() == null) {
 				if (this.client.currentScreen != null) {
-					double e = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
-					double f = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
-					this.client.currentScreen.mouseScrolled(e, f, d);
+					double g = this.x * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth();
+					double h = this.y * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight();
+					this.client.currentScreen.mouseScrolled(g, h, e, f);
 					this.client.currentScreen.applyMousePressScrollNarratorDelay();
 				} else if (this.client.player != null) {
-					if (this.eventDeltaWheel != 0.0 && Math.signum(d) != Math.signum(this.eventDeltaWheel)) {
-						this.eventDeltaWheel = 0.0;
+					if (this.eventDeltaHorizontalWheel != 0.0 && Math.signum(e) != Math.signum(this.eventDeltaHorizontalWheel)) {
+						this.eventDeltaHorizontalWheel = 0.0;
 					}
 
-					this.eventDeltaWheel += d;
-					int i = (int)this.eventDeltaWheel;
-					if (i == 0) {
+					if (this.eventDeltaVerticalWheel != 0.0 && Math.signum(f) != Math.signum(this.eventDeltaVerticalWheel)) {
+						this.eventDeltaVerticalWheel = 0.0;
+					}
+
+					this.eventDeltaHorizontalWheel += e;
+					this.eventDeltaVerticalWheel += f;
+					int i = (int)this.eventDeltaHorizontalWheel;
+					int j = (int)this.eventDeltaVerticalWheel;
+					if (i == 0 && j == 0) {
 						return;
 					}
 
-					this.eventDeltaWheel -= (double)i;
+					this.eventDeltaHorizontalWheel -= (double)i;
+					this.eventDeltaVerticalWheel -= (double)j;
+					int k = j == 0 ? -i : j;
 					if (this.client.player.isSpectator()) {
 						if (this.client.inGameHud.getSpectatorHud().isOpen()) {
-							this.client.inGameHud.getSpectatorHud().cycleSlot(-i);
+							this.client.inGameHud.getSpectatorHud().cycleSlot(-k);
 						} else {
-							float g = MathHelper.clamp(this.client.player.getAbilities().getFlySpeed() + (float)i * 0.005F, 0.0F, 0.2F);
-							this.client.player.getAbilities().setFlySpeed(g);
+							float l = MathHelper.clamp(this.client.player.getAbilities().getFlySpeed() + (float)j * 0.005F, 0.0F, 0.2F);
+							this.client.player.getAbilities().setFlySpeed(l);
 						}
 					} else {
-						this.client.player.getInventory().scrollInHotbar((double)i);
+						this.client.player.getInventory().scrollInHotbar((double)k);
 					}
 				}
 			}

@@ -85,7 +85,7 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 	}
 
 	@Override
-	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
 		return this.chooseStemState(world.getBlockState(pos.offset(this.growthDirection)));
 	}
 

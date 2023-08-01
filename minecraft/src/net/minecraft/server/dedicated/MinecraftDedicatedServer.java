@@ -445,6 +445,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		return serverPropertiesHandler.enforceSecureProfile && serverPropertiesHandler.onlineMode && this.apiServices.serviceSignatureVerifier() != null;
 	}
 
+	@Override
+	public boolean shouldLogIps() {
+		return this.getProperties().logIps;
+	}
+
 	protected boolean convertData() {
 		boolean bl = false;
 

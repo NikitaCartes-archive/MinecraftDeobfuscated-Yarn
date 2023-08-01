@@ -51,12 +51,12 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 			LOGGER.info("User aborted connecting to realms");
 			return;
 		} catch (RealmsServiceException var5) {
-			switch(var5.getErrorCode(-1)) {
+			switch(var5.error.getErrorCode()) {
 				case 6002:
 					setScreen(new RealmsTermsScreen(this.lastScreen, this.mainScreen, this.server));
 					return;
 				case 6006:
-					boolean bl = this.server.ownerUUID.equals(MinecraftClient.getInstance().getSession().getUuid());
+					boolean bl = MinecraftClient.getInstance().uuidEquals(this.server.ownerUUID);
 					setScreen(
 						(Screen)(bl
 							? new RealmsBrokenWorldScreen(this.lastScreen, this.mainScreen, this.server.id, this.server.worldType == RealmsServer.WorldType.MINIGAME)
@@ -66,7 +66,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 					);
 					return;
 				default:
-					this.error(var5.toString());
+					this.error(var5);
 					LOGGER.error("Couldn't connect to world", var5);
 					return;
 			}
@@ -75,7 +75,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 			return;
 		} catch (Exception var7) {
 			LOGGER.error("Couldn't connect to world", var7);
-			this.error(var7.getLocalizedMessage());
+			this.error(var7);
 			return;
 		}
 

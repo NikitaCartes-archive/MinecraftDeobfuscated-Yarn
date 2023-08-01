@@ -178,7 +178,7 @@ public class BookEditScreen extends Screen {
 		this.signButton.visible = !this.signing;
 		this.cancelButton.visible = this.signing;
 		this.finalizeButton.visible = this.signing;
-		this.finalizeButton.active = !this.title.trim().isEmpty();
+		this.finalizeButton.active = !Util.isBlank(this.title);
 	}
 
 	private void removeEmptyPages() {
@@ -382,11 +382,10 @@ public class BookEditScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.setFocused(null);
 		int i = (this.width - 192) / 2;
 		int j = 2;
-		context.drawTexture(BookScreen.BOOK_TEXTURE, i, 2, 0, 0, 192, 192);
 		if (this.signing) {
 			boolean bl = this.tickCounter / 6 % 2 == 0;
 			OrderedText orderedText = OrderedText.concat(OrderedText.styledForwardsVisitedString(this.title, Style.EMPTY), bl ? BLACK_CURSOR_TEXT : GRAY_CURSOR_TEXT);
@@ -409,8 +408,12 @@ public class BookEditScreen extends Screen {
 			this.drawSelection(context, pageContent.selectionRectangles);
 			this.drawCursor(context, pageContent.position, pageContent.atEnd);
 		}
+	}
 
-		super.render(context, mouseX, mouseY, delta);
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.renderBackground(context, mouseX, mouseY, delta);
+		context.drawTexture(BookScreen.BOOK_TEXTURE, (this.width - 192) / 2, 2, 0, 0, 192, 192);
 	}
 
 	private void drawCursor(DrawContext context, BookEditScreen.Position position, boolean atEnd) {

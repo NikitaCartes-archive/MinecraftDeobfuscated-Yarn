@@ -102,7 +102,7 @@ public class EntityAttributeInstance {
 		this.updateCallback.accept(this);
 	}
 
-	public void removeModifier(EntityAttributeModifier modifier) {
+	private void removeModifier(EntityAttributeModifier modifier) {
 		this.getModifiers(modifier.getOperation()).remove(modifier);
 		this.idToModifiers.remove(modifier.getId());
 		this.persistentModifiers.remove(modifier);

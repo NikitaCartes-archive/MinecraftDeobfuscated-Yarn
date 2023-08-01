@@ -1,7 +1,6 @@
 package net.minecraft.client.gui.screen.multiplayer;
 
 import com.google.common.base.Strings;
-import com.google.common.base.Suppliers;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
@@ -36,7 +35,6 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 		super(client, width, height, top, bottom, itemHeight);
 		this.parent = parent;
 		this.setRenderBackground(false);
-		this.setRenderHorizontalShadows(false);
 	}
 
 	@Override
@@ -59,7 +57,7 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 			if (playerListEntry != null) {
 				boolean bl = playerListEntry.hasPublicKey();
 				entriesByUuids.put(
-					uUID, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID, playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture, bl)
+					uUID, new SocialInteractionsPlayerListEntry(this.client, this.parent, uUID, playerListEntry.getProfile().getName(), playerListEntry::getSkinTextures, bl)
 				);
 			}
 		}
@@ -73,12 +71,7 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 					gameProfile.getId(),
 					uuid -> {
 						SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntryxx = new SocialInteractionsPlayerListEntry(
-							this.client,
-							this.parent,
-							gameProfile.getId(),
-							gameProfile.getName(),
-							Suppliers.memoize(() -> this.client.getSkinProvider().loadSkin(gameProfile)),
-							true
+							this.client, this.parent, gameProfile.getId(), gameProfile.getName(), this.client.getSkinProvider().getSkinTexturesSupplier(gameProfile), true
 						);
 						socialInteractionsPlayerListEntryxx.setOffline(true);
 						return socialInteractionsPlayerListEntryxx;
@@ -110,7 +103,7 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 
 	private void sortPlayers() {
 		this.players.sort(Comparator.comparing(player -> {
-			if (player.getUuid().equals(this.client.getSession().getUuidOrNull())) {
+			if (this.client.uuidEquals(player.getUuid())) {
 				return 0;
 			} else if (player.getUuid().version() == 2) {
 				return 4;
@@ -169,7 +162,7 @@ public class SocialInteractionsPlayerListWidget extends ElementListWidget<Social
 			&& (Strings.isNullOrEmpty(this.currentSearch) || player.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
 			boolean bl = player.hasPublicKey();
 			SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry = new SocialInteractionsPlayerListEntry(
-				this.client, this.parent, player.getProfile().getId(), player.getProfile().getName(), player::getSkinTexture, bl
+				this.client, this.parent, player.getProfile().getId(), player.getProfile().getName(), player::getSkinTextures, bl
 			);
 			this.addEntry(socialInteractionsPlayerListEntry);
 			this.players.add(socialInteractionsPlayerListEntry);

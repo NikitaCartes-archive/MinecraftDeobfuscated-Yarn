@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -38,6 +39,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.event.GameEvent;
+import org.joml.Vector3f;
 
 public class RavagerEntity extends RaiderEntity {
 	private static final Predicate<Entity> IS_NOT_RAVAGER = entity -> entity.isAlive() && !(entity instanceof RavagerEntity);
@@ -121,21 +123,8 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public double getMountedHeightOffset() {
-		return 2.1;
-	}
-
-	@Nullable
-	@Override
-	public LivingEntity getControllingPassenger() {
-		if (!this.isAiDisabled()) {
-			Entity var2 = this.getFirstPassenger();
-			if (var2 instanceof LivingEntity livingEntity) {
-				return livingEntity;
-			}
-		}
-
-		return null;
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + 0.0625F * scaleFactor, -0.0625F * scaleFactor);
 	}
 
 	@Override
@@ -250,7 +239,7 @@ public class RavagerEntity extends RaiderEntity {
 				this.getWorld().addParticle(ParticleTypes.POOF, vec3d.x, vec3d.y, vec3d.z, d, e, f);
 			}
 
-			this.emitGameEvent(GameEvent.ENTITY_ROAR);
+			this.emitGameEvent(GameEvent.ENTITY_ACTION);
 		}
 	}
 

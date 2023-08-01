@@ -6,6 +6,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.logging.LogUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -53,8 +54,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
 
 public class TestCommand {
+	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_33178 = 200;
 	private static final int field_33179 = 1024;
 	private static final int field_33180 = 15;
@@ -159,6 +162,7 @@ public class TestCommand {
 						)
 				)
 				.then(CommandManager.literal("exportthis").executes(context -> executeExport(context.getSource())))
+				.then(CommandManager.literal("exportthese").executes(context -> executeExportThese(context.getSource())))
 				.then(
 					CommandManager.literal("import")
 						.then(
@@ -432,6 +436,28 @@ public class TestCommand {
 		}
 	}
 
+	private static int executeExportThese(ServerCommandSource source) {
+		BlockPos blockPos = BlockPos.ofFloored(source.getPosition());
+		ServerWorld serverWorld = source.getWorld();
+		Collection<BlockPos> collection = StructureTestUtil.findStructureBlocks(blockPos, 200, serverWorld);
+		if (collection.isEmpty()) {
+			sendMessage(serverWorld, "Couldn't find any structure blocks within 200 block radius", Formatting.RED);
+			return 1;
+		} else {
+			boolean bl = true;
+
+			for(BlockPos blockPos2 : collection) {
+				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(blockPos2);
+				String string = structureBlockBlockEntity.getStructurePath();
+				if (executeExport(source, string) != 0) {
+					bl = false;
+				}
+			}
+
+			return bl ? 0 : 1;
+		}
+	}
+
 	private static int executeExport(ServerCommandSource source, String testName) {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName);
 		Identifier identifier = new Identifier("minecraft", testName);
@@ -445,7 +471,7 @@ public class TestCommand {
 				Files.createDirectories(path3.getParent());
 			} catch (IOException var7) {
 				sendMessage(source, "Could not create folder " + path3.getParent());
-				var7.printStackTrace();
+				LOGGER.error("Could not create export folder", var7);
 				return 1;
 			}
 
@@ -486,8 +512,7 @@ public class TestCommand {
 			sendMessage(source, "Imported to " + path2.toAbsolutePath());
 			return 0;
 		} catch (CommandSyntaxException | IOException var12) {
-			System.err.println("Failed to load structure " + testName);
-			var12.printStackTrace();
+			LOGGER.error("Failed to load structure {}", testName, var12);
 			return 1;
 		}
 	}

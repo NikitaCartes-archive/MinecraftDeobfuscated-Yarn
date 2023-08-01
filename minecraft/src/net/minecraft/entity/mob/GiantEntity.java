@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -17,6 +18,11 @@ public class GiantEntity extends HostileEntity {
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 10.440001F;
+	}
+
+	@Override
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return -3.75F;
 	}
 
 	public static DefaultAttributeContainer.Builder createGiantAttributes() {

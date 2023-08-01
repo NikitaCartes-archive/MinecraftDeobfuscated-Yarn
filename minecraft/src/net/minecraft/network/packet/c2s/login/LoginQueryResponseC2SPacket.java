@@ -5,45 +5,42 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 import net.minecraft.network.packet.Packet;
 
-public class LoginQueryResponseC2SPacket implements Packet<ServerLoginPacketListener> {
+public record LoginQueryResponseC2SPacket(int queryId, @Nullable LoginQueryResponsePayload response) implements Packet<ServerLoginPacketListener> {
 	private static final int MAX_PAYLOAD_SIZE = 1048576;
-	private final int queryId;
-	@Nullable
-	private final PacketByteBuf response;
 
-	public LoginQueryResponseC2SPacket(int queryId, @Nullable PacketByteBuf response) {
-		this.queryId = queryId;
-		this.response = response;
+	public static LoginQueryResponseC2SPacket read(PacketByteBuf buf) {
+		int i = buf.readVarInt();
+		return new LoginQueryResponseC2SPacket(i, readPayload(i, buf));
 	}
 
-	public LoginQueryResponseC2SPacket(PacketByteBuf buf) {
-		this.queryId = buf.readVarInt();
-		this.response = buf.readNullable(buf2 -> {
-			int i = buf2.readableBytes();
-			if (i >= 0 && i <= 1048576) {
-				return new PacketByteBuf(buf2.readBytes(i));
-			} else {
-				throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
-			}
-		});
+	/**
+	 * {@return the response payload read from {@code buf}}
+	 * 
+	 * @implNote This delegates the logic to {@link #getVanillaPayload},
+	 * which simply validates the size of the buffer and returns {@link
+	 * UnknownLoginQueryResponsePayload#INSTANCE}.
+	 */
+	private static LoginQueryResponsePayload readPayload(int queryId, PacketByteBuf buf) {
+		return getVanillaPayload(buf);
+	}
+
+	private static LoginQueryResponsePayload getVanillaPayload(PacketByteBuf buf) {
+		int i = buf.readableBytes();
+		if (i >= 0 && i <= 1048576) {
+			buf.skipBytes(i);
+			return UnknownLoginQueryResponsePayload.INSTANCE;
+		} else {
+			throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
+		}
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.queryId);
-		buf.writeNullable(this.response, (buf2, response) -> buf2.writeBytes(response.slice()));
+		buf.writeNullable(this.response, (bufx, response) -> response.write(bufx));
 	}
 
 	public void apply(ServerLoginPacketListener serverLoginPacketListener) {
 		serverLoginPacketListener.onQueryResponse(this);
-	}
-
-	public int getQueryId() {
-		return this.queryId;
-	}
-
-	@Nullable
-	public PacketByteBuf getResponse() {
-		return this.response;
 	}
 }

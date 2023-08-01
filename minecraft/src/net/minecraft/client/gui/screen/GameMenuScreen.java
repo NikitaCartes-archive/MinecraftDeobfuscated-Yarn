@@ -11,16 +11,19 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
 import net.minecraft.client.gui.screen.option.OptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.GridWidget;
 import net.minecraft.client.gui.widget.SimplePositioningWidget;
 import net.minecraft.client.gui.widget.TextWidget;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.realms.gui.screen.RealmsMainScreen;
+import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 
 @Environment(EnvType.CLIENT)
 public class GameMenuScreen extends Screen {
+	private static final Identifier DRAFT_REPORT_ICON_TEXTURE = new Identifier("icon/draft_report");
 	private static final int GRID_COLUMNS = 2;
 	private static final int BUTTONS_TOP_MARGIN = 50;
 	private static final int GRID_MARGIN = 4;
@@ -35,7 +38,6 @@ public class GameMenuScreen extends Screen {
 	private static final Text SHARE_TO_LAN_TEXT = Text.translatable("menu.shareToLan");
 	private static final Text PLAYER_REPORTING_TEXT = Text.translatable("menu.playerReporting");
 	private static final Text RETURN_TO_MENU_TEXT = Text.translatable("menu.returnToMenu");
-	private static final Text DISCONNECT_TEXT = Text.translatable("menu.disconnect");
 	private static final Text SAVING_LEVEL_TEXT = Text.translatable("menu.savingLevel");
 	private static final Text GAME_TEXT = Text.translatable("menu.game");
 	private static final Text PAUSED_TEXT = Text.translatable("menu.paused");
@@ -82,7 +84,7 @@ public class GameMenuScreen extends Screen {
 			adder.add(this.createButton(PLAYER_REPORTING_TEXT, SocialInteractionsScreen::new));
 		}
 
-		Text text = this.client.isInSingleplayer() ? RETURN_TO_MENU_TEXT : DISCONNECT_TEXT;
+		Text text = this.client.isInSingleplayer() ? RETURN_TO_MENU_TEXT : ScreenTexts.DISCONNECT;
 		this.exitButton = adder.add(ButtonWidget.builder(text, button -> {
 			button.active = false;
 			this.client.getAbuseReportContext().tryShowDraftScreen(this.client, this, this::disconnect, true);
@@ -94,7 +96,7 @@ public class GameMenuScreen extends Screen {
 
 	private void disconnect() {
 		boolean bl = this.client.isInSingleplayer();
-		boolean bl2 = this.client.isConnectedToRealms();
+		ServerInfo serverInfo = this.client.getCurrentServerEntry();
 		this.client.world.disconnect();
 		if (bl) {
 			this.client.disconnect(new MessageScreen(SAVING_LEVEL_TEXT));
@@ -105,7 +107,7 @@ public class GameMenuScreen extends Screen {
 		TitleScreen titleScreen = new TitleScreen();
 		if (bl) {
 			this.client.setScreen(titleScreen);
-		} else if (bl2) {
+		} else if (serverInfo != null && serverInfo.isRealm()) {
 			this.client.setScreen(new RealmsMainScreen(titleScreen));
 		} else {
 			this.client.setScreen(new MultiplayerScreen(titleScreen));
@@ -119,13 +121,16 @@ public class GameMenuScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		if (this.showMenu) {
-			this.renderBackground(context);
-		}
-
 		super.render(context, mouseX, mouseY, delta);
 		if (this.showMenu && this.client != null && this.client.getAbuseReportContext().hasDraft() && this.exitButton != null) {
-			context.drawTexture(ClickableWidget.WIDGETS_TEXTURE, this.exitButton.getX() + this.exitButton.getWidth() - 17, this.exitButton.getY() + 3, 182, 24, 15, 15);
+			context.drawGuiTexture(DRAFT_REPORT_ICON_TEXTURE, this.exitButton.getX() + this.exitButton.getWidth() - 17, this.exitButton.getY() + 3, 15, 15);
+		}
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		if (this.showMenu) {
+			super.renderBackground(context, mouseX, mouseY, delta);
 		}
 	}
 

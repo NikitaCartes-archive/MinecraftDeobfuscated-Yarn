@@ -74,11 +74,11 @@ public abstract class ScrollableWidget extends ClickableWidget implements Drawab
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		if (!this.visible) {
 			return false;
 		} else {
-			this.setScrollY(this.scrollY - amount * this.getDeltaYPerScroll());
+			this.setScrollY(this.scrollY - verticalAmount * this.getDeltaYPerScroll());
 			return true;
 		}
 	}

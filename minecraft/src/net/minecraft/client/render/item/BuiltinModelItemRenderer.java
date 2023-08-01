@@ -48,13 +48,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShieldItem;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
@@ -93,22 +90,11 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloader {
 		Item item = stack.getItem();
 		if (item instanceof BlockItem) {
 			Block block = ((BlockItem)item).getBlock();
-			if (block instanceof AbstractSkullBlock) {
-				GameProfile gameProfile = null;
-				if (stack.hasNbt()) {
-					NbtCompound nbtCompound = stack.getNbt();
-					if (nbtCompound.contains("SkullOwner", NbtElement.COMPOUND_TYPE)) {
-						gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
-					} else if (nbtCompound.contains("SkullOwner", NbtElement.STRING_TYPE) && !Util.isBlank(nbtCompound.getString("SkullOwner"))) {
-						gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
-						nbtCompound.remove("SkullOwner");
-						SkullBlockEntity.loadProperties(gameProfile, profile -> nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), profile)));
-					}
-				}
-
-				SkullBlock.SkullType skullType = ((AbstractSkullBlock)block).getSkullType();
-				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.skullModels.get(skullType);
-				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
+			if (block instanceof AbstractSkullBlock abstractSkullBlock) {
+				NbtCompound nbtCompound = stack.getNbt();
+				GameProfile gameProfile = nbtCompound != null ? SkullBlockEntity.getProfile(nbtCompound) : null;
+				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.skullModels.get(abstractSkullBlock.getSkullType());
+				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(abstractSkullBlock.getSkullType(), gameProfile);
 				SkullBlockEntityRenderer.renderSkull(null, 180.0F, 0.0F, matrices, vertexConsumers, light, skullBlockEntityModel, renderLayer);
 			} else {
 				BlockState blockState = block.getDefaultState();

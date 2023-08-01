@@ -19,12 +19,13 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.SpriteContents;
 import net.minecraft.client.texture.SpriteDimensions;
+import net.minecraft.client.texture.SpriteOpener;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.metadata.ResourceMetadata;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ColorHelper;
 import org.slf4j.Logger;
@@ -34,11 +35,9 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 	static final Logger LOGGER = LogUtils.getLogger();
 	public static final Codec<PalettedPermutationsAtlasSource> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.list(Identifier.CODEC).fieldOf("textures").forGetter(palettedPermutationsAtlasSource -> palettedPermutationsAtlasSource.textures),
-					Identifier.CODEC.fieldOf("palette_key").forGetter(palettedPermutationsAtlasSource -> palettedPermutationsAtlasSource.paletteKey),
-					Codec.unboundedMap(Codec.STRING, Identifier.CODEC)
-						.fieldOf("permutations")
-						.forGetter(palettedPermutationsAtlasSource -> palettedPermutationsAtlasSource.permutations)
+					Codec.list(Identifier.CODEC).fieldOf("textures").forGetter(source -> source.textures),
+					Identifier.CODEC.fieldOf("palette_key").forGetter(source -> source.paletteKey),
+					Codec.unboundedMap(Codec.STRING, Identifier.CODEC).fieldOf("permutations").forGetter(source -> source.permutations)
 				)
 				.apply(instance, PalettedPermutationsAtlasSource::new)
 	);
@@ -54,10 +53,9 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 
 	@Override
 	public void load(ResourceManager resourceManager, AtlasSource.SpriteRegions regions) {
-		Supplier<int[]> supplier = Suppliers.memoize(() -> method_48486(resourceManager, this.paletteKey));
+		Supplier<int[]> supplier = Suppliers.memoize(() -> open(resourceManager, this.paletteKey));
 		Map<String, Supplier<IntUnaryOperator>> map = new HashMap();
-		this.permutations
-			.forEach((string, identifierx) -> map.put(string, Suppliers.memoize(() -> method_48492((int[])supplier.get(), method_48486(resourceManager, identifierx)))));
+		this.permutations.forEach((key, texture) -> map.put(key, Suppliers.memoize(() -> toMapper((int[])supplier.get(), open(resourceManager, texture)))));
 
 		for(Identifier identifier : this.textures) {
 			Identifier identifier2 = RESOURCE_FINDER.toResourcePath(identifier);
@@ -75,38 +73,38 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 		}
 	}
 
-	private static IntUnaryOperator method_48492(int[] is, int[] js) {
-		if (js.length != is.length) {
-			LOGGER.warn("Palette mapping has different sizes: {} and {}", is.length, js.length);
+	private static IntUnaryOperator toMapper(int[] from, int[] to) {
+		if (to.length != from.length) {
+			LOGGER.warn("Palette mapping has different sizes: {} and {}", from.length, to.length);
 			throw new IllegalArgumentException();
 		} else {
-			Int2IntMap int2IntMap = new Int2IntOpenHashMap(js.length);
+			Int2IntMap int2IntMap = new Int2IntOpenHashMap(to.length);
 
-			for(int i = 0; i < is.length; ++i) {
-				int j = is[i];
+			for(int i = 0; i < from.length; ++i) {
+				int j = from[i];
 				if (ColorHelper.Abgr.getAlpha(j) != 0) {
-					int2IntMap.put(ColorHelper.Abgr.getBgr(j), js[i]);
+					int2IntMap.put(ColorHelper.Abgr.getBgr(j), to[i]);
 				}
 			}
 
-			return ix -> {
-				int jxx = ColorHelper.Abgr.getAlpha(ix);
-				if (jxx == 0) {
-					return ix;
+			return color -> {
+				int ixx = ColorHelper.Abgr.getAlpha(color);
+				if (ixx == 0) {
+					return color;
 				} else {
-					int k = ColorHelper.Abgr.getBgr(ix);
-					int l = int2IntMap.getOrDefault(k, ColorHelper.Abgr.toOpaque(k));
-					int m = ColorHelper.Abgr.getAlpha(l);
-					return ColorHelper.Abgr.withAlpha(jxx * m / 255, l);
+					int jxx = ColorHelper.Abgr.getBgr(color);
+					int k = int2IntMap.getOrDefault(jxx, ColorHelper.Abgr.toOpaque(jxx));
+					int l = ColorHelper.Abgr.getAlpha(k);
+					return ColorHelper.Abgr.withAlpha(ixx * l / 255, k);
 				}
 			};
 		}
 	}
 
-	public static int[] method_48486(ResourceManager resourceManager, Identifier identifier) {
-		Optional<Resource> optional = resourceManager.getResource(RESOURCE_FINDER.toResourcePath(identifier));
+	public static int[] open(ResourceManager resourceManager, Identifier texture) {
+		Optional<Resource> optional = resourceManager.getResource(RESOURCE_FINDER.toResourcePath(texture));
 		if (optional.isEmpty()) {
-			LOGGER.error("Failed to load palette image {}", identifier);
+			LOGGER.error("Failed to load palette image {}", texture);
 			throw new IllegalArgumentException();
 		} else {
 			try {
@@ -133,7 +131,7 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 
 				return var5;
 			} catch (Exception var11) {
-				LOGGER.error("Couldn't load texture {}", identifier, var11);
+				LOGGER.error("Couldn't load texture {}", texture, var11);
 				throw new IllegalArgumentException();
 			}
 		}
@@ -147,21 +145,21 @@ public class PalettedPermutationsAtlasSource implements AtlasSource {
 	@Environment(EnvType.CLIENT)
 	static record PalettedSpriteRegion(Sprite baseImage, Supplier<IntUnaryOperator> palette, Identifier permutationLocation) implements AtlasSource.SpriteRegion {
 		@Nullable
-		public SpriteContents get() {
-			Object var2;
+		public SpriteContents apply(SpriteOpener spriteOpener) {
+			Object var3;
 			try {
 				NativeImage nativeImage = this.baseImage.read().applyToCopy((IntUnaryOperator)this.palette.get());
 				return new SpriteContents(
-					this.permutationLocation, new SpriteDimensions(nativeImage.getWidth(), nativeImage.getHeight()), nativeImage, AnimationResourceMetadata.EMPTY
+					this.permutationLocation, new SpriteDimensions(nativeImage.getWidth(), nativeImage.getHeight()), nativeImage, ResourceMetadata.NONE
 				);
-			} catch (IllegalArgumentException | IOException var6) {
-				PalettedPermutationsAtlasSource.LOGGER.error("unable to apply palette to {}", this.permutationLocation, var6);
-				var2 = null;
+			} catch (IllegalArgumentException | IOException var7) {
+				PalettedPermutationsAtlasSource.LOGGER.error("unable to apply palette to {}", this.permutationLocation, var7);
+				var3 = null;
 			} finally {
 				this.baseImage.close();
 			}
 
-			return (SpriteContents)var2;
+			return (SpriteContents)var3;
 		}
 
 		@Override

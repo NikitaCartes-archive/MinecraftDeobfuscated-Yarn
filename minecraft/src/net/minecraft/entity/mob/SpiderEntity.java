@@ -3,6 +3,7 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityGroup;
@@ -41,6 +42,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 
 public class SpiderEntity extends HostileEntity {
 	/**
@@ -68,8 +70,8 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	public double getMountedHeightOffset() {
-		return (double)(this.getHeight() * 0.5F);
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height * 0.85F, 0.0F);
 	}
 
 	@Override
@@ -188,6 +190,11 @@ public class SpiderEntity extends HostileEntity {
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 0.65F;
+	}
+
+	@Override
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return vehicle.getWidth() <= this.getWidth() ? -0.3125F : 0.0F;
 	}
 
 	static class AttackGoal extends MeleeAttackGoal {

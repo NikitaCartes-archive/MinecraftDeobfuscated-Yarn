@@ -114,7 +114,7 @@ public class IntegratedServerLoader {
 			return null;
 		} catch (SymlinkValidationException var4) {
 			LOGGER.warn("{}", var4.getMessage());
-			this.client.setScreen(new SymlinkWarningScreen(null));
+			this.client.setScreen(SymlinkWarningScreen.world(null));
 			return null;
 		}
 	}

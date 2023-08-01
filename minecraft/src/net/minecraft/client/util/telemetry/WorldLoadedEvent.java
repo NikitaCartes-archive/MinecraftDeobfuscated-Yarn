@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -29,7 +30,8 @@ public class WorldLoadedEvent {
 	}
 
 	private TelemetryEventProperty.ServerType getServerType() {
-		if (MinecraftClient.getInstance().isConnectedToRealms()) {
+		ServerInfo serverInfo = MinecraftClient.getInstance().getCurrentServerEntry();
+		if (serverInfo != null && serverInfo.isRealm()) {
 			return TelemetryEventProperty.ServerType.REALM;
 		} else {
 			return MinecraftClient.getInstance().isIntegratedServerRunning() ? TelemetryEventProperty.ServerType.LOCAL : TelemetryEventProperty.ServerType.OTHER;

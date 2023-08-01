@@ -20,7 +20,6 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class AdvancementsScreen extends Screen implements ClientAdvancementManager.Listener {
 	private static final Identifier WINDOW_TEXTURE = new Identifier("textures/gui/advancements/window.png");
-	public static final Identifier TABS_TEXTURE = new Identifier("textures/gui/advancements/tabs.png");
 	public static final int WINDOW_WIDTH = 252;
 	public static final int WINDOW_HEIGHT = 140;
 	private static final int PAGE_OFFSET_X = 9;
@@ -33,6 +32,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	public static final int field_32303 = 16;
 	public static final int field_32304 = 14;
 	public static final int field_32305 = 7;
+	private static final double field_45431 = 16.0;
 	private static final Text SAD_LABEL_TEXT = Text.translatable("advancements.sad_label");
 	private static final Text EMPTY_TEXT = Text.translatable("advancements.empty");
 	private static final Text ADVANCEMENTS_TEXT = Text.translatable("gui.advancements");
@@ -100,7 +100,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		int i = (this.width - 252) / 2;
 		int j = (this.height - 140) / 2;
-		this.renderBackground(context);
+		this.renderBackground(context, mouseX, mouseY, delta);
 		this.drawAdvancementTree(context, mouseX, mouseY, i, j);
 		this.drawWindow(context, i, j);
 		this.drawWidgetTooltip(context, mouseX, mouseY, i, j);
@@ -119,6 +119,16 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 			}
 
 			return true;
+		}
+	}
+
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		if (this.selectedTab != null) {
+			this.selectedTab.move(horizontalAmount * 16.0, verticalAmount * 16.0);
+			return true;
+		} else {
+			return false;
 		}
 	}
 

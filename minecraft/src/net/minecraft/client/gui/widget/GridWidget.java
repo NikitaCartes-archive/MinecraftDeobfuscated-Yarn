@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.Divider;
 import net.minecraft.util.math.MathHelper;
 
@@ -104,6 +105,10 @@ public class GridWidget extends WrapperWidget {
 		return this.add(widget, row, column, 1, 1, positioner);
 	}
 
+	public <T extends Widget> T add(T widget, int row, int column, Consumer<Positioner> callback) {
+		return this.add(widget, row, column, 1, 1, Util.make(this.copyPositioner(), callback));
+	}
+
 	public <T extends Widget> T add(T widget, int row, int column, int occupiedRows, int occupiedColumns) {
 		return this.add(widget, row, column, occupiedRows, occupiedColumns, this.copyPositioner());
 	}
@@ -118,6 +123,10 @@ public class GridWidget extends WrapperWidget {
 			this.children.add(widget);
 			return widget;
 		}
+	}
+
+	public <T extends Widget> T add(T widget, int row, int column, int occupiedBelow, int occupiedAbove, Consumer<Positioner> callback) {
+		return this.add(widget, row, column, occupiedBelow, occupiedAbove, Util.make(this.copyPositioner(), callback));
 	}
 
 	public GridWidget setColumnSpacing(int columnSpacing) {

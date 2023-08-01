@@ -72,7 +72,7 @@ public class NbtIo {
 
 		NbtCompound var2;
 		try {
-			var2 = read(dataInputStream, NbtTagSizeTracker.EMPTY);
+			var2 = readCompound(dataInputStream, NbtTagSizeTracker.EMPTY);
 		} catch (Throwable var5) {
 			if (dataInputStream != null) {
 				try {
@@ -186,7 +186,7 @@ public class NbtIo {
 		DataOutputStream dataOutputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(stream)));
 
 		try {
-			write(nbt, dataOutputStream);
+			writeCompound(nbt, dataOutputStream);
 		} catch (Throwable var6) {
 			try {
 				dataOutputStream.close();
@@ -213,7 +213,7 @@ public class NbtIo {
 			DataOutputStream dataOutputStream = new DataOutputStream(fileOutputStream);
 
 			try {
-				write(nbt, dataOutputStream);
+				writeCompound(nbt, dataOutputStream);
 			} catch (Throwable var8) {
 				try {
 					dataOutputStream.close();
@@ -257,7 +257,7 @@ public class NbtIo {
 				DataInputStream dataInputStream = new DataInputStream(fileInputStream);
 
 				try {
-					var3 = read(dataInputStream, NbtTagSizeTracker.EMPTY);
+					var3 = readCompound(dataInputStream, NbtTagSizeTracker.EMPTY);
 				} catch (Throwable var7) {
 					try {
 						dataInputStream.close();
@@ -291,8 +291,8 @@ public class NbtIo {
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
 	 */
-	public static NbtCompound read(DataInput input) throws IOException {
-		return read(input, NbtTagSizeTracker.EMPTY);
+	public static NbtCompound readCompound(DataInput input) throws IOException {
+		return readCompound(input, NbtTagSizeTracker.EMPTY);
 	}
 
 	/**
@@ -302,7 +302,7 @@ public class NbtIo {
 	 * @throws IOException if the IO operation fails or if the root NBT element is
 	 * not a compound
 	 */
-	public static NbtCompound read(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+	public static NbtCompound readCompound(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 		NbtElement nbtElement = read(input, 0, tracker);
 		if (nbtElement instanceof NbtCompound) {
 			return (NbtCompound)nbtElement;
@@ -312,13 +312,13 @@ public class NbtIo {
 	}
 
 	/**
-	 * Writes the {@code nbt} to {@code file}.
+	 * Writes the {@code nbt} to {@code output}.
 	 * 
 	 * @throws IOException if the IO operation fails
 	 * @see #write(NbtCompound, File)
 	 */
-	public static void write(NbtCompound nbt, DataOutput output) throws IOException {
-		write((NbtElement)nbt, output);
+	public static void writeCompound(NbtCompound nbt, DataOutput output) throws IOException {
+		write(nbt, output);
 	}
 
 	/**
@@ -352,6 +352,44 @@ public class NbtIo {
 		}
 	}
 
+	/**
+	 * Reads an NBT element from {@code input}. Unlike {@link
+	 * #readCompound(DataInput, NbtTagSizeTracker)}, the element does not have to
+	 * be a compound.
+	 * 
+	 * @return the NBT element from the input
+	 * @throws IOException if the IO operation fails
+	 */
+	public static NbtElement read(DataInput input, NbtTagSizeTracker tracker) throws IOException {
+		byte b = input.readByte();
+		return (NbtElement)(b == 0 ? NbtEnd.INSTANCE : read(input, 0, tracker, b));
+	}
+
+	/**
+	 * Writes the {@code nbt} to {@code output}. The output is the byte indicating
+	 * the element type, followed by the NBT data.
+	 * 
+	 * @apiNote In vanilla, this is used exclusively in networking.
+	 * @throws IOException if the IO operation fails
+	 * @see #read(DataInput, NbtTagSizeTracker)
+	 * @see #write(NbtElement, DataOutput)
+	 */
+	public static void writeForPacket(NbtElement nbt, DataOutput output) throws IOException {
+		output.writeByte(nbt.getType());
+		if (nbt.getType() != 0) {
+			nbt.write(output);
+		}
+	}
+
+	/**
+	 * Writes the {@code nbt} to {@code output}. The output is the byte indicating
+	 * the element type, followed by {@linkplain DataOutput#writeUTF an empty string}
+	 * and the NBT data.
+	 * 
+	 * @throws IOException if the IO operation fails
+	 * @see #read(DataInput, NbtTagSizeTracker)
+	 * @see #writeForPacket(NbtElement, DataOutput)
+	 */
 	public static void write(NbtElement nbt, DataOutput output) throws IOException {
 		output.writeByte(nbt.getType());
 		if (nbt.getType() != 0) {
@@ -366,15 +404,18 @@ public class NbtIo {
 			return NbtEnd.INSTANCE;
 		} else {
 			NbtString.skip(input);
+			return read(input, depth, tracker, b);
+		}
+	}
 
-			try {
-				return NbtTypes.byId(b).read(input, depth, tracker);
-			} catch (IOException var7) {
-				CrashReport crashReport = CrashReport.create(var7, "Loading NBT data");
-				CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
-				crashReportSection.add("Tag type", b);
-				throw new CrashException(crashReport);
-			}
+	private static NbtElement read(DataInput input, int depth, NbtTagSizeTracker tracker, byte type) {
+		try {
+			return NbtTypes.byId(type).read(input, depth, tracker);
+		} catch (IOException var7) {
+			CrashReport crashReport = CrashReport.create(var7, "Loading NBT data");
+			CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
+			crashReportSection.add("Tag type", type);
+			throw new CrashException(crashReport);
 		}
 	}
 }

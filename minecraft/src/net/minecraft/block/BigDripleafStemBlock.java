@@ -96,7 +96,7 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Ferti
 	}
 
 	@Override
-	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
 		Optional<BlockPos> optional = BlockLocating.findColumnEnd(world, pos, state.getBlock(), Direction.UP, Blocks.BIG_DRIPLEAF);
 		if (!optional.isPresent()) {
 			return false;

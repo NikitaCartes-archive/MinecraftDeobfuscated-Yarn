@@ -19,7 +19,16 @@ import net.minecraft.village.VillagerData;
 
 @Environment(EnvType.CLIENT)
 public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager2.png");
+	private static final Identifier OUT_OF_STOCK_TEXTURE = new Identifier("container/villager/out_of_stock");
+	private static final Identifier EXPERIENCE_BAR_BACKGROUND_TEXTURE = new Identifier("container/villager/experience_bar_background");
+	private static final Identifier EXPERIENCE_BAR_CURRENT_TEXTURE = new Identifier("container/villager/experience_bar_current");
+	private static final Identifier EXPERIENCE_BAR_RESULT_TEXTURE = new Identifier("container/villager/experience_bar_result");
+	private static final Identifier SCROLLER_TEXTURE = new Identifier("container/villager/scroller");
+	private static final Identifier SCROLLER_DISABLED_TEXTURE = new Identifier("container/villager/scroller_disabled");
+	private static final Identifier TRADE_ARROW_OUT_OF_STOCK_TEXTURE = new Identifier("container/villager/trade_arrow_out_of_stock");
+	private static final Identifier TRADE_ARROW_TEXTURE = new Identifier("container/villager/trade_arrow");
+	private static final Identifier DISCOUNT_STRIKETHROUGH_TEXTURE = new Identifier("container/villager/discount_strikethrough");
+	private static final Identifier TEXTURE = new Identifier("textures/gui/container/villager.png");
 	private static final int TEXTURE_WIDTH = 512;
 	private static final int TEXTURE_HEIGHT = 256;
 	private static final int field_32356 = 99;
@@ -107,7 +116,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 
 			TradeOffer tradeOffer = (TradeOffer)tradeOfferList.get(k);
 			if (tradeOffer.isDisabled()) {
-				context.drawTexture(TEXTURE, this.x + 83 + 99, this.y + 35, 0, 311.0F, 0.0F, 28, 21, 512, 256);
+				context.drawGuiTexture(OUT_OF_STOCK_TEXTURE, this.x + 83 + 99, this.y + 35, 0, 28, 21);
 			}
 		}
 	}
@@ -116,17 +125,17 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 		int i = this.handler.getLevelProgress();
 		int j = this.handler.getExperience();
 		if (i < 5) {
-			context.drawTexture(TEXTURE, x + 136, y + 16, 0, 0.0F, 186.0F, 102, 5, 512, 256);
+			context.drawGuiTexture(EXPERIENCE_BAR_BACKGROUND_TEXTURE, x + 136, y + 16, 0, 102, 5);
 			int k = VillagerData.getLowerLevelExperience(i);
 			if (j >= k && VillagerData.canLevelUp(i)) {
-				int l = 100;
-				float f = 100.0F / (float)(VillagerData.getUpperLevelExperience(i) - k);
-				int m = Math.min(MathHelper.floor(f * (float)(j - k)), 100);
-				context.drawTexture(TEXTURE, x + 136, y + 16, 0, 0.0F, 191.0F, m + 1, 5, 512, 256);
+				int l = 102;
+				float f = 102.0F / (float)(VillagerData.getUpperLevelExperience(i) - k);
+				int m = Math.min(MathHelper.floor(f * (float)(j - k)), 102);
+				context.drawGuiTexture(EXPERIENCE_BAR_CURRENT_TEXTURE, 102, 5, 0, 0, x + 136, y + 16, 0, m, 5);
 				int n = this.handler.getMerchantRewardedExperience();
 				if (n > 0) {
-					int o = Math.min(MathHelper.floor((float)n * f), 100 - m);
-					context.drawTexture(TEXTURE, x + 136 + m + 1, y + 16 + 1, 0, 2.0F, 182.0F, o, 3, 512, 256);
+					int o = Math.min(MathHelper.floor((float)n * f), 102 - m);
+					context.drawGuiTexture(EXPERIENCE_BAR_RESULT_TEXTURE, 102, 5, m, 0, x + 136 + m, y + 16, 0, o, 5);
 				}
 			}
 		}
@@ -143,15 +152,14 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 				m = 113;
 			}
 
-			context.drawTexture(TEXTURE, x + 94, y + 18 + m, 0, 0.0F, 199.0F, 6, 27, 512, 256);
+			context.drawGuiTexture(SCROLLER_TEXTURE, x + 94, y + 18 + m, 0, 6, 27);
 		} else {
-			context.drawTexture(TEXTURE, x + 94, y + 18, 0, 6.0F, 199.0F, 6, 27, 512, 256);
+			context.drawGuiTexture(SCROLLER_DISABLED_TEXTURE, x + 94, y + 18, 0, 6, 27);
 		}
 	}
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
 		super.render(context, mouseX, mouseY, delta);
 		TradeOfferList tradeOfferList = this.handler.getRecipes();
 		if (!tradeOfferList.isEmpty()) {
@@ -215,9 +223,9 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	private void renderArrow(DrawContext context, TradeOffer tradeOffer, int x, int y) {
 		RenderSystem.enableBlend();
 		if (tradeOffer.isDisabled()) {
-			context.drawTexture(TEXTURE, x + 5 + 35 + 20, y + 3, 0, 25.0F, 171.0F, 10, 9, 512, 256);
+			context.drawGuiTexture(TRADE_ARROW_OUT_OF_STOCK_TEXTURE, x + 5 + 35 + 20, y + 3, 0, 10, 9);
 		} else {
-			context.drawTexture(TEXTURE, x + 5 + 35 + 20, y + 3, 0, 15.0F, 171.0F, 10, 9, 512, 256);
+			context.drawGuiTexture(TRADE_ARROW_TEXTURE, x + 5 + 35 + 20, y + 3, 0, 10, 9);
 		}
 	}
 
@@ -230,7 +238,7 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 			context.drawItemInSlot(this.textRenderer, adjustedFirstBuyItem, x + 14, y, adjustedFirstBuyItem.getCount() == 1 ? "1" : null);
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, 300.0F);
-			context.drawTexture(TEXTURE, x + 7, y + 12, 0, 0.0F, 176.0F, 9, 2, 512, 256);
+			context.drawGuiTexture(DISCOUNT_STRIKETHROUGH_TEXTURE, x + 7, y + 12, 0, 9, 2);
 			context.getMatrices().pop();
 		}
 	}
@@ -240,11 +248,11 @@ public class MerchantScreen extends HandledScreen<MerchantScreenHandler> {
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		int i = this.handler.getRecipes().size();
 		if (this.canScroll(i)) {
 			int j = i - 7;
-			this.indexStartOffset = MathHelper.clamp((int)((double)this.indexStartOffset - amount), 0, j);
+			this.indexStartOffset = MathHelper.clamp((int)((double)this.indexStartOffset - verticalAmount), 0, j);
 		}
 
 		return true;

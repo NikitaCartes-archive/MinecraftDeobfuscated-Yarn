@@ -44,6 +44,9 @@ import org.slf4j.Logger;
 public class EntityTrackerEntry {
 	private static final Logger LOGGER = LogUtils.getLogger();
 	private static final int field_29767 = 1;
+	private static final double field_44988 = 7.6293945E-6F;
+	public static final int field_44987 = 60;
+	private static final int field_44989 = 400;
 	private final ServerWorld world;
 	private final Entity entity;
 	private final int tickInterval;

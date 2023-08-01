@@ -38,6 +38,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class LoomScreen extends HandledScreen<LoomScreenHandler> {
+	private static final Identifier BANNER_SLOT_TEXTURE = new Identifier("container/loom/banner_slot");
+	private static final Identifier DYE_SLOT_TEXTURE = new Identifier("container/loom/dye_slot");
+	private static final Identifier PATTERN_SLOT_TEXTURE = new Identifier("container/loom/pattern_slot");
+	private static final Identifier SCROLLER_TEXTURE = new Identifier("container/loom/scroller");
+	private static final Identifier SCROLLER_DISABLED_TEXTURE = new Identifier("container/loom/scroller_disabled");
+	private static final Identifier PATTERN_SELECTED_TEXTURE = new Identifier("container/loom/pattern_selected");
+	private static final Identifier PATTERN_HIGHLIGHTED_TEXTURE = new Identifier("container/loom/pattern_highlighted");
+	private static final Identifier PATTERN_TEXTURE = new Identifier("container/loom/pattern");
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
 	private static final int PATTERN_LIST_COLUMNS = 4;
 	private static final int PATTERN_LIST_ROWS = 4;
@@ -83,28 +91,27 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 
 	@Override
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-		this.renderBackground(context);
 		int i = this.x;
 		int j = this.y;
 		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
 		Slot slot = this.handler.getBannerSlot();
 		Slot slot2 = this.handler.getDyeSlot();
 		Slot slot3 = this.handler.getPatternSlot();
-		Slot slot4 = this.handler.getOutputSlot();
 		if (!slot.hasStack()) {
-			context.drawTexture(TEXTURE, i + slot.x, j + slot.y, this.backgroundWidth, 0, 16, 16);
+			context.drawGuiTexture(BANNER_SLOT_TEXTURE, i + slot.x, j + slot.y, 16, 16);
 		}
 
 		if (!slot2.hasStack()) {
-			context.drawTexture(TEXTURE, i + slot2.x, j + slot2.y, this.backgroundWidth + 16, 0, 16, 16);
+			context.drawGuiTexture(DYE_SLOT_TEXTURE, i + slot2.x, j + slot2.y, 16, 16);
 		}
 
 		if (!slot3.hasStack()) {
-			context.drawTexture(TEXTURE, i + slot3.x, j + slot3.y, this.backgroundWidth + 32, 0, 16, 16);
+			context.drawGuiTexture(PATTERN_SLOT_TEXTURE, i + slot3.x, j + slot3.y, 16, 16);
 		}
 
 		int k = (int)(41.0F * this.scrollPosition);
-		context.drawTexture(TEXTURE, i + 119, j + 13 + k, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
+		Identifier identifier = this.canApplyDyePattern ? SCROLLER_TEXTURE : SCROLLER_DISABLED_TEXTURE;
+		context.drawGuiTexture(identifier, i + 119, j + 13 + k, 12, 15);
 		DiffuseLighting.disableGuiDepthLighting();
 		if (this.bannerPatterns != null && !this.hasTooManyPatterns) {
 			context.getMatrices().push();
@@ -127,8 +134,6 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			);
 			context.getMatrices().pop();
 			context.draw();
-		} else if (this.hasTooManyPatterns) {
-			context.drawTexture(TEXTURE, i + slot4.x - 2, j + slot4.y - 2, this.backgroundWidth, 17, 17, 16);
 		}
 
 		if (this.canApplyDyePattern) {
@@ -148,16 +153,16 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 					int r = l + o * 14;
 					int s = m + n * 14;
 					boolean bl = mouseX >= r && mouseY >= s && mouseX < r + 14 && mouseY < s + 14;
-					int t;
+					Identifier identifier2;
 					if (q == this.handler.getSelectedPattern()) {
-						t = this.backgroundHeight + 14;
+						identifier2 = PATTERN_SELECTED_TEXTURE;
 					} else if (bl) {
-						t = this.backgroundHeight + 28;
+						identifier2 = PATTERN_HIGHLIGHTED_TEXTURE;
 					} else {
-						t = this.backgroundHeight;
+						identifier2 = PATTERN_TEXTURE;
 					}
 
-					context.drawTexture(TEXTURE, r, s, 0, t, 14, 14);
+					context.drawGuiTexture(identifier2, r, s, 14, 14);
 					this.drawBanner(context, (RegistryEntry<BannerPattern>)list.get(q), r, s);
 				}
 			}
@@ -237,10 +242,10 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+	public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
 		int i = this.getRows() - 4;
 		if (this.canApplyDyePattern && i > 0) {
-			float f = (float)amount / (float)i;
+			float f = (float)verticalAmount / (float)i;
 			this.scrollPosition = MathHelper.clamp(this.scrollPosition - f, 0.0F, 1.0F);
 			this.visibleTopRow = Math.max((int)(this.scrollPosition * (float)i + 0.5F), 0);
 		}

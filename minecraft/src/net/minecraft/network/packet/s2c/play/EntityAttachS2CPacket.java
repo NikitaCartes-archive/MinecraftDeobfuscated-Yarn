@@ -7,23 +7,23 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 
 public class EntityAttachS2CPacket implements Packet<ClientPlayPacketListener> {
-	private final int attachedId;
-	private final int holdingId;
+	private final int attachedEntityId;
+	private final int holdingEntityId;
 
 	public EntityAttachS2CPacket(Entity attachedEntity, @Nullable Entity holdingEntity) {
-		this.attachedId = attachedEntity.getId();
-		this.holdingId = holdingEntity != null ? holdingEntity.getId() : 0;
+		this.attachedEntityId = attachedEntity.getId();
+		this.holdingEntityId = holdingEntity != null ? holdingEntity.getId() : 0;
 	}
 
 	public EntityAttachS2CPacket(PacketByteBuf buf) {
-		this.attachedId = buf.readInt();
-		this.holdingId = buf.readInt();
+		this.attachedEntityId = buf.readInt();
+		this.holdingEntityId = buf.readInt();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.writeInt(this.attachedId);
-		buf.writeInt(this.holdingId);
+		buf.writeInt(this.attachedEntityId);
+		buf.writeInt(this.holdingEntityId);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -31,10 +31,10 @@ public class EntityAttachS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public int getAttachedEntityId() {
-		return this.attachedId;
+		return this.attachedEntityId;
 	}
 
 	public int getHoldingEntityId() {
-		return this.holdingId;
+		return this.holdingEntityId;
 	}
 }

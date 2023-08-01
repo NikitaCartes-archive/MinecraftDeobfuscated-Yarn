@@ -1,12 +1,9 @@
 package net.minecraft.recipe;
 
-import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.DecoratedPotBlockEntity;
 import net.minecraft.inventory.RecipeInputInventory;
-import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.book.CraftingRecipeCategory;
 import net.minecraft.registry.DynamicRegistryManager;
 import net.minecraft.registry.tag.ItemTags;
@@ -54,14 +51,7 @@ public class CraftingDecoratedPotRecipe extends SpecialCraftingRecipe {
 			recipeInputInventory.getStack(5).getItem(),
 			recipeInputInventory.getStack(7).getItem()
 		);
-		return getPotStackWith(sherds);
-	}
-
-	public static ItemStack getPotStackWith(DecoratedPotBlockEntity.Sherds sherds) {
-		ItemStack itemStack = Items.DECORATED_POT.getDefaultStack();
-		NbtCompound nbtCompound = sherds.toNbt(new NbtCompound());
-		BlockItem.setBlockEntityNbt(itemStack, BlockEntityType.DECORATED_POT, nbtCompound);
-		return itemStack;
+		return DecoratedPotBlockEntity.getStackWith(sherds);
 	}
 
 	@Override

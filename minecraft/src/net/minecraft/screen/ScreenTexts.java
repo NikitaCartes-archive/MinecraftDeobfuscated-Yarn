@@ -22,6 +22,7 @@ public class ScreenTexts {
 	public static final Text ACKNOWLEDGE = Text.translatable("gui.acknowledge");
 	public static final Text OPEN_LINK = Text.translatable("chat.link.open");
 	public static final Text COPY_LINK_TO_CLIPBOARD = Text.translatable("gui.copy_link_to_clipboard");
+	public static final Text DISCONNECT = Text.translatable("menu.disconnect");
 	public static final Text CONNECT_FAILED = Text.translatable("connect.failed");
 	public static final Text LINE_BREAK = Text.literal("\n");
 	public static final Text SENTENCE_SEPARATOR = Text.literal(". ");

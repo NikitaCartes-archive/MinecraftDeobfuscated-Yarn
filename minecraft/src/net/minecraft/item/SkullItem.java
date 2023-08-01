@@ -1,13 +1,10 @@
 package net.minecraft.item;
 
-import com.mojang.authlib.GameProfile;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.Text;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.Direction;
 
 public class SkullItem extends VerticallyAttachableBlockItem {
@@ -42,9 +39,6 @@ public class SkullItem extends VerticallyAttachableBlockItem {
 	@Override
 	public void postProcessNbt(NbtCompound nbt) {
 		super.postProcessNbt(nbt);
-		if (nbt.contains("SkullOwner", NbtElement.STRING_TYPE) && !Util.isBlank(nbt.getString("SkullOwner"))) {
-			GameProfile gameProfile = new GameProfile(null, nbt.getString("SkullOwner"));
-			SkullBlockEntity.loadProperties(gameProfile, profile -> nbt.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), profile)));
-		}
+		SkullBlockEntity.fillSkullOwner(nbt);
 	}
 }

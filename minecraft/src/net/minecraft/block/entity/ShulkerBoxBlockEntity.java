@@ -72,6 +72,10 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 				break;
 			case OPENING:
 				this.animationProgress += 0.1F;
+				if (this.prevAnimationProgress == 0.0F) {
+					updateNeighborStates(world, pos, state);
+				}
+
 				if (this.animationProgress >= 1.0F) {
 					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
 					this.animationProgress = 1.0F;
@@ -82,6 +86,10 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 				break;
 			case CLOSING:
 				this.animationProgress -= 0.1F;
+				if (this.prevAnimationProgress == 1.0F) {
+					updateNeighborStates(world, pos, state);
+				}
+
 				if (this.animationProgress <= 0.0F) {
 					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
 					this.animationProgress = 0.0F;
@@ -135,12 +143,10 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			this.viewerCount = data;
 			if (data == 0) {
 				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSING;
-				updateNeighborStates(this.getWorld(), this.pos, this.getCachedState());
 			}
 
 			if (data == 1) {
 				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENING;
-				updateNeighborStates(this.getWorld(), this.pos, this.getCachedState());
 			}
 
 			return true;
@@ -151,6 +157,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 	private static void updateNeighborStates(World world, BlockPos pos, BlockState state) {
 		state.updateNeighbors(world, pos, Block.NOTIFY_ALL);
+		world.updateNeighborsAlways(pos, state.getBlock());
 	}
 
 	@Override

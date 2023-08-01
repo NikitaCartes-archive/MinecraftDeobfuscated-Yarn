@@ -16,6 +16,11 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CartographyTableScreen extends HandledScreen<CartographyTableScreenHandler> {
+	private static final Identifier ERROR_TEXTURE = new Identifier("container/cartography_table/error");
+	private static final Identifier SCALED_MAP_TEXTURE = new Identifier("container/cartography_table/scaled_map");
+	private static final Identifier DUPLICATED_MAP_TEXTURE = new Identifier("container/cartography_table/duplicated_map");
+	private static final Identifier MAP_TEXTURE = new Identifier("container/cartography_table/map");
+	private static final Identifier LOCKED_TEXTURE = new Identifier("container/cartography_table/locked");
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/cartography_table.png");
 
 	public CartographyTableScreen(CartographyTableScreenHandler handler, PlayerInventory inventory, Text title) {
@@ -31,7 +36,6 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 
 	@Override
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-		this.renderBackground(context);
 		int i = this.x;
 		int j = this.y;
 		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
@@ -50,13 +54,13 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 				if (mapState.locked) {
 					bl4 = true;
 					if (bl2 || bl3) {
-						context.drawTexture(TEXTURE, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
+						context.drawGuiTexture(ERROR_TEXTURE, i + 35, j + 31, 28, 21);
 					}
 				}
 
 				if (bl2 && mapState.scale >= 4) {
 					bl4 = true;
-					context.drawTexture(TEXTURE, i + 35, j + 31, this.backgroundWidth + 50, 132, 28, 21);
+					context.drawGuiTexture(ERROR_TEXTURE, i + 35, j + 31, 28, 21);
 				}
 			}
 		} else {
@@ -73,25 +77,25 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 		int i = this.x;
 		int j = this.y;
 		if (expandMode && !cannotExpand) {
-			context.drawTexture(TEXTURE, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
+			context.drawGuiTexture(SCALED_MAP_TEXTURE, i + 67, j + 13, 66, 66);
 			this.drawMap(context, mapId, mapState, i + 85, j + 31, 0.226F);
 		} else if (cloneMode) {
-			context.drawTexture(TEXTURE, i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
+			context.drawGuiTexture(DUPLICATED_MAP_TEXTURE, i + 67 + 16, j + 13, 50, 66);
 			this.drawMap(context, mapId, mapState, i + 86, j + 16, 0.34F);
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, 1.0F);
-			context.drawTexture(TEXTURE, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
+			context.drawGuiTexture(DUPLICATED_MAP_TEXTURE, i + 67, j + 13 + 16, 50, 66);
 			this.drawMap(context, mapId, mapState, i + 70, j + 32, 0.34F);
 			context.getMatrices().pop();
 		} else if (lockMode) {
-			context.drawTexture(TEXTURE, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
+			context.drawGuiTexture(MAP_TEXTURE, i + 67, j + 13, 66, 66);
 			this.drawMap(context, mapId, mapState, i + 71, j + 17, 0.45F);
 			context.getMatrices().push();
 			context.getMatrices().translate(0.0F, 0.0F, 1.0F);
-			context.drawTexture(TEXTURE, i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
+			context.drawGuiTexture(LOCKED_TEXTURE, i + 118, j + 60, 10, 14);
 			context.getMatrices().pop();
 		} else {
-			context.drawTexture(TEXTURE, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
+			context.drawGuiTexture(MAP_TEXTURE, i + 67, j + 13, 66, 66);
 			this.drawMap(context, mapId, mapState, i + 71, j + 17, 0.45F);
 		}
 	}

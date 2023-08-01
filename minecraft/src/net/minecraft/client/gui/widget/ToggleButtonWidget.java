@@ -1,33 +1,27 @@
 package net.minecraft.client.gui.widget;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.screen.ScreenTexts;
-import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ToggleButtonWidget extends ClickableWidget {
-	protected Identifier texture;
+	@Nullable
+	protected ButtonTextures textures;
 	protected boolean toggled;
-	protected int u;
-	protected int v;
-	protected int pressedUOffset;
-	protected int hoverVOffset;
 
 	public ToggleButtonWidget(int x, int y, int width, int height, boolean toggled) {
 		super(x, y, width, height, ScreenTexts.EMPTY);
 		this.toggled = toggled;
 	}
 
-	public void setTextureUV(int u, int v, int pressedUOffset, int hoverVOffset, Identifier texture) {
-		this.u = u;
-		this.v = v;
-		this.pressedUOffset = pressedUOffset;
-		this.hoverVOffset = hoverVOffset;
-		this.texture = texture;
+	public void setTextures(ButtonTextures textures) {
+		this.textures = textures;
 	}
 
 	public void setToggled(boolean toggled) {
@@ -45,18 +39,10 @@ public class ToggleButtonWidget extends ClickableWidget {
 
 	@Override
 	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-		RenderSystem.disableDepthTest();
-		int i = this.u;
-		int j = this.v;
-		if (this.toggled) {
-			i += this.pressedUOffset;
+		if (this.textures != null) {
+			RenderSystem.disableDepthTest();
+			context.drawGuiTexture(this.textures.get(this.toggled, this.isSelected()), this.getX(), this.getY(), this.width, this.height);
+			RenderSystem.enableDepthTest();
 		}
-
-		if (this.isSelected()) {
-			j += this.hoverVOffset;
-		}
-
-		context.drawTexture(this.texture, this.getX(), this.getY(), i, j, this.width, this.height);
-		RenderSystem.enableDepthTest();
 	}
 }

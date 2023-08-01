@@ -14,25 +14,17 @@ import net.minecraft.text.Text;
 @Environment(EnvType.CLIENT)
 public abstract class RealmsScreen extends Screen {
 	protected static final int field_33055 = 17;
-	protected static final int field_33056 = 20;
 	protected static final int field_33057 = 7;
 	protected static final long MAX_FILE_SIZE = 5368709120L;
-	public static final int WHITE = 16777215;
-	public static final int field_33060 = 10526880;
 	protected static final int field_33061 = 5000268;
 	protected static final int field_33062 = 7105644;
 	protected static final int field_33063 = 8388479;
-	protected static final int field_33064 = 6077788;
-	protected static final int RED = 16711680;
 	protected static final int field_33036 = 15553363;
-	protected static final int field_33037 = -1073741824;
 	protected static final int field_33038 = 13413468;
 	protected static final int field_33039 = -256;
 	protected static final int field_33040 = 3368635;
 	protected static final int field_33041 = 7107012;
 	protected static final int field_33042 = 8226750;
-	protected static final int field_33043 = 16777120;
-	protected static final String ADVENTURE_MAPS_IN_1_9_URL = "https://www.minecraft.net/realms/adventure-maps-in-1-9";
 	protected static final int field_39676 = 8;
 	private final List<RealmsLabel> labels = Lists.<RealmsLabel>newArrayList();
 

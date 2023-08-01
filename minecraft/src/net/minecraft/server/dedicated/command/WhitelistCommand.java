@@ -16,7 +16,6 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
 
 public class WhitelistCommand {
 	private static final SimpleCommandExceptionType ALREADY_ON_EXCEPTION = new SimpleCommandExceptionType(Text.translatable("commands.whitelist.alreadyOn"));
@@ -79,7 +78,7 @@ public class WhitelistCommand {
 			if (!whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
 				whitelist.add(whitelistEntry);
-				source.sendFeedback(() -> Text.translatable("commands.whitelist.add.success", Texts.toText(gameProfile)), true);
+				source.sendFeedback(() -> Text.translatable("commands.whitelist.add.success", Text.literal(gameProfile.getName())), true);
 				++i;
 			}
 		}
@@ -99,7 +98,7 @@ public class WhitelistCommand {
 			if (whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
 				whitelist.remove(whitelistEntry);
-				source.sendFeedback(() -> Text.translatable("commands.whitelist.remove.success", Texts.toText(gameProfile)), true);
+				source.sendFeedback(() -> Text.translatable("commands.whitelist.remove.success", Text.literal(gameProfile.getName())), true);
 				++i;
 			}
 		}

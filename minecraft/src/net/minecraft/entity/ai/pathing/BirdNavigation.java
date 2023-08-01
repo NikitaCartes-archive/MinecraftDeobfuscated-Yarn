@@ -27,7 +27,7 @@ public class BirdNavigation extends EntityNavigation {
 
 	@Override
 	protected boolean isAtValidPosition() {
-		return this.canSwim() && this.isInLiquid() || !this.entity.hasVehicle();
+		return this.canSwim() && this.entity.isInFluid() || !this.entity.hasVehicle();
 	}
 
 	@Override

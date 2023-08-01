@@ -96,7 +96,7 @@ public class TaskScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 80, 16777215);
 		if (this.description == null) {
 			String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
@@ -104,8 +104,6 @@ public class TaskScreen extends Screen {
 		} else {
 			this.description.drawCenterWithShadow(context, this.width / 2, 120);
 		}
-
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override

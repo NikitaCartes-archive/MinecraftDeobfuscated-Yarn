@@ -22,7 +22,7 @@ public class SwimNavigation extends EntityNavigation {
 
 	@Override
 	protected boolean isAtValidPosition() {
-		return this.canJumpOutOfWater || this.isInLiquid();
+		return this.canJumpOutOfWater || this.entity.isInFluid();
 	}
 
 	@Override

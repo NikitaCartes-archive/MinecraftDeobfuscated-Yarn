@@ -16,7 +16,7 @@ public class ScrollableTextWidget extends ScrollableWidget {
 	public ScrollableTextWidget(int x, int y, int width, int height, Text message, TextRenderer textRenderer) {
 		super(x, y, width, height, message);
 		this.textRenderer = textRenderer;
-		this.wrapped = new MultilineTextWidget(0, 0, message, textRenderer).setMaxWidth(this.getWidth() - this.getPaddingDoubled());
+		this.wrapped = new MultilineTextWidget(message, textRenderer).setMaxWidth(this.getWidth() - this.getPaddingDoubled());
 	}
 
 	public ScrollableTextWidget textColor(int textColor) {

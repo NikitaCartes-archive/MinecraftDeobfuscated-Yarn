@@ -80,7 +80,12 @@ public class SoundEngine {
 			throw new IllegalStateException("OpenAL 1.1 not supported");
 		} else {
 			this.setDirectionalAudio(aLCCapabilities.ALC_SOFT_HRTF && directionalAudio);
-			this.contextPointer = ALC10.alcCreateContext(this.devicePointer, (IntBuffer)null);
+
+			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+				IntBuffer intBuffer = memoryStack.callocInt(3).put(6554).put(1).put(0).flip();
+				this.contextPointer = ALC10.alcCreateContext(this.devicePointer, intBuffer);
+			}
+
 			ALC10.alcMakeContextCurrent(this.contextPointer);
 			int i = this.getMonoSourceCount();
 			int j = MathHelper.clamp((int)MathHelper.sqrt((float)i), 2, 8);

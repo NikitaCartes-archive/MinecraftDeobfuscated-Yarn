@@ -4,10 +4,11 @@ import java.util.function.Consumer;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldEvents;
 
 public class SpongeBlock extends Block {
 	public static final int field_31250 = 6;
@@ -34,7 +35,7 @@ public class SpongeBlock extends Block {
 	protected void update(World world, BlockPos pos) {
 		if (this.absorbWater(world, pos)) {
 			world.setBlockState(pos, Blocks.WET_SPONGE.getDefaultState(), Block.NOTIFY_LISTENERS);
-			world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(Blocks.WATER.getDefaultState()));
+			world.playSound(null, pos, SoundEvents.BLOCK_SPONGE_ABSORB, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 	}
 
@@ -53,7 +54,7 @@ public class SpongeBlock extends Block {
 					return false;
 				} else {
 					Block block = blockState.getBlock();
-					if (block instanceof FluidDrainable fluidDrainable && !fluidDrainable.tryDrainFluid(world, currentPos, blockState).isEmpty()) {
+					if (block instanceof FluidDrainable fluidDrainable && !fluidDrainable.tryDrainFluid(null, world, currentPos, blockState).isEmpty()) {
 						return true;
 					}
 

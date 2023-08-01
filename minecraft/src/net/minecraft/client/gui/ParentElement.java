@@ -71,8 +71,8 @@ public interface ParentElement extends Element {
 	void setDragging(boolean dragging);
 
 	@Override
-	default boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-		return this.hoveredElement(mouseX, mouseY).filter(element -> element.mouseScrolled(mouseX, mouseY, amount)).isPresent();
+	default boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+		return this.hoveredElement(mouseX, mouseY).filter(element -> element.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)).isPresent();
 	}
 
 	@Override

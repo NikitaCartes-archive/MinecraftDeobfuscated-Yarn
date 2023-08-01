@@ -222,8 +222,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	public double getHeightOffset() {
-		return -0.6;
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return -0.7F;
 	}
 
 	public boolean isShaking() {

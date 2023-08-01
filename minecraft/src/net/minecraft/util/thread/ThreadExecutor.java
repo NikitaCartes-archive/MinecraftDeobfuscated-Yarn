@@ -138,6 +138,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements SampleableEx
 			task.run();
 		} catch (Exception var3) {
 			LOGGER.error(LogUtils.FATAL_MARKER, "Error executing task on {}", this.getName(), var3);
+			throw var3;
 		}
 	}
 

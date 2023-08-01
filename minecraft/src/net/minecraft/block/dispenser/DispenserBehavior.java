@@ -391,8 +391,8 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.getPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 				BlockState blockState = worldAccess.getBlockState(blockPos);
 				Block block = blockState.getBlock();
-				if (block instanceof FluidDrainable) {
-					ItemStack itemStack = ((FluidDrainable)block).tryDrainFluid(worldAccess, blockPos, blockState);
+				if (block instanceof FluidDrainable fluidDrainable) {
+					ItemStack itemStack = fluidDrainable.tryDrainFluid(null, worldAccess, blockPos, blockState);
 					if (itemStack.isEmpty()) {
 						return super.dispenseSilently(pointer, stack);
 					} else {

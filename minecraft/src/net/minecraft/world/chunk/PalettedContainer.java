@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 import java.util.stream.LongStream;
 import javax.annotation.Nullable;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.encoding.VarInts;
 import net.minecraft.util.collection.EmptyPaletteStorage;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.collection.PackedIntegerArray;
@@ -387,7 +388,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T>, ReadableC
 		 * @see #writePacket(PacketByteBuf)
 		 */
 		public int getPacketSize() {
-			return 1 + this.palette.getPacketSize() + PacketByteBuf.getVarIntLength(this.storage.getSize()) + this.storage.getData().length * 8;
+			return 1 + this.palette.getPacketSize() + VarInts.getSizeInBytes(this.storage.getSize()) + this.storage.getData().length * 8;
 		}
 
 		public void writePacket(PacketByteBuf buf) {

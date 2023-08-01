@@ -30,11 +30,6 @@ public class DirectConnectScreen extends Screen {
 	}
 
 	@Override
-	public void tick() {
-		this.addressField.tick();
-	}
-
-	@Override
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (!this.selectServerButton.active || this.getFocused() != this.addressField || keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_KP_ENTER) {
 			return super.keyPressed(keyCode, scanCode, modifiers);
@@ -94,10 +89,9 @@ public class DirectConnectScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
 		context.drawTextWithShadow(this.textRenderer, ENTER_IP_TEXT, this.width / 2 - 100, 100, 10526880);
 		this.addressField.render(context, mouseX, mouseY, delta);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

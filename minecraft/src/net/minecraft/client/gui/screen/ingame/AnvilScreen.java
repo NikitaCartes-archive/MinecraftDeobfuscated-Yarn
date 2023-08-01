@@ -18,6 +18,9 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
+	private static final Identifier TEXT_FIELD_TEXTURE = new Identifier("container/anvil/text_field");
+	private static final Identifier TEXT_FIELD_DISABLED_TEXTURE = new Identifier("container/anvil/text_field_disabled");
+	private static final Identifier ERROR_TEXTURE = new Identifier("container/anvil/error");
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/anvil.png");
 	private static final Text TOO_EXPENSIVE_TEXT = Text.translatable("container.repair.expensive");
 	private TextFieldWidget nameField;
@@ -27,12 +30,6 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 		super(handler, inventory, title, TEXTURE);
 		this.player = inventory.player;
 		this.titleX = 60;
-	}
-
-	@Override
-	public void handledScreenTick() {
-		super.handledScreenTick();
-		this.nameField.tick();
 	}
 
 	@Override
@@ -49,7 +46,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 		this.nameField.setText("");
 		this.addSelectableChild(this.nameField);
 		this.setInitialFocus(this.nameField);
-		this.nameField.setEditable(false);
+		this.nameField.setEditable(this.handler.getSlot(0).hasStack());
 	}
 
 	@Override
@@ -113,7 +110,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	@Override
 	protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
 		super.drawBackground(context, delta, mouseX, mouseY);
-		context.drawTexture(TEXTURE, this.x + 59, this.y + 20, 0, this.backgroundHeight + (this.handler.getSlot(0).hasStack() ? 0 : 16), 110, 16);
+		context.drawGuiTexture(this.handler.getSlot(0).hasStack() ? TEXT_FIELD_TEXTURE : TEXT_FIELD_DISABLED_TEXTURE, this.x + 59, this.y + 20, 110, 16);
 	}
 
 	@Override
@@ -124,7 +121,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	@Override
 	protected void drawInvalidRecipeArrow(DrawContext context, int x, int y) {
 		if ((this.handler.getSlot(0).hasStack() || this.handler.getSlot(1).hasStack()) && !this.handler.getSlot(this.handler.getResultSlotIndex()).hasStack()) {
-			context.drawTexture(TEXTURE, x + 99, y + 45, this.backgroundWidth, 0, 28, 21);
+			context.drawGuiTexture(ERROR_TEXTURE, x + 99, y + 45, 28, 21);
 		}
 	}
 

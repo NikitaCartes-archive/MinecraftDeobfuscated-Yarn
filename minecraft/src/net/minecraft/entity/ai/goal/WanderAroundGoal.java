@@ -35,7 +35,7 @@ public class WanderAroundGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (this.mob.hasPassengers()) {
+		if (this.mob.hasControllingPassenger()) {
 			return false;
 		} else {
 			if (!this.ignoringChance) {
@@ -68,7 +68,7 @@ public class WanderAroundGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.mob.getNavigation().isIdle() && !this.mob.hasPassengers();
+		return !this.mob.getNavigation().isIdle() && !this.mob.hasControllingPassenger();
 	}
 
 	@Override

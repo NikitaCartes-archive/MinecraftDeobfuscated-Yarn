@@ -18,19 +18,14 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public abstract class SliderWidget extends ClickableWidget {
-	private static final Identifier TEXTURE = new Identifier("textures/gui/slider.png");
-	protected static final int field_43051 = 200;
-	protected static final int field_43052 = 20;
-	protected static final int field_43102 = 20;
-	protected static final int field_43103 = 4;
+	private static final Identifier TEXTURE = new Identifier("widget/slider");
+	private static final Identifier HIGHLIGHTED_TEXTURE = new Identifier("widget/slider_highlighted");
+	private static final Identifier HANDLE_TEXTURE = new Identifier("widget/slider_handle");
+	private static final Identifier HANDLE_HIGHLIGHTED_TEXTURE = new Identifier("widget/slider_handle_highlighted");
 	protected static final int field_43054 = 2;
 	private static final int field_41788 = 20;
 	private static final int field_41789 = 4;
 	private static final int field_41790 = 8;
-	private static final int field_41792 = 0;
-	private static final int field_41793 = 1;
-	private static final int field_41794 = 2;
-	private static final int field_41795 = 3;
 	protected double value;
 	private boolean sliderFocused;
 
@@ -39,14 +34,12 @@ public abstract class SliderWidget extends ClickableWidget {
 		this.value = value;
 	}
 
-	private int getYImage() {
-		int i = this.isFocused() && !this.sliderFocused ? 1 : 0;
-		return i * 20;
+	private Identifier getTexture() {
+		return this.isFocused() && !this.sliderFocused ? HIGHLIGHTED_TEXTURE : TEXTURE;
 	}
 
-	private int getTextureV() {
-		int i = !this.hovered && !this.sliderFocused ? 2 : 3;
-		return i * 20;
+	private Identifier getHandleTexture() {
+		return !this.hovered && !this.sliderFocused ? HANDLE_TEXTURE : HANDLE_HIGHLIGHTED_TEXTURE;
 	}
 
 	@Override
@@ -73,8 +66,8 @@ public abstract class SliderWidget extends ClickableWidget {
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.enableDepthTest();
-		context.drawNineSlicedTexture(TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getYImage());
-		context.drawNineSlicedTexture(TEXTURE, this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 8, 20, 20, 4, 200, 20, 0, this.getTextureV());
+		context.drawGuiTexture(this.getTexture(), this.getX(), this.getY(), this.getWidth(), this.getHeight());
+		context.drawGuiTexture(this.getHandleTexture(), this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 8, 20);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		int i = this.active ? 16777215 : 10526880;
 		this.drawScrollableText(context, minecraftClient.textRenderer, 2, i | MathHelper.ceil(this.alpha * 255.0F) << 24);

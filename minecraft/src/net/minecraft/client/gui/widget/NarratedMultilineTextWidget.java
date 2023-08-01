@@ -11,17 +11,20 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public class NarratedMultilineTextWidget extends MultilineTextWidget {
-	private static final int FOCUSED_BORDER_COLOR = -1;
-	private static final int UNFOCUSED_BORDER_COLOR = -6250336;
 	private static final int BACKGROUND_COLOR = 1426063360;
-	private static final int EXPANSION = 3;
-	private static final int BORDER_WIDTH = 1;
+	private static final int EXPANSION = 4;
+	private final boolean alwaysShowBorders;
 
-	public NarratedMultilineTextWidget(TextRenderer textRenderer, Text text, int width) {
-		super(text, textRenderer);
-		this.setMaxWidth(width);
+	public NarratedMultilineTextWidget(int maxWidth, Text message, TextRenderer textRenderer) {
+		this(maxWidth, message, textRenderer, true);
+	}
+
+	public NarratedMultilineTextWidget(int maxWidth, Text message, TextRenderer textRenderer, boolean alwaysShowBorders) {
+		super(message, textRenderer);
+		this.setMaxWidth(maxWidth);
 		this.setCentered(true);
 		this.active = true;
+		this.alwaysShowBorders = alwaysShowBorders;
 	}
 
 	@Override
@@ -31,16 +34,16 @@ public class NarratedMultilineTextWidget extends MultilineTextWidget {
 
 	@Override
 	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-		int i = this.getX() - 3;
-		int j = this.getY() - 3;
-		int k = this.getX() + this.getWidth() + 3;
-		int l = this.getY() + this.getHeight() + 3;
-		int m = this.isFocused() ? -1 : -6250336;
-		context.fill(i - 1, j - 1, i, l + 1, m);
-		context.fill(k, j - 1, k + 1, l + 1, m);
-		context.fill(i, j, k, j - 1, m);
-		context.fill(i, l, k, l + 1, m);
-		context.fill(i, j, k, l, 1426063360);
+		if (this.isFocused() || this.alwaysShowBorders) {
+			int i = this.getX() - 4;
+			int j = this.getY() - 4;
+			int k = this.getWidth() + 8;
+			int l = this.getHeight() + 8;
+			int m = this.alwaysShowBorders ? (this.isFocused() ? -1 : -6250336) : -1;
+			context.fill(i + 1, j, i + k, j + l, 1426063360);
+			context.drawBorder(i, j, k, l, m);
+		}
+
 		super.renderButton(context, mouseX, mouseY, delta);
 	}
 

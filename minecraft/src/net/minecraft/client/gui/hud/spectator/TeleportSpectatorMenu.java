@@ -7,13 +7,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
+	private static final Identifier TELEPORT_TO_PLAYER_TEXTURE = new Identifier("spectator/teleport_to_player");
 	private static final Comparator<PlayerListEntry> ORDERING = Comparator.comparing(a -> a.getProfile().getId());
 	private static final Text TELEPORT_TEXT = Text.translatable("spectatorMenu.teleport");
 	private static final Text PROMPT_TEXT = Text.translatable("spectatorMenu.teleport.prompt");
@@ -53,7 +54,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 
 	@Override
 	public void renderIcon(DrawContext context, float brightness, int alpha) {
-		context.drawTexture(SpectatorHud.SPECTATOR_TEXTURE, 0, 0, 0.0F, 0.0F, 16, 16, 256, 256);
+		context.drawGuiTexture(TELEPORT_TO_PLAYER_TEXTURE, 0, 0, 16, 16);
 	}
 
 	@Override

@@ -11,7 +11,7 @@ import net.minecraft.server.world.ServerWorld;
 
 public class GolemLastSeenSensor extends Sensor<LivingEntity> {
 	private static final int RUN_TIME = 200;
-	private static final int GOLEM_DETECTED_WARMUP = 600;
+	private static final int GOLEM_DETECTED_WARMUP = 599;
 
 	public GolemLastSeenSensor() {
 		this(200);
@@ -42,6 +42,6 @@ public class GolemLastSeenSensor extends Sensor<LivingEntity> {
 	}
 
 	public static void rememberIronGolem(LivingEntity entity) {
-		entity.getBrain().remember(MemoryModuleType.GOLEM_DETECTED_RECENTLY, true, 600L);
+		entity.getBrain().remember(MemoryModuleType.GOLEM_DETECTED_RECENTLY, true, 599L);
 	}
 }

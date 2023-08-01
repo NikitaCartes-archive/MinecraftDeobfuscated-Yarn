@@ -8,7 +8,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.RealmsError;
 import net.minecraft.client.realms.exception.RealmsServiceException;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
@@ -39,16 +38,7 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 
 	private static RealmsGenericErrorScreen.ErrorMessages getErrorMessages(RealmsServiceException exception) {
 		RealmsError realmsError = exception.error;
-		if (realmsError == null) {
-			return getErrorMessages(Text.translatable("mco.errorMessage.realmsService", exception.httpResultCode), Text.literal(exception.httpResponseText));
-		} else {
-			int i = realmsError.getErrorCode();
-			String string = "mco.errorMessage." + i;
-			return getErrorMessages(
-				Text.translatable("mco.errorMessage.realmsService.realmsError", i),
-				(Text)(I18n.hasTranslation(string) ? Text.translatable(string) : Text.of(realmsError.getErrorMessage()))
-			);
-		}
+		return getErrorMessages(Text.translatable("mco.errorMessage.realmsService.realmsError", realmsError.getErrorCode()), realmsError.getText());
 	}
 
 	private static RealmsGenericErrorScreen.ErrorMessages getErrorMessages(Text description) {
@@ -74,10 +64,9 @@ public class RealmsGenericErrorScreen extends RealmsScreen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
-		context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessages.title, this.width / 2, 80, 16777215);
-		this.description.drawCenterWithShadow(context, this.width / 2, 100, 9, 16711680);
 		super.render(context, mouseX, mouseY, delta);
+		context.drawCenteredTextWithShadow(this.textRenderer, this.errorMessages.title, this.width / 2, 80, -1);
+		this.description.drawCenterWithShadow(context, this.width / 2, 100, 9, -65536);
 	}
 
 	@Environment(EnvType.CLIENT)

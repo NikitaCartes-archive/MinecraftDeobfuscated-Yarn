@@ -14,7 +14,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CheckboxWidget extends PressableWidget {
-	private static final Identifier TEXTURE = new Identifier("textures/gui/checkbox.png");
+	private static final Identifier SELECTED_HIGHLIGHTED_TEXTURE = new Identifier("widget/checkbox_selected_highlighted");
+	private static final Identifier SELECTED_TEXTURE = new Identifier("widget/checkbox_selected");
+	private static final Identifier HIGHLIGHTED_TEXTURE = new Identifier("widget/checkbox_highlighted");
+	private static final Identifier TEXTURE = new Identifier("widget/checkbox");
 	private static final int TEXT_COLOR = 14737632;
 	private boolean checked;
 	private final boolean showMessage;
@@ -57,7 +60,14 @@ public class CheckboxWidget extends PressableWidget {
 		TextRenderer textRenderer = minecraftClient.textRenderer;
 		context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 		RenderSystem.enableBlend();
-		context.drawTexture(TEXTURE, this.getX(), this.getY(), this.isFocused() ? 20.0F : 0.0F, this.checked ? 20.0F : 0.0F, 20, this.height, 64, 64);
+		Identifier identifier;
+		if (this.checked) {
+			identifier = this.isFocused() ? SELECTED_HIGHLIGHTED_TEXTURE : SELECTED_TEXTURE;
+		} else {
+			identifier = this.isFocused() ? HIGHLIGHTED_TEXTURE : TEXTURE;
+		}
+
+		context.drawGuiTexture(identifier, this.getX(), this.getY(), 20, this.height);
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.showMessage) {
 			context.drawTextWithShadow(

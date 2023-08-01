@@ -73,7 +73,7 @@ public class LevelLoadingScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		long l = Util.getMeasuringTimeMs();
 		if (l - this.lastNarrationTime > 2000L) {
 			this.lastNarrationTime = l;

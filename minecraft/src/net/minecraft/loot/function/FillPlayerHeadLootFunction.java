@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.mojang.authlib.GameProfile;
 import java.util.Set;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -38,10 +37,10 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isOf(Items.PLAYER_HEAD)) {
-			Entity entity = context.get(this.entity.getParameter());
-			if (entity instanceof PlayerEntity) {
-				GameProfile gameProfile = ((PlayerEntity)entity).getGameProfile();
-				stack.getOrCreateNbt().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
+			Object gameProfile = context.get(this.entity.getParameter());
+			if (gameProfile instanceof PlayerEntity playerEntity) {
+				GameProfile gameProfilex = playerEntity.getGameProfile();
+				stack.getOrCreateNbt().put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfilex));
 			}
 		}
 

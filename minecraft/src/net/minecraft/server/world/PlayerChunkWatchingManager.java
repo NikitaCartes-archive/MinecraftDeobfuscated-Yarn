@@ -8,15 +8,15 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public final class PlayerChunkWatchingManager {
 	private final Object2BooleanMap<ServerPlayerEntity> watchingPlayers = new Object2BooleanOpenHashMap<>();
 
-	public Set<ServerPlayerEntity> getPlayersWatchingChunk(long l) {
+	public Set<ServerPlayerEntity> getPlayersWatchingChunk() {
 		return this.watchingPlayers.keySet();
 	}
 
-	public void add(long l, ServerPlayerEntity player, boolean watchDisabled) {
-		this.watchingPlayers.put(player, watchDisabled);
+	public void add(ServerPlayerEntity player, boolean inactive) {
+		this.watchingPlayers.put(player, inactive);
 	}
 
-	public void remove(long l, ServerPlayerEntity player) {
+	public void remove(ServerPlayerEntity player) {
 		this.watchingPlayers.removeBoolean(player);
 	}
 
@@ -34,8 +34,5 @@ public final class PlayerChunkWatchingManager {
 
 	public boolean isWatchDisabled(ServerPlayerEntity player) {
 		return this.watchingPlayers.getBoolean(player);
-	}
-
-	public void movePlayer(long prevPos, long currentPos, ServerPlayerEntity player) {
 	}
 }

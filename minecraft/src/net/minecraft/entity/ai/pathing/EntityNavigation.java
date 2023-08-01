@@ -333,10 +333,6 @@ public abstract class EntityNavigation {
 
 	protected abstract boolean isAtValidPosition();
 
-	protected boolean isInLiquid() {
-		return this.entity.isInsideWaterOrBubbleColumn() || this.entity.isInLava();
-	}
-
 	/**
 	 * Adjusts the current path according to various special obstacles that may be in the way, for example sunlight
 	 */

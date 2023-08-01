@@ -1,5 +1,8 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.network.NetworkSide;
+import net.minecraft.network.NetworkState;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.text.Text;
 
 /**
@@ -10,6 +13,10 @@ import net.minecraft.text.Text;
  * client or server game engine threads.
  */
 public interface PacketListener {
+	NetworkSide getSide();
+
+	NetworkState getState();
+
 	/**
 	 * Called when the connection this listener listens to has disconnected.
 	 * Can be used to display the disconnection reason.
@@ -19,6 +26,10 @@ public interface PacketListener {
 	void onDisconnected(Text reason);
 
 	boolean isConnectionOpen();
+
+	default boolean accepts(Packet<?> packet) {
+		return this.isConnectionOpen();
+	}
 
 	/**
 	 * {@return whether uncaught exceptions in main thread should crash the game

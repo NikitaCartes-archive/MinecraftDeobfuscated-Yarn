@@ -101,7 +101,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
-import net.minecraft.util.Uuids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
@@ -181,7 +180,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	public PlayerEntity(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
 		super(EntityType.PLAYER, world);
-		this.setUuid(Uuids.getUuidFromProfile(gameProfile));
+		this.setUuid(gameProfile.getId());
 		this.gameProfile = gameProfile;
 		this.playerScreenHandler = new PlayerScreenHandler(this.inventory, !world.isClient, this);
 		this.currentScreenHandler = this.playerScreenHandler;
@@ -367,7 +366,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	protected void updatePose() {
-		if (this.wouldPoseNotCollide(EntityPose.SWIMMING)) {
+		if (this.canChangeIntoPose(EntityPose.SWIMMING)) {
 			EntityPose entityPose;
 			if (this.isFallFlying()) {
 				entityPose = EntityPose.FALL_FLYING;
@@ -384,9 +383,9 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 
 			EntityPose entityPose2;
-			if (this.isSpectator() || this.hasVehicle() || this.wouldPoseNotCollide(entityPose)) {
+			if (this.isSpectator() || this.hasVehicle() || this.canChangeIntoPose(entityPose)) {
 				entityPose2 = entityPose;
-			} else if (this.wouldPoseNotCollide(EntityPose.CROUCHING)) {
+			} else if (this.canChangeIntoPose(EntityPose.CROUCHING)) {
 				entityPose2 = EntityPose.CROUCHING;
 			} else {
 				entityPose2 = EntityPose.SWIMMING;
@@ -394,6 +393,10 @@ public abstract class PlayerEntity extends LivingEntity {
 
 			this.setPose(entityPose2);
 		}
+	}
+
+	protected boolean canChangeIntoPose(EntityPose pose) {
+		return this.getWorld().isSpaceEmpty(this, this.getDimensions(pose).getBoxAt(this.getPos()).contract(1.0E-7));
 	}
 
 	@Override
@@ -764,7 +767,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Override
 	public void readCustomDataFromNbt(NbtCompound nbt) {
 		super.readCustomDataFromNbt(nbt);
-		this.setUuid(Uuids.getUuidFromProfile(this.gameProfile));
+		this.setUuid(this.gameProfile.getId());
 		NbtList nbtList = nbt.getList("Inventory", NbtElement.COMPOUND_TYPE);
 		this.inventory.readNbt(nbtList);
 		this.inventory.selectedSlot = nbt.getInt("SelectedItemSlot");
@@ -1055,8 +1058,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public double getHeightOffset() {
-		return -0.35;
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return -0.6F;
 	}
 
 	@Override
@@ -2000,12 +2003,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void setAbsorptionAmount(float amount) {
-		if (amount < 0.0F) {
-			amount = 0.0F;
-		}
-
-		this.getDataTracker().set(ABSORPTION_AMOUNT, amount);
+	protected void setAbsorptionAmountUnclamped(float absorptionAmount) {
+		this.getDataTracker().set(ABSORPTION_AMOUNT, absorptionAmount);
 	}
 
 	@Override

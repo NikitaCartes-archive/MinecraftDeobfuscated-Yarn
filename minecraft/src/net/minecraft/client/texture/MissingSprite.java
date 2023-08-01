@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.metadata.AnimationFrameResourceMetadata;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
+import net.minecraft.resource.metadata.ResourceMetadata;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
@@ -15,9 +16,9 @@ public final class MissingSprite {
 	private static final int HEIGHT = 16;
 	private static final String MISSINGNO_ID = "missingno";
 	private static final Identifier MISSINGNO = new Identifier("missingno");
-	private static final AnimationResourceMetadata METADATA = new AnimationResourceMetadata(
-		ImmutableList.of(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false
-	);
+	private static final ResourceMetadata METADATA = new ResourceMetadata.Builder()
+		.add(AnimationResourceMetadata.READER, new AnimationResourceMetadata(ImmutableList.of(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false))
+		.build();
 	@Nullable
 	private static NativeImageBackedTexture texture;
 

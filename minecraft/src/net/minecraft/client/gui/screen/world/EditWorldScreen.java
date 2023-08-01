@@ -43,11 +43,6 @@ public class EditWorldScreen extends Screen {
 	}
 
 	@Override
-	public void tick() {
-		this.levelNameTextField.tick();
-	}
-
-	@Override
 	protected void init() {
 		this.saveButton = ButtonWidget.builder(Text.translatable("selectWorld.edit.save"), button -> this.commit())
 			.dimensions(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20)
@@ -56,7 +51,7 @@ public class EditWorldScreen extends Screen {
 		LevelSummary levelSummary = this.storageSession.getLevelSummary();
 		String string = levelSummary == null ? "" : levelSummary.getDisplayName();
 		this.levelNameTextField.setText(string);
-		this.levelNameTextField.setChangedListener(levelName -> this.saveButton.active = !levelName.trim().isEmpty());
+		this.levelNameTextField.setChangedListener(levelName -> this.saveButton.active = !Util.isBlank(levelName));
 		this.addSelectableChild(this.levelNameTextField);
 		ButtonWidget buttonWidget = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectWorld.edit.resetIcon"), button -> {
 			this.storageSession.getIconFile().ifPresent(path -> FileUtils.deleteQuietly(path.toFile()));
@@ -170,10 +165,9 @@ public class EditWorldScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 15, 16777215);
 		context.drawTextWithShadow(this.textRenderer, ENTER_NAME_TEXT, this.width / 2 - 100, 24, 10526880);
 		this.levelNameTextField.render(context, mouseX, mouseY, delta);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

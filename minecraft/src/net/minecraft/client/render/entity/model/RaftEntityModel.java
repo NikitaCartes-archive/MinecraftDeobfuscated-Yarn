@@ -38,7 +38,7 @@ public class RaftEntityModel extends CompositeEntityModel<BoatEntity> {
 		modelPartData.addChild(
 			"bottom",
 			ModelPartBuilder.create().uv(0, 0).cuboid(-14.0F, -11.0F, -4.0F, 28.0F, 20.0F, 4.0F).uv(0, 0).cuboid(-14.0F, -9.0F, -8.0F, 28.0F, 16.0F, 4.0F),
-			ModelTransform.of(0.0F, -2.0F, 1.0F, 1.5708F, 0.0F, 0.0F)
+			ModelTransform.of(0.0F, -2.1F, 1.0F, 1.5708F, 0.0F, 0.0F)
 		);
 		int i = 20;
 		int j = 7;

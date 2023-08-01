@@ -86,7 +86,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 				boolean bl3 = signBlockEntity.runCommandClickEvent(player, world, pos, bl2x);
 				if (signBlockEntity.isWaxed()) {
 					world.playSound(null, signBlockEntity.getPos(), SoundEvents.BLOCK_SIGN_WAXED_INTERACT_FAIL, SoundCategory.BLOCKS);
-					return ActionResult.PASS;
+					return this.getActionResult(bl);
 				} else if (bl
 					&& !this.isOtherPlayerEditing(player, signBlockEntity)
 					&& signChangingItem2.canUseOnSignText(signText, player)
@@ -102,7 +102,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 					return ActionResult.SUCCESS;
 				} else if (!this.isOtherPlayerEditing(player, signBlockEntity) && player.canModifyBlocks() && this.isTextLiteralOrEmpty(player, signBlockEntity, bl2x)) {
 					this.openEditScreen(player, signBlockEntity, bl2x);
-					return ActionResult.SUCCESS;
+					return this.getActionResult(bl);
 				} else {
 					return ActionResult.PASS;
 				}
@@ -112,6 +112,10 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 		} else {
 			return ActionResult.PASS;
 		}
+	}
+
+	private ActionResult getActionResult(boolean usedSignChanger) {
+		return usedSignChanger ? ActionResult.PASS : ActionResult.SUCCESS;
 	}
 
 	private boolean isTextLiteralOrEmpty(PlayerEntity player, SignBlockEntity blockEntity, boolean front) {

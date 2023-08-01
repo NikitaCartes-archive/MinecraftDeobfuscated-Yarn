@@ -32,7 +32,7 @@ public class OperatorEntry extends ServerConfigEntry<GameProfile> {
 	@Override
 	protected void write(JsonObject json) {
 		if (this.getKey() != null) {
-			json.addProperty("uuid", this.getKey().getId() == null ? "" : this.getKey().getId().toString());
+			json.addProperty("uuid", this.getKey().getId().toString());
 			json.addProperty("name", this.getKey().getName());
 			json.addProperty("level", this.permissionLevel);
 			json.addProperty("bypassesPlayerLimit", this.bypassPlayerLimit);

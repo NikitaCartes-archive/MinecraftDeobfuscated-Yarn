@@ -27,7 +27,7 @@ public class GoToVillageGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (this.mob.hasPassengers()) {
+		if (this.mob.hasControllingPassenger()) {
 			return false;
 		} else if (this.mob.getWorld().isDay()) {
 			return false;

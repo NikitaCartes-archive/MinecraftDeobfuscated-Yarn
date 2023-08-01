@@ -18,7 +18,7 @@ public class PounceAtTargetGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (this.mob.hasPassengers()) {
+		if (this.mob.hasControllingPassenger()) {
 			return false;
 		} else {
 			this.target = this.mob.getTarget();

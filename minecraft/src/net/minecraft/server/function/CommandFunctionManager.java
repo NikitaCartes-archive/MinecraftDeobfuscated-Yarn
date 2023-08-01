@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.IntConsumer;
 import javax.annotation.Nullable;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -89,16 +90,20 @@ public class CommandFunctionManager {
 	 * Executes a function.
 	 * 
 	 * <p>This is same as calling {@link #execute(CommandFunction, ServerCommandSource,
-	 * Tracer) execute(function, source, null)}.
+	 * Tracer, NbtCompound) execute(function, source, null, null)}.
 	 * 
 	 * @return the command output value
-	 * @see #execute(CommandFunction, ServerCommandSource, Tracer)
+	 * @see #execute(CommandFunction, ServerCommandSource, Tracer, NbtCompound)
 	 * 
 	 * @param function the function
 	 * @param source the command source to execute with
 	 */
 	public int execute(CommandFunction function, ServerCommandSource source) {
-		return this.execute(function, source, null);
+		try {
+			return this.execute(function, source, null, null);
+		} catch (MacroException var4) {
+			return 0;
+		}
 	}
 
 	/**
@@ -117,28 +122,30 @@ public class CommandFunctionManager {
 	 * @see #execute(CommandFunction, ServerCommandSource)
 	 * 
 	 * @param function the function
-	 * @param tracer a tracer for a non-recursive function execution
 	 * @param source the command source to execute with
+	 * @param tracer a tracer for a non-recursive function execution
+	 * @param arguments arguments for macro substitution, if any
 	 */
-	public int execute(CommandFunction function, ServerCommandSource source, @Nullable CommandFunctionManager.Tracer tracer) {
+	public int execute(CommandFunction function, ServerCommandSource source, @Nullable CommandFunctionManager.Tracer tracer, @Nullable NbtCompound arguments) throws MacroException {
+		CommandFunction commandFunction = function.withMacroReplaced(arguments, this.getDispatcher(), source);
 		if (this.execution != null) {
 			if (tracer != null) {
 				this.execution.reportError(NO_TRACE_IN_FUNCTION_TEXT.getString());
 				return 0;
 			} else {
-				this.execution.recursiveRun(function, source);
+				this.execution.recursiveRun(commandFunction, source);
 				return 0;
 			}
 		} else {
-			int var4;
+			int var6;
 			try {
 				this.execution = new CommandFunctionManager.Execution(tracer);
-				var4 = this.execution.run(function, source);
+				var6 = this.execution.run(commandFunction, source);
 			} finally {
 				this.execution = null;
 			}
 
-			return var4;
+			return var6;
 		}
 	}
 
@@ -240,7 +247,7 @@ public class CommandFunctionManager {
 
 		/**
 		 * Handles a recursive case in {@link CommandFunctionManager#execute(CommandFunction,
-		 * ServerCommandSource, CommandFunctionManager.Tracer)}.
+		 * ServerCommandSource, CommandFunctionManager.Tracer, NbtCompound)}.
 		 * 
 		 * <p>This effectively swaps an entry with a command element with {@code /function}
 		 * command at the head of the deque with another entry with a function element
@@ -266,7 +273,7 @@ public class CommandFunctionManager {
 
 		/**
 		 * Handles a new case in {@link CommandFunctionManager#execute(CommandFunction,
-		 * ServerCommandSource, CommandFunctionManager.Tracer)}.
+		 * ServerCommandSource, CommandFunctionManager.Tracer, NbtCompound)}.
 		 * 
 		 * @return a value for the command result
 		 * 

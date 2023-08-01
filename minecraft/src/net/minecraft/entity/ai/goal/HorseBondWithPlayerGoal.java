@@ -51,16 +51,16 @@ public class HorseBondWithPlayerGoal extends Goal {
 	@Override
 	public void tick() {
 		if (!this.horse.isTame() && this.horse.getRandom().nextInt(this.getTickCount(50)) == 0) {
-			Entity entity = (Entity)this.horse.getPassengerList().get(0);
+			Entity entity = this.horse.getFirstPassenger();
 			if (entity == null) {
 				return;
 			}
 
-			if (entity instanceof PlayerEntity) {
+			if (entity instanceof PlayerEntity playerEntity) {
 				int i = this.horse.getTemper();
 				int j = this.horse.getMaxTemper();
 				if (j > 0 && this.horse.getRandom().nextInt(j) < i) {
-					this.horse.bondWithPlayer((PlayerEntity)entity);
+					this.horse.bondWithPlayer(playerEntity);
 					return;
 				}
 

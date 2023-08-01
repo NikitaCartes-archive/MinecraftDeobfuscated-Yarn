@@ -2,12 +2,17 @@ package net.minecraft.world;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
+import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.nbt.NbtCompound;
 
 public class ForcedChunkState extends PersistentState {
 	public static final String CHUNKS_KEY = "chunks";
 	private static final String FORCED_KEY = "Forced";
 	private final LongSet chunks;
+
+	public static PersistentState.Type<ForcedChunkState> getPersistentStateType() {
+		return new PersistentState.Type<>(ForcedChunkState::new, ForcedChunkState::fromNbt, DataFixTypes.SAVED_DATA_RANDOM_SEQUENCES);
+	}
 
 	private ForcedChunkState(LongSet chunks) {
 		this.chunks = chunks;

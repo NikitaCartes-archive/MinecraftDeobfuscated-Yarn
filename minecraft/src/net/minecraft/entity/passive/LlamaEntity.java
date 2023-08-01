@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.DyedCarpetBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -50,12 +51,12 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.ValueLists;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 
 public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<LlamaEntity.Variant>, RangedAttackMob {
 	private static final int MAX_STRENGTH = 5;
@@ -152,29 +153,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	@Override
 	protected int getInventorySize() {
 		return this.hasChest() ? 2 + 3 * this.getInventoryColumns() : super.getInventorySize();
-	}
-
-	@Override
-	protected void updatePassengerPosition(Entity passenger, Entity.PositionUpdater positionUpdater) {
-		if (this.hasPassenger(passenger)) {
-			float f = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
-			float g = MathHelper.sin(this.bodyYaw * (float) (Math.PI / 180.0));
-			float h = 0.3F;
-			positionUpdater.accept(
-				passenger, this.getX() + (double)(0.3F * g), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() - (double)(0.3F * f)
-			);
-		}
-	}
-
-	@Override
-	public double getMountedHeightOffset() {
-		return (double)this.getHeight() * 0.6;
-	}
-
-	@Nullable
-	@Override
-	public LivingEntity getControllingPassenger() {
-		return null;
 	}
 
 	@Override
@@ -500,6 +478,11 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	@Override
 	public Vec3d getLeashOffset() {
 		return new Vec3d(0.0, 0.75 * (double)this.getStandingEyeHeight(), (double)this.getWidth() * 0.5);
+	}
+
+	@Override
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height - (this.isBaby() ? 0.8125F : 0.5F) * scaleFactor, -0.3F * scaleFactor);
 	}
 
 	static class ChaseWolvesGoal extends ActiveTargetGoal<WolfEntity> {

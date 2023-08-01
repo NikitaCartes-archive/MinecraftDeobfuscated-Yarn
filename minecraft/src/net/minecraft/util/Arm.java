@@ -5,15 +5,18 @@ package net.minecraft.util;
  * 
  * @see Hand
  */
-public enum Arm implements TranslatableOption {
-	LEFT(0, "options.mainHand.left"),
-	RIGHT(1, "options.mainHand.right");
+public enum Arm implements TranslatableOption, StringIdentifiable {
+	LEFT(0, "left", "options.mainHand.left"),
+	RIGHT(1, "right", "options.mainHand.right");
 
+	public static final com.mojang.serialization.Codec<Arm> CODEC = StringIdentifiable.createCodec(Arm::values);
 	private final int id;
+	private final String name;
 	private final String translationKey;
 
-	private Arm(int id, String translationKey) {
+	private Arm(int id, String name, String translationKey) {
 		this.id = id;
+		this.name = name;
 		this.translationKey = translationKey;
 	}
 
@@ -32,5 +35,10 @@ public enum Arm implements TranslatableOption {
 	@Override
 	public String getTranslationKey() {
 		return this.translationKey;
+	}
+
+	@Override
+	public String asString() {
+		return this.name;
 	}
 }

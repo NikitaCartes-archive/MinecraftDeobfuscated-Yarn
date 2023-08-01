@@ -13,24 +13,24 @@ import net.minecraft.util.math.ChunkPos;
 
 public class SharedConstants {
 	@Deprecated
-	public static final boolean IS_DEVELOPMENT_VERSION = false;
+	public static final boolean IS_DEVELOPMENT_VERSION = true;
 	@Deprecated
-	public static final int WORLD_VERSION = 3465;
+	public static final int WORLD_VERSION = 3567;
 	@Deprecated
 	public static final String CURRENT_SERIES = "main";
 	@Deprecated
-	public static final String VERSION_NAME = "1.20.1";
+	public static final String VERSION_NAME = "23w31a";
 	@Deprecated
-	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 763;
+	public static final int RELEASE_TARGET_PROTOCOL_VERSION = 764;
 	@Deprecated
-	public static final int field_29736 = 142;
-	public static final int SNBT_TOO_OLD_THRESHOLD = 3437;
+	public static final int field_29736 = 144;
+	public static final int SNBT_TOO_OLD_THRESHOLD = 3563;
 	private static final int field_29708 = 30;
-	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = false;
+	public static final boolean CRASH_ON_UNCAUGHT_THREAD_EXCEPTION = true;
 	@Deprecated
-	public static final int RESOURCE_PACK_VERSION = 15;
+	public static final int RESOURCE_PACK_VERSION = 16;
 	@Deprecated
-	public static final int DATA_PACK_VERSION = 15;
+	public static final int DATA_PACK_VERSION = 16;
 	@Deprecated
 	public static final int field_39963 = 1;
 	public static final int field_39964 = 1;
@@ -130,6 +130,7 @@ public class SharedConstants {
 	public static final int field_39898 = 32;
 	public static final char[] INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
 	public static final int TICKS_PER_SECOND = 20;
+	public static final int field_44973 = 50;
 	public static final int TICKS_PER_MINUTE = 1200;
 	public static final int TICKS_PER_IN_GAME_DAY = 24000;
 	public static final float field_29705 = 1365.3334F;
@@ -213,7 +214,7 @@ public class SharedConstants {
 	}
 
 	public static int getProtocolVersion() {
-		return 763;
+		return 1073741968;
 	}
 
 	public static boolean isOutsideGenerationArea(ChunkPos pos) {

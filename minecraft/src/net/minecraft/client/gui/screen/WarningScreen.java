@@ -52,11 +52,10 @@ public abstract class WarningScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.drawTitle(context);
 		int i = this.width / 2 - this.messageText.getMaxWidth() / 2;
 		this.messageText.drawWithShadow(context, i, 70, this.getLineHeight(), 16777215);
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	protected void drawTitle(DrawContext context) {

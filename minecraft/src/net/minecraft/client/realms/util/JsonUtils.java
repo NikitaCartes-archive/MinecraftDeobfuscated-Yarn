@@ -2,6 +2,7 @@ package net.minecraft.client.realms.util;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.util.UndashedUuid;
 import java.util.Date;
 import java.util.UUID;
 import java.util.function.Function;
@@ -44,7 +45,7 @@ public class JsonUtils {
 	@Nullable
 	public static UUID getUuidOr(String key, JsonObject node, @Nullable UUID defaultValue) {
 		String string = getStringOr(key, node, null);
-		return string == null ? defaultValue : UUID.fromString(string);
+		return string == null ? defaultValue : UndashedUuid.fromStringLenient(string);
 	}
 
 	public static int getIntOr(String key, JsonObject node, int defaultValue) {

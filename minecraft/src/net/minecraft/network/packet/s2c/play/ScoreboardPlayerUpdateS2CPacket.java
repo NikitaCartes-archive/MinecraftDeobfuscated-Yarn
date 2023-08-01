@@ -12,25 +12,25 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	@Nullable
 	private final String objectiveName;
 	private final int score;
-	private final ServerScoreboard.UpdateMode mode;
+	private final ServerScoreboard.UpdateMode updateMode;
 
-	public ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode mode, @Nullable String objectiveName, String playerName, int score) {
-		if (mode != ServerScoreboard.UpdateMode.REMOVE && objectiveName == null) {
+	public ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode updateMode, @Nullable String objectiveName, String playerName, int score) {
+		if (updateMode != ServerScoreboard.UpdateMode.REMOVE && objectiveName == null) {
 			throw new IllegalArgumentException("Need an objective name");
 		} else {
 			this.playerName = playerName;
 			this.objectiveName = objectiveName;
 			this.score = score;
-			this.mode = mode;
+			this.updateMode = updateMode;
 		}
 	}
 
 	public ScoreboardPlayerUpdateS2CPacket(PacketByteBuf buf) {
 		this.playerName = buf.readString();
-		this.mode = buf.readEnumConstant(ServerScoreboard.UpdateMode.class);
+		this.updateMode = buf.readEnumConstant(ServerScoreboard.UpdateMode.class);
 		String string = buf.readString();
 		this.objectiveName = Objects.equals(string, "") ? null : string;
-		if (this.mode != ServerScoreboard.UpdateMode.REMOVE) {
+		if (this.updateMode != ServerScoreboard.UpdateMode.REMOVE) {
 			this.score = buf.readVarInt();
 		} else {
 			this.score = 0;
@@ -40,9 +40,9 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeString(this.playerName);
-		buf.writeEnumConstant(this.mode);
+		buf.writeEnumConstant(this.updateMode);
 		buf.writeString(this.objectiveName == null ? "" : this.objectiveName);
-		if (this.mode != ServerScoreboard.UpdateMode.REMOVE) {
+		if (this.updateMode != ServerScoreboard.UpdateMode.REMOVE) {
 			buf.writeVarInt(this.score);
 		}
 	}
@@ -65,6 +65,6 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	}
 
 	public ServerScoreboard.UpdateMode getUpdateMode() {
-		return this.mode;
+		return this.updateMode;
 	}
 }

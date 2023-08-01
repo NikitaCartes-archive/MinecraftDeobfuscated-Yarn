@@ -29,7 +29,13 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
-	static final Identifier TEXTURE = new Identifier("textures/gui/container/beacon.png");
+	private static final Identifier TEXTURE = new Identifier("textures/gui/container/beacon.png");
+	static final Identifier BUTTON_DISABLED_TEXTURE = new Identifier("container/beacon/button_disabled");
+	static final Identifier BUTTON_SELECTED_TEXTURE = new Identifier("container/beacon/button_selected");
+	static final Identifier BUTTON_HIGHLIGHTED_TEXTURE = new Identifier("container/beacon/button_highlighted");
+	static final Identifier BUTTON_TEXTURE = new Identifier("container/beacon/button");
+	static final Identifier CONFIRM_TEXTURE = new Identifier("container/beacon/confirm");
+	static final Identifier CANCEL_TEXTURE = new Identifier("container/beacon/cancel");
 	private static final Text PRIMARY_POWER_TEXT = Text.translatable("block.minecraft.beacon.primary");
 	private static final Text SECONDARY_POWER_TEXT = Text.translatable("block.minecraft.beacon.secondary");
 	private final List<BeaconScreen.BeaconButtonWidget> buttons = Lists.<BeaconScreen.BeaconButtonWidget>newArrayList();
@@ -133,7 +139,6 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
 		super.render(context, mouseX, mouseY, delta);
 		this.drawMouseoverTooltip(context, mouseX, mouseY);
 	}
@@ -152,17 +157,18 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-			int i = 219;
-			int j = 0;
+			Identifier identifier;
 			if (!this.active) {
-				j += this.width * 2;
+				identifier = BeaconScreen.BUTTON_DISABLED_TEXTURE;
 			} else if (this.disabled) {
-				j += this.width * 1;
+				identifier = BeaconScreen.BUTTON_SELECTED_TEXTURE;
 			} else if (this.isSelected()) {
-				j += this.width * 3;
+				identifier = BeaconScreen.BUTTON_HIGHLIGHTED_TEXTURE;
+			} else {
+				identifier = BeaconScreen.BUTTON_TEXTURE;
 			}
 
-			context.drawTexture(BeaconScreen.TEXTURE, this.getX(), this.getY(), j, 219, this.width, this.height);
+			context.drawGuiTexture(identifier, this.getX(), this.getY(), this.width, this.height);
 			this.renderExtra(context);
 		}
 
@@ -190,7 +196,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	@Environment(EnvType.CLIENT)
 	class CancelButtonWidget extends BeaconScreen.IconButtonWidget {
 		public CancelButtonWidget(int x, int y) {
-			super(x, y, 112, 220, ScreenTexts.CANCEL);
+			super(x, y, BeaconScreen.CANCEL_TEXTURE, ScreenTexts.CANCEL);
 		}
 
 		@Override
@@ -206,7 +212,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 	@Environment(EnvType.CLIENT)
 	class DoneButtonWidget extends BeaconScreen.IconButtonWidget {
 		public DoneButtonWidget(int x, int y) {
-			super(x, y, 90, 220, ScreenTexts.DONE);
+			super(x, y, BeaconScreen.CONFIRM_TEXTURE, ScreenTexts.DONE);
 		}
 
 		@Override
@@ -279,18 +285,16 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Environment(EnvType.CLIENT)
 	abstract static class IconButtonWidget extends BeaconScreen.BaseButtonWidget {
-		private final int u;
-		private final int v;
+		private final Identifier texture;
 
-		protected IconButtonWidget(int i, int j, int k, int l, Text text) {
-			super(i, j, text);
-			this.u = k;
-			this.v = l;
+		protected IconButtonWidget(int x, int y, Identifier texture, Text message) {
+			super(x, y, message);
+			this.texture = texture;
 		}
 
 		@Override
 		protected void renderExtra(DrawContext context) {
-			context.drawTexture(BeaconScreen.TEXTURE, this.getX() + 2, this.getY() + 2, this.u, this.v, 18, 18);
+			context.drawGuiTexture(this.texture, this.getX() + 2, this.getY() + 2, 18, 18);
 		}
 	}
 

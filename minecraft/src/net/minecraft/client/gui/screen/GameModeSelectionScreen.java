@@ -23,7 +23,9 @@ import org.lwjgl.glfw.GLFW;
 
 @Environment(EnvType.CLIENT)
 public class GameModeSelectionScreen extends Screen {
-	static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
+	static final Identifier SLOT_TEXTURE = new Identifier("gamemode_switcher/slot");
+	static final Identifier SELECTION_TEXTURE = new Identifier("gamemode_switcher/selection");
+	private static final Identifier TEXTURE = new Identifier("textures/gui/container/gamemode_switcher.png");
 	private static final int TEXTURE_WIDTH = 128;
 	private static final int TEXTURE_HEIGHT = 128;
 	private static final int BUTTON_SIZE = 26;
@@ -96,6 +98,10 @@ public class GameModeSelectionScreen extends Screen {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
 	}
 
 	private void apply() {
@@ -171,11 +177,11 @@ public class GameModeSelectionScreen extends Screen {
 		}
 
 		private void drawBackground(DrawContext context) {
-			context.drawTexture(GameModeSelectionScreen.TEXTURE, this.getX(), this.getY(), 0.0F, 75.0F, 26, 26, 128, 128);
+			context.drawGuiTexture(GameModeSelectionScreen.SLOT_TEXTURE, this.getX(), this.getY(), 26, 26);
 		}
 
 		private void drawSelectionBox(DrawContext context) {
-			context.drawTexture(GameModeSelectionScreen.TEXTURE, this.getX(), this.getY(), 26.0F, 75.0F, 26, 26, 128, 128);
+			context.drawGuiTexture(GameModeSelectionScreen.SELECTION_TEXTURE, this.getX(), this.getY(), 26, 26);
 		}
 	}
 

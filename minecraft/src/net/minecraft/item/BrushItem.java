@@ -1,6 +1,7 @@
 package net.minecraft.item;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrushableBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -67,7 +68,10 @@ public class BrushItem extends Item {
 					BlockPos blockPos = blockHitResult.getBlockPos();
 					BlockState blockState = world.getBlockState(blockPos);
 					Arm arm = user.getActiveHand() == Hand.MAIN_HAND ? playerEntity.getMainArm() : playerEntity.getMainArm().getOpposite();
-					this.addDustParticles(world, blockHitResult, blockState, user.getRotationVec(0.0F), arm);
+					if (blockState.hasBlockBreakParticles() && blockState.getRenderType() != BlockRenderType.INVISIBLE) {
+						this.addDustParticles(world, blockHitResult, blockState, user.getRotationVec(0.0F), arm);
+					}
+
 					Block bl2 = blockState.getBlock();
 					SoundEvent soundEvent;
 					if (bl2 instanceof BrushableBlock brushableBlock) {
@@ -102,7 +106,7 @@ public class BrushItem extends Item {
 		return ProjectileUtil.getCollision(user, entity -> !entity.isSpectator() && entity.canHit(), MAX_BRUSH_DISTANCE);
 	}
 
-	public void addDustParticles(World world, BlockHitResult hitResult, BlockState state, Vec3d userRotation, Arm arm) {
+	private void addDustParticles(World world, BlockHitResult hitResult, BlockState state, Vec3d userRotation, Arm arm) {
 		double d = 3.0;
 		int i = arm == Arm.RIGHT ? 1 : -1;
 		int j = world.getRandom().nextBetweenExclusive(7, 12);

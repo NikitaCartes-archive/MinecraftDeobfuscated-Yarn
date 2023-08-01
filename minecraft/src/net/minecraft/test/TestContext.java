@@ -1,6 +1,7 @@
 package net.minecraft.test;
 
 import com.mojang.authlib.GameProfile;
+import io.netty.channel.embedded.EmbeddedChannel;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -24,6 +25,8 @@ import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.Path;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -31,6 +34,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkSide;
+import net.minecraft.network.NetworkState;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -224,6 +228,9 @@ public class TestContext {
 		};
 	}
 
+	@Deprecated(
+		forRemoval = true
+	)
 	public ServerPlayerEntity createMockCreativeServerPlayerInWorld() {
 		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(
 			this.getWorld().getServer(), this.getWorld(), new GameProfile(UUID.randomUUID(), "test-mock-player")
@@ -238,7 +245,10 @@ public class TestContext {
 				return true;
 			}
 		};
-		this.getWorld().getServer().getPlayerManager().onPlayerConnect(new ClientConnection(NetworkSide.SERVERBOUND), serverPlayerEntity);
+		ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
+		EmbeddedChannel embeddedChannel = new EmbeddedChannel(clientConnection);
+		embeddedChannel.attr(ClientConnection.SERVERBOUND_PROTOCOL_KEY).set(NetworkState.PLAY.getHandler(NetworkSide.SERVERBOUND));
+		this.getWorld().getServer().getPlayerManager().onPlayerConnect(clientConnection, serverPlayerEntity, 0);
 		return serverPlayerEntity;
 	}
 
@@ -618,6 +628,14 @@ public class TestContext {
 		T object = (T)propertyGetter.apply(entity);
 		if (!object.equals(expectedValue)) {
 			throw new GameTestException("Entity " + entity + " value " + propertyName + "=" + object + " is not equal to expected " + expectedValue);
+		}
+	}
+
+	public void expectEntityHasEffect(LivingEntity entity, StatusEffect effect, int amplifier) {
+		StatusEffectInstance statusEffectInstance = entity.getStatusEffect(effect);
+		if (statusEffectInstance == null || statusEffectInstance.getAmplifier() != amplifier) {
+			int i = amplifier + 1;
+			throw new GameTestException("Entity " + entity + " failed has " + effect.getTranslationKey() + " x " + i + " test");
 		}
 	}
 

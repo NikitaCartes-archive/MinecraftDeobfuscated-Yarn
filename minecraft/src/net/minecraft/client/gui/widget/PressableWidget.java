@@ -6,8 +6,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.input.KeyCodes;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 /**
@@ -16,12 +18,10 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public abstract class PressableWidget extends ClickableWidget {
-	protected static final int field_43046 = 46;
-	protected static final int field_43047 = 200;
-	protected static final int field_43048 = 20;
-	protected static final int field_43100 = 20;
-	protected static final int field_43101 = 4;
 	protected static final int field_43050 = 2;
+	private static final ButtonTextures TEXTURES = new ButtonTextures(
+		new Identifier("widget/button"), new Identifier("widget/button_disabled"), new Identifier("widget/button_highlighted")
+	);
 
 	public PressableWidget(int i, int j, int k, int l, Text text) {
 		super(i, j, k, l, text);
@@ -35,7 +35,7 @@ public abstract class PressableWidget extends ClickableWidget {
 		context.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 		RenderSystem.enableBlend();
 		RenderSystem.enableDepthTest();
-		context.drawNineSlicedTexture(WIDGETS_TEXTURE, this.getX(), this.getY(), this.getWidth(), this.getHeight(), 20, 4, 200, 20, 0, this.getTextureY());
+		context.drawGuiTexture(TEXTURES.get(this.active, this.isSelected()), this.getX(), this.getY(), this.getWidth(), this.getHeight());
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		int i = this.active ? 16777215 : 10526880;
 		this.drawMessage(context, minecraftClient.textRenderer, i | MathHelper.ceil(this.alpha * 255.0F) << 24);
@@ -43,17 +43,6 @@ public abstract class PressableWidget extends ClickableWidget {
 
 	public void drawMessage(DrawContext context, TextRenderer textRenderer, int color) {
 		this.drawScrollableText(context, textRenderer, 2, color);
-	}
-
-	private int getTextureY() {
-		int i = 1;
-		if (!this.active) {
-			i = 0;
-		} else if (this.isSelected()) {
-			i = 2;
-		}
-
-		return 46 + i * 20;
 	}
 
 	@Override

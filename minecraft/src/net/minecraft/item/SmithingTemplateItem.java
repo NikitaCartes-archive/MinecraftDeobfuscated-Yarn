@@ -15,7 +15,6 @@ import net.minecraft.world.World;
 public class SmithingTemplateItem extends Item {
 	private static final Formatting TITLE_FORMATTING = Formatting.GRAY;
 	private static final Formatting DESCRIPTION_FORMATTING = Formatting.BLUE;
-	private static final String TRANSLATION_KEY = Util.createTranslationKey("item", new Identifier("smithing_template"));
 	private static final Text INGREDIENTS_TEXT = Text.translatable(Util.createTranslationKey("item", new Identifier("smithing_template.ingredients")))
 		.formatted(TITLE_FORMATTING);
 	private static final Text APPLIES_TO_TEXT = Text.translatable(Util.createTranslationKey("item", new Identifier("smithing_template.applies_to")))
@@ -180,10 +179,5 @@ public class SmithingTemplateItem extends Item {
 
 	public List<Identifier> getEmptyAdditionsSlotTextures() {
 		return this.emptyAdditionsSlotTextures;
-	}
-
-	@Override
-	public String getTranslationKey() {
-		return TRANSLATION_KEY;
 	}
 }

@@ -6,12 +6,15 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorMenu {
+	static final Identifier CLOSE_TEXTURE = new Identifier("spectator/close");
+	static final Identifier SCROLL_LEFT_TEXTURE = new Identifier("spectator/scroll_left");
+	static final Identifier SCROLL_RIGHT_TEXTURE = new Identifier("spectator/scroll_right");
 	private static final SpectatorMenuCommand CLOSE_COMMAND = new SpectatorMenu.CloseSpectatorMenuCommand();
 	private static final SpectatorMenuCommand PREVIOUS_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(-1, true);
 	private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new SpectatorMenu.ChangePageSpectatorMenuCommand(1, true);
@@ -134,9 +137,9 @@ public class SpectatorMenu {
 		@Override
 		public void renderIcon(DrawContext context, float brightness, int alpha) {
 			if (this.direction < 0) {
-				context.drawTexture(SpectatorHud.SPECTATOR_TEXTURE, 0, 0, 144.0F, 0.0F, 16, 16, 256, 256);
+				context.drawGuiTexture(SpectatorMenu.SCROLL_LEFT_TEXTURE, 0, 0, 16, 16);
 			} else {
-				context.drawTexture(SpectatorHud.SPECTATOR_TEXTURE, 0, 0, 160.0F, 0.0F, 16, 16, 256, 256);
+				context.drawGuiTexture(SpectatorMenu.SCROLL_RIGHT_TEXTURE, 0, 0, 16, 16);
 			}
 		}
 
@@ -160,7 +163,7 @@ public class SpectatorMenu {
 
 		@Override
 		public void renderIcon(DrawContext context, float brightness, int alpha) {
-			context.drawTexture(SpectatorHud.SPECTATOR_TEXTURE, 0, 0, 128.0F, 0.0F, 16, 16, 256, 256);
+			context.drawGuiTexture(SpectatorMenu.CLOSE_TEXTURE, 0, 0, 16, 16);
 		}
 
 		@Override

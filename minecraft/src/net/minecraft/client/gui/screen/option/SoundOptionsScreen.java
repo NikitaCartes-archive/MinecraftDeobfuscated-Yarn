@@ -50,4 +50,9 @@ public class SoundOptionsScreen extends GameOptionsScreen {
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
 		this.render(context, this.optionButtons, mouseX, mouseY, delta);
 	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
+	}
 }

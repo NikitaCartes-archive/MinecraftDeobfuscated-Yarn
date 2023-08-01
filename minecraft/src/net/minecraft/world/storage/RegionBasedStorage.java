@@ -56,7 +56,7 @@ public final class RegionBasedStorage implements AutoCloseable {
 					break label43;
 				}
 
-				var8 = NbtIo.read(dataInputStream);
+				var8 = NbtIo.readCompound(dataInputStream);
 			} catch (Throwable var7) {
 				if (dataInputStream != null) {
 					try {
@@ -116,7 +116,7 @@ public final class RegionBasedStorage implements AutoCloseable {
 			DataOutputStream dataOutputStream = regionFile.getChunkOutputStream(pos);
 
 			try {
-				NbtIo.write(nbt, dataOutputStream);
+				NbtIo.writeCompound(nbt, dataOutputStream);
 			} catch (Throwable var8) {
 				if (dataOutputStream != null) {
 					try {

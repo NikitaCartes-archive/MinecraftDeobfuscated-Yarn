@@ -23,7 +23,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AdvancementWidget {
-	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/advancements/widgets.png");
+	private static final Identifier TITLE_BOX_TEXTURE = new Identifier("advancements/title_box");
 	private static final int field_32286 = 26;
 	private static final int field_32287 = 0;
 	private static final int field_32288 = 200;
@@ -147,9 +147,7 @@ public class AdvancementWidget {
 				advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
 			}
 
-			context.drawTexture(
-				WIDGETS_TEXTURE, x + this.x + 3, y + this.y, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26
-			);
+			context.drawGuiTexture(advancementObtainedStatus.getFrameTexture(this.display.getFrame()), x + this.x + 3, y + this.y, 26, 26);
 			context.drawItemWithoutEntity(this.display.getIcon(), x + this.x + 8, y + this.y + 5);
 		}
 
@@ -214,23 +212,15 @@ public class AdvancementWidget {
 		int n = 32 + this.description.size() * 9;
 		if (!this.description.isEmpty()) {
 			if (bl2) {
-				context.drawNineSlicedTexture(WIDGETS_TEXTURE, m, l + 26 - n, this.width, n, 10, 200, 26, 0, 52);
+				context.drawGuiTexture(TITLE_BOX_TEXTURE, m, l + 26 - n, this.width, n);
 			} else {
-				context.drawNineSlicedTexture(WIDGETS_TEXTURE, m, l, this.width, n, 10, 200, 26, 0, 52);
+				context.drawGuiTexture(TITLE_BOX_TEXTURE, m, l, this.width, n);
 			}
 		}
 
-		context.drawTexture(WIDGETS_TEXTURE, m, l, 0, advancementObtainedStatus.getSpriteIndex() * 26, j, 26);
-		context.drawTexture(WIDGETS_TEXTURE, m + j, l, 200 - k, advancementObtainedStatus2.getSpriteIndex() * 26, k, 26);
-		context.drawTexture(
-			WIDGETS_TEXTURE,
-			originX + this.x + 3,
-			originY + this.y,
-			this.display.getFrame().getTextureV(),
-			128 + advancementObtainedStatus3.getSpriteIndex() * 26,
-			26,
-			26
-		);
+		context.drawGuiTexture(advancementObtainedStatus.getBoxTexture(), 200, 26, 0, 0, m, l, j, 26);
+		context.drawGuiTexture(advancementObtainedStatus2.getBoxTexture(), 200, 26, 200 - k, 0, m + j, l, k, 26);
+		context.drawGuiTexture(advancementObtainedStatus3.getFrameTexture(this.display.getFrame()), originX + this.x + 3, originY + this.y, 26, 26);
 		if (bl) {
 			context.drawTextWithShadow(this.client.textRenderer, this.title, m + 5, originY + this.y + 9, -1);
 			if (string != null) {

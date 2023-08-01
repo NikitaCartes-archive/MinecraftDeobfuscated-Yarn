@@ -1,6 +1,7 @@
 package net.minecraft.client.realms.dto;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.realms.RealmsSerializable;
@@ -10,7 +11,7 @@ public class PlayerInfo extends ValueObject implements RealmsSerializable {
 	@SerializedName("name")
 	private String name;
 	@SerializedName("uuid")
-	private String uuid;
+	private UUID uuid;
 	@SerializedName("operator")
 	private boolean operator;
 	@SerializedName("accepted")
@@ -26,11 +27,11 @@ public class PlayerInfo extends ValueObject implements RealmsSerializable {
 		this.name = name;
 	}
 
-	public String getUuid() {
+	public UUID getUuid() {
 		return this.uuid;
 	}
 
-	public void setUuid(String uuid) {
+	public void setUuid(UUID uuid) {
 		this.uuid = uuid;
 	}
 

@@ -38,9 +38,8 @@ public class OutOfMemoryScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, this.height / 4 - 60 + 20, 16777215);
 		this.message.drawWithShadow(context, this.width / 2 - 145, this.height / 4, 9, 10526880);
-		super.render(context, mouseX, mouseY, delta);
 	}
 }

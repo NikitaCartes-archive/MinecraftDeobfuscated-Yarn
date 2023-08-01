@@ -15,6 +15,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.block.entity.SignBlockEntityRenderer;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.screen.ScreenTexts;
@@ -99,12 +100,11 @@ public abstract class AbstractSignEditScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+		super.render(context, mouseX, mouseY, delta);
 		DiffuseLighting.disableGuiDepthLighting();
-		this.renderBackground(context);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 40, 16777215);
 		this.renderSign(context);
 		DiffuseLighting.enableGuiDepthLighting();
-		super.render(context, mouseX, mouseY, delta);
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public abstract class AbstractSignEditScreen extends Screen {
 		context.getMatrices().translate(0.0F, 0.0F, 4.0F);
 		Vector3f vector3f = this.getTextScale();
 		context.getMatrices().scale(vector3f.x(), vector3f.y(), vector3f.z());
-		int i = this.text.getColor().getSignColor();
+		int i = this.text.isGlowing() ? this.text.getColor().getSignColor() : SignBlockEntityRenderer.getColor(this.text);
 		boolean bl = this.ticksSinceOpened / 6 % 2 == 0;
 		int j = this.selectionManager.getSelectionStart();
 		int k = this.selectionManager.getSelectionEnd();

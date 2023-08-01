@@ -60,7 +60,7 @@ public class DownloadTask extends LongRunningTask {
 					return;
 				}
 
-				LOGGER.error("Couldn't download world data");
+				LOGGER.error("Couldn't download world data", var5);
 				setScreen(new RealmsGenericErrorScreen(var5, this.lastScreen));
 				return;
 			} catch (Exception var6) {
@@ -69,7 +69,7 @@ public class DownloadTask extends LongRunningTask {
 				}
 
 				LOGGER.error("Couldn't download world data", var6);
-				this.error(var6.getLocalizedMessage());
+				this.error(var6);
 				return;
 			}
 		}

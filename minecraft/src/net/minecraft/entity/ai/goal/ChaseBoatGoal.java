@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -55,8 +56,9 @@ public class ChaseBoatGoal extends Goal {
 	@Override
 	public void start() {
 		for(BoatEntity boatEntity : this.mob.getWorld().getNonSpectatingEntities(BoatEntity.class, this.mob.getBoundingBox().expand(5.0))) {
-			if (boatEntity.getControllingPassenger() != null && boatEntity.getControllingPassenger() instanceof PlayerEntity) {
-				this.passenger = (PlayerEntity)boatEntity.getControllingPassenger();
+			LivingEntity var5 = boatEntity.getControllingPassenger();
+			if (var5 instanceof PlayerEntity playerEntity) {
+				this.passenger = playerEntity;
 				break;
 			}
 		}

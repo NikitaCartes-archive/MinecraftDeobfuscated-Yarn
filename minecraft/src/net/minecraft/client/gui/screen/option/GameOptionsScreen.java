@@ -30,9 +30,8 @@ public class GameOptionsScreen extends Screen {
 	}
 
 	protected void render(DrawContext context, OptionListWidget optionButtons, int mouseX, int mouseY, float tickDelta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, tickDelta);
 		optionButtons.render(context, mouseX, mouseY, tickDelta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 20, 16777215);
-		super.render(context, mouseX, mouseY, tickDelta);
 	}
 }

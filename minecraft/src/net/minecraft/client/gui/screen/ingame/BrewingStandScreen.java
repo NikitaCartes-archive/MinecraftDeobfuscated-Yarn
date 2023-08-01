@@ -11,6 +11,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BrewingStandScreen extends HandledScreen<BrewingStandScreenHandler> {
+	private static final Identifier FUEL_LENGTH_TEXTURE = new Identifier("container/brewing_stand/fuel_length");
+	private static final Identifier BREW_PROGRESS_TEXTURE = new Identifier("container/brewing_stand/brew_progress");
+	private static final Identifier BUBBLES_TEXTURE = new Identifier("container/brewing_stand/bubbles");
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/brewing_stand.png");
 	private static final int[] BUBBLE_PROGRESS = new int[]{29, 24, 20, 16, 11, 6, 0};
 
@@ -26,7 +29,6 @@ public class BrewingStandScreen extends HandledScreen<BrewingStandScreenHandler>
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
 		super.render(context, mouseX, mouseY, delta);
 		this.drawMouseoverTooltip(context, mouseX, mouseY);
 	}
@@ -39,19 +41,19 @@ public class BrewingStandScreen extends HandledScreen<BrewingStandScreenHandler>
 		int k = this.handler.getFuel();
 		int l = MathHelper.clamp((18 * k + 20 - 1) / 20, 0, 18);
 		if (l > 0) {
-			context.drawTexture(TEXTURE, i + 60, j + 44, 176, 29, l, 4);
+			context.drawGuiTexture(FUEL_LENGTH_TEXTURE, 18, 4, 0, 0, i + 60, j + 44, l, 4);
 		}
 
 		int m = this.handler.getBrewTime();
 		if (m > 0) {
 			int n = (int)(28.0F * (1.0F - (float)m / 400.0F));
 			if (n > 0) {
-				context.drawTexture(TEXTURE, i + 97, j + 16, 176, 0, 9, n);
+				context.drawGuiTexture(BREW_PROGRESS_TEXTURE, 9, 28, 0, 0, i + 97, j + 16, 9, n);
 			}
 
 			n = BUBBLE_PROGRESS[m / 2 % 7];
 			if (n > 0) {
-				context.drawTexture(TEXTURE, i + 63, j + 14 + 29 - n, 185, 29 - n, 12, n);
+				context.drawGuiTexture(BUBBLES_TEXTURE, 12, 29, 0, 29 - n, i + 63, j + 14 + 29 - n, 12, n);
 			}
 		}
 	}

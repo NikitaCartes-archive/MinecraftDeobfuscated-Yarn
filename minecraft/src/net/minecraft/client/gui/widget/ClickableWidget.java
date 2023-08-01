@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -26,7 +25,6 @@ import net.minecraft.client.sound.SoundManager;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
@@ -37,8 +35,6 @@ import net.minecraft.util.math.MathHelper;
  */
 @Environment(EnvType.CLIENT)
 public abstract class ClickableWidget implements Drawable, Element, Widget, Selectable {
-	public static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
-	public static final Identifier ACCESSIBILITY_TEXTURE = new Identifier("textures/gui/accessibility.png");
 	private static final double field_43055 = 0.5;
 	private static final double field_43056 = 3.0;
 	protected int width;
@@ -129,21 +125,28 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 
 	protected abstract void renderButton(DrawContext context, int mouseX, int mouseY, float delta);
 
-	protected static void drawScrollableText(DrawContext context, TextRenderer textRenderer, Text text, int left, int top, int right, int bottom, int color) {
+	protected static void drawScrollableText(DrawContext context, TextRenderer textRenderer, Text text, int startX, int startY, int endX, int endY, int color) {
+		drawScrollableText(context, textRenderer, text, (startX + endX) / 2, startX, startY, endX, endY, color);
+	}
+
+	protected static void drawScrollableText(
+		DrawContext context, TextRenderer textRenderer, Text text, int centerX, int startX, int startY, int endX, int endY, int color
+	) {
 		int i = textRenderer.getWidth(text);
-		int j = (top + bottom - 9) / 2 + 1;
-		int k = right - left;
+		int j = (startY + endY - 9) / 2 + 1;
+		int k = endX - startX;
 		if (i > k) {
 			int l = i - k;
 			double d = (double)Util.getMeasuringTimeMs() / 1000.0;
 			double e = Math.max((double)l * 0.5, 3.0);
 			double f = Math.sin((Math.PI / 2) * Math.cos((Math.PI * 2) * d / e)) / 2.0 + 0.5;
 			double g = MathHelper.lerp(f, 0.0, (double)l);
-			context.enableScissor(left, top, right, bottom);
-			context.drawTextWithShadow(textRenderer, text, left - (int)g, j, color);
+			context.enableScissor(startX, startY, endX, endY);
+			context.drawTextWithShadow(textRenderer, text, startX - (int)g, j, color);
 			context.disableScissor();
 		} else {
-			context.drawCenteredTextWithShadow(textRenderer, text, (left + right) / 2, j, color);
+			int l = MathHelper.clamp(centerX, startX + i / 2, endX - i / 2);
+			context.drawCenteredTextWithShadow(textRenderer, text, l, j, color);
 		}
 	}
 
@@ -151,20 +154,6 @@ public abstract class ClickableWidget implements Drawable, Element, Widget, Sele
 		int i = this.getX() + xMargin;
 		int j = this.getX() + this.getWidth() - xMargin;
 		drawScrollableText(context, textRenderer, this.getMessage(), i, this.getY(), j, this.getY() + this.getHeight(), color);
-	}
-
-	public void drawTexture(
-		DrawContext context, Identifier texture, int x, int y, int u, int v, int hoveredVOffset, int width, int height, int textureWidth, int textureHeight
-	) {
-		int i = v;
-		if (!this.isNarratable()) {
-			i = v + hoveredVOffset * 2;
-		} else if (this.isSelected()) {
-			i = v + hoveredVOffset;
-		}
-
-		RenderSystem.enableDepthTest();
-		context.drawTexture(texture, x, y, (float)u, (float)i, width, height, textureWidth, textureHeight);
 	}
 
 	public void onClick(double mouseX, double mouseY) {

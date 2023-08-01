@@ -3,14 +3,18 @@ package net.minecraft.client.gui.widget;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.screen.ScreenTexts;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PageTurnWidget extends ButtonWidget {
+	private static final Identifier PAGE_FORWARD_HIGHLIGHTED_TEXTURE = new Identifier("widget/page_forward_highlighted");
+	private static final Identifier PAGE_FORWARD_TEXTURE = new Identifier("widget/page_forward");
+	private static final Identifier PAGE_BACKWARD_HIGHLIGHTED_TEXTURE = new Identifier("widget/page_backward_highlighted");
+	private static final Identifier PAGE_BACKWARD_TEXTURE = new Identifier("widget/page_backward");
 	private final boolean isNextPageButton;
 	private final boolean playPageTurnSound;
 
@@ -22,17 +26,14 @@ public class PageTurnWidget extends ButtonWidget {
 
 	@Override
 	public void renderButton(DrawContext context, int mouseX, int mouseY, float delta) {
-		int i = 0;
-		int j = 192;
-		if (this.isSelected()) {
-			i += 23;
+		Identifier identifier;
+		if (this.isNextPageButton) {
+			identifier = this.isSelected() ? PAGE_FORWARD_HIGHLIGHTED_TEXTURE : PAGE_FORWARD_TEXTURE;
+		} else {
+			identifier = this.isSelected() ? PAGE_BACKWARD_HIGHLIGHTED_TEXTURE : PAGE_BACKWARD_TEXTURE;
 		}
 
-		if (!this.isNextPageButton) {
-			j += 13;
-		}
-
-		context.drawTexture(BookScreen.BOOK_TEXTURE, this.getX(), this.getY(), i, j, 23, 13);
+		context.drawGuiTexture(identifier, this.getX(), this.getY(), 23, 13);
 	}
 
 	@Override

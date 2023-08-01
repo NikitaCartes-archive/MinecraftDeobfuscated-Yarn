@@ -54,15 +54,16 @@ public class BucketItem extends Item implements FluidModificationItem {
 				return TypedActionResult.fail(itemStack);
 			} else if (this.fluid == Fluids.EMPTY) {
 				BlockState blockState = world.getBlockState(blockPos);
-				if (blockState.getBlock() instanceof FluidDrainable fluidDrainable) {
-					ItemStack itemStack2 = fluidDrainable.tryDrainFluid(world, blockPos, blockState);
-					if (!itemStack2.isEmpty()) {
+				Block itemStack2 = blockState.getBlock();
+				if (itemStack2 instanceof FluidDrainable fluidDrainable) {
+					ItemStack itemStack2x = fluidDrainable.tryDrainFluid(user, world, blockPos, blockState);
+					if (!itemStack2x.isEmpty()) {
 						user.incrementStat(Stats.USED.getOrCreateStat(this));
 						fluidDrainable.getBucketFillSound().ifPresent(sound -> user.playSound(sound, 1.0F, 1.0F));
 						world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
-						ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, user, itemStack2);
+						ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, user, itemStack2x);
 						if (!world.isClient) {
-							Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, itemStack2);
+							Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, itemStack2x);
 						}
 
 						return TypedActionResult.success(itemStack3, world.isClient());
@@ -98,13 +99,33 @@ public class BucketItem extends Item implements FluidModificationItem {
 
 	@Override
 	public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult) {
-		if (!(this.fluid instanceof FlowableFluid)) {
+		Fluid blockState = this.fluid;
+		if (!(blockState instanceof FlowableFluid)) {
 			return false;
 		} else {
-			BlockState blockState = world.getBlockState(pos);
-			Block block = blockState.getBlock();
-			boolean bl = blockState.canBucketPlace(this.fluid);
-			boolean bl2 = blockState.isAir() || bl || block instanceof FluidFillable && ((FluidFillable)block).canFillWithFluid(world, pos, blockState, this.fluid);
+			FlowableFluid flowableFluid;
+			Block block;
+			boolean bl;
+			boolean var10000;
+			label82: {
+				flowableFluid = (FlowableFluid)blockState;
+				blockState = world.getBlockState(pos);
+				block = blockState.getBlock();
+				bl = blockState.canBucketPlace(this.fluid);
+				label70:
+				if (!blockState.isAir() && !bl) {
+					if (block instanceof FluidFillable fluidFillable && fluidFillable.canFillWithFluid(player, world, pos, blockState, this.fluid)) {
+						break label70;
+					}
+
+					var10000 = false;
+					break label82;
+				}
+
+				var10000 = true;
+			}
+
+			boolean bl2 = var10000;
 			if (!bl2) {
 				return hitResult != null && this.placeFluid(player, world, hitResult.getBlockPos().offset(hitResult.getSide()), null);
 			} else if (world.getDimension().ultrawarm() && this.fluid.isIn(FluidTags.WATER)) {
@@ -120,11 +141,13 @@ public class BucketItem extends Item implements FluidModificationItem {
 				}
 
 				return true;
-			} else if (block instanceof FluidFillable && this.fluid == Fluids.WATER) {
-				((FluidFillable)block).tryFillWithFluid(world, pos, blockState, ((FlowableFluid)this.fluid).getStill(false));
-				this.playEmptyingSound(player, world, pos);
-				return true;
 			} else {
+				if (block instanceof FluidFillable fluidFillable && this.fluid == Fluids.WATER) {
+					fluidFillable.tryFillWithFluid(world, pos, blockState, flowableFluid.getStill(false));
+					this.playEmptyingSound(player, world, pos);
+					return true;
+				}
+
 				if (!world.isClient && bl && !blockState.isLiquid()) {
 					world.breakBlock(pos, true);
 				}

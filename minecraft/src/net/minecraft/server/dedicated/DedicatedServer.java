@@ -1,6 +1,8 @@
 package net.minecraft.server.dedicated;
 
-public interface DedicatedServer {
+import net.minecraft.network.QueryableServer;
+
+public interface DedicatedServer extends QueryableServer {
 	ServerPropertiesHandler getProperties();
 
 	String getHostname();
@@ -8,12 +10,6 @@ public interface DedicatedServer {
 	int getPort();
 
 	String getMotd();
-
-	String getVersion();
-
-	int getCurrentPlayerCount();
-
-	int getMaxPlayerCount();
 
 	String[] getPlayerNames();
 

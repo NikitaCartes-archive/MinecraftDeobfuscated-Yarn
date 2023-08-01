@@ -91,7 +91,7 @@ public class ModelPredicateProviderRegistry {
 			} else {
 				return world == null
 					? 0.0F
-					: ArmorTrim.getTrim(world.getRegistryManager(), stack)
+					: ArmorTrim.getTrim(world.getRegistryManager(), stack, true)
 						.map(ArmorTrim::getMaterial)
 						.map(RegistryEntry::value)
 						.map(ArmorTrimMaterial::itemModelIndex)

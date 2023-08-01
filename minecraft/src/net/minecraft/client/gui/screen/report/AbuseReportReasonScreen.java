@@ -44,7 +44,6 @@ public class AbuseReportReasonScreen extends Screen {
 	@Override
 	protected void init() {
 		this.reasonList = new AbuseReportReasonScreen.ReasonListWidget(this.client);
-		this.reasonList.setRenderBackground(false);
 		this.addSelectableChild(this.reasonList);
 		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = Nullables.map(this.reason, this.reasonList::getEntry);
 		this.reasonList.setSelected(reasonEntry);
@@ -70,10 +69,9 @@ public class AbuseReportReasonScreen extends Screen {
 
 	@Override
 	public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-		this.renderBackground(context);
+		super.render(context, mouseX, mouseY, delta);
 		this.reasonList.render(context, mouseX, mouseY, delta);
 		context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 16, 16777215);
-		super.render(context, mouseX, mouseY, delta);
 		context.fill(this.getLeft(), this.getTop(), this.getRight(), this.getBottom(), 2130706432);
 		context.drawTextWithShadow(this.textRenderer, DESCRIPTION_TEXT, this.getLeft() + 4, this.getTop() + 4, -8421505);
 		AbuseReportReasonScreen.ReasonListWidget.ReasonEntry reasonEntry = this.reasonList.getSelectedOrNull();
@@ -87,6 +85,11 @@ public class AbuseReportReasonScreen extends Screen {
 			int o = this.textRenderer.getWrappedLinesHeight(reasonEntry.reason.getDescription(), m);
 			context.drawTextWrapped(this.textRenderer, reasonEntry.reason.getDescription(), i, k + (n - o) / 2, m, -1);
 		}
+	}
+
+	@Override
+	public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+		this.renderBackgroundTexture(context);
 	}
 
 	private int getDoneButtonY() {

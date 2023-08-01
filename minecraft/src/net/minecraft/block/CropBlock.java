@@ -145,7 +145,11 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
-		return (world.getBaseLightLevel(pos, 0) >= 8 || world.isSkyVisible(pos)) && super.canPlaceAt(state, world, pos);
+		return hasEnoughLightAt(world, pos) && super.canPlaceAt(state, world, pos);
+	}
+
+	protected static boolean hasEnoughLightAt(WorldView world, BlockPos pos) {
+		return world.getBaseLightLevel(pos, 0) >= 8;
 	}
 
 	@Override
@@ -167,7 +171,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 	}
 
 	@Override
-	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state, boolean isClient) {
+	public boolean isFertilizable(WorldView world, BlockPos pos, BlockState state) {
 		return !this.isMature(state);
 	}
 

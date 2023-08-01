@@ -1,7 +1,6 @@
 package net.minecraft.scoreboard;
 
 import java.util.Comparator;
-import javax.annotation.Nullable;
 
 public class ScoreboardPlayerScore {
 	public static final Comparator<ScoreboardPlayerScore> COMPARATOR = (a, b) -> {
@@ -12,7 +11,6 @@ public class ScoreboardPlayerScore {
 		}
 	};
 	private final Scoreboard scoreboard;
-	@Nullable
 	private final ScoreboardObjective objective;
 	private final String playerName;
 	private int score;
@@ -56,7 +54,6 @@ public class ScoreboardPlayerScore {
 		}
 	}
 
-	@Nullable
 	public ScoreboardObjective getObjective() {
 		return this.objective;
 	}

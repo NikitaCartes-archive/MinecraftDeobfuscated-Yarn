@@ -1,6 +1,7 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -58,8 +59,8 @@ public abstract class AbstractDonkeyEntity extends AbstractHorseEntity {
 	}
 
 	@Override
-	public double getMountedHeightOffset() {
-		return super.getMountedHeightOffset() - 0.25;
+	protected float getPassengerAttachmentY(EntityDimensions dimensions, float scaleFactor) {
+		return dimensions.height - (this.isBaby() ? 0.15625F : 0.3875F) * scaleFactor;
 	}
 
 	@Override

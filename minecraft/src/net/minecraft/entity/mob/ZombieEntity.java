@@ -65,6 +65,7 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
+import org.joml.Vector3f;
 
 public class ZombieEntity extends HostileEntity {
 	private static final UUID BABY_SPEED_ID = UUID.fromString("B9766B59-9566-4402-BC1F-2EE2A276D836");
@@ -181,7 +182,7 @@ public class ZombieEntity extends HostileEntity {
 		this.getDataTracker().set(BABY, baby);
 		if (this.getWorld() != null && !this.getWorld().isClient) {
 			EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
-			entityAttributeInstance.removeModifier(BABY_SPEED_BONUS);
+			entityAttributeInstance.removeModifier(BABY_SPEED_BONUS.getId());
 			if (baby) {
 				entityAttributeInstance.addTemporaryModifier(BABY_SPEED_BONUS);
 			}
@@ -534,8 +535,13 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public double getHeightOffset() {
-		return this.isBaby() ? 0.0 : -0.45;
+	protected Vector3f getPassengerAttachmentPos(Entity passenger, EntityDimensions dimensions, float scaleFactor) {
+		return new Vector3f(0.0F, dimensions.height + 0.0625F * scaleFactor, 0.0F);
+	}
+
+	@Override
+	protected float getUnscaledRidingOffset(Entity vehicle) {
+		return -0.7F;
 	}
 
 	@Override
