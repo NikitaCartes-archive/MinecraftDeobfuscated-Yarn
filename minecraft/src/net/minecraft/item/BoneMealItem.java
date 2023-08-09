@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldEvents;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.event.GameEvent;
 
 public class BoneMealItem extends Item {
 	public static final int field_30851 = 3;
@@ -39,6 +40,7 @@ public class BoneMealItem extends Item {
 		BlockPos blockPos2 = blockPos.offset(context.getSide());
 		if (useOnFertilizable(context.getStack(), world, blockPos)) {
 			if (!world.isClient) {
+				context.getPlayer().emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
 				world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos, 0);
 			}
 
@@ -48,6 +50,7 @@ public class BoneMealItem extends Item {
 			boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
 			if (bl && useOnGround(context.getStack(), world, blockPos2, context.getSide())) {
 				if (!world.isClient) {
+					context.getPlayer().emitGameEvent(GameEvent.ITEM_INTERACT_FINISH);
 					world.syncWorldEvent(WorldEvents.BONE_MEAL_USED, blockPos2, 0);
 				}
 
@@ -60,7 +63,8 @@ public class BoneMealItem extends Item {
 
 	public static boolean useOnFertilizable(ItemStack stack, World world, BlockPos pos) {
 		BlockState blockState = world.getBlockState(pos);
-		if (blockState.getBlock() instanceof Fertilizable fertilizable && fertilizable.isFertilizable(world, pos, blockState)) {
+		Block var5 = blockState.getBlock();
+		if (var5 instanceof Fertilizable fertilizable && fertilizable.isFertilizable(world, pos, blockState)) {
 			if (world instanceof ServerWorld) {
 				if (fertilizable.canGrow(world, world.random, pos, blockState)) {
 					fertilizable.grow((ServerWorld)world, world.random, pos, blockState);

@@ -1750,7 +1750,7 @@ public class ItemGroups {
 
 		for(SuspiciousStewIngredient suspiciousStewIngredient : list) {
 			ItemStack itemStack = new ItemStack(Items.SUSPICIOUS_STEW);
-			SuspiciousStewItem.addEffectToStew(itemStack, suspiciousStewIngredient.getEffectInStew(), suspiciousStewIngredient.getEffectInStewDuration());
+			SuspiciousStewItem.writeEffectsToStew(itemStack, suspiciousStewIngredient.getStewEffects());
 			set.add(itemStack);
 		}
 

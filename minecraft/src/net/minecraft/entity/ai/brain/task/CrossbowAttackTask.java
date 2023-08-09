@@ -74,7 +74,7 @@ public class CrossbowAttackTask<E extends MobEntity & CrossbowUser, T extends Li
 				this.state = CrossbowAttackTask.CrossbowState.READY_TO_ATTACK;
 			}
 		} else if (this.state == CrossbowAttackTask.CrossbowState.READY_TO_ATTACK) {
-			entity.attack(target, 1.0F);
+			entity.shootAt(target, 1.0F);
 			ItemStack itemStack2 = entity.getStackInHand(ProjectileUtil.getHandPossiblyHolding(entity, Items.CROSSBOW));
 			CrossbowItem.setCharged(itemStack2, false);
 			this.state = CrossbowAttackTask.CrossbowState.UNCHARGED;

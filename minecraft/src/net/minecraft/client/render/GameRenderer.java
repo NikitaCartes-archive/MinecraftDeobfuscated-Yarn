@@ -873,7 +873,8 @@ public class GameRenderer implements AutoCloseable {
 
 	private void updateFovMultiplier() {
 		float f = 1.0F;
-		if (this.client.getCameraEntity() instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
+		Entity var3 = this.client.getCameraEntity();
+		if (var3 instanceof AbstractClientPlayerEntity abstractClientPlayerEntity) {
 			f = abstractClientPlayerEntity.getFovMultiplier();
 		}
 
@@ -913,22 +914,23 @@ public class GameRenderer implements AutoCloseable {
 	}
 
 	private void tiltViewWhenHurt(MatrixStack matrices, float tickDelta) {
-		if (this.client.getCameraEntity() instanceof LivingEntity livingEntity) {
-			float f = (float)livingEntity.hurtTime - tickDelta;
+		Entity f = this.client.getCameraEntity();
+		if (f instanceof LivingEntity livingEntity) {
+			float fx = (float)livingEntity.hurtTime - tickDelta;
 			if (livingEntity.isDead()) {
 				float g = Math.min((float)livingEntity.deathTime + tickDelta, 20.0F);
 				matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(40.0F - 8000.0F / (g + 200.0F)));
 			}
 
-			if (f < 0.0F) {
+			if (fx < 0.0F) {
 				return;
 			}
 
-			f /= (float)livingEntity.maxHurtTime;
-			f = MathHelper.sin(f * f * f * f * (float) Math.PI);
+			float var8 = fx / (float)livingEntity.maxHurtTime;
+			float var9 = MathHelper.sin(var8 * var8 * var8 * var8 * (float) Math.PI);
 			float g = livingEntity.getDamageTiltYaw();
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-g));
-			float h = (float)((double)(-f) * 14.0 * this.client.options.getDamageTiltStrength().getValue());
+			float h = (float)((double)(-var9) * 14.0 * this.client.options.getDamageTiltStrength().getValue());
 			matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(h));
 			matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(g));
 		}
@@ -1044,10 +1046,11 @@ public class GameRenderer implements AutoCloseable {
 		}
 
 		if (!this.client.skipGameRender) {
+			boolean bl = this.client.isFinishedLoading();
 			int i = (int)(this.client.mouse.getX() * (double)this.client.getWindow().getScaledWidth() / (double)this.client.getWindow().getWidth());
 			int j = (int)(this.client.mouse.getY() * (double)this.client.getWindow().getScaledHeight() / (double)this.client.getWindow().getHeight());
 			RenderSystem.viewport(0, 0, this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
-			if (tick && this.client.world != null) {
+			if (bl && tick && this.client.world != null) {
 				this.client.getProfiler().push("level");
 				this.renderWorld(tickDelta, startTime, new MatrixStack());
 				this.updateWorldIcon();
@@ -1081,7 +1084,7 @@ public class GameRenderer implements AutoCloseable {
 			RenderSystem.applyModelViewMatrix();
 			DiffuseLighting.enableGuiDepthLighting();
 			DrawContext drawContext = new DrawContext(this.client, this.buffers.getEntityVertexConsumers());
-			if (tick && this.client.world != null) {
+			if (bl && tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (this.client.player != null) {
 					float f = MathHelper.lerp(tickDelta, this.client.player.prevNauseaIntensity, this.client.player.nauseaIntensity);
@@ -1103,17 +1106,17 @@ public class GameRenderer implements AutoCloseable {
 			if (this.client.getOverlay() != null) {
 				try {
 					this.client.getOverlay().render(drawContext, i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var16) {
-					CrashReport crashReport = CrashReport.create(var16, "Rendering overlay");
+				} catch (Throwable var17) {
+					CrashReport crashReport = CrashReport.create(var17, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.getOverlay().getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
 				}
-			} else if (this.client.currentScreen != null) {
+			} else if (bl && this.client.currentScreen != null) {
 				try {
 					this.client.currentScreen.renderWithTooltip(drawContext, i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var15) {
-					CrashReport crashReport = CrashReport.create(var15, "Rendering screen");
+				} catch (Throwable var16) {
+					CrashReport crashReport = CrashReport.create(var16, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
@@ -1141,17 +1144,20 @@ public class GameRenderer implements AutoCloseable {
 					if (this.client.currentScreen != null) {
 						this.client.currentScreen.updateNarrator();
 					}
-				} catch (Throwable var14) {
-					CrashReport crashReport = CrashReport.create(var14, "Narrating screen");
+				} catch (Throwable var15) {
+					CrashReport crashReport = CrashReport.create(var15, "Narrating screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
 				}
 			}
 
-			this.client.getProfiler().push("toasts");
-			this.client.getToastManager().draw(drawContext);
-			this.client.getProfiler().pop();
+			if (bl) {
+				this.client.getProfiler().push("toasts");
+				this.client.getToastManager().draw(drawContext);
+				this.client.getProfiler().pop();
+			}
+
 			drawContext.draw();
 			matrixStack.pop();
 			RenderSystem.applyModelViewMatrix();

@@ -55,7 +55,7 @@ public class EntityTrackerEntry {
 	private final TrackedPosition trackedPos = new TrackedPosition();
 	private int lastYaw;
 	private int lastPitch;
-	private int lastHeadPitch;
+	private int lastHeadYaw;
 	private Vec3d velocity = Vec3d.ZERO;
 	private int trackingTick;
 	private int updatesWithoutVehicle;
@@ -74,7 +74,7 @@ public class EntityTrackerEntry {
 		this.trackedPos.setPos(entity.getSyncedPos());
 		this.lastYaw = MathHelper.floor(entity.getYaw() * 256.0F / 360.0F);
 		this.lastPitch = MathHelper.floor(entity.getPitch() * 256.0F / 360.0F);
-		this.lastHeadPitch = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
+		this.lastHeadYaw = MathHelper.floor(entity.getHeadYaw() * 256.0F / 360.0F);
 		this.lastOnGround = entity.isOnGround();
 		this.changedEntries = entity.getDataTracker().getChangedEntries();
 	}
@@ -198,9 +198,9 @@ public class EntityTrackerEntry {
 			}
 
 			int i = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
-			if (Math.abs(i - this.lastHeadPitch) >= 1) {
+			if (Math.abs(i - this.lastHeadYaw) >= 1) {
 				this.receiver.accept(new EntitySetHeadYawS2CPacket(this.entity, (byte)i));
-				this.lastHeadPitch = i;
+				this.lastHeadYaw = i;
 			}
 
 			this.entity.velocityDirty = false;
@@ -235,7 +235,7 @@ public class EntityTrackerEntry {
 		}
 
 		Packet<ClientPlayPacketListener> packet = this.entity.createSpawnPacket();
-		this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
+		this.lastHeadYaw = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
 		sender.accept(packet);
 		if (this.changedEntries != null) {
 			sender.accept(new EntityTrackerUpdateS2CPacket(this.entity.getId(), this.changedEntries));
@@ -281,7 +281,8 @@ public class EntityTrackerEntry {
 			sender.accept(new EntityPassengersSetS2CPacket(this.entity.getVehicle()));
 		}
 
-		if (this.entity instanceof MobEntity mobEntity && mobEntity.isLeashed()) {
+		Entity var13 = this.entity;
+		if (var13 instanceof MobEntity mobEntity && mobEntity.isLeashed()) {
 			sender.accept(new EntityAttachS2CPacket(mobEntity, mobEntity.getHoldingEntity()));
 		}
 	}

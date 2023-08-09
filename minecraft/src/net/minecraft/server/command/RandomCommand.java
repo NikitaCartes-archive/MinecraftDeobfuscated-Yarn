@@ -143,8 +143,8 @@ public class RandomCommand {
 			random = source.getWorld().getRandom();
 		}
 
-		int i = range.getMin() == null ? Integer.MIN_VALUE : range.getMin();
-		int j = range.getMax() == null ? Integer.MAX_VALUE : range.getMax();
+		int i = range.getMin().orElse(Integer.MIN_VALUE);
+		int j = range.getMax().orElse(Integer.MAX_VALUE);
 		long l = (long)j - (long)i;
 		if (l == 0L) {
 			throw RANGE_TOO_SMALL_EXCEPTION.create();

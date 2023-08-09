@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class Stats {
@@ -101,6 +102,7 @@ public class Stats {
 	}
 
 	private static <T> StatType<T> registerType(String id, Registry<T> registry) {
-		return Registry.register(Registries.STAT_TYPE, id, new StatType<>(registry));
+		Text text = Text.translatable("stat_type.minecraft." + id);
+		return Registry.register(Registries.STAT_TYPE, id, new StatType<>(registry, text));
 	}
 }

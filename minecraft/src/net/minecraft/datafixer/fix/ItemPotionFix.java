@@ -173,7 +173,7 @@ public class ItemPotionFix extends DataFix {
 						Typed<?> typed2 = typed;
 						Dynamic<?> dynamic2 = ((Typed)optional2.get()).get(DSL.remainderFinder());
 						Optional<String> optional3 = dynamic2.get("Potion").asString().result();
-						if (!optional3.isPresent()) {
+						if (optional3.isEmpty()) {
 							String string = ID_TO_POTIONS[s & 127];
 							Typed<?> typed3 = ((Typed)optional2.get())
 								.set(DSL.remainderFinder(), dynamic2.set("Potion", dynamic2.createString(string == null ? "minecraft:water" : string)));

@@ -11,6 +11,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -278,6 +279,7 @@ public class BlockEntityType<T extends BlockEntity> {
 	private final BlockEntityType.BlockEntityFactory<? extends T> factory;
 	private final Set<Block> blocks;
 	private final Type<?> type;
+	private final RegistryEntry.Reference<BlockEntityType<?>> registryEntry = Registries.BLOCK_ENTITY_TYPE.createEntry(this);
 
 	/**
 	 * {@return the block entity type's ID, or {@code null} if it is unregistered}
@@ -322,6 +324,11 @@ public class BlockEntityType<T extends BlockEntity> {
 	 */
 	public boolean supports(BlockState state) {
 		return this.blocks.contains(state.getBlock());
+	}
+
+	@Nullable
+	public RegistryEntry.Reference<BlockEntityType<?>> getRegistryEntry() {
+		return this.registryEntry;
 	}
 
 	/**

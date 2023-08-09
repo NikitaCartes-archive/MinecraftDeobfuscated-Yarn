@@ -31,7 +31,8 @@ public class HorseScreen extends HandledScreen<HorseScreenHandler> {
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
 		context.drawTexture(TEXTURE, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
-		if (this.entity instanceof AbstractDonkeyEntity abstractDonkeyEntity && abstractDonkeyEntity.hasChest()) {
+		AbstractHorseEntity var8 = this.entity;
+		if (var8 instanceof AbstractDonkeyEntity abstractDonkeyEntity && abstractDonkeyEntity.hasChest()) {
 			context.drawGuiTexture(CHEST_SLOTS_TEXTURE, 90, 54, 0, 0, i + 79, j + 17, abstractDonkeyEntity.getInventoryColumns() * 18, 54);
 		}
 

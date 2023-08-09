@@ -233,7 +233,7 @@ public class Brain<E extends LivingEntity> {
 		} else {
 			return state == MemoryModuleState.REGISTERED
 				|| state == MemoryModuleState.VALUE_PRESENT && optional.isPresent()
-				|| state == MemoryModuleState.VALUE_ABSENT && !optional.isPresent();
+				|| state == MemoryModuleState.VALUE_ABSENT && optional.isEmpty();
 		}
 	}
 

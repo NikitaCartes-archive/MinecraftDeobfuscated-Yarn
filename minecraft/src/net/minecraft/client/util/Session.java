@@ -1,6 +1,5 @@
 package net.minecraft.client.util;
 
-import com.mojang.authlib.GameProfile;
 import com.mojang.util.UndashedUuid;
 import java.util.Arrays;
 import java.util.Locale;
@@ -56,10 +55,6 @@ public class Session {
 
 	public Optional<String> getXuid() {
 		return this.xuid;
-	}
-
-	public GameProfile getProfile() {
-		return new GameProfile(this.getUuidOrNull(), this.getUsername());
 	}
 
 	public Session.AccountType getAccountType() {

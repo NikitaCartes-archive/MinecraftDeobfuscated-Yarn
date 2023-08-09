@@ -12,7 +12,7 @@ public class EntityShulkerColorFix extends ChoiceFix {
 	}
 
 	public Dynamic<?> fixShulkerColor(Dynamic<?> dynamic) {
-		return !dynamic.get("Color").map(Dynamic::asNumber).result().isPresent() ? dynamic.set("Color", dynamic.createByte((byte)10)) : dynamic;
+		return dynamic.get("Color").map(Dynamic::asNumber).result().isEmpty() ? dynamic.set("Color", dynamic.createByte((byte)10)) : dynamic;
 	}
 
 	@Override

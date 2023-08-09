@@ -214,7 +214,7 @@ public class LightningEntity extends Entity {
 
 		for(int i = 0; i < count; ++i) {
 			Optional<BlockPos> optional = cleanOxidationAround(world, mutablePos);
-			if (!optional.isPresent()) {
+			if (optional.isEmpty()) {
 				break;
 			}
 

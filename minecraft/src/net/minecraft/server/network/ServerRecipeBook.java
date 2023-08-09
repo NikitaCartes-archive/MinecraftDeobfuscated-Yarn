@@ -103,7 +103,7 @@ public class ServerRecipeBook extends RecipeBook {
 			try {
 				Identifier identifier = new Identifier(string);
 				Optional<? extends Recipe<?>> optional = recipeManager.get(identifier);
-				if (!optional.isPresent()) {
+				if (optional.isEmpty()) {
 					LOGGER.error("Tried to load unrecognized recipe: {} removed now.", identifier);
 				} else {
 					handler.accept((Recipe)optional.get());

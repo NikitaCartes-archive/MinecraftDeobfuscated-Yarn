@@ -1,10 +1,6 @@
 package net.minecraft.loot.provider.score;
 
-import net.minecraft.util.JsonSerializableType;
-import net.minecraft.util.JsonSerializer;
+import com.mojang.serialization.Codec;
 
-public class LootScoreProviderType extends JsonSerializableType<LootScoreProvider> {
-	public LootScoreProviderType(JsonSerializer<? extends LootScoreProvider> jsonSerializer) {
-		super(jsonSerializer);
-	}
+public record LootScoreProviderType(Codec<? extends LootScoreProvider> codec) {
 }

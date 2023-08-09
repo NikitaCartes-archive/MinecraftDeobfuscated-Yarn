@@ -1,10 +1,10 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,10 +19,10 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 	}
 
 	public TameAnimalCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		LootContextPredicate lootContextPredicate2 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
-		return new TameAnimalCriterion.Conditions(lootContextPredicate, lootContextPredicate2);
+		Optional<LootContextPredicate> optional2 = EntityPredicate.contextPredicateFromJson(jsonObject, "entity", advancementEntityPredicateDeserializer);
+		return new TameAnimalCriterion.Conditions(optional, optional2);
 	}
 
 	public void trigger(ServerPlayerEntity player, AnimalEntity entity) {
@@ -31,29 +31,29 @@ public class TameAnimalCriterion extends AbstractCriterion<TameAnimalCriterion.C
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final LootContextPredicate entity;
+		private final Optional<LootContextPredicate> entity;
 
-		public Conditions(LootContextPredicate player, LootContextPredicate entity) {
-			super(TameAnimalCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<LootContextPredicate> entity) {
+			super(TameAnimalCriterion.ID, playerPredicate);
 			this.entity = entity;
 		}
 
 		public static TameAnimalCriterion.Conditions any() {
-			return new TameAnimalCriterion.Conditions(LootContextPredicate.EMPTY, LootContextPredicate.EMPTY);
+			return new TameAnimalCriterion.Conditions(Optional.empty(), Optional.empty());
 		}
 
-		public static TameAnimalCriterion.Conditions create(EntityPredicate entity) {
-			return new TameAnimalCriterion.Conditions(LootContextPredicate.EMPTY, EntityPredicate.asLootContextPredicate(entity));
+		public static TameAnimalCriterion.Conditions create(Optional<EntityPredicate> entity) {
+			return new TameAnimalCriterion.Conditions(Optional.empty(), EntityPredicate.contextPredicateFromEntityPredicate(entity));
 		}
 
-		public boolean matches(LootContext tamedEntityContext) {
-			return this.entity.test(tamedEntityContext);
+		public boolean matches(LootContext entity) {
+			return this.entity.isEmpty() || ((LootContextPredicate)this.entity.get()).test(entity);
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("entity", this.entity.toJson(predicateSerializer));
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.entity.ifPresent(lootContextPredicate -> jsonObject.add("entity", lootContextPredicate.toJson()));
 			return jsonObject;
 		}
 	}

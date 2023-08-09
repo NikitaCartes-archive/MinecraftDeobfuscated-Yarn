@@ -1,6 +1,7 @@
 package net.minecraft.registry.entry;
 
 import com.mojang.datafixers.util.Either;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -97,7 +98,7 @@ public interface RegistryEntryList<T> extends Iterable<RegistryEntry<T>> {
 	/**
 	 * {@return a new direct list of {@code values} converted to a registry entry with {@code mapper}}
 	 */
-	static <E, T> RegistryEntryList.Direct<T> of(Function<E, RegistryEntry<T>> mapper, List<E> values) {
+	static <E, T> RegistryEntryList.Direct<T> of(Function<E, RegistryEntry<T>> mapper, Collection<E> values) {
 		return of(values.stream().map(mapper).toList());
 	}
 

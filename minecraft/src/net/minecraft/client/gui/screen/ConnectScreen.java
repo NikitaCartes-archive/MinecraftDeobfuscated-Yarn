@@ -92,7 +92,7 @@ public class ConnectScreen extends Screen {
 						return;
 					}
 
-					if (!optional.isPresent()) {
+					if (optional.isEmpty()) {
 						client.execute(
 							() -> client.setScreen(new DisconnectedScreen(ConnectScreen.this.parent, ConnectScreen.this.failureErrorMessage, ConnectScreen.BLOCKED_HOST_TEXT))
 						);
@@ -107,6 +107,7 @@ public class ConnectScreen extends Screen {
 						}
 
 						clientConnection = new ClientConnection(NetworkSide.CLIENTBOUND);
+						clientConnection.resetPacketSizeLog(client.receivedPacketSizeLog);
 						ConnectScreen.this.future = ClientConnection.connect(inetSocketAddress, client.options.shouldUseNativeTransport(), clientConnection);
 					}
 

@@ -2,6 +2,7 @@ package net.minecraft.data.server.advancement.vanilla;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import net.minecraft.advancement.Advancement;
@@ -113,7 +114,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		EntityType.ZOMBIFIED_PIGLIN
 	};
 
-	private static LightningStrikeCriterion.Conditions createLightningStrike(NumberRange.IntRange range, EntityPredicate entity) {
+	private static LightningStrikeCriterion.Conditions createLightningStrike(NumberRange.IntRange range, Optional<EntityPredicate> entity) {
 		return LightningStrikeCriterion.Conditions.create(
 			EntityPredicate.Builder.create()
 				.distance(DistancePredicate.absolute(NumberRange.FloatRange.atMost(30.0)))
@@ -190,7 +191,9 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			)
 			.criterion(
 				"trade_at_world_height",
-				VillagerTradeCriterion.Conditions.create(EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))))
+				VillagerTradeCriterion.Conditions.create(
+					EntityPredicate.Builder.create().location(LocationPredicate.Builder.createY(NumberRange.FloatRange.atLeast(319.0)))
+				)
 			)
 			.build(exporter, "adventure/trade_at_world_height");
 		Advancement advancement4 = requireListedMobsKilled(Advancement.Builder.create())
@@ -281,7 +284,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				true,
 				false
 			)
-			.criterion("struck_villager", ChanneledLightningCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.VILLAGER).build()))
+			.criterion("struck_villager", ChanneledLightningCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.VILLAGER)))
 			.build(exporter, "adventure/very_very_frightening");
 		Advancement.Builder.create()
 			.parent(advancement3)
@@ -460,8 +463,8 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				"bullseye",
 				TargetHitCriterion.Conditions.create(
 					NumberRange.IntRange.exactly(15),
-					EntityPredicate.asLootContextPredicate(
-						EntityPredicate.Builder.create().distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(30.0))).build()
+					EntityPredicate.contextPredicateFromEntityPredicate(
+						EntityPredicate.Builder.create().distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(30.0)))
 					)
 				)
 			)
@@ -540,7 +543,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"play_jukebox_in_meadows",
 				ItemCriterion.Conditions.createItemUsedOnBlock(
-					LocationPredicate.Builder.create().biome(BiomeKeys.MEADOW).block(BlockPredicate.Builder.create().blocks(Blocks.JUKEBOX).build()),
+					LocationPredicate.Builder.create().biome(BiomeKeys.MEADOW).block(BlockPredicate.Builder.create().blocks(Blocks.JUKEBOX)),
 					ItemPredicate.Builder.create().tag(ItemTags.MUSIC_DISCS)
 				)
 			)
@@ -574,9 +577,9 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 			.criterion(
 				"fall_from_world_height",
 				TravelCriterion.Conditions.fallFromHeight(
-					EntityPredicate.Builder.create().location(LocationPredicate.y(NumberRange.FloatRange.atMost(-59.0))),
+					EntityPredicate.Builder.create().location(LocationPredicate.Builder.createY(NumberRange.FloatRange.atMost(-59.0))),
 					DistancePredicate.y(NumberRange.FloatRange.atLeast(379.0)),
-					LocationPredicate.y(NumberRange.FloatRange.atLeast(319.0))
+					LocationPredicate.Builder.createY(NumberRange.FloatRange.atLeast(319.0))
 				)
 			)
 			.build(exporter, "adventure/fall_from_world_height");
@@ -638,10 +641,10 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 				RecipeCraftedCriterion.Conditions.create(
 					new Identifier("minecraft:decorated_pot"),
 					List.of(
-						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS).build(),
-						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS).build(),
-						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS).build(),
-						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS).build()
+						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS),
+						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS),
+						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS),
+						ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS)
 					)
 				)
 			)
@@ -693,9 +696,9 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 
 	private static CriterionConditions requirePlacedBlockReadByComparator(Block block) {
 		LootCondition.Builder[] builders = (LootCondition.Builder[])ComparatorBlock.FACING.getValues().stream().map(facing -> {
-			StatePredicate statePredicate = StatePredicate.Builder.create().exactMatch(ComparatorBlock.FACING, facing).build();
-			BlockPredicate blockPredicate = BlockPredicate.Builder.create().blocks(Blocks.COMPARATOR).state(statePredicate).build();
-			return LocationCheckLootCondition.builder(LocationPredicate.Builder.create().block(blockPredicate), new BlockPos(facing.getOpposite().getVector()));
+			StatePredicate.Builder builder = StatePredicate.Builder.create().exactMatch(ComparatorBlock.FACING, facing);
+			BlockPredicate.Builder builder2 = BlockPredicate.Builder.create().blocks(Blocks.COMPARATOR).state(builder);
+			return LocationCheckLootCondition.builder(LocationPredicate.Builder.create().block(builder2), new BlockPos(facing.getOpposite().getVector()));
 		}).toArray(i -> new LootCondition.Builder[i]);
 		return ItemCriterion.Conditions.createPlacedBlock(BlockStatePropertyLootCondition.builder(block), AnyOfLootCondition.builder(builders));
 	}
@@ -709,7 +712,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 					StatePredicate.Builder builder = StatePredicate.Builder.create().exactMatch(ComparatorBlock.FACING, facing);
 					BlockStatePropertyLootCondition.Builder builder2 = new BlockStatePropertyLootCondition.Builder(Blocks.COMPARATOR).properties(builder);
 					LootCondition.Builder builder3 = LocationCheckLootCondition.builder(
-						LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block).build()), new BlockPos(facing.getVector())
+						LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().blocks(block)), new BlockPos(facing.getVector())
 					);
 					return AllOfLootCondition.builder(builder2, builder3);
 				}
@@ -757,7 +760,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 		builder.criterion("trail_ruins_common", PlayerGeneratesContainerLootCriterion.Conditions.create(LootTables.TRAIL_RUINS_COMMON_ARCHAEOLOGY));
 		String[] strings = (String[])builder.getCriteria().keySet().toArray(i -> new String[i]);
 		String string = "has_sherd";
-		builder.criterion("has_sherd", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS).build()));
+		builder.criterion("has_sherd", InventoryChangedCriterion.Conditions.items(ItemPredicate.Builder.create().tag(ItemTags.DECORATED_POT_SHERDS)));
 		builder.requirements(new String[][]{strings, {"has_sherd"}});
 		return builder;
 	}
@@ -792,7 +795,7 @@ public class VanillaAdventureTabAdvancementGenerator implements AdvancementTabGe
 
 	protected static Advancement.Builder requireListedBiomesVisited(Advancement.Builder builder, List<RegistryKey<Biome>> biomes) {
 		for(RegistryKey<Biome> registryKey : biomes) {
-			builder.criterion(registryKey.getValue().toString(), TickCriterion.Conditions.createLocation(LocationPredicate.biome(registryKey)));
+			builder.criterion(registryKey.getValue().toString(), TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createBiome(registryKey)));
 		}
 
 		return builder;

@@ -1,17 +1,17 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
+import java.util.Optional;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.util.Identifier;
 
 public abstract class AbstractCriterionConditions implements CriterionConditions {
 	private final Identifier id;
-	private final LootContextPredicate playerPredicate;
+	private final Optional<LootContextPredicate> playerPredicate;
 
-	public AbstractCriterionConditions(Identifier id, LootContextPredicate entity) {
+	public AbstractCriterionConditions(Identifier id, Optional<LootContextPredicate> playerPredicate) {
 		this.id = id;
-		this.playerPredicate = entity;
+		this.playerPredicate = playerPredicate;
 	}
 
 	@Override
@@ -19,14 +19,14 @@ public abstract class AbstractCriterionConditions implements CriterionConditions
 		return this.id;
 	}
 
-	protected LootContextPredicate getPlayerPredicate() {
+	protected Optional<LootContextPredicate> getPlayerPredicate() {
 		return this.playerPredicate;
 	}
 
 	@Override
-	public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
+	public JsonObject toJson() {
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.add("player", this.playerPredicate.toJson(predicateSerializer));
+		this.playerPredicate.ifPresent(lootContextPredicate -> jsonObject.add("player", lootContextPredicate.toJson()));
 		return jsonObject;
 	}
 

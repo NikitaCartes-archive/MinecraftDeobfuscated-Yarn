@@ -110,7 +110,7 @@ import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 /**
  * A client side packet listener where play stage packets from the server are processed.
  */
-public interface ClientPlayPacketListener extends ClientCommonPacketListener {
+public interface ClientPlayPacketListener extends ClientPingResultPacketListener, ClientCommonPacketListener {
 	@Override
 	default NetworkState getState() {
 		return NetworkState.PLAY;

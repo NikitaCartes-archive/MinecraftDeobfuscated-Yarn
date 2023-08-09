@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import java.util.List;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -9,17 +10,18 @@ import net.minecraft.world.BlockView;
 public class FlowerBlock extends PlantBlock implements SuspiciousStewIngredient {
 	protected static final float field_31094 = 3.0F;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0);
-	private final StatusEffect effectInStew;
-	private final int effectInStewDuration;
+	private final List<SuspiciousStewIngredient.StewEffect> stewEffects;
 
 	public FlowerBlock(StatusEffect suspiciousStewEffect, int effectDuration, AbstractBlock.Settings settings) {
 		super(settings);
-		this.effectInStew = suspiciousStewEffect;
+		int i;
 		if (suspiciousStewEffect.isInstant()) {
-			this.effectInStewDuration = effectDuration;
+			i = effectDuration;
 		} else {
-			this.effectInStewDuration = effectDuration * 20;
+			i = effectDuration * 20;
 		}
+
+		this.stewEffects = List.of(new SuspiciousStewIngredient.StewEffect(suspiciousStewEffect, i));
 	}
 
 	@Override
@@ -29,12 +31,7 @@ public class FlowerBlock extends PlantBlock implements SuspiciousStewIngredient 
 	}
 
 	@Override
-	public StatusEffect getEffectInStew() {
-		return this.effectInStew;
-	}
-
-	@Override
-	public int getEffectInStewDuration() {
-		return this.effectInStewDuration;
+	public List<SuspiciousStewIngredient.StewEffect> getStewEffects() {
+		return this.stewEffects;
 	}
 }

@@ -7,6 +7,9 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+import com.mojang.serialization.Lifecycle;
 import java.util.List;
 import java.util.regex.Pattern;
 import net.minecraft.text.Text;
@@ -41,6 +44,13 @@ public class StringNbtReader {
 	private static final Pattern LONG_PATTERN = Pattern.compile("[-+]?(?:0|[1-9][0-9]*)l", 2);
 	private static final Pattern SHORT_PATTERN = Pattern.compile("[-+]?(?:0|[1-9][0-9]*)s", 2);
 	private static final Pattern INT_PATTERN = Pattern.compile("[-+]?(?:0|[1-9][0-9]*)");
+	public static final Codec<NbtCompound> STRINGIFIED_CODEC = Codec.STRING.comapFlatMap(nbt -> {
+		try {
+			return DataResult.success(new StringNbtReader(new StringReader(nbt)).readCompound(), Lifecycle.stable());
+		} catch (CommandSyntaxException var2) {
+			return DataResult.error(var2::getMessage);
+		}
+	}, NbtCompound::toString);
 	private final StringReader reader;
 
 	/**

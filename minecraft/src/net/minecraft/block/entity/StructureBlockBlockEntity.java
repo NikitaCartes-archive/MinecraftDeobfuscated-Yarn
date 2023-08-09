@@ -366,7 +366,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				return false;
 			}
 
-			return !optional.isPresent() ? false : this.place(world, interactive, (StructureTemplate)optional.get());
+			return optional.isEmpty() ? false : this.place(world, interactive, (StructureTemplate)optional.get());
 		} else {
 			return false;
 		}

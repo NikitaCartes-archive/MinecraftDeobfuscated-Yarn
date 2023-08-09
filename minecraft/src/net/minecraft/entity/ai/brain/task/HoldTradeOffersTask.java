@@ -32,7 +32,7 @@ public class HoldTradeOffersTask extends MultiTickTask<VillagerEntity> {
 
 	public boolean shouldRun(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		Brain<?> brain = villagerEntity.getBrain();
-		if (!brain.getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).isPresent()) {
+		if (brain.getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).isEmpty()) {
 			return false;
 		} else {
 			LivingEntity livingEntity = (LivingEntity)brain.getOptionalRegisteredMemory(MemoryModuleType.INTERACTION_TARGET).get();

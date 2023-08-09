@@ -40,7 +40,7 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 
 		for(int j = 0; j < i; ++j) {
 			Pair<EquipmentSlot, ItemStack> pair = (Pair)this.equipmentList.get(j);
-			EquipmentSlot equipmentSlot = (EquipmentSlot)pair.getFirst();
+			EquipmentSlot equipmentSlot = pair.getFirst();
 			boolean bl = j != i - 1;
 			int k = equipmentSlot.ordinal();
 			buf.writeByte(bl ? k | -128 : k);

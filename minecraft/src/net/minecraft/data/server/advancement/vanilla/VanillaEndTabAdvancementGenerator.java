@@ -95,7 +95,7 @@ public class VanillaEndTabAdvancementGenerator implements AdvancementTabGenerato
 				true,
 				false
 			)
-			.criterion("in_city", TickCriterion.Conditions.createLocation(LocationPredicate.feature(StructureKeys.END_CITY)))
+			.criterion("in_city", TickCriterion.Conditions.createLocation(LocationPredicate.Builder.createStructure(StructureKeys.END_CITY)))
 			.build(exporter, "end/find_end_city");
 		Advancement.Builder.create()
 			.parent(advancement2)

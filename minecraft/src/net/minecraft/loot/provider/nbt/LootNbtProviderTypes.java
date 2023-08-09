@@ -1,24 +1,30 @@
 package net.minecraft.loot.provider.nbt;
 
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import java.util.function.Function;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.JsonSerializer;
-import net.minecraft.util.JsonSerializing;
+import net.minecraft.util.dynamic.Codecs;
 
 public class LootNbtProviderTypes {
-	public static final LootNbtProviderType STORAGE = register("storage", new StorageLootNbtProvider.Serializer());
-	public static final LootNbtProviderType CONTEXT = register("context", new ContextLootNbtProvider.Serializer());
+	private static final Codec<LootNbtProvider> BASE_CODEC = Registries.LOOT_NBT_PROVIDER_TYPE
+		.getCodec()
+		.dispatch(LootNbtProvider::getType, LootNbtProviderType::codec);
+	public static final Codec<LootNbtProvider> CODEC = Codecs.createLazy(
+		() -> Codec.either(ContextLootNbtProvider.field_45880, BASE_CODEC)
+				.xmap(
+					either -> either.map(Function.identity(), Function.identity()),
+					lootNbtProvider -> lootNbtProvider instanceof ContextLootNbtProvider contextLootNbtProvider
+							? Either.left(contextLootNbtProvider)
+							: Either.right(lootNbtProvider)
+				)
+	);
+	public static final LootNbtProviderType STORAGE = register("storage", StorageLootNbtProvider.CODEC);
+	public static final LootNbtProviderType CONTEXT = register("context", ContextLootNbtProvider.CODEC);
 
-	private static LootNbtProviderType register(String id, JsonSerializer<? extends LootNbtProvider> jsonSerializer) {
-		return Registry.register(Registries.LOOT_NBT_PROVIDER_TYPE, new Identifier(id), new LootNbtProviderType(jsonSerializer));
-	}
-
-	public static Object createGsonSerializer() {
-		return JsonSerializing.<LootNbtProvider, LootNbtProviderType>createSerializerBuilder(
-				Registries.LOOT_NBT_PROVIDER_TYPE, "provider", "type", LootNbtProvider::getType
-			)
-			.elementSerializer(CONTEXT, new ContextLootNbtProvider.CustomSerializer())
-			.build();
+	private static LootNbtProviderType register(String id, Codec<? extends LootNbtProvider> codec) {
+		return Registry.register(Registries.LOOT_NBT_PROVIDER_TYPE, new Identifier(id), new LootNbtProviderType(codec));
 	}
 }

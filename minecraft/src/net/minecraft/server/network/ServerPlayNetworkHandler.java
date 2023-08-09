@@ -12,7 +12,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.net.SocketAddress;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -130,6 +129,7 @@ import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSignC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
+import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
@@ -144,6 +144,7 @@ import net.minecraft.network.packet.s2c.play.ProfilelessChatMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -404,7 +405,7 @@ public class ServerPlayNetworkHandler
 				double p = l * l + m * m + n * n;
 				if (p - o > 100.0 && !this.isHost()) {
 					LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), l, m, n);
-					this.connection.send(new VehicleMoveS2CPacket(entity));
+					this.sendPacket(new VehicleMoveS2CPacket(entity));
 					return;
 				}
 
@@ -436,7 +437,7 @@ public class ServerPlayNetworkHandler
 				boolean bl4 = serverWorld.isSpaceEmpty(entity, entity.getBoundingBox().contract(0.0625));
 				if (bl && (bl3 || !bl4)) {
 					entity.updatePositionAndAngles(d, e, f, j, k);
-					this.connection.send(new VehicleMoveS2CPacket(entity));
+					this.sendPacket(new VehicleMoveS2CPacket(entity));
 					return;
 				}
 
@@ -515,7 +516,7 @@ public class ServerPlayNetworkHandler
 			.getCommandManager()
 			.getDispatcher()
 			.getCompletionSuggestions(parseResults)
-			.thenAccept(suggestions -> this.connection.send(new CommandSuggestionsS2CPacket(packet.getCompletionId(), suggestions)));
+			.thenAccept(suggestions -> this.sendPacket(new CommandSuggestionsS2CPacket(packet.getCompletionId(), suggestions)));
 	}
 
 	@Override
@@ -1127,11 +1128,11 @@ public class ServerPlayNetworkHandler
 	@Override
 	public void onDisconnected(Text reason) {
 		LOGGER.info("{} lost connection: {}", this.player.getName().getString(), reason.getString());
-		this.method_52415();
+		this.cleanUp();
 		super.onDisconnected(reason);
 	}
 
-	private void method_52415() {
+	private void cleanUp() {
 		this.messageChainTaskQueue.close();
 		this.server.forcePlayerSampleUpdate();
 		this.server.getPlayerManager().broadcast(Text.translatable("multiplayer.player.left", this.player.getDisplayName()).formatted(Formatting.YELLOW), false);
@@ -1462,10 +1463,15 @@ public class ServerPlayNetworkHandler
 		return this.connection.getAddress();
 	}
 
-	public void method_52414() {
+	public void reconfigure() {
 		this.requestedReconfiguration = true;
-		this.method_52415();
+		this.cleanUp();
 		this.sendPacket(new EnterReconfigurationS2CPacket());
+	}
+
+	@Override
+	public void onQueryPing(QueryPingC2SPacket packet) {
+		this.connection.send(new PingResultS2CPacket(packet.getStartTime()));
 	}
 
 	@Override
@@ -1730,7 +1736,7 @@ public class ServerPlayNetworkHandler
 						return;
 					}
 
-					this.setSession(serialized.toSession(this.player.getGameProfile(), signatureVerifier, Duration.ZERO));
+					this.setSession(serialized.toSession(this.player.getGameProfile(), signatureVerifier));
 				} catch (PlayerPublicKey.PublicKeyException var6) {
 					LOGGER.error("Failed to validate profile key: {}", var6.getMessage());
 					this.disconnect(var6.getMessageText());
@@ -1751,7 +1757,7 @@ public class ServerPlayNetworkHandler
 	@Override
 	public void onAcknowledgeChunks(AcknowledgeChunksC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		this.chunkDataSender.onAcknowledgeChunks(packet.desiredBatchSize());
+		this.chunkDataSender.onAcknowledgeChunks(packet.desiredChunksPerTick());
 	}
 
 	private void setSession(PublicPlayerSession session) {

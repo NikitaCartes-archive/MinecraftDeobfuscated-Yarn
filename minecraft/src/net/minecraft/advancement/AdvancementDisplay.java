@@ -12,6 +12,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -115,11 +116,11 @@ public class AdvancementDisplay {
 		if (!json.has("item")) {
 			throw new JsonSyntaxException("Unsupported icon type, currently only items are supported (add 'item' key)");
 		} else {
-			Item item = JsonHelper.getItem(json, "item");
+			RegistryEntry<Item> registryEntry = JsonHelper.getItem(json, "item");
 			if (json.has("data")) {
 				throw new JsonParseException("Disallowed data tag found");
 			} else {
-				ItemStack itemStack = new ItemStack(item);
+				ItemStack itemStack = new ItemStack(registryEntry);
 				if (json.has("nbt")) {
 					try {
 						NbtCompound nbtCompound = StringNbtReader.parse(JsonHelper.asString(json.get("nbt"), "nbt"));

@@ -50,7 +50,8 @@ public class VanillaGameEventTagProvider extends ValueLookupTagProvider<GameEven
 		GameEvent.SPLASH,
 		GameEvent.STEP,
 		GameEvent.SWIM,
-		GameEvent.TELEPORT
+		GameEvent.TELEPORT,
+		GameEvent.UNEQUIP
 	};
 
 	public VanillaGameEventTagProvider(DataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registryLookupFuture) {

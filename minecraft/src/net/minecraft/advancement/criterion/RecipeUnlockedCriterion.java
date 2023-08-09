@@ -1,8 +1,8 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,10 +18,10 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 	}
 
 	public RecipeUnlockedCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "recipe"));
-		return new RecipeUnlockedCriterion.Conditions(lootContextPredicate, identifier);
+		return new RecipeUnlockedCriterion.Conditions(optional, identifier);
 	}
 
 	public void trigger(ServerPlayerEntity player, Recipe<?> recipe) {
@@ -29,20 +29,20 @@ public class RecipeUnlockedCriterion extends AbstractCriterion<RecipeUnlockedCri
 	}
 
 	public static RecipeUnlockedCriterion.Conditions create(Identifier id) {
-		return new RecipeUnlockedCriterion.Conditions(LootContextPredicate.EMPTY, id);
+		return new RecipeUnlockedCriterion.Conditions(Optional.empty(), id);
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final Identifier recipe;
 
-		public Conditions(LootContextPredicate player, Identifier recipe) {
-			super(RecipeUnlockedCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Identifier recipe) {
+			super(RecipeUnlockedCriterion.ID, playerPredicate);
 			this.recipe = recipe;
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
 			jsonObject.addProperty("recipe", this.recipe.toString());
 			return jsonObject;
 		}

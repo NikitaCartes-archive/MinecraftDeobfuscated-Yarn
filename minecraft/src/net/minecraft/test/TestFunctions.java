@@ -92,7 +92,7 @@ public class TestFunctions {
 
 	public static TestFunction getTestFunctionOrThrow(String structurePath) {
 		Optional<TestFunction> optional = getTestFunction(structurePath);
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			throw new IllegalArgumentException("Can't find the test function for " + structurePath);
 		} else {
 			return (TestFunction)optional.get();

@@ -20,7 +20,6 @@ import org.slf4j.Logger;
 
 public class ChunkDataSender {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	public static final double field_44999 = 25.0;
 	public static final float field_45000 = 0.01F;
 	public static final float field_45001 = 64.0F;
 	private static final float field_45003 = 9.0F;
@@ -73,7 +72,7 @@ public class ChunkDataSender {
 	}
 
 	private static void sendChunkData(ServerPlayNetworkHandler handler, ServerWorld world, WorldChunk chunk) {
-		handler.sendPacketWithoutFlush(new ChunkDataS2CPacket(chunk, world.getLightingProvider(), null, null));
+		handler.sendPacket(new ChunkDataS2CPacket(chunk, world.getLightingProvider(), null, null));
 		ChunkPos chunkPos = chunk.getPos();
 		DebugInfoSender.sendChunkWatchingChange(world, chunkPos);
 	}

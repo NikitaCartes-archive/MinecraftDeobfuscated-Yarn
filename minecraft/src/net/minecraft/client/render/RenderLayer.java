@@ -79,20 +79,7 @@ public abstract class RenderLayer extends RenderPhase {
 		of(TRANSLUCENT_NO_CRUMBLING_PROGRAM)
 	);
 	private static final Function<Identifier, RenderLayer> ARMOR_CUTOUT_NO_CULL = Util.memoize(
-		(Function<Identifier, RenderLayer>)(texture -> {
-			RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
-				.program(ARMOR_CUTOUT_NO_CULL_PROGRAM)
-				.texture(new RenderPhase.Texture(texture, false, false))
-				.transparency(NO_TRANSPARENCY)
-				.cull(DISABLE_CULLING)
-				.lightmap(ENABLE_LIGHTMAP)
-				.overlay(ENABLE_OVERLAY_COLOR)
-				.layering(VIEW_OFFSET_Z_LAYERING)
-				.build(true);
-			return of(
-				"armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, true, false, multiPhaseParameters
-			);
-		})
+		(Function<Identifier, RenderLayer>)(texture -> createArmorCutoutNoCull("armor_cutout_no_cull", texture, false))
 	);
 	private static final Function<Identifier, RenderLayer> ENTITY_SOLID = Util.memoize(
 		(Function<Identifier, RenderLayer>)(texture -> {
@@ -820,8 +807,26 @@ public abstract class RenderLayer extends RenderPhase {
 		return TRANSLUCENT_NO_CRUMBLING;
 	}
 
+	private static RenderLayer.MultiPhase createArmorCutoutNoCull(String name, Identifier texture, boolean decal) {
+		RenderLayer.MultiPhaseParameters multiPhaseParameters = RenderLayer.MultiPhaseParameters.builder()
+			.program(ARMOR_CUTOUT_NO_CULL_PROGRAM)
+			.texture(new RenderPhase.Texture(texture, false, false))
+			.transparency(NO_TRANSPARENCY)
+			.cull(DISABLE_CULLING)
+			.lightmap(ENABLE_LIGHTMAP)
+			.overlay(ENABLE_OVERLAY_COLOR)
+			.layering(VIEW_OFFSET_Z_LAYERING)
+			.depthTest(decal ? EQUAL_DEPTH_TEST : LEQUAL_DEPTH_TEST)
+			.build(true);
+		return of(name, VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL, VertexFormat.DrawMode.QUADS, 256, true, false, multiPhaseParameters);
+	}
+
 	public static RenderLayer getArmorCutoutNoCull(Identifier texture) {
 		return (RenderLayer)ARMOR_CUTOUT_NO_CULL.apply(texture);
+	}
+
+	public static RenderLayer createArmorDecalCutoutNoCull(Identifier texture) {
+		return createArmorCutoutNoCull("armor_decal_cutout_no_cull", texture, true);
 	}
 
 	public static RenderLayer getEntitySolid(Identifier texture) {

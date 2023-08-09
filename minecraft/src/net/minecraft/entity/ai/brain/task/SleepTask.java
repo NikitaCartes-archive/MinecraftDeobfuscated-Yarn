@@ -51,7 +51,7 @@ public class SleepTask extends MultiTickTask<LivingEntity> {
 	@Override
 	protected boolean shouldKeepRunning(ServerWorld world, LivingEntity entity, long time) {
 		Optional<GlobalPos> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.HOME);
-		if (!optional.isPresent()) {
+		if (optional.isEmpty()) {
 			return false;
 		} else {
 			BlockPos blockPos = ((GlobalPos)optional.get()).getPos();

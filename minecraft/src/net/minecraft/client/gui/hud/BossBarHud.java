@@ -12,6 +12,7 @@ import net.minecraft.entity.boss.BossBar;
 import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BossBarHud {
@@ -77,7 +78,7 @@ public class BossBarHud {
 
 	private void renderBossBar(DrawContext context, int x, int y, BossBar bossBar) {
 		this.renderBossBar(context, x, y, bossBar, 182, BACKGROUND_TEXTURES, NOTCHED_BACKGROUND_TEXTURES);
-		int i = (int)(bossBar.getPercent() * 183.0F);
+		int i = MathHelper.lerpPositive(bossBar.getPercent(), 0, 182);
 		if (i > 0) {
 			this.renderBossBar(context, x, y, bossBar, i, PROGRESS_TEXTURES, NOTCHED_PROGRESS_TEXTURES);
 		}
@@ -87,7 +88,7 @@ public class BossBarHud {
 		context.drawGuiTexture(textures[bossBar.getColor().ordinal()], 182, 5, 0, 0, x, y, width, 5);
 		if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
 			RenderSystem.enableBlend();
-			context.drawGuiTexture(notchedTextures[bossBar.getStyle().ordinal() - 1], x, y, width, 5);
+			context.drawGuiTexture(notchedTextures[bossBar.getStyle().ordinal() - 1], 182, 5, 0, 0, x, y, width, 5);
 			RenderSystem.disableBlend();
 		}
 	}

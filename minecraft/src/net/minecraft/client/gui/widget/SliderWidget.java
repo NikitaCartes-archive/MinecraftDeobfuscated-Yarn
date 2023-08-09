@@ -23,9 +23,8 @@ public abstract class SliderWidget extends ClickableWidget {
 	private static final Identifier HANDLE_TEXTURE = new Identifier("widget/slider_handle");
 	private static final Identifier HANDLE_HIGHLIGHTED_TEXTURE = new Identifier("widget/slider_handle_highlighted");
 	protected static final int field_43054 = 2;
-	private static final int field_41788 = 20;
-	private static final int field_41789 = 4;
 	private static final int field_41790 = 8;
+	private static final int field_41789 = 4;
 	protected double value;
 	private boolean sliderFocused;
 
@@ -67,7 +66,7 @@ public abstract class SliderWidget extends ClickableWidget {
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.enableDepthTest();
 		context.drawGuiTexture(this.getTexture(), this.getX(), this.getY(), this.getWidth(), this.getHeight());
-		context.drawGuiTexture(this.getHandleTexture(), this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 8, 20);
+		context.drawGuiTexture(this.getHandleTexture(), this.getX() + (int)(this.value * (double)(this.width - 8)), this.getY(), 8, this.getHeight());
 		context.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		int i = this.active ? 16777215 : 10526880;
 		this.drawScrollableText(context, minecraftClient.textRenderer, 2, i | MathHelper.ceil(this.alpha * 255.0F) << 24);

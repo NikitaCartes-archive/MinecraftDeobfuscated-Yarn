@@ -42,6 +42,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 	private static final float field_40731 = 3.0F;
 	public static final float field_40732 = 6.0F;
 	public static final float field_40733 = 0.5F;
+	private static final String EFFECTS_NBT_KEY = "effects";
 	private Potion potion = Potions.EMPTY;
 	private final List<StatusEffectInstance> effects = Lists.<StatusEffectInstance>newArrayList();
 	private final Map<Entity, Integer> affectedEntities = Maps.newHashMap();
@@ -364,8 +365,8 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 			this.setPotion(PotionUtil.getPotion(nbt));
 		}
 
-		if (nbt.contains("Effects", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("Effects", NbtElement.COMPOUND_TYPE);
+		if (nbt.contains("effects", NbtElement.LIST_TYPE)) {
+			NbtList nbtList = nbt.getList("effects", NbtElement.COMPOUND_TYPE);
 			this.effects.clear();
 
 			for(int i = 0; i < nbtList.size(); ++i) {
@@ -407,7 +408,7 @@ public class AreaEffectCloudEntity extends Entity implements Ownable {
 				nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
 			}
 
-			nbt.put("Effects", nbtList);
+			nbt.put("effects", nbtList);
 		}
 	}
 

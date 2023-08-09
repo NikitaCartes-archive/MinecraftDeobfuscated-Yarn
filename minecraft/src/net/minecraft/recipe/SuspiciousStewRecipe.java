@@ -53,7 +53,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 			if (!itemStack2.isEmpty()) {
 				SuspiciousStewIngredient suspiciousStewIngredient = SuspiciousStewIngredient.of(itemStack2.getItem());
 				if (suspiciousStewIngredient != null) {
-					SuspiciousStewItem.addEffectToStew(itemStack, suspiciousStewIngredient.getEffectInStew(), suspiciousStewIngredient.getEffectInStewDuration());
+					SuspiciousStewItem.writeEffectsToStew(itemStack, suspiciousStewIngredient.getStewEffects());
 					break;
 				}
 			}

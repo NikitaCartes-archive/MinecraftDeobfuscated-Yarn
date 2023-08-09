@@ -120,7 +120,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		}
 
 		this.nameEdit = new TextFieldWidget(
-			this.client.textRenderer, this.column1_x + 2, row(1), this.column2_x - 4, 20, null, Text.translatable("mco.configure.world.edit.slot.name")
+			this.client.textRenderer, this.column1_x, row(1), this.column2_x, 20, null, Text.translatable("mco.configure.world.edit.slot.name")
 		);
 		this.nameEdit.setMaxLength(10);
 		this.nameEdit.setText(this.slotName);

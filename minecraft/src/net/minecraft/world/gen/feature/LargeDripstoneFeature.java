@@ -35,7 +35,7 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 			Optional<CaveSurface> optional = CaveSurface.create(
 				structureWorldAccess, blockPos, largeDripstoneFeatureConfig.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava
 			);
-			if (optional.isPresent() && optional.get() instanceof CaveSurface.Bounded bounded) {
+			if (!optional.isEmpty() && optional.get() instanceof CaveSurface.Bounded bounded) {
 				if (bounded.getHeight() < 4) {
 					return false;
 				} else {

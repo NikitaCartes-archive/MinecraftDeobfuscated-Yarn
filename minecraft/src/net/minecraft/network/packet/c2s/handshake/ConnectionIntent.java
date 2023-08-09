@@ -1,4 +1,6 @@
-package net.minecraft.network;
+package net.minecraft.network.packet.c2s.handshake;
+
+import net.minecraft.network.NetworkState;
 
 public enum ConnectionIntent {
 	STATUS,

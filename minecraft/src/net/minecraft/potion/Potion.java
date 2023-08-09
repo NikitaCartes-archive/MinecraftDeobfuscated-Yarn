@@ -5,12 +5,14 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 
 public class Potion {
 	@Nullable
 	private final String baseName;
 	private final ImmutableList<StatusEffectInstance> effects;
+	private final RegistryEntry.Reference<Potion> registryEntry = Registries.POTION.createEntry(this);
 
 	public static Potion byId(String id) {
 		return Registries.POTION.get(Identifier.tryParse(id));
@@ -43,5 +45,10 @@ public class Potion {
 		}
 
 		return false;
+	}
+
+	@Deprecated
+	public RegistryEntry.Reference<Potion> getRegistryEntry() {
+		return this.registryEntry;
 	}
 }

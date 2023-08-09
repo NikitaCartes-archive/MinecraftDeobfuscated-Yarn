@@ -10,7 +10,6 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.RecipeInputInventory;
-import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeMatcher;
@@ -117,10 +116,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<RecipeInput
 	}
 
 	static void onEquipStack(PlayerEntity player, EquipmentSlot slot, ItemStack newStack, ItemStack currentStack) {
-		Equipment equipment = Equipment.fromStack(newStack);
-		if (equipment != null) {
-			player.onEquipStack(slot, currentStack, newStack);
-		}
+		player.onEquipStack(slot, currentStack, newStack);
 	}
 
 	public static boolean isInHotbar(int slot) {

@@ -1,14 +1,17 @@
 package net.minecraft.loot.entry;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Codec;
 import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
 
 public class SequenceEntry extends CombinedEntry {
-	SequenceEntry(LootPoolEntry[] lootPoolEntrys, LootCondition[] lootConditions) {
-		super(lootPoolEntrys, lootConditions);
+	public static final Codec<SequenceEntry> CODEC = createCodec(SequenceEntry::new);
+
+	SequenceEntry(List<LootPoolEntry> list, List<LootCondition> list2) {
+		super(list, list2);
 	}
 
 	@Override
@@ -17,25 +20,21 @@ public class SequenceEntry extends CombinedEntry {
 	}
 
 	@Override
-	protected EntryCombiner combine(EntryCombiner[] children) {
-		switch(children.length) {
-			case 0:
-				return ALWAYS_TRUE;
-			case 1:
-				return children[0];
-			case 2:
-				return children[0].and(children[1]);
-			default:
-				return (context, lootChoiceExpander) -> {
-					for(EntryCombiner entryCombiner : children) {
-						if (!entryCombiner.expand(context, lootChoiceExpander)) {
-							return false;
-						}
-					}
+	protected EntryCombiner combine(List<? extends EntryCombiner> list) {
+		return switch(list.size()) {
+			case 0 -> ALWAYS_TRUE;
+			case 1 -> (EntryCombiner)list.get(0);
+			case 2 -> ((EntryCombiner)list.get(0)).and((EntryCombiner)list.get(1));
+			default -> (context, lootChoiceExpander) -> {
+			for(EntryCombiner entryCombiner : list) {
+				if (!entryCombiner.expand(context, lootChoiceExpander)) {
+					return false;
+				}
+			}
 
-					return true;
-				};
-		}
+			return true;
+		};
+		};
 	}
 
 	public static SequenceEntry.Builder create(LootPoolEntry.Builder<?>... entries) {
@@ -43,7 +42,7 @@ public class SequenceEntry extends CombinedEntry {
 	}
 
 	public static class Builder extends LootPoolEntry.Builder<SequenceEntry.Builder> {
-		private final List<LootPoolEntry> entries = Lists.<LootPoolEntry>newArrayList();
+		private final ImmutableList.Builder<LootPoolEntry> entries = ImmutableList.builder();
 
 		public Builder(LootPoolEntry.Builder<?>... entries) {
 			for(LootPoolEntry.Builder<?> builder : entries) {
@@ -63,7 +62,7 @@ public class SequenceEntry extends CombinedEntry {
 
 		@Override
 		public LootPoolEntry build() {
-			return new SequenceEntry((LootPoolEntry[])this.entries.toArray(new LootPoolEntry[0]), this.getConditions());
+			return new SequenceEntry(this.entries.build(), this.getConditions());
 		}
 	}
 }

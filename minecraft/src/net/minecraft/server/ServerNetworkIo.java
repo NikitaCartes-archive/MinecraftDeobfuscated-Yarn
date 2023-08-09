@@ -98,7 +98,7 @@ public class ServerNetworkIo {
 									ChannelPipeline channelPipeline = channel.pipeline()
 										.addLast("timeout", new ReadTimeoutHandler(30))
 										.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIo.this.getServer()));
-									ClientConnection.addHandlers(channelPipeline, NetworkSide.SERVERBOUND);
+									ClientConnection.addHandlers(channelPipeline, NetworkSide.SERVERBOUND, null);
 									int i = ServerNetworkIo.this.server.getRateLimit();
 									ClientConnection clientConnection = (ClientConnection)(i > 0 ? new RateLimitedConnection(i) : new ClientConnection(NetworkSide.SERVERBOUND));
 									ServerNetworkIo.this.connections.add(clientConnection);

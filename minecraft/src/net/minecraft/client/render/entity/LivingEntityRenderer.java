@@ -16,6 +16,7 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -57,24 +58,27 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		float h = MathHelper.lerpAngleDegrees(g, livingEntity.prevBodyYaw, livingEntity.bodyYaw);
 		float j = MathHelper.lerpAngleDegrees(g, livingEntity.prevHeadYaw, livingEntity.headYaw);
 		float k = j - h;
-		if (livingEntity.hasVehicle() && livingEntity.getVehicle() instanceof LivingEntity livingEntity2) {
-			h = MathHelper.lerpAngleDegrees(g, livingEntity2.prevBodyYaw, livingEntity2.bodyYaw);
-			k = j - h;
-			float l = MathHelper.wrapDegrees(k);
-			if (l < -85.0F) {
-				l = -85.0F;
-			}
+		if (livingEntity.hasVehicle()) {
+			Entity l = livingEntity.getVehicle();
+			if (l instanceof LivingEntity livingEntity2) {
+				h = MathHelper.lerpAngleDegrees(g, livingEntity2.prevBodyYaw, livingEntity2.bodyYaw);
+				k = j - h;
+				float lx = MathHelper.wrapDegrees(k);
+				if (lx < -85.0F) {
+					lx = -85.0F;
+				}
 
-			if (l >= 85.0F) {
-				l = 85.0F;
-			}
+				if (lx >= 85.0F) {
+					lx = 85.0F;
+				}
 
-			h = j - l;
-			if (l * l > 2500.0F) {
-				h += l * 0.2F;
-			}
+				h = j - lx;
+				if (lx * lx > 2500.0F) {
+					h += lx * 0.2F;
+				}
 
-			k = j - h;
+				k = j - h;
+			}
 		}
 
 		float m = MathHelper.lerp(g, livingEntity.prevPitch, livingEntity.getPitch());

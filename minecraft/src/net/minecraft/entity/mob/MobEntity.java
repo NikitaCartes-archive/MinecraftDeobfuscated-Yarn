@@ -662,40 +662,42 @@ public abstract class MobEntity extends LivingEntity implements Targeter {
 			return this.prefersNewDamageableItem(newStack, oldStack);
 		} else if (newStack.getItem() instanceof CrossbowItem && oldStack.getItem() instanceof CrossbowItem) {
 			return this.prefersNewDamageableItem(newStack, oldStack);
-		} else if (newStack.getItem() instanceof ArmorItem) {
-			if (EnchantmentHelper.hasBindingCurse(oldStack)) {
-				return false;
-			} else if (!(oldStack.getItem() instanceof ArmorItem)) {
-				return true;
-			} else {
-				ArmorItem armorItem = (ArmorItem)newStack.getItem();
-				ArmorItem armorItem2 = (ArmorItem)oldStack.getItem();
-				if (armorItem.getProtection() != armorItem2.getProtection()) {
-					return armorItem.getProtection() > armorItem2.getProtection();
-				} else if (armorItem.getToughness() != armorItem2.getToughness()) {
-					return armorItem.getToughness() > armorItem2.getToughness();
-				} else {
-					return this.prefersNewDamageableItem(newStack, oldStack);
-				}
-			}
 		} else {
-			if (newStack.getItem() instanceof MiningToolItem) {
-				if (oldStack.getItem() instanceof BlockItem) {
+			Item miningToolItem = newStack.getItem();
+			if (miningToolItem instanceof ArmorItem armorItem) {
+				if (EnchantmentHelper.hasBindingCurse(oldStack)) {
+					return false;
+				} else if (!(oldStack.getItem() instanceof ArmorItem)) {
 					return true;
+				} else {
+					ArmorItem armorItem2 = (ArmorItem)oldStack.getItem();
+					if (armorItem.getProtection() != armorItem2.getProtection()) {
+						return armorItem.getProtection() > armorItem2.getProtection();
+					} else if (armorItem.getToughness() != armorItem2.getToughness()) {
+						return armorItem.getToughness() > armorItem2.getToughness();
+					} else {
+						return this.prefersNewDamageableItem(newStack, oldStack);
+					}
 				}
-
-				if (oldStack.getItem() instanceof MiningToolItem) {
-					MiningToolItem miningToolItem = (MiningToolItem)newStack.getItem();
-					MiningToolItem miningToolItem2 = (MiningToolItem)oldStack.getItem();
-					if (miningToolItem.getAttackDamage() != miningToolItem2.getAttackDamage()) {
-						return miningToolItem.getAttackDamage() > miningToolItem2.getAttackDamage();
+			} else {
+				if (newStack.getItem() instanceof MiningToolItem) {
+					if (oldStack.getItem() instanceof BlockItem) {
+						return true;
 					}
 
-					return this.prefersNewDamageableItem(newStack, oldStack);
-				}
-			}
+					Item miningToolItem2 = oldStack.getItem();
+					if (miningToolItem2 instanceof MiningToolItem miningToolItem) {
+						MiningToolItem miningToolItem2x = (MiningToolItem)newStack.getItem();
+						if (miningToolItem2x.getAttackDamage() != miningToolItem.getAttackDamage()) {
+							return miningToolItem2x.getAttackDamage() > miningToolItem.getAttackDamage();
+						}
 
-			return false;
+						return this.prefersNewDamageableItem(newStack, oldStack);
+					}
+				}
+
+				return false;
+			}
 		}
 	}
 

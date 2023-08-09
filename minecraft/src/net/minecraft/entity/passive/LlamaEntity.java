@@ -33,6 +33,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.inventory.Inventory;
@@ -471,7 +472,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 	}
 
 	@Override
-	public void attack(LivingEntity target, float pullProgress) {
+	public void shootAt(LivingEntity target, float pullProgress) {
 		this.spitAt(target);
 	}
 
@@ -512,7 +513,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements VariantHolder<L
 
 		@Override
 		public boolean shouldContinue() {
-			if (this.mob instanceof LlamaEntity llamaEntity && llamaEntity.spit) {
+			MobEntity var2 = this.mob;
+			if (var2 instanceof LlamaEntity llamaEntity && llamaEntity.spit) {
 				llamaEntity.setSpit(false);
 				return false;
 			}

@@ -57,7 +57,7 @@ public class DebugConfigCommand {
 
 	private static int executeConfig(ServerCommandSource source, ServerPlayerEntity player) {
 		GameProfile gameProfile = player.getGameProfile();
-		player.networkHandler.method_52414();
+		player.networkHandler.reconfigure();
 		source.sendFeedback(() -> Text.literal("Switched player " + gameProfile.getName() + "(" + gameProfile.getId() + ") to config mode"), false);
 		return 1;
 	}
@@ -67,7 +67,7 @@ public class DebugConfigCommand {
 			PacketListener var5 = clientConnection.getPacketListener();
 			if (var5 instanceof ServerConfigurationNetworkHandler serverConfigurationNetworkHandler
 				&& serverConfigurationNetworkHandler.getDebugProfile().getId().equals(uuid)) {
-				serverConfigurationNetworkHandler.queueJoinWorldTask();
+				serverConfigurationNetworkHandler.endConfiguration();
 			}
 		}
 

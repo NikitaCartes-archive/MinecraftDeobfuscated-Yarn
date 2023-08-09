@@ -8,9 +8,9 @@ import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.PacketCallbacks;
 import net.minecraft.network.listener.ServerCommonPacketListener;
 import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.c2s.common.CommonPongC2SPacket;
 import net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket;
-import net.minecraft.network.packet.c2s.common.PlayPongC2SPacket;
 import net.minecraft.network.packet.c2s.common.ResourcePackStatusC2SPacket;
 import net.minecraft.network.packet.s2c.common.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.common.KeepAliveS2CPacket;
@@ -34,6 +34,7 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	private boolean waitingForKeepAlive;
 	private long keepAliveId;
 	private int latency;
+	private volatile boolean flushDisabled = false;
 
 	public ServerCommonNetworkHandler(MinecraftServer server, ClientConnection connection, int keepAliveId) {
 		this.server = server;
@@ -62,7 +63,7 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 	}
 
 	@Override
-	public void onPlayPong(PlayPongC2SPacket packet) {
+	public void onPong(CommonPongC2SPacket packet) {
 	}
 
 	@Override
@@ -95,21 +96,24 @@ public abstract class ServerCommonNetworkHandler implements ServerCommonPacketLi
 		this.server.getProfiler().pop();
 	}
 
-	public void sendPacket(Packet<?> packet) {
-		this.send(packet, null, true);
+	public void disableFlush() {
+		this.flushDisabled = true;
 	}
 
-	public void sendPacketWithoutFlush(Packet<?> packet) {
-		this.send(packet, null, false);
-	}
-
-	public void flush() {
+	public void enableFlush() {
+		this.flushDisabled = false;
 		this.connection.flush();
 	}
 
-	public void send(Packet<?> packet, @Nullable PacketCallbacks callbacks, boolean flush) {
+	public void sendPacket(Packet<?> packet) {
+		this.send(packet, null);
+	}
+
+	public void send(Packet<?> packet, @Nullable PacketCallbacks callbacks) {
+		boolean bl = !this.flushDisabled || !this.server.isOnThread();
+
 		try {
-			this.connection.send(packet, callbacks, flush);
+			this.connection.send(packet, callbacks, bl);
 		} catch (Throwable var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Sending packet");
 			CrashReportSection crashReportSection = crashReport.addElement("Packet being sent");

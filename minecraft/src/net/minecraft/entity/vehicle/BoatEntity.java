@@ -674,7 +674,7 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		super.updatePassengerPosition(passenger, positionUpdater);
 		passenger.setYaw(passenger.getYaw() + this.yawVelocity);
 		passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
-		this.copyEntityData(passenger);
+		this.clampPassengerYaw(passenger);
 		if (passenger instanceof AnimalEntity && this.getPassengerList().size() == this.getMaxPassengers()) {
 			int i = passenger.getId() % 2 == 0 ? 90 : 270;
 			passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)i);
@@ -714,18 +714,18 @@ public class BoatEntity extends Entity implements VariantHolder<BoatEntity.Type>
 		return super.updatePassengerForDismount(passenger);
 	}
 
-	protected void copyEntityData(Entity entity) {
-		entity.setBodyYaw(this.getYaw());
-		float f = MathHelper.wrapDegrees(entity.getYaw() - this.getYaw());
+	protected void clampPassengerYaw(Entity passenger) {
+		passenger.setBodyYaw(this.getYaw());
+		float f = MathHelper.wrapDegrees(passenger.getYaw() - this.getYaw());
 		float g = MathHelper.clamp(f, -105.0F, 105.0F);
-		entity.prevYaw += g - f;
-		entity.setYaw(entity.getYaw() + g - f);
-		entity.setHeadYaw(entity.getYaw());
+		passenger.prevYaw += g - f;
+		passenger.setYaw(passenger.getYaw() + g - f);
+		passenger.setHeadYaw(passenger.getYaw());
 	}
 
 	@Override
 	public void onPassengerLookAround(Entity passenger) {
-		this.copyEntityData(passenger);
+		this.clampPassengerYaw(passenger);
 	}
 
 	@Override

@@ -132,6 +132,10 @@ public class MathHelper {
 		return Math.min(Math.max(value, min), max);
 	}
 
+	public static long clamp(long value, long min, long max) {
+		return Math.min(Math.max(value, min), max);
+	}
+
 	public static float clamp(float value, float min, float max) {
 		return value < min ? min : Math.min(value, max);
 	}
@@ -629,6 +633,24 @@ public class MathHelper {
 
 	public static int lerp(float delta, int start, int end) {
 		return start + floor(delta * (float)(end - start));
+	}
+
+	/**
+	 * {@return linear interpolation of {@code delta} between {@code start} and {@code end},
+	 * except that for any positive {@code delta} the value is positive}
+	 * 
+	 * <p>Like {@link #lerp(float, int, int)}, {@code lerpPositive(0, 0, 10)} returns {@code 0}.
+	 * However, if the delta is {@code 0.01f}, the {@code lerp} method would return {@code 0}
+	 * since {@code 0.01 * 10} floored is {@code 0}. This method returns {@code 1} in this
+	 * situation.
+	 * 
+	 * @apiNote This is used to calculate redstone comparator output and boss bar percentage.
+	 * 
+	 * @see #lerp(float, int, int)
+	 */
+	public static int lerpPositive(float delta, int start, int end) {
+		int i = end - start;
+		return start + floor(delta * (float)(i - 1)) + (delta > 0.0F ? 1 : 0);
 	}
 
 	public static float lerp(float delta, float start, float end) {

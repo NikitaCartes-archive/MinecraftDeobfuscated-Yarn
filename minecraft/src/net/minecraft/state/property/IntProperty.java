@@ -46,7 +46,11 @@ public class IntProperty extends Property<Integer> {
 		if (this == object) {
 			return true;
 		} else {
-			return object instanceof IntProperty intProperty && super.equals(object) ? this.values.equals(intProperty.values) : false;
+			if (object instanceof IntProperty intProperty && super.equals(object)) {
+				return this.values.equals(intProperty.values);
+			}
+
+			return false;
 		}
 	}
 

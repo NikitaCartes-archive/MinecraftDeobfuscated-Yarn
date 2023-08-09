@@ -4,7 +4,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.network.listener.ServerQueryPacketListener;
 import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
 import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
-import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
+import net.minecraft.network.packet.s2c.query.PingResultS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.server.ServerMetadata;
 import net.minecraft.text.Text;
@@ -40,8 +40,8 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	}
 
 	@Override
-	public void onPing(QueryPingC2SPacket packet) {
-		this.connection.send(new QueryPongS2CPacket(packet.getStartTime()));
+	public void onQueryPing(QueryPingC2SPacket packet) {
+		this.connection.send(new PingResultS2CPacket(packet.getStartTime()));
 		this.connection.disconnect(REQUEST_HANDLED);
 	}
 }

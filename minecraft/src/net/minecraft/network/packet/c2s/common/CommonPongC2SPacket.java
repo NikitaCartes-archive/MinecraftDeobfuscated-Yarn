@@ -9,18 +9,18 @@ import net.minecraft.network.packet.Packet;
  * play ping packet from the server, passing the {@link #parameter} back to the
  * server.
  * 
- * @see net.minecraft.network.packet.s2c.common.PlayPingS2CPacket
+ * @see net.minecraft.network.packet.s2c.common.CommonPingS2CPacket
  * @see net.minecraft.network.packet.c2s.common.KeepAliveC2SPacket
  * @see net.minecraft.network.packet.c2s.query.QueryPingC2SPacket
  */
-public class PlayPongC2SPacket implements Packet<ServerCommonPacketListener> {
+public class CommonPongC2SPacket implements Packet<ServerCommonPacketListener> {
 	private final int parameter;
 
-	public PlayPongC2SPacket(int parameter) {
+	public CommonPongC2SPacket(int parameter) {
 		this.parameter = parameter;
 	}
 
-	public PlayPongC2SPacket(PacketByteBuf buf) {
+	public CommonPongC2SPacket(PacketByteBuf buf) {
 		this.parameter = buf.readInt();
 	}
 
@@ -30,7 +30,7 @@ public class PlayPongC2SPacket implements Packet<ServerCommonPacketListener> {
 	}
 
 	public void apply(ServerCommonPacketListener serverCommonPacketListener) {
-		serverCommonPacketListener.onPlayPong(this);
+		serverCommonPacketListener.onPong(this);
 	}
 
 	public int getParameter() {

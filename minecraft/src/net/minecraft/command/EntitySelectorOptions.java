@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -100,7 +101,7 @@ public class EntitySelectorOptions {
 			putOption("distance", reader -> {
 				int i = reader.getReader().getCursor();
 				NumberRange.FloatRange floatRange = NumberRange.FloatRange.parse(reader.getReader());
-				if ((floatRange.getMin() == null || !(floatRange.getMin() < 0.0)) && (floatRange.getMax() == null || !(floatRange.getMax() < 0.0))) {
+				if ((!floatRange.getMin().isPresent() || !(floatRange.getMin().get() < 0.0)) && (!floatRange.getMax().isPresent() || !(floatRange.getMax().get() < 0.0))) {
 					reader.setDistance(floatRange);
 					reader.setLocalWorldOnly();
 				} else {
@@ -111,7 +112,7 @@ public class EntitySelectorOptions {
 			putOption("level", reader -> {
 				int i = reader.getReader().getCursor();
 				NumberRange.IntRange intRange = NumberRange.IntRange.parse(reader.getReader());
-				if ((intRange.getMin() == null || intRange.getMin() >= 0) && (intRange.getMax() == null || intRange.getMax() >= 0)) {
+				if ((!intRange.getMin().isPresent() || intRange.getMin().get() >= 0) && (!intRange.getMax().isPresent() || intRange.getMax().get() >= 0)) {
 					reader.setLevelRange(intRange);
 					reader.setIncludesNonPlayers(false);
 				} else {
@@ -483,7 +484,7 @@ public class EntitySelectorOptions {
 										.add(LootContextParameters.THIS_ENTITY, entity)
 										.add(LootContextParameters.ORIGIN, entity.getPos())
 										.build(LootContextTypes.SELECTOR);
-									LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(null);
+									LootContext lootContext = new LootContext.Builder(lootContextParameterSet).build(Optional.empty());
 									lootContext.markActive(LootContext.predicate(lootCondition));
 									return bl ^ lootCondition.test(lootContext);
 								}

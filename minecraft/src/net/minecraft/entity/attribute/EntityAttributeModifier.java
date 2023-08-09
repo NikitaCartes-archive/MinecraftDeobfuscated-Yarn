@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import org.slf4j.Logger;
@@ -91,28 +92,33 @@ public class EntityAttributeModifier {
 	/**
 	 * Represents an operation which can be applied to an attribute modifier.
 	 */
-	public static enum Operation {
+	public static enum Operation implements StringIdentifiable {
 		/**
 		 * Adds to the base value of an attribute.
 		 */
-		ADDITION(0),
+		ADDITION("addition", 0),
 		/**
 		 * Multiplies the base value of the attribute.
 		 * 
 		 * <p>Is applied after addition.
 		 */
-		MULTIPLY_BASE(1),
+		MULTIPLY_BASE("multiply_base", 1),
 		/**
 		 * Multiplies the total value of the attribute.
 		 * 
 		 * <p>The total value is equal to the sum of all additions and base multiplications applied by an attribute modifier.
 		 */
-		MULTIPLY_TOTAL(2);
+		MULTIPLY_TOTAL("multiply_total", 2);
 
 		private static final EntityAttributeModifier.Operation[] VALUES = new EntityAttributeModifier.Operation[]{ADDITION, MULTIPLY_BASE, MULTIPLY_TOTAL};
+		public static final com.mojang.serialization.Codec<EntityAttributeModifier.Operation> CODEC = StringIdentifiable.createCodec(
+			EntityAttributeModifier.Operation::values
+		);
+		private final String name;
 		private final int id;
 
-		private Operation(int id) {
+		private Operation(String name, int id) {
+			this.name = name;
 			this.id = id;
 		}
 
@@ -126,6 +132,11 @@ public class EntityAttributeModifier {
 			} else {
 				throw new IllegalArgumentException("No operation with value " + id);
 			}
+		}
+
+		@Override
+		public String asString() {
+			return this.name;
 		}
 	}
 }

@@ -386,8 +386,10 @@ public class ChatInputSuggestor {
 		private int lastNarrationIndex;
 
 		SuggestionWindow(int x, int y, int width, List<Suggestion> suggestions, boolean narrateFirstSuggestion) {
-			int i = x - 1;
-			int j = ChatInputSuggestor.this.chatScreenSized ? y - 3 - Math.min(suggestions.size(), ChatInputSuggestor.this.maxSuggestionSize) * 12 : y;
+			int i = x - (ChatInputSuggestor.this.textField.drawsBackground() ? 0 : 1);
+			int j = ChatInputSuggestor.this.chatScreenSized
+				? y - 3 - Math.min(suggestions.size(), ChatInputSuggestor.this.maxSuggestionSize) * 12
+				: y - (ChatInputSuggestor.this.textField.drawsBackground() ? 1 : 0);
 			this.area = new Rect2i(i, j, width + 1, Math.min(suggestions.size(), ChatInputSuggestor.this.maxSuggestionSize) * 12);
 			this.typedText = ChatInputSuggestor.this.textField.getText();
 			this.lastNarrationIndex = narrateFirstSuggestion ? -1 : 0;

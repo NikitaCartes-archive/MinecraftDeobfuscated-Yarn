@@ -133,10 +133,8 @@ public class Raid {
 		this.status = Raid.Status.fromName(nbt.getString("Status"));
 		this.heroesOfTheVillage.clear();
 		if (nbt.contains("HeroesOfTheVillage", NbtElement.LIST_TYPE)) {
-			NbtList nbtList = nbt.getList("HeroesOfTheVillage", NbtElement.INT_ARRAY_TYPE);
-
-			for(int i = 0; i < nbtList.size(); ++i) {
-				this.heroesOfTheVillage.add(NbtHelper.toUuid(nbtList.get(i)));
+			for(NbtElement nbtElement : nbt.getList("HeroesOfTheVillage", NbtElement.INT_ARRAY_TYPE)) {
+				this.heroesOfTheVillage.add(NbtHelper.toUuid(nbtElement));
 			}
 		}
 	}

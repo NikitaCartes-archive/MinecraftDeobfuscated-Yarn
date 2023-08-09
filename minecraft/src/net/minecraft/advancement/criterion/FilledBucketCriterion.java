@@ -1,9 +1,9 @@
 package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonObject;
+import java.util.Optional;
 import net.minecraft.item.ItemStack;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.predicate.entity.LootContextPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -18,10 +18,10 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 	}
 
 	public FilledBucketCriterion.Conditions conditionsFromJson(
-		JsonObject jsonObject, LootContextPredicate lootContextPredicate, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
+		JsonObject jsonObject, Optional<LootContextPredicate> optional, AdvancementEntityPredicateDeserializer advancementEntityPredicateDeserializer
 	) {
-		ItemPredicate itemPredicate = ItemPredicate.fromJson(jsonObject.get("item"));
-		return new FilledBucketCriterion.Conditions(lootContextPredicate, itemPredicate);
+		Optional<ItemPredicate> optional2 = ItemPredicate.fromJson(jsonObject.get("item"));
+		return new FilledBucketCriterion.Conditions(optional, optional2);
 	}
 
 	public void trigger(ServerPlayerEntity player, ItemStack stack) {
@@ -29,25 +29,25 @@ public class FilledBucketCriterion extends AbstractCriterion<FilledBucketCriteri
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final ItemPredicate item;
+		private final Optional<ItemPredicate> item;
 
-		public Conditions(LootContextPredicate player, ItemPredicate item) {
-			super(FilledBucketCriterion.ID, player);
+		public Conditions(Optional<LootContextPredicate> playerPredicate, Optional<ItemPredicate> item) {
+			super(FilledBucketCriterion.ID, playerPredicate);
 			this.item = item;
 		}
 
-		public static FilledBucketCriterion.Conditions create(ItemPredicate item) {
-			return new FilledBucketCriterion.Conditions(LootContextPredicate.EMPTY, item);
+		public static FilledBucketCriterion.Conditions create(Optional<ItemPredicate> item) {
+			return new FilledBucketCriterion.Conditions(Optional.empty(), item);
 		}
 
 		public boolean matches(ItemStack stack) {
-			return this.item.test(stack);
+			return !this.item.isPresent() || ((ItemPredicate)this.item.get()).test(stack);
 		}
 
 		@Override
-		public JsonObject toJson(AdvancementEntityPredicateSerializer predicateSerializer) {
-			JsonObject jsonObject = super.toJson(predicateSerializer);
-			jsonObject.add("item", this.item.toJson());
+		public JsonObject toJson() {
+			JsonObject jsonObject = super.toJson();
+			this.item.ifPresent(itemPredicate -> jsonObject.add("item", itemPredicate.toJson()));
 			return jsonObject;
 		}
 	}

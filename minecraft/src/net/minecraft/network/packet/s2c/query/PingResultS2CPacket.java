@@ -1,17 +1,17 @@
 package net.minecraft.network.packet.s2c.query;
 
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.listener.ClientQueryPacketListener;
+import net.minecraft.network.listener.ClientPingResultPacketListener;
 import net.minecraft.network.packet.Packet;
 
-public class QueryPongS2CPacket implements Packet<ClientQueryPacketListener> {
+public class PingResultS2CPacket implements Packet<ClientPingResultPacketListener> {
 	private final long startTime;
 
-	public QueryPongS2CPacket(long startTime) {
+	public PingResultS2CPacket(long startTime) {
 		this.startTime = startTime;
 	}
 
-	public QueryPongS2CPacket(PacketByteBuf buf) {
+	public PingResultS2CPacket(PacketByteBuf buf) {
 		this.startTime = buf.readLong();
 	}
 
@@ -20,8 +20,8 @@ public class QueryPongS2CPacket implements Packet<ClientQueryPacketListener> {
 		buf.writeLong(this.startTime);
 	}
 
-	public void apply(ClientQueryPacketListener clientQueryPacketListener) {
-		clientQueryPacketListener.onPong(this);
+	public void apply(ClientPingResultPacketListener clientPingResultPacketListener) {
+		clientPingResultPacketListener.onPingResult(this);
 	}
 
 	public long getStartTime() {

@@ -356,7 +356,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 	/**
 	 * Renders the background of this screen.
 	 * 
-	 * <p>If the client is in a world, {@linkplain #renderIngameBackground
+	 * <p>If the client is in a world, {@linkplain #renderInGameBackground
 	 * renders the translucent background gradient}.
 	 * Otherwise {@linkplain #renderBackgroundTexture renders the background texture}.
 	 */

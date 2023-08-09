@@ -9,7 +9,6 @@ import com.mojang.authlib.minecraft.BanDetails;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.minecraft.UserApiService.UserFlag;
-import com.mojang.authlib.properties.PropertyMap;
 import com.mojang.authlib.yggdrasil.ServicesKeyType;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.GlConst;
@@ -220,7 +219,6 @@ import net.minecraft.util.ApiServices;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.MetricsData;
 import net.minecraft.util.ModStatus;
 import net.minecraft.util.Nullables;
 import net.minecraft.util.PathUtil;
@@ -247,6 +245,7 @@ import net.minecraft.util.profiler.DebugRecorder;
 import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.DummyRecorder;
 import net.minecraft.util.profiler.EmptyProfileResult;
+import net.minecraft.util.profiler.PerformanceLog;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.profiler.ProfilerTiming;
@@ -323,7 +322,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 */
 	public static final String GL_ERROR_DIALOGUE = "Please make sure you have up-to-date drivers (see aka.ms/mcdriver for instructions).";
 	private final Path resourcePackDir;
-	private final PropertyMap sessionPropertyMap;
+	private final CompletableFuture<GameProfile> gameProfileFuture;
 	private final TextureManager textureManager;
 	private final DataFixer dataFixer;
 	private final WindowProvider windowProvider;
@@ -355,7 +354,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final String versionType;
 	private final Proxy networkProxy;
 	private final LevelStorage levelStorage;
-	public final MetricsData metricsData = new MetricsData();
+	public final PerformanceLog frameNanosLog = new PerformanceLog();
+	public final PerformanceLog pingPerformanceLog = new PerformanceLog();
+	public final PerformanceLog receivedPacketSizeLog = new PerformanceLog();
 	private final boolean is64Bit;
 	private final boolean isDemo;
 	private final boolean multiplayerEnabled;
@@ -447,7 +448,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public Screen currentScreen;
 	@Nullable
 	private Overlay overlay;
-	private boolean connectedToRealms;
 	private Thread thread;
 	private volatile boolean running;
 	@Nullable
@@ -482,6 +482,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private AbuseReportContext abuseReportContext;
 	private final CommandHistoryManager commandHistoryManager;
 	private final SymlinkFinder symlinkFinder;
+	private boolean finishedLoading;
 	private String openProfilerSection = "root";
 
 	public MinecraftClient(RunArgs args) {
@@ -492,7 +493,6 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourcePackDir = args.directories.resourcePackDir.toPath();
 		this.gameVersion = args.game.version;
 		this.versionType = args.game.versionType;
-		this.sessionPropertyMap = args.network.profileProperties;
 		Path path = this.runDirectory.toPath();
 		this.symlinkFinder = LevelStorage.createSymlinkFinder(path.resolve("allowed_symlinks.txt"));
 		DefaultClientResourcePackProvider defaultClientResourcePackProvider = new DefaultClientResourcePackProvider(
@@ -507,8 +507,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.networkProxy = args.network.netProxy;
 		this.authenticationService = new YggdrasilAuthenticationService(this.networkProxy);
 		this.sessionService = this.authenticationService.createMinecraftSessionService();
-		this.userApiService = this.createUserApiService(this.authenticationService, args);
 		this.session = args.network.session;
+		this.gameProfileFuture = CompletableFuture.supplyAsync(
+			() -> this.sessionService.fetchProfile(this.session.getUuidOrNull(), true), Util.getIoWorkerExecutor()
+		);
+		this.userApiService = this.createUserApiService(this.authenticationService, args);
 		LOGGER.info("Setting user: {}", this.session.getUsername());
 		LOGGER.debug("(Session ID is {})", this.session.getSessionId());
 		this.isDemo = args.game.demo;
@@ -672,7 +675,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				}
 
 				this.resourceReloadLogger.finish();
-				this.collectLoadTimes();
+				this.onFinishedLoading();
 			}), false));
 		this.quickPlayLogger = QuickPlayLogger.create(args.quickPlay.path());
 		if (this.isMultiplayerBanned()) {
@@ -688,10 +691,21 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
+	private void onFinishedLoading() {
+		if (!this.finishedLoading) {
+			this.finishedLoading = true;
+			this.collectLoadTimes();
+		}
+	}
+
 	private void collectLoadTimes() {
 		GameLoadTimeEvent.INSTANCE.stopTimer(TelemetryEventProperty.LOAD_TIME_LOADING_OVERLAY_MS);
 		GameLoadTimeEvent.INSTANCE.stopTimer(TelemetryEventProperty.LOAD_TIME_TOTAL_TIME_MS);
 		GameLoadTimeEvent.INSTANCE.send(this.telemetryManager.getSender());
+	}
+
+	public boolean isFinishedLoading() {
+		return this.finishedLoading;
 	}
 
 	private void onInitFinished(RealmsClient realms, ResourceReload reload, RunArgs.QuickPlay quickPlay) {
@@ -967,6 +981,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 								this.worldRenderer.reload();
 								this.resourceReloadLogger.finish();
 								completableFuture.complete(null);
+								this.onFinishedLoading();
 							}), true
 					)
 				);
@@ -1273,7 +1288,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.metricsSampleDuration = o;
 		}
 
-		this.metricsData.pushSample(o);
+		this.frameNanosLog.push(o);
 		this.lastMetricsSampleTime = n;
 		this.profiler.push("fpsUpdate");
 		if (this.currentGlTimerQuery != null && this.currentGlTimerQuery.isResultAvailable()) {
@@ -2189,6 +2204,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.setWorld(null);
 		this.player = null;
 		SkullBlockEntity.clearServices();
+		this.pingPerformanceLog.reset();
+		this.receivedPacketSizeLog.reset();
 	}
 
 	public void enterReconfiguration(Screen screen) {
@@ -2206,6 +2223,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.setWorld(null);
 		this.player = null;
 		SkullBlockEntity.clearServices();
+		this.pingPerformanceLog.reset();
+		this.receivedPacketSizeLog.reset();
 	}
 
 	private void reset(Screen screen) {
@@ -2525,15 +2544,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.session;
 	}
 
-	public PropertyMap getSessionProperties() {
-		if (this.sessionPropertyMap.isEmpty()) {
-			GameProfile gameProfile = this.getSessionService().fetchProfile(this.session.getUuidOrNull(), false);
-			if (gameProfile != null) {
-				this.sessionPropertyMap.putAll(gameProfile.getProperties());
-			}
-		}
-
-		return this.sessionPropertyMap;
+	public GameProfile getGameProfile() {
+		GameProfile gameProfile = (GameProfile)this.gameProfileFuture.join();
+		return gameProfile != null ? gameProfile : new GameProfile(this.session.getUuidOrNull(), this.session.getUsername());
 	}
 
 	public Proxy getNetworkProxy() {
@@ -2677,8 +2690,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.searchManager.reload(key, values);
 	}
 
-	public MetricsData getMetricsData() {
-		return this.metricsData;
+	public PerformanceLog getFrameNanosLog() {
+		return this.frameNanosLog;
 	}
 
 	public DataFixer getDataFixer() {

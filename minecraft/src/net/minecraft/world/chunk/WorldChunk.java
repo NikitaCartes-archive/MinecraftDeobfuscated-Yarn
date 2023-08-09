@@ -748,7 +748,7 @@ public class WorldChunk extends Chunk {
 		}
 
 		public String toString() {
-			return this.wrapped.toString() + " <wrapped>";
+			return this.wrapped + " <wrapped>";
 		}
 	}
 }

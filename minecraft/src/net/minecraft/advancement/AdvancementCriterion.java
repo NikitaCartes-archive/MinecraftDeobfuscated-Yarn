@@ -12,7 +12,6 @@ import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.predicate.entity.AdvancementEntityPredicateDeserializer;
-import net.minecraft.predicate.entity.AdvancementEntityPredicateSerializer;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
@@ -75,7 +74,7 @@ public class AdvancementCriterion {
 		} else {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("trigger", this.conditions.getId().toString());
-			JsonObject jsonObject2 = this.conditions.toJson(AdvancementEntityPredicateSerializer.INSTANCE);
+			JsonObject jsonObject2 = this.conditions.toJson();
 			if (jsonObject2.size() != 0) {
 				jsonObject.add("conditions", jsonObject2);
 			}

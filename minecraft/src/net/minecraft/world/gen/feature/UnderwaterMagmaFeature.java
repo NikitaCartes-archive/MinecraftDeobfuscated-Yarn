@@ -29,7 +29,7 @@ public class UnderwaterMagmaFeature extends Feature<UnderwaterMagmaFeatureConfig
 		UnderwaterMagmaFeatureConfig underwaterMagmaFeatureConfig = context.getConfig();
 		Random random = context.getRandom();
 		OptionalInt optionalInt = getFloorHeight(structureWorldAccess, blockPos, underwaterMagmaFeatureConfig);
-		if (!optionalInt.isPresent()) {
+		if (optionalInt.isEmpty()) {
 			return false;
 		} else {
 			BlockPos blockPos2 = blockPos.withY(optionalInt.getAsInt());

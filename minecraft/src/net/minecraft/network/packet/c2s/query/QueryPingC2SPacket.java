@@ -1,10 +1,10 @@
 package net.minecraft.network.packet.c2s.query;
 
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.listener.ServerQueryPacketListener;
+import net.minecraft.network.listener.ServerQueryPingPacketListener;
 import net.minecraft.network.packet.Packet;
 
-public class QueryPingC2SPacket implements Packet<ServerQueryPacketListener> {
+public class QueryPingC2SPacket implements Packet<ServerQueryPingPacketListener> {
 	private final long startTime;
 
 	public QueryPingC2SPacket(long startTime) {
@@ -20,8 +20,8 @@ public class QueryPingC2SPacket implements Packet<ServerQueryPacketListener> {
 		buf.writeLong(this.startTime);
 	}
 
-	public void apply(ServerQueryPacketListener serverQueryPacketListener) {
-		serverQueryPacketListener.onPing(this);
+	public void apply(ServerQueryPingPacketListener serverQueryPingPacketListener) {
+		serverQueryPingPacketListener.onQueryPing(this);
 	}
 
 	public long getStartTime() {

@@ -185,7 +185,7 @@ import org.joml.Vector3f;
  *  <td>{@link RegistryKey}</td><td>{@link #readRegistryKey(RegistryKey)}</td><td>{@link #writeRegistryKey(RegistryKey)}</td>
  * </tr>
  * <tr>
- *  <td>{@link RegistryKey} of a registry</td><td>{@link #readRegistryRef()}</td><td>{@link #writeRegistryKey(RegistryKey)}</td>
+ *  <td>{@link RegistryKey} of a registry</td><td>{@link #readRegistryRefKey()}</td><td>{@link #writeRegistryKey(RegistryKey)}</td>
  * </tr>
  * <tr>
  *  <td>{@link Date}</td><td>{@link #readDate()}</td><td>{@link #writeDate(Date)}</td>
@@ -1238,7 +1238,7 @@ public class PacketByteBuf extends ByteBuf {
 	 * 
 	 * @return this buf, for chaining
 	 * @see #readVarLong()
-	 * @see net.minecraft.network.encoding.VarLong
+	 * @see net.minecraft.network.encoding.VarLongs
 	 * 
 	 * @param value the value to write
 	 */
